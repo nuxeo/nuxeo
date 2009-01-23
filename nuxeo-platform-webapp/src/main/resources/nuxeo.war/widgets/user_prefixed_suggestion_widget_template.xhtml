@@ -11,7 +11,7 @@
     <h:dataTable value="#{field_0}"
       var="item" rendered="#{not empty field_0}">
       <h:column>
-        <nxu:methodResult name="info" value="#{userSuggestionActions.getUserInfo(item)}">
+        <nxu:methodResult name="info" value="#{userSuggestionActions.getPrefixedUserInfo(item)}">
           <f:subview rendered="#{info.type == 'USER_TYPE'}">
             <h:graphicImage value="/icons/user.gif" alt="user.gif" />
             <h:outputText value="#{nxu:userDisplayName(info.id, info.entry.user.firstName, info.entry.user.lastName)}" />
@@ -64,7 +64,7 @@
             for="#{widget.id}_suggest" tokens=""
             suggestionAction="#{userSuggestionActions.getSuggestions}"
             var="result"
-            fetchValue="#{result.id}"
+            fetchValue="#{result['prefixed_id']}"
             nothingLabel="#{messages['label.suggestion.noSearchResultsOrSearchOverflow']}"
             minChars="#{minChars}" frequency="#{frequency}" requestDelay="#{requestDelay}">
             <f:param name="userSuggestionSearchType" value="#{searchType}" />
@@ -80,17 +80,7 @@
               <f:param name="suggestionSelectionListId" value="#{widget.id}_list" />
             </a4j:support>
             <h:column>
-              <f:subview rendered="#{result.type == 'USER_TYPE'}">
-                <h:graphicImage value="/icons/user.gif" alt="user.gif" />
-                <h:outputText value="#{nxu:userDisplayName(result.id, result.entry.user.firstName, result.entry.user.lastName)}" />
-              </f:subview>
-              <f:subview rendered="#{result.type == 'GROUP_TYPE'}">
-                <h:graphicImage value="/icons/group.gif" alt="group.gif" />
-                <h:outputText value="#{result.id}" />
-              </f:subview>
-              <f:subview rendered="#{empty result.type}">
-                <h:outputText value="#{item}" />
-              </f:subview>
+              <h:outputText value="#{result.id}" />
             </h:column>
           </rich:suggestionbox>
           <br />
@@ -112,7 +102,7 @@
                     <f:param name="index" value="#{model.rowIndex}" />
                     <f:param name="type" value="remove" />
                   </a4j:commandLink>
-                  <nxu:methodResult name="info" value="#{userSuggestionActions.getUserInfo(model.rowData)}">
+                  <nxu:methodResult name="info" value="#{userSuggestionActions.getPrefixedUserInfo(model.rowData)}">
                     <f:subview rendered="#{info.type == 'USER_TYPE'}">
                       <h:graphicImage value="/icons/user.gif" alt="user.gif" />
                       <h:outputText value="#{nxu:userDisplayName(info.id, info.entry.user.firstName, info.entry.user.lastName)}" />

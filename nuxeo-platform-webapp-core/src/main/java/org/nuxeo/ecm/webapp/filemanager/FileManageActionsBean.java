@@ -53,6 +53,7 @@ import org.nuxeo.ecm.platform.ui.web.api.UserAction;
 import org.nuxeo.ecm.platform.ui.web.util.files.FileUtils;
 import org.nuxeo.ecm.webapp.base.InputController;
 import org.nuxeo.ecm.webapp.clipboard.ClipboardActions;
+import org.nuxeo.ecm.webapp.helpers.EventManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;
 
@@ -194,7 +195,7 @@ public class FileManageActionsBean extends InputController implements
             return addBinaryFileFromPlugin(bcontent, mimetype, fullName,
                     morePath);
         } catch (Throwable t) {
-            log.error(t);
+            log.error(t, t);
             return getErrorMessage(TRANSF_ERROR, fullName);
         }
     }
@@ -274,7 +275,7 @@ public class FileManageActionsBean extends InputController implements
                     documentManager, blob, path, true, fullName);
             return createdDoc.getName();
         } catch (Throwable t) {
-            log.error(t);
+            log.error(t, t);
             return getErrorMessage(TRANSF_ERROR, fullName);
         }
     }
@@ -304,12 +305,12 @@ public class FileManageActionsBean extends InputController implements
                 return getErrorMessage(TRANSF_ERROR, fullName);
             }
 
-            eventManager.raiseEventsOnDocumentSelected(createdDoc);
+            EventManager.raiseEventsOnDocumentSelected(createdDoc);
             Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
                     currentDocument);
             return createdDoc.getName();
         } catch (Throwable t) {
-            log.error(t);
+            log.error(t, t);
             return getErrorMessage(TRANSF_ERROR, fullName);
         }
     }
@@ -329,7 +330,7 @@ public class FileManageActionsBean extends InputController implements
             log.debug(debug);
             return debug;
         } catch (Throwable t) {
-            log.error(t);
+            log.error(t, t);
             return getErrorMessage(COPY_ERROR, docId);
         }
     }
@@ -504,7 +505,7 @@ public class FileManageActionsBean extends InputController implements
             clipboardActions.putSelectionInWorkList(docsToAdd, true);
             return debug;
         } catch (Throwable t) {
-            log.error(t);
+            log.error(t, t);
             return getErrorMessage(COPY_ERROR, docId);
         }
     }
@@ -526,7 +527,7 @@ public class FileManageActionsBean extends InputController implements
             clipboardActions.pasteDocumentList(pasteDocs);
             return debug;
         } catch (Throwable t) {
-            log.error(t);
+            log.error(t, t);
             return getErrorMessage(PASTE_ERROR, docId);
         }
     }

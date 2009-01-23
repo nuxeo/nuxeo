@@ -18,18 +18,23 @@
       java.lang.Object)
     </function-signature>
   </function>
-    <function>
+  <function>
     <function-name>printFileSize</function-name>
-    <function-class>org.nuxeo.ecm.platform.ui.web.tag.fn.Functions</function-class>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.Functions
+    </function-class>
     <function-signature>
       java.lang.String printFileSize(java.lang.String)
     </function-signature>
   </function>
   <function>
     <function-name>printFormatedFileSize</function-name>
-    <function-class>org.nuxeo.ecm.platform.ui.web.tag.fn.Functions</function-class>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.Functions
+    </function-class>
     <function-signature>
-      java.lang.String printFormatedFileSize(java.lang.String, java.lang.String, java.lang.Boolean)
+      java.lang.String printFormatedFileSize(java.lang.String, java.lang.String,
+      java.lang.Boolean)
     </function-signature>
   </function>
   <function>
@@ -119,6 +124,16 @@
     </function-class>
     <function-signature>
       String userFullName(java.lang.String)
+    </function-signature>
+  </function>
+  <function>
+    <function-name>userDisplayName</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.Functions
+    </function-class>
+    <function-signature>
+      String userDisplayName(java.lang.String, java.lang.String,
+      java.lang.String)
     </function-signature>
   </function>
   <!-- XXX AT: should be in nxdirectory taglib, not util -->

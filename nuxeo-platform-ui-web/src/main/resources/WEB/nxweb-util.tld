@@ -39,6 +39,8 @@
       </li>
       <li> userFullName(String): returns the full name of a user given its id.
       </li>
+      <li> userDisplayName(String, String, String): returns the full name of a user given its id, first name and last name.
+      </li>
       <li> printFileSize(String size): same as printFormatedFileSize( size, "SI", true)
       </li>
       <li> printFormatedFileSize(String size, String format, bollean isShort) pretty print the size of 

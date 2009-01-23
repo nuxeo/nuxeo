@@ -47,7 +47,6 @@ import org.nuxeo.ecm.platform.notification.api.Notification;
 import org.nuxeo.ecm.platform.notification.api.NotificationManager;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.webapp.base.InputController;
-import org.nuxeo.ecm.webapp.security.PrincipalListManager;
 
 /**
  * Handles the subscriptions page.
@@ -77,9 +76,6 @@ public class GroupsSubscriptionsAction extends InputController implements
     private List<String> selectedNotifications;
 
     @In(create = true)
-    private PrincipalListManager principalListManager;
-
-    @In(create = true)
     private transient NotificationManager notificationManager;
 
     private String selectedGrant;
@@ -87,6 +83,8 @@ public class GroupsSubscriptionsAction extends InputController implements
     private String selectedNotification;
 
     private SelectItem[] permissionActionItems;
+
+    protected List<String> selectedEntries;
 
     /**
      * Gets all the notifications registered in the system.
@@ -113,7 +111,6 @@ public class GroupsSubscriptionsAction extends InputController implements
      * @throws ClientException
      */
     public void updateSubscriptions() throws ClientException {
-        log.info("You have chosen : " + selectedNotifications);
         List<String> selectedNotifications = getSelectedNotifications();
         List<String> subscriptions = getSubscriptionsForCurrentUser();
 
@@ -124,6 +121,7 @@ public class GroupsSubscriptionsAction extends InputController implements
 
         NuxeoPrincipal principal = (NuxeoPrincipal) currentUser;
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
+
         // removing the unselected subscriptions
         if (!removedSubscriptions.isEmpty()) {
             for (String subscription : removedSubscriptions) {
@@ -131,7 +129,8 @@ public class GroupsSubscriptionsAction extends InputController implements
                         + principal.getName(), subscription, currentDoc.getId());
             }
         }
-        // ading the newly selected subsctiptions
+
+        // adding the newly selected subscriptions
         if (!newSubscriptions.isEmpty()) {
             for (String subscription : newSubscriptions) {
                 notificationManager.addSubscription("user:"
@@ -143,7 +142,6 @@ public class GroupsSubscriptionsAction extends InputController implements
         facesMessages.add(FacesMessage.SEVERITY_INFO,
                 resourcesAccessor.getMessages().get(
                         "label.notifications.registered"));
-        log.info("Updating subscriptions.... whatch out !");
     }
 
     private static List<String> getDisjunctElements(List<String> array1,
@@ -163,11 +161,8 @@ public class GroupsSubscriptionsAction extends InputController implements
      * @throws ClientException
      */
     public List<String> getSelectedNotifications() throws ClientException {
-        log.info("GetSelected notifications");
         if (selectedNotifications == null) {
             selectedNotifications = getSubscriptionsForCurrentUser();
-            log.info("Current notification for user : "
-                    + selectedNotifications.toString());
         }
         return selectedNotifications;
     }
@@ -219,14 +214,8 @@ public class GroupsSubscriptionsAction extends InputController implements
         String superParentType = documentManager.getSuperParentType(navigationContext.getCurrentDocument());
         List<Notification> notifications = notificationManager.getNotificationsForSubscriptions(superParentType);
         for (Notification notification : notifications) {
-            List<String> userGroups = getSubscribedUsersForNotification(notification.getName());
-            List<String> principals = new ArrayList<String>();
-            for (String usr : userGroups) {
-                if (usr != null) {
-                    principals.add(usr.substring(usr.indexOf(':') + 1));
-                }
-            }
-            result.put(notification.getLabel(), principals);
+            result.put(notification.getLabel(),
+                    getSubscribedUsersForNotification(notification.getName()));
         }
         return result;
     }
@@ -238,17 +227,7 @@ public class GroupsSubscriptionsAction extends InputController implements
         this.selectedNotifications = selectedNotifications;
     }
 
-    public Map<String, String> getIconAltMap() {
-        return principalListManager.iconAlt;
-    }
-
-    public Map<String, String> getIconPathMap() {
-        return principalListManager.iconPath;
-    }
-
     public SelectItem[] getNotificationActionItems() {
-        log.debug("Factory method called...");
-
         List<String> permissionActions = new ArrayList<String>();
         List<SelectItem> jsfModelList = new ArrayList<SelectItem>();
 
@@ -295,14 +274,13 @@ public class GroupsSubscriptionsAction extends InputController implements
     }
 
     public String addSubscriptionsAndUpdate() throws ClientException {
-        if (principalListManager.getSelectedUserListEmpty()) {
+        if (selectedEntries == null || selectedEntries.isEmpty()) {
             String message = ComponentUtils.translate(
                     FacesContext.getCurrentInstance(),
                     "error.notifManager.noUserSelected");
             FacesMessages.instance().add(message);
             return null;
         }
-        List<String> principalsName = principalListManager.getSelectedUsers();
         String notificationName = resourcesAccessor.getMessages().get(
                 notificationManager.getNotificationByName(selectedNotification).getLabel());
         boolean subscribe = selectedGrant.equals("Subscribe");
@@ -310,33 +288,33 @@ public class GroupsSubscriptionsAction extends InputController implements
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
         NuxeoPrincipal currentPrincipal = (NuxeoPrincipal) currentUser;
 
-        for (String principal : principalsName) {
-            String principalType = principalListManager.getPrincipalType(principal);
+        for (String selectedEntry : selectedEntries) {
             if (subscribe) {
-                if ("GROUP_TYPE".equals(principalType)) {
-                    notificationManager.addSubscription("group:" + principal,
-                            selectedNotification, currentDoc, true,
-                            currentPrincipal, notificationName);
-                } else {
-                    notificationManager.addSubscription("user:" + principal,
-                            selectedNotification, currentDoc, true,
-                            currentPrincipal, notificationName);
-                }
+                notificationManager.addSubscription(selectedEntry,
+                        selectedNotification, currentDoc, true,
+                        currentPrincipal, notificationName);
             } else {
-                if ("GROUP_TYPE".equals(principalType)) {
-                    notificationManager.removeSubscription(
-                            "group:" + principal, selectedNotification,
-                            currentDoc.getId());
-                } else {
-                    notificationManager.removeSubscription("user:" + principal,
-                            selectedNotification, currentDoc.getId());
-                }
+                notificationManager.removeSubscription(selectedEntry,
+                        selectedNotification, currentDoc.getId());
             }
         }
+        // reset
+        selectedEntries = null;
         facesMessages.add(FacesMessage.SEVERITY_INFO,
                 resourcesAccessor.getMessages().get(
                         "label.notifications.registered"));
         return null;
+    }
+
+    public List<String> getSelectedEntries() {
+        if (selectedEntries == null) {
+            selectedEntries = new ArrayList<String>();
+        }
+        return selectedEntries;
+    }
+
+    public void setSelectedEntries(List<String> selectedEntries) {
+        this.selectedEntries = selectedEntries;
     }
 
 }

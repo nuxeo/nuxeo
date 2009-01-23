@@ -37,11 +37,11 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.directory.SizeLimitExceededException;
 import org.nuxeo.ecm.platform.ui.web.component.list.UIEditableList;
-import org.nuxeo.ecm.platform.ui.web.tag.fn.Functions;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 
@@ -65,9 +65,11 @@ public class UserSuggestionActionsBean implements Serializable {
 
     public static final String TYPE_KEY_NAME = "type";
 
+    public static final String PREFIXED_ID_KEY_NAME = "prefixed_id";
+
     public static final String ID_KEY_NAME = "id";
 
-    public static final String LABEL_KEY_NAME = "label";
+    public static final String ENTRY_KEY_NAME = "entry";
 
     @In(create = true)
     protected transient UserManager userManager;
@@ -106,12 +108,16 @@ public class UserSuggestionActionsBean implements Serializable {
         }
     }
 
-    public List<NuxeoGroup> getGroupsSuggestions(Object input)
+    public List<DocumentModel> getGroupsSuggestions(Object input)
             throws ClientException {
         try {
             String pattern = (String) input;
             // XXX: this doesn't fetch group members (references)
-            return userManager.searchGroups(pattern);
+            Map<String, Object> filter = new HashMap<String, Object>();
+            if (pattern != null && pattern != "") {
+                filter.put(userManager.getGroupIdField(), pattern);
+            }
+            return userManager.searchGroups(filter, filter.keySet());
         } catch (SizeLimitExceededException e) {
             addSearchOverflowMessage();
             return Collections.emptyList();
@@ -120,11 +126,11 @@ public class UserSuggestionActionsBean implements Serializable {
         }
     }
 
-    public List<NuxeoPrincipal> getUserSuggestions(Object input)
+    public List<DocumentModel> getUserSuggestions(Object input)
             throws ClientException {
         try {
             String searchPattern = (String) input;
-            return userManager.searchPrincipals(searchPattern);
+            return userManager.searchUsers(searchPattern);
         } catch (SizeLimitExceededException e) {
             addSearchOverflowMessage();
             return Collections.emptyList();
@@ -134,20 +140,16 @@ public class UserSuggestionActionsBean implements Serializable {
     }
 
     public Object getSuggestions(Object input) throws ClientException {
-        List<NuxeoPrincipal> users;
+        List<DocumentModel> users = Collections.emptyList();
         if (USER_TYPE.equals(userSuggestionSearchType)
                 || StringUtils.isEmpty(userSuggestionSearchType)) {
             users = getUserSuggestions(input);
-        } else {
-            users = Collections.emptyList();
         }
 
-        List<NuxeoGroup> groups;
+        List<DocumentModel> groups = Collections.emptyList();
         if (GROUP_TYPE.equals(userSuggestionSearchType)
                 || StringUtils.isEmpty(userSuggestionSearchType)) {
             groups = getGroupsSuggestions(input);
-        } else {
-            groups = Collections.emptyList();
         }
 
         int userSize = users.size();
@@ -167,36 +169,68 @@ public class UserSuggestionActionsBean implements Serializable {
         List<Map<String, Object>> result = new ArrayList<Map<String, Object>>(
                 totalSize);
 
-        for (NuxeoPrincipal user : users) {
+        for (DocumentModel user : users) {
             Map<String, Object> entry = new HashMap<String, Object>();
             entry.put(TYPE_KEY_NAME, USER_TYPE);
-            entry.put(ID_KEY_NAME, user.getName());
-            entry.put(LABEL_KEY_NAME, getUserLabel(user));
+            entry.put(ENTRY_KEY_NAME, user);
+            String userId = user.getId();
+            entry.put(ID_KEY_NAME, userId);
+            entry.put(PREFIXED_ID_KEY_NAME, NuxeoPrincipal.PREFIX + userId);
             result.add(entry);
         }
 
-        for (NuxeoGroup group : groups) {
+        for (DocumentModel group : groups) {
             Map<String, Object> entry = new HashMap<String, Object>();
             entry.put(TYPE_KEY_NAME, GROUP_TYPE);
-            entry.put(ID_KEY_NAME, group.getName());
-            entry.put(LABEL_KEY_NAME, getGroupLabel(group));
+            entry.put(ENTRY_KEY_NAME, group);
+            String groupId = group.getId();
+            entry.put(ID_KEY_NAME, groupId);
+            entry.put(PREFIXED_ID_KEY_NAME, NuxeoGroup.PREFIX + groupId);
             result.add(entry);
         }
 
         return result;
     }
 
-    public static String getUserLabel(NuxeoPrincipal user) {
-        String name = user.getName();
-        StringBuilder label = new StringBuilder(name);
-        label.append(" (");
-        label.append(Functions.principalFullName(user));
-        label.append(')');
-        return label.toString();
+    // XXX: needs optimisation
+    public Map<String, Object> getPrefixedUserInfo(String id)
+            throws ClientException {
+        Map<String, Object> res = new HashMap<String, Object>();
+        res.put(PREFIXED_ID_KEY_NAME, id);
+        if (id != null) {
+            if (id.startsWith(NuxeoPrincipal.PREFIX)) {
+                res.put(TYPE_KEY_NAME, USER_TYPE);
+                String username = id.substring(NuxeoPrincipal.PREFIX.length());
+                res.put(ID_KEY_NAME, username);
+                res.put(ENTRY_KEY_NAME, userManager.getUserModel(username));
+            } else if (id.startsWith(NuxeoGroup.PREFIX)) {
+                res.put(TYPE_KEY_NAME, GROUP_TYPE);
+                String groupname = id.substring(NuxeoGroup.PREFIX.length());
+                res.put(ID_KEY_NAME, groupname);
+                res.put(ENTRY_KEY_NAME, userManager.getGroupModel(groupname));
+            } else {
+                res.put(ID_KEY_NAME, id);
+            }
+        }
+        return res;
     }
 
-    public static String getGroupLabel(NuxeoGroup group) {
-        return group.getName();
+    // XXX: needs optimisation
+    public Map<String, Object> getUserInfo(String id) throws ClientException {
+        Map<String, Object> res = new HashMap<String, Object>();
+        res.put(ID_KEY_NAME, id);
+        if (userManager.getGroup(id) != null) {
+            // group
+            res.put(PREFIXED_ID_KEY_NAME, NuxeoGroup.PREFIX + id);
+            res.put(TYPE_KEY_NAME, GROUP_TYPE);
+            res.put(ENTRY_KEY_NAME, userManager.getGroupModel(id));
+        } else {
+            // user
+            res.put(PREFIXED_ID_KEY_NAME, NuxeoPrincipal.PREFIX + id);
+            res.put(TYPE_KEY_NAME, USER_TYPE);
+            res.put(ENTRY_KEY_NAME, userManager.getUserModel(id));
+        }
+        return res;
     }
 
 }
