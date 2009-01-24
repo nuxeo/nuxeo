@@ -15,6 +15,7 @@
 package org.nuxeo.theme.editor;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
@@ -217,6 +218,21 @@ public class Editor {
     public static void saveTheme(String src, int indent)
             throws ThemeIOException {
         ThemeManager.saveTheme(src, indent);
+    }
+
+    public static void saveChanges() throws ThemeIOException {
+        ThemeManager themeManager = Manager.getThemeManager();
+        Long lastModified = themeManager.getLastModified();
+        for (ThemeDescriptor themeDef : ThemeManager.getThemeDescriptors()) {
+            if (!themeDef.isSaveable()) {
+                continue;
+            }
+            Date lastSaved = themeDef.getLastSaved();
+            if (lastSaved != null && lastSaved.getTime() > lastModified) {
+                continue;
+            }
+            ThemeManager.saveTheme(themeDef.getSrc());
+        }
     }
 
     public static String renderCssPreview(Element element, Style style,
@@ -608,10 +624,10 @@ public class Editor {
     public static void renamePreset(String themeName, String oldName,
             String newName) throws ThemeException {
         PresetManager.renamePreset(themeName, oldName, newName);
-       
+
         final String oldPresetStr = String.format("\"%s\"", oldName);
         final String newPresetStr = String.format("\"%s\"", newName);
-        
+
         ThemeManager themeManager = Manager.getThemeManager();
         for (Style style : themeManager.getStyles(themeName)) {
             for (String viewName : style.getSelectorViewNames()) {
@@ -621,7 +637,8 @@ public class Editor {
                     for (Map.Entry<Object, Object> entry : styleProperties.entrySet()) {
                         String text = (String) entry.getValue();
                         String key = (String) entry.getKey();
-                        String newText = text.replace(oldPresetStr, newPresetStr);
+                        String newText = text.replace(oldPresetStr,
+                                newPresetStr);
                         if (!newText.equals(text)) {
                             styleProperties.setProperty(key, newText);
                         }
@@ -629,7 +646,7 @@ public class Editor {
                 }
             }
         }
-        
+
         EventManager eventManager = Manager.getEventManager();
         eventManager.notify(Events.STYLES_MODIFIED_EVENT, new EventContext(
                 null, null));
@@ -640,14 +657,17 @@ public class Editor {
         PresetManager.deletePreset(themeName, presetName);
     }
 
-    public static void convertCssValueToPreset(String themeName, String category, 
-            String presetName, String value) throws ThemeException {
+    public static void convertCssValueToPreset(String themeName,
+            String category, String presetName, String value)
+            throws ThemeException {
         if (!"color".equals(category)) {
-            throw new ThemeException("Preset category not supported while converting css value to preset: " + category);
+            throw new ThemeException(
+                    "Preset category not supported while converting css value to preset: "
+                            + category);
         }
-        
+
         addPreset(themeName, presetName, category, value);
-        
+
         final String presetStr = String.format("\"%s\"", presetName);
         ThemeManager themeManager = Manager.getThemeManager();
         for (Style style : themeManager.getStyles(themeName)) {

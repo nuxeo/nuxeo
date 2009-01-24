@@ -592,6 +592,16 @@ public class Main extends DefaultModule {
   }
   
   @POST
+  @Path("save_changes")
+  public void saveChanges() {
+      try {
+          Editor.saveChanges()
+      } catch (ThemeException e) {
+          throw new ThemeEditorException(e.getMessage(), e)
+      }
+  }
+  
+  @POST
   @Path("select_preset_group")
   public void selectPresetGroup() {
       FormData form = ctx.getForm()

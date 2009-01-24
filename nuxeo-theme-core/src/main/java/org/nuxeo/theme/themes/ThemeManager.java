@@ -107,6 +107,8 @@ public final class ThemeManager implements Registrable {
 
     private static final FilenameFilter CUSTOM_THEME_FILENAME_FILTER = new CustomThemeNameFilter();
 
+    private static final int DEFAULT_THEME_INDENT = 2;
+
     static {
         CUSTOM_THEME_DIR = new File(Framework.getRuntime().getHome(),
                 "tmp/themes");
@@ -714,6 +716,10 @@ public final class ThemeManager implements Registrable {
         themeDescriptor.setLastLoaded(new Date());
         themeModified();
         updateThemeDescriptors();
+    }
+
+    public static void saveTheme(final String src) throws ThemeIOException {
+        saveTheme(src, DEFAULT_THEME_INDENT);
     }
 
     public static void saveTheme(final String src, final int indent)

@@ -859,6 +859,19 @@ NXThemesEditor.saveTheme = function(src, indent) {
     });
 };
 
+NXThemesEditor.saveChanges = function() {
+    var url = nxthemesBasePath + "/nxthemes-editor/save_changes"; 
+    new Ajax.Request(url, {
+         method: 'post',
+         onSuccess: function(r) {
+           NXThemesEditor.writeMessage("Changes saved.");
+         },
+         onFailure: function(r) {
+           NXThemesEditor.writeMessage("The changes could not be saved.");
+         }         
+    });
+};
+
 NXThemesEditor.refreshCanvas = function() {
     NXThemes.getViewById("canvas area").refresh();
 };
