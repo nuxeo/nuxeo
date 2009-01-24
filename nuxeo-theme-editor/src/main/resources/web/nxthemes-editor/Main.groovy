@@ -453,6 +453,26 @@ public class Main extends DefaultModule {
   }
   
   @POST
+  @Path("convert_to_preset")
+    public void convertValueToPreset() {
+      FormData form = ctx.getForm()
+      String themeName = form.getString("theme_name")
+      String presetName = form.getString("preset_name")      
+      String category = form.getString("category")
+      String value = form.getString("value")
+      if (value == null) {
+          throw new ThemeEditorException("Preset value cannot be null")
+      }
+      try {
+          Editor.addPreset(themeName, presetName, category, value)
+      } catch (ThemeException e) {
+          throw new ThemeEditorException(e.getMessage(), e)
+      }
+      
+      Editor.replaceColorWithPreset(themeName, value, presetName)
+  }
+  
+  @POST
   @Path("edit_preset")
   public void editPreset() {
       FormData form = ctx.getForm()

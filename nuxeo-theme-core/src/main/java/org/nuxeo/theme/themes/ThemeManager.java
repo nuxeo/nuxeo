@@ -617,10 +617,8 @@ public final class ThemeManager implements Registrable {
         for (Format format : getFormatsByTypeName("style")) {
             Style style = (Style) format;
             if (themeName != null) {
-                if (style.isNamed()) {
-                    continue;
-                }
                 ThemeElement theme = getThemeOfFormat(style);
+                // FIXME This shouldn't happen
                 if (theme == null) {
                     // The style is associated to a non-existing element
                     continue;

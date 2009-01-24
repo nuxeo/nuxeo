@@ -612,6 +612,32 @@ public class Editor {
         PresetManager.deletePreset(themeName, presetName);
     }
 
+    public static void replaceColorWithPreset(String themeName, String value,
+            String presetName) {
+        final String presetStr = String.format("\"%s\"", presetName);
+        ThemeManager themeManager = Manager.getThemeManager();
+        for (Style style : themeManager.getStyles(themeName)) {
+            for (String viewName : style.getSelectorViewNames()) {
+                for (String path : style.getPathsForView(viewName)) {
+                    Properties styleProperties = style.getPropertiesFor(
+                            viewName, path);
+                    for (Map.Entry<Object, Object> entry : styleProperties.entrySet()) {
+                        String text = (String) entry.getValue();
+                        String key = (String) entry.getKey();
+                        String newText = org.nuxeo.theme.html.Utils.replaceColor(
+                                text, value, presetStr);
+                        if (!newText.equals(text)) {
+                            styleProperties.setProperty(key, newText);
+                        }
+                    }
+                }
+            }
+        }
+        EventManager eventManager = Manager.getEventManager();
+        eventManager.notify(Events.STYLES_MODIFIED_EVENT, new EventContext(
+                null, null));
+    }
+
     public static void expireThemes() {
         Manager.getEventManager().notify(Events.THEME_MODIFIED_EVENT,
                 new EventContext(null, null));

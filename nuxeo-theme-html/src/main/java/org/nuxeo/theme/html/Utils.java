@@ -77,7 +77,7 @@ public final class Utils {
 
     private static final Pattern rgbColorPattern = Pattern.compile(
             ".*?rgb\\s*\\(\\s*([0-9,\\s]+)\\s*\\).*?", Pattern.DOTALL);
-    
+
     private static final Pattern rgbDigitPattern = Pattern.compile("([0-9]{1,3},[0-9]{1,3},[0-9]{1,3})");
 
     public static final Pattern PRESET_PATTERN = Pattern.compile("^\"(.*?)\"$",
@@ -397,6 +397,24 @@ public final class Utils {
             colors.add("#" + optimizeHexColor(rgbToHex(m.group(1))));
         }
         return colors;
+    }
+
+    public static String replaceColor(String text, String before, String after) {
+        Matcher m = hexColorPattern.matcher(text);
+        while (m.find()) {
+            String found = "#" + optimizeHexColor(m.group(1));
+            if (found.equals(before)) {
+                text = text.replace(String.format("#%s", m.group(1)), after);
+            }
+        }
+        m = rgbColorPattern.matcher(text);
+        while (m.find()) {
+            String found = "#" + optimizeHexColor(rgbToHex(m.group(1)));
+            if (found.equals(before)) {
+                text = text.replace(String.format("rgb(%s)", m.group(1)), after);   
+            }
+        }
+        return text;
     }
 
     public static String optimizeHexColor(String value) {

@@ -1110,7 +1110,7 @@ NXThemesPresetManager.convertValueToPreset = function(themeName, category, prese
     if (!presetName) {
         return;
     } 
-    var url = nxthemesBasePath + "/nxthemes-editor/add_preset";
+    var url = nxthemesBasePath + "/nxthemes-editor/convert_to_preset";
     new Ajax.Request(url, {
          method: 'post',
          parameters: {

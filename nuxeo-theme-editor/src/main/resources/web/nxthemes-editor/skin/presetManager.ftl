@@ -136,7 +136,7 @@ ${preset_info.preview}
 <#assign colors=This.getStyleColors(current_theme_name)>
 
 <#if colors>
-<h3 class="nxthemesEditor">Colors found in this theme ...</h3>
+<h3 class="nxthemesEditor">Colors that are not yet registered as presets ...</h3>
 
 <table cellspacing="5" cellpadding="4" style="margin-bottom: 30px; width: 100%">
 <#assign count = 0 />
