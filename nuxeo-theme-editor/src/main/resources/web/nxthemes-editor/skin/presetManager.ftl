@@ -96,7 +96,7 @@ ${preset_info.preview}
 <#assign preset_names=This.getUnidentifiedPresetNames(current_theme_name)>
 
 <#if preset_names>
-<h3 class="nxthemesEditor">Unknown presets</h3>
+<h3 class="nxthemesEditor">Presets that must be registered ...</h3>
 <table cellspacing="5" cellpadding="4" style="margin-bottom: 30px; width: 100%">
 <#assign count = 0 />
 <#assign row = 1 /> 

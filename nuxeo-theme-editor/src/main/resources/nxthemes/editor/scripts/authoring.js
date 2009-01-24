@@ -633,6 +633,9 @@ NXThemesEditor.addPreset = function(themeName, category, view_id) {
 
 NXThemesEditor.editPreset = function(themeName, presetName, value, view_id) {
     var value = prompt("Enter a CSS value:", value);
+    if (!value) {
+  	  return;
+    }
     var url = nxthemesBasePath + "/nxthemes-editor/edit_preset";
     new Ajax.Request(url, {
          method: 'post',
@@ -950,6 +953,9 @@ NXThemesPresetManager.editPreset = function(info) {
   var presetName = data.get('name');
   var value = data.get('value');
   value = prompt("Enter a CSS value:", value);
+  if (!value) {
+	  return;
+  }
   var url = nxthemesBasePath + "/nxthemes-editor/edit_preset";
   new Ajax.Request(url, {
        method: 'post',
