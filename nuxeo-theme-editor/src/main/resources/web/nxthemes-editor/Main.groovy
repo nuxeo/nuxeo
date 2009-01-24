@@ -328,6 +328,13 @@ public class Main extends DefaultModule {
   }
   
   @POST
+  @Path("copy_preset")
+  public void copyPreset() {
+      String id = ctx.getForm().getString("id")
+      SessionManager.setClipboardPresetId(id) 
+  }
+  
+  @POST
   @Path("paste_preset")
   public String pastePreset() {
       FormData form = ctx.getForm()
