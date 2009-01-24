@@ -133,7 +133,7 @@ ${preset_info.preview}
 
 
 
-<#assign colors=This.getStyleColors(current_theme_name)>
+<#assign colors=This.getHardcodedColors(current_theme_name)>
 
 <#if colors>
 <h3 class="nxthemesEditor">Colors that are not yet registered as presets ...</h3>

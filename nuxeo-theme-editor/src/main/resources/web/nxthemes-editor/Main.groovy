@@ -1160,8 +1160,8 @@ public class Main extends DefaultModule {
               viewNames, false, true, true, true)
   }
   
-  public static List getStyleColors(final themeName) {
-      return Editor.getStyleColors(themeName)    
+  public static List getHardcodedColors(final themeName) {
+      return Editor.getHardcodedColors(themeName)    
   }  
 
   /* Session */

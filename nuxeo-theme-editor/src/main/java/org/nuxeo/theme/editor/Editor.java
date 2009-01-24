@@ -560,7 +560,7 @@ public class Editor {
                 style, null));
     }
 
-    public static List<String> getStyleColors(final String themeName) {
+    public static List<String> getHardcodedColors(final String themeName) {
         Set<String> colors = new HashSet<String>();
         for (Style style : Manager.getThemeManager().getStyles(themeName)) {
             for (Map.Entry<Object, Object> entry : style.getAllProperties().entrySet()) {
@@ -568,6 +568,12 @@ public class Editor {
                 colors.addAll(org.nuxeo.theme.html.Utils.extractCssColors(value));
             }
         }
+        Set<String> colorPresetValues = new HashSet<String>();
+        for (PresetType preset : PresetManager.getCustomPresets(themeName,
+                "color")) {
+            colorPresetValues.add(preset.getValue());
+        }
+        colors.removeAll(colorPresetValues);
         return new ArrayList<String>(colors);
     }
 
