@@ -608,6 +608,28 @@ public class Editor {
     public static void renamePreset(String themeName, String oldName,
             String newName) throws ThemeException {
         PresetManager.renamePreset(themeName, oldName, newName);
+       
+        final String oldPresetStr = String.format("\"%s\"", oldName);
+        final String newPresetStr = String.format("\"%s\"", newName);
+        
+        ThemeManager themeManager = Manager.getThemeManager();
+        for (Style style : themeManager.getStyles(themeName)) {
+            for (String viewName : style.getSelectorViewNames()) {
+                for (String path : style.getPathsForView(viewName)) {
+                    Properties styleProperties = style.getPropertiesFor(
+                            viewName, path);
+                    for (Map.Entry<Object, Object> entry : styleProperties.entrySet()) {
+                        String text = (String) entry.getValue();
+                        String key = (String) entry.getKey();
+                        String newText = text.replace(oldPresetStr, newPresetStr);
+                        if (!newText.equals(text)) {
+                            styleProperties.setProperty(key, newText);
+                        }
+                    }
+                }
+            }
+        }
+        
         EventManager eventManager = Manager.getEventManager();
         eventManager.notify(Events.STYLES_MODIFIED_EVENT, new EventContext(
                 null, null));
@@ -618,8 +640,14 @@ public class Editor {
         PresetManager.deletePreset(themeName, presetName);
     }
 
-    public static void replaceColorWithPreset(String themeName, String value,
-            String presetName) {
+    public static void convertCssValueToPreset(String themeName, String category, 
+            String presetName, String value) throws ThemeException {
+        if (!"color".equals(category)) {
+            throw new ThemeException("Preset category not supported while converting css value to preset: " + category);
+        }
+        
+        addPreset(themeName, presetName, category, value);
+        
         final String presetStr = String.format("\"%s\"", presetName);
         ThemeManager themeManager = Manager.getThemeManager();
         for (Style style : themeManager.getStyles(themeName)) {

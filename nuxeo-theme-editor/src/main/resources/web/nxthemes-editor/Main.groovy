@@ -471,12 +471,10 @@ public class Main extends DefaultModule {
           throw new ThemeEditorException("Preset value cannot be null")
       }
       try {
-          Editor.addPreset(themeName, presetName, category, value)
+          Editor.convertCssValueToPreset(themeName, category, presetName, value)
       } catch (ThemeException e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }
-      
-      Editor.replaceColorWithPreset(themeName, value, presetName)
   }
   
   @POST
