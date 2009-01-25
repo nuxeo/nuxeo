@@ -51,6 +51,16 @@ public class JCRQueryXPath implements Query {
     }
 
 
+    public void setLimit(long limit) {
+        // ignore
+    }
+
+
+    public void setOffset(long offset) {
+        // ignore
+    }
+
+
     public JCRSession getSession() {
         return session;
     }
@@ -80,6 +90,11 @@ public class JCRQueryXPath implements Query {
         } catch (QueryParseException e) {
             throw new QueryException(e);
         }
+    }
+
+    public QueryResult execute(boolean countTotal) throws QueryException {
+        // ignore countTotal
+        return execute();
     }
 
     private String replaceInParams() {

@@ -129,6 +129,10 @@ public class CachingDocumentList implements DocumentModelList {
         return list.size();
     }
 
+    public long totalSize() {
+        return size();
+    }
+
     public List<DocumentModel> subList(int fromIndex, int toIndex) {
         return new CachingDocumentList(cache, list.subList(fromIndex, toIndex));
     }

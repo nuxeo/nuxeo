@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2007-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2007-2009 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -50,10 +50,10 @@ import javax.transaction.xa.Xid;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.exception.JDBCExceptionHelper;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
+import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.CollectionFragment.CollectionFragmentIterator;
 import org.nuxeo.ecm.core.storage.sql.Fragment.State;
@@ -1514,26 +1514,32 @@ public class Mapper {
      *
      * @param query the query as a parsed tree
      * @param queryFilter the query filter
+     * @param countTotal if {@code true}, count the total size without
+     *            limit/offset
      * @param session the current session (to resolve paths)
-     * @return the results
+     * @return the list of matching document ids
      * @throws StorageException
      * @throws SQLException
      */
-    public List<Serializable> query(SQLQuery query, QueryFilter queryFilter,
-            Session session) throws StorageException, SQLException {
+    public PartialList<Serializable> query(SQLQuery query,
+            QueryFilter queryFilter, boolean countTotal, Session session)
+            throws StorageException, SQLException {
         QueryMaker queryMaker = new QueryMaker(sqlInfo, model, session, query,
                 queryFilter);
         queryMaker.makeQuery();
 
         if (queryMaker.selectInfo == null) {
             logDebug("Query cannot return anything due to conflicting clauses");
-            return Collections.emptyList();
+            return new PartialList<Serializable>(
+                    Collections.<Serializable> emptyList(), 0);
         }
 
         if (log.isDebugEnabled()) {
             logSQL(queryMaker.selectInfo.sql, queryMaker.selectParams);
         }
-        PreparedStatement ps = connection.prepareStatement(queryMaker.selectInfo.sql);
+        PreparedStatement ps = connection.prepareStatement(
+                queryMaker.selectInfo.sql, ResultSet.TYPE_SCROLL_INSENSITIVE,
+                ResultSet.CONCUR_READ_ONLY);
         try {
             int i = 1;
             for (Object object : queryMaker.selectParams) {
@@ -1550,11 +1556,33 @@ public class Mapper {
                 }
             }
             ResultSet rs = ps.executeQuery();
+
+            // limit/offset
+            long totalSize = -1;
+            long limit = query.getLimit();
+            long offset = query.getOffset();
+            boolean available;
+            if (limit == 0 || offset == 0) {
+                available = rs.first();
+                if (!available) {
+                    totalSize = 0;
+                }
+                if (limit == 0) {
+                    limit = -1; // infinite
+                }
+            } else {
+                available = rs.absolute((int) offset + 1);
+            }
+
             Column column = queryMaker.selectInfo.whatColumns.get(0);
             List<Serializable> ids = new LinkedList<Serializable>();
-            while (rs.next()) {
+            int rowNum = 0;
+            while (available && limit != 0) {
                 Serializable id = column.getFromResultSet(rs, 1);
                 ids.add(id);
+                rowNum = rs.getRow();
+                available = rs.next();
+                limit--;
             }
             if (log.isDebugEnabled()) {
                 int MAX = 10;
@@ -1574,7 +1602,21 @@ public class Mapper {
                 }
                 logDebug("  -> " + debugIds + end);
             }
-            return ids;
+
+            // total size
+            if (countTotal && totalSize == -1) {
+                if (!available && rowNum != 0) {
+                    // last row read was the actual last
+                    totalSize = rowNum;
+                } else {
+                    // available if limit reached with some left
+                    // rowNum == 0 if skipped too far
+                    rs.last();
+                    totalSize = rs.getRow();
+                }
+            }
+
+            return new PartialList<Serializable>(ids, totalSize);
         } finally {
             ps.close();
         }

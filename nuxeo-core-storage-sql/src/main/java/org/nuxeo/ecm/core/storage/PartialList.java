@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2009 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,30 +12,26 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Bogdan Stefanescu
  *     Florent Guillaume
  */
 
-package org.nuxeo.ecm.core.api;
+package org.nuxeo.ecm.core.storage;
 
-import java.io.Serializable;
 import java.util.List;
 
 /**
- * A serializable list of document models.
- * <p>
- * It may include information about which part of a bigger list it represents.
+ * The bundling of a list and a total size.
  *
- * @author Bogdan Stefanescu
  * @author Florent Guillaume
  */
-public interface DocumentModelList extends List<DocumentModel>, Serializable {
+public class PartialList<E> {
 
-    /**
-     * Returns the total size of the bigger list this is a part of.
-     *
-     * @return the total size
-     */
-    long totalSize();
+    public final List<E> list;
 
+    public final long totalSize;
+
+    public PartialList(List<E> list, long totalSize) {
+        this.list = list;
+        this.totalSize = totalSize;
+    }
 }

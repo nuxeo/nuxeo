@@ -55,6 +55,10 @@ public class JCRQueryXPathResult implements QueryResult {
         return iterator.getSize();
     }
 
+    public long getTotalSize() {
+        return -1;
+    }
+
     public boolean isEmpty() {
         if (iterator.getPosition() > 0) {
             return false;

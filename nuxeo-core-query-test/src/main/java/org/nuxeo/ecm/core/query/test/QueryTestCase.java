@@ -383,6 +383,74 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
                 "dc:description"));
     }
 
+    public void testBatching() throws Exception {
+        doBatching(true);
+    }
+
+    public void doBatching(boolean checkNames) throws Exception {
+        DocumentModelList dml;
+        createDocs();
+
+        String sql = "SELECT * FROM Document ORDER BY ecm:name";
+
+        dml = session.query(sql);
+        assertEquals(7, dml.size());
+        assertEquals(7, dml.totalSize());
+        if (checkNames) {
+            assertEquals("testfile1", dml.get(0).getName());
+            assertEquals("testfile2", dml.get(1).getName());
+            assertEquals("testfile3", dml.get(2).getName());
+            assertEquals("testfile4", dml.get(3).getName());
+            assertEquals("testfolder1", dml.get(4).getName());
+            assertEquals("testfolder2", dml.get(5).getName());
+            assertEquals("testfolder3", dml.get(6).getName());
+        }
+
+        dml = session.query(sql, null, 99, 0, true);
+        assertEquals(7, dml.size());
+        assertEquals(7, dml.totalSize());
+        if (checkNames) {
+            assertEquals("testfile1", dml.get(0).getName());
+            assertEquals("testfolder3", dml.get(6).getName());
+        }
+
+        dml = session.query(sql, null, 7, 0, true);
+        assertEquals(7, dml.size());
+        assertEquals(7, dml.totalSize());
+        if (checkNames) {
+            assertEquals("testfile1", dml.get(0).getName());
+            assertEquals("testfolder3", dml.get(6).getName());
+        }
+
+        dml = session.query(sql, null, 6, 0, true);
+        assertEquals(6, dml.size());
+        assertEquals(7, dml.totalSize());
+        if (checkNames) {
+            assertEquals("testfile1", dml.get(0).getName());
+            assertEquals("testfolder2", dml.get(5).getName());
+        }
+
+        dml = session.query(sql, null, 6, 1, true);
+        assertEquals(6, dml.size());
+        assertEquals(7, dml.totalSize());
+        if (checkNames) {
+            assertEquals("testfile2", dml.get(0).getName());
+            assertEquals("testfolder3", dml.get(5).getName());
+        }
+
+        dml = session.query(sql, null, 99, 3, true);
+        assertEquals(4, dml.size());
+        assertEquals(7, dml.totalSize());
+        if (checkNames) {
+            assertEquals("testfile4", dml.get(0).getName());
+            assertEquals("testfolder3", dml.get(3).getName());
+        }
+
+        dml = session.query(sql, null, 99, 50, true);
+        assertEquals(0, dml.size());
+        assertEquals(7, dml.totalSize());
+    }
+
     public void TODOtestQueryResultsTypes() throws Exception {
         // assertEquals("testQueryResultsTypes", doc.getPropertyValue("title"));
         // assertEquals(Boolean.TRUE, doc.getPropertyValue("my:boolean"));
