@@ -1064,6 +1064,10 @@ ul.nxthemesSelector img {
   border: none;
 }
 
+.nxthemesScreen button img {
+  vertical-align: middle;
+}
+
 .nxthemesTable {
   font: 12px Arial, sans-serif;
   width: 100%;

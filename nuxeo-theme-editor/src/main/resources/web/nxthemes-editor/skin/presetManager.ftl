@@ -1,5 +1,7 @@
 <div>
- 
+
+<#assign themeManager=This.getThemeManager()>
+
 <!-- preset menu -->
 <@nxthemes_view resource="preset-menu.json" />     
       
@@ -13,7 +15,7 @@
 
 <h2 class="nxthemesEditor">Themes</h2>
 <ul class="nxthemesSelector">
-<#list This.getThemeManager().getThemeNames() as theme_name>
+<#list themeManager.getThemeNames() as theme_name>
 <li <#if theme_name = current_theme_name>class="selected"</#if>><a href="javascript:void(0)" 
   onclick="NXThemesEditor.selectTheme('${theme_name}', 'preset manager')">
   <img src="${skinPath}/img/theme-16.png" width="16" height="16" />

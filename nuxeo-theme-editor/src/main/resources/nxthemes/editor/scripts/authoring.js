@@ -846,11 +846,11 @@ NXThemesEditor.repairTheme = function(themeName) {
          onSuccess: function(r) {
         	 NXThemesEditor.highlightSaveButton();
              NXThemes.getViewById("theme manager").refresh();
-             NXThemesEditor.writeMessage("Theme repaired.");
+             NXThemesEditor.writeMessage("Theme cleaned up.");
          },
          onFailure: function(r) {
              NXThemes.getViewById("theme manager").refresh();
-             NXThemesEditor.writeMessage("The theme could not be repaired.");
+             NXThemesEditor.writeMessage("The theme could not be cleaned up.");
          }         
     });
 };

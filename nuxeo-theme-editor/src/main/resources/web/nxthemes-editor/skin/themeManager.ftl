@@ -1,5 +1,7 @@
 <div>
-<#assign themes=This.getThemeManager().getThemeDescriptors()>
+
+<#assign themeManager=This.getThemeManager()>
+<#assign themes=themeManager.getThemeDescriptors()>
 
 <div id="nxthemesThemeManager" class="nxthemesScreen">
 
@@ -56,14 +58,14 @@
           </button>
           <button onclick="window.location='${basePath}/nxthemes-editor/xml_export?theme=${theme.name}'">
             <img src="${skinPath}/img/theme-code.png" width="16" height="16" />
-            Show code
+            Show source
           </button>
         </#if>
       
         <#if theme.reloadable>
           <button onclick="NXThemesEditor.loadTheme('${theme.src}')">
           <img src="${skinPath}/img/theme-reload.png" width="16" height="16" />
-          Reload
+          Restore
           </button>
         </#if>
         <#if theme.loadable>
@@ -75,8 +77,8 @@
 
         <#if theme.repairable>
           <button onclick="NXThemesEditor.repairTheme('${theme.name}')">
-            <img src="${skinPath}/img/theme-repair.png" width="16" height="16" />
-            Repair
+            <img src="${skinPath}/img/cleanup-16.png" width="16" height="16" />
+            Clean up
           </button>
         </#if>
       </p>

@@ -1159,15 +1159,7 @@ public class Main extends DefaultModule {
   public static List<String> getUnidentifiedPresetNames(String themeName) {
       return PresetManager.getUnidentifiedPresetNames(themeName)
   }
-  
-  public static List<String> getUnusedStyleViews(Style style) {
-      return ThemeManager.getUnusedStyleViews(style)
-  }
-  
-  public static List<Style> getStyles(String themeName) {
-      return Manager.getThemeManager().getStyles(themeName)
-  }
-  
+    
   public static String renderStyleView(Style style, String viewName) {
       List<String> viewNames = new ArrayList<String>()
       viewNames.add(viewName)

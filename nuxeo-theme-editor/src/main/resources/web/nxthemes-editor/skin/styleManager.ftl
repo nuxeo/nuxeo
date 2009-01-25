@@ -1,5 +1,7 @@
 <div>
 
+<#assign themeManager=This.getThemeManager()>
+
 <div id="nxthemesStyleManager">
 
 <h1 class="nxthemesEditor">Styles</h1>
@@ -10,7 +12,7 @@
 
 <h2 class="nxthemesEditor">Themes</h2>
 <ul class="nxthemesSelector">
-<#list This.getThemeManager().getThemeNames() as theme_name>
+<#list themeManager.getThemeNames() as theme_name>
 <li <#if theme_name = current_theme_name>class="selected"</#if>><a href="javascript:void(0)" 
   onclick="NXThemesEditor.selectTheme('${theme_name}', 'style manager')">
   <img src="${skinPath}/img/theme-16.png" width="16" height="16" />
@@ -22,21 +24,20 @@
 </td>
 <td style="padding-left: 10px; vertical-align: top;">
 
-
 <h2 class="nxthemesEditor">Theme: ${current_theme_name}</h2>
 
-<h3 class="nxthemesEditorFocus">Unused style views ...</h3>
-
-<#assign styles=This.getStyles(current_theme_name)>
+<#assign styles=themeManager.getStyles(current_theme_name)>
 
 <#list styles as style>
-<#assign views=This.getUnusedStyleViews(style)>
 
+<#assign views=themeManager.getUnusedStyleViews(style)>
 <#if views>
+
+<h3 class="nxthemesEditorFocus">Unused view style ...</h3>
 
 <#list views as view>
 
-<form style="padding: 13px "class="unusedViews" action="javascript:void(0)" submit="return false">
+<form style="padding: 10px 8px 16px 8px" class="unusedViews" action="javascript:void(0)" submit="return false">
   <div>
     <input type="hidden" name="theme_name" value="${current_theme_name}" />
     <input type="hidden" name="style_uid" value="#{style.uid}" />
@@ -44,10 +45,10 @@
   </div>
    
   <div style="font-size: 11px; font-weight: bold">
-    ${current_theme_name}/ ${view}
+    ${view}
   </div>
   
-  <pre style="margin: 4px 0; font-size: 10px; background-color: #ffc; border: 1px solid #fc0">${This.renderStyleView(style, view)}</pre>
+  <pre style="margin: 4px 0 6px 0; font-size: 10px; background-color: #ffc; border: 1px solid #fc0">${This.renderStyleView(style, view)}</pre>
 
   <button type="submit">
     <img src="${skinPath}/img/cleanup-16.png" width="16" height="16" />
