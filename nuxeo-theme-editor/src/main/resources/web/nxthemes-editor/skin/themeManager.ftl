@@ -40,7 +40,15 @@
           <span class="nxthemesEmphasize">LOADING FAILED</span>
         </#if>
       </p>
+      
       <p>
+        <#if theme.saveable>
+          <button onclick="NXThemesEditor.saveTheme('${theme.src}', 2)">
+            <img src="${skinPath}/img/theme-save.png" width="16" height="16" />
+            Save
+          </button>
+        </#if> 
+
         <#if theme.exportable>  
           <button onclick="window.location='${basePath}/nxthemes-editor/xml_export?theme=${theme.name}&amp;download=1&amp;indent=2'">
             <img src="${skinPath}/img/theme-download.png" width="16" height="16" />
