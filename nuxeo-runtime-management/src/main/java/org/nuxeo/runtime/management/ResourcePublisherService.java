@@ -16,17 +16,14 @@
  */
 package org.nuxeo.runtime.management;
 
-import java.lang.management.ManagementFactory;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.Map.Entry;
 
 import javax.management.MBeanServer;
-import javax.management.MBeanServerFactory;
 import javax.management.ObjectName;
 
 import org.apache.commons.lang.StringUtils;
@@ -54,15 +51,13 @@ public class ResourcePublisherService extends DefaultComponent implements
         super(); // enables breaking
     }
 
-    private static final Log log = LogFactory.getLog(ResourcePublisherService.class);
+    static final Log log = LogFactory.getLog(ResourcePublisherService.class);
 
     public static final String SERVICES_EXT_KEY = "services";
 
     public static final String FACTORIES_EXT_KEY = "factories";
 
     public static final String SHORTCUTS_EXT_KEY = "shortcuts";
-
-    public static final String SERVER_LOCATORS_EXT_KEY = "locators";
 
     @Override
     public void registerContribution(Object contribution,
@@ -74,8 +69,6 @@ public class ResourcePublisherService extends DefaultComponent implements
             factoriesRegistry.doRegisterFactory((ResourceFactoryDescriptor) contribution);
         } else if (extensionPoint.equals(SHORTCUTS_EXT_KEY)) {
             shortcutsRegistry.doRegisterShortcut((ShortcutDescriptor) contribution);
-        } else if (extensionPoint.equals(SERVER_LOCATORS_EXT_KEY)) {
-            serverLocatorsRegistry.doRegisterServerLocator((MBeanServerLocatorDescriptor) contribution);
         }
     }
 
@@ -175,9 +168,57 @@ public class ResourcePublisherService extends DefaultComponent implements
             }
         }
 
+        protected ModelMBeanInfoFactory mbeanInfoFactory = new ModelMBeanInfoFactory();
+
+        protected NamedModelMBean doBind(MBeanServer server, ObjectName name,
+                Object instance, Class<?> clazz) throws Exception {
+            NamedModelMBean mbean = new NamedModelMBean();
+            mbean.setManagedResource(instance, "ObjectReference");
+            mbean.setModelMBeanInfo(mbeanInfoFactory.getModelMBeanInfo(clazz));
+            mbean.setInstance(server.registerMBean(mbean, name));
+            return mbean;
+        }
+
+        protected void doBind(Resource resource) {
+            if (resource.mbean != null) {
+                throw new IllegalStateException(resource + " is already bound");
+            }
+            MBeanServer server = serverLocatorService.lookupServer(resource.managementName.getDomain());
+            try {
+                resource.mbean = doBind(server, resource.managementName,
+                        resource.instance, resource.clazz);
+                if (ResourcePublisherService.log.isDebugEnabled()) {
+                    ResourcePublisherService.log.debug("bound " + resource);
+                }
+            } catch (Exception e) {
+                ResourcePublisherService.log.error("Cannot bind " + resource, e);
+            }
+        }
+
+        protected void doUnbind(Resource resource) {
+            if (resource.mbean == null) {
+                throw new IllegalStateException(resource + " is not bound");
+            }
+            if (resource.mbean.getInstance() == null) {
+                return;
+            }
+            try {
+                MBeanServer server = serverLocatorService.lookupServer(resource.managementName);
+                server.unregisterMBean(resource.managementName);
+            } catch (Exception e) {
+                throw ManagementRuntimeException.wrap("Cannot unbind "
+                        + resource, e);
+            } finally {
+                resource.mbean = null;
+                if (ResourcePublisherService.log.isDebugEnabled()) {
+                    ResourcePublisherService.log.debug("unbound " + resource);
+                }
+            }
+        }
+
         protected void doRegisterResource(Resource resource) {
+            doBind(resource);
             registry.put(resource.getManagementName(), resource);
-            serverLocatorsRegistry.doBind(resource);
             if (log.isDebugEnabled()) {
                 log.debug("registered " + resource.getManagementName());
             }
@@ -227,7 +268,7 @@ public class ResourcePublisherService extends DefaultComponent implements
                 iterator.remove();
                 Resource resource = entry.getValue();
                 if (resource.mbean != null) {
-                    serverLocatorsRegistry.doUnbind(entry.getValue());
+                    doUnbind(entry.getValue());
                 }
             }
         }
@@ -253,7 +294,7 @@ public class ResourcePublisherService extends DefaultComponent implements
                         + " is not registered");
             }
             if (resource.mbean != null) {
-                serverLocatorsRegistry.doUnbind(resource);
+                doUnbind(resource);
             }
         }
 
@@ -261,90 +302,7 @@ public class ResourcePublisherService extends DefaultComponent implements
 
     protected final ResourcesRegistry resourcesRegistry = new ResourcesRegistry();
 
-    protected class ServerLocatorsRegistry {
-        protected ModelMBeanInfoFactory mbeanInfoFactory = new ModelMBeanInfoFactory();
-
-        protected Map<String,MBeanServer> otherServers =
-            new HashMap<String,MBeanServer>();
-
-        protected MBeanServer platformServer = ManagementFactory.getPlatformMBeanServer();
-
-        protected void doRegisterServerLocator(
-                MBeanServerLocatorDescriptor descriptor) {
-            platformServer = doLocateServer(descriptor);
-        }
-
-        @SuppressWarnings("unchecked")
-        protected MBeanServer doLocateServer(
-                MBeanServerLocatorDescriptor descriptor) {
-            String domainName = descriptor.getDomainName();
-            for (MBeanServer server : (List<MBeanServer>) MBeanServerFactory.findMBeanServer(null)) {
-                if (server.getDefaultDomain().equals(domainName)) {
-                    return otherServers.put(domainName,server);
-                }
-            }
-            throw new ManagementRuntimeException(
-                    "cannot locate mbean server containing domain "
-                            + domainName);
-        }
-
-        protected void doBind(Resource resource) {
-            if (resource.mbean != null) {
-                throw new IllegalStateException(resource + " is already bound");
-            }
-            NamedModelMBean mbean = null;
-            try {
-                mbean = new NamedModelMBean();
-                mbean.setManagedResource(resource.getInstance(),
-                        "ObjectReference");
-                mbean.setModelMBeanInfo(mbeanInfoFactory.getModelMBeanInfo(resource.getClazz()));
-                mbean.setInstance(platformServer.registerMBean(mbean,
-                        resource.getManagementName()));
-                if (log.isDebugEnabled()) {
-                    log.debug("bound " + resource);
-                }
-            } catch (Exception e) {
-                log.error("Cannot bind " + resource, e);
-            }
-            resource.mbean = mbean;
-        }
-
-        protected void doUnbind(Resource resource) {
-            if (resource.mbean == null) {
-                throw new IllegalStateException(resource + " is not bound");
-            }
-            if (resource.mbean.getInstance() == null) {
-                return;
-            }
-            try {
-                platformServer.unregisterMBean(resource.mbean.getName());
-            } catch (Exception e) {
-                throw ManagementRuntimeException.wrap("Cannot unbind "
-                        + resource, e);
-            } finally {
-                resource.mbean = null;
-                if (log.isDebugEnabled()) {
-                    log.debug("unbound " + resource);
-                }
-            }
-        }
-        
-     
-        protected MBeanServer doLocateServer(ObjectName qualifiedName)
-                throws ManagementException {
-            if (platformServer.isRegistered(qualifiedName)) {
-                return platformServer;
-            }
-            for (MBeanServer server:otherServers.values()) {
-                if (server.isRegistered(qualifiedName)) {
-                    return server;
-                }
-            }
-            throw new ManagementException(qualifiedName + " is not registered");
-        }
-    }
-
-    protected final ServerLocatorsRegistry serverLocatorsRegistry = new ServerLocatorsRegistry();
+    protected ServerLocatorService serverLocatorService;
 
     public void registerResource(String shortName, String qualifiedName,
             Class<?> managementClass, Object instance) {
@@ -382,14 +340,10 @@ public class ResourcePublisherService extends DefaultComponent implements
         return shortcutsRegistry.registry.get(name);
     }
 
-    public MBeanServer lookupServer(ObjectName name) throws ManagementException {
-        return serverLocatorsRegistry.doLocateServer(name);
-    }
-
     protected void doBindResources() {
         for (Resource resource : resourcesRegistry.registry.values()) {
             if (resource.mbean == null) {
-                serverLocatorsRegistry.doBind(resource);
+                resourcesRegistry.doBind(resource);
             }
         }
     }
@@ -401,13 +355,18 @@ public class ResourcePublisherService extends DefaultComponent implements
     protected void doUnbindResources() {
         for (Resource resource : resourcesRegistry.registry.values()) {
             if (resource.mbean == null) {
-                serverLocatorsRegistry.doUnbind(resource);
+                resourcesRegistry.doUnbind(resource);
             }
         }
     }
 
     public void unbindResources() {
         doUnbindResources();
+    }
+
+    @Override
+    public void activate(ComponentContext context) throws Exception {
+        serverLocatorService = (ServerLocatorService) Framework.getLocalService(ServerLocator.class);
     }
 
     @Override
@@ -420,7 +379,7 @@ public class ResourcePublisherService extends DefaultComponent implements
         if (resource == null) {
             throw new IllegalArgumentException(name + " is not registered");
         }
-        serverLocatorsRegistry.doBind(resource);
+        resourcesRegistry.doBind(resource);
     }
 
     public void unbindResource(ObjectName name) {
@@ -428,6 +387,11 @@ public class ResourcePublisherService extends DefaultComponent implements
         if (resource == null) {
             throw new IllegalArgumentException(name + " is not registered");
         }
-        serverLocatorsRegistry.doUnbind(resource);
+        resourcesRegistry.doUnbind(resource);
     }
+    
+    protected void bindForTest(MBeanServer server, ObjectName name, Object instance, Class<?> clazz) throws Exception {
+        resourcesRegistry.doBind(server,name,instance,clazz);
+    }
+
 }

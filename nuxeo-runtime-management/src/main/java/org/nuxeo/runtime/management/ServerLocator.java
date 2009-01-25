@@ -16,24 +16,16 @@
  */
 package org.nuxeo.runtime.management;
 
-import org.nuxeo.common.xmap.annotation.XNode;
-import org.nuxeo.common.xmap.annotation.XObject;
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
 
 /**
  * @author matic
  * 
  */
-@XObject("locator")
-public class MBeanServerLocatorDescriptor {
+public interface ServerLocator {
 
-    public MBeanServerLocatorDescriptor(String domainName) {
-        this.domainName = domainName;
-    }
+    MBeanServer lookupServer(ObjectName name);
+    MBeanServer lookupServer(String domainName);
 
-    @XNode("@domainName")
-    private String domainName;
-
-    public String getDomainName() {
-        return domainName;
-    }
 }
