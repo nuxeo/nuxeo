@@ -33,10 +33,14 @@
      "name": "${preset_info.name}",
      "value": "${preset_info.value}",
      "categories": [
-       {"label": "Color", "choice": "color"},
-       {"label": "Background", "choice": "background"},
-       {"label": "Font", "choice": "font"},
-       {"label": "Image", "choice": "image"}
+       {"label": "Color", "choice": "color"
+        <#if preset_info.category = 'color'>, "selected": "true"</#if>},
+       {"label": "Background", "choice": "background"
+        <#if preset_info.category = 'background'>, "selected": "true"</#if>},
+       {"label": "Font", "choice": "font"
+        <#if preset_info.category = 'font'>, "selected": "true"</#if>},
+       {"label": "Image", "choice": "image"      
+        <#if preset_info.category = 'image'>, "selected": "true"</#if>}
      ],
      "editable": true,
      "copyable": true,
