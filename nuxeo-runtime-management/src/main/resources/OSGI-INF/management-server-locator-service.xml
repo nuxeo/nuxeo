@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.runtime.management.ServerLocator">
+
+  <implementation class="org.nuxeo.runtime.management.ServerLocatorService" />
+
+  <service>
+    <provide interface="org.nuxeo.runtime.management.ServerLocator" />
+  </service>
+
+  <extension-point name="locators">
+    <object class="org.nuxeo.runtime.management.ServerLocatorDescriptor" />
+  </extension-point>
+  
+</component>
