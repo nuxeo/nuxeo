@@ -989,9 +989,29 @@ NXThemes.registerFilters({
 //PRESET MANAGER
 
 if (typeof NXThemesPresetManager == "undefined") {
-NXThemesPresetManager = {
+    NXThemesPresetManager = {
+    }
 }
-}
+
+NXThemesPresetManager.selectTheme = function(name) {
+    if (name !== null) {
+        NXThemes.setCookie("nxthemes.theme", name);
+        NXThemes.getViewById("preset manager").refresh();
+    }
+};
+
+NXThemesPresetManager.selectPresetGroup = function(group) {
+    var url = nxthemesBasePath + "/nxthemes-editor/select_preset_group"; 
+    new Ajax.Request(url, {
+         method: 'post',
+         parameters: {
+             group: group
+         },
+         onComplete: function(r) {
+        	 NXThemes.getViewById("preset manager").refresh();
+         }
+    });
+};
 
 NXThemesPresetManager.editPreset = function(info) {
   var target = Event.element(info);

@@ -7,6 +7,29 @@
 
 <h1 class="nxthemesEditor">Presets</h1>
 
+<table cellpadding="0" cellspacing="0" style="width: 100%"><tr>
+
+<td style="vertical-align: top; width: 200px; padding-right: 10px">
+
+<h2 class="nxthemesEditor">Themes</h2>
+<ul>
+<#list theme_names as theme_name>
+<li><a href="javascript:void(0)" 
+  onclick="NXThemesPresetManager.selectTheme('${theme_name}')">${theme_name}</a></li>
+</#list>
+</ul>
+
+<h2 class="nxthemesEditor">Palettes</h2>
+<ul>
+<#list preset_groups as group>
+<li><a href="javascript:void(0)" 
+  onclick="NXThemesPresetManager.selectPresetGroup('${group}')">${group}</a></li>
+</#list>
+</ul>
+
+</td>
+<td>
+
 <#assign presets = This.getCustomPresets(current_theme_name)>
 
 <h2 class="nxthemesEditor">Theme: ${current_theme_name}</h2>
@@ -174,16 +197,14 @@ ${preset_info.preview}
 
 </#if>
 
-
-
-<#list preset_groups as group>
-<h2 class="nxthemesEditor" style="text-align: center">${group}</h2>
+<!-- Palettes -->
+<h2 class="nxthemesEditor">${selected_preset_group}</h2>
 
 <table cellspacing="5" cellpadding="4" style="margin-bottom: 30px; width: 100%">
 <#assign count = 0 /> 
 <#assign row = 1 /> 
 
-<#list This.getGlobalPresets(group) as preset_info>
+<#list This.getGlobalPresets(selected_preset_group) as preset_info>
 <#assign row = (count % 10) +1 /> 
 
   <#if row == 0>
@@ -197,7 +218,7 @@ ${preset_info.preview}
    "type": "preset",
    "data": {
      "id": "${preset_info.id}",   
-     "group": "${group}",
+     "group": "${selected_preset_group}",
      "name": "${preset_info.name}",
      "editable": false,
      "copyable": true,
@@ -227,7 +248,8 @@ ${preset_info.preview}</div>
         
 </table>
 
-</#list>
+
+</td></tr></table>
 
 </div>
 

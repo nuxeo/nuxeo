@@ -68,6 +68,7 @@ public class Main extends DefaultModule {
     return getTemplate("presetManager.ftl").arg(
             "current_theme_name", getCurrentThemeName(path)).arg(            
             "preset_groups", getPresetGroups()).arg(
+            "selected_preset_group", getSelectedPresetGroup()).arg(              
             "theme_names", Manager.getThemeManager().getThemeNames())
   }
   

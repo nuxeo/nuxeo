@@ -386,13 +386,14 @@ h1.nxthemesEditor {
 	
 h2.nxthemesEditor {
   background-color: #f6f6f6;	
-  padding: 0px 10px;
+  padding: 0px 14px;
   -moz-border-radius: 20px;
   -webkit-border-radius: 20px;
   border-radius: 20px;
   border: 1px solid #ccc; 
-  font-size: 17px;
+  font-size: 16px;
   margin-top: 15px;
+  text-align: left;
 }
 
 h3.nxthemesEditor {
