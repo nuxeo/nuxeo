@@ -68,22 +68,21 @@ public class Main extends DefaultModule {
     return getTemplate("presetManager.ftl").arg(
             "current_theme_name", getCurrentThemeName(path)).arg(            
             "preset_groups", getPresetGroups()).arg(
-            "selected_preset_group", getSelectedPresetGroup()).arg(              
-            "theme_names", Manager.getThemeManager().getThemeNames())
+            "selected_preset_group", getSelectedPresetGroup())
   }
   
   @GET
   @Path("styleManager")
   public Object renderStyleManager(@QueryParam("org.nuxeo.theme.application.path") String path) {
     return getTemplate("styleManager.ftl").arg(
-            "current_theme_name", getCurrentThemeName(path)).arg(            
-            "theme_names", Manager.getThemeManager().getThemeNames())
+            "current_theme_name", getCurrentThemeName(path))
   }  
   
   @GET
   @Path("themeManager")
   public Object renderThemeManager(@QueryParam("org.nuxeo.theme.application.path") String path) {
-    return getTemplate("themeManager.ftl").arg("themes", getThemeDescriptors())
+    return getTemplate("themeManager.ftl").arg(
+            "current_theme_name", getCurrentThemeName(path))
   }
 
   @GET
@@ -768,8 +767,8 @@ public class Main extends DefaultModule {
   
   /* API */
    
-  public static List<ThemeDescriptor> getThemeDescriptors() {
-      return ThemeManager.getThemeDescriptors()
+  public static ThemeDescriptor getThemeDescriptor(String themeName) {
+      return ThemeManager.getThemeDescriptor(themeName)
   }
   
   public static List<String> getNamedStyles(String applicationPath) {
@@ -1265,6 +1264,10 @@ public class Main extends DefaultModule {
     return themes
   }
 
+  public static ThemeManager getThemeManager() {
+      return Manager.getThemeManager()
+  }
+  
   // handle errors
   public Object handleError(WebApplicationException e) {
       if (e instanceof ThemeEditorException) {

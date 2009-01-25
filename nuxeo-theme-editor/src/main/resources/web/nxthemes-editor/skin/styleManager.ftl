@@ -1,11 +1,31 @@
 <div>
 
-<div id="nxthemesStyleManager" class="nxthemesScreen">
+<div id="nxthemesStyleManager">
 
 <h1 class="nxthemesEditor">Styles</h1>
+
+<table cellpadding="0" cellspacing="0" style="width: 100%"><tr>
+
+<td style="vertical-align: top; width: 200px; padding-right: 5px; border-right: 1px dashed #ccc">
+
+<h2 class="nxthemesEditor">Themes</h2>
+<ul class="nxthemesSelector">
+<#list This.getThemeManager().getThemeNames() as theme_name>
+<li <#if theme_name = current_theme_name>class="selected"</#if>><a href="javascript:void(0)" 
+  onclick="NXThemesEditor.selectTheme('${theme_name}', 'style manager')">
+  <img src="${skinPath}/img/theme-16.png" width="16" height="16" />
+  ${theme_name}</a></li>
+</#list>
+</ul>
+
+
+</td>
+<td style="padding-left: 10px; vertical-align: top;">
+
+
 <h2 class="nxthemesEditor">Theme: ${current_theme_name}</h2>
 
-<h3 class="nxthemesEditor">Unused style views ...</h3>
+<h3 class="nxthemesEditorFocus">Unused style views ...</h3>
 
 <#assign styles=This.getStyles(current_theme_name)>
 
@@ -40,6 +60,8 @@
 
 </#if>
 </#list>
+
+</td></tr></table>
 
 </div>
 

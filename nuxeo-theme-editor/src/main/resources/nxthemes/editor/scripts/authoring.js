@@ -542,6 +542,13 @@ NXThemesEditor.deleteElement = function(info) {
     });
 };
 
+NXThemesEditor.selectTheme = function(name, viewId) {
+    if (name !== null) {
+        NXThemes.setCookie("nxthemes.theme", name);
+        NXThemes.getViewById(viewId).refresh();
+    }
+};
+
 NXThemesEditor.selectPerspective = function(info) {
     var form = Event.findElement(info, "form");
     var perspective = Form.findFirstElement(form).getValue();
@@ -553,9 +560,8 @@ NXThemesEditor.switchTheme = function(info) {
     var target = Event.element(info);
     var name = target.getAttribute("name");
     if (name !== null) {
-      NXThemes.setCookie("nxthemes.theme", name);
-      NXThemes.getViewById("theme selector").refresh();
-      NXThemesEditor.refreshCanvas();
+        NXThemesEditor.selectTheme(name, "theme selector");
+        NXThemesEditor.refreshCanvas();
     }
 };
 
@@ -578,8 +584,7 @@ NXThemesEditor.addTheme = function() {
          onSuccess: function(r) {
              var text = r.responseText;
              NXThemesEditor.highlightSaveButton();
-             NXThemes.setCookie("nxthemes.theme", text);
-             NXThemes.getViewById("theme selector").refresh();
+             NXThemesEditor.selectTheme(text, "theme selector");
              NXThemesEditor.refreshCanvas();
          },
          onFailure: function(r) {
@@ -608,8 +613,7 @@ NXThemesEditor.addPage = function(themeName) {
          onSuccess: function(r) {
              var text = r.responseText;
              NXThemesEditor.highlightSaveButton();
-             NXThemes.setCookie("nxthemes.theme", text);
-             NXThemes.getViewById("theme selector").refresh();
+             NXThemesEditor.selectTheme(text, "theme selector");
              NXThemesEditor.refreshCanvas();
          },
          onFailure: function(r) {
@@ -993,12 +997,6 @@ if (typeof NXThemesPresetManager == "undefined") {
     }
 }
 
-NXThemesPresetManager.selectTheme = function(name) {
-    if (name !== null) {
-        NXThemes.setCookie("nxthemes.theme", name);
-        NXThemes.getViewById("preset manager").refresh();
-    }
-};
 
 NXThemesPresetManager.selectPresetGroup = function(group) {
     var url = nxthemesBasePath + "/nxthemes-editor/select_preset_group"; 

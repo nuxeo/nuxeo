@@ -1006,6 +1006,11 @@ public final class ThemeManager implements Registrable {
         return themeDescriptors;
     }
 
+    public static ThemeDescriptor getThemeDescriptor(String themeName) {
+        return (ThemeDescriptor) Manager.getTypeRegistry().lookup(
+                TypeFamily.THEME, themeName);
+    }
+
     // Template engines
     public static List<String> getTemplateEngineNames() {
         List<String> types = new ArrayList<String>();

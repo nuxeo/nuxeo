@@ -1017,17 +1017,17 @@ div.nxthemesFragment b {
   height: 65px;
 }
 
-#nxthemesPresetManager ul.presetList {
+ul.nxthemesSelector {
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
-#nxthemesPresetManager ul.presetList li {
+ul.nxthemesSelector li {
   margin: 1px;
 }
 
-#nxthemesPresetManager ul.presetList li a {
+ul.nxthemesSelector li a {
   text-decoration: none;
   color: #000;
   display: block;
@@ -1039,13 +1039,17 @@ div.nxthemesFragment b {
   color: #000;
 }
 
-#nxthemesPresetManager ul.presetList li a:hover, 
-#nxthemesPresetManager ul.presetList li.selected a {
+ul.nxthemesSelector li a:hover {
   background-color: #ffc;
   color: #300;
 }
 
-#nxthemesPresetManager ul.presetList img {
+ul.nxthemesSelector li.selected a {
+  font-weight: bold;
+  background-color: #f9f9f9;
+}
+
+ul.nxthemesSelector img {
   border: none;
   vertical-align: middle;	
 }
@@ -1060,14 +1064,14 @@ div.nxthemesFragment b {
   border: none;
 }
 
-.nxthemesScreen table {
+.nxthemesTable {
   font: 12px Arial, sans-serif;
   width: 100%;
   border: 1px solid #000;
   cursor: default;
 }
 
-.nxthemesScreen table th {
+.nxthemesTable th {
   background: #bbb;
   text-align: left;
   padding: 4px 10px;
@@ -1077,7 +1081,7 @@ div.nxthemesFragment b {
   color: #000;
 }
 
-.nxthemesScreen table td {
+.nxthemesTable td {
   background-color: #eee;
   text-align: left;
   padding: 3px 10px 3px 10px;
@@ -1086,26 +1090,25 @@ div.nxthemesFragment b {
   vertical-align: middle;
 }
 
-.nxthemesScreen table tr.odd td {
+.nxthemesTable tr.odd td {
   background-color: #f9f9f9;
 }
 
-
-.nxthemesScreen table tr:hover td {
+.nxthemesTable tr:hover td {
   background-color: #fff;
 }
 
-.nxthemesScreen table button {
+.nxthemesTable button {
   font-size: 11px;
   padding: 0 4px;
 }
 
-.nxthemesScreen table td.action {
+.nxthemesTable td.action {
   font-size: 11px;
   text-align: center;
 }
 
-.nxthemesScreen table td img {
+.nxthemesTable td img {
   padding-right: 2px;
   vertical-align: middle;
 }

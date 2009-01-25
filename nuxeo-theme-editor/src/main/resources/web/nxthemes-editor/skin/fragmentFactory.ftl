@@ -4,7 +4,7 @@
 
 <h1 class="nxthemesEditor">Add fragment</h1>
 
-<table cellpadding="0" cellspacing="0" border="0">
+<table class="nxthemesTable">
   <tr>
     <th>Fragment (data source)</th>
     <th>Data type</th>

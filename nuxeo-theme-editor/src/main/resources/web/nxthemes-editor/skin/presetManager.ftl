@@ -12,17 +12,17 @@
 <td style="vertical-align: top; width: 200px; padding-right: 5px; border-right: 1px dashed #ccc">
 
 <h2 class="nxthemesEditor">Themes</h2>
-<ul class="presetList">
-<#list theme_names as theme_name>
+<ul class="nxthemesSelector">
+<#list This.getThemeManager().getThemeNames() as theme_name>
 <li <#if theme_name = current_theme_name>class="selected"</#if>><a href="javascript:void(0)" 
-  onclick="NXThemesPresetManager.selectTheme('${theme_name}')">
+  onclick="NXThemesEditor.selectTheme('${theme_name}', 'preset manager')">
   <img src="${skinPath}/img/theme-16.png" width="16" height="16" />
   ${theme_name}</a></li>
 </#list>
 </ul>
 
-<h2 class="nxthemesEditor">Palettes</h2>
-<ul class="presetList">
+<h2 class="nxthemesEditor" style="border-top: 1px dashed #ccc; padding-top: 10px">Palettes</h2>
+<ul class="nxthemesSelector">
 <#list preset_groups as group>
 <li <#if group = selected_preset_group>class="selected"</#if>><a href="javascript:void(0)" 
   onclick="NXThemesPresetManager.selectPresetGroup('${group}')">
@@ -203,7 +203,7 @@ ${preset_info.preview}
 
 <#if selected_preset_group>
 <!-- Palettes -->
-<h2 class="nxthemesEditor">${selected_preset_group}</h2>
+<h2 class="nxthemesEditor" style="border-top: 1px dashed #ccc; padding-top: 10px">${selected_preset_group}</h2>
 
 <table cellspacing="5" cellpadding="4" style="margin-bottom: 30px; width: 100%">
 <#assign count = 0 /> 
