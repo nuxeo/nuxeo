@@ -12,29 +12,21 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *    Stephane Lacoin (Nuxeo EP Software Engineer)
+ *     matic
  */
-package org.nuxeo.ecm.platform.audit.service.extension;
+package org.nuxeo.ecm.platform.management.adapters;
 
-import java.io.Serializable;
+import javax.servlet.http.HttpSessionEvent;
+import javax.servlet.http.HttpSessionListener;
 
-import org.nuxeo.common.xmap.annotation.XNode;
-import org.nuxeo.common.xmap.annotation.XObject;
+public class HttpSessionMetricListener implements HttpSessionListener {
 
-/**
- * @author Stephane Lacoin (Nuxeo EP software Engineer)
- *
- */
-@XObject("hibernateOptions")
-public class HibernateOptionsDescriptor implements Serializable {
+    public void sessionCreated(HttpSessionEvent se) {
+        HttpSessionMetricFactory.mbeanAdapter.createdSessionCount += 1;
+    }
 
-    private static final long serialVersionUID = 1500818790781765945L;
-
-    @XNode("@datasource")
-    private String datasource;
-
-    public String getDatasource() {
-        return datasource;
+    public void sessionDestroyed(HttpSessionEvent se) {
+        HttpSessionMetricFactory.mbeanAdapter.destroyedSessionCount += 1;
     }
 
 }

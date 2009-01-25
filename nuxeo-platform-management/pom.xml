@@ -9,9 +9,10 @@
     <version>5.2-SNAPSHOT</version>
   </parent>
 
-  <artifactId>nuxeo-platform-audit-core</artifactId>
-  <name>Nuxeo Platform Audit Service - Core</name>
-  <description>Nuxeo Enterprise Platform: Audit Service Core.</description>
+  <groupId>org.nuxeo.ecm.platform</groupId>
+  <artifactId>nuxeo-platform-management</artifactId>
+  <name>Nuxeo Platform Management</name>
+  <description>Nuxeo Enterprise Platform: Management</description>
 
   <dependencies>
 
@@ -21,46 +22,15 @@
       <artifactId>nuxeo-runtime-management</artifactId>
       <version>${nuxeo.runtime.version}</version>
     </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-audit-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-events-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-events-core</artifactId>
-      <version>${nuxeo.platform.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-el</artifactId>
-      <version>${nuxeo.platform.version}</version>
-    </dependency>
-
-    <!-- libraries -->
 
     <dependency>
-      <groupId>commons-lang</groupId>
-      <artifactId>commons-lang</artifactId>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-web-common</artifactId>
     </dependency>
+
     <dependency>
-      <groupId>javax.el</groupId>
-      <artifactId>el-ri</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>javax.el</groupId>
-      <artifactId>el-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>javax.persistence</groupId>
-      <artifactId>persistence</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-entitymanager</artifactId>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-scheduler-core</artifactId>
     </dependency>
 
     <!--  tests -->
@@ -70,22 +40,20 @@
       <artifactId>nuxeo-runtime-osgi</artifactId>
       <scope>test</scope>
     </dependency>
+
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-jcr-connector-test</artifactId>
       <version>${nuxeo.core.version}</version>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.apache.derby</groupId>
-      <artifactId>derbyclient</artifactId>
-      <scope>test</scope>
-    </dependency>
+
     <dependency>
       <groupId>hsqldb</groupId>
       <artifactId>hsqldb</artifactId>
       <scope>test</scope>
     </dependency>
+
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-usermanager-core</artifactId>
@@ -93,6 +61,8 @@
       <scope>test</scope>
     </dependency>
 
+
   </dependencies>
+
 
 </project>

@@ -12,29 +12,35 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *    Stephane Lacoin (Nuxeo EP Software Engineer)
+ *     matic
  */
-package org.nuxeo.ecm.platform.audit.service.extension;
+package org.nuxeo.ecm.platform.management.adapters;
 
-import java.io.Serializable;
-
-import org.nuxeo.common.xmap.annotation.XNode;
-import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.runtime.model.ExtensionPoint;
 
 /**
- * @author Stephane Lacoin (Nuxeo EP software Engineer)
- *
+ * @author Stephane Lacoin (Nuxeo EP Software Engineer)
+ * 
  */
-@XObject("hibernateOptions")
-public class HibernateOptionsDescriptor implements Serializable {
+public class ExtensionPointInventoryAdapter implements
+        ExtensionPointInventoryMBean {
 
-    private static final long serialVersionUID = 1500818790781765945L;
+    public ExtensionPointInventoryAdapter(ExtensionPoint point) {
+        this.point = point;
+    }
 
-    @XNode("@datasource")
-    private String datasource;
+    protected ExtensionPoint point;
 
-    public String getDatasource() {
-        return datasource;
+    public Integer getContributionsCount() {
+        return point.getContributions().length;
+    }
+
+    public String getDescription() {
+        return point.getDocumentation();
+    }
+
+    public String getName() {
+        return point.getName();
     }
 
 }

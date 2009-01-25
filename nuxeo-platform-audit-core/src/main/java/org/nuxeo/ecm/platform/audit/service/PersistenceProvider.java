@@ -71,7 +71,11 @@ public class PersistenceProvider {
         cfg.addAnnotatedClass(ExtendedInfo.StringInfo.class);
         cfg.addAnnotatedClass(ExtendedInfo.LongInfo.class);
 
-        cfg.configure("fake-hibernate.cfg.xml");
+        try {
+            cfg.configure("fake-hibernate.cfg.xml");
+        } catch (RuntimeException e) {
+            throw e;
+        }
 
         emf = cfg.buildEntityManagerFactory();
     }
@@ -88,12 +92,17 @@ public class PersistenceProvider {
 
     protected EntityManager doEntityManager() {
         if (emf == null) {
-           openPersistenceUnit();
+            openPersistenceUnit();
         }
         return emf.createEntityManager();
     }
 
+    protected ClassLoader lastLoader;
+
     public EntityManager acquireEntityManager() {
+        Thread thread = Thread.currentThread();
+        lastLoader = thread.getContextClassLoader();
+        thread.setContextClassLoader(getClass().getClassLoader());
         return doEntityManager();
     }
 
@@ -123,16 +132,20 @@ public class PersistenceProvider {
     }
 
     public void releaseEntityManager(EntityManager em) {
-        if (!em.isOpen()) {
-            return;
-        }
         try {
-            doCommit(em);
-        } finally {
-            if (em.isOpen()) {
-                em.clear();
-                em.close();
+            if (!em.isOpen()) {
+                return;
             }
+            try {
+                doCommit(em);
+            } finally {
+                if (em.isOpen()) {
+                    em.clear();
+                    em.close();
+                }
+            }
+        } finally {
+            Thread.currentThread().setContextClassLoader(lastLoader);
         }
     }
 
@@ -147,6 +160,32 @@ public class PersistenceProvider {
                 em.clear();
                 em.close();
             }
+        }
+    }
+
+    public interface RunCallback<T> {
+        T runWith(EntityManager em);
+    }
+
+    public <T> T run(Boolean needActiveSession, RunCallback<T> callback) {
+        
+        Thread myThread = Thread.currentThread();
+        ClassLoader lastLoader = myThread.getContextClassLoader();
+        myThread.setContextClassLoader(getClass().getClassLoader());
+        try {  // insure context class loader restoring
+            EntityManager em = doEntityManager();
+            if (needActiveSession) {
+                em.getTransaction().begin();
+            }
+            try { // insure entity manager releasing
+                return callback.runWith(em);
+            } catch (RuntimeException e) {
+                throw e;
+            } finally {
+                releaseEntityManager(em);
+            }
+        } finally {
+            myThread.setContextClassLoader(lastLoader);
         }
     }
 
