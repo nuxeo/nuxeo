@@ -25,9 +25,14 @@
 <td style="padding-left: 10px; vertical-align: top;">
 
 <h2 class="nxthemesEditor">Theme: ${current_theme_name}</h2>
+<h3 class="nxthemesEditor">Named styles</h3>
+<ul>
+<#list named_styles as style>
+  <li>${style.name}</li>
+</#list>
+</ul>
 
 <#assign styles=themeManager.getStyles(current_theme_name)>
-
 <#list styles as style>
 
 <#assign views=themeManager.getUnusedStyleViews(style)>

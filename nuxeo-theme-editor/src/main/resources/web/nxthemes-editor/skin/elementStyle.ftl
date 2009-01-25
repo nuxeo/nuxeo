@@ -23,11 +23,12 @@
         <div>
           <label>Inherit style properties from:</label>
 	  <select id="inherited_style" id="inherited_style" onchange="NXThemesStyleEditor.makeElementUseNamedStyle(this)">
+	    <option value=""></option>
 	    <#list named_styles as style>
-	      <#if inherited_style_name_of_selected_element == style>
-	        <option value="${style}" selected="selected">${style}</option>
+	      <#if inherited_style_name_of_selected_element == style.name>
+	        <option value="${style.name}" selected="selected">${style.name}</option>
 	      <#else>
-	        <option value="${style}">${style}</option>
+	        <option value="${style.name}">${style.name}</option>
 	      </#if>
 	    </#list>
 	  </select>

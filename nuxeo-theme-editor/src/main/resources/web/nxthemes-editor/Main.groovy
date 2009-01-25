@@ -75,6 +75,7 @@ public class Main extends DefaultModule {
   @Path("styleManager")
   public Object renderStyleManager(@QueryParam("org.nuxeo.theme.application.path") String path) {
     return getTemplate("styleManager.ftl").arg(
+            "named_styles", getNamedStyles(path)).arg(
             "current_theme_name", getCurrentThemeName(path))
   }  
   
@@ -771,17 +772,9 @@ public class Main extends DefaultModule {
       return ThemeManager.getThemeDescriptor(themeName)
   }
   
-  public static List<String> getNamedStyles(String applicationPath) {
+  public static List<Style> getNamedStyles(String applicationPath) {
       String currentThemeName = getCurrentThemeName(applicationPath)
-      def styles = []
-      List<Identifiable> namedStyles = Manager.getThemeManager().getNamedObjects(currentThemeName, "style")
-      if (namedStyles) {
-          styles.add("")
-          for (namedStyle in namedStyles) {
-              styles.add(namedStyle.getName())
-           }
-      }
-      return styles
+      return Manager.getThemeManager().getNamedObjects(currentThemeName, "style")
   }
   
   public static List<FragmentType> getFragments(applicationPath) {
