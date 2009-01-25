@@ -67,8 +67,15 @@ public class TestNXAuditEventsServiceManagement extends RepositoryOSGITestCase {
 
         deployBundle("org.nuxeo.runtime.management");
 
-        deployContrib("org.nuxeo.ecm.platform.audit.tests",
-                "nxaudit-test-definitions.xml");
+        deployBundle("org.nuxeo.ecm.platform.scheduler.core");
+
+        deployBundle("org.nuxeo.ecm.core.event.compat");
+        
+        deployBundle("org.nuxeo.ecm.platform.audit");
+
+        deployBundle("org.nuxeo.ecm.platform.management");
+
+
 
         NXAuditEventsService.persistenceProvider.setHibernateConfiguration(new TestHibernateConfiguration());
 
@@ -92,13 +99,6 @@ public class TestNXAuditEventsServiceManagement extends RepositoryOSGITestCase {
 
     protected final MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
 
-    protected void doEnableManagement() throws InstanceNotFoundException,
-            ReflectionException, MBeanException {
-        String qualifiedName = ObjectNameFactory.formatQualifiedName(ResourcePublisherService.NAME);
-        ObjectName objectName = ObjectNameFactory.getObjectName(qualifiedName);
-        mbeanServer.invoke(objectName, "enable", null, null);
-    }
-
     @SuppressWarnings("unchecked")
     protected Set<ObjectName> doQuery(String name) {
         String qualifiedName = ObjectNameFactory.getQualifiedName(name);
@@ -110,11 +110,9 @@ public class TestNXAuditEventsServiceManagement extends RepositoryOSGITestCase {
     public void testCount() throws Exception {
         ((NXAuditEventsService) serviceUnderTest).logMessage(getCoreSession(),
                 message);
-        doEnableManagement();
-        ObjectName objectName =
-            AuditEventMetricFactory.getObjectName(message.getEventId());
-        Long count = (Long)mbeanServer.getAttribute(objectName, "counter");
-        assertEquals(new Long(1), count);
+        ObjectName objectName = AuditEventMetricFactory.getObjectName(message.getEventId());
+        Long count =  (Long)mbeanServer.getAttribute(objectName, "count");
+        assertEquals(new Long(1L), count);
     }
 
 }
