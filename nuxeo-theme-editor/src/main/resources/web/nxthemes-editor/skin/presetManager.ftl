@@ -9,26 +9,30 @@
 
 <table cellpadding="0" cellspacing="0" style="width: 100%"><tr>
 
-<td style="vertical-align: top; width: 200px; padding-right: 10px">
+<td style="vertical-align: top; width: 200px; padding-right: 5px; border-right: 1px dashed #ccc">
 
 <h2 class="nxthemesEditor">Themes</h2>
-<ul>
+<ul class="presetList">
 <#list theme_names as theme_name>
-<li><a href="javascript:void(0)" 
-  onclick="NXThemesPresetManager.selectTheme('${theme_name}')">${theme_name}</a></li>
+<li <#if theme_name = current_theme_name>class="selected"</#if>><a href="javascript:void(0)" 
+  onclick="NXThemesPresetManager.selectTheme('${theme_name}')">
+  <img src="${skinPath}/img/theme-16.png" width="16" height="16" />
+  ${theme_name}</a></li>
 </#list>
 </ul>
 
 <h2 class="nxthemesEditor">Palettes</h2>
-<ul>
+<ul class="presetList">
 <#list preset_groups as group>
-<li><a href="javascript:void(0)" 
-  onclick="NXThemesPresetManager.selectPresetGroup('${group}')">${group}</a></li>
+<li <#if group = selected_preset_group>class="selected"</#if>><a href="javascript:void(0)" 
+  onclick="NXThemesPresetManager.selectPresetGroup('${group}')">
+  <img src="${skinPath}/img/palette-16.png" width="16" height="16" />
+  ${group}</a></li>
 </#list>
 </ul>
 
 </td>
-<td>
+<td style="padding-left: 10px; vertical-align: top;">
 
 <#assign presets = This.getCustomPresets(current_theme_name)>
 
@@ -123,7 +127,7 @@ ${preset_info.preview}
 <#assign preset_names=This.getUnidentifiedPresetNames(current_theme_name)>
 
 <#if preset_names>
-<h3 class="nxthemesEditor">Presets that must be registered ...</h3>
+<h3 class="nxthemesEditorFocus">Presets that must be registered ...</h3>
 <table cellspacing="5" cellpadding="4" style="margin-bottom: 30px; width: 100%">
 <#assign count = 0 />
 <#assign row = 1 /> 
@@ -163,7 +167,7 @@ ${preset_info.preview}
 <#assign colors=This.getHardcodedColors(current_theme_name)>
 
 <#if colors>
-<h3 class="nxthemesEditor">Colors that are not yet registered as presets ...</h3>
+<h3 class="nxthemesEditorFocus">Colors that are not yet registered as presets ...</h3>
 
 <table cellspacing="5" cellpadding="4" style="margin-bottom: 30px; width: 100%">
 <#assign count = 0 />
@@ -197,6 +201,7 @@ ${preset_info.preview}
 
 </#if>
 
+<#if selected_preset_group>
 <!-- Palettes -->
 <h2 class="nxthemesEditor">${selected_preset_group}</h2>
 
@@ -247,7 +252,7 @@ ${preset_info.preview}</div>
 </#if>
         
 </table>
-
+</#if>
 
 </td></tr></table>
 

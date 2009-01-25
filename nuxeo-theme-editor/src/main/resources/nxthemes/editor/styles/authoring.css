@@ -385,18 +385,14 @@ h1.nxthemesEditor {
 }
 	
 h2.nxthemesEditor {
-  background-color: #f6f6f6;	
-  padding: 0px 14px;
-  -moz-border-radius: 20px;
-  -webkit-border-radius: 20px;
-  border-radius: 20px;
-  border: 1px solid #ccc; 
   font-size: 16px;
-  margin-top: 15px;
-  text-align: left;
 }
 
 h3.nxthemesEditor {
+  font-size: 13px;
+}
+
+.nxthemesEditorFocus {
   background-color: #fc0;
   font-size: 13px;
   font-weight: normal;
@@ -1020,6 +1016,40 @@ div.nxthemesFragment b {
 #nxthemesPresetManager div.preview div {
   height: 65px;
 }
+
+#nxthemesPresetManager ul.presetList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+#nxthemesPresetManager ul.presetList li {
+  margin: 1px;
+}
+
+#nxthemesPresetManager ul.presetList li a {
+  text-decoration: none;
+  color: #000;
+  display: block;
+  padding: 4px;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
+  font-size: 12px;
+  color: #000;
+}
+
+#nxthemesPresetManager ul.presetList li a:hover, 
+#nxthemesPresetManager ul.presetList li.selected a {
+  background-color: #ffc;
+  color: #300;
+}
+
+#nxthemesPresetManager ul.presetList img {
+  border: none;
+  vertical-align: middle;	
+}
+
 
 .nxthemesScreen a {
   text-decoration: none;
