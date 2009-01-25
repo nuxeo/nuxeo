@@ -31,6 +31,15 @@ if (typeof NXThemesEditor == "undefined") {
 
 }
 
+NXThemesEditor.highlightSaveButton = function() {
+	NXThemes.getViewById("save changes").highlight();
+};
+
+
+NXThemesEditor.dehighlightSaveButton = function() {
+	NXThemes.getViewById("save changes").dehighlight();
+};
+
 NXThemesEditor.setCanvasMode =  function(info) {
     var target = Event.element(info);
     var mode = target.getAttribute("name");
@@ -76,6 +85,7 @@ NXThemesEditor.moveElement = function(info) {
          },
          onComplete: function(r) {
              NXThemesEditor.refreshCanvas();
+             NXThemesEditor.highlightSaveButton();
          }
     });
 };
@@ -90,7 +100,8 @@ NXThemesEditor.addFragment = function(typeName, destId) {
          },
          onComplete: function(r) {
              NXThemesEditor.refreshCanvas();
-             NXThemesEditor.switchToEditCanvas()
+             NXThemesEditor.highlightSaveButton();
+             NXThemesEditor.switchToEditCanvas();
          }
     });
     return false;
@@ -162,6 +173,7 @@ NXThemesEditor.setSize = function(info) {
              'width': width
          },
          onComplete: function(r) {
+        	 NXThemesEditor.highlightSaveButton();
              NXThemesEditor.refreshCanvas();
          }
     });       
@@ -188,6 +200,7 @@ NXThemesEditor.updateElementProperties = function(info) {
              property_map: propertyMap.toJSON()
          },
          onSuccess: function(r) {
+        	 NXThemesEditor.highlightSaveButton();
              NXThemes.getViewById("element properties").refresh();
              NXThemesEditor.writeMessage("Properties updated.");
          },
@@ -222,6 +235,7 @@ NXThemesEditor.updateElementWidget = function(info) {
              'view_name': viewName,
          },
          onComplete: function(r) {
+        	 NXThemesEditor.highlightSaveButton();
              NXThemesEditor.writeMessage("Widget changed.");
          }
     });
@@ -253,6 +267,7 @@ NXThemesEditor.updateElementDescription = function(info) {
              'description': description
          },
          onComplete: function(r) {
+        	 NXThemesEditor.highlightSaveButton();
              NXThemesEditor.writeMessage("Description changed.");
          }
     });         
@@ -287,6 +302,7 @@ NXThemesEditor.updateElementStyle = function() {
              property_map: propertyMap.toJSON()
          },
          onComplete: function(r) {
+        	 NXThemesEditor.highlightSaveButton();
              NXThemesStyleEditor.refreshCssPreview();
              NXThemesEditor.writeMessage("Style updated.");
          }
@@ -316,6 +332,7 @@ NXThemesEditor.updateElementStyleCss = function() {
              css_source: cssSource
          },
          onComplete: function(r) {
+        	 NXThemesEditor.highlightSaveButton();
              NXThemesStyleEditor.refreshCssPreview();
              NXThemesEditor.writeMessage("Style updated.");
          }
@@ -347,6 +364,7 @@ NXThemesEditor.setElementVisibility = function(info) {
              'perspectives': perspectives
          },
          onComplete: function(r) {
+        	 NXThemesEditor.highlightSaveButton();
              NXThemes.getViewById("element visibility").refresh();
              NXThemesEditor.writeMessage("Visibility changed.");
          }
@@ -398,6 +416,7 @@ NXThemesEditor.splitElement = function(info) {
              id: id
          },
          onComplete: function(r) {
+        	 NXThemesEditor.highlightSaveButton();
              NXThemesEditor.refreshCanvas();
          }
     });       
@@ -433,6 +452,7 @@ NXThemesEditor.updateElementPadding = function(info) {
              property_map: propertyMap.toJSON()
          },
          onComplete: function(r) {
+        	 NXThemesEditor.highlightSaveButton();
              NXThemesEditor.refreshCanvas();
          }
     });
@@ -453,7 +473,8 @@ NXThemesEditor.alignElement = function(info) {
              position: position
          },
          onComplete: function(r) {
-           NXThemesEditor.refreshCanvas();
+        	 NXThemesEditor.highlightSaveButton();
+             NXThemesEditor.refreshCanvas();
          }
     });     
 };
@@ -467,6 +488,7 @@ NXThemesEditor.duplicateElement = function(info) {
              id: id
          },
          onSuccess: function(r) {
+        	 NXThemesEditor.highlightSaveButton();
              NXThemes.getViewById("style css").hide();
              NXThemes.getViewById("style css").show();
              NXThemesEditor.refreshCanvas();
@@ -487,6 +509,7 @@ NXThemesEditor.pasteElement = function(info) {
              dest_id: destId
          },
          onSuccess: function(r) {
+        	 NXThemesEditor.highlightSaveButton();
              NXThemes.getViewById("style css").hide();
              NXThemes.getViewById("style css").show();
              NXThemesEditor.refreshCanvas();
@@ -508,6 +531,7 @@ NXThemesEditor.deleteElement = function(info) {
              id: id
          },
          onSuccess: function(r) {
+        	 NXThemesEditor.highlightSaveButton();
              NXThemesEditor.refreshCanvas();
          },
          onFailure: function(r) {
@@ -553,6 +577,7 @@ NXThemesEditor.addTheme = function() {
          },
          onSuccess: function(r) {
              var text = r.responseText;
+             NXThemesEditor.highlightSaveButton();
              NXThemes.setCookie("nxthemes.theme", text);
              NXThemes.getViewById("theme selector").refresh();
              NXThemesEditor.refreshCanvas();
@@ -582,6 +607,7 @@ NXThemesEditor.addPage = function(themeName) {
          },
          onSuccess: function(r) {
              var text = r.responseText;
+             NXThemesEditor.highlightSaveButton();
              NXThemes.setCookie("nxthemes.theme", text);
              NXThemes.getViewById("theme selector").refresh();
              NXThemesEditor.refreshCanvas();
@@ -621,6 +647,7 @@ NXThemesEditor.addPreset = function(themeName, category, view_id) {
              category: category
          },
          onSuccess: function(r) {
+        	 NXThemesEditor.highlightSaveButton();
              NXThemes.getViewById(view_id).refresh();
          },
          onFailure: function(r) {
@@ -645,6 +672,7 @@ NXThemesEditor.editPreset = function(themeName, presetName, value, view_id) {
              value: value
          },
          onComplete: function(r) {
+        	 NXThemesEditor.highlightSaveButton();
              NXThemes.getViewById(view_id).refresh();
          }
     });      
@@ -660,6 +688,7 @@ NXThemesEditor.addSection = function(info) {
              id: id
          },         
          onComplete: function(r) {
+        	 NXThemesEditor.highlightSaveButton();
              NXThemesEditor.refreshCanvas();
          }
     });
@@ -676,7 +705,8 @@ NXThemesEditor.alignSection = function(info, position) {
              position: position
          }, 
          onComplete: function(r) {
-           NXThemesEditor.refreshCanvas();
+        	 NXThemesEditor.highlightSaveButton();
+             NXThemesEditor.refreshCanvas();
          }
     }); 
 };
@@ -724,7 +754,8 @@ NXThemesEditor.setAreaStyle = function(info) {
              category: category
          },          
          onComplete: function(r) {
-           NXThemes.getControllerById('area style perspectives').switchTo('style chooser');
+        	 NXThemesEditor.highlightSaveButton();
+             NXThemes.getControllerById('area style perspectives').switchTo('style chooser');
          }
     });
 };
@@ -749,9 +780,10 @@ NXThemesEditor.updateAreaStyle = function(value) {
              value: value
          }, 
          onComplete: function(r) {
-           NXThemes.getViewById("style css").hide();
-           NXThemes.getViewById("style css").show();
-           NXThemesEditor.refreshCanvas();
+        	 NXThemesEditor.highlightSaveButton();
+             NXThemes.getViewById("style css").hide();
+             NXThemes.getViewById("style css").show();
+             NXThemesEditor.refreshCanvas();
          }
       });
   }
@@ -766,7 +798,7 @@ NXThemesEditor.setPresetGroup = function(select) {
              group: group
          }, 
          onComplete: function(r) {
-           NXThemes.getViewById("area style chooser").refresh();
+             NXThemes.getViewById("area style chooser").refresh();
          }
     });
 };
@@ -808,6 +840,7 @@ NXThemesEditor.repairTheme = function(themeName) {
              name: themeName
          },
          onSuccess: function(r) {
+        	 NXThemesEditor.highlightSaveButton();
              NXThemes.getViewById("theme manager").refresh();
              NXThemesEditor.writeMessage("Theme repaired.");
          },
@@ -830,6 +863,7 @@ NXThemesEditor.loadTheme = function(src) {
              src: src
          },
          onSuccess: function(r) {
+           NXThemesEditor.dehighlightSaveButton();
            NXThemes.getViewById("theme manager").refresh();
            NXThemesEditor.writeMessage("Theme loaded.");
          },
@@ -865,6 +899,7 @@ NXThemesEditor.saveChanges = function() {
          method: 'post',
          onSuccess: function(r) {
            NXThemesEditor.writeMessage("Changes saved.");
+           NXThemesEditor.dehighlightSaveButton();
          },
          onFailure: function(r) {
            NXThemesEditor.writeMessage("The changes could not be saved.");
@@ -978,6 +1013,7 @@ NXThemesPresetManager.editPreset = function(info) {
            value: value
        },
        onComplete: function(r) {
+    	   NXThemesEditor.highlightSaveButton();
            NXThemes.getViewById("preset manager").refresh();
        }
   });          
@@ -999,6 +1035,7 @@ NXThemesPresetManager.renamePreset = function(info) {
            new_name: newName
        },
        onSuccess: function(r) {
+    	   NXThemesEditor.highlightSaveButton();
            NXThemes.getViewById("preset manager").refresh();
        },
        onFailure: function(r) {
@@ -1039,6 +1076,7 @@ NXThemesPresetManager.pastePreset = function(info) {
            preset_name: presetName
        },
        onSuccess: function(r) {
+    	   NXThemesEditor.highlightSaveButton();
            NXThemes.getViewById("preset manager").refresh();
        },
        onFailure: function(r) {
@@ -1062,6 +1100,7 @@ NXThemesPresetManager.deletePreset = function(info) {
            preset_name: presetName
        },
        onSuccess: function(r) {
+    	   NXThemesEditor.highlightSaveButton();
            NXThemes.getViewById("preset manager").refresh();
        },
        onFailure: function(r) {
@@ -1090,6 +1129,7 @@ NXThemesPresetManager.setPresetCategory = function(info) {
              category: category
          },
          onSuccess: function(r) {
+        	 NXThemesEditor.highlightSaveButton();
              NXThemes.getViewById("preset manager").refresh();
          },
          onFailure: function(r) {
@@ -1114,6 +1154,7 @@ NXThemesPresetManager.addMissingPreset = function(themeName, presetName) {
              value: presetValue
          },
          onSuccess: function(r) {
+        	 NXThemesEditor.highlightSaveButton();
              NXThemes.getViewById("preset manager").refresh();
          },
          onFailure: function(r) {
@@ -1139,6 +1180,7 @@ NXThemesPresetManager.convertValueToPreset = function(themeName, category, prese
              value: presetValue
          },
          onSuccess: function(r) {
+        	 NXThemesEditor.highlightSaveButton();
              NXThemes.getViewById("preset manager").refresh();
          },
          onFailure: function(r) {
@@ -1258,6 +1300,7 @@ NXThemesStyleEditor.createStyle = function() {
     new Ajax.Request(url, {
          method: 'post',
          onComplete: function(r) {
+    	     NXThemesEditor.highlightSaveButton();
              NXThemes.getViewById("element style").refresh();
              NXThemesEditor.writeMessage("New style created.");
          }
@@ -1401,6 +1444,7 @@ NXThemesStyleEditor.makeElementUseNamedStyle = function(select) {
          method: 'post',
          parameters: parameters,
          onComplete: function(req) {
+    	     NXThemesEditor.highlightSaveButton();
              NXThemes.getViewById("element style").refresh();
          }
     });
@@ -1424,6 +1468,7 @@ NXThemesStyleEditor.createNamedStyle = function(id, currentThemeName) {
              theme_name: currentThemeName
          },
          onComplete: function(req) {
+        	 NXThemesEditor.highlightSaveButton();
              NXThemes.getViewById("element style").refresh();
          }
     });
@@ -1443,6 +1488,7 @@ NXThemesStyleEditor.deleteNamedStyle = function(id, currentThemeName, styleName)
              theme_name: currentThemeName
          },
          onSuccess: function(r) {
+        	 NXThemesEditor.highlightSaveButton();
              NXThemes.getViewById("element style").refresh();
          },
          onFailure: function(r) {
@@ -1549,6 +1595,7 @@ NXThemesStyleManager.deleteUnusedStyleView = function(info) {
              style_uid: styleUid
          },
          onSuccess: function(r) {
+        	 NXThemesEditor.highlightSaveButton();
              NXThemes.getViewById("style manager").refresh();
          },
          onFailure: function(r) {

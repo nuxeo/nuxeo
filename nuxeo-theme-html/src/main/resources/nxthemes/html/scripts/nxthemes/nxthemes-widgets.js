@@ -680,6 +680,14 @@ NXThemes.Button.prototype = Object.extend(new NXThemes.View(), {
 
   deselect: function() {
    $(this.widget).removeClassName("selected");
+  },
+
+  highlight: function() {
+   $(this.widget).addClassName("highlighted");
+  },
+	  
+  dehighlight: function() { 
+   $(this.widget).removeClassName("highlighted");
   }
 
 });
