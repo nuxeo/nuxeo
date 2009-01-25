@@ -12,29 +12,38 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *    Stephane Lacoin (Nuxeo EP Software Engineer)
+ *     matic
  */
-package org.nuxeo.ecm.platform.audit.service.extension;
+package org.nuxeo.ecm.platform.management.adapters;
 
-import java.io.Serializable;
-
-import org.nuxeo.common.xmap.annotation.XNode;
-import org.nuxeo.common.xmap.annotation.XObject;
+import java.util.Set;
 
 /**
- * @author Stephane Lacoin (Nuxeo EP software Engineer)
- *
+ * @author Stephane Lacoin (Nuxeo EP Software Engineer)
+ * 
  */
-@XObject("hibernateOptions")
-public class HibernateOptionsDescriptor implements Serializable {
+public interface RuntimeInventoryMBean {
 
-    private static final long serialVersionUID = 1500818790781765945L;
+    String getName();
 
-    @XNode("@datasource")
-    private String datasource;
+    String getDescription();
 
-    public String getDatasource() {
-        return datasource;
-    }
+    String getVersion();
+
+    String getHome();
+
+    Set<String> getAvailableComponents();
+
+    int getAvailableComponentsCount();
+
+    Set<String> getPendingComponentsName();
+
+    int getPendingComponentsCount();
+
+    void bindTree();
+
+    void unbindTree();
+    
+    boolean isTreeBound();
 
 }

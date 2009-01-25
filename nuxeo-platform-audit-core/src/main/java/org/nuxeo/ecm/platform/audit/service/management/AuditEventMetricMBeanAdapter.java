@@ -12,29 +12,31 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *    Stephane Lacoin (Nuxeo EP Software Engineer)
+ *     matic
  */
-package org.nuxeo.ecm.platform.audit.service.extension;
+package org.nuxeo.ecm.platform.audit.service.management;
 
-import java.io.Serializable;
-
-import org.nuxeo.common.xmap.annotation.XNode;
-import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
 
 /**
- * @author Stephane Lacoin (Nuxeo EP software Engineer)
- *
+ * @author matic
+ * 
  */
-@XObject("hibernateOptions")
-public class HibernateOptionsDescriptor implements Serializable {
+public class AuditEventMetricMBeanAdapter implements AuditEventMetricMBean {
 
-    private static final long serialVersionUID = 1500818790781765945L;
+    protected AuditEventMetricMBeanAdapter(NXAuditEventsService service,
+            String name) {
+        this.service = service;
+        this.eventName = name;
+    }
 
-    @XNode("@datasource")
-    private String datasource;
+    protected final NXAuditEventsService service;
 
-    public String getDatasource() {
-        return datasource;
+    protected final String eventName;
+
+ 
+    public Long getCount() {
+        return service.getEventsCount(eventName);
     }
 
 }

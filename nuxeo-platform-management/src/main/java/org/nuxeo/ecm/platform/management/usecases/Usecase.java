@@ -12,29 +12,18 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *    Stephane Lacoin (Nuxeo EP Software Engineer)
+ *     matic
  */
-package org.nuxeo.ecm.platform.audit.service.extension;
+package org.nuxeo.ecm.platform.management.usecases;
 
-import java.io.Serializable;
-
-import org.nuxeo.common.xmap.annotation.XNode;
-import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 
 /**
- * @author Stephane Lacoin (Nuxeo EP software Engineer)
+ * @author Stephane Lacoin (Nuxeo EP Software Engineer)
  *
  */
-@XObject("hibernateOptions")
-public class HibernateOptionsDescriptor implements Serializable {
-
-    private static final long serialVersionUID = 1500818790781765945L;
-
-    @XNode("@datasource")
-    private String datasource;
-
-    public String getDatasource() {
-        return datasource;
-    }
-
+public interface Usecase {
+    void init(Object service);
+    void runCase(CoreSession session) throws ClientException;
 }

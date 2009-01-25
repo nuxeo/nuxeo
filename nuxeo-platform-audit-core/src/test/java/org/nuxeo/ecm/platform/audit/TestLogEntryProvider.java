@@ -29,6 +29,8 @@ import javax.persistence.EntityManager;
 
 import junit.framework.TestCase;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.audit.api.AuditException;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.FilterMapEntry;
@@ -209,5 +211,25 @@ public class TestLogEntryProvider extends TestCase {
         LogEntry three = doCreateEntryAndPersist("three");
         int count = providerUnderTest.removeEntries(eventId(), "/");
         assertEquals(3, count);
+    }
+    
+    public void testCountEventsById() {
+        LogEntry one = doCreateEntryAndPersist("one");
+        String eventId = one.getEventId();
+        Long count = 
+            providerUnderTest.countEventsById(eventId);
+        assertEquals(new Long(1), count);
+    }
+    
+    protected static final Log log = LogFactory.getLog(TestLogEntryProvider.class);
+    
+    public void testEventIds() {
+        String eventId = eventId();
+        LogEntry one = doCreateEntryAndPersist("one");
+        LogEntry two = doCreateEntryAndPersist("two");
+        List<String> eventIds =
+            providerUnderTest.findEventIds();
+        assertEquals(2, eventIds.size());
+        assertEquals(eventId, eventIds.get(0));
     }
 }
