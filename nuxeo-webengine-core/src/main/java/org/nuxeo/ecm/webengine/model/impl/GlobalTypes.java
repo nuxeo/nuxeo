@@ -24,10 +24,10 @@ import org.nuxeo.ecm.webengine.loader.ClassProxy;
 import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.runtime.annotations.loader.AnnotationLoader;
-import org.nuxeo.runtime.annotations.loader.BundleAnnotationsLoader;
 import org.osgi.framework.Bundle;
 
 /**
+ * @deprecated this should be removed since global types are no more supported
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */

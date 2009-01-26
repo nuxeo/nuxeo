@@ -417,7 +417,7 @@ public class ModuleImpl implements Module {
 
     public void reloadMessages() {
         messages = new Messages(superModule != null
-                ? superModule.getMessages() : engine.getMessages(), this);
+                ? superModule.getMessages() : null, this);
     }
 
     public Messages getMessages() {

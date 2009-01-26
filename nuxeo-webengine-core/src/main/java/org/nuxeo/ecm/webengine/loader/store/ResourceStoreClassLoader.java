@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 
-import org.apache.commons.jci.utils.ConversionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -164,13 +163,6 @@ public class ResourceStoreClassLoader extends ClassLoader {
         return "" + this + "[" + this.getClass().getClassLoader() + "]";
     }
 
-
-    /**
-     * org/my/Class.xxx -> org.my.Class
-     */
-    public static String convertResourceToClassName( final String pResourceName ) {
-        return ConversionUtils.stripExtension(pResourceName).replace('/', '.');
-    }
 
     /**
      * org.my.Class -> org/my/Class.class

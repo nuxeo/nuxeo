@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.webengine;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -39,8 +38,6 @@ import org.nuxeo.ecm.platform.rendering.api.ResourceLocator;
 import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
 import org.nuxeo.ecm.webengine.debug.ReloadManager;
 import org.nuxeo.ecm.webengine.loader.WebLoader;
-import org.nuxeo.ecm.webengine.model.Messages;
-import org.nuxeo.ecm.webengine.model.MessagesProvider;
 import org.nuxeo.ecm.webengine.model.Module;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.WebContext;
@@ -60,7 +57,7 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class WebEngine implements ResourceLocator, MessagesProvider {
+public class WebEngine implements ResourceLocator {
 
     public static final String SKIN_PATH_PREFIX_KEY = "org.nuxeo.ecm.webengine.skinPathPrefix";
 
@@ -105,14 +102,13 @@ public class WebEngine implements ResourceLocator, MessagesProvider {
     protected Scripting scripting;
     protected RenderingEngine rendering;
     protected Map<String, Object> env;
-    protected boolean isDebug = false;
+    protected boolean isDevMode = false;
 
     protected GlobalTypes globalTypes;
 
     protected AnnotationManager annoMgr;
 
     protected final ResourceRegistry registry;
-    protected Messages messages;
 
     protected String skinPathPrefix;
 
@@ -125,8 +121,8 @@ public class WebEngine implements ResourceLocator, MessagesProvider {
     public WebEngine(ResourceRegistry registry, File root) throws IOException {
         this.registry = registry;
         this.root = root;        
-        this.isDebug = Boolean.parseBoolean(Framework.getProperty("debug", "false"));
-        if (isDebug) {
+        this.isDevMode = Boolean.parseBoolean(Framework.getProperty("debug", "false"));
+        if (isDevMode) {
             reloadMgr = new ReloadManager(this);
         }
         webLoader = new WebLoader(this);
@@ -141,9 +137,7 @@ public class WebEngine implements ResourceLocator, MessagesProvider {
             //TODO: should put this in web.xml and not use jboss.home.dir to test if on jboss
             skinPathPrefix = System.getProperty("jboss.home.dir") != null ? "/nuxeo/site/skin" : "/skin";
         }
-//TODO remove this
-//        moduleMgr = new ModuleManager(this);
-//        moduleMgr.loadModules(root);
+
         registerRootBinding();        
 
         env = new HashMap<String, Object>();
@@ -154,8 +148,6 @@ public class WebEngine implements ResourceLocator, MessagesProvider {
         rendering = new FreemarkerEngine();
         rendering.setResourceLocator(this);
         rendering.setSharedVariable("env", getEnvironment());
-
-        messages = new Messages(null, this);
 
 
         // register writers - TODO make an extension point
@@ -206,47 +198,17 @@ public class WebEngine implements ResourceLocator, MessagesProvider {
         return (String)mimeTypes.get(ext);
     }
 
-    public Messages getMessages() {
-        return messages;
-    }
-
-    @SuppressWarnings("unchecked")
-    public Map<String,String> getMessages(String language) {
-        log.info("Loading i18n files");
-        File file = new File(root,  new StringBuilder()
-                    .append("WEB-INF/i18n/messages_")
-                    .append(language)
-                    .append(".properties").toString());
-        InputStream in = null;
-        try {
-            in = new FileInputStream(file);
-            Properties p = new Properties();
-            p.load(in);
-            return new HashMap(p); // HashMap is faster than Properties
-        } catch (IOException e) {
-            return null;
-        } finally {
-            if (in != null) {
-                try {
-                    in.close();
-                } catch (IOException ee) {
-                    log.error(ee);
-                }
-            }
-        }
-    }
-
     public AnnotationManager getAnnotationManager() {
         return annoMgr;
     }
 
 
-    public boolean isDebug() {
-        return isDebug;
+    public boolean isDevMode() {
+        return isDevMode;
     }
 
-    public void setDebug(boolean isDebug) {
-        this.isDebug = isDebug;
+    public void setDevMode(boolean isDevMode) {
+        this.isDevMode = isDevMode;
     }
 
     public void registerRenderingExtension(String id, Object obj) {
