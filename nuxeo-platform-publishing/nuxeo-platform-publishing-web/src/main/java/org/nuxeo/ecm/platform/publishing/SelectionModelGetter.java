@@ -134,7 +134,7 @@ public class SelectionModelGetter extends UnrestrictedSessionRunner {
 
         PagedDocumentsProvider sectionsProvider = null;
         try {
-            sectionsProvider = queryModel.getResultsProvider(params);
+            sectionsProvider = queryModel.getResultsProvider(coreSession, params);
         } catch (QueryException e) {
             throw new ClientException(String.format("Invalid search query. "
                     + "Check the \"%s\" QueryModel configuration",
