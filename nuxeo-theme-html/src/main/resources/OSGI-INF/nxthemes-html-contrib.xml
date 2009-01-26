@@ -91,7 +91,7 @@
 
     <!-- WYSIWYG JavaScript framework 0.1 http://github.com/37signals/wysihat/tree/master -->
     <resource name="wysihat.js">
-      <path>nxthemes/html/scripts/nxthemes/wysihat.js</path>
+      <path>nxthemes/html/scripts/wysihat.js</path>
       <require>prototype.js</require>
     </resource>
 
