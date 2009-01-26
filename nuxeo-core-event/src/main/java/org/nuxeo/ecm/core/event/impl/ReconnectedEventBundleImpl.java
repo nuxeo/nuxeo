@@ -102,10 +102,13 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
                     Object newArg = arg;
                     if (arg instanceof DocumentModel) {
                         DocumentModel oldDoc = (DocumentModel) arg;
-                        try {
-                            newArg = session.getDocument(oldDoc.getRef());
-                        } catch (ClientException e) {
-                            log.error("Can not refetch Doc with ref " + oldDoc.getRef().toString(), e);
+                        DocumentRef ref = oldDoc.getRef();
+                        if (ref!=null) {
+                            try {
+                                newArg = session.getDocument(oldDoc.getRef());
+                            } catch (ClientException e) {
+                                log.error("Can not refetch Doc with ref " + ref.toString(), e);
+                            }
                         }
                     }
                     // XXX treat here other cases !!!!
@@ -121,17 +124,23 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
 
                 Map<String, Serializable> newProps = new HashMap<String, Serializable>();
                 for (String propName : ctx.getProperties().keySet()) {
-                    Serializable propValue = ctx.getProperty(propName);
-                    if (propValue instanceof DocumentModel) {
-                        DocumentModel oldDoc = (DocumentModel) propValue;
-                        try {
-                            propValue = session.getDocument(oldDoc.getRef());
-                        } catch (ClientException e) {
-                            log.error("Can not refetch Doc with ref " + oldDoc.getRef().toString(), e);
+                    Object propValueOb = ctx.getProperty(propName);
+                    if (propValueOb instanceof Serializable) {
+                        Serializable propValue = (Serializable) propValueOb;
+                        if (propValue instanceof DocumentModel) {
+                            DocumentModel oldDoc = (DocumentModel) propValue;
+                            try {
+                                propValue = session.getDocument(oldDoc.getRef());
+                            } catch (ClientException e) {
+                                log.error("Can not refetch Doc with ref " + oldDoc.getRef().toString(), e);
+                            }
                         }
+                        // XXX treat here other cases !!!!
+                        newProps.put(propName, propValue);
                     }
-                    // XXX treat here other cases !!!!
-                    newProps.put(propName, propValue);
+                    else {
+                        log.warn("EventBundle contains non serializablee property : " + propValueOb.getClass().getSimpleName());
+                    }
                 }
                 newCtx.setProperties(newProps);
 

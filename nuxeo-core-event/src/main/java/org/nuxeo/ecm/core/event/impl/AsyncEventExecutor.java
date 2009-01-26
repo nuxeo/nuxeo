@@ -107,7 +107,7 @@ public class AsyncEventExecutor {
                 txh.commitOrRollbackTransaction();
                 log.debug("Async listener executed, commiting tx");
             } catch (Throwable t) {
-                log.error("Failed to execute async event "+bundle.getName()+" on listener "+listener);
+                log.error("Failed to execute async event "+bundle.getName()+" on listener "+listener , t);
                 txh.rollbackTransaction();
             } finally {
                 bundle.disconnect();

@@ -3,7 +3,7 @@
 
   <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
 
-    <listener isAsync="false" isPostCommit="true" class="org.nuxeo.ecm.core.event.jms.JmsEventForwarder">
+    <listener async="true" postCommit="true" class="org.nuxeo.ecm.core.event.jms.JmsEventForwarder">
     </listener>
 
   </extension>

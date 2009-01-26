@@ -111,6 +111,7 @@ public class JMSEventBundle implements Serializable {
 
     }
 
+    // Should not be necessary since this is noww done in CoreSession
     protected Map<String,Serializable> filterContextProperties(Map<String,Serializable> properties) {
 
         Map<String,Serializable> serializableProps = new HashMap<String, Serializable>();

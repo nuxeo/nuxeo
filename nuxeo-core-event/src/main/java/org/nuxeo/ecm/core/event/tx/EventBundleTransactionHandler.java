@@ -47,12 +47,13 @@ public class EventBundleTransactionHandler {
         tx = createUT();
         if (tx == null) {
             log.error("No TransactionManager");
-            isTxEnabled=false;
+            isTxEnabled = false;
             return;
         }
         try {
-            if (tx.getStatus()==STATUS_COMMITTED) {
-                log.error("Transaction is already commited, try to begin anyway");
+            if (tx.getStatus() == STATUS_COMMITTED) {
+                log
+                        .error("Transaction is already commited, try to begin anyway");
             }
             tx.begin();
         } catch (Exception e) {
@@ -98,22 +99,22 @@ public class EventBundleTransactionHandler {
             tm = (TransactionManager) context.lookup("TransactionManager");
         } catch (NamingException ne) {
             try {
-                tm = (TransactionManager) context.lookup("java:/TransactionManager");
+                tm = (TransactionManager) context
+                        .lookup("java:/TransactionManager");
             } catch (NamingException ne2) {
                 isTxEnabled = false;
             }
         }
 
-
-        if (tm==null) {
-            isTxEnabled=false;
+        if (tm == null) {
+            isTxEnabled = false;
             return null;
         }
 
         try {
             return tm.getTransaction();
         } catch (SystemException e) {
-            isTxEnabled=false;
+            isTxEnabled = false;
             return null;
         }
 
@@ -150,9 +151,9 @@ public class EventBundleTransactionHandler {
                     log.error("Error while marking tx for rollback", e);
                 }
             } else {
-                log.error("There is no active UT");
+                log.error("Can not rollback : there is no active UT");
             }
-            tx=null;
+            tx = null;
         }
     }
 
@@ -162,23 +163,22 @@ public class EventBundleTransactionHandler {
         }
         if (tx != null) {
             if (isUTTransactionActive()) {
-                if (isUTTransactionMarkedRollback()) {
-                    try {
-                        tx.rollback();
-                    } catch (Exception e) {
-                        log.error("Error during RollBack", e);
-                    }
-                } else {
-                    try {
-                        tx.commit();
-                    } catch (Exception e) {
-                        log.error("Error during Commit", e);
-                    }
+                try {
+                    tx.commit();
+                } catch (Exception e) {
+                    log.error("Error during Commit", e);
+                }
+            } else if (isUTTransactionMarkedRollback()){
+                try {
+                    log.debug("Rolling bcak transaction");
+                    tx.rollback();
+                } catch (Exception e) {
+                    log.error("Error during RollBack", e);
                 }
             } else {
-                log.error("There is no active UT");
+                //log.error("TX is in abnormal state)
             }
-            tx=null;
+            tx = null;
         }
 
     }
