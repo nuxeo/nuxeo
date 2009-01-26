@@ -23,6 +23,8 @@ import static org.jboss.seam.ScopeType.CONVERSATION;
 
 import java.util.Map;
 
+import javax.faces.application.FacesMessage;
+
 import org.jboss.seam.annotations.Create;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
@@ -85,7 +87,8 @@ public class PublishingActionsListenerBean extends InputController implements
         try {
             publishingService = Framework.getService(PublishingService.class);
         } catch (Exception e) {
-            throw new IllegalStateException("Publishing service not deployed.", e);
+            throw new IllegalStateException("Publishing service not deployed.",
+                    e);
         }
     }
 
@@ -96,6 +99,15 @@ public class PublishingActionsListenerBean extends InputController implements
     }
 
     public String rejectDocument() throws PublishingException {
+        if (rejectPublishingComment == null
+                || "".equals(rejectPublishingComment)) {
+            facesMessages.addToControl("rejectPublishingComment",
+                    FacesMessage.SEVERITY_ERROR,
+                    resourcesAccessor.getMessages().get(
+                            "label.publishing.reject.user.comment.mandatory"));
+            return null;
+        }
+
         publishingService.validatorRejectPublication(getCurrentDocument(),
                 currentUser, rejectPublishingComment);
         try {

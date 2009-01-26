@@ -135,12 +135,20 @@ public interface JbpmService {
             throws NuxeoJbpmException;
 
     // PROCESS
+
+    /**
+     * End the process instance and cancel all related tasks.
+     *
+     * @param principal the canceller.
+     */
+    public void abandonProcessInstance(NuxeoPrincipal principal, Long processId) throws NuxeoJbpmException;
+
     /**
      * Return a list of all current process instances for this user.
      *
      * <p>
-     * A current process instance is an unfinished process. The user is
-     * the process instances initiator.
+     * A current process instance is an unfinished process. The user is the
+     * process instances initiator.
      *
      * @param principal
      * @return A list of ProcessInstance
@@ -178,8 +186,8 @@ public interface JbpmService {
 
     /**
      * Return a list of available Process Definition Name available for this
-     * document and user. All process definition if dm is <code>null</code>.
-     * The returned process definition is always the latest.
+     * document and user. All process definition if dm is <code>null</code>. The
+     * returned process definition is always the latest.
      *
      * @param user the caller.
      * @param dm the document concerned by the process

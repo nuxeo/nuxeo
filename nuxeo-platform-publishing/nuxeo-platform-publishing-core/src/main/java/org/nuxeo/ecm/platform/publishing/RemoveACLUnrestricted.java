@@ -40,6 +40,7 @@ public class RemoveACLUnrestricted extends UnrestrictedSessionRunner {
         ACP acp = document.getACP();
         acp.removeACL(aclName);
         session.setACP(document.getRef(), acp, true);
+        session.save();
     }
 
 }

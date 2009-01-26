@@ -26,6 +26,7 @@ import java.util.Map;
 
 import org.jbpm.taskmgmt.exe.TaskInstance;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -111,8 +112,8 @@ public class JbpmPublisher extends AbstractPublisher implements Publisher {
 
     public boolean isPublished(DocumentModel proxy) throws PublishingException {
         try {
-            List<TaskInstance> tis = getJbpmService().getTaskInstances(proxy, null,
-                    null);
+            List<TaskInstance> tis = getJbpmService().getTaskInstances(proxy,
+                    null, null);
             for (TaskInstance ti : tis) {
                 if (ti.getName().equals(TASK_NAME)) {
                     // if there is a task on this doc, then it is not yet
@@ -227,25 +228,27 @@ public class JbpmPublisher extends AbstractPublisher implements Publisher {
 
     public void validatorPublishDocument(DocumentModel currentDocument,
             NuxeoPrincipal currentUser) throws PublishingException {
-        CoreSession session;
+        CoreSession session = null;
         try {
             session = getCoreSession(currentDocument.getRepositoryName(),
                     currentUser);
+            removeACL(currentDocument, session);
+            endTask(currentDocument, currentUser);
+            notifyEvent(PublishingEvent.documentPublicationApproved,
+                    currentDocument, session);
+            notifyEvent(PublishingEvent.documentPublished, currentDocument, session);
         } catch (ClientException e) {
             throw new PublishingException(e);
+        } finally {
+            CoreInstance.getInstance().close(session);
         }
-        removeACL(currentDocument, session);
-        endTask(currentDocument, currentUser);
-        notifyEvent(PublishingEvent.documentPublicationApproved,
-                currentDocument, session);
-        notifyEvent(PublishingEvent.documentPublished, currentDocument, session);
     }
 
     private void endTask(DocumentModel document, NuxeoPrincipal currentUser)
             throws PublishingException {
         try {
-            List<TaskInstance> tis = getJbpmService().getTaskInstances(document,
-                    currentUser, null);
+            List<TaskInstance> tis = getJbpmService().getTaskInstances(
+                    document, currentUser, null);
             for (TaskInstance ti : tis) {
                 if (ti.getName().equals(TASK_NAME)) {
                     ti.end();
@@ -273,15 +276,18 @@ public class JbpmPublisher extends AbstractPublisher implements Publisher {
     public void validatorRejectPublication(DocumentModel doc,
             NuxeoPrincipal principal, String comment)
             throws PublishingException {
-        CoreSession coreSession;
+        CoreSession coreSession = null;
         try {
             coreSession = getCoreSession(doc.getRepositoryName(), principal);
+            notifyEvent(PublishingEvent.documentPublicationRejected, doc,
+                    coreSession);
+            removeProxy(doc, coreSession);
+            endTask(doc, principal);
         } catch (ClientException e) {
             throw new PublishingException(e);
+        } finally {
+            CoreInstance.getInstance().close(coreSession);
         }
-        notifyEvent(PublishingEvent.documentPublicationRejected, doc, null);
-        removeProxy(doc, coreSession);
-        endTask(doc, principal);
 
     }
 

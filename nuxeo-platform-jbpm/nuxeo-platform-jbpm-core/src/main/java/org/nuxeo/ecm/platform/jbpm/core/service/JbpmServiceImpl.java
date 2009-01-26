@@ -586,4 +586,23 @@ public class JbpmServiceImpl implements JbpmService {
     protected void setTypeFilters(Map<String, String[]> typeFilters) {
         this.typeFilters = typeFilters;
     }
+
+    public void abandonProcessInstance(final NuxeoPrincipal principal,
+            final Long processId) throws NuxeoJbpmException {
+        executeJbpmOperation(new JbpmOperation() {
+            @SuppressWarnings("unchecked")
+            public Serializable run(JbpmContext context)
+                    throws NuxeoJbpmException {
+                ProcessInstance pi = context.getProcessInstance(processId);
+                List<TaskInstance> tis = (List<TaskInstance>) pi.getTaskMgmtInstance().getTaskInstances();
+                for (TaskInstance ti : tis) {
+                    if (!ti.hasEnded()) {
+                        ti.cancel();
+                    }
+                }
+                pi.end();
+                return null;
+            }
+        });
+    }
 }
