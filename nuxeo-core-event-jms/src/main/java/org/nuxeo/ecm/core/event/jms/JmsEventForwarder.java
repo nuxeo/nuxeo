@@ -36,6 +36,7 @@ import org.nuxeo.ecm.core.event.ReconnectedEventBundle;
 /**
  *
  * Forwards Core EventBundles to JMS topic
+ *
  * @author Tiry
  *
  */
@@ -112,15 +113,13 @@ public class JmsEventForwarder implements PostCommitEventListener {
     }
 
     protected boolean canForwardMessage(EventBundle events) {
-
         // Check Bus is Active
         if (!jmsBusIsActive) {
              log.debug("JMS Bus is not active, cannot forward message");
              return false;
         }
-
         if (events instanceof ReconnectedEventBundle) {
-            if (((ReconnectedEventBundle)events).comeFromJMS()) {
+            if (((ReconnectedEventBundle)events).comesFromJMS()) {
                 log.debug("Message already comes from JMS bus, not forwarding");
                 return false;
             }
