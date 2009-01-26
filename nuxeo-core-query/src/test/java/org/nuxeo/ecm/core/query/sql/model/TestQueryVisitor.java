@@ -118,7 +118,7 @@ public class TestQueryVisitor extends TestCase {
         assertEquals(expected, v.toString());
     }
 
-    private static final Pattern REMOVE_TZ_PATTERN = Pattern.compile("(.*)(\\+.*|Z)'\\)$");
+    private static final Pattern REMOVE_TZ_PATTERN = Pattern.compile("(.*)((\\+|-).*|Z)'\\)$");
 
     private String removeTzSuffix(String value) {
         Matcher matcher = REMOVE_TZ_PATTERN.matcher(value);
