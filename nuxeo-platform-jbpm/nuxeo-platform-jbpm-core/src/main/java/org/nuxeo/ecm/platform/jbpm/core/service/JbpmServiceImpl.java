@@ -340,8 +340,6 @@ public class JbpmServiceImpl implements JbpmService {
                     if (pi == null) {// task created outside a process
                         String docId = (String) ti.getVariable(JbpmService.VariableName.documentId.name());
                         String repoId = (String) ti.getVariable(JbpmService.VariableName.documentRepositoryName.name());
-                        String d = dm.getId();
-                        String r = dm.getRepositoryName();
                         if (docId.equals(dm.getId())
                                 && repoId.equals(dm.getRepositoryName())) {
                             result.add(ti);
