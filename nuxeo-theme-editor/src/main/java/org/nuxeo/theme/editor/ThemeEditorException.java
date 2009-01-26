@@ -1,5 +1,7 @@
 package org.nuxeo.theme.editor;
 
+import javax.ws.rs.core.Response;
+
 import org.nuxeo.ecm.webengine.WebException;
 
 public class ThemeEditorException extends WebException {
@@ -16,6 +18,11 @@ public class ThemeEditorException extends WebException {
 
     public ThemeEditorException(String message, Throwable cause) {
         super(message, cause);
+    }
+    
+    @Override
+    public Response getResponse() {
+        return Response.status(500).entity(this.getMessage()).build();
     }
 
 }
