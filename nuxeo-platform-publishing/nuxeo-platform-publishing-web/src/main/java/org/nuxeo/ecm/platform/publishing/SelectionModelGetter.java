@@ -45,6 +45,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  */
 public class SelectionModelGetter extends UnrestrictedSessionRunner {
+
     private final List<DocumentModelTreeNode> treeNodes = new ArrayList<DocumentModelTreeNode>();
 
     protected final CoreSession coreSession;
@@ -134,7 +135,7 @@ public class SelectionModelGetter extends UnrestrictedSessionRunner {
 
         PagedDocumentsProvider sectionsProvider = null;
         try {
-            sectionsProvider = queryModel.getResultsProvider(params);
+            sectionsProvider = queryModel.getResultsProvider(session, params);
         } catch (QueryException e) {
             throw new ClientException(String.format("Invalid search query. "
                     + "Check the \"%s\" QueryModel configuration",
