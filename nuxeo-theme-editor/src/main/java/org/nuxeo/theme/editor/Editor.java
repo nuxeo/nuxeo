@@ -223,6 +223,7 @@ public class Editor {
     public static void saveChanges() throws ThemeIOException {
         ThemeManager themeManager = Manager.getThemeManager();
         Long lastModified = themeManager.getLastModified();
+        boolean ok = false;
         for (ThemeDescriptor themeDef : ThemeManager.getThemeDescriptors()) {
             if (!themeDef.isSaveable()) {
                 continue;
@@ -232,6 +233,10 @@ public class Editor {
                 continue;
             }
             ThemeManager.saveTheme(themeDef.getSrc());
+            ok = true;
+        }
+        if (!ok) {
+            throw new ThemeIOException("No theme could be saved.");
         }
     }
 
