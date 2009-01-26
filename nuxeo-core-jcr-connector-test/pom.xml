@@ -86,6 +86,11 @@
       <artifactId>nuxeo-core-query-test</artifactId>
       <scope>test</scope>
     </dependency>
+     <dependency>
+      <groupId>javax.transaction</groupId>
+      <artifactId>jta</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
 </project>

@@ -53,7 +53,8 @@ public interface Event extends Serializable {
         LOCAL, //
         CANCEL, //
         COMMIT, //
-        INLINE
+        INLINE,
+        ROOLBACK
     }
 
     /**
@@ -110,6 +111,23 @@ public interface Event extends Serializable {
      * @return true if canceled, false otherwise.
      */
     boolean isCanceled();
+
+
+    /**
+     * Marks transaction for RollBack
+     * <p>
+     * This will exit the event listeners loop and throw a RuntimeException
+     * In JTA container, this will make the global transaction rollback.
+     *
+     */
+    void markRollBack();
+
+    /**
+     * Checks whether the event was marked for RollBack
+     *
+     * @return true if rolledback, false otherwise.
+     */
+    boolean isMarkedForRollBack();
 
     /**
      * Whether this event must not be added to a bundle. An event is not inline

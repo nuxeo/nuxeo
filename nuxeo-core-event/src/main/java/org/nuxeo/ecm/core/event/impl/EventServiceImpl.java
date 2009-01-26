@@ -33,19 +33,23 @@ import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.PostCommitEventListener;
+import org.nuxeo.ecm.core.event.ReconnectedEventBundle;
+import org.nuxeo.ecm.core.event.jms.AsyncProcessorConfig;
+import org.nuxeo.ecm.core.event.tx.PostCommitSynchronousRunner;
 
 /**
  * This implementation is always recording the event even if no transaction was started.
  * If the transaction was not started, the SAVE event is used to flush the event bundle.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author tiry
  */
 public class EventServiceImpl implements EventService {
 
     private static final Log log  = LogFactory.getLog(EventServiceImpl.class);
 
     public final static VMID VMID = new VMID();
-    
+
     protected static final ThreadLocal<EventBundleImpl> bundle = new ThreadLocal<EventBundleImpl>() {
         @Override
         protected EventBundleImpl initialValue() {
@@ -62,18 +66,23 @@ public class EventServiceImpl implements EventService {
         listeners = new ListenerList(cmp);
         postCommitListeners = new ListenerList(cmp);
         asyncExec = AsyncEventExecutor.create();
+
+    }
+
+    public int getActiveAsyncTaskCount() {
+        return asyncExec.getNbTasksRunning();
     }
 
     public void addEventListener(EventListenerDescriptor listener) {
         try {
             EventListener el = listener.asEventListener();
             if (el != null) {
-                listeners.add(new Entry<EventListener>(el, listener.getPriority(), listener.isAsync, listener.getEvents()));
+                listeners.add(new Entry<EventListener>(el, listener.getPriority(), listener.isAsync, listener.getEvents(), listener.getName()));
             } else {
                 PostCommitEventListener pcel = listener.asPostCommitListener();
                 if (pcel != null) {
                     postCommitListeners.add(
-                            new Entry<PostCommitEventListener>(pcel, listener.getPriority(), listener.isAsync, listener.getEvents()));
+                            new Entry<PostCommitEventListener>(pcel, listener.getPriority(), listener.isAsync, listener.getEvents(),listener.getName()));
                 } else {
                     log.error("Invalid event listener: class: "+listener.clazz + "; script: "+listener.script+"; context: "+listener.rc);
                 }
@@ -87,11 +96,11 @@ public class EventServiceImpl implements EventService {
         try {
             EventListener el = listener.asEventListener();
             if (el != null) {
-                listeners.remove(new Entry<EventListener>(el, listener.getPriority(), listener.isAsync, listener.getEvents()));
+                listeners.remove(new Entry<EventListener>(el, listener.getPriority(), listener.isAsync, listener.getEvents(), listener.getName()));
             } else {
                 PostCommitEventListener pcel = listener.asPostCommitListener();
                 postCommitListeners.remove(
-                        new Entry<PostCommitEventListener>(pcel, listener.getPriority(), listener.isAsync, listener.getEvents()));
+                        new Entry<PostCommitEventListener>(pcel, listener.getPriority(), listener.isAsync, listener.getEvents(), listener.getName()));
             }
         } catch (Exception e) {
             log.error("Failed to register event listener", e);
@@ -117,9 +126,19 @@ public class EventServiceImpl implements EventService {
         for (Object obj : ar) {
             Entry<EventListener> entry = (Entry<EventListener>)obj;
             if (entry.acceptEvent(ename)) {
-                entry.listener.handleEvent(event);
-                if (event.isCanceled()) {
-                    return;
+                try {
+                    entry.listener.handleEvent(event);
+                }
+                catch (Throwable t) {
+                    log.error("Error during sync listener execution", t);
+                }
+                finally {
+                    if (event.isMarkedForRollBack()) {
+                        throw new RuntimeException("Exception during sync listener execution, rollingback");
+                    }
+                    if (event.isCanceled()) {
+                        return;
+                    }
                 }
             }
         }
@@ -127,17 +146,49 @@ public class EventServiceImpl implements EventService {
 
     @SuppressWarnings("unchecked")
     public void fireEventBundle(EventBundle event) throws ClientException {
+        boolean comesFromJMS = false;
+
         Object[] ar = postCommitListeners.getListeners();
+
+        if (event instanceof ReconnectedEventBundle) {
+            if (((ReconnectedEventBundle)event).comesFromJMS()) {
+                comesFromJMS=true;
+            }
+        }
+
+        // XXX : this sorting should be done at registration time
+        List<PostCommitEventListener> syncListeners = new ArrayList<PostCommitEventListener>();
+        List<PostCommitEventListener> asyncListeners = new ArrayList<PostCommitEventListener>();
         for (Object obj : ar) {
             Entry<PostCommitEventListener> entry = (Entry<PostCommitEventListener>)obj;
             if (entry.async) {
-                asyncExec.run(entry.listener, event);
+                   asyncListeners.add(entry.listener);
             } else {
-                entry.listener.handleEvent(event);
+                syncListeners.add(entry.listener);
             }
         }
+
+
+        // run sync listeners
+        if (comesFromJMS) {
+            // when called from JMS we must skip sync listeners
+            // - postComit listerers should be on the core
+            // - there is no transaction started by JMS listener
+            log.debug("Desactivating sync post-commit listener since we are called from JMS");
+        } else {
+            PostCommitSynchronousRunner syncRunner = new PostCommitSynchronousRunner(syncListeners, event);
+            syncRunner.run();
+
+        }
+
+        // fire async listeners
+        if (AsyncProcessorConfig.forceJMSUsage() && !comesFromJMS) {
+            log.debug("Skipping async exec, this will be triggered via JMS");
+        } else {
+            asyncExec.run(asyncListeners, event);
+        }
     }
-    
+
     /**
      * Force sync mode. This will ignore async flags on the listeners
      * @param event
@@ -147,11 +198,11 @@ public class EventServiceImpl implements EventService {
     public void fireEventBundleSync(EventBundle event) throws ClientException {
         Object[] ar = postCommitListeners.getListeners();
         for (Object obj : ar) {
-            Entry<PostCommitEventListener> entry = (Entry<PostCommitEventListener>)obj;            
+            Entry<PostCommitEventListener> entry = (Entry<PostCommitEventListener>)obj;
             entry.listener.handleEvent(event);
         }
     }
-    
+
     @SuppressWarnings("unchecked")
     public List<EventListener> getEventListeners() {
         ArrayList<EventListener> result = new ArrayList<EventListener>();
@@ -161,7 +212,7 @@ public class EventServiceImpl implements EventService {
         }
         return result;
     }
-    
+
     @SuppressWarnings("unchecked")
     public List<PostCommitEventListener> getPostCommitEventListeners() {
         ArrayList<PostCommitEventListener> result = new ArrayList<PostCommitEventListener>();
@@ -172,15 +223,15 @@ public class EventServiceImpl implements EventService {
         return result;
     }
 
-    
+
     public ListenerList getInternalListeners() {
         return listeners;
     }
-    
+
     public ListenerList getInternalPostCommitListeners() {
         return postCommitListeners;
     }
-    
+
     public void transactionStarted() {
         bundle.get().setTransacted(true);
     }
@@ -214,16 +265,20 @@ public class EventServiceImpl implements EventService {
         public final T listener;
         public final Set<String> events;
         public boolean async;
+        public String name;
 
-        public Entry(T listener, int priority, boolean async, Set<String> events) {
+        public Entry(T listener, int priority, boolean async, Set<String> events, String name) {
             this.listener = listener;
             this.priority = priority;
             this.events = events;
             this.async = async;
+            this.name=name;
         }
+
         public Entry(T listener) {
-            this(listener, 0, false, null);
+            this(listener, 0, false, null,listener.getClass().getSimpleName());
         }
+
         @Override
         public boolean equals(Object obj) {
             if (obj instanceof Entry<?>) {

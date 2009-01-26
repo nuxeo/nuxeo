@@ -42,6 +42,9 @@ public class EventListenerDescriptor {
 
     public static final Log log = LogFactory.getLog(EventListenerDescriptor.class);
 
+    @XNode("@name")
+    protected String name;
+
     /**
      * The event listener class.
      */
@@ -66,7 +69,7 @@ public class EventListenerDescriptor {
      */
     @XNode("@async")
     protected boolean isAsync;
-    
+
     /**
      * The priority to be used to order listeners.
      */
@@ -160,6 +163,18 @@ public class EventListenerDescriptor {
         } else {
             return Script.newScript(script);
         }
+    }
+
+    public String getName() {
+        if (name==null) {
+            if (clazz!=null) {
+                name = clazz.getSimpleName();
+            }
+            else {
+                name = script;
+            }
+        }
+        return name;
     }
 
 }

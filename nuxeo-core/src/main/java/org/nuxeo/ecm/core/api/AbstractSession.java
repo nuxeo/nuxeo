@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -331,12 +332,21 @@ public abstract class AbstractSession implements CoreSession,
     protected void notifyEvent(String eventId, DocumentModel source,
             Map<String, ?> options, String category, String comment,
             boolean withLifeCycle) throws ClientException {
-        
+
         DocumentEventContext ctx = new DocumentEventContext(this, getPrincipal(), source);
 
         // compatibility with old code (< 5.2.M4) - import info from old event model
         if (options != null) {
-            ctx.setProperties((Map<String,Serializable>)options);
+            Map<String,Serializable> eventProperties = new HashMap<String, Serializable>();
+            // Sanity check since option is Map<String, ?>
+            for (Entry<String,?> entry : options.entrySet()) {
+                if (entry.getValue() instanceof Serializable) {
+                    eventProperties.put(entry.getKey(),(Serializable) entry.getValue());
+                } else {
+                    log.warn("option map contains non serializable value under key" + entry.getKey());
+                }
+            }
+            ctx.setProperties(eventProperties);
         }
         ctx.setProperty(CoreEventConstants.REPOSITORY_NAME, repositoryName);
         ctx.setProperty(CoreEventConstants.SESSION_ID, sessionId);
@@ -357,11 +367,11 @@ public abstract class AbstractSession implements CoreSession,
         }
         ctx.setProperty("category", category == null ?
                 DocumentEventCategories.EVENT_DOCUMENT_CATEGORY : category);
-        // compat code: mark SAVE event as a commit event 
+        // compat code: mark SAVE event as a commit event
         Event event = ctx.event(eventId);
         if (DocumentEventTypes.SESSION_SAVED.equals(eventId)) {
             event.setIsCommitEvent(true);
-        }        
+        }
         // compat code: set isLocal on event if JMS is blocked
         if (source != null) {
             Boolean blockJms = (Boolean)source.getContextData("BLOCK_JMS_PRODUCING");

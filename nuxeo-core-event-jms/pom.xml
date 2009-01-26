@@ -7,7 +7,7 @@
     <version>1.5-SNAPSHOT</version>
   </parent>
 
-  <artifactId>nuxeo-core-event</artifactId>
+  <artifactId>nuxeo-core-event-jms</artifactId>
   <name>Nuxeo Core Event</name>
   <description>Core Events model and implementation</description>
 
@@ -17,12 +17,16 @@
       <artifactId>nuxeo-core-api</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-event</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.osgi</groupId>
       <artifactId>osgi-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>javax.transaction</groupId>
-      <artifactId>jta</artifactId>
+      <groupId>javax.jms</groupId>
+      <artifactId>jms</artifactId>
     </dependency>
 
     <!-- TODO this should use maven conditional dependencies. If java 6 we don't need it since scripting is part of java 6 -->
