@@ -101,18 +101,8 @@ public interface FileManager {
     String computeDigest(Blob blob) throws ClientException,
             NoSuchAlgorithmException, IOException;
 
-    List<DocumentLocation> findExistingDocumentWithFile(String path,
-            String digest, Principal principal) throws ClientException,
-            SearchException, QueryException;
-
-    List<DocumentLocation> findExistingDocumentWithFile(String path, Blob blob,
-            Principal principal) throws ClientException;
-
-    boolean isFileAlreadyPresentInPath(String path, String digest,
-            Principal principal) throws ClientException, SearchException,
-            QueryException;
-
-    boolean isFileAlreadyPresentInPath(String path, Blob blob,
+    List<DocumentLocation> findExistingDocumentWithFile(
+            CoreSession documentManager, String path, String digest,
             Principal principal) throws ClientException;
 
     boolean isUnicityEnabled() throws ClientException;

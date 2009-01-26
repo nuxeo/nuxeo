@@ -30,6 +30,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.repository.Repository;
@@ -138,24 +139,28 @@ public class CoreSearchBackend extends AbstractSearchEngineBackend {
     protected static ResultSet searchQuery(SQLQuery sqlQuery, int offset,
             int limit, CoreSession session, SearchPrincipal searchPrincipal)
             throws ClientException {
-        // TODO record the orignal query in sqlQuery instead of calling toString
         String query = sqlQuery.toString();
-        int max = limit == 0 ? 0 : offset + limit;
-        DocumentModelList documentModelList = session.query(query, max);
-        int size = documentModelList.size();
-        int pageHits = size - offset;
-        List<ResultItem> resultItems = new ArrayList<ResultItem>(size);
+        DocumentModelList documentModelList = session.query(query, null, limit,
+                offset, true);
+        int totalHits = (int) documentModelList.totalSize();
+        int pageHits = documentModelList.size();
+        List<ResultItem> resultItems = new ArrayList<ResultItem>(pageHits);
         for (DocumentModel doc : documentModelList) {
             if (doc == null) {
                 log.error("Got null document from query: " + query);
                 continue;
             }
             // detach the document so that we can use it beyond the session
-            ((DocumentModelImpl) doc).detach(true);
+            try {
+                ((DocumentModelImpl) doc).detach(true);
+            } catch (DocumentSecurityException e) {
+                // no access to the document (why?)
+                continue;
+            }
             resultItems.add(new DocumentModelResultItem(doc));
         }
-        return new ResultSetImpl(sqlQuery, "core", searchPrincipal, offset,
-                limit, resultItems, size, pageHits);
+        return new ResultSetImpl(sqlQuery, searchPrincipal, offset, limit,
+                resultItems, totalHits, pageHits);
     }
 
     protected static Serializable getPrincipal(SearchPrincipal searchPrincipal) {

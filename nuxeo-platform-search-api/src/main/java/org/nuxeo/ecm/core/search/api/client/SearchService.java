@@ -159,7 +159,9 @@ public interface SearchService extends Serializable {
      * @return a ResultSet instance
      * @throws SearchException wrap low level backend exception
      * @throws QueryException if the query is invalid or unsupported
+     * @deprecated use {@link CoreSession#query} instead
      */
+    @Deprecated
     ResultSet searchQuery(ComposedNXQuery nxqlQuery, int offset, int range)
             throws SearchException, QueryException;
 
@@ -173,7 +175,9 @@ public interface SearchService extends Serializable {
      * @return a result set instance
      * @throws SearchException wrap low level backend exception
      * @throws QueryException if the query is invalid or unsupported
+     * @deprecated use {@link CoreSession#query} instead
      */
+    @Deprecated
     ResultSet searchQuery(NativeQuery nativeQuery, int offset, int range)
             throws SearchException, QueryException;
 
@@ -189,7 +193,9 @@ public interface SearchService extends Serializable {
      * @return a result set instance
      * @throws SearchException wrap low level backend exception
      * @throws QueryException wrong query, rewrapped from backend
+     * @deprecated use {@link CoreSession#query} instead
      */
+    @Deprecated
     ResultSet searchQuery(NativeQueryString queryString, String backendName,
             int offset, int range) throws SearchException, QueryException;
 

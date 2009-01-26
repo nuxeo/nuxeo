@@ -30,6 +30,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.FieldImpl;
 import org.nuxeo.ecm.core.schema.types.QName;
@@ -111,7 +112,7 @@ public class TestSearchPageProvider extends NXRuntimeTestCase {
 
     @SuppressWarnings("unchecked")
     public void testGetNumberOfPages() {
-        ResultSet set = new ResultSetImpl(null, null, null, 0, 10,
+        ResultSet set = new ResultSetImpl((SQLQuery) null, null, 0, 10,
                 Collections.EMPTY_LIST, 17, 10);
         SearchPageProvider provider = new SearchPageProvider(set);
         assertEquals(2, provider.getNumberOfPages());
@@ -119,7 +120,7 @@ public class TestSearchPageProvider extends NXRuntimeTestCase {
 
     @SuppressWarnings("unchecked")
     public void testGetCurerntPageSize() {
-        ResultSet set = new ResultSetImpl(null, null, null, 10, 10,
+        ResultSet set = new ResultSetImpl((SQLQuery) null, null, 10, 10,
                 Collections.EMPTY_LIST, 17, 7);
         SearchPageProvider provider = new SearchPageProvider(set);
         assertEquals(7, provider.getCurrentPageSize());
@@ -149,7 +150,7 @@ public class TestSearchPageProvider extends NXRuntimeTestCase {
 
     public void testGetCurrentPage() throws Exception {
         SearchPageProvider provider = new MockSearchPageProvider(
-                new ResultSetImpl(null, null, null, 14, 20,
+                new ResultSetImpl((SQLQuery) null, null, 14, 20,
                         Arrays.asList(resultItem), 16, 1));
         DocumentModelList docModels = provider.getCurrentPage();
         assertEquals(1, docModels.size());
@@ -158,7 +159,7 @@ public class TestSearchPageProvider extends NXRuntimeTestCase {
 
     public void testGetCurrentPageWithCorrupted() throws Exception {
         SearchPageProvider provider = new MockSearchPageProvider(
-                new ResultSetImpl(null, null, null, 14, 20, Arrays.asList(
+                new ResultSetImpl((SQLQuery) null, null, 14, 20, Arrays.asList(
                         resultItem, corruptedResultItem1()), 17, 2));
         DocumentModelList docModels = provider.getCurrentPage();
         assertEquals(1, docModels.size());
@@ -171,7 +172,7 @@ public class TestSearchPageProvider extends NXRuntimeTestCase {
     @SuppressWarnings("unchecked")
     public void testEmptyResults() {
         SearchPageProvider provider =
-            new SearchPageProvider(new ResultSetImpl(null, null, null, 0, 10, Collections.EMPTY_LIST, 0, 0));
+            new SearchPageProvider(new ResultSetImpl((SQLQuery) null, null, 0, 10, Collections.EMPTY_LIST, 0, 0));
         assertFalse(provider.isNextPageAvailable());
         assertFalse(provider.isPreviousPageAvailable());
         assertEquals(0, provider.getCurrentPageIndex());

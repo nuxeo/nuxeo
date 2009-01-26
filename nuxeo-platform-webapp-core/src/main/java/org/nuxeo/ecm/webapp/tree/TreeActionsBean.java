@@ -44,7 +44,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.Filter;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.Sorter;
 import org.nuxeo.ecm.core.search.api.client.querymodel.QueryModel;
 import org.nuxeo.ecm.core.search.api.client.querymodel.descriptor.QueryModelDescriptor;
@@ -109,9 +108,7 @@ public class TreeActionsBean implements TreeActions, Serializable {
                     sorter = treeManager.getSorter(DEFAULT_TREE_PLUGIN_NAME);
                     QueryModelDescriptor queryModelDescriptor = treeManager.getQueryModelDescriptor(DEFAULT_TREE_PLUGIN_NAME);
                     queryModel = queryModelDescriptor == null ? null
-                            : new QueryModel(
-                                    queryModelDescriptor,
-                                    (NuxeoPrincipal) documentManager.getPrincipal());
+                            : new QueryModel(queryModelDescriptor);
                 } catch (Exception e) {
                     log.error(
                             "Could not fetch filter, sorter or node type for tree ",

@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core.search.api;
 
 import junit.framework.TestCase;
 
+import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.search.api.client.search.results.ResultSet;
 import org.nuxeo.ecm.core.search.api.client.search.results.impl.ResultSetImpl;
 
@@ -33,20 +34,20 @@ import org.nuxeo.ecm.core.search.api.client.search.results.impl.ResultSetImpl;
 public class TestResultSetAPI extends TestCase {
 
     public void testResultSetsPaging() {
-        ResultSet set = new ResultSetImpl(null, null, null, 0, 9, null, 39, 9);
+        ResultSet set = new ResultSetImpl((SQLQuery) null, null, 0, 9, null, 39, 9);
         assertTrue(set.isFirstPage());
 
-        set = new ResultSetImpl(null, null, null, 8, 9, null, 39, 9);
+        set = new ResultSetImpl((SQLQuery) null, null, 8, 9, null, 39, 9);
         assertTrue(set.isFirstPage());
         assertTrue(set.hasNextPage());
         assertEquals(1, set.getPageNumber());
 
-        set = new ResultSetImpl(null, null, null, 28, 9, null, 39, 9);
+        set = new ResultSetImpl((SQLQuery) null, null, 28, 9, null, 39, 9);
         assertFalse(set.isFirstPage());
         assertTrue(set.hasNextPage());
         assertEquals(4, set.getPageNumber());
 
-        set = new ResultSetImpl(null, null, null, 32, 9, null, 39, 7);
+        set = new ResultSetImpl((SQLQuery) null, null, 32, 9, null, 39, 7);
         assertFalse(set.isFirstPage());
         assertFalse(set.hasNextPage());
         // This is disputable but one can argue that pages
@@ -54,24 +55,24 @@ public class TestResultSetAPI extends TestCase {
         // see also previous test with offset=8, range=9
         assertEquals(4, set.getPageNumber());
 
-        set = new ResultSetImpl(null, null, null, 39, 9, null, 39, 1);
+        set = new ResultSetImpl((SQLQuery) null, null, 39, 9, null, 39, 1);
         assertFalse(set.isFirstPage());
         assertFalse(set.hasNextPage());
         assertEquals(5, set.getPageNumber());
 
-        set = new ResultSetImpl(null, null, null, 9, 9, null, 39, 9);
+        set = new ResultSetImpl((SQLQuery) null, null, 9, 9, null, 39, 9);
         assertFalse(set.isFirstPage());
         assertTrue(set.hasNextPage());
         assertEquals(2, set.getPageNumber());
     }
 
     public void testRoundBatches() {
-        ResultSet set = new ResultSetImpl(null, null, null, 20, 10, null, 37, 10);
+        ResultSet set = new ResultSetImpl((SQLQuery) null, null, 20, 10, null, 37, 10);
         assertFalse(set.isFirstPage());
         assertTrue(set.hasNextPage());
         assertEquals(3, set.getPageNumber());
 
-        set = new ResultSetImpl(null, null, null, 30, 10, null, 37, 7);
+        set = new ResultSetImpl((SQLQuery) null, null, 30, 10, null, 37, 7);
         assertFalse(set.isFirstPage());
         assertFalse(set.hasNextPage());
         assertEquals(4, set.getPageNumber());

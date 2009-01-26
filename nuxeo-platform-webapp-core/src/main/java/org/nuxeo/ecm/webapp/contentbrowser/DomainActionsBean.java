@@ -99,7 +99,7 @@ public class DomainActionsBean extends InputController implements DomainActions,
                 // return documentManager.getChildren(root.getRef(), null,
                 // SecurityConstants.READ, facetFilter, null);
                 domains = queryModelActions.get(QM_USER_DOMAINS).getDocuments(
-                        new Object[0]);
+                        documentManager, new Object[0]);
             } catch (Throwable t) {
                 throw ClientException.wrap(t);
             }

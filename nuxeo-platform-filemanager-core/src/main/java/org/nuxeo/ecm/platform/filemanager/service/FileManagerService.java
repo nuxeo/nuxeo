@@ -46,13 +46,6 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.query.sql.SQLQueryParser;
-import org.nuxeo.ecm.core.search.api.client.SearchException;
-import org.nuxeo.ecm.core.search.api.client.SearchService;
-import org.nuxeo.ecm.core.search.api.client.common.SearchServiceDelegate;
-import org.nuxeo.ecm.core.search.api.client.query.QueryException;
-import org.nuxeo.ecm.core.search.api.client.query.impl.ComposedNXQueryImpl;
-import org.nuxeo.ecm.core.search.api.client.search.results.document.SearchPageProvider;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.platform.filemanager.api.FileManagerPermissionException;
 import org.nuxeo.ecm.platform.filemanager.service.extension.CreationContainerListProvider;
@@ -87,6 +80,12 @@ public class FileManagerService extends DefaultComponent implements FileManager 
             "org.nuxeo.ecm.platform.filemanager.service.FileManagerService");
 
     public static final String DEFAULT_FOLDER_TYPE_NAME = "Folder";
+
+    // TODO: OG: we should use an overridable query model instead of hardcoding
+    // the NXQL query
+    public static final String QUERY = "SELECT * FROM Document WHERE file:content:digest = '%s'";
+
+    public static final int MAX = 15;
 
     private static final Log log = LogFactory.getLog(FileManagerService.class);
 
@@ -464,61 +463,15 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         return base64Digest;
     }
 
-    // FIXME: infinite recursion!
-    public boolean isFileAlreadyPresentInPath(String path, Blob blob,
-            Principal principal) {
-        return isFileAlreadyPresentInPath(path, blob, principal);
-    }
-
-    public boolean isFileAlreadyPresentInPath(String path, String digest,
-            Principal principal) throws SearchException, QueryException {
-        int maxResultsCount = 15;
-        // TODO: OG: we should use an overridable query model instead of
-        // hardcoding the NXQL query
-        String nxql = "SELECT * FROM Document WHERE file:content:digest = "
-                + digest;
-        SearchService service = SearchServiceDelegate.getRemoteSearchService();
-        ComposedNXQueryImpl query = new ComposedNXQueryImpl(
-                SQLQueryParser.parse(nxql),
-                service.getSearchPrincipal(principal));
-        SearchPageProvider nxqlProvider = new SearchPageProvider(
-                service.searchQuery(query, 0, maxResultsCount), false, null,
-                nxql);
-
-        long nbresult = nxqlProvider.getResultsCount();
-        return nbresult == 0;
-    }
-
-    // FIXME: infinite recursion
-    public List<DocumentLocation> findExistingDocumentWithFile(String path,
-            Blob blob, Principal principal) {
-        return findExistingDocumentWithFile(path, blob, principal);
-    }
-
-    public List<DocumentLocation> findExistingDocumentWithFile(String path,
-            String digest, Principal principal) throws SearchException,
-            QueryException {
-        int maxResultsCount = 15;
-        // TODO: OG: we should use an overridable query model instead of
-        // hardcoding the NXQL query
-        String nxql = String.format(
-                "SELECT * FROM Document WHERE file:content:digest = '%s'",
-                digest);
-        SearchService service = SearchServiceDelegate.getRemoteSearchService();
-        ComposedNXQueryImpl query = new ComposedNXQueryImpl(
-                SQLQueryParser.parse(nxql),
-                service.getSearchPrincipal(principal));
-        SearchPageProvider nxqlProvider = new SearchPageProvider(
-                service.searchQuery(query, 0, maxResultsCount), false, null,
-                nxql);
-
-        nxqlProvider.getResultsCount();
-        DocumentModelList documentModelList = nxqlProvider.getCurrentPage();
-        List<DocumentLocation> docLocationList = new ArrayList<DocumentLocation>();
+    public List<DocumentLocation> findExistingDocumentWithFile(
+            CoreSession documentManager, String path, String digest,
+            Principal principal) throws ClientException {
+        String nxql = String.format(QUERY, digest);
+        DocumentModelList documentModelList = documentManager.query(nxql, MAX);
+        List<DocumentLocation> docLocationList = new ArrayList<DocumentLocation>(
+                documentModelList.size());
         for (DocumentModel documentModel : documentModelList) {
-            DocumentLocation docLocation = new DocumentLocationImpl(
-                    documentModel);
-            docLocationList.add(docLocation);
+            docLocationList.add(new DocumentLocationImpl(documentModel));
         }
         return docLocationList;
     }

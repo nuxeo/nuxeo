@@ -23,26 +23,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.Remove;
-import javax.faces.application.FacesMessage;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.Destroy;
+import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.query.QueryParseException;
-import org.nuxeo.ecm.core.query.sql.SQLQueryParser;
-import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
-import org.nuxeo.ecm.core.search.api.client.SearchException;
-import org.nuxeo.ecm.core.search.api.client.SearchService;
-import org.nuxeo.ecm.core.search.api.client.common.SearchServiceDelegate;
-import org.nuxeo.ecm.core.search.api.client.query.ComposedNXQuery;
-import org.nuxeo.ecm.core.search.api.client.query.QueryException;
-import org.nuxeo.ecm.core.search.api.client.query.impl.ComposedNXQueryImpl;
-import org.nuxeo.ecm.core.search.api.client.search.results.ResultSet;
-import org.nuxeo.ecm.core.search.api.client.search.results.document.SearchPageProvider;
 import org.nuxeo.ecm.webapp.base.InputController;
 
 /**
@@ -59,6 +49,9 @@ public class EditorLinkActionsBean extends InputController implements EditorLink
     private boolean hasSearchResults = false;
 
     private String searchKeywords;
+
+    @In(create = true, required = false)
+    private transient CoreSession documentManager;
 
     public boolean getHasSearchResults() {
         return hasSearchResults;
@@ -93,34 +86,9 @@ public class EditorLinkActionsBean extends InputController implements EditorLink
                 StringUtils.join(constraints.toArray(), " AND "));
         log.debug("Query: " + query);
 
-        final SQLQuery nxqlQuery = SQLQueryParser.parse(query);
-        final ComposedNXQuery composedQuery = new ComposedNXQueryImpl(nxqlQuery);
-        final SearchService searchService = SearchServiceDelegate.getRemoteSearchService();
-
-        try {
-            final ResultSet queryResults = searchService.searchQuery(
-                    composedQuery, 0, 100);
-            if (queryResults != null) {
-                final SearchPageProvider provider = new SearchPageProvider(
-                        queryResults);
-                resultDocuments = provider.getCurrentPage();
-            }
-            log.debug("FTQ query result contains: " + resultDocuments.size()
-                    + " docs.");
-            hasSearchResults = !resultDocuments.isEmpty();
-        } catch (QueryException e) {
-            facesMessages.add(FacesMessage.SEVERITY_WARN,
-                    resourcesAccessor.getMessages().get(
-                            "label.search.service.wrong.query"));
-            log.error("QueryException in search popup : " + e.getMessage());
-        } catch (QueryParseException e) {
-            facesMessages.add(FacesMessage.SEVERITY_WARN,
-                    resourcesAccessor.getMessages().get(
-                            "label.search.service.wrong.query"));
-            log.error("QueryParseException in search popup : " + e.getMessage());
-        } catch (SearchException e) {
-            throw ClientException.wrap(e);
-        }
+        resultDocuments = documentManager.query(query, 100);
+        hasSearchResults = !resultDocuments.isEmpty();
+        log.debug("query result contains: " + resultDocuments.size() + " docs.");
         return "test_popup";
     }
 

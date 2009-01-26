@@ -121,17 +121,18 @@ public class DocumentTreeNodeImpl implements DocumentTreeNode {
                 // filter says this is a leaf, don't look at children
                 return;
             }
+            CoreSession session = CoreInstance.getInstance().getSession(
+                    sessionId);
             List<DocumentModel> documents;
             if (queryModel == null) {
                 // get the children using the core
-                CoreSession session = CoreInstance.getInstance().getSession(
-                        sessionId);
                 documents = session.getChildren(document.getRef(), null,
                         SecurityConstants.READ, filter, sorter);
             } else {
                 // get the children using a query model
                 try {
-                    documents = queryModel.getDocuments(new Object[] { getId() });
+                    documents = queryModel.getDocuments(session,
+                            new Object[] { getId() });
                 } catch (QueryException e) {
                     log.warn("Could not query children", e);
                     documents = Collections.emptyList();

@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.ui.web.restAPI;
 
+import java.io.Serializable;
 import java.security.Principal;
 
 import javax.servlet.http.HttpServletRequest;
@@ -114,6 +115,14 @@ public class BaseNuxeoRestlet extends Restlet {
             return null;
         }
         return httpServletRequest.getUserPrincipal();
+    }
+
+    protected static Serializable getSerializablePrincipal(Request req) {
+        Principal principal = getUserPrincipal(req);
+        if (principal instanceof Serializable) {
+            return (Serializable) principal;
+        }
+        return null;
     }
 
     protected static String getRestletFullUrl(Request request) {

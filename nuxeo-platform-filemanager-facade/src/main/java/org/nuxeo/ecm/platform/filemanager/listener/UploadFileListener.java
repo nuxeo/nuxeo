@@ -166,7 +166,7 @@ public class UploadFileListener implements MessageListener {
                 String digest = blob.getDigest();
 
                 List<DocumentLocation> existingDocuments = fileManager.findExistingDocumentWithFile(
-                        newDoc.getPathAsString(), digest,
+                        session, newDoc.getPathAsString(), digest,
                         session.getPrincipal());
 
                 if (!existingDocuments.isEmpty()) {

@@ -26,6 +26,7 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 import org.nuxeo.ecm.core.api.SortInfo;
@@ -63,6 +64,9 @@ public class DocumentChildrenSearchFarm extends InputController implements
     @In(create = true)
     private transient ResultsProvidersCache resultsProvidersCache;
 
+    @In(create = true, required = false)
+    private transient CoreSession documentManager;
+
     public PagedDocumentsProvider getResultsProvider(String name)
             throws ClientException {
         return getResultsProvider(name, null);
@@ -96,7 +100,7 @@ public class DocumentChildrenSearchFarm extends InputController implements
             Object[] params, SortInfo sortInfo) throws ClientException {
         try {
             QueryModel qm = queryModelActions.get(qmName);
-            return qm.getResultsProvider(params, sortInfo);
+            return qm.getResultsProvider(documentManager, params, sortInfo);
         } catch (QueryException e) {
             throw new ClientException(String.format("Invalid search query. "
                     + "Check the '%s' QueryModel configuration", qmName), e);

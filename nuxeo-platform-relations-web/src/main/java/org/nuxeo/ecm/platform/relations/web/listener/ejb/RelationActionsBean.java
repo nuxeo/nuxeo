@@ -518,63 +518,39 @@ public class RelationActionsBean  extends DocumentContextBoundActionBean impleme
     }
 
     public String searchDocuments() throws ClientException {
-        try {
-            log.debug("Making call to get documents list for keywords: "
-                    + searchKeywords);
-            // reset existing search results
-            resultDocuments = null;
-            List<String> constraints = new ArrayList<String>();
-            if (searchKeywords != null) {
-                searchKeywords = searchKeywords.trim();
-                if (searchKeywords.length() > 0) {
-                    if (!searchKeywords.equals("*")) {
-                        // full text search
-                        constraints.add(String.format("ecm:fulltext LIKE '%s'",
-                                searchKeywords));
-                    }
+        log.debug("Making call to get documents list for keywords: "
+                + searchKeywords);
+        // reset existing search results
+        resultDocuments = null;
+        List<String> constraints = new ArrayList<String>();
+        if (searchKeywords != null) {
+            searchKeywords = searchKeywords.trim();
+            if (searchKeywords.length() > 0) {
+                if (!searchKeywords.equals("*")) {
+                    // full text search
+                    constraints.add(String.format("ecm:fulltext LIKE '%s'",
+                            searchKeywords));
                 }
             }
-            // no folderish doc nor hidden doc
-            constraints.add("ecm:mixinType != 'Folderish'");
-            constraints.add("ecm:mixinType != 'HiddenInNavigation'");
-            // no archived revisions
-            constraints.add("ecm:isCheckedInVersion = 0");
-            // filter current document
-            DocumentModel currentDocument = getCurrentDocument();
-            if (currentDocument != null) {
-                constraints.add(String.format("ecm:id != '%s'",
-                        currentDocument.getId()));
-            }
-            // search keywords
-            String query = String.format("SELECT * FROM Document WHERE %s",
-                    StringUtils.join(constraints.toArray(), " AND "));
-            log.debug("query: " + query);
-            SQLQuery nxqlQuery = SQLQueryParser.parse(query);
-            ComposedNXQuery cQuery = new ComposedNXQueryImpl(nxqlQuery);
-            SearchService searchService = SearchServiceDelegate.getRemoteSearchService();
-            ResultSet queryResults = searchService.searchQuery(cQuery, 0, 100);
-            if (queryResults != null) {
-                SearchPageProvider provider = new SearchPageProvider(
-                        queryResults);
-                resultDocuments = provider.getCurrentPage();
-            }
-            log.debug("FTQ query result contains: " + resultDocuments.size()
-                    + " docs.");
-            hasSearchResults = !resultDocuments.isEmpty();
-        } catch (QueryException e) {
-            facesMessages.add(FacesMessage.SEVERITY_WARN,
-                    resourcesAccessor.getMessages().get(
-                            "label.search.service.wrong.query"));
-            // throw ClientException.wrap(e);
-            log.error("QueryException in search popup : " + e.getMessage());
-        } catch (QueryParseException e) {
-            facesMessages.add(FacesMessage.SEVERITY_WARN,
-                    resourcesAccessor.getMessages().get(
-                            "label.search.service.wrong.query"));
-            log.error("QueryParseException in search popup : " + e.getMessage());
-        } catch (SearchException e) {
-            throw ClientException.wrap(e);
         }
+        // no folderish doc nor hidden doc
+        constraints.add("ecm:mixinType != 'Folderish'");
+        constraints.add("ecm:mixinType != 'HiddenInNavigation'");
+        // no archived revisions
+        constraints.add("ecm:isCheckedInVersion = 0");
+        // filter current document
+        DocumentModel currentDocument = getCurrentDocument();
+        if (currentDocument != null) {
+            constraints.add(String.format("ecm:id != '%s'",
+                    currentDocument.getId()));
+        }
+        // search keywords
+        String query = String.format("SELECT * FROM Document WHERE %s",
+                StringUtils.join(constraints.toArray(), " AND "));
+        log.debug("query: " + query);
+        resultDocuments = documentManager.query(query, 100);
+        hasSearchResults = !resultDocuments.isEmpty();
+        log.debug("query result contains: " + resultDocuments.size() + " docs.");
         return "create_relation_search_document";
     }
 

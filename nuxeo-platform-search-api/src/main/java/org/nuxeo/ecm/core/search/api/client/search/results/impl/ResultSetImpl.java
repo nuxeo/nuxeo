@@ -22,6 +22,12 @@ package org.nuxeo.ecm.core.search.api.client.search.results.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.DocumentSecurityException;
+import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.search.api.client.SearchException;
 import org.nuxeo.ecm.core.search.api.client.SearchService;
@@ -50,18 +56,45 @@ public class ResultSetImpl extends ArrayList<ResultItem> implements ResultSet {
 
     protected final int pageHits;
 
-    protected final SQLQuery query;
+    protected final String query;
 
-    protected final String backendName;
+    protected final SQLQuery sqlQuery;
 
     protected final SearchPrincipal principal;
 
-    public ResultSetImpl(SQLQuery query, String backendName,
-            SearchPrincipal principal, int offset, int range,
-            List<ResultItem> resultItems, int totalHits, int pageHits) {
+    protected final CoreSession session;
+
+    /**
+     * Constructor used when a CoreSession is available.
+     */
+    public ResultSetImpl(String query, CoreSession session, int offset,
+            int range, List<ResultItem> resultItems, int totalHits, int pageHits) {
         this.query = query;
-        this.backendName = backendName;
+        sqlQuery = null;
+        this.session = session;
+        principal = null;
+        this.offset = offset;
+        this.range = range;
+        this.totalHits = totalHits;
+        this.pageHits = pageHits;
+        if (resultItems != null) {
+            addAll(resultItems);
+        }
+    }
+
+    /**
+     * Constructor used for compatibility, using the SearchService.
+     *
+     * @deprecated use the constructor taking a {@link CoreSession} instead
+     */
+    @Deprecated
+    public ResultSetImpl(SQLQuery sqlQuery, SearchPrincipal principal,
+            int offset, int range, List<ResultItem> resultItems, int totalHits,
+            int pageHits) {
+        this.sqlQuery = sqlQuery;
+        query = null;
         this.principal = principal;
+        session = null;
         this.offset = offset;
         this.range = range;
         this.totalHits = totalHits;
@@ -119,18 +152,45 @@ public class ResultSetImpl extends ArrayList<ResultItem> implements ResultSet {
     }
 
     public ResultSet replay(int offset, int range) throws SearchException {
+        if (session != null) {
+            try {
+                DocumentModelList list = session.query(query, null, range,
+                        offset, true);
+                List<ResultItem> resultItems = new ArrayList<ResultItem>(
+                        list.size());
+                for (DocumentModel doc : list) {
+                    if (doc == null) {
+                        continue;
+                    }
+                    // detach the document so that we can use it beyond the
+                    // session
+                    try {
+                        ((DocumentModelImpl) doc).detach(true);
+                    } catch (DocumentSecurityException e) {
+                        // no access to the document (why?)
+                        continue;
+                    }
+                    resultItems.add(new DocumentModelResultItem(doc));
+                }
+                return new ResultSetImpl(query, session, offset, range,
+                        resultItems, (int) list.totalSize(), list.size());
+            } catch (ClientException e1) {
+                throw new SearchException("QueryException for: " + query);
+            }
+        }
+
+        // compat code, loopback through search service
+        if (sqlQuery == null) {
+            throw new SearchException("Replay is not supported");
+        }
         SearchService service = SearchServiceDelegate.getRemoteSearchService();
         try {
-            if (query != null) {
-                return service.searchQuery(new ComposedNXQueryImpl(query, principal),
-                        offset, range);
-            } else {
-                throw new SearchException(
-                        "Replay is not supported..............");
-            }
+            return service.searchQuery(new ComposedNXQueryImpl(sqlQuery,
+                    principal), offset, range);
         } catch (QueryException e) {
             // should really not happen
-            throw new SearchException("QueryException for " + query.toString());
+            throw new SearchException("QueryException for "
+                    + sqlQuery.toString());
         }
     }
 
