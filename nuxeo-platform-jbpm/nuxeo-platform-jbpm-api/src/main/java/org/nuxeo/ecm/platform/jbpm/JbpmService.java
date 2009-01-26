@@ -83,7 +83,8 @@ public interface JbpmService {
      * @param currentUser the user.
      * @return A list of task instances.
      */
-    List<TaskInstance> getCurrentTaskInstances(final NuxeoPrincipal currentUser)
+    List<TaskInstance> getCurrentTaskInstances(
+            final NuxeoPrincipal currentUser, JbpmListFilter filter)
             throws NuxeoJbpmException;
 
     /**
@@ -135,15 +136,17 @@ public interface JbpmService {
 
     // PROCESS
     /**
-     * Return a list of all current process instances for this user. A current
-     * process instance is an unfinished process. The user either is the process
-     * instances initiator or has a task assigned to him in the process.
+     * Return a list of all current process instances for this user.
+     *
+     * <p>
+     * A current process instance is an unfinished process. The user is
+     * the process instances initiator.
      *
      * @param principal
      * @return A list of ProcessInstance
      */
-    List<ProcessInstance> getCurrentProcessInstances(NuxeoPrincipal principal)
-            throws NuxeoJbpmException;
+    List<ProcessInstance> getCurrentProcessInstances(NuxeoPrincipal principal,
+            JbpmListFilter filter) throws NuxeoJbpmException;
 
     /**
      * Return the process instance.
@@ -175,8 +178,8 @@ public interface JbpmService {
 
     /**
      * Return a list of available Process Definition Name available for this
-     * document and user. All process definition if dm is <code>null</code>. The
-     * returned process definition is always the latest.
+     * document and user. All process definition if dm is <code>null</code>.
+     * The returned process definition is always the latest.
      *
      * @param user the caller.
      * @param dm the document concerned by the process

@@ -4,8 +4,9 @@
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="actions">
 
-    <action id="TAB_CONTENT_JBPM" link="/document_process.xhtml" enabled="true"
-      label="action.view.review" icon="/icons/file.gif" order="60">
+    <action id="TAB_CONTENT_JBPM" link="/incl/tabs/document_process.xhtml"
+      enabled="true" label="action.view.review" icon="/icons/file.gif"
+      order="60">
       <category>VIEW_ACTION_LIST</category>
       <filter id="jbpm-process">
         <rule grant="true">

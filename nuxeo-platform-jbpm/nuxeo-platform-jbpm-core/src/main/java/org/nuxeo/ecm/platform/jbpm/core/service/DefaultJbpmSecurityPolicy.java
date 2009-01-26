@@ -27,25 +27,11 @@ import org.nuxeo.ecm.platform.jbpm.JbpmSecurityPolicy;
  */
 public class DefaultJbpmSecurityPolicy implements JbpmSecurityPolicy {
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.nuxeo.ecm.platform.jbpm.core.PermissionMapper#getPermissionName(org
-     *      .jbpm.graph.def.Transition,
-     *      org.nuxeo.ecm.platform.jbpm.core.PermissionMapper.Action)
-     */
     public Boolean checkPermission(Transition transition, Action action,
             DocumentModel dm) {
         return Boolean.TRUE;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.nuxeo.ecm.platform.jbpm.core.PermissionMapper#getPermissionName(org
-     *      .jbpm.graph.def.ProcessDefinition,
-     *      org.nuxeo.ecm.platform.jbpm.core.PermissionMapper.Action)
-     */
     public Boolean checkPermission(ProcessDefinition processDefinition,
             Action action, DocumentModel dm) {
         return Boolean.TRUE;

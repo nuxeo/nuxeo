@@ -7,16 +7,6 @@
     </module>
   </extension>
 
-  <extension target="faces-config#NAVIGATION">
-
-    <navigation-case>
-      <from-outcome>workflow_create_view</from-outcome>
-      <to-view-id>/workflow_create_view.xhtml</to-view-id>
-      <redirect />
-    </navigation-case>
-
-  </extension>
-
   <install>
     <unzip from="${bundle.fileName}" to="/">
       <include>nuxeo.war/**</include>

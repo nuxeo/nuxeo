@@ -17,7 +17,6 @@
 package org.nuxeo.ecm.platform.jbpm.web;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,7 +30,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.jbpm.JbpmService;
 import org.nuxeo.ecm.platform.jbpm.NuxeoJbpmException;
-import org.nuxeo.ecm.webapp.security.PrincipalListManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -42,6 +40,7 @@ import org.nuxeo.runtime.api.Framework;
 @Name("org.nuxeo.ecm.platform.jbpm.web.JbpmHelper")
 @Scope(ScopeType.STATELESS)
 public class JbpmHelper {
+
     private transient JbpmService jbpmService;
 
     public JbpmService getJbpmService() throws Exception {
@@ -64,14 +63,14 @@ public class JbpmHelper {
         return null;
     }
 
-    public String endTask(TaskInstance ti, PrincipalListManager plm)
-            throws NuxeoJbpmException, Exception {
-        Map<String, Serializable> variables = new HashMap<String, Serializable>();
-        ArrayList<String> users = new ArrayList<String>(plm.getSelectedUsers());
-        variables.put(JbpmService.VariableName.participants.name(), users);
-        getJbpmService().endTask(ti.getId(), null, variables, null);
-        return null;
-    }
+//    public String endTask(TaskInstance ti, PrincipalListManager plm)
+//            throws NuxeoJbpmException, Exception {
+//        Map<String, Serializable> variables = new HashMap<String, Serializable>();
+//        ArrayList<String> users = new ArrayList<String>(plm.getSelectedUsers());
+//        variables.put(JbpmService.VariableName.participants.name(), users);
+//        getJbpmService().endTask(ti.getId(), null, variables, null);
+//        return null;
+//    }
 
     public String updateProcessVariable(ProcessInstance pi,
             String variableName, Object variableValue)

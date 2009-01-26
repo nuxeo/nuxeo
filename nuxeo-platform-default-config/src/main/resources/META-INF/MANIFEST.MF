@@ -5,5 +5,7 @@ Bundle-SymbolicName: org.nuxeo.ecm.default.config
 Bundle-Localization: plugin
 Bundle-Vendor: Nuxeo
 Bundle-Category: web,stateful
-Nuxeo-Component: OSGI-INF/nxdirectories-contrib.xml
-Require-Bundle: org.nuxeo.ecm.directory.api
+Nuxeo-Component: OSGI-INF/nxdirectories-contrib.xml,
+  OSGI-INF/jbpmService-contrib.xml
+Require-Bundle: org.nuxeo.ecm.directory.api,
+  org.nuxeo.ecm.platform.jbpm.core

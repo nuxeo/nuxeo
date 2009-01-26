@@ -98,7 +98,8 @@ public class JbpmServiceImpl implements JbpmService {
 
     @SuppressWarnings("unchecked")
     public List<TaskInstance> getCurrentTaskInstances(
-            final NuxeoPrincipal currentUser) throws NuxeoJbpmException {
+            final NuxeoPrincipal currentUser, final JbpmListFilter filter)
+            throws NuxeoJbpmException {
         try {
             return (List<TaskInstance>) executeJbpmOperation(new JbpmOperation() {
                 public ArrayList<TaskInstance> run(JbpmContext context)
@@ -112,12 +113,19 @@ public class JbpmServiceImpl implements JbpmService {
                     }
                     prefixedGroup.add(NuxeoPrincipal.PREFIX
                             + currentUser.getName());
-                    List<TaskInstance> tis = context.getTaskMgmtSession().findTaskInstances(
-                            prefixedGroup);
+                    ArrayList<TaskInstance> tis = new ArrayList<TaskInstance>();
+                    tis.addAll(context.getTaskMgmtSession().findTaskInstances(
+                            prefixedGroup));
                     tis.addAll(context.getTaskMgmtSession().findPooledTaskInstances(
                             prefixedGroup));
-                    Set<TaskInstance> setTis = new HashSet<TaskInstance>();
+
+                    // filter
+                    tis = filter.filter(context, null, tis, currentUser);
+
+                    // remove duplicates
+                    HashSet<TaskInstance> setTis = new HashSet<TaskInstance>();
                     setTis.addAll(tis);
+
                     return toArrayList(setTis);
                 }
 
@@ -184,21 +192,34 @@ public class JbpmServiceImpl implements JbpmService {
 
     @SuppressWarnings("unchecked")
     public List<ProcessInstance> getCurrentProcessInstances(
-            final NuxeoPrincipal principal) throws NuxeoJbpmException {
-        return (List<ProcessInstance>) executeJbpmOperation(new JbpmOperation() {
+            final NuxeoPrincipal principal, final JbpmListFilter filter)
+            throws NuxeoJbpmException {
+        List<ProcessInstance> res = (List<ProcessInstance>) executeJbpmOperation(new JbpmOperation() {
             public ArrayList<ProcessInstance> run(JbpmContext context)
                     throws NuxeoJbpmException {
-                context.setActorId(NuxeoPrincipal.PREFIX + principal.getName());
-                Map<Long, ProcessInstance> maps = new HashMap<Long, ProcessInstance>();
-                for (TaskInstance ti : getCurrentTaskInstances(principal)) {
-                    if (ti.getProcessInstance() != null) {
-                        maps.put(ti.getProcessInstance().getId(),
-                                ti.getProcessInstance());
+
+                ArrayList<ProcessInstance> initiatorPD = new ArrayList<ProcessInstance>();
+                List<ProcessDefinition> pds = context.getGraphSession().findAllProcessDefinitions();
+                for (ProcessDefinition pd : pds) {
+                    List<ProcessInstance> pis = context.getGraphSession().findProcessInstances(
+                            pd.getId());
+                    for (ProcessInstance pi : pis) {
+                        String actorName = NuxeoPrincipal.PREFIX
+                                + principal.getName();
+                        if (actorName.equals(pi.getContextInstance().getVariable(
+                                JbpmService.VariableName.initiator.name()))) {
+                            initiatorPD.add(pi);
+                        }
                     }
                 }
-                return toArrayList(maps.values());
+                initiatorPD = filter.filter(context, null, initiatorPD,
+                        principal);
+
+                return toArrayList(initiatorPD);
             }
         });
+
+        return res;
     }
 
     @SuppressWarnings("unchecked")
@@ -235,8 +256,9 @@ public class JbpmServiceImpl implements JbpmService {
             result = session.getDocument(new IdRef(docId));
         } catch (ClientException e) {
             throw new NuxeoJbpmException(e);
+        } finally {
+            closeCoreSession(session);
         }
-        closeCoreSession(session);
         return result;
     }
 

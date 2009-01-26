@@ -39,6 +39,7 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.web.RequestParameter;
+import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
 import org.jbpm.graph.exe.ProcessInstance;
 import org.jbpm.taskmgmt.exe.TaskInstance;
@@ -57,6 +58,7 @@ import org.nuxeo.ecm.platform.comment.web.CommentManagerActions;
 import org.nuxeo.ecm.platform.forum.web.api.PostAction;
 import org.nuxeo.ecm.platform.forum.web.api.ThreadAction;
 import org.nuxeo.ecm.platform.forum.workflow.ForumConstants;
+import org.nuxeo.ecm.platform.jbpm.JbpmEventNames;
 import org.nuxeo.ecm.platform.jbpm.JbpmService;
 import org.nuxeo.ecm.platform.jbpm.JbpmService.VariableName;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
@@ -234,6 +236,9 @@ public class PostActionBean implements PostAction {
             }
         }
         commentManagerActions.deleteComment(deletePostId);
+
+        Events.instance().raiseEvent(JbpmEventNames.WORKFLOW_ENDED);
+
         return navigationContext.navigateToDocument(getParentThread());
     }
 
@@ -247,6 +252,8 @@ public class PostActionBean implements PostAction {
 
         jbpmService.endTask(moderationTask.getId(),
                 ForumConstants.PROCESS_TRANSITION_TO_REJECTED, null, null);
+
+        Events.instance().raiseEvent(JbpmEventNames.WORKFLOW_TASK_COMPLETED);
 
         // force comment manager to reload posts
         commentManagerActions.documentChanged();
@@ -267,6 +274,8 @@ public class PostActionBean implements PostAction {
 
         jbpmService.endTask(moderationTask.getId(),
                 ForumConstants.PROCESS_TRANSITION_TO_PUBLISH, null, null);
+
+        Events.instance().raiseEvent(JbpmEventNames.WORKFLOW_TASK_COMPLETED);
 
         // force comment manager to reload posts
         commentManagerActions.documentChanged();
@@ -306,6 +315,8 @@ public class PostActionBean implements PostAction {
         vars.put(ForumConstants.POST_REF, post.getId());
         jbpmService.createProcessInstance((NuxeoPrincipal) currentUser,
                 ForumConstants.PROCESS_INSTANCE_NAME, thread, vars, null);
+        Events.instance().raiseEvent(JbpmEventNames.WORKFLOW_NEW_STARTED);
+
     }
 
     protected ProcessInstance getModerationProcess(DocumentModel thread,

@@ -4,4 +4,4 @@ Bundle-Name: Nuxeo ECM JBPM Facade
 Bundle-SymbolicName: org.nuxeo.ecm.platform.jbpm.facade;singleton:=true
 Bundle-Vendor: Nuxeo
 Bundle-Category: web,stateful
-Require-Bundle: org.nuxeo.ecm.platform.core.jbpm
+Require-Bundle: org.nuxeo.ecm.platform.jbpm.core

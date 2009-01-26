@@ -27,11 +27,11 @@ package org.nuxeo.ecm.platform.jbpm.test;
  */
 public class JbpmTestConstants {
 
-    public static final String API_BUNDLE_NAME = "org.nuxeo.ecm.platform.core.jbpm.api";
+    public static final String API_BUNDLE_NAME = "org.nuxeo.ecm.platform.jbpm.api";
 
-    public static final String CORE_BUNDLE_NAME = "org.nuxeo.ecm.platform.core.jbpm";
+    public static final String CORE_BUNDLE_NAME = "org.nuxeo.ecm.platform.jbpm.core";
 
-    public static final String TESTING_BUNDLE_NAME = "org.nuxeo.ecm.platform.core.jbpm.testing";
+    public static final String TESTING_BUNDLE_NAME = "org.nuxeo.ecm.platform.jbpm.testing";
 
     public static final String TEST_JBPM_CONFIGURATION = "test-contrib.xml";
 

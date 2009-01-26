@@ -94,13 +94,15 @@ public class JbpmServiceBean implements JbpmService {
     }
 
     public List<ProcessInstance> getCurrentProcessInstances(
-            NuxeoPrincipal principal) throws NuxeoJbpmException {
-        return service.getCurrentProcessInstances(principal);
+            NuxeoPrincipal principal, JbpmListFilter filter)
+            throws NuxeoJbpmException {
+        return service.getCurrentProcessInstances(principal, filter);
     }
 
-    public List<TaskInstance> getCurrentTaskInstances(NuxeoPrincipal currentUser)
+    public List<TaskInstance> getCurrentTaskInstances(
+            NuxeoPrincipal currentUser, JbpmListFilter filter)
             throws NuxeoJbpmException {
-        return service.getCurrentTaskInstances(currentUser);
+        return service.getCurrentTaskInstances(currentUser, filter);
     }
 
     public DocumentModel getDocumentModel(TaskInstance ti, NuxeoPrincipal user)
