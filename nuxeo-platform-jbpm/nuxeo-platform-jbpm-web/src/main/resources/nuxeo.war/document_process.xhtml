@@ -10,12 +10,18 @@
 <c:choose>
 
   <c:when test="#{empty processes}">
-    <h:form>
-      <h3><h:outputText value="#{messages['label.review.start.new']}" /></h3>
-      <i> <h:outputText
-        value="#{messages['label.review.fillup.information']}" /></i>
+
+    <h:form id="startWorkflow">
+      <h3>
+        <h:outputText value="#{messages['label.review.start.new']}" />
+      </h3>
+      <i>
+        <h:outputText value="#{messages['label.review.fillup.information']}" />
+      </i>
+
       <h:panelGrid columns="2" styleClass="dataInput"
         columnClasses="labelColumn, fieldColumn">
+
         <h:outputLabel for="workflowDefinitionId" class="required"
           value="#{messages['label.review.select.one']}" />
         <h:panelGroup class="dataInputGroup">
@@ -29,7 +35,9 @@
             </c:forEach>
           </h:selectOneRadio>
         </h:panelGroup>
-        <h:outputLabel value="#{messages['label.review.out.life.cycle']}" />
+
+        <h:outputLabel class="required"
+          value="#{messages['label.review.out.life.cycle']}" />
         <h:panelGroup class="dataInputGroup">
           <h:selectOneRadio id="lifeCycleDestinationStateTransition"
             value="#{lifecycleEndState}" required="true"
@@ -45,12 +53,16 @@
           <h:message styleClass="errorMessage"
             for="lifeCycleDestinationStateTransition" />
         </h:panelGroup>
+
         <h:outputText value="" />
         <h:commandButton styleClass="button" type="submit"
           value="#{messages['label.review.start']}"
           action="#{jbpmHelper.createProcessInstance(currentUser, selectedPD, currentDocument, lifecycleEndState)}" />
+
       </h:panelGrid>
+
     </h:form>
+
   </c:when>
 
   <c:when test="#{processes.size() == 1}">
