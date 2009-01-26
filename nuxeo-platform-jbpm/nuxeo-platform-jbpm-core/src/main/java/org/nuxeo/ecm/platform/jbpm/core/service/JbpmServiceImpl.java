@@ -92,7 +92,7 @@ public class JbpmServiceImpl implements JbpmService {
         return configuration;
     }
 
-    public void setConfiguration(JbpmConfiguration configuration) {
+    protected void setConfiguration(JbpmConfiguration configuration) {
         this.configuration = configuration;
     }
 
@@ -120,7 +120,9 @@ public class JbpmServiceImpl implements JbpmService {
                             prefixedGroup));
 
                     // filter
-                    tis = filter.filter(context, null, tis, currentUser);
+                    if (filter != null) {
+                        tis = filter.filter(context, null, tis, currentUser);
+                    }
 
                     // remove duplicates
                     HashSet<TaskInstance> setTis = new HashSet<TaskInstance>();
@@ -212,8 +214,11 @@ public class JbpmServiceImpl implements JbpmService {
                         }
                     }
                 }
-                initiatorPD = filter.filter(context, null, initiatorPD,
-                        principal);
+
+                if (filter != null) {
+                    initiatorPD = filter.filter(context, null, initiatorPD,
+                            principal);
+                }
 
                 return toArrayList(initiatorPD);
             }
@@ -223,7 +228,7 @@ public class JbpmServiceImpl implements JbpmService {
     }
 
     @SuppressWarnings("unchecked")
-    public List<ProcessDefinition> getProcessDefinitions(NuxeoPrincipal user)
+    protected List<ProcessDefinition> getProcessDefinitions(NuxeoPrincipal user)
             throws NuxeoJbpmException {
         return (List<ProcessDefinition>) executeJbpmOperation(new JbpmOperation() {
             public ArrayList<ProcessDefinition> run(JbpmContext context) {
@@ -509,8 +514,8 @@ public class JbpmServiceImpl implements JbpmService {
         });
     }
 
-    public void addPermissionMapper(JbpmSecurityPolicy permissionMapper) {
-        this.securityPolicies.add(permissionMapper);
+    protected void addSecurityPolicy(JbpmSecurityPolicy securityPolicy) {
+        this.securityPolicies.add(securityPolicy);
     }
 
     @SuppressWarnings("unchecked")
@@ -578,7 +583,7 @@ public class JbpmServiceImpl implements JbpmService {
         return typeFilters;
     }
 
-    public void setTypeFilters(Map<String, String[]> typeFilters) {
+    protected void setTypeFilters(Map<String, String[]> typeFilters) {
         this.typeFilters = typeFilters;
     }
 }

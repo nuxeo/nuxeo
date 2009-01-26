@@ -12,8 +12,11 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     arussel
+ *     Anahide Tchertchian
+ *
+ * $Id$
  */
+
 package org.nuxeo.ecm.platform.jbpm.core.helper;
 
 import org.jbpm.graph.exe.ExecutionContext;
@@ -23,10 +26,12 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * @author arussel
+ * Action handler used to follow a given life cycle transition
  *
+ * @author arussel
+ * @author Anahide Tchertchian
  */
-public class ParallelReviewHelper extends AbstractJbpmHandlerHelper {
+public class LifecycleTransitionActionHandler extends AbstractJbpmHandlerHelper {
 
     private static final long serialVersionUID = 1L;
 
@@ -48,4 +53,5 @@ public class ParallelReviewHelper extends AbstractJbpmHandlerHelper {
         }
         executionContext.getToken().signal();
     }
+
 }

@@ -25,6 +25,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  */
 @XObject("processDefinition")
 public class TypeFilterDescriptor {
+
     @XNode("@name")
     private String processDefinitionName;
 
@@ -38,4 +39,5 @@ public class TypeFilterDescriptor {
     public String[] getAllowedType() {
         return allowedType.split(",");
     }
+
 }

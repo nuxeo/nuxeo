@@ -12,21 +12,29 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     arussel
+ *     Anahide Tchertchian
+ *
+ * $Id$
  */
+
 package org.nuxeo.ecm.platform.jbpm.core.helper;
 
 import org.jbpm.graph.exe.ExecutionContext;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.platform.jbpm.AbstractJbpmHandlerHelper;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * @author arussel
+ * Action handler that removes rights
+ *
+ * @author Anahide Tchertchian
  *
  */
-public class ValidationReviewHelper extends AbstractJbpmHandlerHelper {
+public class RemoveRightsActionHandler extends AbstractJbpmHandlerHelper {
 
     private static final long serialVersionUID = 1L;
 
@@ -39,13 +47,17 @@ public class ValidationReviewHelper extends AbstractJbpmHandlerHelper {
     public void execute(ExecutionContext executionContext) throws Exception {
         this.executionContext = executionContext;
         if (nuxeoHasStarted()) {
-            String endLifecycle = getEndLifecycleTransition();
-            if (endLifecycle != null && !"".equals(endLifecycle)) {
+            CoreSession session = null;
+            try {
                 String user = getSwimlaneUser(getInitiator());
-                followTransition(getNuxeoPrincipal(user), getDocumentRef(),
-                        endLifecycle);
+                session = getCoreSession(getNuxeoPrincipal(user));
+                DocumentRef docRef = getDocumentRef();
+                ACP acp = session.getACP(docRef);
+                acp.removeACL(getACLName());
+                session.setACP(docRef, acp, true);
+            } finally {
+                closeCoreSession(session);
             }
         }
-        executionContext.getToken().signal();
     }
 }

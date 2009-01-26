@@ -134,4 +134,13 @@ public abstract class AbstractJbpmHandlerHelper implements ActionHandler,
     protected boolean nuxeoHasStarted() throws Exception {
         return Framework.getRuntime() != null;
     }
+
+    protected String getACLName() {
+        String pid = String.valueOf(executionContext.getProcessInstance().getId());
+        return String.format("WORKFLOW_ACP_%s", pid);
+    }
+
+
+
+
 }

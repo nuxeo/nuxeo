@@ -6,4 +6,4 @@ Bundle-Vendor: Nuxeo
 Bundle-Category: core,stateful
 Nuxeo-Component: OSGI-INF/publisher-jbpm-contrib.xml,
 Require-Bundle: org.nuxeo.ecm.platform.publishing,
-  org.nuxeo.ecm.platform.core.jbpm
+  org.nuxeo.ecm.platform.jbpm.core

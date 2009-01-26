@@ -51,7 +51,7 @@ public class JbpmComponent extends DefaultComponent implements
             "org.nuxeo.ecm.platform.jbpm.core.JbpmService");
 
     public static enum ExtensionPoint {
-        deployer, processDefinition, activeConfiguration, configurationPath, permissionMapper, typeFilter
+        deployer, processDefinition, activeConfiguration, configurationPath, securityPolicy, typeFilter
     };
 
     private JbpmConfiguration jbpmConfiguration;
@@ -64,7 +64,7 @@ public class JbpmComponent extends DefaultComponent implements
 
     private boolean lazyInitialized;
 
-    private final JbpmServiceImpl bManagementServiceImpl = new JbpmServiceImpl();
+    private final JbpmServiceImpl service = new JbpmServiceImpl();
 
     private static final Log log = LogFactory.getLog(JbpmComponent.class);
 
@@ -98,9 +98,9 @@ public class JbpmComponent extends DefaultComponent implements
             }
             paths.put(configPath.getName(), url);
             break;
-        case permissionMapper:
+        case securityPolicy:
             SecurityPolicyDescriptor pmd = (SecurityPolicyDescriptor) contribution;
-            bManagementServiceImpl.addPermissionMapper(pmd.getKlass().newInstance());
+            service.addSecurityPolicy(pmd.getKlass().newInstance());
             break;
         case typeFilter:
             TypeFilterDescriptor tfd = (TypeFilterDescriptor) contribution;
@@ -140,13 +140,13 @@ public class JbpmComponent extends DefaultComponent implements
     @Override
     public <T> T getAdapter(Class<T> adapter) {
         if (JbpmService.class.isAssignableFrom(adapter)) {
-            if (bManagementServiceImpl.getConfiguration() == null) {
-                synchronized (bManagementServiceImpl) {
-                    bManagementServiceImpl.setConfiguration(getConfiguration());
+            if (service.getConfiguration() == null) {
+                synchronized (service) {
+                    service.setConfiguration(getConfiguration());
                     initialize();
                 }
             }
-            return (T) bManagementServiceImpl;
+            return (T) service;
         }
         return null;
     }
@@ -187,7 +187,7 @@ public class JbpmComponent extends DefaultComponent implements
                     log.error("error deploying url: " + url, e);
                 }
             }
-            bManagementServiceImpl.setTypeFilters(typeFiltersContrib);
+            service.setTypeFilters(typeFiltersContrib);
         }
     }
 

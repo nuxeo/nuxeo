@@ -8,10 +8,19 @@
     <task name="choose-participant" swimlane="initiator" />
     <transition to="condition on participants" />
   </task-node>
+  <!-- add rights -->
   <decision name="condition on participants">
-    <transition to="validate node" />
+    <transition to="setup rights" />
     <transition condition="#{empty participants}" to="follow transition" />
   </decision>
+  <node name="setup rights">
+    <action
+      class="org.nuxeo.ecm.platform.jbpm.core.helper.AddRightsActionHandler">
+      <!-- XXX -->
+      <list>participants</list>
+    </action>
+    <transition to="validate node" />
+  </node>
   <task-node name="validate node">
     <task name="validate">
       <assignment actor-id="#{participants[0]}" />
@@ -25,8 +34,13 @@
   </task-node>
   <node name="follow transition">
     <action
-      class="org.nuxeo.ecm.platform.jbpm.core.helper.ValidationReviewHelper" />
+      class="org.nuxeo.ecm.platform.jbpm.core.helper.LifecycleTransitionActionHandler" />
     <transition to="end" />
   </node>
-  <end-state name="end" />
+  <end-state name="end">
+    <event type="node-enter">
+      <action
+        class="org.nuxeo.ecm.platform.jbpm.core.helper.RemoveRightsActionHandler" />
+    </event>
+  </end-state>
 </process-definition>
