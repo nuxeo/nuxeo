@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.rendering;
+package org.nuxeo.ecm.wiki.rendering;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +29,7 @@ import org.nuxeo.ecm.platform.rendering.wiki.WikiFilter;
 import org.nuxeo.ecm.platform.rendering.wiki.WikiSerializer;
 import org.nuxeo.ecm.platform.rendering.wiki.WikiTransformer;
 import org.nuxeo.ecm.platform.rendering.wiki.extensions.PatternFilter;
+import org.nuxeo.ecm.webengine.rendering.RenderingExtensionDescriptor;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

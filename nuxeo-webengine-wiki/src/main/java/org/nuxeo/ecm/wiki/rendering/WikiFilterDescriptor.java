@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.rendering;
+package org.nuxeo.ecm.wiki.rendering;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;

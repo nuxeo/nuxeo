@@ -9,11 +9,15 @@
     wiki transformer configuration
   </documentation>
 
-  <extension-point name="rendering-extension" target="org.nuxeo.ecm.webengine.WebEngineComponent">
-        <object
-      class="org.nuxeo.ecm.webengine.rendering.WikiTransformerDescriptor" />
+ <extension-point name="rendering-extension"
+	    target="org.nuxeo.ecm.webengine.WebEngineComponent">
+    <documentation>
+      Contribute the wiki transformer to main rendering engine by overriding the
+      transformer extension point to add custom wiki transformer
+      configuration
+    </documentation>
+    <object class="org.nuxeo.ecm.wiki.rendering.WikiTransformerDescriptor" />
   </extension-point>
-
 
   <extension target="org.nuxeo.ecm.webengine.rendering.wiki" point="rendering-extension">
     <rendering-extension name="wiki" serializer="org.nuxeo.ecm.platform.rendering.wiki.WikiSerializer">

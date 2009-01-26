@@ -21,23 +21,19 @@ package org.nuxeo.ecm.webengine;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.ZipUtils;
-import org.nuxeo.ecm.webengine.install.Installer;
 import org.nuxeo.ecm.webengine.rendering.RenderingExtensionDescriptor;
 import org.nuxeo.ecm.webengine.security.GuardDescriptor;
 import org.nuxeo.ecm.webengine.security.PermissionService;
 import org.nuxeo.runtime.RuntimeServiceException;
 import org.nuxeo.runtime.annotations.loader.BundleAnnotationsLoader;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.deploy.ConfigurationDeployer;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
@@ -58,13 +54,8 @@ public class WebEngineComponent extends DefaultComponent { //implements Configur
     public static final ComponentName NAME = new ComponentName(WebEngineComponent.class.getName());
 
     public static final String RENDERING_EXTENSION_XP = "rendering-extension";
-    public static final String WEB_OBJ_XP = "webObject";
-    public static final String BINDING_XP = "binding"; // TODO deprecated
     public static final String RESOURCE_BINDING_XP = "resource";
     public static final String GUARD_XP = "guard"; // global guards
-    public static final String MODULE_XP = "application";
-    public static final String CONFIG_XP = "configuration";
-    public static final String APP_MAPPING_XP = "application-mapping";
     public static final String FORM_XP = "form";
 
 
@@ -72,9 +63,7 @@ public class WebEngineComponent extends DefaultComponent { //implements Configur
 
     protected Set<String> deployedBundles = new HashSet<String>();
     private WebEngine engine;
-//    private FileChangeNotifier notifier;
 
-    private ConfigurationDeployer deployer;
 
     @Override
     public void activate(ComponentContext context) throws Exception {
@@ -96,27 +85,11 @@ public class WebEngineComponent extends DefaultComponent { //implements Configur
         root = root.getCanonicalFile();
         log.info("Using web root: "+root);
 
-        File baseModule = null; 
-//TODO remove this        
-//        try {
-//            baseModule = deployWebDir(context.getRuntimeContext().getBundle(), root);
-//        } catch (Exception e) { // delete incomplete files
-//            FileUtils.deleteTree(root);
-//            throw e;
-//        }        
-
-        // load message bundle
-        //TODO: remove notifier
-//        notifier = new FileChangeNotifier();
-//        notifier.start();
-
         ResourceRegistry registry = Framework.getLocalService(ResourceRegistry.class);
         if (registry == null) {
             throw new Error("Could not find a server implementation");
         }
         engine = new WebEngine(registry, root);
-//        deployer = new ConfigurationDeployer(notifier);
-//        deployer.addConfigurationChangedListener(this);
 
         // start deploying web bundles
         final RuntimeContext ctx = context.getRuntimeContext();
@@ -194,54 +167,12 @@ public class WebEngineComponent extends DefaultComponent { //implements Configur
         context.getRuntimeContext().getBundle().getBundleContext().removeBundleListener(BundleAnnotationsLoader.getInstance());
         engine.stop();
         engine = null;
-//        notifier.stop();
-//        deployer.removeConfigurationChangedListener(this);
-        deployer = null;
-//        notifier = null;
         super.deactivate(context);
     }
 
-    private static File deployWebDir(Bundle bundle, File root) throws IOException {
-        root = new File(root, "modules/"+bundle.getSymbolicName());
-        if (!root.exists()) {
-            root.mkdirs();
-            Installer.copyResources(bundle, "web", root);
-            URL url = bundle.getEntry("META-INF/web-types");
-            if (url != null) {
-                InputStream in = url.openStream();
-                try {
-                    File file = new File(root, "META-INF");
-                    file.mkdirs();
-                    file = new File(file, "web-types");
-                    FileUtils.copyToFile(in, file);
-                } catch (IOException e) {
-                    if (in != null) in.close();
-                }
-            }
-        }
-        return new File(root, "module.xml");
-    }
 
     public WebEngine getEngine() {
         return engine;
-    }
-
-    public void loadConfiguration(RuntimeContext context, File file, boolean trackChanges) throws Exception {
-        try {
-            deployer.deploy(context, file, trackChanges);
-        } finally {
-            //TODO engine2 ?
-            //engine.fireConfigurationChanged();
-        }
-    }
-
-    public void unloadConfiguration(File file) throws Exception {
-        try {
-            deployer.undeploy(file);
-        } finally {
-            //TODO engine2 ?
-            //engine.fireConfigurationChanged();
-        }
     }
 
 
@@ -262,16 +193,6 @@ public class WebEngineComponent extends DefaultComponent { //implements Configur
                 throw new RuntimeServiceException(
                         "Deployment Error. Failed to contribute freemarker template extension: "+fed.name);
             }
-        } else if (extensionPoint.equals(CONFIG_XP)) {
-            System.out.println("Extensions point "+CONFIG_XP+" is no more supported");
-//            ConfigurationFileDescriptor cfg = (ConfigurationFileDescriptor)contribution;
-//            if (cfg.path != null) {
-//                loadConfiguration(contributor.getContext(), new File(engine.getRootDirectory(), cfg.path), cfg.trackChanges);
-//            } else if (cfg.entry != null) {
-//                throw new UnsupportedOperationException("Entry is not supported for now");
-//            } else {
-//                log.error("Neither path neither entry attribute was defined in the configuration extension. Ignoring");
-//            }
 //TODO
 //        } else if (extensionPoint.endsWith(FORM_XP)) {
 //            Form form = (Form)contribution;
@@ -292,15 +213,6 @@ public class WebEngineComponent extends DefaultComponent { //implements Configur
         } else if (extensionPoint.equals(RENDERING_EXTENSION_XP)) {
             RenderingExtensionDescriptor fed = (RenderingExtensionDescriptor)contribution;
             engine.unregisterRenderingExtension(fed.name);
-        } else if (extensionPoint.equals(CONFIG_XP)) {
-//            ConfigurationFileDescriptor cfg = (ConfigurationFileDescriptor)contribution;
-//            if (cfg.path != null) {
-//                unloadConfiguration(new File(engine.getRootDirectory(), cfg.path));
-//            } else if (cfg.entry != null) {
-//                throw new UnsupportedOperationException("Entry is not supported for now");
-//            } else {
-//                log.error("Neither path neither entry attribute was defined in the configuration extension. Ignoring");
-//            }
 //TODO
 //        } else if (extensionPoint.endsWith(FORM_XP)) {
 //            Form form = (Form)contribution;
@@ -312,18 +224,9 @@ public class WebEngineComponent extends DefaultComponent { //implements Configur
     public <T> T getAdapter(Class<T> adapter) {
         if (adapter == WebEngine.class) {
             return adapter.cast(engine);
-//        } else if (adapter == FileChangeNotifier.class) {
-//            return adapter.cast(notifier);
         }
         return null;
     }
 
-
-//    public void configurationChanged(Entry entry) throws Exception {
-//        if (engine != null) {
-//            engine.reload();
-//            //engine.fireConfigurationChanged(); ?
-//        }
-//    }
 
 }
