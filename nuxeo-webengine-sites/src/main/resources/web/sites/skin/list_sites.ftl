@@ -10,5 +10,6 @@ Sites available
 <a href="${This.path}/${s.href}"> ${s.name} </a>
 <br>
 </#list>
+
 </body>
 </html>

@@ -16,5 +16,9 @@ Welcome Animation/Image</br>
 Welcome Text:</br>
 ${welcomeText}
 
+<hr>
+<#include "includes/tree.ftl"/>
+<@navigator/>
+
 </body>
 </html>

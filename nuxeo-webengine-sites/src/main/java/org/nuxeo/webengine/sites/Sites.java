@@ -19,8 +19,9 @@ import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
+import javax.ws.rs.core.Response;
 
-@WebObject(type="sites", guard="user=Administrator")
+@WebObject(type="sites", guard="user=Administrator", facets={"Sites"})
 @Produces({"text/html; charset=UTF-8", "*/*; charset=UTF-8"})
 public class Sites extends DefaultObject {
 
@@ -34,7 +35,9 @@ public class Sites extends DefaultObject {
         if ( "/".equals(path) ){
             try {
                 List<Object> sites = getWebContainers();
-                return getTemplate("list_sites.ftl").arg("sites", sites);
+                WebContext context = WebEngine.getActiveContext();
+                CoreSession session = context.getCoreSession();
+                return getTemplate("list_sites.ftl").arg("sites", sites).arg("rootDoc", session.getRootDocument());
             } catch (ClientException e){
                 e.printStackTrace();
             }

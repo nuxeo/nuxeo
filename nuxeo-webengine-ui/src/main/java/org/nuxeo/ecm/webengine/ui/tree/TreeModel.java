@@ -31,7 +31,7 @@ import org.nuxeo.common.utils.Path;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface TreeView extends Serializable {
+public interface TreeModel extends Serializable {
 
     /**
      * Get the content provider used by this tree

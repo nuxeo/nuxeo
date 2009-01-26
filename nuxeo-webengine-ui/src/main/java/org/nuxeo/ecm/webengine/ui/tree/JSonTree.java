@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.webengine.ui.tree;
 
 import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 import org.nuxeo.ecm.webengine.forms.FormData;
 import org.nuxeo.ecm.webengine.model.WebContext;
@@ -31,13 +32,13 @@ import org.nuxeo.ecm.webengine.session.UserSession;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public abstract class JSonTree extends AbstractComponent {
+public abstract class JSonTree {
 
     private static final long serialVersionUID = 1L;
 
-    protected TreeViewImpl tree;
+    protected TreeModelImpl tree;
 
-    public TreeView getTree() {
+    public TreeModel getTree() {
         return tree;
     }
 
@@ -45,25 +46,15 @@ public abstract class JSonTree extends AbstractComponent {
     protected abstract ContentProvider  getProvider(WebContext ctx);
     protected abstract JSonTreeSerializer getSerializer(WebContext ctx);
 
-    @Override
-    public void doInitialize(UserSession session, String name)
-            throws SessionException {
-        try {
-            tree = new TreeViewImpl();
-        } catch (Exception e) {
-            throw new SessionException(
-                    "Failed to initialize tree component "+getClass()+"#"+name+ ". Cause: "+e.getMessage(), e);
-        }
+
+    public String updateSelection(WebContext ctx) {
+        return updateSelection(ctx, getProvider(ctx), getSerializer(ctx));
     }
 
-    @Override
-    public void doDestroy(UserSession session) throws SessionException {
-        tree = null;
+    public String enter(WebContext ctx, String path) {
+        return enter(ctx, path, getSerializer(ctx));
     }
 
-    public void updateSelection(WebContext ctx) {
-        updateSelection(ctx, getProvider(ctx), getSerializer(ctx));
-    }
 
     /**
     root=ID   - enter node ID
@@ -83,7 +74,12 @@ public abstract class JSonTree extends AbstractComponent {
                     toggle(selection);
                 }
             } else {
-                String result = enter(ctx, selection, serializer);
+                String result = null;
+                if ( "source".equals(selection)){
+                    result = enter(ctx, tree.root.getPath().toString(), serializer);
+                } else {
+                    result = enter(ctx, selection, serializer);
+                }
                 if (result != null) {
                     return result;
                 } else {
@@ -95,6 +91,15 @@ public abstract class JSonTree extends AbstractComponent {
         }
         return null;
     }
+
+    public String getTreeAsJSONArray(WebContext ctx) {
+        JSonTreeSerializer serializer = getSerializer(ctx);
+        JSONObject o = serializer.toJSON(tree.root);
+        JSONArray array = new JSONArray();
+        array.add(o);
+        return array.toString();
+    }
+
 
     protected String enter(WebContext ctx, String path, JSonTreeSerializer serializer) {
         TreeItem item = tree.findAndReveal(path);

@@ -45,6 +45,12 @@
       <artifactId>commons-fileupload</artifactId>
       <version>1.1.1</version>
     </dependency>
+    <dependency>
+      <groupId>net.sf.json-lib</groupId>
+      <artifactId>json-lib</artifactId>
+      <classifier>jdk15</classifier>
+    </dependency>
+
 
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
@@ -70,6 +76,16 @@
       <artifactId>nuxeo-webengine-core</artifactId>
       <version>${nuxeo.webengine.version}</version>
     </dependency>
+
+    <dependency>
+      <groupId>org.nuxeo.ecm.webengine</groupId>
+       <artifactId>nuxeo-webengine-ui</artifactId>
+      <version>${nuxeo.webengine.version}</version>
+    </dependency>
+
+
+
+
 
 
     <dependency>

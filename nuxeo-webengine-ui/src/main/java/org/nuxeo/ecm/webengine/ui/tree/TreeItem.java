@@ -50,8 +50,8 @@ public interface TreeItem extends Serializable {
      *
      * @see #find(Path)
      * @see #findAndReveal(Path)
-     * @see TreeView#find(Path)
-     * @see TreeView#findAndReveal(Path)
+     * @see TreeModel#find(Path)
+     * @see TreeModel#findAndReveal(Path)
      */
     Path getPath();
 
@@ -61,7 +61,7 @@ public interface TreeItem extends Serializable {
      * The nature of the object
      * depends on the registered content provider which will populate the tree
      * branches when {@link ContentProvider#getChildren(Object)} is called. The
-     * root item is specified by using {@link TreeView#setInput(Object)}
+     * root item is specified by using {@link TreeModel#setInput(Object)}
      *
      * @return the attached object or null if none
      */

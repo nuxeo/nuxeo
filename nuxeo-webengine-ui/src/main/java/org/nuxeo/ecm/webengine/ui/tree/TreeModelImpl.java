@@ -26,7 +26,7 @@ import org.nuxeo.common.utils.Path;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class TreeViewImpl implements TreeView {
+public class TreeModelImpl implements TreeModel {
 
     private static final long serialVersionUID = 1L;
 
@@ -34,10 +34,10 @@ public class TreeViewImpl implements TreeView {
     protected TreeItem root;
 
 
-    public TreeViewImpl() {
+    public TreeModelImpl() {
     }
 
-    public TreeViewImpl(ContentProvider provider) {
+    public TreeModelImpl(ContentProvider provider) {
         this.provider = provider;
     }
 
