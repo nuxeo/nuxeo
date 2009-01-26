@@ -22,6 +22,7 @@ package org.nuxeo.ecm.webapp.search;
 import java.io.Serializable;
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.ejb.PostActivate;
@@ -52,15 +53,16 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.query.QueryParseException;
-import org.nuxeo.ecm.core.query.sql.SQLQueryParser;
 import org.nuxeo.ecm.core.search.api.client.IndexingException;
 import org.nuxeo.ecm.core.search.api.client.SearchException;
 import org.nuxeo.ecm.core.search.api.client.SearchService;
 import org.nuxeo.ecm.core.search.api.client.common.SearchServiceDelegate;
 import org.nuxeo.ecm.core.search.api.client.query.QueryException;
-import org.nuxeo.ecm.core.search.api.client.query.impl.ComposedNXQueryImpl;
 import org.nuxeo.ecm.core.search.api.client.querymodel.QueryModel;
+import org.nuxeo.ecm.core.search.api.client.search.results.ResultItem;
+import org.nuxeo.ecm.core.search.api.client.search.results.ResultSet;
 import org.nuxeo.ecm.core.search.api.client.search.results.document.SearchPageProvider;
+import org.nuxeo.ecm.core.search.api.client.search.results.impl.ResultSetImpl;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.ui.web.api.SortNotSupportedException;
 import org.nuxeo.ecm.platform.ui.web.model.SelectDataModel;
@@ -493,27 +495,24 @@ public class SearchActionsBean extends InputController implements
             SortInfo sortInfo) throws ClientException,
             ResultsProviderFarmUserException {
         // TODO param!
-        // XXX : we have here a dependency to the Core implementation
         try {
             switch (searchTypeId) {
             case NXQL:
                 if (sortInfo != null) {
                     throw new SortNotSupportedException();
                 }
-                SearchService service = SearchServiceDelegate.getRemoteSearchService();
-                ComposedNXQueryImpl query = new ComposedNXQueryImpl(
-                        SQLQueryParser.parse(nxql),
-                        service.getSearchPrincipal(currentUser));
+                ResultSet resultSet = new ResultSetImpl(nxql, documentManager,
+                        0, maxResultsCount,
+                        Collections.<ResultItem> emptyList(), 0, 0).replay();
                 SearchPageProvider nxqlProvider = new SearchPageProvider(
-                        service.searchQuery(query, 0, maxResultsCount), false,
-                        null, nxql);
+                        resultSet, false, null, nxql);
                 nxqlProvider.setName(name);
                 return nxqlProvider;
             case KEYWORDS:
                 Object[] sK = { simpleSearchKeywords };
                 QueryModel qm = queryModelActions.get(QM_SIMPLE);
                 PagedDocumentsProvider simpleProvider = qm.getResultsProvider(
-                        sK, sortInfo);
+                        documentManager, sK, sortInfo);
                 simpleProvider.setName(name);
                 return simpleProvider;
             default:

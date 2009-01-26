@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2007-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,9 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Olivier Grisel
+ *     Georges Racinet
+ *     Florent Guillaume
  */
 
 package org.nuxeo.ecm.webapp.querymodel;
@@ -36,7 +36,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.search.api.client.query.QueryException;
@@ -96,20 +95,14 @@ public class QueryModelActionsBean extends InputController implements
                         + queryModelName);
             }
             if (descriptor.isStateless()) {
-                model = new QueryModel(descriptor,
-                        (NuxeoPrincipal) documentManager.getPrincipal());
+                model = new QueryModel(descriptor);
             } else {
                 assert descriptor.isStateful() : queryModelName
                         + " is neither stateless nor stateful";
 
-                if (!isInitialized()) {
-                    throw new ClientException(
-                            "Cannot build a stateful query model without a Core session");
-                }
                 String docTypeName = descriptor.getDocType();
                 model = new QueryModel(descriptor,
-                        documentManager.createDocumentModel(docTypeName),
-                        (NuxeoPrincipal) documentManager.getPrincipal());
+                        documentManager.createDocumentModel(docTypeName));
             }
             queryModels.put(queryModelName, model);
         }
@@ -140,8 +133,8 @@ public class QueryModelActionsBean extends InputController implements
         }
 
         try {
-            PagedDocumentsProvider provider = model.getResultsProvider(null,
-                    sortInfo);
+            PagedDocumentsProvider provider = model.getResultsProvider(
+                    documentManager, null, sortInfo);
             provider.setName(queryModelName);
             return provider;
         } catch (QueryException e) {
@@ -181,8 +174,7 @@ public class QueryModelActionsBean extends InputController implements
         if (!descriptor.isStateful()) {
             return false;
         }
-        DocumentModel doc = get(queryModelName).getDocumentModel();
-        return doc != null && doc.getRef() != null;
+        return get(queryModelName).isPersisted();
     }
 
     public QueryModel load(String queryModelName, DocumentRef ref)
@@ -202,8 +194,8 @@ public class QueryModelActionsBean extends InputController implements
         if (!isInitialized()) {
             throw new ClientException("Need a Core Session");
         }
-        QueryModel qm = new QueryModel(descriptor, documentManager.getDocument(ref),
-                (NuxeoPrincipal) documentManager.getPrincipal());
+        QueryModel qm = new QueryModel(descriptor,
+                documentManager.getDocument(ref));
         queryModels.put(queryModelName, qm);
         Events.instance().raiseEvent(EventNames.QUERY_MODEL_CHANGED, qm);
         return qm;
@@ -234,14 +226,16 @@ public class QueryModelActionsBean extends InputController implements
             throw new ClientException("Need a Core Session");
         }
         QueryModel qm = get(queryModelName);
-        DocumentModel doc = qm.getDocumentModel();
+        DocumentModel docqm = qm.getDocumentModel();
+        DocumentModel doc = documentManager.createDocumentModel(docqm.getType());
+        doc.copyContent(docqm);
         doc.setPathInfo(parentPath, name);
         doc = documentManager.createDocument(doc);
         if (saveSession) {
             documentManager.save();
         }
-        return new QueryModel(descriptor, doc,
-                (NuxeoPrincipal) documentManager.getPrincipal());
+        qm.setPersisted(true);
+        return new QueryModel(descriptor, doc);
     }
 
 }

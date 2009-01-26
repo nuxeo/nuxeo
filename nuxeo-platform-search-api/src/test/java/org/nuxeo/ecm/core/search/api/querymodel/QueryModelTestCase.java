@@ -94,30 +94,29 @@ public class QueryModelTestCase extends RepositoryOSGITestCase {
         documentModelWithFixedPart = statefulModelWithFixedPart.getDocumentModel();
 
         statelessModel = new QueryModel(
-                service.getQueryModelDescriptor("statelessModel"), null);
+                service.getQueryModelDescriptor("statelessModel"));
 
         statelessModelWithSort = new QueryModel(
-                service.getQueryModelDescriptor("statelessModelWithSort"), null);
+                service.getQueryModelDescriptor("statelessModelWithSort"));
 
         statelessModelWithListParam = new QueryModel(
-                service.getQueryModelDescriptor("statelessModelWithListParam"),
-                null);
+                service.getQueryModelDescriptor("statelessModelWithListParam"));
 
-        statelessModelWithBooleanParam = new QueryModel(service.getQueryModelDescriptor("statelessModelWithBooleanParam"),
-                null);
+        statelessModelWithBooleanParam = new QueryModel(
+                service.getQueryModelDescriptor("statelessModelWithBooleanParam"));
 
-        statelessModelWithIntegerParam = new QueryModel(service.getQueryModelDescriptor("statelessModelWithIntegerParam"),
-                null);
+        statelessModelWithIntegerParam = new QueryModel(
+                service.getQueryModelDescriptor("statelessModelWithIntegerParam"));
 
-        statelessModelWithFloatParam = new QueryModel(service.getQueryModelDescriptor("statelessModelWithFloatParam"),
-                null);
+        statelessModelWithFloatParam = new QueryModel(
+                service.getQueryModelDescriptor("statelessModelWithFloatParam"));
 
     }
 
     protected QueryModel initializeStatefulQueryModel(
             QueryModelDescriptor descriptor) throws ClientException {
         DocumentModel documentModel = coreSession.createDocumentModel(descriptor.getDocType());
-        return new QueryModel(descriptor, documentModel, null);
+        return new QueryModel(descriptor, documentModel);
     }
 
     // NXP-2161
@@ -467,7 +466,7 @@ public class QueryModelTestCase extends RepositoryOSGITestCase {
         documentModel = coreSession.getDocument(new PathRef("/model"));
         assertEquals(4L, documentModel.getProperty(QM_SCHEMA, "intfield"));
         QueryModelDescriptor descriptor = statefulModel.getDescriptor();
-        statefulModel = new QueryModel(descriptor, documentModel, null);
+        statefulModel = new QueryModel(descriptor, documentModel);
         assertEquals("SELECT * FROM Document WHERE intparameter < 4",
                 descriptor.getQuery(documentModel));
     }

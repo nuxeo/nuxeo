@@ -302,7 +302,7 @@ public class PublishActionsBean implements PublishActions, Serializable {
         PagedDocumentsProvider sectionsProvider = null;
         try {
             sectionsProvider = queryModelActions.get(DOMAIN_SECTIONS).getResultsProvider(
-                    params);
+                    documentManager, params);
         } catch (QueryException e) {
             throw new ClientException(String.format("Invalid search query. "
                     + "Check the \"%s\" QueryModel configuration",

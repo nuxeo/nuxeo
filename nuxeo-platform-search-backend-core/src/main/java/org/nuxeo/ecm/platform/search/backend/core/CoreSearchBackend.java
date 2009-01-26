@@ -159,8 +159,8 @@ public class CoreSearchBackend extends AbstractSearchEngineBackend {
             }
             resultItems.add(new DocumentModelResultItem(doc));
         }
-        return new ResultSetImpl(sqlQuery, "core", searchPrincipal, offset,
-                limit, resultItems, totalHits, pageHits);
+        return new ResultSetImpl(sqlQuery, searchPrincipal, offset, limit,
+                resultItems, totalHits, pageHits);
     }
 
     protected static Serializable getPrincipal(SearchPrincipal searchPrincipal) {

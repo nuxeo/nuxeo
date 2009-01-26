@@ -457,8 +457,8 @@ public class DashBoardActionsBean extends InputController implements
     protected PagedDocumentsProvider getQmDocuments(String qmName,
             Object[] params, SortInfo sortInfo) throws ClientException {
         try {
-            return queryModelActions.get(qmName).getResultsProvider(params,
-                    sortInfo);
+            return queryModelActions.get(qmName).getResultsProvider(
+                    documentManager, params, sortInfo);
         } catch (QueryException e) {
             throw new ClientException(String.format("Invalid search query. "
                     + "Check the \"%s\" QueryModel configuration", qmName), e);

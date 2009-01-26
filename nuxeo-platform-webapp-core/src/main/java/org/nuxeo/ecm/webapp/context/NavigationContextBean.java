@@ -185,29 +185,13 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
         if (currentDocument != null) {
             path = currentDocument.getPath();
         } else {
-            // Find a document. Maybe using the core could be robuster
-            // but not sure query support will exist for long in core
-            SearchService ss = SearchServiceDelegate.getRemoteSearchService();
-            if (ss == null) {
-                throw new ClientException("Cannot find the Search Service");
-            }
-
-            ComposedNXQueryImpl q = new ComposedNXQueryImpl(
-                    SQLQueryParser.parse("SELECT * FROM Document"),
-                    ss.getSearchPrincipal(documentManager.getPrincipal()));
-            ResultSet results;
-            try {
-                results = ss.searchQuery(q, 0, 1);
-            } catch (Exception e) {
-                throw new ClientException(e);
-            }
-            if (results.getPageHits() != 1) {
-                log.error("Could not find a single document readable by " +
-                          "current user. Are the indexes empty?");
+            // Find any document, and use its domain.
+            DocumentModelList docs = documentManager.query("SELECT * FROM Document", 1);
+            if (docs.size() < 1) {
+                log.error("Could not find a single document readable by current user.");
                 return null;
-            } else {
-                path = new Path((String) results.get(0).get(BuiltinDocumentFields.FIELD_DOC_PATH));
             }
+            path = docs.get(0).getPath();
         }
         String[] segs = {path.segment(0)};
         return Path.createFromSegments(segs).toString();

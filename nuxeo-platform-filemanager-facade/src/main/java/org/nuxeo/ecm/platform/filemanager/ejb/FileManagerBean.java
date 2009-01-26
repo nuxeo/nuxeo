@@ -144,54 +144,19 @@ public class FileManagerBean implements FileManager {
         return getFileManagerService().computeDigest(blob);
     }
 
-    public List<DocumentLocation> findExistingDocumentWithFile(String path,
-            Blob blob, Principal principal) throws ClientException {
-        return getFileManagerService().findExistingDocumentWithFile(path, blob,
-                principal);
-    }
-
     public List<String> getFields() throws ClientException {
         return getFileManagerService().getFields();
-    }
-
-    public boolean isFileAlreadyPresentInPath(String path, Blob blob,
-            Principal principal) throws ClientException {
-        return getFileManagerService().isFileAlreadyPresentInPath(path, blob,
-                principal);
     }
 
     public boolean isUnicityEnabled() throws ClientException {
         return getFileManagerService().isUnicityEnabled();
     }
 
-    public List<DocumentLocation> findExistingDocumentWithFile(String path,
-            String digest, Principal principal) throws ClientException,
-            SearchException, QueryException {
-        try {
-            return getFileManagerService().findExistingDocumentWithFile(path,
-                    digest, principal);
-        } catch (ClientException e) {
-            throw new ClientException(e);
-        } catch (SearchException e) {
-            throw new SearchException(e);
-        } catch (QueryException e) {
-            throw new QueryException(e);
-        }
-    }
-
-    public boolean isFileAlreadyPresentInPath(String path, String digest,
-            Principal principal) throws ClientException, SearchException,
-            QueryException {
-        try {
-            return getFileManagerService().isFileAlreadyPresentInPath(path,
-                    digest, principal);
-        } catch (ClientException e) {
-            throw new ClientException(e);
-        } catch (SearchException e) {
-            throw new SearchException(e);
-        } catch (QueryException e) {
-            throw new QueryException(e);
-        }
+    public List<DocumentLocation> findExistingDocumentWithFile(
+            CoreSession documentManager, String path, String digest,
+            Principal principal) throws ClientException {
+        return getFileManagerService().findExistingDocumentWithFile(
+                documentManager, path, digest, principal);
     }
 
     public DocumentModelList getCreationContainers(Principal principal,
