@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo Event Service
+Bundle-SymbolicName: org.nuxeo.ecm.core.event.jms;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Localization: bundle
+Bundle-Category: core
+Require-Bundle: org.nuxeo.ecm.core.event
+Eclipse-LazyStart: true
+Nuxeo-Component: OSGI-INF/jmslistener-contrib.xml

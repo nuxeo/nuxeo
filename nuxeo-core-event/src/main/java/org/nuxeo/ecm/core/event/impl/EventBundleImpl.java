@@ -32,8 +32,8 @@ public class EventBundleImpl implements EventBundle {
     private static final long serialVersionUID = 1L;
 
     // not final to allow modification derived classes
-    protected VMID vmid;  
-    
+    protected VMID vmid;
+
     protected final List<Event> events;
 
     /**
@@ -43,11 +43,17 @@ public class EventBundleImpl implements EventBundle {
      */
     protected boolean isTransacted;
 
-    public EventBundleImpl() {
+
+    public EventBundleImpl(VMID sourceVMID) {
         events = new ArrayList<Event>();
-        vmid = EventServiceImpl.VMID;
+        vmid = sourceVMID;
     }
-    
+
+    public EventBundleImpl() {
+        this(EventServiceImpl.VMID);
+    }
+
+
     public boolean hasRemoteSource() {
         return !vmid.equals(EventServiceImpl.VMID);
     }
@@ -97,6 +103,10 @@ public class EventBundleImpl implements EventBundle {
 
     public Iterator<Event> iterator() {
         return events.iterator();
+    }
+
+    public VMID getSourceVMID() {
+        return vmid;
     }
 
 }

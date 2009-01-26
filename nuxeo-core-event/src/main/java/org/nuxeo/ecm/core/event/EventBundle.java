@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.core.event;
 
 import java.io.Serializable;
+import java.rmi.dgc.VMID;
 
 /**
  * An ordered set of events raised during an user operation.
@@ -89,11 +90,18 @@ public interface EventBundle extends Iterable<Event>, Serializable {
      * @return the number of events in that bundle
      */
     int size();
-    
+
     /**
      * Tests whether or not this event bundle was created on a remote machine.
      * @return  true if the event bundle was fired from a remote machine, false otherwise
      */
     boolean hasRemoteSource();
+
+    /**
+     * Returns the VMID of the JVM where the bundle was created
+     * @return
+     */
+    VMID getSourceVMID();
+
 
 }

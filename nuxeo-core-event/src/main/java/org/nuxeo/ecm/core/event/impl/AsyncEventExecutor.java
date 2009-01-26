@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.core.event.impl;
 
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -25,23 +26,26 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.PostCommitEventListener;
+import org.nuxeo.ecm.core.event.ReconnectedEventBundle;
+import org.nuxeo.ecm.core.event.tx.EventBundleTransactionHandler;
 import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author tiry
  *
  */
 public class AsyncEventExecutor {
 
     private static Log log = LogFactory.getLog(AsyncEventExecutor.class);
-    
-    public static final int QUEUE_SIZE = Integer.MAX_VALUE; 
-    
+
+    public static final int QUEUE_SIZE = Integer.MAX_VALUE;
+
     protected ThreadPoolExecutor executor;
 
     protected BlockingQueue<Runnable> queue;
 
-    
+
     public static AsyncEventExecutor create() {
         String val = Framework.getProperty("org.nuxeo.ecm.core.event.async.poolSize");
         int poolSize = val == null ? 4 : Integer.parseInt(val);
@@ -53,39 +57,59 @@ public class AsyncEventExecutor {
         int queueSize = val == null ? QUEUE_SIZE : Integer.parseInt(val);
         return new AsyncEventExecutor(poolSize, maxPoolSize, keepAliveTime, queueSize);
     }
-    
+
     public AsyncEventExecutor() {
         this (4, 16, 4, QUEUE_SIZE);
     }
-    
+
     public AsyncEventExecutor(int poolSize, int maxPoolSize, int keepAliveTime) {
         this (poolSize, maxPoolSize, keepAliveTime, QUEUE_SIZE);
     }
-    
+
     public AsyncEventExecutor(int poolSize, int maxPoolSize, int keepAliveTime, int queueSize) {
         queue = new LinkedBlockingQueue<Runnable>(queueSize);
         executor = new ThreadPoolExecutor(poolSize, maxPoolSize,
                 keepAliveTime, TimeUnit.SECONDS, queue);
     }
-    
-    public void run(PostCommitEventListener listener, EventBundle event) {        
-        executor.execute(new Job(listener, event));        
+
+
+    public void run(List<PostCommitEventListener> listeners, EventBundle event) {
+        for (PostCommitEventListener listener : listeners) {
+            run(listener, event);
+        }
     }
-    
+
+    public void run(PostCommitEventListener listener, EventBundle event) {
+        executor.execute(new Job(listener, event));
+    }
+
     public static class Job implements Runnable {
-        protected EventBundle bundle;
+        protected ReconnectedEventBundle bundle;
         protected PostCommitEventListener listener;
         public Job(PostCommitEventListener listener, EventBundle bundle) {
             this.listener = listener;
-            this.bundle = bundle;
-        }
-        public void run() {
-            try {
-                this.listener.handleEvent(bundle);
-            } catch (Throwable t) {
-                log.error("Failed to execute async event "+bundle.getName()+" on listener "+listener);
+
+            if (bundle instanceof ReconnectedEventBundle) {
+                this.bundle = (ReconnectedEventBundle) bundle;
+            } else {
+                this.bundle = new ReconnectedEventBundleImpl(bundle);
             }
         }
+        public void run() {
+            EventBundleTransactionHandler txh = new EventBundleTransactionHandler();
+            try {
+                txh.beginNewTransaction();
+                this.listener.handleEvent(bundle);
+                txh.commitOrRollbackTransaction();
+                log.debug("Async listener executed, commiting tx");
+            } catch (Throwable t) {
+                log.error("Failed to execute async event "+bundle.getName()+" on listener "+listener);
+                txh.rollbackTransaction();
+            } finally {
+                bundle.disconnect();
+            }
+
+        }
     }
-    
+
 }

@@ -39,19 +39,26 @@ public class EventImpl implements Event {
 
     protected Set<Flag> flags;
 
-    public EventImpl(String name, EventContext ctx, Set<Flag> flags) {
+
+    public EventImpl(String name, EventContext ctx, Set<Flag> flags, long creationTime) {
         this.name = name;
         this.ctx = ctx;
-        time = System.currentTimeMillis();
+        time = creationTime;
         if (flags == null) {
             flags = EnumSet.noneOf(Flag.class);
         }
         this.flags = flags;
     }
 
+    public EventImpl(String name, EventContext ctx, Set<Flag> flags) {
+        this(name,ctx,flags,System.currentTimeMillis());
+    }
+
     public EventImpl(String name, EventContext ctx) {
         this(name, ctx, null);
     }
+
+
 
     public Set<Flag> getFlags() {
         return flags;
@@ -71,6 +78,14 @@ public class EventImpl implements Event {
 
     public void cancel() {
         flags.add(Flag.CANCEL);
+    }
+
+    public void markRollBack() {
+        flags.add(Flag.ROOLBACK);
+    }
+
+    public boolean isMarkedForRollBack() {
+        return flags.contains(Flag.ROOLBACK);
     }
 
     public boolean isCanceled() {

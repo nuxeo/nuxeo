@@ -66,7 +66,7 @@ public class EventListenerDescriptor {
      */
     @XNode("@async")
     protected boolean isAsync;
-    
+
     /**
      * The priority to be used to order listeners.
      */
@@ -79,6 +79,10 @@ public class EventListenerDescriptor {
     protected Set<String> events;
 
     protected RuntimeContext rc;
+
+
+    @XNode("@onlyUsableViaJMS")
+    protected boolean onlyUsableViaJMS= false;
 
     public int getPriority() {
         return priority;
@@ -98,6 +102,10 @@ public class EventListenerDescriptor {
 
     public Set<String> getEvents() {
         return events;
+    }
+
+    public boolean isOnlyUsableViaJMS() {
+        return onlyUsableViaJMS;
     }
 
     @XNodeList(value="event", componentType=String.class, type=HashSet.class, nullByDefault=true)
