@@ -42,6 +42,9 @@ public class EventListenerDescriptor {
 
     public static final Log log = LogFactory.getLog(EventListenerDescriptor.class);
 
+    @XNode("@name")
+    protected String name;
+
     /**
      * The event listener class.
      */
@@ -80,10 +83,6 @@ public class EventListenerDescriptor {
 
     protected RuntimeContext rc;
 
-
-    @XNode("@onlyUsableViaJMS")
-    protected boolean onlyUsableViaJMS= false;
-
     public int getPriority() {
         return priority;
     }
@@ -102,10 +101,6 @@ public class EventListenerDescriptor {
 
     public Set<String> getEvents() {
         return events;
-    }
-
-    public boolean isOnlyUsableViaJMS() {
-        return onlyUsableViaJMS;
     }
 
     @XNodeList(value="event", componentType=String.class, type=HashSet.class, nullByDefault=true)
@@ -168,6 +163,18 @@ public class EventListenerDescriptor {
         } else {
             return Script.newScript(script);
         }
+    }
+
+    public String getName() {
+        if (name==null) {
+            if (clazz!=null) {
+                name = clazz.getSimpleName();
+            }
+            else {
+                name = script;
+            }
+        }
+        return name;
     }
 
 }

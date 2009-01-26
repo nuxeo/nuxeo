@@ -7,6 +7,13 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.PostCommitEventListener;
 
+/**
+ *
+ * Runs synchronous Listeners in a separated thread in order to enable TX management
+ *
+ * @author tiry
+ *
+ */
 public class PostCommitSynchronousRunner {
 
     protected EventBundleTransactionHandler txh = new EventBundleTransactionHandler();
@@ -37,12 +44,12 @@ public class PostCommitSynchronousRunner {
 
     protected void runSync() {
         Thread runner = new Thread(new MonoThreadExecutor());
-        runner.start();
+        runner.run();
     }
 
     protected void runSyncWithTimeOut(long timeout) {
         Thread runner = new Thread(new MonoThreadExecutor());
-        runner.run();
+        runner.start();
         try {
             this.wait(timeout);
         } catch (InterruptedException e) {

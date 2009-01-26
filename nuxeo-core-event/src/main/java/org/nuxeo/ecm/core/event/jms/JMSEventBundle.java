@@ -23,6 +23,12 @@ import org.nuxeo.ecm.core.event.impl.EventBundleImpl;
 import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.ecm.core.event.impl.EventImpl;
 
+/**
+ * Serializable representation of an {@link EventBundle} that is used for JMS forwarding
+ *
+ * @author tiry
+ *
+ */
 public class JMSEventBundle implements Serializable {
 
     /**
@@ -53,7 +59,6 @@ public class JMSEventBundle implements Serializable {
                 // local event should not be exported to JMS
                 continue;
             }
-
             CoreSession evtSession = event.getContext().getCoreSession();
 
             String repoName=null;
@@ -200,11 +205,12 @@ public class JMSEventBundle implements Serializable {
 
 
             if ((Boolean)evt.get("isDocumentEventContext")) {
-                ctx = new DocumentEventContext(null,principal,(DocumentModel) args[0], (DocumentRef)args[1]);
+                ctx = new DocumentEventContext(session,principal,(DocumentModel) args[0], (DocumentRef)args[1]);
                 // XXX we loose other args ...
             }
             else {
-                ctx = new EventContextImpl(null,principal,args);
+                ctx = new EventContextImpl(session,principal);
+                ((EventContextImpl)ctx).setArgs(args);
             }
 
             ctx.setProperties(ctxProperties);

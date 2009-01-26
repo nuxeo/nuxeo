@@ -14,6 +14,13 @@ import javax.transaction.UserTransaction;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+/**
+ *
+ * Helper class to encapsulate Transaction management
+ *
+ * @author tiry
+ *
+ */
 public class EventBundleTransactionHandler {
 
     protected UserTransaction tx = null;
@@ -38,6 +45,11 @@ public class EventBundleTransactionHandler {
         }
 
         tx = createUT();
+        if (tx == null) {
+            log.error("No TransactionManager");
+            isTxEnabled=false;
+            return;
+        }
         try {
             if (tx.getStatus()==STATUS_COMMITTED) {
                 log.error("Transaction is already commited, try to begin anyway");
@@ -46,9 +58,7 @@ public class EventBundleTransactionHandler {
         } catch (Exception e) {
             log.error("Unable to start transaction", e);
         }
-        if (tx == null) {
-            return;
-        }
+
     }
 
     protected UserTransaction createUT() {

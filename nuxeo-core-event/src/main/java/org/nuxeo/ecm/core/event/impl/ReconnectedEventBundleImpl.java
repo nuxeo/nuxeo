@@ -27,7 +27,7 @@ import org.nuxeo.ecm.core.event.ReconnectedEventBundle;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * JMS implementation for an {@link EventBundle} that need to be reconnected to a usable Session
+ * Default implementation for an {@link EventBundle} that need to be reconnected to a usable Session
  *
  * @author tiry
  *
@@ -115,7 +115,8 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
                 if (ctx instanceof DocumentEventContext) {
                     newCtx = new DocumentEventContext(session,ctx.getPrincipal(),(DocumentModel) newArgs.get(0), (DocumentRef)newArgs.get(1));
                 } else {
-                    newCtx = new EventContextImpl(session,ctx.getPrincipal(), newArgs.toArray());
+                    newCtx = new EventContextImpl(session,ctx.getPrincipal());
+                    ((EventContextImpl)newCtx).setArgs(newArgs.toArray());
                 }
 
                 Map<String, Serializable> newProps = new HashMap<String, Serializable>();
@@ -196,7 +197,7 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
 
     }
 
-    public boolean comeFromJMS() {
+    public boolean comesFromJMS() {
         return false;
     }
 

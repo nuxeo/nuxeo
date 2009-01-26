@@ -73,7 +73,7 @@ public class ReconnectedJMSEventBundle extends ReconnectedEventBundleImpl {
     }
 
     @Override
-    public boolean comeFromJMS() {
+    public boolean comesFromJMS() {
         return true;
     }
 }

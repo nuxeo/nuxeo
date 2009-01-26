@@ -48,6 +48,15 @@ public class EventContextImpl extends AbstractEventContext {
         this.principal = principal;
     }
 
+    public EventContextImpl(CoreSession session, Principal principal) {
+        this.session = session;
+        this.principal = principal;
+        this.args=EMPTY;
+    }
+
+    public void setArgs(Object[] args) {
+        this.args=args;
+    }
 
     public CoreSession getCoreSession() {
         return session;

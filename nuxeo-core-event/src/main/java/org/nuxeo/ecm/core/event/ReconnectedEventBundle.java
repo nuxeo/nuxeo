@@ -27,5 +27,5 @@ public interface ReconnectedEventBundle extends EventBundle {
      * marker for Bundles comming from JMS
      * @return
      */
-    boolean comeFromJMS();
+    boolean comesFromJMS();
 }

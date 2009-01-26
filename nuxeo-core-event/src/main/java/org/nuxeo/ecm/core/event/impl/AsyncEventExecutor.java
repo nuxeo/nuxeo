@@ -58,6 +58,10 @@ public class AsyncEventExecutor {
         return new AsyncEventExecutor(poolSize, maxPoolSize, keepAliveTime, queueSize);
     }
 
+    public int getNbTasksRunning() {
+        return executor.getActiveCount();
+    }
+
     public AsyncEventExecutor() {
         this (4, 16, 4, QUEUE_SIZE);
     }
