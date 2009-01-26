@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.jbpm.core.theme">
+  <require>org.nuxeo.theme.nuxeo.default</require>
+
+  <extension target="org.nuxeo.theme.services.ThemeService" point="views">
+    <view name="nuxeo5 user processes" template-engine="jsf-facelets">
+      <!--
+        Fragment to be displayed as part of the dashboard to display the
+        list of processes of the current user (i.e : the ones where he is
+        initiator
+      -->
+      <format-type>widget</format-type>
+      <template>dashboard_user_pd.xhtml</template>
+      <resource>foldable-box.js</resource>
+    </view>
+    <view name="nuxeo5 user tasks" template-engine="jsf-facelets">
+      <!--
+        Fragment to be displayed as part of the dashboard to display the
+        list of tasks of the current user
+      -->
+      <format-type>widget</format-type>
+      <template>dashboard_user_task.xhtml</template>
+      <resource>foldable-box.js</resource>
+    </view>
+  </extension>
+</component>

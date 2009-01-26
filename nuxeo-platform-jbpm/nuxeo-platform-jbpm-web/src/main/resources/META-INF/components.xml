@@ -1,0 +1,13 @@
+<components xmlns="http://jboss.com/products/seam/components"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <factory name="jbpmHelper" value="#{org.nuxeo.ecm.platform.jbpm.web.JbpmHelper}"
+    scope="STATELESS" />
+  <factory name="restrictToInitiator"
+    value="#{org.nuxeo.ecm.platform.jbpm.web.restrictToInitiatorFilter}"
+    scope="STATELESS" />
+  <factory name="currentTaskInstances"
+    value="#{jbpmService.getCurrentTaskInstances(currentUser)}" scope="PAGE" />
+  <component name="typeFilter"
+    class="org.nuxeo.ecm.platform.jbpm.core.filter.ConfigurableTypeFilter"
+    scope="APPLICATION" />
+</components>
