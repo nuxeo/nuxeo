@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -80,7 +80,7 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
                 }
             }
         }
-        log.debug("serviceUrl=" + url);
+        log.debug("serviceUrl: " + url);
         return url;
     }
 
@@ -118,7 +118,7 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
         String casTicket = httpRequest.getParameter(ticketKey);
 
         if (casTicket == null) {
-            // no ticket found
+            log.debug("No ticket found");
             return null;
         }
 
@@ -192,7 +192,7 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
             log.error("checkCasTicket failed with SAXException:", e);
             return null;
         } catch (ParserConfigurationException e) {
-            log.error("checkCasTicket failed with ParserConfigurationException:",e);
+            log.error("checkCasTicket failed with ParserConfigurationException:", e);
             return null;
         }
 
