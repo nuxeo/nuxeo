@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.rendering;
+package org.nuxeo.ecm.wiki.rendering;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

@@ -19,7 +19,7 @@
 
 package org.nuxeo.ecm.wiki.listener;
 
-import static org.nuxeo.ecm.webengine.rendering.WikiPageLinkResolver.PAGE_LINK_PATTERN;
+import static org.nuxeo.ecm.wiki.rendering.WikiPageLinkResolver.PAGE_LINK_PATTERN;
 
 import java.io.StringReader;
 import java.util.ArrayList;

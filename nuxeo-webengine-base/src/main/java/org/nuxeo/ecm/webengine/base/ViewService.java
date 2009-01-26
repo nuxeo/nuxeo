@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.model.impl;
+package org.nuxeo.ecm.webengine.base;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -27,6 +27,7 @@ import javax.ws.rs.Produces;
 
 import org.nuxeo.ecm.webengine.model.View;
 import org.nuxeo.ecm.webengine.model.WebAdapter;
+import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

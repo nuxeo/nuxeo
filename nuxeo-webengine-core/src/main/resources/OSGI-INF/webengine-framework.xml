@@ -90,4 +90,22 @@
       class="org.nuxeo.ecm.webengine.ResourceBinding" />
   </extension-point>
 
+
+  <extension-point name="rendering-extension"
+    target="org.nuxeo.ecm.webengine.WebEngineComponent">
+    <documentation>
+      Contribute the wiki transformer to main rendering engine by overriding the
+      transformer extension point to add custom wiki transformer
+      configuration
+    </documentation>
+    <object class="org.nuxeo.ecm.webengine.rendering.WikiTransformerDescriptor" />
+  </extension-point>
+
+  <extension target="org.nuxeo.ecm.webengine.WebEngineComponent" point="rendering-extension">
+    <rendering-extension name="script" class="org.nuxeo.ecm.webengine.rendering.ScriptMethod"/>
+    <rendering-extension name="render" class="org.nuxeo.ecm.webengine.rendering.RenderDirective"/>
+    <rendering-extension name="wiki" class="org.nuxeo.ecm.platform.rendering.wiki.WikiTransformer"/>
+    <rendering-extension name="API" class="org.nuxeo.ecm.webengine.rendering.APIHelper"/>
+  </extension>
+  
 </component>

@@ -98,12 +98,12 @@ public class WebEngineComponent extends DefaultComponent { //implements Configur
 
         File baseModule = null; 
 //TODO remove this        
-        try {
-            baseModule = deployWebDir(context.getRuntimeContext().getBundle(), root);
-        } catch (Exception e) { // delete incomplete files
-            FileUtils.deleteTree(root);
-            throw e;
-        }        
+//        try {
+//            baseModule = deployWebDir(context.getRuntimeContext().getBundle(), root);
+//        } catch (Exception e) { // delete incomplete files
+//            FileUtils.deleteTree(root);
+//            throw e;
+//        }        
 
         // load message bundle
         //TODO: remove notifier

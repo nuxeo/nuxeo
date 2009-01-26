@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 
 <module name="admin" root-type="admin" path="/admin" extends="base">
+  <nature>groovy</nature> 
   <links>
     <link id="tab_content" path="/@views/content_page">
       <!--guard>Write</guard-->

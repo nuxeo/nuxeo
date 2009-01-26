@@ -21,10 +21,12 @@
     <module>nuxeo-webengine-resteasy-adapter</module>    
     <module>nuxeo-webengine-core</module>
     <module>nuxeo-webengine-ui</module>
+    <module>nuxeo-webengine-base</module>
     <module>nuxeo-webengine-admin</module>
     <module>nuxeo-webengine-wiki</module>
     <module>nuxeo-webengine-server</module>
     <module>nuxeo-webengine-wiki-jsf</module>
+    <module>nuxeo-webengine-sites</module>
   </modules>
 
   <properties>
@@ -67,6 +69,11 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.webengine</groupId>
+        <artifactId>nuxeo-webengine-base</artifactId>
+        <version>${nuxeo.webengine.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.webengine</groupId>
         <artifactId>nuxeo-webengine-ui</artifactId>
         <version>${nuxeo.webengine.version}</version>
       </dependency>
@@ -78,6 +85,11 @@
       <dependency>
         <groupId>org.nuxeo.ecm.webengine</groupId>
         <artifactId>nuxeo-webengine-wiki-jsf</artifactId>
+        <version>${nuxeo.webengine.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.webengine</groupId>
+        <artifactId>nuxeo-webengine-sites</artifactId>
         <version>${nuxeo.webengine.version}</version>
       </dependency>
       <dependency>
