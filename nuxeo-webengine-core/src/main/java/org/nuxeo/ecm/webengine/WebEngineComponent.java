@@ -115,7 +115,6 @@ public class WebEngineComponent extends DefaultComponent { //implements Configur
             throw new Error("Could not find a server implementation");
         }
         engine = new WebEngine(registry, root);
-        engine.registerModule(baseModule);
 //        deployer = new ConfigurationDeployer(notifier);
 //        deployer.addConfigurationChangedListener(this);
 
@@ -186,6 +185,7 @@ public class WebEngineComponent extends DefaultComponent { //implements Configur
             ZipUtils.unzip(bundleFile, moduleRoot);
             engine.registerModule(cfg);
         }
+        log.info("Deployed web module found in bundle: "+bundleId);
     }
 
     @Override
