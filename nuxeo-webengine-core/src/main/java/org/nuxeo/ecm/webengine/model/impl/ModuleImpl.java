@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -38,6 +39,7 @@ import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.webengine.ResourceBinding;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.debug.ModuleTracker;
 import org.nuxeo.ecm.webengine.model.AdapterNotFoundException;
 import org.nuxeo.ecm.webengine.model.AdapterType;
 import org.nuxeo.ecm.webengine.model.ErrorHandler;
@@ -60,7 +62,6 @@ public class ModuleImpl implements Module {
 
     private static final Log log = LogFactory.getLog(ModuleImpl.class);
 
-    protected final String name;
     protected final WebEngine engine;
     protected final Object typeLock = new Object();
     protected TypeRegistry typeReg;
@@ -68,30 +69,34 @@ public class ModuleImpl implements Module {
     protected final ModuleImpl superModule;
     protected LinkRegistry linkReg;
     protected final String skinPathPrefix;
-    protected ResourceType rootType;
-
+    protected ResourceType rootType; 
+    
     protected Messages messages;
     protected DirectoryStack dirStack;
-    protected LinkProvider linkProvider;
+    protected LinkProvider linkProvider;    
     protected ErrorHandler errorHandler;
 
+    protected ModuleTracker tracker;
+    
     // cache used for resolved files
     protected ConcurrentMap<String, ScriptFile> fileCache;
-
+    
 
     //TODO remove this
+    /* (non-Javadoc)
+     * @see org.nuxeo.ecm.webengine.model.Module#getModuleBinding()
+     */
     public ResourceBinding getModuleBinding() {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public ModuleImpl(WebEngine engine, String name, ModuleImpl superModule, ModuleConfiguration config) throws Exception {
+    public ModuleImpl(WebEngine engine, ModuleImpl superModule, ModuleConfiguration config) throws Exception {        
         this.engine = engine;
-        this.name = name;
         this.superModule = superModule;
         this.configuration = config;
         skinPathPrefix = new StringBuilder()
-            .append(engine.getSkinPathPrefix()).append('/').append(name).toString();
+            .append(engine.getSkinPathPrefix()).append('/').append(config.name).toString();
         fileCache = new ConcurrentHashMap<String, ScriptFile>();
         Class<LinkProvider> lpc = config.getLinkProviderClass();
         if (lpc != null) {
@@ -104,28 +109,47 @@ public class ModuleImpl implements Module {
             errorHandler = ehc.newInstance();
         } else {
             errorHandler = new DefaultErrorHandler();
-        }
+        }        
         loadConfiguration();
         reloadMessages();
         loadDirectoryStack();
+    }
+    
+    public ModuleTracker getTracker() {
+        if (tracker == null) { // tracker will be installed only in debug mode
+            tracker = new ModuleTracker(this);
+        }
+        return tracker;
+    }
+    
+    /**
+     * 
+     * @return null if no natures was specified
+     */
+    public Set<String> getNatures() {
+        return configuration.natures;
+    }
+    
+    public boolean hasNature(String natureId) {
+        return configuration.natures != null && configuration.natures.contains(natureId);
     }
 
     public ErrorHandler getErrorHandler() {
         return errorHandler;
     }
-
+    
     public LinkProvider getLinkProvider() {
         return linkProvider;
     }
-
+    
     public WebEngine getEngine() {
         return engine;
     }
 
     public String getName() {
-        return name;
+        return configuration.name;
     }
-
+    
     public ModuleImpl getSuperModule() {
         return superModule;
     }
@@ -139,7 +163,10 @@ public class ModuleImpl implements Module {
         getTypeRegistry();
         return rootType;
     }
-
+    
+    /* (non-Javadoc)
+     * @see org.nuxeo.ecm.webengine.model.Module#getRootObject()
+     */
     public Object getRootObject() {
         try {
             AbstractWebContext ctx = (AbstractWebContext)WebEngine.getActiveContext();
@@ -148,7 +175,6 @@ public class ModuleImpl implements Module {
             obj.setRoot(true);
             return obj;
         } catch (Exception e) {
-            e.printStackTrace();
             throw WebException.wrap("Failed to instantiate the root resource for module "+getName(),  e);
         }
     }
@@ -162,15 +188,16 @@ public class ModuleImpl implements Module {
             synchronized (typeLock) {
                 if (typeReg == null) {
                     typeReg = createTypeRegistry();
-                    rootType = getTypeRegistry().getType(configuration.rootType);
+                    rootType = typeReg.getType(configuration.rootType);
                 }
             }
         }
         return typeReg;
     }
 
+
     public Class<?> loadClass(String className) throws ClassNotFoundException {
-        return engine.getScripting().loadClass(className);
+        return engine.loadClass(className);
     }
 
     public ResourceType getType(String typeName) {
@@ -232,7 +259,7 @@ public class ModuleImpl implements Module {
     }
 
     public boolean isDerivedFrom(String moduleName) {
-        if (name.equals(moduleName)) {
+        if (configuration.name.equals(moduleName)) {
             return true;
         }
         if (superModule != null) {
@@ -248,6 +275,7 @@ public class ModuleImpl implements Module {
         return null;
     }
 
+    
     public void loadConfiguration() {
         linkReg = new LinkRegistry();
         if (configuration.links != null) {
@@ -257,6 +285,7 @@ public class ModuleImpl implements Module {
         }
         configuration.links = null; // avoid storing unused data
     }
+    
 
     public List<LinkDescriptor> getLinks(String category) {
         return linkReg.getLinks(category);
@@ -269,6 +298,7 @@ public class ModuleImpl implements Module {
     public LinkRegistry getLinkRegistry() {
         return linkReg;
     }
+
 
     public String getTemplateFileExt() {
         return configuration.templateFileExt;
@@ -290,7 +320,7 @@ public class ModuleImpl implements Module {
         //TODO: reload module configuration or recreate module
         flushSkinCache();
         flushTypeCache();
-        engine.getScripting().flushCache();
+        engine.getWebLoader().flushCache();
     }
 
     public static File getSkinDir(File moduleDir) {
@@ -359,14 +389,14 @@ public class ModuleImpl implements Module {
 
     /**
      * TODO There are no more reasons to lazy load the type registry since module are lazy loaded.
-     * Type registry must be loaded at module creation
-     *
+     * Type registry must be loaded at module creation 
+     * 
      * @return
      */
     public TypeRegistry createTypeRegistry() {
         //double s = System.currentTimeMillis();
         GlobalTypes gtypes = engine.getGlobalTypes();
-        TypeRegistry typeReg;
+        TypeRegistry typeReg = null;
         // install types from super modules
         if (superModule != null) { //TODO add type reg listener on super modules to update types  when needed?
             typeReg = new TypeRegistry(superModule.getTypeRegistry(), engine, this);
@@ -374,7 +404,7 @@ public class ModuleImpl implements Module {
             typeReg = new TypeRegistry(gtypes.getTypeRegistry(), engine, this);
         }
         if (configuration.directory.isDirectory()) {
-            DirectoryTypeLoader loader = new DirectoryTypeLoader(engine, typeReg, configuration.directory);
+            DefaultTypeLoader loader = new DefaultTypeLoader(this, typeReg, configuration.directory);
             loader.load();
         }
         //System.out.println(">>>>>>>>>>>>>"+((System.currentTimeMillis()-s)/1000));
@@ -419,10 +449,12 @@ public class ModuleImpl implements Module {
             }
         }
     }
-
+    
+    
     @Override
     public String toString() {
         return getName();
     }
+
 
 }

@@ -19,6 +19,9 @@
 
 package org.nuxeo.ecm.webengine.notifier;
 
+import java.io.File;
+import java.util.List;
+
 // FIXME: interface has changed and this example is no more appropriate.
 /**
  * An example of listener implementation:
@@ -39,20 +42,16 @@ package org.nuxeo.ecm.webengine.notifier;
  */
 public interface FileChangeListener {
 
-    int MODIFIED = 1;
-    int CREATED = 2;
-    int DELETED = 3;
 
     /**
-     * Notifies that the given file changed.
+     * Notifies that the given files changed.
      *
      * @param entry
-     * @param type
-     * @param now the time stamp when the change was detected.
-     *      This value can be used as a notification ID by listeners to avoid
-     *      multiple processing for notification that will send multiple events
      * @throws Exception
      */
-    void fileChanged(FileChangeNotifier.FileEntry entry, int type, long now) throws Exception;
+    void filesModified(List<File> entry) throws Exception;
 
+    void filesCreated(List<File> entry) throws Exception;
+    
+    void filesRemoved(List<File> entry) throws Exception;
 }

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<module root-type="base" path="/">
+<module name="base" root-type="base" path="/">
   <links>
     
     <link id="link_print" path="/@views/print">

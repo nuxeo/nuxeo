@@ -255,6 +255,19 @@
     </dependency>
 
     <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-audit-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-audit-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-el</artifactId>
+    </dependency>
+
+    <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-client</artifactId>
     </dependency>
@@ -359,6 +372,32 @@
       <artifactId>groovy-all</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>net.sf.opencsv</groupId>
+      <artifactId>opencsv</artifactId>
+      <version>1.7</version>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.el</groupId>
+      <artifactId>el-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.el</groupId>
+      <artifactId>el-ri</artifactId>
+    </dependency>
+    
+    <dependency>                                                                                                                                            
+      <groupId>org.apache.commons</groupId>                                                                                                                 
+      <artifactId>commons-jci-core</artifactId>                                                                                                             
+      <version>1.0</version>                                                                                                                                
+    </dependency>                                                                                                                                           
+                                                                                                                                                            
+    <dependency>                                                                                                                                            
+      <groupId>org.apache.commons</groupId>                                                                                                                 
+      <artifactId>commons-jci-fam</artifactId>                                                                                                              
+      <version>1.0</version>                                                                                                                                
+    </dependency>  
   </dependencies>
 
   <build>

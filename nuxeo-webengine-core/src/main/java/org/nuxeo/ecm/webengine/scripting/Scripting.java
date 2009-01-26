@@ -39,6 +39,8 @@ import javax.script.SimpleScriptContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.webengine.WebEngine;
+import org.nuxeo.ecm.webengine.loader.WebLoader;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -52,23 +54,10 @@ public class Scripting {
 
     // this will be lazy initialized
     private ScriptEngineManager scriptMgr;
-
-    protected final GroovyScripting groovy;
-
-    public Scripting() {
-        this(false);
-    }
-
-    public Scripting(boolean isDebug) {
-        groovy = new GroovyScripting(isDebug);
-    }
+    private WebLoader loader;
     
-    public void addClassPath(String path) {
-        groovy.addClasspath(path);
-    }
-
-    public void addClassPathUrl(URL url) {
-        groovy.addClasspathUrl(url);
+    public Scripting(WebLoader loader) {
+        this.loader = loader;
     }
 
 
@@ -90,11 +79,6 @@ public class Scripting {
         }
     }
 
-    public void flushCache() {
-        log.info("Flushing Groovy class cache");
-        groovy.clearCache();
-    }
-
     /**
      * Lazy init scripting manager to avoid loading script engines when
      * no scripting is used. Javax Scripting is not used by default in WebWengine
@@ -114,13 +98,6 @@ public class Scripting {
         return getEngineManager().getEngineByExtension(ext) != null;
     }
 
-    public GroovyScripting getGroovyScripting() {
-        return groovy;
-    }
-
-    public Class<?> loadClass(String className) throws ClassNotFoundException {
-        return groovy.loadClass(className);
-    }
 
     public Object runScript(ScriptFile script) throws Exception {
         return runScript(script, null);
@@ -131,7 +108,7 @@ public class Scripting {
             log.debug("## Running Script: "+script.getFile());
         }
         if ("groovy".equals(script.getExtension())) {
-            return groovy.eval(script.file, args);
+            return loader.getGroovyScripting().eval(script.file, args);
         } else {
             return _runScript(script, args);
         }

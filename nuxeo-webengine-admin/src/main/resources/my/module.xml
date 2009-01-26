@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+
+<module name="admin2" root-type="admin" path="/admin2" extends="base">
+</module>

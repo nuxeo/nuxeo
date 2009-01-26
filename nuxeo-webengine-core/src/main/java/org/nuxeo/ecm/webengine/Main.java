@@ -21,7 +21,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
-import org.nuxeo.ecm.webengine.model.impl.ModuleDescriptor;
+import org.nuxeo.ecm.webengine.model.impl.ModuleConfiguration;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -50,7 +50,7 @@ public class Main {
     public Object dispatch(@PathParam("modulePath") String path) {
         try {
             WebEngine engine = Framework.getService(WebEngine.class);
-            ModuleDescriptor md = engine.getModuleManager().getModuleByPath(path);
+            ModuleConfiguration md = engine.getModuleManager().getModuleByPath(path);
             if (md != null) {
                 return md.get().getRootObject();
             } else {

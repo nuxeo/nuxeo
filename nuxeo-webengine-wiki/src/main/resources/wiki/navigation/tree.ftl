@@ -25,9 +25,7 @@
     <a title="Toggle the tree below, opening closed branches, closing open branches" href="#">Toggle All</a>
   </div>
   <div class="treeroot"><a href="${rooturl}">${rootdoc.title}</a></div>
-  <ul id="treenav" class="treeview">
-	<li><li>
-  </ul>
+  <ul id="treenav" class="treeview"></ul>
 </div>
 <!-- End Navigation Tree -->
 </#macro>

@@ -21,7 +21,6 @@ package org.nuxeo.ecm.webengine.model.impl;
 
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.loader.ClassProxy;
-import org.nuxeo.ecm.webengine.loader.StaticClassProxy;
 import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.runtime.annotations.loader.AnnotationLoader;
@@ -35,17 +34,19 @@ import org.osgi.framework.Bundle;
 public class GlobalTypes  implements AnnotationLoader {
 
     protected final TypeRegistry typeReg;
-
+    protected final WebEngine engine;
+    
     public GlobalTypes(WebEngine engine) {
+        this.engine = engine;
         typeReg = new TypeRegistry(engine, null);
-        BundleAnnotationsLoader.getInstance().addLoader(WebObject.class.getName(), this);
-        BundleAnnotationsLoader.getInstance().addLoader(WebAdapter.class.getName(), this);
+//        BundleAnnotationsLoader.getInstance().addLoader(WebObject.class.getName(), this);
+//        BundleAnnotationsLoader.getInstance().addLoader(WebAdapter.class.getName(), this);
     }
 
     // support for loading annotations from descriptor files
     public void loadAnnotation(Bundle bundle, String annotationType, String className, String[] args) throws Exception {
         // args are ignored for now
-        ClassProxy clazz = new StaticClassProxy(bundle.loadClass(className));
+        ClassProxy clazz = engine.getWebLoader().getClassProxy(bundle, className);
         if (annotationType.equals(WebObject.class.getName())) {
             WebObject type = clazz.get().getAnnotation(WebObject.class);
             typeReg.registerType(TypeDescriptor.fromAnnotation(clazz, type));

@@ -19,8 +19,6 @@
 
 package org.nuxeo.ecm.webengine.model.impl;
 
-import groovy.lang.GroovyClassLoader;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -33,41 +31,42 @@ import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.loader.ClassProxy;
-import org.nuxeo.ecm.webengine.loader.GroovyClassProxy;
-import org.nuxeo.ecm.webengine.loader.StaticClassProxy;
+import org.nuxeo.ecm.webengine.loader.WebLoader;
 import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.ecm.webengine.model.WebObject;
 
 /**
+ * Load web types extracted from Groovy source files. Types are cached in
+ * META-INF/groovy-web-types. When types are reloaded this file will be removed.
+ *  
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class DirectoryTypeLoader {
+public class GroovyTypeLoader {
 
-    public static final Log log = LogFactory.getLog(DirectoryTypeLoader.class);
+    public static final Log log = LogFactory.getLog(GroovyTypeLoader.class);
     public static final String CRLF = System.getProperty("line.separator");
+    public static final String WEB_TYPES_FILE = "META-INF/groovy-web-types"; 
 
-    protected final GroovyClassLoader loader;
+    protected final WebLoader loader;
     protected final TypeRegistry typeReg;
     protected final File root;
-    protected boolean isDebug = false;
 
-    public DirectoryTypeLoader(WebEngine engine, TypeRegistry typeReg, File root) {
+    public GroovyTypeLoader(WebEngine engine, TypeRegistry typeReg, File root) {
         this.typeReg = typeReg;
         this.root = root;
-        loader = engine.getScripting().getGroovyScripting().getGroovyClassLoader();
-        isDebug = engine.isDebug();
+        loader = engine.getWebLoader();
     }
 
     public synchronized void flushCache() {
         log.info("Flush directory type provider cache");
-        File cache = new File(root, ".types");
+        File cache = new File(root, WEB_TYPES_FILE);
         cache.delete();
     }
 
     public synchronized void load() {
         try {
-            File cache = new File(root, ".types");
+            File cache = new File(root, WEB_TYPES_FILE);
             if (cache.isFile()) {
                 for (String line : FileUtils.readLines(cache)) {
                     if (line.equals("")) {
@@ -79,9 +78,10 @@ public class DirectoryTypeLoader {
                     }
                 }
             } else {
+                cache.getParentFile().mkdirs();
                 Writer w = new BufferedWriter(new FileWriter(cache));
                 try {
-                    scan(root, root.getName(), w);
+                    scan(root, null, w);
                     w.close();
                 } catch (Throwable t) {
                     w.close();
@@ -150,12 +150,7 @@ public class DirectoryTypeLoader {
      * @throws ClassNotFoundException
      */
     protected TypeDescriptor loadType(String className) throws ClassNotFoundException {
-        ClassProxy clazz;
-        if (isDebug) {
-            clazz = new GroovyClassProxy(loader, className);
-        } else {
-            clazz = new StaticClassProxy(loader.loadClass(className));
-        }
+        ClassProxy clazz = loader.getGroovyClassProxy(className);
         WebObject type = clazz.get().getAnnotation(WebObject.class);
         if (type != null) {
             return TypeDescriptor.fromAnnotation(clazz, type);

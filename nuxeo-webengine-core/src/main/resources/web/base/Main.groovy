@@ -11,7 +11,6 @@ import org.nuxeo.ecm.webengine.*;
 import org.nuxeo.ecm.core.api.*;
 
 @WebObject(type="base")
-@Path("/")
 @Produces(["text/html; charset=UTF-8", "*/*; charset=UTF-8"])
 public class Main extends DefaultModule {
     

@@ -21,10 +21,15 @@ package org.nuxeo.ecm.webengine;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.common.utils.ZipUtils;
 import org.nuxeo.ecm.webengine.install.Installer;
 import org.nuxeo.ecm.webengine.rendering.RenderingExtensionDescriptor;
 import org.nuxeo.ecm.webengine.security.GuardDescriptor;
@@ -39,6 +44,9 @@ import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleEvent;
+import org.osgi.framework.BundleListener;
 
 /**
  * TODO remove old WebEngine references and rename WebEngine2 to WebEngine
@@ -55,7 +63,6 @@ public class WebEngineComponent extends DefaultComponent { //implements Configur
     public static final String RESOURCE_BINDING_XP = "resource";
     public static final String GUARD_XP = "guard"; // global guards
     public static final String MODULE_XP = "application";
-    public static final String INSTALL_XP = "install";
     public static final String CONFIG_XP = "configuration";
     public static final String APP_MAPPING_XP = "application-mapping";
     public static final String FORM_XP = "form";
@@ -63,6 +70,7 @@ public class WebEngineComponent extends DefaultComponent { //implements Configur
 
     private static final Log log = LogFactory.getLog(WebEngineComponent.class);
 
+    protected Set<String> deployedBundles = new HashSet<String>();
     private WebEngine engine;
 //    private FileChangeNotifier notifier;
 
@@ -88,12 +96,14 @@ public class WebEngineComponent extends DefaultComponent { //implements Configur
         root = root.getCanonicalFile();
         log.info("Using web root: "+root);
 
+        File baseModule = null; 
+//TODO remove this        
         try {
-            deployWebDir(context.getRuntimeContext().getBundle(), root);
+            baseModule = deployWebDir(context.getRuntimeContext().getBundle(), root);
         } catch (Exception e) { // delete incomplete files
             FileUtils.deleteTree(root);
             throw e;
-        }
+        }        
 
         // load message bundle
         //TODO: remove notifier
@@ -105,17 +115,85 @@ public class WebEngineComponent extends DefaultComponent { //implements Configur
             throw new Error("Could not find a server implementation");
         }
         engine = new WebEngine(registry, root);
+        engine.registerModule(baseModule);
 //        deployer = new ConfigurationDeployer(notifier);
 //        deployer.addConfigurationChangedListener(this);
 
+        // start deploying web bundles
+        final RuntimeContext ctx = context.getRuntimeContext();
+        BundleContext bc = bundle.getBundleContext();
+        bundle.getBundleContext().addBundleListener(new BundleListener() {
+            public void bundleChanged(BundleEvent event) {
+                try {
+                    switch (event.getType()) {
+                    case BundleEvent.STARTED:
+                        synchronized (deployedBundles) {
+                            deployModules(ctx, event.getBundle());
+                        }
+                    }
+                } catch (IOException e) {
+                    log.error("Failed to deploy web modules in bundle: "+event.getBundle().getSymbolicName());
+                }
+            }
+        });
+        // synchronize next block with the listener since they may run in parallel
+        synchronized (deployedBundles) {
+            // deploy bundles already installed
+            for (Bundle b : bc.getBundles()) {
+                deployModules(ctx, b);
+            }
+        }
+        
+        engine.start();
+    }
+    
+    protected void deployModules(RuntimeContext ctx, Bundle b) throws IOException {
+        String id = b.getSymbolicName(); 
+        if (deployedBundles.contains(id)) {
+            return; // already deployed
+        }
+        URL url = b.getEntry("module.xml");
+        if (url == null) {// not a webengine module
+            return;
+        }
+        File bf = ctx.getRuntime().getBundleFile(b);
+        if (bf == null) {
+            log.warn("Bundle type not supported - cannot be resolved to a file. Bundle: "+b.getSymbolicName());
+            return;
+        } 
+        deployedBundles.add(id);
+        deployModule(id, bf, url);
     }
 
+    protected void deployModule(String bundleId, File bundleFile, URL moduleConfig) throws IOException {
+        if (bundleFile.isDirectory()) { // exploded jar - deploy it as is.
+            File cfg = new File(bundleFile, "module.xml");
+            engine.registerModule(cfg);
+        } else { // should be a JAR - we copy the bundle module content
+            File moduleRoot = new File(engine.getRootDirectory(), "modules/"+bundleId);
+            File cfg = new File(moduleRoot, "module.xml");
+            if (moduleRoot.exists()) {
+                if (bundleFile.lastModified() < moduleRoot.lastModified()) {
+                    // already deployed and JAR was not modified since. ingore module
+                    engine.registerModule(cfg);
+                    return;
+                }
+                // remove existing files
+                moduleRoot.delete();
+            }
+            // create the module root
+            moduleRoot.mkdirs();            
+            ZipUtils.unzip(bundleFile, moduleRoot);
+            engine.registerModule(cfg);
+        }
+    }
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
         //TODO: move this in runtime
         context.getRuntimeContext().getBundle().getBundleContext().removeBundleListener(BundleAnnotationsLoader.getInstance());
-
+        engine.stop();
+        engine = null;
 //        notifier.stop();
 //        deployer.removeConfigurationChangedListener(this);
         deployer = null;
@@ -123,14 +201,28 @@ public class WebEngineComponent extends DefaultComponent { //implements Configur
         super.deactivate(context);
     }
 
-    private static void deployWebDir(Bundle bundle, File root) throws IOException {
-        if (!new File(root, "base").exists()) {
+    private static File deployWebDir(Bundle bundle, File root) throws IOException {
+        root = new File(root, "modules/"+bundle.getSymbolicName());
+        if (!root.exists()) {
             root.mkdirs();
             Installer.copyResources(bundle, "web", root);
+            URL url = bundle.getEntry("META-INF/web-types");
+            if (url != null) {
+                InputStream in = url.openStream();
+                try {
+                    File file = new File(root, "META-INF");
+                    file.mkdirs();
+                    file = new File(file, "web-types");
+                    FileUtils.copyToFile(in, file);
+                } catch (IOException e) {
+                    if (in != null) in.close();
+                }
+            }
         }
+        return new File(root, "module.xml");
     }
 
-    public WebEngine getEngine2() {
+    public WebEngine getEngine() {
         return engine;
     }
 
@@ -170,9 +262,6 @@ public class WebEngineComponent extends DefaultComponent { //implements Configur
                 throw new RuntimeServiceException(
                         "Deployment Error. Failed to contribute freemarker template extension: "+fed.name);
             }
-        } else if (extensionPoint.equals(INSTALL_XP)) {
-            Installer installer = (Installer)contribution;
-            installer.install(contributor.getContext(), engine.getRootDirectory());
         } else if (extensionPoint.equals(CONFIG_XP)) {
             System.out.println("Extensions point "+CONFIG_XP+" is no more supported");
 //            ConfigurationFileDescriptor cfg = (ConfigurationFileDescriptor)contribution;
@@ -203,9 +292,6 @@ public class WebEngineComponent extends DefaultComponent { //implements Configur
         } else if (extensionPoint.equals(RENDERING_EXTENSION_XP)) {
             RenderingExtensionDescriptor fed = (RenderingExtensionDescriptor)contribution;
             engine.unregisterRenderingExtension(fed.name);
-        } else if (extensionPoint.equals(INSTALL_XP)) {
-            Installer installer = (Installer)contribution;
-            installer.uninstall(contributor.getContext(), engine.getRootDirectory());
         } else if (extensionPoint.equals(CONFIG_XP)) {
 //            ConfigurationFileDescriptor cfg = (ConfigurationFileDescriptor)contribution;
 //            if (cfg.path != null) {

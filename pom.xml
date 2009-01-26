@@ -36,7 +36,7 @@
     <dependency>
       <groupId>org.nuxeo.build</groupId>
       <artifactId>nuxeo-webengine-apt</artifactId>
-      <version>1.0</version>
+      <version>1.2-SNAPSHOT</version>
       <scope>compile</scope>
       <!-- workaround for Mac OS X -->
       <exclusions>
@@ -165,6 +165,17 @@
           <artifactId>jaxrs-api</artifactId>
           <version>1.0-beta-8</version>
         </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-jci-core</artifactId>
+      <version>1.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-jci-fam</artifactId>
+      <version>1.0</version>
+    </dependency>
+
     </dependencies>
   </dependencyManagement>
 

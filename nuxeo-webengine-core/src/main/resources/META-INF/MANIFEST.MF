@@ -15,6 +15,7 @@ Nuxeo-Component: OSGI-INF/webengine-framework.xml,
  OSGI-INF/web-deployment-contrib.xml,
  OSGI-INF/authentication-contrib.xml,
  OSGI-INF/wiki-transformer-contrib.xml
+Nuxeo-WebModule:    					web/base           				 
 Provide-Package: org.nuxeo.ecm.core.rest,
  org.nuxeo.ecm.core.rest.security,
  org.nuxeo.ecm.webengine,
