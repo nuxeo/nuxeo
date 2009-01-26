@@ -105,7 +105,7 @@ public class ModuleImpl implements Module {
             linkProvider = new DefaultLinkProvider();
         }
         Class<ErrorHandler> ehc = config.getErrorHandlerClass();
-        if (lpc != null) {
+        if (ehc != null) {
             errorHandler = ehc.newInstance();
         } else {
             errorHandler = new DefaultErrorHandler();
