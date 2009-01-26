@@ -206,9 +206,10 @@ public class SecurityService extends DefaultComponent {
             return new String[] { principal.getName() };
         } else {
             String[] tmp = userGroups.toArray(new String[userGroups.size()]);
-            String[] groups = new String[tmp.length + 1];
+            String[] groups = new String[tmp.length + 2];
             groups[0] = principal.getName();
             System.arraycopy(tmp, 0, groups, 1, tmp.length);
+            groups[tmp.length + 1] = SecurityConstants.EVERYONE;
             return groups;
         }
     }
