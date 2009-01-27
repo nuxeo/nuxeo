@@ -51,6 +51,7 @@ import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.ResourceType;
 import org.nuxeo.ecm.webengine.model.TypeNotFoundException;
 import org.nuxeo.ecm.webengine.model.Validator;
+import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 
 /**
@@ -164,13 +165,10 @@ public class ModuleImpl implements Module {
         return rootType;
     }
     
-    /* (non-Javadoc)
-     * @see org.nuxeo.ecm.webengine.model.Module#getRootObject()
-     */
-    public Object getRootObject() {
+    
+    public Resource getRootObject(WebContext ctx) {
         try {
-            AbstractWebContext ctx = (AbstractWebContext)WebEngine.getActiveContext();
-            ctx.setModule(this);
+            ((AbstractWebContext)ctx).setModule(this);
             Resource obj = ctx.newObject(getRootType());
             obj.setRoot(true);
             return obj;
@@ -426,7 +424,7 @@ public class ModuleImpl implements Module {
 
     @SuppressWarnings("unchecked")
     public Map<String,String> getMessages(String language) {
-        log.info("Loading i18n files");
+        log.info("Loading i18n files for module "+configuration.name);
         File file = new File(configuration.directory,  new StringBuilder()
                     .append("/i18n/messages_")
                     .append(language)

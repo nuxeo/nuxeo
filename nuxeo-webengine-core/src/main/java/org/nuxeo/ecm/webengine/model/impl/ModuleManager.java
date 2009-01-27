@@ -69,6 +69,10 @@ public class ModuleManager {
         return paths.get(path);
     }
     
+    public ModuleConfiguration getRootModule() {
+        return paths.get("/");
+    }
+    
     public ModuleConfiguration[] getModules() {
         return modules.values().toArray(new ModuleConfiguration[modules.size()]);
     }
@@ -89,7 +93,7 @@ public class ModuleManager {
         if (!path.startsWith("/")) {
             path = "/"+path;
         }
-        paths.put(path, descriptor);    
+        paths.put(path, descriptor);
     }
     
     //TODO the class path is not updated by this operation ...

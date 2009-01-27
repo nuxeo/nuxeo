@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 
 <module name="base" root-type="base" path="/">
-  <nature>groovy</nature> 
   <links>
     
     <link id="link_print" path="/@views/print">
