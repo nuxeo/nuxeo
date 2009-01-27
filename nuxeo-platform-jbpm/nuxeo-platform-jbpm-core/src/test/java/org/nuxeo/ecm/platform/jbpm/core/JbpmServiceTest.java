@@ -103,6 +103,8 @@ public class JbpmServiceTest extends RepositoryOSGITestCase {
                 null);
         assertNotNull(tasks);
         assertEquals(1, tasks.size());
+        service.abandonProcessInstance(administrator, pd.getId());
+        assertTrue(pd.hasEnded());
     }
 
     public void testTaskManagement() throws Exception {

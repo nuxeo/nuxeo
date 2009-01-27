@@ -594,10 +594,10 @@ public class JbpmServiceImpl implements JbpmService {
             public Serializable run(JbpmContext context)
                     throws NuxeoJbpmException {
                 ProcessInstance pi = context.getProcessInstance(processId);
-                List<TaskInstance> tis = (List<TaskInstance>) pi.getTaskMgmtInstance().getTaskInstances();
+                Collection<TaskInstance> tis = pi.getTaskMgmtInstance().getTaskInstances();
                 for (TaskInstance ti : tis) {
                     if (!ti.hasEnded()) {
-                        ti.cancel();
+                        ti.getTaskMgmtInstance().removeTaskInstance(ti);
                     }
                 }
                 pi.end();
