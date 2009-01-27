@@ -188,11 +188,12 @@ public class SecurityService extends DefaultComponent {
     public String[] getPermissionsToCheck(String permission) {
         String[] groups = permissionProvider.getPermissionGroups(permission);
         if (groups == null) {
-            return new String[] { permission };
+            return new String[] { permission, SecurityConstants.EVERYTHING };
         } else {
-            String[] perms = new String[groups.length + 1];
+            String[] perms = new String[groups.length + 2];
             perms[0] = permission;
             System.arraycopy(groups, 0, perms, 1, groups.length);
+            perms[groups.length + 1] = SecurityConstants.EVERYTHING;
             return perms;
         }
     }
@@ -203,13 +204,14 @@ public class SecurityService extends DefaultComponent {
             userGroups = ((NuxeoPrincipal) principal).getAllGroups();
         }
         if (userGroups == null) {
-            return new String[] { principal.getName() };
+            return new String[] { principal.getName(),
+                    SecurityConstants.EVERYONE };
         } else {
-            String[] tmp = userGroups.toArray(new String[userGroups.size()]);
-            String[] groups = new String[tmp.length + 2];
-            groups[0] = principal.getName();
-            System.arraycopy(tmp, 0, groups, 1, tmp.length);
-            groups[tmp.length + 1] = SecurityConstants.EVERYONE;
+            int size = userGroups.size();
+            String[] groups = new String[size + 2];
+            userGroups.toArray(groups);
+            groups[size] = principal.getName();
+            groups[size + 1] = SecurityConstants.EVERYONE;
             return groups;
         }
     }

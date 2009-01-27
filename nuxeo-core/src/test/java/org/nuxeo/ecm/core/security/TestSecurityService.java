@@ -24,6 +24,8 @@ import java.util.List;
 
 import org.nuxeo.ecm.core.CoreTestConstants;
 import org.nuxeo.ecm.core.NXCore;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.security.PermissionProvider;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.UserVisiblePermission;
@@ -56,8 +58,9 @@ public class TestSecurityService extends NXRuntimeTestCase {
     // TODO: Make this test independent of the permissions-contrib.xml file.
     public void testGetPermissionsToCheck() {
         List<String> perms = Arrays.asList(service.getPermissionsToCheck(SecurityConstants.READ));
-        assertEquals(3, perms.size());
+        assertEquals(4, perms.size());
         assertTrue(perms.contains(SecurityConstants.READ));
+        assertTrue(perms.contains(SecurityConstants.EVERYTHING));
     }
 
     public void testDefaultPermissions() {
@@ -244,6 +247,17 @@ public class TestSecurityService extends NXRuntimeTestCase {
         assertEquals("Remove",deleteVP.getDenyPermission());
         assertEquals("ReadRemove",deleteVP.getPermission());
 
+    }
+
+    public void testGetPrincipalsToCheck() throws Exception {
+        NuxeoPrincipal principal = new UserPrincipal("bob", Arrays.asList(
+                "vps", "males"));
+        String[] principals = SecurityService.getPrincipalsToCheck(principal);
+        assertEquals(4, principals.length);
+        assertTrue(Arrays.asList(principals).contains("bob"));
+        assertTrue(Arrays.asList(principals).contains("vps"));
+        assertTrue(Arrays.asList(principals).contains("males"));
+        assertTrue(Arrays.asList(principals).contains(SecurityConstants.EVERYONE));
     }
 
 }

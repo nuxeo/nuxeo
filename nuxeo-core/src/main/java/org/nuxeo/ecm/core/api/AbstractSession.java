@@ -1309,14 +1309,6 @@ public abstract class AbstractSession implements CoreSession,
                     principals = SecurityService.getPrincipalsToCheck(principal);
                 }
                 String[] permissions = securityService.getPermissionsToCheck(permission);
-                if (!Arrays.asList(permissions).contains(EVERYTHING)) {
-                    // TODO fix DefaultPermissionProvider.getPermissionGroups
-                    // instead
-                    String[] p = new String[permissions.length + 1];
-                    p[0] = EVERYTHING;
-                    System.arraycopy(permissions, 0, p, 1, permissions.length);
-                    permissions = p;
-                }
                 QueryFilter queryFilter = new QueryFilter(principals,
                         permissions,
                         filter instanceof FacetFilter ? (FacetFilter) filter
