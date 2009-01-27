@@ -33,7 +33,7 @@ import org.nuxeo.theme.editor.*
 
 @WebObject(type="nxthemes-editor", guard="user=Administrator")
 @Produces(["text/html", "*/*"])
-public class Main extends DefaultModule {
+public class Main extends ModuleRoot {
     
     @GET
     @Path("perspectiveSelector")

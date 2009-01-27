@@ -35,7 +35,7 @@ import org.nuxeo.theme.webwidgets.*
 @WebObject(type="nxthemes-webwidgets")
 
 @Produces(["text/html", "*/*"])
-public class Main extends DefaultModule {
+public class Main extends ModuleRoot {
     
      @GET
      @Path("webWidgetFactory")

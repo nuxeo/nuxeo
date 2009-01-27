@@ -67,7 +67,7 @@ public class NXThemesHeadDirective implements TemplateDirectiveModel {
         HttpServletRequest request = context.getRequest();
         final URL themeUrl = (URL) request.getAttribute("org.nuxeo.theme.url");
 
-        String baseUrl = context.getHead().getURL();
+        String baseUrl = context.head().getURL();
         if (!baseUrl.endsWith("/")) {
             baseUrl += "/";
         }
