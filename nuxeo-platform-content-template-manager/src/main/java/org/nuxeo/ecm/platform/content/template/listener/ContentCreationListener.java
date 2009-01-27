@@ -23,40 +23,19 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.event.CoreEvent;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
-import org.nuxeo.ecm.core.listener.AbstractEventListener;
+import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.EventListener;
+import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.content.template.service.ContentTemplateService;
 import org.nuxeo.runtime.api.Framework;
 
-public class ContentCreationListener extends AbstractEventListener {
+public class ContentCreationListener implements EventListener {
 
-    private static final Log log = LogFactory.getLog(ContentCreationListener.class);
+    private static final Log log = LogFactory
+            .getLog(ContentCreationListener.class);
 
     private ContentTemplateService service;
-
-    @Override
-    public void notifyEvent(CoreEvent event) throws Exception {
-
-        String eventId = event.getEventId();
-        Object ob = event.getSource();
-
-        if (!(ob instanceof DocumentModel)) {
-            return;
-        }
-
-        DocumentModel createdDocument = (DocumentModel) ob;
-
-        if (eventId.equals(DocumentEventTypes.DOCUMENT_CREATED)) {
-            try {
-                getService().executeFactoryForType(createdDocument);
-            }
-            catch (ClientException e) {
-                log.error(
-                        "Error while executing content factory for type " + createdDocument.getType() + " : " + e.getMessage());
-            }
-        }
-    }
 
     private ContentTemplateService getService() {
         if (service == null) {
@@ -65,4 +44,24 @@ public class ContentCreationListener extends AbstractEventListener {
         return service;
     }
 
+    public void handleEvent(Event event) throws ClientException {
+
+        DocumentEventContext docCtx = null;
+        if (event.getContext() instanceof DocumentEventContext) {
+            docCtx = (DocumentEventContext) event.getContext();
+        } else {
+            return;
+        }
+        String eventId = event.getName();
+        DocumentModel createdDocument = docCtx.getSourceDocument();
+
+        if (eventId.equals(DocumentEventTypes.DOCUMENT_CREATED)) {
+            try {
+                getService().executeFactoryForType(createdDocument);
+            } catch (ClientException e) {
+                log.error("Error while executing content factory for type "
+                        + createdDocument.getType() + " : " + e.getMessage());
+            }
+        }
+    }
 }

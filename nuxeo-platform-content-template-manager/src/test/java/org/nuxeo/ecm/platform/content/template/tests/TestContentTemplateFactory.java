@@ -49,8 +49,6 @@ public class TestContentTemplateFactory extends RepositoryTestCase {
         super.setUp();
 
         deployBundle("org.nuxeo.ecm.core.event");
-        deployBundle("org.nuxeo.ecm.core.event.compat");
-
 
         deployContrib("org.nuxeo.ecm.platform.content.template.tests",
                 "RepositoryManager.xml");
