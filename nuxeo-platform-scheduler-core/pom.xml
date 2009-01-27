@@ -23,10 +23,10 @@
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core</artifactId>
     </dependency>
-    <dependency>                                                                                                                                            
-      <groupId>org.nuxeo.ecm.core</groupId>                                                                                                                 
-      <artifactId>nuxeo-core-event-compat</artifactId>                                                                                                      
-    </dependency>  
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-event</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-api</artifactId>
@@ -35,7 +35,6 @@
       <groupId>opensymphony</groupId>
       <artifactId>quartz-all</artifactId>
     </dependency>
-
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-osgi</artifactId>
@@ -54,6 +53,11 @@
     <dependency>
       <groupId>jboss</groupId>
       <artifactId>jboss-common</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.transaction</groupId>
+      <artifactId>jta</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

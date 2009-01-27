@@ -20,31 +20,22 @@ package org.nuxeo.ecm.platform.scheduler.core;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.event.CoreEvent;
-import org.nuxeo.ecm.core.listener.AbstractEventListener;
-import org.nuxeo.ecm.core.listener.AsynchronousEventListener;
-import org.nuxeo.ecm.core.listener.DocumentModelEventListener;
+import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.platform.api.ECM;
 import org.nuxeo.ecm.platform.api.Platform;
 
 // import org.nuxeo.ecm.platform.api.RepositoryDescriptor;
 
-public class EventListener extends AbstractEventListener implements
-        AsynchronousEventListener, DocumentModelEventListener {
+public class TestEventListener implements EventListener
+{
 
     private static final Log log = LogFactory.getLog(EventListener.class);
-
-    public void notifyEvent(CoreEvent event) {
-        if (event.getEventId().equals("testEvent")) {
-            log.info("Received event!");
-            // note we were called
-            Whiteboard.getWhiteboard().incrementCount();
-            // doSomething(event);
-        }
-    }
 
     /**
      * Example method to connect to the session and get the root.
@@ -66,6 +57,15 @@ public class EventListener extends AbstractEventListener implements
         } catch (Throwable e) {
             e.printStackTrace();
         }
+    }
+
+    public void handleEvent(Event event) throws ClientException {
+         if (event.getName().equals("testEvent")) {
+                log.info("Received event!");
+                // note we were called
+                Whiteboard.getWhiteboard().incrementCount();
+                // doSomething(event);
+            }
     }
 
 }
