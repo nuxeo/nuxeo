@@ -64,7 +64,6 @@ public class PDParallelValidationTest extends AbstractProcessDefinitionTest {
                 ti = (TaskInstance) context.getTaskList(actorId).get(0);
                 ti.end();
             }
-            List l = pi.findAllTokens();
             // process finished
             assertTrue(pi.hasEnded());
         } finally {
