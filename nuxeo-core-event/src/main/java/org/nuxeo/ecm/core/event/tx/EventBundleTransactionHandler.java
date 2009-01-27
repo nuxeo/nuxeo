@@ -31,7 +31,7 @@ public class EventBundleTransactionHandler {
     private static final Log log = LogFactory
             .getLog(EventBundleTransactionHandler.class);
 
-    protected boolean isTxEnabled = true;
+    protected static boolean isTxEnabled = true;
 
     public void beginNewTransaction() {
 
