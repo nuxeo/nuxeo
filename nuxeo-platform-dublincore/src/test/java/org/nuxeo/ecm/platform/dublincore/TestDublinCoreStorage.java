@@ -38,8 +38,8 @@ import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.listener.CoreEventListenerService;
-import org.nuxeo.ecm.core.listener.EventListener;
+import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.event.impl.EventServiceImpl;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryTestCase;
 import org.nuxeo.ecm.platform.dublincore.listener.DublinCoreListener;
 import org.nuxeo.ecm.platform.dublincore.service.DublinCoreStorageService;
@@ -73,11 +73,9 @@ public class TestDublinCoreStorage extends RepositoryTestCase {
         deployContrib("org.nuxeo.ecm.platform.dublincore.tests",
                 "LifeCycleService.xml");
 
-        deployContrib("org.nuxeo.ecm.platform.dublincore.tests",
-                "nxdublincore-bundle.xml");
+        deployContrib("org.nuxeo.ecm.platform.dublincore","OSGI-INF/nxdublincore-service.xml");
 
         deployBundle("org.nuxeo.ecm.core.event");
-        deployBundle("org.nuxeo.ecm.core.event.compat");
 
         Map<String, Serializable> context = new HashMap<String, Serializable>();
         context.put("username", "Administrator");
@@ -87,16 +85,17 @@ public class TestDublinCoreStorage extends RepositoryTestCase {
         root = remote.getRootDocument();
     }
 
-    private static CoreEventListenerService getListenerService() {
-        return Framework.getLocalService(CoreEventListenerService.class);
+    private static EventServiceImpl getEventServiceImpl() {
+        return (EventServiceImpl) Framework.getLocalService(EventService.class);
     }
 
+    /*
     public void testServiceRegistration() {
         CoreEventListenerService listenerService = getListenerService();
         EventListener dcListener = listenerService.getEventListenerByName("dclistener");
         assertNotNull(dcListener);
         log.info("DCListener registered");
-    }
+    }*/
 
     public void testStorageService() {
         DublinCoreStorageService service = NXDublinCore.getDublinCoreStorageService();

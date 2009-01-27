@@ -30,7 +30,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.event.CoreEvent;
+import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -47,7 +47,7 @@ public class DublinCoreStorageService extends DefaultComponent {
     private static final Log log = LogFactory.getLog(DublinCoreStorageService.class);
 
     public Boolean setModificationDate(DocumentModel doc,
-            Calendar modificationDate, CoreEvent event) {
+            Calendar modificationDate, Event event) {
         try {
             doc.setProperty("dublincore", "modified", modificationDate);
         } catch (ClientException e) {
@@ -65,8 +65,8 @@ public class DublinCoreStorageService extends DefaultComponent {
         return true;
     }
 
-    public Boolean addContributor(DocumentModel doc, CoreEvent event) {
-        Principal principal = event.getPrincipal();
+    public Boolean addContributor(DocumentModel doc, Event event) {
+        Principal principal = event.getContext().getPrincipal();
         if (principal == null) {
             return false;
         }
@@ -114,7 +114,7 @@ public class DublinCoreStorageService extends DefaultComponent {
     }
 
     public Boolean setCreationDate(DocumentModel doc, Calendar creationDate,
-            CoreEvent event) {
+            Event event) {
         try {
             doc.setProperty("dublincore", "created", creationDate);
         } catch (ClientException e) {
