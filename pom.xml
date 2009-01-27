@@ -7,6 +7,7 @@
     <groupId>org.nuxeo.ecm.platform</groupId>
     <artifactId>nuxeo-platform-parent</artifactId>
     <version>5.2-SNAPSHOT</version>
+    <relativePath>../nuxeo-platform/pom.xml</relativePath>
   </parent>
 
   <groupId>org.nuxeo.ecm.webengine</groupId>
@@ -26,6 +27,7 @@
     <module>nuxeo-webengine-wiki</module>
     <module>nuxeo-webengine-server</module>
     <module>nuxeo-webengine-wiki-jsf</module>
+    <module>nuxeo-webengine-management</module>
     <module>nuxeo-webengine-sites</module>
   </modules>
 
