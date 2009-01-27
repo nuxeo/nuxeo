@@ -34,7 +34,7 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
  *
  */
 @WebAdapter(name="views", type="ViewService")
-@Produces({"text/html", "*/*"})
+@Produces("text/html; charset=UTF-8")
 public class ViewService extends DefaultAdapter {
 
     @GET
