@@ -10,9 +10,13 @@
   </task-node>
   <!-- add rights -->
   <decision name="condition on participants">
+    <event type="node-enter">
+      <script><![CDATA[executionContext.setVariable("previousActorId", executionContext.jbpmContext.actorId)]]></script>
+    </event>
     <transition to="setup rights" />
     <transition condition="#{empty participants}" to="follow transition" />
   </decision>
+
   <node name="setup rights">
     <action
       class="org.nuxeo.ecm.platform.jbpm.core.helper.AddRightsActionHandler">
@@ -21,9 +25,23 @@
     </action>
     <transition to="validate node" />
   </node>
+
   <task-node name="validate node">
     <task name="validate">
       <assignment actor-id="#{participants[0]}" />
+    </task>
+    <transition name="validate" to="condition on participants">
+      <script>
+        <variable name="participants" />
+        <expression><![CDATA[!participants.isEmpty() && participants.remove(0) != null]]></expression>
+      </script>
+    </transition>
+    <transition name="reject" to="validate after reject node" />
+  </task-node>
+
+  <task-node name="validate after reject node">
+    <task name="validate after reject">
+      <assignment actor-id="#{previousActorId}" />
     </task>
     <transition to="condition on participants">
       <script>
@@ -32,6 +50,7 @@
       </script>
     </transition>
   </task-node>
+
   <node name="follow transition">
     <action
       class="org.nuxeo.ecm.platform.jbpm.core.helper.LifecycleTransitionActionHandler" />

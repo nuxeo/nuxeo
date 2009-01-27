@@ -27,11 +27,21 @@
     <task name="validate">
       <assignment actor-id="#{participant}" />
     </task>
-    <transition to="participants join" />
+    <transition name="valid" to="participants join" />
+    <transition name="reject" to="participants join">
+      <script>
+        <!--  variable name="contextInstance"/ -->
+        <expression><![CDATA[executionContext.setVariable("rejected","rejected")]]></expression>
+      </script>
+    </transition>
   </task-node>
   <join name="participants join">
-    <transition to="follow transition" />
+    <transition to="do follow transition" />
   </join>
+  <decision name="do follow transition">
+    <transition to="end" condition="#{contextInstance.variables['rejected'] == 'rejected'}"/>
+    <transition to="follow transition" condition="#{contextInstance.variables['rejected'] == null}"/>
+  </decision>
   <node name="follow transition">
     <action
       class="org.nuxeo.ecm.platform.jbpm.core.helper.LifecycleTransitionActionHandler" />
