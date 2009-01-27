@@ -8,7 +8,7 @@ The following wikis are available:
 <ul>
   <#list wikis as wiki>
     <li id="${wiki.id}">
-      <a href="wikis/${wiki.name}">${wiki.title}</a>
+      <a href="${This.path}/${wiki.name}">${wiki.title}</a>
     </li>
   </#list>
 </ul>

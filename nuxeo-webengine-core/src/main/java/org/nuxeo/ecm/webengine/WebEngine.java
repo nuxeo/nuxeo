@@ -324,7 +324,7 @@ public class WebEngine implements ResourceLocator {
                 }
             }
         }
-        //reloadModules();
+        webLoader.flushCache();
     }
 
     public synchronized void reloadModules() {

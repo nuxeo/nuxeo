@@ -83,15 +83,6 @@ public class ModuleImpl implements Module {
     protected ConcurrentMap<String, ScriptFile> fileCache;
     
 
-    //TODO remove this
-    /* (non-Javadoc)
-     * @see org.nuxeo.ecm.webengine.model.Module#getModuleBinding()
-     */
-    public ResourceBinding getModuleBinding() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
     public ModuleImpl(WebEngine engine, ModuleImpl superModule, ModuleConfiguration config) throws Exception {        
         this.engine = engine;
         this.superModule = superModule;

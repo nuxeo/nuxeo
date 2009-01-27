@@ -3,9 +3,9 @@
 <module name="base" root-type="base" path="/">
   <links>
     
-    <link id="link_print" path="/@views/print">
+    <!--link id="link_print" path="/@views/print">
       <category>TOOLBOX</category>
-    </link>
+    </link-->
 
     
     <link id="link_help" path="/help">

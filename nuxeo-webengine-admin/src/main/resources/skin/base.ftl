@@ -42,7 +42,7 @@
            <input type="hidden" name="orderBy" value="dc:modified">
          </form>
         </div>
-        <h1><a href="${Context.modulePath}">${Root.document.title}</a></h1>
+        <h1><a href="${Context.modulePath}"><#if Root.parent>${Root.document.title}<#else>Repository</#if></a></h1>
        </#if>
        </@block>
     </div>

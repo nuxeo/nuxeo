@@ -61,14 +61,6 @@ public interface Module extends MessagesProvider {
     
     LinkProvider getLinkProvider();
 
-
-    /**
-     * Gets the root binding of this module.
-     * @deprecated remove it after refactoring modules
-     * @return
-     */
-    ResourceBinding getModuleBinding();
-
     List<ResourceBinding> getResourceBindings();
 
     /**

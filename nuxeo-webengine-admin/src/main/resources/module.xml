@@ -24,6 +24,7 @@
     </link>
     <link id="link_print" path="/@views/print">
       <category>TOOLBOX</category>
+      <type>Document</type>
     </link>
     <link id="link_delete_doc" path="/@delete">
       <type>Document</type>

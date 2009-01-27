@@ -12,7 +12,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.rest.DocumentObject;
 import org.nuxeo.ecm.webengine.model.WebObject;
 
-@WebObject(type = "WikiPage")
+@WebObject(type = "WikiPage", superType="Document")
 @Produces("text/html; charset=UTF-8")
 public class WikiPageObject extends DocumentObject {
 

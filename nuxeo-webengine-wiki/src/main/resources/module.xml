@@ -20,16 +20,17 @@
 
     <link id="link_print" path="/@views/print">
       <category>TOOLBOX</category>
+      <type>Document</type>
     </link>
     <link id="link_delete_doc" path="/@delete">
       <type>Document</type>
       <category>TOOLBOX</category>
     </link>
 
-    <link id="link_create_doc" path="/@views/create">
+    <!--link id="link_create_wiki_page" path="/@views/create">
       <facet>Folderish</facet>
       <category>TOOLBOX</category>
-    </link>
+    </link-->
 
     <link id="link_create_wikis" path="/@views/create">
       <facet>mainWiki</facet>
