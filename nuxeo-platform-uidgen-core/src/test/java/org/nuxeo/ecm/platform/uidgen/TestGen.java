@@ -25,11 +25,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.event.CoreEvent;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
-import org.nuxeo.ecm.core.api.event.impl.CoreEventImpl;
 import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
+import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.EventContext;
+import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.core.event.impl.EventImpl;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.SchemaNames;
 import org.nuxeo.ecm.core.schema.TypeRef;
@@ -49,8 +51,7 @@ public class TestGen extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core"); // for dublincore
         deployBundle("org.nuxeo.ecm.core.event");
-        deployBundle("org.nuxeo.ecm.core.event.compat");
-        
+
         deployContrib("org.nuxeo.ecm.platform.uidgen.core.tests", "test-uid-CoreExtensions.xml");
         deployContrib("org.nuxeo.ecm.platform.uidgen.core.tests", "nxuidgenerator-bundle.xml");
         deployContrib("org.nuxeo.ecm.platform.uidgen.core.tests", "nxuidgenerator-bundle-contrib.xml");
@@ -163,8 +164,10 @@ public class TestGen extends NXRuntimeTestCase {
         for (int i = 1; i < 100; i++) {
             // local instantiation
             // TODO make it real
-            CoreEvent event = new CoreEventImpl(DocumentEventTypes.DOCUMENT_CREATED, gdoc, null, null, null, null);
-            new DocUIDGeneratorListener().notifyEvent(event);
+
+            EventContext ctx = new DocumentEventContext(null, null, gdoc);
+            Event event = new EventImpl(DocumentEventTypes.DOCUMENT_CREATED, ctx);
+            new DocUIDGeneratorListener().handleEvent(event);
 
             //String uid = generator.createUID(gdoc);
             String uid = (String) gdoc.getProperty("uid", "uid");

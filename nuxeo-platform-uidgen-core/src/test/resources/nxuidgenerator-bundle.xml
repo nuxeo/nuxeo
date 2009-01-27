@@ -15,11 +15,13 @@
       class="org.nuxeo.ecm.platform.uidgen.service.UIDGeneratorDescriptor" />
   </extension-point>
 
-  <require>org.nuxeo.ecm.core.listener.CoreEventListenerService</require>
-  <extension target="org.nuxeo.ecm.core.listener.CoreEventListenerService"
-    point="listener">
-    <listener name="uidlistener"
-      class="org.nuxeo.ecm.platform.uidgen.corelistener.DocUIDGeneratorListener" />
+   <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
+    <documentation>
+     </documentation>
+
+    <listener name="uidlistener" async="false" postCommit="false" class="org.nuxeo.ecm.platform.uidgen.corelistener.DocUIDGeneratorListener" priority="10">
+      <event>documentCreated</event>
+    </listener>
   </extension>
 
 </component>
