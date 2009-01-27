@@ -154,7 +154,7 @@ public class JbpmServiceBean implements JbpmService {
         return service.getProcessDefinitions(user, dm, filter);
     }
 
-    public Map<String, String[]> getTypeFilterConfiguration() {
+    public Map<String, List<String>> getTypeFilterConfiguration() {
         return service.getTypeFilterConfiguration();
     }
 
@@ -167,6 +167,16 @@ public class JbpmServiceBean implements JbpmService {
             DocumentModel dm, NuxeoPrincipal principal)
             throws NuxeoJbpmException {
         return service.getPermission(pi, action, dm, principal);
+    }
+
+    public ProcessDefinition getLatestProcessDefinitionByName(String name)
+            throws NuxeoJbpmException {
+        return service.getLatestProcessDefinitionByName(name);
+    }
+
+    public List<ProcessDefinition> getLatestProcessDefinitionByType(String type)
+            throws NuxeoJbpmException {
+        return service.getLatestProcessDefinitionByType(type);
     }
 
 }
