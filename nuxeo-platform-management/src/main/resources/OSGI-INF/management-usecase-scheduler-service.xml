@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<component
+  name="org.nuxeo.ecm.platform.management.usecases.UsecaseScheduler">
+
+  <implementation
+    class="org.nuxeo.ecm.platform.management.usecases.UsecaseSchedulerService" />
+
+  <service>
+    <provide
+      interface="org.nuxeo.ecm.platform.management.usecases.UsecaseScheduler" />
+  </service>
+
+  <require>org.nuxeo.ecm.platform.scheduler.core.service.SchedulerRegistryService</require>
+  
+   <extension-point name="schedule">
+    <schedule id="managementUsecaseSchedule">
+      <cronExpression>0 0/5 * * * ?</cronExpression>
+      <eventId>MananagementUsecaseSchedule</eventId>
+      <eventCategory>default</eventCategory>
+      <password></password>
+      <username>scheduler</username>
+    </schedule>
+  </extension-point>
+
+  <require>org.nuxeo.ecm.core.listener.CoreEventListenerService</require>
+
+  <extension-point name="usecases">
+    <object class="org.nuxeo.ecm.platform.management.usecases.UsecaseDescriptor" />
+  </extension-point>
+
+</component>

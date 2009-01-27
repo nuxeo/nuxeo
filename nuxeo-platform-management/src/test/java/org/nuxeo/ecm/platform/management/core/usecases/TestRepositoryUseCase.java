@@ -12,29 +12,23 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *    Stephane Lacoin (Nuxeo EP Software Engineer)
+ *     matic
  */
-package org.nuxeo.ecm.platform.audit.service.extension;
+package org.nuxeo.ecm.platform.management.core.usecases;
 
-import java.io.Serializable;
-
-import org.nuxeo.common.xmap.annotation.XNode;
-import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
+import org.nuxeo.ecm.platform.management.usecases.RepositoryUsecase;
 
 /**
- * @author Stephane Lacoin (Nuxeo EP software Engineer)
+ * @author Stephane Lacoin (Nuxeo EP Software Engineer)
  *
  */
-@XObject("hibernateOptions")
-public class HibernateOptionsDescriptor implements Serializable {
-
-    private static final long serialVersionUID = 1500818790781765945L;
-
-    @XNode("@datasource")
-    private String datasource;
-
-    public String getDatasource() {
-        return datasource;
-    }
+public class TestRepositoryUseCase extends RepositoryOSGITestCase {
+    
+   public void testRun() throws Exception {
+       openRepositoryWithSystemPrivileges();
+       RepositoryUsecase usecase = new RepositoryUsecase();
+       usecase.runCase(getCoreSession());
+   }
 
 }
