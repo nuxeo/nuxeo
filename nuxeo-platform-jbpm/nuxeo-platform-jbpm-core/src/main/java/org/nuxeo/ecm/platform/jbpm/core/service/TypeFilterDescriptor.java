@@ -16,7 +16,11 @@
  */
 package org.nuxeo.ecm.platform.jbpm.core.service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
@@ -29,15 +33,15 @@ public class TypeFilterDescriptor {
     @XNode("@name")
     private String processDefinitionName;
 
-    @XNode("type")
-    private String allowedType;
+    @XNodeList(value="type", componentType=String.class, type=ArrayList.class)
+    private List<String> allowedTypes;
 
     public String getProcessDefinitionName() {
         return processDefinitionName;
     }
 
-    public String[] getAllowedType() {
-        return allowedType.split(",");
+    public List<String> getAllowedType() {
+        return allowedTypes;
     }
 
 }

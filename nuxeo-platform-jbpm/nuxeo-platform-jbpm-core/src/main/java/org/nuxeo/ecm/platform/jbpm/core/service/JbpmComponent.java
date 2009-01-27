@@ -104,7 +104,7 @@ public class JbpmComponent extends DefaultComponent implements
             break;
         case typeFilter:
             TypeFilterDescriptor tfd = (TypeFilterDescriptor) contribution;
-            typeFiltersContrib.put(tfd.getProcessDefinitionName(), tfd.getAllowedType());
+            typeFiltersContrib.put(tfd.getProcessDefinitionName(), tfd.getAllowedType().toArray(new String[]{}));
             break;
         }
     }

@@ -9,16 +9,16 @@
       deployer="ifChanged" />
 
   </extension>
-
+  
   <extension target="org.nuxeo.ecm.platform.jbpm.core.JbpmService"
     point="typeFilter">
     <processDefinition name="review_parallel">
-      <type>File,Note</type>
       <type>File</type>
       <type>Note</type>
     </processDefinition>
     <processDefinition name="review_approbation">
-      <type>File,Note</type>
+      <type>File</type>
+      <type>Node</type>
     </processDefinition>
   </extension>
 
