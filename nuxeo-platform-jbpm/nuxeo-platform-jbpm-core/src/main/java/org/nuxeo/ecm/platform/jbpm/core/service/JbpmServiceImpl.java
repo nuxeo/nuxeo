@@ -34,6 +34,7 @@ import org.jbpm.graph.def.ProcessDefinition;
 import org.jbpm.graph.def.Transition;
 import org.jbpm.graph.exe.ProcessInstance;
 import org.jbpm.taskmgmt.exe.TaskInstance;
+import org.jbpm.taskmgmt.exe.TaskMgmtInstance;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -595,10 +596,15 @@ public class JbpmServiceImpl implements JbpmService {
                     throws NuxeoJbpmException {
                 ProcessInstance pi = context.getProcessInstance(processId);
                 Collection<TaskInstance> tis = pi.getTaskMgmtInstance().getTaskInstances();
+                TaskMgmtInstance taskMgmt = pi.getTaskMgmtInstance();
+                List<TaskInstance> toRemove = new ArrayList<TaskInstance>();
                 for (TaskInstance ti : tis) {
                     if (!ti.hasEnded()) {
-                        ti.getTaskMgmtInstance().removeTaskInstance(ti);
+                        toRemove.add(ti);
                     }
+                }
+                for (TaskInstance ti : toRemove) {
+                    taskMgmt.removeTaskInstance(ti);
                 }
                 pi.end();
                 return null;
