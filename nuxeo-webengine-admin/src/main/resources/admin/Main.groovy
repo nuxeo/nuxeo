@@ -10,7 +10,7 @@ import org.nuxeo.ecm.webengine.model.exceptions.*;
 import org.nuxeo.ecm.webengine.*;
 
 @WebObject(type="admin", guard="user=Administrator")
-@Produces(["text/html", "*/*"])
+@Produces(["text/html; charset=UTF-8"])
 public class Main extends DefaultModule {
 
   @Path("users")

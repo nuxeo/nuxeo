@@ -9,7 +9,7 @@ import org.nuxeo.runtime.api.*;
 import org.nuxeo.ecm.platform.usermanager.*;
 
 @WebObject(type="User")
-@Produces(["text/html", "*/*"])
+@Produces(["text/html; charset=UTF-8"])
 public class User extends DefaultObject {
 
   def principal;

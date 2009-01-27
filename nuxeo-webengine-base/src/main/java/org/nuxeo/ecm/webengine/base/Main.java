@@ -27,13 +27,10 @@ import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.impl.AbstractWebContext;
 import org.nuxeo.ecm.webengine.model.impl.DefaultModule;
-import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 import org.nuxeo.ecm.webengine.model.impl.ModuleConfiguration;
 import org.nuxeo.ecm.webengine.model.impl.ModuleImpl;
 import org.nuxeo.ecm.webengine.model.impl.ModuleManager;
 import org.nuxeo.ecm.webengine.model.impl.ResourceTypeImpl;
-
-import com.sun.jmx.interceptor.DefaultMBeanServerInterceptor;
 
 /**
  * The web entry point of WebEngine. 

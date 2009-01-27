@@ -19,10 +19,9 @@ import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
-import javax.ws.rs.core.Response;
 
 @WebObject(type="sites", guard="user=Administrator", facets={"Sites"})
-@Produces({"text/html; charset=UTF-8", "*/*; charset=UTF-8"})
+@Produces("text/html; charset=UTF-8")
 public class Sites extends DefaultObject {
 
     @GET

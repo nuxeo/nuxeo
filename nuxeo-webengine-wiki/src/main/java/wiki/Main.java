@@ -26,7 +26,7 @@ import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultModule;
 
 @WebObject(type = "wikis", facets = { "mainWiki" })
-@Produces( { "text/html; charset=UTF-8", "*/*; charset=UTF-8" })
+@Produces("text/html; charset=UTF-8")
 public class Main extends DefaultModule {
 
     DocumentModel doc;

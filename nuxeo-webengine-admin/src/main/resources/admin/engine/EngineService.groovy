@@ -10,7 +10,7 @@ import org.nuxeo.runtime.api.*;
 import org.nuxeo.ecm.platform.usermanager.*;
 
 @WebObject(type="Engine")
-@Produces(["text/html", "*/*"])
+@Produces(["text/html; charset=UTF-8"])
 public class EngineService extends DefaultObject {
 
   @GET
