@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -56,7 +57,7 @@ public class JbpmComponent extends DefaultComponent implements
 
     private JbpmConfiguration jbpmConfiguration;
 
-    private final Map<String, String[]> typeFiltersContrib = new HashMap<String, String[]>();
+    private final Map<String, List<String>> typeFiltersContrib = new HashMap<String, List<String>>();
 
     private String activeConfigurationName;
 
@@ -105,8 +106,8 @@ public class JbpmComponent extends DefaultComponent implements
             break;
         case typeFilter:
             TypeFilterDescriptor tfd = (TypeFilterDescriptor) contribution;
-            typeFiltersContrib.put(tfd.getProcessDefinitionName(),
-                    tfd.getAllowedType().toArray(new String[] {}));
+            typeFiltersContrib.put(tfd.getType(),
+                    tfd.getPDs());
             break;
         }
     }

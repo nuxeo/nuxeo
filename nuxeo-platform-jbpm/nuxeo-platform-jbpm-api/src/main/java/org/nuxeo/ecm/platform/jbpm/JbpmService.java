@@ -90,6 +90,7 @@ public interface JbpmService {
      *
      * @param currentUser the user.
      * @return A list of task instances.
+     * @throws IllegalStateException If the currentUser is null.
      */
     List<TaskInstance> getCurrentTaskInstances(
             final NuxeoPrincipal currentUser, JbpmListFilter filter)
@@ -162,6 +163,7 @@ public interface JbpmService {
      *
      * @param principal
      * @return A list of ProcessInstance
+     * @throws IllegalStateException If the principal is null.
      */
     List<ProcessInstance> getCurrentProcessInstances(NuxeoPrincipal principal,
             JbpmListFilter filter) throws NuxeoJbpmException;
@@ -196,8 +198,8 @@ public interface JbpmService {
 
     /**
      * Return a list of available Process Definition Name available for this
-     * document and user. All process definition if dm is <code>null</code>.
-     * The returned process definition is always the latest.
+     * document and user. All process definition if dm is <code>null</code>. The
+     * returned process definition is always the latest.
      *
      * @param user the caller.
      * @param dm the document concerned by the process
@@ -205,6 +207,27 @@ public interface JbpmService {
      */
     List<ProcessDefinition> getProcessDefinitions(NuxeoPrincipal user,
             DocumentModel dm, JbpmListFilter filter) throws NuxeoJbpmException;
+
+    /**
+     * Return the latest process definition attached to a type.
+     *
+     * Matching between type and process definition is done in the typeFilter
+     * extension point of the service.
+     *
+     * @param type the type.
+     * @return A list of process definition.
+     */
+    List<ProcessDefinition> getLatestProcessDefinitionByType(String type)
+            throws NuxeoJbpmException;
+
+    /**
+     * Return the latest process definition with this name.
+     *
+     * @param name the Name.
+     * @return the process definition.
+     */
+    ProcessDefinition getLatestProcessDefinitionByName(String name)
+            throws NuxeoJbpmException;
 
     /**
      * Terminate this process and all the tokens in it.
@@ -268,7 +291,7 @@ public interface JbpmService {
             NuxeoPrincipal user, JbpmListFilter jbpmListFilter)
             throws NuxeoJbpmException;
 
-    Map<String, String[]> getTypeFilterConfiguration();
+    Map<String, List<String>> getTypeFilterConfiguration();
 
     Boolean getPermission(ProcessInstance pi, JbpmSecurityPolicy.Action action,
             DocumentModel dm, NuxeoPrincipal principal)

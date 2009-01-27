@@ -58,7 +58,7 @@ public class JbpmServiceImpl implements JbpmService {
 
     private static final String FROM_ORG_JBPM_TASKMGMT_EXE_TASK_INSTANCE_TI_WHERE_TI_END_IS_NULL = "from org.jbpm.taskmgmt.exe.TaskInstance ti where ti.end is null";
 
-    private Map<String, String[]> typeFilters;
+    private Map<String, List<String>> typeFilters;
 
     private JbpmConfiguration configuration;
 
@@ -103,6 +103,9 @@ public class JbpmServiceImpl implements JbpmService {
             return (List<TaskInstance>) executeJbpmOperation(new JbpmOperation() {
                 public ArrayList<TaskInstance> run(JbpmContext context)
                         throws NuxeoJbpmException {
+                    if (currentUser == null) {
+                        throw new IllegalStateException("Null current user");
+                    }
                     context.setActorId(NuxeoPrincipal.PREFIX
                             + currentUser.getName());
                     List<String> groups = currentUser.getAllGroups();
@@ -152,7 +155,9 @@ public class JbpmServiceImpl implements JbpmService {
         ProcessInstance pi = (ProcessInstance) executeJbpmOperation(new JbpmOperation() {
             public ProcessInstance run(JbpmContext context)
                     throws NuxeoJbpmException {
-                context.setActorId(NuxeoPrincipal.PREFIX + user.getName());
+                if (user != null) {
+                    context.setActorId(NuxeoPrincipal.PREFIX + user.getName());
+                }
                 ProcessInstance pi = context.newProcessInstance(processDefinitionName);
                 if (variables != null) {
                     pi.getContextInstance().addVariables(variables);
@@ -188,7 +193,9 @@ public class JbpmServiceImpl implements JbpmService {
         List<ProcessInstance> res = (List<ProcessInstance>) executeJbpmOperation(new JbpmOperation() {
             public ArrayList<ProcessInstance> run(JbpmContext context)
                     throws NuxeoJbpmException {
-
+                if (principal == null) {
+                    throw new IllegalStateException("Null principal");
+                }
                 ArrayList<ProcessInstance> initiatorPD = new ArrayList<ProcessInstance>();
                 List<ProcessDefinition> pds = context.getGraphSession().findAllProcessDefinitions();
                 for (ProcessDefinition pd : pds) {
@@ -237,7 +244,9 @@ public class JbpmServiceImpl implements JbpmService {
         return (DocumentModel) executeJbpmOperation(new JbpmOperation() {
             public Serializable run(JbpmContext context)
                     throws NuxeoJbpmException {
-                context.setActorId(NuxeoPrincipal.PREFIX + user.getName());
+                if (user != null) {
+                    context.setActorId(NuxeoPrincipal.PREFIX + user.getName());
+                }
                 TaskInstance sessionedTi = context.getTaskInstance(ti.getId());
                 String docId = (String) sessionedTi.getVariable(JbpmService.VariableName.documentId.name());
                 String repoId = (String) sessionedTi.getVariable(JbpmService.VariableName.documentRepositoryName.name());
@@ -448,7 +457,8 @@ public class JbpmServiceImpl implements JbpmService {
             public Serializable run(JbpmContext context)
                     throws NuxeoJbpmException {
                 if (principal != null) {
-                context.setActorId(NuxeoPrincipal.PREFIX + principal.getName());
+                    context.setActorId(NuxeoPrincipal.PREFIX
+                            + principal.getName());
                 }
                 // jbpm code returns an array list.
                 return (Serializable) context.getTaskInstance(taskInstanceId).getAvailableTransitions();
@@ -516,7 +526,9 @@ public class JbpmServiceImpl implements JbpmService {
         return (List<ProcessDefinition>) executeJbpmOperation(new JbpmOperation() {
             public ArrayList<ProcessDefinition> run(JbpmContext context)
                     throws NuxeoJbpmException {
-                context.setActorId(NuxeoPrincipal.PREFIX + user.getName());
+                if (user != null) {
+                    context.setActorId(NuxeoPrincipal.PREFIX + user.getName());
+                }
                 List<ProcessDefinition> pds = context.getGraphSession().findLatestProcessDefinitions();
                 ArrayList<ProcessDefinition> result = new ArrayList<ProcessDefinition>(
                         pds);
@@ -555,11 +567,11 @@ public class JbpmServiceImpl implements JbpmService {
         });
     }
 
-    public Map<String, String[]> getTypeFilterConfiguration() {
+    public Map<String, List<String>> getTypeFilterConfiguration() {
         return typeFilters;
     }
 
-    protected void setTypeFilters(Map<String, String[]> typeFilters) {
+    protected void setTypeFilters(Map<String, List<String>> typeFilters) {
         this.typeFilters = typeFilters;
     }
 
@@ -569,6 +581,9 @@ public class JbpmServiceImpl implements JbpmService {
             @SuppressWarnings("unchecked")
             public Serializable run(JbpmContext context)
                     throws NuxeoJbpmException {
+                if(principal != null) {
+                    context.setActorId(principal.getName());
+                }
                 ProcessInstance pi = context.getProcessInstance(processId);
                 Collection<TaskInstance> tis = pi.getTaskMgmtInstance().getTaskInstances();
                 TaskMgmtInstance taskMgmt = pi.getTaskMgmtInstance();
@@ -583,6 +598,36 @@ public class JbpmServiceImpl implements JbpmService {
                 }
                 pi.end();
                 return null;
+            }
+        });
+    }
+
+    public ProcessDefinition getLatestProcessDefinitionByName(final String name)
+            throws NuxeoJbpmException {
+        return (ProcessDefinition) executeJbpmOperation(new JbpmOperation() {
+            public Serializable run(JbpmContext context)
+                    throws NuxeoJbpmException {
+                return context.getGraphSession().findLatestProcessDefinition(
+                        name);
+            }
+        });
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<ProcessDefinition> getLatestProcessDefinitionByType(
+            final String type) throws NuxeoJbpmException {
+        return (List<ProcessDefinition>) executeJbpmOperation(new JbpmOperation() {
+            public Serializable run(JbpmContext context)
+                    throws NuxeoJbpmException {
+                List<String> pdsName = typeFilters.get(type);
+                if (pdsName == null) {
+                    return new ArrayList<ProcessDefinition>();
+                }
+                ArrayList<ProcessDefinition> pds = new ArrayList<ProcessDefinition>();
+                for (String name : pdsName) {
+                    pds.add(getLatestProcessDefinitionByName(name));
+                }
+                return pds;
             }
         });
     }

@@ -16,7 +16,6 @@
  */
 package org.nuxeo.ecm.platform.jbpm.core;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -74,11 +73,11 @@ public class JbpmServiceTest extends RepositoryOSGITestCase {
     }
 
     public void testTypeFilter() throws Exception {
-        Map<String, String[]> typeFilters = service.getTypeFilterConfiguration();
+        Map<String, List<String>> typeFilters = service.getTypeFilterConfiguration();
         assertEquals(2, typeFilters.size());
-        assertEquals(2, typeFilters.get("review_parallel").length);
-        assertTrue(Arrays.equals(typeFilters.get("review_parallel"),
-                new String[] { "File", "Note" }));
+        assertEquals(2, typeFilters.get("Note").size());
+        assertTrue(typeFilters.get("Note").contains("review_parallel"));
+        assertTrue(typeFilters.get("Note").contains("review_approbation"));
     }
 
     public void testProcessInstanceLifecycle() throws Exception {

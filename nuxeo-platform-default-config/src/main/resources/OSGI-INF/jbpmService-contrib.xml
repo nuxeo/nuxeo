@@ -4,7 +4,8 @@
   <extension target="org.nuxeo.ecm.platform.jbpm.core.JbpmService"
     point="processDefinition">
 
-    <processDefinition path="process/parallel-review.xml" deployer="ifChanged" />
+    <processDefinition path="process/parallel-review.xml"
+      deployer="ifChanged" />
     <processDefinition path="process/validation-review.xml"
       deployer="ifChanged" />
 
@@ -22,17 +23,13 @@
     point="typeFilter">
 
     <type name="Note">
-      <processDefinition name="review_parallel" />
-      <processDefinition name="review_approbation" />
+      <processDefinition>review_parallel</processDefinition>
+      <processDefinition>review_approbation</processDefinition>
     </type>
-    <processDefinition name="review_parallel">
-      <type>File</type>
-      <type>Note</type>
-    </processDefinition>
-    <processDefinition name="review_approbation">
-      <type>File</type>
-      <type>Node</type>
-    </processDefinition>
+    <type name="File">
+      <processDefinition>review_parallel</processDefinition>
+      <processDefinition>review_approbation</processDefinition>
+    </type>
   </extension>
 
 </component>

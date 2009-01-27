@@ -27,21 +27,21 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @author arussel
  *
  */
-@XObject("processDefinition")
+@XObject("type")
 public class TypeFilterDescriptor {
 
     @XNode("@name")
-    private String processDefinitionName;
+    private String type;
 
-    @XNodeList(value="type", componentType=String.class, type=ArrayList.class)
-    private List<String> allowedTypes;
+    @XNodeList(value="processDefinition", componentType=String.class, type=ArrayList.class)
+    private List<String> pds;
 
-    public String getProcessDefinitionName() {
-        return processDefinitionName;
+    public String getType() {
+        return type;
     }
 
-    public List<String> getAllowedType() {
-        return allowedTypes;
+    public List<String> getPDs() {
+        return pds;
     }
 
 }
