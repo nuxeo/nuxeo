@@ -41,6 +41,7 @@
       <artifact group="org.nuxeo.ecm.webengine" name="nuxeo-webengine-core" />
       <artifact group="org.nuxeo.ecm.webengine" name="nuxeo-webengine-admin" />
       <artifact group="org.nuxeo.ecm.webengine" name="nuxeo-webengine-wiki" />
+      <artifact group="org.nuxeo.ecm.webengine" name="nuxeo-webengine-sites" />
       <artifact group="org.nuxeo.ecm.webengine"
         name="nuxeo-webengine-resteasy-adapter" />
       <!-- nuxeo-addons -->
