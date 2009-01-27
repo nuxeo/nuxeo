@@ -9,12 +9,15 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.SimplePrincipal;
+import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventContext;
@@ -93,7 +96,7 @@ public class JMSEventBundle implements Serializable {
             for (Object arg : args) {
                 if (arg instanceof DocumentModel) {
                     DocumentModel doc = (DocumentModel) arg;
-                    String strRepresentation = doc.getRepositoryName() + ":" +  doc.getId();
+                    String strRepresentation = doc.getRepositoryName() + ":" +  doc.getId() + ":" + doc.getType() + ":" + doc.getPathAsString();
                     listArgs.add("DOCREF:" + strRepresentation);
                 }
                 else if (arg instanceof Serializable) {
@@ -187,7 +190,13 @@ public class JMSEventBundle implements Serializable {
                         DocumentRef idRef = new IdRef(part[2]);
                         DocumentModel doc=null;
                         try {
-                            doc = session.getDocument(idRef);
+                            if (session.exists(idRef)) {
+                                doc = session.getDocument(idRef);
+                            }
+                            else {
+                                String parentPath = new Path(part[4]).removeLastSegments(1).toString();
+                                doc = new DocumentModelImpl(session.getSessionId(),part[3],part[2],new Path(part[4]),idRef,new PathRef(parentPath),null,null);
+                            }
                         }
                         catch (ClientException e) {
                             // TODO
@@ -203,7 +212,6 @@ public class JMSEventBundle implements Serializable {
                 args[idx]=value;
                 idx++;
             }
-
 
             if ((Boolean)evt.get("isDocumentEventContext")) {
                 ctx = new DocumentEventContext(session,principal,(DocumentModel) args[0], (DocumentRef)args[1]);

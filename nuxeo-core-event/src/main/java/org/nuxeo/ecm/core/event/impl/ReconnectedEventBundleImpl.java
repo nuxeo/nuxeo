@@ -84,8 +84,10 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
         } else {
             // Sanity Check
             if (!reconnectedCoreSession.getRepositoryName().equals(repoName)) {
-                throw new IllegalStateException(
-                        "Can no reconnected a Bundle tied to several Core instances !");
+                if (repoName!=null) {
+                    throw new IllegalStateException(
+                            "Can no reconnected a Bundle tied to several Core instances !");
+                }
             }
         }
         return reconnectedCoreSession;
@@ -109,7 +111,12 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
                         DocumentRef ref = oldDoc.getRef();
                         if (ref != null) {
                             try {
-                                newArg = session.getDocument(oldDoc.getRef());
+                                if (session.exists(oldDoc.getRef())) {
+                                    newArg = session.getDocument(oldDoc.getRef());
+                                } else {
+                                    // probably deleted doc
+                                    newArg = oldDoc;
+                                }
                             } catch (ClientException e) {
                                 log.error("Can not refetch Doc with ref "
                                         + ref.toString(), e);
