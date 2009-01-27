@@ -73,8 +73,9 @@ public class LogEntryProvider {
 
     @SuppressWarnings("unchecked")
     public List<LogEntry> getLogEntriesFor(String uuid) {
-        if (log.isDebugEnabled())
+        if (log.isDebugEnabled()) {
             log.debug("getLogEntriesFor() UUID=" + uuid);
+        }
         Query query = em.createNamedQuery("LogEntry.findByDocument");
         query.setParameter("docUUID", uuid);
         return doPublish(query.getResultList());
@@ -84,12 +85,11 @@ public class LogEntryProvider {
     @Deprecated
     public List<LogEntry> getLogEntriesFor(String uuid,
             Map<String, FilterMapEntry> filterMap, boolean doDefaultSort) {
-        if (log.isDebugEnabled())
+        if (log.isDebugEnabled()) {
             log.debug("getLogEntriesFor() UUID=" + uuid);
+        }
 
         if (filterMap == null) {
-            if (log.isWarnEnabled())
-                log.warn("filter map is null");
             filterMap = new HashMap<String, FilterMapEntry>();
         }
 
@@ -139,8 +139,9 @@ public class LogEntryProvider {
     }
 
     public LogEntry getLogEntryByID(long id) {
-        if (log.isDebugEnabled())
+        if (log.isDebugEnabled()) {
             log.debug("getLogEntriesFor() logID=" + id);
+        }
         return doPublish(em.find(LogEntry.class, id));
     }
 
@@ -161,8 +162,9 @@ public class LogEntryProvider {
             throw new IllegalArgumentException(
                     "You must give a not null eventId");
         }
-        if (log.isDebugEnabled())
+        if (log.isDebugEnabled()) {
             log.debug("queryLogs() whereClause=" + eventIds);
+        }
 
         Date limit;
         try {
@@ -263,8 +265,9 @@ public class LogEntryProvider {
             em.remove(entry);
             count += 1;
         }
-        if (log.isDebugEnabled())
+        if (log.isDebugEnabled()) {
             log.debug("removed " + count + " entries from " + pathPattern);
+        }
         return count;
     }
 
