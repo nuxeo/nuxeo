@@ -32,15 +32,17 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.event.CoreEvent;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyException;
-import org.nuxeo.ecm.core.listener.AbstractEventListener;
+import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.EventContext;
+import org.nuxeo.ecm.core.event.EventListener;
+import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.runtime.api.Framework;
 
-public class DigestComputer extends AbstractEventListener {
+public class DigestComputer implements EventListener {
 
     private Boolean initDone = false;
 
@@ -67,30 +69,6 @@ public class DigestComputer extends AbstractEventListener {
         }
 
         return initDone;
-    }
-
-    @Override
-    public void notifyEvent(CoreEvent coreEvent) throws Exception {
-        if (!initIfNeeded()) {
-            return;
-        }
-
-        if (!activateDigestComputation) {
-            return;
-        }
-
-        Object source = coreEvent.getSource();
-        if (source instanceof DocumentModel) {
-            DocumentModel doc = (DocumentModel) source;
-            if (doc.isProxy()) {
-                return;
-            }
-            String evt = coreEvent.getEventId();
-            if (DocumentEventTypes.ABOUT_TO_CREATE.equals(evt)
-                    || DocumentEventTypes.BEFORE_DOC_UPDATE.equals(evt)) {
-                addDigestToDocument(doc);
-            }
-        }
     }
 
     private void addDigestToDocument(DocumentModel doc) {
@@ -137,6 +115,30 @@ public class DigestComputer extends AbstractEventListener {
         }
         byte[] b = md.digest();
         return Base64.encodeBytes(b);
+    }
+
+    public void handleEvent(Event event) throws ClientException {
+        if (!initIfNeeded()) {
+            return;
+        }
+
+        if (!activateDigestComputation) {
+            return;
+        }
+
+        EventContext ctx = event.getContext();
+        if (ctx instanceof DocumentEventContext) {
+            DocumentEventContext docCtx = (DocumentEventContext) ctx;
+                DocumentModel doc = (DocumentModel) docCtx.getSourceDocument();
+                if (doc.isProxy()) {
+                    return;
+                }
+                String evt = event.getName();
+                if (DocumentEventTypes.ABOUT_TO_CREATE.equals(evt)
+                        || DocumentEventTypes.BEFORE_DOC_UPDATE.equals(evt)) {
+                    addDigestToDocument(doc);
+                }
+        }
     }
 
 }
