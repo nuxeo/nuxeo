@@ -35,7 +35,7 @@
   	</dependency>
   	<dependency>
   		<groupId>org.nuxeo.ecm.platform</groupId>
-  		<artifactId>nuxeo-platform-management-core</artifactId>
+  		<artifactId>nuxeo-platform-management</artifactId>
   		<version>${nuxeo.platform.version}</version>
   		<scope>compile</scope>
   	</dependency>
