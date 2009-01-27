@@ -29,8 +29,8 @@
     <schema name="files" src="schema/files.xsd"/>
     <schema name="note" src="schema/note.xsd"/>
     <schema name="domain" src="schema/domain.xsd"/>
-    
-    <schema name="publish_ergo" src="schemas/publish_ergo.xsd" />
+
+    <schema name="publish_ergo" src="schema/publish_ergo.xsd" />
     <schema name="webcontainer" prefix="webc" src="schema/webcontainer.xsd"/>
 
   </extension>
