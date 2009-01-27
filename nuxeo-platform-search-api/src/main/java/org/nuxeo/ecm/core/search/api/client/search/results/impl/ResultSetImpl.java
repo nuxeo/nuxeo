@@ -50,6 +50,7 @@ public class ResultSetImpl extends ArrayList<ResultItem> implements ResultSet {
 
     protected final int offset;
 
+    /** 0 means all results */
     protected final int range;
 
     protected final int totalHits;
@@ -120,8 +121,7 @@ public class ResultSetImpl extends ArrayList<ResultItem> implements ResultSet {
     }
 
     public ResultSet goToPage(int page) throws SearchException {
-        int current = getPageNumber();
-        int newOffset = range * (page - current) + offset;
+        int newOffset = range * (page - 1);
         if (newOffset >= 0 && newOffset < totalHits) {
             return replay(newOffset, range);
         }
@@ -137,6 +137,9 @@ public class ResultSetImpl extends ArrayList<ResultItem> implements ResultSet {
     }
 
     public boolean hasNextPage() {
+        if (range == 0) {
+            return false;
+        }
         if (pageHits < range) {
             return false;
         }
@@ -144,7 +147,7 @@ public class ResultSetImpl extends ArrayList<ResultItem> implements ResultSet {
     }
 
     public boolean isFirstPage() {
-        return offset < range;
+        return range == 0 ? true : offset < range;
     }
 
     public ResultSet replay() throws SearchException {
@@ -195,6 +198,9 @@ public class ResultSetImpl extends ArrayList<ResultItem> implements ResultSet {
     }
 
     public int getPageNumber() {
+        if (range == 0) {
+            return 1;
+        }
         return (offset + range) / range;
     }
 

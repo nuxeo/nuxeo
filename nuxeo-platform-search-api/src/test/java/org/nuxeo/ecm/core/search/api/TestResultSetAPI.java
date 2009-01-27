@@ -64,6 +64,11 @@ public class TestResultSetAPI extends TestCase {
         assertFalse(set.isFirstPage());
         assertTrue(set.hasNextPage());
         assertEquals(2, set.getPageNumber());
+
+        set = new ResultSetImpl((SQLQuery) null, null, 0, 0, null, 30, 10);
+        assertTrue(set.isFirstPage());
+        assertFalse(set.hasNextPage());
+        assertEquals(1, set.getPageNumber());
     }
 
     public void testRoundBatches() {
