@@ -138,7 +138,6 @@ public class WebEngine implements ResourceLocator {
             skinPathPrefix = System.getProperty("jboss.home.dir") != null ? "/nuxeo/site/skin" : "/skin";
         }
 
-        //registerRootBinding();        
 
         env = new HashMap<String, Object>();
         env.put("installDir", root);
@@ -168,10 +167,6 @@ public class WebEngine implements ResourceLocator {
      */
     public void setSkinPathPrefix(String skinPathPrefix) {
         this.skinPathPrefix = skinPathPrefix;
-    }
-
-    public void registerRootBinding() {
-    	registry.addBinding(new ResourceBinding("/", ModuleDispatcher.class, false));
     }
     
     /**

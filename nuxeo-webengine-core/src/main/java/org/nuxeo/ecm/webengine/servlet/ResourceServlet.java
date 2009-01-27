@@ -79,7 +79,7 @@ public class ResourceServlet extends HttpServlet {
             return;
         }
 
-        service(req, resp, module, path);
+        service(req, resp, module, "/resources"+path);
     }
 
     protected void service(HttpServletRequest req, HttpServletResponse resp, Module module, String path)
