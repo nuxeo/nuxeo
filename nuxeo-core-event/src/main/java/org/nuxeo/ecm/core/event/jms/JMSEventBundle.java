@@ -73,7 +73,7 @@ public class JMSEventBundle implements Serializable {
 
             serializableEvent.put("name", event.getName());
             serializableEvent.put("time", Long.toString(event.getTime()));
-            serializableEvent.put("contextProperties", (Serializable)filterContextProperties(event.getContext().getProperties()));
+            serializableEvent.put("contextProperties", (Serializable)event.getContext().getProperties());
             if (evtSession!=null) {
                     serializableEvent.put("contextSessionId", evtSession.getSessionId());
             }

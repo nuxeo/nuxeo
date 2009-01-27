@@ -35,7 +35,7 @@ public final class CoreEventConstants {
      * Document is passed as an option in event in case old listeners need it
      * and cannot handle the document model.
      */
-    public static final String DOCUMENT = "document";
+    //public static final String DOCUMENT = "document";
 
     /**
      * Path the of the container of the empty document model that is being

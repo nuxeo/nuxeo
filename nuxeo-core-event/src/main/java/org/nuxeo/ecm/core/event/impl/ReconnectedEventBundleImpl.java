@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
@@ -27,7 +28,8 @@ import org.nuxeo.ecm.core.event.ReconnectedEventBundle;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Default implementation for an {@link EventBundle} that need to be reconnected to a usable Session
+ * Default implementation for an {@link EventBundle} that need to be reconnected
+ * to a usable Session
  *
  * @author tiry
  *
@@ -44,17 +46,19 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
 
     protected CoreSession reconnectedCoreSession;
 
-    private static final Log log = LogFactory.getLog(ReconnectedEventBundleImpl.class);
+    private static final Log log = LogFactory
+            .getLog(ReconnectedEventBundleImpl.class);
 
     public ReconnectedEventBundleImpl() {
 
     }
+
     public ReconnectedEventBundleImpl(EventBundle sourceEventBundle) {
-        this.sourceEventBundle=sourceEventBundle;
+        this.sourceEventBundle = sourceEventBundle;
     }
 
     protected CoreSession getReconnectedCoreSession(String repoName) {
-        if (reconnectedCoreSession==null) {
+        if (reconnectedCoreSession == null) {
             try {
                 loginCtx = Framework.login();
             } catch (LoginException e) {
@@ -63,7 +67,8 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
             }
 
             try {
-                RepositoryManager mgr = Framework.getService(RepositoryManager.class);
+                RepositoryManager mgr = Framework
+                        .getService(RepositoryManager.class);
                 Repository repo;
                 if (repoName != null) {
                     repo = mgr.getRepository(repoName);
@@ -72,30 +77,29 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
                 }
 
                 reconnectedCoreSession = repo.open();
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 log.error("Error while openning core session", e);
                 return null;
             }
-        }
-        else {
+        } else {
             // Sanity Check
             if (!reconnectedCoreSession.getRepositoryName().equals(repoName)) {
-                throw new IllegalStateException("Can no reconnected a Bundle tied to several Core instances !");
+                throw new IllegalStateException(
+                        "Can no reconnected a Bundle tied to several Core instances !");
             }
         }
         return reconnectedCoreSession;
     }
 
-
     protected List<Event> getReconnectedEvents() {
-        if (reconnectedEvents==null) {
+        if (reconnectedEvents == null) {
             reconnectedEvents = new ArrayList<Event>();
             for (Event event : sourceEventBundle.getEvents()) {
 
                 EventContext ctx = event.getContext();
                 EventContext newCtx = null;
-                CoreSession session = getReconnectedCoreSession(ctx.getCoreSession().getRepositoryName());
+                CoreSession session = getReconnectedCoreSession(ctx
+                        .getCoreSession().getRepositoryName());
 
                 List<Object> newArgs = new ArrayList<Object>();
                 for (Object arg : ctx.getArguments()) {
@@ -103,11 +107,12 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
                     if (arg instanceof DocumentModel) {
                         DocumentModel oldDoc = (DocumentModel) arg;
                         DocumentRef ref = oldDoc.getRef();
-                        if (ref!=null) {
+                        if (ref != null) {
                             try {
                                 newArg = session.getDocument(oldDoc.getRef());
                             } catch (ClientException e) {
-                                log.error("Can not refetch Doc with ref " + ref.toString(), e);
+                                log.error("Can not refetch Doc with ref "
+                                        + ref.toString(), e);
                             }
                         }
                     }
@@ -116,36 +121,33 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
                 }
 
                 if (ctx instanceof DocumentEventContext) {
-                    newCtx = new DocumentEventContext(session,ctx.getPrincipal(),(DocumentModel) newArgs.get(0), (DocumentRef)newArgs.get(1));
+                    newCtx = new DocumentEventContext(session, ctx
+                            .getPrincipal(), (DocumentModel) newArgs.get(0),
+                            (DocumentRef) newArgs.get(1));
                 } else {
-                    newCtx = new EventContextImpl(session,ctx.getPrincipal());
-                    ((EventContextImpl)newCtx).setArgs(newArgs.toArray());
+                    newCtx = new EventContextImpl(session, ctx.getPrincipal());
+                    ((EventContextImpl) newCtx).setArgs(newArgs.toArray());
                 }
 
                 Map<String, Serializable> newProps = new HashMap<String, Serializable>();
-                for (String propName : ctx.getProperties().keySet()) {
-                    Object propValueOb = ctx.getProperty(propName);
-                    if (propValueOb instanceof Serializable) {
-                        Serializable propValue = (Serializable) propValueOb;
-                        if (propValue instanceof DocumentModel) {
-                            DocumentModel oldDoc = (DocumentModel) propValue;
-                            try {
-                                propValue = session.getDocument(oldDoc.getRef());
-                            } catch (ClientException e) {
-                                log.error("Can not refetch Doc with ref " + oldDoc.getRef().toString(), e);
-                            }
+                for (Entry<String, Serializable> prop : ctx.getProperties()
+                        .entrySet()) {
+                    Serializable propValue = prop.getValue();
+                    if (propValue instanceof DocumentModel) {
+                        DocumentModel oldDoc = (DocumentModel) propValue;
+                        try {
+                            propValue = session.getDocument(oldDoc.getRef());
+                        } catch (ClientException e) {
+                            log.error("Can not refetch Doc with ref "
+                                    + oldDoc.getRef().toString(), e);
                         }
-                        // XXX treat here other cases !!!!
-                        newProps.put(propName, propValue);
                     }
-                    else {
-                        log.warn("EventBundle contains non serializablee property : " + propValueOb.getClass().getSimpleName());
-                    }
+                    // XXX treat here other cases !!!!
+                    newProps.put(prop.getKey(), propValue);
                 }
                 newCtx.setProperties(newProps);
-
-                Event newEvt = new EventImpl(event.getName(),newCtx,event.getFlags(), event.getTime());
-
+                Event newEvt = new EventImpl(event.getName(), newCtx, event
+                        .getFlags(), event.getTime());
                 reconnectedEvents.add(newEvt);
             }
         }
@@ -157,7 +159,8 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
     }
 
     public Event[] getEvents() {
-        return getReconnectedEvents().toArray(new Event[getReconnectedEvents().size()]);
+        return getReconnectedEvents().toArray(
+                new Event[getReconnectedEvents().size()]);
     }
 
     public String getName() {
@@ -193,25 +196,19 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
     }
 
     public void disconnect() {
-        if (reconnectedCoreSession!=null) {
+        if (reconnectedCoreSession != null) {
             CoreInstance.getInstance().close(reconnectedCoreSession);
         }
-        if (loginCtx!=null) {
+        if (loginCtx != null) {
             try {
                 loginCtx.logout();
             } catch (LoginException e) {
                 log.error("Error while logging out", e);
             }
         }
-
     }
 
     public boolean comesFromJMS() {
         return false;
     }
-
-
-
-
-
 }

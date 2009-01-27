@@ -294,8 +294,8 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
-    protected Map<String, Object> getContextMapEventInfo(DocumentModel doc) {
-        Map<String, Object> options = new HashMap<String, Object>();
+    protected Map<String, Serializable> getContextMapEventInfo(DocumentModel doc) {
+        Map<String, Serializable> options = new HashMap<String, Serializable>();
         if (doc != null) {
             ScopedMap ctxData = doc.getContextData();
             if (ctxData != null) {
@@ -330,23 +330,14 @@ public abstract class AbstractSession implements CoreSession,
 
     @SuppressWarnings("unchecked")
     protected void notifyEvent(String eventId, DocumentModel source,
-            Map<String, ?> options, String category, String comment,
+            Map<String, Serializable> options, String category, String comment,
             boolean withLifeCycle) throws ClientException {
 
         DocumentEventContext ctx = new DocumentEventContext(this, getPrincipal(), source);
 
         // compatibility with old code (< 5.2.M4) - import info from old event model
         if (options != null) {
-            Map<String,Serializable> eventProperties = new HashMap<String, Serializable>();
-            // Sanity check since option is Map<String, ?>
-            for (Entry<String,?> entry : options.entrySet()) {
-                if (entry.getValue() instanceof Serializable) {
-                    eventProperties.put(entry.getKey(),(Serializable) entry.getValue());
-                } else {
-                    log.warn("option map contains non serializable value under key" + entry.getKey());
-                }
-            }
-            ctx.setProperties(eventProperties);
+            ctx.setProperties(options);
         }
         ctx.setProperty(CoreEventConstants.REPOSITORY_NAME, repositoryName);
         ctx.setProperty(CoreEventConstants.SESSION_ID, sessionId);
@@ -394,8 +385,8 @@ public abstract class AbstractSession implements CoreSession,
      * @param options additional info to pass to the event
      */
     protected void notifyVersionChange(DocumentModel oldDocument,
-            DocumentModel newDocument, Map<String, Object> options) throws ClientException {
-        final Map<String, Object> info = new HashMap<String, Object>();
+            DocumentModel newDocument, Map<String, Serializable> options) throws ClientException {
+        final Map<String, Serializable> info = new HashMap<String, Serializable>();
         if (options != null) {
             info.putAll(options);
         }
@@ -539,11 +530,11 @@ public abstract class AbstractSession implements CoreSession,
                 doc.unlock();
             }
 
-            Map<String, Object> options = new HashMap<String, Object>();
+            Map<String, Serializable> options = new HashMap<String, Serializable>();
 
             // notify document created by copy
             DocumentModel docModel = readModel(doc, null);
-            options.put(CoreEventConstants.DOCUMENT, doc);
+
             String comment = srcDoc.getRepository().getName() + ':'
                     + src.toString();
             notifyEvent(DocumentEventTypes.DOCUMENT_CREATED_BY_COPY, docModel,
@@ -553,7 +544,7 @@ public abstract class AbstractSession implements CoreSession,
             // notify document copied
             comment = doc.getRepository().getName() + ':'
                     + docModel.getRef().toString();
-            options.put(CoreEventConstants.DOCUMENT, srcDoc);
+
             notifyEvent(DocumentEventTypes.DOCUMENT_DUPLICATED, srcDocModel,
                     options, null, comment, true);
 
@@ -596,9 +587,8 @@ public abstract class AbstractSession implements CoreSession,
             docModel = createDocument(docModel);
             Document doc = resolveReference(docModel.getRef());
 
-            Map<String, Object> options = new HashMap<String, Object>();
+            Map<String, Serializable> options = new HashMap<String, Serializable>();
             // notify document created by copy
-            options.put(CoreEventConstants.DOCUMENT, doc);
             String comment = srcDoc.getRepository().getName() + ':'
                     + src.toString();
             notifyEvent(DocumentEventTypes.DOCUMENT_CREATED_BY_COPY, docModel,
@@ -607,7 +597,6 @@ public abstract class AbstractSession implements CoreSession,
             // notify document copied
             comment = doc.getRepository().getName() + ':'
                     + docModel.getRef().toString();
-            options.put(CoreEventConstants.DOCUMENT, srcDoc);
             notifyEvent(DocumentEventTypes.DOCUMENT_DUPLICATED, srcDocModel,
                     options, null, comment, true);
 
@@ -653,8 +642,7 @@ public abstract class AbstractSession implements CoreSession,
 
             // notify document moved
             DocumentModel docModel = readModel(doc, null);
-            Map<String, Object> options = new HashMap<String, Object>();
-            options.put(CoreEventConstants.DOCUMENT, doc);
+            Map<String, Serializable> options = new HashMap<String, Serializable>();
             options.put(CoreEventConstants.PARENT_PATH,
                     srcDocModel.getParentRef());
             notifyEvent(DocumentEventTypes.DOCUMENT_MOVED, docModel, options,
@@ -691,10 +679,9 @@ public abstract class AbstractSession implements CoreSession,
             checkPermission(doc, WRITE_SECURITY);
             DocumentModel docModel = readModel(doc, null);
 
-            Map<String, Object> options = new HashMap<String, Object>();
-            options.put(CoreEventConstants.DOCUMENT, doc);
-            options.put(CoreEventConstants.OLD_ACP, docModel.getACP().clone());
-            options.put(CoreEventConstants.NEW_ACP, newAcp.clone());
+            Map<String, Serializable> options = new HashMap<String, Serializable>();
+            options.put(CoreEventConstants.OLD_ACP, (Serializable)docModel.getACP().clone());
+            options.put(CoreEventConstants.NEW_ACP, (Serializable)newAcp.clone());
 
             notifyEvent(DocumentEventTypes.BEFORE_DOC_SECU_UPDATE, docModel,
                     options, null, null, true);
@@ -716,7 +703,7 @@ public abstract class AbstractSession implements CoreSession,
     }
 
     private DocumentModel createDocumentModelFromTypeName(String typeName,
-            Map<String, Object> options) throws ClientException {
+            Map<String, Serializable> options) throws ClientException {
         try {
             DocumentType docType = getSession().getTypeManager().getDocumentType(
                     typeName);
@@ -727,7 +714,7 @@ public abstract class AbstractSession implements CoreSession,
             DocumentModel docModel = DocumentModelFactory.createDocumentModel(
                     sessionId, docType);
             if (options == null) {
-                options = new HashMap<String, Object>();
+                options = new HashMap<String, Serializable>();
             }
             // do not forward this event on the JMS Bus
             options.put("BLOCK_JMS_PRODUCING", true);
@@ -741,13 +728,13 @@ public abstract class AbstractSession implements CoreSession,
 
     public DocumentModel createDocumentModel(String typeName)
             throws ClientException {
-        Map<String, Object> options = new HashMap<String, Object>();
+        Map<String, Serializable> options = new HashMap<String, Serializable>();
         return createDocumentModelFromTypeName(typeName, options);
     }
 
     public DocumentModel createDocumentModel(String parentPath, String id,
             String typeName) throws ClientException {
-        Map<String, Object> options = new HashMap<String, Object>();
+        Map<String, Serializable> options = new HashMap<String, Serializable>();
         options.put(CoreEventConstants.PARENT_PATH, parentPath);
         options.put(CoreEventConstants.DOCUMENT_MODEL_ID, id);
         DocumentModel model = createDocumentModelFromTypeName(typeName, options);
@@ -757,7 +744,13 @@ public abstract class AbstractSession implements CoreSession,
 
     public DocumentModel createDocumentModel(String typeName,
             Map<String, Object> options) throws ClientException {
-        return createDocumentModelFromTypeName(typeName, options);
+
+        Map<String, Serializable> serializableOptions = new HashMap<String, Serializable>();
+
+        for (Entry<String, Object> entry : options.entrySet()) {
+            serializableOptions.put(entry.getKey(), (Serializable)entry.getValue());
+        }
+        return createDocumentModelFromTypeName(typeName, serializableOptions);
     }
 
     public DocumentModel createDocument(DocumentModel docModel)
@@ -787,7 +780,7 @@ public abstract class AbstractSession implements CoreSession,
                 initialLifecycleState = (String) lifecycleStateinfo;
             }
 
-            Map<String, Object> options = getContextMapEventInfo(docModel);
+            Map<String, Serializable> options = getContextMapEventInfo(docModel);
             notifyEvent(DocumentEventTypes.ABOUT_TO_CREATE, docModel, options,
                     null, null, false); // no lifecycle yet
             name = generateDocumentName(folder, name);
@@ -810,7 +803,6 @@ public abstract class AbstractSession implements CoreSession,
             docModel = writeModel(doc, docModel);
 
             // re-read docmodel
-            options.put(CoreEventConstants.DOCUMENT, doc);
             notifyEvent(DocumentEventTypes.DOCUMENT_CREATED, docModel, options,
                     null, null, true);
             docModel = writeModel(doc, docModel);
@@ -1546,8 +1538,7 @@ public abstract class AbstractSession implements CoreSession,
             DocumentException {
         // XXX notify with options if needed
         DocumentModel docModel = readModel(doc, null);
-        Map<String, Object> options = new HashMap<String, Object>();
-        options.put(CoreEventConstants.DOCUMENT, doc);
+        Map<String, Serializable> options = new HashMap<String, Serializable>();
         if (docModel != null) {
             options.put("docTitle", docModel.getTitle());
         }
@@ -1562,7 +1553,6 @@ public abstract class AbstractSession implements CoreSession,
         }
         doc.remove();
         if (!doc.isVersion()) {
-            options.remove(CoreEventConstants.DOCUMENT);
             notifyEvent(DocumentEventTypes.DOCUMENT_REMOVED, docModel, options,
                     null, null, false);
         }
@@ -1606,7 +1596,7 @@ public abstract class AbstractSession implements CoreSession,
 
     public void save() throws ClientException {
         try {
-            final Map<String, Object> options = new HashMap<String, Object>();
+            final Map<String, Serializable> options = new HashMap<String, Serializable>();
             getSession().save();
             notifyEvent(DocumentEventTypes.SESSION_SAVED, null, options, null,
                     null, true);
@@ -1630,7 +1620,7 @@ public abstract class AbstractSession implements CoreSession,
             checkPermission(doc, WRITE_PROPERTIES);
 
             // add document context data to core event
-            Map<String, Object> options = getContextMapEventInfo(docModel);
+            Map<String, Serializable> options = getContextMapEventInfo(docModel);
 
             // TODO make this configurable or put in other place
             final ScopedMap ctxData = docModel.getContextData();
@@ -1649,7 +1639,6 @@ public abstract class AbstractSession implements CoreSession,
                         VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, null);
             }
 
-            options.put(CoreEventConstants.DOCUMENT, doc);
             notifyEvent(DocumentEventTypes.BEFORE_DOC_UPDATE, docModel,
                     options, null, null, true);
 
@@ -1890,7 +1879,7 @@ public abstract class AbstractSession implements CoreSession,
             // we're about to overwrite the document, make sure it's archived
             createDocumentSnapshot(docModel);
 
-            final Map<String, Object> options = new HashMap<String, Object>();
+            final Map<String, Serializable> options = new HashMap<String, Serializable>();
 
             // FIXME: the fields are hardcoded. should be moved in versioning
             // component
@@ -1905,7 +1894,6 @@ public abstract class AbstractSession implements CoreSession,
                         VersioningDocument.CURRENT_DOCUMENT_MINOR_VERSION_KEY,
                         minorVer);
             }
-            options.put(CoreEventConstants.DOCUMENT, doc);
             notifyEvent(DocumentEventTypes.BEFORE_DOC_RESTORE, docModel,
                     options, null, null, true);
             writeModel(doc, docModel);
@@ -1970,8 +1958,7 @@ public abstract class AbstractSession implements CoreSession,
             // WRITE_PROPERTIES
             checkPermission(doc, WRITE_PROPERTIES);
             DocumentModel docModel = readModel(doc, null);
-            Map<String, Object> options = new HashMap<String, Object>();
-            options.put(CoreEventConstants.DOCUMENT, doc);
+            Map<String, Serializable> options = new HashMap<String, Serializable>();
             notifyEvent(DocumentEventTypes.ABOUT_TO_CHECKOUT, docModel,
                     options, null, null, true);
 
@@ -2044,11 +2031,10 @@ public abstract class AbstractSession implements CoreSession,
             log.debug("Created proxy for version " + vlabel
                     + " of the document " + doc.getPath());
 
-            Map<String, Object> options = new HashMap<String, Object>();
+            Map<String, Serializable> options = new HashMap<String, Serializable>();
 
             // notify for reindexing
             DocumentModel proxyModel = readModel(proxy, null);
-            options.put(CoreEventConstants.DOCUMENT, proxy);
             notifyEvent(DocumentEventTypes.DOCUMENT_PROXY_PUBLISHED,
                     proxyModel, options, null, null, true);
 
@@ -2057,7 +2043,6 @@ public abstract class AbstractSession implements CoreSession,
                     options, null, null, true);
 
             DocumentModel sectionModel = readModel(section, null);
-            options.put(CoreEventConstants.DOCUMENT, section);
             notifyEvent(DocumentEventTypes.SECTION_CONTENT_PUBLISHED,
                     sectionModel, options, null, null, true);
 
@@ -2319,14 +2304,13 @@ public abstract class AbstractSession implements CoreSession,
 
             if (operationResult) {
                 // Construct a map holding meta information about the event.
-                Map<String, Object> options = new HashMap<String, Object>();
+                Map<String, Serializable> options = new HashMap<String, Serializable>();
                 options.put(LifeCycleEventTypes.OPTION_NAME_FROM,
                         formerStateName);
                 options.put(LifeCycleEventTypes.OPTION_NAME_TO,
                         doc.getCurrentLifeCycleState());
                 options.put(LifeCycleEventTypes.OPTION_NAME_TRANSITION,
                         transition);
-                options.put(CoreEventConstants.DOCUMENT, doc);
                 DocumentModel docModel = readModel(doc, null);
                 notifyEvent(LifeCycleEventTypes.LIFECYCLE_TRANSITION_EVENT,
                         docModel, options,
@@ -2434,8 +2418,7 @@ public abstract class AbstractSession implements CoreSession,
             checkPermission(doc, WRITE_PROPERTIES);
             doc.setLock(key);
             DocumentModel docModel = readModel(doc, null);
-            Map<String, Object> options = new HashMap<String, Object>();
-            options.put(CoreEventConstants.DOCUMENT, doc);
+            Map<String, Serializable> options = new HashMap<String, Serializable>();
             notifyEvent(DocumentEventTypes.DOCUMENT_LOCKED, docModel, options,
                     null, null, true);
         } catch (DocumentException e) {
@@ -2459,8 +2442,7 @@ public abstract class AbstractSession implements CoreSession,
                     || lockDetails[0].equals(username)) {
                 String lockKey = doc.unlock();
                 DocumentModel docModel = readModel(doc, null);
-                Map<String, Object> options = new HashMap<String, Object>();
-                options.put(CoreEventConstants.DOCUMENT, doc);
+                Map<String, Serializable> options = new HashMap<String, Serializable>();
                 notifyEvent(DocumentEventTypes.DOCUMENT_UNLOCKED, docModel,
                         options, null, null, true);
                 return lockKey;
@@ -2539,12 +2521,10 @@ public abstract class AbstractSession implements CoreSession,
                 DocumentModel newDocument = copy(docRef, sectionRef,
                         docToPublish.getName());
 
-                Map<String, Object> options = new HashMap<String, Object>();
-                options.put(CoreEventConstants.DOCUMENT, newDocument);
+                Map<String, Serializable> options = new HashMap<String, Serializable>();
                 notifyEvent(DocumentEventTypes.DOCUMENT_PROXY_PUBLISHED,
                         newDocument, options, null, null, true);
 
-                options.put(CoreEventConstants.DOCUMENT, section);
                 notifyEvent(DocumentEventTypes.SECTION_CONTENT_PUBLISHED,
                         section, options, null, null, true);
 
@@ -2686,12 +2666,11 @@ public abstract class AbstractSession implements CoreSession,
             }
             Document doc = resolveReference(parent);
             doc.orderBefore(src, dest);
-            Map<String, Object> options = new HashMap<String, Object>();
+            Map<String, Serializable> options = new HashMap<String, Serializable>();
 
             // send event on container passing the reordered child as parameter
             DocumentModel docModel = readModel(doc, null);
             String comment = src;
-            options.put(CoreEventConstants.DOCUMENT, doc);
             options.put(CoreEventConstants.REORDERED_CHILD, src);
             notifyEvent(DocumentEventTypes.DOCUMENT_CHILDREN_ORDER_CHANGED,
                     docModel, options, null, comment, true);
