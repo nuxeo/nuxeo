@@ -34,24 +34,11 @@
 
 <c:if test="#{layout.mode == 'edit' or layout.mode == 'create'}">
 
-  <a4j:region renderRegionOnly="true">
-  <a4j:outputPanel ajaxRendered="true">
 	<div class="foldableBox">
       <h3 class="#{nxu:test(siteActions.webContainerChecked, 'unfolded', 'folded')}" >
-        <h:selectBooleanCheckbox binding="#{siteActions.checkboxComponent}"
-          value="#{layoutValue.webcontainer.isWebContainer}">
-          <a4j:support event="onclick"
-            bypassUpdates="true" ajaxSingle="true"
-            reRender="#{layout.id}" />
-        </h:selectBooleanCheckbox>
-        <a4j:status>
-          <f:facet name="start">
-            <h:graphicImage value="/img/standart_waiter.gif" />
-          </f:facet>
-        </a4j:status>
+         <h:selectBooleanCheckbox onclick="toggleBox(this)" value="#{value.webcontainer.isWebContainer}"/> 
       </h3>
-      <c:if test="#{siteActions.webContainerChecked}">
-        <div class="boxBody">
+        <div class="boxBody" style="#{nxu:test(layoutValue.webcontainer.isWebContainer, 'display: block', 'display: none')}">
           <table class="dataInput">
 		    <tbody>
 		      <nxl:layoutRow>
@@ -72,10 +59,7 @@
 		    </tbody>
   	      </table>
         </div>
-      </c:if>
 	</div>
-  </a4j:outputPanel>
-  </a4j:region>
 
 </c:if>
 </f:subview>
