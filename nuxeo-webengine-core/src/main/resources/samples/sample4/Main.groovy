@@ -114,7 +114,7 @@ import org.nuxeo.ecm.webengine.model.*;
 @WebModule(name="sample4")
 @Path("/sample4")
 @Produces(["text/html", "*/*"])
-public class Main extends DefaultModule {
+public class Main extends ModuleRoot {
 
   /**
    * Get the index view. The view file name is computed as follows: index[-media_type_id].ftl

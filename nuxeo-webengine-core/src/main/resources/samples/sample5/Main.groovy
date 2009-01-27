@@ -45,14 +45,14 @@ import org.nuxeo.ecm.webengine.model.exceptions.*;
  * and rethrowing them as following: <code> ... } catch (Throwable t) { throw WebException.wrap(t); } </code>.
  * The exception wrapping is automatically converting exceptions to the ones defined by WebEngine model.
  * <p>
- * The default exception handling defined in DefaultModule class is simply printing the exception on the output stream.
+ * The default exception handling defined in ModuleRoot class is simply printing the exception on the output stream.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @WebModule(name="sample5")
 @Path("/sample5")
 @Produces(["text/html", "*/*"])
-public class Main extends DefaultModule {
+public class Main extends ModuleRoot {
 
   @GET
   public Object doGet() {

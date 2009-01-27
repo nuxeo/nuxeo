@@ -329,8 +329,11 @@ public abstract class AbstractWebContext implements WebContext {
         return buf.toString();
     }
 
+    /**
+     * This method is working only for root objects that implement {@link ModuleResource}
+     */
     public String getUrlPath(DocumentModel document) {
-        return getHead().getLink(document);
+        return ((ModuleResource)head).getLink(document);
     }
 
     public Log getLog() {
@@ -338,10 +341,6 @@ public abstract class AbstractWebContext implements WebContext {
     }
 
     /* object stack API */
-
-    public ModuleResource getHead() {
-        return (ModuleResource)head;
-    }
 
 
     public Resource push(Resource obj) {
@@ -352,7 +351,7 @@ public abstract class AbstractWebContext implements WebContext {
             tail = rs;
         } else {
             rs.prev = tail;
-            head = tail = rs;
+            head = tail = rs;            
         }
         return obj;
     }

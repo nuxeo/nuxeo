@@ -37,9 +37,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.webengine.ResourceBinding;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
-import org.nuxeo.ecm.webengine.model.ErrorHandler;
 import org.nuxeo.ecm.webengine.model.LinkDescriptor;
-import org.nuxeo.ecm.webengine.model.LinkProvider;
 import org.nuxeo.ecm.webengine.model.Module;
 import org.nuxeo.ecm.webengine.model.Validator;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
@@ -71,12 +69,6 @@ public class ModuleConfiguration implements Cloneable {
         
     @XNode("icon")
     public String icon;
-    
-    @XNode("link-provider")
-    public Class<LinkProvider> linkProvider;
-    
-    @XNode("error-handler")
-    public Class<ErrorHandler> errorHandler;
     
     
     /**
@@ -168,14 +160,7 @@ public class ModuleConfiguration implements Cloneable {
     public String getPath() {
         return path;
     }
-    
-    public Class<LinkProvider> getLinkProviderClass() {
-        return linkProvider;
-    }
-    
-    public Class<ErrorHandler> getErrorHandlerClass() {
-        return errorHandler;
-    }
+
 
     public Module get() {
         if (module == null) {

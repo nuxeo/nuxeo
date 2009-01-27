@@ -57,10 +57,6 @@ public interface Module extends MessagesProvider {
 
     Messages getMessages();
     
-    ErrorHandler getErrorHandler();
-    
-    LinkProvider getLinkProvider();
-
     List<ResourceBinding> getResourceBindings();
 
     /**

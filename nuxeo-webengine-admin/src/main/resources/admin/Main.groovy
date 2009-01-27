@@ -11,7 +11,7 @@ import org.nuxeo.ecm.webengine.*;
 
 @WebObject(type="admin", guard="user=Administrator")
 @Produces(["text/html; charset=UTF-8"])
-public class Main extends DefaultModule {
+public class Main extends ModuleRoot {
 
   @Path("users")
   public Object getUserManagement() {

@@ -29,7 +29,7 @@ import org.nuxeo.ecm.webengine.*;
 @WebModule(name="sample2")
 @Path("/sample2")
 @Produces(["text/html", "*/*"])
-public class Main extends DefaultModule {
+public class Main extends ModuleRoot {
 
   @GET
   public String doGet() {

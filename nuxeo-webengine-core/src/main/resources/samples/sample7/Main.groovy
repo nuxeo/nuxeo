@@ -50,7 +50,7 @@ import org.nuxeo.ecm.webengine.model.exceptions.*;
 @WebModule(name="sample7")
 @Path("/sample7")
 @Produces(["text/html", "*/*"])
-public class Main extends DefaultModule {
+public class Main extends ModuleRoot {
 
   @GET
   public Object doGet() {

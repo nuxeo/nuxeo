@@ -42,9 +42,7 @@ import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.debug.ModuleTracker;
 import org.nuxeo.ecm.webengine.model.AdapterNotFoundException;
 import org.nuxeo.ecm.webengine.model.AdapterType;
-import org.nuxeo.ecm.webengine.model.ErrorHandler;
 import org.nuxeo.ecm.webengine.model.LinkDescriptor;
-import org.nuxeo.ecm.webengine.model.LinkProvider;
 import org.nuxeo.ecm.webengine.model.Messages;
 import org.nuxeo.ecm.webengine.model.Module;
 import org.nuxeo.ecm.webengine.model.Resource;
@@ -74,8 +72,6 @@ public class ModuleImpl implements Module {
     
     protected Messages messages;
     protected DirectoryStack dirStack;
-    protected LinkProvider linkProvider;    
-    protected ErrorHandler errorHandler;
 
     protected ModuleTracker tracker;
     
@@ -90,18 +86,6 @@ public class ModuleImpl implements Module {
         skinPathPrefix = new StringBuilder()
             .append(engine.getSkinPathPrefix()).append('/').append(config.name).toString();
         fileCache = new ConcurrentHashMap<String, ScriptFile>();
-        Class<LinkProvider> lpc = config.getLinkProviderClass();
-        if (lpc != null) {
-            linkProvider = lpc.newInstance();
-        } else {
-            linkProvider = new DefaultLinkProvider();
-        }
-        Class<ErrorHandler> ehc = config.getErrorHandlerClass();
-        if (ehc != null) {
-            errorHandler = ehc.newInstance();
-        } else {
-            errorHandler = new DefaultErrorHandler();
-        }        
         loadConfiguration();
         reloadMessages();
         loadDirectoryStack();
@@ -124,14 +108,6 @@ public class ModuleImpl implements Module {
     
     public boolean hasNature(String natureId) {
         return configuration.natures != null && configuration.natures.contains(natureId);
-    }
-
-    public ErrorHandler getErrorHandler() {
-        return errorHandler;
-    }
-    
-    public LinkProvider getLinkProvider() {
-        return linkProvider;
     }
     
     public WebEngine getEngine() {

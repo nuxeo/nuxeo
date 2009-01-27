@@ -32,12 +32,7 @@ import org.nuxeo.ecm.webengine.model.ModuleResource;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class DefaultModule extends DefaultObject implements ModuleResource {
-
-    @Override
-    public boolean isAdapter() {
-        return false;
-    }
+public class ModuleRoot extends DefaultObject implements ModuleResource {
 
     /**
      * You should override this method to resolve objects to links.

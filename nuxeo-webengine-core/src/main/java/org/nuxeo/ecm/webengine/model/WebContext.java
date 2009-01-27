@@ -210,12 +210,14 @@ public interface WebContext extends Adaptable {
     /**
      * TODO: should we remove this method from the context and create a specialized service to resolve document models to paths?
      * Get a suitable URI path for the given Nuxeo document, that can be used to invoke this document.
+     * This method is working only for root objects that implement {@link ModuleResource}
      *
      * @param document the nuxeo document
      * @return the path if any or null if no suitable path can be found
      * XXX can this method return null?
+     * @throws ClassCastException if the module root is not implementing {@link ModuleResource}
      */
-    String getUrlPath(DocumentModel document); // try to resolve a nuxeo doc to a web object path
+    String getUrlPath(DocumentModel document) throws ClassCastException; 
 
     /**
      * Sets a context variable.
@@ -283,8 +285,6 @@ public interface WebContext extends Adaptable {
     AdapterResource newAdapter(Resource ctx, String adapterName, Object ...  args);
 
     /** object stack API */
-
-    ModuleResource  getHead();
 
     Resource push(Resource obj);
 
