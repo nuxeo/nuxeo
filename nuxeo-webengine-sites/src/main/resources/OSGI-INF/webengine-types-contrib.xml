@@ -4,17 +4,5 @@
 
   <require>org.nuxeo.ecm.platform.types.TypeService</require>
   <require>org.nuxeo.webengine.document.types</require>
-  <extension target="org.nuxeo.ecm.platform.types.TypeService"
-             point="types">
-
-	<type id="Workspace" coretype="Workspace">
-      <layouts mode="any">
-        <layout>heading</layout>
-        <layout>file</layout>
-        <layout>webcontainer</layout>
-      </layouts>
-     </type>
-
-  </extension>
 
 </component>
