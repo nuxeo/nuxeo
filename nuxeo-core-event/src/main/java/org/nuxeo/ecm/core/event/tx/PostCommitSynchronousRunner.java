@@ -9,28 +9,32 @@ import org.nuxeo.ecm.core.event.PostCommitEventListener;
 
 /**
  *
- * Runs synchronous Listeners in a separated thread in order to enable TX management
+ * Runs synchronous Listeners in a separated thread in order to enable TX
+ * management
  *
  * @author tiry
  *
  */
 public class PostCommitSynchronousRunner {
 
-    private static final Log log = LogFactory.getLog(PostCommitSynchronousRunner.class);
+    private static final Log log = LogFactory
+            .getLog(PostCommitSynchronousRunner.class);
 
     protected List<PostCommitEventListener> listeners = null;
     protected EventBundle event = null;
-    protected long timeout=0;
+    protected long timeout = 0;
 
     public static int DEFAULT_TIME_OUT_MS = 300;
 
-    public PostCommitSynchronousRunner(List<PostCommitEventListener> listeners, EventBundle event, long timeout) {
-        this.listeners=listeners;
-        this.event=event;
-        this.timeout=timeout;
+    public PostCommitSynchronousRunner(List<PostCommitEventListener> listeners,
+            EventBundle event, long timeout) {
+        this.listeners = listeners;
+        this.event = event;
+        this.timeout = timeout;
     }
 
-    public PostCommitSynchronousRunner(List<PostCommitEventListener> listeners, EventBundle event) {
+    public PostCommitSynchronousRunner(List<PostCommitEventListener> listeners,
+            EventBundle event) {
         this(listeners, event, DEFAULT_TIME_OUT_MS);
     }
 
@@ -39,67 +43,48 @@ public class PostCommitSynchronousRunner {
     }
 
     protected void runSync() {
-        log.debug("Starting sync executor from Thread " + Thread.currentThread().getId());
+        log.debug("Starting sync executor from Thread "
+                + Thread.currentThread().getId());
         Thread runner = new Thread(new MonoThreadExecutor());
         runner.start();
         try {
             runner.join(timeout);
             if (runner.isAlive()) {
-                log.warn("One of the PostCommitListener is too slow, check your listeners ...");
+                log
+                        .warn("One of the PostCommitListener is too slow, check your listeners ...");
                 log.warn("Exit before the end of processing");
             }
         } catch (InterruptedException e) {
             log.error("Exit before the end of processing", e);
         }
-        log.debug("Terminated sync executor from Thread " + Thread.currentThread().getId());
+        log.debug("Terminated sync executor from Thread "
+                + Thread.currentThread().getId());
     }
-
-/*    protected void runSyncWithTimeOut(long timeout) {
-        log.debug("Starting syncTimeout executor from Thread " + Thread.currentThread().getId());
-        Thread runner = new Thread(new MonoThreadExecutor(this));
-        runner.start();
-        try {
-            this.wait(timeout);
-        } catch (InterruptedException e) {
-            log.error("Exit before the end of processing", e);
-        }
-        log.debug("Terminated syncTimeout executor from Thread " + Thread.currentThread().getId());
-    }*/
 
     protected class MonoThreadExecutor implements Runnable {
 
-        protected Object waiter;
-        protected EventBundleTransactionHandler txh;
-
         public MonoThreadExecutor() {
-             txh = new EventBundleTransactionHandler();
-        }
-
-        public MonoThreadExecutor(Object waiter) {
-            this();
-            this.waiter = waiter;
         }
 
         public void run() {
+            EventBundleTransactionHandler txh;
+            txh = new EventBundleTransactionHandler();
             long t0 = System.currentTimeMillis();
-            log.debug("Start post commit sync execution in Thread " + Thread.currentThread().getId());
+            log.debug("Start post commit sync execution in Thread "
+                    + Thread.currentThread().getId());
             for (PostCommitEventListener listener : listeners) {
                 try {
                     txh.beginNewTransaction();
                     listener.handleEvent(event);
                     txh.commitOrRollbackTransaction();
-                }
-                catch (Throwable t) {
+                } catch (Throwable t) {
                     txh.rollbackTransaction();
                 }
             }
-            log.debug("End of post commit sync execution : " + (System.currentTimeMillis()-t0) + "ms");
-            if (waiter!=null) {
-                waiter.notify();
-            }
+            log.debug("End of post commit sync execution : "
+                    + (System.currentTimeMillis() - t0) + "ms");
         }
 
     }
-
 
 }
