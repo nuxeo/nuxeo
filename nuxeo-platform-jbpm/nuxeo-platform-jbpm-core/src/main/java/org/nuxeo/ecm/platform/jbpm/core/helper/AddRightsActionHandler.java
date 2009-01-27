@@ -44,6 +44,7 @@ public class AddRightsActionHandler extends AbstractJbpmHandlerHelper {
 
     private static final long serialVersionUID = 1L;
 
+    private String item;
     private String list;
 
     protected NuxeoPrincipal getNuxeoPrincipal(String user) throws Exception {
@@ -81,6 +82,7 @@ public class AddRightsActionHandler extends AbstractJbpmHandlerHelper {
                 }
                 acp.addACL(acl);
                 session.setACP(docRef, acp, true);
+                session.save();
             } finally {
                 closeCoreSession(session);
             }

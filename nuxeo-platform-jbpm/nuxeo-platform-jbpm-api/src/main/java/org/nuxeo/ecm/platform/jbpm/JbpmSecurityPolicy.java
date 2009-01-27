@@ -16,9 +16,9 @@
  */
 package org.nuxeo.ecm.platform.jbpm;
 
-import org.jbpm.graph.def.ProcessDefinition;
-import org.jbpm.graph.def.Transition;
+import org.jbpm.graph.exe.ProcessInstance;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
 /**
  * @author arussel
@@ -31,28 +31,13 @@ public interface JbpmSecurityPolicy {
     };
 
     /**
-     * check the permission on a transition.
-     * <dl>
-     * <dt>read</dt>
-     * <dd>Read a transition.</dd>
-     * <dt>execute</dt>
-     * <dd>Take a transition.</dd>
-     * </dl>
+     * Checks the permission on a process instance.
      *
-     * @param transition the transition.
-     * @param action the action.
-     * @param dm the attached document, <code>null</code> if no document is
-     *            attached to the process.
-     * @return if the permission is granted, <code>null</code> if unknown.
-     */
-    Boolean checkPermission(Transition transition, Action action,
-            DocumentModel dm);
-
-    /**
-     * check the permission on a process instance.
      * <dl>
      * <dt>read</dt>
-     * <dd>Read a process definition.</dd>
+     * <dd>Read a process instance from this definition.</dd>
+     * <dt>write</dt>
+     * <dd>Edit a process instance from this definition.</dd>
      * <dt>execute</dt>
      * <dd>Create a process instance from this definition.</dd>
      * </dl>
@@ -63,6 +48,6 @@ public interface JbpmSecurityPolicy {
      *            attache to the process.
      * @return if the permission is granted, <code>null</code> if unknow.
      */
-    Boolean checkPermission(ProcessDefinition processDefinition, Action action,
-            DocumentModel dm);
+    Boolean checkPermission(ProcessInstance processInstance, Action action,
+            DocumentModel dm, NuxeoPrincipal user);
 }

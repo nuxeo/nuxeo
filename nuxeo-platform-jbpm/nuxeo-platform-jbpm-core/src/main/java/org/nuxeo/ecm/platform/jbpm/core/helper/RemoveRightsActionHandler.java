@@ -55,6 +55,7 @@ public class RemoveRightsActionHandler extends AbstractJbpmHandlerHelper {
                 ACP acp = session.getACP(docRef);
                 acp.removeACL(getACLName());
                 session.setACP(docRef, acp, true);
+                session.save();
             } finally {
                 closeCoreSession(session);
             }

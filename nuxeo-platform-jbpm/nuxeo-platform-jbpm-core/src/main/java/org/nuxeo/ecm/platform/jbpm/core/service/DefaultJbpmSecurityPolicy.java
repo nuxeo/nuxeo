@@ -16,24 +16,26 @@
  */
 package org.nuxeo.ecm.platform.jbpm.core.service;
 
-import org.jbpm.graph.def.ProcessDefinition;
-import org.jbpm.graph.def.Transition;
+import org.jbpm.graph.exe.ProcessInstance;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.jbpm.JbpmSecurityPolicy;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.platform.jbpm.AbstractJbpmSecurityPolicy;
 
 /**
  * @author arussel
  *
  */
-public class DefaultJbpmSecurityPolicy implements JbpmSecurityPolicy {
+public class DefaultJbpmSecurityPolicy extends AbstractJbpmSecurityPolicy {
 
-    public Boolean checkPermission(Transition transition, Action action,
-            DocumentModel dm) {
-        return Boolean.TRUE;
-    }
-
-    public Boolean checkPermission(ProcessDefinition processDefinition,
-            Action action, DocumentModel dm) {
+    public Boolean checkPermission(ProcessInstance pi, Action action,
+            DocumentModel dm, NuxeoPrincipal principal) {
+        if (Action.write.equals(action)) {
+            // only initiator and administrator
+            if (isAdminOrInitiator(pi, principal)) {
+                return Boolean.TRUE;
+            }
+            return Boolean.FALSE;
+        }
         return Boolean.TRUE;
     }
 

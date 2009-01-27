@@ -36,6 +36,7 @@ import org.nuxeo.ecm.platform.jbpm.JbpmOperation;
 import org.nuxeo.ecm.platform.jbpm.JbpmService;
 import org.nuxeo.ecm.platform.jbpm.NuxeoJbpmException;
 import org.nuxeo.ecm.platform.jbpm.NuxeoJbpmRuntimeException;
+import org.nuxeo.ecm.platform.jbpm.JbpmSecurityPolicy.Action;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -127,8 +128,9 @@ public class JbpmServiceBean implements JbpmService {
     }
 
     public List<TaskInstance> getTaskInstances(Long processInstanceId,
-            NuxeoPrincipal principal) throws NuxeoJbpmException {
-        return service.getTaskInstances(processInstanceId, principal);
+            NuxeoPrincipal principal, JbpmListFilter filter)
+            throws NuxeoJbpmException {
+        return service.getTaskInstances(processInstanceId, principal, filter);
     }
 
     public List<TaskInstance> getTaskInstances(DocumentModel dm,
@@ -159,6 +161,12 @@ public class JbpmServiceBean implements JbpmService {
     public void abandonProcessInstance(NuxeoPrincipal principal, Long processId)
             throws NuxeoJbpmException {
         service.abandonProcessInstance(principal, processId);
+    }
+
+    public Boolean getPermission(ProcessInstance pi, Action action,
+            DocumentModel dm, NuxeoPrincipal principal)
+            throws NuxeoJbpmException {
+        return service.getPermission(pi, action, dm, principal);
     }
 
 }

@@ -136,11 +136,12 @@ public abstract class AbstractJbpmHandlerHelper implements ActionHandler,
     }
 
     protected String getACLName() {
-        String pid = String.valueOf(executionContext.getProcessInstance().getId());
-        return String.format("WORKFLOW_ACP_%s", pid);
+        Long pid = executionContext.getProcessInstance().getId();
+        return getProcessACLName(pid);
     }
 
-
-
+    public static String getProcessACLName(Long pid) {
+        return JbpmService.ACL_PREFIX + String.valueOf(pid);
+    }
 
 }

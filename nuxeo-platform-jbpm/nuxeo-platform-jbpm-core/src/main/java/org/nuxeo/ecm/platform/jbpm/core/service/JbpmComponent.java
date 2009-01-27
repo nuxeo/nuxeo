@@ -100,11 +100,13 @@ public class JbpmComponent extends DefaultComponent implements
             break;
         case securityPolicy:
             SecurityPolicyDescriptor pmd = (SecurityPolicyDescriptor) contribution;
-            service.addSecurityPolicy(pmd.getKlass().newInstance());
+            service.addSecurityPolicy(pmd.getProcessDefinition(),
+                    pmd.getKlass().newInstance());
             break;
         case typeFilter:
             TypeFilterDescriptor tfd = (TypeFilterDescriptor) contribution;
-            typeFiltersContrib.put(tfd.getProcessDefinitionName(), tfd.getAllowedType().toArray(new String[]{}));
+            typeFiltersContrib.put(tfd.getProcessDefinitionName(),
+                    tfd.getAllowedType().toArray(new String[] {}));
             break;
         }
     }

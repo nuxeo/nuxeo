@@ -33,4 +33,5 @@ public class NuxeoJbpmException extends ClientException {
     public NuxeoJbpmException(Throwable e) {
         super(e);
     }
+
 }

@@ -55,14 +55,22 @@ public interface JbpmService {
         documentId, documentRepositoryName, endLifecycleTransition, initiator, participants
     }
 
+    public enum TaskVariableName {
+        directive
+    }
+
     public enum HibernateQueries {
         NuxeoHibernateQueries_getProcessInstancesForDoc, NuxeoHibernateQueries_getTaskInstancesForDoc
     }
 
     /**
+     * Marker for acls managed by workflow
+     */
+    public static String ACL_PREFIX = "WORKFLOW_ACL_";
+
+    /**
      * Return the configuration.
      */
-
     JbpmConfiguration getConfiguration();
 
     /**
@@ -95,7 +103,8 @@ public interface JbpmService {
      * @return
      */
     List<TaskInstance> getTaskInstances(Long processInstanceId,
-            NuxeoPrincipal principal) throws NuxeoJbpmException;
+            NuxeoPrincipal principal, JbpmListFilter filter)
+            throws NuxeoJbpmException;
 
     /**
      * End the task following the transition. If transition is null, follow the
@@ -141,7 +150,8 @@ public interface JbpmService {
      *
      * @param principal the canceller.
      */
-    public void abandonProcessInstance(NuxeoPrincipal principal, Long processId) throws NuxeoJbpmException;
+    public void abandonProcessInstance(NuxeoPrincipal principal, Long processId)
+            throws NuxeoJbpmException;
 
     /**
      * Return a list of all current process instances for this user.
@@ -186,8 +196,8 @@ public interface JbpmService {
 
     /**
      * Return a list of available Process Definition Name available for this
-     * document and user. All process definition if dm is <code>null</code>. The
-     * returned process definition is always the latest.
+     * document and user. All process definition if dm is <code>null</code>.
+     * The returned process definition is always the latest.
      *
      * @param user the caller.
      * @param dm the document concerned by the process
@@ -259,4 +269,9 @@ public interface JbpmService {
             throws NuxeoJbpmException;
 
     Map<String, String[]> getTypeFilterConfiguration();
+
+    Boolean getPermission(ProcessInstance pi, JbpmSecurityPolicy.Action action,
+            DocumentModel dm, NuxeoPrincipal principal)
+            throws NuxeoJbpmException;
+
 }

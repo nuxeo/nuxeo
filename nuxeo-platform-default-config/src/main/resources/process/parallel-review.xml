@@ -30,8 +30,7 @@
     <transition name="valid" to="participants join" />
     <transition name="reject" to="participants join">
       <script>
-        <!--  variable name="contextInstance"/ -->
-        <expression><![CDATA[executionContext.setVariable("rejected","rejected")]]></expression>
+        <expression><![CDATA[executionContext.setVariable("rejected", true)]]></expression>
       </script>
     </transition>
   </task-node>
@@ -39,8 +38,8 @@
     <transition to="do follow transition" />
   </join>
   <decision name="do follow transition">
-    <transition to="end" condition="#{contextInstance.variables['rejected'] == 'rejected'}"/>
-    <transition to="follow transition" condition="#{contextInstance.variables['rejected'] == null}"/>
+    <transition to="end" condition="#{contextInstance.variables['rejected']}"/>
+    <transition to="follow transition" condition="#{!contextInstance.variables['rejected']}"/>
   </decision>
   <node name="follow transition">
     <action

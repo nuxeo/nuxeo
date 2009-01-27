@@ -9,9 +9,22 @@
       deployer="ifChanged" />
 
   </extension>
-  
+
+  <extension target="org.nuxeo.ecm.platform.jbpm.core.JbpmService"
+    point="securityPolicy">
+
+    <securityPolicy class="" for="review_parallel" />
+    <securityPolicy class="" for="review_approbation" />
+
+  </extension>
+
   <extension target="org.nuxeo.ecm.platform.jbpm.core.JbpmService"
     point="typeFilter">
+
+    <type name="Note">
+      <processDefinition name="review_parallel" />
+      <processDefinition name="review_approbation" />
+    </type>
     <processDefinition name="review_parallel">
       <type>File</type>
       <type>Note</type>

@@ -30,6 +30,9 @@ public class SecurityPolicyDescriptor {
     @XNode("@class")
     private Class<? extends JbpmSecurityPolicy> klass;
 
+    @XNode("@for")
+    private String processDefinition;
+
     public Class<? extends JbpmSecurityPolicy> getKlass() {
         return klass;
     }
@@ -37,4 +40,13 @@ public class SecurityPolicyDescriptor {
     public void setKlass(Class<? extends JbpmSecurityPolicy> klass) {
         this.klass = klass;
     }
+
+    public String getProcessDefinition() {
+        return processDefinition;
+    }
+
+    public void setProcessDefinition(String processDefinition) {
+        this.processDefinition = processDefinition;
+    }
+
 }
