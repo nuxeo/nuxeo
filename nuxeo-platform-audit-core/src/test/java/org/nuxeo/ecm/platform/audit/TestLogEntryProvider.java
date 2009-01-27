@@ -229,7 +229,7 @@ public class TestLogEntryProvider extends TestCase {
         LogEntry two = doCreateEntryAndPersist("two");
         List<String> eventIds =
             providerUnderTest.findEventIds();
-        assertEquals(2, eventIds.size());
+        assertEquals(1, eventIds.size());
         assertEquals(eventId, eventIds.get(0));
     }
 }
