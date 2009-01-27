@@ -17,7 +17,7 @@
 package org.nuxeo.ecm.platform.jbpm.core.filter;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import org.jbpm.JbpmContext;
@@ -50,15 +50,15 @@ public class ConfigurableTypeFilter implements JbpmListFilter {
         } catch (Exception e) {
             throw new IllegalStateException("Jbpm Service is not deployed.", e);
         }
-        Map<String, String[]> filters = jbpmService.getTypeFilterConfiguration();
+        Map<String, List<String>> filters = jbpmService.getTypeFilterConfiguration();
         ArrayList<ProcessDefinition> pds = new ArrayList<ProcessDefinition>();
         for (T t : list) {
             ProcessDefinition definition = (ProcessDefinition) t;
-            String[] allowedTypes = filters.get(definition.getName());
+            List<String> allowedTypes = filters.get(definition.getName());
             if(allowedTypes == null) {
                 continue;
             }
-            if(Arrays.asList(allowedTypes).contains(document.getType())) {
+            if(allowedTypes.contains(document.getType())) {
                 pds.add(definition);
             }
         }
