@@ -22,8 +22,8 @@ import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 
-@WebObject(type = "site", guard = "user=Administrator")
-@Produces( { "text/html; charset=UTF-8", "*/*; charset=UTF-8" })
+@WebObject(type = "site", guard = "user=Administrator", facets={"Site"})
+@Produces("text/html; charset=UTF-8")
 public class Site extends DefaultObject {
     String url;
 
@@ -33,10 +33,6 @@ public class Site extends DefaultObject {
         assert args != null && args.length == 1;
         url = (String) args[0];
         ws = getWorkspaceByUrl(url);
-        // if ( ws != null ) {
-        // System.out.println("Workspace url = "+ SiteHelper.getString(ws,
-        // "webc:url", "N/A"));
-        // }
     }
 
     @GET
@@ -119,5 +115,11 @@ public class Site extends DefaultObject {
         }
         return null;
     }
+
+    public DocumentModel getWorkspace(){
+        return ws;
+    }
+
+
 
 }

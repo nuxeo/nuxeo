@@ -21,10 +21,12 @@ package org.nuxeo.ecm.webengine.notifier;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Timer;
@@ -34,7 +36,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.collections.ListenerList;
 import org.nuxeo.runtime.api.Framework;
-import static org.nuxeo.ecm.webengine.notifier.FileChangeListener.*;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -79,12 +80,32 @@ public class FileChangeNotifier implements FileChangeListener {
         listeners.remove(listener);
     }
 
-    public void fileChanged(FileEntry entry, int type, long tm) {
+    public void filesCreated(List<File> entries) {
         for (Object listener : listeners.getListeners()) {
             try {
-                ((FileChangeListener) listener).fileChanged(entry, type, tm);
+                ((FileChangeListener) listener).filesCreated(entries);
             } catch (Throwable t) {
-                log.error("Error while to notifying file change for: "+entry.file, t);
+                log.error("Error while to notifying file creation for: "+entries, t);
+            }
+        }
+    }
+
+    public void filesRemoved(List<File> entries) {
+        for (Object listener : listeners.getListeners()) {
+            try {
+                ((FileChangeListener) listener).filesRemoved(entries);
+            } catch (Throwable t) {
+                log.error("Error while to notifying file removal for: "+entries, t);
+            }
+        }
+    }
+
+    public void filesModified(List<File> entries) {
+        for (Object listener : listeners.getListeners()) {
+            try {
+                ((FileChangeListener) listener).filesModified(entries);
+            } catch (Throwable t) {
+                log.error("Error while to notifying file change for: "+entries, t);
             }
         }
     }
@@ -95,7 +116,20 @@ public class FileChangeNotifier implements FileChangeListener {
             try {
                 Collection<FileEntry> entries = ((Map<String, FileEntry>) roots.clone()).values();
                 for (FileEntry entry : entries) {
-                    entry.scanForChanges(FileChangeNotifier.this);
+                    //TODO how to handle cases when roots are removed or renamed?
+                    ArrayList<File> removed = new ArrayList<File>();
+                    ArrayList<File> created = new ArrayList<File>();
+                    ArrayList<File> modified = new ArrayList<File>();
+                    entry.scanForChanges(created, removed, modified);
+                    if (!removed.isEmpty()) {
+                        FileChangeNotifier.this.filesRemoved(removed);
+                    }
+                    if (!created.isEmpty()) {
+                        FileChangeNotifier.this.filesCreated(created);
+                    }
+                    if (!modified.isEmpty()) {
+                        FileChangeNotifier.this.filesModified(modified);    
+                    }                    
                 }
             } catch (Throwable t) {
                 log.error("Error while to notifying file change", t);
@@ -149,15 +183,22 @@ public class FileChangeNotifier implements FileChangeListener {
             return file.toString();
         }
 
-        public void scanForChanges(FileChangeListener listener) throws IOException {
+        public void scanForChanges(List<File> created, List<File> removed, List<File> modified) throws IOException {
             long tm = file.lastModified();
-            if (tm > lastModified) { // handle REMOVE and CREATE
-                // this file changed
+            if (tm > lastModified) {
+                lastModified = tm;
+                // the file changed
                 if (isDirectory != file.isDirectory()) {
                     if (isDirectory) {
-                        //TODO this directory was removed and recreated as a file
+                        // this directory was removed and recreated as a file
+                        isDirectory = false;
+                        removed.add(this.file); // because of this we must send first remove notif and then create 
+                        created.add(this.file);
                     } else {
-                        //TODO this file was removed and recreated as a directory
+                        // TODO this file was removed and recreated as a directory
+                        isDirectory = true;
+                        removed.add(this.file);
+                        created.add(this.file);
                     }
                 } else if (isDirectory) {
                     // find out which files changed in that directory
@@ -169,9 +210,9 @@ public class FileChangeNotifier implements FileChangeListener {
                         if (entry == null) { // a new file
                             entry = new FileEntry(f);
                             children.put(f, entry);
-                            fileChanged(entry, CREATED, tm);
+                            created.add(entry.file);
                         } else {
-                            entry.scanForChanges(listener);
+                            entry.scanForChanges(created, removed, modified);
                         }
                     }
                     // look for deleted files
@@ -179,19 +220,10 @@ public class FileChangeNotifier implements FileChangeListener {
                     clone.removeAll(checkedFiles);
                     for (File f : clone) {
                         FileEntry entry = children.remove(f);
-                        fileChanged(entry, DELETED, tm);
+                        removed.add(entry.file);
                     }
                 } else {
-                    fileChanged(this, MODIFIED, tm);
-                }
-                lastModified = tm;
-            }
-            if (isDirectory) { // descend into
-                Map<File,FileEntry> clone = (Map<File,FileEntry>) children.clone();
-                for (FileEntry entry : clone.values()) {
-                    if (entry.isDirectory) {
-                        entry.scanForChanges(listener);
-                    }
+                    modified.add(this.file);
                 }
             }
         }
@@ -201,10 +233,19 @@ public class FileChangeNotifier implements FileChangeListener {
         FileChangeNotifier fcn = new FileChangeNotifier();
         fcn.watch(new File("/home/bstefanescu/tmp/test"));
         fcn.addListener(new FileChangeListener() {
-            public void fileChanged(FileEntry entry, int type, long now)
+            public void filesModified(List<File> entries)
                     throws Exception {
-                System.out.println("FILE CHANGED: "+entry.file.getName()+" - "+type);
+                System.out.println("FILES CHANGED: "+entries);
             }
+            public void filesCreated(List<File> entries)
+            throws Exception {
+                System.out.println("FILES CREATED: "+entries);
+            }
+            public void filesRemoved(List<File> entries)
+            throws Exception {
+                System.out.println("FILES REMOVED: "+entries);
+            }
+
         });
         fcn.start();
         System.out.println("Watching ...");

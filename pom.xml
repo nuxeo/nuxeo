@@ -22,11 +22,13 @@
     <module>nuxeo-webengine-resteasy-adapter</module>    
     <module>nuxeo-webengine-core</module>
     <module>nuxeo-webengine-ui</module>
+    <module>nuxeo-webengine-base</module>
     <module>nuxeo-webengine-admin</module>
     <module>nuxeo-webengine-wiki</module>
     <module>nuxeo-webengine-server</module>
     <module>nuxeo-webengine-wiki-jsf</module>
     <module>nuxeo-webengine-management</module>
+    <module>nuxeo-webengine-sites</module>
   </modules>
 
   <properties>
@@ -38,7 +40,7 @@
     <dependency>
       <groupId>org.nuxeo.build</groupId>
       <artifactId>nuxeo-webengine-apt</artifactId>
-      <version>1.0</version>
+      <version>1.2-SNAPSHOT</version>
       <scope>compile</scope>
       <!-- workaround for Mac OS X -->
       <exclusions>
@@ -69,6 +71,11 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.webengine</groupId>
+        <artifactId>nuxeo-webengine-base</artifactId>
+        <version>${nuxeo.webengine.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.webengine</groupId>
         <artifactId>nuxeo-webengine-ui</artifactId>
         <version>${nuxeo.webengine.version}</version>
       </dependency>
@@ -80,6 +87,11 @@
       <dependency>
         <groupId>org.nuxeo.ecm.webengine</groupId>
         <artifactId>nuxeo-webengine-wiki-jsf</artifactId>
+        <version>${nuxeo.webengine.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.webengine</groupId>
+        <artifactId>nuxeo-webengine-sites</artifactId>
         <version>${nuxeo.webengine.version}</version>
       </dependency>
       <dependency>
@@ -167,6 +179,7 @@
           <artifactId>jaxrs-api</artifactId>
           <version>1.0-beta-8</version>
         </dependency>
+
     </dependencies>
   </dependencyManagement>
 

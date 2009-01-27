@@ -41,7 +41,7 @@ public interface Module extends MessagesProvider {
     
     File getRoot();
 
-    Object getRootObject();
+    Resource getRootObject(WebContext ctx);
     
     WebEngine getEngine();
 

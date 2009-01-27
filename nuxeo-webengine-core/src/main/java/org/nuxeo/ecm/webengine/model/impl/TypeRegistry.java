@@ -29,6 +29,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.webengine.WebEngine;
+import org.nuxeo.ecm.webengine.loader.ClassProxy;
 import org.nuxeo.ecm.webengine.loader.StaticClassProxy;
 import org.nuxeo.ecm.webengine.model.AdapterType;
 import org.nuxeo.ecm.webengine.model.Resource;
@@ -46,7 +47,7 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
     protected final Map<String, AdapterType> adapters;
     protected final ModuleImpl module;
     protected final WebEngine engine; // cannot use module.getEngine() since module may be null
-    protected Class<?> docObjectClass;
+    protected ClassProxy docObjectClass;
 
     public TypeRegistry(TypeRegistry parent, WebEngine engine, ModuleImpl module) {
         super (parent);
@@ -209,10 +210,10 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
                 }
                 try {
                     if (docObjectClass == null) {
-                        docObjectClass = Class.forName("org.nuxeo.ecm.core.rest.DocumentObject");
+                        docObjectClass = engine.getWebLoader().getClassProxy("org.nuxeo.ecm.core.rest.DocumentObject");
                     }
                     TypeDescriptor superWebType = new TypeDescriptor(
-                            new StaticClassProxy(docObjectClass), typeName, superSuperTypeName);
+                            docObjectClass, typeName, superSuperTypeName);
                     registerType(superWebType);
                     return true;
                 } catch (ClassNotFoundException e) {

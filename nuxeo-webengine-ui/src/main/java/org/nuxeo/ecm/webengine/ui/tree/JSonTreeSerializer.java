@@ -84,13 +84,16 @@ public class JSonTreeSerializer implements TreeItemVisitor {
         json.element("text", item.getLabel())
             .element("id", item.getPath().toString())
             .element("href", getUrl(item));
-        if (item.isContainer()) {
-            json.element("hasChildren", true);
-        }
-        if (item.isExpanded()) {
-            json.element("expanded", true);
-            if (item.hasChildren()) {
-                json.element("children", children);
+        json.element("expanded", item.isExpanded());
+        if ( item.isContainer() ){
+            if (item.isContainer()) {
+                if ( item.hasChildren()) {
+                    json.element("children", children);
+                } else {
+                    json.element("hasChildren", true);
+                }
+            } else {
+                json.element("hasChildren", false);
             }
         }
         return json;

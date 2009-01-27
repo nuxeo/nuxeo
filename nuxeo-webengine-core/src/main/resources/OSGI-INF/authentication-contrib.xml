@@ -3,6 +3,8 @@
 
   <!-- replace auth chain -->
   <require>org.nuxeo.ecm.platform.ui.web.auth.defaultConfig</require>
+  <require>org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService</require>
+
 
   <extension
     target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"

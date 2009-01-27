@@ -21,6 +21,7 @@ package org.nuxeo.ecm.webengine.model.impl;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.text.ParseException;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -199,9 +200,17 @@ public abstract class AbstractResourceType implements ResourceType {
 
     protected ScriptFile findTypeTemplate(Module module, String name) throws IOException {
         String path = resolveResourcePath(clazz.getClassName(), name);
-        File f = new File(module.getEngine().getRootDirectory(), path);
-        if (f.isFile()) {
-            return new ScriptFile(f);
+        URL url = clazz.get().getResource(path);
+        if (url != null) {
+            if (!"file".equals(url.getProtocol())) {
+                // TODO ScriptFile is not supporting URLs .. must refactor ScriptFile
+                return null;
+            }             
+            try {
+                return new ScriptFile(new File(url.toURI()));
+            } catch (Exception e) {
+                throw WebException.wrap("Failed to convert URL to URI: "+url, e);
+            }
         }
         return null;
     }
@@ -212,11 +221,13 @@ public abstract class AbstractResourceType implements ResourceType {
         int p = path.lastIndexOf('.');
         if (p > -1) {
             path = path.substring(0, p);
+            path = path.replace('.', File.separatorChar);
+            return new StringBuilder().append(File.separatorChar).append(path)
+            .append(File.separatorChar)
+            .append(fileName).toString();
         }
-        path = path.replace('.', File.separatorChar);
-        return new StringBuilder().append(File.separatorChar).append(path)
-                .append(File.separatorChar)
-                .append(fileName).toString();
+        return new StringBuilder().append(File.separatorChar)
+            .append(fileName).toString();
     }
 
 }

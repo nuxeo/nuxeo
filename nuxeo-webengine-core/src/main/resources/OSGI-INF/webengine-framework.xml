@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.webengine.WebEngineComponent">
   <require>org.nuxeo.ecm.webengine.server</require>
+  
   <implementation
           class="org.nuxeo.ecm.webengine.WebEngineComponent" />
   <documentation>
@@ -13,9 +14,6 @@
   -->
 
   <service>
-  	<provide
-  		interface="org.nuxeo.ecm.webengine.util.FileChangeNotifier" />
-    <!-- temporary entry remove it -->
     <provide interface="org.nuxeo.ecm.webengine.WebEngine" />
   </service>
 
@@ -34,6 +32,7 @@
   </extension-point>
 
 
+
   <extension-point name="guard">
   <documentation>
     @author Bogdan Stefanescu (bs@nuxeo.com)
@@ -49,34 +48,6 @@
       class="org.nuxeo.ecm.webengine.security.GuardDescriptor" />
   </extension-point>
 
-
-  <extension-point name="install">
-  <documentation>
-    @author Bogdan Stefanescu (bs@nuxeo.com)
-    Deploy external files as web resources. Can be used by client plugins to deploy
-    web files into the web directory.
-    <code>
-      <resource path="/web" target="/"/>
-    </code>
-  </documentation>
-
-    <object
-      class="org.nuxeo.ecm.webengine.install.Installer" />
-  </extension-point>
-
-  <extension-point name="configuration">
-  <documentation>
-    @author Bogdan Stefanescu (bs@nuxeo.com)
-    Register a configuration file.
-    <code>
-      <resource path="/nuxeo-web.xml" trackChanges="true" />
-    </code>
-  </documentation>
-
-    <object
-      class="org.nuxeo.ecm.webengine.ConfigurationFileDescriptor" />
-  </extension-point>
-
   <extension-point name="resource">
   <documentation>
     @author Bogdan Stefanescu (bs@nuxeo.com)
@@ -90,4 +61,19 @@
       class="org.nuxeo.ecm.webengine.ResourceBinding" />
   </extension-point>
 
+
+  <extension target="org.nuxeo.ecm.webengine.WebEngineComponent" point="rendering-extension">
+    <rendering-extension name="script" class="org.nuxeo.ecm.webengine.rendering.ScriptMethod"/>
+    <rendering-extension name="render" class="org.nuxeo.ecm.webengine.rendering.RenderDirective"/>
+    <rendering-extension name="wiki" class="org.nuxeo.ecm.platform.rendering.wiki.WikiTransformer"/>
+    <rendering-extension name="API" class="org.nuxeo.ecm.webengine.rendering.APIHelper"/>
+  </extension>
+
+
+  <extension target="org.nuxeo.runtime.server" point="webapp">
+    <webapp name="nuxeo" path="/">
+      <root>web</root>
+    </webapp>
+  </extension> 
+   
 </component>

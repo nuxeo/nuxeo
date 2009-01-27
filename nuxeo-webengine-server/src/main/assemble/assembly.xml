@@ -27,6 +27,8 @@
   <artifactSet id="third-party-libs">
     <import>**</import>
     <includes>
+      <artifact group="javax.el" name="el-ri"/>
+      <artifact group="javax.el" name="el-api"/>
       <artifact group="javax.script" name="script-api" />
       <artifact group="org.codehaus.groovy" name="groovy-all" />
       <artifact name="osgi-core" />
@@ -42,6 +44,7 @@
       <artifact group="jline" />
       <artifact name="freemarker" />
       <artifact group="javax.servlet" name="servlet-api" version="2.4"/>
+      <artifact group="net.sf.opencsv" name="opencsv" version="1.7" /> 
       <!--TODO: seems to be deployed by webengine artifact name="json-lib" /--> 
       <artifact name="json-lib" />
       <artifact name="ezmorph" /> <!-- needed by jsonlib -->
@@ -57,6 +60,8 @@
       <artifact name="hibernate-annotations" />
       <artifact group="org.hibernate" name="hibernate"/>
       <artifact group="org.resteasy" />
+      <artifact group="org.apache.commons" name="commons-jci-core" />
+      <artifact group="org.apache.commons" name="commons-jci-fam" />
     </includes>
     <excludes>
       <artifact group="org.mortbay.jetty" name="servlet-api-2.5" />
