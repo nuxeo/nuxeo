@@ -78,10 +78,13 @@ public class SQLSecurityManager implements SecurityManager {
         }
     }
 
-    // TODO XXX
     public ACP getMergedACP(Document doc) throws SecurityException {
         try {
-            ACP acp = getACP(doc);
+            Document base = doc.isVersion() ? doc.getSourceDocument() : doc;
+            if (base == null) {
+                return null;
+            }
+            ACP acp = getACP(base);
             if (doc.getParent() == null) {
                 return acp;
             }
@@ -244,8 +247,8 @@ public class SQLSecurityManager implements SecurityManager {
     }
 
     protected ACL getInheritedACLs(Document doc) throws DocumentException {
-        ACL merged = null;
         doc = doc.getParent();
+        ACL merged = null;
         while (doc != null) {
             ACP acp = getACP(doc);
             if (acp != null) {

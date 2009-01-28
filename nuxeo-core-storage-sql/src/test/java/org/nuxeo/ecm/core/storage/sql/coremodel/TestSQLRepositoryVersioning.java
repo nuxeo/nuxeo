@@ -24,10 +24,16 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.VersionModelImpl;
+import org.nuxeo.ecm.core.api.security.ACE;
+import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
+import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 
 /**
  * @author Florent Guillaume
@@ -45,6 +51,7 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         super.setUp();
         deployContrib("org.nuxeo.ecm.core.storage.sql.tests",
                 "OSGI-INF/test-repo-core-types-contrib.xml");
+        deployBundle("org.nuxeo.ecm.core.event");
         openSession();
     }
 
@@ -82,7 +89,7 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         session.checkIn(file.getRef(), version);
         session.checkOut(file.getRef());
 
-        DocumentModel newFileVersion = session.saveDocumentAsNewVersion(file);
+        session.saveDocumentAsNewVersion(file);
     }
 
     public void testSaveAsNewVersion2() throws Exception {
@@ -97,7 +104,7 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
                 "file#1", "File");
         file = session.createDocument(file);
 
-        DocumentModel newFileVersion = session.saveDocumentAsNewVersion(file);
+        session.saveDocumentAsNewVersion(file);
     }
 
     // SUPNXP-60: Suppression d'une version d'un document.
@@ -381,8 +388,8 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         assertTrue(session.isCheckedOut(docRef));
 
         doc.setProperty("file", "filename", "second name");
-        doc.setProperty("common", "title", "f1");
-        doc.setProperty("common", "description", "desc 1");
+        doc.setProperty("dc", "title", "f1");
+        doc.setProperty("dc", "description", "desc 1");
         session.saveDocument(doc);
         session.save();
 
@@ -430,8 +437,8 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         session.checkOut(childFile.getRef());
 
         childFile.setProperty("file", "filename", "second name");
-        childFile.setProperty("common", "title", "f1");
-        childFile.setProperty("common", "description", "desc 1");
+        childFile.setProperty("dc", "title", "f1");
+        childFile.setProperty("dc", "description", "desc 1");
         session.saveDocument(childFile);
         session.save();
         version = new VersionModelImpl();
@@ -462,6 +469,57 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         assertNotNull(restoredDoc);
         assertNotNull(restoredDoc.getRef());
         assertEquals("second name", restoredDoc.getProperty("file", "filename"));
+    }
+
+    // security on versions, see TestLocalAPIWithCustomVersioning
+
+    public void testVersionSecurity() throws Exception {
+        DocumentModel folder = new DocumentModelImpl("/", "folder", "Folder");
+        folder = session.createDocument(folder);
+        ACP acp = new ACPImpl();
+        ACE ace = new ACE("princ1", "perm1", true);
+        ACL acl = new ACLImpl("acl1", false);
+        acl.add(ace);
+        acp.addACL(acl);
+        session.setACP(folder.getRef(), acp, true);
+        DocumentModel file = new DocumentModelImpl("/folder", "file", "File");
+        file = session.createDocument(file);
+        // set security
+        acp = new ACPImpl();
+        ace = new ACE("princ2", "perm2", true);
+        acl = new ACLImpl("acl2", false);
+        acl.add(ace);
+        acp.addACL(acl);
+        session.setACP(file.getRef(), acp, true);
+        session.save();
+        VersionModel vm = new VersionModelImpl();
+        vm.setLabel("v1");
+        session.checkIn(file.getRef(), vm);
+        session.checkOut(file.getRef());
+
+        // check security on version
+        DocumentModel version = session.getDocumentWithVersion(file.getRef(), vm);
+        acp = session.getACP(version.getRef());
+        ACL[] acls = acp.getACLs();
+        assertEquals(2, acls.length);
+        acl = acls[0];
+        assertEquals(1, acl.size());
+        assertEquals("princ2", acl.get(0).getUsername());
+        acl = acls[1];
+        assertEquals(1 + 4, acl.size()); // 1 + 4 root defaults
+        assertEquals("princ1", acl.get(0).getUsername());
+
+        // remove live document (create a proxy so the version stays)
+        session.createProxy(folder.getRef(), file.getRef(), vm, true);
+        session.save();
+        session.removeDocument(file.getRef());
+        // recheck security on version
+        try {
+            session.getACP(version.getRef());
+            fail();
+        } catch (DocumentSecurityException e) {
+            // ok
+        }
     }
 
 }

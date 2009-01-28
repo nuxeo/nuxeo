@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.core.query.sql.model;
 
+import org.nuxeo.ecm.core.query.sql.NXQL;
 
 /**
  * An infix expression.
@@ -36,8 +37,6 @@ public class Expression implements Operand {
 
 
     public Expression(Operand lvalue, Operator operator, Operand rvalue) {
-        assert lvalue != null && operator != null;
-
         this.lvalue = lvalue;
         this.rvalue = rvalue;
         this.operator = operator;
@@ -88,6 +87,11 @@ public class Expression implements Operand {
         result = 37 * result + lvalue.hashCode();
         result = 37 * result + (rvalue == null ? 0 : rvalue.hashCode());
         return result;
+    }
+
+
+    public boolean isPathExpression() {
+        return (lvalue instanceof Reference) && NXQL.ECM_PATH.equals(((Reference)lvalue).name);
     }
 
 }

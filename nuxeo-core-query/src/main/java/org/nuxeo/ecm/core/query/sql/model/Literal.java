@@ -23,12 +23,15 @@ package org.nuxeo.ecm.core.query.sql.model;
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class Literal implements Operand {
+public abstract class Literal implements Operand {
 
     private static final long serialVersionUID = 7459498561660866191L;
 
-    public void accept(IVisitor visitor) {
-        visitor.visitLiteral(this);
-    }
+    /**
+     * Gets a string representation of the value.
+     *
+     * @return a string representation of the value
+     */
+    public abstract String asString();
 
 }

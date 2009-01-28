@@ -20,7 +20,6 @@ package org.nuxeo.ecm.core.storage.sql.coremodel;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.DocumentVersionProxy;
-import org.nuxeo.ecm.core.model.Property;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.storage.sql.Node;
 import org.nuxeo.ecm.core.versioning.DocumentVersion;

@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.core.storage.sql.coremodel;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -53,6 +54,7 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelTreeNodeComparator;
 import org.nuxeo.ecm.core.api.impl.FacetFilter;
 import org.nuxeo.ecm.core.api.impl.VersionModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
+import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
@@ -74,6 +76,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         super.setUp();
         deployContrib("org.nuxeo.ecm.core.storage.sql.tests",
                 "OSGI-INF/test-repo-core-types-contrib.xml");
+        deployBundle("org.nuxeo.ecm.core.event");
         openSession();
     }
 
@@ -152,7 +155,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals(Arrays.asList("e", "f"), Arrays.asList((String[]) strings));
         Object participants = child.getProperty("testList", "participants");
         assertTrue(participants instanceof List);
-        assertEquals(Arrays.asList("c", "d"), (List<?>) participants);
+        assertEquals(Arrays.asList("c", "d"), participants);
     }
 
     public void testSystemProperties() throws Exception {
@@ -188,6 +191,213 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals(0, children.size());
         children = session.getChildren(new PathRef("/doc/"));
         assertEquals(0, children.size());
+    }
+
+    public void testComplexType() throws Exception {
+        DocumentModel doc = new DocumentModelImpl("/", "doc", "ComplexDoc");
+        doc = session.createDocument(doc);
+        DocumentRef docRef = doc.getRef();
+        session.save();
+
+        // test setting and reading a map with an empty list
+        closeSession();
+        openSession();
+        doc = session.getDocument(docRef);
+        Map<String, Object> attachedFile = new HashMap<String, Object>();
+        List<Map<String, Object>> vignettes = new ArrayList<Map<String, Object>>();
+        attachedFile.put("name", "some name");
+        attachedFile.put("vignettes", vignettes);
+        doc.setPropertyValue("cmpf:attachedFile", (Serializable) attachedFile);
+        session.saveDocument(doc);
+        session.save();
+        closeSession();
+        openSession();
+        doc = session.getDocument(docRef);
+        assertEquals(attachedFile,
+                doc.getProperty("cmpf:attachedFile").getValue());
+        assertEquals(attachedFile.get("vignettes"), doc.getProperty(
+                "cmpf:attachedFile/vignettes").getValue());
+
+        // test setting and reading a list of maps without a complex type in the
+        // maps
+        Map<String, Object> vignette = new HashMap<String, Object>();
+        vignette.put("width", Long.valueOf(0));
+        vignette.put("height", Long.valueOf(0));
+        vignette.put("content", null);
+        vignettes.add(vignette);
+        doc.setPropertyValue("cmpf:attachedFile", (Serializable) attachedFile);
+        session.saveDocument(doc);
+        session.save();
+        closeSession();
+        openSession();
+        doc = session.getDocument(docRef);
+        assertEquals(attachedFile,
+                doc.getProperty("cmpf:attachedFile").getValue());
+        assertEquals(attachedFile.get("vignettes"), doc.getProperty(
+                "cmpf:attachedFile/vignettes").getValue());
+        assertEquals(vignette, doc.getProperty(
+                "cmpf:attachedFile/vignettes/vignette[0]").getValue());
+        assertEquals(Long.valueOf(0), doc.getProperty(
+                "cmpf:attachedFile/vignettes/vignette[0]/height").getValue());
+        assertEquals(attachedFile,
+                doc.getProperty("cmpf:attachedFile").getValue());
+
+        // test setting and reading a list of maps with a blob inside the map
+        byte[] binaryContent = "01AB".getBytes();
+        Blob blob = StreamingBlob.createFromByteArray(binaryContent,
+                "application/octet-stream");
+        blob.setFilename("file.bin");
+        vignette.put("content", blob);
+        doc.setPropertyValue("cmpf:attachedFile", (Serializable) attachedFile);
+        session.saveDocument(doc);
+        session.save();
+
+        closeSession();
+        openSession();
+        assertEquals(attachedFile,
+                doc.getProperty("cmpf:attachedFile").getValue());
+        assertEquals(attachedFile.get("vignettes"), doc.getProperty(
+                "cmpf:attachedFile/vignettes").getValue());
+        assertEquals(vignette, doc.getProperty(
+                "cmpf:attachedFile/vignettes/vignette[0]").getValue());
+        assertEquals(Long.valueOf(0), doc.getProperty(
+                "cmpf:attachedFile/vignettes/vignette[0]/height").getValue());
+        // this doesn't work due to core restrictions (BlobProperty):
+        // assertEquals(blob.getFilename(), doc.getProperty(
+        // "cmpf:attachedFile/vignettes/vignette[0]/content/name").getValue());
+        Blob b = (Blob) doc.getProperty(
+                "cmpf:attachedFile/vignettes/vignette[0]/content").getValue();
+        assertEquals("file.bin", b.getFilename());
+
+    }
+
+    public void testComplexTypeOrdering() throws Exception {
+        // test case to reproduce an ordering content related Heisenbug on
+        // postgresql: NXP-2810: Preserve creation order of children of a
+        // complex type property in SQL storage with PostgreSQL
+
+        // create documents with a list of ordered vignettes
+        createComplexDocs(0, 5);
+
+        // check that the created docs hold their complex content in the
+        // creation order
+        checkComplexDocs(0, 5);
+
+        // add some more docs
+        createComplexDocs(5, 10);
+
+        // check that both the old and new document still hold their complex
+        // content in the same creation order
+        checkComplexDocs(0, 10);
+    }
+
+    protected void createComplexDocs(int iMin, int iMax) throws ClientException {
+        for (int i = iMin; i < iMax; i++) {
+            DocumentModel doc = session.createDocumentModel("/", "doc" + i,
+                    "ComplexDoc");
+
+            Map<String, Object> attachedFile = new HashMap<String, Object>();
+            List<Map<String, Object>> vignettes = new ArrayList<Map<String, Object>>();
+            attachedFile.put("name", "some name");
+            attachedFile.put("vignettes", vignettes);
+
+            for (int j = 0; j < 3; j++) {
+                Map<String, Object> vignette = new HashMap<String, Object>();
+                vignette.put("width", Long.valueOf(j));
+                vignette.put("height", Long.valueOf(j));
+                vignette.put("content",
+                        StreamingBlob.createFromString(String.format(
+                                "document %d, vignette %d", i, j)));
+                vignettes.add(vignette);
+            }
+            doc.setPropertyValue("cmpf:attachedFile",
+                    (Serializable) attachedFile);
+            doc = session.createDocument(doc);
+
+            session.save();
+            closeSession();
+            openSession();
+        }
+    }
+
+    protected void checkComplexDocs(int iMin, int iMax) throws ClientException,
+            IOException {
+        for (int i = iMin; i < iMax; i++) {
+            DocumentModel doc = session.getDocument(new PathRef("/doc" + i));
+
+            for (int j = 0; j < 3; j++) {
+                String propertyPath = String.format(
+                        "cmpf:attachedFile/vignettes/%d/", j);
+                assertEquals(Long.valueOf(j), doc.getProperty(
+                        propertyPath + "height").getValue());
+                assertEquals(Long.valueOf(j), doc.getProperty(
+                        propertyPath + "width").getValue());
+                assertEquals(String.format("document %d, vignette %d", i, j),
+                        doc.getProperty(propertyPath + "content").getValue(
+                                Blob.class).getString());
+            }
+
+            closeSession();
+            openSession();
+        }
+    }
+
+    public void testMarkDirty() throws Exception {
+        DocumentModel doc = new DocumentModelImpl("/", "doc", "MyDocType");
+        doc = session.createDocument(doc);
+        session.save();
+
+        doc.setProperty("dublincore", "title", "title1");
+        doc.setProperty("testList", "participants", new ArrayList<String>(
+                Arrays.asList("a", "b")));
+        session.saveDocument(doc);
+        session.save();
+
+        doc.setProperty("dublincore", "title", "title2");
+        doc.setProperty("testList", "participants", new ArrayList<String>(
+                Arrays.asList("c", "d")));
+        session.saveDocument(doc);
+        session.save();
+
+        // ----- new session -----
+        closeSession();
+        openSession();
+        // root = session.getRootDocument();
+        doc = session.getDocument(new PathRef("/doc"));
+        String title = (String) doc.getProperty("dublincore", "title");
+        assertEquals("title2", title);
+        Object participants = doc.getProperty("testList", "participants");
+        assertEquals(Arrays.asList("c", "d"), participants);
+    }
+
+    public void testMarkDirtyForList() throws Exception {
+        DocumentModel doc = new DocumentModelImpl("/", "doc", "ComplexDoc");
+        Map<String, Object> attachedFile = new HashMap<String, Object>();
+        List<Map<String, Object>> vignettes = new ArrayList<Map<String, Object>>();
+        attachedFile.put("vignettes", vignettes);
+        Map<String, Object> vignette = new HashMap<String, Object>();
+        vignette.put("width", 111L);
+        vignettes.add(vignette);
+        doc.setPropertyValue("cmpf:attachedFile", (Serializable) attachedFile);
+        doc = session.createDocument(doc);
+        session.save();
+
+        doc.getProperty("cmpf:attachedFile/vignettes/vignette[0]/width").setValue(
+                222L);
+        session.saveDocument(doc);
+        session.save();
+
+        doc.getProperty("cmpf:attachedFile/vignettes/vignette[0]/width").setValue(
+                333L);
+        session.saveDocument(doc);
+        session.save();
+
+        // ----- new session -----
+        closeSession();
+        openSession();
+        doc = session.getDocument(new PathRef("/doc"));
+        assertEquals(333L, doc.getProperty(
+                "cmpf:attachedFile/vignettes/vignette[0]/width").getValue());
     }
 
     //
@@ -1895,7 +2105,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
                 name2, "File");
         childFile = createChildDocument(childFile);
 
-        String[] str = new String[] { "a", "b", "c" };
+        String[] str = { "a", "b", "c" };
         childFile.setProperty("dublincore", "participants", str);
         session.saveDocument(childFile);
 
@@ -2558,35 +2768,32 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
                 "proxy_test", "File");
 
         doc = session.createDocument(doc);
-        doc.setProperty("common", "title", "the title");
+        doc.setProperty("dublincore", "title", "the title");
         doc = session.saveDocument(doc);
-        // session.save();
 
         VersionModel version = new VersionModelImpl();
         version.setCreated(Calendar.getInstance());
         version.setLabel("v1");
         session.checkIn(doc.getRef(), version);
-        // session.save();
 
         // checkout the doc to modify it
         session.checkOut(doc.getRef());
-        doc.setProperty("common", "title", "the title modified");
+        doc.setProperty("dublincore", "title", "the title modified");
         doc = session.saveDocument(doc);
-        // session.save();
 
         DocumentModel proxy = session.createProxy(root.getRef(), doc.getRef(),
                 version, true);
-        // session.save();
-        // assertEquals("the title", proxy.getProperty("common", "title"));
-        // assertEquals("the title modified", doc.getProperty("common",
-        // "title"));
+        session.save();
+        assertEquals("the title", proxy.getProperty("dublincore", "title"));
+        assertEquals("the title modified", doc.getProperty("dublincore",
+                "title"));
 
         // make another new version
         VersionModel version2 = new VersionModelImpl();
         version2.setCreated(Calendar.getInstance());
         version2.setLabel("v2");
         session.checkIn(doc.getRef(), version2);
-        // session.save();
+        session.checkOut(doc.getRef());
 
         DocumentModelList list = session.getChildren(root.getRef());
         assertEquals(2, list.size());
@@ -2596,8 +2803,6 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         }
 
         session.removeDocument(proxy.getRef());
-        // session.save();
-
         list = session.getChildren(root.getRef());
         assertEquals(1, list.size());
 
@@ -2622,13 +2827,10 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals(3, session.getChildrenRefs(root.getRef(), null).size());
 
         // a second time to check overwrite
-        // XXX this test fails for mysterious reasons (hasNode doesn't detect
-        // the child node that was added by the first copy -- XASession pb?)
-        // session.publishDocument(proxy, folder);
-        // session.save();
-        // assertEquals(1, session.getChildrenRefs(folder.getRef(),
-        // null).size());
-        // assertEquals(3, session.getChildrenRefs(root.getRef(), null).size());
+        session.publishDocument(proxy, folder);
+        session.save();
+        assertEquals(1, session.getChildrenRefs(folder.getRef(), null).size());
+        assertEquals(3, session.getChildrenRefs(root.getRef(), null).size());
 
         // and without overwrite
         session.publishDocument(proxy, folder, false);

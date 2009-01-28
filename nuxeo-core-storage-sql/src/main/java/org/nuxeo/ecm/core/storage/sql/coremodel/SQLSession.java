@@ -38,8 +38,15 @@ import org.nuxeo.ecm.core.model.NoSuchPropertyException;
 import org.nuxeo.ecm.core.model.Property;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.model.Session;
+import org.nuxeo.ecm.core.query.FilterableQuery;
 import org.nuxeo.ecm.core.query.Query;
 import org.nuxeo.ecm.core.query.QueryException;
+import org.nuxeo.ecm.core.query.QueryFilter;
+import org.nuxeo.ecm.core.query.QueryParseException;
+import org.nuxeo.ecm.core.query.QueryResult;
+import org.nuxeo.ecm.core.query.UnsupportedQueryTypeException;
+import org.nuxeo.ecm.core.query.sql.SQLQueryParser;
+import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
@@ -47,6 +54,8 @@ import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.security.SecurityManager;
+import org.nuxeo.ecm.core.security.SecurityService;
+import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Binary;
 import org.nuxeo.ecm.core.storage.sql.CollectionProperty;
@@ -54,6 +63,7 @@ import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.Node;
 import org.nuxeo.ecm.core.storage.sql.SimpleProperty;
 import org.nuxeo.ecm.core.versioning.DocumentVersion;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * This class is the bridge between the Nuxeo SPI Session and the actual
@@ -71,7 +81,9 @@ public class SQLSession implements Session {
 
     private SQLDocument root;
 
-    private String userSessionId;
+    private final String userSessionId;
+
+    private final SecurityService securityService;
 
     public SQLSession(org.nuxeo.ecm.core.storage.sql.Session session,
             Repository repository, Map<String, Serializable> context)
@@ -93,6 +105,7 @@ public class SQLSession implements Session {
         root = newDocument(rootNode);
 
         userSessionId = (String) context.get("SESSION_ID");
+        securityService = Framework.getLocalService(SecurityService.class);
     }
 
     /*
@@ -223,7 +236,7 @@ public class SQLSession implements Session {
         }
     }
 
-    private static Pattern dotDigitsPattern = Pattern.compile("(.*)\\.[0-9]+$");
+    private static final Pattern dotDigitsPattern = Pattern.compile("(.*)\\.[0-9]+$");
 
     protected String findFreeName(Node parentNode, String name)
             throws StorageException {
@@ -301,8 +314,53 @@ public class SQLSession implements Session {
 
     public Query createQuery(String query, Query.Type qType, String... params)
             throws QueryException {
-        // XXX TODO
-        throw new UnsupportedOperationException();
+        if (qType != Query.Type.NXQL) {
+            throw new UnsupportedQueryTypeException(qType);
+        }
+        if (params != null && params.length != 0) {
+            throw new QueryException("Parameters not supported");
+        }
+        try {
+            return new SQLSessionQuery(SQLQueryParser.parse(query));
+        } catch (QueryParseException e) {
+            throw new QueryException(e.getMessage() + ": " + query, e);
+        }
+    }
+
+    protected class SQLSessionQuery implements FilterableQuery {
+
+        protected final SQLQuery sqlQuery;
+
+        public SQLSessionQuery(SQLQuery sqlQuery) {
+            this.sqlQuery = sqlQuery;
+        }
+
+        public void setLimit(long limit) {
+            sqlQuery.setLimit(limit);
+        }
+
+        public void setOffset(long offset) {
+            sqlQuery.setOffset(offset);
+        }
+
+        public QueryResult execute() throws QueryException {
+            return execute(null, false);
+        }
+
+        public QueryResult execute(boolean countTotal) throws QueryException {
+            return execute(null, countTotal);
+        }
+
+        public QueryResult execute(QueryFilter queryFilter, boolean countTotal)
+                throws QueryException {
+            try {
+                PartialList<Serializable> lwts = session.query(sqlQuery,
+                        queryFilter, countTotal);
+                return new SQLQueryResult(SQLSession.this, lwts.list, lwts.totalSize);
+            } catch (StorageException e) {
+                throw new QueryException(e.getMessage(), e);
+            }
+        }
     }
 
     /*
@@ -342,6 +400,17 @@ public class SQLSession implements Session {
             return new SQLDocumentVersion(node, type, this);
         } else {
             return new SQLDocument(node, type, this, false);
+        }
+    }
+
+    // called by SQLQueryResult iterator
+    protected Document getDocumentById(Serializable id)
+            throws DocumentException {
+        try {
+            Node node = session.getNodeById(id);
+            return node == null ? null : newDocument(node);
+        } catch (StorageException e) {
+            throw new DocumentException("Failed to get document: " + id, e);
         }
     }
 
@@ -616,6 +685,9 @@ public class SQLSession implements Session {
                     if (complexListSize == -1) {
                         // get existing
                         childNodes = session.getChildren(node, name, true);
+                        // as Children are not ordered for now, order by hand
+                        Collections.sort(childNodes,
+                                new Node.PositionComparator(model));
                     } else {
                         // create with given size (after a remove)
                         childNodes = new ArrayList<Node>(complexListSize);

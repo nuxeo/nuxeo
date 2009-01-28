@@ -24,7 +24,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.nuxeo.ecm.core.storage.sql.CollectionFragment.CollectionMaker;
 import org.nuxeo.ecm.core.storage.sql.db.Column;
 
 /**
@@ -40,12 +39,10 @@ public class ACLsFragment extends ArrayFragment {
      * Constructs an empty {@link ACLsFragment} of the given table with the
      * given id (which may be a temporary one).
      *
-     * @param tableName the table name
      * @param id the id
      * @param state the initial state for the fragment
      * @param context the persistence context to which the row is tied, or
      *            {@code null}
-     * @param array the initial acls to use
      */
     public ACLsFragment(Serializable id, State state, Context context,
             Serializable[] acls) {
@@ -77,8 +74,7 @@ public class ACLsFragment extends ArrayFragment {
                     } else if (key.equals(model.ACL_NAME_KEY)) {
                         name = (String) v;
                     } else if (key.equals(model.ACL_GRANT_KEY)) {
-                        grant = v == null ? false
-                                : ((Boolean) v).booleanValue();
+                        grant = v == null ? false : (Boolean) v;
                     } else if (key.equals(model.ACL_PERMISSION_KEY)) {
                         permission = (String) v;
                     } else if (key.equals(model.ACL_USER_KEY)) {
@@ -132,11 +128,11 @@ public class ACLsFragment extends ArrayFragment {
                 if (key.equals(model.MAIN_KEY)) {
                     v = getId();
                 } else if (key.equals(model.ACL_POS_KEY)) {
-                    v = Long.valueOf(acl.pos);
+                    v = (long) acl.pos;
                 } else if (key.equals(model.ACL_NAME_KEY)) {
                     v = acl.name;
                 } else if (key.equals(model.ACL_GRANT_KEY)) {
-                    v = Boolean.valueOf(acl.grant);
+                    v = acl.grant;
                 } else if (key.equals(model.ACL_PERMISSION_KEY)) {
                     v = acl.permission;
                 } else if (key.equals(model.ACL_USER_KEY)) {
@@ -154,4 +150,5 @@ public class ACLsFragment extends ArrayFragment {
         }
 
     }
+
 }

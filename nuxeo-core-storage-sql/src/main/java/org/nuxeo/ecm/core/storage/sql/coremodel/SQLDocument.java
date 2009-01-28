@@ -34,15 +34,12 @@ import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
-import org.nuxeo.ecm.core.api.model.PropertyException;
-import org.nuxeo.ecm.core.api.model.impl.ComplexProperty;
 import org.nuxeo.ecm.core.lifecycle.LifeCycle;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleService;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.DocumentIterator;
 import org.nuxeo.ecm.core.model.EmptyDocumentIterator;
-import org.nuxeo.ecm.core.model.PropertyContainer;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.schema.DocumentType;
@@ -60,7 +57,7 @@ public class SQLDocument extends SQLComplexProperty implements Document {
     private static final Log log = LogFactory.getLog(SQLDocument.class);
 
     // cache of the lock state, for efficiency
-    protected transient String lock;
+    protected String lock;
 
     protected SQLDocument(Node node, ComplexType type, SQLSession session,
             boolean readonly) {
@@ -136,66 +133,37 @@ public class SQLDocument extends SQLComplexProperty implements Document {
         setBoolean(Model.MISC_DIRTY_PROP, value);
     }
 
-    /*
-     * The following 3 methods are a bit complex, there are two levels of
-     * "properties" in play.
-     *
-     * - the "high level" properties, visible to application code,
-     * org.nuxeo.ecm.core.api.model...,
-     *
-     * - the "core model level" properties, org.nuxeo.ecm.core.model...
-     */
-
     /**
-     * Read into the high-level DocumentPart the values retrieved through this
-     * SQLDocument.
+     * Reads into the {@link DocumentPart} the values from this
+     * {@link SQLDocument}.
      */
     public void readDocumentPart(DocumentPart dp) throws Exception {
-        readPropertyContainer((ComplexProperty) dp, this);
-    }
-
-    /**
-     * Sets into the high-level ComplexProperty the values retrieved through the
-     * PropertyContainer (SQLDocument/SQLComplexProperty).
-     */
-    protected static void readPropertyContainer(
-            ComplexProperty complexProperty, PropertyContainer propertyContainer)
-            throws DocumentException, PropertyException {
-        for (Property property : complexProperty) {
-            readOneProperty(property,
-                    propertyContainer.getPropertyValue(property.getName()));
+        for (Property property : dp) {
+            property.init((Serializable) getPropertyValue(property.getName()));
         }
     }
 
     /**
-     * Sets into the high-level Property the given semi-simple value.
+     * Writes into this {@link SQLDocument} the values from the
+     * {@link DocumentPart}.
      */
-    protected static void readOneProperty(Property property, Object value)
-            throws PropertyException, DocumentException {
-        if (property.isContainer()) {
-            if (property.isList()) {
-                for (Object v : (List<?>) value) {
-                    readPropertyContainer((ComplexProperty) property.add(),
-                            (PropertyContainer) v);
-                }
-            } else {
-                property.init((Serializable) value);
-                // readPropertyContainer((ComplexProperty) property,
-                // (PropertyContainer) value);
-            }
-        } else {
-            property.init((Serializable) value);
-        }
-    }
-
     public void writeDocumentPart(DocumentPart dp) throws Exception {
         for (Property property : dp) {
             setPropertyValue(property.getName(), property.getValue());
         }
-        dp.clearDirtyFlags();
+        clearDirtyFlags(dp);
     }
 
-    protected static Map<String, String> systemPropNameMap;
+    protected static void clearDirtyFlags(Property property) {
+        if (property.isContainer()) {
+            for (Property p : property) {
+                clearDirtyFlags(p);
+            }
+        }
+        property.clearDirtyFlags();
+    }
+
+    protected static final Map<String, String> systemPropNameMap;
 
     static {
         systemPropNameMap = new HashMap<String, String>();
@@ -235,19 +203,35 @@ public class SQLDocument extends SQLComplexProperty implements Document {
      */
 
     public String getLifeCyclePolicy() throws LifeCycleException {
-        LifeCycleService service = NXCore.getLifeCycleService();
-        if (service == null) {
-            throw new LifeCycleException("LifeCycleService not available");
+        try {
+            return getString(Model.MISC_LIFECYCLE_POLICY_PROP);
+        } catch (DocumentException e) {
+            throw new LifeCycleException("Failed to get policy", e);
         }
-        return service.getLifeCyclePolicy(this);
+    }
+
+    public void setLifeCyclePolicy(String policy) throws LifeCycleException {
+        try {
+            setString(Model.MISC_LIFECYCLE_POLICY_PROP, policy);
+        } catch (DocumentException e) {
+            throw new LifeCycleException("Failed to set policy", e);
+        }
     }
 
     public String getCurrentLifeCycleState() throws LifeCycleException {
-        LifeCycleService service = NXCore.getLifeCycleService();
-        if (service == null) {
-            throw new LifeCycleException("LifeCycleService not available");
+        try {
+            return getString(Model.MISC_LIFECYCLE_STATE_PROP);
+        } catch (DocumentException e) {
+            throw new LifeCycleException("Failed to get state", e);
         }
-        return service.getCurrentLifeCycleState(this);
+    }
+
+    public void setCurrentLifeCycleState(String state) throws LifeCycleException {
+        try {
+            setString(Model.MISC_LIFECYCLE_STATE_PROP, state);
+        } catch (DocumentException e) {
+            throw new LifeCycleException("Failed to set state", e);
+        }
     }
 
     public boolean followTransition(String transition)
@@ -270,7 +254,7 @@ public class SQLDocument extends SQLComplexProperty implements Document {
         if (lifeCycle == null) {
             return Collections.emptyList();
         }
-        return lifeCycle.getAllowedStateTransitionsFrom(service.getCurrentLifeCycleState(this));
+        return lifeCycle.getAllowedStateTransitionsFrom(getCurrentLifeCycleState());
     }
 
     /*

@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.security.AccessControlException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -40,8 +41,11 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.query.QueryFilter;
+import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.storage.Credentials;
+import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
 
 /**
@@ -58,6 +62,8 @@ public class SessionImpl implements Session {
 
     protected final SchemaManager schemaManager;
 
+    private final Mapper mapper;
+
     private final Model model;
 
     private final PersistenceContext context;
@@ -73,6 +79,7 @@ public class SessionImpl implements Session {
             Credentials credentials) throws StorageException {
         this.repository = repository;
         this.schemaManager = schemaManager;
+        this.mapper = mapper;
         // this.credentials = credentials;
         model = mapper.getModel();
         context = new PersistenceContext(mapper, invalidators);
@@ -303,6 +310,9 @@ public class SessionImpl implements Session {
                 name.equals("..")) {
             throw new IllegalArgumentException("Illegal name: " + name);
         }
+        if (!model.isType(typeName)) {
+            throw new IllegalArgumentException("Unknown type: " + typeName);
+        }
 
         Serializable id = context.generateNewId();
 
@@ -324,14 +334,14 @@ public class SessionImpl implements Session {
         hierMap.put(model.HIER_CHILD_ISPROPERTY_KEY,
                 Boolean.valueOf(complexProp));
 
-        SimpleFragment mainRow = (SimpleFragment) context.createSimpleFragment(
+        SimpleFragment mainRow = context.createSimpleFragment(
                 model.mainTableName, id, mainMap);
 
         SimpleFragment hierRow;
         if (model.separateMainTable) {
             // TODO put it in a collection context instead
-            hierRow = (SimpleFragment) context.createSimpleFragment(
-                    model.hierTableName, id, hierMap);
+            hierRow = context.createSimpleFragment(model.hierTableName, id,
+                    hierMap);
         } else {
             hierRow = null;
         }
@@ -519,12 +529,21 @@ public class SessionImpl implements Session {
         return nodes;
     }
 
+    public PartialList<Serializable> query(SQLQuery query, QueryFilter queryFilter,
+            boolean countTotal) throws StorageException {
+        try {
+            return mapper.query(query, queryFilter, countTotal, this);
+        } catch (SQLException e) {
+            throw new StorageException("Invalid query: " + query, e);
+        }
+    }
+
     // returns context or null if missing
     protected Context getContext(String tableName) {
         return context.getContextOrNull(tableName);
     }
 
-    private void checkLive() throws IllegalStateException {
+    private void checkLive() {
         if (!live) {
             throw new IllegalStateException("Session is not live");
         }
@@ -565,13 +584,13 @@ public class SessionImpl implements Session {
         hierMap.put(model.HIER_CHILD_NAME_KEY, "");
         hierMap.put(model.HIER_CHILD_ISPROPERTY_KEY, Boolean.FALSE);
 
-        SimpleFragment mainRow = (SimpleFragment) context.createSimpleFragment(
+        SimpleFragment mainRow = context.createSimpleFragment(
                 model.mainTableName, id, mainMap);
 
         SimpleFragment hierRow;
         if (model.separateMainTable) {
-            hierRow = (SimpleFragment) context.createSimpleFragment(
-                    model.hierTableName, id, hierMap);
+            hierRow = context.createSimpleFragment(model.hierTableName, id,
+                    hierMap);
         } else {
             hierRow = null;
         }

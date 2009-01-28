@@ -36,7 +36,7 @@ public class Insert implements Serializable {
 
     protected final Dialect dialect;
 
-    private Table table;
+    private final Table table;
 
     private final List<Column> columns;
 
@@ -44,7 +44,7 @@ public class Insert implements Serializable {
 
     public Insert(Table table) {
         this.table = table;
-        this.dialect = table.dialect;
+        dialect = table.getDialect();
         columns = new LinkedList<Column>();
     }
 
@@ -75,7 +75,7 @@ public class Insert implements Serializable {
         List<String> values = new LinkedList<String>();
         for (Column column : columns) {
             columnNames.add(column.getQuotedName());
-            values.add("?");
+            values.add(column.getFreeVariableSetter());
         }
 
         if (columnNames.isEmpty()) {

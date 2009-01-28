@@ -29,7 +29,6 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
 import org.nuxeo.ecm.core.model.Document;
-import org.nuxeo.ecm.core.model.DocumentIterator;
 import org.nuxeo.ecm.core.model.EmptyDocumentIterator;
 import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
@@ -191,7 +190,7 @@ public class SQLDocumentVersion extends SQLDocument implements DocumentVersion {
         return null;
     }
 
-    protected static DocumentVersionIterator EMPTY_VERSION_ITERATOR = new DocumentVersionIterator() {
+    protected static final DocumentVersionIterator EMPTY_VERSION_ITERATOR = new DocumentVersionIterator() {
         public boolean hasNext() {
             return false;
         }

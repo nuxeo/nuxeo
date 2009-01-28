@@ -17,10 +17,6 @@
 
 package org.nuxeo.ecm.core.storage.sql.coremodel;
 
-import java.io.File;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-
 import org.nuxeo.ecm.core.query.test.QueryTestCase;
 
 /**
@@ -30,33 +26,23 @@ public class TestSQLRepositoryQuery extends QueryTestCase {
 
     @Override
     public void deployRepository() throws Exception {
-        File testdir = new File("target/test");
-        testdir.mkdirs();
-        File dbdir = new File(testdir, "repository");
-        deleteRecursive(dbdir);
-        System.setProperty("derby.stream.error.file", new File(testdir,
-                "derby.log").getAbsolutePath());
+        SQLRepositoryHelper.setUpRepository();
         deployContrib("org.nuxeo.ecm.core.storage.sql.tests",
-                "OSGI-INF/test-repo-repository-contrib.xml");
-    }
+                SQLRepositoryHelper.getDeploymentContrib());
+        deployBundle("org.nuxeo.ecm.core.event");
 
-    protected static void deleteRecursive(File file) {
-        if (file.isDirectory()) {
-            for (String child : file.list()) {
-                deleteRecursive(new File(file, child));
-            }
-        }
-        file.delete();
     }
 
     @Override
     public void undeployRepository() throws Exception {
-        try {
-            DriverManager.getConnection("jdbc:derby:;shutdown=true");
-            fail("Expected Derby shutdown exception");
-        } catch (SQLException e) {
-            assertEquals("Derby system shutdown.", e.getMessage());
-        }
+        SQLRepositoryHelper.tearDownRepository();
     }
 
+    @Override
+    public void testSQLFulltextBlob() throws Exception {
+        deployBundle("org.nuxeo.ecm.core.convert.api");
+        deployBundle("org.nuxeo.ecm.core.convert");
+        deployBundle("org.nuxeo.ecm.core.convert.plugins");
+        super.testSQLFulltextBlob();
+    }
 }

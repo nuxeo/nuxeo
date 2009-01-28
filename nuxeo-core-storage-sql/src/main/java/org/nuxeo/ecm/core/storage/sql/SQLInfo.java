@@ -17,12 +17,10 @@
 
 package org.nuxeo.ecm.core.storage.sql;
 
-import java.io.Serializable;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -58,7 +56,7 @@ public class SQLInfo {
 
     private final Model model;
 
-    private final Dialect dialect;
+    protected final Dialect dialect;
 
     private final SQLExceptionConverter sqlExceptionConverter;
 
@@ -79,10 +77,6 @@ public class SQLInfo {
     private final Map<String, String> insertSqlMap; // statement
 
     private final Map<String, List<Column>> insertColumnsMap;
-
-    private final Map<String, String> updateByIdSqlMap; // statement
-
-    private final Map<String, List<Column>> updateByIdColumnsMap;
 
     private final Map<String, String> deleteSqlMap; // statement
 
@@ -128,11 +122,11 @@ public class SQLInfo {
 
     private final Map<String, Column> copyIdColumnMap;
 
-    private String selectVersionIdByLabelSql;
+    private final String selectVersionIdByLabelSql;
 
     private final List<Column> selectVersionIdByLabelWhereColumns;
 
-    private Column selectVersionIdByLabelWhatColumn;
+    private final Column selectVersionIdByLabelWhatColumn;
 
     protected final Map<String, SQLInfoSelect> selectFragmentById;
 
@@ -191,9 +185,6 @@ public class SQLInfo {
         insertSqlMap = new HashMap<String, String>();
         insertColumnsMap = new HashMap<String, List<Column>>();
 
-        updateByIdSqlMap = new HashMap<String, String>();
-        updateByIdColumnsMap = new HashMap<String, List<Column>>();
-
         deleteSqlMap = new HashMap<String, String>();
 
         copyHierSqlExplicitName = null;
@@ -213,23 +204,12 @@ public class SQLInfo {
         initSQL();
     }
 
-    // ----- exceptions -----
-
     public SQLExceptionConverter getSqlExceptionConverter() {
         return sqlExceptionConverter;
     }
 
-    // ----- create whole database -----
-
     public Database getDatabase() {
         return database;
-    }
-
-    public List<String> getTableCreateSqls(Table table) {
-        List<String> sqls = new LinkedList<String>();
-        sqls.add(table.getCreateSql());
-        sqls.addAll(table.getPostCreateSqls());
-        return sqls;
     }
 
     // ----- select -----
@@ -326,13 +306,39 @@ public class SQLInfo {
 
     // ----- update -----
 
-    // XXX more fined grained SQL updating only changed columns
-    public String getUpdateByIdSql(String tableName) {
-        return updateByIdSqlMap.get(tableName);
+    // TODO these two methods are redundant with one another
+
+    public SQLInfoSelect getUpdateById(String tableName, Collection<String> keys) {
+        Table table = database.getTable(tableName);
+        List<String> values = new LinkedList<String>();
+        List<Column> columns = new LinkedList<Column>();
+        Column mainColumn = table.getColumn(model.MAIN_KEY);
+        for (String key : keys) {
+            Column column = table.getColumn(key);
+            values.add(column.getQuotedName() + " = " +
+                    column.getFreeVariableSetter());
+            columns.add(column);
+        }
+        columns.add(mainColumn);
+        Update update = new Update(table);
+        update.setNewValues(StringUtils.join(values, ", "));
+        update.setWhere(mainColumn.getQuotedName() + " = ?");
+        return new SQLInfoSelect(update.getStatement(), columns, null, null);
     }
 
-    public List<Column> getUpdateByIdColumns(String tableName) {
-        return updateByIdColumnsMap.get(tableName);
+    public Update getUpdateByIdForKeys(String tableName, Set<String> keys) {
+        Table table = database.getTable(tableName);
+        List<String> values = new ArrayList<String>(keys.size());
+        for (String key : keys) {
+            Column column = table.getColumn(key);
+            values.add(column.getQuotedName() + " = " +
+                    column.getFreeVariableSetter());
+        }
+        Update update = new Update(table);
+        update.setNewValues(StringUtils.join(values, ", "));
+        update.setWhere(table.getColumn(model.MAIN_KEY).getQuotedName() +
+                " = ?");
+        return update;
     }
 
     // ----- delete -----
@@ -415,12 +421,13 @@ public class SQLInfo {
          * versions
          */
         Table table = database.getTable(model.VERSION_TABLE_NAME);
-        selectVersionsByVersionable = makeSelect(table,
-                model.VERSION_VERSIONABLE_KEY);
-        table.addIndex(model.VERSION_VERSIONABLE_KEY);
         selectVersionsByLabel = makeSelect(table,
                 model.VERSION_VERSIONABLE_KEY, model.VERSION_LABEL_KEY);
+        table.addIndex(model.VERSION_VERSIONABLE_KEY);
         // don't index versionable+label, a simple label scan will suffice
+        selectVersionsByVersionable = makeSelect(table, new String[] {
+                model.VERSION_CREATED_KEY, ORDER_ASC },
+                model.VERSION_VERSIONABLE_KEY);
         selectVersionsByVersionableLastFirst = makeSelect(table, new String[] {
                 model.VERSION_CREATED_KEY, ORDER_DESC },
                 model.VERSION_VERSIONABLE_KEY);
@@ -607,12 +614,20 @@ public class SQLInfo {
                     // these are columns that need to be searchable, as some
                     // databases (Derby) don't allow matches on CLOB columns
                     sqlType = Types.VARCHAR;
+                } else if (tableName.equals(model.mainTableName) ||
+                        tableName.equals(model.ACL_TABLE_NAME) ||
+                        tableName.equals(model.MISC_TABLE_NAME)) {
+                    // or VARCHAR for system tables // TODO size?
+                    sqlType = Types.VARCHAR;
+                } else if (tableName.equals(model.FULLTEXT_TABLE_NAME)) {
+                    sqlType = Column.ExtendedTypes.FULLTEXT;
                 } else {
-                    sqlType = Types.CLOB; // or VARCHAR for system tables?
+                    sqlType = Types.CLOB;
                 }
                 break;
             case BOOLEAN:
-                sqlType = Types.BIT;
+                sqlType = Types.BIT; // many databases don't know BOOLEAN
+                // turned into SMALLINT by Derby
                 break;
             case LONG:
                 sqlType = Types.INTEGER;
@@ -682,7 +697,6 @@ public class SQLInfo {
         protected void postProcess() {
             postProcessSelectById();
             postProcessInsert();
-            postProcessUpdateById();
             postProcessDelete();
             postProcessCopy();
         }
@@ -790,8 +804,8 @@ public class SQLInfo {
         // children ids and types
         protected void postProcessSelectChildrenIdsAndTypes() {
             assert !model.separateMainTable; // otherwise join needed
-            ArrayList<Column> whatColumns = new ArrayList<Column>(2);
-            ArrayList<String> whats = new ArrayList<String>(2);
+            List<Column> whatColumns = new ArrayList<Column>(2);
+            List<String> whats = new ArrayList<String>(2);
             Column column = table.getColumn(model.MAIN_KEY);
             whatColumns.add(column);
             whats.add(column.getQuotedName());
@@ -846,28 +860,6 @@ public class SQLInfo {
             }
             identityFetchSqlMap.put(tableName, sql);
             identityFetchColumnMap.put(tableName, identityColumn);
-        }
-
-        protected void postProcessUpdateById() {
-            List<String> newValues = new LinkedList<String>();
-            List<Column> updateByIdColumns = new LinkedList<Column>();
-            List<String> wheres = new LinkedList<String>();
-            List<Column> whereColumns = new LinkedList<Column>();
-            for (Column column : table.getColumns()) {
-                if (column.getKey().equals(model.MAIN_KEY)) {
-                    wheres.add(column.getQuotedName() + " = ?");
-                    whereColumns.add(column);
-                } else {
-                    newValues.add(column.getQuotedName() + " = ?");
-                    updateByIdColumns.add(column);
-                }
-            }
-            updateByIdColumns.addAll(whereColumns);
-            Update update = new Update(table);
-            update.setNewValues(StringUtils.join(newValues, ", "));
-            update.setWhere(StringUtils.join(wheres, " AND "));
-            updateByIdSqlMap.put(tableName, update.getStatement());
-            updateByIdColumnsMap.put(tableName, updateByIdColumns);
         }
 
         protected void postProcessDelete() {
@@ -982,19 +974,6 @@ public class SQLInfo {
 
     }
 
-    public Update getUpdateByIdForKeys(String tableName, Set<String> keys) {
-        Table table = database.getTable(tableName);
-        List<String> values = new ArrayList<String>(keys.size());
-        for (String key : keys) {
-            values.add(table.getColumn(key).getQuotedName() + " = ?");
-        }
-        Update update = new Update(table);
-        update.setNewValues(StringUtils.join(values, ", "));
-        update.setWhere(table.getColumn(model.MAIN_KEY).getQuotedName() +
-                " = ?");
-        return update;
-    }
-
     public static class SQLInfoSelect {
 
         public final String sql;
@@ -1003,11 +982,16 @@ public class SQLInfo {
 
         public final List<Column> whereColumns;
 
+        public final List<Column> opaqueColumns;
+
         public SQLInfoSelect(String sql, List<Column> whatColumns,
-                List<Column> whereColumns) {
+                List<Column> whereColumns, List<Column> opaqueColumns) {
             this.sql = sql;
             this.whatColumns = new ArrayList<Column>(whatColumns);
-            this.whereColumns = new ArrayList<Column>(whereColumns);
+            this.whereColumns = whereColumns == null ? null
+                    : new ArrayList<Column>(whereColumns);
+            this.opaqueColumns = opaqueColumns == null ? null
+                    : new ArrayList<Column>(opaqueColumns);
         }
     }
 
@@ -1027,6 +1011,7 @@ public class SQLInfo {
         List<String> freeColumnsList = Arrays.asList(freeColumns);
         List<Column> whatColumns = new LinkedList<Column>();
         List<Column> whereColumns = new LinkedList<Column>();
+        List<Column> opaqueColumns = new LinkedList<Column>();
         List<String> whats = new LinkedList<String>();
         List<String> wheres = new LinkedList<String>();
         for (Column column : table.getColumns()) {
@@ -1034,10 +1019,16 @@ public class SQLInfo {
             if (freeColumnsList.contains(column.getKey())) {
                 whereColumns.add(column);
                 wheres.add(qname + " = ?");
+            } else if (column.isOpaque()) {
+                opaqueColumns.add(column);
             } else {
                 whatColumns.add(column);
                 whats.add(qname);
             }
+        }
+        if (whats.isEmpty()) {
+            // only opaque columns, don't generate an illegal SELECT
+            whats.add(table.getColumn(model.MAIN_KEY).getQuotedName());
         }
         Select select = new Select(table);
         select.setWhat(StringUtils.join(whats, ", "));
@@ -1052,7 +1043,7 @@ public class SQLInfo {
         }
         select.setOrderBy(StringUtils.join(orders, ", "));
         return new SQLInfoSelect(select.getStatement(), whatColumns,
-                whereColumns);
+                whereColumns, opaqueColumns.isEmpty() ? null : opaqueColumns);
     }
 
     /**
@@ -1064,6 +1055,7 @@ public class SQLInfo {
         List<String> freeColumnsList = Arrays.asList(freeColumns);
         List<Column> whatColumns = new LinkedList<Column>();
         List<Column> whereColumns = new LinkedList<Column>();
+        List<Column> opaqueColumns = new LinkedList<Column>();
         List<String> whats = new LinkedList<String>();
         List<String> wheres = new LinkedList<String>();
         String join = table.getColumn(model.MAIN_KEY).getFullQuotedName() +
@@ -1074,10 +1066,16 @@ public class SQLInfo {
             if (freeColumnsList.contains(column.getKey())) {
                 whereColumns.add(column);
                 wheres.add(qname + " = ?");
+            } else if (column.isOpaque()) {
+                opaqueColumns.add(column);
             } else {
                 whatColumns.add(column);
                 whats.add(qname);
             }
+        }
+        if (whats.isEmpty()) {
+            // only opaque columns, don't generate an illegal SELECT
+            whats.add(table.getColumn(model.MAIN_KEY).getQuotedName());
         }
         for (String name : joinCriteria) {
             Column column = joinTable.getColumn(name);
@@ -1089,7 +1087,428 @@ public class SQLInfo {
         select.setFrom(table.getQuotedName() + ", " + joinTable.getQuotedName());
         select.setWhere(StringUtils.join(wheres, " AND "));
         return new SQLInfoSelect(select.getStatement(), whatColumns,
-                whereColumns);
+                whereColumns, opaqueColumns.isEmpty() ? null : opaqueColumns);
+    }
+
+    /**
+     * Class to hold info about a stored procedure and how to create it.
+     */
+    public static class StoredProcedureInfo {
+
+        /**
+         * If {@code null}, use {@link #checkDropStatement} to check if drop or
+         * not.
+         */
+        public final Boolean dropFlag;
+
+        /** If this statement's execution returns something, then do the drop. */
+        public final String checkDropStatement;
+
+        public final String dropStatement;
+
+        public final String createStatement;
+
+        public StoredProcedureInfo(Boolean dropFlag, String checkDropStatement,
+                String dropStatement, String createStatement) {
+            this.dropFlag = dropFlag;
+            this.checkDropStatement = checkDropStatement;
+            this.dropStatement = dropStatement;
+            this.createStatement = createStatement;
+        }
+    }
+
+    public class DerbyStoredProcedureInfoMaker {
+
+        public final String idType;
+
+        public final String methodSuffix;
+
+        public final String className = "org.nuxeo.ecm.core.storage.sql.db.DerbyFunctions";
+
+        public DerbyStoredProcedureInfoMaker() {
+            switch (model.idGenPolicy) {
+            case APP_UUID:
+                idType = "VARCHAR(36)";
+                methodSuffix = "String";
+                break;
+            case DB_IDENTITY:
+                idType = "INTEGER";
+                methodSuffix = "Long";
+                break;
+            default:
+                throw new AssertionError(model.idGenPolicy);
+            }
+        }
+
+        public StoredProcedureInfo makeInTree() {
+            return makeFunction("NX_IN_TREE",
+                    "(ID %s, BASEID %<s) RETURNS SMALLINT", "isInTree" +
+                            methodSuffix, "READS SQL DATA");
+        }
+
+        public StoredProcedureInfo makeParseFullText() {
+            return makeFunction(
+                    "NX_PARSE_FULLTEXT",
+                    "(S1 VARCHAR(10000), S2 VARCHAR(10000)) RETURNS VARCHAR(10000)",
+                    "parseFullText", "");
+        }
+
+        public StoredProcedureInfo makeContainsFullText() {
+            return makeFunction(
+                    "NX_CONTAINS",
+                    "(FT VARCHAR(10000), QUERY VARCHAR(10000)) RETURNS SMALLINT",
+                    "matchesFullTextDerby", "");
+        }
+
+        public StoredProcedureInfo makeFTInsertTrigger() {
+            Table ft = database.getTable(model.FULLTEXT_TABLE_NAME);
+            Column ftft = ft.getColumn(model.FULLTEXT_FULLTEXT_KEY);
+            Column ftst = ft.getColumn(model.FULLTEXT_SIMPLETEXT_KEY);
+            Column ftbt = ft.getColumn(model.FULLTEXT_BINARYTEXT_KEY);
+            Column ftid = ft.getColumn(model.MAIN_KEY);
+            return makeTrigger(
+                    "NX_TRIG_FT_INSERT", //
+                    String.format(
+                            "AFTER INSERT ON %1$s "//
+                                    + "REFERENCING NEW AS NEW " //
+                                    + "FOR EACH ROW "//
+                                    + "UPDATE %1$s " //
+                                    + "SET %2$s = NX_PARSE_FULLTEXT(CAST(%3$s AS VARCHAR(10000)), CAST(%4$s AS VARCHAR(10000))) " //
+                                    + "WHERE %5$s = NEW.%5$s", //
+                            ft.getQuotedName(), // 1 table "FULLTEXT"
+                            ftft.getQuotedName(), // 2 column "TEXT"
+                            ftst.getQuotedName(), // 3 column "SIMPLETEXT"
+                            ftbt.getQuotedName(), // 4 column "BINARYTEXT"
+                            ftid.getQuotedName() // 5 column "ID"
+                    ));
+        }
+
+        public StoredProcedureInfo makeFTUpdateTrigger() {
+            Table ft = database.getTable(model.FULLTEXT_TABLE_NAME);
+            Column ftft = ft.getColumn(model.FULLTEXT_FULLTEXT_KEY);
+            Column ftst = ft.getColumn(model.FULLTEXT_SIMPLETEXT_KEY);
+            Column ftbt = ft.getColumn(model.FULLTEXT_BINARYTEXT_KEY);
+            Column ftid = ft.getColumn(model.MAIN_KEY);
+            return makeTrigger(
+                    "NX_TRIG_FT_UPDATE", //
+                    String.format(
+                            "AFTER UPDATE OF %3$s, %4$s ON %1$s "//
+                                    + "REFERENCING NEW AS NEW " //
+                                    + "FOR EACH ROW "//
+                                    + "UPDATE %1$s " //
+                                    + "SET %2$s = NX_PARSE_FULLTEXT(CAST(%3$s AS VARCHAR(10000)), CAST(%4$s AS VARCHAR(10000))) " //
+                                    + "WHERE %5$s = NEW.%5$s", //
+                            ft.getQuotedName(), // 1 table "FULLTEXT"
+                            ftft.getQuotedName(), // 2 column "TEXT"
+                            ftst.getQuotedName(), // 3 column "SIMPLETEXT"
+                            ftbt.getQuotedName(), // 4 column "BINARYTEXT"
+                            ftid.getQuotedName() // 5 column "ID"
+                    ));
+        }
+
+        public StoredProcedureInfo makeAccessAllowed() {
+            return makeFunction(
+                    "NX_ACCESS_ALLOWED",
+                    "(ID %s, PRINCIPALS VARCHAR(10000), PERMISSIONS VARCHAR(10000)) RETURNS SMALLINT",
+                    "isAccessAllowed" + methodSuffix, "READS SQL DATA");
+        }
+
+        protected StoredProcedureInfo makeFunction(String functionName,
+                String proto, String methodName, String info) {
+            proto = String.format(proto, idType);
+            return new StoredProcedureInfo(
+                    null, // do a drop check
+                    String.format(
+                            "SELECT ALIAS FROM SYS.SYSALIASES WHERE ALIAS = '%s' AND ALIASTYPE = 'F'",
+                            functionName), //
+                    String.format("DROP FUNCTION %s", functionName), //
+                    String.format("CREATE FUNCTION %s%s " //
+                            + "LANGUAGE JAVA " //
+                            + "PARAMETER STYLE JAVA " //
+                            + "EXTERNAL NAME '%s.%s' " //
+                            + "%s", //
+                            functionName, proto, //
+                            className, methodName, info));
+        }
+
+        public StoredProcedureInfo makeTrigger(String triggerName, String body) {
+            return new StoredProcedureInfo(
+                    null, // do a drop check
+                    String.format(
+                            "SELECT TRIGGERNAME FROM SYS.SYSTRIGGERS WHERE TRIGGERNAME = '%s'",
+                            triggerName), //
+                    String.format("DROP TRIGGER %s", triggerName), //
+                    String.format("CREATE TRIGGER %s %s", triggerName, body));
+
+        }
+    }
+
+    public class H2StoredProcedureInfoMaker {
+
+        public final String methodSuffix;
+
+        public static final String h2Functions = "org.nuxeo.ecm.core.storage.sql.db.H2Functions";
+
+        public static final String h2Fulltext = "org.nuxeo.ecm.core.storage.sql.db.H2Fulltext";
+
+        public H2StoredProcedureInfoMaker() {
+            switch (model.idGenPolicy) {
+            case APP_UUID:
+                methodSuffix = "String";
+                break;
+            case DB_IDENTITY:
+                methodSuffix = "Long";
+                break;
+            default:
+                throw new AssertionError(model.idGenPolicy);
+            }
+        }
+
+        public StoredProcedureInfo makeInTree() {
+            return makeFunction("NX_IN_TREE", "isInTree" + methodSuffix);
+        }
+
+        public StoredProcedureInfo makeAccessAllowed() {
+            return makeFunction("NX_ACCESS_ALLOWED", "isAccessAllowed" +
+                    methodSuffix);
+        }
+
+        public StoredProcedureInfo makeFTInit() {
+            return new StoredProcedureInfo(Boolean.FALSE, null, null,
+                    String.format(
+                            "CREATE ALIAS IF NOT EXISTS NXFT_INIT FOR \"%s.init\"; "
+                                    + "CALL NXFT_INIT()", h2Fulltext));
+        }
+
+        public StoredProcedureInfo makeFTIndex() {
+            Table ft = database.getTable(model.FULLTEXT_TABLE_NAME);
+            Column ftst = ft.getColumn(model.FULLTEXT_SIMPLETEXT_KEY);
+            Column ftbt = ft.getColumn(model.FULLTEXT_BINARYTEXT_KEY);
+            return new StoredProcedureInfo(
+                    Boolean.FALSE,
+                    null,
+                    null, //
+                    String.format(
+                            "CALL NXFT_CREATE_INDEX('PUBLIC', '%s', ('%s', '%s'), '%s')", //
+                            ft.getName(), ftst.getPhysicalName(),
+                            ftbt.getPhysicalName(),
+                            dialect.getFulltextAnalyzer()));
+        }
+
+        protected StoredProcedureInfo makeFunction(String functionName,
+                String methodName) {
+            return new StoredProcedureInfo(Boolean.TRUE, null, //
+                    String.format("DROP ALIAS IF EXISTS %s", functionName), //
+                    String.format("CREATE ALIAS %s FOR \"%s.%s\"",
+                            functionName, h2Functions, methodName));
+        }
+    }
+
+    public class PostgreSQLstoredProcedureInfoMaker {
+
+        public final String idType;
+
+        public PostgreSQLstoredProcedureInfoMaker() {
+            switch (model.idGenPolicy) {
+            case APP_UUID:
+                idType = "varchar(36)";
+                break;
+            case DB_IDENTITY:
+                idType = "integer";
+                break;
+            default:
+                throw new AssertionError(model.idGenPolicy);
+            }
+        }
+
+        public StoredProcedureInfo makeInTree() {
+            return new StoredProcedureInfo(
+                    Boolean.FALSE, // no drop needed
+                    null,
+                    null, //
+                    String.format(
+                            "CREATE OR REPLACE FUNCTION NX_IN_TREE(id %s, baseid %<s) " //
+                                    + "RETURNS boolean " //
+                                    + "AS $$ " //
+                                    + "DECLARE" //
+                                    + "  curid %<s := id; " //
+                                    + "BEGIN" //
+                                    + "  IF baseid IS NULL OR id IS NULL OR baseid = id THEN" //
+                                    + "    RETURN false;" //
+                                    + "  END IF;" //
+                                    + "  LOOP" //
+                                    + "    SELECT parentid INTO curid FROM hierarchy WHERE hierarchy.id = curid;" //
+                                    + "    IF curid IS NULL THEN" //
+                                    + "      RETURN false; " //
+                                    + "    ELSIF curid = baseid THEN" //
+                                    + "      RETURN true;" //
+                                    + "    END IF;" //
+                                    + "  END LOOP;" //
+                                    + "END " //
+                                    + "$$ " //
+                                    + "LANGUAGE plpgsql " //
+                                    + "STABLE " //
+                            , idType));
+        }
+
+        public StoredProcedureInfo makeAccessAllowed() {
+            return new StoredProcedureInfo(
+                    Boolean.FALSE, // no drop needed
+                    null, //
+                    null, //
+                    String.format(
+                            "CREATE OR REPLACE FUNCTION NX_ACCESS_ALLOWED" //
+                                    + "(id %s, users varchar[], permissions varchar[]) " //
+                                    + "RETURNS boolean " //
+                                    + "AS $$ " //
+                                    + "DECLARE" //
+                                    + "  curid %<s := id;" //
+                                    + "  newid %<s;" //
+                                    + "  r record;" //
+                                    + "  first boolean := true;" //
+                                    + "BEGIN" //
+                                    + "  WHILE curid IS NOT NULL LOOP" //
+                                    + "    FOR r in SELECT acls.grant, acls.permission, acls.user FROM acls WHERE acls.id = curid ORDER BY acls.pos LOOP"
+                                    + "      IF r.permission = ANY(permissions) AND r.user = ANY(users) THEN" //
+                                    + "        RETURN r.grant;" //
+                                    + "      END IF;" //
+                                    + "    END LOOP;" //
+                                    + "    SELECT parentid INTO newid FROM hierarchy WHERE hierarchy.id = curid;" //
+                                    + "    IF first AND newid IS NULL THEN" //
+                                    + "      SELECT versionableid INTO newid FROM versions WHERE versions.id = curid;" //
+                                    + "    END IF;" //
+                                    + "    first := false;" //
+                                    + "    curid := newid;" //
+                                    + "  END LOOP;" //
+                                    + "  RETURN false; " //
+                                    + "END " //
+                                    + "$$ " //
+                                    + "LANGUAGE plpgsql " //
+                                    + "STABLE " //
+                            , idType));
+        }
+
+        public StoredProcedureInfo makeToTSVector() {
+            String tsconfig = dialect.getFulltextAnalyzer();
+            return new StoredProcedureInfo( //
+                    Boolean.FALSE, // no drop needed
+                    null, //
+                    null, //
+                    String.format(
+                            "CREATE OR REPLACE FUNCTION NX_TO_TSVECTOR(string VARCHAR) " //
+                                    + "RETURNS TSVECTOR " //
+                                    + "AS $$" //
+                                    + "  SELECT TO_TSVECTOR('%s', $1) " //
+                                    + "$$ " //
+                                    + "LANGUAGE sql " //
+                                    + "STABLE " //
+                            , tsconfig));
+        }
+
+        public StoredProcedureInfo makeContainsFullText() {
+            String tsconfig = dialect.getFulltextAnalyzer();
+            return new StoredProcedureInfo( //
+                    Boolean.FALSE, // no drop needed
+                    null, //
+                    null, //
+                    String.format(
+                            "CREATE OR REPLACE FUNCTION NX_CONTAINS(ft TSVECTOR, query VARCHAR) " //
+                                    + "RETURNS boolean " //
+                                    + "AS $$" //
+                                    + "  SELECT $1 @@ TO_TSQUERY('%s', $2) " //
+                                    + "$$ " //
+                                    + "LANGUAGE sql " //
+                                    + "STABLE " //
+                            , tsconfig));
+        }
+
+        public StoredProcedureInfo makeFTTrigger() {
+            Table ft = database.getTable(model.FULLTEXT_TABLE_NAME);
+            String qname = ft.getQuotedName();
+            return new StoredProcedureInfo(
+                    Boolean.TRUE, // do a drop
+                    null, //
+                    String.format(
+                            "DROP TRIGGER IF EXISTS NX_TRIG_FT_UPDATE ON %s",
+                            qname),
+                    String.format(
+                            "CREATE TRIGGER NX_TRIG_FT_UPDATE " //
+                                    + "BEFORE INSERT OR UPDATE ON %s "
+                                    + "FOR EACH ROW EXECUTE PROCEDURE NX_UPDATE_FULLTEXT()" //
+                            , qname));
+        }
+
+        public StoredProcedureInfo makeConsolidateFullText() {
+            Table ft = database.getTable(model.FULLTEXT_TABLE_NAME);
+            Column ftft = ft.getColumn(model.FULLTEXT_FULLTEXT_KEY);
+            Column ftst = ft.getColumn(model.FULLTEXT_SIMPLETEXT_KEY);
+            Column ftbt = ft.getColumn(model.FULLTEXT_BINARYTEXT_KEY);
+            return new StoredProcedureInfo(Boolean.FALSE, // no drop needed
+                    null, //
+                    null, //
+                    String.format(
+                            "CREATE OR REPLACE FUNCTION NX_UPDATE_FULLTEXT() " //
+                                    + "RETURNS trigger " //
+                                    + "AS $$ " //
+                                    + "BEGIN" //
+                                    + "  NEW.%s := NEW.%s || NEW.%s;" //
+                                    + "  RETURN NEW; " //
+                                    + "END " //
+                                    + "$$ " //
+                                    + "LANGUAGE plpgsql " //
+                                    + "VOLATILE " //
+                            , ftft.getQuotedName(), ftst.getQuotedName(),
+                            ftbt.getQuotedName()));
+        }
+
+    }
+
+    /**
+     * Gets the statements creating the appropriate stored procedures.
+     */
+    public Collection<StoredProcedureInfo> getStoredProceduresSqls() {
+        List<StoredProcedureInfo> spis = new LinkedList<StoredProcedureInfo>();
+        String databaseName = dialect.getDatabaseName();
+        if ("Apache Derby".equals(databaseName)) {
+            DerbyStoredProcedureInfoMaker maker = new DerbyStoredProcedureInfoMaker();
+            spis.add(maker.makeInTree());
+            spis.add(maker.makeAccessAllowed());
+            spis.add(maker.makeParseFullText());
+            spis.add(maker.makeContainsFullText());
+        } else if ("H2".equals(databaseName)) {
+            H2StoredProcedureInfoMaker maker = new H2StoredProcedureInfoMaker();
+            spis.add(maker.makeInTree());
+            spis.add(maker.makeAccessAllowed());
+        } else if ("PostgreSQL".equals(databaseName)) {
+            PostgreSQLstoredProcedureInfoMaker maker = new PostgreSQLstoredProcedureInfoMaker();
+            spis.add(maker.makeInTree());
+            spis.add(maker.makeAccessAllowed());
+            spis.add(maker.makeToTSVector());
+            spis.add(maker.makeContainsFullText());
+        }
+        return spis;
+    }
+
+    /**
+     * Gets the statements creating the appropriate triggers.
+     */
+    public Collection<StoredProcedureInfo> getTriggersSqls() {
+        List<StoredProcedureInfo> spis = new LinkedList<StoredProcedureInfo>();
+        String databaseName = dialect.getDatabaseName();
+        if ("Apache Derby".equals(databaseName)) {
+            DerbyStoredProcedureInfoMaker maker = new DerbyStoredProcedureInfoMaker();
+            spis.add(maker.makeFTInsertTrigger());
+            spis.add(maker.makeFTUpdateTrigger());
+        } else if ("H2".equals(databaseName)) {
+            H2StoredProcedureInfoMaker maker = new H2StoredProcedureInfoMaker();
+            spis.add(maker.makeFTInit());
+            spis.add(maker.makeFTIndex());
+        } else if ("PostgreSQL".equals(databaseName)) {
+            PostgreSQLstoredProcedureInfoMaker maker = new PostgreSQLstoredProcedureInfoMaker();
+            spis.add(maker.makeConsolidateFullText());
+            spis.add(maker.makeFTTrigger());
+        }
+        return spis;
     }
 
 }

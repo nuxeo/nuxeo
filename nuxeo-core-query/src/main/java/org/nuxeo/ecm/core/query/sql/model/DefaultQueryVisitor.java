@@ -82,9 +82,21 @@ public class DefaultQueryVisitor implements IVisitor {
     }
 
     public void visitExpression(Expression node) {
-        node.lvalue.accept(this);
-        node.operator.accept(this);
-        node.rvalue.accept(this);
+        if (node.rvalue == null) {
+            // NOT
+            node.operator.accept(this);
+            node.lvalue.accept(this);
+        } else {
+            node.lvalue.accept(this);
+            node.operator.accept(this);
+            node.rvalue.accept(this);
+        }
+    }
+
+    public void visitMultiExpression(MultiExpression node) {
+        for (Operand operand : node.values) {
+            operand.accept(this);
+        }
     }
 
     public void visitOperator(Operator node) {

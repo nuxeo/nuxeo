@@ -192,6 +192,20 @@ public class Model {
 
     public static final String LOCK_KEY = "lock";
 
+    public static final String FULLTEXT_TABLE_NAME = "fulltext";
+
+    public static final String FULLTEXT_FULLTEXT_PROP = "ecm:fulltext";
+
+    public static final String FULLTEXT_FULLTEXT_KEY = "fulltext";
+
+    public static final String FULLTEXT_SIMPLETEXT_PROP = "ecm:simpleText";
+
+    public static final String FULLTEXT_SIMPLETEXT_KEY = "simpletext";
+
+    public static final String FULLTEXT_BINARYTEXT_PROP = "ecm:binaryText";
+
+    public static final String FULLTEXT_BINARYTEXT_KEY = "binarytext";
+
     public static class PropertyInfo {
 
         public final PropertyType propertyType;
@@ -202,12 +216,33 @@ public class Model {
 
         public final boolean readonly;
 
+        public final boolean fulltext;
+
         public PropertyInfo(PropertyType propertyType, String fragmentName,
                 String fragmentKey, boolean readonly) {
             this.propertyType = propertyType;
             this.fragmentName = fragmentName;
             this.fragmentKey = fragmentKey;
             this.readonly = readonly;
+            // TODO use some config to decide this
+            fulltext = (propertyType.equals(PropertyType.STRING) ||
+                    propertyType.equals(PropertyType.BINARY) || propertyType.equals(PropertyType.ARRAY_STRING)) &&
+                    (fragmentKey == null || !fragmentKey.equals(MAIN_KEY)) &&
+                    !fragmentName.equals(HIER_TABLE_NAME) &&
+                    !fragmentName.equals(MAIN_TABLE_NAME) &&
+                    !fragmentName.equals(VERSION_TABLE_NAME) &&
+                    !fragmentName.equals(PROXY_TABLE_NAME) &&
+                    !fragmentName.equals(FULLTEXT_TABLE_NAME) &&
+                    !fragmentName.equals(LOCK_TABLE_NAME) &&
+                    !fragmentName.equals(UID_SCHEMA_NAME) &&
+                    !fragmentName.equals(MISC_TABLE_NAME);
+        }
+
+        @Override
+        public String toString() {
+            return "PropertyInfo(" + fragmentName + ", " + fragmentKey + ", " +
+                    propertyType + (readonly ? ", RO" : "") +
+                    (fulltext ? ", FT" : "") + ')';
         }
     }
 
@@ -222,13 +257,20 @@ public class Model {
     private final AtomicLong temporaryIdCounter;
 
     /** Shared high-level properties that don't come from the schema manager. */
-    private Map<String, Type> specialPropertyTypes;
+    private final Map<String, Type> specialPropertyTypes;
 
     /** Per-schema/type info about properties. */
     private final HashMap<String, Map<String, PropertyInfo>> schemaPropertyInfos;
 
     /** Shared properties. */
     private final Map<String, PropertyInfo> sharedPropertyInfos;
+
+    /** Merged properties (all schemas together + shared). */
+    private final Map<String, PropertyInfo> mergedPropertyInfos;
+
+    private final Map<String, Map<String, PropertyInfo>> fulltextStringPropertyInfos;
+
+    private final Map<String, Map<String, PropertyInfo>> fulltextBinaryPropertyInfos;
 
     /** Per-table info about properties. */
     private final Map<String, Map<String, PropertyType>> fragmentsKeys;
@@ -257,6 +299,15 @@ public class Model {
     /** Maps schema to simple+collection fragments. */
     protected final Map<String, Set<String>> typeFragments;
 
+    /** Map of doc types to facets, for search. */
+    protected final Map<String, Set<String>> documentTypesFacets;
+
+    /** Map of doc type to its supertype, for search. */
+    protected final Map<String, String> documentSuperTypes;
+
+    /** Map of doc type to its subtypes (including itself), for search. */
+    protected final Map<String, Set<String>> documentSubTypes;
+
     public Model(RepositoryImpl repository, SchemaManager schemaManager) {
         binaryManager = repository.getBinaryManager();
         RepositoryDescriptor repositoryDescriptor = repository.getRepositoryDescriptor();
@@ -268,6 +319,9 @@ public class Model {
 
         schemaPropertyInfos = new HashMap<String, Map<String, PropertyInfo>>();
         sharedPropertyInfos = new HashMap<String, PropertyInfo>();
+        mergedPropertyInfos = new HashMap<String, PropertyInfo>();
+        fulltextStringPropertyInfos = new HashMap<String, Map<String, PropertyInfo>>();
+        fulltextBinaryPropertyInfos = new HashMap<String, Map<String, PropertyInfo>>();
         fragmentsKeys = new HashMap<String, Map<String, PropertyType>>();
 
         collectionTables = new HashMap<String, PropertyType>();
@@ -279,6 +333,10 @@ public class Model {
         typeSimpleFragments = new HashMap<String, Set<String>>();
         typeCollectionFragments = new HashMap<String, Set<String>>();
 
+        documentTypesFacets = new HashMap<String, Set<String>>();
+        documentSuperTypes = new HashMap<String, String>();
+        documentSubTypes = new HashMap<String, Set<String>>();
+
         specialPropertyTypes = new HashMap<String, Type>();
 
         initMainModel();
@@ -287,7 +345,10 @@ public class Model {
         initLocksModel();
         initAclModel();
         initMiscModel();
+        initFullTextModel();
         initModels(schemaManager);
+
+        inferFulltextInfo();
     }
 
     /**
@@ -313,7 +374,7 @@ public class Model {
         switch (idGenPolicy) {
         case APP_UUID:
             return UUID.randomUUID().toString();
-            // return "U_" + temporaryIdCounter.incrementAndGet();
+            // return "UUID_" + temporaryIdCounter.incrementAndGet();
         case DB_IDENTITY:
             return "T" + temporaryIdCounter.incrementAndGet();
         default:
@@ -367,8 +428,9 @@ public class Model {
                 schemaPropertyInfos.put(schemaName, propertyInfos);
             }
         }
-        propertyInfos.put(propertyName, new PropertyInfo(propertyType,
-                fragmentName, fragmentKey, readonly));
+        PropertyInfo propertyInfo = new PropertyInfo(propertyType,
+                fragmentName, fragmentKey, readonly);
+        propertyInfos.put(propertyName, propertyInfo);
 
         // per-table
         if (fragmentKey != null) {
@@ -385,6 +447,16 @@ public class Model {
             specialPropertyTypes.put(propertyName, type);
         }
 
+        // merged properties
+        PropertyInfo previous = mergedPropertyInfos.get(propertyName);
+        if (previous == null) {
+            mergedPropertyInfos.put(propertyName, propertyInfo);
+        } else {
+            log.info(String.format(
+                    "Schemas '%s' and '%s' both have a property '%s', "
+                            + "unqualified reference in queries will use schema '%1$s'",
+                    previous.fragmentName, fragmentName, propertyName));
+        }
     }
 
     /**
@@ -403,9 +475,35 @@ public class Model {
                 // schema with no properties (complex list)
                 continue;
             }
-            for (Map.Entry<String, PropertyInfo> info : infos.entrySet()) {
+            for (Entry<String, PropertyInfo> info : infos.entrySet()) {
                 propertyInfos.put(info.getKey(), info.getValue());
             }
+        }
+    }
+
+    /**
+     * Infers fulltext info for all schemas.
+     */
+    private void inferFulltextInfo() {
+        for (Entry<String, Map<String, PropertyInfo>> entry : schemaPropertyInfos.entrySet()) {
+            Map<String, PropertyInfo> stringPropertyInfos = new HashMap<String, PropertyInfo>();
+            Map<String, PropertyInfo> binaryPropertyInfos = new HashMap<String, PropertyInfo>();
+            for (Entry<String, PropertyInfo> e : entry.getValue().entrySet()) {
+                String name = e.getKey();
+                PropertyInfo info = e.getValue();
+                if (!info.fulltext) {
+                    continue;
+                }
+                if (info.propertyType == PropertyType.STRING ||
+                        info.propertyType == PropertyType.ARRAY_STRING) {
+                    stringPropertyInfos.put(name, info);
+                } else if (info.propertyType == PropertyType.BINARY) {
+                    binaryPropertyInfos.put(name, info);
+                }
+            }
+            String schemaName = entry.getKey();
+            fulltextStringPropertyInfos.put(schemaName, stringPropertyInfos);
+            fulltextBinaryPropertyInfos.put(schemaName, binaryPropertyInfos);
         }
     }
 
@@ -418,6 +516,54 @@ public class Model {
         PropertyInfo propertyInfo = propertyInfos.get(propertyName);
         return propertyInfo != null ? propertyInfo
                 : sharedPropertyInfos.get(propertyName);
+    }
+
+    public Map<String, PropertyInfo> getPropertyInfos(String typeName) {
+        return schemaPropertyInfos.get(typeName);
+    }
+
+    public PropertyInfo getPropertyInfo(String propertyName) {
+        return mergedPropertyInfos.get(propertyName);
+    }
+
+    public Map<String, PropertyInfo> getFulltextStringPropertyInfos(
+            String schemaName) {
+        return fulltextStringPropertyInfos.get(schemaName);
+    }
+
+    public Map<String, PropertyInfo> getFulltextBinaryPropertyInfos(
+            String schemaName) {
+        return fulltextBinaryPropertyInfos.get(schemaName);
+    }
+
+    /**
+     * Finds out if a field is to be indexed as fulltext.
+     *
+     * @param fragmentName
+     * @param fragmentKey the key or {@code null} for a collection
+     * @return {@link PropertyType#STRING} or {@link PropertyType#BINARY} if
+     *         this field is to be indexed as fulltext
+     */
+    public PropertyType getFulltextFieldType(String fragmentName,
+            String fragmentKey) {
+        if (fragmentKey == null) {
+            PropertyType type = collectionTables.get(fragmentName);
+            if (type == PropertyType.ARRAY_STRING ||
+                    type == PropertyType.ARRAY_BINARY) {
+                return type.getArrayBaseType();
+            }
+            return null;
+        } else {
+            Map<String, PropertyInfo> infos = schemaPropertyInfos.get(fragmentName);
+            if (infos == null) {
+                return null;
+            }
+            PropertyInfo info = infos.get(fragmentKey);
+            if (info != null && info.fulltext) {
+                return info.propertyType;
+            }
+            return null;
+        }
     }
 
     private void addCollectionFragmentInfos(String fragmentName,
@@ -498,8 +644,8 @@ public class Model {
         // fragmentName may be null, to just create the entry
         if (fragmentName != null) {
             fragments.add(fragmentName);
-            addTypeFragment(typeName, fragmentName);
         }
+        addTypeFragment(typeName, fragmentName);
     }
 
     protected void addTypeCollectionFragment(String typeName,
@@ -519,7 +665,10 @@ public class Model {
             fragments = new HashSet<String>();
             typeFragments.put(typeName, fragments);
         }
-        fragments.add(fragmentName);
+        // fragmentName may be null, to just create the entry
+        if (fragmentName != null) {
+            fragments.add(fragmentName);
+        }
     }
 
     public Set<String> getTypeSimpleFragments(String typeName) {
@@ -528,6 +677,27 @@ public class Model {
 
     public Set<String> getTypeFragments(String typeName) {
         return typeFragments.get(typeName);
+    }
+
+    public boolean isType(String typeName) {
+        return typeFragments.containsKey(typeName);
+    }
+
+    public boolean isDocumentType(String typeName) {
+        return documentTypesFacets.containsKey(typeName);
+    }
+
+    public String getDocumentSuperType(String typeName) {
+        return documentSuperTypes.get(typeName);
+    }
+
+    public Set<String> getDocumentSubTypes(String typeName) {
+        return documentSubTypes.get(typeName);
+    }
+
+    public Set<String> getDocumentTypeFacets(String typeName) {
+        Set<String> facets = documentTypesFacets.get(typeName);
+        return facets == null ? Collections.<String> emptySet() : facets;
     }
 
     /**
@@ -586,6 +756,28 @@ public class Model {
             addTypeCollectionFragment(typeName, MISC_TABLE_NAME);
             log.debug("Fragments for " + typeName + ": " +
                     getTypeFragments(typeName));
+
+            // record doc type and facets, super type, sub types
+            documentTypesFacets.put(typeName, new HashSet<String>(
+                    documentType.getFacets()));
+            Type superType = documentType.getSuperType();
+            if (superType != null) {
+                String superTypeName = superType.getName();
+                documentSuperTypes.put(typeName, superTypeName);
+            }
+        }
+        // compute subtypes for all types
+        for (String type : documentTypesFacets.keySet()) {
+            String superType = type;
+            do {
+                Set<String> subTypes = documentSubTypes.get(superType);
+                if (subTypes == null) {
+                    subTypes = new HashSet<String>();
+                    documentSubTypes.put(superType, subTypes);
+                }
+                subTypes.add(type);
+                superType = documentSuperTypes.get(superType);
+            } while (superType != null);
         }
     }
 
@@ -668,6 +860,21 @@ public class Model {
     }
 
     /**
+     * Special model for the fulltext table.
+     */
+    private void initFullTextModel() {
+        addPropertyInfo(null, FULLTEXT_FULLTEXT_PROP, PropertyType.STRING,
+                FULLTEXT_TABLE_NAME, FULLTEXT_FULLTEXT_KEY, false,
+                StringType.INSTANCE);
+        addPropertyInfo(null, FULLTEXT_SIMPLETEXT_PROP, PropertyType.STRING,
+                FULLTEXT_TABLE_NAME, FULLTEXT_SIMPLETEXT_KEY, false,
+                StringType.INSTANCE);
+        addPropertyInfo(null, FULLTEXT_BINARYTEXT_PROP, PropertyType.STRING,
+                FULLTEXT_TABLE_NAME, FULLTEXT_BINARYTEXT_KEY, false,
+                StringType.INSTANCE);
+    }
+
+    /**
      * Special collection-like model for the ACL table.
      */
     private void initAclModel() {
@@ -697,11 +904,10 @@ public class Model {
             return schemaFragment.get(typeName); // may be null
         }
 
-        /** Initialized if this type has a table associated. */
-        String thisFragmentName = null;
-
         log.debug("Making model for type " + typeName);
 
+        /** Initialized if this type has a table associated. */
+        String thisFragmentName = null;
         for (Field field : complexType.getFields()) {
             Type fieldType = field.getType();
             if (fieldType.isComplexType()) {
@@ -711,9 +917,7 @@ public class Model {
                 ComplexType fieldComplexType = (ComplexType) fieldType;
                 String subTypeName = fieldComplexType.getName();
                 String subFragmentName = initTypeModel(fieldComplexType);
-                if (subFragmentName != null) {
-                    addTypeSimpleFragment(subTypeName, subFragmentName);
-                }
+                addTypeSimpleFragment(subTypeName, subFragmentName);
             } else {
                 String propertyName = field.getName().getPrefixedName();
                 if (fieldType.isListType()) {

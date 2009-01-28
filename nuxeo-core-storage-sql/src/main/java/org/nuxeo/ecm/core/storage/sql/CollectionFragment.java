@@ -59,7 +59,7 @@ public abstract class CollectionFragment extends Fragment {
      * Interface for a class that knows how to build an array from a SQL result
      * set, and build the appropriate collection fragments.
      */
-    protected static interface CollectionMaker {
+    protected interface CollectionMaker {
 
         Serializable[] makeArray(Serializable id, ResultSet rs,
                 List<Column> columns, Context context, Model model)
@@ -78,7 +78,7 @@ public abstract class CollectionFragment extends Fragment {
      */
     protected abstract CollectionFragmentIterator getIterator();
 
-    protected static interface CollectionFragmentIterator extends
+    protected interface CollectionFragmentIterator extends
             Iterator<Serializable> {
 
         /**

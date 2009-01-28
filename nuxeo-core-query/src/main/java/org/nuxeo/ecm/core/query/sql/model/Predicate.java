@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.core.query.sql.model;
 
 
+
 /**
  * Predicates are boolean expressions.
  *

@@ -40,7 +40,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  */
 public class ResourceAdapterTestCase extends BaseTestCase {
 
-    private static Log log = LogFactory.getLog(ResourceAdapterTestCase.class);
+    private static final Log log = LogFactory.getLog(ResourceAdapterTestCase.class);
 
     private PublicNXRuntimeTestCase runtimeTestCase;
 

@@ -22,12 +22,21 @@
     </xs:sequence>
   </xs:complexType>
 
+  <xs:complexType name="duo">
+    <xs:sequence>
+      <xs:element name="first" type="nxs:person"/>
+      <xs:element name="second" type="nxs:person"/>
+    </xs:sequence>
+  </xs:complexType>
+
   <xs:element name="title" type="xs:string"/>
   <xs:element name="created" type="xs:date"/>
+  <xs:element name="rate" type="xs:double"/>
   <xs:element name="bin" type="xs:base64Binary"/>
   <xs:element name="subjects" type="nxs:stringArray"/>
   <xs:element name="tags" type="nxs:stringArray"/>
   <xs:element name="owner" type="nxs:person"/>
   <xs:element name="friends" type="nxs:personList"/>
+  <xs:element name="couple" type="nxs:duo"/>
 
 </xs:schema>

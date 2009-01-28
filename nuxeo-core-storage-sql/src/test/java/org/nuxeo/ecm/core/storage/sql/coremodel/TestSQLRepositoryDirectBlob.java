@@ -17,10 +17,14 @@
 
 package org.nuxeo.ecm.core.storage.sql.coremodel;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -47,6 +51,7 @@ public class TestSQLRepositoryDirectBlob extends SQLRepositoryTestCase {
         super.setUp();
         deployContrib("org.nuxeo.ecm.core.storage.sql.tests",
                 "OSGI-INF/test-repo-core-types-contrib.xml");
+        deployBundle("org.nuxeo.ecm.core.event");
         openSession();
     }
 
@@ -121,6 +126,49 @@ public class TestSQLRepositoryDirectBlob extends SQLRepositoryTestCase {
         assertEquals(expected, blob.getString());
 
     }
+
+    public void testBinarySerialization() throws Exception {
+        DocumentModel folder = session.getRootDocument();
+        DocumentModel file = new DocumentModelImpl(folder.getPathAsString(),
+                "filea", "File");
+        file = session.createDocument(file);
+        session.save();
+
+        // create a binary instance pointing to some content stored on the
+        // filesystem
+        String digest = createFile();
+        BinaryManager binaryManager = new BinaryManager(null);
+        Binary binary = binaryManager.getBinary(digest);
+        if (binary == null) {
+            throw new RuntimeException("Missing file for digest: " + digest);
+        }
+
+        String expected = "this is a file";
+        byte[] observedContent = new byte[expected.length()];
+        assertEquals(digest, binary.getDigest());
+        assertEquals(expected.length(), binary.getLength());
+        assertEquals(expected.length(), binary.getStream().read(observedContent));
+        assertEquals(expected, new String(observedContent));
+
+        // serialize and deserialize the binary instance
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ObjectOutputStream out = new ObjectOutputStream(bos);
+        out.writeObject(binary);
+        out.flush();
+        out.close();
+
+        // Make an input stream from the byte array and read
+        // a copy of the object back in.
+        ObjectInputStream in = new ObjectInputStream(
+                new ByteArrayInputStream(bos.toByteArray()));
+        Binary binaryCopy = (Binary) in.readObject();
+
+        observedContent = new byte[expected.length()];
+        assertEquals(digest, binaryCopy.getDigest());
+        assertEquals(expected.length(), binaryCopy.getLength());
+        assertEquals(expected.length(), binaryCopy.getStream().read(observedContent));
+        assertEquals(expected, new String(observedContent));
+    }
 }
 
 /**
@@ -194,8 +242,7 @@ class FileManager {
 
     protected static String toHexString(byte[] data) {
         StringBuilder buf = new StringBuilder(2 * data.length);
-        for (int i = 0; i < data.length; i++) {
-            byte b = data[i];
+        for (byte b : data) {
             buf.append(HEX_DIGITS[(0xF0 & b) >> 4]);
             buf.append(HEX_DIGITS[0x0F & b]);
         }
@@ -214,4 +261,5 @@ class FileManager {
         dir.mkdirs();
         return new File(dir, digest);
     }
+
 }

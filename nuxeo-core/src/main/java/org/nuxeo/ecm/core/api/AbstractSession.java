@@ -49,6 +49,7 @@ import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.core.api.impl.DocsQueryProviderDef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelIteratorImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
+import org.nuxeo.ecm.core.api.impl.FacetFilter;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.impl.VersionModelImpl;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
@@ -71,7 +72,9 @@ import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.ecm.core.model.PathComparator;
 import org.nuxeo.ecm.core.model.Property;
 import org.nuxeo.ecm.core.model.Session;
+import org.nuxeo.ecm.core.query.FilterableQuery;
 import org.nuxeo.ecm.core.query.Query;
+import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.QueryResult;
 import org.nuxeo.ecm.core.repository.RepositoryInitializationHandler;
@@ -1179,38 +1182,89 @@ public abstract class AbstractSession implements CoreSession,
     }
 
     public DocumentModelList query(String query) throws ClientException {
-        return query(query, null, 0);
+        return query(query, null, 0, 0, false);
     }
 
-    @Deprecated
     public DocumentModelList query(String query, int max)
             throws ClientException {
-        return query(query, null, max);
+        return query(query, null, max, 0, false);
     }
 
-    @Deprecated
     public DocumentModelList query(String query, Filter filter)
             throws ClientException {
-        return query(query, filter, 0);
+        return query(query, filter, 0, 0, false);
     }
 
-    @Deprecated
     public DocumentModelList query(String query, Filter filter, int max)
             throws ClientException {
+        return query(query, filter, max, 0, false);
+    }
+
+    public DocumentModelList query(String query, Filter filter, long limit,
+            long offset, boolean countTotal) throws ClientException {
+        SecurityService securityService = getSecurityService();
+        Principal principal = getPrincipal();
         try {
             Query compiledQuery = getSession().createQuery(query,
                     Query.Type.NXQL);
-            DocumentModelList retrievedDocs = compiledQuery.execute().getDocumentModels();
-            final DocumentModelList docs = new DocumentModelListImpl();
+            if (limit != 0) {
+                compiledQuery.setLimit(limit);
+                compiledQuery.setOffset(offset);
+            }
+            QueryResult results;
+            boolean postFilterPermission;
+            boolean postFilterFilter;
+            boolean postFilterPolicies;
+            String permission = BROWSE;
+            if (compiledQuery instanceof FilterableQuery) {
+                postFilterPermission = false;
+                postFilterPolicies = !securityService.arePoliciesExpressibleInQuery();
+                postFilterFilter = filter != null
+                        && !(filter instanceof FacetFilter);
+                String[] principals;
+                if (principal.getName().equals("system")) {
+                    principals = null; // means: no security check needed
+                } else {
+                    principals = SecurityService.getPrincipalsToCheck(principal);
+                }
+                String[] permissions = securityService.getPermissionsToCheck(permission);
+                QueryFilter queryFilter = new QueryFilter(principals,
+                        permissions,
+                        filter instanceof FacetFilter ? (FacetFilter) filter
+                                : null,
+                        securityService.getPoliciesQueryTransformers());
+                results = ((FilterableQuery) compiledQuery).execute(
+                        queryFilter, countTotal);
+            } else {
+                postFilterPermission = true;
+                postFilterPolicies = securityService.arePoliciesRestrictingPermission(permission);
+                postFilterFilter = filter != null;
+                results = compiledQuery.execute(countTotal);
+            }
+            if (!postFilterPermission && !postFilterFilter
+                    && !postFilterPolicies) {
+                // the backend has done all the needed filtering
+                return results.getDocumentModels();
+            }
+            // post-filter the results if the query couldn't do it
+            final DocumentModelList docs = new DocumentModelListImpl(
+                    Collections.<DocumentModel> emptyList(),
+                    results.getTotalSize());
             int nbr = 0;
-            for (DocumentModel model : retrievedDocs) {
-                if (hasPermission(model.getRef(), BROWSE)) {
-                    if (filter == null || filter.accept(model)) {
-                        docs.add(model);
-                        nbr++;
+            for (DocumentModel model : results.getDocumentModels()) {
+                if (postFilterPermission || postFilterPolicies) {
+                    if (!hasPermission(model.getRef(), permission)) {
+                        continue;
                     }
                 }
-                if (max != 0 && nbr >= max) {
+                if (postFilterFilter) {
+                    if (!filter.accept(model)) {
+                        continue;
+                    }
+                }
+                docs.add(model);
+                nbr++;
+                if (limit != 0 && nbr >= limit) {
                     break;
                 }
             }

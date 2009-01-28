@@ -18,18 +18,23 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.sql.Model.PropertyInfo;
 
 /**
  * The persistence context in use by a session.
@@ -96,6 +101,7 @@ public class PersistenceContext {
         for (Context context : contexts.values()) {
             n += context.clearCaches();
         }
+        createdIds.clear();
         return n;
     }
 
@@ -171,6 +177,19 @@ public class PersistenceContext {
         oldIdMap.putAll(idMap);
 
         log.debug("End of save");
+    }
+
+    /**
+     * Rolls back everything.
+     * <p>
+     * As there may have been things already written to database and recorded as
+     * pristine, the caches must be completely cleared.
+     * <p>
+     * In a transactional context, the underlying XAResource held by the mapper
+     * will also be rolled back by {@link TransactionalSession}.
+     */
+    public void rollback() {
+        clearCaches();
     }
 
     /**
@@ -340,12 +359,12 @@ public class PersistenceContext {
         /*
          * Create a "version" row for our new version.
          */
-        HashMap<String, Serializable> map = new HashMap<String, Serializable>();
+        Map<String, Serializable> map = new HashMap<String, Serializable>();
         map.put(model.VERSION_VERSIONABLE_KEY, id);
         map.put(model.VERSION_CREATED_KEY, new GregorianCalendar()); // now
         map.put(model.VERSION_LABEL_KEY, label);
         map.put(model.VERSION_DESCRIPTION_KEY, description);
-        SimpleFragment versionRow = (SimpleFragment) createSimpleFragment(
+        SimpleFragment versionRow = createSimpleFragment(
                 model.VERSION_TABLE_NAME, newId, map);
         /*
          * Update the original node to reflect that it's checked in.
@@ -512,6 +531,18 @@ public class PersistenceContext {
         }
         Context proxiesContext = getContext(model.PROXY_TABLE_NAME);
         return mapper.getProxies(searchId, byTarget, parentId, proxiesContext);
+    }
+
+    /**
+     * Finds the id of the enclosing non-complex-property node.
+     *
+     * @param id the id
+     * @return the id of the containing document, or {@code null} if there is no
+     *         parent or the parent has been deleted.
+     */
+    protected Serializable getContainingDocument(Serializable id)
+            throws StorageException {
+        return hierContext.getContainingDocument(id);
     }
 
 }

@@ -23,11 +23,12 @@
         <connectionfactory-impl-class>org.nuxeo.ecm.core.storage.sql.ra.ConnectionFactoryImpl</connectionfactory-impl-class>
         <connection-interface>org.nuxeo.ecm.core.storage.sql.Session</connection-interface>
         <connection-impl-class>org.nuxeo.ecm.core.storage.sql.ra.ConnectionImpl</connection-impl-class>
+        <!-- this is not an error, JBoss 4 uses a "non-standard" schema -->
         <transaction-support>XATransaction</transaction-support>
         <config-property>
           <config-property-name>Name</config-property-name>
           <config-property-type>java.lang.String</config-property-type>
-          <config-property-value>Nuxeo Core SQL Storage</config-property-value> 
+          <config-property-value>Nuxeo Core SQL Storage</config-property-value>
         </config-property>
       </connection-definition>
     </outbound-resourceadapter>

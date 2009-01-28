@@ -28,6 +28,9 @@ import javax.resource.cci.Interaction;
 import javax.resource.cci.LocalTransaction;
 import javax.resource.cci.ResultSetInfo;
 
+import org.nuxeo.ecm.core.query.QueryFilter;
+import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
+import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Binary;
 import org.nuxeo.ecm.core.storage.sql.Model;
@@ -120,7 +123,7 @@ public class ConnectionImpl implements Session {
 
     private Session getSession() throws StorageException {
         if (session == null) {
-            throw new StorageException("Cannot use closed connection handle");
+            throw new StorageException("Cannot use closed connection handle: " + this);
         }
         return session;
     }
@@ -235,6 +238,12 @@ public class ConnectionImpl implements Session {
     public Node addProxy(Serializable targetId, Serializable versionableId,
             Node parent, String name, Long pos) throws StorageException {
         return getSession().addProxy(targetId, versionableId, parent, name, pos);
+    }
+
+    public PartialList<Serializable> query(SQLQuery query,
+            QueryFilter queryFilter, boolean countTotal)
+            throws StorageException {
+        return getSession().query(query, queryFilter, countTotal);
     }
 
 }

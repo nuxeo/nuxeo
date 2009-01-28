@@ -18,7 +18,7 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
-import java.util.HashMap;
+import java.util.Comparator;
 import java.util.Map;
 
 import org.apache.commons.collections.map.ReferenceMap;
@@ -53,7 +53,7 @@ public class Node {
      */
     private final Map<String, BaseProperty> propertyCache;
 
-    private transient Boolean isVersion;
+    private Boolean isVersion;
 
     /**
      * Creates a Node.
@@ -76,7 +76,7 @@ public class Node {
             fragments = rowGroup.fragments;
         }
         // memory-sensitive
-        this.propertyCache = new ReferenceMap(ReferenceMap.HARD,
+        propertyCache = new ReferenceMap(ReferenceMap.HARD,
                 ReferenceMap.SOFT);
     }
 
@@ -245,13 +245,13 @@ public class Node {
 
     public void setSingleProperty(String name, Serializable value)
             throws StorageException {
-        SimpleProperty property = (SimpleProperty) getSimpleProperty(name);
+        SimpleProperty property = getSimpleProperty(name);
         property.setValue(value);
     }
 
     public void setCollectionProperty(String name, Serializable[] value)
             throws StorageException {
-        CollectionProperty property = (CollectionProperty) getCollectionProperty(name);
+        CollectionProperty property = getCollectionProperty(name);
         property.setValue(value);
     }
 
@@ -291,4 +291,41 @@ public class Node {
         return getId().hashCode();
     }
 
+    /**
+     * Comparator of nodes by position.
+     * <p>
+     * {@code null} positions are sorted last.
+     *
+     * @author Florent Guillaume
+     */
+    public static class PositionComparator implements Comparator<Node> {
+
+        protected final String posKey;
+
+        public PositionComparator(Model model) {
+            posKey = model.HIER_CHILD_POS_KEY;
+        }
+
+        public int compare(Node n1, Node n2) {
+            try {
+                Long pos1 = (Long) n1.getHierFragment().get(posKey);
+                Long pos2 = (Long) n2.getHierFragment().get(posKey);
+                if (pos1 == null && pos2 == null) {
+                    // coherent sort
+                    return n1.hashCode() - n2.hashCode();
+                }
+                if (pos1 == null) {
+                    return 1;
+                }
+                if (pos2 == null) {
+                    return -1;
+                }
+                return pos1.compareTo(pos2);
+            } catch (StorageException e) {
+                // shouldn't happen
+                return n1.hashCode() - n2.hashCode();
+            }
+        }
+
+    }
 }

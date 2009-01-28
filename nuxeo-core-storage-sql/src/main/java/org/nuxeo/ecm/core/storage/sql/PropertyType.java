@@ -98,7 +98,7 @@ public enum PropertyType {
      * @return the normalized value
      * @throws IllegalArgumentException
      */
-    public Serializable normalize(Object value) throws IllegalArgumentException {
+    public Serializable normalize(Object value) {
         if (value == null) {
             return null;
         }
@@ -163,8 +163,7 @@ public enum PropertyType {
      * @return the normalized array
      * @throws IllegalArgumentException
      */
-    public Serializable[] normalize(Object[] value)
-            throws IllegalArgumentException {
+    public Serializable[] normalize(Object[] value) {
         if (value == null) {
             return emptyArray;
         }

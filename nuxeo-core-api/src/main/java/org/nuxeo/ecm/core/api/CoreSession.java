@@ -972,10 +972,7 @@ public interface CoreSession {
      * @param max number of document to retrieve
      * @return the query result
      * @throws ClientException
-     *
-     * @deprecated use search service
      */
-    @Deprecated
     DocumentModelList query(String query, int max) throws ClientException;
 
     /**
@@ -986,11 +983,26 @@ public interface CoreSession {
      * @param filter the filter to apply to result
      * @return the query result
      * @throws ClientException
-     *
-     * @deprecated use search service
      */
-    @Deprecated
     DocumentModelList query(String query, Filter filter) throws ClientException;
+
+    /**
+     * Executes the given NXQL query and returns the result that matches the
+     * filter.
+     *
+     * @param query the query to execute
+     * @param filter the filter to apply to result
+     * @param limit the maximum number of documents to retrieve, or 0 for all of
+     *            them
+     * @param offset the offset (starting at 0) into the list of documents
+     * @param countTotal if {@code true}, return a {@link DocumentModelList}
+     *            that includes a total size of the underlying list (size if
+     *            there was no limit or offset)
+     * @return the query result
+     * @throws ClientException
+     */
+    DocumentModelList query(String query, Filter filter, long limit,
+            long offset, boolean countTotal) throws ClientException;
 
     /**
      * Executes the given NXQL query and returns the result that matches the
@@ -1001,10 +1013,7 @@ public interface CoreSession {
      * @param max number of document to retrieve
      * @return the query result
      * @throws ClientException
-     *
-     * @deprecated use search service
      */
-    @Deprecated
     DocumentModelList query(String query, Filter filter, int max)
             throws ClientException;
 

@@ -39,6 +39,9 @@ public class RepositoryDescriptor {
     @XNode("@name")
     public String name;
 
+    @XNode("indexing/fulltext@analyzer")
+    public String fulltextAnalyzer;
+
     @XNode("xa-datasource")
     public String xaDataSourceName;
 
@@ -77,7 +80,7 @@ public class RepositoryDescriptor {
             }
             throw new IllegalArgumentException(value);
         }
-    };
+    }
 
     /**
      * Which id generation policy to use.

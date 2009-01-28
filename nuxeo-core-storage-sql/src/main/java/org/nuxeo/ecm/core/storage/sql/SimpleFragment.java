@@ -18,8 +18,12 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.nuxeo.ecm.core.storage.StorageException;
 
@@ -38,14 +42,26 @@ public class SimpleFragment extends Fragment {
     public static final SimpleFragment UNKNOWN = new SimpleFragment(null,
             State.DETACHED, null, null);
 
+    private static enum OpaqueValue {
+        OPAQUE_VALUE
+    }
+
+    /**
+     * A database value we don't care about reading. When present in a fragment,
+     * it won't be written, but any other value will be.
+     */
+    public static final Serializable OPAQUE = OpaqueValue.OPAQUE_VALUE;
+
     /** The map actually holding the data. */
     private final Map<String, Serializable> map;
+
+    /** The previous values, to be able to find dirty fields. */
+    private Map<String, Serializable> old;
 
     /**
      * Constructs an empty {@link SimpleFragment} of the given table with the
      * given id (which may be a temporary one).
      *
-     * @param tableName the table name
      * @param id the id
      * @param state the initial state for the fragment
      * @param context the persistence context to which the row is tied, or
@@ -59,6 +75,7 @@ public class SimpleFragment extends Fragment {
             map = new HashMap<String, Serializable>();
         }
         this.map = map;
+        clearDirty();
     }
 
     @Override
@@ -67,12 +84,15 @@ public class SimpleFragment extends Fragment {
         Map<String, Serializable> newMap = context.mapper.readSingleRowMap(
                 context.getTableName(), getId(), context);
         map.clear();
+        State state;
         if (newMap == null) {
-            return State.ABSENT;
+            state = State.ABSENT;
         } else {
             map.putAll(newMap);
-            return State.PRISTINE;
+            state = State.PRISTINE;
         }
+        clearDirty();
+        return state;
     }
 
     /**
@@ -86,6 +106,36 @@ public class SimpleFragment extends Fragment {
         accessed(); // maybe refetch other values
         map.put(key, value);
         markModified();
+    }
+
+    /**
+     * Gets the dirty fields (fields changed since last clear).
+     *
+     * @return the dirty fields
+     */
+    public Collection<String> getDirty() {
+        List<String> dirty = new LinkedList<String>();
+        for (Entry<String, Serializable> entry : map.entrySet()) {
+            String key = entry.getKey();
+            Serializable value = entry.getValue();
+            Serializable oldValue = old.get(key);
+            if (value == null) {
+                if (oldValue != null) {
+                    dirty.add(key);
+                }
+            } else if (!value.equals(oldValue)) {
+                dirty.add(key);
+            }
+        }
+        return dirty;
+    }
+
+    /**
+     * Clears the dirty fields.
+     */
+    @SuppressWarnings("unchecked")
+    public void clearDirty() {
+        old = (HashMap) ((HashMap) map).clone();
     }
 
     /**

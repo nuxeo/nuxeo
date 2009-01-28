@@ -39,14 +39,15 @@ public class OrderByExpr implements Operand {
         int result = 1;
         result = prime * result + (isDescending ? 1231 : 1237);
         result = prime * result +
-                ((reference == null) ? 0 : reference.hashCode());
+                (reference == null ? 0 : reference.hashCode());
         return result;
     }
 
     @Override
     public boolean equals(Object other) {
-        if (other == this)
+        if (other == this) {
             return true;
+        }
         if (other instanceof OrderByExpr) {
             return equals((OrderByExpr) other);
         }
@@ -54,8 +55,9 @@ public class OrderByExpr implements Operand {
     }
 
     private boolean equals(OrderByExpr other) {
-        if (isDescending != other.isDescending)
+        if (isDescending != other.isDescending) {
             return false;
+        }
         if (reference == null) {
             if (other.reference != null) {
                 return false;
@@ -73,9 +75,9 @@ public class OrderByExpr implements Operand {
     @Override
     public String toString() {
         if (isDescending) {
-            return reference.toString();
-        } else {
             return reference.toString() + " DESC";
+        } else {
+            return reference.toString();
         }
     }
 

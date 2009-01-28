@@ -33,9 +33,13 @@ public class StringLiteral extends Literal {
         this.value = value;
     }
 
-    @Override
     public void accept(IVisitor visitor) {
         visitor.visitStringLiteral(this);
+    }
+
+    @Override
+    public String asString() {
+        return value;
     }
 
     @Override

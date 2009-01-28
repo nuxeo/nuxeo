@@ -23,6 +23,9 @@ import java.util.List;
 
 import javax.resource.cci.Connection;
 
+import org.nuxeo.ecm.core.query.QueryFilter;
+import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
+import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
 
 /**
@@ -38,7 +41,7 @@ public interface Session extends Connection {
      *
      * @return {@code true} if the session is live
      */
-    public boolean isLive();
+    boolean isLive();
 
     /**
      * Gets the {@link Model} associated to this session.
@@ -151,7 +154,8 @@ public interface Session extends Connection {
      * Gets the children of a node.
      *
      * @param parent the parent node
-     * @param name the children name to get (for lists of complex properties)
+     * @param name the children name to get (for lists of complex properties),
+     *            or {@code null} for all
      * @param complexProp whether to check complex properties or regular
      *            children
      * @return the collection of children
@@ -318,5 +322,18 @@ public interface Session extends Connection {
      * @throws StorageException
      */
     List<Node> getProxies(Node document, Node parent) throws StorageException;
+
+    /**
+     * Makes a NXQL query to the database.
+     *
+     * @param query the query as a parsed tree
+     * @param queryFilter the query filter
+     * @param countTotal if {@code true}, also count the total size without
+     *            offset/limit
+     * @return the resulting list with total size included
+     */
+    PartialList<Serializable> query(SQLQuery query,
+            QueryFilter queryFilter, boolean countTotal)
+            throws StorageException;
 
 }

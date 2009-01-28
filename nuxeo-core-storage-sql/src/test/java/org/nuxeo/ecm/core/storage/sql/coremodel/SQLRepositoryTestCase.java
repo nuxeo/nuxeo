@@ -17,10 +17,7 @@
 
 package org.nuxeo.ecm.core.storage.sql.coremodel;
 
-import java.io.File;
 import java.io.Serializable;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,7 +36,7 @@ public abstract class SQLRepositoryTestCase extends NXRuntimeTestCase {
 
     protected CoreSession session;
 
-    public SQLRepositoryTestCase(String name) {
+    protected SQLRepositoryTestCase(String name) {
         super(name);
     }
 
@@ -48,38 +45,15 @@ public abstract class SQLRepositoryTestCase extends NXRuntimeTestCase {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core");
-        deployRepository();
+        SQLRepositoryHelper.setUpRepository();
+        deployContrib("org.nuxeo.ecm.core.storage.sql.tests",
+                SQLRepositoryHelper.getDeploymentContrib());
     }
 
     @Override
     protected void tearDown() throws Exception {
         super.tearDown();
-        try {
-            DriverManager.getConnection("jdbc:derby:;shutdown=true");
-            fail("Expected Derby shutdown exception");
-        } catch (SQLException e) {
-            assertEquals("Derby system shutdown.", e.getMessage());
-        }
-    }
-
-    public void deployRepository() throws Exception {
-        File testdir = new File("target/test");
-        testdir.mkdirs();
-        File dbdir = new File(testdir, "repository");
-        deleteRecursive(dbdir);
-        System.setProperty("derby.stream.error.file", new File(testdir,
-                "derby.log").getAbsolutePath());
-        deployContrib("org.nuxeo.ecm.core.storage.sql.tests",
-                "OSGI-INF/test-repo-repository-contrib.xml");
-    }
-
-    protected static void deleteRecursive(File file) {
-        if (file.isDirectory()) {
-            for (String child : file.list()) {
-                deleteRecursive(new File(file, child));
-            }
-        }
-        file.delete();
+        SQLRepositoryHelper.tearDownRepository();
     }
 
     public void openSession() throws ClientException {
@@ -93,12 +67,16 @@ public abstract class SQLRepositoryTestCase extends NXRuntimeTestCase {
         return CoreInstance.getInstance().open(REPOSITORY_NAME, context);
     }
 
-    public void closeSession() throws ClientException {
+    public void closeSession() {
         closeSession(session);
     }
 
-    public void closeSession(CoreSession session) throws ClientException {
-        CoreInstance.getInstance().close(session);
+    public void closeSession(CoreSession session) {
+        try {
+            CoreInstance.getInstance().close(session);
+        } catch (ClientException e) {
+            e.printStackTrace();
+        }
     }
 
 }
