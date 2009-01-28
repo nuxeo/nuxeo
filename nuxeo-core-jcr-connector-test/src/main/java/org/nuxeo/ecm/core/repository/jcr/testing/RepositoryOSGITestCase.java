@@ -28,8 +28,11 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentException;
+import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.event.impl.EventServiceImpl;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.model.Session;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
@@ -129,4 +132,18 @@ public abstract class RepositoryOSGITestCase extends NXRuntimeTestCase {
         return repository.getSession(null);
     }
 
+    protected EventServiceImpl eventService;
+
+    protected void waitForEventsDispatched() {
+        if (eventService == null) {
+            eventService = (EventServiceImpl) Framework.getLocalService(EventService.class);
+        }
+        while (eventService.getActiveAsyncTaskCount() > 0) {
+            try {
+                Thread.sleep(100);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }
