@@ -140,9 +140,9 @@ public class JbpmServiceBean implements JbpmService {
         return service.getTaskInstances(dm, user, jbpmListFilter);
     }
 
-    public void persistProcessInstance(ProcessInstance pi)
+    public ProcessInstance persistProcessInstance(ProcessInstance pi)
             throws NuxeoJbpmException {
-        service.persistProcessInstance(pi);
+        return service.persistProcessInstance(pi);
     }
 
     public void saveTaskInstances(List<TaskInstance> taskInstances)

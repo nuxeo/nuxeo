@@ -124,14 +124,23 @@ public class DashBoardActionsBean implements DashboardActions {
                     null);
             if (tasks != null) {
                 for (TaskInstance task : tasks) {
-                    DocumentModel doc = jbpmService.getDocumentModel(task, pal);
-                    if (doc != null) {
-                        currentUserTasks.add(new DashBoardItemImpl(task, doc));
-                    } else {
-                        log.error(String.format(
-                                "User '%s' has a task of type '%s' on an "
-                                        + "unexisting or unvisible document",
-                                currentUser.getName(), task.getName()));
+                    try {
+                        if (task.hasEnded() || task.isCancelled()) {
+                            continue;
+                        }
+                        DocumentModel doc = jbpmService.getDocumentModel(task,
+                                pal);
+                        if (doc != null) {
+                            currentUserTasks.add(new DashBoardItemImpl(task,
+                                    doc));
+                        } else {
+                            log.error(String.format(
+                                    "User '%s' has a task of type '%s' on an "
+                                            + "unexisting or unvisible document",
+                                    currentUser.getName(), task.getName()));
+                        }
+                    } catch (Exception e) {
+                        log.error(e);
                     }
                 }
             }
@@ -149,17 +158,24 @@ public class DashBoardActionsBean implements DashboardActions {
                     (NuxeoPrincipal) currentUser, null);
             if (processes != null) {
                 for (ProcessInstance process : processes) {
-                    DocumentModel doc = jbpmService.getDocumentModel(process,
-                            pal);
-                    if (doc != null) {
-                        currentUserProcesses.add(new DocumentProcessItemImpl(
-                                process, doc));
-                    } else {
-                        log.error(String.format(
-                                "User '%s' has a process of type '%s' on an "
-                                        + "unexisting or unvisible document",
-                                currentUser.getName(),
-                                process.getProcessDefinition().getName()));
+                    try {
+                        if (process.hasEnded()) {
+                            continue;
+                        }
+                        DocumentModel doc = jbpmService.getDocumentModel(
+                                process, pal);
+                        if (doc != null) {
+                            currentUserProcesses.add(new DocumentProcessItemImpl(
+                                    process, doc));
+                        } else {
+                            log.error(String.format(
+                                    "User '%s' has a process of type '%s' on an "
+                                            + "unexisting or unvisible document",
+                                    currentUser.getName(),
+                                    process.getProcessDefinition().getName()));
+                        }
+                    } catch (Exception e) {
+                        log.error(e);
                     }
                 }
             }

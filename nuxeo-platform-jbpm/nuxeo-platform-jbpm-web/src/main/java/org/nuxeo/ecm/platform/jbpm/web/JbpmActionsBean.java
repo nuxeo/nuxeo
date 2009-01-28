@@ -51,15 +51,16 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 import org.nuxeo.ecm.platform.jbpm.AbstractJbpmHandlerHelper;
 import org.nuxeo.ecm.platform.jbpm.JbpmEventNames;
 import org.nuxeo.ecm.platform.jbpm.JbpmSecurityPolicy;
 import org.nuxeo.ecm.platform.jbpm.JbpmService;
 import org.nuxeo.ecm.platform.jbpm.TaskListFilter;
-import org.nuxeo.ecm.platform.jbpm.TaskStartDateComparator;
+import org.nuxeo.ecm.platform.jbpm.TaskCreateDateComparator;
 import org.nuxeo.ecm.platform.jbpm.VirtualTaskInstance;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
+import org.nuxeo.ecm.platform.ui.web.invalidations.AutomaticDocumentBasedInvalidation;
+import org.nuxeo.ecm.platform.ui.web.invalidations.DocumentContextBoundActionBean;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 
@@ -69,7 +70,9 @@ import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
  */
 @Name("jbpmActions")
 @Scope(ScopeType.CONVERSATION)
-public class JbpmActionsBean implements JbpmActions {
+@AutomaticDocumentBasedInvalidation
+public class JbpmActionsBean extends DocumentContextBoundActionBean implements
+        JbpmActions {
 
     private static final long serialVersionUID = 1L;
 
@@ -214,17 +217,10 @@ public class JbpmActionsBean implements JbpmActions {
                 currentTasks.addAll(jbpmService.getTaskInstances(
                         currentProcess.getId(), null, new TaskListFilter(
                                 taskNames)));
-                Collections.sort(currentTasks, new TaskStartDateComparator());
+                Collections.sort(currentTasks, new TaskCreateDateComparator());
             }
         }
         return currentTasks;
-    }
-
-    public String getVirtualTasksLayoutMode() throws ClientException {
-        if (getCanManageProcess()) {
-            return BuiltinModes.EDIT;
-        }
-        return BuiltinModes.VIEW;
     }
 
     @SuppressWarnings("unchecked")
@@ -284,11 +280,9 @@ public class JbpmActionsBean implements JbpmActions {
                     resourcesAccessor.getMessages().get(
                             "label.review.added.reviewer"));
 
-            // reset so that's reloaded
-            newVirtualTask = null;
-            currentVirtualTasks = null;
-            showAddVirtualTaskForm = null;
-            // TODO: refresh process instance?
+            resetCurrentData();
+            // show create form again
+            showAddVirtualTaskForm = true;
         }
         return null;
     }
@@ -311,8 +305,7 @@ public class JbpmActionsBean implements JbpmActions {
                             "label.review.movedUp.reviewer"));
 
             // reset so that's reloaded
-            currentVirtualTasks = null;
-            // TODO: refresh process instance?
+            resetCurrentData();
         }
         return null;
     }
@@ -335,8 +328,7 @@ public class JbpmActionsBean implements JbpmActions {
                             "label.review.movedDown.reviewer"));
 
             // reset so that's reloaded
-            currentVirtualTasks = null;
-            // TODO: refresh process instance?
+            resetCurrentData();
         }
         return null;
     }
@@ -358,9 +350,7 @@ public class JbpmActionsBean implements JbpmActions {
                             "label.review.removed.reviewer"));
 
             // reset so that's reloaded
-            currentVirtualTasks = null;
-            showAddVirtualTaskForm = null;
-            // TODO: refresh process instance?
+            resetCurrentData();
         }
         return null;
     }
@@ -418,7 +408,7 @@ public class JbpmActionsBean implements JbpmActions {
                     "No start task found on current process with name "
                             + taskName);
         }
-        return null;
+        return startTask;
     }
 
     public boolean isProcessStarted(String startTaskName)
@@ -518,7 +508,7 @@ public class JbpmActionsBean implements JbpmActions {
         this.userComment = comment;
     }
 
-    public void resetCurrentData() throws ClientException {
+    public void resetCurrentData() {
         canManageCurrentProcess = null;
         currentProcess = null;
         currentProcessInitiator = null;
@@ -527,6 +517,11 @@ public class JbpmActionsBean implements JbpmActions {
         newVirtualTask = null;
         showAddVirtualTaskForm = null;
         userComment = null;
+    }
+
+    @Override
+    protected void resetBeanCache(DocumentModel newCurrentDocumentModel) {
+        resetCurrentData();
     }
 
 }

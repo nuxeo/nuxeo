@@ -122,6 +122,22 @@ public class JbpmServiceTest extends RepositoryOSGITestCase {
         assertNotNull(lists);
     }
 
+    public void testProcessInstancePersistence() throws Exception {
+        DocumentModel dm = getDocument();
+        // create process instance
+        ProcessInstance pi = service.createProcessInstance(administrator,
+                "review_parallel", dm, null, null);
+        Long pid = pi.getId();
+        // edit
+        Map<String, Object> variables = new HashMap<String, Object>();
+        variables.put("foo", "bar");
+        pi.getContextInstance().addVariables(variables);
+        service.persistProcessInstance(pi);
+
+        ProcessInstance editedPi = service.getProcessInstance(pid);
+        assertEquals("bar", editedPi.getContextInstance().getVariable("foo"));
+    }
+
     protected DocumentModel getDocument() throws Exception {
         openRepository();
         CoreSession session = getCoreSession();
