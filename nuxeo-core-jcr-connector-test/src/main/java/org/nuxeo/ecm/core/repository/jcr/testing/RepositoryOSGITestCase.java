@@ -138,12 +138,12 @@ public abstract class RepositoryOSGITestCase extends NXRuntimeTestCase {
         if (eventService == null) {
             eventService = (EventServiceImpl) Framework.getLocalService(EventService.class);
         }
-        while (eventService.getActiveAsyncTaskCount() > 0) {
+        do {
             try {
                 Thread.sleep(100);
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }
+        }  while (eventService.getActiveAsyncTaskCount() > 0);
     }
 }
