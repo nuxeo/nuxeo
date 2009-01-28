@@ -112,7 +112,7 @@ def testShell():
     os.chdir("nxshell")
     print "Starting server, and running short tests"
     flush()
-    p = pexpect.spawn("sh nxclient.sh", timeout=120)
+    p = pexpect.spawn("sh nxclient.sh -console", timeout=120)
     p.logfile = sys.stdout
     p.expect("Framework started in")
     # No real tests since there is no real server to connect to (for now).
