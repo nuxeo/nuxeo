@@ -52,9 +52,10 @@ import org.nuxeo.ecm.platform.forum.web.api.PostAction;
 import org.nuxeo.ecm.platform.forum.web.api.ThreadAction;
 import org.nuxeo.ecm.platform.forum.web.api.ThreadAdapter;
 import org.nuxeo.ecm.platform.forum.workflow.ForumConstants;
-import org.nuxeo.ecm.webapp.base.InputController;
+import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.webapp.contentbrowser.DocumentActions;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
+import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 
 /**
  * This Action Listener represents a Thread inside a forum.
@@ -63,7 +64,7 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
  */
 @Name("threadAction")
 @Scope(ScopeType.CONVERSATION)
-public class ThreadActionBean extends InputController implements ThreadAction {
+public class ThreadActionBean implements ThreadAction {
 
     private static final Log log = LogFactory.getLog(ThreadActionBean.class);
 
@@ -88,6 +89,12 @@ public class ThreadActionBean extends InputController implements ThreadAction {
     protected transient CommentManagerActions commentManagerActions;
 
     @In(create = true)
+    protected NavigationContext navigationContext;
+
+    @In(create = true)
+    protected ResourcesAccessor resourcesAccessor;
+
+    @In(create = true)
     protected PostAction postAction;
 
     protected String title;
@@ -108,6 +115,7 @@ public class ThreadActionBean extends InputController implements ThreadAction {
         docThread = documentManager.createDocument(docThread);
         documentManager.save();
 
+        DocumentModel currentDocument = navigationContext.getCurrentDocument();
         Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
                 currentDocument);
         clean();
@@ -129,6 +137,7 @@ public class ThreadActionBean extends InputController implements ThreadAction {
      */
     protected DocumentModel getThreadModel() throws ClientException {
 
+        DocumentModel currentDocument = navigationContext.getCurrentDocument();
         String path = currentDocument.getPathAsString();
         String docId = IdUtils.generateId(title);
 

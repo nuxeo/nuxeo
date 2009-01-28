@@ -45,7 +45,6 @@ import org.nuxeo.ecm.platform.versioning.api.VersioningActions;
 import org.nuxeo.ecm.platform.versioning.api.VersioningException;
 import org.nuxeo.ecm.platform.versioning.service.ServiceHelper;
 import org.nuxeo.ecm.platform.versioning.service.VersioningService;
-import org.nuxeo.ecm.platform.versioning.wfintf.WFVersioningPolicyProvider;
 
 /**
  * Core event listener performing version increment based on rules and/or user
@@ -114,41 +113,22 @@ public class DocVersioningListener extends AbstractEventListener implements
 
                 if (LifeCycleEventTypes.LIFECYCLE_TRANSITION_EVENT.equals(eventId)) {
 
-                    final Map<String, ?> evtInfoMap;
-                    try {
-                        evtInfoMap = coreEvent.getInfo();
-                    } catch (ClassCastException e) {
-                        // XXX : should define a more restrictive event info
-                        log.error("BAD event info type", e);
-                        return;
-                    }
+                    // XXX Used to check the workflow rules, do we need
+                    // version changes on lifecycle change?
 
-                    final String from;
-                    final String to;
-                    try {
-                        from = (String) evtInfoMap.get(LifeCycleEventTypes.OPTION_NAME_FROM);
-                        to = (String) evtInfoMap.get(LifeCycleEventTypes.OPTION_NAME_TO);
-                    } catch (ClassCastException e) {
-                        log.error("BAD option type", e);
-                        return;
-                    }
-
-                    if (log.isDebugEnabled()) {
-                        log.debug(logPrefix + "Lifecycle event: 1st state="
-                                + from + ", 2nd state=" + to);
-                    }
-
-                    req = getChangeDocVersionsRequest(doc, from, to);
+                    return;
 
                 } else if (eventId.equals(DOCUMENT_CREATED) && !doc.isProxy()) {
                     // set major version at 1
                     try {
                         doc.setProperty(
                                 DocumentModelUtils.getSchemaName(majorPropName),
-                                DocumentModelUtils.getFieldName(majorPropName), 1L);
+                                DocumentModelUtils.getFieldName(majorPropName),
+                                1L);
                         doc.setProperty(
                                 DocumentModelUtils.getSchemaName(minorPropName),
-                                DocumentModelUtils.getFieldName(minorPropName), 0L);
+                                DocumentModelUtils.getFieldName(minorPropName),
+                                0L);
                     } catch (ClientException e) {
                         throw new ClientRuntimeException(e);
                     }
@@ -176,8 +156,7 @@ public class DocVersioningListener extends AbstractEventListener implements
                     }
 
                     // has to be string
-                    final VersioningActions incOption = (VersioningActions) options.get(
-                            VersioningActions.KEY_FOR_INC_OPTION);
+                    final VersioningActions incOption = (VersioningActions) options.get(VersioningActions.KEY_FOR_INC_OPTION);
                     if (incOption == null) {
                         log.debug("version increment option not available");
                         return;
@@ -238,25 +217,6 @@ public class DocVersioningListener extends AbstractEventListener implements
             throw new VersioningException("VersioningService service not found");
         }
         return service;
-    }
-
-    private static VersionChangeRequest getChangeDocVersionsRequest(
-            DocumentModel doc, String stateFrom, String stateTo) {
-
-        final BasicVersionChangeRequest req = new BasicVersionChangeRequest(
-                VersionChangeRequest.RequestSource.WORKFLOW, doc) {
-
-            public VersioningActions getVersioningAction() {
-                log.warn("Rule for WORKFLOW not correctly defined");
-                return null;
-            }
-
-        };
-
-        req.setWfStateInitial(stateFrom);
-        req.setWfStateFinal(stateTo);
-
-        return req;
     }
 
     private static VersionChangeRequest createAutoChangeRequest(
@@ -333,16 +293,6 @@ public class DocVersioningListener extends AbstractEventListener implements
             }
         } else {
             log.warn(logPrefix + "document lifecycle not initialized.");
-        }
-
-        // check with document Workflow
-        log.debug(logPrefix + "checking versioning policy in document workflow");
-        final VersioningActions wfvaction = WFVersioningPolicyProvider.getVersioningPolicyFor(doc);
-        if (wfvaction != null) {
-            if (wfvaction == VersioningActions.ACTION_CASE_DEPENDENT) {
-                log.debug(logPrefix + "WF case dependent...");
-                return true;
-            }
         }
 
         return false;

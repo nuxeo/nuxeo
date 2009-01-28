@@ -20,12 +20,10 @@
 package org.nuxeo.ecm.webapp.dashboard;
 
 import java.util.Date;
-import java.util.Map;
 
-import org.nuxeo.ecm.core.api.ClientException;
+import org.jbpm.taskmgmt.exe.TaskInstance;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMWorkItemInstance;
 
 /**
  * Dashboard item implementation.
@@ -36,55 +34,38 @@ public class DashBoardItemImpl implements DashBoardItem {
 
     private static final long serialVersionUID = 919752175741886376L;
 
+    private final Long id;
+
     private final String name;
 
-    private final String id;
-
     private final String description;
-
-    private final String comment;
 
     private final Date startDate;
 
     private final Date dueDate;
 
+    private final boolean expired;
+
     private final String directive;
 
-    private final DocumentModel docModel;
+    private final String comment;
 
-    private final String docRefTitle;
+    private final DocumentModel document;
 
-    // XXX: used?
-    private String priority;
-
-    // XXX: used?
-    private int docUUID;
-
-    private String authorName;
-
-    private String workflowType;
-
-    private boolean expired;
-
-    private String text;
-
-    private Map<String, String> textUtils;
-
-
-    public DashBoardItemImpl(WMWorkItemInstance wfTaskInstance,
-            DocumentModel docModel, String docRefTitle) {
-        this.docModel = docModel;
-        this.docRefTitle = docRefTitle;
-        id = wfTaskInstance.getId();
-        name = wfTaskInstance.getName();
-        description = wfTaskInstance.getDescription();
-        dueDate = wfTaskInstance.getDueDate();
-        startDate = wfTaskInstance.getStartDate();
-        directive = wfTaskInstance.getDirective();
-        comment = wfTaskInstance.getComment();
+    public DashBoardItemImpl(TaskInstance task, DocumentModel document) {
+        this.document = document;
+        id = task.getId();
+        name = task.getName();
+        description = task.getDescription();
+        dueDate = task.getDueDate();
+        startDate = task.getStart();
+        directive = (String) task.getVariable("directive");
+        comment = (String) task.getVariable("comment");
         if (dueDate != null) {
             Date today = new Date();
             expired = dueDate.before(today);
+        } else {
+            expired = false;
         }
     }
 
@@ -97,19 +78,15 @@ public class DashBoardItemImpl implements DashBoardItem {
     }
 
     public DocumentRef getDocRef() {
-        return docModel.getRef();
+        return document.getRef();
     }
 
     public Date getDueDate() {
         return dueDate;
     }
 
-    public String getId() {
+    public Long getId() {
         return id;
-    }
-
-    public String getPriority() {
-        return priority;
     }
 
     public Date getStartDate() {
@@ -124,61 +101,12 @@ public class DashBoardItemImpl implements DashBoardItem {
         return directive;
     }
 
-    public String getDocRefTitle() {
-        return docRefTitle;
-    }
-
-    public int getDocUUID() {
-        return docUUID;
-    }
-
     public DocumentModel getDocument() {
-        return docModel;
-    }
-
-    public String getAuthorName() {
-        return authorName;
-    }
-
-    public String getWorkflowType() {
-        return workflowType;
+        return document;
     }
 
     public boolean isExpired() {
         return expired;
-    }
-
-    public void setAuthorName(String authorName) {
-        this.authorName = authorName;
-    }
-
-    public void setWorkflowType(String workflowType) {
-        this.workflowType = workflowType;
-    }
-
-    public String getText() {
-        String schemaName = textUtils.keySet().toArray(new String[0])[0];
-        String field = textUtils.get(schemaName);
-        try {
-            text = (String) docModel.getProperty(schemaName, field);
-        } catch (ClientException e) {
-            text = null;
-        }
-        if (text != null) {
-            String[] lines = text.split("\n");
-            StringBuilder result = new StringBuilder();
-            for (int i = 0; i < lines.length && i < 5; i++) {
-                if (lines[i].length() > 0) {
-                    result.append(lines[i]).append("<br />");
-                }
-            }
-            text = result.toString();
-        }
-        return text != null ? text : "";
-    }
-
-    public void setTextUtils(Map<String, String> textUtils) {
-        this.textUtils = textUtils;
     }
 
 }

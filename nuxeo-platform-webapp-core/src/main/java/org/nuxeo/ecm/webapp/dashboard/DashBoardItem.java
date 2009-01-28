@@ -21,7 +21,6 @@ package org.nuxeo.ecm.webapp.dashboard;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.Map;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -38,9 +37,10 @@ public interface DashBoardItem extends Serializable {
      * <p>
      * Workflow task instance right now.
      *
+     * @since 5.2.M4 uses the long identifier instead of String equivalent
      * @return the identifier of the dash board item.
      */
-    String getId();
+    Long getId();
 
     /**
      * Returns the name of the DashBoardItem.
@@ -57,13 +57,6 @@ public interface DashBoardItem extends Serializable {
      * @return a document reference instance
      */
     DocumentRef getDocRef();
-
-    /**
-     * Returns the document UUID.
-     *
-     * @return the document UUID
-     */
-    int getDocUUID();
 
     /**
      * Returns the description of the item.
@@ -94,20 +87,6 @@ public interface DashBoardItem extends Serializable {
     Date getDueDate();
 
     /**
-     * Returns task priority.
-     *
-     * @return task priority
-     */
-    String getPriority();
-
-    /**
-     * Returns the doc ref title.
-     *
-     * @return the doc ref title
-     */
-    String getDocRefTitle();
-
-    /**
      * Returns the item associated directive.
      *
      * @return the item associated directive
@@ -122,37 +101,10 @@ public interface DashBoardItem extends Serializable {
     DocumentModel getDocument();
 
     /**
-     * Returns the name of the workflow initiator.
-     *
-     * @return the name of the workflow initiator
-     */
-    String getAuthorName();
-
-    /**
-     * Returns the type of the workflow.
-     *
-     * @return the type of the workflow
-     */
-    String getWorkflowType();
-
-    /**
      * Does the user reach the deadline?
      *
      * @return the expired flag.
      */
     boolean isExpired();
-
-    /**
-     * Returns the text of an dashboard item.
-     * @return
-     */
-    String getText();
-
-    /**
-     * This method is used to set the schema name and field name which are going to be used to return
-     * the text on an dashboard item.
-     * @param textUtils
-     */
-    void setTextUtils(Map<String, String> textUtils);
 
 }
