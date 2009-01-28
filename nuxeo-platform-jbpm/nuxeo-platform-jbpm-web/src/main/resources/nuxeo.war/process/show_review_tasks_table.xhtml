@@ -129,13 +129,13 @@
             </h:outputText>
           </td>
           <td>
-            <f:subview rendered="#{jbpmActions.canEndTask(task)}">
+            <f:subview rendered="#{jbpmActions.getCanEndTask(task)}">
               <h:commandLink value="#{messages['label.review.end.task']}"
                 action="#{jbpmActions.validateTask(task, null)}" />
             </f:subview>
           </td>
           <td>
-            <f:subview rendered="#{jbpmActions.canEndTask(task)}">
+            <f:subview rendered="#{jbpmActions.getCanEndTask(task)}">
               <h:commandLink value="#{messages['label.review.reject.task']}"
                 action="#{jbpmActions.rejectTask(task, 'reject')}" />
             </f:subview>

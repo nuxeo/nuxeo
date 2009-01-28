@@ -102,7 +102,7 @@ public class JbpmActionsBean implements JbpmActions {
 
     protected List<TaskInstance> currentTasks;
 
-    protected List<VirtualTaskInstance> currentVirtualTasks;
+    protected ArrayList<VirtualTaskInstance> currentVirtualTasks;
 
     protected VirtualTaskInstance newVirtualTask;
 
@@ -114,14 +114,12 @@ public class JbpmActionsBean implements JbpmActions {
     public boolean getCanCreateProcess() throws ClientException {
         ProcessInstance currentProcess = getCurrentProcess();
         if (currentProcess == null) {
-            // check write and write security rights on current doc
+            // check write permissions on current doc
             DocumentModel currentDoc = navigationContext.getCurrentDocument();
             if (currentDoc != null) {
                 DocumentRef docRef = currentDoc.getRef();
                 return documentManager.hasPermission(docRef,
-                        SecurityConstants.WRITE)
-                        && documentManager.hasPermission(docRef,
-                                SecurityConstants.WRITE_SECURITY);
+                        SecurityConstants.WRITE);
             }
         }
         return false;
@@ -230,7 +228,7 @@ public class JbpmActionsBean implements JbpmActions {
     }
 
     @SuppressWarnings("unchecked")
-    public List<VirtualTaskInstance> getCurrentVirtualTasks()
+    public ArrayList<VirtualTaskInstance> getCurrentVirtualTasks()
             throws ClientException {
         if (currentVirtualTasks == null) {
             currentVirtualTasks = new ArrayList<VirtualTaskInstance>();
@@ -439,8 +437,14 @@ public class JbpmActionsBean implements JbpmActions {
                     if (startTask.hasEnded()) {
                         throw new ClientException("Process is already started");
                     }
+                    // optim: pass participants as transient variables to avoid
+                    // lookup in the process instance
+                    Map<String, Serializable> transientVariables = new HashMap<String, Serializable>();
+                    transientVariables.put(
+                            JbpmService.VariableName.participants.name(),
+                            getCurrentVirtualTasks());
                     jbpmService.endTask(startTask.getId(), null, null, null,
-                            null);
+                            transientVariables);
                 } else {
                     throw new ClientException(
                             "No start task found on current process with name "

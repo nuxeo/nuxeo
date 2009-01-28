@@ -21,7 +21,11 @@ package org.nuxeo.ecm.platform.jbpm.core.helper;
 
 import java.util.List;
 
+import javax.security.auth.login.LoginContext;
+
 import org.jbpm.graph.exe.ExecutionContext;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
@@ -31,6 +35,7 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.jbpm.AbstractJbpmHandlerHelper;
+import org.nuxeo.ecm.platform.jbpm.NuxeoJbpmException;
 import org.nuxeo.ecm.platform.jbpm.VirtualTaskInstance;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
@@ -54,6 +59,16 @@ public class AddRightsActionHandler extends AbstractJbpmHandlerHelper {
         return userManager.getPrincipal(user);
     }
 
+    // XXX open a system session to set rights: running a workflow only requires "write"
+    protected CoreSession getSystemSession() throws Exception {
+        String repositoryName = getDocumentRepositoryName();
+        try {
+            return CoreInstance.getInstance().open(repositoryName, null);
+        } catch (ClientException e) {
+            throw new NuxeoJbpmException(e);
+        }
+    }
+
     @Override
     @SuppressWarnings("unchecked")
     public void execute(ExecutionContext executionContext) throws Exception {
@@ -64,10 +79,10 @@ public class AddRightsActionHandler extends AbstractJbpmHandlerHelper {
             if (participants == null) {
                 participants = (List<VirtualTaskInstance>) executionContext.getVariable(list);
             }
+            LoginContext loginContext = null;
             CoreSession session = null;
             try {
-                String user = getSwimlaneUser(getInitiator());
-                session = getCoreSession(getNuxeoPrincipal(user));
+                session = getSystemSession();
                 DocumentRef docRef = getDocumentRef();
                 ACP acp = session.getACP(docRef);
                 String aclName = getACLName();
@@ -87,6 +102,9 @@ public class AddRightsActionHandler extends AbstractJbpmHandlerHelper {
                 session.setACP(docRef, acp, true);
                 session.save();
             } finally {
+                if (loginContext != null) {
+                    loginContext.logout();
+                }
                 closeCoreSession(session);
             }
         }

@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.jbpm.web;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.faces.component.UIComponent;
@@ -57,7 +58,7 @@ public interface JbpmActions extends Serializable {
 
     String getVirtualTasksLayoutMode() throws ClientException;
 
-    List<VirtualTaskInstance> getCurrentVirtualTasks() throws ClientException;
+    ArrayList<VirtualTaskInstance> getCurrentVirtualTasks() throws ClientException;
 
     boolean getShowAddVirtualTaskForm() throws ClientException;
 
