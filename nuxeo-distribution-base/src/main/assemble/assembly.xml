@@ -33,13 +33,11 @@
     <includes>
       <artifact group="javax.script" name="script-api" />
       <artifact group="org.codehaus.groovy" name="groovy-all" />
-      <artifact group="concurrent" />
       <artifact group="jline" />
       <artifact group="dom4j" />
       <artifact group="org.osgi" />
       <artifact name="commons-logging" />
-      <artifact name="jboss-remoting" />
-      <artifact name="jboss-common" />
+      <artifact name="jbossall-client" />
       <artifact group="log4j" name="log4j" />
     </includes>
   </artifactSet>
