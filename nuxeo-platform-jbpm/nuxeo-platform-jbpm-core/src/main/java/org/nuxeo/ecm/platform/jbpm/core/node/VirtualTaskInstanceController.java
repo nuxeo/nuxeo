@@ -16,22 +16,44 @@
  */
 package org.nuxeo.ecm.platform.jbpm.core.node;
 
+import java.util.List;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jbpm.context.exe.ContextInstance;
+import org.jbpm.graph.exe.Comment;
 import org.jbpm.graph.exe.Token;
 import org.jbpm.taskmgmt.exe.TaskInstance;
 import org.nuxeo.ecm.platform.jbpm.AbstractJbpmHandlerHelper;
+import org.nuxeo.ecm.platform.jbpm.VirtualTaskInstance;
 
 /**
  * @author arussel
  *
  */
 public class VirtualTaskInstanceController extends AbstractJbpmHandlerHelper {
+    private static Log log = LogFactory.getLog(VirtualTaskInstanceController.class);
 
     private static final long serialVersionUID = 1L;
 
+    @SuppressWarnings("unchecked")
     @Override
     public void initializeTaskVariables(TaskInstance taskInstance,
             ContextInstance contextInstance, Token token) {
+        VirtualTaskInstance vti = (VirtualTaskInstance) contextInstance.getTransientVariable("participant");
+        if(vti == null) {
+            List<VirtualTaskInstance> vtis = (List<VirtualTaskInstance>)contextInstance.getVariable("participants");
+            vti =  vtis.get(0);
+        }
+        taskInstance.setDueDate(vti.getDueDate());
+        try {
+            taskInstance.addComment(new Comment(
+                    (String) contextInstance.getVariable("initiator"),
+                    vti.getComment()));
+            taskInstance.setVariableLocally("directive", vti.getDirective());
+        } catch (Exception e) {
+            log.error("Error in Virtual Task Instance Controller", e);
+        }
 
     }
 

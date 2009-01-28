@@ -25,6 +25,7 @@
   </node>
   <task-node name="validate node">
     <task name="validate">
+      <controller class="org.nuxeo.ecm.platform.jbpm.VirtualTaskInstanceController"/>
       <assignment pooled-actors="#{participant.actors}" />
     </task>
     <transition name="valid" to="participants join" />

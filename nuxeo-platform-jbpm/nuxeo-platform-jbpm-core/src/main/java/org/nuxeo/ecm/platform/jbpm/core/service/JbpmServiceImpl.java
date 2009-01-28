@@ -141,9 +141,7 @@ public class JbpmServiceImpl implements JbpmService {
 
     private void eagerLoadPooledActor(Collection<TaskInstance> tis) {
         for (TaskInstance ti : tis) {
-            if (ti.getPooledActors() != null) {
-                ti.getPooledActors().size();
-            }
+            eagerLoadTaskInstance(ti);
         }
     }
 
@@ -361,7 +359,7 @@ public class JbpmServiceImpl implements JbpmService {
                         String repoId = (String) ti.getVariable(JbpmService.VariableName.documentRepositoryName.name());
                         if (docId.equals(dm.getId())
                                 && repoId.equals(dm.getRepositoryName())) {
-                            ti.getPooledActors().size();
+                            eagerLoadTaskInstance(ti);
                             result.add(ti);
                         }
                     } else if (!donePi.contains(pi.getId())) {
@@ -375,9 +373,7 @@ public class JbpmServiceImpl implements JbpmService {
                             useDocument.add(pi.getId());
                         }
                         if (useDocument.contains(pi.getId())) {
-                            if (ti.getPooledActors() != null) {
-                                ti.getPooledActors().size();
-                            }
+                            eagerLoadTaskInstance(ti);
                             result.add(ti);
                         }
                     }
@@ -388,6 +384,15 @@ public class JbpmServiceImpl implements JbpmService {
                 return result;
             }
         });
+    }
+
+    private void eagerLoadTaskInstance(TaskInstance ti) {
+        if (ti.getPooledActors() != null) {
+            ti.getPooledActors().size();
+        }
+        if (ti.getVariableInstances() != null) {
+            ti.getVariableInstances().size();
+        }
     }
 
     protected CoreSession getCoreSession(String repositoryName,
@@ -504,9 +509,7 @@ public class JbpmServiceImpl implements JbpmService {
                         processInstanceId).getTaskMgmtInstance().getTaskInstances();
                 ArrayList<TaskInstance> result = new ArrayList<TaskInstance>();
                 for (TaskInstance ti : tis) {
-                    if (ti.getPooledActors() != null) {
-                        ti.getPooledActors().size();
-                    }
+                    eagerLoadTaskInstance(ti);
                     result.add(ti);
                 }
                 return result;

@@ -23,6 +23,7 @@ import org.jbpm.JbpmContext;
 import org.jbpm.graph.exe.ProcessInstance;
 import org.jbpm.taskmgmt.exe.TaskInstance;
 import org.nuxeo.ecm.platform.jbpm.JbpmService;
+import org.nuxeo.ecm.platform.jbpm.VirtualTaskInstance;
 
 /**
  * @author arussel
@@ -51,8 +52,8 @@ public class ValidationReviewTest extends AbstractProcessDefinitionTest {
             List<TaskInstance> bobstask = context.getTaskList("bob");
             assertEquals(1, bobstask.size());
             List<VirtualTaskInstance> participants = new ArrayList<VirtualTaskInstance>();
-            participants.add(new VirtualTaskInstance("bob"));
-            participants.add(new VirtualTaskInstance("trudy"));
+            participants.add(new VirtualTaskInstance("bob", "dobob", "yobob", null));
+            participants.add(new VirtualTaskInstance("trudy", "dotrudy", "yotrudy", null));
             pi.getContextInstance().setVariable(
                     JbpmService.VariableName.participants.name(), participants);
             bobstask.get(0).end();

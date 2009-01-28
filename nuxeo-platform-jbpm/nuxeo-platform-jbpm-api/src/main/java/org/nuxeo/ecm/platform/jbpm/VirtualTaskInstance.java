@@ -17,10 +17,11 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.platform.jbpm.web;
+package org.nuxeo.ecm.platform.jbpm;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -39,6 +40,33 @@ public class VirtualTaskInstance implements Serializable {
     protected String comment;
 
     protected Date dueDate;
+
+    public VirtualTaskInstance() {
+    }
+
+    public VirtualTaskInstance(List<String> actors) {
+        this.actors = actors;
+    }
+
+    public VirtualTaskInstance(String actor) {
+        actors = Collections.singletonList(actor);
+    }
+
+    public VirtualTaskInstance(List<String> actors, String directive,
+            String comment, Date dueDate) {
+        this.actors = actors;
+        this.directive = directive;
+        this.comment = comment;
+        this.dueDate = dueDate;
+    }
+
+    public VirtualTaskInstance(String actor, String directive,
+            String comment, Date dueDate) {
+        this.actors = Collections.singletonList(actor);
+        this.directive = directive;
+        this.comment = comment;
+        this.dueDate = dueDate;
+    }
 
     public List<String> getActors() {
         if (actors == null) {

@@ -21,9 +21,11 @@ import java.util.List;
 import java.util.Set;
 
 import org.jbpm.JbpmContext;
+import org.jbpm.graph.exe.Comment;
 import org.jbpm.graph.exe.ProcessInstance;
 import org.jbpm.taskmgmt.exe.TaskInstance;
 import org.nuxeo.ecm.platform.jbpm.JbpmService;
+import org.nuxeo.ecm.platform.jbpm.VirtualTaskInstance;
 
 /**
  * @author arussel
@@ -54,8 +56,8 @@ public class PDParallelValidationTest extends AbstractProcessDefinitionTest {
                     tis.toArray(new TaskInstance[] {})[0].getActorId());
             // bob finish choosing the participants
             List<VirtualTaskInstance> participants = new ArrayList<VirtualTaskInstance>();
-            participants.add(new VirtualTaskInstance("bob"));
-            participants.add(new VirtualTaskInstance("trudy"));
+            participants.add(new VirtualTaskInstance("bob", "dobob", "yobob", null));
+            participants.add(new VirtualTaskInstance("trudy", "dotrudy", "yotrudy", null));
             pi.getContextInstance().setVariable("participants", participants);
             ti = (TaskInstance) context.getTaskList("bob").get(0);
             ti.end();
@@ -63,6 +65,8 @@ public class PDParallelValidationTest extends AbstractProcessDefinitionTest {
             assertEquals(1, context.getGroupTaskList(bob_list).size());
             assertEquals(1, context.getGroupTaskList(trudy_list).size());
             ti = (TaskInstance) context.getGroupTaskList(bob_list).get(0);
+            assertEquals("yobob", ((Comment)(ti.getComments().get(0))).getMessage());
+            assertEquals("dobob", ti.getVariable("directive"));
             ti.end();
             ti = (TaskInstance) context.getGroupTaskList(trudy_list).get(0);
             ti.end("reject");

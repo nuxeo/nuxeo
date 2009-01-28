@@ -66,7 +66,6 @@ public abstract class AbstractJbpmHandlerHelper implements ActionHandler,
         throw new UnsupportedOperationException();
     }
 
-
     public void initializeTaskVariables(TaskInstance taskInstance,
             ContextInstance contextInstance, Token token) {
         throw new UnsupportedOperationException();
@@ -76,6 +75,7 @@ public abstract class AbstractJbpmHandlerHelper implements ActionHandler,
             ContextInstance contextInstance, Token token) {
         throw new UnsupportedOperationException();
     }
+
     public JbpmService getJbpmService() throws Exception {
         if (jbpmService == null) {
             jbpmService = Framework.getService(JbpmService.class);
@@ -157,5 +157,4 @@ public abstract class AbstractJbpmHandlerHelper implements ActionHandler,
     public static String getProcessACLName(Long pid) {
         return JbpmService.ACL_PREFIX + String.valueOf(pid);
     }
-
 }
