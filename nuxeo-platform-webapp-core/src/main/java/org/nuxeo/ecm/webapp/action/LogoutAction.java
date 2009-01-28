@@ -34,7 +34,7 @@ import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
-import org.nuxeo.ecm.platform.ui.web.auth.NXAuthContants;
+import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 import org.nuxeo.ecm.webapp.base.InputController;
@@ -84,7 +84,7 @@ public class LogoutAction extends InputController implements Serializable {
             String baseURL = BaseURL.getBaseURL(request);
             request.setAttribute(URLPolicyService.DISABLE_REDIRECT_REQUEST_KEY,
                     true);
-            response.sendRedirect(baseURL + NXAuthContants.LOGOUT_PAGE);
+            response.sendRedirect(baseURL + NXAuthConstants.LOGOUT_PAGE);
             context.responseComplete();
         }
         return null;

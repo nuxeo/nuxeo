@@ -45,15 +45,15 @@ public class DueDateValidator implements Validator {
 
         final String DATE_FORMAT = "dd/MM/yyyy";
         SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
-        Date today = null;
-        Date dueDate = null;
 
         String bundleName = context.getApplication().getMessageBundle();
         FacesMessage message = null;
         Locale locale = context.getViewRoot().getLocale();
-        String msg = "";
 
         if (value != null) {
+            Date today = null;
+            Date dueDate = null;
+            String msg = "";
             try {
                 dueDate = dateFormat.parse(dateFormat.format((Date) value));
                 today = dateFormat.parse(dateFormat.format(new Date()));
@@ -61,20 +61,17 @@ public class DueDateValidator implements Validator {
                 msg = I18NUtils.getMessageString(bundleName,
                         "label.workflow.error.date_parsing", null, locale);
                 message = new FacesMessage(msg);
-
             }
             if (dueDate.before(today)) {
                 msg = I18NUtils.getMessageString(bundleName,
                         "label.workflow.error.outdated_duedate", null, locale);
                 message = new FacesMessage(msg);
-
             }
         }
         if (message != null) {
             message.setSeverity(FacesMessage.SEVERITY_ERROR);
             throw new ValidatorException(message);
         }
-
     }
 
 }

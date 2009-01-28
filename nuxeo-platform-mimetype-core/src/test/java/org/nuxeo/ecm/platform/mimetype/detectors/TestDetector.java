@@ -30,7 +30,7 @@ import org.nuxeo.common.utils.FileUtils;
 
 public class TestDetector extends TestCase {
 
-    private  File getFileFromTestResource(String resource) {
+    private static File getFileFromTestResource(String resource) {
         // retrieves contextually the resource file and decode its path
         // returns the corresponding File Object
         return FileUtils.getResourceFileFromContext(resource);
@@ -52,7 +52,7 @@ public class TestDetector extends TestCase {
 
         // direct access
         String[] returnedMimetype = sniffer.guessExcel(xlsFile);
-        assertTrue(returnedMimetype.length != 0);
+        assertTrue(returnedMimetype.length > 0);
     }
 
     public void testSnifferXLSByByteArray() throws IOException {
@@ -60,18 +60,10 @@ public class TestDetector extends TestCase {
         XlsMimetypeSniffer sniffer = new XlsMimetypeSniffer();
 
         // by byte[]
-        String[] returnedByteMimetype;
         byte[] data = FileUtils.readBytes(xlsFile);
-        // FIXME: no need for these variables
-        int dummyInt = 0;
-        long dummyLong = 0;
-        Map dummyMap = new HashMap();
-        String dummyString = "dummy";
-        char dummyChar = dummyString.charAt(0);
-
-        returnedByteMimetype = sniffer.process(data, dummyInt, dummyInt,
-                dummyLong, dummyChar, dummyString, dummyMap);
-        assertTrue(returnedByteMimetype.length != 0);
+        String[] returnedByteMimetype = sniffer.process(data, 0, 0, 0L, 'd',
+                "dummy", new HashMap());
+        assertTrue(returnedByteMimetype.length > 0);
     }
 
     public void testSnifferXLSWrongFile() {
@@ -100,7 +92,7 @@ public class TestDetector extends TestCase {
         // xml excel 2003
         File xmlFile = getFileFromTestResource("test-data/TestExcel2003AsXML.xml.txt");
         String[] mimetype = sniffer.guessMsoXml(xmlFile);
-        assertTrue(mimetype.length != 0);
+        assertTrue(mimetype.length > 0);
         assertEquals("application/vnd.ms-excel", mimetype[0]);
 
         // xml word 2003
@@ -117,15 +109,8 @@ public class TestDetector extends TestCase {
         String [] returnedByteMimetype = {};
         File xmlFile = getFileFromTestResource("test-data/TestWord2003AsXML.xml.txt");
         byte[] data = FileUtils.readBytes(xmlFile);
-        // FIXME: no need for these variables
-        int dummyInt = 0;
-        long dummyLong = 0;
-        Map dummyMap = new HashMap();
-        String dummyString = "dummy";
-        char dummyChar = dummyString.charAt(0);
-
-        returnedByteMimetype = sniffer.process(data, dummyInt, dummyInt,
-                dummyLong, dummyChar, dummyString, dummyMap);
+        returnedByteMimetype = sniffer.process(data, 0, 0, 0L, 'd', "dummy",
+                new HashMap());
         assertEquals("application/msword", returnedByteMimetype[0]);
     }
 
@@ -171,36 +156,36 @@ public class TestDetector extends TestCase {
 
         File file = getFileFromTestResource("test-data/hello.odt");
         String[] returnedMimetype = sniffer.guessOOo(file);
-        assertTrue(returnedMimetype.length != 0);
+        assertTrue(returnedMimetype.length > 0);
         assertEquals("application/vnd.oasis.opendocument.text",
                 returnedMimetype[0]);
 
         file = getFileFromTestResource("test-data/hello.ods");
         returnedMimetype = sniffer.guessOOo(file);
-        assertTrue(returnedMimetype.length != 0);
+        assertTrue(returnedMimetype.length > 0);
         assertEquals("application/vnd.oasis.opendocument.spreadsheet",
                 returnedMimetype[0]);
 
         file = getFileFromTestResource("test-data/hello.odp");
         returnedMimetype = sniffer.guessOOo(file);
-        assertTrue(returnedMimetype.length != 0);
+        assertTrue(returnedMimetype.length > 0);
         assertEquals("application/vnd.oasis.opendocument.presentation",
                 returnedMimetype[0]);
 
         // OOo1.x
         file = getFileFromTestResource("test-data/hello.sxw");
         returnedMimetype = sniffer.guessOOo(file);
-        assertTrue(returnedMimetype.length != 0);
+        assertTrue(returnedMimetype.length > 0);
         assertEquals("application/vnd.sun.xml.writer", returnedMimetype[0]);
 
         file = getFileFromTestResource("test-data/hello.sxc");
         returnedMimetype = sniffer.guessOOo(file);
-        assertTrue(returnedMimetype.length != 0);
+        assertTrue(returnedMimetype.length > 0);
         assertEquals("application/vnd.sun.xml.calc", returnedMimetype[0]);
 
         file = getFileFromTestResource("test-data/hello.sxi");
         returnedMimetype = sniffer.guessOOo(file);
-        assertTrue(returnedMimetype.length != 0);
+        assertTrue(returnedMimetype.length > 0);
         assertEquals("application/vnd.sun.xml.impress", returnedMimetype[0]);
     }
 
@@ -208,7 +193,6 @@ public class TestDetector extends TestCase {
         OOoMimetypeSniffer sniffer = new OOoMimetypeSniffer();
 
         // by byte[]
-        String[] returnedByteMimetype;
         File file = getFileFromTestResource("test-data/hello.odt");
         byte[] data = FileUtils.readBytes(file);
         // FIXME: no need for these variables
@@ -218,8 +202,8 @@ public class TestDetector extends TestCase {
         String dummyString = "dummy";
         char dummyChar = dummyString.charAt(0);
 
-        returnedByteMimetype = sniffer.process(data, dummyInt, dummyInt,
-                dummyLong, dummyChar, dummyString, dummyMap);
+        String[] returnedByteMimetype = sniffer.process(data, dummyInt,
+                dummyInt, dummyLong, dummyChar, dummyString, dummyMap);
         assertEquals("application/vnd.oasis.opendocument.text",
                 returnedByteMimetype[0]);
     }
@@ -241,7 +225,7 @@ public class TestDetector extends TestCase {
 
         // direct access
         String[] returnedMimetype = sniffer.guessPowerpoint(pptFile);
-        assertTrue(returnedMimetype.length != 0);
+        assertTrue(returnedMimetype.length > 0);
     }
 
     // TODO: fix and reactivate
@@ -250,7 +234,6 @@ public class TestDetector extends TestCase {
         PptMimetypeSniffer sniffer = new PptMimetypeSniffer();
 
         // by byte[]
-        String[] returnedByteMimetype;
         byte[] data = FileUtils.readBytes(pptFile);
         // FIXME: no need for these variables
         int dummyInt = 0;
@@ -259,9 +242,10 @@ public class TestDetector extends TestCase {
         String dummyString = "dummy";
         char dummyChar = dummyString.charAt(0);
 
-        returnedByteMimetype = sniffer.process(data, dummyInt, dummyInt,
+        String[] returnedByteMimetype = sniffer.process(data, dummyInt,
+                dummyInt,
                 dummyLong, dummyChar, dummyString, dummyMap);
-        assertTrue(returnedByteMimetype.length != 0);
+        assertTrue(returnedByteMimetype.length > 0);
     }
 
     public void testSnifferPPTWrongFile() {

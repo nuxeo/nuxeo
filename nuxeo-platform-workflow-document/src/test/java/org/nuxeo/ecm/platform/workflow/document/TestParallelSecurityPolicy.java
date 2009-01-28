@@ -31,11 +31,6 @@ public class TestParallelSecurityPolicy extends TestCase {
 
     OrderedReviewWorkflowDocumentSecurityPolicy policy;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
-
     private String generateIdentifier() {
         return String.valueOf(random.nextInt());
     }

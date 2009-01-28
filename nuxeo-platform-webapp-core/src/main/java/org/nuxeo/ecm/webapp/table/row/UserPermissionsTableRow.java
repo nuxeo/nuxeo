@@ -31,6 +31,7 @@ import org.nuxeo.ecm.webapp.table.cell.AbstractTableCell;
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
  *
  */
+@SuppressWarnings({"ALL"})
 @Deprecated
 public class UserPermissionsTableRow extends TableRow {
 

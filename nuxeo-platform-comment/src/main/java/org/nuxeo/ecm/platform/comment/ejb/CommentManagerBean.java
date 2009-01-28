@@ -29,11 +29,11 @@ import javax.ejb.Remote;
 import javax.ejb.Stateless;
 
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.service.CommentService;
 import org.nuxeo.ecm.platform.comment.service.CommentServiceHelper;
-import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
 
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
@@ -66,7 +66,7 @@ public class CommentManagerBean implements CommentManager {
             String author = context.getCallerPrincipal().getName();
             return commentManager.createComment(docModel, comment, author);
         } catch (Throwable e) {
-            throw EJBExceptionHandler.wrapException(e);
+            throw ClientException.wrap(e);
         }
     }
 
@@ -75,19 +75,27 @@ public class CommentManagerBean implements CommentManager {
         try {
             return commentManager.createComment(docModel, comment, author);
         } catch (Throwable e) {
-            throw EJBExceptionHandler.wrapException(e);
+            throw ClientException.wrap(e);
         }
     }
 
     private String updateAuthor(DocumentModel docModel) {
-        String author = (String) docModel.getProperty("comment", "author");
+        String author;
+        try {
+            author = (String) docModel.getProperty("comment", "author");
+        } catch (ClientException e) {
+            author = null;
+        }
         if (author == null) {
             author = context.getCallerPrincipal().getName();
-            docModel.setProperty("comment", "author", author);
+            try {
+                docModel.setProperty("comment", "author", author);
+            } catch (ClientException e) {
+                throw new ClientRuntimeException(e);
+            }
         }
         return author;
     }
-
 
     public DocumentModel createComment(DocumentModel docModel,
             DocumentModel comment) throws ClientException {
@@ -95,7 +103,7 @@ public class CommentManagerBean implements CommentManager {
             updateAuthor(comment);
             return commentManager.createComment(docModel, comment);
         } catch (Throwable e) {
-            throw EJBExceptionHandler.wrapException(e);
+            throw ClientException.wrap(e);
         }
     }
 
@@ -104,7 +112,7 @@ public class CommentManagerBean implements CommentManager {
         try {
             commentManager.deleteComment(docModel, comment);
         } catch (Throwable e) {
-            throw EJBExceptionHandler.wrapException(e);
+            throw ClientException.wrap(e);
         }
     }
 
@@ -113,7 +121,7 @@ public class CommentManagerBean implements CommentManager {
         try {
             return commentManager.getComments(docModel);
         } catch (Throwable e) {
-            throw EJBExceptionHandler.wrapException(e);
+            throw ClientException.wrap(e);
         }
     }
 
@@ -123,7 +131,7 @@ public class CommentManagerBean implements CommentManager {
             updateAuthor(child);
             return commentManager.createComment(docModel, parent, child);
         } catch (Throwable e) {
-            throw EJBExceptionHandler.wrapException(e);
+            throw ClientException.wrap(e);
         }
     }
 
@@ -132,7 +140,7 @@ public class CommentManagerBean implements CommentManager {
         try {
             return commentManager.getComments(docModel, parent);
         } catch (Throwable e) {
-            throw EJBExceptionHandler.wrapException(e);
+            throw ClientException.wrap(e);
         }
     }
 

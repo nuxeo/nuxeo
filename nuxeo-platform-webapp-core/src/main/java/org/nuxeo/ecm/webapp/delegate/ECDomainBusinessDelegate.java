@@ -33,7 +33,6 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Unwrap;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.interfaces.ejb.ECDomain;
-import org.nuxeo.ecm.platform.ui.web.shield.NuxeoJavaBeanErrorHandler;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -42,7 +41,6 @@ import org.nuxeo.runtime.api.Framework;
  */
 @Name("ecDomain")
 @Scope(CONVERSATION)
-@NuxeoJavaBeanErrorHandler
 public class ECDomainBusinessDelegate implements Serializable {
 
     private static final long serialVersionUID = -9197504420097544988L;
@@ -85,7 +83,7 @@ public class ECDomainBusinessDelegate implements Serializable {
 
     @Destroy
     @PermitAll
-    public void destroy() throws ClientException {
+    public void destroy() {
         if (null != ecDomain) {
             ecDomain.remove();
             ecDomain = null;

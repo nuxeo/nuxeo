@@ -35,7 +35,7 @@ public interface NuxeoRemoting extends BaseNuxeoWebService {
      *
      * @param sid the session id
      * @return the repository name
-     * @throws Exception
+     * @throws ClientException
      */
     String getRepositoryName(String sid) throws ClientException;
 
@@ -148,7 +148,7 @@ public interface NuxeoRemoting extends BaseNuxeoWebService {
             throws ClientException;
 
     /**
-     * Same as {@link #getDocumentProperties(String, String, String)} but skips
+     * Same as {@link #getDocumentProperties(String, String)} but skips
      * blobs.
      *
      * @param sid
@@ -203,7 +203,6 @@ public interface NuxeoRemoting extends BaseNuxeoWebService {
      * @throws ClientException
      */
     ACE[] getDocumentLocalACL(String sid, String uuid) throws ClientException;
-
     /**
      * Checks the given permission for the current user on the given document.
      *

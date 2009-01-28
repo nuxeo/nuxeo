@@ -1,0 +1,30 @@
+<f:subview xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:pleiade="http://com.nuxeo.projects.pleiade/"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout" id="#{widget.id}">
+
+  <c:if test="#{widget.mode != 'edit'}">
+
+    <h:outputText value="#{field_0}" />
+
+  </c:if>
+
+  <c:if test="#{widget.mode == 'edit'}">
+
+    <h:selectOneListbox value="#{field_0}"
+      id="#{widget.id}_select" styleClass="dataInputText"
+      required="#{widget.properties['required']}">
+      <f:selectItem itemValue="wiki" itemLabel="#{messages['label.wiki']}" />
+      <f:selectItem itemValue="blog" itemLabel="#{messages['label.blog']}" />
+      <f:selectItem itemValue="site" itemLabel="#{messages['label.minisite']}" />
+    </h:selectOneListbox>
+    <h:message styleClass="errorMessage" for="#{widget.id}_select"
+      id="#{widget.id}_message" />
+
+  </c:if>
+
+</f:subview>

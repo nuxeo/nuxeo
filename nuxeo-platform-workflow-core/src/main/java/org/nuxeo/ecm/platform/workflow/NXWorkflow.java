@@ -28,6 +28,8 @@ import org.nuxeo.runtime.api.Framework;
  * <p>
  * This is the main entry point to the workflow services
  *
+ * @see WorkflowService
+ *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 public final class NXWorkflow {
@@ -38,9 +40,9 @@ public final class NXWorkflow {
     /**
      * Returns the workflow service.
      *
-     * @see org.nuxeo.ecm.plarform.ec.workflow.model.WorkflowService
+     * @see WorkflowService
      *
-     * @return the life cycle service.
+     * @return the workflow service.
      */
     public static WorkflowService getWorkflowService() {
         return (WorkflowService) Framework.getRuntime().getComponent(

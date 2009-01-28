@@ -108,9 +108,8 @@ public final class DirectoryFunctions {
             DirectoryService dirService = Framework.getService(DirectoryService.class);
             session = dirService.open(directoryName);
             DocumentModelList result = new DocumentModelListImpl();
-            DocumentModel entry;
             for (String entryId : entryIds) {
-                entry = session.getEntry(entryId);
+                DocumentModel entry = session.getEntry(entryId);
                 if (entry != null) {
                     result.add(entry);
                 }

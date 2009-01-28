@@ -86,18 +86,14 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
         if (fieldDefs == null) {
             return leaf;
         }
-        TagAttribute name;
-        String computedName;
-        TagAttribute value;
-        String computedValue;
         List<ParamHandler> paramHandlers = new ArrayList<ParamHandler>();
         for (int i = 0; i < fieldDefs.length; i++) {
-            computedName = String.format("%s_%s",
+            String computedName = String.format("%s_%s",
                     RenderVariables.widgetVariables.field.name(), i);
-            name = helper.createAttribute("name", computedName);
-            computedValue = ValueExpressionHelper.createExpressionString(
+            TagAttribute name = helper.createAttribute("name", computedName);
+            String computedValue = ValueExpressionHelper.createExpressionString(
                     widget.getValueName(), fieldDefs[i]);
-            value = helper.createAttribute("value", computedValue);
+            TagAttribute value = helper.createAttribute("value", computedValue);
             TagConfig config = TagConfigFactory.createTagConfig(tagConfig,
                     helper.getTagAttributes(name, value), leaf);
             paramHandlers.add(new ParamHandler(config));

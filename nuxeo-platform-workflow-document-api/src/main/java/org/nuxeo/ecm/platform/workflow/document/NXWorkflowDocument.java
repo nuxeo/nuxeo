@@ -38,7 +38,7 @@ public final class NXWorkflowDocument {
     /**
      * Returns the workflow rules service.
      *
-     * @see org.nuxeo.ecm.plarform.ec.workflow.model.WorkflowService
+     * @see WorkflowRulesManager
      *
      * @return the workflow rules service.
      * @deprecated use {@link Framework#getService(Class)}

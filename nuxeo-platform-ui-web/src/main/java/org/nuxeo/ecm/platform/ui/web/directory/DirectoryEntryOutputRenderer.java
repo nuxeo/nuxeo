@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.platform.ui.web.directory;
 
-import java.io.IOException;
 import java.util.Locale;
 
 import javax.faces.component.UIComponent;
@@ -30,6 +29,7 @@ import javax.faces.render.Renderer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.i18n.I18NUtils;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
@@ -51,30 +51,33 @@ public class DirectoryEntryOutputRenderer extends Renderer {
             entryId = dirComponent.getEntryId();
         }
         String directoryName = dirComponent.getDirectoryName();
-        ResponseWriter writer = context.getResponseWriter();
         String toWrite = null;
         if (directoryName != null) {
-                // get the entry information
+            // get the entry information
             String keySeparator = (String) dirComponent.getAttributes().get(
                     "keySeparator");
             if (keySeparator != null) {
-                entryId = entryId
-                        .substring(entryId.lastIndexOf(keySeparator) + 1,
-                                entryId.length());
+                entryId = entryId.substring(
+                        entryId.lastIndexOf(keySeparator) + 1, entryId.length());
             }
-            DocumentModel entry = DirectoryHelper.getEntry(directoryName, entryId);
+            DocumentModel entry = DirectoryHelper.getEntry(directoryName,
+                    entryId);
 
             if (entry != null) {
-                Boolean displayIdAndLabel = (Boolean) dirComponent
-                        .getDisplayIdAndLabel();
+                Boolean displayIdAndLabel = dirComponent.getDisplayIdAndLabel();
                 if (displayIdAndLabel == null) {
                     displayIdAndLabel = Boolean.FALSE; // unboxed later
                 }
-                Boolean translate = (Boolean) dirComponent.getLocalize();
+                Boolean translate = dirComponent.getLocalize();
 
-                String label = (String) entry.getProperty(
-                        keySeparator != null ? "xvocabulary" : "vocabulary",
-                        "label");
+                String label;
+                try {
+                    label = (String) entry.getProperty(
+                            keySeparator != null ? "xvocabulary" : "vocabulary",
+                            "label");
+                } catch (ClientException e) {
+                    label = null;
+                }
                 String display = (String) dirComponent.getAttributes().get(
                         "display");
                 if (label == null || "".equals(label)) {
@@ -83,9 +86,9 @@ public class DirectoryEntryOutputRenderer extends Renderer {
                 if (Boolean.TRUE.equals(translate)) {
                     label = translate(context, label);
                 }
-                toWrite = display != null ? DirectoryHelper.instance()
-                        .getOptionValue(entryId, label, display,
-                                displayIdAndLabel, " ") : label;
+                toWrite = display != null ? DirectoryHelper.instance().getOptionValue(
+                        entryId, label, display, displayIdAndLabel, " ")
+                        : label;
 
             }
         }
@@ -94,9 +97,12 @@ public class DirectoryEntryOutputRenderer extends Renderer {
             toWrite = entryId;
         }
         try {
-            writer.writeText(toWrite, null);
-            writer.flush();
-        } catch (IOException e) {
+            if (toWrite != null) {
+                ResponseWriter writer = context.getResponseWriter();
+                writer.writeText(toWrite, null);
+                writer.flush();
+            }
+        } catch (Exception e) {
             log.error("IOException trying to write on the response", e);
         }
     }

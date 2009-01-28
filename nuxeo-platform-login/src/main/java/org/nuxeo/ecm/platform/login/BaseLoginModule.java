@@ -31,10 +31,12 @@ public abstract class BaseLoginModule implements LoginPlugin {
     protected Map<String, String> parameters = new HashMap<String, String>();
 
 
+    // Not used.
     public String getLoginPage() {
         return loginPage;
     }
 
+    // Not used.
     public void setLoginPage(String loginPage) {
         this.loginPage = loginPage;
     }

@@ -25,7 +25,6 @@ import org.nuxeo.runtime.api.Framework;
  *         kalogeropoulos</a>
  *
  */
-
 public final class NXFileManager {
 
     private NXFileManager() {

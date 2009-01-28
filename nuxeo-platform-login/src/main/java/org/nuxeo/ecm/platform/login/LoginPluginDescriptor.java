@@ -33,7 +33,7 @@ public class LoginPluginDescriptor {
     protected Map<String, String> parameters = new HashMap<String, String>();
 
     @XNode("@class")
-    protected Class className;
+    protected Class<LoginPlugin> className;
 
     @XNode("enabled")
     protected Boolean enabled;
@@ -41,25 +41,13 @@ public class LoginPluginDescriptor {
     @XNode("@name")
     protected String pluginName;
 
-    protected Boolean initialized = false;
+    protected boolean initialized = false;
 
-    public LoginPluginDescriptor() {
-        this(null, null, null, null);
-    }
-
-    public LoginPluginDescriptor(Map<String, String> parameters,
-            String pluginName, Boolean enabled, Class className) {
-        this.parameters = parameters;
-        this.enabled = enabled;
-        this.className = className;
-        this.pluginName = pluginName;
-    }
-
-    public Class getClassName() {
+    public Class<LoginPlugin> getClassName() {
         return className;
     }
 
-    public void setClassName(Class className) {
+    public void setClassName(Class<LoginPlugin> className) {
         this.className = className;
     }
 
@@ -87,11 +75,11 @@ public class LoginPluginDescriptor {
         this.pluginName = pluginName;
     }
 
-    public void setInitialized(Boolean initialized) {
+    public void setInitialized(boolean initialized) {
         this.initialized = initialized;
     }
 
-    public Boolean getInitialized() {
+    public boolean getInitialized() {
         return initialized;
     }
 

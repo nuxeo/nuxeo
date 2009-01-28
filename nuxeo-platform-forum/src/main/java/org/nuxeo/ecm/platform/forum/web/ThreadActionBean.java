@@ -40,10 +40,12 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.core.Events;
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.comment.web.CommentManagerActions;
 import org.nuxeo.ecm.platform.comment.web.ThreadEntry;
 import org.nuxeo.ecm.platform.forum.web.api.PostAction;
@@ -53,7 +55,6 @@ import org.nuxeo.ecm.platform.forum.workflow.ForumConstants;
 import org.nuxeo.ecm.webapp.base.InputController;
 import org.nuxeo.ecm.webapp.contentbrowser.DocumentActions;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
-import org.nuxeo.ecm.webapp.security.PrincipalListManager;
 
 /**
  * This Action Listener represents a Thread inside a forum.
@@ -64,41 +65,40 @@ import org.nuxeo.ecm.webapp.security.PrincipalListManager;
 @Scope(ScopeType.CONVERSATION)
 public class ThreadActionBean extends InputController implements ThreadAction {
 
-    private static final long serialVersionUID = 1L;
-
     private static final Log log = LogFactory.getLog(ThreadActionBean.class);
 
-    protected final String schema = "thread";
+    private static final long serialVersionUID = -2667460487440135732L;
 
-    protected final String type = "Thread";
+    protected static final String schema = "thread";
+
+    protected static final String type = "Thread";
 
     protected boolean principalIsAdmin;
 
     @In(create = true)
-    protected Principal currentUser;
+    protected transient Principal currentUser;
 
     @In(create = true, required = false)
-    protected CoreSession documentManager;
+    protected transient CoreSession documentManager;
 
     @In(create = true)
-    protected DocumentActions documentActions;
+    protected transient DocumentActions documentActions;
 
     @In(create = true)
-    protected PrincipalListManager principalListManager;
-
-    @In(create = true)
-    protected CommentManagerActions commentManagerActions;
+    protected transient CommentManagerActions commentManagerActions;
 
     @In(create = true)
     protected PostAction postAction;
 
-    private String title;
+    protected String title;
 
-    private String description;
+    protected String description;
 
-    private boolean moderated;
+    protected List<String> selectedModerators;
 
-    private NuxeoPrincipal principal;
+    protected boolean moderated;
+
+    protected NuxeoPrincipal principal;
 
     public String addThread() throws ClientException {
 
@@ -117,24 +117,20 @@ public class ThreadActionBean extends InputController implements ThreadAction {
     /**
      * Clean variables.
      */
-    private void clean() {
+    protected void clean() {
         title = null;
         description = null;
         moderated = false;
+        selectedModerators = null;
     }
 
     /**
-     * Get the Thread to create as a DocumentModel.
-     *
-     * @return
-     * @throws ClientException
+     * Gets the Thread to create as a DocumentModel.
      */
-    private DocumentModel getThreadModel() throws ClientException {
+    protected DocumentModel getThreadModel() throws ClientException {
 
         String path = currentDocument.getPathAsString();
         String docId = IdUtils.generateId(title);
-
-        List<String> moderators = principalListManager.getSelectedUsers();
 
         final DocumentModel docThread = documentManager.createDocumentModel(
                 path, docId, type);
@@ -143,24 +139,31 @@ public class ThreadActionBean extends InputController implements ThreadAction {
         docThread.setProperty(schema, "moderated", moderated);
 
         if (moderated) {
+            // XXX: hack, administrators should have the right to moderate
+            // without being in this list
             // We automatically add administrators as moderators
-            if (!moderators.contains("administrators")) {
-                moderators.add("administrators");
+            if (!selectedModerators.contains(SecurityConstants.ADMINISTRATORS)) {
+                selectedModerators.add(SecurityConstants.ADMINISTRATORS);
             }
-            // We can also remove Administrator() since his group is added
-            if (moderators.contains("Administrator()")) {
-                moderators.remove("Administrator()");
+            // We can also remove Administrator since his group is added
+            if (selectedModerators.contains(SecurityConstants.ADMINISTRATOR)) {
+                selectedModerators.remove(SecurityConstants.ADMINISTRATOR);
             }
-            docThread.setProperty(schema, "moderators", moderators);
+            docThread.setProperty(schema, "moderators", selectedModerators);
         }
 
         return docThread;
     }
 
+    @SuppressWarnings( { "unchecked" })
     public List<String> getModerators() {
         DocumentModel currentThread = navigationContext.getCurrentDocument();
-
-        return (List<String>) currentThread.getProperty("thread", "moderators");
+        try {
+            return (List<String>) currentThread.getProperty("thread",
+                    "moderators");
+        } catch (ClientException ce) {
+            throw new ClientRuntimeException(ce);
+        }
     }
 
     public boolean isPrincipalModerator() {
@@ -168,8 +171,8 @@ public class ThreadActionBean extends InputController implements ThreadAction {
         List<String> moderators = getModerators();
 
         boolean moderator = false;
-        if (isPrincipalGroupModerator()
-                || (moderators != null && moderators.contains(principal.getName()))) {
+        if (isPrincipalGroupModerator() || moderators != null
+                && moderators.contains(principal.getName())) {
             moderator = true;
         }
         return moderator;
@@ -189,7 +192,6 @@ public class ThreadActionBean extends InputController implements ThreadAction {
     }
 
     public boolean isCurrentThreadModerated() throws ClientException {
-
         DocumentModel currentThread = navigationContext.getCurrentDocument();
         return isThreadModerated(currentThread);
     }
@@ -347,20 +349,20 @@ public class ThreadActionBean extends InputController implements ThreadAction {
 
     public boolean isThreadModerated(DocumentModel thread)
             throws ClientException {
-        thread = getDocumentThreadModel(thread.getRef());
         if (thread != null) {
-            Boolean moderation = (Boolean) thread.getProperty("thread",
-                    "moderated");
-            if (moderation != null) {
-                return moderation.booleanValue();
+            thread = getDocumentThreadModel(thread.getRef());
+            if (thread != null) {
+                Boolean moderation = (Boolean) thread.getProperty("thread",
+                        "moderated");
+                if (moderation != null) {
+                    return moderation;
+                }
             }
         }
-
         return false;
     }
 
     public DocumentModel getParentPost(int post) throws ClientException {
-
         DocumentModel parentPost = null;
 
         List<ThreadEntry> posts = getPostsAsThread();
@@ -379,7 +381,6 @@ public class ThreadActionBean extends InputController implements ThreadAction {
         DocumentModel parent = getParentPost(post);
         if (parent == null) {
             return true;
-
         } else if (ForumConstants.PUBLISHED_STATE.equals(parent.getCurrentLifeCycleState())) {
             return true;
         }
@@ -387,18 +388,26 @@ public class ThreadActionBean extends InputController implements ThreadAction {
     }
 
     /**
-     * Get the thread for a given document reference
-     *
-     * @param threadRef
-     * @return
+     * Gets the thread for a given document reference.
      */
-    private DocumentModel getDocumentThreadModel(DocumentRef threadRef)
+    protected DocumentModel getDocumentThreadModel(DocumentRef threadRef)
             throws ClientException {
         DocumentModel thread = null;
         if (threadRef != null) {
             thread = documentManager.getDocument(threadRef);
         }
         return thread;
+    }
+
+    public List<String> getSelectedModerators() {
+        if (selectedModerators == null) {
+            selectedModerators = new ArrayList<String>();
+        }
+        return selectedModerators;
+    }
+
+    public void setSelectedModerators(List<String> selectedModerators) {
+        this.selectedModerators = selectedModerators;
     }
 
 }

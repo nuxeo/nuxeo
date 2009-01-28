@@ -30,6 +30,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.FieldImpl;
 import org.nuxeo.ecm.core.schema.types.QName;
@@ -77,21 +78,16 @@ public class TestSearchPageProvider extends NXRuntimeTestCase {
             return new FieldImpl(qname, StringType.INSTANCE,
                     StringType.INSTANCE);
         }
-
     }
 
     private ResultItem resultItem;
 
     @Override
-    public void setUp() {
-        try {
-            super.setUp();
-            resultItem = new ResultItemImpl(buildResultItemMap(), "the_id");
-            deployBundle("org.nuxeo.ecm.core.schema");
-            deployBundle("org.nuxeo.ecm.core");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public void setUp() throws Exception {
+        super.setUp();
+        resultItem = new ResultItemImpl(buildResultItemMap(), "the_id");
+        deployBundle("org.nuxeo.ecm.core.schema");
+        deployBundle("org.nuxeo.ecm.core");
     }
 
     private static Map<String, Serializable> buildResultItemMap() {
@@ -115,17 +111,16 @@ public class TestSearchPageProvider extends NXRuntimeTestCase {
     }
 
     @SuppressWarnings("unchecked")
-    public void testGetNumberOfPages() throws Exception {
-        ResultSet set = new ResultSetImpl(null, null, null, 0, 10,
+    public void testGetNumberOfPages() {
+        ResultSet set = new ResultSetImpl((SQLQuery) null, null, 0, 10,
                 Collections.EMPTY_LIST, 17, 10);
         SearchPageProvider provider = new SearchPageProvider(set);
         assertEquals(2, provider.getNumberOfPages());
-
     }
 
     @SuppressWarnings("unchecked")
-    public void testGetCurerntPageSize() throws Exception {
-        ResultSet set = new ResultSetImpl(null, null, null, 10, 10,
+    public void testGetCurerntPageSize() {
+        ResultSet set = new ResultSetImpl((SQLQuery) null, null, 10, 10,
                 Collections.EMPTY_LIST, 17, 7);
         SearchPageProvider provider = new SearchPageProvider(set);
         assertEquals(7, provider.getCurrentPageSize());
@@ -142,7 +137,6 @@ public class TestSearchPageProvider extends NXRuntimeTestCase {
      * Checks that a DocumentModel constructed from member field resultItem is
      * correct.
      */
-    @SuppressWarnings("unchecked")
     public static void checkSetUpDocumentModel(DocumentModel docModel)
             throws Exception {
         assertEquals(new PathRef("doc/path"), docModel.getRef());
@@ -156,7 +150,7 @@ public class TestSearchPageProvider extends NXRuntimeTestCase {
 
     public void testGetCurrentPage() throws Exception {
         SearchPageProvider provider = new MockSearchPageProvider(
-                new ResultSetImpl(null, null, null, 14, 20,
+                new ResultSetImpl((SQLQuery) null, null, 14, 20,
                         Arrays.asList(resultItem), 16, 1));
         DocumentModelList docModels = provider.getCurrentPage();
         assertEquals(1, docModels.size());
@@ -165,7 +159,7 @@ public class TestSearchPageProvider extends NXRuntimeTestCase {
 
     public void testGetCurrentPageWithCorrupted() throws Exception {
         SearchPageProvider provider = new MockSearchPageProvider(
-                new ResultSetImpl(null, null, null, 14, 20, Arrays.asList(
+                new ResultSetImpl((SQLQuery) null, null, 14, 20, Arrays.asList(
                         resultItem, corruptedResultItem1()), 17, 2));
         DocumentModelList docModels = provider.getCurrentPage();
         assertEquals(1, docModels.size());
@@ -176,10 +170,9 @@ public class TestSearchPageProvider extends NXRuntimeTestCase {
      * See NXP-1696
      */
     @SuppressWarnings("unchecked")
-    public void testEmptyResults() throws Exception {
+    public void testEmptyResults() {
         SearchPageProvider provider =
-            new SearchPageProvider(new ResultSetImpl(null, null, null, 0, 10, Collections.EMPTY_LIST, 0, 0));
-        assertTrue(provider.getCurrentPage() instanceof DocumentModelList);
+            new SearchPageProvider(new ResultSetImpl((SQLQuery) null, null, 0, 10, Collections.EMPTY_LIST, 0, 0));
         assertFalse(provider.isNextPageAvailable());
         assertFalse(provider.isPreviousPageAvailable());
         assertEquals(0, provider.getCurrentPageIndex());

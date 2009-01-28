@@ -25,7 +25,7 @@ public interface DirectoryFactory {
     String getName();
 
     /**
-     * Return the directory with the given name.
+     * Returns the directory with the given name.
      *
      * @param name the name of the directory
      * @return the directory with the given name

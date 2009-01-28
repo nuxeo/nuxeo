@@ -79,28 +79,27 @@ public class FilterRule {
      *
      * @param conditions
      */
-    private void preprocessConditions(String[] conditions) {
+    private static void preprocessConditions(String[] conditions) {
         for (int i = 0; i < conditions.length; i++) {
             String condition = conditions[i];
             condition = condition.trim();
             if ((condition.startsWith("${") || condition.startsWith("#{"))
                     && condition.endsWith("}")) {
-                String parsedCondition = condition.substring(2,
-                        condition.length() - 1);
-                int idx = parsedCondition.indexOf(".");
-                if (idx==-1)
-                {
+                String parsedCondition = condition.substring(2, condition
+                        .length() - 1);
+                int idx = parsedCondition.indexOf('.');
+                if (idx == -1) {
                     // simple context variable lookup (may be Factory call)
-                    conditions[i]="SeamContext.get(\"" + parsedCondition + "\")";
-                }
-                else
-                {
-                   // Seam component call
-                   String seamComponentName = parsedCondition.substring(0, idx);
-                   String resolutionAccessor = "SeamContext.get(\""
-                        + seamComponentName + "\")";
-                   conditions[i] = resolutionAccessor
-                        + parsedCondition.substring(idx);
+                    conditions[i] = "SeamContext.get(\"" + parsedCondition
+                            + "\")";
+                } else {
+                    // Seam component call
+                    String seamComponentName = parsedCondition
+                            .substring(0, idx);
+                    String resolutionAccessor = "SeamContext.get(\""
+                            + seamComponentName + "\")";
+                    conditions[i] = resolutionAccessor
+                            + parsedCondition.substring(idx);
                 }
             }
         }

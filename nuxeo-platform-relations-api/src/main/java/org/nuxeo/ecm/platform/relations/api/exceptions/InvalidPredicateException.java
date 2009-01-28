@@ -23,7 +23,6 @@ package org.nuxeo.ecm.platform.relations.api.exceptions;
  * A predicate has to be a resource.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public class InvalidPredicateException extends RuntimeException {
 
@@ -43,4 +42,5 @@ public class InvalidPredicateException extends RuntimeException {
     public InvalidPredicateException(Throwable cause) {
         super(cause);
     }
+
 }

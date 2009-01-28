@@ -45,7 +45,7 @@ import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.RequestParameter;
+import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -56,7 +56,6 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
@@ -99,21 +98,19 @@ import org.nuxeo.runtime.api.Framework;
 public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants {
 
     protected static final String IMMUTABLE_FACET = "Immutable";
-
-    protected static final long serialVersionUID = 876879071L;
-
     protected static final String MODIFIED_FIELD = "modified";
-
     protected static final String DUBLINCORE_SCHEMA = "dublincore";
 
     @SuppressWarnings("unused")
     private static final Log log = LogFactory.getLog(LiveEditBootstrapHelper.class);
 
-    @In(required = true, create = true)
-    protected NavigationContext navigationContext;
+    private static final long serialVersionUID = 876879071L;
+
+    @In(create = true)
+    protected transient NavigationContext navigationContext;
 
     @In(create = true, required = false)
-    protected CoreSession documentManager;
+    protected transient CoreSession documentManager;
 
     @RequestParameter
     protected String action;
@@ -338,7 +335,7 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
             addTextElement(docInfo, docMimetypeTag, mimetype);
             addTextElement(docInfo, docFileExtensionTag,
                     getFileExtension(mimetype));
-            
+
             Element docFileAuthorizedExtensions = docInfo.addElement(docFileAuthorizedExtensionsTag);
             List<String> authorizedExtensions = getFileExtensions(mimetype);
             if (authorizedExtensions != null) {
@@ -378,7 +375,7 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
             addTextElement(templateDocInfo, docMimetypeTag, mimetype);
             addTextElement(templateDocInfo, docFileExtensionTag,
                     getFileExtension(mimetype));
-            
+
             Element templateFileAuthorizedExtensions = templateDocInfo.addElement(docFileAuthorizedExtensionsTag);
             if (authorizedExtensions != null) {
                 for (String extension : authorizedExtensions) {
@@ -480,7 +477,7 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
         List<String> extensions = mimetypeRegistry.getExtensionsFromMimetypeName(mimetype);
         return extensions;
     }
-    
+
     protected static Element addTextElement(Element parent,
             QName newElementName, String value) {
         Element element = parent.addElement(newElementName);
@@ -492,7 +489,7 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
 
     // TODO: please explain what is the use of the "editId" tag here
     protected static String getEditId(DocumentModel doc, CoreSession session,
-            String userName) throws ClientException {
+            String userName) {
         StringBuilder sb = new StringBuilder();
 
         if (doc != null) {
@@ -506,8 +503,12 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
         sb.append(userName);
         Calendar modified = null;
         if (doc != null) {
-            modified = (Calendar) doc.getProperty(DUBLINCORE_SCHEMA,
-                    MODIFIED_FIELD);
+            try {
+                modified = (Calendar) doc.getProperty(DUBLINCORE_SCHEMA,
+                        MODIFIED_FIELD);
+            } catch (ClientException e) {
+                modified = null;
+            }
         }
         if (modified == null) {
             modified = Calendar.getInstance();
@@ -547,10 +548,10 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
                 if (mimetypeEntry == null) {
                     isEditable = Boolean.FALSE;
                 } else {
-                    isEditable = Boolean.valueOf(mimetypeEntry.isOnlineEditable());
+                    isEditable = mimetypeEntry.isOnlineEditable();
                 }
             } catch (Throwable t) {
-                throw EJBExceptionHandler.wrapException(t);
+                throw ClientException.wrap(t);
             }
 
             if (liveEditClientConfig.getLiveEditConfigurationPolicy().equals(LiveEditClientConfig.LE_CONFIG_BOTHSIDES)){
@@ -559,49 +560,38 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
             }
             cachedEditableStates.put(mimetype, isEditable);
         }
-        return isEditable.booleanValue();
-
+        return isEditable;
     }
 
-
-    @Factory(value="msword_liveeditable", scope=ScopeType.SESSION)
-    public boolean isMSWordLiveEdititable() throws ClientException
-    {
+    @Factory(value = "msword_liveeditable", scope = ScopeType.SESSION)
+    public boolean isMSWordLiveEdititable() throws ClientException {
         return isMimeTypeLiveEditable("application/msword");
     }
 
-    @Factory(value="msexcel_liveeditable", scope=ScopeType.SESSION)
-    public boolean isMSExcelLiveEdititable() throws ClientException
-    {
+    @Factory(value = "msexcel_liveeditable", scope = ScopeType.SESSION)
+    public boolean isMSExcelLiveEdititable() throws ClientException {
         return isMimeTypeLiveEditable("application/vnd.ms-excel");
     }
 
-    @Factory(value="mspowerpoint_liveeditable", scope=ScopeType.SESSION)
-    public boolean isMSPowerpointLiveEdititable() throws ClientException
-    {
+    @Factory(value = "mspowerpoint_liveeditable", scope = ScopeType.SESSION)
+    public boolean isMSPowerpointLiveEdititable() throws ClientException {
         return isMimeTypeLiveEditable("application/vnd.ms-powerpoint");
     }
 
-    @Factory(value="ootext_liveeditable", scope=ScopeType.SESSION)
-    public boolean isOOTextLiveEdititable() throws ClientException
-    {
+    @Factory(value = "ootext_liveeditable", scope = ScopeType.SESSION)
+    public boolean isOOTextLiveEdititable() throws ClientException {
         return isMimeTypeLiveEditable("application/vnd.oasis.opendocument.text");
     }
 
-    @Factory(value="oocalc_liveeditable", scope=ScopeType.SESSION)
-    public boolean isOOCalcLiveEdititable() throws ClientException
-    {
+    @Factory(value = "oocalc_liveeditable", scope = ScopeType.SESSION)
+    public boolean isOOCalcLiveEdititable() throws ClientException {
         return isMimeTypeLiveEditable("application/vnd.oasis.opendocument.spreadsheet");
     }
 
-    @Factory(value="oopresentation_liveeditable", scope=ScopeType.SESSION)
-    public boolean isOOPresentationLiveEdititable() throws ClientException
-    {
+    @Factory(value = "oopresentation_liveeditable", scope = ScopeType.SESSION)
+    public boolean isOOPresentationLiveEdititable() throws ClientException {
         return isMimeTypeLiveEditable("application/vnd.oasis.opendocument.presentation");
     }
-
-
-
 
     public boolean isCurrentDocumentLiveEditable() throws ClientException {
         return isDocumentLiveEditable(navigationContext.getCurrentDocument(),
@@ -662,7 +652,7 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
                 return cacheBlobToFalse(cacheKey);
             }
 
-            Blob blob = null;
+            Blob blob;
             try {
                 blob = documentModel.getProperty(propertyName).getValue(
                         Blob.class);
@@ -674,7 +664,7 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
             cachedEditableBlob = isLiveEditable(blob);
             cachedEditableBlobs.put(cacheKey, cachedEditableBlob);
         }
-        return cachedEditableBlob.booleanValue();
+        return cachedEditableBlob;
     }
 
     protected boolean cacheBlobToFalse(String cacheKey) {

@@ -89,12 +89,10 @@ public class ActionService extends DefaultComponent implements ActionManager {
         }
     }
 
-    @SuppressWarnings("unchecked")
     public List<Action> getActions(String category, ActionContext context) {
         return getActions(category, context, true);
     }
 
-    @SuppressWarnings("unchecked")
     public List<Action> getActions(String category, ActionContext context,
             boolean hideUnavailableActions) {
         List<Action> actions = actionReg.getActions(category);
@@ -108,11 +106,7 @@ public class ActionService extends DefaultComponent implements ActionManager {
             applyFilters(context, actions);
 
             for (Action a : allActions) {
-                if (actions.contains(a)) {
-                    a.setAvailable(true);
-                } else {
-                    a.setAvailable(false);
-                }
+                a.setAvailable(actions.contains(a));
             }
 
             Collections.sort(allActions);

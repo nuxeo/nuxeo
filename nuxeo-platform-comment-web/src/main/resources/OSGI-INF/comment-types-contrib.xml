@@ -7,8 +7,7 @@
   <require>org.nuxeo.ecm.platform.types.TypeService</require>
 
   <extension target="org.nuxeo.ecm.platform.types.TypeService"
-    point="types">
-
+      point="types">
     <type id="Domain" coretype="Domain">
       <subtypes>
         <type>CommentRoot</type>
@@ -25,9 +24,9 @@
       </subtypes>
       <layout>
         <widget jsfcomponent="h:inputText" schemaname="dublincore"
-          fieldname="title" required="true" />
+            fieldname="title" required="true"/>
         <widget jsfcomponent="h:inputTextarea" schemaname="dublincore"
-          fieldname="description" />
+            fieldname="description"/>
       </layout>
     </type>
 
@@ -37,7 +36,6 @@
       <default-view>comment_view</default-view>
       <create-view>comment_create</create-view>
     </type>
-
   </extension>
 
 </component>

@@ -28,4 +28,6 @@ import org.jbpm.graph.def.ActionHandler;
  */
 public abstract class JbpmWorkflowActionHandler implements ActionHandler {
 
+    private static final long serialVersionUID = 576607663126475367L;
+
 }

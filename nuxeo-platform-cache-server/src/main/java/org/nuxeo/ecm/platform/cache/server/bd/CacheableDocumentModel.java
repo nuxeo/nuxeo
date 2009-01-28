@@ -20,8 +20,9 @@
 package org.nuxeo.ecm.platform.cache.server.bd;
 
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
+import org.jboss.cache.aop.annotation.PojoCacheable;
 
-@org.jboss.cache.aop.annotation.PojoCacheable
+@PojoCacheable
 public class CacheableDocumentModel extends DocumentModelImpl {
 
     private static final long serialVersionUID = 1L;

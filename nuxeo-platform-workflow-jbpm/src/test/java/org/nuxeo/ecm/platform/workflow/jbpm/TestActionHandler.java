@@ -37,8 +37,7 @@ public class TestActionHandler extends JbpmWorkflowActionHandler {
 
     private static final long serialVersionUID = 1327637414446001773L;
 
-    private static final Log log = LogFactory
-            .getLog(TestActionHandler.class);
+    private static final Log log = LogFactory.getLog(TestActionHandler.class);
 
     public void execute(ExecutionContext executionContext) throws Exception {
         Token token = executionContext.getToken();
@@ -52,7 +51,6 @@ public class TestActionHandler extends JbpmWorkflowActionHandler {
             TaskInstance ti = tmi.createTaskInstance(taskNode.getTask((String) k), token);
             ti.start();
         }
-
     }
 
 }
