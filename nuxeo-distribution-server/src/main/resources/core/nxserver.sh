@@ -66,17 +66,24 @@
 ################################################
 
 JAVA_OPTS="-Djava.rmi.server.RMIClassLoaderSpi=org.nuxeo.runtime.launcher.NuxeoRMIClassLoader -Dsun.lang.ClassLoader.allowArraySyntax=true"
-JAVA_OPTS="$JAVA_OPTS -Dderby.system.home=data/derby"
+JAVA_OPTS="$JAVA_OPTS"
+#JAVA_OPTS="$JAVA_OPTS -Dorg.nuxeo.runtime.1.3.3.streaming.port=3233"
 
-if [ "x$1" = "x-debug" ] ; then
-    JAVA_OPTS="$JAVA_OPTS -Ddebug=true -Xdebug -Xrunjdwp:transport=dt_socket,address=8788,server=y,suspend=n"
-fi
+CMD_ARGS="$@"
+DEV_OPTS=""
+if [ "x$1" = "x-dev" ] ; then
+# remove dev parameter
+    shift 1
+    JAVA_OPTS="$JAVA_OPTS -Dorg.nuxeo.dev=true -Xdebug -Xrunjdwp:transport=dt_socket,address=127.0.0.1:8788,server=y,suspend=n"
+    DEV_OPTS="-clear -console"
+fi 
 
 NXC_VERSION=`ls nuxeo-runtime-launcher-*|cut -d"-" -f4- `
-NXP_VERSION=`ls bundles/nuxeo-shell-commands-base-* |cut -d"-" -f5-`
+
+#example on how to add external bundles to your environment. Usefull to dev. using IDEs.
+#the eclipse plugin is using this option to start webengine.
+#POST_BUNDLES="-post-bundles /path/to/your/external/bundle:/path/to/second/bundle:/etc"
 
 java $JAVA_OPTS -jar nuxeo-runtime-launcher-${NXC_VERSION} \
     bundles/nuxeo-runtime-osgi-${NXC_VERSION}/org.nuxeo.osgi.application.Main \
-    bundles/.:lib/.:config -bundles:\
-    -bundles=bundles/nuxeo-shell-commands-base-${NXP_VERSION}@3\
-    -home . "$@"
+    bundles/.:lib/.:config $POST_BUNDLES -home . $DEV_OPTS "$@"
