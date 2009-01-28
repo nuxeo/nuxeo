@@ -56,8 +56,6 @@ public interface JbpmActions extends Serializable {
     List<TaskInstance> getCurrentTasks(String... taskNames)
             throws ClientException;
 
-    String getVirtualTasksLayoutMode() throws ClientException;
-
     ArrayList<VirtualTaskInstance> getCurrentVirtualTasks() throws ClientException;
 
     boolean getShowAddVirtualTaskForm() throws ClientException;

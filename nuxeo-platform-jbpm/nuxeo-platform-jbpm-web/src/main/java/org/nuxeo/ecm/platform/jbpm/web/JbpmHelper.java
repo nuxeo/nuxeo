@@ -28,6 +28,7 @@ import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jbpm.graph.exe.ProcessInstance;
+import org.jbpm.taskmgmt.exe.PooledActor;
 import org.jbpm.taskmgmt.exe.TaskInstance;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -119,6 +120,18 @@ public class JbpmHelper {
             }
         }
         return false;
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<String> getPooledActorIds(TaskInstance task) {
+        List<String> res = new ArrayList<String>();
+        Set pooledActors = task.getPooledActors();
+        for (Object pooledActor : pooledActors) {
+            if (pooledActor instanceof PooledActor) {
+                res.add(((PooledActor) pooledActor).getActorId());
+            }
+        }
+        return res;
     }
 
 }

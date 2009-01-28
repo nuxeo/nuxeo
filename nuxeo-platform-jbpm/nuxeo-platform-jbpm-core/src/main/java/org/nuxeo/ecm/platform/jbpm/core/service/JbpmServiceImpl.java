@@ -212,11 +212,7 @@ public class JbpmServiceImpl implements JbpmService {
                                 + principal.getName();
                         Object initiator = pi.getContextInstance().getVariable(
                                 JbpmService.VariableName.initiator.name());
-                        DocumentModel dm = getDocumentModel(pi, principal);
-                        if (actorName.equals(initiator)
-                                && getPermission(pi,
-                                        JbpmSecurityPolicy.Action.read, dm,
-                                        principal)) {
+                        if (actorName.equals(initiator)) {
                             initiatorPD.add(pi);
                         }
                     }
@@ -253,9 +249,19 @@ public class JbpmServiceImpl implements JbpmService {
                 if (user != null) {
                     context.setActorId(NuxeoPrincipal.PREFIX + user.getName());
                 }
+                String docId;
+                String repoId;
                 TaskInstance sessionedTi = context.getTaskInstance(ti.getId());
-                String docId = (String) sessionedTi.getVariable(JbpmService.VariableName.documentId.name());
-                String repoId = (String) sessionedTi.getVariable(JbpmService.VariableName.documentRepositoryName.name());
+                ProcessInstance pi = sessionedTi.getProcessInstance();
+                if (pi == null) {// task created outside a process
+                    docId = (String) sessionedTi.getVariable(JbpmService.VariableName.documentId.name());
+                    repoId = (String) sessionedTi.getVariable(JbpmService.VariableName.documentRepositoryName.name());
+                } else {
+                    ProcessInstance sessionedPi = context.getProcessInstance(pi.getId());
+                    ContextInstance ci = sessionedPi.getContextInstance();
+                    docId = (String) ci.getVariable(JbpmService.VariableName.documentId.name());
+                    repoId = (String) ci.getVariable(JbpmService.VariableName.documentRepositoryName.name());
+                }
                 return getDocumentModel(user, docId, repoId);
             }
         });
@@ -581,16 +587,22 @@ public class JbpmServiceImpl implements JbpmService {
         return Boolean.TRUE;
     }
 
-    public void persistProcessInstance(final ProcessInstance pi)
+    @SuppressWarnings("unchecked")
+    public ProcessInstance persistProcessInstance(final ProcessInstance pi)
             throws NuxeoJbpmException {
-        executeJbpmOperation(new JbpmOperation() {
+        return (ProcessInstance) executeJbpmOperation(new JbpmOperation() {
             public Serializable run(JbpmContext context)
                     throws NuxeoJbpmException {
+                ProcessInstance sessionedPi = context.getProcessInstance(pi.getId());
+                ContextInstance ci = sessionedPi.getContextInstance();
+                Map<String, Object> attrs = pi.getContextInstance().getVariables();
+                for (String k : attrs.keySet()) {
+                    ci.setVariable(k, attrs.get(k));
+                }
                 Session session = context.getSession();
-                session.saveOrUpdate(pi);
-                return null;
+                session.saveOrUpdate(sessionedPi);
+                return context.getProcessInstance(pi.getId());
             }
-
         });
     }
 
