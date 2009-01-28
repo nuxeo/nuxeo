@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.core.Events;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -30,17 +31,16 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
-import org.nuxeo.ecm.core.api.event.CoreEvent;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
-import org.nuxeo.ecm.core.api.event.impl.CoreEventImpl;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
-import org.nuxeo.ecm.platform.events.api.EventMessage;
-import org.nuxeo.ecm.platform.events.api.delegate.DocumentMessageProducerBusinessDelegate;
-import org.nuxeo.ecm.platform.events.api.impl.DocumentMessageImpl;
+import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.EventProducer;
+import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.publishing.api.PublishingService;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
+import org.apache.commons.logging.Log;
 
 /**
  * @author alexandre
@@ -60,6 +60,8 @@ public class DocumentPublisher extends UnrestrictedSessionRunner {
     protected final DocumentRef docRef;
 
     protected final DocumentRef sectionRef;
+
+    private static final Log log = LogFactory.getLog(DocumentPublisher.class);
 
     /** Returned proxy. */
     public DocumentRef proxyRef;
@@ -152,16 +154,25 @@ public class DocumentPublisher extends UnrestrictedSessionRunner {
         properties.put(CoreEventConstants.DOC_LIFE_CYCLE,
                 dm.getCurrentLifeCycleState());
 
-        CoreEvent event = new CoreEventImpl(eventId, dm, properties,
-                coreSession.getPrincipal(), category, comment);
+        DocumentEventContext ctx = new DocumentEventContext(coreSession,coreSession.getPrincipal(),dm);
+        ctx.setProperties(properties);
+        ctx.setComment(comment);
+        ctx.setCategory(category);
 
-        EventMessage message = new DocumentMessageImpl(dm, event);
+        Event event = ctx.event(eventId);
+
+        EventProducer evtProducer = null;
 
         try {
-            DocumentMessageProducerBusinessDelegate.getRemoteDocumentMessageProducer().produce(
-                    message);
+            evtProducer = Framework.getService(EventProducer.class);
         } catch (Exception e) {
-            throw new ClientException(e);
+            log.error("Unable to get EventProducer", e);
+        }
+
+        try {
+            evtProducer.fireEvent(event);
+        } catch (Exception e) {
+            log.error("Unable to send message", e);
         }
     }
 }
