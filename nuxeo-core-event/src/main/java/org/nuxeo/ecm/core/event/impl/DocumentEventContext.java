@@ -55,7 +55,11 @@ public class DocumentEventContext extends EventContextImpl {
     }
 
     public String getCategory(){
-        return (String) getProperty(CATEGORY_PROPERTY_KEY);
+        Serializable data = getProperty(CATEGORY_PROPERTY_KEY);
+        if (data instanceof String) {
+            return (String) data;
+        }
+        return null;
     }
 
     public void setCategory(String category){
@@ -63,7 +67,11 @@ public class DocumentEventContext extends EventContextImpl {
     }
 
     public String getComment(){
-        return (String) getProperty(COMMENT_PROPERTY_KEY);
+        Serializable data = getProperty(COMMENT_PROPERTY_KEY);
+        if (data instanceof String) {
+            return (String) data;
+        }
+        return null;
     }
 
     public void setComment(String comment){
