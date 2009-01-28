@@ -531,8 +531,9 @@ public class JbpmServiceImpl implements JbpmService {
         executeJbpmOperation(new JbpmOperation() {
             public Serializable run(JbpmContext context)
                     throws NuxeoJbpmException {
+                Session session = context.getSession();
                 for (TaskInstance ti : taskInstances) {
-                    context.save(ti);
+                    session.saveOrUpdate(ti);
                 }
                 return null;
             }
@@ -585,7 +586,7 @@ public class JbpmServiceImpl implements JbpmService {
         executeJbpmOperation(new JbpmOperation() {
             public Serializable run(JbpmContext context)
                     throws NuxeoJbpmException {
-                context.save(pi);
+                context.getSession().saveOrUpdate(pi);
                 return null;
             }
 
