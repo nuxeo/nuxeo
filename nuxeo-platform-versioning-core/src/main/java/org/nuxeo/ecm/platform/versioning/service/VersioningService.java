@@ -54,7 +54,7 @@ import org.nuxeo.runtime.model.Property;
 
 /**
  * Versions management component implementation.
- *
+ * 
  * @author : <a href="dm@nuxeo.com">Dragos Mihalache</a>
  */
 public class VersioningService extends DefaultComponent implements
@@ -189,9 +189,9 @@ public class VersioningService extends DefaultComponent implements
         // TODO
     }
 
-    public VersionIncEditOptions getVersionIncEditOptions(@NotNull
-    DocumentModel docModel) throws VersioningException, ClientException,
-            DocumentException {
+    public VersionIncEditOptions getVersionIncEditOptions(
+            @NotNull DocumentModel docModel) throws VersioningException,
+            ClientException, DocumentException {
         if (null == docModel.getSessionId()) {
             throw new IllegalArgumentException(
                     "document model is not bound to a core session (null sessionId)");
@@ -241,20 +241,22 @@ public class VersioningService extends DefaultComponent implements
             versIncOpts.addInfo("wfvaction = " + wfvaction);
 
             if (wfvaction != null) {
-                versIncOpts.clearOptions();
                 if (wfvaction == VersioningActions.ACTION_CASE_DEPENDENT) {
-                    versIncOpts.addOption(VersioningActions.ACTION_NO_INCREMENT);
-                    versIncOpts.addOption(VersioningActions.ACTION_INCREMENT_MINOR);
+                    if (versIncOpts.getOptions() == null
+                            || versIncOpts.getOptions().isEmpty()) {
+                        versIncOpts.addOption(VersioningActions.ACTION_NO_INCREMENT);
+                        versIncOpts.addOption(VersioningActions.ACTION_INCREMENT_MINOR);
+                        versIncOpts.addOption(VersioningActions.ACTION_INCREMENT_MAJOR);
+                    }
                 } else {
+                    versIncOpts.clearOptions();
                     // because LE needs options we add the option received from
-                    // WF
-                    // also the rule is that if wf specified an inc option
+                    // WF also the rule is that if wf specified an inc option
                     // that one is to be added
                     versIncOpts.addOption(wfvaction);
                     // set default so it will appear selected
                     versIncOpts.setDefaultVersioningAction(wfvaction);
                 }
-
                 versIncOpts.setVersioningAction(wfvaction);
             } else {
                 log.error("wf action is null");
@@ -269,10 +271,10 @@ public class VersioningService extends DefaultComponent implements
     /**
      * Edit: an increment option is asked to a user who edits a document in
      * various lifecycle states.
-     *
+     * 
      * @param lifecycleState
      * @return
-     *
+     * 
      * @deprecated parameters are insufficient for a full evaluation. Will be
      *             removed. Use getVersionIncEditOptions(...)
      */
@@ -292,7 +294,7 @@ public class VersioningService extends DefaultComponent implements
 
     /**
      * Needed to keep API compatibility (will be deprecated)
-     *
+     * 
      * @param lifecycleState
      * @param docType - redundant when docModel is not null
      * @param docModel
@@ -354,8 +356,9 @@ public class VersioningService extends DefaultComponent implements
 
             // will add options (these are to be displayed to user) only if
             // action is ask_user
-            if (VersioningActions.ACTION_CASE_DEPENDENT == descriptorAction) {
-                log.debug(logPrefix + "Action case_dependent, adding options ");
+            if (VersioningActions.ACTION_CASE_DEPENDENT == descriptorAction
+                    || VersioningActions.ACTION_QUERY_WORKFLOW == descriptorAction) {
+                log.debug(logPrefix + "adding options ");
                 final RuleOptionDescriptor[] descOptions = descriptor.getOptions();
                 for (RuleOptionDescriptor opt : descOptions) {
 
@@ -385,18 +388,13 @@ public class VersioningService extends DefaultComponent implements
                         log.warn("Invalid action name: " + opt);
                     }
                 }
-
-                editOptions.setVersioningAction(VersioningActions.ACTION_CASE_DEPENDENT);
-                editOptions.addInfo("Action case dependent");
-
             } else {
                 log.debug(logPrefix + "descriptorAction = " + descriptorAction
                         + "; no option for user specified by rule.");
 
-                // TODO maybe set it in one place, see above
-                editOptions.setVersioningAction(descriptorAction);
-                editOptions.addInfo("descriptorAction = " + descriptorAction);
             }
+            editOptions.setVersioningAction(descriptorAction);
+            editOptions.addInfo("descriptorAction = " + descriptorAction);
 
             // apply only the first matching rule
             break;
