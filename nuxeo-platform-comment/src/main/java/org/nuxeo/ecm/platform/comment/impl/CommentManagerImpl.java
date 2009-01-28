@@ -42,8 +42,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.event.CoreEvent;
-import org.nuxeo.ecm.core.api.event.impl.CoreEventImpl;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
@@ -51,16 +49,14 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
+import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.EventProducer;
+import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.comment.api.CommentConstants;
 import org.nuxeo.ecm.platform.comment.api.CommentConverter;
 import org.nuxeo.ecm.platform.comment.api.CommentEvents;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.service.CommentServiceConfig;
-import org.nuxeo.ecm.platform.events.api.DocumentMessage;
-import org.nuxeo.ecm.platform.events.api.DocumentMessageProducer;
-import org.nuxeo.ecm.platform.events.api.DocumentMessageProducerException;
-import org.nuxeo.ecm.platform.events.api.delegate.DocumentMessageProducerBusinessDelegate;
-import org.nuxeo.ecm.platform.events.api.impl.DocumentMessageImpl;
 import org.nuxeo.ecm.platform.relations.api.RelationManager;
 import org.nuxeo.ecm.platform.relations.api.Resource;
 import org.nuxeo.ecm.platform.relations.api.Statement;
@@ -277,7 +273,7 @@ public class CommentManagerImpl implements CommentManager {
         } catch (Exception e) {
             log.error("Error building principal for notification", e);
         }
-        notifyEvent(docModel, CommentEvents.COMMENT_ADDED, null,
+        notifyEvent(session, docModel, CommentEvents.COMMENT_ADDED, null,
                 createdComment, principal);
 
         return createdComment;
@@ -332,16 +328,11 @@ public class CommentManagerImpl implements CommentManager {
         return commentDocModel;
     }
 
-    private static void notifyEvent(DocumentModel docModel, String eventType,
+    private static void notifyEvent(CoreSession session, DocumentModel docModel, String eventType,
             DocumentModel parent, DocumentModel child, NuxeoPrincipal principal)
             throws ClientException {
-        DocumentMessageProducer producer;
-        try {
-            producer = DocumentMessageProducerBusinessDelegate.getRemoteDocumentMessageProducer();
-        } catch (DocumentMessageProducerException e) {
-            throw new ClientException("notify event failed", e);
-        }
 
+        DocumentEventContext ctx = new DocumentEventContext(session, principal, docModel);
         Map<String, Serializable> props = new HashMap<String, Serializable>();
         if (parent != null) {
             props.put(CommentConstants.PARENT_COMMENT, parent);
@@ -349,15 +340,16 @@ public class CommentManagerImpl implements CommentManager {
         props.put(CommentConstants.COMMENT, child);
         props.put(CommentConstants.COMMENT_TEXT, (String) child.getProperty(
                 "comment", "text"));
+        props.put("category", CommentConstants.EVENT_COMMENT_CATEGORY);
+        ctx.setProperties(props);
+        Event event = ctx.event(eventType);
 
-        CoreEvent event = new CoreEventImpl(eventType, docModel, props,
-                principal, CommentConstants.EVENT_COMMENT_CATEGORY, eventType);
-
-        DocumentMessage msg = new DocumentMessageImpl(docModel, event);
-        if (producer != null) { // do not send if JMS not present
-            producer.produce(msg);
+        try {
+            EventProducer evtProducer = Framework.getService(EventProducer.class);
+            evtProducer.fireEvent(event);
+        } catch (Exception e) {
+            log.error("Error while send message", e);
         }
-
         // send also a synchronous Seam message so the CommentManagerActionBean
         // can rebuild its list
         // Events.instance().raiseEvent(eventType, docModel);
@@ -468,10 +460,11 @@ public class CommentManagerImpl implements CommentManager {
 
             NuxeoPrincipal author = getAuthor(comment);
             session.removeDocument(ref);
-            session.save();
 
-            notifyEvent(docModel, CommentEvents.COMMENT_REMOVED, null, comment,
+            notifyEvent(session, docModel, CommentEvents.COMMENT_REMOVED, null, comment,
                     author);
+
+            session.save();
 
         } catch (Throwable e) {
             log.error("failed to delete comment", e);
@@ -493,13 +486,13 @@ public class CommentManagerImpl implements CommentManager {
             DocumentModel parentDocModel = session.getDocument(parent.getRef());
             DocumentModel newComment = createComment(session, parentDocModel,
                     child);
-            session.save();
 
             UserManager userManager = Framework.getService(UserManager.class);
             NuxeoPrincipal principal = userManager.getPrincipal(author);
-            notifyEvent(docModel, CommentEvents.COMMENT_ADDED, parent,
+            notifyEvent(session, docModel, CommentEvents.COMMENT_ADDED, parent,
                     newComment, principal);
 
+            session.save();
             return newComment;
 
         } catch (Exception e) {

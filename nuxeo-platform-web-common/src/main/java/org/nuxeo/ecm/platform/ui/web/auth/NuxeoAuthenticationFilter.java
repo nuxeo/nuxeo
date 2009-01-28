@@ -43,14 +43,14 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.event.CoreEvent;
-import org.nuxeo.ecm.core.api.event.impl.CoreEventImpl;
+import org.nuxeo.ecm.core.api.SimplePrincipal;
+import org.nuxeo.ecm.core.event.EventContext;
+import org.nuxeo.ecm.core.event.EventProducer;
+import org.nuxeo.ecm.core.event.impl.EventContextImpl;
+import org.nuxeo.ecm.core.event.impl.InlineEventContext;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
-import org.nuxeo.ecm.platform.events.api.DocumentMessage;
-import org.nuxeo.ecm.platform.events.api.DocumentMessageProducer;
-import org.nuxeo.ecm.platform.events.api.impl.DocumentMessageImpl;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.LoginResponseHandler;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPluginLogoutExtension;
@@ -120,31 +120,31 @@ public class NuxeoAuthenticationFilter implements Filter {
                 return false;
             }
 
-            DocumentMessageProducer producer;
+            EventProducer evtProducer=null;
             try {
-                producer = Framework.getService(DocumentMessageProducer.class);
-            } catch (Exception e) {
-                log.error("Unable to get JMS message producer: "
+                evtProducer = Framework.getService(EventProducer.class);
+            }
+            catch (Exception e) {
+                log.error("Unable to get Event producer: "
                         + e.getMessage());
                 return false;
             }
 
-            // XXX : Catch all errors to be sure to logout
+            Principal principal = new SimplePrincipal(userInfo.getUserName());
 
             Map<String, Serializable> props = new HashMap<String, Serializable>();
-            DocumentModel dm = new DocumentMessageImpl();
-
             props.put("AuthenticationPlugin", userInfo.getAuthPluginName());
             props.put("LoginPlugin", userInfo.getLoginPluginName());
+            props.put("category", LOGIN_JMS_CATEGORY);
+            props.put("comment", comment);
 
-            Principal systemPrincipal = (Principal) loginContext.getSubject().getPrincipals().toArray()[0];
+            EventContext ctx = new InlineEventContext(principal, props);
 
-            CoreEvent event = new CoreEventImpl(eventId, dm, props,
-                    systemPrincipal, LOGIN_JMS_CATEGORY, comment);
-
-            DocumentMessage msg = new DocumentMessageImpl(dm, event);
-
-            producer.produce(msg);
+            try {
+                evtProducer.fireEvent(ctx.event(eventId));
+            } catch (ClientException e) {
+                log.error("Unable to send authentication event", e);
+            }
 
             return true;
         } finally {
