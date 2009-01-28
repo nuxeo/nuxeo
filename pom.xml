@@ -646,7 +646,7 @@
         <version>1.0.1</version>
         <scope>provided</scope>
       </dependency>
-      
+
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-jbossws-wrapper</artifactId>
@@ -779,7 +779,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>jboss-packaging-maven-plugin</artifactId>
-      	<extensions>true</extensions>
+        <extensions>true</extensions>
       </plugin>
     </plugins>
     <pluginManagement>
@@ -841,7 +841,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-nuxeo-plugin</artifactId>
-          <version>1.0.8</version>
+          <version>1.0.8.1</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -866,7 +866,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-dependency-plugin</artifactId>
-          <version>2.0</version>
+          <version>2.1</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -1291,6 +1291,9 @@
       <releases>
         <enabled>true</enabled>
       </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
     </pluginRepository>
     <pluginRepository>
       <id>public-snapshot</id>
@@ -1300,6 +1303,6 @@
         <enabled>true</enabled>
       </snapshots>
     </pluginRepository>
-  </pluginRepositories> 
- 
+  </pluginRepositories>
+
 </project>
