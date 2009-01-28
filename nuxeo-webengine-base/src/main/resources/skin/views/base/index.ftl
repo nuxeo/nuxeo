@@ -11,7 +11,7 @@ Welcome to Nuxeo WebEngine. Here are the available applications :
 <ul>
 
 <#list Engine.moduleManager.modules as module>
-  <#if module.name != "base" >  
+  <#if !module.headless >  
     <li><a href="${basePath}${module.path}">${module.name}</a></li>
   </#if>
 </#list>

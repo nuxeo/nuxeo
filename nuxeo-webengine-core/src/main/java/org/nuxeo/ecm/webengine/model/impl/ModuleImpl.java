@@ -97,6 +97,15 @@ public class ModuleImpl implements Module {
         }
         return tracker;
     }
+
+    /**
+     * Whether or not this module has a GUI and should be listed in available GUI module list.
+     * For example REST modules usually has no GUI 
+     * @return true if headless (no GUI is provided), false otherwise
+     */
+    public boolean isHeadless() {
+        return configuration.isHeadless;
+    }
     
     /**
      * 
