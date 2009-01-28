@@ -39,14 +39,31 @@ public class ExtensionDescriptorReader {
         xmap = new XMap();
         xmap.setValueFactory(ComponentName.class, new XValueFactory() {
             @Override
-            public Object getValue(Context context, String value) {
+            public Object deserialize(Context context, String value) {
                 return new ComponentName(value);
+            }
+
+            @Override
+            public String serialize(Context context, Object value) {
+                if ( value != null ) {
+                    return value.toString();
+                }
+                return null;
             }
         });
         xmap.setValueFactory(Version.class, new XValueFactory() {
+
             @Override
-            public Object getValue(Context context, String value) {
+            public Object deserialize(Context context, String value) {
                 return Version.parseString(value);
+            }
+
+            @Override
+            public String serialize(Context context, Object value) {
+                if ( value != null ) {
+                    return value.toString();
+                }
+                return null;
             }
         });
         xmap.register(ExtensionImpl.class);
