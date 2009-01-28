@@ -599,7 +599,6 @@ public class NXAuditEventsService extends DefaultComponent implements
     protected void logDocumentEvent(EntityManager em, String eventName,
             DocumentEventContext docCtx, Date eventDate) {
         DocumentModel document = docCtx.getSourceDocument();
-        DocumentRef target = docCtx.getDestination();
         Principal principal = docCtx.getPrincipal();
         Map<String, Serializable> properties = docCtx.getProperties();
 
