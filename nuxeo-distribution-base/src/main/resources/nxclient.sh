@@ -69,8 +69,11 @@ JAVA_OPTS="-Djava.rmi.server.RMIClassLoaderSpi=org.nuxeo.runtime.launcher.NuxeoR
 JAVA_OPTS="$JAVA_OPTS"
 #JAVA_OPTS="$JAVA_OPTS -Dorg.nuxeo.runtime.1.3.3.streaming.port=3233"
 
+CMD_ARGS="$@"
 DEV_OPTS=""
 if [ "x$1" = "x-dev" ] ; then
+# remove dev parameter
+    shift 1
     JAVA_OPTS="$JAVA_OPTS -Dorg.nuxeo.dev=true -Xdebug -Xrunjdwp:transport=dt_socket,address=127.0.0.1:8788,server=y,suspend=n"
     DEV_OPTS="-clear -console"
 fi 

@@ -1,14 +1,14 @@
 To launch the 'ls' command:
-./nxclient.sh ls -h localhost
+./nxclient.sh -console ls -h localhost
 
 To launch the interactive console:
-./nxclient.sh interactive -h localhost
+./nxclient.sh -console -h localhost
 
 to launch in debug mode:
-./nxclient.sh -debug interactive -h localhost
+./nxclient.sh -dev -console -h localhost
 
 in debug mode + clear classpath cache
-./nxclient.sh -debug -clear interactive -h localhost
+./nxclient.sh -dev -clear -console interactive -h localhost
 
-'./nxclient.sh interactive' is equivalent to './nxshell.sh'
+'./nxclient.sh -console' is equivalent to './nxshell.sh'
 
