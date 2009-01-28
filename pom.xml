@@ -63,6 +63,7 @@
     <module>nuxeo-platform-login</module>
     <module>nuxeo-platform-login-jboss</module>
     <module>nuxeo-platform-auth-web-jboss</module>
+    <module>nuxeo-platform-management</module>
     <module>nuxeo-platform-mimetype-api</module>
     <module>nuxeo-platform-mimetype-core</module>
     <module>nuxeo-platform-mimetype-facade</module>
