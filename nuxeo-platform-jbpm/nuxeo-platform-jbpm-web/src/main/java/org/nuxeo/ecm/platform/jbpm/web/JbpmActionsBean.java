@@ -398,59 +398,50 @@ public class JbpmActionsBean implements JbpmActions {
 
     }
 
-    public boolean isProcessStarted(String startTaskName)
-            throws ClientException {
-        if (startTaskName != null) {
+    protected TaskInstance getStartTask(String taskName) throws ClientException {
+        TaskInstance startTask = null;
+        if (taskName != null) {
             // get task with that name on current process
             ProcessInstance pi = getCurrentProcess();
             if (pi != null) {
                 List<TaskInstance> tasks = jbpmService.getTaskInstances(
                         currentProcess.getId(), null, new TaskListFilter(
-                                startTaskName));
+                                taskName));
                 if (tasks != null && !tasks.isEmpty()) {
-                    // consider first one found
-                    TaskInstance startTask = tasks.get(0);
-                    if (startTask.hasEnded()) {
-                        return true;
-                    }
-                } else {
-                    throw new ClientException(
-                            "No start task found on current process with name "
-                                    + startTaskName);
+                    // take first one found
+                    startTask = tasks.get(0);
                 }
             }
         }
-        return false;
+        if (startTask == null) {
+            throw new ClientException(
+                    "No start task found on current process with name "
+                            + taskName);
+        }
+        return null;
+    }
+
+    public boolean isProcessStarted(String startTaskName)
+            throws ClientException {
+        TaskInstance startTask = getStartTask(startTaskName);
+        return startTask.hasEnded();
     }
 
     public String startProcess(String startTaskName) throws ClientException {
-        if (startTaskName != null && getCanManageProcess()) {
-            // get task with that name on current process
-            ProcessInstance pi = getCurrentProcess();
-            if (pi != null) {
-                List<TaskInstance> tasks = jbpmService.getTaskInstances(
-                        currentProcess.getId(), null, new TaskListFilter(
-                                startTaskName));
-                if (tasks != null && !tasks.isEmpty()) {
-                    // consider first one found
-                    TaskInstance startTask = tasks.get(0);
-                    if (startTask.hasEnded()) {
-                        throw new ClientException("Process is already started");
-                    }
-                    // optim: pass participants as transient variables to avoid
-                    // lookup in the process instance
-                    Map<String, Serializable> transientVariables = new HashMap<String, Serializable>();
-                    transientVariables.put(
-                            JbpmService.VariableName.participants.name(),
-                            getCurrentVirtualTasks());
-                    jbpmService.endTask(startTask.getId(), null, null, null,
-                            transientVariables);
-                } else {
-                    throw new ClientException(
-                            "No start task found on current process with name "
-                                    + startTaskName);
-                }
+        if (getCanManageProcess()) {
+            TaskInstance startTask = getStartTask(startTaskName);
+            if (startTask.hasEnded()) {
+                throw new ClientException("Process is already started");
             }
+            // optim: pass participants as transient variables to avoid
+            // lookup in the process instance
+            Map<String, Serializable> transientVariables = new HashMap<String, Serializable>();
+            transientVariables.put(
+                    JbpmService.VariableName.participants.name(),
+                    getCurrentVirtualTasks());
+            jbpmService.endTask(startTask.getId(), null, null, null,
+                    transientVariables);
+            resetCurrentData();
         }
         return null;
     }
