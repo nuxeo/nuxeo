@@ -1,27 +1,13 @@
-<div xmlns:nxthemes="http://nuxeo.org/nxthemes"
-  xmlns:ui="http://java.sun.com/jsf/facelets"
-  xmlns:f="http://java.sun.com/jsf/core"
-  xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
-  xmlns:c="http://java.sun.com/jstl/core"
-  xmlns:nxu="http://nuxeo.org/nxweb/util"
-  class="closedContent">
+<div xmlns:ui="http://java.sun.com/jsf/facelets">
 
-  <h3>
-    <c:set var="label"
-      value="document_#{process.processDefinition.name}" />
-    <h:outputText value="#{messages[label]}" />
-  </h3>
-
-  <ui:decorate template="/process/show_tasks_table.xhtml">
+  <ui:include src="/process/show_process_title.xhtml">
     <ui:param name="process" value="#{process}" />
-  </ui:decorate>
+  </ui:include>
 
-  <h:panelGroup rendered="#{jbpmHelper.processHasRunningTask(process, 'validate')}">
-    <ui:decorate template="/process/variable/participants.xhtml">
-      <ui:param name="participants"
-        value="#{process.getContextInstance().getVariable('participants')}" />
-    </ui:decorate>
-  </h:panelGroup>
+  <ui:include src="/process/add_workflow_task.xhtml" />
+
+  <ui:include src="/process/show_review_tasks_table.xhtml" />
+
+  <ui:include src="/process/abandon_process.xhtml" />
 
 </div>

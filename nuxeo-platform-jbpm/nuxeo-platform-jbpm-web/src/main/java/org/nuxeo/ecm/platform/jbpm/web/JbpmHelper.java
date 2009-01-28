@@ -26,6 +26,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jbpm.graph.exe.ProcessInstance;
 import org.jbpm.taskmgmt.exe.TaskInstance;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.jbpm.JbpmService;
@@ -63,15 +64,6 @@ public class JbpmHelper {
         return null;
     }
 
-//    public String endTask(TaskInstance ti, PrincipalListManager plm)
-//            throws NuxeoJbpmException, Exception {
-//        Map<String, Serializable> variables = new HashMap<String, Serializable>();
-//        ArrayList<String> users = new ArrayList<String>(plm.getSelectedUsers());
-//        variables.put(JbpmService.VariableName.participants.name(), users);
-//        getJbpmService().endTask(ti.getId(), null, variables, null);
-//        return null;
-//    }
-
     public String updateProcessVariable(ProcessInstance pi,
             String variableName, Object variableValue)
             throws NuxeoJbpmException, Exception {
@@ -90,4 +82,13 @@ public class JbpmHelper {
         }
         return false;
     }
+
+    public boolean isTaskAssignedToUser(TaskInstance task, NuxeoPrincipal user)
+            throws ClientException {
+        if (task != null && user != null) {
+
+        }
+        return false;
+    }
+
 }

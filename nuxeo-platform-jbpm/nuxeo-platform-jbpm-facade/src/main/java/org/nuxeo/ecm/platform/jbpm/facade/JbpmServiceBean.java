@@ -169,14 +169,14 @@ public class JbpmServiceBean implements JbpmService {
         return service.getPermission(pi, action, dm, principal);
     }
 
-    public ProcessDefinition getLatestProcessDefinitionByName(String name)
+    public ProcessDefinition getProcessDefinitionByName(String name)
             throws NuxeoJbpmException {
-        return service.getLatestProcessDefinitionByName(name);
+        return service.getProcessDefinitionByName(name);
     }
 
-    public List<ProcessDefinition> getLatestProcessDefinitionByType(String type)
+    public List<ProcessDefinition> getProcessDefinitionsByType(String type)
             throws NuxeoJbpmException {
-        return service.getLatestProcessDefinitionByType(type);
+        return service.getProcessDefinitionsByType(type);
     }
 
 }

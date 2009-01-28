@@ -209,7 +209,7 @@ public interface JbpmService {
             DocumentModel dm, JbpmListFilter filter) throws NuxeoJbpmException;
 
     /**
-     * Return the latest process definition attached to a type.
+     * Return the latest process definitions attached to a type.
      *
      * Matching between type and process definition is done in the typeFilter
      * extension point of the service.
@@ -217,7 +217,7 @@ public interface JbpmService {
      * @param type the type.
      * @return A list of process definition.
      */
-    List<ProcessDefinition> getLatestProcessDefinitionByType(String type)
+    List<ProcessDefinition> getProcessDefinitionsByType(String type)
             throws NuxeoJbpmException;
 
     /**
@@ -226,7 +226,7 @@ public interface JbpmService {
      * @param name the Name.
      * @return the process definition.
      */
-    ProcessDefinition getLatestProcessDefinitionByName(String name)
+    ProcessDefinition getProcessDefinitionByName(String name)
             throws NuxeoJbpmException;
 
     /**

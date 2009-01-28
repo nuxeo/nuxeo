@@ -6,8 +6,5 @@
   <factory name="restrictToInitiator"
     value="#{org.nuxeo.ecm.platform.jbpm.web.restrictToInitiatorFilter}"
     scope="STATELESS" />
-  <component name="typeFilter"
-    class="org.nuxeo.ecm.platform.jbpm.core.filter.ConfigurableTypeFilter"
-    scope="APPLICATION" />
 
 </components>

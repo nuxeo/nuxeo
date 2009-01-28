@@ -25,7 +25,7 @@
   </node>
   <task-node name="validate node">
     <task name="validate">
-      <assignment actor-id="#{participant}" />
+      <assignment actor-id="#{participant.actors}" />
     </task>
     <transition name="valid" to="participants join" />
     <transition name="reject" to="participants join">

@@ -4,8 +4,7 @@
   <extension target="org.nuxeo.ecm.platform.jbpm.core.JbpmService"
     point="processDefinition">
 
-    <processDefinition path="process/parallel-review.xml"
-      deployer="ifChanged" />
+    <processDefinition path="process/parallel-review.xml" deployer="ifChanged" />
     <processDefinition path="process/validation-review.xml"
       deployer="ifChanged" />
 
@@ -14,8 +13,12 @@
   <extension target="org.nuxeo.ecm.platform.jbpm.core.JbpmService"
     point="securityPolicy">
 
-    <securityPolicy class="" for="review_parallel" />
-    <securityPolicy class="" for="review_approbation" />
+    <securityPolicy
+      class="org.nuxeo.ecm.platform.jbpm.core.service.DefaultJbpmSecurityPolicy"
+      for="review_parallel" />
+    <securityPolicy
+      class="org.nuxeo.ecm.platform.jbpm.core.service.DefaultJbpmSecurityPolicy"
+      for="review_approbation" />
 
   </extension>
 

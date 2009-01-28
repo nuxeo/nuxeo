@@ -611,7 +611,7 @@ public class JbpmServiceImpl implements JbpmService {
         });
     }
 
-    public ProcessDefinition getLatestProcessDefinitionByName(final String name)
+    public ProcessDefinition getProcessDefinitionByName(final String name)
             throws NuxeoJbpmException {
         return (ProcessDefinition) executeJbpmOperation(new JbpmOperation() {
             public Serializable run(JbpmContext context)
@@ -623,7 +623,7 @@ public class JbpmServiceImpl implements JbpmService {
     }
 
     @SuppressWarnings("unchecked")
-    public List<ProcessDefinition> getLatestProcessDefinitionByType(
+    public List<ProcessDefinition> getProcessDefinitionsByType(
             final String type) throws NuxeoJbpmException {
         return (List<ProcessDefinition>) executeJbpmOperation(new JbpmOperation() {
             public Serializable run(JbpmContext context)
@@ -634,7 +634,7 @@ public class JbpmServiceImpl implements JbpmService {
                 }
                 ArrayList<ProcessDefinition> pds = new ArrayList<ProcessDefinition>();
                 for (String name : pdsName) {
-                    pds.add(getLatestProcessDefinitionByName(name));
+                    pds.add(getProcessDefinitionByName(name));
                 }
                 return pds;
             }
