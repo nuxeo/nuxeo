@@ -119,10 +119,9 @@
     <dependency>
       <groupId>org.resteasy</groupId>
       <artifactId>jaxrs-api</artifactId>
-      <version>1.0-beta-8</version>
     </dependency>
 
-<!-- needed for distribution 
+<!-- needed for distribution
       <dependency>
          <groupId>javax.annotation</groupId>
          <artifactId>jsr250-api</artifactId>
@@ -159,9 +158,9 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-    	<groupId>org.nuxeo.ecm.platform</groupId>
-    	<artifactId>nuxeo-platform-audit-api</artifactId>
-    	<version>${nuxeo.platform.version}</version>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-audit-api</artifactId>
+      <version>${nuxeo.platform.version}</version>
     </dependency>
   </dependencies>
 
