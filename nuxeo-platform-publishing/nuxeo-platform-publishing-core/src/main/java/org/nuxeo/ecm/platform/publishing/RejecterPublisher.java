@@ -16,6 +16,8 @@
  */
 package org.nuxeo.ecm.platform.publishing;
 
+import java.util.List;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -37,7 +39,7 @@ public class RejecterPublisher extends AbstractPublisher implements Publisher {
     }
 
     public boolean isPublished(DocumentModel document) {
-        //if it is there, then it is published
+        // if it is there, then it is published
         return document != null;
     }
 
@@ -51,7 +53,8 @@ public class RejecterPublisher extends AbstractPublisher implements Publisher {
             throws PublishingException {
         CoreSession coreSession = null;
         try {
-            coreSession = getCoreSession(document.getRepositoryName(), principal);
+            coreSession = getCoreSession(document.getRepositoryName(),
+                    principal);
             boolean docPerm = coreSession.hasPermission(document.getRef(),
                     SecurityConstants.READ);
             boolean secPerm = coreSession.hasPermission(
@@ -76,9 +79,27 @@ public class RejecterPublisher extends AbstractPublisher implements Publisher {
         // rejected for no reason
     }
 
-    protected boolean isValidator(DocumentModel document, NuxeoPrincipal principal)
-            throws PublishingException {
+    protected boolean isValidator(DocumentModel document,
+            NuxeoPrincipal principal) throws PublishingException {
         return false;
     }
 
+    public void unpublish(DocumentModel document, NuxeoPrincipal principal)
+            throws PublishingException {
+        try {
+            CoreSession coreSession = getCoreSession(
+                    document.getRepositoryName(), principal);
+            coreSession.removeDocument(document.getRef());
+            coreSession.save();
+        } catch (ClientException e) {
+            throw new PublishingException(e);
+        }
+    }
+
+    public void unpublish(List<DocumentModel> documents,
+            NuxeoPrincipal principal) throws PublishingException {
+        for (DocumentModel document : documents) {
+            unpublish(document, principal);
+        }
+    }
 }

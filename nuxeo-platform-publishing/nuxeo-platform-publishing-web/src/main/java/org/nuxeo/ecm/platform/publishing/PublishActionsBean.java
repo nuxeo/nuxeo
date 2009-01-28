@@ -49,7 +49,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentModelTreeNode;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.event.CoreEvent;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
@@ -525,47 +524,16 @@ public class PublishActionsBean implements PublishActions, Serializable {
 
     // TODO move to protected
     public void unPublishDocument(DocumentModel proxy) throws ClientException {
-        documentManager.removeDocument(proxy.getRef());
-        documentManager.save();
-        try {
-            notifyEvent(
-                    org.nuxeo.ecm.webapp.helpers.EventNames.DOCUMENT_UNPUBLISHED,
-                    null, comment, null, navigationContext.getCurrentDocument());
-        } catch (Exception e) {
-            throw new ClientException(e);
-        }
+        publishingService.unpublish(proxy, currentUser);
     }
 
     // TODO move to protected
     public void unPublishDocuments(List<DocumentModel> documentsList)
             throws ClientException {
+        publishingService.unpublish(documentsList, currentUser);
         Object[] params = { documentsList.size() };
-        List<DocumentRef> documentsRef = new ArrayList<DocumentRef>();
-        for (DocumentModel document : documentsList) {
-            documentsRef.add(document.getRef());
-            if (document.isProxy() && document.getSourceId() != null) {
-                try {
-                    String proxySourceId = documentManager.getDocument(
-                            new IdRef(document.getSourceId())).getSourceId();
-                    notifyEvent(
-                            org.nuxeo.ecm.webapp.helpers.EventNames.DOCUMENT_UNPUBLISHED,
-                            null,
-                            null,
-                            null,
-                            documentManager.getDocument(new IdRef(proxySourceId)));
-
-                } catch (Exception e) {
-                    throw new ClientException(e);
-                }
-            }
-
-        }
-
         // remove from the current selection list
         documentsListsManager.resetWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION);
-
-        documentManager.removeDocuments(documentsRef.toArray(new DocumentRef[0]));
-        documentManager.save();
 
         facesMessages.add(FacesMessage.SEVERITY_INFO,
                 resourcesAccessor.getMessages().get("n_unpublished_docs"),

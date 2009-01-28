@@ -29,7 +29,7 @@
                   <c:set var="taskNameLabel" value="label.workflow.task.#{task.name}" />#{messages[taskNameLabel]}</h:column>
                 <h:column>
                   <f:facet name="header">#{messages['label.workflow.task.startDate']}</f:facet>
-                  <h:outputText value="#{task.create}" />
+                  <h:outputText value="#{task.startDate}" />
                 </h:column>
                 <h:column>
                   <f:facet name="header">#{messages['label.title']}</f:facet>

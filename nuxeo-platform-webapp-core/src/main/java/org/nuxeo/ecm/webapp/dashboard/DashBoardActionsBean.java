@@ -13,9 +13,6 @@
 
 package org.nuxeo.ecm.webapp.dashboard;
 
-import static org.jboss.seam.ScopeType.SESSION;
-import static org.jboss.seam.annotations.Install.FRAMEWORK;
-
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,6 +23,7 @@ import javax.ejb.Remove;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
@@ -62,8 +60,8 @@ import org.nuxeo.ecm.webapp.querymodel.QueryModelActions;
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 @Name("dashboardActions")
-@Scope(SESSION)
-@Install(precedence = FRAMEWORK)
+@Scope(ScopeType.CONVERSATION)
+@Install(precedence = Install.FRAMEWORK)
 public class DashBoardActionsBean implements DashboardActions {
 
     private static final long serialVersionUID = 7737098220471277412L;
@@ -116,7 +114,7 @@ public class DashBoardActionsBean implements DashboardActions {
 
     protected Collection<DashBoardItem> currentUserTasks;
 
-    @Factory("currentUserTasks")
+    @Factory(value = "currentUserTasks", scope = ScopeType.PAGE)
     public Collection<DashBoardItem> computeDashboardItems()
             throws ClientException {
         if (currentUserTasks == null) {
@@ -141,7 +139,7 @@ public class DashBoardActionsBean implements DashboardActions {
         return currentUserTasks;
     }
 
-    @Factory("currentUserProcesses")
+    @Factory(value = "currentUserProcesses", scope = ScopeType.PAGE)
     public Collection<DocumentProcessItem> computeDocumentProcessItems()
             throws ClientException {
         if (currentUserProcesses == null) {

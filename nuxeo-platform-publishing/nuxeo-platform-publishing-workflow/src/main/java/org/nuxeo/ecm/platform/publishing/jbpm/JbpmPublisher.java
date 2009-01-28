@@ -24,12 +24,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.jboss.seam.core.Events;
 import org.jbpm.taskmgmt.exe.TaskInstance;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.platform.jbpm.JbpmEventNames;
 import org.nuxeo.ecm.platform.jbpm.JbpmService;
 import org.nuxeo.ecm.platform.jbpm.NuxeoJbpmException;
 import org.nuxeo.ecm.platform.publishing.AbstractPublisher;
@@ -53,7 +55,7 @@ public class JbpmPublisher extends AbstractPublisher implements Publisher {
     public static String ACL_NAME = "org.nuxeo.ecm.platform.publishing.jbpm.JbpmPublisher";
 
     public static enum PublishingEvent {
-        documentPublished, documentSubmittedForPublication, documentPublicationRejected, documentPublicationApproved, documentWaitingPublication
+        documentPublished, documentSubmittedForPublication, documentPublicationRejected, documentPublicationApproved, documentWaitingPublication, documentUnpublished
     };
 
     private JbpmService jbpmService;
@@ -186,6 +188,7 @@ public class JbpmPublisher extends AbstractPublisher implements Publisher {
         ti.setName(TASK_NAME);
         ti.setCreate(new Date());
         getJbpmService().saveTaskInstances(Collections.singletonList(ti));
+        Events.instance().raiseEvent(JbpmEventNames.WORKFLOW_TASK_START);
     }
 
     protected void restrictPermission(DocumentModel newProxy,
@@ -236,7 +239,8 @@ public class JbpmPublisher extends AbstractPublisher implements Publisher {
             endTask(currentDocument, currentUser);
             notifyEvent(PublishingEvent.documentPublicationApproved,
                     currentDocument, session);
-            notifyEvent(PublishingEvent.documentPublished, currentDocument, session);
+            notifyEvent(PublishingEvent.documentPublished, currentDocument,
+                    session);
         } catch (ClientException e) {
             throw new PublishingException(e);
         } finally {
@@ -253,6 +257,8 @@ public class JbpmPublisher extends AbstractPublisher implements Publisher {
                 if (ti.getName().equals(TASK_NAME)) {
                     ti.end();
                     jbpmService.saveTaskInstances(Collections.singletonList(ti));
+                    Events.instance().raiseEvent(
+                            JbpmEventNames.WORKFLOW_TASK_COMPLETED);
                     return;
                 }
             }
@@ -299,6 +305,28 @@ public class JbpmPublisher extends AbstractPublisher implements Publisher {
             deleter.runUnrestricted();
         } catch (ClientException e) {
             throw new PublishingException(e);
+        }
+    }
+
+    public void unpublish(DocumentModel doc, NuxeoPrincipal principal)
+            throws PublishingException {
+        CoreSession coreSession = null;
+        try {
+            coreSession = getCoreSession(doc.getRepositoryName(), principal);
+            notifyEvent(PublishingEvent.documentUnpublished, doc, coreSession);
+            removeProxy(doc, coreSession);
+            endTask(doc, principal);// does nothing if none
+        } catch (ClientException e) {
+            throw new PublishingException(e);
+        } finally {
+            CoreInstance.getInstance().close(coreSession);
+        }
+    }
+
+    public void unpublish(List<DocumentModel> documents,
+            NuxeoPrincipal principal) throws PublishingException {
+        for (DocumentModel document : documents) {
+            unpublish(document, principal);
         }
     }
 

@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.platform.publishing;
 
+import java.util.List;
+
 import javax.annotation.PostConstruct;
 import javax.ejb.Local;
 import javax.ejb.Remote;
@@ -101,6 +103,16 @@ public class PublishingServiceBean implements PublishingService {
     public void validatorRejectPublication(DocumentModel doc,
             NuxeoPrincipal principal, String comment) throws PublishingException {
         service.validatorRejectPublication(doc, principal, comment);
+    }
+
+    public void unpublish(DocumentModel document, NuxeoPrincipal principal)
+            throws PublishingException {
+        service.unpublish(document, principal);
+    }
+
+    public void unpublish(List<DocumentModel> documents,
+            NuxeoPrincipal principal) throws PublishingException {
+        service.unpublish(documents, principal);
     }
 
 }

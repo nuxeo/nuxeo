@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.platform.publishing;
 
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -155,6 +157,16 @@ public class PublishingServiceImpl extends DefaultComponent implements
 
     public boolean isPublished(DocumentModel proxy) throws PublishingException {
         return publisher.isPublished(proxy);
+    }
+
+    public void unpublish(DocumentModel document, NuxeoPrincipal principal)
+            throws PublishingException {
+        publisher.unpublish(document, principal);
+    }
+
+    public void unpublish(List<DocumentModel> documents,
+            NuxeoPrincipal principal) throws PublishingException {
+        publisher.unpublish(documents, principal);
     }
 
 }

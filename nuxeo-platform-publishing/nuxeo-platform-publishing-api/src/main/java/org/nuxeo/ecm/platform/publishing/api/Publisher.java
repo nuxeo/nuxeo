@@ -16,15 +16,22 @@
  */
 package org.nuxeo.ecm.platform.publishing.api;
 
+import java.util.List;
+
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-
 
 /**
  * @author arussel
  *
  */
 public interface Publisher {
+
+    void unpublish(DocumentModel document, NuxeoPrincipal principal)
+            throws PublishingException;
+
+    void unpublish(List<DocumentModel> documents, NuxeoPrincipal principal)
+            throws PublishingException;
 
     void submitToPublication(DocumentModel document,
             DocumentModel placeToPublishTo, NuxeoPrincipal principal)

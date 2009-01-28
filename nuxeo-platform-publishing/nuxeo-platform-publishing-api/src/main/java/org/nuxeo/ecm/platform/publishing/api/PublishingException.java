@@ -19,11 +19,13 @@
 
 package org.nuxeo.ecm.platform.publishing.api;
 
+import org.nuxeo.ecm.core.api.ClientException;
+
 /**
  * Publishing related exception.
  *
  */
-public class PublishingException extends Exception {
+public class PublishingException extends ClientException {
 
     private static final long serialVersionUID = 1L;
 
