@@ -8,5 +8,4 @@ Provide-Package: org.nuxeo.ecm.webengine.wiki
 Require-Bundle: org.nuxeo.ecm.webengine.core,
  org.nuxeo.ecm.platform.audit.core
 Nuxeo-Require: org.nuxeo.ecm.webengine.core
-Nuxeo-Component: OSGI-INF/admin-deployment-contrib.xml,
- OSGI-INF/audit-contrib.xml
+Nuxeo-Component: OSGI-INF/audit-contrib.xml
