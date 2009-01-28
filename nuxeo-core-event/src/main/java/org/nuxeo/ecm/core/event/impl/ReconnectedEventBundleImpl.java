@@ -222,4 +222,8 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
     public boolean comesFromJMS() {
         return false;
     }
+
+    public boolean containsEventName(String eventName) {
+        return sourceEventBundle.containsEventName(eventName);
+    }
 }

@@ -109,4 +109,16 @@ public class EventBundleImpl implements EventBundle {
         return vmid;
     }
 
+    public boolean containsEventName(String eventName) {
+        if (eventName==null) {
+            return false;
+        }
+        for (Event event : events) {
+            if (eventName.equals(event.getName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }
