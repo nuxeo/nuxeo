@@ -84,7 +84,7 @@
     <module>nuxeo-platform-relations-jena-plugin</module>
     <module>nuxeo-platform-relations-web</module>
     <module>nuxeo-platform-relations-facade</module>
-    <module>nuxeo-platform-relations-search</module>
+    <!--<module>nuxeo-platform-relations-search</module>-->
     <module>nuxeo-platform-scheduler-core</module>
     <module>nuxeo-platform-search-api</module>
     <module>nuxeo-platform-search-backend-core</module>

@@ -56,9 +56,6 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.search.api.client.query.QueryException;
 import org.nuxeo.ecm.core.search.api.client.querymodel.QueryModel;
 import org.nuxeo.ecm.platform.actions.Action;
-import org.nuxeo.ecm.platform.events.api.DocumentMessageProducer;
-import org.nuxeo.ecm.platform.events.api.delegate.DocumentMessageProducerBusinessDelegate;
-import org.nuxeo.ecm.platform.events.api.impl.MassLifeCycleTransitionMessage;
 import org.nuxeo.ecm.platform.ui.web.api.ResultsProviderFarm;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.ui.web.model.SelectDataModel;
@@ -102,8 +99,6 @@ public class DeleteActionsBean extends InputController implements
     private static final String DELETE_TRANSITION = "delete";
 
     private static final String UNDELETE_TRANSITION = "undelete";
-
-    private transient DocumentMessageProducer docMsgProducer;
 
     @In(create = true, required = false)
     private transient CoreSession documentManager;
@@ -531,6 +526,7 @@ public class DeleteActionsBean extends InputController implements
                         + " Life Cycle state " + DELETE_TRANSITION + " is not available");
             }
             // JMS message preparation and sending
+            /*
             if (document.isFolder()) {
 
                 DocumentRef parentRef = document.getRef();
@@ -547,17 +543,10 @@ public class DeleteActionsBean extends InputController implements
                 } catch (Exception e) {
                     throw new ClientException(e);
                 }
-            }
+            }*/
         }
     }
 
-    private DocumentMessageProducer getDocumentMessageProducer()
-            throws Exception {
-        if (docMsgProducer == null) {
-            docMsgProducer = DocumentMessageProducerBusinessDelegate.getRemoteDocumentMessageProducer();
-        }
-        return docMsgProducer;
-    }
 
     public String undeleteSelection() throws ClientException {
         if (!documentsListsManager.isWorkingListEmpty(DocumentsListsManager.CURRENT_DOCUMENT_TRASH_SELECTION)) {
@@ -665,6 +654,7 @@ public class DeleteActionsBean extends InputController implements
             }
 
             // restore children
+            /*
             if (document.isFolder()) {
 
                 DocumentRef parentRef = document.getRef();
@@ -681,7 +671,7 @@ public class DeleteActionsBean extends InputController implements
                 } catch (Exception e) {
                     throw new ClientException(e);
                 }
-            }
+            }*/
         }
     }
 

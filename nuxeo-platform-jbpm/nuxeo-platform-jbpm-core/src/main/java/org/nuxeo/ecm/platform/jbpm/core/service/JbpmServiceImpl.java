@@ -587,7 +587,7 @@ public class JbpmServiceImpl implements JbpmService {
             public Serializable run(JbpmContext context)
                     throws NuxeoJbpmException {
                 Session session = context.getSession();
-                session.update(pi);
+                session.saveOrUpdate(pi);
                 return null;
             }
 
