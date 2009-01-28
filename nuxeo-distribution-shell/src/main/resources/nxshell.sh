@@ -1,4 +1,4 @@
 #!/bin/sh
 
-exec ./nxclient.sh interactive "$@"
+exec ./nxclient.sh -console "$@"
 

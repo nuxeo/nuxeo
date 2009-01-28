@@ -12,10 +12,6 @@
     <directory>src/main/resources/platform</directory>
   </fileSet>
 
-  <fileSet id="platform-audit-template" profile="audit">
-    <directory>src/main/resources/audit</directory>
-  </fileSet>
-
   <fileSet id="webengine-template" profile="webengine">
     <directory>src/main/resources/webengine</directory>
   </fileSet>
@@ -72,18 +68,8 @@
 
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-versioning-api"/>
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-versioning-core"/>
-    </artifacts>
-  </artifactSet>
-
-  <artifactSet id="platform-audit-bundles" profile="audit">
-    <artifacts>
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-audit-api"/>
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-audit-core"/>
-    </artifacts>
-  </artifactSet>
-
-  <artifactSet id="platform-el-bundles" profile="el">
-    <artifacts>
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-el"/>
     </artifacts>
   </artifactSet>
@@ -95,6 +81,8 @@
       <artifact group="org.nuxeo.ecm.webengine" name="nuxeo-webengine-admin" version="${nuxeo.webengine.version}"/>
       <artifact group="org.nuxeo.ecm.webengine" name="nuxeo-webengine-ui" version="${nuxeo.webengine.version}"/>
       <artifact group="org.nuxeo.ecm.webengine" name="nuxeo-webengine-wiki" version="${nuxeo.webengine.version}"/>
+      <artifact group="org.nuxeo.ecm.webengine" name="nuxeo-webengine-base" version="${nuxeo.webengine.version}"/>
+      <artifact group="org.nuxeo.ecm.webengine" name="nuxeo-webengine-sites" version="${nuxeo.webengine.version}"/>
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-rendering" version="${nuxeo.platform.version}"/>
     </artifacts>
   </artifactSet>
@@ -178,8 +166,6 @@
   <assemble>
     <set>bundles</set>
     <set>platform-bundles</set>
-    <set>platform-el-bundles</set>
-    <set>platform-audit-bundles</set>
     <set>webengine-bundles</set>
     <set>theme-bundles</set>
     <outputFile>bundles</outputFile>
