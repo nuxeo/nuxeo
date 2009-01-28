@@ -64,6 +64,10 @@ public class ModuleConfiguration implements Cloneable {
     @XNode("@name")
     public String name;
 
+    @XNode("@headless")
+    public boolean isHeadless;
+    
+    
     @XNode("title")
     public String title;
         
@@ -186,5 +190,9 @@ public class ModuleConfiguration implements Cloneable {
     public boolean isLoaded() {
         return module != null;
     }
-    
+
+    public boolean isHeadless() {
+        return isHeadless;        
+    }
+
 }
