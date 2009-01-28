@@ -16,15 +16,12 @@
     target="org.nuxeo.ecm.platform.versioning.service.VersioningService"
     point="rules">
 
-    <!-- this rule seems obsolete (?) -->
-    <versioningRuleWF name="sampleWFRule" workflowStateInitial="assigned"
-      workflowStateFinal="inprogress" action="inc_minor">
-    </versioningRuleWF>
-
-    <!-- this rule seems obsolete (?) -->
+    <!-- rule to point to the worklow variable and default to configurable
+      options is it decides to ask_user -->
     <versioningRuleEdit name="sampleEditRuleReview" action="query_workflow"
       lifecycleState="review">
-
+      <option value="no_inc" default="true" />
+      <option value="inc_minor" />
     </versioningRuleEdit>
 
     <versioningRuleEdit name="sampleEditRuleProject" action="ask_user"
