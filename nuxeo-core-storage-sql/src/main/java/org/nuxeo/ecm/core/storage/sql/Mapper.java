@@ -324,10 +324,6 @@ public class Mapper {
                     int t = column.getSqlType();
                     if (t != sqlType) {
                         // type in database is different...
-                        if (t == Column.ExtendedTypes.FULLTEXT) {
-                            // fulltext, keep our extend type info in the column
-                            continue;
-                        }
                         // record the actual type
                         column.setSqlType(sqlType);
                         // some databases are known to change requested types

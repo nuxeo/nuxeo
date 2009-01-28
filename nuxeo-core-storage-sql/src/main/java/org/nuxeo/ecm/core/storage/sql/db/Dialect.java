@@ -54,12 +54,6 @@ public class Dialect {
 
     protected final boolean storesUpperCaseIdentifiers;
 
-    protected final String fulltextAnalyzer;
-
-    private static final String DEFAULT_FULLTEXT_ANALYSER_PG = "english";
-
-    private static final String DEFAULT_FULLTEXT_ANALYSER_H2 = "org.apache.lucene.analysis.standard.StandardAnalyzer";
-
     /**
      * Creates a {@code Dialect} by connecting to the datasource to check what
      * database is used.
@@ -93,17 +87,6 @@ public class Dialect {
             }
         }
         dialectName = dialect.getClass().getSimpleName();
-        String analyzer = repositoryDescriptor.fulltextAnalyzer;
-        if (analyzer == null) {
-            // suitable defaults
-            if (dialect instanceof PostgreSQLDialect) {
-                analyzer = DEFAULT_FULLTEXT_ANALYSER_PG;
-            }
-            if (dialect instanceof H2Dialect) {
-                analyzer = DEFAULT_FULLTEXT_ANALYSER_H2;
-            }
-        }
-        fulltextAnalyzer = analyzer;
     }
 
     public String getDatabaseName() {
@@ -157,29 +140,10 @@ public class Dialect {
     }
 
     public String getTypeName(int sqlType, int length, int precision, int scale) {
-        if (sqlType == Column.ExtendedTypes.FULLTEXT) {
-            if (dialect instanceof PostgreSQLDialect) {
-                return "tsvector";
-            }
-            sqlType = Types.CLOB;
-        }
         if (dialect instanceof DerbyDialect && sqlType == Types.CLOB) {
             return "clob"; // different from DB2Dialect
         }
         return dialect.getTypeName(sqlType, length, precision, scale);
-    }
-
-    /**
-     * Gets the type of a fulltext column has known by JDBC.
-     * <p>
-     * This is used for setNull.
-     */
-    public int getFulltextType() {
-        // see also getTypeName
-        if (dialect instanceof PostgreSQLDialect) {
-            return Types.OTHER;
-        }
-        return Types.CLOB;
     }
 
     /**
@@ -193,20 +157,7 @@ public class Dialect {
      * @return the expression containing a free variable
      */
     public String getFreeVariableSetterForType(int type) {
-        if (type == Column.ExtendedTypes.FULLTEXT &&
-                dialect instanceof PostgreSQLDialect) {
-            return "NX_TO_TSVECTOR(?)";
-        }
         return "?";
-    }
-
-    /**
-     * Gets the fulltext analyzer configured.
-     * <p>
-     * For PostgreSQL, it's a text search configuration name.
-     */
-    public String getFulltextAnalyzer() {
-        return fulltextAnalyzer;
     }
 
     public String getNoColumnsInsertString() {
@@ -325,68 +276,6 @@ public class Dialect {
             sql += " = 1";
         }
         return sql;
-    }
-
-    /**
-     * Checks if the fulltext table is needed in queries.
-     * <p>
-     * This won't be the case if {@link #getFulltextMatch} returns a join that
-     * already does the job.
-     */
-    public boolean isFulltextTableNeeded() {
-        return !(dialect instanceof H2Dialect);
-    }
-
-    /**
-     * Gets the information needed to do a a fulltext match, either with a
-     * direct expression in the WHERE clause, or using a join with an additional
-     * table.
-     * <p>
-     * Returns a String array with:
-     * <ul>
-     * <li>the expression to join with, or {@code null}; this expression has one
-     * % parameters for the table alias,</li>
-     * <li>a potential query paramenter for it,</li>
-     * <li>the where expression to add to the WHERE clause (may be {@code null}
-     * if none is required when a join is enough); this expression has one %
-     * parameters for the table alias,</li>
-     * <li>a potential query paramenter for it.</li>
-     * </ul>
-     *
-     * @param ftColumn the column containing the fulltext to match
-     * @param mainColumn the column with the main id, for joins
-     * @param fulltextQuery the query to do
-     * @return a String array with the table join expression, the join param,
-     *         the where expression and the where parm
-     *
-     */
-    public String[] getFulltextMatch(Column ftColumn, Column mainColumn,
-            String fulltextQuery) {
-        if (dialect instanceof DerbyDialect) {
-            String qname = ftColumn.getFullQuotedName();
-            if (ftColumn.getSqlType() == Types.CLOB) {
-                String colFmt = getClobCast(false);
-                if (colFmt != null) {
-                    qname = String.format(colFmt, qname, Integer.valueOf(255));
-                }
-            }
-            String whereExpr = String.format("NX_CONTAINS(%s, ?) = 1", qname);
-            return new String[] { null, null, whereExpr, fulltextQuery };
-        }
-        if (dialect instanceof H2Dialect) {
-            String queryTable = String.format("NXFT_SEARCH('%s', '%s', ?)",
-                    "PUBLIC", ftColumn.getTable().getName());
-            String whereExpr = String.format("%%s.KEY = %s",
-                    mainColumn.getFullQuotedName());
-            return new String[] { (queryTable + " %s"), fulltextQuery,
-                    whereExpr, null };
-        }
-        if (dialect instanceof PostgreSQLDialect) {
-            String whereExpr = String.format("NX_CONTAINS(%s, ?)",
-                    ftColumn.getFullQuotedName());
-            return new String[] { null, null, whereExpr, fulltextQuery };
-        }
-        throw new UnsupportedOperationException();
     }
 
     /**

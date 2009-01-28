@@ -40,22 +40,6 @@ import org.nuxeo.ecm.core.storage.sql.PropertyType;
  */
 public class Column implements Serializable {
 
-    /**
-     * Extended (internal) types beyond the standard JDBC ones.
-     */
-    public static class ExtendedTypes {
-
-        private ExtendedTypes() {
-        }
-
-        /** A column holding full text information. */
-        public static final int FULLTEXT = Types.OTHER + 10;
-
-        public static boolean hasElement(int type) {
-            return type == FULLTEXT;
-        }
-    }
-
     private static final long serialVersionUID = 1L;
 
     protected final Table table;
@@ -154,7 +138,7 @@ public class Column implements Serializable {
     }
 
     public boolean isOpaque() {
-        return ExtendedTypes.hasElement(sqlType);
+        return false;
     }
 
     public void setSqlType(int sqlType) {
@@ -242,10 +226,7 @@ public class Column implements Serializable {
     public void setToPreparedStatement(PreparedStatement ps, int index,
             Serializable value) throws SQLException {
         if (value == null) {
-            ps.setNull(
-                    index,
-                    sqlType == ExtendedTypes.FULLTEXT ? dialect.getFulltextType()
-                            : sqlType);
+            ps.setNull(index, sqlType);
             return;
         }
         switch (sqlType) {
@@ -280,9 +261,6 @@ public class Column implements Serializable {
             Calendar cal = (Calendar) value;
             Timestamp ts = new Timestamp(cal.getTimeInMillis());
             ps.setTimestamp(index, ts, cal); // cal passed for timezone
-            return;
-        case ExtendedTypes.FULLTEXT:
-            ps.setString(index, (String) value);
             return;
         default:
             throw new SQLException("Unhandled SQL type: " + sqlType);

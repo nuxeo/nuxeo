@@ -116,7 +116,6 @@ public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
         properties.put("User", SQLBackendHelper.PG_DATABASE_OWNER);
         properties.put("Password", SQLBackendHelper.PG_DATABASE_PASSWORD);
         descriptor.properties = properties;
-        descriptor.fulltextAnalyzer = "english";
         return descriptor;
     }
 

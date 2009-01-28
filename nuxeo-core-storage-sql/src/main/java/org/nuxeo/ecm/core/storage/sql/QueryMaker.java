@@ -437,8 +437,6 @@ public class QueryMaker {
         }
         if (info.wherePredicate != null) {
             info.wherePredicate.accept(whereBuilder);
-            // JOINs added by fulltext queries
-            joins.addAll(whereBuilder.joins);
             selectParams.addAll(0, whereBuilder.joinParams);
             // WHERE clause
             String where = whereBuilder.buf.toString();
@@ -562,10 +560,6 @@ public class QueryMaker {
         if (NXQL.ECM_LIFECYCLESTATE.equals(name)) {
             return database.getTable(model.MISC_TABLE_NAME).getColumn(
                     model.MISC_LIFECYCLE_STATE_KEY);
-        }
-        if (NXQL.ECM_FULLTEXT.equals(name)) {
-            throw new QueryMakerException(NXQL.ECM_FULLTEXT +
-                    " must be used as left-hand operand");
         }
         if (NXQL.ECM_VERSIONLABEL.equals(name)) {
             return database.getTable(model.VERSION_TABLE_NAME).getColumn(
@@ -816,13 +810,6 @@ public class QueryMaker {
                 props.add(model.VERSION_LABEL_PROP);
                 return;
             }
-            if (NXQL.ECM_FULLTEXT.equals(name)) {
-                if (sqlInfo.dialect.isFulltextTableNeeded()) {
-                    // we only use this for its fragment name
-                    props.add(model.FULLTEXT_SIMPLETEXT_PROP);
-                }
-                return;
-            }
             if (name.startsWith(NXQL.ECM_PREFIX)) {
                 throw new QueryMakerException("Unknown field: " + name);
             }
@@ -864,8 +851,6 @@ public class QueryMaker {
 
         public final StringBuilder buf = new StringBuilder();
 
-        public final List<String> joins = new LinkedList<String>();
-
         public final List<String> joinParams = new LinkedList<String>();
 
         public final List<Serializable> whereParams = new LinkedList<Serializable>();
@@ -873,8 +858,6 @@ public class QueryMaker {
         public boolean allowArray;
 
         private boolean inOrderBy;
-
-        private int ftJoinNumber;
 
         @Override
         public void visitQuery(SQLQuery node) {
@@ -911,8 +894,6 @@ public class QueryMaker {
                 visitExpressionIsProxy(node);
             } else if (NXQL.ECM_ISVERSION.equals(name)) {
                 visitExpressionIsVersion(node);
-            } else if (NXQL.ECM_FULLTEXT.equals(name)) {
-                visitExpressionFulltext(node);
             } else if ((op == Operator.EQ || op == Operator.NOTEQ ||
                     op == Operator.IN || op == Operator.NOTIN) &&
                     name != null && !name.startsWith(NXQL.ECM_PREFIX)) {
@@ -1030,54 +1011,6 @@ public class QueryMaker {
             buf.append(database.getTable(model.VERSION_TABLE_NAME).getColumn(
                     model.MAIN_KEY).getFullQuotedName());
             buf.append(bool ? " IS NOT NULL" : " IS NULL");
-        }
-
-        protected void visitExpressionFulltext(Expression node) {
-            if (node.operator != Operator.EQ && node.operator != Operator.LIKE) {
-                throw new QueryMakerException(NXQL.ECM_FULLTEXT +
-                        " requires = or LIKE operator");
-            }
-            if (!(node.rvalue instanceof StringLiteral)) {
-                throw new QueryMakerException(NXQL.ECM_FULLTEXT +
-                        " requires literal string as right argument");
-            }
-            String fulltextQuery = ((StringLiteral) node.rvalue).value;
-            // TODO parse query language for fulltext
-            // for now just a sequence of words
-            Column ftColumn = database.getTable(model.FULLTEXT_TABLE_NAME).getColumn(
-                    model.FULLTEXT_FULLTEXT_KEY);
-            Column mainColumn = joinedHierTable.getColumn(model.MAIN_KEY);
-            String[] info = sqlInfo.dialect.getFulltextMatch(ftColumn,
-                    mainColumn, fulltextQuery);
-            String joinExpr = info[0];
-            String joinParam = info[1];
-            String whereExpr = info[2];
-            String whereParam = info[3];
-            String joinAlias = getFtJoinAlias();
-            if (joinExpr != null) {
-                // specific join table (H2)
-                joins.add(String.format(joinExpr, joinAlias));
-                if (joinParam != null) {
-                    joinParams.add(joinParam);
-                }
-            }
-            if (whereExpr != null) {
-                buf.append(String.format(whereExpr, joinAlias));
-                if (whereParam != null) {
-                    whereParams.add(whereParam);
-                }
-            } else {
-                buf.append("1=1"); // we still need an expression in the tree
-            }
-        }
-
-        private String getFtJoinAlias() {
-            ftJoinNumber++;
-            if (ftJoinNumber == 1) {
-                return "_FT";
-            } else {
-                return "_FT" + ftJoinNumber;
-            }
         }
 
         @Override
