@@ -125,7 +125,7 @@ public class JbpmServiceImpl implements JbpmService {
                     if (filter != null) {
                         tis = filter.filter(context, null, tis, currentUser);
                     }
-
+                    eagerLoadPooledActor(tis);
                     // remove duplicates
                     HashSet<TaskInstance> setTis = new HashSet<TaskInstance>();
                     setTis.addAll(tis);
@@ -136,6 +136,12 @@ public class JbpmServiceImpl implements JbpmService {
             });
         } catch (Exception e) {
             throw new NuxeoJbpmException(e);
+        }
+    }
+
+    private void eagerLoadPooledActor(Collection<TaskInstance> tis) {
+        for (TaskInstance ti : tis) {
+            ti.getPooledActors().size();
         }
     }
 
@@ -353,6 +359,7 @@ public class JbpmServiceImpl implements JbpmService {
                         String repoId = (String) ti.getVariable(JbpmService.VariableName.documentRepositoryName.name());
                         if (docId.equals(dm.getId())
                                 && repoId.equals(dm.getRepositoryName())) {
+                            ti.getPooledActors().size();
                             result.add(ti);
                         }
                     } else if (!donePi.contains(pi.getId())) {
@@ -366,6 +373,7 @@ public class JbpmServiceImpl implements JbpmService {
                             useDocument.add(pi.getId());
                         }
                         if (useDocument.contains(pi.getId())) {
+                            ti.getPooledActors().size();
                             result.add(ti);
                         }
                     }
@@ -492,6 +500,7 @@ public class JbpmServiceImpl implements JbpmService {
                         processInstanceId).getTaskMgmtInstance().getTaskInstances();
                 ArrayList<TaskInstance> result = new ArrayList<TaskInstance>();
                 for (TaskInstance ti : tis) {
+                    ti.getPooledActors().size();
                     result.add(ti);
                 }
                 return result;
@@ -581,7 +590,7 @@ public class JbpmServiceImpl implements JbpmService {
             @SuppressWarnings("unchecked")
             public Serializable run(JbpmContext context)
                     throws NuxeoJbpmException {
-                if(principal != null) {
+                if (principal != null) {
                     context.setActorId(principal.getName());
                 }
                 ProcessInstance pi = context.getProcessInstance(processId);
