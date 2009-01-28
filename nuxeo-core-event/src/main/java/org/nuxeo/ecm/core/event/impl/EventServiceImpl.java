@@ -121,6 +121,10 @@ public class EventServiceImpl implements EventService {
             if (!b.isTransacted() && event.isCommitEvent()) {
                 transactionCommited();
             }
+        } else {
+            EventBundleImpl b = new EventBundleImpl();
+            b.push(event);
+            fireEventBundle(b);
         }
         String ename = event.getName();
         for (Object obj : ar) {
