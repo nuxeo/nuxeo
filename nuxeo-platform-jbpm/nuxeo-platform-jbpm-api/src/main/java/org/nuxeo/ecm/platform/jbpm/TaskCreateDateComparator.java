@@ -29,13 +29,13 @@ import org.jbpm.taskmgmt.exe.TaskInstance;
  *
  * @author Anahide Tchertchian
  */
-public class TaskStartDateComparator implements Comparator<TaskInstance> {
+public class TaskCreateDateComparator implements Comparator<TaskInstance> {
 
     private static final long serialVersionUID = 1L;
 
     public int compare(TaskInstance t1, TaskInstance t2) {
-        Date v1 = t1.getStart();
-        Date v2 = t2.getStart();
+        Date v1 = t1.getCreate();
+        Date v2 = t2.getCreate();
         int cmp = 0;
         boolean useHash = false;
         if (v1 == null && v2 == null) {

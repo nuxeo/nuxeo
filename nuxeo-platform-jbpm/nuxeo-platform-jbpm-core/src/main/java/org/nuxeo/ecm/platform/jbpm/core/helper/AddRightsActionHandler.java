@@ -37,8 +37,6 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.jbpm.AbstractJbpmHandlerHelper;
 import org.nuxeo.ecm.platform.jbpm.NuxeoJbpmException;
 import org.nuxeo.ecm.platform.jbpm.VirtualTaskInstance;
-import org.nuxeo.ecm.platform.usermanager.UserManager;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * Action handler that add READ rights to given participants.
@@ -50,16 +48,10 @@ public class AddRightsActionHandler extends AbstractJbpmHandlerHelper {
 
     private static final long serialVersionUID = 1L;
 
-    private String item;
-
     private String list;
 
-    protected NuxeoPrincipal getNuxeoPrincipal(String user) throws Exception {
-        UserManager userManager = Framework.getService(UserManager.class);
-        return userManager.getPrincipal(user);
-    }
-
-    // XXX open a system session to set rights: running a workflow only requires "write"
+    // XXX open a system session to set rights: running a workflow only requires
+    // "write"
     protected CoreSession getSystemSession() throws Exception {
         String repositoryName = getDocumentRepositoryName();
         try {
@@ -105,7 +97,9 @@ public class AddRightsActionHandler extends AbstractJbpmHandlerHelper {
                 if (loginContext != null) {
                     loginContext.logout();
                 }
-                closeCoreSession(session);
+                if (session != null) {
+                    closeCoreSession(session);
+                }
             }
         }
         executionContext.getToken().signal();

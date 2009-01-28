@@ -241,8 +241,11 @@ public interface JbpmService {
 
     /**
      * Persist a process instance.
+     *
+     * @return the updated instance.
      */
-    void persistProcessInstance(ProcessInstance pi) throws NuxeoJbpmException;
+    ProcessInstance persistProcessInstance(ProcessInstance pi)
+            throws NuxeoJbpmException;
 
     // DOCUMENT
 

@@ -33,8 +33,9 @@
                 </h:column>
                 <h:column>
                   <f:facet name="header">#{messages['label.title']}</f:facet>
-                  <nxd:documentLink document="#{task.document}" tab="TAB_CONTENT_JBPM"
-                    title="#{nxd:titleOrId(task.document)}" />
+                  <nxd:restDocumentLink document="#{task.document}" tab="TAB_CONTENT_JBPM">
+                    <h:outputText value="#{nxd:titleOrId(task.document)}" />
+                  </nxd:restDocumentLink>
                 </h:column>
               </h:dataTable>
             </c:when>

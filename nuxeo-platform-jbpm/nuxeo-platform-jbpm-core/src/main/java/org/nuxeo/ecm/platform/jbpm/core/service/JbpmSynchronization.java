@@ -32,21 +32,11 @@ public class JbpmSynchronization implements Synchronization {
         this.context = context;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see javax.transaction.Synchronization#afterCompletion(int)
-     */
     public void afterCompletion(int arg0) {
         context.close();
         JbpmServiceImpl.contexts.set(null);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see javax.transaction.Synchronization#beforeCompletion()
-     */
     public void beforeCompletion() {
         context.getSession().flush();
     }
