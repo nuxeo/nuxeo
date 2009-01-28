@@ -12,7 +12,6 @@
   <groupId>org.nuxeo.ecm.webengine</groupId>
   <artifactId>nuxeo-webengine-management</artifactId>
   <name>Nuxeo WebEngine Management</name>
-  <version>5.2-SNAPSHOT</version>
 
   <dependencies>
   	<dependency>
