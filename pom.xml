@@ -28,9 +28,11 @@
     <module>nuxeo-core</module>
     <module>nuxeo-core-api</module>
     <module>nuxeo-core-facade</module>
+    <!--
     <module>nuxeo-core-jca</module>
     <module>nuxeo-core-jcr-connector</module>
     <module>nuxeo-core-jcr-connector-test</module>
+    -->
     <module>nuxeo-core-query</module>
     <module>nuxeo-core-query-test</module>
     <module>nuxeo-core-schema</module>
