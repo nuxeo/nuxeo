@@ -74,11 +74,12 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
                     repo = mgr.getRepository(repoName);
                 } else {
                     repo = mgr.getDefaultRepository();
+                    repoName = repo.getName();
                 }
 
                 reconnectedCoreSession = repo.open();
             } catch (Exception e) {
-                log.error("Error while openning core session", e);
+                log.error("Error while openning core session on repo " + repoName , e);
                 return null;
             }
         } else {
