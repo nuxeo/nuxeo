@@ -49,25 +49,9 @@ import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.event.CoreEvent;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
-import org.nuxeo.ecm.core.api.event.impl.CoreEventImpl;
-import org.nuxeo.ecm.core.query.QueryParseException;
-import org.nuxeo.ecm.core.query.sql.SQLQueryParser;
-import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
-import org.nuxeo.ecm.core.search.api.client.SearchException;
-import org.nuxeo.ecm.core.search.api.client.SearchService;
-import org.nuxeo.ecm.core.search.api.client.common.SearchServiceDelegate;
-import org.nuxeo.ecm.core.search.api.client.query.ComposedNXQuery;
-import org.nuxeo.ecm.core.search.api.client.query.QueryException;
-import org.nuxeo.ecm.core.search.api.client.query.impl.ComposedNXQueryImpl;
-import org.nuxeo.ecm.core.search.api.client.search.results.ResultSet;
-import org.nuxeo.ecm.core.search.api.client.search.results.document.SearchPageProvider;
-import org.nuxeo.ecm.platform.events.api.DocumentMessage;
-import org.nuxeo.ecm.platform.events.api.DocumentMessageProducer;
-import org.nuxeo.ecm.platform.events.api.DocumentMessageProducerException;
-import org.nuxeo.ecm.platform.events.api.delegate.DocumentMessageProducerBusinessDelegate;
-import org.nuxeo.ecm.platform.events.api.impl.DocumentMessageImpl;
+import org.nuxeo.ecm.core.event.EventProducer;
+import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.relations.api.Literal;
 import org.nuxeo.ecm.platform.relations.api.Node;
 import org.nuxeo.ecm.platform.relations.api.QNameResource;
@@ -92,6 +76,7 @@ import org.nuxeo.ecm.platform.relations.web.listener.RelationActions;
 import org.nuxeo.ecm.platform.ui.web.invalidations.AutomaticDocumentBasedInvalidation;
 import org.nuxeo.ecm.platform.ui.web.invalidations.DocumentContextBoundActionBean;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Seam component that manages statements involving current document as well as
@@ -114,6 +99,9 @@ public class RelationActionsBean  extends DocumentContextBoundActionBean impleme
     private static final long serialVersionUID = 2336539966097558178L;
 
     private static final Log log = LogFactory.getLog(RelationActionsBean.class);
+
+
+    protected static boolean includeStatementsInEvents = false;
 
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
@@ -342,16 +330,25 @@ public class RelationActionsBean  extends DocumentContextBoundActionBean impleme
     }
 
     protected void notifyEvent(String eventId, DocumentModel source,
-            Map<String, Object> options, String comment) {
-        CoreEvent coreEvent = new CoreEventImpl(eventId, source, options,
-                documentManager.getPrincipal(), RelationEvents.CATEGORY,
-                comment);
-        DocumentMessage msg = new DocumentMessageImpl(source, coreEvent);
+            Map<String, Serializable> options, String comment) {
+
+        EventProducer evtProducer = null;
+
         try {
-            DocumentMessageProducer producer = DocumentMessageProducerBusinessDelegate.getRemoteDocumentMessageProducer();
-            producer.produce(msg);
-        } catch (DocumentMessageProducerException e) {
-            log.error("Error when trying to notify");
+               evtProducer = Framework.getService(EventProducer.class);
+        }
+        catch (Exception e) {
+            log.error("Unable to get EventProducer to send event notification", e);
+        }
+
+        DocumentEventContext docCtx = new DocumentEventContext(documentManager,documentManager.getPrincipal(),source);
+        options.put("category", RelationEvents.CATEGORY);
+        options.put("comment", comment);
+
+        try {
+            evtProducer.fireEvent(docCtx.event(eventId));
+        } catch (ClientException e) {
+            log.error("Error while trying to send notification message", e);
         }
     }
 
@@ -404,11 +401,13 @@ public class RelationActionsBean  extends DocumentContextBoundActionBean impleme
 
             // notifications
 
-            Map<String, Object> options = new HashMap<String, Object>();
+            Map<String, Serializable> options = new HashMap<String, Serializable>();
             String currentLifeCycleState = currentDoc.getCurrentLifeCycleState();
             options.put(CoreEventConstants.DOC_LIFE_CYCLE,
                     currentLifeCycleState);
-            putStatements(options, stmt);
+            if (includeStatementsInEvents) {
+                putStatements(options, stmt);
+            }
             options.put(RelationEvents.GRAPH_NAME_EVENT_KEY,
                     RelationConstants.GRAPH_NAME);
 
@@ -421,8 +420,10 @@ public class RelationActionsBean  extends DocumentContextBoundActionBean impleme
 
             // XXX AT: try to refetch it from the graph so that resources are
             // transformed into qname resources: useful for indexing
-            putStatements(options, relationManager.getStatements(
+            if (includeStatementsInEvents) {
+                putStatements(options, relationManager.getStatements(
                     RelationConstants.GRAPH_NAME, stmt));
+            }
 
             // after notification
             notifyEvent(RelationEvents.AFTER_RELATION_CREATION, currentDoc,
@@ -444,16 +445,16 @@ public class RelationActionsBean  extends DocumentContextBoundActionBean impleme
     }
 
     // for consistency for callers only
-    private static void putStatements(Map<String, Object> options,
+    private static void putStatements(Map<String, Serializable> options,
             List<Statement> statements) {
-        options.put(RelationEvents.STATEMENTS_EVENT_KEY, statements);
+        options.put(RelationEvents.STATEMENTS_EVENT_KEY, (Serializable)statements);
     }
 
-    private static void putStatements(Map<String, Object> options,
+    private static void putStatements(Map<String, Serializable> options,
             Statement statement) {
         List<Statement> statements = new LinkedList<Statement>();
         statements.add(statement);
-        options.put(RelationEvents.STATEMENTS_EVENT_KEY, statements);
+        options.put(RelationEvents.STATEMENTS_EVENT_KEY, (Serializable) statements);
     }
 
     public void toggleCreateForm(ActionEvent event) {
@@ -477,14 +478,16 @@ public class RelationActionsBean  extends DocumentContextBoundActionBean impleme
                 && outgoingStatementsInfo.contains(stmtInfo)) {
             Statement stmt = stmtInfo.getStatement();
             // notifications
-            Map<String, Object> options = new HashMap<String, Object>();
+            Map<String, Serializable> options = new HashMap<String, Serializable>();
             DocumentModel source = getCurrentDocument();
             String currentLifeCycleState = source.getCurrentLifeCycleState();
             options.put(CoreEventConstants.DOC_LIFE_CYCLE,
                     currentLifeCycleState);
             options.put(RelationEvents.GRAPH_NAME_EVENT_KEY,
                     RelationConstants.GRAPH_NAME);
-            putStatements(options, stmt);
+            if (includeStatementsInEvents) {
+                putStatements(options, stmt);
+            }
 
             // before notification
             notifyEvent(RelationEvents.BEFORE_RELATION_REMOVAL, source,
