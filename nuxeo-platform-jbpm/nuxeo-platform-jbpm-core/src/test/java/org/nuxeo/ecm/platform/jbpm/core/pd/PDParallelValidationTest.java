@@ -16,7 +16,7 @@
  */
 package org.nuxeo.ecm.platform.jbpm.core.pd;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -53,16 +53,18 @@ public class PDParallelValidationTest extends AbstractProcessDefinitionTest {
             assertEquals("bob",
                     tis.toArray(new TaskInstance[] {})[0].getActorId());
             // bob finish choosing the participants
-            pi.getContextInstance().setVariable("participants",
-                    Arrays.asList(new String[] { "bob", "trudy" }));
+            List<VirtualTaskInstance> participants = new ArrayList<VirtualTaskInstance>();
+            participants.add(new VirtualTaskInstance("bob"));
+            participants.add(new VirtualTaskInstance("trudy"));
+            pi.getContextInstance().setVariable("participants", participants);
             ti = (TaskInstance) context.getTaskList("bob").get(0);
             ti.end();
             // bob and trudy have tasks
-            assertEquals(1, context.getTaskList("bob").size());
-            assertEquals(1, context.getTaskList("trudy").size());
-            ti = (TaskInstance) context.getTaskList("bob").get(0);
+            assertEquals(1, context.getGroupTaskList(bob_list).size());
+            assertEquals(1, context.getGroupTaskList(trudy_list).size());
+            ti = (TaskInstance) context.getGroupTaskList(bob_list).get(0);
             ti.end();
-            ti = (TaskInstance) context.getTaskList("trudy").get(0);
+            ti = (TaskInstance) context.getGroupTaskList(trudy_list).get(0);
             ti.end("reject");
             // process finished
             assertTrue(pi.hasEnded());

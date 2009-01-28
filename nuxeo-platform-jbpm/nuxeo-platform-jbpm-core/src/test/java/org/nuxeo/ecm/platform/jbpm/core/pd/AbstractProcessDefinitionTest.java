@@ -3,6 +3,7 @@ package org.nuxeo.ecm.platform.jbpm.core.pd;
 import java.io.InputStream;
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import junit.framework.TestCase;
@@ -13,6 +14,9 @@ import org.jbpm.graph.def.ProcessDefinition;
 import org.nuxeo.ecm.core.api.SimplePrincipal;
 
 public abstract class AbstractProcessDefinitionTest extends TestCase {
+    protected final List<String> bob_list = Collections.singletonList("bob");
+
+    protected final List<String> trudy_list = Collections.singletonList("trudy");
 
     protected JbpmConfiguration configuration;
 

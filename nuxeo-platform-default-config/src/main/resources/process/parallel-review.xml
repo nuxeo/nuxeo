@@ -25,7 +25,7 @@
   </node>
   <task-node name="validate node">
     <task name="validate">
-      <assignment actor-id="#{participant.actors}" />
+      <assignment pooled-actors="#{participant.actors}" />
     </task>
     <transition name="valid" to="participants join" />
     <transition name="reject" to="participants join">
@@ -38,8 +38,9 @@
     <transition to="do follow transition" />
   </join>
   <decision name="do follow transition">
-    <transition to="end" condition="#{contextInstance.variables['rejected']}"/>
-    <transition to="follow transition" condition="#{!contextInstance.variables['rejected']}"/>
+    <transition to="end" condition="#{contextInstance.variables['rejected']}" />
+    <transition to="follow transition"
+      condition="#{!contextInstance.variables['rejected']}" />
   </decision>
   <node name="follow transition">
     <action

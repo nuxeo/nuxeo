@@ -21,11 +21,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.jbpm.context.exe.ContextInstance;
 import org.jbpm.graph.def.ActionHandler;
 import org.jbpm.graph.exe.ExecutionContext;
+import org.jbpm.graph.exe.Token;
 import org.jbpm.graph.node.DecisionHandler;
 import org.jbpm.taskmgmt.def.AssignmentHandler;
+import org.jbpm.taskmgmt.def.TaskControllerHandler;
 import org.jbpm.taskmgmt.exe.Assignable;
+import org.jbpm.taskmgmt.exe.TaskInstance;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -41,7 +45,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  */
 public abstract class AbstractJbpmHandlerHelper implements ActionHandler,
-        AssignmentHandler, DecisionHandler {
+        AssignmentHandler, DecisionHandler, TaskControllerHandler {
 
     private static final long serialVersionUID = 1L;
 
@@ -62,6 +66,16 @@ public abstract class AbstractJbpmHandlerHelper implements ActionHandler,
         throw new UnsupportedOperationException();
     }
 
+
+    public void initializeTaskVariables(TaskInstance taskInstance,
+            ContextInstance contextInstance, Token token) {
+        throw new UnsupportedOperationException();
+    }
+
+    public void submitTaskVariables(TaskInstance taskInstance,
+            ContextInstance contextInstance, Token token) {
+        throw new UnsupportedOperationException();
+    }
     public JbpmService getJbpmService() throws Exception {
         if (jbpmService == null) {
             jbpmService = Framework.getService(JbpmService.class);

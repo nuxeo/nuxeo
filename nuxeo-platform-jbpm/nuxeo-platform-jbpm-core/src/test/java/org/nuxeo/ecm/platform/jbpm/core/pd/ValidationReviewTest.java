@@ -17,7 +17,6 @@
 package org.nuxeo.ecm.platform.jbpm.core.pd;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.jbpm.JbpmContext;
@@ -51,27 +50,28 @@ public class ValidationReviewTest extends AbstractProcessDefinitionTest {
             // choosing participant task
             List<TaskInstance> bobstask = context.getTaskList("bob");
             assertEquals(1, bobstask.size());
+            List<VirtualTaskInstance> participants = new ArrayList<VirtualTaskInstance>();
+            participants.add(new VirtualTaskInstance("bob"));
+            participants.add(new VirtualTaskInstance("trudy"));
             pi.getContextInstance().setVariable(
-                    JbpmService.VariableName.participants.name(),
-                    new ArrayList<String>(Arrays.asList(new String[] { "bob",
-                            "trudy" })));
+                    JbpmService.VariableName.participants.name(), participants);
             bobstask.get(0).end();
             // first evaluation
-            bobstask = context.getTaskList("bob");
+            bobstask = context.getGroupTaskList(bob_list);
             assertEquals(1, bobstask.size());
-            List<TaskInstance> trudystask = context.getTaskList("trudy");
+            List<TaskInstance> trudystask = context.getGroupTaskList(trudy_list);
             assertEquals(0, trudystask.size());
             bobstask.get(0).end();
             // second evaluation
-            trudystask = context.getTaskList("trudy");
+            trudystask = context.getGroupTaskList(trudy_list);
             assertEquals(1, trudystask.size());
-            bobstask = context.getTaskList("bob");
+            bobstask = context.getGroupTaskList(bob_list);
             assertEquals(0, bobstask.size());
             trudystask.get(0).end("reject");
             // second evalutaion by bob
             bobstask = context.getTaskList("bob");
             assertEquals(1, bobstask.size());
-            trudystask = context.getTaskList("trudy");
+            trudystask = context.getGroupTaskList(trudy_list);
             assertEquals(0, trudystask.size());
             bobstask.get(0).end();
             // finished

@@ -141,7 +141,9 @@ public class JbpmServiceImpl implements JbpmService {
 
     private void eagerLoadPooledActor(Collection<TaskInstance> tis) {
         for (TaskInstance ti : tis) {
-            ti.getPooledActors().size();
+            if (ti.getPooledActors() != null) {
+                ti.getPooledActors().size();
+            }
         }
     }
 
@@ -373,7 +375,9 @@ public class JbpmServiceImpl implements JbpmService {
                             useDocument.add(pi.getId());
                         }
                         if (useDocument.contains(pi.getId())) {
-                            ti.getPooledActors().size();
+                            if (ti.getPooledActors() != null) {
+                                ti.getPooledActors().size();
+                            }
                             result.add(ti);
                         }
                     }
@@ -500,7 +504,9 @@ public class JbpmServiceImpl implements JbpmService {
                         processInstanceId).getTaskMgmtInstance().getTaskInstances();
                 ArrayList<TaskInstance> result = new ArrayList<TaskInstance>();
                 for (TaskInstance ti : tis) {
-                    ti.getPooledActors().size();
+                    if (ti.getPooledActors() != null) {
+                        ti.getPooledActors().size();
+                    }
                     result.add(ti);
                 }
                 return result;
@@ -623,8 +629,8 @@ public class JbpmServiceImpl implements JbpmService {
     }
 
     @SuppressWarnings("unchecked")
-    public List<ProcessDefinition> getProcessDefinitionsByType(
-            final String type) throws NuxeoJbpmException {
+    public List<ProcessDefinition> getProcessDefinitionsByType(final String type)
+            throws NuxeoJbpmException {
         return (List<ProcessDefinition>) executeJbpmOperation(new JbpmOperation() {
             public Serializable run(JbpmContext context)
                     throws NuxeoJbpmException {
