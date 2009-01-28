@@ -1,0 +1,151 @@
+<div xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  class="closedContent">
+
+<h:form id="reviewTasksTable">
+
+  <h3>
+    <h:outputText
+      value="#{messages['label.workflow.review.task.list']}" />
+  </h3>
+
+  <table class="dataOutput">
+    <tbody>
+      <tr>
+        <th>
+          <h:outputText value="#{messages['label.workflow.task.validated']}" />
+        </th>
+        <th>
+          <h:outputText
+            value="#{messages['label.workflow.task.principal']}" />
+        </th>
+        <th>
+          <h:outputText
+            value="#{messages['label.workflow.task.directive']}" />
+        </th>
+        <th>
+          <h:outputText
+            value="#{messages['label.review.user.comment']}" />
+        </th>
+        <th>
+          <h:outputText
+            value="#{messages['label.workflow.task.startdate']}" />
+        </th>
+        <th>
+          <h:outputText
+            value="#{messages['label.workflow.task.enddate']}" />
+        </th>
+        <th>
+          <h:outputText
+            value="#{messages['label.workflow.task.duedate']}" />
+        </th>
+        <th>
+        </th>
+        <th>
+        </th>
+        <f:subview rendered="#{jbpmActions.canManageProcess}">
+          <th>
+          </th>
+        </f:subview>
+      </tr>
+      <nxu:methodResult name="tasks" value="#{jbpmActions.getCurrentTasks('validate')}">
+        <nxu:repeat var="task" value="#{tasks}">
+          <tr>
+            <td>
+              <h:graphicImage value="/icons/review_accepted.png"
+                rendered="#{empty task.end}" />
+              <h:graphicImage value="/icons/review_pending.gif"
+                rendered="#{!empty task.end}" />
+            </td>
+            <td>
+              pooled actors
+            </td>
+            <td>
+              XXX           
+            </td>
+            <td>
+              <h:outputText value="#{task.comment}" />
+            </td>
+            <td>
+              <h:outputText value="#{task.startDate}">
+                <f:convertDateTime
+                  pattern="#{nxu:dateAndTimeFormater('medium')}"
+                  timeZone="#{timeZone}" />
+              </h:outputText>
+            </td>
+            <td>
+              <h:outputText value="#{task.endDate}">
+                <f:convertDateTime
+                  pattern="#{nxu:dateAndTimeFormater('medium')}"
+                  timeZone="#{timeZone}" />
+              </h:outputText>
+            </td>
+            <td>
+              <h:outputText value="#{task.dueDate}">
+                <f:convertDateTime
+                  pattern="#{nxu:dateAndTimeFormater('medium')}"
+                  timeZone="#{timeZone}" />
+              </h:outputText>
+            </td>
+            <td>
+              validate
+            </td>
+            <td>
+              reject
+            </td>
+            <f:subview rendered="#{jbpmActions.canManageProcess}">
+              <td>
+                remove/move up/move down
+              </td>
+            </f:subview>                
+          </tr>
+        </nxu:repeat>
+      </nxu:methodResult>
+      <nxu:repeat var="virtualTask" value="#{jbpmActions.currentVirtualTasks}">
+        <tr>
+          <td>
+            <h:graphicImage value="/icons/review_pending.gif" />
+          </td>
+          <td>
+            <nxl:layout name="user_group_prefixed_suggestion" mode="view"
+              value="#{virtualTask.actors}" />
+          </td>
+          <td>
+            <h:outputText
+              value="#{messages[virtualTask.variables.directive]}" />
+          </td>
+          <td>
+            <h:inputText value="#{virtualTask.comment}" />
+          </td>
+          <td>
+          </td>
+          <td>
+          </td>
+          <td>
+            <h:outputText value="#{virtualTask.dueDate}">
+              <f:convertDateTime
+                pattern="#{nxu:dateAndTimeFormater('medium')}"
+                timeZone="#{timeZone}" />
+            </h:outputText>
+          </td>
+          <td>
+          </td>
+          <td>
+          </td>
+          <td>
+            remove
+          </td>
+        </tr>
+      </nxu:repeat>
+    </tbody>
+  </table>
+  
+</h:form>
+
+</div>

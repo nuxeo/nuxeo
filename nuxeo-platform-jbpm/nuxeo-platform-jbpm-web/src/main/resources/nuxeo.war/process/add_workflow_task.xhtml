@@ -1,0 +1,42 @@
+<div xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+<c:if test="#{jbpmActions.canManageProcess}">
+
+  <div class="foldableBox">
+    <h3 class="folded">
+      <a href="#" onclick="return toggleBox(this)">
+        <h:outputText value="#{messages['label.review.choose.reviewer']}"/>
+      </a>
+    </h3>
+    
+    <div style="display: none">
+    
+      <h:form id="addReviewers">
+      
+        <nxl:layout name="add_workflow_task" mode="create"
+          value="#{jbpmActions.newVirtualTask}" />
+
+        <table class="dataInput">
+          <tr>
+            <td>
+              <h:commandButton type="submit"
+                value="#{messages['label.review.create.task']}"
+                styleClass="button"
+                action="#{jbpmActions.addNewVirtualTask}"/>
+            </td>
+          </tr>
+        </table>
+
+      </h:form>
+
+    </div>
+  
+  </div>
+
+</c:if>
+
+</div>
