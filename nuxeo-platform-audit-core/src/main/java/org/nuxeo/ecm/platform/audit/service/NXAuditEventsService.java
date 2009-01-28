@@ -62,8 +62,6 @@ import org.nuxeo.ecm.platform.audit.service.extension.ExtendedInfoDescriptor;
 import org.nuxeo.ecm.platform.audit.service.extension.HibernateOptionsDescriptor;
 import org.nuxeo.ecm.platform.el.ExpressionContext;
 import org.nuxeo.ecm.platform.el.ExpressionEvaluator;
-import org.nuxeo.ecm.platform.events.api.DocumentMessage;
-import org.nuxeo.ecm.platform.events.api.impl.DocumentMessageImpl;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -74,7 +72,7 @@ import com.sun.el.ExpressionFactoryImpl;
 
 /**
  * Event service configuration.
- *
+ * 
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 public class NXAuditEventsService extends DefaultComponent implements
@@ -192,11 +190,12 @@ public class NXAuditEventsService extends DefaultComponent implements
         return eventNames;
     }
 
-    protected void doPutExtendedInfos(LogEntry entry, DocumentMessage message,
-            DocumentModel source, Principal principal) {
+    protected void doPutExtendedInfos(LogEntry entry,
+            EventContext eventContext, DocumentModel source,
+            Principal principal) {
         ExpressionContext context = new ExpressionContext();
-        if (message != null) {
-            expressionEvaluator.bindValue(context, "message", message);
+        if (eventContext != null) {
+            expressionEvaluator.bindValue(context, "message", eventContext);
         }
         if (source != null) {
             expressionEvaluator.bindValue(context, "source", source);
@@ -216,15 +215,6 @@ public class NXAuditEventsService extends DefaultComponent implements
         }
     }
 
-    protected Principal guardedPrincipal(DocumentMessage message) {
-        try {
-            return message.getPrincipal();
-        } catch (Exception e) {
-            throw new AuditRuntimeException("Cannot get principal from "
-                    + message, e);
-        }
-    }
-
     protected Principal guardedPrincipal(CoreSession session) {
         try {
             return session.getPrincipal();
@@ -241,11 +231,6 @@ public class NXAuditEventsService extends DefaultComponent implements
             throw new AuditRuntimeException("Cannot get principal from "
                     + event, e);
         }
-    }
-
-    protected DocumentModel guardedDocument(CoreSession session,
-            DocumentMessage message) {
-        return guardedDocument(session, message.getRef());
     }
 
     protected DocumentModel guardedDocument(CoreSession session,
@@ -300,56 +285,6 @@ public class NXAuditEventsService extends DefaultComponent implements
         }
     }
 
-    protected LogEntry doCreateAndFillEntryFromMessage(CoreSession session,
-            DocumentMessage message) {
-
-        DocumentModel source = guardedDocument(session, message);
-        Principal principal = guardedPrincipal(message);
-
-        LogEntry entry = new LogEntry();
-        entry.setEventId(message.getEventId());
-        entry.setEventDate(message.getEventDate());
-        entry.setDocUUID(message.getId());
-        entry.setDocPath(message.getPathAsString());
-        entry.setDocType(message.getType());
-        entry.setPrincipalName(message.getPrincipalName());
-        entry.setCategory(message.getCategory());
-        entry.setDocLifeCycle(message.getDocCurrentLifeCycle());
-        entry.setComment(message.getComment());
-
-        doPutExtendedInfos(entry, message, source, principal);
-        return entry;
-
-    }
-
-    protected LogEntry doCreateAndFillEntryFromEvent(CoreEvent event) {
-        Principal principal = guardedPrincipal(event);
-        DocumentModel document = (DocumentModel) event.getSource();
-        LogEntry entry = new LogEntry();
-        entry.setEventId(event.getEventId());
-        entry.setEventDate(event.getDate());
-        entry.setDocUUID(document.getId());
-        entry.setDocPath(document.getPathAsString());
-        entry.setDocType(document.getType());
-        entry.setPrincipalName(principal.getName());
-        entry.setComment(event.getComment());
-        try {
-            if (document.isLifeCycleLoaded())
-                entry.setDocLifeCycle(document.getCurrentLifeCycleState());
-        } catch (ClientException e1) {
-            throw new AuditRuntimeException(
-                    "Cannot fetch life cycle state from " + document, e1);
-        }
-        entry.setCategory("eventDocumentCategory");
-
-        DocumentMessage message = new DocumentMessageImpl(document, event);
-
-        doPutExtendedInfos(entry, message, document, principal);
-
-        return entry;
-
-    }
-
     protected LogEntry doCreateAndFillEntryFromDocument(DocumentModel doc,
             Principal principal) throws AuditException {
         LogEntry entry = new LogEntry();
@@ -371,29 +306,9 @@ public class NXAuditEventsService extends DefaultComponent implements
             entry.setEventDate(creationDate.getTime());
         }
 
-        doPutExtendedInfos(entry, (DocumentMessage) null, doc, principal);
+        doPutExtendedInfos(entry, null, doc, principal);
 
         return entry;
-    }
-
-    public void logMessage(final CoreSession session, final DocumentMessage message) {
-         persistenceProvider.run(true,
-                new RunCallback<Integer>() {
-                    public Integer runWith(EntityManager em) {
-                        logMessage(em, session, message);
-                        return 0;
-                    }
-                });
-    }
-
-    public void logMessage(EntityManager em, CoreSession session,
-            DocumentMessage message) {
-        String eventId = message.getEventId();
-        if (eventId != null && !eventNames.contains(eventId)) {
-            return;
-        }
-        LogEntry entry = doCreateAndFillEntryFromMessage(session, message);
-        addLogEntry(em, entry);
     }
 
     public void addLogEntries(List<LogEntry> entries) {
@@ -597,32 +512,6 @@ public class NXAuditEventsService extends DefaultComponent implements
         LogEntryProvider.createProvider(em).addLogEntry(entry);
     }
 
-    /**
-     * @param coreEvent
-     * @throws AuditException
-     */
-    public void logEvent(final CoreEvent coreEvent) {
-        persistenceProvider.run(true, new RunCallback<Integer>() {
-            public Integer runWith(EntityManager em) {
-                logEvent(em, coreEvent);
-                return 0;
-            }
-        });
-    }
-
-    /**
-     * @param em
-     * @param coreEvent
-     * @throws AuditException
-     */
-    private void logEvent(EntityManager em, CoreEvent event) {
-        String eventId = event.getEventId();
-        if (eventId != null && eventNames.contains(eventId) == false)
-            return;
-        LogEntry entry = doCreateAndFillEntryFromEvent(event);
-        addLogEntry(em, entry);
-    }
-
     public Long getEventsCount(final String eventId) {
         return persistenceProvider.run(false, new RunCallback<Long>() {
             public Long runWith(EntityManager em) {
@@ -649,52 +538,48 @@ public class NXAuditEventsService extends DefaultComponent implements
         return LogEntryProvider.createProvider(em).findEventIds();
     }
 
-
-
     public void logEvent(final Event event) throws AuditException {
         AuditException ae = null;
-        ae = persistenceProvider.run(true,
-                 new RunCallback<AuditException>() {
-                     public AuditException runWith(EntityManager em) {
-                         try {
-                            logEvent(em, event);
-                        } catch (AuditException e) {
-                          log.error("Error while adding event to log", e);
-                          return e;
-                        }
-                         return null;
-                     }
-                 });
-        if (ae!=null) {
+        ae = persistenceProvider.run(true, new RunCallback<AuditException>() {
+            public AuditException runWith(EntityManager em) {
+                try {
+                    logEvent(em, event);
+                } catch (AuditException e) {
+                    log.error("Error while adding event to log", e);
+                    return e;
+                }
+                return null;
+            }
+        });
+        if (ae != null) {
             throw ae;
         }
     }
 
     public void logEvents(final EventBundle eventBundle) throws AuditException {
-           AuditException ae = null;
-           ae = persistenceProvider.run(true,
-                    new RunCallback<AuditException>() {
-                        public AuditException runWith(EntityManager em) {
-                            try {
-                               logEvents(em, eventBundle);
-                           } catch (AuditException e) {
-                             log.error("Error while adding eventBundle to log", e);
-                             return e;
-                           }
-                            return null;
-                        }
-                    });
-           if (ae!=null) {
-               throw ae;
-           }
-      }
-
-    public void logEvents(EntityManager em, EventBundle eventBundle) throws AuditException {
-        for (Event event : eventBundle) {
-             logEvent(em, event);
+        AuditException ae = null;
+        ae = persistenceProvider.run(true, new RunCallback<AuditException>() {
+            public AuditException runWith(EntityManager em) {
+                try {
+                    logEvents(em, eventBundle);
+                } catch (AuditException e) {
+                    log.error("Error while adding eventBundle to log", e);
+                    return e;
+                }
+                return null;
+            }
+        });
+        if (ae != null) {
+            throw ae;
         }
     }
 
+    public void logEvents(EntityManager em, EventBundle eventBundle)
+            throws AuditException {
+        for (Event event : eventBundle) {
+            logEvent(em, event);
+        }
+    }
 
     public void logEvent(EntityManager em, Event event) throws AuditException {
         if (!getAuditableEventNames().contains(event.getName())) {
@@ -703,38 +588,37 @@ public class NXAuditEventsService extends DefaultComponent implements
         EventContext ctx = event.getContext();
         if (ctx instanceof DocumentEventContext) {
             DocumentEventContext docCtx = (DocumentEventContext) ctx;
-            logDocumentEvent(em,event.getName(), docCtx, new Date(event.getTime()));
-        }
-        else {
-            logMiscEvent(em,event.getName(), ctx, new Date(event.getTime()));
+            logDocumentEvent(em, event.getName(), docCtx, new Date(
+                    event.getTime()));
+        } else {
+            logMiscEvent(em, event.getName(), ctx, new Date(event.getTime()));
         }
 
     }
 
-
-    protected void logDocumentEvent(EntityManager em, String eventName, DocumentEventContext docCtx, Date eventDate) {
+    protected void logDocumentEvent(EntityManager em, String eventName,
+            DocumentEventContext docCtx, Date eventDate) {
         DocumentModel document = docCtx.getSourceDocument();
         DocumentRef target = docCtx.getDestination();
         Principal principal = docCtx.getPrincipal();
-        Map<String, Serializable> properties =  docCtx.getProperties();
-
+        Map<String, Serializable> properties = docCtx.getProperties();
 
         LogEntry entry = new LogEntry();
         entry.setEventId(eventName);
         entry.setEventDate(eventDate);
-        if (document!=null) {
+        if (document != null) {
             entry.setDocUUID(document.getId());
             entry.setDocPath(document.getPathAsString());
             entry.setDocType(document.getType());
         } else {
             log.warn("received event " + eventName + " with null document");
         }
-        if (principal!=null) {
+        if (principal != null) {
             entry.setPrincipalName(principal.getName());
         } else {
             log.warn("received event " + eventName + " with null principal");
         }
-        entry.setComment((String)properties.get("comment"));
+        entry.setComment((String) properties.get("comment"));
         try {
             if (document.isLifeCycleLoaded())
                 entry.setDocLifeCycle(document.getCurrentLifeCycleState());
@@ -744,32 +628,28 @@ public class NXAuditEventsService extends DefaultComponent implements
         }
         entry.setCategory("eventDocumentCategory");
 
-        // XXX TODO
-        //doPutExtendedInfos(entry, message, document, principal);
+        doPutExtendedInfos(entry, docCtx, document, principal);
 
-        addLogEntry(em,entry);
+        addLogEntry(em, entry);
     }
 
-
-    protected void logMiscEvent(EntityManager em, String eventName, EventContext ctx, Date eventDate) {
+    protected void logMiscEvent(EntityManager em, String eventName,
+            EventContext ctx, Date eventDate) {
         Principal principal = ctx.getPrincipal();
-        Map<String, Serializable> properties =  ctx.getProperties();
-        Object[] args = ctx.getArguments();
+        Map<String, Serializable> properties = ctx.getProperties();
 
         LogEntry entry = new LogEntry();
         entry.setEventId(eventName);
         entry.setEventDate(eventDate);
         entry.setPrincipalName(principal.getName());
-        entry.setComment((String)properties.get("comment"));
+        entry.setComment((String) properties.get("comment"));
 
         String category = (String) properties.get("category");
         entry.setCategory(category);
 
-        // XXX TODO
-        //doPutExtendedInfos(entry, message, document, principal);
+        doPutExtendedInfos(entry, ctx, null, principal);
 
-        addLogEntry(em,entry);
+        addLogEntry(em, entry);
     }
-
 
 }
