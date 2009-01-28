@@ -50,7 +50,7 @@ import org.nuxeo.ecm.platform.events.api.JMSConstant;
  *
  * @author <a mailto="ja@nuxeo.com">Julien Anguenot</a>
  */
-@MessageDriven(activationConfig = {
+/*@MessageDriven(activationConfig = {
         @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"),
         @ActivationConfigProperty(propertyName = "destination", propertyValue = "topic/NXPMessages"),
         @ActivationConfigProperty(propertyName = "providerAdapterJNDI", propertyValue = "java:/NXCoreEventsProvider"),
@@ -59,7 +59,7 @@ import org.nuxeo.ecm.platform.events.api.JMSConstant;
                 + " IN ('"
                 + JMSConstant.DOCUMENT_MESSAGE
                 + "','"
-                + JMSConstant.EVENT_MESSAGE + "')") })
+                + JMSConstant.EVENT_MESSAGE + "')") })*/
 public class AuditMessageListener implements MessageListener {
 
     @SuppressWarnings("unused")

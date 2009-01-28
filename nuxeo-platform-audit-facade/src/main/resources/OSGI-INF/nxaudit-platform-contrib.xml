@@ -15,6 +15,15 @@
       <service class="org.nuxeo.ecm.platform.audit.api.Logs" group="platform/audit">
         <locator>%LogsBean</locator>
       </service>
+      <service class="org.nuxeo.ecm.platform.audit.api.AuditReader" group="platform/audit">
+        <locator>%LogsBean</locator>
+      </service>
+      <service class="org.nuxeo.ecm.platform.audit.api.AuditLogger" group="platform/audit">
+        <locator>%LogsBean</locator>
+      </service>
+      <service class="org.nuxeo.ecm.platform.audit.api.AuditAdmin" group="platform/audit">
+        <locator>%LogsBean</locator>
+      </service>
 
     </extension>
 </component>

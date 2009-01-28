@@ -43,7 +43,14 @@ import org.nuxeo.ecm.core.api.event.CoreEvent;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
+import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.EventBundle;
+import org.nuxeo.ecm.core.event.EventContext;
+import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.platform.audit.api.AuditAdmin;
 import org.nuxeo.ecm.platform.audit.api.AuditException;
+import org.nuxeo.ecm.platform.audit.api.AuditLogger;
+import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.ecm.platform.audit.api.AuditRuntimeException;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.FilterMapEntry;
@@ -53,7 +60,6 @@ import org.nuxeo.ecm.platform.audit.service.PersistenceProvider.RunCallback;
 import org.nuxeo.ecm.platform.audit.service.extension.EventDescriptor;
 import org.nuxeo.ecm.platform.audit.service.extension.ExtendedInfoDescriptor;
 import org.nuxeo.ecm.platform.audit.service.extension.HibernateOptionsDescriptor;
-import org.nuxeo.ecm.platform.audit.service.management.AuditEventMetricMBeanAdapter;
 import org.nuxeo.ecm.platform.el.ExpressionContext;
 import org.nuxeo.ecm.platform.el.ExpressionEvaluator;
 import org.nuxeo.ecm.platform.events.api.DocumentMessage;
@@ -72,7 +78,7 @@ import com.sun.el.ExpressionFactoryImpl;
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 public class NXAuditEventsService extends DefaultComponent implements
-        NXAuditEvents {
+        NXAuditEvents, AuditReader, AuditLogger, AuditAdmin {
     public static final ComponentName NAME = new ComponentName(
             "org.nuxeo.ecm.platform.audit.service.NXAuditEventsService");
 
@@ -642,5 +648,128 @@ public class NXAuditEventsService extends DefaultComponent implements
     public List<String> getLoggedEventIds(EntityManager em) {
         return LogEntryProvider.createProvider(em).findEventIds();
     }
+
+
+
+    public void logEvent(final Event event) throws AuditException {
+        AuditException ae = null;
+        ae = persistenceProvider.run(true,
+                 new RunCallback<AuditException>() {
+                     public AuditException runWith(EntityManager em) {
+                         try {
+                            logEvent(em, event);
+                        } catch (AuditException e) {
+                          log.error("Error while adding event to log", e);
+                          return e;
+                        }
+                         return null;
+                     }
+                 });
+        if (ae!=null) {
+            throw ae;
+        }
+    }
+
+    public void logEvents(final EventBundle eventBundle) throws AuditException {
+           AuditException ae = null;
+           ae = persistenceProvider.run(true,
+                    new RunCallback<AuditException>() {
+                        public AuditException runWith(EntityManager em) {
+                            try {
+                               logEvents(em, eventBundle);
+                           } catch (AuditException e) {
+                             log.error("Error while adding eventBundle to log", e);
+                             return e;
+                           }
+                            return null;
+                        }
+                    });
+           if (ae!=null) {
+               throw ae;
+           }
+      }
+
+    public void logEvents(EntityManager em, EventBundle eventBundle) throws AuditException {
+        for (Event event : eventBundle) {
+             logEvent(em, event);
+        }
+    }
+
+
+    public void logEvent(EntityManager em, Event event) throws AuditException {
+        if (!getAuditableEventNames().contains(event.getName())) {
+            return;
+        }
+        EventContext ctx = event.getContext();
+        if (ctx instanceof DocumentEventContext) {
+            DocumentEventContext docCtx = (DocumentEventContext) ctx;
+            logDocumentEvent(em,event.getName(), docCtx, new Date(event.getTime()));
+        }
+        else {
+            logMiscEvent(em,event.getName(), ctx, new Date(event.getTime()));
+        }
+
+    }
+
+
+    protected void logDocumentEvent(EntityManager em, String eventName, DocumentEventContext docCtx, Date eventDate) {
+        DocumentModel document = docCtx.getSourceDocument();
+        DocumentRef target = docCtx.getDestination();
+        Principal principal = docCtx.getPrincipal();
+        Map<String, Serializable> properties =  docCtx.getProperties();
+
+
+        LogEntry entry = new LogEntry();
+        entry.setEventId(eventName);
+        entry.setEventDate(eventDate);
+        if (document!=null) {
+            entry.setDocUUID(document.getId());
+            entry.setDocPath(document.getPathAsString());
+            entry.setDocType(document.getType());
+        } else {
+            log.warn("received event " + eventName + " with null document");
+        }
+        if (principal!=null) {
+            entry.setPrincipalName(principal.getName());
+        } else {
+            log.warn("received event " + eventName + " with null principal");
+        }
+        entry.setComment((String)properties.get("comment"));
+        try {
+            if (document.isLifeCycleLoaded())
+                entry.setDocLifeCycle(document.getCurrentLifeCycleState());
+        } catch (ClientException e1) {
+            throw new AuditRuntimeException(
+                    "Cannot fetch life cycle state from " + document, e1);
+        }
+        entry.setCategory("eventDocumentCategory");
+
+        // XXX TODO
+        //doPutExtendedInfos(entry, message, document, principal);
+
+        addLogEntry(em,entry);
+    }
+
+
+    protected void logMiscEvent(EntityManager em, String eventName, EventContext ctx, Date eventDate) {
+        Principal principal = ctx.getPrincipal();
+        Map<String, Serializable> properties =  ctx.getProperties();
+        Object[] args = ctx.getArguments();
+
+        LogEntry entry = new LogEntry();
+        entry.setEventId(eventName);
+        entry.setEventDate(eventDate);
+        entry.setPrincipalName(principal.getName());
+        entry.setComment((String)properties.get("comment"));
+
+        String category = (String) properties.get("category");
+        entry.setCategory(category);
+
+        // XXX TODO
+        //doPutExtendedInfos(entry, message, document, principal);
+
+        addLogEntry(em,entry);
+    }
+
 
 }

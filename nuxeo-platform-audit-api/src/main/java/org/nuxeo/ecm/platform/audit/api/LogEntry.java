@@ -41,7 +41,6 @@ import javax.persistence.TemporalType;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.platform.events.api.DocumentMessage;
 
 /**
  * Log entry .
@@ -267,6 +266,7 @@ public class LogEntry {
         return ToStringBuilder.reflectionToString(this);
     }
 
+    /**
     @Deprecated
     public static LogEntry createEntryFromMessage(DocumentMessage message) {
         LogEntry entry = new LogEntry();
@@ -279,5 +279,5 @@ public class LogEntry {
         entry.setDocLifeCycle(message.getDocCurrentLifeCycle());
         return entry;
     }
-
+    **/
 }

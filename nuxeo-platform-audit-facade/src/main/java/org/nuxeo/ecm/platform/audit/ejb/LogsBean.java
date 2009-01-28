@@ -34,6 +34,8 @@ import javax.persistence.PersistenceContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.platform.audit.api.AuditException;
 import org.nuxeo.ecm.platform.audit.api.FilterMapEntry;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
@@ -127,6 +129,15 @@ public class LogsBean implements Logs {
     public long syncLogCreationEntries(String repoId, String path,
             Boolean recurs) throws AuditException, ClientException {
         return service().syncLogCreationEntries(em, repoId, path, recurs);
+    }
+
+    public void logEvent(Event event) throws AuditException {
+        service().logEvent(em, event);
+
+    }
+
+    public void logEvents(EventBundle eventBundle) throws AuditException {
+        service().logEvents(em, eventBundle);
     }
 
  }

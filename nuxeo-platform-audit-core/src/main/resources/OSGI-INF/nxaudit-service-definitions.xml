@@ -16,8 +16,10 @@
 
   <service>
     <provide interface="org.nuxeo.ecm.platform.audit.api.NXAuditEvents"/>
+    <provide interface="org.nuxeo.ecm.platform.audit.api.AuditReader"/>
+    <provide interface="org.nuxeo.ecm.platform.audit.api.AuditLogger"/>
   </service>
-  
+
   <extension-point name="event">
     <documentation>
       This service registers auditable events.
@@ -27,7 +29,7 @@
       This service is used to filter auditable events from the JMS topic based
       on their names. The following XML snipset give figures out how the default
       event types are selected for auditing.
-      
+
       <programlisting>
   <extension target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService"
       point="event">
@@ -75,7 +77,7 @@
      <documentation>
         This service persist audit into a database using hibernate. You're able to specify the datasource
         using this extension point.
-        
+
         <p />
         <programlisting>
           <hibernateOptions datasource="java/nxaudits"/>
@@ -83,6 +85,6 @@
      </documentation>
       <object
       class="org.nuxeo.ecm.platform.audit.service.extension.HibernateOptionsDescriptor" />
-     
+
   </extension-point>
 </component>
