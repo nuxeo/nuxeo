@@ -1150,19 +1150,13 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
      * @see DocumentModel#copyContent(DocumentModel)
      */
     public void copyContent(DocumentModel sourceDoc) {
-        declaredSchemas = new String[sourceDoc.getDeclaredSchemas().length];
-        for (int i = 0; i < sourceDoc.getDeclaredSchemas().length; i++) {
-            declaredSchemas[i] = sourceDoc.getDeclaredSchemas()[i];
-        }
-
-        declaredFacets = new HashSet<String>();
-        declaredFacets.addAll(sourceDoc.getDeclaredFacets());
+        String[] schemas = sourceDoc.getDeclaredSchemas();
+        declaredSchemas = schemas == null ? null : schemas.clone();
+        Set<String> facets = sourceDoc.getDeclaredFacets();
+        declaredFacets = facets == null ? null : new HashSet<String>(facets);
 
         DataModelMap newDataModels = new DataModelMapImpl();
-        // dataModels could not be all loaded
-        //for (String key : sourceDoc.getDataModels().keySet()) {
-        for (String key : declaredSchemas) {
-            //DataModel oldDM = sourceDoc.getDataModels().get(key);
+        for (String key : sourceDoc.getDocumentType().getSchemaNames()) {
             DataModel oldDM = sourceDoc.getDataModel(key);
             DataModel newDM = cloneDataModel(oldDM);
             newDataModels.put(key, newDM);
