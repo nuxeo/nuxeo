@@ -143,15 +143,13 @@ public class EventBundleTransactionHandler {
             return;
         }
         if (tx != null) {
-            if (isUTTransactionActive()) {
-                try {
+            try {
+                if (!isUTTransactionMarkedRollback()) {
                     tx.setRollbackOnly();
-                    commitOrRollbackTransaction();
-                } catch (Exception e) {
-                    log.error("Error while marking tx for rollback", e);
                 }
-            } else {
-                log.error("Can not rollback : there is no active UT");
+                commitOrRollbackTransaction();
+            } catch (Exception e) {
+                log.error("Error while marking tx for rollback", e);
             }
             tx = null;
         }
@@ -170,7 +168,7 @@ public class EventBundleTransactionHandler {
                 }
             } else if (isUTTransactionMarkedRollback()){
                 try {
-                    log.debug("Rolling bcak transaction");
+                    log.debug("Rolling back transaction");
                     tx.rollback();
                 } catch (Exception e) {
                     log.error("Error during RollBack", e);
