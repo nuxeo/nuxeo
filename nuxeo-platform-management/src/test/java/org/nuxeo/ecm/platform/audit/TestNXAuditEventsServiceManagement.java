@@ -89,7 +89,7 @@ public class TestNXAuditEventsServiceManagement extends RepositoryOSGITestCase {
         model.setProperty("dublincore", "title", "huum");
         session.createDocument(model);
         session.save();
-        super.waitForEventsDispatched();
+        waitForEventsDispatched();
         ObjectName objectName = AuditEventMetricFactory.getObjectName("documentCreated");
         Long count = (Long) mbeanServer.getAttribute(objectName, "count");
         assertEquals(new Long(1L), count);
