@@ -422,6 +422,7 @@ public class JbpmServiceImpl implements JbpmService {
     }
 
     public void endTask(final Long taskInstanceId, final String transition,
+            final Map<String, Serializable> taskVariables,
             final Map<String, Serializable> variables,
             final Map<String, Serializable> transientVariables)
             throws NuxeoJbpmException {
@@ -429,6 +430,9 @@ public class JbpmServiceImpl implements JbpmService {
             public Serializable run(JbpmContext context)
                     throws NuxeoJbpmException {
                 TaskInstance ti = context.getTaskInstance(taskInstanceId);
+                if (taskVariables != null) {
+                    ti.addVariables(taskVariables);
+                }
                 if (variables != null) {
                     ti.getProcessInstance().getContextInstance().addVariables(
                             variables);
@@ -496,7 +500,7 @@ public class JbpmServiceImpl implements JbpmService {
 
     @SuppressWarnings("unchecked")
     public List<TaskInstance> getTaskInstances(final Long processInstanceId,
-            final NuxeoPrincipal principal, JbpmListFilter filter)
+            final NuxeoPrincipal principal, final JbpmListFilter filter)
             throws NuxeoJbpmException {
         return (List<TaskInstance>) executeJbpmOperation(new JbpmOperation() {
             public Serializable run(JbpmContext context)
@@ -512,6 +516,11 @@ public class JbpmServiceImpl implements JbpmService {
                     eagerLoadTaskInstance(ti);
                     result.add(ti);
                 }
+
+                if (filter != null) {
+                    result = filter.filter(context, null, result, principal);
+                }
+
                 return result;
             }
         });

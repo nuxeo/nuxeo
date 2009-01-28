@@ -21,10 +21,10 @@ package org.nuxeo.ecm.platform.jbpm.web;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
+import javax.faces.event.ActionEvent;
 
 import org.jbpm.graph.exe.ProcessInstance;
 import org.jbpm.taskmgmt.exe.TaskInstance;
@@ -39,7 +39,7 @@ import org.nuxeo.ecm.platform.jbpm.VirtualTaskInstance;
  */
 public interface JbpmActions extends Serializable {
 
-    boolean getCanStartProcess() throws ClientException;
+    boolean getCanCreateProcess() throws ClientException;
 
     boolean getCanManageProcess() throws ClientException;
 
@@ -59,6 +59,10 @@ public interface JbpmActions extends Serializable {
 
     List<VirtualTaskInstance> getCurrentVirtualTasks() throws ClientException;
 
+    boolean getShowAddVirtualTaskForm() throws ClientException;
+
+    void toggleShowAddVirtualTaskForm(ActionEvent event) throws ClientException;
+
     VirtualTaskInstance getNewVirtualTask() throws ClientException;
 
     String addNewVirtualTask() throws ClientException;
@@ -76,9 +80,14 @@ public interface JbpmActions extends Serializable {
     void validateTaskDueDate(FacesContext context, UIComponent component,
             Object value);
 
-    String endTask(TaskInstance taskInstance, String transition,
-            Map<String, Serializable> variables,
-            Map<String, Serializable> transientVariables)
+    boolean isProcessStarted(String startTaskName) throws ClientException;
+
+    String startProcess(String startTaskName) throws ClientException;
+
+    String validateTask(TaskInstance taskInstance, String transition)
+            throws ClientException;
+
+    String rejectTask(TaskInstance taskInstance, String transition)
             throws ClientException;
 
     String abandonCurrentProcess() throws ClientException;

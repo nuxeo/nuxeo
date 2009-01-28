@@ -7,13 +7,27 @@
 <c:if test="#{jbpmActions.canManageProcess}">
 
   <div class="foldableBox">
-    <h3 class="folded">
-      <a href="#" onclick="return toggleBox(this)">
-        <h:outputText value="#{messages['label.review.choose.reviewer']}"/>
-      </a>
+
+    <c:choose>
+      <c:when test="#{jbpmActions.showAddVirtualTaskForm}">
+        <c:set var="h3Class" value="unfolded"/>
+        <c:set var="boxBodyStyle" value=""/>
+      </c:when>
+      <c:otherwise>
+        <c:set var="h3Class" value="folded"/>
+        <c:set var="boxBodyStyle" value="display: none"/>
+      </c:otherwise>
+    </c:choose>
+
+    <h3 class="#{h3Class}">
+      <h:form>
+        <h:commandLink actionListener="#{jbpmActions.toggleShowAddVirtualTaskForm}">
+          <h:outputText value="#{messages['label.review.choose.reviewer']}"/>
+        </h:commandLink>
+      </h:form>
     </h3>
     
-    <div style="display: none">
+    <div class="boxBody" style="#{boxBodyStyle}">
     
       <h:form id="addReviewers">
       
@@ -21,14 +35,17 @@
           value="#{jbpmActions.newVirtualTask}" />
 
         <table class="dataInput">
-          <tr>
-            <td>
-              <h:commandButton type="submit"
-                value="#{messages['label.review.create.task']}"
-                styleClass="button"
-                action="#{jbpmActions.addNewVirtualTask}"/>
-            </td>
-          </tr>
+          <tbody>
+            <tr>
+              <td class="labelColumn"></td>
+              <td class="fieldColumn">
+                <h:commandButton type="submit"
+                  value="#{messages['label.review.create.task']}"
+                  styleClass="button"
+                  action="#{jbpmActions.addNewVirtualTask}"/>
+              </td>
+            </tr>
+          </tbody>
         </table>
 
       </h:form>

@@ -56,7 +56,7 @@ public interface JbpmService {
     }
 
     public enum TaskVariableName {
-        directive
+        directive, validated
     }
 
     public enum HibernateQueries {
@@ -113,12 +113,14 @@ public interface JbpmService {
      *
      * @param taskInstanceId
      * @param transition
+     * @param taskVariables TODO
      * @param variables A list a variables to add to the process instance.
      * @param transientVariables the list of transient variables.
      * @throws NuxeoJbpmSecurityRuntimeException If a document is attached to
      *             the process and the transition is not allowed for user.
      */
     void endTask(Long taskInstanceId, String transition,
+            Map<String, Serializable> taskVariables,
             Map<String, Serializable> variables,
             Map<String, Serializable> transientVariables)
             throws NuxeoJbpmException;
@@ -198,8 +200,8 @@ public interface JbpmService {
 
     /**
      * Return a list of available Process Definition Name available for this
-     * document and user. All process definition if dm is <code>null</code>. The
-     * returned process definition is always the latest.
+     * document and user. All process definition if dm is <code>null</code>.
+     * The returned process definition is always the latest.
      *
      * @param user the caller.
      * @param dm the document concerned by the process

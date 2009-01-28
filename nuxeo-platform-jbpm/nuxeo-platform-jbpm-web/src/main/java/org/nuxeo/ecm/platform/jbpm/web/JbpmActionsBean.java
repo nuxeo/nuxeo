@@ -34,6 +34,7 @@ import javax.faces.application.FacesMessage;
 import javax.faces.component.EditableValueHolder;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
+import javax.faces.event.ActionEvent;
 
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
@@ -105,10 +106,12 @@ public class JbpmActionsBean implements JbpmActions {
 
     protected VirtualTaskInstance newVirtualTask;
 
+    protected Boolean showAddVirtualTaskForm;
+
     // TODO: use it for notifications
     protected String userComment;
 
-    public boolean getCanStartProcess() throws ClientException {
+    public boolean getCanCreateProcess() throws ClientException {
         ProcessInstance currentProcess = getCurrentProcess();
         if (currentProcess == null) {
             // check write and write security rights on current doc
@@ -148,6 +151,7 @@ public class JbpmActionsBean implements JbpmActions {
             JbpmHelper helper = new JbpmHelper();
             NuxeoPrincipal pal = (NuxeoPrincipal) currentUser;
             return pal.isAdministrator()
+                    || pal.getName().equals(getCurrentProcessInitiator())
                     || helper.isTaskAssignedToUser(taskInstance, pal);
         }
         return false;
@@ -155,7 +159,7 @@ public class JbpmActionsBean implements JbpmActions {
 
     public String createProcessInstance(NuxeoPrincipal principal, String pd,
             DocumentModel dm, String endLifeCycle) throws ClientException {
-        if (getCanStartProcess()) {
+        if (getCanCreateProcess()) {
             Map<String, Serializable> map = null;
             if (endLifeCycle != null && !endLifeCycle.equals("")
                     && !"null".equals(endLifeCycle)) {
@@ -242,6 +246,22 @@ public class JbpmActionsBean implements JbpmActions {
         return currentVirtualTasks;
     }
 
+    public boolean getShowAddVirtualTaskForm() throws ClientException {
+        if (showAddVirtualTaskForm == null) {
+            showAddVirtualTaskForm = false;
+            if (getCurrentVirtualTasks().isEmpty()
+                    && (currentTasks == null || currentTasks.isEmpty())) {
+                showAddVirtualTaskForm = true;
+            }
+        }
+        return showAddVirtualTaskForm;
+    }
+
+    public void toggleShowAddVirtualTaskForm(ActionEvent event)
+            throws ClientException {
+        showAddVirtualTaskForm = !getShowAddVirtualTaskForm();
+    }
+
     public VirtualTaskInstance getNewVirtualTask() throws ClientException {
         if (newVirtualTask == null) {
             newVirtualTask = new VirtualTaskInstance();
@@ -251,7 +271,7 @@ public class JbpmActionsBean implements JbpmActions {
 
     public String addNewVirtualTask() throws ClientException {
         ProcessInstance pi = getCurrentProcess();
-        if (pi != null && newVirtualTask != null) {
+        if (pi != null && newVirtualTask != null && getCanManageProcess()) {
             List<VirtualTaskInstance> virtualTasks = getCurrentVirtualTasks();
             if (virtualTasks == null) {
                 virtualTasks = new ArrayList<VirtualTaskInstance>();
@@ -269,6 +289,7 @@ public class JbpmActionsBean implements JbpmActions {
             // reset so that's reloaded
             newVirtualTask = null;
             currentVirtualTasks = null;
+            showAddVirtualTaskForm = null;
             // TODO: refresh process instance?
         }
         return null;
@@ -276,7 +297,7 @@ public class JbpmActionsBean implements JbpmActions {
 
     public String moveDownVirtualTask(int index) throws ClientException {
         ProcessInstance pi = getCurrentProcess();
-        if (pi != null) {
+        if (pi != null && getCanManageProcess()) {
             List<VirtualTaskInstance> virtualTasks = getCurrentVirtualTasks();
             if (virtualTasks != null && index + 1 < virtualTasks.size()) {
                 VirtualTaskInstance task = virtualTasks.remove(index);
@@ -300,7 +321,7 @@ public class JbpmActionsBean implements JbpmActions {
 
     public String moveUpVirtualTask(int index) throws ClientException {
         ProcessInstance pi = getCurrentProcess();
-        if (pi != null) {
+        if (pi != null && getCanManageProcess()) {
             List<VirtualTaskInstance> virtualTasks = getCurrentVirtualTasks();
             if (virtualTasks != null && index - 1 < virtualTasks.size()) {
                 VirtualTaskInstance task = virtualTasks.remove(index);
@@ -324,7 +345,7 @@ public class JbpmActionsBean implements JbpmActions {
 
     public String removeVirtualTask(int index) throws ClientException {
         ProcessInstance pi = getCurrentProcess();
-        if (pi != null) {
+        if (pi != null && getCanManageProcess()) {
             List<VirtualTaskInstance> virtualTasks = getCurrentVirtualTasks();
             if (virtualTasks != null && index < virtualTasks.size()) {
                 virtualTasks.remove(index);
@@ -340,6 +361,7 @@ public class JbpmActionsBean implements JbpmActions {
 
             // reset so that's reloaded
             currentVirtualTasks = null;
+            showAddVirtualTaskForm = null;
             // TODO: refresh process instance?
         }
         return null;
@@ -378,17 +400,90 @@ public class JbpmActionsBean implements JbpmActions {
 
     }
 
-    public String endTask(TaskInstance taskInstance, String transition,
-            Map<String, Serializable> variables,
-            Map<String, Serializable> transientVariables)
+    public boolean isProcessStarted(String startTaskName)
+            throws ClientException {
+        if (startTaskName != null) {
+            // get task with that name on current process
+            ProcessInstance pi = getCurrentProcess();
+            if (pi != null) {
+                List<TaskInstance> tasks = jbpmService.getTaskInstances(
+                        currentProcess.getId(), null, new TaskListFilter(
+                                startTaskName));
+                if (tasks != null && !tasks.isEmpty()) {
+                    // consider first one found
+                    TaskInstance startTask = tasks.get(0);
+                    if (startTask.hasEnded()) {
+                        return true;
+                    }
+                } else {
+                    throw new ClientException(
+                            "No start task found on current process with name "
+                                    + startTaskName);
+                }
+            }
+        }
+        return false;
+    }
+
+    public String startProcess(String startTaskName) throws ClientException {
+        if (startTaskName != null && getCanManageProcess()) {
+            // get task with that name on current process
+            ProcessInstance pi = getCurrentProcess();
+            if (pi != null) {
+                List<TaskInstance> tasks = jbpmService.getTaskInstances(
+                        currentProcess.getId(), null, new TaskListFilter(
+                                startTaskName));
+                if (tasks != null && !tasks.isEmpty()) {
+                    // consider first one found
+                    TaskInstance startTask = tasks.get(0);
+                    if (startTask.hasEnded()) {
+                        throw new ClientException("Process is already started");
+                    }
+                    jbpmService.endTask(startTask.getId(), null, null, null,
+                            null);
+                } else {
+                    throw new ClientException(
+                            "No start task found on current process with name "
+                                    + startTaskName);
+                }
+            }
+        }
+        return null;
+    }
+
+    public String validateTask(TaskInstance taskInstance, String transition)
             throws ClientException {
         if (taskInstance != null) {
-            jbpmService.endTask(taskInstance.getId(), transition, variables,
-                    null);
+            // add marker that task was validated
+            Map<String, Serializable> taskVariables = new HashMap<String, Serializable>();
+            taskVariables.put(JbpmService.TaskVariableName.validated.name(),
+                    true);
+            jbpmService.endTask(taskInstance.getId(), transition,
+                    taskVariables, null, null);
+
             facesMessages.add(FacesMessage.SEVERITY_INFO,
                     resourcesAccessor.getMessages().get(
                             "label.review.task.ended"));
+
             Events.instance().raiseEvent(JbpmEventNames.WORKFLOW_TASK_COMPLETED);
+            resetCurrentData();
+        }
+        return null;
+    }
+
+    public String rejectTask(TaskInstance taskInstance, String transition)
+            throws ClientException {
+        if (taskInstance != null) {
+            // add marker that task was rejected
+            Map<String, Serializable> taskVariables = new HashMap<String, Serializable>();
+            taskVariables.put(JbpmService.TaskVariableName.validated.name(),
+                    false);
+            jbpmService.endTask(taskInstance.getId(), transition,
+                    taskVariables, null, null);
+            facesMessages.add(FacesMessage.SEVERITY_INFO,
+                    resourcesAccessor.getMessages().get(
+                            "label.review.task.ended"));
+            Events.instance().raiseEvent(JbpmEventNames.WORKFLOW_TASK_REJECTED);
             resetCurrentData();
         }
         return null;
@@ -396,7 +491,7 @@ public class JbpmActionsBean implements JbpmActions {
 
     public String abandonCurrentProcess() throws ClientException {
         ProcessInstance currentProcess = getCurrentProcess();
-        if (currentProcess != null) {
+        if (currentProcess != null && getCanManageProcess()) {
             // remove wf acls
             Long pid = currentProcess.getId();
             DocumentModel currentDoc = navigationContext.getCurrentDocument();
@@ -435,6 +530,7 @@ public class JbpmActionsBean implements JbpmActions {
         currentTasks = null;
         currentVirtualTasks = null;
         newVirtualTask = null;
+        showAddVirtualTaskForm = null;
         userComment = null;
     }
 

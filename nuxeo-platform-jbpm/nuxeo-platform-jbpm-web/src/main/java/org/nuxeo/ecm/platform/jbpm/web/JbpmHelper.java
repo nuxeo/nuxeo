@@ -17,9 +17,12 @@
 package org.nuxeo.ecm.platform.jbpm.web;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Name;
@@ -28,6 +31,7 @@ import org.jbpm.graph.exe.ProcessInstance;
 import org.jbpm.taskmgmt.exe.TaskInstance;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.jbpm.JbpmService;
 import org.nuxeo.ecm.platform.jbpm.NuxeoJbpmException;
@@ -83,10 +87,36 @@ public class JbpmHelper {
         return false;
     }
 
+    @SuppressWarnings("unchecked")
     public boolean isTaskAssignedToUser(TaskInstance task, NuxeoPrincipal user)
             throws ClientException {
         if (task != null && user != null) {
+            // task actors
+            List<String> taskActors = new ArrayList<String>();
+            String taskActorId = task.getActorId();
+            if (taskActorId != null) {
+                taskActors.add(taskActorId);
+            }
+            Set pooled = task.getPooledActors();
+            if (pooled != null) {
+                taskActors.addAll(pooled);
+            }
 
+            // user actors
+            List<String> actors = new ArrayList<String>();
+            List<String> groups = user.getAllGroups();
+            String actorId = NuxeoPrincipal.PREFIX + user.getName();
+            actors.add(actorId);
+            for (String s : groups) {
+                actors.add(NuxeoGroup.PREFIX + s);
+            }
+
+            // try to match one of the user actors in task actors
+            for (String taskActor : taskActors) {
+                if (actors.contains(taskActor)) {
+                    return true;
+                }
+            }
         }
         return false;
     }

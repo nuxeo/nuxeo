@@ -10,11 +10,11 @@
 
   <c:when test="#{empty currentProcess}">
 
-    <c:if test="#{!jbpmActions.canStartProcess}">
-      <h:outputText value="#{messages['label.review.no.review.started']}">
+    <c:if test="#{!jbpmActions.canCreateProcess}">
+      <h:outputText value="#{messages['label.review.no.review.started']}" />
     </c:if>
 
-    <c:if test="#{jbpmActions.canStartProcess}">
+    <c:if test="#{jbpmActions.canCreateProcess}">
       <h:form id="startWorkflow">
         <h3>
           <h:outputText value="#{messages['label.review.start.new']}" />

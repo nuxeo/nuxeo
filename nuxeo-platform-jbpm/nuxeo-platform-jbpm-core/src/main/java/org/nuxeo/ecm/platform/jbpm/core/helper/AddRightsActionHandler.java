@@ -31,6 +31,7 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.jbpm.AbstractJbpmHandlerHelper;
+import org.nuxeo.ecm.platform.jbpm.VirtualTaskInstance;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
@@ -45,6 +46,7 @@ public class AddRightsActionHandler extends AbstractJbpmHandlerHelper {
     private static final long serialVersionUID = 1L;
 
     private String item;
+
     private String list;
 
     protected NuxeoPrincipal getNuxeoPrincipal(String user) throws Exception {
@@ -57,10 +59,10 @@ public class AddRightsActionHandler extends AbstractJbpmHandlerHelper {
     public void execute(ExecutionContext executionContext) throws Exception {
         this.executionContext = executionContext;
         if (nuxeoHasStarted() && list != null) {
-            List<String> participants = (List<String>) executionContext.getContextInstance().getTransientVariable(
+            List<VirtualTaskInstance> participants = (List<VirtualTaskInstance>) executionContext.getContextInstance().getTransientVariable(
                     list);
             if (participants == null) {
-                participants = (List<String>) executionContext.getVariable(list);
+                participants = (List<VirtualTaskInstance>) executionContext.getVariable(list);
             }
             CoreSession session = null;
             try {
@@ -70,15 +72,16 @@ public class AddRightsActionHandler extends AbstractJbpmHandlerHelper {
                 ACP acp = session.getACP(docRef);
                 String aclName = getACLName();
                 ACL acl = acp.getOrCreateACL(aclName);
-                for (String participant : participants) {
-                    // get rid of user/group prefix
-                    String pname = participant;
-                    if (pname.startsWith(NuxeoPrincipal.PREFIX)) {
-                        pname = pname.substring(NuxeoPrincipal.PREFIX.length());
-                    } else if (pname.startsWith(NuxeoGroup.PREFIX)) {
-                        pname = pname.substring(NuxeoGroup.PREFIX.length());
+                for (VirtualTaskInstance participant : participants) {
+                    for (String pname : participant.getActors()) {
+                        // get rid of user/group prefix
+                        if (pname.startsWith(NuxeoPrincipal.PREFIX)) {
+                            pname = pname.substring(NuxeoPrincipal.PREFIX.length());
+                        } else if (pname.startsWith(NuxeoGroup.PREFIX)) {
+                            pname = pname.substring(NuxeoGroup.PREFIX.length());
+                        }
+                        acl.add(new ACE(pname, SecurityConstants.READ, true));
                     }
-                    acl.add(new ACE(participant, SecurityConstants.READ, true));
                 }
                 acp.addACL(acl);
                 session.setACP(docRef, acp, true);

@@ -73,10 +73,11 @@ public class JbpmServiceBean implements JbpmService {
     }
 
     public void endTask(Long taskInstanceId, String transition,
+            Map<String, Serializable> taskVariables,
             Map<String, Serializable> variables,
             Map<String, Serializable> transientVariables)
             throws NuxeoJbpmException {
-        service.endTask(taskInstanceId, transition, variables,
+        service.endTask(taskInstanceId, transition, taskVariables, variables,
                 transientVariables);
     }
 

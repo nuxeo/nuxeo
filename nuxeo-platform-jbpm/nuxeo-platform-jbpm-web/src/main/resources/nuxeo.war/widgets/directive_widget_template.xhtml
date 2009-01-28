@@ -7,7 +7,7 @@
   </c:if>
 
   <c:if test="#{widget.mode == 'edit'}">
-    <h:selectOneMenu value="#{field_0}">
+    <h:selectOneMenu value="#{field_0}" id="#{widget.id}">
       <f:selectItem itemValue="workflowDirectiveValidation"
         itemLabel="#{messages['workflowDirectiveValidation']}" />
       <f:selectItem itemValue="workflowDirectiveOpinion"
