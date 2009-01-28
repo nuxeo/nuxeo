@@ -21,6 +21,7 @@ package org.nuxeo.common.xmap;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.w3c.dom.Element;
+import org.w3c.dom.Text;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -28,7 +29,7 @@ import org.w3c.dom.Element;
  */
 public class XAnnotatedMember {
 
-    protected final XSetter setter;
+    protected final XAccessor accessor;
 
     protected Path path;
 
@@ -49,14 +50,14 @@ public class XAnnotatedMember {
 
     private final XMap xmap;
 
-    protected XAnnotatedMember(XMap xmap, XSetter setter) {
+    protected XAnnotatedMember(XMap xmap, XAccessor accessor) {
         this.xmap = xmap;
-        this.setter = setter;
+        this.accessor = accessor;
     }
 
-    public XAnnotatedMember(XMap xmap, XSetter setter, XNode anno) {
+    public XAnnotatedMember(XMap xmap, XAccessor setter, XNode anno) {
         this.xmap = xmap;
-        this.setter = setter;
+        this.accessor = setter;
         path = new Path(anno.value());
         trim = anno.trim();
         type = setter.getType();
@@ -66,13 +67,31 @@ public class XAnnotatedMember {
 
     protected void setValue(Object instance, Object value) throws Exception {
         try {
-            setter.setValue(instance, value);
+            accessor.setValue(instance, value);
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException(
                     String.format("%s, setter=%s, value=%s", e.getMessage(),
-                            setter, value), e);
+                            accessor, value), e);
         }
     }
+
+    public void toXML(Object instance, Element parent) throws Exception{
+        Element e = XMLBuilder.getOrCreateElement(parent, path);
+        Object v = accessor.getValue(instance);
+        if (xao == null ) {
+            if ( v != null && valueFactory != null){
+                String value = valueFactory.serialize(null,v);
+                if ( value != null) {
+
+                    XMLBuilder.fillField(e, value, path.attribute);
+                }
+            }
+        } else {
+            XMLBuilder.toXML(v, e, xao);
+        }
+    }
+
+
 
     public void process(Context ctx, Element element) throws Exception {
         Object value = getValue(ctx, element);
@@ -96,9 +115,11 @@ public class XAnnotatedMember {
             if (trim) {
                 val = val.trim();
             }
-            return valueFactory.getValue(ctx, val);
+            return valueFactory.deserialize(ctx, val);
         }
         return null;
     }
+
+
 
 }

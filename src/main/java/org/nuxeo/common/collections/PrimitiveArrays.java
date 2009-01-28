@@ -155,37 +155,51 @@ public final class PrimitiveArrays {
             if (arrType == Integer.TYPE) {
                 int[] ar = (int[]) array;
                 Integer[] result = new Integer[ar.length];
-                System.arraycopy(ar, 0, result, 0, ar.length);
+                for (int i=0; i<ar.length; i++) {
+                    result[i] = ar[i];
+                }
                 return result;
             } else if (arrType == Long.TYPE) {
                 long[] ar = (long[]) array;
                 Long[] result = new Long[ar.length];
-                System.arraycopy(ar, 0, result, 0, ar.length);
+                for (int i=0; i<ar.length; i++) {
+                    result[i] = ar[i];
+                }
                 return result;
             } else if (arrType == Double.TYPE) {
                 double[] ar = (double[]) array;
                 Double[] result = new Double[ar.length];
-                System.arraycopy(ar, 0, result, 0, ar.length);
+                for (int i=0; i<ar.length; i++) {
+                    result[i] = ar[i];
+                }
                 return result;
             } else if (arrType == Float.TYPE) {
                 float[] ar = (float[]) array;
                 Float[] result = new Float[ar.length];
-                System.arraycopy(ar, 0, result, 0, ar.length);
+                for (int i=0; i<ar.length; i++) {
+                    result[i] = ar[i];
+                }
                 return result;
             } else if (arrType == Character.TYPE) {
                 char[] ar = (char[]) array;
                 Character[] result = new Character[ar.length];
-                System.arraycopy(ar, 0, result, 0, ar.length);
+                for (int i=0; i<ar.length; i++) {
+                    result[i] = ar[i];
+                }
                 return result;
             } else if (arrType == Byte.TYPE) {
                 byte[] ar = (byte[]) array;
                 Byte[] result = new Byte[ar.length];
-                System.arraycopy(ar, 0, result, 0, ar.length);
+                for (int i=0; i<ar.length; i++) {
+                    result[i] = ar[i];
+                }
                 return result;
             } else if (arrType == Short.TYPE) {
                 short[] ar = (short[]) array;
                 Short[] result = new Short[ar.length];
-                System.arraycopy(ar, 0, result, 0, ar.length);
+                for (int i=0; i<ar.length; i++) {
+                    result[i] = ar[i];
+                }
                 return result;
             } else {
                 return null;

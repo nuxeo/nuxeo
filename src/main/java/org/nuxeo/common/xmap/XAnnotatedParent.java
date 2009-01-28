@@ -27,8 +27,8 @@ import org.w3c.dom.Element;
  */
 public class XAnnotatedParent extends XAnnotatedMember {
 
-    protected XAnnotatedParent(XMap xmap, XSetter setter) {
-        super(xmap, setter);
+    protected XAnnotatedParent(XMap xmap, XAccessor accessor) {
+        super(xmap, accessor);
     }
 
     @Override

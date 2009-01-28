@@ -47,17 +47,17 @@ public abstract class XValueFactory {
             = new Hashtable<Class, XValueFactory>();
 
 
-    public abstract Object getValue(Context context, String value);
-
+    public abstract Object deserialize(Context context, String value);
+    public abstract String serialize(Context context, Object value);
 
     public final Object getElementValue(Context context, Node element, boolean trim) {
         String text = element.getTextContent();
-        return getValue(context, trim ? text.trim() : text);
+        return deserialize(context, trim ? text.trim() : text);
     }
 
     public final Object getAttributeValue(Context context, Node element, String name) {
         Node at = element.getAttributes().getNamedItem(name);
-        return at != null ? getValue(context, at.getNodeValue()) : null;
+        return at != null ? deserialize(context, at.getNodeValue()) : null;
     }
 
 
@@ -74,48 +74,75 @@ public abstract class XValueFactory {
         if (factory == null) {
             return null;
         }
-        return factory.getValue(context, value);
+        return factory.deserialize(context, value);
     }
 
     public static final XValueFactory STRING = new XValueFactory() {
         @Override
-        public Object getValue(Context context, String value) {
+        public Object deserialize(Context context, String value) {
             return value;
+        }
+
+        @Override
+        public String serialize(Context context, Object value) {
+            return value.toString();
         }
     };
 
     public static final XValueFactory INTEGER = new XValueFactory() {
         @Override
-        public Object getValue(Context context, String value) {
+        public Object deserialize(Context context, String value) {
             return Integer.valueOf(value);
+        }
+
+        @Override
+        public String serialize(Context context, Object value) {
+            return value.toString();
         }
     };
 
     public static final XValueFactory LONG = new XValueFactory() {
         @Override
-        public Object getValue(Context context, String value) {
+        public Object deserialize(Context context, String value) {
             return Long.valueOf(value);
+        }
+
+        @Override
+        public String serialize(Context context, Object value) {
+            return value.toString();
         }
     };
 
     public static final XValueFactory DOUBLE = new XValueFactory() {
         @Override
-        public Object getValue(Context context, String value) {
+        public Object deserialize(Context context, String value) {
             return Double.valueOf(value);
+        }
+
+        public String serialize(Context context, Object value) {
+            return value.toString();
         }
     };
 
     public static final XValueFactory FLOAT = new XValueFactory() {
         @Override
-        public Object getValue(Context context, String value) {
+        public Object deserialize(Context context, String value) {
             return Float.valueOf(value);
+        }
+
+        public String serialize(Context context, Object value) {
+            return value.toString();
         }
     };
 
     public static final XValueFactory BOOLEAN = new XValueFactory() {
         @Override
-        public Object getValue(Context context, String value) {
+        public Object deserialize(Context context, String value) {
             return Boolean.valueOf(value);
+        }
+
+        public String serialize(Context context, Object value) {
+            return value.toString();
         }
     };
 
@@ -123,36 +150,50 @@ public abstract class XValueFactory {
         final DateFormat df = DateFormat.getDateInstance();
 
         @Override
-        public Object getValue(Context context, String value) {
+        public Object deserialize(Context context, String value) {
             try {
                 return df.parse(value);
             } catch (Exception e) {
                 return null;
             }
         }
+
+        public String serialize(Context context, Object value) {
+            Date date = (Date) value;
+            return df.format(date);
+        }
     };
 
     public static final XValueFactory FILE = new XValueFactory() {
         @Override
-        public Object getValue(Context context, String value) {
+        public Object deserialize(Context context, String value) {
             return new File(value);
+        }
+
+        public String serialize(Context context, Object value) {
+            File file = (File) value;
+            return file.getName();
         }
     };
 
     public static final XValueFactory URL = new XValueFactory() {
         @Override
-        public Object getValue(Context context, String value) {
+        public Object deserialize(Context context, String value) {
             try {
                 return new URL(value);
             } catch (Exception e) {
                 return null;
             }
         }
+
+        public String serialize(Context context, Object value) {
+            return value.toString();
+        }
     };
 
     public static final XValueFactory CLASS = new XValueFactory() {
         @Override
-        public Object getValue(Context context, String value) {
+        public Object deserialize(Context context, String value) {
             try {
                 return context.loadClass(value);
             } catch (Exception e) {
@@ -160,17 +201,27 @@ public abstract class XValueFactory {
                 return null;
             }
         }
+
+        public String serialize(Context context, Object value) {
+            Class<?> clazz = (Class<?>) value;
+            return clazz.toString();
+        }
     };
 
     public static final XValueFactory RESOURCE = new XValueFactory() {
         @Override
-        public Object getValue(Context context, String value) {
+        public Object deserialize(Context context, String value) {
             try {
                 return new Resource(context.getResource(value));
             } catch (Exception e) {
                 log.error("Cannot load resource: " + e);
                 return null;
             }
+        }
+
+        @Override
+        public String serialize(Context context, Object value) {
+            return value.toString();
         }
     };
 

@@ -19,25 +19,30 @@
 
 package org.nuxeo.common.xmap;
 
-import org.nuxeo.common.xmap.annotation.XContext;
-import org.w3c.dom.Element;
-
 /**
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class XAnnotatedContext extends XAnnotatedMember {
+public interface XAccessor {
 
-    private final String key;
+    /**
+     * Gets the type of the object to be set by this setter.
+     *
+     * @return the setter object type
+     */
+    Class getType();
 
-    protected XAnnotatedContext(XMap xmap, XAccessor accessor, XContext anno) {
-        super(xmap, accessor);
-        key = anno.value();
-    }
+    /**
+     * Sets the value of the underlying member.
+     *
+     * @param instance the instance of the object that owns this field
+     * @param value the value to set
+     * @throws Exception
+     */
+    void setValue(Object instance, Object value)
+            throws Exception;
 
-    @Override
-    protected Object getValue(Context ctx, Element base) throws Exception {
-        return ctx.getProperty(key);
-    }
+
+    Object getValue(Object instance) throws Exception;
 
 }

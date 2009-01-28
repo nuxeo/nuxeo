@@ -19,25 +19,32 @@
 
 package org.nuxeo.common.xmap;
 
-import org.nuxeo.common.xmap.annotation.XContext;
-import org.w3c.dom.Element;
+import java.lang.reflect.Field;
 
 /**
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class XAnnotatedContext extends XAnnotatedMember {
+public class XFieldAccessor implements XAccessor {
 
-    private final String key;
+    private final Field field;
 
-    protected XAnnotatedContext(XMap xmap, XAccessor accessor, XContext anno) {
-        super(xmap, accessor);
-        key = anno.value();
+    public XFieldAccessor(Field field) {
+        this.field = field;
+        this.field.setAccessible(true);
     }
 
-    @Override
-    protected Object getValue(Context ctx, Element base) throws Exception {
-        return ctx.getProperty(key);
+    public Class getType() {
+        return field.getType();
+    }
+
+    public void setValue(Object instance, Object value)
+            throws IllegalAccessException {
+        field.set(instance, value);
+    }
+
+    public Object getValue(Object instance) throws Exception  {
+       return field.get(instance);
     }
 
 }

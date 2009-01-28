@@ -64,7 +64,7 @@ public class Author {
     @XNodeList(value = "friends/friend", type = ArrayList.class, componentType = Name.class)
     List<Name> friends;
 
-    int age;
+
 
     @XNodeList(value = "metadata/double", type = Double[].class, componentType = Double.class)
     Double[] doubleArray;
@@ -75,6 +75,10 @@ public class Author {
     @XNodeMap(value = "properties/property", key = "@name", type = HashMap.class, componentType = String.class)
     Map<String, String> properties;
 
+
+    int age;
+
+
     @XContent("testContent")
     String testContent;
 
@@ -82,6 +86,8 @@ public class Author {
     DocumentFragment testContent2;
 
     boolean item1;
+
+
     boolean item2;
     boolean item3;
 
@@ -154,5 +160,28 @@ public class Author {
                 + "  properties: " + properties + '\n'
                 + '}';
     }
+
+
+    // getter used to reverse xmap
+    public int getAge() {
+        return age;
+    }
+
+    public String getField1() {
+        return "" + item1;
+    }
+
+    public String getField2() {
+        return "" +item2;
+    }
+
+    public String getField3() {
+        return ""+ item3;
+    }
+
+
+    // map to load objetcs
+    @XNodeMap(value = "persons/person", key = "firstName", type = HashMap.class, componentType = Name.class)
+    Map<String, Name> persons;
 
 }

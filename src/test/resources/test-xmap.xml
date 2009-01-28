@@ -58,6 +58,18 @@
 	<item3>c</item3>
 	<item1>a</item1>
 
+		<persons>
+            <person>
+                <firstName>friend1_fn</firstName>
+                <lastName>friend1_ln</lastName>
+            </person>
+            <person>
+                <firstName>friend2_fn</firstName>
+                <lastName>friend2_ln</lastName>
+            </person>
+        </persons>
+
+
     </author>
 
 

@@ -19,8 +19,12 @@
 
 package org.nuxeo.common.xmap;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
@@ -34,7 +38,9 @@ import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
+import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.xmap.annotation.XContent;
 import org.nuxeo.common.xmap.annotation.XContext;
 import org.nuxeo.common.xmap.annotation.XMemberAnnotation;
@@ -192,7 +198,7 @@ public class XMap {
             }
             Annotation anno =  checkMemberAnnotation(method);
             if (anno != null) {
-                XAnnotatedMember member = createMethodMember(method, anno);
+                XAnnotatedMember member = createMethodMember(method, anno, xob.klass);
                 xob.addMember(member);
             }
         }
@@ -475,7 +481,7 @@ public class XMap {
         return ae.getAnnotation(XObject.class);
     }
 
-    private XAnnotatedMember createMember(Annotation annotation, XSetter setter) {
+    private XAnnotatedMember createMember(Annotation annotation, XAccessor setter) {
         XAnnotatedMember member = null;
         int type = annotation.annotationType().getAnnotation(XMemberAnnotation.class).value();
         if (type == XMemberAnnotation.NODE) {
@@ -495,13 +501,47 @@ public class XMap {
     }
 
     public final XAnnotatedMember createFieldMember(Field field, Annotation annotation) {
-        XSetter setter = new XFieldSetter(field);
+        XAccessor setter = new XFieldAccessor(field);
         return createMember(annotation, setter);
     }
 
-    public final XAnnotatedMember createMethodMember(Method method, Annotation annotation) {
-        XSetter setter = new XMethodSetter(method);
+    public final XAnnotatedMember createMethodMember(Method method, Annotation annotation, Class klass) {
+        XAccessor setter = new XMethodAccessor(method, klass);
         return createMember(annotation, setter);
     }
+
+
+    // methods to serialize the map
+    public String toXML(Object object) throws ParserConfigurationException, IOException{
+        DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
+        DocumentBuilder docBuilder = dbfac.newDocumentBuilder();
+        Document doc = docBuilder.newDocument();
+        // create root element
+        Element root = doc.createElement("root");
+        doc.appendChild(root);
+
+        // load xml reprezentation in root
+        toXML(object, root);
+        return DOMSerializer.toString(root);
+    }
+
+    public void toXML(Object object, OutputStream os ) throws Exception{
+        String xml = toXML(object);
+        os.write(xml.getBytes());
+    }
+
+    public void toXML(Object object, File file) throws Exception{
+        String xml = toXML(object);
+        FileUtils.writeFile(file, xml);
+    }
+
+    public void toXML(Object object, Element root){
+        XAnnotatedObject xao = objects.get(object.getClass());
+        if ( xao == null ){
+            throw new IllegalArgumentException(object.getClass().getCanonicalName() + " is NOT registred in xmap");
+        }
+        XMLBuilder.saveToXML(object, root, xao);
+    }
+
 
 }

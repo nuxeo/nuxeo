@@ -19,8 +19,10 @@
 
 package org.nuxeo.common.xmap;
 
+import java.util.List;
 import java.util.Map;
 
+import org.nuxeo.common.collections.PrimitiveArrays;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -40,7 +42,7 @@ public class XAnnotatedMap extends XAnnotatedList {
 
     protected final boolean isNullByDefault;
 
-    public XAnnotatedMap(XMap xmap, XSetter setter, XNodeMap anno) {
+    public XAnnotatedMap(XMap xmap, XAccessor setter, XNodeMap anno) {
         super(xmap, setter);
         path = new Path(anno.value());
         trim = anno.trim();
@@ -55,7 +57,7 @@ public class XAnnotatedMap extends XAnnotatedList {
     @SuppressWarnings("unchecked")
     @Override
     protected Object getValue(Context ctx, Element base)
-            throws IllegalAccessException, InstantiationException {
+    throws IllegalAccessException, InstantiationException {
         Map<String, Object> values = (Map) type.newInstance();
         if (xao != null) {
             DOMHelper.visitMapNodes(ctx, this, base, path, elementMapVisitor, values);
@@ -74,6 +76,32 @@ public class XAnnotatedMap extends XAnnotatedList {
         return values;
     }
 
+
+    @Override
+    public void toXML(Object instance, Element parent) throws Exception {
+        Object v = accessor.getValue(instance);
+        if ( v != null && v instanceof Map<?, ?>){
+            Map<String, ?> map = (Map<String, ?>) v;
+            if ( xao == null ) {
+                for ( Map.Entry<String, ?>  entry: map.entrySet()){
+                    String entryKey = entry.getKey();
+                    String value = valueFactory.serialize(null, entry.getValue());
+                    Element e = XMLBuilder.addElement(parent, path);
+                    Element keyElement = XMLBuilder.getOrCreateElement(e, key);
+                    XMLBuilder.fillField(keyElement, entryKey, key.attribute);
+                    XMLBuilder.fillField(e, value, null);
+                }
+            } else {
+                for ( Map.Entry<String, ?>  entry: map.entrySet()){
+                    String entryKey = entry.getKey();
+                    Element e = XMLBuilder.addElement(parent, path);
+                    Element keyElement = XMLBuilder.getOrCreateElement(e, key);
+                    XMLBuilder.fillField(keyElement, entryKey, key.attribute);
+                    XMLBuilder.toXML(entry.getValue(), e, xao);
+                }
+            }
+        }
+    }
 }
 
 class ElementMapVisitor implements DOMHelper.NodeMapVisitor {
@@ -96,7 +124,7 @@ class ElementValueMapVisitor implements DOMHelper.NodeMapVisitor {
             val = val.trim();
         }
         if (xam.valueFactory != null) {
-            result.put(key, xam.valueFactory.getValue(ctx, val));
+            result.put(key, xam.valueFactory.deserialize(ctx, val));
         } else {
             // TODO: log warning?
             result.put(key, val);
@@ -109,7 +137,7 @@ class AttributeValueMapVisitor implements DOMHelper.NodeMapVisitor {
             Map<String, Object> result) {
         String val = node.getNodeValue();
         if (xam.valueFactory != null) {
-            result.put(key, xam.valueFactory.getValue(ctx, val));
+            result.put(key, xam.valueFactory.deserialize(ctx, val));
         } else {
             // TODO: log warning?
             result.put(key, val);

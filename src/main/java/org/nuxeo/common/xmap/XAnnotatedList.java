@@ -46,11 +46,11 @@ public class XAnnotatedList extends XAnnotatedMember {
     protected boolean isNullByDefault;
 
 
-    protected XAnnotatedList(XMap xmap, XSetter setter) {
+    protected XAnnotatedList(XMap xmap, XAccessor setter) {
         super(xmap, setter);
     }
 
-    public XAnnotatedList(XMap xmap, XSetter setter, XNodeList anno) {
+    public XAnnotatedList(XMap xmap, XAccessor setter, XNodeList anno) {
         super(xmap, setter);
         path = new Path(anno.value());
         trim = anno.trim();
@@ -97,42 +97,72 @@ public class XAnnotatedList extends XAnnotatedMember {
         }
         return values;
     }
-}
 
-class ElementVisitor implements DOMHelper.NodeVisitor {
-    public void visitNode(Context ctx, XAnnotatedMember xam, Node node, Collection<Object> result) {
-        try {
-            result.add(xam.xao.newInstance(ctx, (Element) node));
-        } catch (Exception e) {
-            // TODO
-            e.printStackTrace();
+    @Override
+    public void toXML(Object instance, Element parent) throws Exception {
+        Object v = accessor.getValue(instance);
+        if ( v != null ){
+            Object[] objects = null;
+            if ( v instanceof Object[]){
+                objects = (Object[]) v;
+            } else if (v instanceof List){
+                objects = ((List)v).toArray();
+            } else {
+                objects = PrimitiveArrays.toObjectArray(v);
+            }
+            if ( objects != null) {
+                if ( xao == null){
+                    for ( Object o : objects){
+                        String value = valueFactory.serialize(null,o);
+                        if ( value != null ) {
+                            Element e = XMLBuilder.addElement(parent, path);
+                            XMLBuilder.fillField(e, value, path.attribute);
+                        }
+                    }
+                } else {
+                    for ( Object o : objects){
+                        Element e = XMLBuilder.addElement(parent, path);
+                        XMLBuilder.toXML(o, e, xao);
+                    }
+                }
+            }
         }
     }
 }
-
-class ElementValueVisitor implements DOMHelper.NodeVisitor {
-    public void visitNode(Context ctx, XAnnotatedMember xam, Node node, Collection<Object> result) {
-        String val = node.getTextContent();
-        if (xam.trim) {
-            val = val.trim();
-        }
-        if (xam.valueFactory != null) {
-            result.add(xam.valueFactory.getValue(ctx, val));
-        } else {
-            // TODO: log warning?
-            result.add(val);
+    class ElementVisitor implements DOMHelper.NodeVisitor {
+        public void visitNode(Context ctx, XAnnotatedMember xam, Node node, Collection<Object> result) {
+            try {
+                result.add(xam.xao.newInstance(ctx, (Element) node));
+            } catch (Exception e) {
+                // TODO
+                e.printStackTrace();
+            }
         }
     }
-}
 
-class AttributeValueVisitor implements DOMHelper.NodeVisitor {
-    public void visitNode(Context ctx, XAnnotatedMember xam, Node node, Collection<Object> result) {
-        String val = node.getNodeValue();
-        if (xam.valueFactory != null) {
-            result.add(xam.valueFactory.getValue(ctx, val));
-        } else {
-            // TODO: log warning?
-            result.add(val);
+    class ElementValueVisitor implements DOMHelper.NodeVisitor {
+        public void visitNode(Context ctx, XAnnotatedMember xam, Node node, Collection<Object> result) {
+            String val = node.getTextContent();
+            if (xam.trim) {
+                val = val.trim();
+            }
+            if (xam.valueFactory != null) {
+                result.add(xam.valueFactory.deserialize(ctx, val));
+            } else {
+                // TODO: log warning?
+                result.add(val);
+            }
         }
     }
-}
+
+    class AttributeValueVisitor implements DOMHelper.NodeVisitor {
+        public void visitNode(Context ctx, XAnnotatedMember xam, Node node, Collection<Object> result) {
+            String val = node.getNodeValue();
+            if (xam.valueFactory != null) {
+                result.add(xam.valueFactory.deserialize(ctx, val));
+            } else {
+                // TODO: log warning?
+                result.add(val);
+            }
+        }
+    }

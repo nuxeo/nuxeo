@@ -21,6 +21,9 @@ package org.nuxeo.common.xmap;
 
 import java.io.IOException;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
 import org.nuxeo.common.xmap.annotation.XContent;
 import org.w3c.dom.DocumentFragment;
 import org.w3c.dom.Element;
@@ -46,7 +49,7 @@ public class XAnnotatedContent extends XAnnotatedMember {
     }
 
 
-    public XAnnotatedContent(XMap xmap, XSetter setter, XContent anno) {
+    public XAnnotatedContent(XMap xmap, XAccessor setter, XContent anno) {
         super(xmap, setter);
         path = new Path(anno.value());
         type = setter.getType();
@@ -63,16 +66,35 @@ public class XAnnotatedContent extends XAnnotatedMember {
         el.normalize();
         Node node = el.getFirstChild();
         if (node == null) {
-            boolean asDOM = setter.getType() == DocumentFragment.class;
+            boolean asDOM = accessor.getType() == DocumentFragment.class;
             return asDOM ? null : "";
         }
         Range range = ((DocumentRange) el.getOwnerDocument()).createRange();
         range.setStartBefore(node);
         range.setEndAfter(el.getLastChild());
         DocumentFragment fragment =  range.cloneContents();
-        boolean asDOM = setter.getType() == DocumentFragment.class;
+        boolean asDOM = accessor.getType() == DocumentFragment.class;
         return asDOM ? fragment
                 : DOMSerializer.toString(fragment, DEFAULT_FORMAT);
+    }
+
+    @Override
+    public void toXML(Object instance, Element parent) throws Exception {
+        String value = null;
+        Object v = accessor.getValue(instance);
+        if ( v instanceof DocumentFragment ){
+            Element e = XMLBuilder.getOrCreateElement(parent, path);
+            DocumentFragment df  = (DocumentFragment) v;
+            Node node = e.getOwnerDocument().importNode(df, true);
+            e.appendChild(node);
+        } else if ( valueFactory != null && v != null ){
+            value = valueFactory.serialize(null,v);
+            if ( value != null) {
+                Element e = XMLBuilder.getOrCreateElement(parent, path);
+                DOMHelper.loadFragment(e, value);
+            }
+        }
+
     }
 
 }
