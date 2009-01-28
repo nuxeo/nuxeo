@@ -27,7 +27,8 @@
 
   <task-node name="validate node">
     <task name="validate">
-      <controller class="org.nuxeo.ecm.platform.jbpm.VirtualTaskInstanceController"/>
+      <controller
+        class="org.nuxeo.ecm.platform.jbpm.core.node.VirtualTaskInstanceController" />
       <assignment pooled-actors="#{participants[0].actors}" />
     </task>
     <transition name="validate" to="condition on participants">
