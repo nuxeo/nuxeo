@@ -121,7 +121,7 @@ public class WebEngine implements ResourceLocator {
     public WebEngine(ResourceRegistry registry, File root) throws IOException {
         this.registry = registry;
         this.root = root;        
-        this.isDevMode = Boolean.parseBoolean(Framework.getProperty("debug", "false"));
+        this.isDevMode = Boolean.parseBoolean(Framework.getProperty("org.nuxeo.dev", "false"));
         if (isDevMode) {
             reloadMgr = new ReloadManager(this);
         }
