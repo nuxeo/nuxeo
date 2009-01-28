@@ -46,8 +46,8 @@ public class TestRuntimeMbeanAdapterFactory extends RepositoryOSGITestCase {
     }
 
     public void testRegisterFactories() throws Exception {
-//        doRegisterInventoryFactory();
-//        doRegisterRepositorySessionMetricFactory();
+        doRegisterInventoryFactory();
+        doRegisterRepositorySessionMetricFactory();
     }
 
     public void doRegisterInventoryFactory() throws Exception {

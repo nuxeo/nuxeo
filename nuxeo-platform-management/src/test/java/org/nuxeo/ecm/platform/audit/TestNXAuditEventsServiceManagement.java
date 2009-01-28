@@ -22,25 +22,18 @@ package org.nuxeo.ecm.platform.audit;
 import java.lang.management.ManagementFactory;
 import java.util.Set;
 
-import javax.management.InstanceNotFoundException;
-import javax.management.MBeanException;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
-import javax.management.ReflectionException;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.event.CoreEvent;
-import org.nuxeo.ecm.core.api.event.impl.CoreEventImpl;
+import org.nuxeo.ecm.core.event.impl.EventServiceImpl;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
 import org.nuxeo.ecm.platform.audit.api.NXAuditEvents;
 import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
 import org.nuxeo.ecm.platform.audit.service.management.AuditEventMetricFactory;
-import org.nuxeo.ecm.platform.events.DocumentMessageFactory;
-import org.nuxeo.ecm.platform.events.api.DocumentMessage;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.management.ObjectNameFactory;
-import org.nuxeo.runtime.management.ResourcePublisherService;
 
 /**
  * Test the event conf service.
@@ -51,13 +44,7 @@ public class TestNXAuditEventsServiceManagement extends RepositoryOSGITestCase {
 
     private NXAuditEvents serviceUnderTest;
 
-    protected DocumentModel rootDocument;
-
-    protected DocumentModel source;
-
-    protected DocumentMessage message;
-
-    protected CoreEvent event;
+    protected EventServiceImpl eventService;
 
     @Override
     public void setUp() throws Exception {
@@ -70,12 +57,10 @@ public class TestNXAuditEventsServiceManagement extends RepositoryOSGITestCase {
         deployBundle("org.nuxeo.ecm.platform.scheduler.core");
 
         deployBundle("org.nuxeo.ecm.core.event.compat");
-        
+
         deployBundle("org.nuxeo.ecm.platform.audit");
 
         deployBundle("org.nuxeo.ecm.platform.management");
-
-
 
         NXAuditEventsService.persistenceProvider.setHibernateConfiguration(new TestHibernateConfiguration());
 
@@ -84,17 +69,7 @@ public class TestNXAuditEventsServiceManagement extends RepositoryOSGITestCase {
         assertNotNull(serviceUnderTest);
 
         openRepository();
-        CoreSession session = getCoreSession();
-        rootDocument = getCoreSession().getRootDocument();
 
-        DocumentModel model = session.createDocumentModel(
-                rootDocument.getPathAsString(), "youps", "File");
-        model.setProperty("dublincore", "title", "huum");
-        source = session.createDocument(model);
-        session.save();
-        event = new CoreEventImpl("documentCreated", source, null,
-                session.getPrincipal(), null, null);
-        message = DocumentMessageFactory.createDocumentMessage(source, event);
     }
 
     protected final MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
@@ -104,15 +79,20 @@ public class TestNXAuditEventsServiceManagement extends RepositoryOSGITestCase {
         String qualifiedName = ObjectNameFactory.getQualifiedName(name);
         ObjectName objectName = ObjectNameFactory.getObjectName(qualifiedName);
         return mbeanServer.queryNames(objectName, null);
-
     }
 
     public void testCount() throws Exception {
-//        ((NXAuditEventsService) serviceUnderTest).logMessage(getCoreSession(),
-//                message);
-//        ObjectName objectName = AuditEventMetricFactory.getObjectName(message.getEventId());
-//        Long count =  (Long)mbeanServer.getAttribute(objectName, "count");
-//        assertEquals(new Long(1L), count);
+        CoreSession session = getCoreSession();
+        DocumentModel rootDocument = getCoreSession().getRootDocument();
+        DocumentModel model = session.createDocumentModel(
+                rootDocument.getPathAsString(), "youps", "File");
+        model.setProperty("dublincore", "title", "huum");
+        session.createDocument(model);
+        session.save();
+        super.waitForEventsDispatched();
+        ObjectName objectName = AuditEventMetricFactory.getObjectName("documentCreated");
+        Long count = (Long) mbeanServer.getAttribute(objectName, "count");
+        assertEquals(new Long(1L), count);
     }
 
 }
