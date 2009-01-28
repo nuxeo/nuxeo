@@ -100,7 +100,6 @@
     	<groupId>org.nuxeo.ecm.core</groupId>
     	<artifactId>nuxeo-core-event-compat</artifactId>
     	<version>${nuxeo.core.version}</version>
-    	<scope>test</scope>
     </dependency>
 
 
