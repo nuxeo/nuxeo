@@ -218,7 +218,7 @@ public class PublishActionsBean implements PublishActions, Serializable {
     protected void getSectionsSelectModel() throws ClientException {
         SelectionModelGetter selectionModelGetter = new SelectionModelGetter(
                 documentManager, navigationContext.getCurrentDocument(),
-                sectionRootTypes, sectionTypes,
+                getSectionRootTypes(), getSectionTypes(),
                 queryModelActions.get("DOMAIN_SECTIONS"));
         selectionModelGetter.runUnrestricted();
         sectionsModel = selectionModelGetter.getDataModel();
