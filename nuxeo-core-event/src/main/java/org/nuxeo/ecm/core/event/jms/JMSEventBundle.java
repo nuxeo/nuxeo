@@ -154,7 +154,7 @@ public class JMSEventBundle implements Serializable {
 
     public EventBundle reconstructEventBundle(CoreSession session) throws CannotReconstructEventBundle {
 
-        if ((session==null) || (!session.getRepositoryName().equals(coreInstanceName))) {
+        if (!session.getRepositoryName().equals(coreInstanceName)) {
             throw new CannotReconstructEventBundle("This session can not be used on this Bundle");
         }
         EventBundle bundle = new EventBundleRelayedViaJMS();
@@ -190,7 +190,7 @@ public class JMSEventBundle implements Serializable {
                         DocumentRef idRef = new IdRef(part[2]);
                         DocumentModel doc=null;
                         try {
-                            if (session.exists(idRef)) {
+                            if ((session!=null) && (session.exists(idRef))) {
                                 doc = session.getDocument(idRef);
                             }
                             else {

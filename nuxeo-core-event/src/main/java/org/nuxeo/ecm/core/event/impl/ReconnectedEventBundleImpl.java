@@ -100,13 +100,17 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
 
                 EventContext ctx = event.getContext();
                 EventContext newCtx = null;
-                CoreSession session = getReconnectedCoreSession(ctx
+                CoreSession session = null;
+
+                if (ctx.getCoreSession()!=null) {
+                 session = getReconnectedCoreSession(ctx
                         .getCoreSession().getRepositoryName());
+                }
 
                 List<Object> newArgs = new ArrayList<Object>();
                 for (Object arg : ctx.getArguments()) {
                     Object newArg = arg;
-                    if (arg instanceof DocumentModel) {
+                    if ((arg instanceof DocumentModel) && (session!=null)) {
                         DocumentModel oldDoc = (DocumentModel) arg;
                         DocumentRef ref = oldDoc.getRef();
                         if (ref != null) {
@@ -140,7 +144,7 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
                 for (Entry<String, Serializable> prop : ctx.getProperties()
                         .entrySet()) {
                     Serializable propValue = prop.getValue();
-                    if (propValue instanceof DocumentModel) {
+                    if ((propValue instanceof DocumentModel) && (session!=null)) {
                         DocumentModel oldDoc = (DocumentModel) propValue;
                         try {
                             propValue = session.getDocument(oldDoc.getRef());
