@@ -49,9 +49,44 @@
   </xsl:template>
   <xsl:template match="category[@name='org.apache.myfaces.renderkit.html.util.DefaultAddResource']">
   </xsl:template>
+  <xsl:template match="category[@name='javax.enterprise.resource.webcontainer.jsf.renderkit']">
+  </xsl:template>
+  <xsl:template match="category[@name='javax.enterprise.resource.webcontainer.jsf.application']">
+  </xsl:template>
+  <xsl:template match="category[@name='javax.enterprise.resource.webcontainer.jsf.lifecycle']">
+  </xsl:template>
+  <xsl:template match="appender[@name='ERROR-FILE']">
+  </xsl:template>
+  <xsl:template match="category[@name='nuxeo-error-log']">
+  </xsl:template>
 
   <!-- reinsert after org.apache category -->
   <xsl:template match="category[@name='org.apache']">
+    <xsl:text>
+    </xsl:text>
+       <appender name="ERROR-FILE" class="org.jboss.logging.appender.DailyRollingFileAppender">
+      <errorHandler class="org.jboss.logging.util.OnlyOnceErrorHandler"/>
+      <param name="File" value='${{jboss.server.log.dir}}/nuxeo-error.log'/>
+      <param name="Append" value="false"/>
+
+      <!-- Rollover at midnight each day -->
+      <param name="DatePattern" value="'.'yyyy-MM-dd"/>
+
+      <!-- Rollover at the top of each hour
+      <param name="DatePattern" value="'.'yyyy-MM-dd-HH"/>
+      -->
+
+      <layout class="org.apache.log4j.PatternLayout">
+         <!-- The default pattern: Date Priority [Category] Message\n -->
+         <param name="ConversionPattern" value="%d %-5p [%c] %m%n"/>
+
+         <!-- The full pattern: Date MS Priority [Category] (Thread:NDC) Message\n
+         <param name="ConversionPattern" value="%d %-5r %-5p [%c] (%t:%x) %m%n"/>
+          -->
+      </layout>
+   </appender>
+    <xsl:text>
+    </xsl:text>
     <xsl:copy>
       <xsl:apply-templates select="@*|node()"/>
     </xsl:copy>
@@ -140,6 +175,27 @@
     <category name="org.apache.myfaces.renderkit.html.util.DefaultAddResource">
       <priority value="ERROR"/>
     </category>
+    <xsl:text>
+   </xsl:text>
+    <category name="javax.enterprise.resource.webcontainer.jsf.renderkit">
+      <priority value="INFO"/>
+    </category>
+    <xsl:text>
+   </xsl:text>
+    <category name="javax.enterprise.resource.webcontainer.jsf.application">
+      <priority value="INFO"/>
+    </category>
+    <xsl:text>
+   </xsl:text>
+    <category name="javax.enterprise.resource.webcontainer.jsf.lifecycle">
+      <priority value="INFO"/>
+    </category>
+    <xsl:text>
+    </xsl:text>
+    <category name="nuxeo-error-log">
+     <priority value="TRACE"/>
+     <appender-ref ref="ERROR-FILE"/>
+   </category>
   </xsl:template>
 
 </xsl:stylesheet>
