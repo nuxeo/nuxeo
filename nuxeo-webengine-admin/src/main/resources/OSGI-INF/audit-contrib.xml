@@ -11,12 +11,4 @@
 
   <require>org.nuxeo.ecm.core.listener.CoreEventListenerService</require>
 
-  <extension
-          target="org.nuxeo.ecm.core.listener.CoreEventListenerService"
-          point="listener">
-          <listener name="audit"
-          class="org.nuxeo.ecm.platform.audit.AuditEventListener">
-          </listener>
-  </extension>
-
 </component>
