@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.core.lifecycle.extensions;
 
 import java.util.Collection;
+import java.util.HashSet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -44,19 +45,20 @@ public class LifeCycleDescriptor {
 
     private static final Log log = LogFactory.getLog(LifeCycleDescriptor.class);
 
-    /** Name of this life cycle. */
     @XNode("@name")
     private String name;
 
     @XNode("@lifecyclemanager")
     public void setLifeCycleManager(String lifeCycleManager) {
-        log.warn("Ignoring deprecated lifecyclemanager attribute '" +
-                lifeCycleManager + "' for lifecycle '" + name + "'");
+        log.warn("Ignoring deprecated lifecyclemanager attribute '"
+                + lifeCycleManager + "' for lifecycle '" + name + "'");
     }
 
-    /** The initial state name. */
     @XNode("@initial")
     private String initialStateName;
+
+    @XNode("@defaultInitial")
+    private String defaultInitialStateName;
 
     @XNode("description")
     private String description;
@@ -66,7 +68,6 @@ public class LifeCycleDescriptor {
 
     @XNode("transitions")
     private Element transitions;
-
 
     public String getDescription() {
         return description;
@@ -80,45 +81,56 @@ public class LifeCycleDescriptor {
         return name;
     }
 
+    public String getInitialStateName() {
+        return initialStateName;
+    }
+
+    public String getDefaultInitialStateName() {
+        return defaultInitialStateName;
+    }
+
     public Collection<LifeCycleState> getStates() {
         LifeCycleStateConfiguration conf = new LifeCycleStateConfiguration(
                 states);
         return conf.getStates();
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setStates(Element states) {
-        this.states = states;
-    }
-
-    public void setTransitions(Element transitions) {
-        this.transitions = transitions;
-    }
-
     public Collection<LifeCycleTransition> getTransitions() {
-        return new LifeCycleTransitionConfiguration(transitions)
-                .getTransitions();
-    }
-
-    public String getInitialStateName() {
-        return initialStateName;
+        return new LifeCycleTransitionConfiguration(transitions).getTransitions();
     }
 
     /**
      * Returns a life cycle instance out of the life cycle configuration.
-     *
-     * @return a life cycle instance out of the life cycle configuration.
      */
     public LifeCycle getLifeCycle() {
-        return new LifeCycleImpl(name, initialStateName, getStates(),
-                getTransitions());
-    }
-
-    public void setInitialStateName(String initialStateName) {
-        this.initialStateName = initialStateName;
+        String defaultInitialStateName = this.defaultInitialStateName;
+        if (initialStateName != null) {
+            defaultInitialStateName = initialStateName;
+            log.warn(String.format("Lifecycle registration of default initial"
+                    + " state has changed, change initial=\"%s\" to "
+                    + "defaultInitial=\"%s\" in lifecyle '%s' definition",
+                    defaultInitialStateName, defaultInitialStateName, name));
+        }
+        boolean defaultInitialStateFound = false;
+        Collection<String> initialStateNames = new HashSet<String>();
+        Collection<LifeCycleState> states = getStates();
+        for (LifeCycleState state : states) {
+            String stateName = state.getName();
+            if (defaultInitialStateName.equals(stateName)) {
+                defaultInitialStateFound = true;
+                initialStateNames.add(stateName);
+            }
+            if (state.isInitial()) {
+                initialStateNames.add(stateName);
+            }
+        }
+        if (!defaultInitialStateFound) {
+            log.error(String.format(
+                    "Default initial state %s not found on lifecycle %s",
+                    defaultInitialStateName, name));
+        }
+        return new LifeCycleImpl(name, defaultInitialStateName,
+                initialStateNames, states, getTransitions());
     }
 
 }
