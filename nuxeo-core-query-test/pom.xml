@@ -16,10 +16,12 @@
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-api</artifactId>
+      <version>${version}</version>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core</artifactId>
+      <version>${version}</version>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.common</groupId>
