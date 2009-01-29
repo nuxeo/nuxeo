@@ -192,6 +192,7 @@ public class DashBoardActionsBean implements DashboardActions {
             JbpmEventNames.WORKFLOW_TASK_REMOVED,
             JbpmEventNames.WORK_ITEMS_LIST_LOADED,
             JbpmEventNames.WORKFLOW_TASKS_COMPUTED,
+            JbpmEventNames.WORKFLOW_ABANDONED,
             org.nuxeo.ecm.webapp.helpers.EventNames.DOMAIN_SELECTION_CHANGED }, create = false, inject = false)
     @BypassInterceptors
     public void invalidateDocumentProcessItems() throws ClientException {
@@ -208,6 +209,7 @@ public class DashBoardActionsBean implements DashboardActions {
             JbpmEventNames.WORKFLOW_TASK_REMOVED,
             JbpmEventNames.WORK_ITEMS_LIST_LOADED,
             JbpmEventNames.WORKFLOW_TASKS_COMPUTED,
+            JbpmEventNames.WORKFLOW_ABANDONED,
             org.nuxeo.ecm.webapp.helpers.EventNames.DOMAIN_SELECTION_CHANGED }, create = false, inject = false)
     @BypassInterceptors
     public void invalidateDashboardItems() throws ClientException {

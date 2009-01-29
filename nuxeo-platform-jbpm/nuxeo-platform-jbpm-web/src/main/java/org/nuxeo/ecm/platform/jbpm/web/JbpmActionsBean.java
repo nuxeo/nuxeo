@@ -99,6 +99,8 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
 
     protected Boolean canManageCurrentProcess;
 
+    protected Boolean canAddNewTasks;
+
     protected ProcessInstance currentProcess;
 
     protected String currentProcessInitiator;
@@ -142,6 +144,35 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
             }
         }
         return canManageCurrentProcess;
+    }
+
+    public boolean getCanAddNewTasks() throws ClientException {
+        if (canAddNewTasks == null) {
+            canAddNewTasks = false;
+            if (getCanManageProcess()) {
+                canAddNewTasks = true;
+            } else {
+                ProcessInstance pi = getCurrentProcess();
+                if (pi != null) {
+                    // check if user has a current task in this workflow
+                    List<TaskInstance> tasks = jbpmService.getTaskInstances(
+                            currentProcess.getId(), null, null);
+                    if (tasks != null && !tasks.isEmpty()) {
+                        JbpmHelper helper = new JbpmHelper();
+                        NuxeoPrincipal pal = currentUser;
+                        for (TaskInstance task : tasks) {
+                            if (!task.isCancelled() && !task.hasEnded()
+                                    && helper.isTaskAssignedToUser(task, pal)) {
+                                canAddNewTasks = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+        }
+        return canAddNewTasks;
     }
 
     public boolean getCanEndTask(TaskInstance taskInstance)
@@ -509,8 +540,7 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
             // end process and tasks
             jbpmService.deleteProcessInstance(currentUser, pid);
             facesMessages.add(FacesMessage.SEVERITY_INFO,
-                    resourcesAccessor.getMessages().get(
-                            "label.review.task.ended"));
+                    resourcesAccessor.getMessages().get("workflowAbandoned"));
 
             Events.instance().raiseEvent(JbpmEventNames.WORKFLOW_ABANDONED);
             resetCurrentData();
@@ -528,6 +558,7 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
 
     public void resetCurrentData() {
         canManageCurrentProcess = null;
+        canAddNewTasks = null;
         currentProcess = null;
         currentProcessInitiator = null;
         currentTasks = null;

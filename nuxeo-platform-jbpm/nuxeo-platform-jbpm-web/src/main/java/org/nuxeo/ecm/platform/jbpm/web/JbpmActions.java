@@ -44,6 +44,8 @@ public interface JbpmActions extends Serializable {
 
     boolean getCanManageProcess() throws ClientException;
 
+    boolean getCanAddNewTasks() throws ClientException;
+
     boolean getCanEndTask(TaskInstance taskInstance) throws ClientException;
 
     String createProcessInstance(NuxeoPrincipal principal, String pd,
@@ -56,7 +58,8 @@ public interface JbpmActions extends Serializable {
     List<TaskInstance> getCurrentTasks(String... taskNames)
             throws ClientException;
 
-    ArrayList<VirtualTaskInstance> getCurrentVirtualTasks() throws ClientException;
+    ArrayList<VirtualTaskInstance> getCurrentVirtualTasks()
+            throws ClientException;
 
     boolean getShowAddVirtualTaskForm() throws ClientException;
 

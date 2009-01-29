@@ -28,14 +28,53 @@
                   <f:facet name="header">#{messages['label.workflow.task.name']}</f:facet>
                   <c:set var="taskNameLabel" value="label.workflow.task.#{task.name}" />#{messages[taskNameLabel]}</h:column>
                 <h:column>
-                  <f:facet name="header">#{messages['label.workflow.task.startDate']}</f:facet>
-                  <h:outputText value="#{task.startDate}" />
-                </h:column>
-                <h:column>
                   <f:facet name="header">#{messages['label.title']}</f:facet>
                   <nxd:restDocumentLink document="#{task.document}" tab="TAB_CONTENT_JBPM">
                     <h:outputText value="#{nxd:titleOrId(task.document)}" />
                   </nxd:restDocumentLink>
+                </h:column>
+                <h:column>
+                  <f:facet name="header">
+                    <h:outputText
+                      value="#{messages['label.review.directive']}" />
+                  </f:facet>
+                  <h:outputText
+                    value="#{messages[task.directive]}" />
+                </h:column>
+                <h:column>
+                  <f:facet name="header">
+                    <h:outputText
+                      value="#{messages['label.review.user.comment']}" />
+                  </f:facet>
+                  <h:outputText
+                    value="#{messages[task.comment]}" />
+                </h:column>
+                <h:column>
+                  <f:facet name="header">
+                    <h:outputText
+                      value="#{messages['label.workflow.task.duedate']}" />
+                  </f:facet>
+                  <h:outputText value="#{task.dueDate}"
+                    rendered="#{task.expired}"
+                    styleClass="error">
+                    <f:convertDateTime
+                      pattern="#{nxu:dateAndTimeFormater('medium')}"
+                      timeZone="#{timeZone}" />
+                  </h:outputText>
+                  <h:outputText value="#{task.dueDate}"
+                    rendered="#{!task.expired}">
+                    <f:convertDateTime
+                      pattern="#{nxu:dateAndTimeFormater('medium')}"
+                      timeZone="#{timeZone}" />
+                  </h:outputText>
+                </h:column>
+                <h:column>
+                  <f:facet name="header">#{messages['label.workflow.task.startDate']}</f:facet>
+                  <h:outputText value="#{task.startDate}">
+                    <f:convertDateTime
+                      pattern="#{nxu:dateAndTimeFormater('medium')}"
+                      timeZone="#{timeZone}" />
+                  </h:outputText>
                 </h:column>
               </h:dataTable>
             </c:when>

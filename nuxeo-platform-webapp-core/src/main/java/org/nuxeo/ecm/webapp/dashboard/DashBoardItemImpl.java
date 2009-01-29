@@ -62,7 +62,7 @@ public class DashBoardItemImpl implements DashBoardItem {
         name = task.getName();
         description = task.getDescription();
         dueDate = task.getDueDate();
-        startDate = task.getStart();
+        startDate = task.getCreate();
         directive = (String) task.getVariableLocally(TaskVariableName.directive.name());
         List<Comment> comments = task.getComments();
         if (comments != null && !comments.isEmpty()) {
