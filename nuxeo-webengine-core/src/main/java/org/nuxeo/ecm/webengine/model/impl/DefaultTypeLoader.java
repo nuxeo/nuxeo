@@ -76,7 +76,7 @@ public class DefaultTypeLoader {
   
     public void flushCache() {
         if (gLoader != null) {
-            gLoader.load();
+            gLoader.flushCache();
         }        
     }
     
