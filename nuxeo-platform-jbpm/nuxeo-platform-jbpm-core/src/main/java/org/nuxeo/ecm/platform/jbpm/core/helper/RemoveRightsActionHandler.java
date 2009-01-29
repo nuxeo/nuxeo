@@ -60,10 +60,8 @@ public class RemoveRightsActionHandler extends AbstractJbpmHandlerHelper {
             try {
                 session = getSystemSession();
                 DocumentRef docRef = getDocumentRef();
-                ACP acp = session.getACP(docRef);
-                acp.removeACL(getACLName());
-                session.setACP(docRef, acp, true);
-                session.save();
+                RemoveRightsUnrestricted runner = new RemoveRightsUnrestricted(session, docRef, getACLName());
+                runner.runUnrestricted();
             } finally {
                 if (loginContext != null) {
                     loginContext.logout();

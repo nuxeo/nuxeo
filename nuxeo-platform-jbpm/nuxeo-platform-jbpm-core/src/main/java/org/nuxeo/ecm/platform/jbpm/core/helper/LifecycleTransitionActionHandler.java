@@ -38,7 +38,7 @@ public class LifecycleTransitionActionHandler extends AbstractJbpmHandlerHelper 
 
     protected NuxeoPrincipal getNuxeoPrincipal(String user) throws Exception {
         UserManager userManager = Framework.getService(UserManager.class);
-        return userManager.getPrincipal(user);
+        return userManager.getPrincipal(user.substring(user.indexOf(':') + 1));
     }
 
     @Override

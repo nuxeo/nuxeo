@@ -33,7 +33,6 @@ import org.jbpm.taskmgmt.exe.TaskInstance;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -135,10 +134,9 @@ public abstract class AbstractJbpmHandlerHelper implements ActionHandler,
     protected void followTransition(NuxeoPrincipal principal,
             DocumentRef docRef, String transition) throws Exception {
         CoreSession coreSession = getCoreSession(principal);
-        DocumentModel model = coreSession.getDocument(docRef);
-        model.followTransition(transition);
-        coreSession.saveDocument(model);
+        coreSession.followTransition(docRef, transition);
         coreSession.save();
+        closeCoreSession(coreSession);
     }
 
     protected String getStringVariable(String name) {

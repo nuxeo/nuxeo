@@ -40,9 +40,9 @@ import org.nuxeo.ecm.platform.jbpm.VirtualTaskInstance;
 
 /**
  * Action handler that add READ rights to given participants.
- *
+ * 
  * @author Anahide Tchertchian
- *
+ * 
  */
 public class AddRightsActionHandler extends AbstractJbpmHandlerHelper {
 
@@ -91,8 +91,9 @@ public class AddRightsActionHandler extends AbstractJbpmHandlerHelper {
                     }
                 }
                 acp.addACL(acl);
-                session.setACP(docRef, acp, true);
-                session.save();
+                AddRightUnrestricted runner = new AddRightUnrestricted(session,
+                        docRef, acp);
+                runner.runUnrestricted();
             } finally {
                 if (loginContext != null) {
                     loginContext.logout();
