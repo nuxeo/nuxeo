@@ -42,9 +42,11 @@ public class UIHead extends UIOutput {
 
         params.put("themeName", ThemeManager.getThemeNameByUrl(themeUrl));
         params.put("path", externalContext.getRequestContextPath());
-        params.put(
-                "baseUrl",
-                URLUtils.getBaseURL((ServletRequest) externalContext.getRequest()));
+        String baseUrl = URLUtils.getBaseURL((ServletRequest) externalContext.getRequest());
+        if (!baseUrl.endsWith("/")) {
+            baseUrl += "/";
+        }
+        params.put("baseUrl", baseUrl);
 
         writer.write(Head.render(params));
     }
