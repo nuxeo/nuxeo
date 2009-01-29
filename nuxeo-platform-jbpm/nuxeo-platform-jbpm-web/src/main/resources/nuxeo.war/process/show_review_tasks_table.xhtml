@@ -142,16 +142,14 @@
             </h:outputText>
           </td>
           <td>
-            <f:subview rendered="#{jbpmActions.getCanEndTask(task)}">
-              <h:commandLink value="#{messages['label.review.end.task']}"
-                action="#{jbpmActions.validateTask(task, null)}" />
-            </f:subview>
+            <h:commandLink value="#{messages['label.review.end.task']}"
+              action="#{jbpmActions.validateTask(task, null)}"
+              rendered="#{jbpmActions.getCanEndTask(task)}" />             
           </td>
           <td>
-            <f:subview rendered="#{jbpmActions.getCanEndTask(task) and task.name != 'validate-after-reject'}">
-              <h:commandLink value="#{messages['label.review.reject.task']}"
-                action="#{jbpmActions.rejectTask(task, 'reject')}" />
-            </f:subview>
+            <h:commandLink value="#{messages['label.review.reject.task']}"
+              action="#{jbpmActions.rejectTask(task, 'reject')}"
+              rendered="#{jbpmActions.getCanEndTask(task) and task.name != 'validate-after-reject'}" />
           </td>
           <f:subview rendered="#{jbpmActions.canManageParticipants}">
             <td></td>
@@ -160,16 +158,15 @@
       </nxu:repeat>
       <nxu:repeat var="virtualTask" value="#{virtualTasks}" index="index">
         <tr>
-          <f:subview rendered="#{jbpmActions.canManageParticipants}"
-            id="removeParticipantTest">
+          <c:if test="#{jbpmActions.canManageParticipants}">
             <td class="iconColum">
               <h:commandLink action="#{jbpmActions.removeVirtualTask(index)}"
                 onclick="return confirmDeleteTask();"
-                id="removeParticipant">
+                id="removeParticipant_#{index}">
                 <h:graphicImage value="/icons/action_delete.gif" />
               </h:commandLink>
             </td>
-          </f:subview>      
+          </c:if>
           <td class="iconColumn">
             <h:graphicImage value="/icons/review_pending.gif" />
           </td>
@@ -199,21 +196,21 @@
           </td>
           <td>
           </td>
-          <f:subview rendered="#{jbpmActions.canManageParticipants}"
-            id="moveParticipantTest">
+          <c:if test="#{jbpmActions.canManageParticipants}">
             <td class="iconColum">
               <h:commandLink action="#{jbpmActions.moveUpVirtualTask(index)}"
-                rendered="#{index != 0}" id="moveUp">
+                rendered="#{index != 0}"
+                id="moveUp_#{index}">
                 <h:graphicImage value="/icons/arrow_up.gif" />
               </h:commandLink>
               <br />
               <h:commandLink action="#{jbpmActions.moveDownVirtualTask(index)}"
                 rendered="#{index +1 != virtualTasks.size()}"
-                 id="moveDown">
+                 id="moveDown_#{index}">
                 <h:graphicImage value="/icons/arrow_down.gif" />
               </h:commandLink>
             </td>
-          </f:subview>
+          </c:if>
         </tr>
       </nxu:repeat>
     </tbody>
