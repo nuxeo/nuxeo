@@ -66,7 +66,6 @@ public abstract class VersioningBaseTestCase extends RepositoryTestCase {
             // the repository should be deployed the last
             // after any other bundle that is deploying doctypes
             deployBundle("org.nuxeo.ecm.core.event");
-            deployBundle("org.nuxeo.ecm.core.event.compat");
             deployContrib("org.nuxeo.ecm.platform.versioning.tests",
                     "DemoRepository.xml");
             repository = NXCore.getRepositoryService().getRepositoryManager().getRepository(
@@ -107,10 +106,7 @@ public abstract class VersioningBaseTestCase extends RepositoryTestCase {
         deployContrib("org.nuxeo.ecm.platform.versioning.tests",
                 "DemoRepository.xml");
         deployContrib("org.nuxeo.ecm.platform.versioning.tests",
-                "CoreEventListenerService.xml");
-        deployContrib("org.nuxeo.ecm.platform.versioning.tests",
                 "DocumentAdapterService.xml");
-
         deployContrib("org.nuxeo.ecm.platform.versioning.tests",
                 "LifeCycleService.xml");
         deployContrib("org.nuxeo.ecm.platform.versioning.tests",
