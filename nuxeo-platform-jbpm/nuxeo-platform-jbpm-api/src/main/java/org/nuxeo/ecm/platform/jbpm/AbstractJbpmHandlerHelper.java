@@ -98,7 +98,7 @@ public abstract class AbstractJbpmHandlerHelper implements ActionHandler,
     }
 
     protected String getInitiator() throws Exception {
-        return getStringVariable(VariableName.initiator.name());
+        return getSwimlaneUser(VariableName.initiator.name());
     }
 
     protected String getEndLifecycleTransition() throws Exception {
