@@ -44,7 +44,7 @@ public interface JbpmActions extends Serializable {
 
     boolean getCanManageProcess() throws ClientException;
 
-    boolean getCanAddNewTasks() throws ClientException;
+    boolean getCanManageParticipants() throws ClientException;
 
     boolean getCanEndTask(TaskInstance taskInstance) throws ClientException;
 

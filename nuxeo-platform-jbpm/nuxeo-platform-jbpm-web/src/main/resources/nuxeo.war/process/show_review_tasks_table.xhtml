@@ -30,7 +30,7 @@
   <table class="dataOutput">
     <thead>
       <tr>
-        <f:subview rendered="#{jbpmActions.canManageProcess}">
+        <f:subview rendered="#{jbpmActions.canManageParticipants}">
           <th class="iconColum"></th>
         </f:subview>
         <th>
@@ -62,7 +62,7 @@
         </th>
         <th></th>
         <th></th>
-        <f:subview rendered="#{jbpmActions.canManageProcess}">
+        <f:subview rendered="#{jbpmActions.canManageParticipants}">
           <th class="iconColumn">
           </th>
         </f:subview>
@@ -71,7 +71,7 @@
     <tbody>
       <nxu:repeat var="task" value="#{tasks}">
         <tr>
-          <f:subview rendered="#{jbpmActions.canManageProcess}">
+          <f:subview rendered="#{jbpmActions.canManageParticipants}">
             <td class="iconColumn">
             </td>
           </f:subview>
@@ -153,14 +153,14 @@
                 action="#{jbpmActions.rejectTask(task, 'reject')}" />
             </f:subview>
           </td>
-          <f:subview rendered="#{jbpmActions.canManageProcess}">
+          <f:subview rendered="#{jbpmActions.canManageParticipants}">
             <td></td>
           </f:subview>                
         </tr>
       </nxu:repeat>
       <nxu:repeat var="virtualTask" value="#{virtualTasks}" index="index">
         <tr>
-          <f:subview rendered="#{jbpmActions.canManageProcess}">
+          <f:subview rendered="#{jbpmActions.canManageParticipants}">
             <td class="iconColum">
               <h:commandLink action="#{jbpmActions.removeVirtualTask(index)}"
                 onclick="return confirmDeleteTask();">
@@ -197,7 +197,7 @@
           </td>
           <td>
           </td>
-          <f:subview rendered="#{jbpmActions.canManageProcess}">
+          <f:subview rendered="#{jbpmActions.canManageParticipants}">
             <td class="iconColum">
               <h:commandLink action="#{jbpmActions.moveUpVirtualTask(index)}"
                 rendered="#{index != 0}">

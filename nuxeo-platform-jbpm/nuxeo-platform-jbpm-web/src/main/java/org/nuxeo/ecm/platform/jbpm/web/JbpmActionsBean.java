@@ -99,7 +99,7 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
 
     protected Boolean canManageCurrentProcess;
 
-    protected Boolean canAddNewTasks;
+    protected Boolean canManageParticipants;
 
     protected ProcessInstance currentProcess;
 
@@ -146,11 +146,11 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
         return canManageCurrentProcess;
     }
 
-    public boolean getCanAddNewTasks() throws ClientException {
-        if (canAddNewTasks == null) {
-            canAddNewTasks = false;
+    public boolean getCanManageParticipants() throws ClientException {
+        if (canManageParticipants == null) {
+            canManageParticipants = false;
             if (getCanManageProcess()) {
-                canAddNewTasks = true;
+                canManageParticipants = true;
             } else {
                 ProcessInstance pi = getCurrentProcess();
                 if (pi != null) {
@@ -163,16 +163,22 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
                         for (TaskInstance task : tasks) {
                             if (!task.isCancelled() && !task.hasEnded()
                                     && helper.isTaskAssignedToUser(task, pal)) {
-                                canAddNewTasks = true;
+                                canManageParticipants = true;
                                 break;
                             }
                         }
                     }
                 }
             }
-
+            // NXP-3090: cannot manage participants after parallel wf is started
+            if (canManageParticipants) {
+                if (isProcessStarted("choose-participant")
+                        && "review_parallel".equals(getCurrentProcess().getProcessDefinition().getName())) {
+                    canManageParticipants = false;
+                }
+            }
         }
-        return canAddNewTasks;
+        return canManageParticipants;
     }
 
     public boolean getCanEndTask(TaskInstance taskInstance)
@@ -294,7 +300,7 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
 
     public String addNewVirtualTask() throws ClientException {
         ProcessInstance pi = getCurrentProcess();
-        if (pi != null && newVirtualTask != null && getCanManageProcess()) {
+        if (pi != null && newVirtualTask != null && getCanManageParticipants()) {
             List<VirtualTaskInstance> virtualTasks = getCurrentVirtualTasks();
             if (virtualTasks == null) {
                 virtualTasks = new ArrayList<VirtualTaskInstance>();
@@ -318,7 +324,7 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
 
     public String moveDownVirtualTask(int index) throws ClientException {
         ProcessInstance pi = getCurrentProcess();
-        if (pi != null && getCanManageProcess()) {
+        if (pi != null && getCanManageParticipants()) {
             List<VirtualTaskInstance> virtualTasks = getCurrentVirtualTasks();
             if (virtualTasks != null && index + 1 < virtualTasks.size()) {
                 VirtualTaskInstance task = virtualTasks.remove(index);
@@ -341,7 +347,7 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
 
     public String moveUpVirtualTask(int index) throws ClientException {
         ProcessInstance pi = getCurrentProcess();
-        if (pi != null && getCanManageProcess()) {
+        if (pi != null && getCanManageParticipants()) {
             List<VirtualTaskInstance> virtualTasks = getCurrentVirtualTasks();
             if (virtualTasks != null && index - 1 < virtualTasks.size()) {
                 VirtualTaskInstance task = virtualTasks.remove(index);
@@ -364,7 +370,7 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
 
     public String removeVirtualTask(int index) throws ClientException {
         ProcessInstance pi = getCurrentProcess();
-        if (pi != null && getCanManageProcess()) {
+        if (pi != null && getCanManageParticipants()) {
             List<VirtualTaskInstance> virtualTasks = getCurrentVirtualTasks();
             if (virtualTasks != null && index < virtualTasks.size()) {
                 virtualTasks.remove(index);
@@ -558,7 +564,7 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
 
     public void resetCurrentData() {
         canManageCurrentProcess = null;
-        canAddNewTasks = null;
+        canManageParticipants = null;
         currentProcess = null;
         currentProcessInitiator = null;
         currentTasks = null;
