@@ -23,6 +23,9 @@
 
     <negotiation object="engine" strategy="default">
       <scheme>
+        org.nuxeo.theme.jsf.negotiation.engine.RequestAttribute
+      </scheme>    
+      <scheme>
         org.nuxeo.theme.jsf.negotiation.engine.RequestParameter
       </scheme>
       <scheme>
@@ -37,6 +40,9 @@
     </negotiation>
 
     <negotiation object="mode" strategy="default">
+      <scheme>
+        org.nuxeo.theme.jsf.negotiation.mode.RequestAttribute
+      </scheme>    
       <scheme>
         org.nuxeo.theme.jsf.negotiation.mode.RequestParameter
       </scheme>
@@ -53,6 +59,9 @@
 
     <negotiation object="theme" strategy="default">
       <scheme>
+        org.nuxeo.theme.jsf.negotiation.theme.RequestAttribute
+      </scheme>    
+      <scheme>
         org.nuxeo.theme.jsf.negotiation.theme.RequestParameter
       </scheme>
       <scheme>
@@ -67,6 +76,9 @@
     </negotiation>
 
     <negotiation object="perspective" strategy="default">
+      <scheme>
+        org.nuxeo.theme.jsf.negotiation.perspective.RequestAttribute
+      </scheme>    
       <scheme>
         org.nuxeo.theme.jsf.negotiation.perspective.RequestParameter
       </scheme>
