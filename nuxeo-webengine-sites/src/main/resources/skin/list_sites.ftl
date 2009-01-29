@@ -1,9 +1,7 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
-<head>
-<title>Sites</title>
-</head>
-<body>
+
+<@theme>
+<@block name="content">
+
 Sites available
 <hr>
 <#list sites as s>
@@ -11,5 +9,5 @@ Sites available
 <br>
 </#list>
 
-</body>
-</html>
+</@block>
+</@theme>

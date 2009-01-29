@@ -1,11 +1,6 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
-<head>
-<title>Mini Site</title>
-</head>
-<body>
-<H1>Mini site template</H1>
-<hr>
+<@theme>
+<@block name="content">
+
 Logo : <img src="${This.path}/logo" alt="logo">
 <hr>
 
@@ -16,9 +11,5 @@ Welcome Animation/Image</br>
 Welcome Text:</br>
 ${welcomeText}
 
-<hr>
-<#include "includes/tree.ftl"/>
-<@navigator/>
-
-</body>
-</html>
+</@block>
+</@theme>
