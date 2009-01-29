@@ -1,3 +1,4 @@
+<#import "common/util.ftl" as base/>
 
 <html>
 <head>
