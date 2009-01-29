@@ -52,7 +52,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author arussel
- *
+ * 
  */
 public class JbpmServiceImpl implements JbpmService {
 
@@ -430,11 +430,14 @@ public class JbpmServiceImpl implements JbpmService {
     public void endTask(final Long taskInstanceId, final String transition,
             final Map<String, Serializable> taskVariables,
             final Map<String, Serializable> variables,
-            final Map<String, Serializable> transientVariables)
-            throws NuxeoJbpmException {
+            final Map<String, Serializable> transientVariables,
+            final NuxeoPrincipal principal) throws NuxeoJbpmException {
         executeJbpmOperation(new JbpmOperation() {
             public Serializable run(JbpmContext context)
                     throws NuxeoJbpmException {
+                if (principal != null) {
+                    context.setActorId(NuxeoPrincipal.PREFIX + principal.getName());
+                }
                 TaskInstance ti = context.getTaskInstance(taskInstanceId);
                 if (taskVariables != null) {
                     ti.addVariables(taskVariables);

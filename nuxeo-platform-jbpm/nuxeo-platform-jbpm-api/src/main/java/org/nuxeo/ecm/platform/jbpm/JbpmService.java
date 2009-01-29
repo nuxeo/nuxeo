@@ -116,13 +116,15 @@ public interface JbpmService {
      * @param taskVariables TODO
      * @param variables A list a variables to add to the process instance.
      * @param transientVariables the list of transient variables.
+     * @param principal the user ending the task. Might be different from task.getActorId()
      * @throws NuxeoJbpmSecurityRuntimeException If a document is attached to
      *             the process and the transition is not allowed for user.
      */
     void endTask(Long taskInstanceId, String transition,
             Map<String, Serializable> taskVariables,
             Map<String, Serializable> variables,
-            Map<String, Serializable> transientVariables)
+            Map<String, Serializable> transientVariables,
+            NuxeoPrincipal principal)
             throws NuxeoJbpmException;
 
     /**

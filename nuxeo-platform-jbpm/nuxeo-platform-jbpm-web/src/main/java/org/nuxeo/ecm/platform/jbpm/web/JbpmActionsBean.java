@@ -66,7 +66,7 @@ import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 
 /**
  * @author Anahide Tchertchian
- *
+ * 
  */
 @Name("jbpmActions")
 @Scope(ScopeType.CONVERSATION)
@@ -95,7 +95,7 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
     protected ResourcesAccessor resourcesAccessor;
 
     @In(create = true)
-    protected transient Principal currentUser;
+    protected transient NuxeoPrincipal currentUser;
 
     protected Boolean canManageCurrentProcess;
 
@@ -430,7 +430,7 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
                     JbpmService.VariableName.participants.name(),
                     getCurrentVirtualTasks());
             jbpmService.endTask(startTask.getId(), null, null, null,
-                    transientVariables);
+                    transientVariables, currentUser);
             resetCurrentData();
         }
         return null;
@@ -444,7 +444,7 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
             taskVariables.put(JbpmService.TaskVariableName.validated.name(),
                     true);
             jbpmService.endTask(taskInstance.getId(), transition,
-                    taskVariables, null, null);
+                    taskVariables, null, null, currentUser);
 
             facesMessages.add(FacesMessage.SEVERITY_INFO,
                     resourcesAccessor.getMessages().get(
@@ -464,7 +464,7 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
             taskVariables.put(JbpmService.TaskVariableName.validated.name(),
                     false);
             jbpmService.endTask(taskInstance.getId(), transition,
-                    taskVariables, null, null);
+                    taskVariables, null, null, currentUser);
             facesMessages.add(FacesMessage.SEVERITY_INFO,
                     resourcesAccessor.getMessages().get(
                             "label.review.task.ended"));
