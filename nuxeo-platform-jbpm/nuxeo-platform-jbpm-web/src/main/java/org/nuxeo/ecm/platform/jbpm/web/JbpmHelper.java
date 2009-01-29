@@ -40,7 +40,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author arussel
- *
+ * 
  */
 // renamed in META-INF/components.xml for easier configuration
 @Name("org.nuxeo.ecm.platform.jbpm.web.JbpmHelper")
@@ -92,17 +92,6 @@ public class JbpmHelper {
     public boolean isTaskAssignedToUser(TaskInstance task, NuxeoPrincipal user)
             throws ClientException {
         if (task != null && user != null) {
-            // task actors
-            List<String> taskActors = new ArrayList<String>();
-            String taskActorId = task.getActorId();
-            if (taskActorId != null) {
-                taskActors.add(taskActorId);
-            }
-            Set pooled = task.getPooledActors();
-            if (pooled != null) {
-                taskActors.addAll(pooled);
-            }
-
             // user actors
             List<String> actors = new ArrayList<String>();
             List<String> groups = user.getAllGroups();
@@ -112,10 +101,17 @@ public class JbpmHelper {
                 actors.add(NuxeoGroup.PREFIX + s);
             }
 
-            // try to match one of the user actors in task actors
-            for (String taskActor : taskActors) {
-                if (actors.contains(taskActor)) {
-                    return true;
+            // task actors
+            if (actors.contains(task.getActorId())) {
+                return true;
+            }
+            // pooled actor
+            Set<PooledActor> pooled = task.getPooledActors();
+            if (pooled != null) {
+                for (PooledActor pa : pooled) {
+                    if (actors.contains(pa.getActorId())) {
+                        return true;
+                    }
                 }
             }
         }
