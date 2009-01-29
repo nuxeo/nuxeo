@@ -11,6 +11,9 @@ h2 {
   background-color:#ddeeff;
   color: #0066ff;
 }
+#header h1 {
+    background:    #333;
+}
 
 #main h1 input {
   color: #0066ff;
