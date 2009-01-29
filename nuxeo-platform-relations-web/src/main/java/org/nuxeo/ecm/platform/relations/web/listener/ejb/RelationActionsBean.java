@@ -544,7 +544,7 @@ public class RelationActionsBean  extends DocumentContextBoundActionBean impleme
         // filter current document
         DocumentModel currentDocument = getCurrentDocument();
         if (currentDocument != null) {
-            constraints.add(String.format("ecm:id != '%s'",
+            constraints.add(String.format("ecm:uuid != '%s'",
                     currentDocument.getId()));
         }
         // search keywords
