@@ -70,7 +70,7 @@ public class ValidationReviewTest extends AbstractProcessDefinitionTest {
             assertEquals(0, bobstask.size());
             trudystask.get(0).end("reject");
             // second evalutaion by bob
-            bobstask = context.getTaskList("bob");
+            bobstask = context.getGroupTaskList(bob_list);
             assertEquals(1, bobstask.size());
             trudystask = context.getGroupTaskList(trudy_list);
             assertEquals(0, trudystask.size());

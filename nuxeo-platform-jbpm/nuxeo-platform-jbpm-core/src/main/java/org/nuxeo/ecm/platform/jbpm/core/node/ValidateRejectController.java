@@ -29,6 +29,7 @@ import org.nuxeo.ecm.platform.jbpm.AbstractJbpmHandlerHelper;
  */
 public class ValidateRejectController extends AbstractJbpmHandlerHelper {
 
+    public static final String WORKFLOW_DIRECTIVE_TASK_REJECTED = "workflowDirectiveTaskRejected";
     private static final long serialVersionUID = 1L;
 
     @Override
@@ -41,6 +42,6 @@ public class ValidateRejectController extends AbstractJbpmHandlerHelper {
             ContextInstance contextInstance, Token token) {
         taskInstance.addComment((Comment) token.getComments().get(
                 token.getComments().size() - 1));
-        taskInstance.setVariableLocally("directive", "label.workflow.validation.taskRejected");
+        taskInstance.setVariableLocally("directive", WORKFLOW_DIRECTIVE_TASK_REJECTED);
     }
 }

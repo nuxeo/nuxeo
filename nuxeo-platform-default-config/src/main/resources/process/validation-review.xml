@@ -49,7 +49,7 @@
     <task name="validate-after-reject">
       <controller
         class="org.nuxeo.ecm.platform.jbpm.core.node.ValidateRejectController" />
-      <assignment actor-id="#{previousActorId}" />
+      <assignment pooled-actors="#{contextInstance.variables['previousActorId']}" />
     </task>
     <transition to="condition on participants" />
   </task-node>
