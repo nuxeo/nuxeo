@@ -14,7 +14,11 @@
   <!-- add rights -->
   <decision name="condition on participants">
     <event type="node-enter">
-      <script><![CDATA[executionContext.setVariable("previousActorId", executionContext.getJbpmContext().getActorId())]]></script>
+
+      <script>
+        <variable name="participant" />
+        <expression><![CDATA[executionContext.setVariable("previousActorId", (participant == null ? executionContext.getJbpmContext().getActorId() : participant.actors))]]></expression>
+      </script>
     </event>
     <transition to="setup rights">
       <script>

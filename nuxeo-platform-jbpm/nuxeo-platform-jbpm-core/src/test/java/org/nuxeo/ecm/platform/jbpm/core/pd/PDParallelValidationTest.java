@@ -62,6 +62,8 @@ public class PDParallelValidationTest extends AbstractProcessDefinitionTest {
             ti = (TaskInstance) context.getTaskList("bob").get(0);
             ti.end();
             // bob and trudy have tasks
+            pi = context.getProcessInstance(pi.getId());
+            assertNull(pi.getContextInstance().getVariable("participants"));
             assertEquals(1, context.getGroupTaskList(bob_list).size());
             assertEquals(1, context.getGroupTaskList(trudy_list).size());
             ti = (TaskInstance) context.getGroupTaskList(bob_list).get(0);

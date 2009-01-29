@@ -21,7 +21,11 @@
       <var>participant</var>
       <list>participants</list>
     </action>
-    <transition to="validate node" />
+    <transition to="validate node">
+      <script>
+        <expression><![CDATA[executionContext.setVariable("participants",null)]]></expression>
+      </script>
+    </transition>
   </node>
   <task-node name="validate node">
     <task name="validate">
