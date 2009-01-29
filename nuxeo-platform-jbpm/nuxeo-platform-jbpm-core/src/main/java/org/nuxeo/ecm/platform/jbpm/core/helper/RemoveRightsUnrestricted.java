@@ -24,12 +24,16 @@ import org.nuxeo.ecm.core.api.security.ACP;
 
 /**
  * @author alexandre
- * 
+ *
  */
 public class RemoveRightsUnrestricted extends UnrestrictedSessionRunner {
+
     final private DocumentRef docRef;
+
     final private String aclName;
-    public RemoveRightsUnrestricted(CoreSession session, DocumentRef docRef, String aclName) {
+
+    public RemoveRightsUnrestricted(CoreSession session, DocumentRef docRef,
+            String aclName) {
         super(session);
         this.docRef = docRef;
         this.aclName = aclName;

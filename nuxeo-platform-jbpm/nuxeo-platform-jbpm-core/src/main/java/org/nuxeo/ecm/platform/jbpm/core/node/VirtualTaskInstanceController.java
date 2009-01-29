@@ -26,12 +26,15 @@ import org.jbpm.graph.exe.Token;
 import org.jbpm.taskmgmt.exe.TaskInstance;
 import org.nuxeo.ecm.platform.jbpm.AbstractJbpmHandlerHelper;
 import org.nuxeo.ecm.platform.jbpm.VirtualTaskInstance;
+import org.nuxeo.ecm.platform.jbpm.JbpmService.TaskVariableName;
+import org.nuxeo.ecm.platform.jbpm.JbpmService.VariableName;
 
 /**
  * @author arussel
  *
  */
 public class VirtualTaskInstanceController extends AbstractJbpmHandlerHelper {
+
     private static Log log = LogFactory.getLog(VirtualTaskInstanceController.class);
 
     private static final long serialVersionUID = 1L;
@@ -40,20 +43,21 @@ public class VirtualTaskInstanceController extends AbstractJbpmHandlerHelper {
     @Override
     public void initializeTaskVariables(TaskInstance taskInstance,
             ContextInstance contextInstance, Token token) {
-        VirtualTaskInstance vti = (VirtualTaskInstance) contextInstance.getTransientVariable("participant");
-        if(vti == null) {
-            vti = (VirtualTaskInstance) contextInstance.getVariable("participant");
+        VirtualTaskInstance vti = (VirtualTaskInstance) contextInstance.getTransientVariable(VariableName.partipant.name());
+        if (vti == null) {
+            vti = (VirtualTaskInstance) contextInstance.getVariable(VariableName.partipant.name());
         }
-        if(vti == null) {
-            List<VirtualTaskInstance> vtis = (List<VirtualTaskInstance>)contextInstance.getVariable("participants");
-            vti =  vtis.get(0);
+        if (vti == null) {
+            List<VirtualTaskInstance> vtis = (List<VirtualTaskInstance>) contextInstance.getVariable(VariableName.participants.name());
+            vti = vtis.get(0);
         }
         taskInstance.setDueDate(vti.getDueDate());
         try {
             taskInstance.addComment(new Comment(
-                    (String) contextInstance.getVariable("initiator"),
+                    (String) contextInstance.getVariable(VariableName.initiator.name()),
                     vti.getComment()));
-            taskInstance.setVariableLocally("directive", vti.getDirective());
+            taskInstance.setVariableLocally(TaskVariableName.directive.name(),
+                    vti.getDirective());
         } catch (Exception e) {
             log.error("Error in Virtual Task Instance Controller", e);
         }

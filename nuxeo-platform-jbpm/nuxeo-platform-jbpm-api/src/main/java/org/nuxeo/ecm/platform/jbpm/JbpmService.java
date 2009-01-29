@@ -52,7 +52,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 public interface JbpmService {
 
     public enum VariableName {
-        documentId, documentRepositoryName, endLifecycleTransition, initiator, participants
+        documentId, documentRepositoryName, endLifecycleTransition, initiator, participants, partipant
     }
 
     public enum TaskVariableName {
@@ -116,7 +116,8 @@ public interface JbpmService {
      * @param taskVariables TODO
      * @param variables A list a variables to add to the process instance.
      * @param transientVariables the list of transient variables.
-     * @param principal the user ending the task. Might be different from task.getActorId()
+     * @param principal the user ending the task. Might be different from
+     *            task.getActorId()
      * @throws NuxeoJbpmSecurityRuntimeException If a document is attached to
      *             the process and the transition is not allowed for user.
      */
@@ -124,8 +125,7 @@ public interface JbpmService {
             Map<String, Serializable> taskVariables,
             Map<String, Serializable> variables,
             Map<String, Serializable> transientVariables,
-            NuxeoPrincipal principal)
-            throws NuxeoJbpmException;
+            NuxeoPrincipal principal) throws NuxeoJbpmException;
 
     /**
      * Return a list of of possible transition for this user. (If a document is

@@ -22,7 +22,6 @@ package org.nuxeo.ecm.platform.jbpm.core.helper;
 import org.jbpm.graph.exe.ExecutionContext;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.jbpm.AbstractJbpmHandlerHelper;
-import org.nuxeo.ecm.platform.jbpm.JbpmService.VariableName;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
@@ -38,7 +37,10 @@ public class LifecycleTransitionActionHandler extends AbstractJbpmHandlerHelper 
 
     protected NuxeoPrincipal getNuxeoPrincipal(String user) throws Exception {
         UserManager userManager = Framework.getService(UserManager.class);
-        return userManager.getPrincipal(user.substring(user.indexOf(':') + 1));
+        if (user.startsWith(NuxeoPrincipal.PREFIX)) {
+            user = user.substring(NuxeoPrincipal.PREFIX.length());
+        }
+        return userManager.getPrincipal(user);
     }
 
     @Override

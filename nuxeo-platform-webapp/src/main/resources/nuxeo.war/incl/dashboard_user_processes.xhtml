@@ -26,13 +26,13 @@
                 var="process" styleClass="dataList">
                 <h:column>
                   <f:facet name="header">#{messages['label.name']}</f:facet>
-                  <c:set var="label" value="document_#{process.name}" />
+                  <c:set var="label" value="document_#{process.processInstanceName}" />
                   #{messages[label]}
                 </h:column>
                 <h:column>
                   <f:facet name="header">#{messages['label.title']}</f:facet>
-                  <nxd:restDocumentLink document="#{process.document}" tab="TAB_CONTENT_JBPM">
-                    <h:outputText value="#{nxd:titleOrId(process.document)}" />
+                  <nxd:restDocumentLink document="#{process.documentModel}" tab="TAB_CONTENT_JBPM">
+                    <h:outputText value="#{nxd:titleOrId(process.documentModel)}" />
                   </nxd:restDocumentLink>
                 </h:column>
                 <h:column>

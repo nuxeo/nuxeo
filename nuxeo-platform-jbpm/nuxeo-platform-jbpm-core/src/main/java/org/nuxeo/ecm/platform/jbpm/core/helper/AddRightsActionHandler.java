@@ -21,8 +21,6 @@ package org.nuxeo.ecm.platform.jbpm.core.helper;
 
 import java.util.List;
 
-import javax.security.auth.login.LoginContext;
-
 import org.jbpm.graph.exe.ExecutionContext;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
@@ -40,9 +38,9 @@ import org.nuxeo.ecm.platform.jbpm.VirtualTaskInstance;
 
 /**
  * Action handler that add READ rights to given participants.
- * 
+ *
  * @author Anahide Tchertchian
- * 
+ *
  */
 public class AddRightsActionHandler extends AbstractJbpmHandlerHelper {
 
@@ -71,7 +69,6 @@ public class AddRightsActionHandler extends AbstractJbpmHandlerHelper {
             if (participants == null) {
                 participants = (List<VirtualTaskInstance>) executionContext.getVariable(list);
             }
-            LoginContext loginContext = null;
             CoreSession session = null;
             try {
                 session = getSystemSession();
@@ -79,6 +76,17 @@ public class AddRightsActionHandler extends AbstractJbpmHandlerHelper {
                 ACP acp = session.getACP(docRef);
                 String aclName = getACLName();
                 ACL acl = acp.getOrCreateACL(aclName);
+                // add back read and write permissions on doc for initiator in
+                // case they're lost during the review
+                String initiator = getInitiator();
+                if (initiator != null) {
+                    if (initiator.startsWith(NuxeoPrincipal.PREFIX)) {
+                        initiator = initiator.substring(NuxeoPrincipal.PREFIX.length());
+                    }
+                    acl.add(new ACE(initiator, SecurityConstants.READ_WRITE,
+                            true));
+                }
+                // add read permission for every review participant
                 for (VirtualTaskInstance participant : participants) {
                     for (String pname : participant.getActors()) {
                         // get rid of user/group prefix
@@ -95,9 +103,6 @@ public class AddRightsActionHandler extends AbstractJbpmHandlerHelper {
                         docRef, acp);
                 runner.runUnrestricted();
             } finally {
-                if (loginContext != null) {
-                    loginContext.logout();
-                }
                 if (session != null) {
                     closeCoreSession(session);
                 }

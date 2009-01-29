@@ -52,7 +52,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author arussel
- * 
+ *
  */
 public class JbpmServiceImpl implements JbpmService {
 
@@ -161,10 +161,17 @@ public class JbpmServiceImpl implements JbpmService {
         ProcessInstance pi = (ProcessInstance) executeJbpmOperation(new JbpmOperation() {
             public ProcessInstance run(JbpmContext context)
                     throws NuxeoJbpmException {
+                String initiatorActorId = NuxeoPrincipal.PREFIX
+                        + user.getName();
                 if (user != null) {
-                    context.setActorId(NuxeoPrincipal.PREFIX + user.getName());
+                    context.setActorId(initiatorActorId);
                 }
                 ProcessInstance pi = context.newProcessInstance(processDefinitionName);
+                if (initiatorActorId != null) {
+                    pi.getContextInstance().setVariable(
+                            JbpmService.VariableName.initiator.name(),
+                            initiatorActorId);
+                }
                 if (variables != null) {
                     pi.getContextInstance().addVariables(variables);
                 }
@@ -436,11 +443,14 @@ public class JbpmServiceImpl implements JbpmService {
             public Serializable run(JbpmContext context)
                     throws NuxeoJbpmException {
                 if (principal != null) {
-                    context.setActorId(NuxeoPrincipal.PREFIX + principal.getName());
+                    context.setActorId(NuxeoPrincipal.PREFIX
+                            + principal.getName());
                 }
                 TaskInstance ti = context.getTaskInstance(taskInstanceId);
                 if (taskVariables != null) {
-                    ti.addVariables(taskVariables);
+                    for (String k : taskVariables.keySet()) {
+                        ti.setVariableLocally(k, taskVariables.get(k));
+                    }
                 }
                 if (variables != null) {
                     ti.getProcessInstance().getContextInstance().addVariables(

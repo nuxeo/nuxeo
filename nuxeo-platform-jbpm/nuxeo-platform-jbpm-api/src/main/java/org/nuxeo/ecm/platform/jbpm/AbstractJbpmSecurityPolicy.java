@@ -29,10 +29,9 @@ import org.nuxeo.ecm.platform.jbpm.JbpmService.VariableName;
  */
 public abstract class AbstractJbpmSecurityPolicy implements JbpmSecurityPolicy {
 
-    protected boolean isAdminOrInitiator(ProcessInstance pi,
-            NuxeoPrincipal user) {
-        return (user != null && (user.isAdministrator() || user.getName().equals(
-                getInitiator(pi))));
+    protected boolean isAdminOrInitiator(ProcessInstance pi, NuxeoPrincipal user) {
+        return user != null
+                && (user.isAdministrator() || (NuxeoPrincipal.PREFIX + user.getName()).equals(getInitiator(pi)));
     }
 
     protected String getInitiator(ProcessInstance pi) {

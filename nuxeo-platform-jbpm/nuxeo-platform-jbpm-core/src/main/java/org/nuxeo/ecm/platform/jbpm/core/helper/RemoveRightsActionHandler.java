@@ -19,14 +19,11 @@
 
 package org.nuxeo.ecm.platform.jbpm.core.helper;
 
-import javax.security.auth.login.LoginContext;
-
 import org.jbpm.graph.exe.ExecutionContext;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.platform.jbpm.AbstractJbpmHandlerHelper;
 import org.nuxeo.ecm.platform.jbpm.NuxeoJbpmException;
 
@@ -55,17 +52,14 @@ public class RemoveRightsActionHandler extends AbstractJbpmHandlerHelper {
     public void execute(ExecutionContext executionContext) throws Exception {
         this.executionContext = executionContext;
         if (nuxeoHasStarted()) {
-            LoginContext loginContext = null;
             CoreSession session = null;
             try {
                 session = getSystemSession();
                 DocumentRef docRef = getDocumentRef();
-                RemoveRightsUnrestricted runner = new RemoveRightsUnrestricted(session, docRef, getACLName());
+                RemoveRightsUnrestricted runner = new RemoveRightsUnrestricted(
+                        session, docRef, getACLName());
                 runner.runUnrestricted();
             } finally {
-                if (loginContext != null) {
-                    loginContext.logout();
-                }
                 if (session != null) {
                     closeCoreSession(session);
                 }

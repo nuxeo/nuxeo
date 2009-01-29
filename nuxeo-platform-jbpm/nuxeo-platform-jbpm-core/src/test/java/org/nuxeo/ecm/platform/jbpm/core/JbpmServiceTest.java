@@ -27,6 +27,7 @@ import org.jbpm.taskmgmt.exe.TaskInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
 import org.nuxeo.ecm.platform.jbpm.JbpmService;
 import org.nuxeo.ecm.platform.jbpm.core.service.JbpmServiceImpl;
@@ -66,7 +67,7 @@ public class JbpmServiceTest extends RepositoryOSGITestCase {
         service = Framework.getService(JbpmService.class);
         userManager = Framework.getService(UserManager.class);
         assertNotNull(userManager);
-        administrator = userManager.getPrincipal("Administrator");
+        administrator = userManager.getPrincipal(SecurityConstants.ADMINISTRATOR);
         assertNotNull(administrator);
         user1 = userManager.getPrincipal("myuser1");
         assertNotNull(user1);
@@ -92,6 +93,9 @@ public class JbpmServiceTest extends RepositoryOSGITestCase {
         ProcessInstance pd = service.createProcessInstance(administrator,
                 "review_parallel", dm, null, null);
         assertNotNull(pd);
+        assertEquals(pd.getContextInstance().getVariable(
+                JbpmService.VariableName.initiator.name()),
+                NuxeoPrincipal.PREFIX + SecurityConstants.ADMINISTRATOR);
         assertEquals(pd.getContextInstance().getVariable(
                 JbpmService.VariableName.documentId.name()), dm.getId());
         assertEquals(pd.getContextInstance().getVariable(

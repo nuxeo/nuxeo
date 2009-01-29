@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.platform.jbpm.web;
 
 import java.io.Serializable;
-import java.security.Principal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -55,8 +54,8 @@ import org.nuxeo.ecm.platform.jbpm.AbstractJbpmHandlerHelper;
 import org.nuxeo.ecm.platform.jbpm.JbpmEventNames;
 import org.nuxeo.ecm.platform.jbpm.JbpmSecurityPolicy;
 import org.nuxeo.ecm.platform.jbpm.JbpmService;
-import org.nuxeo.ecm.platform.jbpm.TaskListFilter;
 import org.nuxeo.ecm.platform.jbpm.TaskCreateDateComparator;
+import org.nuxeo.ecm.platform.jbpm.TaskListFilter;
 import org.nuxeo.ecm.platform.jbpm.VirtualTaskInstance;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.invalidations.AutomaticDocumentBasedInvalidation;
@@ -66,7 +65,7 @@ import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 
 /**
  * @author Anahide Tchertchian
- * 
+ *
  */
 @Name("jbpmActions")
 @Scope(ScopeType.CONVERSATION)
@@ -135,8 +134,7 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
             if (currentProcess != null) {
                 Boolean canWrite = jbpmService.getPermission(currentProcess,
                         JbpmSecurityPolicy.Action.write,
-                        navigationContext.getCurrentDocument(),
-                        (NuxeoPrincipal) currentUser);
+                        navigationContext.getCurrentDocument(), currentUser);
                 if (canWrite != null) {
                     canManageCurrentProcess = canWrite;
                 }
@@ -150,7 +148,7 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
         if (taskInstance != null
                 && (!taskInstance.isCancelled() && !taskInstance.hasEnded())) {
             JbpmHelper helper = new JbpmHelper();
-            NuxeoPrincipal pal = (NuxeoPrincipal) currentUser;
+            NuxeoPrincipal pal = currentUser;
             return pal.isAdministrator()
                     || pal.getName().equals(getCurrentProcessInitiator())
                     || helper.isTaskAssignedToUser(taskInstance, pal);
@@ -181,8 +179,7 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
     public ProcessInstance getCurrentProcess() throws ClientException {
         if (currentProcess == null) {
             List<ProcessInstance> processes = jbpmService.getProcessInstances(
-                    navigationContext.getCurrentDocument(),
-                    (NuxeoPrincipal) currentUser, null);
+                    navigationContext.getCurrentDocument(), currentUser, null);
             if (processes != null && !processes.isEmpty()) {
                 currentProcess = processes.get(0);
             }
@@ -488,8 +485,7 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
             }
 
             // end process and tasks
-            jbpmService.abandonProcessInstance((NuxeoPrincipal) currentUser,
-                    pid);
+            jbpmService.abandonProcessInstance(currentUser, pid);
             facesMessages.add(FacesMessage.SEVERITY_INFO,
                     resourcesAccessor.getMessages().get(
                             "label.review.task.ended"));

@@ -40,7 +40,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author arussel
- * 
+ *
  */
 // renamed in META-INF/components.xml for easier configuration
 @Name("org.nuxeo.ecm.platform.jbpm.web.JbpmHelper")
@@ -121,13 +121,10 @@ public class JbpmHelper {
     @SuppressWarnings("unchecked")
     public List<String> getPooledActorIds(TaskInstance task) {
         List<String> res = new ArrayList<String>();
-        Set pooledActors = task.getPooledActors();
-        for (Object pooledActor : pooledActors) {
-            if (pooledActor instanceof PooledActor) {
-                res.add(((PooledActor) pooledActor).getActorId());
-            }
+        Set<PooledActor> pooledActors = task.getPooledActors();
+        for (PooledActor pooledActor : pooledActors) {
+            res.add(pooledActor.getActorId());
         }
         return res;
     }
-
 }

@@ -133,7 +133,7 @@
             </f:subview>
           </td>
           <td>
-            <f:subview rendered="#{jbpmActions.getCanEndTask(task)}">
+            <f:subview rendered="#{jbpmActions.getCanEndTask(task) and task.name != 'validate-after-reject'}">
               <h:commandLink value="#{messages['label.review.reject.task']}"
                 action="#{jbpmActions.rejectTask(task, 'reject')}" />
             </f:subview>
