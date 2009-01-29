@@ -62,7 +62,7 @@ import org.nuxeo.runtime.model.Extension;
 
 /**
  * @author <a href="mailto:npaslaru@nuxeo.com">Narcis Paslaru</a>
- * 
+ *
  */
 public class NotificationService extends DefaultComponent implements
         NotificationManager {
@@ -300,7 +300,7 @@ public class NotificationService extends DefaultComponent implements
                 doc);
         ctx.setCategory(DocumentEventCategories.EVENT_CLIENT_NOTIF_CATEGORY);
         ctx.setProperties(options);
-        Event event = ctx.event(DocumentEventTypes.SUBSCRIPTION_ASSIGNED);
+        Event event = ctx.newEvent(DocumentEventTypes.SUBSCRIPTION_ASSIGNED);
 
         try {
             doFireEvent(event);

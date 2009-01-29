@@ -94,8 +94,6 @@
       <artifactId>nuxeo-platform-comment-core</artifactId>
       <scope>test</scope>
     </dependency>
-
-
   </dependencies>
 
 </project>

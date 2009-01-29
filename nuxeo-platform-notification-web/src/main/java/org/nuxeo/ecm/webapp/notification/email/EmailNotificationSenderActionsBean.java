@@ -188,7 +188,7 @@ public class EmailNotificationSenderActionsBean extends InputController implemen
 
         DocumentEventContext ctx = new DocumentEventContext(documentManager, currentUser, navigationContext.getCurrentDocument());
         ctx.setProperties(options);
-        Event event = ctx.event(DocumentEventTypes.EMAIL_DOCUMENT_SEND);
+        Event event = ctx.newEvent(DocumentEventTypes.EMAIL_DOCUMENT_SEND);
 
         EventProducer evtProducer = null;
         try {

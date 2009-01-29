@@ -48,7 +48,6 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.SimplePrincipal;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventProducer;
-import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.ecm.core.event.impl.InlineEventContext;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.LoginResponseHandler;
@@ -141,7 +140,7 @@ public class NuxeoAuthenticationFilter implements Filter {
             EventContext ctx = new InlineEventContext(principal, props);
 
             try {
-                evtProducer.fireEvent(ctx.event(eventId));
+                evtProducer.fireEvent(ctx.newEvent(eventId));
             } catch (ClientException e) {
                 log.error("Unable to send authentication event", e);
             }

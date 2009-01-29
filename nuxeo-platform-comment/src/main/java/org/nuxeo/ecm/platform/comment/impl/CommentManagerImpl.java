@@ -342,7 +342,7 @@ public class CommentManagerImpl implements CommentManager {
                 "comment", "text"));
         props.put("category", CommentConstants.EVENT_COMMENT_CATEGORY);
         ctx.setProperties(props);
-        Event event = ctx.event(eventType);
+        Event event = ctx.newEvent(eventType);
 
         try {
             EventProducer evtProducer = Framework.getService(EventProducer.class);
