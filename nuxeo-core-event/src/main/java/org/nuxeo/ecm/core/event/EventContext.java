@@ -45,7 +45,7 @@ import org.nuxeo.ecm.core.event.Event.Flag;
  * contexts.
  * <p>
  * An event context also acts as an event factory. See {@link #newEvent(String)}
- * and {@link #event(String, int)} methods. Events created by an event context
+ * and {@link #newEvent(String, Set<Flag>)} methods. Events created by an event context
  * are automatically mapped to that context.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -136,11 +136,11 @@ public interface EventContext extends Serializable {
 
     /**
      * Creates a new event in that context given the event name. The default
-     * flags if the event will be used.
+     * flags for the event will be used.
      *
      * @param name the event name
      * @return the event
-     * @see EventContext#event(String, int)
+     * @see #newEvent(String, Set<Flag>)
      */
     Event newEvent(String name);
 
