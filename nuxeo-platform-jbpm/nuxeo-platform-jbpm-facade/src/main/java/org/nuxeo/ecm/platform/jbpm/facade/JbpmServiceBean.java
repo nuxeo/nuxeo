@@ -159,9 +159,9 @@ public class JbpmServiceBean implements JbpmService {
         return service.getTypeFilterConfiguration();
     }
 
-    public void abandonProcessInstance(NuxeoPrincipal principal, Long processId)
+    public void deleteProcessInstance(NuxeoPrincipal principal, Long processId)
             throws NuxeoJbpmException {
-        service.abandonProcessInstance(principal, processId);
+        service.deleteProcessInstance(principal, processId);
     }
 
     public Boolean getPermission(ProcessInstance pi, Action action,

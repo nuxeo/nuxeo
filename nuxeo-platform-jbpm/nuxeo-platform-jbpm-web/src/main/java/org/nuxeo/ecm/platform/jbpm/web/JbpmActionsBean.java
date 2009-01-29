@@ -485,7 +485,7 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
             }
 
             // end process and tasks
-            jbpmService.abandonProcessInstance(currentUser, pid);
+            jbpmService.deleteProcessInstance(currentUser, pid);
             facesMessages.add(FacesMessage.SEVERITY_INFO,
                     resourcesAccessor.getMessages().get(
                             "label.review.task.ended"));

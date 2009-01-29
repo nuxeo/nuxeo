@@ -44,10 +44,10 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
  * might not have been fetch. If you need dependent object, use the
  * executeJbpmOperation making sure those object are properly loaded inside the
  * operation.
- *
- *
+ * 
+ * 
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
- *
+ * 
  */
 public interface JbpmService {
 
@@ -75,7 +75,7 @@ public interface JbpmService {
 
     /**
      * Execute a JbpmOperation.
-     *
+     * 
      * @param operation
      * @return The object returned by the run method of the JbpmOperation.
      * @throws NuxeoJbpmException
@@ -87,7 +87,7 @@ public interface JbpmService {
     /**
      * Return a list of task instances assigned to this user or one of its
      * group.
-     *
+     * 
      * @param currentUser the user.
      * @return A list of task instances.
      * @throws IllegalStateException If the currentUser is null.
@@ -98,7 +98,7 @@ public interface JbpmService {
 
     /**
      * Return a list of task instance for this process instance.
-     *
+     * 
      * @param processInstanceId the id of the process instance.
      * @param principal
      * @return
@@ -110,7 +110,7 @@ public interface JbpmService {
     /**
      * End the task following the transition. If transition is null, follow the
      * default transition.
-     *
+     * 
      * @param taskInstanceId
      * @param transition
      * @param taskVariables TODO
@@ -130,7 +130,7 @@ public interface JbpmService {
     /**
      * Return a list of of possible transition for this user. (If a document is
      * attached to the process, then return only the allowed transition)
-     *
+     * 
      * @param taskInstanceId the id of the taskInstance.
      * @param principal the user
      * @return
@@ -142,7 +142,7 @@ public interface JbpmService {
      * Saves the task instances.
      * <p>
      * Tasks are created or updated if they already exist.
-     *
+     * 
      * @param taskInstances
      */
     void saveTaskInstances(List<TaskInstance> taskInstances)
@@ -151,20 +151,23 @@ public interface JbpmService {
     // PROCESS
 
     /**
-     * End the process instance and cancel all related tasks.
-     *
+     * Delete the process instance and related tasks.
+     * 
+     * If you want don't want to delete the process, add a abandon state and
+     * suitable transitions. 
+     * 
      * @param principal the canceller.
      */
-    public void abandonProcessInstance(NuxeoPrincipal principal, Long processId)
+    public void deleteProcessInstance(NuxeoPrincipal principal, Long processId)
             throws NuxeoJbpmException;
 
     /**
      * Return a list of all current process instances for this user.
-     *
+     * 
      * <p>
      * A current process instance is an unfinished process. The user is the
      * process instances initiator.
-     *
+     * 
      * @param principal
      * @return A list of ProcessInstance
      * @throws IllegalStateException If the principal is null.
@@ -174,7 +177,7 @@ public interface JbpmService {
 
     /**
      * Return the process instance.
-     *
+     * 
      * @param processInstanceId the id of the process instance.
      * @return
      */
@@ -183,7 +186,7 @@ public interface JbpmService {
 
     /**
      * Return the created and started process instance.
-     *
+     * 
      * @param processInstanceName the name of the process
      * @param user the initiator of the process.
      * @param dm the document attached to this process.
@@ -202,9 +205,9 @@ public interface JbpmService {
 
     /**
      * Return a list of available Process Definition Name available for this
-     * document and user. All process definition if dm is <code>null</code>.
-     * The returned process definition is always the latest.
-     *
+     * document and user. All process definition if dm is <code>null</code>. The
+     * returned process definition is always the latest.
+     * 
      * @param user the caller.
      * @param dm the document concerned by the process
      * @return A list of process definition
@@ -214,10 +217,10 @@ public interface JbpmService {
 
     /**
      * Return the latest process definitions attached to a type.
-     *
+     * 
      * Matching between type and process definition is done in the typeFilter
      * extension point of the service.
-     *
+     * 
      * @param type the type.
      * @return A list of process definition.
      */
@@ -226,7 +229,7 @@ public interface JbpmService {
 
     /**
      * Return the latest process definition with this name.
-     *
+     * 
      * @param name the Name.
      * @return the process definition.
      */
@@ -235,7 +238,7 @@ public interface JbpmService {
 
     /**
      * Terminate this process and all the tokens in it.
-     *
+     * 
      * @param processId the id of the process instance.
      * @throws NuxeoJbpmException
      */
@@ -243,7 +246,7 @@ public interface JbpmService {
 
     /**
      * Persist a process instance.
-     *
+     * 
      * @return the updated instance.
      */
     ProcessInstance persistProcessInstance(ProcessInstance pi)
@@ -253,7 +256,7 @@ public interface JbpmService {
 
     /**
      * Return the document used in this task.
-     *
+     * 
      * @param ti the task.
      * @param user the user.
      * @return a list of DocumentModel.
@@ -263,7 +266,7 @@ public interface JbpmService {
 
     /**
      * Return a list of document used in this process.
-     *
+     * 
      * @param pi the process instance.
      * @param user the user.
      * @return a list of DocumentModel.
@@ -275,9 +278,9 @@ public interface JbpmService {
     /**
      * Return the list of task instances associated with this document for which
      * the user is the actor or belongs to the pooled actor list.
-     *
+     * 
      * If the user is null, then it returns all task instances for the document.
-     *
+     * 
      * @param dm the document.
      * @param user
      * @return
@@ -288,7 +291,7 @@ public interface JbpmService {
 
     /**
      * Return the list of process instances associated with this document.
-     *
+     * 
      * @param dm
      * @param user
      * @return

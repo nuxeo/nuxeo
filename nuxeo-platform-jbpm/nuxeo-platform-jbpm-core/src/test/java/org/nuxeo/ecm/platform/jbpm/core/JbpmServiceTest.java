@@ -16,6 +16,8 @@
  */
 package org.nuxeo.ecm.platform.jbpm.core;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -30,6 +32,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
 import org.nuxeo.ecm.platform.jbpm.JbpmService;
+import org.nuxeo.ecm.platform.jbpm.VirtualTaskInstance;
 import org.nuxeo.ecm.platform.jbpm.core.service.JbpmServiceImpl;
 import org.nuxeo.ecm.platform.jbpm.test.JbpmTestConstants;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
@@ -38,7 +41,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author arussel
- *
+ * 
  */
 public class JbpmServiceTest extends RepositoryOSGITestCase {
 
@@ -89,9 +92,15 @@ public class JbpmServiceTest extends RepositoryOSGITestCase {
                 administrator, dm, null);
         assertNotNull(pds);
         assertEquals(2, pds.size());
+        List<VirtualTaskInstance> participants = new ArrayList<VirtualTaskInstance>();
+        participants.add(new VirtualTaskInstance("bob", "dobob", "yobob", null));
+        participants.add(new VirtualTaskInstance("trudy", "dotrudy", "yotrudy",
+                null));
         // create process instance
         ProcessInstance pd = service.createProcessInstance(administrator,
-                "review_parallel", dm, null, null);
+                "review_parallel", dm, Collections.singletonMap("participants",
+                        (Serializable) participants), null);
+        Long pdId = pd.getId();
         assertNotNull(pd);
         assertEquals(pd.getContextInstance().getVariable(
                 JbpmService.VariableName.initiator.name()),
@@ -106,8 +115,17 @@ public class JbpmServiceTest extends RepositoryOSGITestCase {
                 null);
         assertNotNull(tasks);
         assertEquals(1, tasks.size());
-        service.abandonProcessInstance(administrator, pd.getId());
-        assertTrue(pd.hasEnded());
+        tasks = service.getCurrentTaskInstances(administrator, null);
+        assertEquals(1, tasks.size());
+        tasks.get(0).cancel();
+        tasks = service.getCurrentTaskInstances(administrator, null);
+        assertEquals(0, tasks.size());
+        service.deleteProcessInstance(administrator, pd.getId());
+        pd = service.getProcessInstance(pdId);
+        assertNull(pd);
+        List<TaskInstance> tis = service.getCurrentTaskInstances(administrator,
+                null);
+        assertTrue(tis.isEmpty());
     }
 
     public void testTaskManagement() throws Exception {

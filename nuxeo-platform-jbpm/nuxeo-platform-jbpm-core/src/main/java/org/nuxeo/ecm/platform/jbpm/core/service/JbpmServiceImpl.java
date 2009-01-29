@@ -627,7 +627,7 @@ public class JbpmServiceImpl implements JbpmService {
         this.typeFilters = typeFilters;
     }
 
-    public void abandonProcessInstance(final NuxeoPrincipal principal,
+    public void deleteProcessInstance(final NuxeoPrincipal principal,
             final Long processId) throws NuxeoJbpmException {
         executeJbpmOperation(new JbpmOperation() {
             @SuppressWarnings("unchecked")
@@ -638,7 +638,6 @@ public class JbpmServiceImpl implements JbpmService {
                 }
                 ProcessInstance pi = context.getProcessInstance(processId);
                 Collection<TaskInstance> tis = pi.getTaskMgmtInstance().getTaskInstances();
-                TaskMgmtInstance taskMgmt = pi.getTaskMgmtInstance();
                 List<TaskInstance> toRemove = new ArrayList<TaskInstance>();
                 for (TaskInstance ti : tis) {
                     if (!ti.hasEnded()) {
@@ -646,9 +645,9 @@ public class JbpmServiceImpl implements JbpmService {
                     }
                 }
                 for (TaskInstance ti : toRemove) {
-                    taskMgmt.removeTaskInstance(ti);
+                    context.getSession().delete(ti);
                 }
-                pi.end();
+                context.getSession().delete(pi);
                 return null;
             }
         });
