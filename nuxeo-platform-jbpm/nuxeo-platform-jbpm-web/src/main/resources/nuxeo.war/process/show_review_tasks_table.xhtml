@@ -160,10 +160,12 @@
       </nxu:repeat>
       <nxu:repeat var="virtualTask" value="#{virtualTasks}" index="index">
         <tr>
-          <f:subview rendered="#{jbpmActions.canManageParticipants}">
+          <f:subview rendered="#{jbpmActions.canManageParticipants}"
+            id="removeParticipantTest">
             <td class="iconColum">
               <h:commandLink action="#{jbpmActions.removeVirtualTask(index)}"
-                onclick="return confirmDeleteTask();">
+                onclick="return confirmDeleteTask();"
+                id="removeParticipant">
                 <h:graphicImage value="/icons/action_delete.gif" />
               </h:commandLink>
             </td>
@@ -197,15 +199,17 @@
           </td>
           <td>
           </td>
-          <f:subview rendered="#{jbpmActions.canManageParticipants}">
+          <f:subview rendered="#{jbpmActions.canManageParticipants}"
+            id="moveParticipantTest">
             <td class="iconColum">
               <h:commandLink action="#{jbpmActions.moveUpVirtualTask(index)}"
-                rendered="#{index != 0}">
+                rendered="#{index != 0}" id="moveUp">
                 <h:graphicImage value="/icons/arrow_up.gif" />
               </h:commandLink>
               <br />
               <h:commandLink action="#{jbpmActions.moveDownVirtualTask(index)}"
-                rendered="#{index +1 != virtualTasks.size()}">
+                rendered="#{index +1 != virtualTasks.size()}"
+                 id="moveDown">
                 <h:graphicImage value="/icons/arrow_down.gif" />
               </h:commandLink>
             </td>
