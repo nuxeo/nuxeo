@@ -48,6 +48,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.jbpm.AbstractJbpmHandlerHelper;
@@ -471,6 +472,28 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
         return null;
     }
 
+    // helper inner class to do the unrestricted abandon
+    protected class UnrestrictedAbandon extends UnrestrictedSessionRunner {
+
+        private final DocumentModel doc;
+
+        private final Long processId;
+
+        protected UnrestrictedAbandon(DocumentModel doc, Long processId) {
+            super(documentManager);
+            this.doc = doc;
+            this.processId = processId;
+        }
+
+        @Override
+        public void run() throws ClientException {
+            ACP acp = doc.getACP();
+            acp.removeACL(AbstractJbpmHandlerHelper.getProcessACLName(processId));
+            session.setACP(doc.getRef(), acp, true);
+            session.save();
+        }
+    }
+
     public String abandonCurrentProcess() throws ClientException {
         ProcessInstance currentProcess = getCurrentProcess();
         if (currentProcess != null && getCanManageProcess()) {
@@ -478,10 +501,9 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
             Long pid = currentProcess.getId();
             DocumentModel currentDoc = navigationContext.getCurrentDocument();
             if (currentDoc != null) {
-                ACP acp = currentDoc.getACP();
-                acp.removeACL(AbstractJbpmHandlerHelper.getProcessACLName(pid));
-                documentManager.setACP(currentDoc.getRef(), acp, true);
-                documentManager.save();
+                UnrestrictedAbandon runner = new UnrestrictedAbandon(
+                        currentDoc, pid);
+                runner.runUnrestricted();
             }
 
             // end process and tasks

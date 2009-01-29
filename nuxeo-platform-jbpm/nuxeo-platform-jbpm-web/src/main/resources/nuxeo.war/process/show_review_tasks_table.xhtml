@@ -81,28 +81,43 @@
             <h:graphicImage value="/icons/review_current_level.gif"
               rendered="#{!empty task.create and empty task.end}" />
             <h:graphicImage value="/icons/review_accepted.png"
-              rendered="#{!empty task.end and task.variables.validated}" />
+              rendered="#{!empty task.end and task.variablesLocally.validated}" />
             <h:graphicImage value="/icons/review_refused.png"
-              rendered="#{!empty task.end and !task.variables.validated}" />
+              rendered="#{!empty task.end and !task.variablesLocally.validated}" />
           </td>
           <td>
             <nxl:layout name="user_group_prefixed_suggestion" mode="view"
               value="#{jbpmHelper.getPooledActorIds(task)}" />
+            <nxu:methodResult name="userInfo" value="#{userSuggestionActions.getPrefixedUserInfo(task.actorId)}">
+              <f:subview rendered="#{userInfo.type == 'USER_TYPE'}">
+                <h:graphicImage value="/icons/user.gif" alt="user.gif" />
+                <h:outputText value="#{nxu:userDisplayName(userInfo.id, userInfo.entry.user.firstName, userInfo.entry.user.lastName)}" />
+              </f:subview>
+              <f:subview rendered="#{userInfo.type == 'GROUP_TYPE'}">
+                <h:graphicImage value="/icons/group.gif" alt="group.gif" />
+                <h:outputText value="#{userInfo.id}" />
+              </f:subview>
+              <f:subview rendered="#{empty userInfo.type}">
+                <h:outputText value="#{task.actorId}" />
+              </f:subview>
+            </nxu:methodResult>
           </td>
           <td>
             <h:outputText value="#{messages[task.variablesLocally.directive]}" />
           </td>
           <td>
             <nxu:repeat name="comment" value="#{task.comments}">
-              <nxu:methodResult name="userInfo" value="#{userSuggestionActions.getPrefixedUserInfo(comment.actorId)}">
-                <f:subview rendered="#{info.type == 'USER_TYPE'}">
-                  <h:outputText value="#{nxu:userDisplayName(userInfo.id, userInfo.entry.user.firstName, userInfo.entry.user.lastName)}" />
-                </f:subview>
-                <f:subview rendered="#{userInfo.type != 'USER_TYPE'}">
-                  <h:outputText value="#{comment.actorId}" />
-                </f:subview>
-              </nxu:methodResult>
-              <h:outputText value=": #{comment.message}" />
+              <f:subview rendered="#{!empty comment}">
+                <nxu:methodResult name="userInfo" value="#{userSuggestionActions.getPrefixedUserInfo(comment.actorId)}">
+                  <f:subview rendered="#{userInfo.type == 'USER_TYPE'}">
+                    <h:outputText value="#{nxu:userDisplayName(userInfo.id, userInfo.entry.user.firstName, userInfo.entry.user.lastName)}" />
+                  </f:subview>
+                  <f:subview rendered="#{userInfo.type != 'USER_TYPE'}">
+                    <h:outputText value="#{comment.actorId}" />
+                  </f:subview>
+                  <h:outputText value=": #{comment.message}" />
+                </nxu:methodResult>
+              </f:subview>
             </nxu:repeat>
           </td>
           <td>

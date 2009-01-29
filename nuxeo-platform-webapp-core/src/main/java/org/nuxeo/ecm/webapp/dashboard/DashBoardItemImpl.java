@@ -20,10 +20,13 @@
 package org.nuxeo.ecm.webapp.dashboard;
 
 import java.util.Date;
+import java.util.List;
 
+import org.jbpm.graph.exe.Comment;
 import org.jbpm.taskmgmt.exe.TaskInstance;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.platform.jbpm.JbpmService.TaskVariableName;
 
 /**
  * Dashboard item implementation.
@@ -52,6 +55,7 @@ public class DashBoardItemImpl implements DashBoardItem {
 
     private final DocumentModel document;
 
+    @SuppressWarnings("unchecked")
     public DashBoardItemImpl(TaskInstance task, DocumentModel document) {
         this.document = document;
         id = task.getId();
@@ -59,8 +63,13 @@ public class DashBoardItemImpl implements DashBoardItem {
         description = task.getDescription();
         dueDate = task.getDueDate();
         startDate = task.getStart();
-        directive = (String) task.getVariable("directive");
-        comment = (String) task.getVariable("comment");
+        directive = (String) task.getVariableLocally(TaskVariableName.directive.name());
+        List<Comment> comments = task.getComments();
+        if (comments != null && !comments.isEmpty()) {
+            comment = comments.get(comments.size() - 1).getMessage();
+        } else {
+            comment = null;
+        }
         if (dueDate != null) {
             Date today = new Date();
             expired = dueDate.before(today);

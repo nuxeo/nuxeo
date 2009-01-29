@@ -80,7 +80,17 @@
               <f:param name="suggestionSelectionListId" value="#{widget.id}_list" />
             </a4j:support>
             <h:column>
-              <h:outputText value="#{result.id}" />
+              <f:subview rendered="#{result.type == 'USER_TYPE'}">
+                <h:graphicImage value="/icons/user.gif" alt="user.gif" />
+                <h:outputText value="#{nxu:userDisplayName(result.id, result.entry.user.firstName, result.entry.user.lastName)}" />
+              </f:subview>
+              <f:subview rendered="#{result.type == 'GROUP_TYPE'}">
+                <h:graphicImage value="/icons/group.gif" alt="group.gif" />
+                <h:outputText value="#{result.id}" />
+              </f:subview>
+              <f:subview rendered="#{empty result.type}">
+                <h:outputText value="#{item}" />
+              </f:subview>
             </h:column>
           </rich:suggestionbox>
           <br />
