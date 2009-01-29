@@ -342,10 +342,12 @@
         <artifactId>jbpm-jpdl</artifactId>
         <version>3.3.0.GA</version>
       </dependency>
+      <!-- overrides jackrabbit version 1.4.5 specified by jbpm -->
       <dependency>
-        <groupId>org.jbpm.jbpm3</groupId>
-        <artifactId>jbpm-jpdl</artifactId>
-        <version>3.3.0.GA</version>
+        <groupId>org.apache.jackrabbit</groupId>
+        <artifactId>jackrabbit-core</artifactId>
+        <version>1.5.0</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>jboss</groupId>
