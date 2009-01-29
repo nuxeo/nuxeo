@@ -178,11 +178,11 @@
         org.nuxeo.theme.webengine.negotiation.engine.RequestParameter
       </scheme>
       <scheme>
-        org.nuxeo.theme.webengine.negotiation.engine.RequestAttribute
-      </scheme>       
-      <scheme>
         org.nuxeo.theme.webengine.negotiation.engine.CookieValue
       </scheme>
+      <scheme>
+        org.nuxeo.theme.webengine.negotiation.engine.RequestAttribute
+      </scheme>       
       <scheme>
         org.nuxeo.theme.webengine.negotiation.engine.ViewId
       </scheme>         
@@ -194,13 +194,13 @@
     <negotiation object="mode" strategy="web">
       <scheme>
         org.nuxeo.theme.webengine.negotiation.mode.RequestParameter
-      </scheme>
-      <scheme>
-        org.nuxeo.theme.webengine.negotiation.mode.RequestAttribute
-      </scheme>        
+      </scheme>       
       <scheme>
         org.nuxeo.theme.webengine.negotiation.mode.CookieValue
       </scheme>
+      <scheme>
+        org.nuxeo.theme.webengine.negotiation.mode.RequestAttribute
+      </scheme>       
       <scheme>
         org.nuxeo.theme.webengine.negotiation.mode.ViewId
       </scheme>         
@@ -212,13 +212,13 @@
     <negotiation object="theme" strategy="web">
       <scheme>
         org.nuxeo.theme.webengine.negotiation.theme.RequestParameter
-      </scheme>
-      <scheme>
-        org.nuxeo.theme.webengine.negotiation.theme.RequestAttribute
-      </scheme>           
+      </scheme>          
       <scheme>
         org.nuxeo.theme.webengine.negotiation.theme.CookieValue
       </scheme>
+      <scheme>
+        org.nuxeo.theme.webengine.negotiation.theme.RequestAttribute
+      </scheme>       
       <scheme>
         org.nuxeo.theme.webengine.negotiation.theme.ViewId
       </scheme>            
@@ -232,11 +232,11 @@
         org.nuxeo.theme.webengine.negotiation.perspective.RequestParameter
       </scheme>
       <scheme>
-        org.nuxeo.theme.webengine.negotiation.perspective.RequestAttribute
-      </scheme>       
-      <scheme>
         org.nuxeo.theme.webengine.negotiation.perspective.CookieValue
       </scheme>
+      <scheme>
+        org.nuxeo.theme.webengine.negotiation.perspective.RequestAttribute
+      </scheme>       
       <scheme>
         org.nuxeo.theme.webengine.negotiation.perspective.ViewId
       </scheme>      

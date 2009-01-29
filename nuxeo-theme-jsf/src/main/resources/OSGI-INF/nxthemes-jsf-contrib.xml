@@ -23,14 +23,14 @@
 
     <negotiation object="engine" strategy="default">
       <scheme>
-        org.nuxeo.theme.jsf.negotiation.engine.RequestAttribute
-      </scheme>    
-      <scheme>
         org.nuxeo.theme.jsf.negotiation.engine.RequestParameter
       </scheme>
       <scheme>
         org.nuxeo.theme.jsf.negotiation.engine.CookieValue
       </scheme>
+      <scheme>
+        org.nuxeo.theme.jsf.negotiation.engine.RequestAttribute
+      </scheme>       
       <scheme>
         org.nuxeo.theme.jsf.negotiation.engine.ViewId
       </scheme>
@@ -41,14 +41,14 @@
 
     <negotiation object="mode" strategy="default">
       <scheme>
-        org.nuxeo.theme.jsf.negotiation.mode.RequestAttribute
-      </scheme>    
-      <scheme>
         org.nuxeo.theme.jsf.negotiation.mode.RequestParameter
       </scheme>
       <scheme>
         org.nuxeo.theme.jsf.negotiation.mode.CookieValue
       </scheme>
+      <scheme>
+        org.nuxeo.theme.jsf.negotiation.mode.RequestAttribute
+      </scheme>       
       <scheme>
         org.nuxeo.theme.jsf.negotiation.mode.ViewId
       </scheme>
@@ -59,14 +59,14 @@
 
     <negotiation object="theme" strategy="default">
       <scheme>
-        org.nuxeo.theme.jsf.negotiation.theme.RequestAttribute
-      </scheme>    
-      <scheme>
         org.nuxeo.theme.jsf.negotiation.theme.RequestParameter
       </scheme>
       <scheme>
         org.nuxeo.theme.jsf.negotiation.theme.CookieValue
       </scheme>
+      <scheme>
+        org.nuxeo.theme.jsf.negotiation.theme.RequestAttribute
+      </scheme>        
       <scheme>
         org.nuxeo.theme.jsf.negotiation.theme.ViewId
       </scheme>
@@ -77,14 +77,14 @@
 
     <negotiation object="perspective" strategy="default">
       <scheme>
-        org.nuxeo.theme.jsf.negotiation.perspective.RequestAttribute
-      </scheme>    
-      <scheme>
         org.nuxeo.theme.jsf.negotiation.perspective.RequestParameter
       </scheme>
       <scheme>
         org.nuxeo.theme.jsf.negotiation.perspective.CookieValue
       </scheme>
+      <scheme>
+        org.nuxeo.theme.jsf.negotiation.perspective.RequestAttribute
+      </scheme>       
       <scheme>
         org.nuxeo.theme.jsf.negotiation.perspective.ViewId
       </scheme>
