@@ -24,15 +24,15 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-event</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-schema</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-notification-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-events-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
@@ -46,7 +46,6 @@
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-url-api</artifactId>
     </dependency>
-
     <dependency>
       <groupId>org.freemarker</groupId>
       <artifactId>freemarker</artifactId>
@@ -62,6 +61,10 @@
     <dependency>
       <groupId>javax.mail</groupId>
       <artifactId>mail</artifactId>
+    </dependency>
+    <dependency>
+    	<groupId>org.nuxeo.ecm.core</groupId>
+    	<artifactId>nuxeo-core-event</artifactId>
     </dependency>
   </dependencies>
 

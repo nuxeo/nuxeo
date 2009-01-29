@@ -19,14 +19,16 @@
 
 package org.nuxeo.ecm.platform.jbpm.core.helper;
 
+import javax.security.auth.login.LoginContext;
+
 import org.jbpm.graph.exe.ExecutionContext;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.platform.jbpm.AbstractJbpmHandlerHelper;
-import org.nuxeo.ecm.platform.usermanager.UserManager;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.ecm.platform.jbpm.NuxeoJbpmException;
 
 /**
  * Action handler that removes rights
@@ -38,26 +40,35 @@ public class RemoveRightsActionHandler extends AbstractJbpmHandlerHelper {
 
     private static final long serialVersionUID = 1L;
 
-    protected NuxeoPrincipal getNuxeoPrincipal(String user) throws Exception {
-        UserManager userManager = Framework.getService(UserManager.class);
-        return userManager.getPrincipal(user);
+    // XXX open a system session to set rights: running a workflow only requires
+    // "write"
+    protected CoreSession getSystemSession() throws Exception {
+        String repositoryName = getDocumentRepositoryName();
+        try {
+            return CoreInstance.getInstance().open(repositoryName, null);
+        } catch (ClientException e) {
+            throw new NuxeoJbpmException(e);
+        }
     }
 
     @Override
     public void execute(ExecutionContext executionContext) throws Exception {
         this.executionContext = executionContext;
         if (nuxeoHasStarted()) {
+            LoginContext loginContext = null;
             CoreSession session = null;
             try {
-                String user = getSwimlaneUser(getInitiator());
-                session = getCoreSession(getNuxeoPrincipal(user));
+                session = getSystemSession();
                 DocumentRef docRef = getDocumentRef();
-                ACP acp = session.getACP(docRef);
-                acp.removeACL(getACLName());
-                session.setACP(docRef, acp, true);
-                session.save();
+                RemoveRightsUnrestricted runner = new RemoveRightsUnrestricted(session, docRef, getACLName());
+                runner.runUnrestricted();
             } finally {
-                closeCoreSession(session);
+                if (loginContext != null) {
+                    loginContext.logout();
+                }
+                if (session != null) {
+                    closeCoreSession(session);
+                }
             }
         }
     }

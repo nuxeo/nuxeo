@@ -346,7 +346,7 @@ public class RelationActionsBean  extends DocumentContextBoundActionBean impleme
         options.put("comment", comment);
 
         try {
-            evtProducer.fireEvent(docCtx.event(eventId));
+            evtProducer.fireEvent(docCtx.newEvent(eventId));
         } catch (ClientException e) {
             log.error("Error while trying to send notification message", e);
         }

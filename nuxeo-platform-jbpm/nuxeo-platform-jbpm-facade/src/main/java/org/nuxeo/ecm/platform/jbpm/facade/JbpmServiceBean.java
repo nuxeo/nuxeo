@@ -75,10 +75,10 @@ public class JbpmServiceBean implements JbpmService {
     public void endTask(Long taskInstanceId, String transition,
             Map<String, Serializable> taskVariables,
             Map<String, Serializable> variables,
-            Map<String, Serializable> transientVariables)
+            Map<String, Serializable> transientVariables, NuxeoPrincipal principal)
             throws NuxeoJbpmException {
         service.endTask(taskInstanceId, transition, taskVariables, variables,
-                transientVariables);
+                transientVariables, principal);
     }
 
     public Serializable executeJbpmOperation(JbpmOperation operation)
@@ -140,9 +140,9 @@ public class JbpmServiceBean implements JbpmService {
         return service.getTaskInstances(dm, user, jbpmListFilter);
     }
 
-    public void persistProcessInstance(ProcessInstance pi)
+    public ProcessInstance persistProcessInstance(ProcessInstance pi)
             throws NuxeoJbpmException {
-        service.persistProcessInstance(pi);
+        return service.persistProcessInstance(pi);
     }
 
     public void saveTaskInstances(List<TaskInstance> taskInstances)

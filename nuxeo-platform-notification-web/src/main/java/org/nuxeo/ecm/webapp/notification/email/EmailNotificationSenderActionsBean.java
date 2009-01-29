@@ -41,13 +41,11 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.event.CoreEvent;
 import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
-import org.nuxeo.ecm.core.api.event.impl.CoreEventImpl;
-import org.nuxeo.ecm.platform.events.api.DocumentMessage;
-import org.nuxeo.ecm.platform.events.api.DocumentMessageProducer;
-import org.nuxeo.ecm.platform.events.api.impl.DocumentMessageImpl;
+import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.EventProducer;
+import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.types.adapter.TypeInfo;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.webapp.base.InputController;
@@ -96,7 +94,6 @@ public class EmailNotificationSenderActionsBean extends InputController implemen
     @Out(required = false)
     private List<NuxeoPrincipal> toEmail;
 
-    private DocumentMessageProducer messageProducer;
 
     //@Create
     public void initialize() {
@@ -185,45 +182,24 @@ public class EmailNotificationSenderActionsBean extends InputController implemen
                 (principalListManager.getPrincipalType(user) == PrincipalListManager.USER_TYPE ? "user:" : "group:") + user);
         options.put("subject", theMailSubject);
         options.put("content", theMailContent);
+        options.put("category", DocumentEventCategories.EVENT_CLIENT_NOTIF_CATEGORY);
 
         NuxeoPrincipal currentUser = (NuxeoPrincipal) FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal();
 
-        // Default category
-        String category = DocumentEventCategories.EVENT_CLIENT_NOTIF_CATEGORY;
-        CoreEvent event = new CoreEventImpl(
-                DocumentEventTypes.EMAIL_DOCUMENT_SEND, navigationContext.getCurrentDocument(), options,
-                currentUser, category, null);
+        DocumentEventContext ctx = new DocumentEventContext(documentManager, currentUser, navigationContext.getCurrentDocument());
+        ctx.setProperties(options);
+        Event event = ctx.newEvent(DocumentEventTypes.EMAIL_DOCUMENT_SEND);
 
-        //CoreEventListenerService service = NXCore.getCoreEventListenerService();
-
-        DocumentMessage msg = new DocumentMessageImpl(navigationContext.getCurrentDocument(), event);
-
-        DocumentMessageProducer producer = null;
-
+        EventProducer evtProducer = null;
         try {
-            producer = getMessageProducer();
+            evtProducer = Framework.getService(EventProducer.class);
         } catch (Exception e) {
-            log.error("Unable to get MessageProducer : " + e.getMessage());
+            log.error("Can not get EventProducer : email won't be sent", e);
+            return;
         }
 
-        if (producer != null) {
-            log.debug("Send JMS message for for event="
-                    + DocumentEventTypes.SUBSCRIPTION_ASSIGNED);
-            producer.produce(msg);
-        } else {
-            log.error("Impossible to notify core events !");
-        }
-    }
+        evtProducer.fireEvent(event);
 
-    private DocumentMessageProducer getMessageProducer() {
-        if (messageProducer == null){
-            try {
-                messageProducer = Framework.getService(DocumentMessageProducer.class);
-            } catch (Exception e) {
-
-            }
-        }
-        return messageProducer;
     }
 
     /**

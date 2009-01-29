@@ -8,6 +8,6 @@ Eclipse-LazyStart: false
 Nuxeo-Component: OSGI-INF/querymodel-contrib.xml
 Require-Bundle: org.nuxeo.ecm.core.api,
   org.nuxeo.ecm.platform.publishing.api,
-  org.nuxeo.ecm.platform.events.api,
+  org.nuxeo.ecm.core.event,
   org.nuxeo.ecm.platform.ui,
   org.nuxeo.ecm.webapp.core

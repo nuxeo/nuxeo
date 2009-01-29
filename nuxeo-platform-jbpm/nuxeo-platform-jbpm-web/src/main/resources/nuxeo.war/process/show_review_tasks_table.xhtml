@@ -74,12 +74,12 @@
           <f:subview rendered="#{jbpmActions.canManageProcess}">
             <td class="iconColumn">
             </td>
-          </f:subview>                
+          </f:subview>
           <td class="iconColumn">
             <h:graphicImage value="/icons/review_pending.gif"
-              rendered="#{empty task.start}" />
+              rendered="#{empty task.create}" />
             <h:graphicImage value="/icons/review_current_level.gif"
-              rendered="#{!empty task.start and empty task.end}" />
+              rendered="#{!empty task.create and empty task.end}" />
             <h:graphicImage value="/icons/review_accepted.png"
               rendered="#{!empty task.end and task.variables.validated}" />
             <h:graphicImage value="/icons/review_refused.png"
@@ -87,9 +87,7 @@
           </td>
           <td>
             <nxl:layout name="user_group_prefixed_suggestion" mode="view"
-              value="#{task.pooledActors}" />
-            <nxl:layout name="user_group_prefixed_suggestion" mode="view"
-              value="#{task.actorId}" />
+              value="#{jbpmHelper.getPooledActorIds(task)}" />
           </td>
           <td>
             <h:outputText value="#{messages[task.variables.directive]}" />
@@ -108,7 +106,7 @@
             </nxu:repeat>
           </td>
           <td>
-            <h:outputText value="#{task.start}">
+            <h:outputText value="#{task.create}">
               <f:convertDateTime
                 pattern="#{nxu:dateAndTimeFormater('medium')}"
                 timeZone="#{timeZone}" />
@@ -155,7 +153,7 @@
               </h:commandLink>
             </td>
           </f:subview>      
-          <td>
+          <td class="iconColumn">
             <h:graphicImage value="/icons/review_pending.gif" />
           </td>
           <td>

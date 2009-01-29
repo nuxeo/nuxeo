@@ -29,7 +29,7 @@
       <option>major</option>
     </versioningRuleEdit>
 
-    <!-- 
+    <!--
       Auto rules: rules that apply when core events are received
     -->
     <versioningRuleAuto name="sampleAutoRule_if_state_is_project"
@@ -46,7 +46,6 @@
 
   </extension>
 
-  <require>org.nuxeo.ecm.core.listener.CoreEventListenerService</require>
   <extension target="org.nuxeo.ecm.core.listener.CoreEventListenerService"
     point="listener">
     <listener name="versioningChangeListener"

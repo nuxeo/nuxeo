@@ -25,7 +25,8 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
-import org.nuxeo.ecm.platform.versioning.listeners.VersioningChangeListener;
+import org.nuxeo.ecm.platform.versioning.listeners.VersioningChangeEventListener;
+
 
 /**
  * Listener for testing purposes only. It checks the versions (major and minor)
@@ -33,8 +34,7 @@ import org.nuxeo.ecm.platform.versioning.listeners.VersioningChangeListener;
  *
  * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
  */
-public class VersioningChangeListenerForTesting extends
-        VersioningChangeListener {
+public class VersioningChangeListenerForTesting extends VersioningChangeEventListener {
 
     private static final Log log = LogFactory.getLog(VersioningChangeListenerForTesting.class);
 

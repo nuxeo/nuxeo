@@ -50,18 +50,15 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentModelTreeNode;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.event.CoreEvent;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
-import org.nuxeo.ecm.core.api.event.impl.CoreEventImpl;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.EventProducer;
+import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.TypeService;
 import org.nuxeo.ecm.platform.actions.Action;
-import org.nuxeo.ecm.platform.events.api.DocumentMessageProducer;
-import org.nuxeo.ecm.platform.events.api.EventMessage;
-import org.nuxeo.ecm.platform.events.api.delegate.DocumentMessageProducerBusinessDelegate;
-import org.nuxeo.ecm.platform.events.api.impl.DocumentMessageImpl;
 import org.nuxeo.ecm.platform.publishing.api.DocumentWaitingValidationException;
 import org.nuxeo.ecm.platform.publishing.api.PublishingException;
 import org.nuxeo.ecm.platform.publishing.api.PublishingInformation;
@@ -141,8 +138,6 @@ public class PublishActionsBean implements PublishActions, Serializable {
     // list of selected sections
     private List<DocumentModelTreeNode> selectedSections = new ArrayList<DocumentModelTreeNode>();
 
-    private transient DocumentMessageProducer docMsgProducer;
-
     private String comment;
 
     private static Set<String> sectionRootTypes;
@@ -179,14 +174,6 @@ public class PublishActionsBean implements PublishActions, Serializable {
             }
         }
         return sectionTypes;
-    }
-
-    private DocumentMessageProducer getDocumentMessageProducer()
-            throws Exception {
-        if (docMsgProducer == null) {
-            docMsgProducer = DocumentMessageProducerBusinessDelegate.getRemoteDocumentMessageProducer();
-        }
-        return docMsgProducer;
     }
 
     /*
@@ -510,16 +497,29 @@ public class PublishActionsBean implements PublishActions, Serializable {
         properties.put(CoreEventConstants.DOC_LIFE_CYCLE,
                 dm.getCurrentLifeCycleState());
 
-        CoreEvent event = new CoreEventImpl(eventId, dm, properties,
-                documentManager.getPrincipal(), category, comment);
+        DocumentEventContext ctx = new DocumentEventContext(documentManager,documentManager.getPrincipal(), dm);
 
-        EventMessage message = new DocumentMessageImpl(dm, event);
+        ctx.setProperties(properties);
+        ctx.setComment(comment);
+        ctx.setCategory(category);
+
+        EventProducer evtProducer = null;
 
         try {
-            getDocumentMessageProducer().produce(message);
+            evtProducer = Framework.getService(EventProducer.class);
         } catch (Exception e) {
-            throw new ClientException(e);
+            log.error("Unable to access EventProducer", e);
+            return;
         }
+
+        Event event = ctx.newEvent(eventId);
+
+        try {
+            evtProducer.fireEvent(event);
+        } catch (Exception e) {
+            log.error("Error while sending event", e);
+        }
+
     }
 
     // TODO move to protected

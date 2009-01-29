@@ -29,22 +29,23 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
+import org.nuxeo.ecm.core.api.CoreInstance;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.event.CoreEvent;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
-import org.nuxeo.ecm.core.api.event.impl.CoreEventImpl;
+import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.EventProducer;
+import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.ec.notification.UserSubscription;
 import org.nuxeo.ecm.platform.ec.notification.email.EmailHelper;
 import org.nuxeo.ecm.platform.ec.placeful.Annotation;
 import org.nuxeo.ecm.platform.ec.placeful.ejb.interfaces.EJBPlacefulService;
 import org.nuxeo.ecm.platform.ec.placeful.interfaces.PlacefulService;
-import org.nuxeo.ecm.platform.events.api.DocumentMessage;
-import org.nuxeo.ecm.platform.events.api.DocumentMessageProducer;
-import org.nuxeo.ecm.platform.events.api.impl.DocumentMessageImpl;
 import org.nuxeo.ecm.platform.notification.api.Notification;
 import org.nuxeo.ecm.platform.notification.api.NotificationManager;
 import org.nuxeo.ecm.platform.notification.api.NotificationRegistry;
@@ -264,15 +265,22 @@ public class NotificationService extends DefaultComponent implements
         }
     }
 
-    protected static DocumentMessageProducer getMessageProducer()
-            throws Exception {
-        return Framework.getService(DocumentMessageProducer.class);
+    protected EventProducer producer;
+
+    protected void doFireEvent(Event event) throws ClientException {
+        if (producer == null) {
+            try {
+                producer = Framework.getService(EventProducer.class);
+            } catch (Exception e) {
+                throw new ClientRuntimeException(
+                        "Unable to get MessageProducer : ", e);
+            }
+        }
+        producer.fireEvent(event);
     }
 
-    private static void raiseConfirmationEvent(NuxeoPrincipal principal,
+    private void raiseConfirmationEvent(NuxeoPrincipal principal,
             DocumentModel doc, String username, String notification) {
-        // Default category
-        String category = DocumentEventCategories.EVENT_CLIENT_NOTIF_CATEGORY;
 
         Map<String, Serializable> options = new HashMap<String, Serializable>();
 
@@ -286,29 +294,18 @@ public class NotificationService extends DefaultComponent implements
         options.put("recipients", username);
         options.put("notifName", notification);
 
-        CoreEvent event = new CoreEventImpl(
-                DocumentEventTypes.SUBSCRIPTION_ASSIGNED, doc, options,
-                principal, category, null);
-
-        // CoreEventListenerService service =
-        // NXCore.getCoreEventListenerService();
-
-        DocumentMessage msg = new DocumentMessageImpl(doc, event);
-
-        DocumentMessageProducer producer = null;
+        CoreSession session = CoreInstance.getInstance().getSession(
+                doc.getSessionId());
+        DocumentEventContext ctx = new DocumentEventContext(session, principal,
+                doc);
+        ctx.setCategory(DocumentEventCategories.EVENT_CLIENT_NOTIF_CATEGORY);
+        ctx.setProperties(options);
+        Event event = ctx.newEvent(DocumentEventTypes.SUBSCRIPTION_ASSIGNED);
 
         try {
-            producer = getMessageProducer();
-        } catch (Exception e) {
-            log.error("Unable to get MessageProducer : ", e);
-        }
-
-        if (producer != null) {
-            log.debug("Send JMS message for for event="
-                    + DocumentEventTypes.SUBSCRIPTION_ASSIGNED);
-            producer.produce(msg);
-        } else {
-            log.error("Impossible to notify core events !");
+            doFireEvent(event);
+        } catch (ClientException e) {
+            throw new ClientRuntimeException("Cannot fire event " + event, e);
         }
     }
 

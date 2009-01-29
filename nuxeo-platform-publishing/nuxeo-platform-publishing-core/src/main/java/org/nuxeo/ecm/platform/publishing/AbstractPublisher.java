@@ -25,13 +25,12 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.event.CoreEvent;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
-import org.nuxeo.ecm.core.api.event.impl.CoreEventImpl;
-import org.nuxeo.ecm.platform.events.api.EventMessage;
-import org.nuxeo.ecm.platform.events.api.delegate.DocumentMessageProducerBusinessDelegate;
-import org.nuxeo.ecm.platform.events.api.impl.DocumentMessageImpl;
+import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.EventProducer;
+import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author arussel
@@ -72,14 +71,27 @@ public abstract class AbstractPublisher {
                 coreSession.getSessionId());
         properties.put(CoreEventConstants.DOC_LIFE_CYCLE,
                 dm.getCurrentLifeCycleState());
-        CoreEvent event = new CoreEventImpl(eventId, dm, properties,
-                coreSession.getPrincipal(), category, comment);
-        EventMessage message = new DocumentMessageImpl(dm, event);
+
+        DocumentEventContext ctx = new DocumentEventContext(coreSession,coreSession.getPrincipal(),dm);
+        ctx.setProperties(properties);
+        ctx.setComment(comment);
+        ctx.setCategory(category);
+
+        Event event = ctx.newEvent(eventId);
+
+        EventProducer evtProducer = null;
+
         try {
-            DocumentMessageProducerBusinessDelegate.getRemoteDocumentMessageProducer().produce(
-                    message);
+            evtProducer = Framework.getService(EventProducer.class);
         } catch (Exception e) {
             throw new ClientException(e);
         }
+
+        try {
+            evtProducer.fireEvent(event);
+        } catch (Exception e) {
+            throw new ClientException(e);
+        }
+
     }
 }

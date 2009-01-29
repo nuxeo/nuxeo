@@ -22,36 +22,23 @@ package org.nuxeo.ecm.platform.audit;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.event.CoreEvent;
-import org.nuxeo.ecm.core.api.event.impl.CoreEventImpl;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
 import org.nuxeo.ecm.platform.audit.api.AuditException;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.api.NXAuditEvents;
 import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
-import org.nuxeo.ecm.platform.events.DocumentMessageFactory;
-import org.nuxeo.ecm.platform.events.api.DocumentMessage;
 import org.nuxeo.runtime.api.Framework;
 
 /**
  * Test the event conf service.
- *
+ * 
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 public class TestNXAuditEventsService extends RepositoryOSGITestCase {
 
     private NXAuditEvents serviceUnderTest;
-
-    protected DocumentModel rootDocument;
-
-    protected DocumentModel source;
-
-    protected DocumentMessage message;
-
-    protected CoreEvent event;
 
     @Override
     public void setUp() throws Exception {
@@ -59,8 +46,7 @@ public class TestNXAuditEventsService extends RepositoryOSGITestCase {
 
         deployBundle("org.nuxeo.ecm.platform.usermanager");
 
-        deployContrib("org.nuxeo.ecm.platform.audit.tests",
-                "nxaudit-test-definitions.xml");
+        deployBundle("org.nuxeo.ecm.platform.audit");
 
         NXAuditEventsService.persistenceProvider.setHibernateConfiguration(new TestHibernateConfiguration());
 
@@ -69,27 +55,26 @@ public class TestNXAuditEventsService extends RepositoryOSGITestCase {
         assertNotNull(serviceUnderTest);
 
         openRepository();
-        CoreSession session = getCoreSession();
-        rootDocument = getCoreSession().getRootDocument();
 
-        DocumentModel model = session.createDocumentModel(
+    }
+    
+    protected DocumentModel doCreateDocument() throws ClientException {
+        DocumentModel rootDocument = coreSession.getRootDocument();
+        DocumentModel model = coreSession.createDocumentModel(
                 rootDocument.getPathAsString(), "youps", "File");
         model.setProperty("dublincore", "title", "huum");
-        source = session.createDocument(model);
-        session.save();
-        event = new CoreEventImpl("documentCreated", source, null,
-                session.getPrincipal(), "category", "yo");
-        message = DocumentMessageFactory.createDocumentMessage(source, event);
+        DocumentModel source = coreSession.createDocument(model);
+        coreSession.save();
+        waitForEventsDispatched();
+        return source;
     }
-
-    public void testLogMessage() throws AuditException, DocumentException {
-        ((NXAuditEventsService) serviceUnderTest).logMessage(getCoreSession(),
-                message);
+    
+    public void testLogMessage() throws DocumentException, ClientException {
+        DocumentModel source = doCreateDocument();
         List<LogEntry> entries = serviceUnderTest.getLogEntriesFor(source.getId());
         assertTrue(entries.size() == 1);
         LogEntry entry = entries.get(0);
-        assertEquals("category", entry.getCategory());
-        assertEquals("yo", entry.getComment());
+        assertEquals("eventDocumentCategory", entry.getCategory());
         assertEquals("project", entry.getDocLifeCycle());
         assertEquals("/youps", entry.getDocPath());
         assertEquals("File", entry.getDocType());
@@ -98,6 +83,8 @@ public class TestNXAuditEventsService extends RepositoryOSGITestCase {
     }
 
     public void testsyncLogCreation() throws AuditException, ClientException {
+        doCreateDocument();
+        DocumentModel rootDocument = coreSession.getRootDocument();
         long count = serviceUnderTest.syncLogCreationEntries(
                 getRepository().getName(), rootDocument.getPathAsString(), true);
         assertEquals(count, 2);
