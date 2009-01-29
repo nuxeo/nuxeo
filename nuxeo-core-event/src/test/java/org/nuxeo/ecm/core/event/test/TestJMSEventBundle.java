@@ -45,9 +45,9 @@ public class TestJMSEventBundle extends NXRuntimeTestCase {
         EventContext ctx3 = new DocumentEventContext(null,new SimplePrincipal("tata"),srcDoc, destinationRef);
 
 
-        bundle.push(ctx1.event("EVT1"));
-        bundle.push(ctx2.event("EVT2"));
-        bundle.push(ctx3.event("EVT3"));
+        bundle.push(ctx1.newEvent("EVT1"));
+        bundle.push(ctx2.newEvent("EVT2"));
+        bundle.push(ctx3.newEvent("EVT3"));
 
         return bundle;
     }

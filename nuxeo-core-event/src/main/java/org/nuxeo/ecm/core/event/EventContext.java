@@ -44,7 +44,7 @@ import org.nuxeo.ecm.core.event.Event.Flag;
  * To add more information you need to implement more specialized event
  * contexts.
  * <p>
- * An event context also acts as an event factory. See {@link #event(String)}
+ * An event context also acts as an event factory. See {@link #newEvent(String)}
  * and {@link #event(String, int)} methods. Events created by an event context
  * are automatically mapped to that context.
  *
@@ -142,7 +142,7 @@ public interface EventContext extends Serializable {
      * @return the event
      * @see EventContext#event(String, int)
      */
-    Event event(String name);
+    Event newEvent(String name);
 
     /**
      * Creates a new event in that context given the event name. The given flags
@@ -152,6 +152,6 @@ public interface EventContext extends Serializable {
      * @param flags the event flags to use
      * @return the event the event
      */
-    Event event(String name, Set<Flag> flags);
+    Event newEvent(String name, Set<Flag> flags);
 
 }

@@ -34,12 +34,12 @@ public class InlineEventContext extends EventContextImpl implements
     }
 
     @Override
-    public Event event(String name) {
+    public Event newEvent(String name) {
         Set<Flag> flags = EnumSet.noneOf(Flag.class);
         if (!boundToCoreSession) {
             flags.add(Flag.INLINE);
         }
-        return super.event(name, flags);
+        return super.newEvent(name, flags);
     }
 
 }

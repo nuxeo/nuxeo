@@ -359,7 +359,7 @@ public abstract class AbstractSession implements CoreSession,
         ctx.setProperty("category", category == null ?
                 DocumentEventCategories.EVENT_DOCUMENT_CATEGORY : category);
         // compat code: mark SAVE event as a commit event
-        Event event = ctx.event(eventId);
+        Event event = ctx.newEvent(eventId);
         if (DocumentEventTypes.SESSION_SAVED.equals(eventId)) {
             event.setIsCommitEvent(true);
         }

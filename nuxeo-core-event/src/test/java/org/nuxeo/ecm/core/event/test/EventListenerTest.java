@@ -112,12 +112,12 @@ public class EventListenerTest extends NXRuntimeTestCase {
 
     public void testEventCreation() {
         EventContextImpl ctx = new EventContextImpl();
-        Event event = ctx.event("test");
+        Event event = ctx.newEvent("test");
         assertEquals("test", event.getName());
         assertEquals(ctx, event.getContext());
         assertEquals(Collections.<Flag> emptySet(), event.getFlags());
 
-        event = ctx.event("test2", EnumSet.of(Flag.COMMIT, Flag.INLINE));
+        event = ctx.newEvent("test2", EnumSet.of(Flag.COMMIT, Flag.INLINE));
         assertEquals("test2", event.getName());
         assertEquals(ctx, event.getContext());
         assertEquals(EnumSet.of(Flag.COMMIT, Flag.INLINE), event.getFlags());
@@ -126,7 +126,7 @@ public class EventListenerTest extends NXRuntimeTestCase {
     public void testTimestamp() {
         long tm = System.currentTimeMillis();
         EventContextImpl ctx = new EventContextImpl();
-        Event event = ctx.event("test");
+        Event event = ctx.newEvent("test");
         assertTrue(tm <= event.getTime());
     }
 

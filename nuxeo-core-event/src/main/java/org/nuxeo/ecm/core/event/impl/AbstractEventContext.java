@@ -87,11 +87,11 @@ public abstract class AbstractEventContext implements EventContext {
         properties.put(key, value);
     }
 
-    public Event event(String name) {
+    public Event newEvent(String name) {
         return new EventImpl(name, this);
     }
 
-    public Event event(String name, Set<Flag> flags) {
+    public Event newEvent(String name, Set<Flag> flags) {
         return new EventImpl(name, this, flags);
     }
 
