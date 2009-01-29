@@ -512,7 +512,7 @@ public class PublishActionsBean implements PublishActions, Serializable {
             return;
         }
 
-        Event event = ctx.event(eventId);
+        Event event = ctx.newEvent(eventId);
 
         try {
             evtProducer.fireEvent(event);

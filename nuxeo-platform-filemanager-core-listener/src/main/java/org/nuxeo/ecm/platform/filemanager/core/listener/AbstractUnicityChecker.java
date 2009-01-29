@@ -115,7 +115,7 @@ public abstract class AbstractUnicityChecker {
         props.put("category", DocumentEventCategories.EVENT_CLIENT_NOTIF_CATEGORY);
         props.put("duplicatedDocLocation", (Serializable) existingDocs);
 
-        Event event = ctx.event(DUPLICATED_FILE);
+        Event event = ctx.newEvent(DUPLICATED_FILE);
 
         try {
             EventProducer producer = Framework.getService(EventProducer.class);

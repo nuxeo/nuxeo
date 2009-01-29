@@ -159,7 +159,7 @@ public class DocumentPublisher extends UnrestrictedSessionRunner {
         ctx.setComment(comment);
         ctx.setCategory(category);
 
-        Event event = ctx.event(eventId);
+        Event event = ctx.newEvent(eventId);
 
         EventProducer evtProducer = null;
 
