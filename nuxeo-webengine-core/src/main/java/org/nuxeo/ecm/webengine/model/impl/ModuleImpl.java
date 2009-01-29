@@ -286,6 +286,8 @@ public class ModuleImpl implements Module {
     public void flushTypeCache() {
         log.info("Flushing type cache for module: "+getName());
         synchronized (typeLock) {
+            //  remove type cache files if any
+            new DefaultTypeLoader(this, typeReg, configuration.directory).flushCache();
             typeReg = null; // type registry will be recreated on first access
         }
     }
