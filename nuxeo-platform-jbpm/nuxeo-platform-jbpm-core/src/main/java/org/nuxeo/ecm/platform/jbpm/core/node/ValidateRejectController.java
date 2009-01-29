@@ -41,6 +41,6 @@ public class ValidateRejectController extends AbstractJbpmHandlerHelper {
             ContextInstance contextInstance, Token token) {
         taskInstance.addComment((Comment) token.getComments().get(
                 token.getComments().size() - 1));
-        taskInstance.setVariableLocally("directive", "");
+        taskInstance.setVariableLocally("directive", "label.workflow.validation.taskRejected");
     }
 }

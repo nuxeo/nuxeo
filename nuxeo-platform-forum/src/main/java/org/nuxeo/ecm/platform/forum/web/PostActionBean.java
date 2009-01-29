@@ -251,7 +251,7 @@ public class PostActionBean implements PostAction {
         }
 
         jbpmService.endTask(moderationTask.getId(),
-                ForumConstants.PROCESS_TRANSITION_TO_REJECTED, null, null, null);
+                ForumConstants.PROCESS_TRANSITION_TO_REJECTED, null, null, null, (NuxeoPrincipal) currentUser);
 
         Events.instance().raiseEvent(JbpmEventNames.WORKFLOW_TASK_COMPLETED);
 
@@ -273,7 +273,7 @@ public class PostActionBean implements PostAction {
         }
 
         jbpmService.endTask(moderationTask.getId(),
-                ForumConstants.PROCESS_TRANSITION_TO_PUBLISH, null, null, null);
+                ForumConstants.PROCESS_TRANSITION_TO_PUBLISH, null, null, null, (NuxeoPrincipal)currentUser);
 
         Events.instance().raiseEvent(JbpmEventNames.WORKFLOW_TASK_COMPLETED);
 
