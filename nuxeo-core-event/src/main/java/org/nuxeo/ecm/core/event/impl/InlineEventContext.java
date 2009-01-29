@@ -11,8 +11,7 @@ import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.Event.Flag;
 
-public class InlineEventContext extends EventContextImpl implements
-        EventContext {
+public class InlineEventContext extends EventContextImpl {
 
     private static final long serialVersionUID = 1L;
 
@@ -24,13 +23,8 @@ public class InlineEventContext extends EventContextImpl implements
 
     public InlineEventContext(CoreSession session, Principal principal, Map<String, Serializable> properties) {
         super(session, principal);
-        super.setProperties(properties);
-        if (session!=null) {
-            boundToCoreSession=true;
-        }
-        else {
-            boundToCoreSession=false;
-        }
+        setProperties(properties);
+        boundToCoreSession = session != null;
     }
 
     @Override
@@ -39,7 +33,7 @@ public class InlineEventContext extends EventContextImpl implements
         if (!boundToCoreSession) {
             flags.add(Flag.INLINE);
         }
-        return super.newEvent(name, flags);
+        return newEvent(name, flags);
     }
 
 }

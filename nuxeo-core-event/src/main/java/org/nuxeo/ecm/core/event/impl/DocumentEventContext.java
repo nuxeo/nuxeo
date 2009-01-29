@@ -29,32 +29,31 @@ import org.nuxeo.ecm.core.api.DocumentRef;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * @author tiry
- *
  */
 public class DocumentEventContext extends EventContextImpl {
 
     private static final long serialVersionUID = 1L;
 
-    public static final String CATEGORY_PROPERTY_KEY ="category";
-    public static final String COMMENT_PROPERTY_KEY ="comment";
+    public static final String CATEGORY_PROPERTY_KEY = "category";
+    public static final String COMMENT_PROPERTY_KEY = "comment";
 
     public DocumentEventContext(CoreSession session, Principal principal, DocumentModel source) {
-        super (session, principal, source, null);
+        super(session, principal, source, null);
     }
 
     public DocumentEventContext(CoreSession session, Principal principal, DocumentModel source, DocumentRef destDoc) {
-        super (session, principal, source, destDoc);
+        super(session, principal, source, destDoc);
     }
 
     public DocumentModel getSourceDocument() {
-        return (DocumentModel)args[0];
+        return (DocumentModel) args[0];
     }
 
     public DocumentRef getDestination() {
-        return (DocumentRef)args[1];
+        return (DocumentRef) args[1];
     }
 
-    public String getCategory(){
+    public String getCategory() {
         Serializable data = getProperty(CATEGORY_PROPERTY_KEY);
         if (data instanceof String) {
             return (String) data;
@@ -62,11 +61,11 @@ public class DocumentEventContext extends EventContextImpl {
         return null;
     }
 
-    public void setCategory(String category){
+    public void setCategory(String category) {
         setProperty(CATEGORY_PROPERTY_KEY, category);
     }
 
-    public String getComment(){
+    public String getComment() {
         Serializable data = getProperty(COMMENT_PROPERTY_KEY);
         if (data instanceof String) {
             return (String) data;
@@ -74,7 +73,7 @@ public class DocumentEventContext extends EventContextImpl {
         return null;
     }
 
-    public void setComment(String comment){
+    public void setComment(String comment) {
         setProperty(COMMENT_PROPERTY_KEY, comment);
     }
 
@@ -84,10 +83,10 @@ public class DocumentEventContext extends EventContextImpl {
         String comment = getComment();
         String category = getCategory();
         super.setProperties(properties);
-        if (getComment()==null) {
+        if (getComment() == null) {
             setComment(comment);
         }
-        if (getCategory()==null){
+        if (getCategory() == null) {
             setCategory(category);
         }
     }

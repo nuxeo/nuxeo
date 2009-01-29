@@ -38,7 +38,7 @@ public class EventBundleImpl implements EventBundle {
 
     /**
      * If true the bundle is controlled by a transaction, otherwise it is controlled by the SAVE event.
-     * <p>
+     * <p/>
      * This means the bundle will be fired either at transaction commit either at SAVE event
      */
     protected boolean isTransacted;
@@ -68,7 +68,7 @@ public class EventBundleImpl implements EventBundle {
 
     public String[] getEventNames() {
         String[] names = new String[events.size()];
-        for (int i=0; i<names.length; i++) {
+        for (int i = 0; i < names.length; i++) {
             names[i] = events.get(i).getName();
         }
         return names;
@@ -110,7 +110,7 @@ public class EventBundleImpl implements EventBundle {
     }
 
     public boolean containsEventName(String eventName) {
-        if (eventName==null) {
+        if (eventName == null) {
             return false;
         }
         for (Event event : events) {

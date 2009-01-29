@@ -46,7 +46,7 @@ import org.nuxeo.ecm.core.event.tx.PostCommitSynchronousRunner;
  */
 public class EventServiceImpl implements EventService {
 
-    private static final Log log  = LogFactory.getLog(EventServiceImpl.class);
+    private static final Log log = LogFactory.getLog(EventServiceImpl.class);
 
     public final static VMID VMID = new VMID();
 
@@ -77,14 +77,15 @@ public class EventServiceImpl implements EventService {
         try {
             EventListener el = listener.asEventListener();
             if (el != null) {
-                listeners.add(new Entry<EventListener>(el, listener.getPriority(), listener.isAsync, listener.getEvents(), listener.getName()));
+                listeners.add(
+                        new Entry<EventListener>(el, listener.getPriority(), listener.isAsync, listener.getEvents(), listener.getName()));
             } else {
                 PostCommitEventListener pcel = listener.asPostCommitListener();
                 if (pcel != null) {
                     postCommitListeners.add(
-                            new Entry<PostCommitEventListener>(pcel, listener.getPriority(), listener.isAsync, listener.getEvents(),listener.getName()));
+                            new Entry<PostCommitEventListener>(pcel, listener.getPriority(), listener.isAsync, listener.getEvents(), listener.getName()));
                 } else {
-                    log.error("Invalid event listener: class: "+listener.clazz + "; script: "+listener.script+"; context: "+listener.rc);
+                    log.error("Invalid event listener: class: " + listener.clazz + "; script: " + listener.script + "; context: " + listener.rc);
                 }
             }
         } catch (Exception e) {
@@ -96,7 +97,8 @@ public class EventServiceImpl implements EventService {
         try {
             EventListener el = listener.asEventListener();
             if (el != null) {
-                listeners.remove(new Entry<EventListener>(el, listener.getPriority(), listener.isAsync, listener.getEvents(), listener.getName()));
+                listeners.remove(
+                        new Entry<EventListener>(el, listener.getPriority(), listener.isAsync, listener.getEvents(), listener.getName()));
             } else {
                 PostCommitEventListener pcel = listener.asPostCommitListener();
                 postCommitListeners.remove(
@@ -128,7 +130,7 @@ public class EventServiceImpl implements EventService {
         }
         String ename = event.getName();
         for (Object obj : ar) {
-            Entry<EventListener> entry = (Entry<EventListener>)obj;
+            Entry<EventListener> entry = (Entry<EventListener>) obj;
             if (entry.acceptEvent(ename)) {
                 try {
                     entry.listener.handleEvent(event);
@@ -155,8 +157,8 @@ public class EventServiceImpl implements EventService {
         Object[] ar = postCommitListeners.getListeners();
 
         if (event instanceof ReconnectedEventBundle) {
-            if (((ReconnectedEventBundle)event).comesFromJMS()) {
-                comesFromJMS=true;
+            if (((ReconnectedEventBundle) event).comesFromJMS()) {
+                comesFromJMS = true;
             }
         }
 
@@ -164,14 +166,13 @@ public class EventServiceImpl implements EventService {
         List<PostCommitEventListener> syncListeners = new ArrayList<PostCommitEventListener>();
         List<PostCommitEventListener> asyncListeners = new ArrayList<PostCommitEventListener>();
         for (Object obj : ar) {
-            Entry<PostCommitEventListener> entry = (Entry<PostCommitEventListener>)obj;
+            Entry<PostCommitEventListener> entry = (Entry<PostCommitEventListener>) obj;
             if (entry.async) {
-                   asyncListeners.add(entry.listener);
+                asyncListeners.add(entry.listener);
             } else {
                 syncListeners.add(entry.listener);
             }
         }
-
 
         // run sync listeners
         if (comesFromJMS) {
@@ -195,6 +196,7 @@ public class EventServiceImpl implements EventService {
 
     /**
      * Force sync mode. This will ignore async flags on the listeners
+     *
      * @param event
      * @throws ClientException
      */
@@ -202,14 +204,14 @@ public class EventServiceImpl implements EventService {
     public void fireEventBundleSync(EventBundle event) throws ClientException {
         Object[] ar = postCommitListeners.getListeners();
         for (Object obj : ar) {
-            Entry<PostCommitEventListener> entry = (Entry<PostCommitEventListener>)obj;
+            Entry<PostCommitEventListener> entry = (Entry<PostCommitEventListener>) obj;
             entry.listener.handleEvent(event);
         }
     }
 
     @SuppressWarnings("unchecked")
     public List<EventListener> getEventListeners() {
-        ArrayList<EventListener> result = new ArrayList<EventListener>();
+        List<EventListener> result = new ArrayList<EventListener>();
         Object[] ar = postCommitListeners.getListeners();
         for (Object obj : ar) {
             result.add(((Entry<EventListener>) obj).listener);
@@ -219,14 +221,13 @@ public class EventServiceImpl implements EventService {
 
     @SuppressWarnings("unchecked")
     public List<PostCommitEventListener> getPostCommitEventListeners() {
-        ArrayList<PostCommitEventListener> result = new ArrayList<PostCommitEventListener>();
+        List<PostCommitEventListener> result = new ArrayList<PostCommitEventListener>();
         Object[] ar = postCommitListeners.getListeners();
         for (Object obj : ar) {
             result.add(((Entry<PostCommitEventListener>) obj).listener);
         }
         return result;
     }
-
 
     public ListenerList getInternalListeners() {
         return listeners;
@@ -276,11 +277,11 @@ public class EventServiceImpl implements EventService {
             this.priority = priority;
             this.events = events;
             this.async = async;
-            this.name=name;
+            this.name = name;
         }
 
         public Entry(T listener) {
-            this(listener, 0, false, null,listener.getClass().getSimpleName());
+            this(listener, 0, false, null, listener.getClass().getSimpleName());
         }
 
         @Override

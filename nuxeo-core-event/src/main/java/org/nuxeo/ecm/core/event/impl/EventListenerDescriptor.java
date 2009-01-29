@@ -103,7 +103,7 @@ public class EventListenerDescriptor {
         return events;
     }
 
-    @XNodeList(value="event", componentType=String.class, type=HashSet.class, nullByDefault=true)
+    @XNodeList(value = "event", componentType = String.class, type = HashSet.class, nullByDefault = true)
     public void setEvents(Set<String> events) {
         this.events = events.isEmpty() ? null : events;
     }
@@ -115,7 +115,7 @@ public class EventListenerDescriptor {
     public EventListener asEventListener() throws Exception {
         if (clazz != null) {
             if (EventListener.class.isAssignableFrom(clazz)) {
-                return (EventListener)clazz.newInstance();
+                return (EventListener) clazz.newInstance();
             }
             return null;
         }
@@ -132,10 +132,10 @@ public class EventListenerDescriptor {
         if (clazz != null) {
             try {
                 if (PostCommitEventListener.class.isAssignableFrom(clazz)) {
-                    return (PostCommitEventListener)clazz.newInstance();
+                    return (PostCommitEventListener) clazz.newInstance();
                 }
             } catch (Exception e) {
-                log.error("Failed to instantiate post commit event listener "+clazz, e);
+                log.error("Failed to instantiate post commit event listener " + clazz, e);
             }
             return null;
         }
@@ -156,7 +156,7 @@ public class EventListenerDescriptor {
                 // in a test environment bundle entries may not work
                 url = rc.getResource(script);
                 if (url == null) {
-                    throw new Exception("Script Not found: "+script);
+                    throw new Exception("Script Not found: " + script);
                 }
             }
             return Script.newScript(url);
@@ -166,11 +166,10 @@ public class EventListenerDescriptor {
     }
 
     public String getName() {
-        if (name==null) {
-            if (clazz!=null) {
+        if (name == null) {
+            if (clazz != null) {
                 name = clazz.getSimpleName();
-            }
-            else {
+            } else {
                 name = script;
             }
         }

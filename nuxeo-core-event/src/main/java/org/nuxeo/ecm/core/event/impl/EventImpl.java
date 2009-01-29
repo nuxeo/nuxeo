@@ -51,13 +51,12 @@ public class EventImpl implements Event {
     }
 
     public EventImpl(String name, EventContext ctx, Set<Flag> flags) {
-        this(name,ctx,flags,System.currentTimeMillis());
+        this(name, ctx, flags, System.currentTimeMillis());
     }
 
     public EventImpl(String name, EventContext ctx) {
         this(name, ctx, null);
     }
-
 
 
     public Set<Flag> getFlags() {

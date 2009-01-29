@@ -23,7 +23,7 @@ import java.util.Set;
 
 /**
  * A map used to track duplicates.
- * <p>
+ * <p/>
  * This class is not synchronized on read; this means you need to populate the
  * map before using it.
  *

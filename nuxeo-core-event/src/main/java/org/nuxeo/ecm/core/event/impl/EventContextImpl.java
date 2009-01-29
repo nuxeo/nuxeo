@@ -38,12 +38,12 @@ public class EventContextImpl extends AbstractEventContext {
     protected EventContextImpl() {
     }
 
-    public EventContextImpl(Object ... args) {
+    public EventContextImpl(Object... args) {
         this(null, null, args);
     }
 
-    public EventContextImpl(CoreSession session, Principal principal, Object ... args) {
-        super (args);
+    public EventContextImpl(CoreSession session, Principal principal, Object... args) {
+        super(args);
         this.session = session;
         this.principal = principal;
     }
@@ -51,11 +51,11 @@ public class EventContextImpl extends AbstractEventContext {
     public EventContextImpl(CoreSession session, Principal principal) {
         this.session = session;
         this.principal = principal;
-        this.args=EMPTY;
+        args = EMPTY;
     }
 
     public void setArgs(Object[] args) {
-        this.args=args;
+        this.args = args;
     }
 
     public CoreSession getCoreSession() {

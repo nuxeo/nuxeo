@@ -33,7 +33,6 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * @author tiry
- *
  */
 public class AsyncEventExecutor {
 
@@ -63,11 +62,11 @@ public class AsyncEventExecutor {
     }
 
     public AsyncEventExecutor() {
-        this (4, 16, 4, QUEUE_SIZE);
+        this(4, 16, 4, QUEUE_SIZE);
     }
 
     public AsyncEventExecutor(int poolSize, int maxPoolSize, int keepAliveTime) {
-        this (poolSize, maxPoolSize, keepAliveTime, QUEUE_SIZE);
+        this(poolSize, maxPoolSize, keepAliveTime, QUEUE_SIZE);
     }
 
     public AsyncEventExecutor(int poolSize, int maxPoolSize, int keepAliveTime, int queueSize) {
@@ -90,6 +89,7 @@ public class AsyncEventExecutor {
     public static class Job implements Runnable {
         protected ReconnectedEventBundle bundle;
         protected PostCommitEventListener listener;
+
         public Job(PostCommitEventListener listener, EventBundle bundle) {
             this.listener = listener;
 
@@ -99,6 +99,7 @@ public class AsyncEventExecutor {
                 this.bundle = new ReconnectedEventBundleImpl(bundle);
             }
         }
+
         public void run() {
             EventBundleTransactionHandler txh = new EventBundleTransactionHandler();
             try {
@@ -107,7 +108,7 @@ public class AsyncEventExecutor {
                 txh.commitOrRollbackTransaction();
                 log.debug("Async listener executed, commiting tx");
             } catch (Throwable t) {
-                log.error("Failed to execute async event "+bundle.getName()+" on listener "+listener , t);
+                log.error("Failed to execute async event " + bundle.getName() + " on listener " + listener, t);
                 txh.rollbackTransaction();
             } finally {
                 bundle.disconnect();

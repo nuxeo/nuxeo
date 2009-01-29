@@ -28,7 +28,7 @@ import org.nuxeo.ecm.core.event.EventContext;
 
 /**
  * Base class to be used to create new context events.
- * <p>
+ * <p/>
  * This class handles context properties and event creation.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -47,7 +47,7 @@ public abstract class AbstractEventContext implements EventContext {
     protected AbstractEventContext() {
     }
 
-    protected AbstractEventContext(Object ... args) {
+    protected AbstractEventContext(Object... args) {
         this.args = args == null || (args.length == 1 && args[0] == null) ? EMPTY : args;
     }
 

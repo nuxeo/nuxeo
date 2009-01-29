@@ -95,8 +95,8 @@ public interface EventService extends EventProducer {
     void fireEventBundle(EventBundle event) throws ClientException;
 
     /**
-     * Fire an event bundle in asynchronous mode. That is asyncrhounous listeners will be 
-     * synchronously ru.  
+     * Fire an event bundle in asynchronous mode. That is asyncrhounous listeners will be
+     * synchronously ru.
      * @param event
      * @throws ClientException
      */
@@ -105,20 +105,18 @@ public interface EventService extends EventProducer {
 
     /**
      * Get the list of the registered event listeners
-     * Modification on this list will not modify the internal lists in that {@link EventService}  
+     * Modification on this list will not modify the internal lists in that {@link EventService}
      * @return the event listeners
      */
     List<EventListener> getEventListeners();
-    
-    
+
     /**
      * Get the list of the registered post commit event listeners
-     * Modification on this list will not modify the internal lists in that {@link EventService}   
-     * @return the post commit event listeners 
+     * Modification on this list will not modify the internal lists in that {@link EventService}
+     * @return the post commit event listeners
      */
     List<PostCommitEventListener> getPostCommitEventListeners();
-    
-    
+
     /**
      * Notifies that a transaction was started.
      * <p>
@@ -151,5 +149,5 @@ public interface EventService extends EventProducer {
      * @return true if a transaction was started, false otherwise
      */
     boolean isTransactionStarted();
-    
+
 }

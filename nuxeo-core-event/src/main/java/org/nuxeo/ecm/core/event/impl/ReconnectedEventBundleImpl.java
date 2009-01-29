@@ -32,7 +32,6 @@ import org.nuxeo.runtime.api.Framework;
  * to a usable Session
  *
  * @author tiry
- *
  */
 public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
 
@@ -46,11 +45,9 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
 
     protected CoreSession reconnectedCoreSession;
 
-    private static final Log log = LogFactory
-            .getLog(ReconnectedEventBundleImpl.class);
+    private static final Log log = LogFactory.getLog(ReconnectedEventBundleImpl.class);
 
     public ReconnectedEventBundleImpl() {
-
     }
 
     public ReconnectedEventBundleImpl(EventBundle sourceEventBundle) {
@@ -79,13 +76,13 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
 
                 reconnectedCoreSession = repo.open();
             } catch (Exception e) {
-                log.error("Error while openning core session on repo " + repoName , e);
+                log.error("Error while openning core session on repo " + repoName, e);
                 return null;
             }
         } else {
             // Sanity Check
             if (!reconnectedCoreSession.getRepositoryName().equals(repoName)) {
-                if (repoName!=null) {
+                if (repoName != null) {
                     throw new IllegalStateException(
                             "Can no reconnected a Bundle tied to several Core instances !");
                 }
@@ -100,18 +97,16 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
             for (Event event : sourceEventBundle.getEvents()) {
 
                 EventContext ctx = event.getContext();
-                EventContext newCtx = null;
                 CoreSession session = null;
 
-                if (ctx.getCoreSession()!=null) {
-                 session = getReconnectedCoreSession(ctx
-                        .getCoreSession().getRepositoryName());
+                if (ctx.getCoreSession() != null) {
+                    session = getReconnectedCoreSession(ctx.getCoreSession().getRepositoryName());
                 }
 
                 List<Object> newArgs = new ArrayList<Object>();
                 for (Object arg : ctx.getArguments()) {
                     Object newArg = arg;
-                    if ((arg instanceof DocumentModel) && (session!=null)) {
+                    if (arg instanceof DocumentModel && session != null) {
                         DocumentModel oldDoc = (DocumentModel) arg;
                         DocumentRef ref = oldDoc.getRef();
                         if (ref != null) {
@@ -132,6 +127,7 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
                     newArgs.add(newArg);
                 }
 
+                EventContext newCtx = null;
                 if (ctx instanceof DocumentEventContext) {
                     newCtx = new DocumentEventContext(session, ctx
                             .getPrincipal(), (DocumentModel) newArgs.get(0),
@@ -145,7 +141,7 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
                 for (Entry<String, Serializable> prop : ctx.getProperties()
                         .entrySet()) {
                     Serializable propValue = prop.getValue();
-                    if ((propValue instanceof DocumentModel) && (session!=null)) {
+                    if (propValue instanceof DocumentModel && session != null) {
                         DocumentModel oldDoc = (DocumentModel) propValue;
                         try {
                             propValue = session.getDocument(oldDoc.getRef());

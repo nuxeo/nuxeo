@@ -25,9 +25,9 @@ import org.nuxeo.ecm.core.api.ClientException;
  */
 public interface EventProducer {
 
-    public void fireEvent(Event event) throws ClientException;
-    
-    public void fireEventBundle(EventBundle event) throws ClientException;
-    
-    
+    void fireEvent(Event event) throws ClientException;
+
+    void fireEventBundle(EventBundle event) throws ClientException;
+
+
 }
