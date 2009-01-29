@@ -323,6 +323,7 @@ public class JbpmServiceImpl implements JbpmService {
                     if (getPermission(pi, JbpmSecurityPolicy.Action.read, dm,
                             user)) {
                         result.add(pi);
+                        pi.getContextInstance().getVariables().size();
                     }
                 }
                 if (jbpmListFilter != null) {

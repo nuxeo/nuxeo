@@ -106,7 +106,7 @@
             <h:outputText value="#{messages[task.variablesLocally.directive]}" />
           </td>
           <td>
-            <nxu:repeat name="comment" value="#{task.comments}">
+            <c:forEach var="comment" items="${task.comments}">
               <f:subview rendered="#{!empty comment}">
                 <nxu:methodResult name="userInfo" value="#{userSuggestionActions.getPrefixedUserInfo(comment.actorId)}">
                   <f:subview rendered="#{userInfo.type == 'USER_TYPE'}">
@@ -118,7 +118,7 @@
                   <h:outputText value=": #{comment.message}" />
                 </nxu:methodResult>
               </f:subview>
-            </nxu:repeat>
+            </c:forEach>
           </td>
           <td>
             <h:outputText value="#{task.create}">
