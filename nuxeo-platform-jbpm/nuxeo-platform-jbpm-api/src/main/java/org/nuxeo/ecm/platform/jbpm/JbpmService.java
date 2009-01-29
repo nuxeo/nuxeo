@@ -52,7 +52,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 public interface JbpmService {
 
     public enum VariableName {
-        documentId, documentRepositoryName, endLifecycleTransition, initiator, participants, partipant
+        documentId, documentRepositoryName, endLifecycleTransition, initiator, participants, participant
     }
 
     public enum TaskVariableName {

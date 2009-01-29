@@ -43,9 +43,9 @@ public class VirtualTaskInstanceController extends AbstractJbpmHandlerHelper {
     @Override
     public void initializeTaskVariables(TaskInstance taskInstance,
             ContextInstance contextInstance, Token token) {
-        VirtualTaskInstance vti = (VirtualTaskInstance) contextInstance.getTransientVariable(VariableName.partipant.name());
+        VirtualTaskInstance vti = (VirtualTaskInstance) contextInstance.getTransientVariable(VariableName.participant.name());
         if (vti == null) {
-            vti = (VirtualTaskInstance) contextInstance.getVariable(VariableName.partipant.name());
+            vti = (VirtualTaskInstance) contextInstance.getVariable(VariableName.participant.name());
         }
         if (vti == null) {
             List<VirtualTaskInstance> vtis = (List<VirtualTaskInstance>) contextInstance.getVariable(VariableName.participants.name());
