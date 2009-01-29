@@ -13,6 +13,9 @@
   <xs:element name="name" type="xs:string"/>
   <xs:element name="url" type="xs:string"/>
   <xs:element name="template" type="xs:string"/>
+  <xs:element name="theme" type="xs:string"/>
+  <xs:element name="themePage" type="xs:string"/>
+  <xs:element name="themePerspective" type="xs:string"/>
   <xs:element name="email" type="xs:string"/>
 
   <xs:element name="welcomeText" type="xs:string"/>
