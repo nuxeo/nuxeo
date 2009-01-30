@@ -318,8 +318,15 @@ public class WebEngine implements ResourceLocator {
     public synchronized void reload() {
         log.info("Reloading WebEngine");
         if (moduleMgr != null) { // avoid synchronizing if not needed
+            for (ModuleConfiguration mc :  moduleMgr.getModules()) {
+                if (mc.isLoaded()) {
+                    // this is needed even if the module manager 
+                    // is rebuild since it may remove groovy file caches
+                    mc.get().flushCache(); 
+                }
+            }
             synchronized(this) { 
-                if (moduleMgr != null) {
+                if (moduleMgr != null) {                    
                     moduleMgr = null;
                 }
             }

@@ -66,7 +66,7 @@
 ################################################
 
 JAVA_OPTS="-Djava.rmi.server.RMIClassLoaderSpi=org.nuxeo.runtime.launcher.NuxeoRMIClassLoader -Dsun.lang.ClassLoader.allowArraySyntax=true"
-JAVA_OPTS="$JAVA_OPTS"
+JAVA_OPTS="$JAVA_OPTS -Dderby.system.home=data/derby"
 #JAVA_OPTS="$JAVA_OPTS -Dorg.nuxeo.runtime.1.3.3.streaming.port=3233"
 
 CMD_ARGS="$@"
