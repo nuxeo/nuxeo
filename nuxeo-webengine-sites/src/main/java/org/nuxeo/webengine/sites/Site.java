@@ -37,6 +37,7 @@ public class Site extends DefaultObject {
 
     @GET
     public Object doGet() {
+    	ctx.getRequest().setAttribute("org.nuxeo.theme.theme", "sites/default"); 
         if (ws == null) {
             return getTemplate("no_site.ftl").arg("url", url);
         }
@@ -45,6 +46,7 @@ public class Site extends DefaultObject {
 
     @Path("{page}")
     public Object doGet(@PathParam("page") String page) {
+    	ctx.getRequest().setAttribute("org.nuxeo.theme.theme", "sites/workspace"); 
         try {
             DocumentModel pageDoc = ctx.getCoreSession().getChild(ws.getRef(),
                     page);
