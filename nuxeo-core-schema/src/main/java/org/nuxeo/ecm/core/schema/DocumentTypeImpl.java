@@ -210,7 +210,7 @@ public class DocumentTypeImpl extends CompositeTypeImpl implements DocumentType 
                     return true;
                 }
             }
-            
+
             // TODO: expand *
             return false;
         }

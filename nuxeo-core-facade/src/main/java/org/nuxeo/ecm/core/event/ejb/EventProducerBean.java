@@ -36,13 +36,13 @@ import org.nuxeo.runtime.api.Framework;
 public class EventProducerBean implements  EventProducer {
 
     protected EventProducer service = Framework.getLocalService(EventProducer.class);
-    
+
     public void fireEvent(Event event) throws ClientException {
         service.fireEvent(event);
     }
-    
+
     public void fireEventBundle(EventBundle event) throws ClientException {
         service.fireEventBundle(event);
     }
-    
+
 }

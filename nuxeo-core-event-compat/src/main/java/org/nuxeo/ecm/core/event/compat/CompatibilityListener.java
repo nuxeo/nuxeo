@@ -32,28 +32,28 @@ import org.nuxeo.runtime.api.Framework;
 public class CompatibilityListener implements EventListener {
 
     private CoreEventListenerService service;
-    
+
     public CoreEventListenerService getEventService() {
         if (service == null) {
             service = Framework.getLocalService(CoreEventListenerService.class);
         }
         return service;
     }
-    
+
     public static CoreEvent toCoreEvent(Event event) {
         EventContext ctx = event.getContext();
         Object[] args = ctx.getArguments();
         Object src = args.length > 0 ? args[0] : null;
-        // category and comment are passed through the context properties 
+        // category and comment are passed through the context properties
         return new CoreEventImpl(event.getName(), src, ctx.getProperties(), ctx.getPrincipal(), null, null);
     }
 
     public void handleEvent(Event event) throws ClientException {
         getEventService().notifyEventListeners(toCoreEvent(event));
     }
-    
-    
-    /** old notify implememtation - TODO must delete this after commiting new event impl. 
+
+
+    /** old notify implememtation - TODO must delete this after commiting new event impl.
     protected void notifyEvent(String eventId, DocumentModel source,
             Map<String, Object> options, String category, String comment,
             boolean withLifeCycle) {

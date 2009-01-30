@@ -812,4 +812,3 @@ class DummyXid implements Xid {
         return new byte[0];
     }
 }
-

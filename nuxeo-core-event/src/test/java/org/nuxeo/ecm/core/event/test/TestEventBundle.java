@@ -31,5 +31,5 @@ public class TestEventBundle extends EventBundleImpl {
     public void setVMID(VMID vmid) {
         this.vmid = vmid;
     }
-    
+
 }

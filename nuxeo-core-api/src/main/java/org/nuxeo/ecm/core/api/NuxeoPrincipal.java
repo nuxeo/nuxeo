@@ -32,7 +32,7 @@ import java.util.List;
  */
 public interface NuxeoPrincipal extends Principal, Serializable {
 
-    public static final String PREFIX = "user:";
+    String PREFIX = "user:";
 
     /**
      * Gets the first name of this principal.

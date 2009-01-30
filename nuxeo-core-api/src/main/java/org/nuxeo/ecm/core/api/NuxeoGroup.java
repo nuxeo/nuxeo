@@ -30,7 +30,7 @@ import java.util.List;
  */
 public interface NuxeoGroup extends Serializable {
 
-    public static final String PREFIX = "group:";
+    String PREFIX = "group:";
 
     /**
      * Gets the list of member users of this group.
