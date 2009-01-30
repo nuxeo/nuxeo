@@ -21,12 +21,19 @@
         <layout>webpage</layout>
       </layouts>
     </type>
-    
+
     <type id="Workspace" coretype="Workspace">
       <subtypes>
         <type>WebPage</type>
       </subtypes>
     </type>
-    
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
+    point="types">
+    <types>
+      <type name="WebPage">default</type>
+    </types>
   </extension>
 </component>
