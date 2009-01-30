@@ -7,13 +7,15 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.platform.comment.service.CommentServiceConfig;
 import org.nuxeo.ecm.platform.relations.api.RelationManager;
 import org.nuxeo.ecm.platform.relations.api.Resource;
 import org.nuxeo.ecm.platform.relations.api.Statement;
 import org.nuxeo.ecm.platform.relations.api.impl.StatementImpl;
 
-public class CommentRemovedEventListener extends AbstractCommentListener {
+public class CommentRemovedEventListener extends AbstractCommentListener implements EventListener {
 
     private static final Log log = LogFactory.getLog(CommentRemovedEventListener.class);
 
@@ -39,5 +41,10 @@ public class CommentRemovedEventListener extends AbstractCommentListener {
         List<Statement> statementList = relationManager.getStatements(
                 config.graphName, pattern);
         relationManager.remove(config.graphName, statementList);
+    }
+
+    public void handleEvent(Event event) throws ClientException {
+        // TODO Auto-generated method stub
+
     }
 }

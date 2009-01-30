@@ -22,26 +22,30 @@ public abstract class AbstractCommentListener {
         public void handleEvent(EventBundle events) throws ClientException {
 
             for (Event event : events.getEvents()) {
-                if (DocumentEventTypes.ABOUT_TO_REMOVE.equals(event.getName())) {
-                    log.debug("CommentEventListener processing ABOUT_TO_REMOVE event");
-                    EventContext ctx = event.getContext();
-                    if (ctx instanceof DocumentEventContext) {
-                        DocumentEventContext docCtx = (DocumentEventContext) ctx;
-                        DocumentModel doc = docCtx.getSourceDocument();
-                        CoreSession coreSession = docCtx.getCoreSession();
-                        CommentServiceConfig config = CommentServiceHelper.getCommentService().getConfig();
-                        try {
-                            RelationManager relationManager = Framework.getService(RelationManager.class);
-                            doProcess(coreSession, relationManager, config, doc);
-                            log.debug("CommentEventListener processed ABOUT_TO_REMOVE successfully");
-                        }
-                        catch (Exception e) {
-                            log.error("Error during message processing", e);
-                        }
+                handleEvent(event);
+            }
+        }
 
-                        log.debug("CommentEventListener exiting");
-                        return;
+        public void handleEvent(Event event) throws ClientException {
+            if (DocumentEventTypes.ABOUT_TO_REMOVE.equals(event.getName())) {
+                log.debug("CommentEventListener processing ABOUT_TO_REMOVE event");
+                EventContext ctx = event.getContext();
+                if (ctx instanceof DocumentEventContext) {
+                    DocumentEventContext docCtx = (DocumentEventContext) ctx;
+                    DocumentModel doc = docCtx.getSourceDocument();
+                    CoreSession coreSession = docCtx.getCoreSession();
+                    CommentServiceConfig config = CommentServiceHelper.getCommentService().getConfig();
+                    try {
+                        RelationManager relationManager = Framework.getService(RelationManager.class);
+                        doProcess(coreSession, relationManager, config, doc);
+                        log.debug("CommentEventListener processed ABOUT_TO_REMOVE successfully");
                     }
+                    catch (Exception e) {
+                        log.error("Error during message processing", e);
+                    }
+
+                    log.debug("CommentEventListener exiting");
+                    return;
                 }
             }
         }
