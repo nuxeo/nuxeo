@@ -1,29 +1,32 @@
 What's new in Nuxeo 5.2.M4
 ==========================
+                    
+[STATUS: DRAFT - will be announced on monday]
 
-VisibleSQL Repository
+Visible SQL™ Repository
 ---------------------
 
 ### What changes ?
 
-Althought the repository API and feature remain the same, the data storage structure has changed.
-
-Instead of relying on JackRabbit BD mapping, we now have our own DB mapping that is based on the XSD schemas.
-
-This basically means that the SQL model is now compliant with the business model.
+Although the repository API and high level features remain the same, the data storage structure has changed. Instead of relying on Jackrabbit for database mapping, we now have our own relational database mapping, Visible SQL™. The relational model is based on the XSD schemas; this basically means that the RDB model is now compliant with the business model.
 
 ### Why is it better ?
 
-Data stored in the SQLDB are no longer cryptic like with JCR.
-This means you can see your data in the SQL DB and use simple SQL batch to do mass import.
+The data stored in the SQL RDB is no longer cryptic and opaque, as it was with Jackrabbit's mapping. This has a number of benefits for data processing:
 
-This also means that you can plug any SQL compliant reporting tool to do reporting on top of Nuxeo repository.
+- you can see and debug your data in the SQL database,
+- you can do simple batches for mass import and export,
+- you can migrate your schemas easily,
+- you can plug any SQL compliant reporting tool to do reports on top of the Nuxeo repository.
 
-The VisibleSQL repository is also an important step because:
+The Visible SQL™ repository is also an important step because :
 
-- it opens the way for a lot of low level optimizations
-- it opens the way for extending NXSQL to also support efficient join with Relations and Audit
-- it opens the way for transparent schemas migration
+- it opens the way for a lot of low level optimizations:
+  - denormalization for speed,
+  - per-database data structures (arrays, uuid types, indexes, full text),
+  - per-database stored procedures for speedups,
+- it opens the way for extending our search model to also support efficient join with Relations and Audit,
+- it opens the way for additional high-level features (tree-based versioning, mixins, user-defined schemas).
 
 Event Service
 -------------
