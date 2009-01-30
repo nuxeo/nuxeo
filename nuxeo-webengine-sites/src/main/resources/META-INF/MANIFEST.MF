@@ -8,7 +8,8 @@ Nuxeo-Component: OSGI-INF/webengine-layouts-contrib.xml,
  OSGI-INF/webengine-types-contrib.xml,
  OSGI-INF/webengine-actions-contrib.xml,
  OSGI-INF/ecm-types-contrib.xml,
- OSGI-INF/core-types-contrib.xml
+ OSGI-INF/core-types-contrib.xml,
+ OSGI-INF/theme-contrib.xml
 Require-Bundle: org.nuxeo.ecm.webapp.core, org.nuxeo.ecm.webengine.core 
 Nuxeo-RequiredBy: org.nuxeo.ecm.war
 Export-Package: org.nuxeo.webengine.site
