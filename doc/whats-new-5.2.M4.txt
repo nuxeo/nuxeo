@@ -1,0 +1,259 @@
+What's new in Nuxeo 5.2.M4
+==========================
+
+VisibleSQL Repository
+---------------------
+
+### What changes ?
+
+Althought the repository API and feature remain the same, the data storage structure has changed.
+
+Instead of relying on JackRabbit BD mapping, we now have our own DB mapping that is based on the XSD schemas.
+
+This basically means that the SQL model is now compliant with the business model.
+
+### Why is it better ?
+
+Data stored in the SQLDB are no longer cryptic like with JCR.
+This means you can see your data in the SQL DB and use simple SQL batch to do mass import.
+
+This also means that you can plug any SQL compliant reporting tool to do reporting on top of Nuxeo repository.
+
+The VisibleSQL repository is also an important step because:
+
+- it opens the way for a lot of low level optimizations
+- it opens the way for extending NXSQL to also support efficient join with Relations and Audit
+- it opens the way for transparent schemas migration
+
+Event Service
+-------------
+
+### What changes ?
+
+We now provides a new API and extension point system to:
+
+- fire events or event bundles
+- register event listeners
+
+Until 5.2-M3, we had to separated models : CoreEvents+CoreListeners / JMSEvents+MDB.
+
+Starting with 5.2-M4, the model is completely homogenous : there is only one Event/Listener model.
+
+JMS is still used when needed, but it's now an implementation detail of the platform, and it's transparent for your listeners.
+
+### Why is it better ?
+
+The API for sending an event is now far more simple and there is only one.
+
+Writing an EventListener is also simpler :
+
+- no need to write an MDB
+- no need to handle Authentication/Repository initialization
+- there are only 2 interfaces: EventListener / PostCommitEventListener
+- you can use a simple script!
+
+EventListeners can now be:
+
+- synchronous: on the fly processing within the same transaction
+- postcommit synchronous: just after the commit in a new separated transaction
+- postcommit asynchronous
+
+The new eventListener system also manages transactions for you.
+
+One of the key benefit of the refactoring, is that JMS is no longer a required dependency : you can have asynchronous listeners without JMS.
+
+This means :
+
+- we can embed more services in a WebEngine/Jetty package
+- you can now easily test your EventListeners in JUnit without needing JMS/MDB setup
+
+### About compatibility :
+
+We provide a nuxeo-core-event-compat package that re-enables old event system:
+
+- run transparently old CoreListeners
+- forward to the old JMS Topic
+- triggers old MDBs
+
+If you need the old API for sending events/messages, you have to deploy the old nuxeo-platform-event-* packages.
+
+Converter Service
+-----------------
+
+### What changes ?
+
+Transformation service had some API design issues that we wanted to correct.
+
+This required defining a brand new interface, so we decided to define a new service name to avoid any confusion.
+
+### Why is it better ?
+
+- API is now simpler: there are only converters, not transformers and plugins like before.
+- ConversionService includes a caching system
+- data input/output is handled by BlobHolder interface, no more TransformDocument or plain Blob
+- ConversionAPI now provides an API to know if converter is available, this is usefull when the converter depends on an external program that must be installed on the server (like OpenOffice server)
+
+### About compatibility
+
+Transformer API is now deprecated and the old transform implementations and plugins have been removed from default distribution.
+
+Nevertheless, we now provide a tranformer-compat bundle.
+
+Transformers API is still available, but the implementation now wraps calls to the ConversionService.
+
+This means you can use the new Converters from the old Transformation service API.
+
+All default included Transformers have been migrated to converters with the same name.
+
+Code that was using transformers should still work in 5.2.
+
+If you have contributer transformers, they will be available as converts of via the old API, but you may have to change the Required-Bundle in the MANIFEST.
+
+Audit Service
+-------------
+
+### What changes ?
+
+Audit service is now far more easily configurable, no more need to contribute a Entity class to customize you log format.
+
+Customization is now done via an EL and XML.
+
+Audit service is now based on the EventService:
+
+- this does run in WebEngine
+- this does run in Unit tests
+
+Audit service is now integrated into the Nuxeo Management extensions, so you can get informations from Audit via JMX.
+
+We also did some APi cleanup.
+
+### Why is it better ?
+
+Configuring Audit log is now easy : you can now leverage this to build a custom application level log to monitor usage of the platform and build business reports on top of it.
+
+### About compatibility
+
+If you don't have customized your AuditLog format (because it was too complicated), migration should be transparent.
+
+Workflows
+---------
+
+### What changes ?
+
+The Workflow service has been completely rebuilt from scratch.
+
+It still uses JBPM, but there is no more a WFMC API on top of it.
+
+### Why is it better ?
+
+Contributing workflows is now far more easy : you only have to know JBPM, there is more need to go through the WFMC mapping.
+
+This also means that Nuxeo workflows are now more natural for a JBPM developer, the JBPL definition olds more logic and you can use the JBPM editor.
+
+Workflows are now more performant (less indirections and direct access to JBPM/Hibernate).
+
+In the next releases, we will extend the JPDL el to expose more generic Nuxeo primitives
+
+### About compatibility
+
+Old workflows have been rewritten with the new model, so does the UI.
+
+But, sorry, there is no transparent compatibility. You can still deploy the old workflow stack on 5.2-M4 though.
+
+Repository Indexing
+-------------------
+
+### What changes ?
+
+M4 no more relies on Compass/Lucene for indexing and searching.
+
+Complete indexing/query support (including full text) is not provide directly by the repository (on both VisibleSQL and JCR backends).
+
+### Why is it better ?
+
+- no more compass locks problems
+- only one Query API
+- complete indexing/query support even for embeddable packagings
+
+WebEngine
+---------
+
+[TODO: complete]
+
+### What changes ?
+
+- Eclipse dev tools integration
+- integrated with NXThemes
+
+### Why is it better ?
+                 
+[TODO]
+
+JSF / Directories
+-----------------
+
+### What changes?
+
+Default Users/Groups management screens now use the Layout system.
+New JSF component to handle suggestBox on top of directories.
+
+### Why is it better ?
+
+You can now customize easily Users/Groups screens.
+
+You can easily integrate users/groups or any directory search in your layouts or xhtml pages.
+
+Misc additions
+--------------
+
+### WebWorkspace
+
+Even if in M4, WebWorkspace comes in alpha release, this already gives you a example on how the JSF WebApp and WebEngine can collaborate together.
+
+The default Workspace has been extended so you can choose to expose it automatically via web engine to do a simple website.
+
+You can define :
+
+- its url
+- its template
+- its theme (not complete for now)
+
+### CommandLine Service
+
+Lets you configure external command lines tools that you want to use from Nuxeo.
+
+The service handles :
+
+- configuration of the command lines (with OS specific options if needed)
+- mapping of command I/O
+- API to test command availability
+- API to get installation message
+
+### OOo server daemon
+
+OpenOffice server can now be managed by a Daemon hosted in Nuxeo.
+
+The daemon provides :
+
+- automatic OOo installation discovery when possible
+- automatic OOo start : off / on Nuxeo startup / on first usage
+- OOo instance pooling
+
+### Management Service
+
+Nuxeo now includes a module to expose Nuxeo services and extension points via JMX.
+
+[TODO: to be completed, should probably move to a top level item]
+
+### GWT / Flex
+
+We don't have anything released about that even if infrastructure exists and works.
+
+Addons that are now part of the default distribution
+----------------------------------------------------
+
+- Preview service
+- Tiling service
+- Annotation service
+- Virtual Navigation
+- PictureBook and imaging services
