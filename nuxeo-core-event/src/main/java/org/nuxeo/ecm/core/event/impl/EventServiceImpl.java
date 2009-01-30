@@ -46,9 +46,9 @@ import org.nuxeo.ecm.core.event.tx.PostCommitSynchronousRunner;
  */
 public class EventServiceImpl implements EventService {
 
-    private static final Log log = LogFactory.getLog(EventServiceImpl.class);
+    public static final VMID VMID = new VMID();
 
-    public final static VMID VMID = new VMID();
+    private static final Log log = LogFactory.getLog(EventServiceImpl.class);
 
     protected static final ThreadLocal<EventBundleImpl> bundle = new ThreadLocal<EventBundleImpl>() {
         @Override
@@ -59,7 +59,7 @@ public class EventServiceImpl implements EventService {
 
     protected final ListenerList listeners;
     protected final ListenerList postCommitListeners;
-    protected AsyncEventExecutor asyncExec;
+    protected final AsyncEventExecutor asyncExec;
 
     public EventServiceImpl() {
         EntryComparator cmp = new EntryComparator();
@@ -269,8 +269,8 @@ public class EventServiceImpl implements EventService {
         public final int priority;
         public final T listener;
         public final Set<String> events;
-        public boolean async;
-        public String name;
+        public final boolean async;
+        public final String name;
 
         public Entry(T listener, int priority, boolean async, Set<String> events, String name) {
             this.listener = listener;

@@ -34,11 +34,9 @@ import org.nuxeo.ecm.core.event.PostCommitEventListener;
 import org.nuxeo.ecm.core.event.ReconnectedEventBundle;
 
 /**
- *
- * Forwards Core EventBundles to JMS topic
+ * Forwards Core EventBundles to JMS topics.
  *
  * @author Tiry
- *
  */
 public class JmsEventForwarder implements PostCommitEventListener {
 
@@ -46,33 +44,30 @@ public class JmsEventForwarder implements PostCommitEventListener {
 
     private static final Log log = LogFactory.getLog(JmsEventForwarder.class);
 
-    protected boolean jmsBusIsActive=true;
+    protected boolean jmsBusIsActive = true;
 
     protected void produceJMSMessage(JMSEventBundle message) throws JMSBusNotActiveException {
-        Topic nuxeoTopic = null;
-        TopicConnection nuxeoTopicConnection = null;
-        TopicSession nuxeoTopicSession = null;
-        TopicPublisher nuxeoMessagePublisher = null;
-        InitialContext ctx=null;
-
+        InitialContext ctx;
+        Topic nuxeoTopic;
         try {
             ctx = new InitialContext();
             nuxeoTopic = (Topic) ctx.lookup(NUXEO_JMS_TOPIC);
         }
         catch (NamingException e) {
-            jmsBusIsActive=false;
+            jmsBusIsActive = false;
             throw new JMSBusNotActiveException(e);
         }
 
+        TopicConnection nuxeoTopicConnection = null;
+        TopicSession nuxeoTopicSession = null;
+        TopicPublisher nuxeoMessagePublisher = null;
         try {
-            TopicConnectionFactory factory = (TopicConnectionFactory) ctx
-                    .lookup("TopicConnectionFactory");
+            TopicConnectionFactory factory = (TopicConnectionFactory) ctx.lookup("TopicConnectionFactory");
             nuxeoTopicConnection = factory.createTopicConnection();
             nuxeoTopicSession = nuxeoTopicConnection.createTopicSession(false,
                     TopicSession.AUTO_ACKNOWLEDGE);
 
-            ObjectMessage jmsMessage = nuxeoTopicSession
-                    .createObjectMessage(message);
+            ObjectMessage jmsMessage = nuxeoTopicSession.createObjectMessage(message);
 
             // add Headers for JMS message
             jmsMessage.setStringProperty("BundleEvent", message.getEventBundleName());
@@ -87,8 +82,9 @@ public class JmsEventForwarder implements PostCommitEventListener {
         } finally {
             if (nuxeoTopicSession != null) {
                 try {
-                    if (nuxeoMessagePublisher != null)
+                    if (nuxeoMessagePublisher != null) {
                         nuxeoMessagePublisher.close();
+                    }
                     nuxeoTopicConnection.close();
                     nuxeoTopicSession.close();
                 } catch (JMSException e) {
@@ -96,11 +92,9 @@ public class JmsEventForwarder implements PostCommitEventListener {
                 }
             }
         }
-
     }
 
     public void handleEvent(EventBundle events) throws ClientException {
-
         if (!canForwardMessage(events)) {
             return;
         }
@@ -115,15 +109,16 @@ public class JmsEventForwarder implements PostCommitEventListener {
     protected boolean canForwardMessage(EventBundle events) {
         // Check Bus is Active
         if (!jmsBusIsActive) {
-             log.debug("JMS Bus is not active, cannot forward message");
-             return false;
+            log.debug("JMS Bus is not active, cannot forward message");
+            return false;
         }
         if (events instanceof ReconnectedEventBundle) {
-            if (((ReconnectedEventBundle)events).comesFromJMS()) {
+            if (((ReconnectedEventBundle) events).comesFromJMS()) {
                 log.debug("Message already comes from JMS bus, not forwarding");
                 return false;
             }
         }
         return true;
     }
+
 }

@@ -23,10 +23,10 @@ import org.apache.commons.logging.LogFactory;
  */
 public class EventBundleTransactionHandler {
 
-    protected UserTransaction tx = null;
+    protected UserTransaction tx;
 
-    protected final static String UTName = "java:comp/UserTransaction";
-    protected final static String UTNameAlternate = "UserTransaction";
+    protected static final String UTName = "java:comp/UserTransaction";
+    protected static final String UTNameAlternate = "UserTransaction";
 
     private static final Log log = LogFactory
             .getLog(EventBundleTransactionHandler.class);
@@ -63,16 +63,15 @@ public class EventBundleTransactionHandler {
     }
 
     protected UserTransaction createUT() {
-        UserTransaction ut = null;
 
         InitialContext context = null;
-
         try {
             context = new InitialContext();
         } catch (Exception e) {
             isTxEnabled = false;
         }
 
+        UserTransaction ut = null;
         try {
             ut = (UserTransaction) context.lookup(UTName);
         } catch (NamingException ne) {
@@ -86,15 +85,14 @@ public class EventBundleTransactionHandler {
     }
 
     protected Transaction createTxFromTM() {
-        TransactionManager tm = null;
         InitialContext context = null;
-
         try {
             context = new InitialContext();
         } catch (Exception e) {
             isTxEnabled = false;
         }
 
+        TransactionManager tm = null;
         try {
             tm = (TransactionManager) context.lookup("TransactionManager");
         } catch (NamingException ne) {
@@ -117,7 +115,6 @@ public class EventBundleTransactionHandler {
             isTxEnabled = false;
             return null;
         }
-
     }
 
     protected boolean isUTTransactionActive() {
@@ -178,7 +175,6 @@ public class EventBundleTransactionHandler {
             }
             tx = null;
         }
-
     }
 
 }

@@ -14,12 +14,11 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class AsyncProcessorConfig {
 
-    protected static Boolean forceJMSUsage = null;
+    protected static Boolean forceJMSUsage;
 
     protected static String forceJMSUsageKey = "org.nuxeo.ecm.event.forceJMS";
 
     public static boolean forceJMSUsage() {
-
         if (forceJMSUsage == null) {
             String forceFlag = Framework.getProperty(forceJMSUsageKey, "false");
             forceJMSUsage = Boolean.parseBoolean(forceFlag);

@@ -36,20 +36,19 @@ public class JMSEventBundle implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    protected List<Map<String, Serializable>> serialisableEvents;
+    private static final Log log = LogFactory.getLog(JMSEventBundle.class);
 
-    protected String coreInstanceName;
+    protected final List<Map<String, Serializable>> serialisableEvents;
 
-    protected String eventBundleName;
+    protected final String eventBundleName;
+
+    protected final VMID sourceVMID;
 
     protected boolean isDocumentEventContext = false;
 
-    protected VMID sourceVMID;
-
-    private static final Log log = LogFactory.getLog(JMSEventBundle.class);
+    protected String coreInstanceName;
 
     public JMSEventBundle(EventBundle events) {
-
         eventBundleName = events.getName();
         sourceVMID = events.getSourceVMID();
         serialisableEvents = new ArrayList<Map<String, Serializable>>();
@@ -110,7 +109,6 @@ public class JMSEventBundle implements Serializable {
 
     // Should not be necessary since this is noww done in CoreSession
     protected Map<String, Serializable> filterContextProperties(Map<String, Serializable> properties) {
-
         Map<String, Serializable> serializableProps = new HashMap<String, Serializable>();
 
         for (String key : properties.keySet()) {

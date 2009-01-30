@@ -36,13 +36,13 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class AsyncEventExecutor {
 
-    private static Log log = LogFactory.getLog(AsyncEventExecutor.class);
+    private static final Log log = LogFactory.getLog(AsyncEventExecutor.class);
 
     public static final int QUEUE_SIZE = Integer.MAX_VALUE;
 
-    protected ThreadPoolExecutor executor;
+    protected final ThreadPoolExecutor executor;
 
-    protected BlockingQueue<Runnable> queue;
+    protected final BlockingQueue<Runnable> queue;
 
 
     public static AsyncEventExecutor create() {
@@ -75,7 +75,6 @@ public class AsyncEventExecutor {
                 keepAliveTime, TimeUnit.SECONDS, queue);
     }
 
-
     public void run(List<PostCommitEventListener> listeners, EventBundle event) {
         for (PostCommitEventListener listener : listeners) {
             run(listener, event);
@@ -87,8 +86,9 @@ public class AsyncEventExecutor {
     }
 
     public static class Job implements Runnable {
-        protected ReconnectedEventBundle bundle;
-        protected PostCommitEventListener listener;
+
+        protected final ReconnectedEventBundle bundle;
+        protected final PostCommitEventListener listener;
 
         public Job(PostCommitEventListener listener, EventBundle bundle) {
             this.listener = listener;
@@ -104,7 +104,7 @@ public class AsyncEventExecutor {
             EventBundleTransactionHandler txh = new EventBundleTransactionHandler();
             try {
                 txh.beginNewTransaction();
-                this.listener.handleEvent(bundle);
+                listener.handleEvent(bundle);
                 txh.commitOrRollbackTransaction();
                 log.debug("Async listener executed, commiting tx");
             } catch (Throwable t) {
@@ -113,7 +113,6 @@ public class AsyncEventExecutor {
             } finally {
                 bundle.disconnect();
             }
-
         }
     }
 

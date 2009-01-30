@@ -49,7 +49,7 @@ import java.util.Set;
  */
 public interface Event extends Serializable {
 
-    static enum Flag {
+    enum Flag {
         LOCAL, //
         CANCEL, //
         COMMIT, //

@@ -17,11 +17,10 @@ import org.nuxeo.ecm.core.event.PostCommitEventListener;
  */
 public class PostCommitSynchronousRunner {
 
-    private static final Log log = LogFactory
-            .getLog(PostCommitSynchronousRunner.class);
+    private static final Log log = LogFactory.getLog(PostCommitSynchronousRunner.class);
 
-    protected List<PostCommitEventListener> listeners = null;
-    protected EventBundle event = null;
+    protected List<PostCommitEventListener> listeners;
+    protected EventBundle event;
     protected long timeout = 0;
 
     public static int DEFAULT_TIME_OUT_MS = 300;
@@ -63,12 +62,8 @@ public class PostCommitSynchronousRunner {
 
     protected class MonoThreadExecutor implements Runnable {
 
-        public MonoThreadExecutor() {
-        }
-
         public void run() {
-            EventBundleTransactionHandler txh;
-            txh = new EventBundleTransactionHandler();
+            EventBundleTransactionHandler txh = new EventBundleTransactionHandler();
             long t0 = System.currentTimeMillis();
             log.debug("Start post commit sync execution in Thread "
                     + Thread.currentThread().getId());

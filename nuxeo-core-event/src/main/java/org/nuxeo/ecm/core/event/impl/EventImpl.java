@@ -37,7 +37,7 @@ public class EventImpl implements Event {
 
     protected final EventContext ctx;
 
-    protected Set<Flag> flags;
+    protected final Set<Flag> flags;
 
 
     public EventImpl(String name, EventContext ctx, Set<Flag> flags, long creationTime) {

@@ -29,5 +29,4 @@ public interface EventProducer {
 
     void fireEventBundle(EventBundle event) throws ClientException;
 
-
 }

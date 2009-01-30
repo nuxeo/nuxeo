@@ -18,14 +18,12 @@ import org.nuxeo.ecm.core.event.impl.ReconnectedEventBundleImpl;
  */
 public class ReconnectedJMSEventBundle extends ReconnectedEventBundleImpl {
 
+    private static final Log log = LogFactory.getLog(ReconnectedJMSEventBundle.class);
     private static final long serialVersionUID = 1L;
 
-    protected JMSEventBundle jmsEventBundle;
-
-    private static final Log log = LogFactory.getLog(ReconnectedJMSEventBundle.class);
+    protected final JMSEventBundle jmsEventBundle;
 
     public ReconnectedJMSEventBundle(JMSEventBundle jmsEventBundle) {
-        super();
         this.jmsEventBundle = jmsEventBundle;
     }
 
@@ -33,7 +31,8 @@ public class ReconnectedJMSEventBundle extends ReconnectedEventBundleImpl {
     protected List<Event> getReconnectedEvents() {
         if (sourceEventBundle == null) {
             try {
-                sourceEventBundle = jmsEventBundle.reconstructEventBundle(getReconnectedCoreSession(jmsEventBundle.getCoreInstanceName()));
+                sourceEventBundle = jmsEventBundle.reconstructEventBundle(
+                        getReconnectedCoreSession(jmsEventBundle.getCoreInstanceName()));
             } catch (CannotReconstructEventBundle e) {
                 log.error("Error while reconstructing Bundle from JMS", e);
                 return null;

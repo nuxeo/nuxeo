@@ -186,7 +186,7 @@ public class EventListenerTest extends NXRuntimeTestCase {
         assertFalse(event.hasRemoteSource());
     }
 
-    public final static Object serialize(Object obj) throws Exception {
+    public static Object serialize(Object obj) throws Exception {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ObjectOutputStream out = new ObjectOutputStream(baos);
         out.writeObject(obj);
