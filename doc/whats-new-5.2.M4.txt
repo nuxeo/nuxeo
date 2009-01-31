@@ -1,56 +1,78 @@
 What's new in Nuxeo 5.2.M4
 ==========================
-                    
-[STATUS: DRAFT - will be announced on monday]
 
-Visible SQL™ Repository
+[STATUS: DRAFT - will be announced on Feb 2]
+
+Summary 
 ---------------------
 
-### What changes ?
+- New back-end repository engine (but continued support for Jackrabbit)
+- New web development tool, WebEngine, based on JAX-RS and integrated with 
+  Eclipse
+- Simplified and faster workflow using JBPM
+- Cleaner, simpler event model (compatible with JMS, but JMS is not required)
+- Simplified format conversion system, with improved caching
+- Open office daemon now managed by Nuxeo
+- Nuxeo services and extension points are now visible via JMX
+- Improved Audit system is now integrated with Event service and visible via JMX
+- Better integration with MS Office through support for the SharePoint protocol
 
-Although the repository API and high level features remain the same, the data storage structure has changed. Instead of relying on Jackrabbit for database mapping, we now have our own relational database mapping, Visible SQL™. The relational model is based on the XSD schemas; this basically means that the RDB model is now compliant with the business model.
+Visible SQL? Repository
+---------------------
 
-### Why is it better ?
+### What has changed?
 
-The data stored in the SQL RDB is no longer cryptic and opaque, as it was with Jackrabbit's mapping. This has a number of benefits for data processing:
+Although the repository API and high level features remain the same, the data 
+storage structure has changed. Instead of relying on Jackrabbit for database 
+mapping, we now have our own relational database mapping, Visible SQL?. The 
+relational model is based on the XSD schemas; this basically means that the RDB 
+model is now compliant with the business model.
+
+### Why is it better?
+
+The data stored in the SQL RDB is no longer cryptic and opaque, as it was with 
+Jackrabbit's mapping. This has a number of benefits for data processing:
 
 - you can see and debug your data in the SQL database,
-- you can do simple batches for mass import and export,
+- you can do simple batch processing for mass import and export,
 - you can migrate your schemas easily,
-- you can plug any SQL compliant reporting tool to do reports on top of the Nuxeo repository.
+- you can plug any SQL-compliant reporting tool to do reports on top of the 
+ Nuxeo repository.
 
-The Visible SQL™ repository is also an important step because :
+The Visible SQL? repository itself is also an important step because it opens 
+the way for a lot of low level optimizations:
 
-- it opens the way for a lot of low level optimizations:
-  - denormalization for speed,
-  - per-database data structures (arrays, uuid types, indexes, full text),
-  - per-database stored procedures for speedups,
-- it opens the way for extending our search model to also support efficient join with Relations and Audit,
-- it opens the way for additional high-level features (tree-based versioning, mixins, user-defined schemas).
+- denormalization for speed,
+- per-database data structures (arrays, uuid types, indexes, full text),
+- per-database stored procedures for speedups,
+- it opens the way for extending our search model to also support efficient 
+ join with Relations and Audit,
+
+Visible SQL also opens the way for additional high-level features 
+like tree-based versioning, mixins, user-defined schemas.
 
 Event Service
 -------------
 
-### What changes ?
+### What has changed?
 
 We now provides a new API and extension point system to:
 
 - fire events or event bundles
 - register event listeners
 
-Until 5.2-M3, we had to separated models : CoreEvents+CoreListeners / JMSEvents+MDB.
+Previously, we had to separated models: CoreEvents+CoreListeners / 
+JMSEvents + Message Driven Beans. Starting with 5.2-M4, the model is now 
+completely homogeneous. JMS is still used when needed, but it's now an 
+implementation detail of the platform, and it's transparent for your listeners.
 
-Starting with 5.2-M4, the model is completely homogenous : there is only one Event/Listener model.
+### Why is it better?
 
-JMS is still used when needed, but it's now an implementation detail of the platform, and it's transparent for your listeners.
+The API for sending an event is now far simpler, as well as unified.
 
-### Why is it better ?
+Writing an EventListener is also simpler:
 
-The API for sending an event is now far more simple and there is only one.
-
-Writing an EventListener is also simpler :
-
-- no need to write an MDB
+- no need to write a Message Driven Bean (MDB)
 - no need to handle Authentication/Repository initialization
 - there are only 2 interfaces: EventListener / PostCommitEventListener
 - you can use a simple script!
@@ -61,16 +83,18 @@ EventListeners can now be:
 - postcommit synchronous: just after the commit in a new separated transaction
 - postcommit asynchronous
 
-The new eventListener system also manages transactions for you.
+The new eventListener system also manages these transactions for you.
 
-One of the key benefit of the refactoring, is that JMS is no longer a required dependency : you can have asynchronous listeners without JMS.
+One of the key benefit of this simplification, is that JMS is no longer a 
+required dependency: you can have asynchronous listeners without JMS.
 
-This means :
+Thus:
 
 - we can embed more services in a WebEngine/Jetty package
-- you can now easily test your EventListeners in JUnit without needing JMS/MDB setup
+- you can now easily test your EventListeners in JUnit without needing 
+ JMS/MDB setup
 
-### About compatibility :
+### About compatibility:
 
 We provide a nuxeo-core-event-compat package that re-enables old event system:
 
@@ -78,154 +102,235 @@ We provide a nuxeo-core-event-compat package that re-enables old event system:
 - forward to the old JMS Topic
 - triggers old MDBs
 
-If you need the old API for sending events/messages, you have to deploy the old nuxeo-platform-event-* packages.
+If you need the old API for sending events/messages, you have to deploy the old 
+nuxeo-platform-event-* packages.
 
 Converter Service
 -----------------
 
-### What changes ?
+### What has changed?
 
 Transformation service had some API design issues that we wanted to correct.
 
-This required defining a brand new interface, so we decided to define a new service name to avoid any confusion.
+This required defining a brand new interface, so we decided to define a new 
+service name to avoid any confusion.
 
-### Why is it better ?
+### Why is it better?
 
-- API is now simpler: there are only converters, not transformers and plugins like before.
+- API is now simpler: there are only converters, not transformers and plugins 
+ like before.
 - ConversionService includes a caching system
-- data input/output is handled by BlobHolder interface, no more TransformDocument or plain Blob
-- ConversionAPI now provides an API to know if converter is available, this is usefull when the converter depends on an external program that must be installed on the server (like OpenOffice server)
+- data input/output is handled by BlobHolder interface, no more 
+ TransformDocument or plain Blob
+- ConversionAPI now provides an API to know if converter is available, 
+ this is useful when the converter depends on an external program that must 
+ be installed on the server (like OpenOffice server)
 
 ### About compatibility
 
-Transformer API is now deprecated and the old transform implementations and plugins have been removed from default distribution.
+Transformer API is now deprecated and the old transform implementations and 
+plugins have been removed from default distribution.
 
 Nevertheless, we now provide a tranformer-compat bundle.
 
-Transformers API is still available, but the implementation now wraps calls to the ConversionService.
+Transformers API is still available, but the implementation now wraps calls to 
+the ConversionService.
 
-This means you can use the new Converters from the old Transformation service API.
+This means you can use the new Converters from the old Transformation service 
+API.
 
-All default included Transformers have been migrated to converters with the same name.
+All default included Transformers have been migrated to Converters with the 
+same name.
 
 Code that was using transformers should still work in 5.2.
 
-If you have contributer transformers, they will be available as converts of via the old API, but you may have to change the Required-Bundle in the MANIFEST.
+If you have contributed Transformers, they will be available as Converters  
+via the compatibility API, but you may have to change the Required-Bundle in the 
+MANIFEST.MF of your bundle.
 
 Audit Service
 -------------
 
-### What changes ?
+### What has changed?
 
-Audit service is now far more easily configurable, no more need to contribute a Entity class to customize you log format.
+Audit service is now far more easier to configure, no more need to contribute a 
+Entity class just to customize your log format.
 
 Customization is now done via an EL and XML.
 
-Audit service is now based on the EventService:
+Audit service is now based on the EventService allowing it run in unit tests
+and inside WebEngine (see below).
 
-- this does run in WebEngine
-- this does run in Unit tests
+The Audit service is now integrated into the Nuxeo Management extensions, so you 
+can get informations from Audit via JMX.
 
-Audit service is now integrated into the Nuxeo Management extensions, so you can get informations from Audit via JMX.
+We also did some API cleanup.
 
-We also did some APi cleanup.
+### Why is it better?
 
-### Why is it better ?
-
-Configuring Audit log is now easy : you can now leverage this to build a custom application level log to monitor usage of the platform and build business reports on top of it.
+Configuring the Audit log is now easy: you can now leverage this to build a 
+custom application level log to monitor usage of the platform and build business 
+reports on top of it.
 
 ### About compatibility
 
-If you don't have customized your AuditLog format (because it was too complicated), migration should be transparent.
+If you have not customized your AuditLog format (because it was too 
+complicated!), migration should be transparent.
 
 Workflows
 ---------
 
-### What changes ?
+### What has changed?
 
 The Workflow service has been completely rebuilt from scratch.
 
-It still uses JBPM, but there is no more a WFMC API on top of it.
+It still uses JBPM, but the WFMC API on top of it has been removed.
 
-### Why is it better ?
+### Why is it better?
 
-Contributing workflows is now far more easy : you only have to know JBPM, there is more need to go through the WFMC mapping.
+Defining workflows is now much easier: you only have to know JBPM, 
+there is no longer a need to go through the WFMC mapping.
 
-This also means that Nuxeo workflows are now more natural for a JBPM developer, the JBPL definition olds more logic and you can use the JBPM editor.
+This also means that Nuxeo workflows are now more natural for a JBPM developer,
+the JBPL definition holds more logic and you can use a JBPM editor in tools
+like Eclipse.
 
-Workflows are now more performant (less indirections and direct access to JBPM/Hibernate).
+Workflows are now higher performance (less indirections and direct access to 
+JBPM/Hibernate).
 
-In the next releases, we will extend the JPDL el to expose more generic Nuxeo primitives
+Soon, we will extend the JPDL expression language to expose more generic Nuxeo 
+primitives, improving JBPL integration with the Nuxeo platform.
 
 ### About compatibility
 
-Old workflows have been rewritten with the new model, so does the UI.
+Old workflows have been rewritten with the new model, as has the UI.
 
-But, sorry, there is no transparent compatibility. You can still deploy the old workflow stack on 5.2-M4 though.
+But, sorry, there is no transparent compatibility. If you would like, you can 
+still deploy the old workflow stack on 5.2M4 to use older workflows.
 
 Repository Indexing
 -------------------
 
-### What changes ?
+### What has changed?
 
-M4 no more relies on Compass/Lucene for indexing and searching.
+M4 does not depend on Compass/Lucene for indexing and searching.
 
-Complete indexing/query support (including full text) is not provide directly by the repository (on both VisibleSQL and JCR backends).
+Complete indexing/query support (including full text) is now provide directly 
+by the repository (on both Visible SQL and JCR backends).
 
-### Why is it better ?
+### Why is it better?
 
-- no more compass locks problems
-- only one Query API
-- complete indexing/query support even for embeddable packagings
+- This should fix the problems we have seen with Compass locks 
+- There is only one Query API (instead of one for SQL and one for Jackrabbit)
+- Complete indexing/query support even for embedded packagings (such as Jetty)
+
+Management Service
+------------------
+
+### What has changed?
+
+Nuxeo now includes a module to expose Nuxeo services and extension points via 
+JMX, the Java Management Extensions.
+
+### Why is it better?
+
+You can now use standard tools like the Java Management Console for Nuxeo
+administration.
 
 WebEngine
 ---------
 
-[TODO: complete]
+### What has changed?
 
-### What changes ?
+Nuxeo 5.2M4 includes WebEngine RC2.  WebEngine is a tool for accessing the
+Nuxeo Platform via RESTful services.  It supports the JAX-RS (Java API for
+Restful Services, aka JSR-311) on the server.
 
-- Eclipse dev tools integration
-- integrated with NXThemes
+- Simplified the web module declaration and packaging 
+- Full lazy loading of web modules.
+- Hot reload of Java classes residing inside WebEngine modules.
+- Eclipse plugin to develop webengine modules including: 
+- A WebEngine project nature.
+- WebEngine server view that allows deploying WebEngine module projects on a 
+  remote WebEngine.
+- Starting a remote WebEngine in run or debug mode from eclipse. (Eclipse run 
+  configurations are used) 
+- Transparent java classes reload on the remote WebEngine server as java 
+  sources are modified (and saved) in eclipse. 
+- Modules can now be "headless" if they have no web GUI.
+- Groovy is still supported but is now not turned on default.  Groovy code can
+  also be hot-reloaded from the Eclipse UI.
 
-### Why is it better ?
-                 
-[TODO]
+The Eclipse plugin is available as an eclipse update site at 
+<http://download.nuxeo.org/nuxeo-ide/updates/snapshots/>
+
+
+### Why is it better?
+
+- Allows much tighter, faster development loop for Java developers using
+ WebEngine inside eclipse.
+- Allows easy creating of RESTful Web applications that integrate with the
+ Nuxeo platform. 
+- Headless modules can be used to implement REST-based web services that
+ do not have a user interfaces. 
+
+Windows SharePoint Services
+-----------------
+
+### What has changed?
+
+The Microsoft WebDAV extensions (WSS) are now mostly supported by Nuxeo. 
+Microsoft Office tools like Word and Excel probe remote "folders" to see if 
+they are hosted on a Microsoft SharePoint server. If so, the Office tools 
+speak an enhanced version of the WebDAV protocol that supports more features.  
+Nuxeo servers, with the NxWSS bundle installed, correctly respond to the probes
+and most of the enhanced protocol messages.
+
+### Why is it better?
+
+Users can now load and save documents to Nuxeo as easily as they can with
+a SharePoint server.  Also, the enhanced features that work with a SharePoint
+server--such as granting a user access to the document--work with Nuxeo and
+are visible in the user interface of Office tools like Word in a new side panel. 
 
 JSF / Directories
 -----------------
 
-### What changes?
+### What has changed?
 
 Default Users/Groups management screens now use the Layout system.
-New JSF component to handle suggestBox on top of directories.
+New JSF component to handle a "suggestion box" on top of directories.
 
-### Why is it better ?
+### Why is it better?
 
 You can now customize easily Users/Groups screens.
 
-You can easily integrate users/groups or any directory search in your layouts or xhtml pages.
+You can easily integrate users/groups or any directory search in your layouts 
+or xhtml pages.
 
 Misc additions
 --------------
 
 ### WebWorkspace
 
-Even if in M4, WebWorkspace comes in alpha release, this already gives you a example on how the JSF WebApp and WebEngine can collaborate together.
+This is the alpha release of WebWorkspace that allows easy creation of 
+web sites whose content lives in a Nuxeo repository.  This feature is
+built on WebEngine and JSF and is visible in all Nuxeo workspaces. By
+just clicking a checkbox, you can enable access to the workspace from
+the web.
 
-The default Workspace has been extended so you can choose to expose it automatically via web engine to do a simple website.
+You can define:
 
-You can define :
-
-- its url
-- its template
-- its theme (not complete for now)
+- the URL of the website
+- the template used for the content of the website
+- coming soon: you will be able to define it's theme using Nuxeo's theme editor
 
 ### CommandLine Service
 
-Lets you configure external command lines tools that you want to use from Nuxeo.
+Allows you to configure external command line tools that you want to use from 
+within Nuxeo.
 
-The service handles :
+The service handles:
 
 - configuration of the command lines (with OS specific options if needed)
 - mapping of command I/O
@@ -234,23 +339,14 @@ The service handles :
 
 ### OOo server daemon
 
-OpenOffice server can now be managed by a Daemon hosted in Nuxeo.
+OpenOffice.org server can now be managed by a Daemon hosted in Nuxeo.
 
-The daemon provides :
+The daemon provides:
 
 - automatic OOo installation discovery when possible
-- automatic OOo start : off / on Nuxeo startup / on first usage
+- automatic OOo start: off / on Nuxeo startup / on first usage
 - OOo instance pooling
 
-### Management Service
-
-Nuxeo now includes a module to expose Nuxeo services and extension points via JMX.
-
-[TODO: to be completed, should probably move to a top level item]
-
-### GWT / Flex
-
-We don't have anything released about that even if infrastructure exists and works.
 
 Addons that are now part of the default distribution
 ----------------------------------------------------
