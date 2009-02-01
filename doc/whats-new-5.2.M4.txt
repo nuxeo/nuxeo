@@ -27,6 +27,12 @@ Summary
 - Improved picture support: picture's metadata extraction, picture libraries,
   in-browser crop/resize.
 
+- Theme Editor: added support for custom themes that can be created
+  "through the web" and be stored without modifying the configuration of the
+  application. Added a preset manager and a style manager to better organize
+  styles and presets. Added a "save changes" function.
+
+
 ###Tech features
 
 - Visible Content Store: new storage engine the repository  (but continued
@@ -48,6 +54,10 @@ Summary
 
 - Improved Audit Service, easier to customize and integrated with the new 
   monitoring services
+
+- The Theme Engine and the Theme Editor run natively under WebEngine 
+  (Jetty, Glassfish) and under JBoss/JSF.
+
 
 Visible Content Store
 ---------------------
@@ -340,6 +350,90 @@ You can now customize easily Users/Groups screens.
 
 You can easily integrate users/groups or any directory search in your layouts 
 or XHTML pages.
+
+
+Nuxeo Theme
+------------
+
+### Theme Engine
+
+The Theme Engine can be used directly with WebEngine.
+This allows themes created under Nuxeo EP and running on JBoss to be reused in a 
+pure WebEngine environment provided that new views have been defined:
+
+Declared views now require a "template-engine" attribute:
+
+<view name="breadcrumbs" template-engine="freemarker">
+  <format-type>widget</format-type>
+  <template>widgets/breadcrumbs.ftl</template>
+</view>
+
+If no "template-engine" attribute is specified then "jsf-facelets" is assumed
+by default. This is meant for backward compatibility with existing Nuxeo EP
+applications.
+
+You are invited to update your custom JSF view declarations to remove warnings
+at startup. Simply add: template-engine="jsf-facelets" in your theme 
+contribution file:
+
+<view name="my widget" template-engine="jsf-facelets">
+  <format-type>widget</format-type>
+  <template>widgets/my-widget.xhtml</template>
+</view>
+
+
+### Theme Editor
+
+The Theme Editor application has been ported to WebEngine which allows it to
+run natively in both JSF and Freemarker environments.
+
+Access to the theme editor requires Administrator privileges which means that
+themes are protected against unwanted modifications.
+
+Large effort has been put into simplifying the creation and the management
+of themes through the web, without having to redeploy the application and to 
+restart the server.
+
+Custom themes created in the theme editor are thus stored in the temporary 
+folder of the application server in:
+
+  /opt/jboss/server/default/data/NXRuntime/tmp/themes under JBOSS
+
+and in:
+
+  /opt/nxserver/tmp/themes under Jetty and Glassfish
+
+This allows end-users who have sufficient privileges to create and save their
+own theme while the application is already deployed.
+
+Custom style presets, i.e. color, font, background properties, can also be 
+created through the web. Previously they needed to be registered as static 
+configuration files.
+
+Custom presets are defined per theme. They are stored in the theme's XML file 
+under <presets>:
+
+<?xml version="1.0" encoding="UTF-8"?>
+<theme description="" name="my-theme">
+  ...
+  <presets>
+    <preset category="font" name="default">14px Arial</preset>
+    <preset category="background" name="button">url(/skin/app/img/bg-button.png)</preset>
+    <preset category="color" name="blue">#009</preset>
+    <preset category="color" name="light gray">#ccc</preset>
+  </presets>
+  ...
+</theme>
+
+A Style Manager and a Preset Manager have been added to the Theme Editor to
+simplify the management of styles and presets.
+
+Any color found in a theme which is not declared as a preset can be easily
+converted into a preset.
+
+A "Save changes" button has been added to the Theme Editor to remind users that
+changes need to be saved.
+
 
 Misc additions
 --------------
