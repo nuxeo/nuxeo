@@ -2,7 +2,7 @@ What's new in Nuxeo 5.2.M4
 ==========================
 
 [STATUS: DRAFT - will be announced on Feb 2]
-[TODO IS: add paragraphs for functional items, fix wording, reorganise to fit the structure and order I've defined in the summary]
+[TODO IS: add paragraphs for functional items, fix wording, reorganize to fit the structure and order I've defined in the summary]
 
 *Cleaner and leaner for developers, extra features for users!*
 
@@ -11,32 +11,43 @@ Summary
 
 ###Functional features
 
-- WebWorkspaces: expose workspaces on the web, exposing them as "dedicated collaborative mini-sites", including document publishing, blogs and wikis.
+- WebWorkspaces: expose workspaces on the web, exposing them as "dedicated
+  collaborative mini-sites", including document publishing, blogs and wikis.
 
-- Content Annotation Service: annotation document content and pictures (multi-GB ones), thanks to this in-browser HTML-based annotation technology, leveraging W3C Annotea
+- Content Annotation Service: annotation document content and pictures
+  (multi-GB ones), thanks to this in-browser HTML-based annotation technology,
+  leveraging W3C Annotea
 
-- Implementation of *Microsoft Windows Sharepoint Services 3.0* (WSS) for a native integration with MS Office and Windows desktops
+- Implementation of *Microsoft Windows SharePoint Services 3.0* (WSS) for a
+  native integration with MS Office and Windows desktops
 
-- Virtual Navigation is now bundled by default and allows to browse the repository on several metadata axis
+- Virtual Navigation is now bundled by default and allows to browse the
+  repository on several metadata axis
 
-- Improved picture support: picture's metadata extraction, picture libraries, in-browser crop/resize.
+- Improved picture support: picture's metadata extraction, picture libraries,
+  in-browser crop/resize.
 
 ###Tech features
-- Visible Content Store: new storage engine the repository  (but continued support for Jackrabbit)
 
-- Improvement of WebEngine, the web framework for Content-Oriented Web Apps, now fully-based on JAX-RS and integrated with Eclipse IDE
+- Visible Content Store: new storage engine the repository  (but continued
+  support for Jackrabbit)
 
-- Advanced document conversion service, with improved caching and OpenOffice instances management (for office doc conversions)
+- Improvement of WebEngine, the web framework for Content-Oriented Web Apps,
+  now fully-based on JAX-RS and integrated with Eclipse IDE
 
-- Nuxeo Monitoring Services: access and expose monitoring data of components, accessible through HTTP and JMX
+- Advanced document conversion service, with improved caching and OpenOffice
+  instances management (for office doc conversions)
 
-- Simplified and faster workflow service, leveraging jBPM properly and more integrated with the repository
+- Nuxeo Monitoring Services: access and expose monitoring data of components,
+  accessible through HTTP and JMX
+
+- Simplified and faster workflow service, leveraging jBPM properly and more
+  integrated with the repository
 
 - Cleaner, simpler event model (compatible with JMS, but JMS is not required)
 
-- Improved Audit Service, easier to customize and integrated with the monitoring services
-
-
+- Improved Audit Service, easier to customize and integrated with the new 
+  monitoring services
 
 Visible Content Store
 ---------------------
@@ -46,7 +57,6 @@ Visible Content Store
 Although the repository API and high level features remain the same, we offer 
 a new storage engine. In addition to the Jackrabbit store, we now offer a native engine for RDBMS databases: Visible Content Store™. The relational data model is based on the XSD schemas; this basically means that the RDB 
 model is now fully compliant with the business domain model. We believe it's a great technology and will enable a range of new apps and integration mechanisms for our customers.
-
 
 ### Why is it better?
 
@@ -81,7 +91,7 @@ We now provides a new API and extension point system to:
 - fire events or event bundles
 - register event listeners
 
-Previously, we had to different models : CoreEvents + CoreListeners / 
+Previously, we had to different models: CoreEvents + CoreListeners / 
 JMSEvents + Message Driven Beans. Starting with 5.2-M4, the model is now 
 completely streamlined. JMS is still used when needed, but it's now an 
 implementation detail of the platform, and it's transparent for the listeners.
@@ -90,7 +100,7 @@ implementation detail of the platform, and it's transparent for the listeners.
 
 The API for sending an event is now far simpler, as well as unified.
 
-Writing an EventListener is also simpler :
+Writing an EventListener is also simpler:
 
 - no need to write a Message Driven Bean (MDB)
 - no need to handle Authentication/Repository initialization
@@ -106,8 +116,11 @@ EventListeners can now be:
 The new eventListener system also manages these transactions for you.
 
 One of the key benefit of this simplification, is that JMS is no longer a 
-required dependency : you can have asynchronous listeners without JMS.  Thus:
-- we can embed more services in a lightweigth container (jetty, tomcat, gf3 prelude)
+required dependency: you can have asynchronous listeners without JMS.
+
+Thus:
+
+- we can embed more services in a lightweight container (jetty, tomcat, gf3 prelude)
 - you can now easily unit test your EventListeners without requiring 
  to setup a JMS service
 
@@ -121,7 +134,6 @@ We provide a nuxeo-core-event-compat package that re-enables old event system:
 
 If you need the old API for sending events/messages, just deploy the
 old nuxeo-platform-event-* packages.
-
 
 Conversion Service
 -------------------
@@ -184,7 +196,7 @@ We also did some API cleanup.
 
 ### Why is it better?
 
-Configuring Audit log is now easy : you can now leverage this to build a
+Configuring Audit log is now easy: you can now leverage this to build a
 custom application level log to monitor usage of the platform and build
 business reports on top of it.
 
@@ -204,7 +216,7 @@ jBPM, but the WFMC API on top of it has been removed.
 
 ### Why is it better?
 
-Defining workflows is now much easier : you only have to know jBPM, there is
+Defining workflows is now much easier: you only have to know jBPM, there is
 no longer a need to go through the WFMC mapping. The full power of the jBPM
 engine at your hands... ;-)
 
@@ -247,7 +259,7 @@ Full compatibility is providing, thanks to NXQL and a pass through in the previo
 Monitoring Service
 ------------------
 
-### What has changed?
+### What's new?
 
 Nuxeo Runtime now includes a module to expose Nuxeo services and extension
 points via JMX. Each service can also expose the data is wants easily thanks
@@ -255,8 +267,7 @@ to this new feature. An HTTP interface to browse exposed services and data is
 also providing to ensure maximum compatibility and integration capabilities
 with your monitoring systems.
 
-
-### Why is it better?
+### Why is it good?
 
 You can now use standard tools like the Java Management Console to monitor and administrate all services of Nuxeo's platform.
 
@@ -281,35 +292,38 @@ Restful Services, aka JSR-311), making it an attractive tool to build RESTful se
   sources are modified (and saved) in eclipse. 
 - Modules can now be "headless" if they have no web GUI.
 - Groovy is still supported but is now not turned on default.  Groovy code can
- also be hot-reloaded from the Eclipse UI.
+  also be hot-reloaded from the Eclipse UI.
 
 The Eclipse plugin is available as an eclipse update site at 
-<http://download.nuxeo.org/nuxeo-ide/updates/snapshots/>. It makes the development experience a real bliss for content-oriented apps developers!
+<http://download.nuxeo.org/nuxeo-ide/updates/snapshots/>. It makes the
+development experience a real bliss for content-oriented apps developers!
 
 ### Why is it better?
 
 - Allows much tighter, faster development loop for Java developers using
- WebEngine inside eclipse.
+  WebEngine inside eclipse.
 - Allows easy creating of RESTful Web applications that integrate with the
  Nuxeo platform. 
 - Headless modules can be used to implement REST-based web services that
  do not have a user interfaces. 
 
-Windows Sharepoint Services
+Windows SharePoint Services
 ----------------------------
 
-### What has changed?
+### What's new?
 
-We have implemented most part of the "Windows Sharepoint Services" protocol, realted with file service. 
-This gives you native and transparent integration with MS Windows and MS Office, since both see Nuxeo EP as a Sharepoint server.
+We have implemented most part of the "Windows SharePoint Services" protocol,
+related to file services. 
 
-### Why is it better?
+This gives you native and transparent integration with MS-Windows and
+MS-Office, since both see Nuxeo EP as a SharePoint server.
+
+### Why is it good?
 
 Users can now load and save documents to Nuxeo as easily as they can with
-a Sharepoint server.  Also, the enhanced features that work with a Sharepoint
+a SharePoint server.  Also, the enhanced features that work with a SharePoint
 server--such as granting a user access to the document--work with Nuxeo and
 are visible in the user interface of Office tools like Word in a new side panel. 
-
 
 Nuxeo Directory UI
 -----------------
@@ -327,13 +341,12 @@ You can now customize easily Users/Groups screens.
 You can easily integrate users/groups or any directory search in your layouts 
 or XHTML pages.
 
-
 Misc additions
 --------------
 
 ### WebWorkspace
 
-[XXX TODO: remove the alpha status, use beta + make it a stand alone paragraph, it's a lot more than a "misc addition" :) ]
+[XXX TODO: remove the alpha status, use beta + make it a stand alone paragraph, it's a lot more than a "misc addition") ]
 
 This is the alpha release of WebWorkspace that allows easy creation of 
 web sites whose content lives in a Nuxeo repository.  This feature is
@@ -341,7 +354,7 @@ built on WebEngine and JSF and is visible in all Nuxeo workspaces. By
 just clicking a checkbox, you can enable access to the workspace from
 the web.
 
-You can define :
+You can define:
 
 - the URL of the website
 - the template used for the content of the website
@@ -352,7 +365,7 @@ You can define :
 Allows you to configure external command line tools that you want to use from 
 within Nuxeo.
 
-The service handles :
+The service handles:
 
 - configuration of the command lines (with OS specific options if needed)
 - mapping of command I/O
@@ -361,12 +374,12 @@ The service handles :
 
 ### OOo server daemon
 
-OpenOffice server can now be managed by a Daemon hosted in Nuxeo.
+OpenOffice.org server can now be managed by a Daemon hosted in Nuxeo.
 
-The daemon provides :
+The daemon provides:
 
 - automatic OOo installation discovery when possible
-- automatic OOo start : off / on Nuxeo startup / on first usage
+- automatic OOo start: off / on Nuxeo startup / on first usage
 - OOo instance pooling
 
 
