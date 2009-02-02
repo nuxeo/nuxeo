@@ -77,8 +77,7 @@ public class WebEngineSessionManager extends DefaultSessionManager {
 
     @Override
     public boolean needResetLogin(ServletRequest req) {
-        String p = ((HttpServletRequest) req).getPathInfo();
-        return p != null && p.startsWith("/login");
+        return WebEngineFormAuthenticator.isLoginRequest((HttpServletRequest) req);
     }
 
 }

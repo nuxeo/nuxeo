@@ -2,7 +2,7 @@
 
 function doLogout() {
   jQuery.cookie("JSESSIONID", null, {path: "/"});
-  jQuery.post("${basePath}/login", {caller: "login", nuxeo_login : "true"});
+  jQuery.post("${Context.loginPath}", {caller: "login", nuxeo_login : "true"});
 }
 
 function doLogin(username, password) {
@@ -12,7 +12,7 @@ function doLogin(username, password) {
   var req = jQuery.ajax({
     type: "POST",
     async: false,
-    url: "${basePath}/login/${basePath}",
+    url: "${Context.loginPath}",
     data: {caller: "login", nuxeo_login : "true", username : username, password : password},
     success: function(html, status) {
       document.location.reload();

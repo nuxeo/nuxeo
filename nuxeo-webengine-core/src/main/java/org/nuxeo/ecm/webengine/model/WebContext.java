@@ -177,6 +177,14 @@ public interface WebContext extends Adaptable {
     String getUrlPath();
 
     /**
+     * Get the login path for the current context.
+     * This is the path you can use as a login form action to perform a login or a logout.
+     * After the login/logout is done the current page in that context will be served.  
+     * @return 
+     */
+    String getLoginPath();
+    
+    /**
      * Get the path prefix that identify the current web application.
      * The application path will include the base path (context + servlet path).
      *

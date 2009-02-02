@@ -41,6 +41,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.forms.FormData;
+import org.nuxeo.ecm.webengine.login.WebEngineFormAuthenticator;
 import org.nuxeo.ecm.webengine.model.AdapterResource;
 import org.nuxeo.ecm.webengine.model.AdapterType;
 import org.nuxeo.ecm.webengine.model.Messages;
@@ -314,7 +315,8 @@ public abstract class AbstractWebContext implements WebContext {
         return request.getRequestURL().toString();
     }
 
-    public String getUrlPath() {
+
+    public StringBuilder getUrlPathBuffer() {
         StringBuilder buf = new StringBuilder(request.getRequestURI().length());
         String path = request.getContextPath();
         if (path == null) {
@@ -326,6 +328,20 @@ public abstract class AbstractWebContext implements WebContext {
         if (pathInfo != null) {
             buf.append(pathInfo);
         }
+        return buf;
+    }
+
+    public String getUrlPath() {
+        return getUrlPathBuffer().toString();
+    }
+
+    public String getLoginPath() {
+        StringBuilder buf = getUrlPathBuffer();
+        int len = buf.length();
+        if (len > 0 && buf.charAt(len-1) == '/') { // remove trailing /
+            buf.setLength(len-1);
+        }
+        buf.append(WebEngineFormAuthenticator.LOGIN_KEY);
         return buf.toString();
     }
 
