@@ -1,15 +1,19 @@
 package org.nuxeo.ecm.webengine.admin;
 
-import javax.ws.rs.*;
-import javax.ws.rs.core.*;
-import javax.servlet.http.HttpServletRequest;
-
-import org.nuxeo.ecm.webengine.model.*;
-import org.nuxeo.ecm.webengine.model.impl.*;
-import org.nuxeo.runtime.api.*;
-import org.nuxeo.ecm.platform.usermanager.*;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.ecm.webengine.model.WebObject;
+import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
+import org.nuxeo.runtime.api.Framework;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Response;
 import java.util.Arrays;
 import java.util.List;
 

@@ -1,12 +1,16 @@
 package org.nuxeo.ecm.webengine.admin;
 
-import javax.ws.rs.*;
-import javax.ws.rs.core.*;
-
-import org.nuxeo.ecm.webengine.model.*;
-import org.nuxeo.ecm.webengine.model.impl.*;
-import org.nuxeo.ecm.webengine.model.exceptions.*;
 import org.nuxeo.ecm.core.rest.DocumentRoot;
+import org.nuxeo.ecm.webengine.model.WebObject;
+import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
+import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
+import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
 
 @WebObject(type = "Admin", guard = "user=Administrator")
 @Produces("text/html; charset=UTF-8")

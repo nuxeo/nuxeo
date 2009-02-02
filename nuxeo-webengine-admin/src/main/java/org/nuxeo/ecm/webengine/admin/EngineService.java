@@ -1,10 +1,12 @@
 package org.nuxeo.ecm.webengine.admin;
 
-import javax.ws.rs.*;
-import javax.ws.rs.core.*;
+import org.nuxeo.ecm.webengine.model.WebObject;
+import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 
-import org.nuxeo.ecm.webengine.model.*;
-import org.nuxeo.ecm.webengine.model.impl.*;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Response;
 
 @WebObject(type = "Engine")
 @Produces("text/html; charset=UTF-8")
