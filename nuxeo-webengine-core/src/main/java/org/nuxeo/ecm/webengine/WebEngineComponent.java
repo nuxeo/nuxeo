@@ -58,7 +58,6 @@ public class WebEngineComponent extends DefaultComponent { //implements Configur
     public static final String GUARD_XP = "guard"; // global guards
     public static final String FORM_XP = "form";
 
-
     private static final Log log = LogFactory.getLog(WebEngineComponent.class);
 
     protected Set<String> deployedBundles = new HashSet<String>();
@@ -115,12 +114,12 @@ public class WebEngineComponent extends DefaultComponent { //implements Configur
                 deployModules(ctx, b);
             }
         }
-        
+
         engine.start();
     }
-    
+
     protected void deployModules(RuntimeContext ctx, Bundle b) throws IOException {
-        String id = b.getSymbolicName(); 
+        String id = b.getSymbolicName();
         if (deployedBundles.contains(id)) {
             return; // already deployed
         }
@@ -132,7 +131,7 @@ public class WebEngineComponent extends DefaultComponent { //implements Configur
         if (bf == null) {
             log.warn("Bundle type not supported - cannot be resolved to a file. Bundle: "+b.getSymbolicName());
             return;
-        } 
+        }
         deployedBundles.add(id);
         deployModule(id, bf, url);
     }
@@ -154,7 +153,7 @@ public class WebEngineComponent extends DefaultComponent { //implements Configur
                 moduleRoot.delete();
             }
             // create the module root
-            moduleRoot.mkdirs();            
+            moduleRoot.mkdirs();
             ZipUtils.unzip(bundleFile, moduleRoot);
             engine.registerModule(cfg);
         }
@@ -170,11 +169,9 @@ public class WebEngineComponent extends DefaultComponent { //implements Configur
         super.deactivate(context);
     }
 
-
     public WebEngine getEngine() {
         return engine;
     }
-
 
     @Override
     public void registerContribution(Object contribution,
@@ -199,7 +196,6 @@ public class WebEngineComponent extends DefaultComponent { //implements Configur
 //            engine.getFormManager().registerForm(form);
         }
     }
-
 
     @Override
     public void unregisterContribution(Object contribution,
@@ -227,6 +223,5 @@ public class WebEngineComponent extends DefaultComponent { //implements Configur
         }
         return null;
     }
-
 
 }

@@ -37,46 +37,46 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class ModuleManager {
 
-    private final static Log log = LogFactory.getLog(ModuleManager.class);
-    
-    protected Map<String, ModuleConfiguration> modules;
-    protected Map<String, ModuleConfiguration> paths;
+    private static final Log log = LogFactory.getLog(ModuleManager.class);
+
+    protected final Map<String, ModuleConfiguration> modules;
+    protected final Map<String, ModuleConfiguration> paths;
     protected WebEngine engine;
-    
-    
+
+
     public ModuleManager(WebEngine engine) {
         this.engine = engine;
         modules = new ConcurrentHashMap<String, ModuleConfiguration>();
         paths = new ConcurrentHashMap<String, ModuleConfiguration>();
     }
-    
+
     /**
-     * Get a module given its name
+     * Gets a module given its name.
+     *
      * @return the module or null if none
      */
     public ModuleConfiguration getModule(String key) {
         return modules.get(key);
     }
-    
+
     public ModuleConfiguration getModuleByPath(String path) {
         if (!path.startsWith("/")) {
-            path = "/"+path;
+            path = "/" + path;
         }
         return paths.get(path);
     }
-    
+
     public ModuleConfiguration getRootModule() {
         return paths.get("/");
     }
-    
+
     public ModuleConfiguration[] getModules() {
         return modules.values().toArray(new ModuleConfiguration[modules.size()]);
     }
-    
+
     public ModuleConfiguration getModuleByConfigFile(File file) {
         ModuleConfiguration[] ar = getModules();
         for (ModuleConfiguration mc : ar) {
@@ -86,16 +86,16 @@ public class ModuleManager {
         }
         return null;
     }
-    
+
     public synchronized void registerModule(ModuleConfiguration descriptor) {
         modules.put(descriptor.name, descriptor);
         String path = descriptor.path;
         if (!path.startsWith("/")) {
-            path = "/"+path;
+            path = "/" + path;
         }
         paths.put(path, descriptor);
     }
-    
+
     //TODO the class path is not updated by this operation ...
     public synchronized File unregisterModule(String name) {
         ModuleConfiguration md = modules.remove(name);
@@ -111,7 +111,7 @@ public class ModuleManager {
         }
         return md.file;
     }
-    
+
     public synchronized void bind(String name, String path) {
         ModuleConfiguration md = modules.get(name);
         if (md != null) {
@@ -119,10 +119,9 @@ public class ModuleManager {
         }
     }
 
-
     public void loadModules(File root) throws IOException {
         for (String name : root.list()) {
-            String path = name+"/module.xml";
+            String path = name + "/module.xml";
             File file = new File(root, path);
             if (file.isFile()) {
                 loadModule(file);
@@ -136,37 +135,37 @@ public class ModuleManager {
         md.setEngine(engine);
         registerModule(md);
     }
-    
+
     public void loadModuleFromDir(File moduleRoot) throws IOException {
         File file = new File(moduleRoot, "module.xml");
         if (file.isFile()) {
             loadModule(file);
         }
     }
-    
+
     public void reloadModule(String name) throws IOException {
-        log.info("Reloading module: "+name);
+        log.info("Reloading module: " + name);
         File cfg = unregisterModule(name);
         if (cfg != null) {
             loadModule(cfg);
         }
     }
-    
+
     public void reloadModules() {
         log.info("Reloading modules");
         for (ModuleConfiguration mc : getModules()) {
             try {
                 reloadModule(mc.name);
             } catch (Exception e) {
-                log.error("Failed to redeploy module: "+mc.name);
+                log.error("Failed to redeploy module: " + mc.name);
             }
         }
     }
 
-    
+
     protected ModuleConfiguration loadConfiguration(File file) {
         if (engine == null) {
-            engine = Framework.getLocalService(WebEngine.class); 
+            engine = Framework.getLocalService(WebEngine.class);
         }
         try {
             XMap xmap = new XMap();
@@ -184,23 +183,25 @@ public class ModuleManager {
             }
             return mc;
         } catch (Exception e) {
-            throw WebException.wrap("Faile to load module configuration: "+file, e);
+            throw WebException.wrap("Faile to load module configuration: " + file, e);
         }
     }
-    
+
     protected Context createXMapContext() {
         return new Context() {
             private static final long serialVersionUID = 1L;
+
             @Override
             public Class<?> loadClass(String className)
-            throws ClassNotFoundException {
+                    throws ClassNotFoundException {
                 return engine.getWebLoader().loadClass(className);
             }
+
             @Override
             public URL getResource(String name) {
                 return engine.getWebLoader().getResource(name);
             }
         };
     }
- 
+
 }

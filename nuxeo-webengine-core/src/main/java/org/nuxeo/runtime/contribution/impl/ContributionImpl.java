@@ -163,7 +163,8 @@ public class ContributionImpl<K, T> implements Contribution<K, T> {
     public T getValue() {
         try {
             if (!isResolved) {
-                throw new IllegalStateException("Cannot compute merged values for not resolved contributions");
+                throw new IllegalStateException(
+                        "Cannot compute merged values for not resolved contributions");
             }
             if (mainFragments.isEmpty() || value != null) {
                 return value;

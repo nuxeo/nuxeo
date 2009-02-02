@@ -50,7 +50,7 @@ public class AnnotationTest extends TestCase {
                 Arrays.asList(acB.getAnnotations()).toString());
 
         List<Annotation> actual = Arrays.asList(acC.getAnnotations());
-        assertEquals(actual.size(), 2);
+        assertEquals(2, actual.size());
         String a1 = "@org.nuxeo.runtime.annotations.Anno2(value=I_class_anno)";
         String a2 = "@org.nuxeo.runtime.annotations.Anno1(value=B_class_anno)";
         assertTrue(("[" + a1 + ", " + a2 + "]").equals(actual.toString()) ||

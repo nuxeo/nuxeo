@@ -54,12 +54,11 @@ public class Scripting {
 
     // this will be lazy initialized
     private ScriptEngineManager scriptMgr;
-    private WebLoader loader;
-    
+    private final WebLoader loader;
+
     public Scripting(WebLoader loader) {
         this.loader = loader;
     }
-
 
     public static CompiledScript compileScript(ScriptEngine engine, File file) throws ScriptException {
         if (engine instanceof Compilable) {
@@ -81,15 +80,18 @@ public class Scripting {
 
     /**
      * Lazy init scripting manager to avoid loading script engines when
-     * no scripting is used. Javax Scripting is not used by default in WebWengine
+     * no scripting is used.
+     * <p>
+     * Javax Scripting is not used by default in WebWengine,
      * we are using directly the Groovy engine.
-     * This is also fixing an annoying pb on mac in java5 due to AppleScripting
-     * which is failing to register. 
-	 * @return the scriptMgr
-	 */
+     * This also fixes an annoying pb on Mac in java5 due to AppleScripting
+     * which is failing to register.
+     *
+     * @return the scriptMgr
+     */
     public ScriptEngineManager getEngineManager() {
 		if (scriptMgr == null) {
-			scriptMgr = new ScriptEngineManager();	
+			scriptMgr = new ScriptEngineManager();
 		}
         return scriptMgr;
     }

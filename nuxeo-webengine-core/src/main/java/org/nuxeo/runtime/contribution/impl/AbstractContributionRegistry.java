@@ -72,7 +72,6 @@ public abstract class AbstractContributionRegistry<K, T> implements
         }
     }
 
-
     public synchronized Contribution<K, T> getContribution(K primaryKey) {
         Contribution<K,T> contrib = registry.get(primaryKey);
         if (contrib == null && parent != null) {
@@ -159,7 +158,6 @@ public abstract class AbstractContributionRegistry<K, T> implements
         }
         updateContribution(contrib.getId(), value, oldValue);
     }
-
 
     public void dispose() {
         registry.clear();

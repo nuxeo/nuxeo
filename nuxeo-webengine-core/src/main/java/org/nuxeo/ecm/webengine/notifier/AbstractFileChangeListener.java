@@ -25,28 +25,28 @@ import java.util.List;
  */
 public abstract class AbstractFileChangeListener implements FileChangeListener {
 
-    public final static int CREATED = 1;
-    public final static int REMOVED = 2;
-    public final static int MODIFIED = 3;
-    
-    public abstract void fileChanged(File file, int type) throws Exception; 
-    
+    public static final int CREATED = 1;
+    public static final int REMOVED = 2;
+    public static final int MODIFIED = 3;
+
+    public abstract void fileChanged(File file, int type) throws Exception;
+
     public void filesCreated(List<File> entries) throws Exception {
         for (File file : entries) {
             fileChanged(file, CREATED);
         }
     }
-    
+
     public void filesModified(List<File> entries) throws Exception {
         for (File file : entries) {
             fileChanged(file, MODIFIED);
-        }        
+        }
     }
-    
+
     public void filesRemoved(List<File> entries) throws Exception {
         for (File file : entries) {
             fileChanged(file, REMOVED);
         }
-    }    
-    
+    }
+
 }

@@ -24,21 +24,20 @@ import java.util.Set;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-public interface Contribution<K,T> extends Iterable<T> {
+public interface Contribution<K, T> extends Iterable<T> {
 
-    ContributionRegistry<K,T> getRegistry();
+    ContributionRegistry<K, T> getRegistry();
 
     K getId();
 
-    Set<Contribution<K,T>> getDependencies();
+    Set<Contribution<K, T>> getDependencies();
 
-    Set<Contribution<K,T>> getDependents();
+    Set<Contribution<K, T>> getDependents();
 
-    Set<Contribution<K,T>> getUnresolvedDependencies();
+    Set<Contribution<K, T>> getUnresolvedDependencies();
 
-    void addFragment(T fragment, K ... superKeys);
+    void addFragment(T fragment, K... superKeys);
 
     boolean removeFragment(T fragment);
 

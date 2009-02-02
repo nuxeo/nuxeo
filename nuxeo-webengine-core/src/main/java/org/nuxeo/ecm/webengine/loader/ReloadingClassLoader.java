@@ -33,38 +33,38 @@ import org.nuxeo.ecm.webengine.loader.store.ResourceStoreClassLoader;
  */
 public class ReloadingClassLoader extends ClassLoader {
 
-    
+
     private final Log log = LogFactory.getLog(ReloadingClassLoader.class);
-    
+
     private final ClassLoader parent;
-    private List<ResourceStore> stores;
+    private final List<ResourceStore> stores;
     private ResourceStoreClassLoader delegate;
 
-    public ReloadingClassLoader( final ClassLoader pParent ) {        
+    public ReloadingClassLoader( final ClassLoader pParent ) {
         super(pParent);
-        parent = pParent;        
+        parent = pParent;
         stores = new ArrayList<ResourceStore>();
         delegate = new ResourceStoreClassLoader(parent, new ResourceStore[0]);
     }
 
     public synchronized void addResourceStore( final ResourceStore store ) throws Exception {
         stores.add(store);
-        reload(); //need to reload to update usderlying store list           
+        reload(); //need to reload to update usderlying store list
     }
 
     public synchronized boolean removeResourceStore( final ResourceStore store ) {
         boolean ret = stores.remove(store);
         if (ret) {
-            delegate = new ResourceStoreClassLoader(parent, stores.toArray(new ResourceStore[stores.size()]));            
-            return true;            
+            delegate = new ResourceStoreClassLoader(parent, stores.toArray(new ResourceStore[stores.size()]));
+            return true;
         }
-        return false;            
+        return false;
     }
-    
+
     public void reload() {
-        delegate = new ResourceStoreClassLoader(parent, stores.toArray(new ResourceStore[stores.size()])); 
+        delegate = new ResourceStoreClassLoader(parent, stores.toArray(new ResourceStore[stores.size()]));
     }
-    
+
     public void clearAssertionStatus() {
         delegate.clearAssertionStatus();
     }

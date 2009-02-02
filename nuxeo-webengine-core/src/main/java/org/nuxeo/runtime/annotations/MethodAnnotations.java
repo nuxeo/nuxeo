@@ -31,7 +31,6 @@ import java.util.Map;
  * Used to collect method annotations from inheritance tree.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 class MethodAnnotations {
 
@@ -52,7 +51,7 @@ class MethodAnnotations {
         if (annos.length == 0) {
             return;
         }
-        for (int i=0, len=entries.size();i<len; i++) {
+        for (int i = 0, len = entries.size(); i < len; i++) {
             Entry entry = entries.get(i);
             if (entry.isSameAs(m)) {
                 for (Annotation anno : annos) {
@@ -74,7 +73,7 @@ class MethodAnnotations {
     }
 
     public void addSuperMethod(AnnotatedMethod am) {
-        for (int i=0, len=entries.size();i<len; i++) {
+        for (int i = 0, len = entries.size(); i < len; i++) {
             Entry entry = entries.get(i);
             if (entry.isSameAs(am.method)) {
                 Annotation[] annos = am.getAnnotations();
@@ -113,7 +112,7 @@ class MethodAnnotations {
                 if (method.getReturnType() == m.getReturnType()) {
                     Class<?>[] pt = m.getParameterTypes();
                     if (parameterTypes.length == pt.length) {
-                        for (int i=0; i<parameterTypes.length; i++) {
+                        for (int i = 0; i < parameterTypes.length; i++) {
                             if (parameterTypes[i] != pt[i]) {
                                 return false;
                             }

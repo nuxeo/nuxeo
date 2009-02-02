@@ -21,6 +21,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -42,64 +43,61 @@ public class ResourceStoreClassLoader extends ClassLoader {
 
     protected Class<?> fastFindClass(final String name) {
         if (stores != null) {
-            for (int i = 0; i < stores.length; i++) {
-                final ResourceStore store = stores[i];
+            for (final ResourceStore store : stores) {
                 final byte[] clazzBytes = store.getBytes(convertClassToResourcePath(name));
                 if (clazzBytes != null) {
                     if (log.isTraceEnabled()) {
-                        log.trace(getId() + " found class: " + name  + " (" + clazzBytes.length + " bytes)");
+                        log.trace(getId() + " found class: " + name + " (" + clazzBytes.length + " bytes)");
                     }
                     return defineClass(name, clazzBytes, 0, clazzBytes.length);
-                }            
+                }
             }
-        }
-        return null;            
-    }
-    
-    @Override
-    protected URL findResource(String name) {
-        if (stores != null) {
-            for (int i = 0; i < stores.length; i++) {
-                final ResourceStore store = stores[i];
-                final URL url = store.getURL(name);
-                if (url != null) {
-                    if (log.isTraceEnabled()) {
-                        log.trace(getId() + " found resource: " + name);    
-                    }
-                    return url;
-                }            
-            }
-        }
-        return null;         
-    }
-    
-    @Override
-    protected Enumeration<URL> findResources(String name) throws IOException {
-        if (stores != null) {
-            ArrayList<URL> result = new ArrayList<URL>(); 
-            for (int i = 0; i < stores.length; i++) {
-                final ResourceStore store = stores[i];
-                final URL url = store.getURL(name);
-                if (url != null) {
-                    if (log.isTraceEnabled()) {
-                        log.trace(getId() + " found resource: " + name);    
-                    }
-                    result.add(url);
-                }            
-            }
-            return Collections.enumeration(result);  
         }
         return null;
     }
-    
-    
+
+    @Override
+    protected URL findResource(String name) {
+        if (stores != null) {
+            for (final ResourceStore store : stores) {
+                final URL url = store.getURL(name);
+                if (url != null) {
+                    if (log.isTraceEnabled()) {
+                        log.trace(getId() + " found resource: " + name);
+                    }
+                    return url;
+                }
+            }
+        }
+        return null;
+    }
+
+    @Override
+    protected Enumeration<URL> findResources(String name) throws IOException {
+        if (stores != null) {
+            List<URL> result = new ArrayList<URL>();
+            for (final ResourceStore store : stores) {
+                final URL url = store.getURL(name);
+                if (url != null) {
+                    if (log.isTraceEnabled()) {
+                        log.trace(getId() + " found resource: " + name);
+                    }
+                    result.add(url);
+                }
+            }
+            return Collections.enumeration(result);
+        }
+        return null;
+    }
+
+
     public synchronized Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
         // log.debug(getId() + " looking for: " + name);
         Class<?> clazz = findLoadedClass(name);
 
         if (clazz == null) {
             clazz = fastFindClass(name);
-            
+
             if (clazz == null) {
 
                 final ClassLoader parent = getParent();
@@ -109,7 +107,7 @@ public class ResourceStoreClassLoader extends ClassLoader {
                 } else {
                     throw new ClassNotFoundException(name);
                 }
-                
+
             } else {
                 if (log.isDebugEnabled()) {
                     log.debug(getId() + " loaded from store: " + name);
@@ -131,9 +129,9 @@ public class ResourceStoreClassLoader extends ClassLoader {
         }
         return clazz;
     }
-    
 
-    
+
+
     @Override
     public Enumeration<URL> getResources(String name) throws IOException {
         Enumeration<URL> urls = findResources(name);
@@ -145,7 +143,7 @@ public class ResourceStoreClassLoader extends ClassLoader {
         }
         return urls;
         }
-    
+
     @Override
     public URL getResource(String name) {
         URL url = findResource(name);
@@ -157,7 +155,7 @@ public class ResourceStoreClassLoader extends ClassLoader {
         }
         return url;
     }
-    
+
 
     protected String getId() {
         return "" + this + "[" + this.getClass().getClassLoader() + "]";
@@ -170,5 +168,5 @@ public class ResourceStoreClassLoader extends ClassLoader {
     public static String convertClassToResourcePath( final String pName ) {
         return pName.replace('.', '/') + ".class";
     }
-    
+
 }

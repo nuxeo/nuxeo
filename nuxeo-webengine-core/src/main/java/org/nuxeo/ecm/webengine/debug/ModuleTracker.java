@@ -46,8 +46,8 @@ public abstract class ModuleTracker implements Runnable {
         skin = new DirectoryEntry(new File(root, "skin"));
         webTypes = new FileEntry(new File(root, "META-INF/web-types"));
     }
-    
-    
+
+
     public void run() {
         try {
             doRun();
@@ -67,7 +67,7 @@ public abstract class ModuleTracker implements Runnable {
         if (webTypes.check()) { // type registration changed - reload types 
             module.flushTypeCache();
         }
-        if (skin.check()) { // skin changed - flush skin cache  
+        if (skin.check()) { // skin changed - flush skin cache
         	flushSkinCache(module);
         }
     }
@@ -90,9 +90,9 @@ public abstract class ModuleTracker implements Runnable {
 
     /**
      * Flush the skin cache for the given module.
-     * Note that all modules skin cache will be flushed since they may depend on 
+     * Note that all modules skin cache will be flushed since they may depend on
      * this module skins.
-     * TODO: optimize this 
+     * TODO: optimize this
      * @param module
      */
     public static void flushSkinCache(ModuleImpl module) {

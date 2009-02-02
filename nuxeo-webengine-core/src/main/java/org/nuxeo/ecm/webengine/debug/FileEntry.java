@@ -20,21 +20,19 @@ import java.io.File;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class FileEntry {
 
     protected long lastModified;
-    protected File file;
+    protected final File file;
 
     public FileEntry(File file) {
         this.file = file;
-        this.lastModified = file.lastModified();
+        lastModified = file.lastModified();
     }
 
-    /** 
-     * Check if file changed and update internal state if needed.
-     * @return
+    /**
+     * Checks if file changed and update internal state if needed.
      */
     public boolean check() {
         long tm = file.lastModified();

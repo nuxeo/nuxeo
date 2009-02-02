@@ -27,7 +27,6 @@ import java.util.Map;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class AnnotatedClass<T> {
 
@@ -48,7 +47,7 @@ public class AnnotatedClass<T> {
 
     @SuppressWarnings("unchecked")
     public <A extends Annotation> A getAnnotation(Class<A> annotationClass) {
-        return (A)annotations.get(annotationClass);
+        return (A) annotations.get(annotationClass);
     }
 
     public <A extends Annotation> A getDeclaredAnnotation(Class<A> annotationClass) {
@@ -75,7 +74,8 @@ public class AnnotatedClass<T> {
         return methods.get(method);
     }
 
-    public AnnotatedMethod getAnnotatedMethod(String name, Class<?> ... parameterTypes) throws NoSuchMethodException {
+    public AnnotatedMethod getAnnotatedMethod(String name, Class<?>... parameterTypes)
+            throws NoSuchMethodException {
         return getAnnotatedMethod(clazz.getMethod(name, parameterTypes));
     }
 
@@ -155,14 +155,14 @@ public class AnnotatedClass<T> {
             return false;
         }
         if (obj.getClass() == AnnotatedClass.class) {
-            return ((AnnotatedClass<?>)obj).clazz == clazz;
+            return ((AnnotatedClass<?>) obj).clazz == clazz;
         }
         return false;
     }
 
     @Override
     public String toString() {
-        return "AnnotatedCass: "+clazz;
+        return "AnnotatedCass: " + clazz;
     }
 
 }

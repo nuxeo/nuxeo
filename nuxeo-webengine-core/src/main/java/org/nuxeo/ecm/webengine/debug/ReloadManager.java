@@ -35,24 +35,24 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class ReloadManager {
 
-    private static Log log = LogFactory.getLog(ReloadManager.class);
-    
+    private static final Log log = LogFactory.getLog(ReloadManager.class);
+
     protected WebEngine engine;
     protected FileEntry deploy; // track deploy/undeploy modules
     private final Timer timer = new Timer("ReloadManager");
 
-    
+
     public ReloadManager(WebEngine engine) {
         this.engine = engine;
         deploy = new FileEntry(engine.getDeploymentDirectory());
     }
-       
+
 
     public void start() {
         String interval = Framework.getProperty("org.nuxeo.ecm.webengine.reloadInterval", "2000");
         start(4000, Integer.parseInt(interval));
     }
-    
+
     public void start(int startAfter, int interval) {
         timer.scheduleAtFixedRate(new Task(), startAfter, interval);
     }
@@ -61,8 +61,8 @@ public class ReloadManager {
         timer.cancel();
         timer.purge();
     }
-    
-    
+
+
     private class Task extends TimerTask {
         public void run() {
             ModuleConfiguration[] modules = engine.getModuleManager().getModules();
@@ -111,5 +111,5 @@ public class ReloadManager {
             }
         }
     }
-    
+
 }
