@@ -111,7 +111,7 @@ public final class ThemeManager implements Registrable {
 
     static {
         CUSTOM_THEME_DIR = new File(Framework.getRuntime().getHome(),
-                "tmp/themes");
+                "themes");
         CUSTOM_THEME_DIR.mkdirs();
     }
 
