@@ -102,7 +102,7 @@ public class WebEngine implements ResourceLocator {
     protected Scripting scripting;
     protected RenderingEngine rendering;
     protected Map<String, Object> env;
-    protected boolean isDevMode = false;
+    protected String devMode = null; 
 
     protected GlobalTypes globalTypes;
 
@@ -121,8 +121,8 @@ public class WebEngine implements ResourceLocator {
     public WebEngine(ResourceRegistry registry, File root) throws IOException {
         this.registry = registry;
         this.root = root;        
-        this.isDevMode = Boolean.parseBoolean(Framework.getProperty("org.nuxeo.dev", "false"));
-        if (isDevMode) {
+        this.devMode = Framework.getProperty("org.nuxeo.dev");
+        if (devMode != null) {
             reloadMgr = new ReloadManager(this);
         }
         webLoader = new WebLoader(this);
@@ -199,11 +199,15 @@ public class WebEngine implements ResourceLocator {
 
 
     public boolean isDevMode() {
-        return isDevMode;
+        return devMode != null;
     }
+    
+    public String getDevMode() {
+        return devMode;
+    }    
 
-    public void setDevMode(boolean isDevMode) {
-        this.isDevMode = isDevMode;
+    public void setDevMode(String devModeId) {
+        this.devMode = devModeId;
     }
 
     public void registerRenderingExtension(String id, Object obj) {
