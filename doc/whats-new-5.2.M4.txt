@@ -163,11 +163,11 @@ restart the server.
 Custom themes created in the theme editor are thus stored in the temporary 
 folder of the application server in:
 
-  /opt/jboss/server/default/data/NXRuntime/tmp/themes under JBOSS
+  /opt/jboss/server/default/data/NXRuntime/themes/ under JBOSS
 
 and in:
 
-  /opt/nxserver/tmp/themes under Jetty and Glassfish
+  /opt/nxserver/themes/ under Jetty and Glassfish
 
 This allows end-users who have sufficient privileges to create and save their
 own theme while the application is already deployed.
