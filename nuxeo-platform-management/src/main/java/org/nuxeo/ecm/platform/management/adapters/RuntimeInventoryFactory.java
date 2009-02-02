@@ -27,7 +27,6 @@ import org.nuxeo.runtime.model.RegistrationInfo;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
- * 
  */
 public class RuntimeInventoryFactory extends
         AbstractResourceFactory implements ResourceFactory {
@@ -45,7 +44,7 @@ public class RuntimeInventoryFactory extends
             }
         });
     }
-    
+
     public void unbindTree() {
         doVisitInventory(new Callback() {
             public void invokeFor(String name, String qualifiedName, Class<?> info, Object instance) {
@@ -64,9 +63,8 @@ public class RuntimeInventoryFactory extends
         }
     }
 
-    protected void doVisitInventoryComponent(Callback callback,
-            RegistrationInfo info) {
-        ComponentName componentName= info.getName();
+    protected void doVisitInventoryComponent(Callback callback, RegistrationInfo info) {
+        ComponentName componentName = info.getName();
         String name = componentName.getName();
         String qualifiedName = ObjectNameFactory.formatQualifiedName(componentName);
         callback.invokeFor(name, qualifiedName, ComponentInventoryMBean.class,
@@ -90,24 +88,23 @@ public class RuntimeInventoryFactory extends
     }
 
     protected void doVisitInventoryExtension(Callback callback,
-            String name,
-            String qualifiedName, Extension extension) {
+            String name, String qualifiedName, Extension extension) {
         qualifiedName += ",extensionPoint=" + extension.getExtensionPoint();
         Object[] contributions = extension.getContributions();
-        if (contributions == null)
+        if (contributions == null) {
             return;
+        }
         for (Object contribution : contributions) {
             doVisitInventoryContribution(callback, name, qualifiedName, contribution);
         }
     }
 
     private void doVisitInventoryContribution(Callback callback,
-            String name,
-            String qualifiedName, Object contribution) {
+            String name, String qualifiedName, Object contribution) {
         String hexName = Integer.toHexString(contribution.hashCode());
         name = name + "-" + hexName;
-        qualifiedName += ",contribution="
-                + hexName;
-        callback.invokeFor(name,qualifiedName, contribution.getClass(), contribution);
+        qualifiedName += ",contribution=" + hexName;
+        callback.invokeFor(name, qualifiedName, contribution.getClass(), contribution);
     }
+
 }

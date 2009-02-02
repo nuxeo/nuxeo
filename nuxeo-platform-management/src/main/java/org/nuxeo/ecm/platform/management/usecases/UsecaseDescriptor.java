@@ -21,15 +21,11 @@ import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
- * 
+ *
  */
 @XObject("usecase")
 public class UsecaseDescriptor {
 
-    public UsecaseDescriptor() {
-        ;
-    }
-    
     @XNode("@name")
     private String shortcutName;
 

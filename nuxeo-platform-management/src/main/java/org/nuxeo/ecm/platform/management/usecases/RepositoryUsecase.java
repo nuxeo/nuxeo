@@ -27,7 +27,7 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
- * 
+ *
  */
 public class RepositoryUsecase implements Usecase {
 
@@ -51,7 +51,6 @@ public class RepositoryUsecase implements Usecase {
     }
 
     public void init(Object service) {
-        ;
     }
 
 }

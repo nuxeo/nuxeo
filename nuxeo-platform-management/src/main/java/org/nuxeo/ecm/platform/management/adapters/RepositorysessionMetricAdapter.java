@@ -21,16 +21,14 @@ import org.nuxeo.ecm.core.model.Repository;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
- * 
  */
 public class RepositorysessionMetricAdapter implements RepositorysessionMetricMBean {
+
+    protected final Repository repository;
 
     public RepositorysessionMetricAdapter(Repository repository) {
         this.repository = repository;
     }
-
-    protected final Repository repository;
-    
 
     public long getActiveSessionsCount() {
         return repository.getActiveSessionsCount();

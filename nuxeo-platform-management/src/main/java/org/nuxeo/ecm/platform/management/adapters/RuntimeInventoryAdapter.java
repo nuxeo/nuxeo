@@ -29,18 +29,17 @@ import org.nuxeo.runtime.model.RegistrationInfo;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
- * 
+ *
  */
 public class RuntimeInventoryAdapter implements RuntimeInventoryMBean {
-
-    public RuntimeInventoryAdapter(
-            RuntimeInventoryFactory factory) {
-        this.factory = factory;
-    }
 
     protected final RuntimeService runtimeService = Framework.getRuntime();
 
     protected final RuntimeInventoryFactory factory;
+
+    public RuntimeInventoryAdapter(RuntimeInventoryFactory factory) {
+        this.factory = factory;
+    }
 
     protected Collection<RegistrationInfo> availableComponents() {
         return runtimeService.getComponentManager().getRegistrations();
@@ -101,7 +100,7 @@ public class RuntimeInventoryAdapter implements RuntimeInventoryMBean {
     }
 
     public void bindTree() {
-        if (isTreeBound == true) {
+        if (isTreeBound) {
             throw new IllegalArgumentException("tree already bound");
         }
         isTreeBound = true;
@@ -109,7 +108,7 @@ public class RuntimeInventoryAdapter implements RuntimeInventoryMBean {
     }
 
     public void unbindTree() {
-        if (isTreeBound == false) {
+        if (!isTreeBound) {
             throw new IllegalArgumentException("tree not bound");
         }
         isTreeBound = false;

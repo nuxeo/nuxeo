@@ -29,7 +29,6 @@ import org.nuxeo.runtime.management.ResourceFactory;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
- * 
  */
 public class RepositorySessionMetricFactory extends AbstractResourceFactory
         implements ResourceFactory {
@@ -40,7 +39,7 @@ public class RepositorySessionMetricFactory extends AbstractResourceFactory
         if (manager != null) {
             return manager;
         }
-        RepositoryService service = null;
+        RepositoryService service;
         try {
             service = (RepositoryService) Framework.getRuntime().getComponent(
                     RepositoryService.NAME);
@@ -55,7 +54,7 @@ public class RepositorySessionMetricFactory extends AbstractResourceFactory
     }
 
     protected Repository repository(RepositoryManager manager, String name) {
-        Repository repository = null;
+        Repository repository;
         try {
             repository = manager.getRepository(name);
         } catch (Exception cause) {
@@ -86,7 +85,7 @@ public class RepositorySessionMetricFactory extends AbstractResourceFactory
                     RepositorysessionMetricMBean.class,
                     new RepositorysessionMetricAdapter(repository(manager,
                             repositoryName)));
-            ;
         }
     }
+
 }

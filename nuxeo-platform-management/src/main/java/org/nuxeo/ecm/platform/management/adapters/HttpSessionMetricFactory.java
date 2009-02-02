@@ -22,17 +22,17 @@ import org.nuxeo.runtime.model.ComponentName;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
- * 
  */
 public class HttpSessionMetricFactory extends AbstractResourceFactory {
- 
-    protected static HttpSessionMetricAdapter mbeanAdapter = 
-        new HttpSessionMetricAdapter();
+
+    protected static HttpSessionMetricAdapter mbeanAdapter =
+            new HttpSessionMetricAdapter();
 
     public void registerResources() {
-        String qualifiedName = 
-            ObjectNameFactory.formatMetricQualifiedName(new ComponentName("httpSessionListener"), "http-session");
+        String qualifiedName =
+                ObjectNameFactory.formatMetricQualifiedName(new ComponentName("httpSessionListener"), "http-session");
         service.registerResource("http-session-metric", qualifiedName,
                 HttpSessionMetricMBean.class, mbeanAdapter);
     }
+
 }

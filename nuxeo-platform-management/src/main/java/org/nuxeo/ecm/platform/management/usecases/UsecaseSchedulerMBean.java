@@ -20,7 +20,6 @@ import java.util.Set;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
- * 
  */
 public interface UsecaseSchedulerMBean {
 
@@ -35,10 +34,11 @@ public interface UsecaseSchedulerMBean {
     Set<String> getUseCasesInSuccess();
 
     int getUseCasesInSuccessCount();
-    
+
     void enable();
-    
+
     void disable();
-    
+
     boolean isEnabled();
+
 }

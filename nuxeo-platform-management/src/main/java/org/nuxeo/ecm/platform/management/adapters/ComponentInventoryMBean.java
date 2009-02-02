@@ -23,7 +23,6 @@ import org.nuxeo.runtime.model.Property;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
- * 
  */
 public interface ComponentInventoryMBean {
 
