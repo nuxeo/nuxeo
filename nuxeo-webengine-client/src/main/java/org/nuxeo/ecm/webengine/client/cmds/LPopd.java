@@ -23,17 +23,21 @@ import org.nuxeo.ecm.webengine.client.Client;
 import org.nuxeo.ecm.webengine.client.command.AnnotatedCommand;
 import org.nuxeo.ecm.webengine.client.command.Cmd;
 import org.nuxeo.ecm.webengine.client.command.CommandLine;
+import org.nuxeo.ecm.webengine.client.command.CommandParameter;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@Cmd(syntax="pwd", synopsis="Print working directory")
-public class Pwd extends AnnotatedCommand {
+@Cmd(syntax="lpopd", synopsis="Pop local directory stack")
+public class LPopd extends AnnotatedCommand {
 
     @Override
     public void run(Client client, CommandLine cmdLine) throws Exception {
-        System.out.println(client.pwd());
+        CommandParameter param = cmdLine.getLastParameter();
+        if (param != null) {
+            client.lpopd(param.getValue());
+        }        
     }
 
 }

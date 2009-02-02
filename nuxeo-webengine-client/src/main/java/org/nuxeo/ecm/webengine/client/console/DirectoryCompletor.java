@@ -13,27 +13,37 @@
  *
  * Contributors:
  *     bstefanescu
- *
- * $Id$
  */
+package org.nuxeo.ecm.webengine.client.console;
 
-package org.nuxeo.ecm.webengine.client.cmds;
+import java.io.File;
+import java.util.List;
 
-import org.nuxeo.ecm.webengine.client.Client;
-import org.nuxeo.ecm.webengine.client.command.AnnotatedCommand;
-import org.nuxeo.ecm.webengine.client.command.Cmd;
-import org.nuxeo.ecm.webengine.client.command.CommandLine;
+import jline.FileNameCompletor;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@Cmd(syntax="pwd", synopsis="Print working directory")
-public class Pwd extends AnnotatedCommand {
+public class DirectoryCompletor extends FileNameCompletor {
 
     @Override
-    public void run(Client client, CommandLine cmdLine) throws Exception {
-        System.out.println(client.pwd());
-    }
+    public int matchFiles(String buffer, String translated, File[] entries,
+            List candidates) {
+        if (entries == null) {
+            return -1;
+        }
 
+        for (int i = 0; i < entries.length; i++) {
+            if (entries[i].getAbsolutePath().startsWith(translated) && entries[i].isDirectory()) {
+                candidates.add(entries[i].getName());
+            }
+        }
+
+        final int index = buffer.lastIndexOf(File.separator);
+
+        return index + File.separator.length();
+    }
+    
+    
 }

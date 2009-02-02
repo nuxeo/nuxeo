@@ -28,12 +28,14 @@ import org.nuxeo.ecm.webengine.client.command.CommandLine;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@Cmd(syntax="pwd", synopsis="Print working directory")
-public class Pwd extends AnnotatedCommand {
+@Cmd(syntax="ll", synopsis="List local directory content")
+public class Ll extends AnnotatedCommand {
 
     @Override
     public void run(Client client, CommandLine cmdLine) throws Exception {
-        System.out.println(client.pwd());
+        client.lls(null);
     }
+    
+    
 
 }

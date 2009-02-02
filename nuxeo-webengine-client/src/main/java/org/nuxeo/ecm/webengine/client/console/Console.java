@@ -20,17 +20,16 @@
 package org.nuxeo.ecm.webengine.client.console;
 
 import java.io.IOException;
-import java.net.URL;
 
 import jline.CandidateListCompletionHandler;
 import jline.CompletionHandler;
 import jline.ConsoleReader;
 
+import org.nuxeo.ecm.webengine.client.Client;
 import org.nuxeo.ecm.webengine.client.command.CommandException;
+import org.nuxeo.ecm.webengine.client.command.CommandLine;
+import org.nuxeo.ecm.webengine.client.command.CommandRegistry;
 import org.nuxeo.ecm.webengine.client.command.ExitException;
-import org.nuxeo.ecm.webengine.client.http.HttpClient;
-
-import com.sun.corba.se.spi.orbutil.fsm.Guard.Complement;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -38,35 +37,64 @@ import com.sun.corba.se.spi.orbutil.fsm.Guard.Complement;
  */
 public class Console {
 
+    protected static Console instance;
+    
     protected ConsoleReader console;
 
-    protected HttpClient client;
+    protected Client client;
 
-    public Console() throws IOException {
+    public static Console getDefault() {
+        return instance;
+    }
+    
+    public static void updatePrompt() {
+        if (instance != null) {
+            instance.updateDefaultPrompt();
+        }        
+    }
+    
+    public static void setPrompt(String prompt) {
+        if (instance != null) {
+            instance.console.setDefaultPrompt(prompt);
+        }
+    }
+
+    public static CommandLine parseCommandLine(CommandRegistry reg, String line) throws CommandException {
+        return new CommandLine(reg, line);
+    }
+
+    public static void runCommand(Client client, String line) throws Exception {
+        parseCommandLine(client.getRegistry(), line).run(client);
+    }
+
+    public Console(Client client) throws IOException {
+        if (Console.instance != null) {
+            throw new IllegalAccessError("Console is already instantiated");
+        }
+        Console.instance = this;
+        this.client = client;
         console = new ConsoleReader();
-        initialize("http://localhost:8080");
-    }
-
-    public void initialize(String host, int port, String path, String username, String password) throws IOException {
-        initialize(new URL("http", host, port, path));
-        //TODO username and password
-    }
-
-    public void initialize(String url) throws IOException {
-        initialize(new URL(url));
-    }
-
-    public void initialize(URL url) throws IOException {
         CompletionHandler ch = console.getCompletionHandler();
         if (ch instanceof CandidateListCompletionHandler) {
             ((CandidateListCompletionHandler)ch).setAlwaysIncludeNewline(false);
         }
         console.setDefaultPrompt("|> ");
-        client = new HttpClient(url);
         // register completors
         console.addCompletor(new CompositeCompletor(this, client.getRegistry()));
     }
 
+    public void updateDefaultPrompt() {
+        if (client.isConnected()) {
+            String path = client.getWorkingDirectory().lastSegment();
+            if (path == null) {
+                path = "/";
+            }
+            console.setDefaultPrompt("|"+client.getHost()+":"+path+"> ");
+        } else {
+            console.setDefaultPrompt("|> ");
+        }
+    }
+    
     public ConsoleReader getReader() {
         return console;
     }
@@ -74,7 +102,7 @@ public class Console {
     /**
      * @return the client.
      */
-    public HttpClient getClient() {
+    public Client getClient() {
         return client;
     }
 
@@ -102,7 +130,7 @@ public class Console {
 
     protected boolean execute(String line) throws Exception {
         try {
-            client.run(line);
+            runCommand(client, line);
         } catch (ExitException e) {
             return false;
         } catch (CommandException e) {
@@ -111,5 +139,12 @@ public class Console {
         return true;
     }
 
+    public CommandLine parseCommandLine(String line) throws CommandException {
+        return parseCommandLine(client.getRegistry(), line);
+    }
 
+    public CommandRegistry getCommandRegistry() {
+        return client.getRegistry();
+    }    
+    
 }

@@ -19,7 +19,14 @@
 
 package org.nuxeo.ecm.webengine.client;
 
+import java.io.File;
+import java.util.List;
+
+import org.nuxeo.ecm.webengine.client.command.ExitException;
 import org.nuxeo.ecm.webengine.client.console.Console;
+import org.nuxeo.ecm.webengine.client.http.JdkHttpClient;
+import org.nuxeo.ecm.webengine.client.util.FileUtils;
+import org.nuxeo.ecm.webengine.client.util.PwdReader;
 
 
 
@@ -30,24 +37,91 @@ import org.nuxeo.ecm.webengine.client.console.Console;
 public class Main {
 
 
-    public static void main(String[] args) {
-
+    public static void main(String[] args) throws Exception {
+        String username = null;
+        String password = null;
+        String url = null;
+        boolean batchMode = false;
+        boolean execMode = false;
+        String command = null;
         if (args.length > 0) {
-            String cmd = args[0];
-            if (!cmd.startsWith("-")) {
-                // builtin command
-                if ("command".equals(cmd)) {
-
-                } else if ("help".equals(cmd)) {
-
+            for (int i=0; i<args.length; i++) {
+                String arg = args[i];
+                if ("-u".equals(arg)) {
+                    if (++i == args.length) { // username
+                        error("Invalid option -u without value. Username requried.");
+                    }
+                    username = args[i];
+                } else if ("-p".equals(arg)) { // password
+                    if (++i == args.length) { // username
+                        error("Invalid option -p without value. Password requried.");
+                    }
+                    password = args[i];
+                } else if ("-e".equals(arg)) { // execute mode 
+                    // execute one command 
+                    execMode = true;
+                    StringBuilder buf = new StringBuilder();
+                    for (i++; i<args.length; i++) {
+                        buf.append(args[i]).append(" ");
+                    }
+                    command = buf.toString();
+                    break;
+                } else if ("-b".equals(arg)) { // batch mode
+                    // execute commands in the given file or if no specified read from stdin
+                    batchMode = true;
+                    if (++i < args.length) {
+                        // read commands from a file
+                        command = args[i];
+                    }
+                    break;
+                } else if ("-h".equals(arg)) { // help
+                    // execute help command
+                    execMode = true;
+                    command = "help";
+                } else if (!arg.startsWith("-")) {
+                    url = arg;
                 } else {
-
+                    // unknown option
                 }
+            }
+            if (username != null && password == null) {
+                password = PwdReader.read();
+            }
+            if (url != null && url.indexOf("://") == -1) {
+                url = "http://"+url;
             }
         }
 
+        Client client = new JdkHttpClient(url, null, username, password);
+
+        if (execMode) {
+            Console.runCommand(client, command);
+            return;
+        } 
+        if (batchMode) {
+            List<String> cmds = null;
+            if (command == null) {
+                cmds = FileUtils.readLines(System.in);
+            } else {
+                cmds = FileUtils.readLines(new File(command));
+            }
+            try {
+                for (String cmd : cmds) {
+                    System.out.println("Running: "+cmd);
+                    Console.runCommand(client, cmd);
+                }
+                System.out.println("Done.");
+            } catch (ExitException e) {
+                System.out.println("Bye.");
+            } catch (Throwable t) {
+                t.printStackTrace();
+            }
+            return;
+        }
+
+        // run in interactive mode
         try {
-            Console console = new Console();
+            Console console = new Console(client);
             //TODO use user profiles to setup console  like prompt and default service to cd in
             console.run();
         } catch (Exception e) {
@@ -56,4 +130,9 @@ public class Main {
 
     }
 
+    
+    static void error(String msg) {
+        System.err.println(msg);
+        System.exit(1);
+    }
 }

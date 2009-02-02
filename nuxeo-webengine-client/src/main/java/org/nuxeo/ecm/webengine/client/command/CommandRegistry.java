@@ -22,8 +22,23 @@ package org.nuxeo.ecm.webengine.client.command;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.nuxeo.ecm.webengine.client.cmds.Cd;
+import org.nuxeo.ecm.webengine.client.cmds.Commands;
+import org.nuxeo.ecm.webengine.client.cmds.Connect;
+import org.nuxeo.ecm.webengine.client.cmds.Disconnect;
 import org.nuxeo.ecm.webengine.client.cmds.Exit;
+import org.nuxeo.ecm.webengine.client.cmds.Get;
 import org.nuxeo.ecm.webengine.client.cmds.Help;
+import org.nuxeo.ecm.webengine.client.cmds.Id;
+import org.nuxeo.ecm.webengine.client.cmds.LCd;
+import org.nuxeo.ecm.webengine.client.cmds.LPopd;
+import org.nuxeo.ecm.webengine.client.cmds.LPushd;
+import org.nuxeo.ecm.webengine.client.cmds.LPwd;
+import org.nuxeo.ecm.webengine.client.cmds.Ll;
+import org.nuxeo.ecm.webengine.client.cmds.Ls;
+import org.nuxeo.ecm.webengine.client.cmds.Popd;
+import org.nuxeo.ecm.webengine.client.cmds.Pushd;
+import org.nuxeo.ecm.webengine.client.cmds.Pwd;
 import org.nuxeo.ecm.webengine.client.cmds.Test;
 import org.nuxeo.ecm.webengine.client.util.StringUtils;
 
@@ -39,6 +54,21 @@ public class CommandRegistry {
     static {
         builtinCommands.registerCommand(new Help());
         builtinCommands.registerCommand(new Exit());
+        builtinCommands.registerCommand(new Connect());
+        builtinCommands.registerCommand(new Disconnect());
+        builtinCommands.registerCommand(new Cd());
+        builtinCommands.registerCommand(new Pushd());
+        builtinCommands.registerCommand(new Popd());
+        builtinCommands.registerCommand(new Ls());
+        builtinCommands.registerCommand(new Pwd());
+        builtinCommands.registerCommand(new Id());
+        builtinCommands.registerCommand(new Get());
+        builtinCommands.registerCommand(new Commands());
+        builtinCommands.registerCommand(new LCd());
+        builtinCommands.registerCommand(new LPushd());
+        builtinCommands.registerCommand(new LPopd());
+        builtinCommands.registerCommand(new LPwd());
+        builtinCommands.registerCommand(new Ll());
         builtinCommands.registerCommand(new Test());
     }
 

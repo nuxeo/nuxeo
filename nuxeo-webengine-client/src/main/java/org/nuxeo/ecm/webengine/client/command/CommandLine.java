@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.nuxeo.ecm.webengine.client.http.HttpClient;
+import org.nuxeo.ecm.webengine.client.Client;
 import org.nuxeo.ecm.webengine.client.util.StringUtils;
 
 /**
@@ -122,7 +122,7 @@ public class CommandLine {
         return cmd;
     }
 
-    public void run(HttpClient client) throws Exception {
+    public void run(Client client) throws Exception {
         getCommand().run(client, this);
     }
 
