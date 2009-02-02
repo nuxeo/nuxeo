@@ -9,7 +9,7 @@ import org.nuxeo.ecm.webengine.ui.tree.JSonTreeSerializer;
 import org.nuxeo.ecm.webengine.ui.tree.TreeItem;
 import org.nuxeo.ecm.webengine.ui.tree.document.DocumentTree;
 
-public class SiteDocumentTree extends DocumentTree{
+public class SiteDocumentTree extends DocumentTree {
 
     public SiteDocumentTree(WebContext ctx, DocumentModel rootDoc) {
         super(ctx, rootDoc);
@@ -29,7 +29,7 @@ public class SiteDocumentTree extends DocumentTree{
         TreeItem item = tree.findAndReveal(path);
         if (item != null) {
             item.expand();
-            if ( !item.hasChildren()){
+            if (!item.hasChildren()) {
                 item.collapse();
             }
             JSONArray result = new JSONArray();

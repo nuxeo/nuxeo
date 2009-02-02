@@ -32,7 +32,7 @@ public class Site extends DefaultObject {
 
     String url;
 
-    DocumentModel ws = null;
+    DocumentModel ws;
 
     public void initialize(Object... args) {
         assert args != null && args.length == 1;
