@@ -24,6 +24,7 @@ import java.util.Comparator;
 import java.util.HashSet;
 
 import org.nuxeo.ecm.webengine.client.Client;
+import org.nuxeo.ecm.webengine.client.Console;
 import org.nuxeo.ecm.webengine.client.command.AnnotatedCommand;
 import org.nuxeo.ecm.webengine.client.command.Cmd;
 import org.nuxeo.ecm.webengine.client.command.Command;
@@ -45,11 +46,12 @@ public class Commands extends AnnotatedCommand implements Comparator<Command>{
         Command[] cmds = client.getRegistry().getCommands();
         Arrays.sort(cmds, this);
         HashSet<String> seen = new HashSet<String>();
+        StringBuilder buf = new StringBuilder();
         for (Command cmd : cmds) {
             String name = cmd.getName();
             if (seen.contains(name)) continue;
             seen.add(name);
-            StringBuilder buf = new StringBuilder();
+            buf.setLength(0);
             buf.append(name);
             String[] aliases = cmd.getAliases();
             if (aliases.length>1) {
@@ -61,7 +63,7 @@ public class Commands extends AnnotatedCommand implements Comparator<Command>{
                 buf.append("]");
             }
             buf.append(" - ").append(cmd.getSynopsis());
-            System.out.println(buf.toString());    
+            Console.getDefault().println(buf.toString());    
         }
     }
 

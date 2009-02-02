@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.webengine.client.cmds;
 
 import org.nuxeo.ecm.webengine.client.Client;
+import org.nuxeo.ecm.webengine.client.Console;
 import org.nuxeo.ecm.webengine.client.command.AnnotatedCommand;
 import org.nuxeo.ecm.webengine.client.command.Cmd;
 import org.nuxeo.ecm.webengine.client.command.CommandLine;
@@ -33,7 +34,7 @@ public class LPwd extends AnnotatedCommand {
 
     @Override
     public void run(Client client, CommandLine cmdLine) throws Exception {
-        System.out.println(client.lpwd());
+        Console.getDefault().println(client.lpwd().getAbsolutePath());
     }
 
 }

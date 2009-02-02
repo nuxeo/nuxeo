@@ -41,11 +41,11 @@ public class CompositeCompletor implements Completor {
 
     private final CommandRegistry registry;
     private final CommandCompletor completor;
-    private final Console console;
+    private final JLineConsole console;
     private final Map<String, Completor> completors = new HashMap<String, Completor>();
     private final Map<String,Completor> paramCompletors = new HashMap<String, Completor>();
 
-    public CompositeCompletor(Console console, CommandRegistry registry) throws IOException {
+    public CompositeCompletor(JLineConsole console, CommandRegistry registry) throws IOException {
         this.registry = registry;
         this.console = console;
         completor = new CommandCompletor(registry);

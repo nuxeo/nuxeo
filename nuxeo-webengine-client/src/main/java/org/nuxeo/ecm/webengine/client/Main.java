@@ -23,7 +23,7 @@ import java.io.File;
 import java.util.List;
 
 import org.nuxeo.ecm.webengine.client.command.ExitException;
-import org.nuxeo.ecm.webengine.client.console.Console;
+import org.nuxeo.ecm.webengine.client.console.JLineConsole;
 import org.nuxeo.ecm.webengine.client.http.JdkHttpClient;
 import org.nuxeo.ecm.webengine.client.util.FileUtils;
 import org.nuxeo.ecm.webengine.client.util.PwdReader;
@@ -94,11 +94,16 @@ public class Main {
 
         Client client = new JdkHttpClient(url, null, username, password);
 
+        
         if (execMode) {
-            Console.runCommand(client, command);
+            Console.setDefault(new Console());
+            Console.getDefault().start(client);
+            JLineConsole.runCommand(client, command);
             return;
         } 
         if (batchMode) {
+            Console.setDefault(new Console());
+            Console.getDefault().start(client);
             List<String> cmds = null;
             if (command == null) {
                 cmds = FileUtils.readLines(System.in);
@@ -121,15 +126,14 @@ public class Main {
 
         // run in interactive mode
         try {
-            Console console = new Console(client);
             //TODO use user profiles to setup console  like prompt and default service to cd in
-            console.run();
+            Console.setDefault(new JLineConsole());
+            Console.getDefault().start(client);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
     }
-
     
     static void error(String msg) {
         System.err.println(msg);

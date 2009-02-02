@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.webengine.client.util;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 
 /**
@@ -34,7 +35,7 @@ import java.io.InputStreamReader;
  */
 public class PwdReader {
 
-    public static String read() throws Exception {
+    public static String read() throws IOException {
         ConsoleEraser consoleEraser = new ConsoleEraser();
         System.out.print("Password:  ");
         BufferedReader stdin = new BufferedReader(new

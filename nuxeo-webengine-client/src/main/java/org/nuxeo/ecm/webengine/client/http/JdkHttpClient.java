@@ -22,9 +22,9 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 import org.nuxeo.ecm.webengine.client.Client;
+import org.nuxeo.ecm.webengine.client.Console;
 import org.nuxeo.ecm.webengine.client.command.CommandLine;
 import org.nuxeo.ecm.webengine.client.util.Base64;
-import org.nuxeo.ecm.webengine.client.util.FileUtils;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -67,10 +67,7 @@ public class JdkHttpClient extends Client {
             int ret = conn.getResponseCode();
             if (ret == 200) {
                 in = conn.getInputStream();
-                String str = FileUtils.read(in).trim();
-                if (str.length() > 0) {
-                    System.out.println(str);
-                }      
+                Console.getDefault().println(in);
             }
             return ret;
         } catch (IOException e) {

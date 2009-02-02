@@ -33,7 +33,6 @@ import org.nuxeo.ecm.webengine.client.command.CommandException;
 import org.nuxeo.ecm.webengine.client.command.CommandLine;
 import org.nuxeo.ecm.webengine.client.command.CommandRegistry;
 import org.nuxeo.ecm.webengine.client.command.RemoteCommand;
-import org.nuxeo.ecm.webengine.client.console.Console;
 import org.nuxeo.ecm.webengine.client.util.FileUtils;
 import org.nuxeo.ecm.webengine.client.util.Path;
 
@@ -118,7 +117,7 @@ public abstract class Client {
             if (!loadRemoteCommands()) {
                 System.err.println("Remote host is not recognized as a compatible server");
             } else {
-                Console.updatePrompt();
+                Console.getDefault().updatePrompt();
                 return;
             }
         } catch (Exception e) {
@@ -139,7 +138,7 @@ public abstract class Client {
         registry = new CommandRegistry();
         url = null;
         basePath = null;
-        Console.updatePrompt();
+        Console.getDefault().updatePrompt();
     }
 
     /**
@@ -173,7 +172,7 @@ public abstract class Client {
             if (dir.isDirectory()) {
                 workingDir = dir;
             } else {
-                System.out.println(path+" is not a directory");
+                Console.getDefault().error(path+" is not a directory");
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -208,13 +207,13 @@ public abstract class Client {
             cwd = cwd.append(path);
         }
         cwd = cwd.makeAbsolute();
-        Console.updatePrompt();
+        Console.getDefault().updatePrompt();
     }
 
     public void pushd(String path) {
         pathStack.add(cwd);
         cd(path);
-        Console.updatePrompt();
+        Console.getDefault().updatePrompt();
     }
 
     public void popd(String path) {
@@ -223,7 +222,7 @@ public abstract class Client {
         } else {
             cwd = pathStack.remove(pathStack.size()-1);
         }
-        Console.updatePrompt();
+        Console.getDefault().updatePrompt();
     }
 
     public Path pwd() {

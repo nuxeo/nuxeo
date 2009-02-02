@@ -22,6 +22,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -84,6 +85,15 @@ public class FileUtils {
             }
         }
         return lines;
+    }
+
+    
+    public static void copy(InputStream in, OutputStream out) throws IOException {
+        byte[] buffer = createBuffer(in.available());
+        int read;
+        while ((read = in.read(buffer)) != -1) {
+            out.write(buffer, 0, read);
+        }
     }
 
     private static byte[] createBuffer(int preferredSize) {

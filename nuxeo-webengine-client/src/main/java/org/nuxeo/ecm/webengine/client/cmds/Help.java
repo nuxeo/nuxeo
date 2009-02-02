@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.webengine.client.cmds;
 
 import org.nuxeo.ecm.webengine.client.Client;
+import org.nuxeo.ecm.webengine.client.Console;
 import org.nuxeo.ecm.webengine.client.command.AnnotatedCommand;
 import org.nuxeo.ecm.webengine.client.command.Cmd;
 import org.nuxeo.ecm.webengine.client.command.Command;
@@ -41,7 +42,7 @@ public class Help extends AnnotatedCommand {
             if (cmd != null) {
                 println(cmd.getHelp(client));
             } else {
-                System.out.println("Unknown command: "+param.getValue());
+                Console.getDefault().println("Unknown command: "+param.getValue());
             }
         } else {
             println(getHelp(client));
