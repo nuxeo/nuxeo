@@ -39,6 +39,8 @@ import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.webengine.ResourceBinding;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.debug.DefaultModuleTracker;
+import org.nuxeo.ecm.webengine.debug.IDEModuleTracker;
 import org.nuxeo.ecm.webengine.debug.ModuleTracker;
 import org.nuxeo.ecm.webengine.model.AdapterNotFoundException;
 import org.nuxeo.ecm.webengine.model.AdapterType;
@@ -93,7 +95,14 @@ public class ModuleImpl implements Module {
     
     public ModuleTracker getTracker() {
         if (tracker == null) { // tracker will be installed only in debug mode
-            tracker = new ModuleTracker(this);
+            String devMode = engine.getDevMode();
+            if (devMode == null) {
+                return null;
+            } else if ("ide".equals(devMode)) {
+                tracker = new IDEModuleTracker(this);
+            } else {
+                tracker = new DefaultModuleTracker(this);                
+            }
         }
         return tracker;
     }

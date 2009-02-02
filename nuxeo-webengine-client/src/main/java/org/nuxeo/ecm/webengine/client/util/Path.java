@@ -139,7 +139,12 @@ public class Path implements Serializable {
                             if (segments.isEmpty()) { // add a dot segment
                                 segments.add("..");
                             } else { // remove last segment
-                                segments.remove(segments.size()-1);
+                                int last = segments.size()-1;
+                                if (!"..".equals(segments.get(last))) {
+                                    segments.remove(last);
+                                } else {
+                                    segments.add("..");
+                                }
                             }
                             i += 2;
                             slash = 1;
@@ -272,6 +277,19 @@ public class Path implements Serializable {
         if (isAbsolute()) {
             return this;
         }
+        int k = 0;
+        for (int i=0; i<segments.length; i++) {
+            if ("..".equals(segments[i])) {
+                k++;
+            } else {
+                break;
+            }
+        }
+        if (k > 0) {
+            String[] newSegments = new String[segments.length-k];
+            System.arraycopy(segments, k, newSegments, 0, newSegments.length);
+           return  new Path(newSegments, flags | HAS_LEADING);
+        } 
         return new Path(segments, flags | HAS_LEADING);
     }
 
@@ -365,22 +383,47 @@ public class Path implements Serializable {
             return tail.makeAbsolute();
         }
 
-        //concatenate the two segment arrays
+        int flags = this.flags;
+        
         int myLen = segments.length;
         int tailLen = tail.segmentCount();
-        String[] newSegments = new String[myLen + tailLen];
-        System.arraycopy(segments, 0, newSegments, 0, myLen);
-        for (int i = 0; i < tailLen; i++) {
-            newSegments[myLen + i] = tail.segment(i);
+        int j = 0; int s = 0;
+        // remove ../ segments from the appended path
+        for (int i=0; i<tailLen; i++) {
+            String seg = tail.segments[i];
+            if ("..".equals(seg)) {
+                j++;
+            } else if (".".equals(seg)) {
+                if (j == 0) s++;
+            } else {
+                break;
+            }
+        }
+        if (j > 0) s = j;
+        
+        int k = myLen - j;
+        if (k < 0) {
+            myLen = -k;
+        } else {
+            myLen = k;
+        }
+        
+        //concatenate the two segment arrays
+        String[] newSegments = new String[myLen + tailLen-s];
+        if (k < 0) { 
+            for (int i = 0; i < myLen; i++) {
+                newSegments[i] = "..";    
+            }            
+            flags &= ~HAS_LEADING;
+        } else if (k > 0) {
+            System.arraycopy(segments, 0, newSegments, 0, myLen);
+        }
+        for (int i = s; i < tailLen; i++) {
+            newSegments[myLen + i-s] = tail.segment(i);
         }
         //use my leading separators and the tail's trailing separator
-        Path result = new Path(newSegments, (flags & HAS_LEADING) | (tail.hasTrailingSeparator() ? HAS_TRAILING : 0));
-        String tailFirstSegment = newSegments[myLen];
-//        TODO
-//        if (tailFirstSegment.equals("..") || tailFirstSegment.equals(".")) { //$NON-NLS-1$ //$NON-NLS-2$
-//            result.canonicalize();
-//        }
-        return result;
+        
+        return new Path(newSegments, (flags & HAS_LEADING) | (tail.hasTrailingSeparator() ? HAS_TRAILING : 0));
     }
 
     public Path append(String tail) {
@@ -389,7 +432,7 @@ public class Path implements Serializable {
             int tailLength = tail.length();
             if (tailLength < 3) {
                 //some special cases
-                if (tailLength == 0 || ".".equals(tail)) { //$NON-NLS-1$
+                if (tailLength == 0 || ".".equals(tail)) {
                     return this;
                 }
                 if ("..".equals(tail)) {
@@ -460,29 +503,37 @@ public class Path implements Serializable {
     }
 
     public static void main(String[] args) {
-
-        System.out.println(new Path("abc/asdf/file.ext"));
-        System.out.println(new org.nuxeo.common.utils.Path("abc/asdf/file.ext"));
-
-        System.out.println(new Path("/abc/asdf/file.ext"));
-        System.out.println(new org.nuxeo.common.utils.Path("/abc/asdf/file.ext"));
-
-        System.out.println(new Path("/./abc//asdf/../file.ext"));
-        System.out.println(new org.nuxeo.common.utils.Path("/./abc//asdf/../file.ext"));
-
-        System.out.println("----------------------");
-
-        double s = System.currentTimeMillis();
-        for (int i=0; i<100000; i++) {
-            new Path("/./abc//asdf/../file.ext");
-        }
-        System.out.println("new path: >>>> "+(System.currentTimeMillis()-s)/1000);
-
-        s = System.currentTimeMillis();
-        for (int i=0; i<100000; i++) {
-            new org.nuxeo.common.utils.Path("/./abc//asdf/../file.ext");
-        }
-        System.out.println("old path: >>>> "+(System.currentTimeMillis()-s)/1000);
+//
+//        System.out.println(new Path("abc/asdf/file.ext"));
+//        System.out.println(new org.nuxeo.common.utils.Path("abc/asdf/file.ext"));
+//
+//        System.out.println(new Path("/abc/asdf/file.ext"));
+//        System.out.println(new org.nuxeo.common.utils.Path("/abc/asdf/file.ext"));
+//
+//        System.out.println(new Path("/./abc//asdf/../file.ext"));
+//        System.out.println(new org.nuxeo.common.utils.Path("/./abc//asdf/../file.ext"));
+//
+//        System.out.println("----------------------");
+//
+//        double s = System.currentTimeMillis();
+//        for (int i=0; i<100000; i++) {
+//            new Path("/./abc//asdf/../file.ext");
+//        }
+//        System.out.println("new path: >>>> "+(System.currentTimeMillis()-s)/1000);
+//
+//        s = System.currentTimeMillis();
+//        for (int i=0; i<100000; i++) {
+//            new org.nuxeo.common.utils.Path("/./abc//asdf/../file.ext");
+//        }
+//        System.out.println("old path: >>>> "+(System.currentTimeMillis()-s)/1000);
+        
+        Path p = new Path("/commands");
+        System.out.println(p);
+        System.out.println(p=p.append("test"));
+        System.out.println(p=p.append("../../../test2"));
+        System.out.println(p=p.makeAbsolute());
+        //System.out.println(p=p.append(".."));
+        //System.out.println(p=p.append(".."));
     }
 
 }

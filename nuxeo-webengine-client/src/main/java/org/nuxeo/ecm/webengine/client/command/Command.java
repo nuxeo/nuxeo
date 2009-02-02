@@ -21,11 +21,10 @@ package org.nuxeo.ecm.webengine.client.command;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringWriter;
 import java.net.URL;
 
-import org.nuxeo.ecm.webengine.client.cmds.Help;
-import org.nuxeo.ecm.webengine.client.http.HttpClient;
+import org.nuxeo.ecm.webengine.client.Client;
+import org.nuxeo.ecm.webengine.client.util.FileUtils;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -36,7 +35,6 @@ public abstract class Command {
     protected CommandSyntax syntax;
     protected String[] aliases;
     protected String synopsis;
-    protected URL url;
 
 
     protected Command() {
@@ -68,42 +66,29 @@ public abstract class Command {
         return syntax;
     }
 
+    
+    protected URL getHelpUrl(Client client) {
+        return getClass().getResource("/META-INF/help/"+getName()+".help");
+    }
+    
     /**
      * @return the help.
      */
-    public String getHelp() {
+    public String getHelp(Client client) {
+        URL url = getHelpUrl(client);
         if (url == null) {
-            url = getClass().getResource("/META-INF/help/"+getName()+".help");
-            if (url == null) {
-                return "N/A";
-            }
+            return "N/A";
         }
         InputStream in = null;
-        StringWriter out = new StringWriter();
         try {
             in = url.openStream();
-            byte[] bytes = new byte[4096*2];
-            int r = in.read(bytes);
-            while (r > -1) {
-                if (r > 0) {
-                    out.write(new String(bytes, 0, r));
-                }
-                r = in.read(bytes);
-            }
+            return FileUtils.read(in); 
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             try { if (in != null) in.close(); } catch (IOException e) {}
         }
-        return out.toString();
-    }
-
-
-    /**
-     * @return the url.
-     */
-    public URL getUrl() {
-        return url;
+        return "N/A";
     }
 
 
@@ -119,18 +104,7 @@ public abstract class Command {
         return true;
     }
 
-    public abstract void run(HttpClient client, CommandLine cmdLine) throws Exception;
+    public abstract void run(Client client, CommandLine cmdLine) throws Exception;
 
-
-    public static void main(String[] args) {
-        Help help = new Help();
-
-        //String r = "org/nuxeo/ecm/webengine/client/builtin/HelpCommand.help";
-        URL url = Help.class.getResource("HelpCommand.help");
-        System.out.println(url);
-        url = Help.class.getResource("ExitCommand.help");
-        System.out.println(url);
-
-    }
 
 }

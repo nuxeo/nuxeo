@@ -17,25 +17,45 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.client.cmds;
+package org.nuxeo.ecm.webengine.client.command;
+
+import java.net.URL;
 
 import org.nuxeo.ecm.webengine.client.Client;
-import org.nuxeo.ecm.webengine.client.command.AnnotatedCommand;
-import org.nuxeo.ecm.webengine.client.command.Cmd;
-import org.nuxeo.ecm.webengine.client.command.CommandLine;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@Cmd(syntax="ls", synopsis="List entries in working directory")
-public class Ls extends AnnotatedCommand {
+public class RemoteCommand extends Command {
 
+    public static RemoteCommand parse(String line) {
+        int p = line.indexOf('\t');
+        if (p > -1) {
+            return new RemoteCommand(line.substring(0, p), line.substring(p+1));
+        }
+        return new RemoteCommand(line, "");
+    }
+    
+    public RemoteCommand(String syntax, String synopsis) {        
+        this.synopsis = synopsis;        
+        this.syntax = CommandSyntax.parse(syntax);
+        this.aliases = this.syntax.getCommandToken().getNames();
+    }
+
+    @Override
+    protected URL getHelpUrl(Client client) {
+        try {
+            return client.getCommandUrl("/"+getName());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+    
     @Override
     public void run(Client client, CommandLine cmdLine) throws Exception {
         client.execute(this, cmdLine);
     }
-    
-    
 
 }

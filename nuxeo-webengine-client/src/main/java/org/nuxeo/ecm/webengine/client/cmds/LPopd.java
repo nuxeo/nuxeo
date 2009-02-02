@@ -29,14 +29,14 @@ import org.nuxeo.ecm.webengine.client.command.CommandParameter;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@Cmd(syntax="pushd", synopsis="Push directory stack")
-public class Pushd extends AnnotatedCommand {
+@Cmd(syntax="lpopd", synopsis="Pop local directory stack")
+public class LPopd extends AnnotatedCommand {
 
     @Override
     public void run(Client client, CommandLine cmdLine) throws Exception {
         CommandParameter param = cmdLine.getLastParameter();
         if (param != null) {
-            client.pushd(param.getValue());
+            client.lpopd(param.getValue());
         }        
     }
 

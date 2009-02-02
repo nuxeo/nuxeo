@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import jline.ClassNameCompletor;
 import jline.Completor;
 import jline.CursorBuffer;
 import jline.FileNameCompletor;
@@ -42,18 +41,23 @@ public class CompositeCompletor implements Completor {
 
     private final CommandRegistry registry;
     private final CommandCompletor completor;
-    private final Console console;
+    private final JLineConsole console;
     private final Map<String, Completor> completors = new HashMap<String, Completor>();
     private final Map<String,Completor> paramCompletors = new HashMap<String, Completor>();
 
-    public CompositeCompletor(Console console, CommandRegistry registry) throws IOException {
+    public CompositeCompletor(JLineConsole console, CommandRegistry registry) throws IOException {
         this.registry = registry;
         this.console = console;
         completor = new CommandCompletor(registry);
         completors.put("command", completor);
         completors.put("file", new FileNameCompletor());
-        completors.put("document", new DocumentNameCompletor(console));
-        completors.put("class", new ClassNameCompletor());
+        completors.put("dir", new DirectoryCompletor());
+        completors.put("item", new DocumentNameCompletor(console));
+        
+        //classname completor is parsing system jars at startup. also it does't work on mac 
+        // I get a java.util.zip.ZipException: error in opening zip file because it tries to load a lib file as a jar
+        // disable it for now
+        //completors.put("class", new ClassNameCompletor());
     }
 
     public void setCompletor(String name, Completor completor) {

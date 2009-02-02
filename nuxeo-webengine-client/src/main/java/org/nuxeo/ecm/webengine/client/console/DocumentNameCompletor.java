@@ -29,9 +29,9 @@ import jline.Completor;
  */
 public class DocumentNameCompletor implements Completor {
 
-    private final Console console;
+    private final JLineConsole console;
 
-    public DocumentNameCompletor(Console console) {
+    public DocumentNameCompletor(JLineConsole console) {
         this.console = console;
     }
 

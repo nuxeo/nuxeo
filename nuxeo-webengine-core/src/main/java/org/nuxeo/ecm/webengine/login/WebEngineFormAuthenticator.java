@@ -36,13 +36,11 @@ public class WebEngineFormAuthenticator implements NuxeoAuthenticationPlugin, Lo
 
     private static final Log log = LogFactory.getLog(WebEngineFormAuthenticator.class);
 
-    protected String usernameKey = "username";
+    protected static String usernameKey = "username";
 
-    protected String passwordKey = "password";
+    protected static String passwordKey = "password";
 
-    protected String loginKey = "/login";
-
-    protected String logoutKey = "/logout";
+    public final static String LOGIN_KEY = "/@@login";
 
 
     public Boolean handleLoginPrompt(HttpServletRequest request,
@@ -59,34 +57,27 @@ public class WebEngineFormAuthenticator implements NuxeoAuthenticationPlugin, Lo
     protected String getLoginPathInfo(HttpServletRequest request) {
         String path = request.getPathInfo();
         if (path != null) {
-            int len = path.length();
-            int keyLen = -1;
-            if (path.startsWith(loginKey)) {
-                keyLen = loginKey.length();
-            } else if (path.startsWith(logoutKey)) {
-                keyLen = loginKey.length();
-            }
-            if (keyLen > -1) {
-                if (len == keyLen) {
-                    return "";
-                }  else if (path.charAt(keyLen) == '/') {
-                    return path.substring(keyLen);
-                } else {
-                    return null;
-                }
+            if (path.endsWith(LOGIN_KEY)) {
+                return path.substring(0, path.length()-LOGIN_KEY.length());
             }
         }
         return null;
     }
+    
+    public static final boolean isLoginRequest(HttpServletRequest request) {
+        String path = request.getPathInfo();
+        if (path != null) {
+            if (path.endsWith(LOGIN_KEY)) {
+                return true;
+            }
+        }
+        return false;        
+    }
 
     public UserIdentificationInfo handleRetrieveIdentity(
             HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
-        String path = getLoginPathInfo(httpRequest);
-        if (path == null) {
+        if (!isLoginRequest(httpRequest)) {
             return null;
-        }
-        if (log.isDebugEnabled()) {
-            log.debug("WebEngine login request: "+path);
         }
         String userName = httpRequest.getParameter(usernameKey);
         String password = httpRequest.getParameter(passwordKey);
@@ -103,12 +94,6 @@ public class WebEngineFormAuthenticator implements NuxeoAuthenticationPlugin, Lo
         }
         if (parameters.get("PasswordKey") != null) {
             passwordKey = parameters.get("PasswordKey");
-        }
-        if (parameters.get("LoginKey") != null) {
-            loginKey = parameters.get("LoginKey");
-        }
-        if (parameters.get("LogoutKey") != null) {
-            logoutKey = parameters.get("LogoutKey");
         }
     }
 

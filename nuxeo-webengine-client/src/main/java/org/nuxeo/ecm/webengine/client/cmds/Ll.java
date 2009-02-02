@@ -23,21 +23,19 @@ import org.nuxeo.ecm.webengine.client.Client;
 import org.nuxeo.ecm.webengine.client.command.AnnotatedCommand;
 import org.nuxeo.ecm.webengine.client.command.Cmd;
 import org.nuxeo.ecm.webengine.client.command.CommandLine;
-import org.nuxeo.ecm.webengine.client.command.CommandParameter;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@Cmd(syntax="pushd", synopsis="Push directory stack")
-public class Pushd extends AnnotatedCommand {
+@Cmd(syntax="ll", synopsis="List local directory content")
+public class Ll extends AnnotatedCommand {
 
     @Override
     public void run(Client client, CommandLine cmdLine) throws Exception {
-        CommandParameter param = cmdLine.getLastParameter();
-        if (param != null) {
-            client.pushd(param.getValue());
-        }        
+        client.lls(null);
     }
+    
+    
 
 }

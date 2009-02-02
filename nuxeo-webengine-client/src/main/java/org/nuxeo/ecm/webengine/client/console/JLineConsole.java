@@ -20,71 +20,67 @@
 package org.nuxeo.ecm.webengine.client.console;
 
 import java.io.IOException;
-import java.net.URL;
 
 import jline.CandidateListCompletionHandler;
 import jline.CompletionHandler;
 import jline.ConsoleReader;
 
+import org.nuxeo.ecm.webengine.client.Client;
+import org.nuxeo.ecm.webengine.client.Console;
 import org.nuxeo.ecm.webengine.client.command.CommandException;
 import org.nuxeo.ecm.webengine.client.command.ExitException;
-import org.nuxeo.ecm.webengine.client.http.HttpClient;
-
-import com.sun.corba.se.spi.orbutil.fsm.Guard.Complement;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class Console {
+public class JLineConsole extends Console {
 
+    
     protected ConsoleReader console;
 
-    protected HttpClient client;
 
-    public Console() throws IOException {
+    public JLineConsole() throws IOException {
+        if (JLineConsole.instance != null) {
+            throw new IllegalAccessError("Console is already instantiated");
+        }
+        JLineConsole.instance = this;
         console = new ConsoleReader();
-        initialize("http://localhost:8080");
-    }
-
-    public void initialize(String host, int port, String path, String username, String password) throws IOException {
-        initialize(new URL("http", host, port, path));
-        //TODO username and password
-    }
-
-    public void initialize(String url) throws IOException {
-        initialize(new URL(url));
-    }
-
-    public void initialize(URL url) throws IOException {
         CompletionHandler ch = console.getCompletionHandler();
         if (ch instanceof CandidateListCompletionHandler) {
             ((CandidateListCompletionHandler)ch).setAlwaysIncludeNewline(false);
         }
-        console.setDefaultPrompt("|> ");
-        client = new HttpClient(url);
-        // register completors
-        console.addCompletor(new CompositeCompletor(this, client.getRegistry()));
     }
 
     public ConsoleReader getReader() {
         return console;
     }
 
-    /**
-     * @return the client.
-     */
-    public HttpClient getClient() {
-        return client;
+
+    protected boolean execute(String line) throws Exception {
+        try {
+            runCommand(client, line);
+        } catch (ExitException e) {
+            return false;
+        } catch (CommandException e) {
+            console.printString(e.getMessage());
+        }
+        return true;
     }
 
-    public void run() throws IOException {
+    
+    @Override
+    public void start(Client client) throws IOException {
+        super.start(client);
+        console.setDefaultPrompt("|> ");
+        // register completors
+        console.addCompletor(new CompositeCompletor(this, client.getRegistry()));
         String line = console.readLine().trim();
         while (true) {
             try {
                 if (line.trim().length() > 0) {
                     if (!execute(line)) break;
-                    newLine();
+                    println();
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -95,21 +91,35 @@ public class Console {
         console.printNewline();
     }
 
-    protected void newLine() throws IOException {
+    
+    @Override
+    public String promptPassword() throws IOException {
+        return console.readLine(new Character('*'));
+    }
+    
+    @Override
+    public void updatePrompt() {
+        if (client.isConnected()) {
+            String path = client.getWorkingDirectory().lastSegment();
+            if (path == null) {
+                path = "/";
+            }
+            console.setDefaultPrompt("|"+client.getHost()+":"+path+"> ");
+        } else {
+            console.setDefaultPrompt("|> ");
+        }
+    }
+
+
+    @Override
+    public void println() throws IOException {
         console.flushConsole();
         console.printNewline();
     }
-
-    protected boolean execute(String line) throws Exception {
-        try {
-            client.run(line);
-        } catch (ExitException e) {
-            return false;
-        } catch (CommandException e) {
-            console.printString(e.getMessage());
-        }
-        return true;
+    
+    @Override
+    public void flush() throws IOException {
+        console.flushConsole();
     }
-
-
+    
 }

@@ -19,10 +19,10 @@
 
 package org.nuxeo.ecm.webengine.client.cmds;
 
+import org.nuxeo.ecm.webengine.client.Client;
 import org.nuxeo.ecm.webengine.client.command.AnnotatedCommand;
 import org.nuxeo.ecm.webengine.client.command.Cmd;
 import org.nuxeo.ecm.webengine.client.command.CommandLine;
-import org.nuxeo.ecm.webengine.client.http.HttpClient;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -32,8 +32,8 @@ import org.nuxeo.ecm.webengine.client.http.HttpClient;
 public class Disconnect extends AnnotatedCommand {
 
     @Override
-    public void run(HttpClient client, CommandLine cmdLine) throws Exception {
-        System.out.println("TODO: Close session ...");
+    public void run(Client client, CommandLine cmdLine) throws Exception {
+        client.disconnect();
     }
 
 }

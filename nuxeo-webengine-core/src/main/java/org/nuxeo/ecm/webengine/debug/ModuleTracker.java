@@ -24,34 +24,27 @@ import org.nuxeo.ecm.webengine.model.impl.ModuleConfiguration;
 import org.nuxeo.ecm.webengine.model.impl.ModuleImpl;
 
 /**
- * This listener is tacking global i18n file changes and web shared classes:
- * <ul>
- * <li> WEB-INF/i18n
- * <li> WEB-INF/classes
- * </ul>
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class ModuleTracker implements Runnable {
+public abstract class ModuleTracker implements Runnable {
 
     private final static Log log = LogFactory.getLog(ModuleTracker.class);
     
     protected ModuleImpl module;
     
     protected FileEntry moduleXml;
-    protected FileEntry annotations;
+    protected FileEntry webTypes;
     protected FileEntry i18n;
     protected DirectoryEntry skin;
-    protected ModuleClassesEntry classes;
     
     public ModuleTracker(ModuleImpl module) {
         this.module = module;
         moduleXml = new FileEntry(module.getModuleConfiguration().file);
         File root = module.getRoot();
-        classes = new ModuleClassesEntry(root);
         i18n = new FileEntry(new File(root, "i18n"));
         skin = new DirectoryEntry(new File(root, "skin"));
-        annotations = new FileEntry(new File(root, "META-INF/annotations"));
+        webTypes = new FileEntry(new File(root, "META-INF/web-types"));
     }
     
     
@@ -71,19 +64,8 @@ public class ModuleTracker implements Runnable {
         if (i18n.check()) { // i18n files changed - reload them
             module.reloadMessages();
         }
-        if (annotations.check()) { // type registration changed - reload types 
+        if (webTypes.check()) { // type registration changed - reload types 
             module.flushTypeCache();
-        }
-        if (classes.check()) { // classes changed - reload class loader
-        	// reload class loaders
-            module.getEngine().getWebLoader().flushCache();
-            // remove registered types (which are using older version of classes)
-            flushTypeCache(module);
-            // re-register main entry point?
-            //module.getEngine().registerRootBinding();
-            // to speed up things we also invalidate skin cache and then return
-            flushSkinCache(module);
-            return;
         }
         if (skin.check()) { // skin changed - flush skin cache  
         	flushSkinCache(module);

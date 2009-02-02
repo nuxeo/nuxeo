@@ -20,24 +20,21 @@
 package org.nuxeo.ecm.webengine.client.cmds;
 
 import org.nuxeo.ecm.webengine.client.Client;
+import org.nuxeo.ecm.webengine.client.Console;
 import org.nuxeo.ecm.webengine.client.command.AnnotatedCommand;
 import org.nuxeo.ecm.webengine.client.command.Cmd;
 import org.nuxeo.ecm.webengine.client.command.CommandLine;
-import org.nuxeo.ecm.webengine.client.command.CommandParameter;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@Cmd(syntax="pushd", synopsis="Push directory stack")
-public class Pushd extends AnnotatedCommand {
+@Cmd(syntax="lpwd", synopsis="Print local working directory")
+public class LPwd extends AnnotatedCommand {
 
     @Override
     public void run(Client client, CommandLine cmdLine) throws Exception {
-        CommandParameter param = cmdLine.getLastParameter();
-        if (param != null) {
-            client.pushd(param.getValue());
-        }        
+        Console.getDefault().println(client.lpwd().getAbsolutePath());
     }
 
 }
