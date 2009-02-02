@@ -59,6 +59,28 @@ Summary
 - The Theme Engine and the Theme Editor now run natively under WebEngine 
   (Jetty, Glassfish) and under JBoss/JSF.
 
+  Access to the theme editor requires Administrator privileges which means that
+  themes are protected against unwanted modifications.
+
+  Large effort has been put into simplifying the creation and the management
+  of themes through the web, without having to redeploy the application and to 
+  restart the server. This allows end-users who have sufficient privileges to 
+  create and save their own theme while the application is already deployed.
+
+  Custom style presets, i.e. color, font, background properties, can also be 
+  created through the web. Previously they needed to be registered as static 
+  configuration files.
+
+  A Style Manager and a Preset Manager have been added to the Theme Editor to
+  simplify the management of styles and presets.
+
+  Any color found in a theme which is not declared as a preset can be easily
+  converted into a preset.
+
+  A "Save changes" button has been added to the Theme Editor to remind users
+  that changes need to be saved.
+
+
 WebWorkspace
 ------------
 
@@ -198,8 +220,6 @@ simplify the management of styles and presets.
 Any color found in a theme which is not declared as a preset can be easily
 converted into a preset.
 
-A "Save changes" button has been added to the Theme Editor to remind users that
-changes need to be saved.
 
 Visible Content Store
 ---------------------
