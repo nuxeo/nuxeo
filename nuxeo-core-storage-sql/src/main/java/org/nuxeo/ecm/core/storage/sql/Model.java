@@ -249,7 +249,7 @@ public class Model {
     private final BinaryManager binaryManager;
 
     /** The id generation policy. */
-    protected final IdGenPolicy idGenPolicy;
+    public final IdGenPolicy idGenPolicy;
 
     /** Is the hierarchy table separate from the main table. */
     protected final boolean separateMainTable;

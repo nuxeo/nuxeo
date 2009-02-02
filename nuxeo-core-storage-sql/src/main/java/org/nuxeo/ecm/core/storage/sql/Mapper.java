@@ -58,8 +58,8 @@ import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.CollectionFragment.CollectionFragmentIterator;
 import org.nuxeo.ecm.core.storage.sql.Fragment.State;
 import org.nuxeo.ecm.core.storage.sql.SQLInfo.SQLInfoSelect;
-import org.nuxeo.ecm.core.storage.sql.SQLInfo.StoredProcedureInfo;
 import org.nuxeo.ecm.core.storage.sql.db.Column;
+import org.nuxeo.ecm.core.storage.sql.db.Dialect.ConditionalStatement;
 import org.nuxeo.ecm.core.storage.sql.db.Table;
 import org.nuxeo.ecm.core.storage.sql.db.Update;
 
@@ -263,9 +263,10 @@ public class Mapper {
      */
     protected void createDatabase() throws StorageException {
         try {
-            executeConditionalStatements(sqlInfo.getStoredProceduresSqls());
+            Collection<ConditionalStatement> statements = sqlInfo.getConditionalStatements();
+            executeConditionalStatements(statements, true);
             createTables();
-            executeConditionalStatements(sqlInfo.getTriggersSqls());
+            executeConditionalStatements(statements, false);
         } catch (SQLException e) {
             throw new StorageException(e);
         }
@@ -420,29 +421,33 @@ public class Mapper {
     }
 
     protected void executeConditionalStatements(
-            Collection<StoredProcedureInfo> spis) throws SQLException {
+            Collection<ConditionalStatement> statements, boolean early)
+            throws SQLException {
         Statement st = connection.createStatement();
-        for (StoredProcedureInfo spi : spis) {
-            boolean drop;
-            if (spi.dropFlag != null) {
-                drop = spi.dropFlag.booleanValue();
+        for (ConditionalStatement s : statements) {
+            if (s.early != early) {
+                continue;
+            }
+            boolean doPre;
+            if (s.doPre != null) {
+                doPre = s.doPre.booleanValue();
             } else {
-                logDebug(spi.checkDropStatement);
-                ResultSet rs = st.executeQuery(spi.checkDropStatement);
+                logDebug(s.checkStatement);
+                ResultSet rs = st.executeQuery(s.checkStatement);
                 if (rs.next()) {
                     // already present
                     logDebug("  -> (present)");
-                    drop = true;
+                    doPre = true;
                 } else {
-                    drop = false;
+                    doPre = false;
                 }
             }
-            if (drop) {
-                logDebug(spi.dropStatement);
-                st.execute(spi.dropStatement);
+            if (doPre) {
+                logDebug(s.preStatement);
+                st.execute(s.preStatement);
             }
-            logDebug(spi.createStatement);
-            st.execute(spi.createStatement);
+            logDebug(s.statement);
+            st.execute(s.statement);
         }
         st.close();
     }
