@@ -88,9 +88,8 @@ public class UserService extends DefaultObject {
         HttpServletRequest req = ctx.getRequest();
         String username = req.getParameter("username");
         UserManager userManager = Framework.getService(UserManager.class);
-        NuxeoPrincipal user;
         if (username != null && !username.equals("")) {
-            user = userManager.getPrincipal(username);
+            NuxeoPrincipal user = userManager.getPrincipal(username);
             String[] selectedGroups;
             if (user != null) {
                 // update
