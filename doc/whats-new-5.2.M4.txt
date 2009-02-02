@@ -9,7 +9,7 @@ What's new in Nuxeo 5.2.M4
 Summary 
 --------
 
-###Functional features
+###Functional enhancements
 
 - WebWorkspaces: expose workspaces on the web, exposing them as "dedicated
   collaborative mini-sites", including document publishing, blogs and wikis.
@@ -33,7 +33,7 @@ Summary
   styles and presets. Added a "save changes" function.
 
 
-###Tech features
+###Technical enhancements
 
 - Visible Content Store: new storage engine the repository  (but continued
   support for Jackrabbit)
@@ -453,7 +453,6 @@ by the repository (on both VisibleSQL and JCR backends).
 ### Why is it better?
 
 - This should fix the problems we have seen with Compass/Lucene locks 
-- There is only one Query API (instead of one for SQL and one for Jackrabbit)
 - Complete indexing/query support even for embedded packagings (such as Jetty)
 
 ###Compatibility
