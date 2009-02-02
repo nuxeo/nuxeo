@@ -225,7 +225,9 @@ public class Editor {
         Long lastModified = themeManager.getLastModified();
         boolean ok = false;
         for (ThemeDescriptor themeDef : ThemeManager.getThemeDescriptors()) {
-            if (!themeDef.isSaveable()) {
+            if (themeDef.isSaveable()) {
+                ok = true;
+            } else {
                 continue;
             }
             Date lastSaved = themeDef.getLastSaved();
@@ -233,10 +235,9 @@ public class Editor {
                 continue;
             }
             ThemeManager.saveTheme(themeDef.getSrc());
-            ok = true;
         }
         if (!ok) {
-            throw new ThemeIOException("No theme could be saved.");
+            throw new ThemeIOException("None of the existing themes can be overwritten.");
         }
     }
 

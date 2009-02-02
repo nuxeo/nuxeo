@@ -1006,7 +1006,8 @@ NXThemesEditor.saveChanges = function() {
            NXThemesEditor.dehighlightSaveButton();
          },
          onFailure: function(r) {
-           NXThemesEditor.writeMessage("The changes could not be saved.");
+           var text = r.responseText;
+           window.alert(text);
          }      
     });
 };
