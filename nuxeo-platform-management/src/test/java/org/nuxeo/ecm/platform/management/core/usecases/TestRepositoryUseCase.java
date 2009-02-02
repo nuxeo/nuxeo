@@ -24,7 +24,7 @@ import org.nuxeo.ecm.platform.management.usecases.RepositoryUsecase;
  *
  */
 public class TestRepositoryUseCase extends RepositoryOSGITestCase {
-    
+
    public void testRun() throws Exception {
        openRepositoryWithSystemPrivileges();
        RepositoryUsecase usecase = new RepositoryUsecase();
