@@ -550,4 +550,25 @@ public final class FileUtils {
           return new File(url.getPath());
         }
     }
+    
+    public static List<String> readLines(InputStream in) throws IOException {
+        List<String> lines = new ArrayList<String>();
+        BufferedReader reader = null;
+        try {
+            reader = new BufferedReader(new InputStreamReader(in));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                lines.add(line);
+            }
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                }
+            }
+        }
+        return lines;
+    }
+
 }
