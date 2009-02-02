@@ -2,27 +2,28 @@ What's new in Nuxeo 5.2.M4
 ==========================
 
 [STATUS: DRAFT - will be announced on Feb 2]
-[TODO IS: add paragraphs for functional items, fix wording, reorganize to fit the structure and order I've defined in the summary]
+[TODO IS: add paragraphs for functional items, fix wording, reorganize to fit 
+the structure and order I've defined in the summary]
 
 *Cleaner and leaner for developers, extra features for users!*
 
 Summary 
 --------
 
-###Functional enhancements
+### Functional enhancements
 
 - WebWorkspaces: expose workspaces on the web, exposing them as "dedicated
   collaborative mini-sites", including document publishing, blogs and wikis.
 
 - Content Annotation Service: annotation document content and pictures
   (multi-GB ones), thanks to this in-browser HTML-based annotation technology,
-  leveraging W3C Annotea
+  leveraging W3C Annotea.
 
 - Implementation of *Microsoft Windows SharePoint Services 3.0* (WSS) for a
-  native integration with MS Office and Windows desktops
+  native integration with MS Office and Windows desktops.
 
 - Virtual Navigation is now bundled by default and allows to browse the
-  repository on several metadata axis
+  repository on several metadata axis.
 
 - Improved picture support: picture's metadata extraction, picture libraries,
   in-browser crop/resize.
@@ -33,29 +34,29 @@ Summary
   styles and presets. Added a "save changes" function.
 
 
-###Technical enhancements
+### Technical enhancements
 
-- Visible Content Store: new storage engine the repository  (but continued
-  support for Jackrabbit)
+- Visible Content Store: new storage engine the repository (but continued
+  support for Jackrabbit).
 
 - Improvement of WebEngine, the web framework for Content-Oriented Web Apps,
-  now fully-based on JAX-RS and integrated with Eclipse IDE
+  now fully-based on JAX-RS and integrated with Eclipse IDE.
 
 - Advanced document conversion service, with improved caching and OpenOffice
-  instances management (for office doc conversions)
+  instances management (for office doc conversions).
 
 - Nuxeo Monitoring Services: access and expose monitoring data of components,
-  accessible through HTTP and JMX
+  accessible through HTTP and JMX.
 
 - Simplified and faster workflow service, leveraging jBPM properly and more
-  integrated with the repository
+  integrated with the repository.
 
-- Cleaner, simpler event model (compatible with JMS, but JMS is not required)
+- Cleaner, simpler event model (compatible with JMS, but JMS is not required).
 
 - Improved Audit Service, easier to customize and integrated with the new 
-  monitoring services
+  monitoring services.
 
-- The Theme Engine and the Theme Editor run natively under WebEngine 
+- The Theme Engine and the Theme Editor now run natively under WebEngine 
   (Jetty, Glassfish) and under JBoss/JSF.
 
 WebWorkspace
@@ -80,8 +81,8 @@ Annotation Service
 
 ### What's new?
 
-This is the first public release of the Nuxeo annotation system.  There is a new
-tab for documents now, the preview tab.  This uses the Preview addons and
+This is the first public release of the Nuxeo annotation system. There is a new
+tab for documents now: the preview tab.  This uses the Preview addons and
 the nuxeo Imaging addons to display the content of a file within Nuxeo
 itself! Then, if you want, you can add textual annotations and
 these are not only stored, but the annotations are kept as Nuxeo relations. 
@@ -97,7 +98,7 @@ Windows SharePoint Services
 
 ### What's new?
 
-We have implemented most part of the "Windows SharePoint Services" protocol,
+We have implemented most parts of the "Windows SharePoint Services" protocol,
 related to file services. 
 
 This gives you native and transparent integration with MS-Windows and
@@ -129,12 +130,12 @@ pure WebEngine environment provided that new views have been defined:
 
 Declared views now require a "template-engine" attribute:
 
-<view name="breadcrumbs" template-engine="freemarker">
-  <format-type>widget</format-type>
-  <template>widgets/breadcrumbs.ftl</template>
-</view>
+    <view name="breadcrumbs" template-engine="freemarker">
+      <format-type>widget</format-type>
+      <template>widgets/breadcrumbs.ftl</template>
+    </view>
 
-If no "template-engine" attribute is specified then "jsf-facelets" is assumed
+If no "template-engine" attribute is specified, then "jsf-facelets" is assumed
 by default. This is meant for backward compatibility with existing Nuxeo EP
 applications.
 
@@ -142,11 +143,10 @@ You are invited to update your custom JSF view declarations to remove warnings
 at startup. Simply add: template-engine="jsf-facelets" in your theme 
 contribution file:
 
-<view name="my widget" template-engine="jsf-facelets">
-  <format-type>widget</format-type>
-  <template>widgets/my-widget.xhtml</template>
-</view>
-
+    <view name="my widget" template-engine="jsf-facelets">
+      <format-type>widget</format-type>
+      <template>widgets/my-widget.xhtml</template>
+    </view>
 
 ### Theme Editor
 
@@ -177,19 +177,20 @@ created through the web. Previously they needed to be registered as static
 configuration files.
 
 Custom presets are defined per theme. They are stored in the theme's XML file 
-under <presets>:
+under `<presets>`:
 
-<?xml version="1.0" encoding="UTF-8"?>
-<theme description="" name="my-theme">
-  ...
-  <presets>
-    <preset category="font" name="default">14px Arial</preset>
-    <preset category="background" name="button">url(/skin/app/img/bg-button.png)</preset>
-    <preset category="color" name="blue">#009</preset>
-    <preset category="color" name="light gray">#ccc</preset>
-  </presets>
-  ...
-</theme>
+    <?xml version="1.0" encoding="UTF-8"?>
+    <theme description="" name="my-theme">
+      ...
+      <presets>
+        <preset category="font" name="default">14px Arial</preset>
+        <preset category="background"
+            name="button">url(/skin/app/img/bg-button.png)</preset>
+        <preset category="color" name="blue">#009</preset>
+        <preset category="color" name="light gray">#ccc</preset>
+      </presets>
+      ...
+    </theme>
 
 A Style Manager and a Preset Manager have been added to the Theme Editor to
 simplify the management of styles and presets.
@@ -206,8 +207,12 @@ Visible Content Store
 ### What has changed?
 
 Although the repository API and high level features remain the same, we offer 
-a new storage engine. In addition to the Jackrabbit store, we now offer a native engine for RDBMS databases: Visible Content Store™. The relational data model is based on the XSD schemas; this basically means that the RDB 
-model is now fully compliant with the business domain model. We believe it's a great technology and will enable a range of new apps and integration mechanisms for our customers.
+a new storage engine. In addition to the Jackrabbit store, we now offer a native 
+engine for RDBMS databases: Visible Content Store™. The relational data model is 
+based on the XSD schemas; this basically means that the RDB 
+model is now fully compliant with the business domain model. We believe it's a 
+great technology and will enable a range of new apps and integration mechanisms 
+for our customers.
 
 ### Why is it better?
 
@@ -227,7 +232,7 @@ the way for a lot of low level optimizations:
 - per-database data structures (arrays, uuid types, indexes, full text),
 - per-database stored procedures for speedups,
 - it opens the way for extending our search model to also support efficient 
- join with Relations and Audit,
+  join with Relations and Audit,
 
 Visible Content Store also opens the way for additional high-level features 
 like tree-based versioning, mixins, user-defined schemas.
@@ -264,9 +269,9 @@ development experience a real bliss for content-oriented apps developers!
 - Allows much tighter, faster development loop for Java developers using
   WebEngine inside eclipse.
 - Allows easy creating of RESTful Web applications that integrate with the
- Nuxeo platform. 
+  Nuxeo platform. 
 - Headless modules can be used to implement REST-based web services that
- do not have a user interfaces. 
+  do not have a user interfaces. 
 
 Conversion Service
 -------------------
@@ -323,7 +328,8 @@ with your monitoring systems.
 
 ### Why is it good?
 
-You can now use standard tools like the Java Management Console to monitor and administrate all services of Nuxeo's platform.
+You can now use standard tools like the Java Management Console to monitor and
+administrate all services of Nuxeo's platform.
 
 
 Workflows
