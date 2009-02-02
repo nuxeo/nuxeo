@@ -1,10 +1,6 @@
 What's new in Nuxeo 5.2.M4
 ==========================
 
-[STATUS: DRAFT - will be announced on Feb 2]
-[TODO IS: add paragraphs for functional items, fix wording, reorganize to fit 
-the structure and order I've defined in the summary]
-
 *Cleaner and leaner for developers, extra features for users!*
 
 Summary 
@@ -27,12 +23,10 @@ Summary
 
 - Theme Editor: added support for custom themes that can be created
   "through the web" and be stored without modifying the configuration of the
-  application. Added a preset manager and a style manager to better organize
-  styles and presets. Added a "save changes" function.
+  application or needing a restart. 
 
 - WebWorkspaces: expose workspaces on the web, exposing them as "dedicated
   collaborative mini-sites", including document publishing, blogs and wikis.
-
 
 ### Technical enhancements
 
@@ -56,65 +50,20 @@ Summary
 - Improved Audit Service, easier to customize and integrated with the new 
   monitoring services.
 
-- The Theme Engine and the Theme Editor now run natively under WebEngine 
-  (Jetty, Glassfish) and under JBoss/JSF.
-
-  Access to the theme editor requires Administrator privileges which means that
-  themes are protected against unwanted modifications.
-
-  Large effort has been put into simplifying the creation and the management
-  of themes through the web, without having to redeploy the application and to 
-  restart the server. This allows end-users who have sufficient privileges to 
-  create and save their own theme while the application is already deployed.
-
-  Custom style presets, i.e. color, font, background properties, can also be 
-  created through the web. Previously they needed to be registered as static 
-  configuration files.
-
-  A Style Manager and a Preset Manager have been added to the Theme Editor to
-  simplify the management of styles and presets.
-
-  Any color found in a theme which is not declared as a preset can be easily
-  converted into a preset.
-
-  A "Save changes" button has been added to the Theme Editor to remind users
-  that changes need to be saved.
-
-
-WebWorkspace
-------------
-
-### What is new?
-
-This is the beta release of WebWorkspace that allows easy creation of 
-web sites whose content lives in a Nuxeo repository.  This feature is
-built on WebEngine and JSF and is visible in all Nuxeo workspaces. By
-just clicking a checkbox, you can enable access to the workspace from
-the web.
-
-You can define:
-
-- the URL of the website
-- the template used for the content of the website
-- coming soon: you will be able to define it's theme using Nuxeo's theme editor
 
 Annotation Service
 ------------------
 
 ### What's new?
 
-This is the first public release of the Nuxeo annotation system. There is a new
-tab for documents now: the preview tab.  This uses the Preview addons and
-the nuxeo Imaging addons to display the content of a file within Nuxeo
-itself! Then, if you want, you can add textual annotations and
-these are not only stored, but the annotations are kept as Nuxeo relations. 
-If the annotations are on images-no matter how large-the location of the
-annotation is recorded as well, so other people reviewing the document see
-the annotation at the right "place" in the image.
+Nuxeo includes an annotation server based on the Annotea W3C standard.  Users can use this service through the new "preview" tab of web UI.
+This enables users to annotate words or paragaphs of documents without modifying the actual content.
+Since Annotea is designed to handle annotation on HTML pages, the GWT Annotation client has been included in HTML preview screen.
 
-The annotation service is built on the W3C standard Annotea for shared
-meta-data.
-
+Nuxeo's implementation is compliant with Annotea standard (RDF based and Rest API), but we also provide specific extensions to :
+- handle annotations on images (select a fragment of picture instead of text fragment)
+- associate annotations with Documents and versions (Annotea only associates annotations to an URL) 
+  
 ### More info
 
 See the Nuxeo Book here:
@@ -140,95 +89,58 @@ are visible in the user interface of Office tools like Word in a new side panel.
 
 Virtual Navigation
 ------------------
-[TODO: Tiry]
+
+The nuxeo virtual navigation plugin is now packaged with the release by default. This allows the user to navigate the same content through many axes--not just the parent/child relationship that one expects for a set of files in directories.
+With Virtual Navigation, the user may navigate by any axis, such as the "by country" or "by topic" options that are enabled by default.  This navigation can also be used in conjunction with our user-defined vocabularies to enable navigation on any chosen set of dimensions. 
 
 ### More info
 
 See the Nuxeo Book here:
 <http://doc.nuxeo.org/5.2/books/nuxeo-book/html/vnavigation.html>
 
-Picture Support
----------------------
-[TODO: Tiry]
+Preview Support & Picture Support
+---------------
+Nuxeo now includes a preview service that is able to generate an HTML preview from Document stored in the Nuxeo content repository.
+Depending on the configuration, preview can be generated from one or several files included in the Document.
+Also depending on the configuration, the preview can be generated on the fly using converters or can be based on pre-processed files stored directly in the document.
+Basically, the preview service is pluggable to allows definitions for each type of document and each mime-type as to how the HTML preview should be generated.
 
-Nuxeo Theme
-------------
+Preview is available for most common file types (MSOffice, OpenOffice, PDF) but also for pictures.
+In order to manage big pictures (hi-def photos), the preview leverages Nuxeo's tiling service and a GWT client that allows zooming and browsing into the image without needing to download the entire image at once.
 
-### Theme Engine
 
-The Theme Engine can be used directly with WebEngine.
-This allows themes created under Nuxeo EP and running on JBoss to be reused in a 
-pure WebEngine environment provided that new views have been defined:
+Themes
+------
 
-Declared views now require a "template-engine" attribute:
+The theme editor now requires Administrator privileges, protected themes
+against unwanted modifications by unprivileged users.
 
-    <view name="breadcrumbs" template-engine="freemarker">
-      <format-type>widget</format-type>
-      <template>widgets/breadcrumbs.ftl</template>
-    </view>
+A significant effort has been put into simplifying the creation and the 
+management of themes through the web, without requiring the application to be
+redeployed and the server restarted. This allows end-users who have sufficient 
+privileges to create and save their own theme while the application is running.
 
-If no "template-engine" attribute is specified, then "jsf-facelets" is assumed
-by default. This is meant for backward compatibility with existing Nuxeo EP
-applications.
-
-You are invited to update your custom JSF view declarations to remove warnings
-at startup. Simply add: template-engine="jsf-facelets" in your theme 
-contribution file:
-
-    <view name="my widget" template-engine="jsf-facelets">
-      <format-type>widget</format-type>
-      <template>widgets/my-widget.xhtml</template>
-    </view>
-
-### Theme Editor
-
-The Theme Editor application has been ported to WebEngine which allows it to
-run natively in both JSF and Freemarker environments.
-
-Access to the theme editor requires Administrator privileges which means that
-themes are protected against unwanted modifications.
-
-Large effort has been put into simplifying the creation and the management
-of themes through the web, without having to redeploy the application and to 
-restart the server.
-
-Custom themes created in the theme editor are thus stored in the temporary 
-folder of the application server in:
-
-  /opt/jboss/server/default/data/NXRuntime/themes/ under JBOSS
-
-and in:
-
-  /opt/nxserver/themes/ under Jetty and Glassfish
-
-This allows end-users who have sufficient privileges to create and save their
-own theme while the application is already deployed.
-
-Custom style presets, i.e. color, font, background properties, can also be 
+Custom style presets, i.e. color, font, background properties, can now be 
 created through the web. Previously they needed to be registered as static 
 configuration files.
 
-Custom presets are defined per theme. They are stored in the theme's XML file 
-under `<presets>`:
 
-    <?xml version="1.0" encoding="UTF-8"?>
-    <theme description="" name="my-theme">
-      ...
-      <presets>
-        <preset category="font" name="default">14px Arial</preset>
-        <preset category="background"
-            name="button">url(/skin/app/img/bg-button.png)</preset>
-        <preset category="color" name="blue">#009</preset>
-        <preset category="color" name="light gray">#ccc</preset>
-      </presets>
-      ...
-    </theme>
+WebWorkspace
+------------
 
-A Style Manager and a Preset Manager have been added to the Theme Editor to
-simplify the management of styles and presets.
+### What is new?
 
-Any color found in a theme which is not declared as a preset can be easily
-converted into a preset.
+This is the beta release of WebWorkspace that allows easy creation of 
+web sites whose content lives in a Nuxeo repository.  This feature is
+built on WebEngine and JSF and is visible in all Nuxeo workspaces. By
+just clicking a checkbox, you can enable access to the workspace from
+the web.
+
+You can define:
+
+- the URL of the website
+- the template used for the content of the website
+- coming soon: you will be able to define it's theme using Nuxeo's theme editor
 
 
 Visible Content Store
@@ -493,6 +405,85 @@ format in the new service first.
 
 See the Nuxeo Book here:
 <http://doc.nuxeo.org/5.2/books/nuxeo-book/html/audit-service.html>
+
+Nuxeo Theme
+------------
+
+### Theme Engine
+
+The Theme Engine can be used directly with WebEngine.
+This allows themes created under Nuxeo EP and running on JBoss to be reused in a 
+pure WebEngine environment provided that new views have been defined:
+
+Declared views now require a "template-engine" attribute:
+
+    <view name="breadcrumbs" template-engine="freemarker">
+      <format-type>widget</format-type>
+      <template>widgets/breadcrumbs.ftl</template>
+    </view>
+
+If no "template-engine" attribute is specified, then "jsf-facelets" is assumed
+by default. This is meant for backward compatibility with existing Nuxeo EP
+applications.
+
+You are invited to update your custom JSF view declarations to remove warnings
+at startup. Simply add: template-engine="jsf-facelets" in your theme 
+contribution file:
+
+    <view name="my widget" template-engine="jsf-facelets">
+      <format-type>widget</format-type>
+      <template>widgets/my-widget.xhtml</template>
+    </view>
+
+### Theme Editor
+
+The Theme Editor application has been ported to WebEngine which allows it to
+run natively in both JSF and Freemarker environments.
+
+Access to the theme editor requires Administrator privileges which means that
+themes are protected against unwanted modifications.
+
+Large effort has been put into simplifying the creation and the management
+of themes through the web, without having to redeploy the application and to 
+restart the server.
+
+Custom themes created in the theme editor are thus stored in the temporary 
+folder of the application server in:
+
+  /opt/jboss/server/default/data/NXRuntime/themes/ under JBOSS
+
+and in:
+
+  /opt/nxserver/themes/ under Jetty and Glassfish
+
+This allows end-users who have sufficient privileges to create and save their
+own theme while the application is already deployed.
+
+Custom style presets, i.e. color, font, background properties, can also be 
+created through the web. Previously they needed to be registered as static 
+configuration files.
+
+Custom presets are defined per theme. They are stored in the theme's XML file 
+under `<presets>`:
+
+    <?xml version="1.0" encoding="UTF-8"?>
+    <theme description="" name="my-theme">
+      ...
+      <presets>
+        <preset category="font" name="default">14px Arial</preset>
+        <preset category="background"
+            name="button">url(/skin/app/img/bg-button.png)</preset>
+        <preset category="color" name="blue">#009</preset>
+        <preset category="color" name="light gray">#ccc</preset>
+      </presets>
+      ...
+    </theme>
+
+A Style Manager and a Preset Manager have been added to the Theme Editor to
+simplify the management of styles and presets.
+
+Any color found in a theme which is not declared as a preset can be easily
+converted into a preset.
 
 Indexing & Search
 -----------------
