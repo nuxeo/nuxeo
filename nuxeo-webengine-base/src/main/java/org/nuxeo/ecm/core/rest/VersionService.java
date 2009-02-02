@@ -45,9 +45,8 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
  * </ul>
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-@WebAdapter(name="versions", type="VersionService", targetType="Document", targetFacets={"Versionable"})
+@WebAdapter(name = "versions", type = "VersionService", targetType = "Document", targetFacets = {"Versionable"})
 public class VersionService extends DefaultAdapter {
 
     @GET
@@ -58,9 +57,9 @@ public class VersionService extends DefaultAdapter {
     @Path("last")
     public DocumentObject getLastVersion() {
         try {
-            DocumentObject dobj = (DocumentObject)getTarget();
-            DocumentModel doc =  dobj.getDocument();
-            DocumentModel v  = dobj.getCoreSession().getLastDocumentVersion(doc.getRef());
+            DocumentObject dobj = (DocumentObject) getTarget();
+            DocumentModel doc = dobj.getDocument();
+            DocumentModel v = dobj.getCoreSession().getLastDocumentVersion(doc.getRef());
             if (v != null) {
                 return dobj.newDocument(v);
             }
@@ -68,14 +67,14 @@ public class VersionService extends DefaultAdapter {
             throw WebException.wrap(e);
         }
         throw new WebResourceNotFoundException(
-                "No version found for "+((DocumentObject)getTarget()).getDocument().getPath());
+                "No version found for " + ((DocumentObject) getTarget()).getDocument().getPath());
     }
 
     @Path("{label}")
     public DocumentObject getVersion(@PathParam("label") String label) {
         try {
-            DocumentObject dobj = (DocumentObject)getTarget();
-            DocumentModel doc =  dobj.getDocument();
+            DocumentObject dobj = (DocumentObject) getTarget();
+            DocumentModel doc = dobj.getDocument();
             List<VersionModel> versions = dobj.getCoreSession().getVersionsForDocument(doc.getRef());
             for (VersionModel v : versions) {
                 if (label.equals(v.getLabel())) {
@@ -86,7 +85,7 @@ public class VersionService extends DefaultAdapter {
             throw WebException.wrap(e);
         }
         throw new WebResourceNotFoundException(
-                "No such version "+label+" for document"+getTarget().getPath());
+                "No such version " + label + " for document" + getTarget().getPath());
     }
 
     @POST

@@ -37,16 +37,15 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Audit Service - manage document versions
  * TODO not yet implemented
- * <p>
+ * <p/>
  * Accepts the following methods:
  * <ul>
  * <li> GET - get audit records
  * </ul>
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-@WebAdapter(name="audits", type="AuditService", targetType="Document")
+@WebAdapter(name = "audits", type = "AuditService", targetType = "Document")
 public class AuditService extends DefaultAdapter {
 
     protected NXAuditEvents guardedService() {
@@ -61,7 +60,7 @@ public class AuditService extends DefaultAdapter {
         }
         return service;
     }
-    
+
     @GET
     public Object doGet() {
         return new View(getTarget(), "audits").resolve();
@@ -69,17 +68,15 @@ public class AuditService extends DefaultAdapter {
 
     public List<LogEntry> getAudits() {
         Logs logs = guardedService();
-        DocumentObject document = (DocumentObject)getTarget();
-        DocumentModel model =document.getAdapter(DocumentModel.class); 
+        DocumentObject document = (DocumentObject) getTarget();
+        DocumentModel model = document.getAdapter(DocumentModel.class);
         String id = model.getId();
         try {
             return logs.getLogEntriesFor(id);
-            
+
         } catch (AuditException e) {
             throw WebException.wrap("Failed to get audit on document " + id, e);
         }
-
     }
-    
 
 }

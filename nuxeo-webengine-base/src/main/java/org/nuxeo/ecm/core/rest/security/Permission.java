@@ -21,7 +21,6 @@ package org.nuxeo.ecm.core.rest.security;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class Permission {
 

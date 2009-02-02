@@ -28,9 +28,8 @@ import org.nuxeo.ecm.webengine.model.WebContext;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
- *  TODO: be able to use other repositories than the default
  */
+// TODO: be able to use other repositories than the default
 public class DocumentRoot extends DocumentObject {
 
     public DocumentRoot(WebContext ctx, String uri) {

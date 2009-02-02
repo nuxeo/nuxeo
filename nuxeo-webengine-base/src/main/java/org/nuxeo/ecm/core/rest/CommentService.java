@@ -33,7 +33,7 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
 
 /**
  * Comment Service - manage document comments
- * <p>
+ * <p/>
  * Accepts the following methods:
  * <ul>
  * <li> POST - create a new comment
@@ -41,9 +41,8 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * @author <a href="mailto:stan@nuxeo.com">Sun Seng David TAN</a>
- *
  */
-@WebAdapter(name = "comments", type="CommentService", targetType = "Document", targetFacets = { "Commentable" })
+@WebAdapter(name = "comments", type = "CommentService", targetType = "Document", targetFacets = {"Commentable"})
 public class CommentService extends DefaultAdapter {
 
     @POST

@@ -36,21 +36,20 @@ import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 import org.nuxeo.ecm.webengine.model.impl.ResourceTypeImpl;
 
 /**
- * The web entry point of WebEngine. 
- * This is a mix between an webengine module and a JAX-RS root resource 
- * 
+ * The web entry point of WebEngine.
+ * <p>
+ * This is a mix between an webengine module and a JAX-RS root resource
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @Path("/")
 @Produces("text/html; charset=UTF-8")
-@WebObject(type="base")
-public class Main  extends ModuleRoot  {
+@WebObject(type = "base")
+public class Main extends ModuleRoot {
 
-    protected ModuleManager mgr;
+    protected final ModuleManager mgr;
     protected Module module;
-    
+
     public Main() {
         ctx = WebEngine.getActiveContext();
         path = ctx.getBasePath();
@@ -58,32 +57,32 @@ public class Main  extends ModuleRoot  {
     }
 
     /**
-     * Initialize current module context
+     * Initializes the current module context.
      */
     protected void init() {
         ModuleConfiguration mc = mgr.getRootModule();
         if (mc == null) {
             throw new WebResourceNotFoundException("Root module not registered");
-        }        
+        }
         module = mc.get();
-        ((AbstractWebContext)ctx).setModule(module);        
-        type = (ResourceTypeImpl)((ModuleImpl)module).getRootType();
+        ((AbstractWebContext) ctx).setModule(module);
+        type = (ResourceTypeImpl) ((ModuleImpl) module).getRootType();
         setRoot(true);
         ctx.push(this);
     }
-    
+
     @GET
-    public Object doGet() {      
+    public Object doGet() {
         init();
         return getView("index");
-    } 
+    }
 
     @GET
     @Path("help")
     public Object getHelp() {
         init();
         return getTemplate("help/help.ftl");
-    } 
+    }
 
     @GET
     @Path("about")
@@ -93,7 +92,7 @@ public class Main  extends ModuleRoot  {
     }
 
     @Path("{path}")
-    public Object dispatch(@PathParam("path") String  path) {
+    public Object dispatch(@PathParam("path") String path) {
         ModuleConfiguration md = mgr.getModuleByPath(path);
         if (md != null) {
             return md.get().getRootObject(ctx);
@@ -101,16 +100,17 @@ public class Main  extends ModuleRoot  {
             throw new WebResourceNotFoundException("No resource found");
         }
     }
-    
+
     // handle errors
+    @Override
     public Object handleError(WebApplicationException e) {
-      if (e instanceof WebSecurityException) {
-        return Response.status(401).entity(getTemplate("error/error_401.ftl")).build();
-      } else if (e instanceof WebResourceNotFoundException) {      
-        return Response.status(404).entity(getTemplate("error/error_404.ftl")).build();
-      } else {
-        return super.handleError(e);
-      } 
+        if (e instanceof WebSecurityException) {
+            return Response.status(401).entity(getTemplate("error/error_401.ftl")).build();
+        } else if (e instanceof WebResourceNotFoundException) {
+            return Response.status(404).entity(getTemplate("error/error_404.ftl")).build();
+        } else {
+            return super.handleError(e);
+        }
     }
-    
+
 }
