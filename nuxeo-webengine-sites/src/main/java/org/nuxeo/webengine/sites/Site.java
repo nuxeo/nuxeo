@@ -9,6 +9,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -22,9 +24,12 @@ import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 
-@WebObject(type = "site", guard = "user=Administrator", facets={"Site"})
+@WebObject(type = "site", guard = "user=Administrator", facets = { "Site" })
 @Produces("text/html; charset=UTF-8")
 public class Site extends DefaultObject {
+
+    private static final Log log = LogFactory.getLog(Site.class);
+
     String url;
 
     DocumentModel ws = null;
@@ -37,19 +42,58 @@ public class Site extends DefaultObject {
 
     @GET
     public Object doGet() {
-    	ctx.getRequest().setAttribute("org.nuxeo.theme.theme", "sites/default"); 
+        ctx.getRequest().setAttribute("org.nuxeo.theme.theme", "sites/default");
         if (ws == null) {
             return getTemplate("no_site.ftl").arg("url", url);
         }
-        return getSiteTemplate(ws).args(getSiteArgs(ws));
+        // getting theme config from document.
+        String theme = null;
+        try {
+            theme = (String) ws.getProperty("webpage", "theme");
+        } catch (ClientException e) {
+            log.error(
+                    "Error while trying to display the webworkspace page. Couldn't get theme properties from the webpage",
+                    e);
+        }
+        if (theme == null) {
+            theme = "sites";
+        }
+        String themePage = null;
+        try {
+            themePage = (String) ws.getProperty("webpage", "themePage");
+        } catch (ClientException e) {
+            log.error(
+                    "Error while trying to display the webworkspace page. Couldn't get theme properties from the webpage",
+                    e);
+        }
+        if (themePage == null) {
+            themePage = "workspace";
+        }
+        ctx.getRequest().setAttribute("org.nuxeo.theme.theme",
+                theme + "/" + themePage);
+
+        return getTemplate("template_default.ftl").args(getSiteArgs(ws));
     }
 
     @Path("{page}")
     public Object doGet(@PathParam("page") String page) {
-    	ctx.getRequest().setAttribute("org.nuxeo.theme.theme", "sites/workspace"); 
         try {
             DocumentModel pageDoc = ctx.getCoreSession().getChild(ws.getRef(),
                     page);
+
+            // getting theme config from document.
+            String theme = (String) pageDoc.getProperty("webpage", "theme");
+            if (theme == null) {
+                theme = "sites";
+            }
+            String themePage = (String) pageDoc.getProperty("webpage",
+                    "themePage");
+            if (themePage == null) {
+                themePage = "page";
+            }
+            ctx.getRequest().setAttribute("org.nuxeo.theme.theme",
+                    theme + "/" + themePage);
+
             return (DocumentObject) ctx.newObject(pageDoc.getType(), pageDoc);
         } catch (Exception e) {
             throw WebException.wrap(e);
@@ -82,17 +126,6 @@ public class Site extends DefaultObject {
         return null;
     }
 
-    protected Template getSiteTemplate(DocumentModel doc) {
-        String siteType = SiteHelper.getString(doc, "webc:template", null);
-        // TODO make this configurable
-        if ("wiki".equals(siteType)) {
-            return getTemplate("template_wiki.ftl");
-        }
-        if ("blog".equals(siteType)) {
-            return getTemplate("template_blog.ftl");
-        }
-        return getTemplate("template_default.ftl");
-    }
 
     protected Map<String, Object> getSiteArgs(DocumentModel doc) {
         Map<String, Object> root = new HashMap<String, Object>();
@@ -118,10 +151,8 @@ public class Site extends DefaultObject {
         return null;
     }
 
-    public DocumentModel getWorkspace(){
+    public DocumentModel getWorkspace() {
         return ws;
     }
-
-
 
 }

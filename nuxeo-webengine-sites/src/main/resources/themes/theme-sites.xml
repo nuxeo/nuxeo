@@ -20,7 +20,6 @@
       <section>
         <cell>
           <fragment type="region fragment"/>
-          <fragment type="region fragment"/>
           <fragment type="generic fragment"/>
           <fragment type="generic fragment"/>
         </cell>
@@ -39,11 +38,6 @@
   </properties>
   <properties element="page[3]/section[1]/cell[1]/fragment[1]">
     <name>content</name>
-    <defaultBody/>
-    <defaultSrc/>
-  </properties>
-  <properties element="page[3]/section[1]/cell[1]/fragment[2]">
-    <name/>
     <defaultBody/>
     <defaultSrc/>
   </properties>
@@ -94,6 +88,9 @@
     <widget element="page[1]/section[1]/cell[1]">
       <view>cell frame</view>
     </widget>
+    <widget element="page[1]/section[1]/cell[1]/fragment[1]">
+      <view>block region</view>
+    </widget>
     <widget element="page[2]">
       <view>page frame</view>
     </widget>
@@ -103,7 +100,7 @@
     <widget element="page[2]/section[1]/cell[1]">
       <view>cell frame</view>
     </widget>
-    <widget element="page[1]/section[1]/cell[1]/fragment[1]">
+    <widget element="page[2]/section[1]/cell[1]/fragment[1]">
       <view>block region</view>
     </widget>
     <widget element="page[2]/section[1]/cell[1]/fragment[2]">
@@ -118,17 +115,14 @@
     <widget element="page[3]/section[1]/cell[1]">
       <view>cell frame</view>
     </widget>
-    <widget element="page[2]/section[1]/cell[1]/fragment[1]">
+    <widget element="page[3]/section[1]/cell[1]/fragment[1]">
       <view>block region</view>
-    </widget>
-    <widget element="page[3]/section[1]/cell[1]/fragment[3]">
-      <view>Minisite Tree</view>
-    </widget>
-    <widget element="page[3]/section[1]/cell[1]/fragment[4]">
-      <view>Minisite Attached files</view>
     </widget>
     <widget element="page[3]/section[1]/cell[1]/fragment[2]">
-      <view>block region</view>
+      <view>Minisite Tree</view>
+    </widget>
+    <widget element="page[3]/section[1]/cell[1]/fragment[3]">
+      <view>Minisite Attached files</view>
     </widget>
     <style element="page[1]/section[1]"/>
     <style element="page[1]/section[1]/cell[1]"/>

@@ -18,8 +18,7 @@
     </view>
     <view name="Minisite Attached files" template-engine="freemarker">
       <format-type>widget</format-type>
-      <template>includes/attached_files.ftl
-      </template>
+      <template>widgets/files.ftl</template>
     </view>
 
   </extension>

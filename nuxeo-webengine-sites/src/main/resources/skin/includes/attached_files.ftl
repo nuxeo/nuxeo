@@ -1,5 +1,3 @@
-
-<#import "common/util.ftl" as base/>
 <#assign files = Document.files.files />
 
 <#if (files?size != 0 || base.canWrite)>
