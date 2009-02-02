@@ -1,4 +1,3 @@
-
 <!-- Login Form -->
 <form action="${Context.loginPath}" method="POST">
 <table cellpadding="4" cellspacing="1">

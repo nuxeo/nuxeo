@@ -7,12 +7,12 @@
 <h2>License:</h2>
 <pre>
  (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
- 
+
  All rights reserved. This program and the accompanying materials
  are made available under the terms of the GNU Lesser General Public License
  (LGPL) version 2.1 which accompanies this distribution, and is available at
  http://www.gnu.org/licenses/lgpl.html
- 
+
  This library is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
@@ -22,7 +22,11 @@
 <h2>Team:</h2>
 <ul>
 <li> Main Developer: <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
-<li> Contributors: <a href="mailto:eb@nuxeo.com">Eric Barroca</a>, <a href="mailto:troger@nuxeo.com">Thomas Roger</a>, <a href="mailto:td@nuxeo.com">Thierry Delprat</a>, <a href="mailto:tsoulcie@nuxeo.com">Thibaut Soulcie</a>, <a href="mailto:sf@nuxeo.com">Stefane Fermigier</a>
+<li> Contributors: <a href="mailto:eb@nuxeo.com">Eric Barroca</a>,
+    <a href="mailto:troger@nuxeo.com">Thomas Roger</a>,
+    <a href="mailto:td@nuxeo.com">Thierry Delprat</a>,
+    <a href="mailto:tsoulcie@nuxeo.com">Thibaut Soulcie</a>,
+    <a href="mailto:sf@nuxeo.com">Stefane Fermigier</a>
 </ul>
 
 <h2>Modules:</h2>

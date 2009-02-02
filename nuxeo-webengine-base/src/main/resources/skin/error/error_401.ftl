@@ -5,7 +5,7 @@
 <h1>401 - Unauthorized</h1>
 
 <p>
-You don't have privileges to access this page
+You don't have the right privileges to access this page.
 </p>
 <p>
 <br/>
