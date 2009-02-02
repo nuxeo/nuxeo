@@ -27,10 +27,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-import javax.sound.midi.Sequence;
-
 /**
- * A collection of {@link Table}s and {@link Sequence}s.
+ * A collection of {@link Table}s.
  *
  * @author Florent Guillaume
  */
