@@ -12,9 +12,6 @@ Summary
 
 ### Functional enhancements
 
-- WebWorkspaces: expose workspaces on the web, exposing them as "dedicated
-  collaborative mini-sites", including document publishing, blogs and wikis.
-
 - Content Annotation Service: annotation document content and pictures
   (multi-GB ones), thanks to this in-browser HTML-based annotation technology,
   leveraging W3C Annotea.
@@ -32,6 +29,9 @@ Summary
   "through the web" and be stored without modifying the configuration of the
   application. Added a preset manager and a style manager to better organize
   styles and presets. Added a "save changes" function.
+
+- WebWorkspaces: expose workspaces on the web, exposing them as "dedicated
+  collaborative mini-sites", including document publishing, blogs and wikis.
 
 
 ### Technical enhancements
@@ -115,6 +115,11 @@ the annotation at the right "place" in the image.
 The annotation service is built on the W3C standard Annotea for shared
 meta-data.
 
+### More info
+
+See the Nuxeo Book here:
+<http://doc.nuxeo.org/5.2/books/nuxeo-book/html/annotation-service.html>
+
 Windows SharePoint Services
 ----------------------------
 
@@ -136,6 +141,11 @@ are visible in the user interface of Office tools like Word in a new side panel.
 Virtual Navigation
 ------------------
 [TODO: Tiry]
+
+### More info
+
+See the Nuxeo Book here:
+<http://doc.nuxeo.org/5.2/books/nuxeo-book/html/vnavigation.html>
 
 Picture Support
 ---------------------
@@ -262,8 +272,10 @@ WebEngine
 
 ### What has changed?
 
-Nuxeo 5.2M4 includes WebEngine RC2. WebEngine is a new web framework to create content-oriented web apps. It is now based on JAX-RS (Java API for
-Restful Services, aka JSR-311), making it an attractive tool to build RESTful services and applications on top of the platform.
+Nuxeo 5.2M4 includes WebEngine RC2. WebEngine is a new web framework to create
+content-oriented web apps. It is now based on JAX-RS (Java API for Restful
+Services, aka JSR-311), making it an attractive tool to build RESTful services
+and applications on top of the platform.
 
 - Simplified the web module declaration and packaging 
 - Full lazy loading of web modules.
@@ -335,6 +347,11 @@ If you have contributed Transformers, they will be available as Converters
 via the compatibility API, but you may have to change the Required-Bundle in the 
 MANIFEST.MF of your bundle.
 
+### More info
+
+See the Nuxeo Book here:
+<http://doc.nuxeo.org/5.2/books/nuxeo-book/html/nuxeo-conversion.html>
+
 Monitoring Service
 ------------------
 
@@ -351,6 +368,10 @@ with your monitoring systems.
 You can now use standard tools like the Java Management Console to monitor and
 administrate all services of Nuxeo's platform.
 
+### More info
+
+See the Nuxeo Book here:
+<http://doc.nuxeo.org/5.2/books/nuxeo-book/html/nuxeo-management.html>
 
 Workflows
 ---------
@@ -380,7 +401,9 @@ Nuxeo primitives, improving JBPL integration with the platform.
 Existing workflows have been rewritten using the new service and are available
 in the UI.
 
-But, there is no transparent upgrade (sorry for that), but it is still possible to deploy the old workflow stack on 5.2M4 to use existing processes without rewriting them.
+But, there is no transparent upgrade (sorry for that), but it is still possible
+to deploy the old workflow stack on 5.2M4 to use existing processes without
+rewriting them.
 
 
 Event Service
@@ -466,6 +489,11 @@ If you haven't customized your AuditLog format, migration is transparent (the
 system migrate the tables). If you have, you need to configure your audit log
 format in the new service first.
 
+### More info
+
+See the Nuxeo Book here:
+<http://doc.nuxeo.org/5.2/books/nuxeo-book/html/audit-service.html>
+
 Indexing & Search
 -----------------
 
@@ -501,9 +529,6 @@ You can now customize easily Users/Groups screens.
 
 You can easily integrate users/groups or any directory search in your layouts 
 or XHTML pages.
-
-
-
 
 Misc additions
 --------------
