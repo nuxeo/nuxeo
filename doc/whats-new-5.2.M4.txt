@@ -1,10 +1,27 @@
-What's new in Nuxeo 5.2.M4
+What's new in Nuxeo 5.2 M4
 ==========================
 
-*Cleaner and leaner for developers, extra features for users!*
+Nuxeo 5.2 M4 has just been released.
+
+This release the last milestone towards Nuxeo 5.2 which is still in active development, and due to be released at the end of February.
+
+As such, you should consider it as experimental or unstable, and still use Nuxeo 5.1.6, available from <http://www.nuxeo.org/sections/downloads/>, for production, unless you have very specific needs and are willing to go though you own QA process or to work with us on making really sure that it fits your needs.
+
+To try it out, grab the packages:
+
+- <http://www.nuxeo.org/static/NuxeoEP/nuxeo-ep-5.2.0.m4-1.tar.gz>
+- <http://www.nuxeo.org/static/NuxeoEP/nuxeo-ep-5.2.0.m4-1.zip>
+
+Or the installers:
+
+- <http://www.nuxeo.org/static/NuxeoEP/nuxeo-ep-5.2.0.m4-installer-1.jar> [Generic]
+- <http://www.nuxeo.org/static/NuxeoEP/nuxeo-ep-5.2.0.m4-setup-1.exe> [Windows 32 bits]
+- <http://www.nuxeo.org/static/NuxeoEP/nuxeo-ep-5.2.0.m4_64-setup.exe> [Windows 64 bits]
 
 Summary 
 --------
+
+*Cleaner and leaner for developers, extra features for users!*
 
 ### Functional enhancements
 
@@ -89,13 +106,15 @@ MS-Office, since both see Nuxeo EP as a SharePoint server.
 
 ### Why is it good?
 
-Basically, the Office integration is not requiring anymore any other software 
-isntallation. No need of addons or plugins to install in order to allow Office 
+Basically, the Office integration doesn't require anymore any other software 
+installation. No need for addons or plugins to install in order to allow Office 
 connects and works with Nuxeo.
-Users can now 
-- open, create, save documents from Office to Nuxeo as easily as they can with a
-SharePoint server
-- list the content of a workpspace in the Office
+
+Users can now:
+
+- open, create, save documents from Office to Nuxeo as easily as they can do 
+  with a SharePoint server
+- list the content of a workspace in Office
 
 Virtual Navigation
 ------------------
