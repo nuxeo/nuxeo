@@ -80,6 +80,9 @@ public abstract class AbstractNode implements Node {
     }
 
     public void moveTo(Node container, Integer order) {
+        if (container == this) {
+            return;
+        }
         setParent(container);
         setOrder(order);
     }
