@@ -81,18 +81,21 @@ Windows SharePoint Services
 
 ### What's new?
 
-We have implemented most parts of the "Windows SharePoint Services" protocol,
-related to file services. 
+We have started implementing the "Windows SharePoint Services" protocols, namely
+WebDAV file upload / download and a small part of the WebServices.
 
-This gives you native and transparent integration with MS-Windows and
+This will give you native and transparent integration with MS-Windows and
 MS-Office, since both see Nuxeo EP as a SharePoint server.
 
 ### Why is it good?
 
-Users can now load and save documents to Nuxeo as easily as they can with
-a SharePoint server.  Also, the enhanced features that work with a SharePoint
-server--such as granting a user access to the document--work with Nuxeo and
-are visible in the user interface of Office tools like Word in a new side panel. 
+Basically, the Office integration is not requiring anymore any other software 
+isntallation. No need of addons or plugins to install in order to allow Office 
+connects and works with Nuxeo.
+Users can now 
+- open, create, save documents from Office to Nuxeo as easily as they can with a
+SharePoint server
+- list the content of a workpspace in the Office
 
 Virtual Navigation
 ------------------
