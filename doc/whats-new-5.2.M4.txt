@@ -73,7 +73,7 @@ annotations to an URL)
   
 ### More info
 
-See the Nuxeo Book here:
+See the relevant chapter in the Nuxeo Book here:
 <http://doc.nuxeo.org/5.2/books/nuxeo-book/html/annotation-service.html>
 
 Windows SharePoint Services
@@ -110,7 +110,7 @@ navigation on any chosen set of dimensions.
 
 ### More info
 
-See the Nuxeo Book here:
+See the relevant chapter in the Nuxeo Book here:
 <http://doc.nuxeo.org/5.2/books/nuxeo-book/html/vnavigation.html>
 
 Preview Support & Picture Support
@@ -286,7 +286,7 @@ MANIFEST.MF of your bundle.
 
 ### More info
 
-See the Nuxeo Book here:
+See the relevant chapter in the Nuxeo Book here:
 <http://doc.nuxeo.org/5.2/books/nuxeo-book/html/nuxeo-conversion.html>
 
 Monitoring Service
@@ -307,7 +307,7 @@ administrate all services of Nuxeo's platform.
 
 ### More info
 
-See the Nuxeo Book here:
+See the relevant chapter in the Nuxeo Book here:
 <http://doc.nuxeo.org/5.2/books/nuxeo-book/html/nuxeo-management.html>
 
 Workflows
@@ -396,6 +396,11 @@ We provide a nuxeo-core-event-compat package that re-enables old event system:
 If you need the old API for sending events/messages, just deploy the
 old nuxeo-platform-event-* packages.
 
+### More info
+
+See the relevant chapter in the Nuxeo Book here:
+<http://doc.nuxeo.org/5.2/books/nuxeo-book/html/nuxeo-events-5.2.html>
+
 Audit Service
 -------------
 
@@ -427,7 +432,7 @@ format in the new service first.
 
 ### More info
 
-See the Nuxeo Book here:
+See the relevant chapter in the Nuxeo Book here:
 <http://doc.nuxeo.org/5.2/books/nuxeo-book/html/audit-service.html>
 
 Nuxeo Theme
@@ -525,7 +530,7 @@ by the repository (on both VisibleSQL and JCR backends).
 - This should fix the problems we have seen with Compass/Lucene locks 
 - Complete indexing/query support even for embedded packagings (such as Jetty)
 
-###Compatibility
+### Compatibility
 
 Full compatibility is providing, thanks to NXQL and a pass through in the 
 previous SearchService (which actually requests the repository).
@@ -537,7 +542,8 @@ Nuxeo Directory UI
 
 Default Users/Groups management screens now use the Layout Service for forms
 definition and rendering. 
-New JSF component to handle a "suggestion box" on top of directories.
+
+A new JSF component to handle a "suggestion box" on top of directories.
 
 ### Why is it better?
 
