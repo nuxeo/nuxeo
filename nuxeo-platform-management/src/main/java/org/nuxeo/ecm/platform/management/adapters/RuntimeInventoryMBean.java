@@ -20,7 +20,6 @@ import java.util.Set;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
- * 
  */
 public interface RuntimeInventoryMBean {
 
@@ -43,7 +42,7 @@ public interface RuntimeInventoryMBean {
     void bindTree();
 
     void unbindTree();
-    
+
     boolean isTreeBound();
 
 }

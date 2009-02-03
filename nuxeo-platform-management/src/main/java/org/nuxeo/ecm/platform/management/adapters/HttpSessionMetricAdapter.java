@@ -19,7 +19,6 @@ package org.nuxeo.ecm.platform.management.adapters;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
- * 
  */
 public class HttpSessionMetricAdapter implements HttpSessionMetricMBean {
 
@@ -38,4 +37,5 @@ public class HttpSessionMetricAdapter implements HttpSessionMetricMBean {
     public long getCreatedSessionCount() {
         return createdSessionCount;
     }
+
 }

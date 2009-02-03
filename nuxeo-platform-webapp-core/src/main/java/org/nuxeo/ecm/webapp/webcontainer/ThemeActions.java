@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2009 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,19 +12,19 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     matic
+ *     stan
  */
-package org.nuxeo.ecm.platform.management.adapters;
 
-/**
- * @author Stephane Lacoin (Nuxeo EP Software Engineer)
- */
-public interface ExtensionPointInventoryMBean {
+package org.nuxeo.ecm.webapp.webcontainer;
 
-    String getName();
+import java.util.List;
 
-    String getDescription();
+import javax.faces.model.SelectItem;
 
-    Integer getContributionsCount();
+public interface ThemeActions {
+
+    List<SelectItem> getAvailableThemes();
+
+    List<SelectItem> getAvailablePages(String page);
 
 }

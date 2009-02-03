@@ -25,7 +25,7 @@ import org.nuxeo.runtime.management.ResourceFactoryDescriptor;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
- * 
+ *
  */
 public class TestRuntimeMbeanAdapterFactory extends RepositoryOSGITestCase {
 
@@ -56,7 +56,7 @@ public class TestRuntimeMbeanAdapterFactory extends RepositoryOSGITestCase {
         managementService.registerContribution(factoryDescriptor, "factories",
                 null);
     }
-    
+
     public void doRegisterRepositorySessionMetricFactory() throws Exception {
         ResourceFactoryDescriptor factoryDescriptor = new ResourceFactoryDescriptor(
                 RepositorySessionMetricFactory.class);

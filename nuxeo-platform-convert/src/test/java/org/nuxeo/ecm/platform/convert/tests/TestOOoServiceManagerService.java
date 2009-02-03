@@ -13,7 +13,6 @@ public class TestOOoServiceManagerService extends NXRuntimeTestCase {
                 "OSGI-INF/ooo-server-daemon-framework.xml");
     }
 
-
     public void testServiceRegistration() throws Exception {
         OOoDaemonService ods = Framework.getLocalService(OOoDaemonService.class);
         assertNotNull(ods);
@@ -35,7 +34,7 @@ public class TestOOoServiceManagerService extends NXRuntimeTestCase {
         assertTrue(started);
 
         int workers = ods.getNbWorkers();
-        assertTrue(workers>0);
+        assertTrue(workers > 0);
 
         Thread.currentThread().sleep(1000);
 
@@ -43,8 +42,7 @@ public class TestOOoServiceManagerService extends NXRuntimeTestCase {
         assertTrue(stoped);
 
         workers = ods.getNbWorkers();
-        assertTrue(workers==0);
-
+        assertSame(0, workers);
     }
 
 }

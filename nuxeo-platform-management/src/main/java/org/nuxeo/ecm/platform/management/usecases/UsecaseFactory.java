@@ -23,7 +23,6 @@ import org.nuxeo.runtime.management.ResourcePublisherService;
 
 /**
  * @author matic
- * 
  */
 public class UsecaseFactory implements ResourceFactory {
 
@@ -31,8 +30,8 @@ public class UsecaseFactory implements ResourceFactory {
 
     public void configure(ResourcePublisherService service,
             ResourceFactoryDescriptor descriptor) {
-        this.scheduler = (UsecaseSchedulerService)Framework.getLocalService(UsecaseScheduler.class);
-        this.scheduler.managementPublisher.setService(service);
+        scheduler = (UsecaseSchedulerService) Framework.getLocalService(UsecaseScheduler.class);
+        scheduler.managementPublisher.setService(service);
     }
 
     public void registerResources() {

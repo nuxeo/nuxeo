@@ -20,7 +20,6 @@ import org.nuxeo.runtime.model.ExtensionPoint;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
- * 
  */
 public class ExtensionPointInventoryAdapter implements
         ExtensionPointInventoryMBean {

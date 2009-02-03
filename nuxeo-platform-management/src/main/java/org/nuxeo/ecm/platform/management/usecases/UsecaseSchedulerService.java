@@ -37,7 +37,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
- * 
+ *
  */
 public class UsecaseSchedulerService extends DefaultComponent implements
         UsecaseScheduler {
@@ -90,8 +90,9 @@ public class UsecaseSchedulerService extends DefaultComponent implements
         }
 
         protected void doUnschedule() {
-            if (registry == null)
+            if (registry == null) {
                 return;
+            }
             registry.unregisterSchedule(this);
         }
     }
@@ -122,8 +123,9 @@ public class UsecaseSchedulerService extends DefaultComponent implements
         }
 
         protected void doUnlisten() {
-            if (service == null)
+            if (service == null) {
                 return;
+            }
             service.removeEventListener(this);
         }
     }
@@ -194,8 +196,9 @@ public class UsecaseSchedulerService extends DefaultComponent implements
         }
 
         protected void doUnpublish() {
-            if (service == null)
+            if (service == null) {
                 return;
+            }
             service.unregisterResource("usecase-scheduler",
                     ObjectNameFactory.formatQualifiedName(NAME)
                             + ",management=quality");
@@ -274,7 +277,7 @@ public class UsecaseSchedulerService extends DefaultComponent implements
 
         protected void doRun() {
 
-            if (isEnabled == false) {
+            if (!isEnabled) {
                 return;
             }
 

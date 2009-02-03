@@ -26,18 +26,16 @@ import org.nuxeo.runtime.model.RegistrationInfo;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
- * 
  */
-public class ComponentInventoryAdapter 
+public class ComponentInventoryAdapter
         implements ComponentInventoryMBean {
 
-    public ComponentInventoryAdapter(RegistrationInfo info) {  
+    protected RegistrationInfo info;
+
+    public ComponentInventoryAdapter(RegistrationInfo info) {
         this.info = info;
     }
-    
-    protected RegistrationInfo info;
-    
-   
+
     public String getDescription() {
         return info.getDocumentation();
     }
@@ -48,7 +46,7 @@ public class ComponentInventoryAdapter
 
     public Set<String> getExtensionPointsName() {
         Set<String> names = new HashSet<String>();
-        for(ExtensionPoint extensionPoint:info.getExtensionPoints()) {
+        for (ExtensionPoint extensionPoint : info.getExtensionPoints()) {
             names.add(extensionPoint.getName());
         }
         return names;
@@ -64,7 +62,7 @@ public class ComponentInventoryAdapter
 
     public Set<String> getProvidedServices() {
         Set<String> names = new HashSet<String>();
-        for(String name:info.getProvidedServiceNames()) {
+        for (String name : info.getProvidedServiceNames()) {
             names.add(name);
         }
         return names;
