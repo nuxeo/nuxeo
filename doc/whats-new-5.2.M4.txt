@@ -56,13 +56,20 @@ Annotation Service
 
 ### What's new?
 
-Nuxeo includes an annotation server based on the Annotea W3C standard.  Users can use this service through the new "preview" tab of web UI.
-This enables users to annotate words or paragaphs of documents without modifying the actual content.
-Since Annotea is designed to handle annotation on HTML pages, the GWT Annotation client has been included in HTML preview screen.
+Nuxeo includes an annotation server based on the Annotea W3C standard. Users
+can use this service through the new "preview" tab of web UI.
+This enables users to annotate words or paragaphs of documents without modifying
+the actual content.
+Since Annotea is designed to handle annotation on HTML pages, the GWT Annotation
+client has been included in HTML preview screen.
 
-Nuxeo's implementation is compliant with Annotea standard (RDF based and Rest API), but we also provide specific extensions to :
-- handle annotations on images (select a fragment of picture instead of text fragment)
-- associate annotations with Documents and versions (Annotea only associates annotations to an URL) 
+Nuxeo's implementation is compliant with Annotea standard (RDF based and Rest 
+API), but we also provide specific extensions to:
+
+- handle annotations on images (select a fragment of picture instead of text
+  fragment)
+- associate annotations with Documents and versions (Annotea only associates 
+annotations to an URL) 
   
 ### More info
 
@@ -90,8 +97,16 @@ are visible in the user interface of Office tools like Word in a new side panel.
 Virtual Navigation
 ------------------
 
-The nuxeo virtual navigation plugin is now packaged with the release by default. This allows the user to navigate the same content through many axes--not just the parent/child relationship that one expects for a set of files in directories.
-With Virtual Navigation, the user may navigate by any axis, such as the "by country" or "by topic" options that are enabled by default.  This navigation can also be used in conjunction with our user-defined vocabularies to enable navigation on any chosen set of dimensions. 
+The nuxeo virtual navigation plugin is now packaged with the release by default. 
+
+This allows the user to navigate the same content through many axes--not just 
+the parent/child relationship that one expects for a set of files in 
+directories.
+
+With Virtual Navigation, the user may navigate by any axis, such as the "by 
+country" or "by topic" options that are enabled by default.  This navigation can 
+also be used in conjunction with our user-defined vocabularies to enable 
+navigation on any chosen set of dimensions. 
 
 ### More info
 
@@ -100,14 +115,26 @@ See the Nuxeo Book here:
 
 Preview Support & Picture Support
 ---------------
-Nuxeo now includes a preview service that is able to generate an HTML preview from Document stored in the Nuxeo content repository.
-Depending on the configuration, preview can be generated from one or several files included in the Document.
-Also depending on the configuration, the preview can be generated on the fly using converters or can be based on pre-processed files stored directly in the document.
-Basically, the preview service is pluggable to allows definitions for each type of document and each mime-type as to how the HTML preview should be generated.
 
-Preview is available for most common file types (MSOffice, OpenOffice, PDF) but also for pictures.
-In order to manage big pictures (hi-def photos), the preview leverages Nuxeo's tiling service and a GWT client that allows zooming and browsing into the image without needing to download the entire image at once.
+Nuxeo now includes a preview service that is able to generate an HTML preview 
+from Document stored in the Nuxeo content repository.
 
+Depending on the configuration, preview can be generated from one or several 
+files included in the Document.
+
+Also depending on the configuration, the preview can be generated on the fly 
+using converters or can be based on pre-processed files stored directly in the 
+document.
+
+Basically, the preview service is pluggable to allows definitions for each type 
+of document and each mime-type as to how the HTML preview should be generated.
+
+Preview is available for most common file types (MSOffice, OpenOffice, PDF) but 
+also for pictures.
+
+In order to manage big pictures (hi-def photos), the preview leverages Nuxeo's 
+tiling service and a GWT client that allows zooming and browsing into the image 
+without needing to download the entire image at once.
 
 Themes
 ------
@@ -123,7 +150,6 @@ privileges to create and save their own theme while the application is running.
 Custom style presets, i.e. color, font, background properties, can now be 
 created through the web. Previously they needed to be registered as static 
 configuration files.
-
 
 WebWorkspace
 ------------
@@ -141,7 +167,6 @@ You can define:
 - the URL of the website
 - the template used for the content of the website
 - coming soon: you will be able to define it's theme using Nuxeo's theme editor
-
 
 Visible Content Store
 ---------------------
@@ -167,8 +192,8 @@ Jackrabbit's mapping. This has a number of benefits for data processing:
 - you can plug any SQL-compliant reporting tool to do reports on top of the 
  Nuxeo repository.
 
-The Visible Content Store™ repository itself is also an important step because it opens 
-the way for a lot of low level optimizations:
+The Visible Content Store™ repository itself is also an important step because 
+it opens the way for a lot of low level optimizations:
 
 - denormalization for speed,
 - per-database data structures (arrays, uuid types, indexes, full text),
@@ -184,7 +209,7 @@ WebEngine
 
 ### What has changed?
 
-Nuxeo 5.2M4 includes WebEngine RC2. WebEngine is a new web framework to create
+Nuxeo 5.2 M4 includes WebEngine RC2. WebEngine is a new web framework to create
 content-oriented web apps. It is now based on JAX-RS (Java API for Restful
 Services, aka JSR-311), making it an attractive tool to build RESTful services
 and applications on top of the platform.
@@ -316,7 +341,6 @@ in the UI.
 But, there is no transparent upgrade (sorry for that), but it is still possible
 to deploy the old workflow stack on 5.2M4 to use existing processes without
 rewriting them.
-
 
 Event Service
 -------------
@@ -490,7 +514,8 @@ Indexing & Search
 
 ### What has changed?
 
-SearchService has been deprecated -> M4 does not depend on Compass/Lucene for indexing and search.
+SearchService has been deprecated -> M4 does not depend on Compass/Lucene for 
+indexing and search.
 
 Complete indexing/query support (including full text) is now provide directly 
 by the repository (on both VisibleSQL and JCR backends).
@@ -502,8 +527,8 @@ by the repository (on both VisibleSQL and JCR backends).
 
 ###Compatibility
 
-Full compatibility is providing, thanks to NXQL and a pass through in the previous SearchService (which actually requests the repository).
-
+Full compatibility is providing, thanks to NXQL and a pass through in the 
+previous SearchService (which actually requests the repository).
 
 Nuxeo Directory UI
 -----------------
@@ -523,7 +548,6 @@ or XHTML pages.
 
 Misc additions
 --------------
-
 
 ### Command-line Service
 
@@ -546,7 +570,6 @@ The daemon provides:
 - automatic OOo installation discovery when possible
 - automatic OOo start: off / on Nuxeo startup / on first usage
 - OOo instance pooling
-
 
 Addons that are now part of the default distribution
 ----------------------------------------------------
