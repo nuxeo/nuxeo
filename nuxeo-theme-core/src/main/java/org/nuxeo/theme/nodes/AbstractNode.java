@@ -37,12 +37,12 @@ public abstract class AbstractNode implements Node {
                     "Cycle detected while trying to make %s a parent of %s.",
                     parent, this));
         }
-        if (this.parentNode != null) {
-            List<Node> siblings = this.parentNode.getChildren();
+        if (parentNode != null) {
+            List<Node> siblings = parentNode.getChildren();
             siblings.remove(this);
-            this.parentNode.setChildren(siblings);
+            parentNode.setChildren(siblings);
         }
-        this.parentNode = parent;
+        parentNode = parent;
     }
 
     public Node getParent() {
@@ -107,7 +107,20 @@ public abstract class AbstractNode implements Node {
     }
 
     public void setOrder(Integer order) throws NodeException {
+        if (order == null) {
+            throw new NodeException(String.format(
+                    "Cannot set node order to null on %s", this));
+        }
+        if (parentNode == null) {
+            throw new NodeException(String.format(
+                    "Cannot set order on node %s unless it has a parent", this));
+        }
         List<Node> siblings = parentNode.getChildren();
+        siblings.remove(this);
+        if (order < 0 || (order > 0 && order > siblings.size())) {
+            throw new NodeException(String.format(
+                    "Incorrect node order value (%s) for %s", order, this));
+        }
         siblings.add(order, this);
         parentNode.setChildren(siblings);
     }
@@ -153,7 +166,7 @@ public abstract class AbstractNode implements Node {
 
     public boolean isChildOf(Node node) {
         boolean res = false;
-        Node parent = this.parentNode;
+        Node parent = parentNode;
         while (parent != null) {
             if (parent == node) {
                 res = true;

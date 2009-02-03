@@ -24,7 +24,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.theme.nodes.Node;
 import org.nuxeo.theme.nodes.NodeException;
 import org.nuxeo.theme.test.DummyNode;
-import org.nuxeo.theme.themes.ThemeManager;
 
 public class TestNodes extends TestCase {
 
@@ -46,6 +45,27 @@ public class TestNodes extends TestCase {
         assertEquals(0, (int) node2.getOrder());
     }
 
+    public void testSetOrderBeyondLimits() throws NodeException {
+        Node node0 = new DummyNode();
+        try {
+            node0.setOrder(0);
+        } catch (NodeException e) {
+            log.warn(e);
+        }
+        Node container = new DummyNode();
+        container.addChild(node0);
+        try {
+            node0.setOrder(1);
+        } catch (NodeException e) {
+            log.warn(e);
+        }
+        try {
+            node0.setOrder(-1);
+        } catch (NodeException e) {
+            log.warn(e);
+        }
+    }
+
     public void testSetParent() throws NodeException {
         Node node0 = new DummyNode();
         Node node1 = new DummyNode();
@@ -62,7 +82,7 @@ public class TestNodes extends TestCase {
         try {
             node1.setParent(node0);
         } catch (NodeException e) {
-            // ok
+            log.warn(e);
         }
         assertSame(node1, node0.getParent());
     }
