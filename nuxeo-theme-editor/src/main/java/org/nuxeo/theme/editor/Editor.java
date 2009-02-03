@@ -40,6 +40,7 @@ import org.nuxeo.theme.formats.styles.Style;
 import org.nuxeo.theme.formats.widgets.Widget;
 import org.nuxeo.theme.fragments.Fragment;
 import org.nuxeo.theme.fragments.FragmentFactory;
+import org.nuxeo.theme.nodes.NodeException;
 import org.nuxeo.theme.perspectives.PerspectiveManager;
 import org.nuxeo.theme.presets.PresetManager;
 import org.nuxeo.theme.presets.PresetType;
@@ -126,7 +127,7 @@ public class Editor {
                 element, null));
     }
 
-    public static void splitElement(Element element) {
+    public static void splitElement(Element element) throws NodeException {
         if (!element.getElementType().getTypeName().equals("cell")) {
             return;
         }
@@ -237,7 +238,8 @@ public class Editor {
             ThemeManager.saveTheme(themeDef.getSrc());
         }
         if (!ok) {
-            throw new ThemeIOException("None of the existing themes can be overwritten.");
+            throw new ThemeIOException(
+                    "None of the existing themes can be overwritten.");
         }
     }
 
@@ -297,18 +299,14 @@ public class Editor {
     }
 
     public static void pasteElement(Element element, String destId)
-            throws ThemeException {
+            throws ThemeException, NodeException {
         Element destElement = ThemeManager.getElementById(destId);
         if (destElement.isLeaf()) {
             destElement = (Element) destElement.getParent();
         }
         if (element != null) {
-            try {
-                destElement.addChild(Manager.getThemeManager().duplicateElement(
-                        element, true));
-            } catch (ThemeException e) {
-                throw new ThemeException(e);
-            }
+            destElement.addChild(Manager.getThemeManager().duplicateElement(
+                    element, true));
         }
         EventManager eventManager = Manager.getEventManager();
         eventManager.notify(Events.STYLES_MODIFIED_EVENT, new EventContext(
@@ -318,7 +316,7 @@ public class Editor {
     }
 
     public static void moveElement(Element srcElement, Element destElement,
-            int order) {
+            int order) throws NodeException {
         srcElement.moveTo(destElement, order);
         EventManager eventManager = Manager.getEventManager();
         eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(
@@ -351,7 +349,8 @@ public class Editor {
                 element, null));
     }
 
-    public static String addPage(String path) throws ThemeException {
+    public static String addPage(String path) throws ThemeException,
+            NodeException {
         ThemeManager themeManager = Manager.getThemeManager();
         if (!path.contains("/")) {
             throw new ThemeException("Incorrect theme path: " + path);
@@ -376,7 +375,8 @@ public class Editor {
         return path;
     }
 
-    public static String addTheme(String name) throws ThemeException {
+    public static String addTheme(String name) throws ThemeException,
+            NodeException {
         ThemeManager themeManager = Manager.getThemeManager();
         if (themeManager.getThemeByName(name) != null) {
             throw new ThemeException("The theme name is already taken: " + name);
@@ -475,7 +475,8 @@ public class Editor {
                 element, null));
     }
 
-    public static void deleteElement(Element element) throws ThemeException {
+    public static void deleteElement(Element element) throws ThemeException,
+            NodeException {
         Element parent = (Element) element.getParent();
         ThemeManager themeManager = Manager.getThemeManager();
         if (element instanceof ThemeElement || element instanceof PageElement) {
@@ -519,7 +520,8 @@ public class Editor {
                 null));
     }
 
-    public static int duplicateElement(Element element) throws ThemeException {
+    public static int duplicateElement(Element element) throws ThemeException,
+            NodeException {
         Element duplicate;
         try {
             duplicate = Manager.getThemeManager().duplicateElement(element,
@@ -712,7 +714,8 @@ public class Editor {
                 null, null));
     }
 
-    public static void insertFragment(Element destElement, String typeName) {
+    public static void insertFragment(Element destElement, String typeName)
+            throws NodeException {
         int order = 0;
         Element destContainer = destElement;
         if (destElement instanceof Fragment) {
@@ -739,7 +742,7 @@ public class Editor {
                 fragment, destContainer));
     }
 
-    public static void insertSectionAfter(Element element) {
+    public static void insertSectionAfter(Element element) throws NodeException {
         ThemeManager themeManager = Manager.getThemeManager();
         Element newSection = ElementFactory.create("section");
         Element newCell = ElementFactory.create("cell");

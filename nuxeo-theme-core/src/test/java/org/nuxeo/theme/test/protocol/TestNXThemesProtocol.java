@@ -25,6 +25,7 @@ import org.nuxeo.theme.elements.ElementFactory;
 import org.nuxeo.theme.elements.PageElement;
 import org.nuxeo.theme.elements.ThemeElement;
 import org.nuxeo.theme.engines.EngineType;
+import org.nuxeo.theme.nodes.NodeException;
 import org.nuxeo.theme.perspectives.PerspectiveType;
 import org.nuxeo.theme.services.ThemeService;
 import org.nuxeo.theme.templates.TemplateEngineType;
@@ -81,7 +82,8 @@ public class TestNXThemesProtocol extends NXRuntimeTestCase {
         assertSame(templateEngine, ThemeManager.getTemplateEngineByUrl(elementUrl));
     }
     
-    public void testGetThemePageByUrl() throws MalformedURLException {
+    public void testGetThemePageByUrl() throws MalformedURLException,
+            NodeException {
         ThemeElement theme = (ThemeElement) ElementFactory.create("theme");
         PageElement page = (PageElement) ElementFactory.create("page");
         theme.setName("theme1");

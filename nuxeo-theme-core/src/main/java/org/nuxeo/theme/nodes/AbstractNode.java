@@ -17,55 +17,79 @@ package org.nuxeo.theme.nodes;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 public abstract class AbstractNode implements Node {
 
-    private static final Log log = LogFactory.getLog(AbstractNode.class);
-    
-    private Node parent;
+    private Node parentNode;
 
-    private List<Node> children = new ArrayList<Node>();
+    private List<Node> childrenNodes = new ArrayList<Node>();
 
     public void clearParent() {
-        parent = null;
+        parentNode = null;
     }
 
-    public void setParent(Node parent) {
+    public void setParent(Node parent) throws NodeException {
         if (this.equals(parent)) {
-            log.warn(String.format("A node cannot be made a parent of itself: %s", this));
-            return;
+            throw new NodeException(String.format(
+                    "A node cannot be made a parent of itself: %s.", this));
         }
-        if (this.parent != null) {
-            List<Node> siblings = this.parent.getChildren();
+        if (parent != null && parent.isChildOf(this)) {
+            throw new NodeException(String.format(
+                    "Cycle detected while trying to make %s a parent of %s.",
+                    parent, this));
+        }
+        if (this.parentNode != null) {
+            List<Node> siblings = this.parentNode.getChildren();
             siblings.remove(this);
-            this.parent.setChildren(siblings);
+            this.parentNode.setChildren(siblings);
         }
-        this.parent = parent;
+        this.parentNode = parent;
     }
 
     public Node getParent() {
-        return parent;
+        return parentNode;
     }
 
-    public Node addChild(Node node) {
-        children.add(node);
+    public Node addChild(Node node) throws NodeException {
+        if (this.equals(node)) {
+            throw new NodeException(String.format(
+                    "A node cannot be made a child of itself: %s.", this));
+        }
+        if (this.isChildOf(node)) {
+            throw new NodeException(String.format(
+                    "Cycle detected while trying to add child %s to %s.", node,
+                    this));
+        }
+        childrenNodes.add(node);
         node.setParent(this);
         return node;
     }
 
-    public void removeChild(Node node) {
-        children.remove(node);
+    public void removeChild(Node node) throws NodeException {
+        if (!childrenNodes.contains(node)) {
+            throw new NodeException(String.format(
+                    "Trying to remove unexisting child %s of %s", node, this));
+        }
+        childrenNodes.remove(node);
         node.setParent(null);
     }
 
     public List<Node> getChildren() {
-        return children;
+        return childrenNodes;
     }
 
-    public void setChildren(List<Node> children) {
-        this.children = children;
+    public void setChildren(List<Node> children) throws NodeException {
+        for (Node child : children) {
+            if (this.equals(child)) {
+                throw new NodeException(String.format(
+                        "Node %s cannot be made a child of itself", child));
+            }
+            if (this.isChildOf(child)) {
+                throw new NodeException(String.format(
+                        "Cycle detected while trying to set children of %s.",
+                        this));
+            }
+        }
+        this.childrenNodes = children;
     }
 
     public abstract NodeTypeFamily getNodeTypeFamily();
@@ -76,38 +100,38 @@ public abstract class AbstractNode implements Node {
 
     public Integer getOrder() {
         Integer order = null;
-        if (parent != null) {
-            order = parent.getChildren().indexOf(this);
+        if (parentNode != null) {
+            order = parentNode.getChildren().indexOf(this);
         }
         return order;
     }
 
-    public void setOrder(Integer order) {
-        List<Node> siblings = parent.getChildren();
+    public void setOrder(Integer order) throws NodeException {
+        List<Node> siblings = parentNode.getChildren();
         siblings.add(order, this);
-        parent.setChildren(siblings);
+        parentNode.setChildren(siblings);
     }
 
-    public void moveTo(Node container, Integer order) {
+    public void moveTo(Node container, Integer order) throws NodeException {
         setParent(container);
         setOrder(order);
     }
 
-    public void insertAfter(Node node) {
+    public void insertAfter(Node node) throws NodeException {
         node.getParent().addChild(this);
         moveTo(node.getParent(), node.getOrder() + 1);
     }
 
     public boolean hasSiblings() {
-        if (parent == null) {
+        if (parentNode == null) {
             return false;
         }
-        return parent.getChildren().size() > 1;
+        return parentNode.getChildren().size() > 1;
     }
 
     public Node getNextNode() {
         int order = getOrder();
-        List<Node> siblings = parent.getChildren();
+        List<Node> siblings = parentNode.getChildren();
         if (order + 1 >= siblings.size()) {
             return null;
         }
@@ -119,17 +143,17 @@ public abstract class AbstractNode implements Node {
         if (order == 0) {
             return null;
         }
-        List<Node> siblings = parent.getChildren();
+        List<Node> siblings = parentNode.getChildren();
         return siblings.get(order - 1);
     }
 
     public boolean hasChildren() {
-        return !children.isEmpty();
+        return !childrenNodes.isEmpty();
     }
 
     public boolean isChildOf(Node node) {
         boolean res = false;
-        Node parent = this.parent;
+        Node parent = this.parentNode;
         while (parent != null) {
             if (parent == node) {
                 res = true;
@@ -140,12 +164,12 @@ public abstract class AbstractNode implements Node {
         return res;
     }
 
-    public void removeDescendants() {
-        for (Node child : children) {
+    public void removeDescendants() throws NodeException {
+        for (Node child : childrenNodes) {
             child.removeDescendants();
             child.clearParent();
         }
-        children.clear();
+        childrenNodes.clear();
     }
 
     public List<Node> getDescendants() {
@@ -155,7 +179,7 @@ public abstract class AbstractNode implements Node {
     }
 
     public void collectDescendants(List<Node> nodes) {
-        for (Node child : children) {
+        for (Node child : childrenNodes) {
             nodes.add(child);
             child.collectDescendants(nodes);
         }

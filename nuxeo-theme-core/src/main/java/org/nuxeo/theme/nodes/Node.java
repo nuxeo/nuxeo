@@ -22,27 +22,27 @@ public interface Node {
 
     void clearParent();
 
-    void setParent(Node node);
+    void setParent(Node node) throws NodeException;
 
     Node getParent();
 
-    Node addChild(Node node);
+    Node addChild(Node node) throws NodeException;
 
-    void removeChild(Node node);
+    void removeChild(Node node) throws NodeException;
 
     List<Node> getChildren();
 
-    void setChildren(List<Node> children);
+    void setChildren(List<Node> children) throws NodeException;
 
     Integer getOrder();
 
-    void setOrder(Integer order);
+    void setOrder(Integer order) throws NodeException;
 
-    void moveTo(Node container, Integer order);
+    void moveTo(Node container, Integer order) throws NodeException;
 
     boolean isLeaf();
 
-    void insertAfter(Node node);
+    void insertAfter(Node node) throws NodeException;
 
     boolean hasSiblings();
 
@@ -54,7 +54,7 @@ public interface Node {
 
     boolean isChildOf(Node node);
 
-    void removeDescendants();
+    void removeDescendants() throws NodeException;
 
     List<Node> getDescendants();
 

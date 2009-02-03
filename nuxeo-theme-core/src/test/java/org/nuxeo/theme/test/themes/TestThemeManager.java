@@ -33,6 +33,7 @@ import org.nuxeo.theme.formats.layouts.Layout;
 import org.nuxeo.theme.formats.styles.Style;
 import org.nuxeo.theme.formats.widgets.Widget;
 import org.nuxeo.theme.fragments.FragmentFactory;
+import org.nuxeo.theme.nodes.NodeException;
 import org.nuxeo.theme.perspectives.PerspectiveManager;
 import org.nuxeo.theme.perspectives.PerspectiveType;
 import org.nuxeo.theme.test.DummyFragment;
@@ -101,7 +102,7 @@ public class TestThemeManager extends NXRuntimeTestCase {
         assertTrue(themeManager.getThemeNames().contains("default"));
     }
 
-    public void testGetPageNames() {
+    public void testGetPageNames() throws NodeException {
         assertTrue(themeManager.getPageNames("default").isEmpty());
 
         ThemeElement theme = new ThemeElement();
@@ -136,7 +137,7 @@ public class TestThemeManager extends NXRuntimeTestCase {
                 ThemeManager.getUrlDescription(elementUrl));
     }
 
-    public void testGetThemeOf() {
+    public void testGetThemeOf() throws NodeException {
         Element theme = ElementFactory.create("theme");
         Element page = ElementFactory.create("page");
         Element section = ElementFactory.create("section");
@@ -149,7 +150,7 @@ public class TestThemeManager extends NXRuntimeTestCase {
         assertNull(ThemeManager.getThemeOf(cell));
     }
 
-    public void testBelongToSameThemef() {
+    public void testBelongToSameThemef() throws NodeException {
         Element theme1 = ElementFactory.create("theme");
         Element page11 = ElementFactory.create("page");
         Element page12 = ElementFactory.create("page");
@@ -459,7 +460,7 @@ public class TestThemeManager extends NXRuntimeTestCase {
         assertTrue(ThemeManager.listAncestorFormatsOf(ancestor3).isEmpty());
     }
 
-    public void testDestroyElement() throws ThemeException {
+    public void testDestroyElement() throws ThemeException, NodeException {
         Element theme = ElementFactory.create("theme");
         Element page = ElementFactory.create("page");
         Element section = ElementFactory.create("section");

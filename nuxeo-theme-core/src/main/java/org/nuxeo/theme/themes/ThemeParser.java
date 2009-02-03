@@ -48,6 +48,7 @@ import org.nuxeo.theme.formats.FormatFactory;
 import org.nuxeo.theme.formats.styles.Style;
 import org.nuxeo.theme.fragments.Fragment;
 import org.nuxeo.theme.fragments.FragmentFactory;
+import org.nuxeo.theme.nodes.NodeException;
 import org.nuxeo.theme.perspectives.PerspectiveType;
 import org.nuxeo.theme.presets.CustomPresetType;
 import org.nuxeo.theme.presets.PresetManager;
@@ -156,7 +157,12 @@ public class ThemeParser {
         // remove old theme
         ThemeElement oldTheme = themeManager.getThemeByName(themeName);
         if (oldTheme != null) {
-            themeManager.destroyElement(oldTheme);
+            try {
+                themeManager.destroyElement(oldTheme);
+            } catch (NodeException e) {
+                throw new ThemeIOException("Failed to destroy theme: "
+                        + themeName, e);
+            }
         }
 
         Node baseNode = getBaseNode(docElem);
@@ -258,7 +264,11 @@ public class ThemeParser {
                 elem.setDescription(description);
             }
 
-            parent.addChild(elem);
+            try {
+                parent.addChild(elem);
+            } catch (NodeException e) {
+                throw new ThemeIOException("Failed to parse layout.", e);
+            }
             parseLayout(elem, n);
         }
     }
@@ -282,7 +292,8 @@ public class ThemeParser {
     }
 
     private static void parseFormats(final ThemeElement theme,
-            org.w3c.dom.Element doc, Node node) throws ThemeIOException, ThemeException {
+            org.w3c.dom.Element doc, Node node) throws ThemeIOException,
+            ThemeException {
         Node baseNode = getBaseNode(doc);
         String themeName = theme.getName();
         ThemeManager themeManager = Manager.getThemeManager();

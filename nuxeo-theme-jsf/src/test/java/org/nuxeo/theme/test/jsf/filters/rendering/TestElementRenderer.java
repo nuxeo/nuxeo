@@ -33,6 +33,7 @@ import org.nuxeo.theme.elements.ThemeElement;
 import org.nuxeo.theme.formats.Format;
 import org.nuxeo.theme.fragments.Fragment;
 import org.nuxeo.theme.fragments.FragmentFactory;
+import org.nuxeo.theme.nodes.NodeException;
 import org.nuxeo.theme.rendering.RenderingInfo;
 import org.nuxeo.theme.themes.ThemeManager;
 
@@ -63,7 +64,7 @@ public class TestElementRenderer extends NXRuntimeTestCase {
         themeManager = null;
     }
 
-    public void testElement() throws MalformedURLException {
+    public void testElement() throws MalformedURLException, NodeException {
 
         URL themeUrl = new URL(
                 "nxtheme://theme/default/mode/jsf-facelets/theme/page");

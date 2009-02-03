@@ -17,6 +17,7 @@ package org.nuxeo.theme.test.elements;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.theme.elements.Element;
 import org.nuxeo.theme.elements.ElementFactory;
+import org.nuxeo.theme.nodes.NodeException;
 
 public class TestElements extends NXRuntimeTestCase {
 
@@ -51,7 +52,7 @@ public class TestElements extends NXRuntimeTestCase {
         assertFalse(cell.isLeaf());
     }
 
-    public void testXPath() {
+    public void testXPath() throws NodeException {
         Element theme = ElementFactory.create("theme");
         Element page = ElementFactory.create("page");
         Element section1 = ElementFactory.create("section");

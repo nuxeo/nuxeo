@@ -62,6 +62,7 @@ import org.nuxeo.theme.fragments.FragmentFactory;
 import org.nuxeo.theme.fragments.FragmentType;
 import org.nuxeo.theme.models.ModelType;
 import org.nuxeo.theme.nodes.Node;
+import org.nuxeo.theme.nodes.NodeException;
 import org.nuxeo.theme.perspectives.PerspectiveManager;
 import org.nuxeo.theme.perspectives.PerspectiveType;
 import org.nuxeo.theme.properties.FieldIO;
@@ -110,8 +111,7 @@ public final class ThemeManager implements Registrable {
     private static final int DEFAULT_THEME_INDENT = 2;
 
     static {
-        CUSTOM_THEME_DIR = new File(Framework.getRuntime().getHome(),
-                "themes");
+        CUSTOM_THEME_DIR = new File(Framework.getRuntime().getHome(), "themes");
         CUSTOM_THEME_DIR.mkdirs();
     }
 
@@ -497,7 +497,8 @@ public final class ThemeManager implements Registrable {
         return duplicate;
     }
 
-    public void destroyElement(final Element element) throws ThemeException {
+    public void destroyElement(final Element element) throws ThemeException,
+            NodeException {
         final Element parent = (Element) element.getParent();
 
         if (element instanceof ThemeElement) {
@@ -667,7 +668,8 @@ public final class ThemeManager implements Registrable {
         log.debug("Added theme: " + themeName);
     }
 
-    public void registerPage(final ThemeElement theme, final PageElement page) {
+    public void registerPage(final ThemeElement theme, final PageElement page)
+            throws NodeException {
         theme.addChild(page);
         String themeName = theme.getName();
         String pageName = page.getName();
@@ -847,7 +849,8 @@ public final class ThemeManager implements Registrable {
         uidManager.unregister(element);
     }
 
-    private static void destroyDescendants(Element element) {
+    private static void destroyDescendants(Element element)
+            throws NodeException {
         for (Node node : element.getDescendants()) {
             removeRelationsOf((Element) node);
         }
