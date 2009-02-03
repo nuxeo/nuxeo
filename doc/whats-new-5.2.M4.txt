@@ -15,7 +15,7 @@ To try it out, grab the packages:
 Or the installers:
 
 - <http://www.nuxeo.org/static/NuxeoEP/nuxeo-ep-5.2.0.m4-installer-1.jar> [Generic]
-- <http://www.nuxeo.org/static/NuxeoEP/nuxeo-ep-5.2.0.m4-setup-1.exe> [Windows 32 bits]
+- <http://www.nuxeo.org/static/NuxeoEP/nuxeo-ep-5.2.0.m4-setup.exe> [Windows 32 bits]
 - <http://www.nuxeo.org/static/NuxeoEP/nuxeo-ep-5.2.0.m4_64-setup.exe> [Windows 64 bits]
 
 Summary 
