@@ -271,7 +271,7 @@ public class Main extends ModuleRoot {
       String pagePath = ctx.getForm().getString("path")
 	  try {
 	      return Editor.addPage(pagePath)
-      } catch (ThemeException e) {
+      } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }      
   }
@@ -282,7 +282,7 @@ public class Main extends ModuleRoot {
       String name = ctx.getForm().getString("name")
 	  try {
 	      return Editor.addTheme(name)
-      } catch (ThemeException e) {
+      } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }
   }
@@ -296,7 +296,7 @@ public class Main extends ModuleRoot {
       Element element = ThemeManager.getElementById(id)
 	  try {
 	      Editor.alignElement(element, position)
-      } catch (ThemeException e) {
+      } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }       
       
@@ -312,7 +312,7 @@ public class Main extends ModuleRoot {
       Element element = ThemeManager.getElementById(id)
 	  try {
 	      Editor.assignStyleProperty(element, propertyName, value)
-      } catch (ThemeException e) {
+      } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }   
   }
@@ -332,7 +332,7 @@ public class Main extends ModuleRoot {
       String category = ctx.getForm().getString("category")
       try {
           Editor.setPresetCategory(themeName, presetName, category)
-      } catch (ThemeException e) {
+      } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }
   }
@@ -362,7 +362,7 @@ public class Main extends ModuleRoot {
      
       try {
           Editor.addPreset(themeName, newPresetName, preset.getCategory(), preset.getValue())
-      } catch (ThemeException e) {
+      } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }      
   }
@@ -377,7 +377,7 @@ public class Main extends ModuleRoot {
       Element element = ThemeManager.getElementById(id)
 	  try {
 	      Editor.createNamedStyle(element, styleName, themeName)
-      } catch (ThemeException e) {
+      } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }
   }
@@ -388,7 +388,7 @@ public class Main extends ModuleRoot {
       Element element = getSelectedElement()
 	  try {
 	      Editor.createStyle(element)
-      } catch (ThemeException e) {
+      } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }
   }
@@ -401,7 +401,7 @@ public class Main extends ModuleRoot {
       Element element = ThemeManager.getElementById(id)
 	  try {
 	      Editor.deleteElement(element)
-      } catch (ThemeException e) {
+      } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }            
   }
@@ -416,7 +416,7 @@ public class Main extends ModuleRoot {
       Element element = ThemeManager.getElementById(id)
 	  try {
 	      Editor.deleteNamedStyle(element, styleName, themeName)
-      } catch (ThemeException e) {
+      } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }           
   }
@@ -429,7 +429,7 @@ public class Main extends ModuleRoot {
       Element element = ThemeManager.getElementById(id)
 	  try {
 	      return Editor.duplicateElement(element)
-      } catch (ThemeException e) {
+      } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }
   }
@@ -439,7 +439,7 @@ public class Main extends ModuleRoot {
   public void expireThemes() {
 	  try {
 	      Editor.expireThemes()
-      } catch (ThemeException e) {
+      } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }
   }
@@ -453,7 +453,7 @@ public class Main extends ModuleRoot {
       Element destElement = ThemeManager.getElementById(destId)
 	  try {
 	      Editor.insertFragment(destElement, typeName)
-      } catch (ThemeException e) {
+      } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }       
   }
@@ -466,7 +466,7 @@ public class Main extends ModuleRoot {
       Element element = ThemeManager.getElementById(id)
 	  try {
 	      Editor.insertSectionAfter(element)
-      } catch (ThemeException e) {
+      } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       } 
   }
@@ -484,7 +484,7 @@ public class Main extends ModuleRoot {
       }
       try {
           return Editor.addPreset(themeName, presetName, category, value)
-      } catch (ThemeException e) {
+      } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }
   }
@@ -502,7 +502,7 @@ public class Main extends ModuleRoot {
       }
       try {
           Editor.convertCssValueToPreset(themeName, category, presetName, value)
-      } catch (ThemeException e) {
+      } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }
   }
@@ -516,7 +516,7 @@ public class Main extends ModuleRoot {
       String value = form.getString("value")
 	  try {
 	      Editor.editPreset(themeName, presetName, value)
-      } catch (ThemeException e) {
+      } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }
   }
@@ -530,7 +530,7 @@ public class Main extends ModuleRoot {
       String newName = form.getString("new_name")
 	  try {
 	      Editor.renamePreset(themeName, oldName, newName)
-      } catch (ThemeException e) {
+      } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }           
   }
@@ -543,7 +543,7 @@ public class Main extends ModuleRoot {
       String presetName = form.getString("preset_name")
      try {
 	      Editor.deletePreset(themeName, presetName)
-      } catch (ThemeException e) {
+      } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }           
   }
@@ -558,7 +558,7 @@ public class Main extends ModuleRoot {
       Element element = ThemeManager.getElementById(id)
 	  try {
 	      Editor.makeElementUseNamedStyle(element, styleName, themeName)
-      } catch (ThemeException e) {
+      } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }
   }
@@ -574,7 +574,7 @@ public class Main extends ModuleRoot {
       Element destElement = ThemeManager.getElementById(destId)
 	  try {
 	     Editor.moveElement(srcElement, destElement, order)
-      } catch (ThemeException e) {
+      } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }       
   }
@@ -591,7 +591,7 @@ public class Main extends ModuleRoot {
       Element element = ThemeManager.getElementById(id)
 	  try {
 	      return Editor.pasteElement(element, destId)
-      } catch (ThemeException e) {
+      } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }      
   }
@@ -603,7 +603,7 @@ public class Main extends ModuleRoot {
       String themeName = form.getString("name")
 	  try {
 	      Editor.repairTheme(themeName)
-      } catch (ThemeException e) {
+      } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }
   }
@@ -616,7 +616,7 @@ public class Main extends ModuleRoot {
       def indent = form.getString("indent") as Integer
       try {
           Editor.saveTheme(src, indent)
-      } catch (ThemeException e) {
+      } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }
   }
@@ -628,7 +628,7 @@ public class Main extends ModuleRoot {
       String src = form.getString("src")      
       try {
           Editor.loadTheme(src)
-      } catch (ThemeException e) {
+      } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }
   }
@@ -638,7 +638,7 @@ public class Main extends ModuleRoot {
   public void saveChanges() {
       try {
           Editor.saveChanges()
-      } catch (ThemeException e) {
+      } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }
   }
@@ -703,7 +703,7 @@ public class Main extends ModuleRoot {
       Element element = ThemeManager.getElementById(id)
 	  try {
 	      Editor.updateElementDescription(element, description)
-      } catch (ThemeException e) {
+      } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }
   }
@@ -718,7 +718,7 @@ public class Main extends ModuleRoot {
       Element element = ThemeManager.getElementById(id)
 	  try {
 	      Editor.updateElementProperties(element, propertyMap)
-      } catch (ThemeException e) {
+      } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }      
   }
@@ -732,7 +732,7 @@ public class Main extends ModuleRoot {
       Format layout = ThemeManager.getFormatById(id)
 	  try {
 	      Editor.updateElementWidth(layout, width)
-      } catch (ThemeException e) {
+      } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }
   }
@@ -748,7 +748,7 @@ public class Main extends ModuleRoot {
       Style selectedStyleLayer = getSelectedStyleLayer()
 	  try {
 	      Editor.updateElementStyleCss(element, selectedStyleLayer, viewName, cssSource) 
-	  } catch (ThemeException e) {
+	  } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }
   }
@@ -761,7 +761,7 @@ public class Main extends ModuleRoot {
       Element element = ThemeManager.getElementById(id)
 	  try {
 	      Editor.splitElement(element)
-	  } catch (ThemeException e) {
+	  } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }
    }
@@ -779,7 +779,7 @@ public class Main extends ModuleRoot {
       Style currentStyleLayer = getSelectedStyleLayer()
 	  try {
 	      Editor.updateElementStyle(element, currentStyleLayer, path, viewName, propertyMap)
-	  } catch (ThemeException e) {
+	  } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }
   }
@@ -794,7 +794,7 @@ public class Main extends ModuleRoot {
       Element element = ThemeManager.getElementById(id)
 	  try {
 	      Editor.updateElementVisibility(element, perspectives, alwaysVisible)
-	  } catch (ThemeException e) {
+	  } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }
   }
@@ -808,7 +808,7 @@ public class Main extends ModuleRoot {
       Element element = getSelectedElement()
 	  try {
 	      Editor.updateElementLayout(element, propertyMap)
-	  } catch (ThemeException e) {
+	  } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }          
   }
@@ -822,7 +822,7 @@ public class Main extends ModuleRoot {
       Element element = ThemeManager.getElementById(id)
 	  try {
 	      Editor.updateElementWidget(element, viewName)
-	  } catch (ThemeException e) {
+	  } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }          
   }
@@ -837,7 +837,7 @@ public class Main extends ModuleRoot {
       Style style = (Style) ThemeManager.getFormatById(styleUid)
 	  try {
 	      Editor.deleteStyleView(style, viewName)
-	  } catch (ThemeException e) {
+	  } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }          
   }
