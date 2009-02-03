@@ -585,7 +585,7 @@ NXThemesEditor.pasteElement = function(info) {
          },
          onFailure: function(r) {
              var text = r.responseText;
-             NXThemesEditor.writeMessage(text);
+             window.alert(text);
          }  
     });
 };
