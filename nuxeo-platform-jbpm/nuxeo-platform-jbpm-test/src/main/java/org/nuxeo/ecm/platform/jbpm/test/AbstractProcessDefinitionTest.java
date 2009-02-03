@@ -1,4 +1,4 @@
-package org.nuxeo.ecm.platform.jbpm.core.pd;
+package org.nuxeo.ecm.platform.jbpm.test;
 
 import java.io.InputStream;
 import java.security.Principal;

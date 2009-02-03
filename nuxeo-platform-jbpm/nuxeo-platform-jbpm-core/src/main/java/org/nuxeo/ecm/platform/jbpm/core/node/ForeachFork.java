@@ -23,6 +23,9 @@ import org.jbpm.graph.exe.ExecutionContext;
 import org.jbpm.graph.exe.Token;
 
 /**
+ * A jBPM node that implements foreach funtionnalities.
+ *
+ *
  * @author arussel
  *
  */
