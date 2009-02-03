@@ -13,12 +13,8 @@
     <factory name="inventory"
       class="org.nuxeo.ecm.platform.management.adapters.RuntimeInventoryFactory" />
 
-
     <factory name="repositorySessionMetric"
       class="org.nuxeo.ecm.platform.management.adapters.RepositorySessionMetricFactory" />
-
-    <factory name="managementUsecaseScheduler"
-      class="org.nuxeo.ecm.platform.management.usecases.UsecaseFactory"/>
 
     <factory name="auditMetric"
       class="org.nuxeo.ecm.platform.audit.service.management.AuditEventMetricFactory"/>
