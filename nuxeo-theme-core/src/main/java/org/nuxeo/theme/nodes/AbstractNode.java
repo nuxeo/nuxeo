@@ -17,8 +17,13 @@ package org.nuxeo.theme.nodes;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 public abstract class AbstractNode implements Node {
 
+    private static final Log log = LogFactory.getLog(AbstractNode.class);
+    
     private Node parent;
 
     private List<Node> children = new ArrayList<Node>();
@@ -28,6 +33,10 @@ public abstract class AbstractNode implements Node {
     }
 
     public void setParent(Node parent) {
+        if (this.equals(parent)) {
+            log.warn(String.format("A node cannot be made a parent of itself: %s", this));
+            return;
+        }
         if (this.parent != null) {
             List<Node> siblings = this.parent.getChildren();
             siblings.remove(this);
@@ -80,9 +89,6 @@ public abstract class AbstractNode implements Node {
     }
 
     public void moveTo(Node container, Integer order) {
-        if (container == this) {
-            return;
-        }
         setParent(container);
         setOrder(order);
     }

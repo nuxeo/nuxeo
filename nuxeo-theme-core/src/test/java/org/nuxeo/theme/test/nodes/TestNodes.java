@@ -74,6 +74,16 @@ public class TestNodes extends TestCase {
         assertSame(container2, node.getParent());
     }
 
+    public void testMoveEdgeCase() {
+        Node node = new DummyNode();
+        Node container = new DummyNode();
+        container.addChild(node);
+        assertSame(container, node.getParent());
+        node.moveTo(node, 0);
+        assertSame(container, node.getParent());
+        assertTrue(node.getChildren().isEmpty());
+    }
+
     public void testInsertAfter() {
         Node node0 = new DummyNode();
         Node node1 = new DummyNode();
