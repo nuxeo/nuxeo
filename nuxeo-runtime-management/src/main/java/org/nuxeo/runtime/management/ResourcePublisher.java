@@ -29,5 +29,6 @@ public interface ResourcePublisher {
     Set<String> getShortcutsName();
 
     Set<ObjectName> getResourcesName();
-
+    
+    ObjectName lookupName(String name);
 }
