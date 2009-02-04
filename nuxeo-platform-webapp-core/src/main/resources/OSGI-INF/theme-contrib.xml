@@ -32,6 +32,7 @@
     <theme>
       <src>themes/theme-galaxy.xml</src>
     </theme>
+    
 
   </extension>
 

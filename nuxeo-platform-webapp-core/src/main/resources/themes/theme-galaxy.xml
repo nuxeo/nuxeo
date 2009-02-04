@@ -1636,7 +1636,7 @@
         <color preset="link (Nuxeo psd colors)" />
         <text-decoration>underline</text-decoration>
       </selector>
-      <selector path="input.button" view="Nuxeo EP footer (Galaxy Theme)">
+      <selector path="input.langSelect" view="Nuxeo EP footer (Galaxy Theme)">
         <margin>9px 5px 0px 5px</margin>
       </selector>
     </style>
