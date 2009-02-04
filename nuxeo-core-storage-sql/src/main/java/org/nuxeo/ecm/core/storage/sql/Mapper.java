@@ -156,19 +156,24 @@ public class Mapper {
     }
 
     // for debug
-    protected void logCount(int count) {
-        if (count > 0 && log.isDebugEnabled()) {
-            logDebug("  -> " + count + " row" + (count > 1 ? "s" : ""));
+    private static boolean isLogEnabled() {
+        return log.isTraceEnabled();
+    }
+
+    // for debug
+    private void logCount(int count) {
+        if (count > 0 && isLogEnabled()) {
+            log("  -> " + count + " row" + (count > 1 ? "s" : ""));
         }
     }
 
     // for debug
-    protected void logDebug(String string) {
-        log.debug("(" + instanceNumber + ") SQL: " + string);
+    private void log(String string) {
+        log.trace("(" + instanceNumber + ") SQL: " + string);
     }
 
     // for debug
-    protected void logResultSet(ResultSet rs, List<Column> columns)
+    private void logResultSet(ResultSet rs, List<Column> columns)
             throws SQLException {
         List<String> res = new LinkedList<String>();
         int i = 0;
@@ -177,11 +182,11 @@ public class Mapper {
             Serializable v = column.getFromResultSet(rs, i);
             res.add(column.getKey() + "=" + loggedValue(v));
         }
-        logDebug("  -> " + StringUtils.join(res, ", "));
+        log("  -> " + StringUtils.join(res, ", "));
     }
 
     // for debug
-    protected void logSQL(String sql, List<Column> columns, SimpleFragment row) {
+    private void logSQL(String sql, List<Column> columns, SimpleFragment row) {
         List<Serializable> values = new ArrayList<Serializable>(columns.size());
         for (Column column : columns) {
             String key = column.getKey();
@@ -202,7 +207,7 @@ public class Mapper {
     }
 
     // for debug
-    protected void logSQL(String sql, List<Serializable> values) {
+    private void logSQL(String sql, List<Serializable> values) {
         StringBuilder buf = new StringBuilder();
         int start = 0;
         for (Serializable v : values) {
@@ -216,14 +221,14 @@ public class Mapper {
             start = index + 1;
         }
         buf.append(sql, start, sql.length());
-        logDebug(buf.toString());
+        log(buf.toString());
     }
 
     /**
      * Returns a loggable value using pseudo-SQL syntax.
      */
     @SuppressWarnings("boxing")
-    protected static String loggedValue(Serializable value) {
+    private static String loggedValue(Serializable value) {
         if (value == null) {
             return "NULL";
         }
@@ -306,10 +311,10 @@ public class Mapper {
                  * Create missing table.
                  */
                 String sql = table.getCreateSql();
-                logDebug(sql);
+                log(sql);
                 st.execute(sql);
                 for (String s : table.getPostCreateSqls()) {
-                    logDebug(s);
+                    log(s);
                     st.execute(s);
                 }
             }
@@ -339,7 +344,7 @@ public class Mapper {
                     log.warn("Adding missing column in database: "
                             + column.getFullQuotedName());
                     String sql = table.getAddColumnSql(column);
-                    logDebug(sql);
+                    log(sql);
                     st.execute(sql);
                 } else {
                     int sqlType = type.intValue();
@@ -409,7 +414,7 @@ public class Mapper {
             throws StorageException {
         String sql = sqlInfo.getSelectRootIdSql();
         try {
-            if (log.isDebugEnabled()) {
+            if (isLogEnabled()) {
                 logSQL(sql, Collections.singletonList(repositoryId));
             }
             PreparedStatement ps = connection.prepareStatement(sql);
@@ -417,15 +422,15 @@ public class Mapper {
                 ps.setObject(1, repositoryId);
                 ResultSet rs = ps.executeQuery();
                 if (!rs.next()) {
-                    if (log.isDebugEnabled()) {
-                        logDebug("  -> (none)");
+                    if (isLogEnabled()) {
+                        log("  -> (none)");
                     }
                     return null;
                 }
                 Column column = sqlInfo.getSelectRootIdWhatColumn();
                 Serializable id = column.getFromResultSet(rs, 1);
-                if (log.isDebugEnabled()) {
-                    logDebug("  -> " + model.MAIN_KEY + '=' + id);
+                if (isLogEnabled()) {
+                    log("  -> " + model.MAIN_KEY + '=' + id);
                 }
                 // check that we didn't get several rows
                 if (rs.next()) {
@@ -453,21 +458,21 @@ public class Mapper {
             if (s.doPre != null) {
                 doPre = s.doPre.booleanValue();
             } else {
-                logDebug(s.checkStatement);
+                log(s.checkStatement);
                 ResultSet rs = st.executeQuery(s.checkStatement);
                 if (rs.next()) {
                     // already present
-                    logDebug("  -> (present)");
+                    log("  -> (present)");
                     doPre = true;
                 } else {
                     doPre = false;
                 }
             }
             if (doPre) {
-                logDebug(s.preStatement);
+                log(s.preStatement);
                 st.execute(s.preStatement);
             }
-            logDebug(s.statement);
+            log(s.statement);
             st.execute(s.statement);
         }
         st.close();
@@ -487,7 +492,7 @@ public class Mapper {
             try {
                 List<Column> columns = sqlInfo.getInsertRootIdColumns();
                 List<Serializable> debugValues = null;
-                if (log.isDebugEnabled()) {
+                if (isLogEnabled()) {
                     debugValues = new ArrayList<Serializable>(2);
                 }
                 int i = 0;
@@ -539,7 +544,7 @@ public class Mapper {
             String sql = sqlInfo.getInsertSql(tableName);
             List<Column> columns = sqlInfo.getInsertColumns(tableName);
             try {
-                if (log.isDebugEnabled()) {
+                if (isLogEnabled()) {
                     logSQL(sql, columns, row);
                 }
                 ps = connection.prepareStatement(sql);
@@ -586,8 +591,8 @@ public class Mapper {
                         rs.next();
                         Serializable iv = icolumn.getFromResultSet(rs, 1);
                         row.setId(iv);
-                        if (log.isDebugEnabled()) {
-                            logDebug("  -> " + icolumn.getKey() + '=' + iv);
+                        if (isLogEnabled()) {
+                            log("  -> " + icolumn.getKey() + '=' + iv);
                         }
                     } catch (SQLException e) {
                         throw new StorageException("Could not fetch: " + isql,
@@ -624,7 +629,7 @@ public class Mapper {
             try {
                 Serializable id = fragment.getId();
                 List<Serializable> debugValues = null;
-                if (log.isDebugEnabled()) {
+                if (isLogEnabled()) {
                     debugValues = new ArrayList<Serializable>(3);
                 }
                 ps = connection.prepareStatement(sql);
@@ -767,7 +772,7 @@ public class Mapper {
              * Compute where part.
              */
             List<Serializable> debugValues = null;
-            if (log.isDebugEnabled()) {
+            if (isLogEnabled()) {
                 debugValues = new LinkedList<Serializable>();
             }
             int i = 1;
@@ -813,7 +818,7 @@ public class Mapper {
                         map.put(column.getKey(), SimpleFragment.OPAQUE);
                     }
                 }
-                if (log.isDebugEnabled()) {
+                if (isLogEnabled()) {
                     logResultSet(rs, select.whatColumns);
                 }
                 list.add(map);
@@ -875,7 +880,7 @@ public class Mapper {
         try {
             // XXX statement should be already prepared
             List<Serializable> debugValues = null;
-            if (log.isDebugEnabled()) {
+            if (isLogEnabled()) {
                 debugValues = new ArrayList<Serializable>(2);
             }
             PreparedStatement ps = connection.prepareStatement(sql);
@@ -931,7 +936,7 @@ public class Mapper {
                         Boolean.valueOf(complexProp));
                 SimpleFragment row = new SimpleFragment(id, State.PRISTINE,
                         context, map);
-                if (log.isDebugEnabled()) {
+                if (isLogEnabled()) {
                     logResultSet(rs, columns);
                 }
                 // check that we didn't get several rows
@@ -993,7 +998,7 @@ public class Mapper {
         String sql = sqlInfo.selectFragmentById.get(tableName).sql;
         try {
             // XXX statement should be already prepared
-            if (log.isDebugEnabled()) {
+            if (isLogEnabled()) {
                 logSQL(sql, Collections.singletonList(id));
             }
             PreparedStatement ps = connection.prepareStatement(sql);
@@ -1005,8 +1010,8 @@ public class Mapper {
                 // construct the resulting collection using each row
                 Serializable[] array = model.newCollectionArray(id, rs,
                         columns, context);
-                if (log.isDebugEnabled()) {
-                    logDebug("  -> " + Arrays.asList(array));
+                if (isLogEnabled()) {
+                    log("  -> " + Arrays.asList(array));
                 }
                 return array;
             } finally {
@@ -1033,7 +1038,7 @@ public class Mapper {
         try {
             PreparedStatement ps = connection.prepareStatement(update.sql);
             try {
-                if (log.isDebugEnabled()) {
+                if (isLogEnabled()) {
                     logSQL(update.sql, update.whatColumns, row);
                 }
                 int i = 0;
@@ -1070,7 +1075,7 @@ public class Mapper {
         try {
             PreparedStatement ps = connection.prepareStatement(sql);
             try {
-                if (log.isDebugEnabled()) {
+                if (isLogEnabled()) {
                     List<Serializable> values = new LinkedList<Serializable>();
                     values.addAll(map.values());
                     values.add(id);
@@ -1128,7 +1133,7 @@ public class Mapper {
     protected boolean deleteFragment(String tableName, Serializable id)
             throws SQLException {
         String sql = sqlInfo.getDeleteSql(tableName);
-        if (log.isDebugEnabled()) {
+        if (isLogEnabled()) {
             logSQL(sql, Collections.singletonList(id));
         }
         PreparedStatement ps = connection.prepareStatement(sql);
@@ -1286,7 +1291,7 @@ public class Mapper {
             }
 
             List<Serializable> debugValues = null;
-            if (log.isDebugEnabled()) {
+            if (isLogEnabled()) {
                 debugValues = new ArrayList<Serializable>(4);
             }
             List<Column> columns = sqlInfo.getCopyHierColumns(explicitName,
@@ -1336,8 +1341,8 @@ public class Mapper {
                 ResultSet rs = ps.executeQuery();
                 rs.next();
                 newId = icolumn.getFromResultSet(rs, 1);
-                if (log.isDebugEnabled()) {
-                    logDebug("  -> " + icolumn.getKey() + '=' + newId);
+                if (isLogEnabled()) {
+                    log("  -> " + icolumn.getKey() + '=' + newId);
                 }
             }
 
@@ -1355,14 +1360,14 @@ public class Mapper {
             boolean onlyComplex) throws SQLException {
         List<Serializable[]> childrenIds = new LinkedList<Serializable[]>();
         String sql = sqlInfo.getSelectChildrenIdsAndTypesSql(onlyComplex);
-        if (log.isDebugEnabled()) {
+        if (isLogEnabled()) {
             logSQL(sql, Collections.singletonList(id));
         }
         List<Column> columns = sqlInfo.getSelectChildrenIdsAndTypesWhatColumns();
         PreparedStatement ps = connection.prepareStatement(sql);
         try {
             List<String> debugValues = null;
-            if (log.isDebugEnabled()) {
+            if (isLogEnabled()) {
                 debugValues = new LinkedList<String>();
             }
             ps.setObject(1, id); // parent id
@@ -1386,7 +1391,7 @@ public class Mapper {
                 }
             }
             if (debugValues != null) {
-                logDebug("  -> " + debugValues);
+                log("  -> " + debugValues);
             }
             return childrenIds;
         } finally {
@@ -1419,7 +1424,7 @@ public class Mapper {
                 boolean overwrite = newId.equals(overwriteId);
                 if (overwrite) {
                     // remove existing first
-                    if (log.isDebugEnabled()) {
+                    if (isLogEnabled()) {
                         logSQL(deleteSql, Collections.singletonList(newId));
                     }
                     deletePs.setObject(1, newId);
@@ -1429,7 +1434,7 @@ public class Mapper {
                 }
                 copyIdColumn.setToPreparedStatement(copyPs, 1, newId);
                 copyIdColumn.setToPreparedStatement(copyPs, 2, id);
-                if (log.isDebugEnabled()) {
+                if (isLogEnabled()) {
                     logSQL(copySql, Arrays.asList(newId, id));
                 }
                 int copyCount = copyPs.executeUpdate();
@@ -1555,12 +1560,12 @@ public class Mapper {
         queryMaker.makeQuery();
 
         if (queryMaker.selectInfo == null) {
-            logDebug("Query cannot return anything due to conflicting clauses");
+            log("Query cannot return anything due to conflicting clauses");
             return new PartialList<Serializable>(
                     Collections.<Serializable> emptyList(), 0);
         }
 
-        if (log.isDebugEnabled()) {
+        if (isLogEnabled()) {
             logSQL(queryMaker.selectInfo.sql, queryMaker.selectParams);
         }
         PreparedStatement ps = connection.prepareStatement(
@@ -1610,7 +1615,7 @@ public class Mapper {
                 available = rs.next();
                 limit--;
             }
-            if (log.isDebugEnabled()) {
+            if (isLogEnabled()) {
                 List<Serializable> debugIds = ids;
                 String end = "";
                 if (ids.size() > DEBUG_MAX_ARRAY) {
@@ -1625,7 +1630,7 @@ public class Mapper {
                     }
                     end = "...";
                 }
-                logDebug("  -> " + debugIds + end);
+                log("  -> " + debugIds + end);
             }
 
             // total size
