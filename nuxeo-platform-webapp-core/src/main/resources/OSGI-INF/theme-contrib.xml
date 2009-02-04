@@ -28,7 +28,7 @@
     <theme>
       <src>themes/theme-default5-2.xml</src>
     </theme>
-    
+
 
 
 
@@ -64,7 +64,7 @@
       <format-type>widget</format-type>
       <template>incl/logo_5-2.xhtml</template>
     </view>
-    
+
     <view name="Nuxeo EP logo (Galaxy Theme)" template-engine="jsf-facelets">
       <format-type>widget</format-type>
       <template>incl/logo_EP_galaxy.xhtml</template>
@@ -106,7 +106,7 @@
       <!-- TODO: remove later -->
       <resource>screen.css</resource>
     </view>
-    
+
     <view name="User services (Galaxy theme)" template-engine="jsf-facelets">
       <format-type>widget</format-type>
       <template>incl/user_services_galaxy.xhtml</template>
@@ -125,7 +125,8 @@
     </view>
 
 
-    <view name="nuxeo5 directory tree explorer" template-engine="jsf-facelets">
+    <view name="nuxeo5 directory tree explorer"
+      template-engine="jsf-facelets">
       <!-- Fragment (not enabled in the default theme)
         that displays trees of [x]vocabularies to perform queries
         based on a hierarchical meta data. See the DirectoryTreeService
@@ -151,8 +152,9 @@
       <format-type>widget</format-type>
       <template>incl/footer.xhtml</template>
     </view>
-    
-    <view name="Nuxeo EP footer (Galaxy Theme)" template-engine="jsf-facelets">
+
+    <view name="Nuxeo EP footer (Galaxy Theme)"
+      template-engine="jsf-facelets">
       <format-type>widget</format-type>
       <template>incl/footer_galaxy.xhtml</template>
     </view>
@@ -205,7 +207,8 @@
       <resource>foldable-box.js</resource>
     </view>
 
-    <view name="nuxeo5 last published documents" template-engine="jsf-facelets">
+    <view name="nuxeo5 last published documents"
+      template-engine="jsf-facelets">
       <!-- Fragment to be displayed as part of the dashboard to display the
         list of documents that have been published recently -->
       <format-type>widget</format-type>
@@ -251,13 +254,27 @@
     </resource>
 
 
-      <resource name="window.js"><path>scripts/window.js</path></resource>
-      <resource name="window_effects.js"><path>scripts/window_effects.js</path></resource>
-      <resource name="waitdlg.js"><path>waitdialog/waitdlg.js</path></resource>
-      <resource name="utils.js"><path>scripts/utils.js</path></resource>
-      <resource name="tableSelections.js"><path>scripts/tableSelections.js</path></resource>
-      <resource name="contextmenu.js"><path>scripts/contextmenu.js</path></resource>
-      <resource name="DragAndDrop.js"><path>scripts/DragAndDrop.js</path></resource>
+    <resource name="window.js">
+      <path>scripts/window.js</path>
+    </resource>
+    <resource name="window_effects.js">
+      <path>scripts/window_effects.js</path>
+    </resource>
+    <resource name="waitdlg.js">
+      <path>waitdialog/waitdlg.js</path>
+    </resource>
+    <resource name="utils.js">
+      <path>scripts/utils.js</path>
+    </resource>
+    <resource name="tableSelections.js">
+      <path>scripts/tableSelections.js</path>
+    </resource>
+    <resource name="contextmenu.js">
+      <path>scripts/contextmenu.js</path>
+    </resource>
+    <resource name="DragAndDrop.js">
+      <path>scripts/DragAndDrop.js</path>
+    </resource>
   </extension>
 
 
@@ -363,24 +380,28 @@
       src="themes/palettes/nxbackgrounds.properties" category="background" />
     <palette name="Nuxeo default borders"
       src="themes/palettes/nxborders.properties" category="border" />
-    <palette name="Courrier default fonts" src="themes/palettes/courrier_fonts.properties"
-      category="font" />
+    <palette name="Courrier default fonts"
+      src="themes/palettes/courrier_fonts.properties" category="font" />
     <palette name="Courrier default backgrounds"
-      src="themes/palettes/courrier_backgrounds.properties" category="background" />
+      src="themes/palettes/courrier_backgrounds.properties"
+      category="background" />
     <palette name="Courrier default borders"
       src="themes/palettes/courrier_borders.properties" category="border" />
-      <palette name="Nuxeo5-2 default fonts" src="themes/palettes/nx5-2_fonts.properties"
-      category="font" />
+    <palette name="Nuxeo5-2 default fonts"
+      src="themes/palettes/nx5-2_fonts.properties" category="font" />
     <palette name="Nuxeo5-2 default backgrounds"
       src="themes/palettes/nx5-2_backgrounds.properties" category="background" />
     <palette name="Nuxeo5-2 default borders"
       src="themes/palettes/nx5-2_borders.properties" category="border" />
 
-    <palette name="Galaxy borders" src="themes/palettes/galaxy-borders.properties" category="border" />
-    <palette name="Galaxy backgrounds" src="themes/palettes/galaxy-backgrounds.properties" category="background" />
-    <palette name="Galaxy fonts" src="themes/palettes/galaxy-fonts.properties" category="font" />
+    <palette name="Galaxy borders"
+      src="themes/palettes/galaxy-borders.properties" category="border" />
+    <palette name="Galaxy backgrounds"
+      src="themes/palettes/galaxy-backgrounds.properties" category="background" />
+    <palette name="Galaxy fonts" src="themes/palettes/galaxy-fonts.properties"
+      category="font" />
 
-    
+
 
   </extension>
 
