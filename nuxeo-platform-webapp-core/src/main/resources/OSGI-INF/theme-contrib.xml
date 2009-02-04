@@ -29,9 +29,7 @@
       <src>themes/theme-default5-2.xml</src>
     </theme>
     
-    <theme>
-      <src>themes/theme-galaxy.xml</src>
-    </theme>
+
 
 
 
@@ -152,6 +150,11 @@
     <view name="nuxeo5 footer" template-engine="jsf-facelets">
       <format-type>widget</format-type>
       <template>incl/footer.xhtml</template>
+    </view>
+    
+    <view name="Nuxeo EP footer (Galaxy Theme)" template-engine="jsf-facelets">
+      <format-type>widget</format-type>
+      <template>incl/footer_galaxy.xhtml</template>
     </view>
 
     <view name="nuxeo5 user tasks" template-engine="jsf-facelets">
