@@ -17,7 +17,7 @@
   <!-- to move to login page -->
   <h:form>
    <h:outputText value="#{messages['label.selectLocale']}" />
-    <h:selectOneMenu value="#{localeSelector.localeString}" styleClass="button langSelect">
+    <h:selectOneMenu value="#{localeSelector.localeString}" styleClass="langSelect">
       <f:selectItems value="#{localeSelector.supportedLocales}"/>
     </h:selectOneMenu>
     <h:commandButton action="#{localeSelector.select}"
