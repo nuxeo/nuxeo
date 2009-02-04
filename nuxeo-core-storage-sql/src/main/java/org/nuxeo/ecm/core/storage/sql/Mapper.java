@@ -279,8 +279,8 @@ public class Mapper {
 
         for (Table table : sqlInfo.getDatabase().getTables()) {
             String tableName = table.getName();
-            if (!tableNames.contains(tableName) &&
-                    !tableNames.contains(tableName.toUpperCase())) {
+            if (!tableNames.contains(tableName)
+                    && !tableNames.contains(tableName.toUpperCase())) {
                 /*
                  * Create missing table.
                  */
@@ -315,8 +315,8 @@ public class Mapper {
             for (Column column : table.getColumns()) {
                 Integer type = columnTypes.remove(column.getPhysicalName().toUpperCase());
                 if (type == null) {
-                    log.warn("Adding missing column in database: " +
-                            column.getFullQuotedName());
+                    log.warn("Adding missing column in database: "
+                            + column.getFullQuotedName());
                     String sql = table.getAddColumnSql(column);
                     logDebug(sql);
                     st.execute(sql);
@@ -353,10 +353,10 @@ public class Mapper {
                 }
             }
             if (!columnTypes.isEmpty()) {
-                log.warn("Database contains additional unused columns for table " +
-                        table.getQuotedName() +
-                        ": " +
-                        StringUtils.join(new ArrayList<String>(
+                log.warn("Database contains additional unused columns for table "
+                        + table.getQuotedName()
+                        + ": "
+                        + StringUtils.join(new ArrayList<String>(
                                 columnTypes.keySet()), ", "));
             }
         }
@@ -408,8 +408,8 @@ public class Mapper {
                 }
                 // check that we didn't get several rows
                 if (rs.next()) {
-                    throw new StorageException("Row query for " + repositoryId +
-                            " returned several rows: " + sql);
+                    throw new StorageException("Row query for " + repositoryId
+                            + " returned several rows: " + sql);
                 }
                 return id;
             } finally {
@@ -559,8 +559,8 @@ public class Mapper {
                         try {
                             rs = ps.executeQuery();
                         } catch (SQLException e) {
-                            throw new StorageException("Could not select: " +
-                                    isql, e);
+                            throw new StorageException("Could not select: "
+                                    + isql, e);
                         }
                         rs.next();
                         Serializable iv = icolumn.getFromResultSet(rs, 1);
@@ -697,9 +697,9 @@ public class Mapper {
                     // row has been deleted in the persistent context,
                     // ignore it
                     continue;
-                } else if (state == State.ABSENT ||
-                        state == State.INVALIDATED_MODIFIED ||
-                        state == State.INVALIDATED_DELETED) {
+                } else if (state == State.ABSENT
+                        || state == State.INVALIDATED_MODIFIED
+                        || state == State.INVALIDATED_DELETED) {
                     // XXX TODO
                     throw new IllegalStateException(state.toString());
                 }
@@ -722,9 +722,9 @@ public class Mapper {
         if (select.whatColumns.isEmpty()) {
             // happens when we fetch a fragment whose columns are all opaque
             // check it's a by-id query
-            if (select.whereColumns.size() == 1 &&
-                    select.whereColumns.get(0).getKey() == model.MAIN_KEY &&
-                    joinMap == null) {
+            if (select.whereColumns.size() == 1
+                    && select.whereColumns.get(0).getKey() == model.MAIN_KEY
+                    && joinMap == null) {
                 Map<String, Serializable> map = new HashMap<String, Serializable>(
                         criteriaMap);
                 if (select.opaqueColumns != null) {
@@ -873,8 +873,8 @@ public class Mapper {
                         throw new AssertionError("Invalid hier column: " + key);
                     }
                     if (v == null) {
-                        throw new IllegalStateException("Null value for key: " +
-                                key);
+                        throw new IllegalStateException("Null value for key: "
+                                + key);
                     }
                     column.setToPreparedStatement(ps, i, v);
                     if (debugValues != null) {
@@ -915,9 +915,9 @@ public class Mapper {
                 }
                 // check that we didn't get several rows
                 if (rs.next()) {
-                    throw new StorageException("Row query for " + parentId +
-                            " child " + childName + " returned several rows: " +
-                            sql);
+                    throw new StorageException("Row query for " + parentId
+                            + " child " + childName
+                            + " returned several rows: " + sql);
                 }
                 return row;
             } finally {
@@ -1095,8 +1095,8 @@ public class Mapper {
         try {
             deleteFragment(fragment.getTableName(), fragment.getId());
         } catch (SQLException e) {
-            throw new StorageException("Could not delete: " +
-                    fragment.getId().toString(), e);
+            throw new StorageException("Could not delete: "
+                    + fragment.getId().toString(), e);
         }
     }
 
@@ -1178,8 +1178,8 @@ public class Mapper {
                     continue;
                 }
                 Set<Serializable> ids = entry.getValue();
-                boolean overwrite = overwriteId != null &&
-                        !tableName.equals(model.mainTableName);
+                boolean overwrite = overwriteId != null
+                        && !tableName.equals(model.mainTableName);
                 Boolean invalidation = copyFragments(tableName, ids, idMap,
                         overwrite ? overwriteId : null);
                 if (invalidation != null) {
@@ -1284,8 +1284,8 @@ public class Mapper {
                 } else if (key.equals(model.MAIN_KEY)) {
                     // present if APP_UUID generation
                     v = newId;
-                } else if (createVersion &&
-                        (key.equals(model.MAIN_BASE_VERSION_KEY) || key.equals(model.MAIN_CHECKED_IN_KEY))) {
+                } else if (createVersion
+                        && (key.equals(model.MAIN_BASE_VERSION_KEY) || key.equals(model.MAIN_CHECKED_IN_KEY))) {
                     v = null;
                 } else {
                     throw new AssertionError(column);
