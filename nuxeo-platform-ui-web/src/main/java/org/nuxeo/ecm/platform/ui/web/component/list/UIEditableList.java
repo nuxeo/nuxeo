@@ -868,14 +868,14 @@ public class UIEditableList extends UIInput implements NamingContainer {
                     }
                 }
             }
-            setSubmittedValue(model.getWrappedData());
         }
 
-        Object submitted = getSubmittedValue();
+        Object submitted = model.getWrappedData();
         if (submitted == null) {
             // set submitted to empty list to force validation
-            setSubmittedValue(Collections.emptyList());
+            submitted = Collections.emptyList();
         }
+        setSubmittedValue(submitted);
 
         // execute validate now that value is submitted
         executeValidate(context);
