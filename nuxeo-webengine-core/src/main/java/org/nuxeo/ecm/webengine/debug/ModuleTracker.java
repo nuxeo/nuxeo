@@ -29,15 +29,15 @@ import org.nuxeo.ecm.webengine.model.impl.ModuleImpl;
  */
 public abstract class ModuleTracker implements Runnable {
 
-    private final static Log log = LogFactory.getLog(ModuleTracker.class);
-    
+    private static final Log log = LogFactory.getLog(ModuleTracker.class);
+
     protected ModuleImpl module;
-    
+
     protected FileEntry moduleXml;
     protected FileEntry webTypes;
     protected FileEntry i18n;
     protected DirectoryEntry skin;
-    
+
     public ModuleTracker(ModuleImpl module) {
         this.module = module;
         moduleXml = new FileEntry(module.getModuleConfiguration().file);
@@ -55,16 +55,16 @@ public abstract class ModuleTracker implements Runnable {
             log.error("Failed to check module changes for "+module.getName(), e);
         }
     }
-    
+
     protected void doRun() throws Exception {
         if (moduleXml.check()) { // module.xml changed - reload module
             module.getEngine().getModuleManager().reloadModule(module.getName());
-            return; 
+            return;
         }
         if (i18n.check()) { // i18n files changed - reload them
             module.reloadMessages();
         }
-        if (webTypes.check()) { // type registration changed - reload types 
+        if (webTypes.check()) { // type registration changed - reload types
             module.flushTypeCache();
         }
         if (skin.check()) { // skin changed - flush skin cache

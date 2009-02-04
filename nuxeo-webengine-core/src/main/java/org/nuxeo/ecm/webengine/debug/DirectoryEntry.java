@@ -21,21 +21,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A file entry that will check all sub directories in the tree 
+ * A file entry that will check all sub directories in the tree
  * rooted in that directory. This will not check the regular files
- * in that tree. For this we may want to use {@link TreeEntry} 
- *  
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * in that tree. For this we may want to use {@link TreeEntry}.
  *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class DirectoryEntry extends FileEntry {
 
     protected List<FileEntry> entries;
-    
+
     public DirectoryEntry(File file) {
-        super (file);
+        super(file);
     }
-        
+
     public List<FileEntry> getChildren() {
         if (entries == null) {
             entries = new ArrayList<FileEntry>();
@@ -45,32 +44,31 @@ public class DirectoryEntry extends FileEntry {
     }
 
     protected void collectChildren() {
-    	if (!file.isDirectory()) { // may happens for missing directories in a project structure
-    		return;
-    	}
+        if (!file.isDirectory()) { // may happens for missing directories in a project structure
+            return;
+        }
         for (File f : file.listFiles()) {
             if (f.isDirectory()) {
                 entries.add(new DirectoryEntry(f));
             }
-        }  
+        }
     }
-    
-    
+
     /**
-     * Scan tree for changes and invalidate it if needed
-     * @return
+     * Scan tree for changes and invalidate it if needed.
      */
-   public boolean check() {
-       if (super.check()) { // changed
-           entries = null;
-           return true;
-       }
-       for (FileEntry entry : getChildren()) {
-           if (entry.check()) {
-               return true;
-           }
-       }
-       return false;
-   }
+    @Override
+    public boolean check() {
+        if (super.check()) { // changed
+            entries = null;
+            return true;
+        }
+        for (FileEntry entry : getChildren()) {
+            if (entry.check()) {
+                return true;
+            }
+        }
+        return false;
+    }
 
 }

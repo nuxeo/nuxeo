@@ -22,20 +22,19 @@ import org.nuxeo.ecm.webengine.model.impl.ModuleImpl;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class IDEModuleTracker extends ModuleTracker {
 
     protected FileEntry classes;
-    
+
     public IDEModuleTracker(ModuleImpl module) {
-        super (module);
+        super(module);
         classes = new FileEntry(new File(module.getRoot(), "META-INF/classes.reload"));
     }
-    
-    
+
+    @Override
     protected void doRun() throws Exception {
-        super.doRun();        
+        super.doRun();
         if (classes.check()) { // classes changed - reload class loader
             // reload class loaders
             module.getEngine().getWebLoader().flushCache();

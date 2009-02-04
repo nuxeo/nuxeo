@@ -40,7 +40,7 @@ public class WebEngineFormAuthenticator implements NuxeoAuthenticationPlugin, Lo
 
     protected static String passwordKey = "password";
 
-    public final static String LOGIN_KEY = "/@@login";
+    public static final String LOGIN_KEY = "/@@login";
 
 
     public Boolean handleLoginPrompt(HttpServletRequest request,
@@ -50,9 +50,6 @@ public class WebEngineFormAuthenticator implements NuxeoAuthenticationPlugin, Lo
 
     /**
      * Gets the path info to be used to redirect after login.
-     *
-     * @param request
-     * @return
      */
     protected String getLoginPathInfo(HttpServletRequest request) {
         String path = request.getPathInfo();
@@ -63,15 +60,15 @@ public class WebEngineFormAuthenticator implements NuxeoAuthenticationPlugin, Lo
         }
         return null;
     }
-    
-    public static final boolean isLoginRequest(HttpServletRequest request) {
+
+    public static boolean isLoginRequest(HttpServletRequest request) {
         String path = request.getPathInfo();
         if (path != null) {
             if (path.endsWith(LOGIN_KEY)) {
                 return true;
             }
         }
-        return false;        
+        return false;
     }
 
     public UserIdentificationInfo handleRetrieveIdentity(
@@ -121,7 +118,6 @@ public class WebEngineFormAuthenticator implements NuxeoAuthenticationPlugin, Lo
         }
         return true;
     }
-
 
     public boolean onSuccess(HttpServletRequest request,
             HttpServletResponse response) {

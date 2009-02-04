@@ -24,7 +24,7 @@ import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 
-@WebObject(type = "site", guard = "user=Administrator", facets = { "Site" })
+@WebObject(type = "site", guard = "user=Administrator", facets = {"Site"})
 @Produces("text/html; charset=UTF-8")
 public class Site extends DefaultObject {
 
@@ -34,6 +34,7 @@ public class Site extends DefaultObject {
 
     DocumentModel ws;
 
+    @Override
     public void initialize(Object... args) {
         assert args != null && args.length == 1;
         url = (String) args[0];
@@ -125,7 +126,6 @@ public class Site extends DefaultObject {
         // TODO return a default image
         return null;
     }
-
 
     protected Map<String, Object> getSiteArgs(DocumentModel doc) {
         Map<String, Object> root = new HashMap<String, Object>();

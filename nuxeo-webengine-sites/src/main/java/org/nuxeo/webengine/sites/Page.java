@@ -25,12 +25,12 @@ import org.nuxeo.ecm.webengine.model.WebObject;
 
 /**
  * @author stan
- * 
  */
 @WebObject(type = "WebPage", superType = "Document")
 @Produces("text/html; charset=UTF-8")
 public class Page extends DocumentObject {
 
+    @Override
     @GET
     public Object doGet() {
         ctx.getRequest().setAttribute("org.nuxeo.theme.theme", "sites/page");

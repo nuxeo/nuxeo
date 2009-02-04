@@ -25,15 +25,15 @@ import org.nuxeo.ecm.webengine.model.impl.ModuleImpl;
 public class DefaultModuleTracker extends ModuleTracker {
 
     protected ModuleClassesEntry classes;
-    
+
     public DefaultModuleTracker(ModuleImpl module) {
         super (module);
         classes = new ModuleClassesEntry(module.getRoot());
     }
-    
-    
+
+    @Override
     protected void doRun() throws Exception {
-        super.doRun();        
+        super.doRun();
         if (classes.check()) { // classes changed - reload class loader
             // reload class loaders
             module.getEngine().getWebLoader().flushCache();

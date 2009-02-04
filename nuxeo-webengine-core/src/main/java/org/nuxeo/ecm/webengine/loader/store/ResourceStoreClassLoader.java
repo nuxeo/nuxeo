@@ -28,7 +28,6 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class ResourceStoreClassLoader extends ClassLoader {
 
@@ -36,7 +35,7 @@ public class ResourceStoreClassLoader extends ClassLoader {
 
     private final ResourceStore[] stores;
 
-    public ResourceStoreClassLoader( final ClassLoader pParent, final ResourceStore[] stores ) {
+    public ResourceStoreClassLoader(final ClassLoader pParent, final ResourceStore[] stores) {
         super(pParent);
         this.stores = stores;
     }
@@ -90,7 +89,7 @@ public class ResourceStoreClassLoader extends ClassLoader {
         return null;
     }
 
-
+    @Override
     public synchronized Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
         // log.debug(getId() + " looking for: " + name);
         Class<?> clazz = findLoadedClass(name);
@@ -122,15 +121,14 @@ public class ResourceStoreClassLoader extends ClassLoader {
         return clazz;
     }
 
-    protected Class<?> findClass( final String name ) throws ClassNotFoundException {
+    @Override
+    protected Class<?> findClass(final String name) throws ClassNotFoundException {
         final Class<?> clazz = fastFindClass(name);
         if (clazz == null) {
             throw new ClassNotFoundException(name);
         }
         return clazz;
     }
-
-
 
     @Override
     public Enumeration<URL> getResources(String name) throws IOException {
@@ -142,7 +140,7 @@ public class ResourceStoreClassLoader extends ClassLoader {
             }
         }
         return urls;
-        }
+    }
 
     @Override
     public URL getResource(String name) {
@@ -156,16 +154,14 @@ public class ResourceStoreClassLoader extends ClassLoader {
         return url;
     }
 
-
     protected String getId() {
         return "" + this + "[" + this.getClass().getClassLoader() + "]";
     }
 
-
     /**
      * org.my.Class -> org/my/Class.class
      */
-    public static String convertClassToResourcePath( final String pName ) {
+    public static String convertClassToResourcePath(final String pName) {
         return pName.replace('.', '/') + ".class";
     }
 

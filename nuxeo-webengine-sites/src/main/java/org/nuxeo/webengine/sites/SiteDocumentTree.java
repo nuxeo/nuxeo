@@ -25,6 +25,7 @@ public class SiteDocumentTree extends DocumentTree {
         return new SiteContentProvider(ctx.getCoreSession());
     }
 
+    @Override
     protected String enter(WebContext ctx, String path, JSonTreeSerializer serializer) {
         TreeItem item = tree.findAndReveal(path);
         if (item != null) {
