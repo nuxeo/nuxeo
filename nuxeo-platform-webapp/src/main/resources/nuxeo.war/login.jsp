@@ -15,20 +15,10 @@
 <!--
       body {
   font: normal 10px Verdana, sans-serif;
-  background: url(/nuxeo/img/theme_galaxy/galaxy_login.png) 0 0 repeat-x #ffffff;
+  background: url(/nuxeo/img/theme5_2/login5_2/login_black_background.jpg) 0 0 repeat-x #393939;
   color: white;
-  height:36px;
-}
 
-.topBar {
-  background:#323436 url(/nuxeo/img/theme_galaxy/small_gray_bar.png) repeat-x scroll left top;
-  width:100%;
-  
 }
-
-.topBar img {
-  margin-left:50px;
-  }
 
 table.loginForm {
   border-spacing:3px;
@@ -228,15 +218,6 @@ font-weight:bold;
 
 <body style="margin:0;text-align:center;">
 
-  <table cellspacing="0" cellpadding="0" border="0" class="topBar">
-    <tbody>
-      <tr>
-        <td>
-          <img width="107" height="36" alt="Nuxeo EP" src="/nuxeo/img/theme_galaxy/nuxeo_5.2_logo.png"/>
-        </td>
-      </tr>
-    </tbody>
-  </table>
 
 <form method="post" action="nxstartup.faces"><!-- To prevent caching -->
 <%
@@ -244,77 +225,41 @@ font-weight:bold;
     response.setHeader("Pragma", "no-cache"); // HTTP 1.0
     response.setDateHeader("Expires", -1); // Prevents caching at the proxy server
 %> <!-- ;jsessionid=<%=request.getSession().getId()%> --> <!-- ImageReady Slices (login_cutted.psd) -->
+<table align="center" width="650" height="500" border="0"
+        cellpadding="0" cellspacing="0">
+        <tr>
+                <td colspan="6"><img src="/nuxeo/img/theme5_2/login5_2/login_01.jpg"
+                        width="650" height="127" alt=""></td>
+        </tr>
+        <tr>
+                <td rowspan="5"><img src="/nuxeo/img/theme5_2/login5_2/login_02.jpg"
+                        width="41" height="372" alt=""></td>
+                <td rowspan="3" background="/nuxeo/img/theme5_2/login5_2/login_03.jpg"
+                        width="138" height="314" valign="middle">
+                <table cellspacing="0" cellpadding="0" border="0" align="center"
+                        width="138">
+                        <tr>
+                                <td align="left" valign="top">
 
-
-
-                 
-  <table align="center" class="">
-    <tr>
-      <td>
-      <h2 class="formTitle"><fmt:message bundle="${messages}" key="label.login.welcomeToNuxeoEnterprise" /></h2>
-              <label class="login_label" for="username">
-                  <fmt:message bundle="${messages}" key="label.login.username" />
-                </label><input class="login_input" type="text"
-                    name="user_name" id="username" size="22"></td>
-            
-            <label class="login_label" for="password">
-                  <fmt:message bundle="${messages}" key="label.login.password" />
-                </label>
-                
-                <input class="login_input" type="password"
-                    name="user_password" id="password" size="22">
-                    
-                                    <% // label.login.logIn %>
-                <input type="hidden" name="form_submitted_marker"
-                    id="form_submitted_marker">
-                    <input class="login_button" type="submit" name="Submit"
-                    value="<fmt:message bundle="${messages}" key="label.login.logIn" />">
-            </tr>
-
-        
-          <c:if test="${param.loginFailed}">
-            <div class="errorMessage">
-                  <fmt:message bundle="${messages}" key="label.login.invalidUsernameOrPassword" />
-            </div>
-          </c:if>
-          <c:if test="${param.loginMissing}">
-            <div class="errorMessage">
-                  <fmt:message bundle="${messages}" key="label.login.missingUsername" />
-            </div>
-          </c:if>
-      </td>
-    </tr>
-    </tr>
-      <td>
-      
-           <div class="extensionsBar">
-             <fmt:message bundle="${messages}" key="label.login.improveYourExperience" />
+                <div class="extensionsBar">
+                <h2>
+                  <fmt:message bundle="${messages}" key="label.login.improveYourExperience" />
+                </h2>
                 <ul>
-                    <li><a href="http://download.nuxeo.org/desktop-integration/drag-drop/msie/">
+                    <li class="ie"><a href="http://download.nuxeo.org/desktop-integration/drag-drop/msie/">
                       <fmt:message bundle="${messages}" key="label.login.IEExtension" />
                     </a></li>
-                    <li><a href="https://download.nuxeo.com/browser/firefox/nuxeo-dragdrop-ff-extension.xpi">
+                    <li class="ff"><a href="https://download.nuxeo.com/browser/firefox/nuxeo-dragdrop-ff-extension.xpi">
                       <fmt:message bundle="${messages}" key="label.login.firefoxExtension" />
                     </a></li>
-                    <li><a href="http://doc.nuxeo.org/xwiki/bin/view/Main/Downloads#HLiveEdit">
+                    <li class="office"><a href="http://doc.nuxeo.org/xwiki/bin/view/Main/Downloads#HLiveEdit">
                       <fmt:message bundle="${messages}" key="label.login.liveEdit" />
                     </a></li>
                 </ul>
                 </div>
 
 
-                
-      
-      </td>
-    </tr>
-  </table>              
-      
-        
-        <p class="loginLegal">
-            <fmt:message bundle="${messages}" key="label.login.copyright" />
-        </p>
-       
-       <div class="buttonsBar">
+                <div class="buttonsBar">
                 <h2>
                   <fmt:message bundle="${messages}" key="label.login.goFurther" />
                 </h2>
@@ -330,9 +275,105 @@ font-weight:bold;
                     </a></li>
                 </ul>
                 </div>
+                </td>
+            </tr>
+        </table>
 
-       
-       </form>
+        </td>
+        <td colspan="4"><img src="/nuxeo/img/theme5_2/login5_2/login_04.jpg"
+            width="471" height="48" alt=""></td>
+    </tr>
+    <tr>
+        <td rowspan="2"><img src="/nuxeo/img/theme5_2/login5_2/login_05.jpg"
+            width="87" height="266" alt=""></td>
+        <td background="/nuxeo/img/theme5_2/login5_2/login_06.jpg" width="303"
+            height="174">
+
+        <table cellpadding="0" border="0" align="center" class="loginForm">
+            <tr>
+                <td colspan="2" align="center">
+                <h2 class="formTitle"><fmt:message bundle="${messages}" key="label.login.welcomeToNuxeoEnterprise" /></h2>
+                </td>
+            </tr>
+            <tr>
+                <td align="right"><label class="login_label" for="username">
+                  <fmt:message bundle="${messages}" key="label.login.username" />
+                </label></td>
+                <td><input class="login_input" type="text"
+                    name="user_name" id="username" size="22"></td>
+            </tr>
+            <tr>
+                <td align="right"><label class="login_label" for="password">
+                  <fmt:message bundle="${messages}" key="label.login.password" />
+                </label></td>
+                <td><input class="login_input" type="password"
+                    name="user_password" id="password" size="22"></td>
+            </tr>
+
+            <tr>
+                <td>&nbsp;</td>
+                <% // label.login.logIn %>
+                <td><input type="hidden" name="form_submitted_marker"
+                    id="form_submitted_marker">
+                    <input class="login_button" type="submit" name="Submit"
+                    value="<fmt:message bundle="${messages}" key="label.login.logIn" />"></td>
+            </tr>
+
+        </table>
+
+        </td>
+        <td colspan="2" rowspan="2"><img
+            src="/nuxeo/img/theme5_2/login5_2/login_07.jpg" width="81" height="266" alt=""></td>
+    </tr>
+    <tr>
+        <td background="/nuxeo/img/theme5_2/login5_2/login_08.jpg" width="303"
+            height="92">
+          <c:if test="${param.loginFailed}">
+            <div class="errorMessage">
+                  <fmt:message bundle="${messages}" key="label.login.invalidUsernameOrPassword" />
+            </div>
+          </c:if>
+          <c:if test="${param.loginMissing}">
+            <div class="errorMessage">
+                  <fmt:message bundle="${messages}" key="label.login.missingUsername" />
+            </div>
+          </c:if>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="4" background="/nuxeo/img/theme5_2/login5_2/login_09.jpg"
+            width="558" height="43" align="center">
+        <p class="loginLegal">
+            <fmt:message bundle="${messages}" key="label.login.copyright" />
+        </p>
+        </td>
+        <td rowspan="2"><img src="/nuxeo/img/theme5_2/login5_2/login_10.jpg"
+            width="51" height="58" alt=""></td>
+    </tr>
+    <tr>
+        <td colspan="4"><img src="/nuxeo/img/theme5_2/login5_2/login_11.jpg"
+            width="558" height="15" alt=""></td>
+    </tr>
+    <tr>
+        <td colspan="6"><img src="/nuxeo/img/theme5_2/login5_2/login_reflect.jpg"
+            alt=""></td>
+    </tr>
+    <tr>
+        <td><img src="/nuxeo/img/theme5_2/login5_2/spacer.gif" width="41"
+            height="1" alt=""></td>
+        <td><img src="/nuxeo/img/theme5_2/login5_2/spacer.gif" width="138"
+            height="1" alt=""></td>
+        <td><img src="/nuxeo/img/theme5_2/login5_2/spacer.gif" width="87"
+            height="1" alt=""></td>
+        <td><img src="/nuxeo/img/theme5_2/login5_2/spacer.gif" width="303"
+            height="1" alt=""></td>
+        <td><img src="/nuxeo/img/theme5_2/login5_2/spacer.gif" width="30"
+            height="1" alt=""></td>
+        <td><img src="/nuxeo/img/theme5_2/login5_2/spacer.gif" width="51"
+            height="1" alt=""></td>
+    </tr>
+</table>
+<!-- End ImageReady Slices --></form>
 
 <!--   Current User = <%=request.getRemoteUser()%> -->
 </body>
