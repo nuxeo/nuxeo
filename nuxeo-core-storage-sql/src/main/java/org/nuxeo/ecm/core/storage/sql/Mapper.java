@@ -99,6 +99,10 @@ public class Mapper {
     // for debug
     private final long instanceNumber = instanceCounter.incrementAndGet();
 
+    private static final int DEBUG_MAX_ARRAY = 10;
+
+    private static final int DEBUG_MAX_STRING = 100;
+
     /**
      * Creates a new Mapper.
      *
@@ -199,11 +203,20 @@ public class Mapper {
 
     // for debug
     protected void logSQL(String sql, List<Serializable> values) {
+        StringBuilder buf = new StringBuilder();
+        int start = 0;
         for (Serializable v : values) {
-            String value = loggedValue(v);
-            sql = sql.replaceFirst("\\?", value);
+            int index = sql.indexOf('?', start);
+            if (index == -1) {
+                // mismatch between number of ? and number of values
+                break;
+            }
+            buf.append(sql, start, index);
+            buf.append(loggedValue(v));
+            start = index + 1;
         }
-        logDebug(sql);
+        buf.append(sql, start, sql.length());
+        logDebug(buf.toString());
     }
 
     /**
@@ -215,7 +228,11 @@ public class Mapper {
             return "NULL";
         }
         if (value instanceof String) {
-            return "'" + ((String) value).replace("'", "''") + "'";
+            String v = (String) value;
+            if (v.length() > DEBUG_MAX_STRING) {
+                v = v.substring(0, DEBUG_MAX_STRING) + "...";
+            }
+            return "'" + v.replace("'", "''") + "'";
         }
         if (value instanceof Calendar) {
             Calendar cal = (Calendar) value;
@@ -247,6 +264,10 @@ public class Mapper {
             for (int i = 0; i < v.length; i++) {
                 if (i > 0) {
                     b.append(',');
+                    if (i > DEBUG_MAX_ARRAY) {
+                        b.append("...");
+                        break;
+                    }
                 }
                 b.append(loggedValue(v[i]));
             }
@@ -1590,16 +1611,15 @@ public class Mapper {
                 limit--;
             }
             if (log.isDebugEnabled()) {
-                int MAX = 10;
                 List<Serializable> debugIds = ids;
                 String end = "";
-                if (ids.size() > MAX) {
-                    debugIds = new ArrayList<Serializable>(MAX);
+                if (ids.size() > DEBUG_MAX_ARRAY) {
+                    debugIds = new ArrayList<Serializable>(DEBUG_MAX_ARRAY);
                     i = 0;
                     for (Serializable id : ids) {
                         debugIds.add(id);
                         i++;
-                        if (i == MAX) {
+                        if (i == DEBUG_MAX_ARRAY) {
                             break;
                         }
                     }
