@@ -30,7 +30,7 @@
     </theme>
     
     <theme>
-      <src>file:///Users/tsoulcie/nxcheckouts/nuxeo/nuxeo-platform/nuxeo-platform-webapp-core/src/main/resources/themes/theme-galaxy.xml</src>
+      <src>themes/theme-galaxy.xml</src>
     </theme>
 
 
