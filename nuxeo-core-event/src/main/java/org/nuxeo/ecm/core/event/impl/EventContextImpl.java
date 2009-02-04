@@ -46,12 +46,14 @@ public class EventContextImpl extends AbstractEventContext {
         super(args);
         this.session = session;
         this.principal = principal;
+        updateRepositoryName();
     }
 
     public EventContextImpl(CoreSession session, Principal principal) {
         this.session = session;
         this.principal = principal;
         args = EMPTY;
+        updateRepositoryName();
     }
 
     public void setArgs(Object[] args) {
@@ -68,6 +70,14 @@ public class EventContextImpl extends AbstractEventContext {
 
     public void setCoreSession(CoreSession session) {
         this.session = session;
+        updateRepositoryName();
+
+    }
+
+    protected void updateRepositoryName() {
+        if (session!=null) {
+            repositoryName=session.getRepositoryName();
+        }
     }
 
     public void setPrincipal(Principal principal) {

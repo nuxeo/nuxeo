@@ -154,4 +154,10 @@ public interface EventContext extends Serializable {
      */
     Event newEvent(String name, Set<Flag> flags);
 
+
+    /**
+     * returns the repository name associated to CoreSession if any
+     * @return
+     */
+    String getRepositoryName();
 }

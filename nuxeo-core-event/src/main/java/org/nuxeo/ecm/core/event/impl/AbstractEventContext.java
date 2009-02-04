@@ -41,6 +41,8 @@ public abstract class AbstractEventContext implements EventContext {
     protected Object[] args;
     protected Map<String, Serializable> properties;
 
+    protected String repositoryName = null;
+
     /**
      * Constructor to be used by derived classes
      */
@@ -95,4 +97,7 @@ public abstract class AbstractEventContext implements EventContext {
         return new EventImpl(name, this, flags);
     }
 
+    public String getRepositoryName() {
+        return repositoryName;
+    }
 }

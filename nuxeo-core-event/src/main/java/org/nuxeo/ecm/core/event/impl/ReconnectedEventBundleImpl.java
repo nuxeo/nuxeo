@@ -119,7 +119,7 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
                 CoreSession session = null;
 
                 if (ctx.getCoreSession() != null) {
-                    session = getReconnectedCoreSession(ctx.getCoreSession().getRepositoryName());
+                    session = getReconnectedCoreSession(ctx.getRepositoryName());
                 }
 
                 List<Object> newArgs = new ArrayList<Object>();
