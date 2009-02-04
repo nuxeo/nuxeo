@@ -29,9 +29,9 @@
       <src>themes/theme-default5-2.xml</src>
     </theme>
 
-
-
-
+    <theme>
+      <src>themes/theme-galaxy.xml</src>
+    </theme>
 
   </extension>
 
