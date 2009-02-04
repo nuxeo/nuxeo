@@ -32,10 +32,10 @@ import java.util.List;
 import java.util.Map;
 
 import javax.faces.application.FacesMessage;
-import javax.faces.component.EditableValueHolder;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIInput;
 import javax.faces.context.FacesContext;
+import javax.faces.validator.ValidatorException;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -240,10 +240,9 @@ public class UserManagerActionsBean implements UserManagerActions {
             FacesMessage message = new FacesMessage(
                     FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(
                             context, "label.userManager.wrong.username"), null);
-            ((EditableValueHolder) component).setValid(false);
-            context.addMessage(component.getClientId(context), message);
             // also add global message
             context.addMessage(null, message);
+            throw new ValidatorException(message);
         }
     }
 
@@ -277,9 +276,9 @@ public class UserManagerActionsBean implements UserManagerActions {
                     FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(
                             context, "label.userManager.password.not.match"),
                     null);
-            secondPasswordComp.setValid(false);
-            context.addMessage(secondPasswordComp.getClientId(context), message);
+            throw new ValidatorException(message);
         }
+
     }
 
     public String editUser() throws ClientException {
