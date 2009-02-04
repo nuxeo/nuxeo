@@ -19,9 +19,7 @@
 
 package org.nuxeo.ecm.webengine.ui.tree.document;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.ui.tree.ContentProvider;
 import org.nuxeo.ecm.webengine.ui.tree.JSonTree;
@@ -34,9 +32,7 @@ import org.nuxeo.ecm.webengine.ui.tree.TreeModelImpl;
  */
 public class DocumentTree extends JSonTree {
 
-    private static final long serialVersionUID = 1L;
-
-    DocumentModel rootDoc = null;
+    DocumentModel rootDoc;
 
     public DocumentTree(WebContext ctx, DocumentModel rootDoc) {
         tree = new TreeModelImpl();

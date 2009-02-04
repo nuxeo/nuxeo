@@ -19,7 +19,6 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.rest.DocumentObject;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
-import org.nuxeo.ecm.webengine.model.Template;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
@@ -105,7 +104,7 @@ public class Site extends DefaultObject {
     @Path("logo")
     public Response getLogo() {
         try {
-            Blob blob = (Blob) SiteHelper.getBlob(ws, "webc:logo");
+            Blob blob = SiteHelper.getBlob(ws, "webc:logo");
             return Response.ok().entity(blob).type(blob.getMimeType()).build();
         } catch (Exception e) {
             e.printStackTrace();
@@ -118,7 +117,7 @@ public class Site extends DefaultObject {
     @Path("welcomeMedia")
     public Response getWelcomeMedia() {
         try {
-            Blob blob = (Blob) SiteHelper.getBlob(ws, "webc:welcomeMedia");
+            Blob blob = SiteHelper.getBlob(ws, "webc:welcomeMedia");
             return Response.ok().entity(blob).type(blob.getMimeType()).build();
         } catch (Exception e) {
             e.printStackTrace();
