@@ -29,7 +29,6 @@ import javax.faces.webapp.UIComponentTag;
  * Tag for directory entry component.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public class DirectoryEntryOutputTag extends UIComponentTag {
 
@@ -49,7 +48,6 @@ public class DirectoryEntryOutputTag extends UIComponentTag {
      * @see javax.faces.webapp.UIComponentTag#setProperties(javax.faces.component.UIComponent)
      */
     @Override
-    @SuppressWarnings("unchecked")
     protected void setProperties(UIComponent component) {
         super.setProperties(component);
         component.getAttributes().put("displayIdAndLabel", displayIdAndLabel);

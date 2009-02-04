@@ -1,9 +1,11 @@
 <?xml version="1.0"?>
 <fragment>
-    <extension target="application#MODULE">
-	<module>
-    	<java>${bundle.fileName}</java>
-	</module>
-	</extension>
+
+  <extension target="application#MODULE">
+    <module>
+      <java>${bundle.fileName}</java>
+    </module>
+  </extension>
+
 </fragment>
 

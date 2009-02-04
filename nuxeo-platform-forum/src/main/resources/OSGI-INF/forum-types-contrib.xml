@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <component name="org.nuxeo.ecm.platform.forum.types">
 
   <require>org.nuxeo.ecm.platform.types.TypeService</require>
   <require>org.nuxeo.ecm.platform.types</require>
 
   <extension target="org.nuxeo.ecm.platform.types.TypeService" point="types">
-
     <type id="Workspace" coretype="Workspace">
       <subtypes>
         <type>Forum</type>
@@ -22,9 +20,9 @@
       </subtypes>
       <layout>
         <widget jsfcomponent="h:inputText" schemaname="dublincore"
-          fieldname="title" required="true"/>
+            fieldname="title" required="true"/>
         <widget jsfcomponent="h:inputTextarea" schemaname="dublincore"
-          fieldname="description"/>
+            fieldname="description"/>
       </layout>
     </type>
 
@@ -35,17 +33,16 @@
       <create-view>thread_create</create-view>
       <layout>
         <widget jsfcomponent="h:inputText" schemaname="dublincore"
-          fieldname="title" required="true"/>
+            fieldname="title" required="true"/>
         <widget jsfcomponent="h:inputTextarea" schemaname="dublincore"
-          fieldname="description"/>
+            fieldname="description"/>
       </layout>
     </type>
 
     <type id="Post" coretype="Post">
-      <icon>/icons/forum_post.gif </icon>
+      <icon>/icons/forum_post.gif</icon>
       <label>label.document.post</label>
     </type>
-
   </extension>
 
 </component>

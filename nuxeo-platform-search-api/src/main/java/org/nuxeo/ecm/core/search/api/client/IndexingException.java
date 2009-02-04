@@ -32,7 +32,6 @@ public class IndexingException extends Exception {
     private static final long serialVersionUID = -961763618434457798L;
 
     public IndexingException() {
-
     }
 
     public IndexingException(String message) {

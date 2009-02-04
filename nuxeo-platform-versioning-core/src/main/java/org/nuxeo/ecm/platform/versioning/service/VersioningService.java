@@ -27,7 +27,6 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jetbrains.annotations.NotNull;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -45,8 +44,6 @@ import org.nuxeo.ecm.platform.versioning.api.VersionIncEditOptions;
 import org.nuxeo.ecm.platform.versioning.api.VersioningActions;
 import org.nuxeo.ecm.platform.versioning.api.VersioningException;
 import org.nuxeo.ecm.platform.versioning.api.VersioningManager;
-import org.nuxeo.ecm.platform.versioning.wfintf.WFState;
-import org.nuxeo.ecm.platform.versioning.wfintf.WFVersioningPolicyProvider;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -54,7 +51,7 @@ import org.nuxeo.runtime.model.Property;
 
 /**
  * Versions management component implementation.
- * 
+ *
  * @author : <a href="dm@nuxeo.com">Dragos Mihalache</a>
  */
 public class VersioningService extends DefaultComponent implements
@@ -71,8 +68,6 @@ public class VersioningService extends DefaultComponent implements
     private String minorVersionProperty;
 
     private String majorVersionProperty;
-
-    private final Map<String, WFBasedRuleDescriptor> wfRuleDescriptors = new LinkedHashMap<String, WFBasedRuleDescriptor>();
 
     private final Map<String, EditBasedRuleDescriptor> editRuleDescriptors = new LinkedHashMap<String, EditBasedRuleDescriptor>();
 
@@ -115,7 +110,6 @@ public class VersioningService extends DefaultComponent implements
         log.debug("<deactivate>");
         super.deactivate(context);
 
-        wfRuleDescriptors.clear();
         editRuleDescriptors.clear();
         autoRuleDescriptors.clear();
         propertiesDescriptors.clear();
@@ -125,17 +119,7 @@ public class VersioningService extends DefaultComponent implements
     public void registerContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor) {
         if (VERSIONING_EXTENSION_POINT_RULES.equals(extensionPoint)) {
-            if (contribution instanceof WFBasedRuleDescriptor) {
-                WFBasedRuleDescriptor descriptor = (WFBasedRuleDescriptor) contribution;
-                String name = descriptor.getName();
-                if (wfRuleDescriptors.containsKey(name)) {
-                    log.debug("deleting contribution " + name);
-                    wfRuleDescriptors.remove(name);
-                }
-                wfRuleDescriptors.put(name, descriptor);
-                log.debug("added a "
-                        + WFBasedRuleDescriptor.class.getSimpleName());
-            } else if (contribution instanceof EditBasedRuleDescriptor) {
+            if (contribution instanceof EditBasedRuleDescriptor) {
                 EditBasedRuleDescriptor descriptor = (EditBasedRuleDescriptor) contribution;
                 String name = descriptor.getName();
                 if (editRuleDescriptors.containsKey(name)) {
@@ -189,9 +173,8 @@ public class VersioningService extends DefaultComponent implements
         // TODO
     }
 
-    public VersionIncEditOptions getVersionIncEditOptions(
-            @NotNull DocumentModel docModel) throws VersioningException,
-            ClientException, DocumentException {
+    public VersionIncEditOptions getVersionIncEditOptions(DocumentModel docModel)
+            throws VersioningException, ClientException, DocumentException {
         if (null == docModel.getSessionId()) {
             throw new IllegalArgumentException(
                     "document model is not bound to a core session (null sessionId)");
@@ -216,14 +199,6 @@ public class VersioningService extends DefaultComponent implements
             return vincOpt;
         }
 
-        final boolean wfInProgress = WFState.hasWFProcessInProgress(docModel);
-
-        // FIXME hardcoded state
-        if (wfInProgress) {
-            log.debug("workflow in progress");
-            lifecycleState = "review";
-        }
-
         if (lifecycleState == null) {
             final VersionIncEditOptions vincOpt = new VersionIncEditOptions();
             vincOpt.addInfo("document doesn't have a lifecycle state, cannot determine v inc options");
@@ -233,48 +208,16 @@ public class VersioningService extends DefaultComponent implements
         VersionIncEditOptions versIncOpts = getVersionIncOptions(
                 lifecycleState, type.getName(), docModel);
 
-        // if the rule says to query workflow do so
-        if (versIncOpts.getVersioningAction() == VersioningActions.ACTION_QUERY_WORKFLOW) {
-            versIncOpts.addInfo("check versioning policy in document workflow");
-
-            final VersioningActions wfvaction = WFVersioningPolicyProvider.getVersioningPolicyFor(docModel);
-            versIncOpts.addInfo("wfvaction = " + wfvaction);
-
-            if (wfvaction != null) {
-                if (wfvaction == VersioningActions.ACTION_CASE_DEPENDENT) {
-                    if (versIncOpts.getOptions() == null
-                            || versIncOpts.getOptions().isEmpty()) {
-                        versIncOpts.addOption(VersioningActions.ACTION_NO_INCREMENT);
-                        versIncOpts.addOption(VersioningActions.ACTION_INCREMENT_MINOR);
-                        versIncOpts.addOption(VersioningActions.ACTION_INCREMENT_MAJOR);
-                    }
-                } else {
-                    versIncOpts.clearOptions();
-                    // because LE needs options we add the option received from
-                    // WF also the rule is that if wf specified an inc option
-                    // that one is to be added
-                    versIncOpts.addOption(wfvaction);
-                    // set default so it will appear selected
-                    versIncOpts.setDefaultVersioningAction(wfvaction);
-                }
-                versIncOpts.setVersioningAction(wfvaction);
-            } else {
-                log.error("wf action is null");
-                versIncOpts.addInfo("wf action is null");
-                versIncOpts.setVersioningAction(null);
-            }
-        }
-
         return versIncOpts;
     }
 
     /**
      * Edit: an increment option is asked to a user who edits a document in
      * various lifecycle states.
-     * 
+     *
      * @param lifecycleState
      * @return
-     * 
+     *
      * @deprecated parameters are insufficient for a full evaluation. Will be
      *             removed. Use getVersionIncEditOptions(...)
      */
@@ -294,7 +237,7 @@ public class VersioningService extends DefaultComponent implements
 
     /**
      * Needed to keep API compatibility (will be deprecated)
-     * 
+     *
      * @param lifecycleState
      * @param docType - redundant when docModel is not null
      * @param docModel
@@ -368,7 +311,7 @@ public class VersioningService extends DefaultComponent implements
                     if (evaluator != null) {
                         if (docModel != null) {
                             if (!evaluator.evaluate(docModel)) {
-                                log.info("option not added (evaluated to false) "
+                                log.debug("option not added (evaluated to false) "
                                         + opt);
                                 continue;
                             }
@@ -409,33 +352,7 @@ public class VersioningService extends DefaultComponent implements
             throws ClientException {
         final String logPrefix = "<incrementVersions> ";
 
-        if (req.getSource() == VersionChangeRequest.RequestSource.WORKFLOW) {
-            boolean ruleFound = false;
-            for (WFBasedRuleDescriptor descriptor : wfRuleDescriptors.values()) {
-                if (!descriptor.isEnabled()) {
-                    continue;
-                }
-
-                if (descriptor.getWorkflowStateInitial().equals(
-                        req.getWfInitialState())
-                        && descriptor.getWorkflowStateFinal().equals(
-                                req.getWfFinalState())) {
-
-                    log.debug("applying lifecycle rule: "
-                            + descriptor.getName());
-
-                    // we detected a match - perform action
-                    performRuleAction(descriptor, req);
-                    ruleFound = true;
-                }
-            }
-
-            if (!ruleFound) {
-                log.debug(logPrefix + "No matching rule found for request: "
-                        + req);
-            }
-
-        } else if (req.getSource() == VersionChangeRequest.RequestSource.EDIT) {
+        if (req.getSource() == VersionChangeRequest.RequestSource.EDIT) {
             for (EditBasedRuleDescriptor descriptor : editRuleDescriptors.values()) {
                 if (!descriptor.isEnabled()) {
                     continue;
@@ -589,8 +506,7 @@ public class VersioningService extends DefaultComponent implements
                     // apply eventually specified lifecycle transition
                     String lsTrans = option.getLifecycleTransition();
                     if (lsTrans != null) {
-
-                        log.info("followTransition: " + lsTrans);
+                        log.debug("followTransition: " + lsTrans);
 
                         try {
                             doc.followTransition(lsTrans);
@@ -600,7 +516,7 @@ public class VersioningService extends DefaultComponent implements
                                             + lsTrans
                                             + " specified by versioning rule:option "
                                             + descriptor.getName() + ":"
-                                            + optionValue);
+                                            + optionValue, e);
                         }
                     }
                 }

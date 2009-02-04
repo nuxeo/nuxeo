@@ -31,7 +31,7 @@ import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.IndexableR
 
 /**
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- * 
+ *
  */
 public class DocumentBuiltinsIndexableResourceImpl extends
         DocumentIndexableResourceImpl implements
@@ -84,11 +84,11 @@ public class DocumentBuiltinsIndexableResourceImpl extends
         } else if (indexableDataName.equals(BuiltinDocumentFields.FIELD_DOC_FACETS)) {
             value = (Serializable) getDocFacets();
         } else if (indexableDataName.equals(BuiltinDocumentFields.FIELD_DOC_FLAGS)) {
-            value = (Serializable) getFlags();
+            value = getFlags();
         }
-        
+
         log.debug("Indexing builtin : " + indexableDataName + " : " + value);
-        
+
         return value;
     }
 

@@ -7,6 +7,7 @@
     <schema name="base" src="schema/base.xsd"/>
     <schema name="querymodel_common" src="schema/querymodel-common.xsd" />
     <schema name="querymodel_test" src="schema/querymodel-test.xsd" />
+    <schema name="querynav" src="schema/querynav.xsd" />
   </extension>
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService"
@@ -18,6 +19,12 @@
     <doctype name="TestQuery" extends="Document">
       <schema name="querymodel_common" />
       <schema name="querymodel_test" />
+      <!-- override because the standard one references common and dublincore
+      which produce errors -->
+      <prefetch/>
+    </doctype>
+     <doctype name="QueryNav" extends="Document">
+      <schema name="querynav" />
     </doctype>
   </extension>
 
@@ -116,6 +123,10 @@
           <field schema="querymodel_test" name="listfield"/>
         </predicate>
 
+        <predicate parameter="someint" operator="=">
+          <field schema="querymodel_test" name="intfield"/>
+        </predicate>
+
       </whereClause>
 
 
@@ -142,6 +153,57 @@
         </fixedPart>
 
       </whereClause>
+    </queryModel>
+
+    <queryModel name="statefulModelWithSubClause" docType="TestQuery">
+
+      <whereClause>
+
+        <predicate parameter="intparameter" operator="=">
+          <field schema="querymodel_test" name="intfield"/>
+        </predicate>
+
+        <predicate type="subClause">
+          <field schema="querymodel_test" name="subclause"/>
+        </predicate>
+
+        <predicate parameter="textparameter" operator="=">
+          <field schema="querymodel_test" name="textfield" />
+        </predicate>
+
+      </whereClause>
+    </queryModel>
+
+
+    <queryModel name="byCoverageNavQueryModel" docType="QueryNav">
+      <max>10</max>
+      <whereClause>
+        <predicate parameter="dc:coverage" operator="STARTSWITH">
+          <field schema="querynav" name="coverage" />
+        </predicate>
+      </whereClause>
+      <sortColumn>
+        <field schema="advanced_search" name="sortColumn" />
+      </sortColumn>
+      <sortAscending>
+        <field schema="advanced_search" name="sortAscending" />
+      </sortAscending>
+    </queryModel>
+
+
+  <queryModel name="ecmPathTest" docType="QueryNav">
+      <max>10</max>
+      <whereClause>
+        <predicate parameter="ecm:path" operator="STARTSWITH">
+          <field schema="querynav" name="coverage" />
+        </predicate>
+      </whereClause>
+      <sortColumn>
+        <field schema="advanced_search" name="sortColumn" />
+      </sortColumn>
+      <sortAscending>
+        <field schema="advanced_search" name="sortAscending" />
+      </sortAscending>
     </queryModel>
 
   </extension>

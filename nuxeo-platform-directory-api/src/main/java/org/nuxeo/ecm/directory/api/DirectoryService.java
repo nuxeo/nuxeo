@@ -34,16 +34,18 @@ import org.nuxeo.runtime.model.ComponentName;
  */
 public interface DirectoryService {
 
-    public static final ComponentName NAME = new ComponentName(
-                "org.nuxeo.ecm.directory.DirectoryServiceImpl");
+    ComponentName NAME = new ComponentName(
+            "org.nuxeo.ecm.directory.DirectoryServiceImpl");
 
     List<String> getDirectoryNames() throws ClientException;
 
     String getDirectorySchema(String directoryName) throws DirectoryException;
 
     /**
-     * Open a session on specified directory.
+     * Opens a session on specified directory.
+     * <p>
      * This method prefers to throw rather than returning null.
+     *
      * @param directoryName
      * @return the session
      * @throws DirectoryException in case the session cannot be created
@@ -56,20 +58,22 @@ public interface DirectoryService {
 
     void registerDirectory(String directoryName, DirectoryFactory factory);
 
-    public void unregisterDirectory(String directoryName,DirectoryFactory factory);
+    void unregisterDirectory(String directoryName, DirectoryFactory factory);
 
-    public String getDirectoryIdField(String directoryName)
-    throws DirectoryException;
+    String getDirectoryIdField(String directoryName) throws DirectoryException;
 
-    public String getDirectoryPasswordField(String directoryName)
-    throws DirectoryException;
+    String getDirectoryPasswordField(String directoryName)
+            throws DirectoryException;
 
     /**
      * Returns the name of the parent directory of specified directory, if
-     * applicable
+     * applicable.
+     *
      * @param directoryName
      * @return the name, or null
      * @throws DirectoryException
      */
-    public String getParentDirectoryName(String directoryName) throws DirectoryException;
+    String getParentDirectoryName(String directoryName)
+            throws DirectoryException;
+
 }

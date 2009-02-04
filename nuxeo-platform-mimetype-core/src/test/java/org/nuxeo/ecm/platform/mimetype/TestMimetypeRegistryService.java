@@ -56,7 +56,6 @@ public class TestMimetypeRegistryService extends TestCase {
     }
 
     private static MimetypeEntryImpl getMimetypeSample() {
-
         String normalizedMimetype = "application/msword";
 
         List<String> mimetypes = new ArrayList<String>();
@@ -107,7 +106,6 @@ public class TestMimetypeRegistryService extends TestCase {
     }
 
     public void testGetMimetypeFromFile() throws Exception {
-
         MimetypeEntry mimetypeEntry = getMimetypeSample();
         mimetypeRegistry.registerMimetype(mimetypeEntry);
 
@@ -121,7 +119,6 @@ public class TestMimetypeRegistryService extends TestCase {
     }
 
     public void testGetMimetypeFromStream() throws Exception {
-
         MimetypeEntry mimetypeEntry = getMimetypeSample();
         mimetypeRegistry.registerMimetype(mimetypeEntry);
 
@@ -136,7 +133,6 @@ public class TestMimetypeRegistryService extends TestCase {
     }
 
     public void testGetMimetypeFromBlob() throws Exception {
-
         MimetypeEntry mimetypeEntry = getMimetypeSample();
         mimetypeRegistry.registerMimetype(mimetypeEntry);
 

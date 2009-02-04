@@ -41,4 +41,5 @@ public interface EditorLinkActions {
     void setSearchKeywords(final String searchKeywords);
 
     void destroy();
+
 }

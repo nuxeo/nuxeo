@@ -2,25 +2,25 @@
 <component name="org.nuxeo.ecm.directory.multi.MultiDirectoryFactory">
 
   <implementation
-    class="org.nuxeo.ecm.directory.multi.MultiDirectoryFactory" />
+      class="org.nuxeo.ecm.directory.multi.MultiDirectoryFactory"/>
 
   <require>org.nuxeo.ecm.directory.DirectoryServiceImpl</require>
 
   <documentation>Multi-directory implementation.</documentation>
 
   <extension target="org.nuxeo.ecm.directory.DirectoryServiceImpl"
-    point="factoryDescriptor">
+      point="factoryDescriptor">
     <factoryDescriptor
-      component="org.nuxeo.ecm.directory.multi.MultiDirectoryFactory" />
+        component="org.nuxeo.ecm.directory.multi.MultiDirectoryFactory"/>
   </extension>
 
   <extension-point name="directories">
     <object
-      class="org.nuxeo.ecm.directory.multi.MultiDirectoryDescriptor" />
-    <object class="org.nuxeo.ecm.directory.multi.SourceDescriptor" />
+        class="org.nuxeo.ecm.directory.multi.MultiDirectoryDescriptor"/>
+    <object class="org.nuxeo.ecm.directory.multi.SourceDescriptor"/>
     <object
-      class="org.nuxeo.ecm.directory.multi.SubDirectoryDescriptor" />
-    <object class="org.nuxeo.ecm.directory.multi.FieldDescriptor" />
+        class="org.nuxeo.ecm.directory.multi.SubDirectoryDescriptor"/>
+    <object class="org.nuxeo.ecm.directory.multi.FieldDescriptor"/>
 
     <documentation>
       This extension point can be used to register new
@@ -48,7 +48,7 @@
           </source>
 
           <source name="sqlusers" creation="true">
-            <subDirectory name="sqlUserDirectory" />
+            <subDirectory name="sqlUserDirectory"/>
           </source>
 
         </directory>

@@ -139,7 +139,7 @@ public class SQLHelper {
         }
     }
 
-    public boolean hasMatchingColumns() throws DirectoryException {
+    public boolean hasMatchingColumns() {
         ResultSet rs = null;
         String tableName = this.tableName;
         try {

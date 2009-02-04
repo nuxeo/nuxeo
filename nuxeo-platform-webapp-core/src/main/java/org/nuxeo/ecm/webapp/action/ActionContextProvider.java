@@ -1,3 +1,22 @@
+/*
+ * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nuxeo - initial API and implementation
+ *
+ * $Id$
+ */
+
 package org.nuxeo.ecm.webapp.action;
 
 import static org.jboss.seam.ScopeType.EVENT;
@@ -19,7 +38,7 @@ import org.nuxeo.ecm.platform.ui.web.util.SeamContextHelper;
 @Scope(STATELESS)
 public class ActionContextProvider implements Serializable {
 
-	private static final long serialVersionUID = 675765759871L;
+    private static final long serialVersionUID = 675765759871L;
 
     @In(create = true)
     private transient NavigationContext navigationContext;
@@ -30,6 +49,9 @@ public class ActionContextProvider implements Serializable {
     @In(create = true, required = false)
     private transient CoreSession documentManager;
 
+    // XXX AT: sometimes EVENT scope is not enough when changing the current
+    // document several times in the same request. Wee
+    // WebActionsBean#setCurrentTabAndNavigate hack for instance.
     @Factory(value = "currentActionContext", scope = EVENT)
     public ActionContext createActionContext() {
         ActionContext ctx = new ActionContext();

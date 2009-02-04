@@ -28,23 +28,22 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DataModel;
-import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.listener.CoreEventListenerService;
-import org.nuxeo.ecm.core.listener.EventListener;
+import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.event.impl.EventServiceImpl;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryTestCase;
 import org.nuxeo.ecm.platform.dublincore.listener.DublinCoreListener;
 import org.nuxeo.ecm.platform.dublincore.service.DublinCoreStorageService;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * DublinCoreStorage Test Case.
@@ -63,8 +62,8 @@ public class TestDublinCoreStorage extends RepositoryTestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
-        deployContrib("org.nuxeo.ecm.platform.dublincore.tests",
-                "CoreService.xml");
+        deployContrib("org.nuxeo.ecm.core", "OSGI-INF/CoreService.xml");
+
         deployContrib("org.nuxeo.ecm.platform.dublincore.tests",
                 "test-CoreExtensions.xml");
         deployContrib("org.nuxeo.ecm.platform.dublincore.tests",
@@ -74,8 +73,9 @@ public class TestDublinCoreStorage extends RepositoryTestCase {
         deployContrib("org.nuxeo.ecm.platform.dublincore.tests",
                 "LifeCycleService.xml");
 
-        deployContrib("org.nuxeo.ecm.platform.dublincore.tests",
-                "nxdublincore-bundle.xml");
+        deployContrib("org.nuxeo.ecm.platform.dublincore","OSGI-INF/nxdublincore-service.xml");
+
+        deployBundle("org.nuxeo.ecm.core.event");
 
         Map<String, Serializable> context = new HashMap<String, Serializable>();
         context.put("username", "Administrator");
@@ -85,39 +85,38 @@ public class TestDublinCoreStorage extends RepositoryTestCase {
         root = remote.getRootDocument();
     }
 
-    private static CoreEventListenerService getListenerService() {
-        return NXCore.getCoreEventListenerService();
+    private static EventServiceImpl getEventServiceImpl() {
+        return (EventServiceImpl) Framework.getLocalService(EventService.class);
     }
 
+    /*
     public void testServiceRegistration() {
         CoreEventListenerService listenerService = getListenerService();
         EventListener dcListener = listenerService.getEventListenerByName("dclistener");
         assertNotNull(dcListener);
-        log.info("DCListener well registered");
-    }
+        log.info("DCListener registered");
+    }*/
 
     public void testStorageService() {
         DublinCoreStorageService service = NXDublinCore.getDublinCoreStorageService();
         assertNotNull(service);
     }
 
-    public void testCreationDate() throws DocumentException, ClientException {
+    public void testCreationDate() throws ClientException {
         DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
                 "file-007", "File");
         DocumentModel childFile2 = remote.createDocument(childFile);
 
-        DataModel dm;
-        dm = childFile2.getDataModel("dublincore");
+        DataModel dm = childFile2.getDataModel("dublincore");
         assertNotNull(dm.getData("created"));
 
-        dm = remote.getDataModel(childFile2.getRef(), "dublincore");
-        assertNotNull(dm.getData("created"));
+        DataModel dm2 = remote.getDataModel(childFile2.getRef(), "dublincore");
+        assertNotNull(dm2.getData("created"));
 
         // assertEquals("toto", (String)dm.getData("creator"));
     }
 
-    public void testModificationDate() throws DocumentException,
-            ClientException {
+    public void testModificationDate() throws ClientException {
         DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
                 "file-008", "File");
         DocumentModel childFile2 = remote.createDocument(childFile);
@@ -131,20 +130,20 @@ public class TestDublinCoreStorage extends RepositoryTestCase {
 
         remote.saveDocument(childFile2);
 
-        DataModel dm;
-        dm = childFile2.getDataModel("dublincore");
+        DataModel dm = childFile2.getDataModel("dublincore");
         Calendar created = (Calendar) dm.getData("created");
         assertNotNull(created);
 
-        dm = remote.getDataModel(childFile2.getRef(), "dublincore");
-        Calendar modified = (Calendar) dm.getData("modified");
+        DataModel dm2 = remote.getDataModel(childFile2.getRef(), "dublincore");
+        Calendar modified = (Calendar) dm2.getData("modified");
         assertNotNull(modified);
 
-        assertTrue(modified.getTime() + " !> " +created.getTime(), modified.after(created));
+        assertTrue(modified.getTime() + " !> " + created.getTime(),
+                modified.after(created));
     }
 
     // Wait until we can have a real list management
-    public void testContributors() throws DocumentException, ClientException {
+    public void testContributors() throws ClientException {
         DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
                 "file-008", "File");
         DocumentModel childFile2 = remote.createDocument(childFile);
@@ -190,6 +189,8 @@ public class TestDublinCoreStorage extends RepositoryTestCase {
                 "contributors");
         contributorsList = Arrays.asList(contributorsArray);
         assertTrue(contributorsList.contains("Jacky"));
+        assertEquals("Administrator", childFile3.getProperty("dublincore",
+                "creator"));
     }
 
 }

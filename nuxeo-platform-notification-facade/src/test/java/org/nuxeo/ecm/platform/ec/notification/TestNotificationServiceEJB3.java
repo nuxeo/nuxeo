@@ -87,21 +87,21 @@ public class TestNotificationServiceEJB3 extends NXClientTestCase {
 
         List<String> users = service.getSubscribers(notifTest, docIdTest);
         assertNotNull("No subscribers", users);
-        assertEquals("Should be 1 user subscribed", users.size(), 1);
+        assertEquals("Should be 1 user subscribed", 1, users.size());
         assertEquals("Wrong name!!!", usernameTest, users.get(0));
 
         List<String> subscriptions = service.getSubscriptionsForUserOnDocument(
                 usernameTest, docIdTest);
         assertNotNull("No subscriptions", subscriptions);
         assertEquals("Should be 1 subscription for user on document",
-                subscriptions.size(), 1);
+                1, subscriptions.size());
         assertEquals("Wrong subscription", notifTest, subscriptions.get(0));
 
         service.removeSubscription(usernameTest, notifTest, docIdTest);
 
         users = service.getSubscribers(notifTest, docIdTest);
         assertNotNull("No subscribers", users);
-        assertEquals("Should be no user subscribed", users.size(), 0);
+        assertEquals("Should be no user subscribed", 0, users.size());
     }
 
 }

@@ -5,7 +5,7 @@
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:t="http://myfaces.apache.org/tomahawk">
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
 
   <ui:define name="page title">
     <h:outputText value="#{messages['title.create.document']}"/>
@@ -17,7 +17,7 @@
       <h:outputText value="#{messages['title.create.document']} #{messages[changeableDocument.type]}" />
     </h3>
     <ui:include src="/incl/message_banner.xhtml" />
-    <h:form enctype="multipart/form-data">
+    <h:form enctype="multipart/form-data" id="createThread">
      <table>
        <tr>
          <td class="labelColumn required"><h:outputText value="#{messages['label.forum.thread.titre']}" /></td>
@@ -49,24 +49,9 @@
             </h:selectOneRadio>
           </td>
        </tr>
-       <tr>
-         <td class="labelColumn"><h:outputText value="#{messages['label.forum.thread.moderators']}" /></td>
-          <td>
-            <ui:include src="/incl/select_users_search.xhtml"/>
-            <table cellspacing="10" cellpadding="0" border="0"
-              class="rightsAddManager">
-              <tr>
-                <td valign="top" align="center">
-                  <ui:include src="/incl/select_users_results.xhtml"/>
-                </td>
-                <td valign="top" align="center">
-                  <ui:include src="/incl/select_users_selection.xhtml"/>
-                </td>
-              </tr>
-            </table>
-          </td>
-       </tr>
-     </table>
+      </table>
+      <nxl:layout name="user_group_suggestion" mode="create"
+        value="#{threadAction.selectedModerators}" />
       <p class="buttonsGadget">
         <h:commandButton type="submit" class="button" value="#{messages['command.create']}"
           action="#{threadAction.addThread}" />

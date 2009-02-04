@@ -50,6 +50,7 @@ public abstract class CoreSearchBackendTestCase extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core.api");
         deployBundle("org.nuxeo.ecm.core");
+        deployBundle("org.nuxeo.ecm.core.event");
         deployRepository();
         deployBundle("org.nuxeo.ecm.platform.search");
         deployBundle("org.nuxeo.ecm.platform.search.backend.core");

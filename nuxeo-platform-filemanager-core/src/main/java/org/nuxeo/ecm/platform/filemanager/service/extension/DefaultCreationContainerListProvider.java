@@ -22,7 +22,6 @@ package org.nuxeo.ecm.platform.filemanager.service.extension;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.search.api.client.querymodel.QueryModel;
@@ -34,11 +33,10 @@ import org.nuxeo.runtime.api.Framework;
  * Default contribution to the CreationContainerListProvider extension point
  * that find the list of Workspaces the user has the right to create new
  * document into.
- *
+ * <p>
  * The filtered list is sorted
  *
  * @author Olivier Grisel <ogrisel@nuxeo.com>
- *
  */
 public class DefaultCreationContainerListProvider extends
         AbstractCreationContainerListProvider {
@@ -47,7 +45,7 @@ public class DefaultCreationContainerListProvider extends
 
     protected QueryModelService qmService;
 
-    protected QueryModelService getQueryModelService() throws Exception {
+    protected QueryModelService getQueryModelService() {
         if (qmService == null) {
             // TODO: update this to a service lookup NXP-2132
             qmService = (QueryModelService) Framework.getRuntime().getComponent(
@@ -62,9 +60,9 @@ public class DefaultCreationContainerListProvider extends
         QueryModelDescriptor descriptor = getQueryModelService().getQueryModelDescriptor(
                 CONTAINER_LIST_PROVIDER_QM);
         // assume the QM is stateless
-        QueryModel qm = new QueryModel(descriptor,
-                (NuxeoPrincipal) documentManager.getPrincipal());
-        DocumentModelList allContainers = qm.getDocuments(new Object[0]);
+        QueryModel qm = new QueryModel(descriptor);
+        DocumentModelList allContainers = qm.getDocuments(documentManager,
+                new Object[0]);
         DocumentModelList filteredContainers = new DocumentModelListImpl();
         for (DocumentModel container : allContainers) {
             if (documentManager.hasPermission(container.getRef(),

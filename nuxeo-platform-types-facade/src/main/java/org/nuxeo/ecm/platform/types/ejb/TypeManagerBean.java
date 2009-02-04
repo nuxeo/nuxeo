@@ -75,6 +75,8 @@ public class TypeManagerBean implements TypeManager {
         return getTypeService().getAllowedSubTypes(typeName);
     }
 
+    // Deprecated, remove in 5.2.
+    @Deprecated
     public String getDefaultWidget(String fieldType) {
         return getTypeService().getDefaultWidget(fieldType);
     }

@@ -37,4 +37,5 @@ public class UserIdentificationInfoCallback implements Callback, Serializable {
     public void setUserInfo(UserIdentificationInfo userInfo) {
         this.userInfo = userInfo;
     }
+
 }

@@ -1,0 +1,73 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+  <script type="text/javascript"  src="#{baseURL}scripts/PublishingTableSelections.js"></script>
+
+<h:outputText value="#{messages['label.publish.noversions.available']}"
+  rendered="#{!documentVersioning.uidDataAvailable}"/>
+
+<f:subview
+  rendered="#{currentPublishingSectionsModel != null and documentVersioning.uidDataAvailable}">
+  <h:form >
+    <h:outputText value="#{messages['label.sections.not.defined']}"
+      rendered="#{currentPublishingSectionsModel.rowCount == 0}" />
+    <nxu:dataTable id="dataTable" value="#{currentPublishingSectionsModel.rows}" var="row"
+      rowClasses="dataRowEven,dataRowOdd" styleClass="dataOutput"
+      rendered="#{currentPublishingSectionsModel.rowCount > 0}">
+      <!-- id and selection -->
+      <nxu:column styleClass="iconColumn" rendered="true">
+        <!-- XXX AT: select all buggy right now -->
+        <f:facet name="header">
+          <h:selectBooleanCheckbox rendered="false"
+            onclilck="selectDataTablePage('#{currentPublishingSectionsModel.name}', this.checked)">
+          </h:selectBooleanCheckbox>
+        </f:facet>
+        <h:selectBooleanCheckbox value="#{row.selected}"
+            onclick="selectSectionForPublish('#{row.data.document.id}', this.checked)"
+            rendered="#{row.data.document.ref != currentDocument.parentRef}">
+<!-- oncomplete="enableCheckBoxesIn('#{documents.name}:dataTable')"> -->
+        </h:selectBooleanCheckbox>
+      </nxu:column>
+      <!--  Title -->
+      <nxu:column>
+        <f:facet name="header">
+          <h:outputText value="#{messages['label.publish.header.title']}" />
+        </f:facet>
+        <h:outputText value="#{row.data.treeLabel}" escape="false"/>
+      </nxu:column>
+      <!--  Version of the published document -->
+      <h:column>
+        <f:facet name="header">
+          <h:outputText
+            value="#{messages['label.publish.header.version']}" />
+        </f:facet>
+        <h:outputText value="#{row.data.version}" />
+      </h:column>
+
+      <!--  Actions for the published document  -->
+      <h:column >
+        <f:facet name="header">
+          <h:outputText value="Action" />
+        </f:facet>
+      <h:commandLink value="#{messages['command.document.unpublish']}"
+        action="#{publishActions.unPublishDocument}"
+        rendered="#{nxd:hasPermission(row.data.document, 'Write') and row.data.version != null and row.data.document.ref != currentDocument.parentRef}"
+        immediate="true">
+        <f:param name="unPublishSectionRef" value="#{row.data.document.id}" />
+      </h:commandLink>
+    </h:column>
+
+    </nxu:dataTable>
+    <f:subview rendered="#{currentPublishingSectionsModel.rowCount != 0}">
+      <ui:include src="/incl/publish_buttons.xhtml" />
+    </f:subview>
+  </h:form>
+</f:subview>
+
+</div>

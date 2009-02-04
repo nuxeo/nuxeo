@@ -33,12 +33,12 @@ import org.apache.commons.logging.LogFactory;
 public class SelectionTableCell extends AbstractTableCell {
     private static final long serialVersionUID = 4088427422628939576L;
 
-    private static Log log = LogFactory.getLog(SelectionTableCell.class);
+    private static final Log log = LogFactory.getLog(SelectionTableCell.class);
 
     protected Boolean selected;
 
     public SelectionTableCell(Boolean selected) {
-        setSelected(selected);
+        this.selected = selected;
 
         log.debug("Constructed and selected: " + selected);
     }
@@ -53,22 +53,22 @@ public class SelectionTableCell extends AbstractTableCell {
 
     @Override
     public Object getValue() {
-        return getSelected();
+        return selected;
     }
 
     @Override
     public Object getDisplayedValue() {
-        return getSelected();
+        return selected;
     }
 
     @Override
     public void setDisplayedValue(Object value) {
-        setSelected((Boolean) value);
+        selected = (Boolean) value;
     }
 
     @Override
     public void setValue(Object value) {
-        setSelected((Boolean) value);
+        selected = (Boolean) value;
     }
 
     public int compareTo(AbstractTableCell cell) {

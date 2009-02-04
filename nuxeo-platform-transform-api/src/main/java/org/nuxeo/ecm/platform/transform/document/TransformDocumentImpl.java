@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.platform.transform.document;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -37,7 +36,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Transform document implementation.
  *
- * @see org.nuxeo.ecm.platform.transform.interfaces.TransformDocument
+ * @see TransformDocument
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
@@ -59,11 +58,11 @@ public class TransformDocumentImpl implements TransformDocument {
         blob = new StringBlob("");
     }
 
-    public TransformDocumentImpl(Blob blob) throws IOException {
+    public TransformDocumentImpl(Blob blob) {
         this.blob = blob;
     }
 
-    public TransformDocumentImpl(Blob blob, String mimetype) throws IOException {
+    public TransformDocumentImpl(Blob blob, String mimetype) {
         this.blob = blob;
         this.mimetype = mimetype;
     }
@@ -84,13 +83,13 @@ public class TransformDocumentImpl implements TransformDocument {
         if (mimetype != null) {
             this.mimetype = mimetype;
         } else {
-            this.mimetype = getBlob().getMimeType();
+            this.mimetype = blob.getMimeType();
             if (this.mimetype == null) {
                 MimetypeRegistry reg = getMimetypeRegistry();
                 if (reg == null) {
                     throw new MimetypeRegistryNotFoundException();
                 }
-                this.mimetype = reg.getMimetypeFromBlob(getBlob());
+                this.mimetype = reg.getMimetypeFromBlob(blob);
             }
         }
     }

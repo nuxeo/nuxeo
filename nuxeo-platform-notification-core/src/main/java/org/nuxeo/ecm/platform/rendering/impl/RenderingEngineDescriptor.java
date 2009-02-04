@@ -37,7 +37,7 @@ public class RenderingEngineDescriptor {
     private String format;
 
     @XNode("class")
-    private Class<?> klass;
+    private Class<RenderingEngine> klass;
 
     public String getFormat() {
         return format;
@@ -53,12 +53,7 @@ public class RenderingEngineDescriptor {
 
     public RenderingEngine newInstance()
             throws InstantiationException, IllegalAccessException {
-        try {
-            return  (RenderingEngine) klass.newInstance();
-        } catch (ClassCastException e) {
-            throw new IllegalArgumentException(
-                    "Engine class must implement" + RenderingEngine.class, e);
-        }
+        return klass.newInstance();
     }
 
     @Override
