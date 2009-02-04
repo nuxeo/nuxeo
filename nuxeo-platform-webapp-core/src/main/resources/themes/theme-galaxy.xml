@@ -208,6 +208,7 @@
     </layout>
     <layout element="page[3]/section[4]/cell[1]">
       <width>100%</width>
+      <text-align>right</text-align>
     </layout>
     <layout element="page[4]">
       <padding>20px</padding>
@@ -536,8 +537,9 @@
         <padding>10px !important</padding>
       </selector>
       <selector path=".dataList td">
-        <border>1px solid #666</border>
-        <padding>3px</padding>
+        <border-bottom preset="tablelines (Galaxy borders)"/>
+        <border-top preset="tablelines (Galaxy borders)"/>
+        <padding>5px 3px</padding>
       </selector>
       <selector path=".dataOutput td table td">
         <border>0px none transparent</border>
@@ -572,27 +574,24 @@
         <margin-top>0px</margin-top>
       </selector>
       <selector path=".dataList thead th">
-        <color>#FFF</color>
-        <border>1px solid #333</border>
-        <background>
-          url(/nuxeo/img/theme5_2/table_header_gray_back.gif) top left repeat-x #5e5e5e
-        </background>
-        <font-size>11px</font-size>
-        <padding>3px</padding>
+        <color>#606161</color>
+        <border-bottom preset="tablelines (Galaxy borders)"/>
+        <background preset="tablethead (Galaxy backgrounds)"/>
+        <padding>5px 3px</padding>
         <text-align>left</text-align>
       </selector>
       <selector path=".dataList thead th a, .dataList thead th a:link">
-        <color preset="white (Nuxeo psd colors)" />
+        <color>#606161</color>
         <text-decoration>none</text-decoration>
       </selector>
       <selector path=".dataList thead th a:visited">
-        <color preset="white (Nuxeo psd colors)" />
+        <color>#606161</color>
       </selector>
       <selector path=".dataList thead th a:active">
-        <color preset="white (Nuxeo psd colors)" />
+        <color>#606161</color>
       </selector>
       <selector path=".dataList thead th a:hover">
-        <color preset="white (Nuxeo psd colors)" />
+        <color>#606161</color>
         <text-decoration>underline</text-decoration>
       </selector>
       <selector path=".relationPredicateColumn">
@@ -613,13 +612,7 @@
       <selector path=".dataInput .button">
         <margin>0 10px 0 0</margin>
       </selector>
-      <selector path=".foldableBox h3.unfolded">
-        <background>
-          url(/nuxeo/icons/arrow_unfolded.gif) top left no-repeat
-        </background>
-      </selector>
-      <selector
-        path=".wizardFrame .templatePreview .templatePreviewDescription">
+      <selector path=".wizardFrame .templatePreview .templatePreviewDescription">
         <font-style>italic</font-style>
       </selector>
       <selector path=".pageNavigationControls">
@@ -663,12 +656,6 @@
       </selector>
       <selector path="table">
         <margin>0</margin>
-      </selector>
-      <selector path=".foldableBox h3">
-        <border-bottom>1px solid #94d8ff</border-bottom>
-        <color preset="white (Nuxeo psd colors)" />
-        <padding>3px 3px 3px 18px</padding>
-        <font-size>11px</font-size>
       </selector>
       <selector path=".pictureBookItem">
         <float>left</float>
@@ -726,19 +713,39 @@
       <selector path="a:active">
         <color preset="link.active (Nuxeo psd colors)" />
       </selector>
-      <selector path=".foldableBox .boxBody">
-        <background>#FFF</background>
-        <padding>10px</padding>
-      </selector>
       <selector path=".rightsAdd">
         <margin>10px 0 10px 0</margin>
+      </selector>
+      <selector path=".foldableBox">
+        <border preset="tabisnotselected (Galaxy borders)"/>
+        <background preset="tabiselected (Galaxy backgrounds)"/>
+        <margin-bottom>20px</margin-bottom>
+      </selector>
+      <selector path=".foldableBox h3">
+        <border-bottom preset="tabiselected (Galaxy borders)"/>
+        <color preset="white (Nuxeo psd colors)" />
+        <padding>3px 3px 3px 18px</padding>
+        <font-size>11px</font-size>
+      </selector>
+      <selector path=".foldableBox h3.folded">
+        <background>url(/nuxeo/img/theme_galaxy/arrow_folded.gif) top left no-repeat
+        </background>
+      </selector>
+      <selector path=".foldableBox h3 a:link, .foldableBox h3 a:visited, .foldableBox h3 a:hover, .foldableBox h3 a:visited:hover">
+        <color preset="white (Nuxeo psd colors)" />
+      </selector>
+      <selector path=".foldableBox h3.unfolded">
+        <background>url(/nuxeo/img/theme_galaxy/arrow_unfolded.gif) top left no-repeat</background>
       </selector>
       <selector path=".foldableBox h3 a">
         <color preset="white (Nuxeo psd colors)" />
         <display>block</display>
       </selector>
-      <selector
-        path=".relationCreateFieldColumn, .fieldColumn, .workflowFieldColumn">
+      <selector path=".foldableBox .boxBody">
+        <background>#ffffff</background>
+        <padding>10px</padding>
+      </selector>
+      <selector path=".relationCreateFieldColumn, .fieldColumn, .workflowFieldColumn">
         <vertical-align>top</vertical-align>
       </selector>
       <selector path=".commentQuote">
@@ -812,13 +819,6 @@
         </background>
         <padding>7px 7px 7px 24px</padding>
       </selector>
-      <selector path=".foldableBox">
-        <border>1px solid #94d8ff</border>
-        <background>
-          url(/nuxeo/img/theme5_2/table_header_background.gif) top left repeat-x #262626
-        </background>
-        <margin-bottom>20px</margin-bottom>
-      </selector>
       <selector path=".pageNavigationControls input">
         <margin-left>5px</margin-left>
       </selector>
@@ -867,11 +867,6 @@
         <background>#f2f7fc</background>
         <padding>5px</padding>
         <text-align>center</text-align>
-      </selector>
-      <selector path=".foldableBox h3.folded">
-        <background>
-          url(/nuxeo/icons/arrow_folded.gif) top left no-repeat
-        </background>
       </selector>
       <selector path=".dataOutput">
         <border-collapse>collapse</border-collapse>
@@ -1130,10 +1125,6 @@
         <margin>5px 0px 10px 15px</margin>
         <padding>2px 1px 2px 1px</padding>
       </selector>
-      <selector
-        path=".foldableBox h3 a:link, .foldableBox h3 a:visited, .foldableBox h3 a:hover, .foldableBox h3 a:visited:hover">
-        <color preset="white (Nuxeo psd colors)" />
-      </selector>
       <selector path=".dataRowOdd">
         <background preset="tableevenlines (Galaxy backgrounds)" />
       </selector>
@@ -1187,8 +1178,9 @@
         <display>none</display>
       </selector>
       <selector path=".dataOutput td, .dataList td">
-        <border>1px solid #DBDBDB</border>
-        <padding>4px 5px</padding>
+        <border-bottom preset="tablelines (Galaxy borders)"/>
+        <border-top preset="tablelines (Galaxy borders)"/>
+        <padding>5px 3px</padding>
       </selector>
       <selector path="img">
         <display>none</display>
@@ -1598,8 +1590,6 @@
     </style>
     <style element="page[3]/section[2]/cell[1]">
       <selector path="" view="cell frame">
-        <border-bottom preset="dark.gray (Nuxeo5-2 default borders)" />
-        <background preset="shade (Nuxeo5-2 default backgrounds)" />
       </selector>
     </style>
     <style element="page[3]/section[2]/cell[1]/fragment[1]"
@@ -1658,9 +1648,7 @@
         <padding>7px</padding>
       </selector>  
       <selector path="div.syndicationButton" view="facelet region">
-        <background>
-          url(/nuxeo/img/syndication_bar.gif) no-repeat top right
-        </background>
+        <background preset="rss (Galaxy backgrounds)"/>
         <margin-bottom>5px</margin-bottom>
         <margin-top>10px</margin-top>
         <font-size>9px</font-size>
@@ -1673,13 +1661,7 @@
         view="facelet region">
         <color>rgb(241, 242, 243)</color>
         <font preset="small (Galaxy fonts)" />
-        <padding-top>2px</padding-top>
-        <padding-left>15px</padding-left>
-        <background>
-          url(/nuxeo/img/syndication_button.gif) no-repeat top left
-        </background>
-        <padding-bottom>2px</padding-bottom>
-        <padding-right>4px</padding-right>
+        <padding>2px 4px</padding>
       </selector>
       <selector path="div.syndicationButton div.syndicationLinks a"
         view="facelet region">
@@ -1691,9 +1673,7 @@
     <style element="page[3]/section[3]/cell[1]|page[3]/section[3]/cell[2]"
       inherit="common style 1">
       <selector path="div.syndicationButton" view="facelet region">
-        <background>
-          url(/nuxeo/img/syndication_bar.gif) no-repeat top right
-        </background>
+        <background preset="rss (Galaxy backgrounds)"/>
         <margin-bottom>5px</margin-bottom>
         <margin-top>10px</margin-top>
         <font-size>9px</font-size>
@@ -1704,15 +1684,9 @@
       </selector>
       <selector path="div.syndicationButton div.syndicationLinks"
         view="facelet region">
-        <font preset="small (Galaxy fonts)" />
         <color>rgb(241, 242, 243)</color>
-        <padding-left>15px</padding-left>
-        <padding-top>2px</padding-top>
-        <background>
-          url(/nuxeo/img/syndication_button.gif) no-repeat top left
-        </background>
-        <padding-bottom>2px</padding-bottom>
-        <padding-right>4px</padding-right>
+        <font preset="small (Galaxy fonts)" />
+        <padding>2px 4px</padding>
       </selector>
       <selector path="div.syndicationButton div.syndicationLinks a"
         view="facelet region">
