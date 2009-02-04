@@ -84,7 +84,7 @@ public class SessionImpl implements Session {
         model = mapper.getModel();
         context = new PersistenceContext(mapper, invalidators);
         live = true;
-        transactionalSession = new TransactionalSession(mapper, context);
+        transactionalSession = new TransactionalSession(this, mapper, context);
         computeRootNode();
     }
 
@@ -165,14 +165,18 @@ public class SessionImpl implements Session {
 
     public void save() throws StorageException {
         checkLive();
-        context.updateFulltext(this);
-        context.save();
+        flush();
         if (!transactionalSession.isInTransaction()) {
             context.notifyInvalidations();
             // as we don't have a way to know when the next non-transactional
             // statement will start, process invalidations immediately
             context.processInvalidations();
         }
+    }
+
+    protected void flush() throws StorageException {
+        context.updateFulltext(this);
+        context.save();
     }
 
     public Node getNodeById(Serializable id) throws StorageException {
