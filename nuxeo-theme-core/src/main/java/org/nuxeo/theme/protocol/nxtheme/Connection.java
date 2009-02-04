@@ -91,8 +91,10 @@ public final class Connection extends URLConnection {
         final RenderingInfo info = new RenderingInfo(rendered, url);
         final String content = ElementRenderer.render(info, cache).getMarkup();
         if (host.equals("theme")) {
-            log.debug(String.format("NXThemes output for %s: \n%s\n",
-                    url.toString(), content));
+            if (log.isTraceEnabled()) {
+                log.trace(String.format("NXThemes output for %s: \n%s\n",
+                        url.toString(), content));
+            }
         }
         return new ByteArrayInputStream(content.getBytes());
     }
