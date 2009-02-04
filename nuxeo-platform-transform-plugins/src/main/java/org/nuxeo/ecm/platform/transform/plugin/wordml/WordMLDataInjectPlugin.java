@@ -32,8 +32,7 @@ public interface WordMLDataInjectPlugin extends Plugin {
      * Transforms the given document(s) by injecting fields into specific places
      * at the XML document.
      *
-     * @see org.nuxeo.ecm.platform.transform.interfaces.Plugin#transform(java.util.HashMap,
-     *      org.nuxeo.ecm.platform.transform.interfaces.TransformDocument[])
+     * @see org.nuxeo.ecm.platform.transform.interfaces.Plugin#transform(Map, TransformDocument[])
      */
     List<TransformDocument> transform(
             Map<String, Serializable> options, TransformDocument... sources);

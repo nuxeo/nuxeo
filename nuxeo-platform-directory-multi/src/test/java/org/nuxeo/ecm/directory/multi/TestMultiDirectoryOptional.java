@@ -27,8 +27,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
@@ -217,8 +219,13 @@ public class TestMultiDirectoryOptional extends NXRuntimeTestCase {
         assertEquals("5", entry.getProperty("schema3", "uid"));
         assertEquals("foo5", entry.getProperty("schema3", "thefoo"));
         assertEquals("bar5", entry.getProperty("schema3", "thebar"));
-        assertNull(entry.getProperty("schema3", "xyz"));
-
+        boolean exceptionThrown = false;
+        try {
+            entry.getProperty("schema3", "xyz");
+        } catch (ClientException ce) {
+            exceptionThrown = true;
+        }
+        assertTrue(exceptionThrown);
         // check underlying directories
         assertNotNull(dir1.getEntry("5"));
         assertEquals("foo5", dir1.getEntry("5").getProperty("schema1", "foo"));
@@ -387,7 +394,6 @@ public class TestMultiDirectoryOptional extends NXRuntimeTestCase {
         e = entries.get(1);
         assertEquals("3", e.getId());
         assertEquals("bar3", e.getProperty("schema3", "thebar"));
-
     }
 
     public void testGetProjection() throws Exception {
@@ -473,6 +479,30 @@ public class TestMultiDirectoryOptional extends NXRuntimeTestCase {
         list = dir.getProjection(filter, "thebar");
         Collections.sort(list);
         assertEquals(Arrays.asList("bar1", "bar3"), list);
+    }
+
+    public void testCreateFromModel() throws Exception {
+        String schema = "schema3";
+        DocumentModel entry = BaseSession.createEntryModel(null, schema, null,
+                null);
+        entry.setProperty("schema3", "uid", "yo");
+
+        assertNull(dir.getEntry("yo"));
+        dir.createEntry(entry);
+        assertNotNull(dir.getEntry("yo"));
+
+        // create one with existing same id, must fail
+        entry.setProperty("schema3", "uid", "1");
+        try {
+            entry = dir.createEntry(entry);
+            fail("Should raise an error, entry already exists");
+        } catch (DirectoryException e) {
+        }
+    }
+
+    public void testHasEntry() throws Exception {
+        assertTrue(dir.hasEntry("1"));
+        assertFalse(dir.hasEntry("foo"));
     }
 
 }

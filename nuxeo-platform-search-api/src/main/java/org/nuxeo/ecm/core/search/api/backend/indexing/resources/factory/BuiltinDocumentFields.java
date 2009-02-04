@@ -74,7 +74,7 @@ public final class BuiltinDocumentFields {
     public static final String FIELD_DOC_REPOSITORY_NAME = "ecm:repositoryName";
 
     public static final String FIELD_DOC_FLAGS = "ecm:flags";
-    
+
     // fields that shouldn't end up in WHERE clauses
 
     public static final String FIELD_ACP_INDEXED = "builtin_acp_indexed";

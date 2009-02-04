@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo ECM JBPM Test
+Bundle-SymbolicName: org.nuxeo.ecm.platform.jbpm.testing;singleton:=true
+Bundle-Vendor: Nuxeo
+Nuxeo-Component: OSGI-INF/test-contrib.xml,
+  OSGI-INF/test-sql-directories-contrib.xml
+Require-Bundle: org.nuxeo.runtime

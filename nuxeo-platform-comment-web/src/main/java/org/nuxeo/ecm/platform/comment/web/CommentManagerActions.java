@@ -74,7 +74,7 @@ public interface CommentManagerActions  {
 
     String getSavedReplyCommentId();
 
-    void setSavedReplyCommentId(String s);
+    void setSavedReplyCommentId(String savedReplyCommentId);
 
     boolean getShowCreateForm();
 

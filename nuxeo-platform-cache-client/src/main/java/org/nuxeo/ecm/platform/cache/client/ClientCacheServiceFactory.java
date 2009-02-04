@@ -52,7 +52,6 @@ public class ClientCacheServiceFactory {
                         ClientCacheServiceFactory.class.getName());
                 //cacheService.init();
             } catch (Exception e) {
-                e.printStackTrace();
                 final String errMsg = "In "
                         + ClientCacheServiceFactory.class.getSimpleName() + ": "
                         + e.getMessage();

@@ -59,11 +59,11 @@ public class FileManagerBean implements FileManager {
 
     private static final Log log = LogFactory.getLog(FileManagerBean.class);
 
-    private transient FileManager service;
+    private FileManager service;
 
-    private transient CoreSession userSession;
+    private CoreSession userSession;
 
-    private transient String userSessionId;
+    private String userSessionId;
 
     private FileManager getFileManagerService() throws ClientException {
         if (service == null) {
@@ -78,10 +78,7 @@ public class FileManagerBean implements FileManager {
     }
 
     private CoreSession validateSession(CoreSession dm) throws Exception {
-        String sid = null;
-
-        sid = dm.getSessionId();
-
+        String sid = dm.getSessionId();
 
         if (CoreInstance.getInstance().isSessionStarted(sid)) {
             // session exists locally : use it :)
@@ -147,55 +144,19 @@ public class FileManagerBean implements FileManager {
         return getFileManagerService().computeDigest(blob);
     }
 
-    public List<DocumentLocation> findExistingDocumentWithFile(String path,
-            Blob blob, Principal principal) throws ClientException {
-        return getFileManagerService().findExistingDocumentWithFile(path, blob,
-                principal);
-    }
-
     public List<String> getFields() throws ClientException {
         return getFileManagerService().getFields();
-    }
-
-    public boolean isFileAlreadyPresentInPath(String path, Blob blob,
-            Principal principal) throws ClientException {
-        return getFileManagerService().isFileAlreadyPresentInPath(path, blob,
-                principal);
     }
 
     public boolean isUnicityEnabled() throws ClientException {
         return getFileManagerService().isUnicityEnabled();
     }
 
-    public List<DocumentLocation> findExistingDocumentWithFile(String path,
-            String digest, Principal principal) throws ClientException,
-            SearchException, QueryException {
-        try {
-            return getFileManagerService().findExistingDocumentWithFile(path,
-                    digest, principal);
-        } catch (ClientException e) {
-            throw new ClientException(e);
-        } catch (SearchException e) {
-            throw new SearchException(e);
-        } catch (QueryException e) {
-            throw new QueryException(e);
-        }
-
-    }
-
-    public boolean isFileAlreadyPresentInPath(String path, String digest,
-            Principal principal) throws ClientException, SearchException,
-            QueryException {
-        try {
-            return getFileManagerService().isFileAlreadyPresentInPath(path,
-                    digest, principal);
-        } catch (ClientException e) {
-            throw new ClientException(e);
-        } catch (SearchException e) {
-            throw new SearchException(e);
-        } catch (QueryException e) {
-            throw new QueryException(e);
-        }
+    public List<DocumentLocation> findExistingDocumentWithFile(
+            CoreSession documentManager, String path, String digest,
+            Principal principal) throws ClientException {
+        return getFileManagerService().findExistingDocumentWithFile(
+                documentManager, path, digest, principal);
     }
 
     public DocumentModelList getCreationContainers(Principal principal,
@@ -209,8 +170,7 @@ public class FileManagerBean implements FileManager {
                 docType);
     }
 
-    public String getDigestAlgorithm()
-    {
+    public String getDigestAlgorithm() {
         try {
             return getFileManagerService().getDigestAlgorithm();
         } catch (ClientException e) {
@@ -218,12 +178,12 @@ public class FileManagerBean implements FileManager {
         }
     }
 
-    public boolean isDigestComputingEnabled()
-    {
+    public boolean isDigestComputingEnabled() {
         try {
             return getFileManagerService().isDigestComputingEnabled();
         } catch (ClientException e) {
             return false;
         }
     }
+
 }

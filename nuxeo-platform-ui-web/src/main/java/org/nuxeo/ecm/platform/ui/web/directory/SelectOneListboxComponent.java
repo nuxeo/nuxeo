@@ -47,7 +47,6 @@ public class SelectOneListboxComponent extends DirectoryAwareComponent {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public void restoreState(FacesContext context, Object state) {
         Object[] values = (Object[]) state;
         super.restoreState(context, values[0]);

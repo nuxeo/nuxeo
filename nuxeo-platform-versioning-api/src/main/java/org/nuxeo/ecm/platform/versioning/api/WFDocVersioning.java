@@ -19,13 +19,18 @@
 
 package org.nuxeo.ecm.platform.versioning.api;
 
+/**
+ * @deprecated since 5.2M4: versioning does not handle workflow anymore
+ */
+@Deprecated
 public interface WFDocVersioning {
 
     /**
      * System property name for workflow proposed versioning incrementation
      * option.
      */
-    static final String SYSTEM_PROPERTY_NAME_WF_OPTION = "WfIncOption";
+    String SYSTEM_PROPERTY_NAME_WF_OPTION = "WfIncOption";
 
-    static final String SYSTEM_PROPERTY_WF_IN_PROGRESS = "WfinProgress";
+    String SYSTEM_PROPERTY_WF_IN_PROGRESS = "WfinProgress";
+
 }

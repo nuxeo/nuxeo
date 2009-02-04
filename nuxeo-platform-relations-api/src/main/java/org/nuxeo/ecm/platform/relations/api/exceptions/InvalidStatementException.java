@@ -20,13 +20,12 @@
 package org.nuxeo.ecm.platform.relations.api.exceptions;
 
 /**
- * Invalid statement exception
- *
+ * Invalid statement exception.
+ * <p>
  * A valid statement cannot hold literals as subjects or predicates, neither
  * blank nodes as predicates.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public class InvalidStatementException extends RuntimeException {
 
@@ -46,4 +45,5 @@ public class InvalidStatementException extends RuntimeException {
     public InvalidStatementException(Throwable cause) {
         super(cause);
     }
+
 }

@@ -61,10 +61,6 @@ public class TestRelationIndexableResource extends NXRuntimeTestCase {
                 "nxsearch-relations-test-framework.xml");
         deployContrib("org.nuxeo.ecm.platform.relations.search.tests",
                 "nxsearch-relations-test-contrib.xml");
-        deployContrib("org.nuxeo.ecm.platform.relations.search.tests",
-                "relations-test-nxsearch-backend-compass-framework.xml");
-        deployContrib("org.nuxeo.ecm.platform.relations.search.tests",
-                "nxsearch-compass-test-contrib.xml");
         // all-in-one for relations
         deployContrib("org.nuxeo.ecm.platform.relations.search.tests",
                 "nxrelations-test-search-bundle.xml");
@@ -80,7 +76,7 @@ public class TestRelationIndexableResource extends NXRuntimeTestCase {
                 "comments", false);
     }
 
-    public void testRegistration() throws Exception {
+    public void testRegistration() {
         ResourceTypeDescriptor desc = searchService
             .getResourceTypeDescriptorByName(ResourceType.RELATIONS);
         assertNotNull(desc);
@@ -90,7 +86,7 @@ public class TestRelationIndexableResource extends NXRuntimeTestCase {
                 RelationIndexableResource);
     }
 
-    public void testComputeId() throws Exception {
+    public void testComputeId() {
         Subject subject = NodeFactory.createResource("test://subj");
         Node object = NodeFactory.createResource("test://obj");
         Node object2 = NodeFactory.createResource("test://other");

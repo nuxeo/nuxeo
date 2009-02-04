@@ -33,7 +33,7 @@ import org.nuxeo.ecm.platform.versioning.api.VersioningActions;
 /**
  * Web action listener interface for versioning.
  *
- * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
+ * @author Dragos Mihalache
  */
 public interface DocumentVersioning {
 

@@ -47,7 +47,6 @@ public class SelectOneListboxRenderer extends Renderer {
     private static final Log log = LogFactory.getLog(SelectOneListboxRenderer.class);
 
     @Override
-    @SuppressWarnings("unchecked")
     public void decode(FacesContext facesContext, UIComponent component) {
         // String compId = component.getClientId(facesContext);
         SelectOneListboxComponent comp = (SelectOneListboxComponent) component;

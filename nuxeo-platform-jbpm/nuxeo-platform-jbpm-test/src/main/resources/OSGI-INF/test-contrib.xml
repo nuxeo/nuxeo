@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.jbpm.core.ActiveConfigurationTest">
+
+  <!--
+    <require>org.nuxeo.ecm.platform.jbpm.core.ActiveConfiguration</require>
+  -->
+
+  <extension target="org.nuxeo.ecm.platform.jbpm.core.JbpmService"
+    point="configurationPath">
+
+    <configuration name="test" path="config/test-jbpm.cfg.xml" />
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.jbpm.core.JbpmService"
+    point="activeConfiguration">
+    <configuration name="test" />
+  </extension>
+
+</component>

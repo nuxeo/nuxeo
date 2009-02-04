@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
     <artifactId>nuxeo-platform-parent</artifactId>
-    <version>5.1.7-SNAPSHOT</version>
+    <version>5.2-SNAPSHOT</version>
   </parent>
 
   <artifactId>nuxeo-platform-content-template-manager</artifactId>
@@ -19,6 +19,11 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-event</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-api</artifactId>
     </dependency>
     <dependency>
@@ -29,6 +34,12 @@
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-jcr-connector-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.transaction</groupId>
+      <artifactId>jta</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 

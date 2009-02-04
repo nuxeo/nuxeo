@@ -1,0 +1,53 @@
+<div xmlns:nxthemes="http://nuxeo.org/nxthemes"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:nxu="http://nuxeo.org/nxweb/util"
+	xmlns:nxh="http://nuxeo.org/nxweb/html"><nxu:methodResult
+	name="isProxy" value="#{publishingActions.isProxy()}">
+
+	<h:panelGroup rendered="#{isProxy}">
+
+		<h3><h:outputText value="#{messages['label.publishing.title']}" /></h3>
+
+		<br />
+
+		<nxu:methodResult name="canManagePublishing"
+			value="#{publishingActions.canManagePublishing()}">
+
+			<h:outputText rendered="#{!publishActions.published}"
+				value="#{messages['label.document.pending']}" />
+
+			<h:outputText rendered="#{publishActions.hasValidationTask()}">
+				<table class="dataInput">
+					<tr>
+						<td><h:outputText class="required"
+							value="#{messages['label.publishing.user.comment']}" /></td>
+						<td><h:inputTextarea id="rejectPublishingComment" rows="5"
+							cols="50" value="#{publishingActions.rejectPublishingComment}" /></td>
+					</tr>
+					<tr>
+						<td colspan="2"><h:message styleClass="errorMessage"
+							for="rejectPublishingComment" /></td>
+					</tr>
+					<tr>
+						<td colspan="2"><h:commandButton type="submit"
+							value="#{messages['label.publishing.accept']}"
+							styleClass="button" rendered="#{canManagePublishing}"
+							action="#{publishingActions.publishDocument}" /> <h:commandButton
+							type="submit" value="#{messages['label.publishing.reject']}"
+							styleClass="button" rendered="#{canManagePublishing}"
+							action="#{publishingActions.rejectDocument}" /></td>
+					</tr>
+				</table>
+			</h:outputText>
+
+
+			<div><h:outputText rendered="#{publishActions.published}"
+				value="#{messages['label.document.published']}" /> <br />
+			</div>
+
+		</nxu:methodResult>
+
+	</h:panelGroup>
+</nxu:methodResult></div>

@@ -81,6 +81,7 @@ public class StaticNavigationHandler {
         return "/" + outcome + ".faces";
     }
 
+    @SuppressWarnings("unchecked")
     private void parse(InputStream stream) {
         outcomeToViewId = new HashMap<String, String>();
         viewIdToOutcome = new HashMap<String, String>();

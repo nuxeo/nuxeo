@@ -81,7 +81,7 @@ public class Type implements Serializable {
 
     // for bundle update::
     @XNode("@remove")
-    protected Boolean remove;
+    protected boolean remove = false;
 
     public String[] getActions() {
         return actions;
@@ -230,11 +230,11 @@ public class Type implements Serializable {
         this.allowedSubTypes = allowedSubTypes;
     }
 
-    public Boolean getRemove() {
+    public boolean getRemove() {
         return remove;
     }
 
-    public void setRemove(Boolean remove) {
+    public void setRemove(boolean remove) {
         this.remove = remove;
     }
 

@@ -63,20 +63,13 @@ public class EventMessageImpl implements EventMessage {
     public EventMessageImpl(CoreEvent coreEvent) {
         eventId = coreEvent.getEventId();
         eventDate = coreEvent.getDate();
-        // assume info is a Map<String, Object> map...
         Map bareInfo = coreEvent.getInfo();
-        // only keep serializable info... see if it needs to be optimized
         Map<String, Serializable> info = new HashMap<String, Serializable>();
         if (bareInfo != null) {
             Set<Map.Entry> set = bareInfo.entrySet();
             for (Map.Entry entry : set) {
                 Object key = entry.getKey();
                 Object value = entry.getValue();
-                // XXX AT: do not test serialization
-                // if (key instanceof String
-                // && SerializableHelper.isSerializable(value)) {
-                // info.put((String) key, (Serializable) value);
-                // }
                 if (value instanceof Serializable) {
                     // do not send Document that may be here for NXP-666
                     // compatibility: it's not serializable.
@@ -101,12 +94,6 @@ public class EventMessageImpl implements EventMessage {
         }
         comment = coreEvent.getComment();
         category = coreEvent.getCategory();
-
-        // Extract life cycle from core event info
-        // NXGED-884: the lifecycle state is already there ok... the one from eventInfo is not the good one.
-        //if (eventInfo != null) {
-        //    docCurrentLifeCycle = (String) eventInfo.get(CoreEventConstants.DOC_LIFE_CYCLE);
-        //}
     }
 
     public Date getEventDate() {
@@ -150,23 +137,15 @@ public class EventMessageImpl implements EventMessage {
     @SuppressWarnings("unchecked")
     @Deprecated
     public void feed(CoreEvent coreEvent) {
-
         eventId = coreEvent.getEventId();
         eventDate = coreEvent.getDate();
-        // assume info is a Map<String, Object> map...
         Map bareInfo = coreEvent.getInfo();
-        // only keep serializable info... see if it needs to be optimized
         Map<String, Serializable> info = new HashMap<String, Serializable>();
         if (bareInfo != null) {
             Set<Map.Entry> set = bareInfo.entrySet();
             for (Map.Entry entry : set) {
                 Object key = entry.getKey();
                 Object value = entry.getValue();
-                // XXX AT: do not test serialization
-                // if (key instanceof String
-                // && SerializableHelper.isSerializable(value)) {
-                // info.put((String) key, (Serializable) value);
-                // }
                 if (value instanceof Serializable) {
                     // do not send Document that may be here for NXP-666
                     // compatibility: it's not serializable.
@@ -191,12 +170,6 @@ public class EventMessageImpl implements EventMessage {
         }
         comment = coreEvent.getComment();
         category = coreEvent.getCategory();
-
-        // Extract life cycle from core event info
-        // NXGED-884: the lifecycle state is already there ok... the one from eventInfo is not the good one.
-        //if (eventInfo != null) {
-        //    docCurrentLifeCycle = (String) eventInfo.get(CoreEventConstants.DOC_LIFE_CYCLE);
-        //}
     }
 
     public void setEventInfo(Map<String, Serializable> eventInfo) {

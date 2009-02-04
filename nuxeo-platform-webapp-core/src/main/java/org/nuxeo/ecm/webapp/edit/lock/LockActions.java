@@ -43,14 +43,14 @@ public interface LockActions extends Serializable {
     /**
      * Gets the lock of the current document.
      *
-     * @throws Exception
+     * @throws ClientException
      */
     String lockCurrentDocument() throws ClientException;
 
     /**
      * Releases the lock of the current document.
      *
-     * @throws Exception
+     * @throws ClientException
      */
     String unlockCurrentDocument() throws ClientException;
 
@@ -59,7 +59,7 @@ public interface LockActions extends Serializable {
      *
      * @param document the document of which lock is to be taken
      *
-     * @throws Exception
+     * @throws ClientException
      */
     String lockDocument(DocumentModel document) throws ClientException;
 
@@ -68,7 +68,7 @@ public interface LockActions extends Serializable {
      *
      * @param document the document of which lock is to be released
      *
-     * @throws Exception
+     * @throws ClientException
      */
     String unlockDocument(DocumentModel document) throws ClientException;
 
@@ -78,7 +78,7 @@ public interface LockActions extends Serializable {
      * @param documents the list with the documents of which locks are to be
      *            taken
      *
-     * @throws Exception
+     * @throws ClientException
      */
     void lockDocuments(List<DocumentModel> documents) throws ClientException;
 
@@ -88,7 +88,7 @@ public interface LockActions extends Serializable {
      * @param documents the list with the documents of which locks are to be
      *            released
      *
-     * @throws Exception
+     * @throws ClientException
      */
     void unlockDocuments(List<DocumentModel> documents) throws ClientException;
 
@@ -136,10 +136,10 @@ public interface LockActions extends Serializable {
     Map<String, String> getCurrentDocLockDetails() throws ClientException;
 
     /**
-     * This method is used to test wheter the live-edit link should appear on a
+     * This method is used to test whether the live-edit link should appear on a
      * document.
      *
-     * @return true if the link can appear
+     * @return true if the link can appear,
      *         false otherwise
      */
     Boolean isCurrentDocumentLiveEditable();

@@ -305,8 +305,7 @@ public class MimetypeRegistryService extends DefaultComponent implements
         File file = null;
         try {
             // make sure the blob can be read several times without exhausting
-            // its
-            // binary source
+            // its binary source
             if (!blob.isPersistent()) {
                 blob = blob.persist();
             }

@@ -49,20 +49,26 @@ public class TestSimpleServerCache extends TestServerCacheBase {
     protected static final String DOC_TYPE_FILE = "File";
     protected static final String DOC_TYPE_FOLDER = "Folder";
 
-    protected class SCHEMA_FILE {
+    protected static class SCHEMA_FILE {
         static final String name = "file";
 
         static final String attr_filename = "filename";
 
         static final String attr_content = "content";
+
+        private SCHEMA_FILE() {
+        }
     }
 
-    protected class SCHEMA_COMMON {
+    protected static class SCHEMA_COMMON {
         static final String name = "common";
 
         static final String attr_title = "title";
 
         static final String attr_description = "description";
+
+        private SCHEMA_COMMON() {
+        }
     }
 
     private CoreInstance server;
@@ -243,7 +249,6 @@ public class TestSimpleServerCache extends TestServerCacheBase {
 
         DocumentModel dm1Cache = (DocumentModel) cache.getObject(parentKey);
         assertEquals(dm1, dm1Cache);
-
     }
 
     public void testListenerObjPut() throws ClientException, CacheServiceException {

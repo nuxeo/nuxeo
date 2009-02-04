@@ -7,8 +7,10 @@
     <className>org.nuxeo.ecm.platform.uidgen.ejb.EjbSequencerFactory</className>
   </extension>
 
+
+
   <!-- Sample generators -->
-  <!-- 
+  <!--
   <extension target="org.nuxeo.ecm.platform.uidgen.service.UIDGeneratorService"
          point="generators">
 
@@ -21,5 +23,5 @@
 
   </extension>
   -->
-  
+
 </component>
