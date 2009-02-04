@@ -7,14 +7,40 @@
   xmlns:s="http://jboss.com/products/seam/taglib"
   xmlns:fn="http://java.sun.com/jsp/jstl/functions">
 
-<div class="userServices">
 <ui:insert name="user">
   <h:form>
 
+ <div class="searchService">
+
+
+    <nxu:methodResult value="#{userServicesContext.getSearchEnabled()}" name="searchEnabled">
+
+    <h:inputText value="#{searchActions.simpleSearchKeywords}" size="15"
+      class="directoryFilter"
+      rendered="#{searchEnabled}"
+      onkeydown="if (event.keyCode == 13) {Element.next(Element.next(this)).click();} else return true;"
+      />
+    <h:inputHidden value="#{searchActions.searchTypeId}"
+      rendered="#{searchEnabled}" >
+      <f:attribute name="value" value="KEYWORDS"/>
+    </h:inputHidden>
+    <h:commandButton action="#{searchActions.performSearch}"
+      rendered="#{searchEnabled}"
+      value="#{messages['command.search']}" class="button" />
+
+    <span class="advancedSearchLink">
+      <h:commandLink action="#{searchActions.search}" rendered="#{searchEnabled}"
+      value="#{messages['command.advancedSearch']}" /></span>
+
+    </nxu:methodResult>
+    
+    </div>
+
+
+   <div class="userActions">
+
     <h:outputText value="#{messages['label.loggedAsUser']}" />
 
-
-    <!--  &nbsp; -->
     <nxu:methodResult name="actions"
                       value="#{webActions.getActionsList('USER_SERVICES')}">
       <nxu:dataList layout="simple"
@@ -28,7 +54,7 @@
         </nxh:commandLink>
       </nxu:dataList>
     </nxu:methodResult>
-    <br />
+
     <nxu:methodResult name="actions"
                       value="#{webActions.getActionsList('USER_SERVICES_BOTTOM')}">
       <nxu:dataList layout="simple"
@@ -48,33 +74,10 @@
 
       </nxu:dataList>
     </nxu:methodResult>
-    <br />
-    <!--  &nbsp; -->
 
-    <nxu:methodResult value="#{userServicesContext.getSearchEnabled()}" name="searchEnabled">
-
-    <h:inputText value="#{searchActions.simpleSearchKeywords}" size="15"
-      class="directoryFilter"
-      rendered="#{searchEnabled}"
-      onkeydown="if (event.keyCode == 13) {Element.next(Element.next(this)).click();} else return true;"
-      />
-    <h:inputHidden value="#{searchActions.searchTypeId}"
-      rendered="#{searchEnabled}" >
-      <f:attribute name="value" value="KEYWORDS"/>
-    </h:inputHidden>
-    <h:commandButton action="#{searchActions.performSearch}"
-      rendered="#{searchEnabled}"
-      value="#{messages['command.search']}" class="button" />
-
-    <div class="advancedSearchLink"><h:commandLink
-      action="#{searchActions.search}"
-      rendered="#{searchEnabled}"
-      value="#{messages['command.advancedSearch']}" /></div>
-
-    </nxu:methodResult>
-
+    </div>
+        
   </h:form>
 </ui:insert>
-</div>
 
 </div>
