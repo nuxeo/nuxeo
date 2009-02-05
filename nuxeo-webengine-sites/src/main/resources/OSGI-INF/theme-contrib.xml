@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.webengine.sites.theme">
+
+  <require>org.nuxeo.theme.webengine
+  </require>
+
+  <extension target="org.nuxeo.theme.services.ThemeService"
+    point="shortcuts">
+    <shortcut key="l" target="session" />
+  </extension>
+
+  <!-- Views -->
+  <extension target="org.nuxeo.theme.services.ThemeService"
+    point="views">
+    <view name="Minisite Tree" template-engine="freemarker">
+      <format-type>widget</format-type>
+      <template>widgets/tree.ftl</template>
+    </view>
+    <view name="Minisite Attached files" template-engine="freemarker">
+      <format-type>widget</format-type>
+      <template>widgets/files.ftl</template>
+    </view>
+
+  </extension>
+
+  <!-- application settings -->
+  <extension target="org.nuxeo.theme.services.ThemeService"
+    point="applications">
+    <application root="/sites" template-engine="freemarker">
+      <negotiation>
+        <strategy>web</strategy>
+        <default-engine>default</default-engine>
+        <default-theme>sites/default
+        </default-theme>
+        <default-perspective>default
+        </default-perspective>
+      </negotiation>
+    </application>
+    <!--  temporary fix for jboss -->
+    <application root="/nuxeo/site/sites"
+      template-engine="freemarker">
+      <negotiation>
+        <strategy>web</strategy>
+        <default-engine>default</default-engine>
+        <default-theme>sites/default
+        </default-theme>
+        <default-perspective>default
+        </default-perspective>
+      </negotiation>
+    </application>
+
+
+  </extension>
+  <!-- themes -->
+  <extension target="org.nuxeo.theme.services.ThemeService"
+    point="themes">
+    <theme>
+      <src>
+        <!--
+          file:///home/stan/hg/nuxeo2/nuxeo/nuxeo-webengine/nuxeo-webengine-sites/src/main/resources/themes/theme-sites.xml
+        -->
+        themes/theme-sites.xml
+      </src>
+    </theme>
+  </extension>
+
+</component>

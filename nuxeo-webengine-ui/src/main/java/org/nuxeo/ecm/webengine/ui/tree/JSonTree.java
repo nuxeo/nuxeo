@@ -24,9 +24,6 @@ import net.sf.json.JSONObject;
 
 import org.nuxeo.ecm.webengine.forms.FormData;
 import org.nuxeo.ecm.webengine.model.WebContext;
-import org.nuxeo.ecm.webengine.session.AbstractComponent;
-import org.nuxeo.ecm.webengine.session.SessionException;
-import org.nuxeo.ecm.webengine.session.UserSession;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -99,7 +96,6 @@ public abstract class JSonTree {
         array.add(o);
         return array.toString();
     }
-
 
     protected String enter(WebContext ctx, String path, JSonTreeSerializer serializer) {
         TreeItem item = tree.findAndReveal(path);

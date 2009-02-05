@@ -42,9 +42,8 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-@WebObject(type="Document")
+@WebObject(type = "Document")
 @Produces({"text/html; charset=UTF-8"})
 public class DocumentObject extends DefaultObject {
 
@@ -88,7 +87,7 @@ public class DocumentObject extends DefaultObject {
             String orderBy = ctx.getRequest().getParameter("orderBy");
             String orderClause = "";
             if (orderBy != null) {
-                orderClause =   " ORDER BY "+orderBy;
+                orderClause = " ORDER BY " + orderBy;
             }
             String path;
             if (doc.isFolder()) {
@@ -96,7 +95,7 @@ public class DocumentObject extends DefaultObject {
             } else {
                 path = doc.getPath().removeLastSegments(1).toString();
             }
-            query = "SELECT * FROM Document WHERE (ecm:fulltext = \""+fullText+"\") AND (ecm:isCheckedInVersion = 0) AND (ecm:path STARTSWITH \""+path+"\")"+orderClause;
+            query = "SELECT * FROM Document WHERE (ecm:fulltext = \"" + fullText + "\") AND (ecm:isCheckedInVersion = 0) AND (ecm:path STARTSWITH \"" + path + "\")" + orderClause;
         }
         try {
             DocumentModelList docs = ctx.getCoreSession().query(query);
@@ -113,7 +112,7 @@ public class DocumentObject extends DefaultObject {
             session.removeDocument(doc.getRef());
             session.save();
         } catch (Exception e) {
-            throw WebException.wrap("Failed to delete document "+doc.getPathAsString(), e);
+            throw WebException.wrap("Failed to delete document " + doc.getPathAsString(), e);
         }
         if (prev != null) { // show parent ? TODO: add getView(method) to be able to change the view method
             return redirect(prev.getPath());
@@ -125,7 +124,7 @@ public class DocumentObject extends DefaultObject {
     public Response doPost() {
         String name = ctx.getForm().getString("name");
         DocumentModel newDoc = DocumentHelper.createDocument(ctx, doc, name);
-        return redirect(getPath()+'/'+newDoc.getName());
+        return redirect(getPath() + '/' + newDoc.getName());
     }
 
     @PUT
@@ -145,7 +144,7 @@ public class DocumentObject extends DefaultObject {
         return null; //TODO
     }
 
-    @Path(value="{path}")
+    @Path(value = "{path}")
     public Resource traverse(@PathParam("path") String path) {
         return newDocument(path);
     }

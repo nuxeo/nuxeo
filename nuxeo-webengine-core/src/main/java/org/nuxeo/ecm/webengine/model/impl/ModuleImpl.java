@@ -66,22 +66,22 @@ public class ModuleImpl implements Module {
     protected final WebEngine engine;
     protected final Object typeLock = new Object();
     protected TypeRegistry typeReg;
-    protected ModuleConfiguration configuration;
+    protected final ModuleConfiguration configuration;
     protected final ModuleImpl superModule;
     protected LinkRegistry linkReg;
     protected final String skinPathPrefix;
-    protected ResourceType rootType; 
-    
+    protected ResourceType rootType;
+
     protected Messages messages;
     protected DirectoryStack dirStack;
 
     protected ModuleTracker tracker;
-    
+
     // cache used for resolved files
     protected ConcurrentMap<String, ScriptFile> fileCache;
-    
 
-    public ModuleImpl(WebEngine engine, ModuleImpl superModule, ModuleConfiguration config) throws Exception {        
+
+    public ModuleImpl(WebEngine engine, ModuleImpl superModule, ModuleConfiguration config) throws Exception {
         this.engine = engine;
         this.superModule = superModule;
         this.configuration = config;
@@ -92,7 +92,7 @@ public class ModuleImpl implements Module {
         reloadMessages();
         loadDirectoryStack();
     }
-    
+
     public ModuleTracker getTracker() {
         if (tracker == null) { // tracker will be installed only in debug mode
             String devMode = engine.getDevMode();
@@ -109,25 +109,25 @@ public class ModuleImpl implements Module {
 
     /**
      * Whether or not this module has a GUI and should be listed in available GUI module list.
-     * For example REST modules usually has no GUI 
+     * For example REST modules usually has no GUI
      * @return true if headless (no GUI is provided), false otherwise
      */
     public boolean isHeadless() {
         return configuration.isHeadless;
     }
-    
+
     /**
-     * 
+     *
      * @return null if no natures was specified
      */
     public Set<String> getNatures() {
         return configuration.natures;
     }
-    
+
     public boolean hasNature(String natureId) {
         return configuration.natures != null && configuration.natures.contains(natureId);
     }
-    
+
     public WebEngine getEngine() {
         return engine;
     }
@@ -135,7 +135,7 @@ public class ModuleImpl implements Module {
     public String getName() {
         return configuration.name;
     }
-    
+
     public ModuleImpl getSuperModule() {
         return superModule;
     }
@@ -149,8 +149,8 @@ public class ModuleImpl implements Module {
         getTypeRegistry();
         return rootType;
     }
-    
-    
+
+
     public Resource getRootObject(WebContext ctx) {
         try {
             ((AbstractWebContext)ctx).setModule(this);
@@ -258,7 +258,7 @@ public class ModuleImpl implements Module {
         return null;
     }
 
-    
+
     public void loadConfiguration() {
         linkReg = new LinkRegistry();
         if (configuration.links != null) {
@@ -268,7 +268,7 @@ public class ModuleImpl implements Module {
         }
         configuration.links = null; // avoid storing unused data
     }
-    
+
 
     public List<LinkDescriptor> getLinks(String category) {
         return linkReg.getLinks(category);
@@ -374,8 +374,8 @@ public class ModuleImpl implements Module {
 
     /**
      * TODO There are no more reasons to lazy load the type registry since module are lazy loaded.
-     * Type registry must be loaded at module creation 
-     * 
+     * Type registry must be loaded at module creation
+     *
      * @return
      */
     public TypeRegistry createTypeRegistry() {
@@ -434,8 +434,8 @@ public class ModuleImpl implements Module {
             }
         }
     }
-    
-    
+
+
     @Override
     public String toString() {
         return getName();

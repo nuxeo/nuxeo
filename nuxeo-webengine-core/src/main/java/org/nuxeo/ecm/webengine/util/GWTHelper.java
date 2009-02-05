@@ -32,7 +32,6 @@ import org.nuxeo.ecm.webengine.WebException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class GWTHelper {
 
@@ -46,7 +45,7 @@ public class GWTHelper {
 
 
     public static JSONArray getChildren(CoreSession session) { // the roots
-        try {            
+        try {
             return getChildren(session, session.getRootDocument(), null);
         } catch (ClientException e) {
             throw WebException.wrap(e);
@@ -68,15 +67,15 @@ public class GWTHelper {
     public static JSONArray getChildren(CoreSession session, DocumentModel doc) {
         return getChildren(session, doc, doc.getId());
     }
-    
+
     public static JSONArray getChildren(CoreSession session, DocumentModel doc, String parentRef) {
-        JSONArray list  = new JSONArray();
-        if( doc == null ){
+        JSONArray list = new JSONArray();
+        if (doc == null) {
             return list;
         }
         try {
             DocumentModelList docs = session.getChildren(doc.getRef());
-            for ( DocumentModel d : docs) {
+            for (DocumentModel d : docs) {
                 JSONObject o = new JSONObject();
                 o.put("id", d.getId());
                 o.put("parentId", parentRef);
@@ -103,14 +102,16 @@ public class GWTHelper {
     }
 
     public static JSONArray getChildrenFiles(CoreSession session, DocumentModel doc, String parentRef) {
-        JSONArray list  = new JSONArray();
-        if( doc == null ){
+        JSONArray list = new JSONArray();
+        if (doc == null) {
             return list;
         }
         try {
             DocumentModelList docs = session.getChildren(doc.getRef());
-            for ( DocumentModel d : docs) {
-                if (d.isFolder()) continue;
+            for (DocumentModel d : docs) {
+                if (d.isFolder()) {
+                    continue;
+                }
                 JSONObject o = new JSONObject();
                 o.put("id", d.getId());
                 o.put("name", d.getName());
@@ -137,14 +138,16 @@ public class GWTHelper {
     }
 
     public static JSONArray getChildrenFolders(CoreSession session, DocumentModel doc, String parentRef) {
-        JSONArray list  = new JSONArray();
-        if( doc == null ){
+        JSONArray list = new JSONArray();
+        if (doc == null) {
             return list;
         }
         try {
             DocumentModelList docs = session.getChildren(doc.getRef());
-            for ( DocumentModel d : docs) {
-                if (!d.isFolder()) continue;
+            for (DocumentModel d : docs) {
+                if (!d.isFolder()) {
+                    continue;
+                }
                 JSONObject o = new JSONObject();
                 o.put("id", d.getId());
                 o.put("parentId", parentRef);
@@ -162,7 +165,7 @@ public class GWTHelper {
         return list;
     }
 
-    public static String toJSon(DocumentModel doc, String ... schemas) {
+    public static String toJSon(DocumentModel doc, String... schemas) {
         return doc2JSon(doc).toString();
     }
 
@@ -172,7 +175,7 @@ public class GWTHelper {
 
     public static JSONObject doc2JSon(DocumentModel doc, String... schemas) {
         try {
-            DocumentRef parentRef = doc.getParentRef(); 
+            DocumentRef parentRef = doc.getParentRef();
             JSONObject obj = new JSONObject();
             obj.put("id", doc.getId());
             obj.put("parentId", parentRef == null ? null : parentRef.reference());
@@ -203,9 +206,6 @@ public class GWTHelper {
                     + doc.getPath(), e);
         }
     }
-
-
-
 
 
 //    public static DocumentModel fromJSon(JSONObject obj) {

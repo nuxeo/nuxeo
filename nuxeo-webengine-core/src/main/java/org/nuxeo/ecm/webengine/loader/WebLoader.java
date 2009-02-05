@@ -34,12 +34,12 @@ import org.osgi.framework.Bundle;
 public class WebLoader {
 
     private static final Log log = LogFactory.getLog(WebLoader.class);
-    
-    protected WebEngine engine;
-    protected ReloadingClassLoader classLoader;
-    protected GroovyScripting gScripting; //TODO refactor groovy loading
-    
-    
+
+    protected final WebEngine engine;
+    protected final ReloadingClassLoader classLoader;
+    protected final GroovyScripting gScripting; //TODO refactor groovy loading
+
+
     public WebLoader(WebEngine engine) {
         this.engine = engine;
         File root = engine.getRootDirectory();
@@ -47,12 +47,12 @@ public class WebLoader {
         gScripting = new GroovyScripting(classLoader, engine.isDevMode());
         addClassPathElement(new File(root, "WEB-INF/classes"));
     }
-    
+
     public WebEngine getEngine() {
         return engine;
     }
-    
-    
+
+
     /**
      * Add a class or resource container to the reloading class loader.
      * The container is either a jar or a directory
@@ -67,18 +67,18 @@ public class WebLoader {
             log.error("Failed to create file store: "+container, e);
         }
     }
-    
+
 
     public URL getResource(String name) {
         return classLoader.getResource(name);
     }
-    
+
 
     public Class<?> loadClass(String name) throws ClassNotFoundException {
         return engine.loadClass(name);
     }
-    
-    
+
+
     public ReloadingClassLoader getClassLoader() {
         return classLoader;
     }
@@ -86,30 +86,30 @@ public class WebLoader {
     public GroovyScripting getGroovyScripting() {
         return gScripting;
     }
-    
+
     public void flushCache() {
         log.info("Flushing loader cache");
         classLoader.reload();
         gScripting.clearCache();
     }
-    
+
     public ClassProxy getGroovyClassProxy(String className) throws ClassNotFoundException {
-        return engine.isDevMode() ? 
-                new GroovyClassProxy(gScripting.getGroovyClassLoader(), className) 
+        return engine.isDevMode() ?
+                new GroovyClassProxy(gScripting.getGroovyClassLoader(), className)
             : new StaticClassProxy(gScripting.loadClass(className));
     }
 
     public ClassProxy getClassProxy(String className) throws ClassNotFoundException {
-        return new StaticClassProxy(classLoader.loadClass(className)); 
+        return new StaticClassProxy(classLoader.loadClass(className));
     }
 
-    public ClassProxy getClassProxy(Bundle bundle, String className) throws ClassNotFoundException {        
+    public ClassProxy getClassProxy(Bundle bundle, String className) throws ClassNotFoundException {
         return new StaticClassProxy(bundle.loadClass(className));
     }
-    
+
     public static ClassLoader getParentLoader() {
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
         return cl == null ? GroovyScripting.class.getClassLoader() : cl;
     }
-    
+
 }

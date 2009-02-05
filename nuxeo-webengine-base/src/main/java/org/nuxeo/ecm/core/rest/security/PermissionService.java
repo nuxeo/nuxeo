@@ -130,7 +130,7 @@ public class PermissionService extends DefaultAdapter {
             }
             return permissions;
         } catch (Exception e) {
-            throw WebException.wrap("Faield to get ACLs", e);
+            throw WebException.wrap("Failed to get ACLs", e);
         }
     }
 

@@ -35,7 +35,6 @@ import org.nuxeo.ecm.webengine.model.WebContext;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class DocumentHelper {
 
@@ -68,7 +67,7 @@ public class DocumentHelper {
                             throw new WebException("Failed to create document. Giving up.");
                         }
                         session.getDocument(new PathRef(path, name));
-                        name = baseTitle+"_"+Long.toHexString(IdUtils.generateLongId());
+                        name = baseTitle + "_" + Long.toHexString(IdUtils.generateLongId());
                         i++;
                     } catch (Exception e) {
                         // the name should be ok
@@ -82,7 +81,7 @@ public class DocumentHelper {
                 newDoc.getPart("dublincore").get("title").setValue(newDoc.getName());
             }
             Module m = context.getModule();
-            Validator v =  m.getValidator(newDoc.getType());
+            Validator v = m.getValidator(newDoc.getType());
             if (v != null) {
                 newDoc = v.validate(newDoc);
             }
@@ -90,7 +89,7 @@ public class DocumentHelper {
             session.save();
             return newDoc;
         } catch (Exception e) {
-            throw WebException.wrap("Failed to create document: "+name, e);
+            throw WebException.wrap("Failed to create document: " + name, e);
         }
     }
 
@@ -110,7 +109,7 @@ public class DocumentHelper {
                         VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, false);
             }
             Module m = ctx.getModule();
-            Validator v =  m.getValidator(doc.getType());
+            Validator v = m.getValidator(doc.getType());
             if (v != null) {
                 doc = v.validate(doc);
             }

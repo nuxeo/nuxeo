@@ -24,11 +24,12 @@ import java.io.File;
  *
  */
 public class TreeEntry extends DirectoryEntry {
-    
+
     public TreeEntry(File file) {
         super (file);
     }
 
+    @Override
     protected void collectChildren() {
     	if (!file.isDirectory()) { // may happens for missing directories in a project structure
     		return;
@@ -39,7 +40,7 @@ public class TreeEntry extends DirectoryEntry {
         	} else {
         		entries.add(new FileEntry(f));
         	}
-        }  
-    }    
-    
+        }
+    }
+
 }

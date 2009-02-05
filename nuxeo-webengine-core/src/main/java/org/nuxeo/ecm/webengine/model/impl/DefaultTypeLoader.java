@@ -28,18 +28,18 @@ import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.ecm.webengine.model.WebObject;
 
 /**
- * A type loader which is loading types from META-INF/web-types file. 
- * This loader is also checking the web module nature. If the project has 
- * for example a Groovy nature it will call at end the {@link GroovyTypeLoader} 
- * 
+ * A type loader which is loading types from META-INF/web-types file.
+ * This loader is also checking the web module nature. If the project has
+ * for example a Groovy nature it will call at end the {@link GroovyTypeLoader}
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public class DefaultTypeLoader {
 
-    public final static Log log = LogFactory.getLog(DefaultTypeLoader.class);
-    public final static String WEB_TYPES_FILE = "META-INF/web-types";
-    
+    public static final Log log = LogFactory.getLog(DefaultTypeLoader.class);
+    public static final String WEB_TYPES_FILE = "META-INF/web-types";
+
     protected GroovyTypeLoader gLoader;
     protected final ModuleImpl module;
     protected final WebLoader loader;
@@ -50,16 +50,16 @@ public class DefaultTypeLoader {
         this.typeReg = typeReg;
         this.root = root;
         this.module = module;
-        loader = module.getEngine().getWebLoader();        
+        loader = module.getEngine().getWebLoader();
         if (module.hasNature("groovy")) {
             gLoader = new GroovyTypeLoader(module.getEngine(), typeReg, root);
         }
     }
-    
+
     public ModuleImpl getModule() {
         return module;
     }
-    
+
     public void load() {
         File file = new File(module.getRoot(), WEB_TYPES_FILE);
         if (file.isFile()) {
@@ -73,18 +73,20 @@ public class DefaultTypeLoader {
             gLoader.load();
         }
     }
-  
+
     public void flushCache() {
         if (gLoader != null) {
             gLoader.flushCache();
-        }        
+        }
     }
-    
-    protected void loadTypesFile(File file) throws Exception {        
+
+    protected void loadTypesFile(File file) throws Exception {
         List<String>lines =  FileUtils.readLines(file);
         for (String line : lines) {
             line = line.trim();
-            if (line.length() == 0 || line.startsWith("#")) return;
+            if (line.length() == 0 || line.startsWith("#")) {
+                return;
+            }
             int p = line.indexOf('|');
             if (p > -1) {
                 line = line.substring(0, p);
@@ -95,7 +97,7 @@ public class DefaultTypeLoader {
             }
         }
     }
-    
+
     protected TypeDescriptor loadType(String className) throws ClassNotFoundException {
         ClassProxy clazz = loader.getClassProxy(className);
         WebObject type = clazz.get().getAnnotation(WebObject.class);
@@ -108,5 +110,5 @@ public class DefaultTypeLoader {
         }
         return null;
     }
-  
+
 }

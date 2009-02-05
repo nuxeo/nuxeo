@@ -26,7 +26,6 @@ import java.util.Map;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class AnnotatedMethod {
 
@@ -61,19 +60,19 @@ public class AnnotatedMethod {
     }
 
     @SuppressWarnings("unchecked")
-    public <A extends  Annotation> A getAnnotation(Class<A> annotationClass) {
-        return (A)annotations.get(annotationClass);
+    public <A extends Annotation> A getAnnotation(Class<A> annotationClass) {
+        return (A) annotations.get(annotationClass);
     }
 
-    public <A extends  Annotation> A getDeclaredAnnotation(Class<A> annotationClass) {
+    public <A extends Annotation> A getDeclaredAnnotation(Class<A> annotationClass) {
         return method.getAnnotation(annotationClass);
     }
 
-    public boolean isAnnotationPresent(Class<? extends  Annotation> annotationClass) {
+    public boolean isAnnotationPresent(Class<? extends Annotation> annotationClass) {
         return annotations.containsKey(annotationClass);
     }
 
-    public boolean isDeclaringAnnotation(Class<? extends  Annotation> annotationClass) {
+    public boolean isDeclaringAnnotation(Class<? extends Annotation> annotationClass) {
         return method.isAnnotationPresent(annotationClass);
     }
 

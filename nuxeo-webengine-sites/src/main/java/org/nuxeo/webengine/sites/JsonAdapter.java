@@ -16,14 +16,14 @@ import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
 
 
-@WebAdapter(name="json", type="JsonTreeAdapter", facets={"Site"})
-public class JsonAdapter extends DefaultAdapter{
+@WebAdapter(name = "json", type = "JsonTreeAdapter", facets = {"Site"})
+public class JsonAdapter extends DefaultAdapter {
 
     public static final String NAVIGATOR_TREE = "navigatorTree";
-    public static final String ROOT_DOCUMENT ="siteName";
+    public static final String ROOT_DOCUMENT = "siteName";
 
     @GET
-    public Response doGet(@QueryParam("root") String root){
+    public Response doGet(@QueryParam("root") String root) {
         WebContext ctx = WebEngine.getActiveContext();
         Object o = ctx.getTargetObject();
 
@@ -31,23 +31,23 @@ public class JsonAdapter extends DefaultAdapter{
         DocumentModel currentDoc = null;
         String result = "";
 
-        if ( o instanceof Site ) {
-            Site site = (Site)o;
+        if (o instanceof Site) {
+            Site site = (Site) o;
             rootDoc = site.getWorkspace();
             currentDoc = rootDoc;
-        } else if( o instanceof DocumentObject ) {
-            DocumentObject docObj = (DocumentObject)o;
+        } else if (o instanceof DocumentObject) {
+            DocumentObject docObj = (DocumentObject) o;
             currentDoc = docObj.getDocument();
             rootDoc = getTreeRoot(currentDoc);
         }
 
-        if ( rootDoc != null) {
-            DocumentModel d = (DocumentModel)ctx.getUserSession().get(ROOT_DOCUMENT);
-            if ( d == null || !d.equals(rootDoc) ) {
+        if (rootDoc != null) {
+            DocumentModel d = (DocumentModel) ctx.getUserSession().get(ROOT_DOCUMENT);
+            if (d == null || !d.equals(rootDoc)) {
                 ctx.getUserSession().put(ROOT_DOCUMENT, rootDoc);
             }
             SiteDocumentTree tree = new SiteDocumentTree(ctx, rootDoc);
-            if ( root == null || "source".equals(root)){
+            if (root == null || "source".equals(root)) {
                 Path relPath = getRelativPath(rootDoc, currentDoc);
                 tree.enter(ctx, relPath.toString());
                 result = tree.getTreeAsJSONArray(ctx);
@@ -60,11 +60,11 @@ public class JsonAdapter extends DefaultAdapter{
     }
 
 
-    protected Path getRelativPath( DocumentModel rootDoc, DocumentModel doc){
+    protected Path getRelativPath(DocumentModel rootDoc, DocumentModel doc) {
         Path rootPath = rootDoc.getPath();
         Path docPath = doc.getPath();
         int n = rootPath.segmentCount();
-        if ( docPath.matchingFirstSegments(rootPath)== n ){
+        if (docPath.matchingFirstSegments(rootPath) == n) {
             return docPath.removeFirstSegments(n);
         }
         return null;
@@ -72,25 +72,24 @@ public class JsonAdapter extends DefaultAdapter{
 
     // return the workspace with webc:isWebContainer
     protected static DocumentModel getTreeRoot(DocumentModel doc) {
-        if  ( doc != null ) {
+        if (doc != null) {
             CoreSession session = CoreInstance.getInstance().getSession(doc.getSessionId());
             DocumentModel parent = doc;
-            while ( parent != null) {
+            while (parent != null) {
                 String docType = parent.getType();
                 boolean isWebContainer = true;
-                if( "Workspace".equals(docType) && isWebContainer){
+                if ("Workspace".equals(docType) && isWebContainer) {
                     return parent;
                 }
-                try  {
+                try {
                     parent = session.getDocument(parent.getParentRef());
-                } catch ( ClientException e ){
+                } catch (ClientException e) {
                     return null;
                 }
             }
         }
         return null;
     }
-
 
 
 }

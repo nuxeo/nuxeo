@@ -20,6 +20,7 @@ import java.io.File;
 import java.util.HashSet;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -31,28 +32,27 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class ReloadManager {
 
-    private static Log log = LogFactory.getLog(ReloadManager.class);
-    
+    private static final Log log = LogFactory.getLog(ReloadManager.class);
+
     protected WebEngine engine;
     protected FileEntry deploy; // track deploy/undeploy modules
     private final Timer timer = new Timer("ReloadManager");
 
-    
+
     public ReloadManager(WebEngine engine) {
         this.engine = engine;
         deploy = new FileEntry(engine.getDeploymentDirectory());
     }
-       
+
 
     public void start() {
         String interval = Framework.getProperty("org.nuxeo.ecm.webengine.reloadInterval", "2000");
         start(4000, Integer.parseInt(interval));
     }
-    
+
     public void start(int startAfter, int interval) {
         timer.scheduleAtFixedRate(new Task(), startAfter, interval);
     }
@@ -61,14 +61,15 @@ public class ReloadManager {
         timer.cancel();
         timer.purge();
     }
-    
-    
+
+
     private class Task extends TimerTask {
+        @Override
         public void run() {
             ModuleConfiguration[] modules = engine.getModuleManager().getModules();
             for (ModuleConfiguration mc : modules) {
                 if (mc.isLoaded()) {
-                    ModuleImpl module = (ModuleImpl)mc.get();
+                    ModuleImpl module = (ModuleImpl) mc.get();
                     module.getTracker().run();
                 }
             }
@@ -76,7 +77,7 @@ public class ReloadManager {
             if (deploy.check()) { // deployment directory changed
                 ModuleManager mgr = engine.getModuleManager();
                 ModuleConfiguration[] ar = mgr.getModules();
-                HashSet<File> set = new HashSet<File>();
+                Set<File> set = new HashSet<File>();
                 for (ModuleConfiguration mc : ar) {
                     set.add(mc.file);
                 }
@@ -88,10 +89,10 @@ public class ReloadManager {
                             if (f.isFile()) {
                                 if (!set.remove(f)) { // a new module
                                     try {
-                                        log.info("auto-deploying module: "+f);
+                                        log.info("auto-deploying module: " + f);
                                         mgr.loadModule(f);
                                     } catch (Exception e) {
-                                        log.error("Failed to load module: "+f, e);
+                                        log.error("Failed to load module: " + f, e);
                                     }
                                 }
                             }
@@ -103,7 +104,7 @@ public class ReloadManager {
                     if (f.getAbsolutePath().startsWith(rootPath)) {
                         ModuleConfiguration mc = mgr.getModuleByConfigFile(f);
                         if (mc != null) {
-                            log.info("auto-undeploying module: "+mc.name);
+                            log.info("auto-undeploying module: " + mc.name);
                             mgr.unregisterModule(mc.name);
                         }
                     }
@@ -111,5 +112,5 @@ public class ReloadManager {
             }
         }
     }
-    
+
 }

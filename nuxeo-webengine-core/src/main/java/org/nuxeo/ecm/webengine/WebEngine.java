@@ -55,7 +55,6 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class WebEngine implements ResourceLocator {
 
@@ -70,7 +69,7 @@ public class WebEngine implements ResourceLocator {
     protected static final Map<Object, Object> mimeTypes = loadMimeTypes();
 
     static Map<Object, Object> loadMimeTypes() {
-        Map<Object,Object> mimeTypes = new HashMap<Object, Object>();
+        Map<Object, Object> mimeTypes = new HashMap<Object, Object>();
         Properties p = new Properties();
         URL url = WebEngine.class.getClassLoader().getResource("OSGI-INF/mime.properties");
         InputStream in = null;
@@ -82,7 +81,10 @@ public class WebEngine implements ResourceLocator {
             throw new Error("Failed to load mime types");
         } finally {
             if (in != null) {
-                try { in.close(); } catch (Exception e) {}
+                try {
+                    in.close();
+                } catch (Exception e) {
+                }
             }
         }
         return mimeTypes;
@@ -138,7 +140,6 @@ public class WebEngine implements ResourceLocator {
             skinPathPrefix = System.getProperty("jboss.home.dir") != null ? "/nuxeo/site/skin" : "/skin";
         }
 
-
         env = new HashMap<String, Object>();
         env.put("installDir", root);
         env.put("engine", "Nuxeo Web Engine");
@@ -148,30 +149,21 @@ public class WebEngine implements ResourceLocator {
         rendering.setResourceLocator(this);
         rendering.setSharedVariable("env", getEnvironment());
 
-
         // register writers - TODO make an extension point
         registry.addMessageBodyWriter(new ResourceWriter());
         registry.addMessageBodyWriter(new TemplateWriter());
         registry.addMessageBodyWriter(new ScriptFileWriter());
         registry.addMessageBodyWriter(new BlobWriter());
-        
     }
-    
 
     public WebLoader getWebLoader() {
         return webLoader;
     }
-    
-    /**
-     * @param skinPathPrefix the skinPathPrefix to set.
-     */
+
     public void setSkinPathPrefix(String skinPathPrefix) {
         this.skinPathPrefix = skinPathPrefix;
     }
-    
-    /**
-     * @return the skinPathPrefix.
-     */
+
     public String getSkinPathPrefix() {
         return skinPathPrefix;
     }
@@ -188,15 +180,13 @@ public class WebEngine implements ResourceLocator {
         return globalTypes;
     }
 
-
     public String getMimeType(String ext) {
-        return (String)mimeTypes.get(ext);
+        return (String) mimeTypes.get(ext);
     }
 
     public AnnotationManager getAnnotationManager() {
         return annoMgr;
     }
-
 
     public boolean isDevMode() {
         return devMode != null;
@@ -226,32 +216,29 @@ public class WebEngine implements ResourceLocator {
         return scripting;
     }
 
-
     /**
      * Register a module reference given its configuration file.
-     * The module configuration is not yet loaded. 
-     * It will be loaded the first time an HTTP request will be made.  
-     * @param config
-     * @throws IOException
+     * The module configuration is not yet loaded.
+     * It will be loaded the first time an HTTP request will be made.
      */
     public void registerModule(File config) throws IOException {
         registeredModules.add(config);
         if (moduleMgr != null) { // avoid synchronizing if not needed
-            synchronized(this) { 
+            synchronized (this) {
                 if (moduleMgr != null) {
-                    moduleMgr.loadModule(config);                    
+                    moduleMgr.loadModule(config);
                 }
             }
-        }         
+        }
     }
-    
+
     public List<File> getRegisteredModules() {
         return registeredModules;
     }
-    
+
     public ModuleManager getModuleManager() {
         if (moduleMgr == null) { // avoid synchronizing if not needed
-            synchronized(this) { 
+            synchronized (this) {
                 if (moduleMgr == null) {
                     moduleMgr = new ModuleManager(this);
                     File deployRoot = getDeploymentDirectory();
@@ -259,7 +246,7 @@ public class WebEngine implements ResourceLocator {
                         try {
                             moduleMgr.loadModules(deployRoot);
                         } catch (IOException e) {
-                            throw WebException.wrap("Failed to load auto-deploy modules", e);        
+                            throw WebException.wrap("Failed to load auto-deploy modules", e);
                         }
                     }
                     try {
@@ -286,7 +273,7 @@ public class WebEngine implements ResourceLocator {
     public File getRootDirectory() {
         return root;
     }
-    
+
     public File getDeploymentDirectory() {
         return new File(root, "deploy");
     }
@@ -303,7 +290,9 @@ public class WebEngine implements ResourceLocator {
         return rendering;
     }
 
-    /** Manage jax-rs root resource bindings */
+    /**
+     * Manage jax-rs root resource bindings
+     */
     public void addResourceBinding(ResourceBinding binding) {
         registry.addBinding(binding);
     }
@@ -322,15 +311,15 @@ public class WebEngine implements ResourceLocator {
     public synchronized void reload() {
         log.info("Reloading WebEngine");
         if (moduleMgr != null) { // avoid synchronizing if not needed
-            for (ModuleConfiguration mc :  moduleMgr.getModules()) {
+            for (ModuleConfiguration mc : moduleMgr.getModules()) {
                 if (mc.isLoaded()) {
-                    // this is needed even if the module manager 
+                    // this is needed even if the module manager
                     // is rebuild since it may remove groovy file caches
-                    mc.get().flushCache(); 
+                    mc.get().flushCache();
                 }
             }
-            synchronized(this) { 
-                if (moduleMgr != null) {                    
+            synchronized (this) {
+                if (moduleMgr != null) {
                     moduleMgr = null;
                 }
             }
@@ -345,9 +334,9 @@ public class WebEngine implements ResourceLocator {
     public void start() {
         if (reloadMgr != null) {
             reloadMgr.start();
-        }        
+        }
     }
-    
+
     public void stop() {
         if (reloadMgr != null) {
             reloadMgr.stop();
@@ -356,7 +345,7 @@ public class WebEngine implements ResourceLocator {
     }
 
     protected ModuleConfiguration getModuleFromPath(String rootPath, String path) {
-        path = path.substring(rootPath.length()+1);
+        path = path.substring(rootPath.length() + 1);
         int p = path.indexOf('/');
         String moduleName = path;
         if (p > -1) {
@@ -365,9 +354,7 @@ public class WebEngine implements ResourceLocator {
         return moduleMgr.getModule(moduleName);
     }
 
-
-
-    /** ResourceLocator API */
+    /* ResourceLocator API */
 
     public URL getResourceURL(String key) {
         try {
@@ -393,6 +380,4 @@ public class WebEngine implements ResourceLocator {
         return null;
     }
 
-
-    
 }

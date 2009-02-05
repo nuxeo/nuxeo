@@ -12,14 +12,26 @@
         <row>
           <widget>pushtomenu</widget>
         </row>
-        <!--
-          row> <widget>template</widget> </row> <row>
-          <widget>tags</widget> </row
-        -->
+        <row>
+          <widget>theme</widget>
+        </row>
         <row>
           <widget>content</widget>
-        </row>
+        </row>        
       </rows>
+
+      <widget name="theme" type="template">
+        <translated>true</translated>
+        <fields>
+          <field>webp:theme</field>
+          <field>webp:themePage</field>
+        </fields>
+        <properties mode="any">
+          <property name="template">
+            /widgets/site_theme_widget.xhtml
+          </property>
+        </properties>
+      </widget>
 
       <widget name="pushtomenu" type="checkbox">
         <translated>true</translated>
@@ -31,6 +43,8 @@
           <property name="styleClass">dataInputText</property>
         </properties>
       </widget>
+
+
 
       <widget name="content" type="htmltext">
         <translated>true</translated>

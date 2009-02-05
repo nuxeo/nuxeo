@@ -31,11 +31,12 @@ import org.osgi.framework.Bundle;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
+@Deprecated
 public class GlobalTypes  implements AnnotationLoader {
 
     protected final TypeRegistry typeReg;
     protected final WebEngine engine;
-    
+
     public GlobalTypes(WebEngine engine) {
         this.engine = engine;
         typeReg = new TypeRegistry(engine, null);

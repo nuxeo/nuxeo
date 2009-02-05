@@ -27,21 +27,19 @@ import org.nuxeo.common.utils.FileUtils;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class MemoryStore implements ResourceStore {
 
-    protected Map<String, byte[]> store;
-    
+    protected final Map<String, byte[]> store;
 
     public MemoryStore() {
-        this (new HashMap<String, byte[]>());
+        this(new HashMap<String, byte[]>());
     }
-    
+
     public MemoryStore(Map<String, byte[]> store) {
         this.store = store;
     }
-    
+
     public boolean exists(String name) {
         return store.containsKey(name);
     }
@@ -74,6 +72,5 @@ public class MemoryStore implements ResourceStore {
     public void remove(String name) {
         store.remove(name);
     }
-
 
 }

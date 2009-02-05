@@ -51,7 +51,7 @@ public class ModuleConfiguration implements Cloneable {
 
     private static final Log log = LogFactory.getLog(ModuleConfiguration.class);
 
-    
+
     @XNode("@path")
     protected String path;
 
@@ -60,21 +60,21 @@ public class ModuleConfiguration implements Cloneable {
 
     @XNode("@extends")
     public String base;
-    
+
     @XNode("@name")
     public String name;
 
     @XNode("@headless")
     public boolean isHeadless;
-    
-    
+
+
     @XNode("title")
     public String title;
-        
+
     @XNode("icon")
     public String icon;
-    
-    
+
+
     /**
      * The module directory.
      * Must be set by the client before registering the descriptor.
@@ -86,10 +86,10 @@ public class ModuleConfiguration implements Cloneable {
      * The module configuration file (this will be set by the module config parser)
      */
     public File file;
-    
+
     @XNodeList(value="nature", type=HashSet.class, componentType=String.class, nullByDefault=true)
     public Set<String> natures;
-    
+
     @XNodeList(value="links/link", type=ArrayList.class, componentType=LinkDescriptor.class, nullByDefault=true)
     public List<LinkDescriptor> links;
 
@@ -117,54 +117,52 @@ public class ModuleConfiguration implements Cloneable {
     @XNodeList(value="media-types/media-type", type=MediaTypeRef[].class, componentType=MediaTypeRef.class, nullByDefault=true)
     public MediaTypeRef[] mediatTypeRefs;
 
-    
+
     public WebEngine engine;
     private ModuleImpl module;
-    
-    
-    
+
+
     public ModuleConfiguration() {}
-    
+
     public ModuleConfiguration(WebEngine engine) {
         this.engine = engine;
     }
-    
+
     public WebEngine getEngine() {
         return engine;
     }
-    
+
     public void setEngine(WebEngine engine) {
         this.engine = engine;
     }
-    
+
     public String getTitle() {
         return title;
     }
-    
+
     public String getIcon() {
         return icon;
     }
-    
+
     public String getName() {
         return name;
     }
-    
+
     public List<LinkDescriptor> getLinks() {
         return links;
     }
-    
+
     public File getDirectory() {
         return directory;
     }
-    
+
     public String getBase() {
         return base;
     }
-    
+
     public String getPath() {
         return path;
     }
-
 
     public Module get() {
         if (module == null) {
@@ -186,13 +184,13 @@ public class ModuleConfiguration implements Cloneable {
         }
         return module;
     }
-    
+
     public boolean isLoaded() {
         return module != null;
     }
 
     public boolean isHeadless() {
-        return isHeadless;        
+        return isHeadless;
     }
 
 }

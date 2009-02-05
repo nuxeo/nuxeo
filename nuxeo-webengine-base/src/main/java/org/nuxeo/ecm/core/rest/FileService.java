@@ -47,7 +47,6 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
 
 /**
  * File Service - manages attachments to a document.
- *
  * <p>
  * Accepts the following methods:
  * <ul>
@@ -56,9 +55,8 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
  * </ul>
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-@WebAdapter(name="file", type="FileService", targetType="Document")
+@WebAdapter(name = "file", type = "FileService", targetType = "Document")
 public class FileService extends DefaultAdapter {
 
     @GET
@@ -71,30 +69,30 @@ public class FileService extends DefaultAdapter {
                 xpath = "file:content";
             } else {
                 throw new IllegalParameterException(
-                "Missing request parameter named 'property' that specify the blob property xpath to fetch");
+                        "Missing request parameter named 'property' that specify the blob property xpath to fetch");
             }
         }
         try {
             Property p = doc.getProperty(xpath);
-            Blob blob = (Blob)p.getValue();
+            Blob blob = (Blob) p.getValue();
             if (blob == null) {
-                throw new WebResourceNotFoundException("No attached file at "+xpath);
+                throw new WebResourceNotFoundException("No attached file at " + xpath);
             }
             String fileName = blob.getFilename();
             if (fileName == null) {
                 p = p.getParent();
                 if (p.isComplex()) { // special handling for file and files schema
                     try {
-                        fileName = (String)p.getValue("filename");
+                        fileName = (String) p.getValue("filename");
                     } catch (PropertyException e) {
                         fileName = "Unknown";
                     }
                 }
             }
             return Response.ok(blob)
-                .header("Content-Disposition","inline; filename="+fileName)
-                .type(blob.getMimeType())
-                .build();
+                    .header("Content-Disposition", "inline; filename=" + fileName)
+                    .type(blob.getMimeType())
+                    .build();
         } catch (Exception e) {
             throw WebException.wrap("Failed to get the attached file", e);
         }
@@ -113,7 +111,8 @@ public class FileService extends DefaultAdapter {
                 xpath = "files:files";
             } else {
                 throw new IllegalArgumentException(
-                        "Missing request parameter named 'property' that specifies the blob property xpath to fetch");
+                        "Missing request parameter named 'property' that specifies " +
+                        "the blob property xpath to fetch");
             }
         }
         Blob blob = form.getFirstBlob();
@@ -126,7 +125,7 @@ public class FileService extends DefaultAdapter {
                 if ("files".equals(p.getSchema().getName())) { // treat the files schema separately
                     Map<String, Serializable> map = new HashMap<String, Serializable>();
                     map.put("filename", blob.getFilename());
-                    map.put("file", (Serializable)blob);
+                    map.put("file", (Serializable) blob);
                     p.add(map);
                 } else {
                     p.add(blob);
@@ -177,7 +176,8 @@ public class FileService extends DefaultAdapter {
                 xpath = "file:content";
             } else {
                 throw new IllegalArgumentException(
-                "Missing request parameter named 'property' that specify the blob property xpath to fetch");
+                        "Missing request parameter named 'property' that specifies "
+                        + "the blob property xpath to fetch");
             }
         }
         try {

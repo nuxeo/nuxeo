@@ -17,22 +17,22 @@ public class SiteHelper {
         }
     }
 
-    public static String getString(DocumentModel d, String xpath) throws  ClientException{
+    public static String getString(DocumentModel d, String xpath) throws ClientException {
         Property p = d.getProperty(xpath);
-        if ( p != null) {
+        if (p != null) {
             Serializable v = p.getValue();
-            if ( v != null ) {
+            if (v != null) {
                 return v.toString();
             }
         }
         return "";
     }
 
-    public static Blob getBlob(DocumentModel d, String xpath) throws  ClientException{
+    public static Blob getBlob(DocumentModel d, String xpath) throws ClientException {
         Property p = d.getProperty(xpath);
-        if ( p != null) {
+        if (p != null) {
             Serializable v = p.getValue();
-            if ( v != null ) {
+            if (v != null) {
                 return (Blob) v;
             }
         }
@@ -41,18 +41,18 @@ public class SiteHelper {
 
     public static boolean getBoolean(DocumentModel d, String xpath, boolean defaultValue) {
         try {
-            return  getBoolean(d, xpath);
+            return getBoolean(d, xpath);
         } catch (ClientException e) {
             return defaultValue;
         }
     }
 
-    public static boolean getBoolean(DocumentModel d, String xpath) throws  ClientException{
+    public static boolean getBoolean(DocumentModel d, String xpath) throws ClientException {
         Property p = d.getProperty(xpath);
-        if ( p != null) {
+        if (p != null) {
             Serializable v = p.getValue();
-            if ( v != null ) {
-                return ((Boolean) v).booleanValue();
+            if (v != null) {
+                return (Boolean) v;
             }
         }
         throw new ClientException("value is null");

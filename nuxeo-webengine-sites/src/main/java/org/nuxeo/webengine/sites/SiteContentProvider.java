@@ -1,6 +1,7 @@
 package org.nuxeo.webengine.sites;
 
 import java.util.Vector;
+import java.util.List;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -14,16 +15,14 @@ public class SiteContentProvider extends DocumentContentProvider {
         super(session);
     }
 
-
-
     @Override
     public Object[] getChildren(Object obj) {
         Object[] objects = super.getChildren(obj);
-        Vector<Object> v= new Vector<Object>();
-        for( Object o : objects){
+        List<Object> v = new Vector<Object>();
+        for (Object o : objects) {
             DocumentModel d = (DocumentModel) o;
             // filter pages
-            if ( SiteHelper.getBoolean(d, "webp:pushtomenu", false)){
+            if (SiteHelper.getBoolean(d, "webp:pushtomenu", false)) {
                 v.add(d);
             }
         }
