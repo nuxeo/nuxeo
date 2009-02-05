@@ -203,6 +203,47 @@ ${preset_info.preview}
 
 </#if>
 
+
+
+<#assign images=This.getHardcodedImages(current_theme_name)>
+
+<#if images>
+<h3 class="nxthemesEditorFocus">Images that are not yet registered as presets ...</h3>
+
+<table cellspacing="5" cellpadding="4" style="margin-bottom: 30px; width: 100%">
+<#assign count = 0 />
+<#assign row = 1 />
+<#assign row = (count % 10) +1 /> 
+
+  <#if row == 0>
+    <tr>
+  </#if>
+<#list images as image>
+<td class="preset">
+  <div class="preview"><div onclick="NXThemesPresetManager.convertValueToPreset('${current_theme_name}', 'image', '${image}')" style="background:${image}">&nbsp;</div></div>
+  <div class="name">${image}</div>
+</td>
+
+  <#if row == 10>
+    </tr>
+  </#if>
+  
+  <#assign count = count + 1/>
+</#list>
+
+<#if row < 10>
+  <#list row..9 as i>
+      <td></td>
+  </#list>
+  </tr>
+</#if>
+        
+</table>
+
+</#if>
+
+
+
 <#if selected_preset_group>
 <!-- Palettes -->
 <h2 class="nxthemesEditor" style="border-top: 1px dashed #ccc; padding-top: 10px">${selected_preset_group}</h2>

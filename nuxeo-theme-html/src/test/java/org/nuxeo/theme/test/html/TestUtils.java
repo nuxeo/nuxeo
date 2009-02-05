@@ -202,13 +202,34 @@ public class TestUtils extends NXRuntimeTestCase {
         assertEquals("#010203", Utils.extractCssColors("rgb( 1, 2, 3 )").get(0));
     }
 
-    public void testReplaceColor() {
-        assertEquals("\"orange\"", Utils.replaceColor("#fc0", "#fc0", "\"orange\""));
-        assertEquals("#fc0 \"yellow\" #fc0", Utils.replaceColor("#fc0 #ff0 #fc0", "#ff0", "\"yellow\""));
-        assertEquals("#fc0 \"yellow\" #fc0", Utils.replaceColor("#fc0 #ffff00 #fc0", "#ff0", "\"yellow\""));
-        assertEquals("\"yellow\" \"yellow\" #fc0", Utils.replaceColor("rgb(255, 255,0) #FFFF00 #fc0", "#ff0", "\"yellow\""));
+    public void testExtractCssImages() {
+        assertEquals("url(image.png)", Utils.extractCssImages("url(image.png)").get(
+                0));
+        assertEquals("url(/image.png)",
+                Utils.extractCssImages("url( /image.png )").get(0));
+        assertEquals("url(/image.png)",
+                Utils.extractCssImages("url  ( /image.png )").get(0));
+        assertEquals("url(/image.png)", Utils.extractCssImages(
+                "url  ( \" /image.png \" )").get(0));
+        assertEquals("url(/image.png)", Utils.extractCssImages(
+                "url  ( \' /image.png \' )").get(0));
+        assertEquals("url(image1.png)", Utils.extractCssImages(
+                "url(image1.png) url(image2.png)").get(0));
+        assertEquals("url(image2.png)", Utils.extractCssImages(
+                "url(\'image1.png\') url(\"image2.png\")").get(1));
     }
-    
+
+    public void testReplaceColor() {
+        assertEquals("\"orange\"", Utils.replaceColor("#fc0", "#fc0",
+                "\"orange\""));
+        assertEquals("#fc0 \"yellow\" #fc0", Utils.replaceColor(
+                "#fc0 #ff0 #fc0", "#ff0", "\"yellow\""));
+        assertEquals("#fc0 \"yellow\" #fc0", Utils.replaceColor(
+                "#fc0 #ffff00 #fc0", "#ff0", "\"yellow\""));
+        assertEquals("\"yellow\" \"yellow\" #fc0", Utils.replaceColor(
+                "rgb(255, 255,0) #FFFF00 #fc0", "#ff0", "\"yellow\""));
+    }
+
     public void testNamedStyles() {
         Style style1 = new StyleFormat();
         style1.setUid(1);

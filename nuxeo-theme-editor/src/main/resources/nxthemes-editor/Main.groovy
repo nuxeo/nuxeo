@@ -1237,10 +1237,14 @@ public class Main extends ModuleRoot {
               viewNames, false, true, true, true)
   }
   
-  public static List getHardcodedColors(final themeName) {
+  public static List<String> getHardcodedColors(final themeName) {
       return Editor.getHardcodedColors(themeName)    
   }  
 
+  public static List<String> getHardcodedImages(final themeName) {
+      return Editor.getHardcodedImages(themeName)    
+  }
+  
   /* Session */
   
   public static String getSelectedPresetGroup() {

@@ -184,7 +184,8 @@ public class Editor {
     }
 
     public static void updateElementProperties(Element element,
-            Map<String, String> propertyMap) throws ThemeException, ThemeIOException {
+            Map<String, String> propertyMap) throws ThemeException,
+            ThemeIOException {
         Properties properties = new Properties();
         for (Object key : propertyMap.keySet()) {
             properties.put(key, propertyMap.get(key));
@@ -601,6 +602,25 @@ public class Editor {
         return new ArrayList<String>(colors);
     }
 
+    public static List<String> getHardcodedImages(final String themeName) {
+        Set<String> images = new HashSet<String>();
+        for (Style style : Manager.getThemeManager().getStyles(themeName)) {
+            for (Map.Entry<Object, Object> entry : style.getAllProperties().entrySet()) {
+                String value = (String) entry.getValue();
+                images.addAll(org.nuxeo.theme.html.Utils.extractCssImages(value));
+            }
+        }
+        Set<String> imagePresetValues = new HashSet<String>();
+        for (PresetType preset : PresetManager.getCustomPresets(themeName)) {
+            String category = preset.getCategory();
+            if ("image".equals(category) || "background".equals(category)) {
+                imagePresetValues.add(preset.getValue());
+            }
+        }
+        images.removeAll(imagePresetValues);
+        return new ArrayList<String>(images);
+    }
+
     public static String addPreset(String themeName, String presetName,
             String category, String value) throws ThemeException {
         if (presetName.equals("")) {
@@ -668,7 +688,7 @@ public class Editor {
     public static void convertCssValueToPreset(String themeName,
             String category, String presetName, String value)
             throws ThemeException {
-        if (!"color".equals(category)) {
+        if (!"color".equals(category) && !"image".equals(category)) {
             throw new ThemeException(
                     "Preset category not supported while converting css value to preset: "
                             + category);
@@ -686,8 +706,14 @@ public class Editor {
                     for (Map.Entry<Object, Object> entry : styleProperties.entrySet()) {
                         String text = (String) entry.getValue();
                         String key = (String) entry.getKey();
-                        String newText = org.nuxeo.theme.html.Utils.replaceColor(
-                                text, value, presetStr);
+                        String newText = text;
+                        if (category.equals("color")) {
+                            newText = org.nuxeo.theme.html.Utils.replaceColor(
+                                    text, value, presetStr);
+                        } else if (category.equals("image")) {
+                            newText = org.nuxeo.theme.html.Utils.replaceImage(
+                                    text, value, presetStr);
+                        }
                         if (!newText.equals(text)) {
                             styleProperties.setProperty(key, newText);
                         }
