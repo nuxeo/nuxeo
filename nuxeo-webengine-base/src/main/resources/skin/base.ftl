@@ -1,5 +1,4 @@
 <html>
-
 <head>
   <title>
     <@block name="title">WebEngine</@block>

@@ -51,7 +51,6 @@ public class ModuleConfiguration implements Cloneable {
 
     private static final Log log = LogFactory.getLog(ModuleConfiguration.class);
 
-
     @XNode("@path")
     protected String path;
 
@@ -66,7 +65,6 @@ public class ModuleConfiguration implements Cloneable {
 
     @XNode("@headless")
     public boolean isHeadless;
-
 
     @XNode("title")
     public String title;
@@ -106,6 +104,7 @@ public class ModuleConfiguration implements Cloneable {
             }
         }
     }
+
     public Map<String, Validator> validators;
 
     @XNodeList(value="resources/resource", type=ArrayList.class, componentType=ResourceBinding.class, nullByDefault=true)

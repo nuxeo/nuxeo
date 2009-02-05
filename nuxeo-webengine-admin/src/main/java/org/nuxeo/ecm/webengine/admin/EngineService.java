@@ -28,7 +28,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
 @WebObject(type = "Engine")
-@Produces("text/html; charset=UTF-8")
+@Produces("text/html;charset=UTF-8")
 public class EngineService extends DefaultObject {
 
     @GET
