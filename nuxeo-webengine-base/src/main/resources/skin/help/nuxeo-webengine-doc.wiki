@@ -349,6 +349,34 @@ Then after building your module you can unzip the JAR and copy the content direc
 
 === Using the Eclipse Plugin
 
+WebEngine is providin an Eclipse Plugin to easy develop web modules in Eclipse IDE. Using this module you can:
+* deploy your Eclipse projects as web modules in a running WebEngine server.
+* starting / stopping / debugging the server from Eclipse IDE.
+* modify your classes and resources without the needed to restart the server to have changes taken into account.
+
+To install the plugin you can use our Eclipse update site: http://download.nuxeo.org/nuxeo-ide/updates/snapshots
+
+To get started using the plugin you need first to install a standalone WebEngine server and then import your web module project inside eclipse.
+To do this you should use maven to generate eclipse specific files as following:
+{{{
+cd /into/yout/project/root
+mvn -o eclipse:eclipse
+}}}
+Then in eclipse use File > Import > General > Existing Project into Workspace to select you project root and import it as an Eclipse project in your workspace.
+Then right click on the project, and select __Nuxeo Tools > Add WebEngine Nature__.
+Now your project was marked as an WebEngine module project and can be deployed on the server you instlalled server.
+To deploy it, you need to open the WebEngine Server view from __Window > Show View > Other > Nuxeo Views > WebEngine Server__.
+
+In this view you will have listed all your projects marked as WebEngine modules. Click on right most icon in the view bar (Server Configuration) and specify the install path of your WebEngine server. Click OK. Now you can start your server from Eclipse IDE. Check the projects (that are listed in the view) you want to deploy on the server and then click on Run button. WebEngine will start (see logs in Console View) and will deploy your plugin too.
+
+You can now modify classes from Eclipse IDE without needing to redeploy your plugin. The changes will be available in your browser as you made them.
+
+*Notes:*
+
+* The Plugin development is still in progress so many features will be added soon, like creation wizards, maven support etc.
+* You must make sure that projects being deployed from Eclipse are *not* already deployed in the server installation directory, otherwise we will have your moduels deployed twice. We will provide later a fix to check for duplicate modules.
+* If your module use external libraries as dependecies you must deploy them for now manually in the server nxserver/lib directory. This will be improved in the future.
+
 === How to checkout WebEngine sources
 
 To obtain the WebEngine sources, you can checkout a WebEngine copy using mercurial as follows:
@@ -385,15 +413,10 @@ Unzip the nxserver.zip go into, make sure the shell files are executable and sta
 
 In this chapter we will go deeper into WebEngine model by proposing 7 samples on how to use common WebEngine concepts.
 
-After installing WebEngine you can find samples inside web/base/samples. You can also download them from here [http://download.nuxeo.org/webengine/releases/nuxeo-webengine-samples-1.0.rc.zip nuxeo-webengine-samples-1.0.rc.zip]
+After installing WebEngine you can find samples inside nxserver/examples directory.
+To access these samples through your browser you need to copy sample folders in nxserver/web/deploy directory. Then follow the instruction in each tutorial.
 
-To access these samples through your browser you need to copy sample folders in WebEngine web root directory and restart WebEngine. Then follow the instruction in each tutorial.
-
-To correctly understand the tutorials you need to look into all `.groovy` and `.ftl` files you find in sample modules and look at the comments.
-
-Each sample is well documented in the corresponding Main.groovy class using java docs.
-
-So in the sections below, I will explain only what the sample is doing and how you can test it.
+To correctly understand the tutorials you need to look into all `.groovy` and `.ftl` files you find in sample modules. Each sample is well documented in the corresponding Main.groovy class using java docs.
 
 ==== Tutorial 1 - JAX-RS: Hello World
 
