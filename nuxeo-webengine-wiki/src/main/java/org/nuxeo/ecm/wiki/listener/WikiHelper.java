@@ -57,11 +57,11 @@ public class WikiHelper {
     public static final String WIKI_ROOT_PATH = "/default-domain/workspaces/wikis";
 
     // FIXME: properly handle exceptions
-    public static List<String> getWordLinks(DocumentModel doc){
+    public static List<String> getWordLinks(DocumentModel doc) {
         try {
             String content = (String) doc.getPart(WikiTypes.SCHEMA_WIKIPAGE).get(WikiTypes.FIELD_CONTENT).getValue();
             StringBuffer collector = new StringBuffer();
-            WordExtractor extractor= new WordExtractor(collector);
+            WordExtractor extractor = new WordExtractor(collector);
             CommonWikiParser parser = new CommonWikiParser();
             try {
                 parser.parse(new StringReader(content), extractor);
@@ -99,7 +99,7 @@ public class WikiHelper {
             if (list != null) {
                 QNameResource docResource = RelationHelper.getDocumentResource(doc);
                 for (String word : list) {
-                    if  ( !word.startsWith(".") ){
+                    if (!word.startsWith(".")) {
                         word = WikiHelper.getAbsolutePageLink(doc, word);
                     }
                     Statement stmt = new StatementImpl(
@@ -113,23 +113,20 @@ public class WikiHelper {
         }
     }
 
-
-
-    public static List<String> getWordLinks(String text){
+    public static List<String> getWordLinks(String text) {
         List<String> wordLinks = new ArrayList<String>();
         Matcher matcher = PAGE_LINK_PATTERN.matcher(text);
         while (matcher.find()) {
             String s = matcher.group(0);
-            if ( !wordLinks.contains(s) ){
+            if (!wordLinks.contains(s)) {
                 wordLinks.add(s);
             }
         }
         return wordLinks;
     }
 
-
-    public static String getAbsolutePageLink(DocumentModel doc, String relativeLink){
-        if ( relativeLink.startsWith(".")) {
+    public static String getAbsolutePageLink(DocumentModel doc, String relativeLink) {
+        if (relativeLink.startsWith(".")) {
             return relativeLink;
         }
         Path path = doc.getPath().removeFirstSegments(3);
@@ -137,15 +134,15 @@ public class WikiHelper {
         return "." + path.toString().replace("/", ".") + "." + relativeLink;
     }
 
-    public static List<Map<String, String>> getLinks(WebContext ctx){
+    public static List<Map<String, String>> getLinks(WebContext ctx) {
         List<Map<String, String>> list = new ArrayList<Map<String, String>>();
         DocumentModel doc = null;
-        org.nuxeo.ecm.webengine.model.Resource resource= ctx.getTargetObject();
-        if ( resource instanceof DocumentObject ){
+        org.nuxeo.ecm.webengine.model.Resource resource = ctx.getTargetObject();
+        if (resource instanceof DocumentObject) {
             DocumentObject docObj = (DocumentObject) resource;
             doc = docObj.getDocument();
         }
-        if ( doc == null) {
+        if (doc == null) {
             return list;
         }
 
@@ -154,7 +151,7 @@ public class WikiHelper {
         String prefix = ctx.getModulePath();
 
         for (DocumentModel d : l) {
-        Map<String, String> map = new HashMap<String, String>();
+            Map<String, String> map = new HashMap<String, String>();
             try {
                 map.put("title", d.getTitle());
                 map.put("href", prefix + "/" + d.getPath().removeFirstSegments(3).toString());
@@ -166,11 +163,9 @@ public class WikiHelper {
         return list;
     }
 
-    public static String getPageAbsoluteLink(DocumentModel doc){
+    public static String getPageAbsoluteLink(DocumentModel doc) {
         String s = doc.getPath().removeFirstSegments(3).toString();
         return "." + s.replace("/", ".");
     }
-
-
 
 }

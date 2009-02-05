@@ -27,7 +27,7 @@ public class Main extends ModuleRoot {
      * Default view
      */
     @GET
-    @Produces("text/xml; charset=UTF-8")
+    @Produces("text/xml;charset=UTF-8")
     public Object doGetShortNamesXML() {
         return getTemplate("list-shortcuts.xml.ftl").arg("shortcuts",
                 publisher.getShortcutsName());
@@ -40,14 +40,16 @@ public class Main extends ModuleRoot {
         ObjectName objectName = publisher.lookupName(name);
         MBeanServer mbeanServer = locator.lookupServer(objectName);
         MBeanInfo objectInfo = mbeanServer.getMBeanInfo(objectName);
-        return getTemplate("list-attributes.xml.ftl").arg("name", name).arg(
-                "qualifiedName", objectName.toString()).arg("objectName",
-                objectName).arg("objectInfo", objectInfo);
+        return getTemplate("list-attributes.xml.ftl")
+                .arg("name", name)
+                .arg("qualifiedName", objectName.toString())
+                .arg("objectName", objectName)
+                .arg("objectInfo", objectInfo);
     }
 
     @GET
     @Path("/{resourceName}/{attributeName}")
-    @Produces("text/xml; charset=UTF-8")
+    @Produces("text/xml;charset=UTF-8")
     public Object doGetAttributeXml(
             @PathParam("resourceName") String resourceName,
             @PathParam("attributeName") String attributeName) throws Exception {
@@ -60,8 +62,10 @@ public class Main extends ModuleRoot {
         MBeanServer mbeanServer = locator.lookupServer(objectName);
         Object attributeValue = mbeanServer.getAttribute(objectName,
                 attributeName);
-        return getTemplate(templateName).arg("resource", resourceName).arg(
-                "name", attributeName).arg("value", attributeValue);
+        return getTemplate(templateName)
+                .arg("resource", resourceName)
+                .arg("name", attributeName)
+                .arg("value", attributeValue);
     }
 
     public String getObjectAttribute(ObjectName objectName,
@@ -77,4 +81,5 @@ public class Main extends ModuleRoot {
     public String getPath(String name) {
         return ctx.getUrlPath() + "/" + name;
     }
+
 }

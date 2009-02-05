@@ -19,7 +19,7 @@
 
   <modules>
     <module>nuxeo-platform-rendering</module>
-    <module>nuxeo-webengine-resteasy-adapter</module>    
+    <module>nuxeo-webengine-resteasy-adapter</module>
     <module>nuxeo-webengine-core</module>
     <module>nuxeo-webengine-ui</module>
     <module>nuxeo-webengine-base</module>
@@ -110,6 +110,7 @@
         <artifactId>nuxeo-runtime-launcher</artifactId>
         <version>${nuxeo.runtime.version}</version>
       </dependency>
+
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core-client</artifactId>
@@ -125,6 +126,7 @@
         <artifactId>nuxeo-core-event-compat</artifactId>
         <version>${nuxeo.core.version}</version>
       </dependency>
+
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-comment</artifactId>
@@ -140,6 +142,7 @@
         <artifactId>nuxeo-platform-web-common</artifactId>
         <version>${nuxeo.platform.version}</version>
       </dependency>
+
       <!-- needed by web-common -->
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
@@ -159,6 +162,7 @@
         <artifactId>nuxeo-shell-commands-base</artifactId>
         <version>${nuxeo.platform.version}</version>
       </dependency>
+
       <dependency>
         <groupId>org.codehaus.groovy</groupId>
         <artifactId>groovy-all</artifactId>
@@ -169,17 +173,16 @@
         <artifactId>script-api</artifactId>
         <version>1.0</version>
       </dependency>
-        <dependency>
-          <groupId>org.resteasy</groupId>
-          <artifactId>resteasy-jaxrs</artifactId>
-          <version>1.0-beta-8-nx</version>
-        </dependency>
-        <dependency>
-          <groupId>org.resteasy</groupId>
-          <artifactId>jaxrs-api</artifactId>
-          <version>1.0-beta-8</version>
-        </dependency>
-
+      <dependency>
+        <groupId>org.resteasy</groupId>
+        <artifactId>resteasy-jaxrs</artifactId>
+        <version>1.0-beta-8-nx</version>
+      </dependency>
+      <dependency>
+        <groupId>org.resteasy</groupId>
+        <artifactId>jaxrs-api</artifactId>
+        <version>1.0-beta-8</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
