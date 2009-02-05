@@ -11,6 +11,16 @@
         <parameter name="CommandLineName">pdftohtml</parameter>
       </parameters>
     </converter>
+    
+    <converter name="pdf2image" class="org.nuxeo.ecm.platform.convert.plugins.PDF2ImageConverter">
+      <sourceMimeType>application/pdf</sourceMimeType>
+      <destinationMimeType>image/jpeg</destinationMimeType>
+      <destinationMimeType>image/png</destinationMimeType>
+      <destinationMimeType>image/gif</destinationMimeType>
+      <parameters>
+        <parameter name="CommandLineName">pdftoimage</parameter>
+      </parameters>
+    </converter>
 
    <converter name="any2ods"
       class="org.nuxeo.ecm.platform.convert.plugins.JODBasedConverter">
