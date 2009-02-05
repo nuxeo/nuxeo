@@ -153,9 +153,6 @@ public class QueryModel implements Serializable {
         if (sortInfo == null) {
             sortInfo = descriptor.getDefaultSortInfo(documentModel);
         }
-        if (sortInfo != null && "ecm:path".equals(sortInfo.getSortColumn())) {
-            sortInfo = null; // XXX cannot sort by ecm:path for now
-        }
 
         String query;
         if (descriptor.isStateful()) {
