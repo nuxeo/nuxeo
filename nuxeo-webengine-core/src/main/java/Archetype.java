@@ -268,7 +268,7 @@ public class Archetype {
                     } else {
                         def = val;
                     }
-                    if (!batchMode && val == null && "true".equals(el.getAttribute("required"))) {
+                    if (!batchMode && val == null && "true".equals(el.getAttribute("prompt"))) {
                         val = readVar(label, def);
                     } 
                     if (val == null) { 
