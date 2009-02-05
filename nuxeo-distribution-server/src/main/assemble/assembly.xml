@@ -4,6 +4,13 @@
     <artifact>org.nuxeo.ecm.distribution:nuxeo-distribution-base:${project.version}:zip</artifact>
   </zipEntrySet>
 
+  <zipEntrySet id="archetype">
+    <artifact>org.nuxeo.ecm.webengine:nuxeo-webengine-core:${nuxeo.webengine.version}:jar</artifact>
+    <includes>
+       <include>Archetype.class</include>
+    </includes>    
+  </zipEntrySet>
+
   <fileSet id="template">
     <directory>src/main/resources/core</directory>
   </fileSet>
@@ -176,6 +183,11 @@
     <delete>true</delete>
     <file>nxclient.sh</file>
     <file>nxclient.cmd</file>
+  </assemble>
+  
+  <assemble>
+    <set>archetype</set>
+    <outputFile>extras/archetype</outputFile>
   </assemble>
 
 </assembly>
