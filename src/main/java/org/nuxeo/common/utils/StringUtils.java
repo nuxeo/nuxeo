@@ -254,6 +254,8 @@ public final class StringUtils {
                 if (dollar) {
                     dollar = false;
                     var = true;
+                } else {
+                    result.append(c);
                 }
                 break;
             case '}':
@@ -268,6 +270,8 @@ public final class StringUtils {
                     } else { // let the variable as is
                         result.append("${").append(varName).append('}');
                     }
+                } else {
+                    result.append(c);
                 }
                 break;
             default:
