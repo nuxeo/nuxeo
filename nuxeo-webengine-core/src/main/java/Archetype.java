@@ -351,7 +351,7 @@ public class Archetype {
         if (elVars != null) {
             processVars(elVars, vars);
         }
-        System.out.println("vars: "+System.getProperty("artifactId")+" - "+System.getProperty("groupId")+" = "+System.getProperty("moduleId"));
+        //System.out.println("vars: "+System.getProperty("artifactId")+" - "+System.getProperty("groupId")+" = "+System.getProperty("moduleId"));
         outDir = expandVars(outDir, vars);
         File out = new File(outDir);
         if (out.exists()) {
