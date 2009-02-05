@@ -1,4 +1,3 @@
-package sample4;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
@@ -111,10 +110,9 @@ import org.nuxeo.ecm.webengine.model.*;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@WebModule(name="sample4")
-@Path("/sample4")
-@Produces(["text/html", "*/*"])
-public class Main extends ModuleRoot {
+@WebObject(type="sample3")
+@Produces(["text/html"])
+public class Sample3 extends ModuleRoot {
 
   /**
    * Get the index view. The view file name is computed as follows: index[-media_type_id].ftl

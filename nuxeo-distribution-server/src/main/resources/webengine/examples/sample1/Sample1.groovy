@@ -1,4 +1,3 @@
-package sample2;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
@@ -26,20 +25,19 @@ import org.nuxeo.ecm.webengine.*;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@WebModule(name="sample2")
-@Path("/sample2")
-@Produces(["text/html", "*/*"])
-public class Main extends ModuleRoot {
+@WebObject(type="sample1")
+@Produces(["text/html"])
+public class Sample1 extends ModuleRoot {
 
   @GET
   public String doGet() {
-    return "Sample2: Hello World!";
+    return "Sample1: Hello World!";
   }
 
   @GET
   @Path("{name}")
   public String doGet(@PathParam("name") String name) {
-    return "Sample2: Hello "+name+"!";
+    return "Sample1: Hello "+name+"!";
   }
 
 }

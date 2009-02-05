@@ -1,4 +1,3 @@
-package sample7;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
@@ -47,10 +46,9 @@ import org.nuxeo.ecm.webengine.model.exceptions.*;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@WebModule(name="sample7")
-@Path("/sample7")
-@Produces(["text/html", "*/*"])
-public class Main extends ModuleRoot {
+@WebObject(type="sample6")
+@Produces(["text/html"])
+public class Sample6 extends ModuleRoot {
 
   @GET
   public Object doGet() {

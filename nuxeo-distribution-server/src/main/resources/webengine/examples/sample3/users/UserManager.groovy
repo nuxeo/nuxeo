@@ -1,4 +1,4 @@
-package sample4.users;
+package users;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;

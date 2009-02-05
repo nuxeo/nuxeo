@@ -1,7 +1,7 @@
 
 <html>
   <head>
-    <title><@block name="title"/></title>
+    <title>Sample 6: Working with links</title>
   </head>
   <body>
     <@block name="content"/>

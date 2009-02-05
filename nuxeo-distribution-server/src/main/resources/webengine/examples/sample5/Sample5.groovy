@@ -1,4 +1,3 @@
-package sample6;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
@@ -46,10 +45,9 @@ import org.nuxeo.ecm.webengine.model.exceptions.*;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@WebModule( name="sample6", base="sample5")
-@Path("/sample6")
-@Produces(["text/html", "*/*"])
-public class Main extends sample5.Main {
+@WebObject(type="sample5")
+@Produces(["text/html"])
+public class Sample5 extends Sample4 {
 
   /**
    * We are reusing bindings declared in the main class from sample5 and only a new one.

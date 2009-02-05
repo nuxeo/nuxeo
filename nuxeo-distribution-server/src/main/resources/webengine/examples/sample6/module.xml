@@ -1,7 +1,8 @@
 <?xml version="1.0"?>
-<module>
+<module name="sample6" root-type="sample6" path="/sample6">
+  <nature>groovy</nature>
 
-<links>
+  <links>
   <!-- link IDs are normally used as the keys of i18n messages - but in this example we are displaying them directly without using i18n mechanism-->
   <!-- link to a info view available for all Documents (i.e. WebObjects that are derived from Document type) -->
   <link id="Info" path="/@views/info">
@@ -24,6 +25,6 @@
     <type>Workspace</type>
     <category>TOOLS</category>
   </link>
-</links>
+  </links>
 
 </module>
