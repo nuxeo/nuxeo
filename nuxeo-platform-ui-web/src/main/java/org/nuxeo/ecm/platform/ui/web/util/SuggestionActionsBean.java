@@ -14,7 +14,7 @@
  * Contributors:
  *     <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  *
- * $Id: PleiadeSuggestionActionsBean.java 59340 2008-12-12 14:07:40Z cbaican $
+ * $Id: SuggestionActionsBean.java 59340 2008-12-12 14:07:40Z cbaican $
  */
 
 package org.nuxeo.ecm.platform.ui.web.util;
@@ -164,16 +164,16 @@ public class SuggestionActionsBean implements Serializable {
         UIComponent base = getBase(component);
         ValueHolder selector = getComponent(base, suggestionInputSelectorId,
                 ValueHolder.class);
-        EditableValueHolder mailbox = getComponent(base,
+        EditableValueHolder hiddenSelector = getComponent(base,
                 suggestionSelectionHiddenId, EditableValueHolder.class);
-        ValueHolder mailboxOutput = getComponent(base,
-                suggestionSelectionOutputId, ValueHolder.class);
+        ValueHolder output = getComponent(base, suggestionSelectionOutputId,
+                ValueHolder.class);
 
-        if (selector != null && mailbox != null && mailboxOutput != null) {
-            String mailboxId = (String) selector.getValue();
+        if (selector != null && hiddenSelector != null && output != null) {
+            String selection = (String) selector.getValue();
 
-            mailboxOutput.setValue(mailboxId);
-            mailbox.setSubmittedValue(mailboxId);
+            output.setValue(selection);
+            hiddenSelector.setSubmittedValue(selection);
         }
     }
 
@@ -189,14 +189,14 @@ public class SuggestionActionsBean implements Serializable {
         ValueHolder selector = getComponent(base, suggestionInputSelectorId,
                 ValueHolder.class);
 
-        EditableValueHolder mailbox = getComponent(base,
+        EditableValueHolder hiddenSelector = getComponent(base,
                 suggestionSelectionHiddenId, EditableValueHolder.class);
-        ValueHolder mailboxOutput = getComponent(base,
-                suggestionSelectionOutputId, ValueHolder.class);
+        ValueHolder output = getComponent(base, suggestionSelectionOutputId,
+                ValueHolder.class);
 
-        if (selector != null && mailbox != null && mailboxOutput != null) {
-            mailboxOutput.setValue("");
-            mailbox.setSubmittedValue("");
+        if (selector != null && hiddenSelector != null && output != null) {
+            output.setValue("");
+            hiddenSelector.setSubmittedValue("");
         }
     }
 
