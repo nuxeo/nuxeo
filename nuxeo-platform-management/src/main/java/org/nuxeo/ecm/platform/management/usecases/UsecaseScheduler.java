@@ -20,7 +20,6 @@ import java.util.Collection;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
- * 
  */
 public interface UsecaseScheduler {
 

@@ -1,3 +1,22 @@
+/*
+ * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nuxeo - initial API and implementation
+ *
+ * $Id$
+ */
+
 package org.nuxeo.ecm.platform.management.adapters;
 
 /*
@@ -29,7 +48,6 @@ import org.nuxeo.runtime.management.ResourceFactory;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
- * 
  */
 public class RepositorySessionMetricFactory extends AbstractResourceFactory
         implements ResourceFactory {
@@ -40,7 +58,7 @@ public class RepositorySessionMetricFactory extends AbstractResourceFactory
         if (manager != null) {
             return manager;
         }
-        RepositoryService service = null;
+        RepositoryService service;
         try {
             service = (RepositoryService) Framework.getRuntime().getComponent(
                     RepositoryService.NAME);
@@ -55,7 +73,7 @@ public class RepositorySessionMetricFactory extends AbstractResourceFactory
     }
 
     protected Repository repository(RepositoryManager manager, String name) {
-        Repository repository = null;
+        Repository repository;
         try {
             repository = manager.getRepository(name);
         } catch (Exception cause) {
@@ -86,7 +104,7 @@ public class RepositorySessionMetricFactory extends AbstractResourceFactory
                     RepositorysessionMetricMBean.class,
                     new RepositorysessionMetricAdapter(repository(manager,
                             repositoryName)));
-            ;
         }
     }
+
 }

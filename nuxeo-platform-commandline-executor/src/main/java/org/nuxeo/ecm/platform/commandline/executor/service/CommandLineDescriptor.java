@@ -33,9 +33,6 @@ import org.nuxeo.common.xmap.annotation.XObject;
 @XObject("command")
 public class CommandLineDescriptor implements Serializable {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
 
 

@@ -26,6 +26,7 @@ import org.jbpm.graph.exe.ProcessInstance;
 import org.jbpm.taskmgmt.exe.TaskInstance;
 import org.nuxeo.ecm.platform.jbpm.JbpmService;
 import org.nuxeo.ecm.platform.jbpm.VirtualTaskInstance;
+import org.nuxeo.ecm.platform.jbpm.test.AbstractProcessDefinitionTest;
 
 /**
  * @author arussel

@@ -18,7 +18,7 @@ package org.nuxeo.ecm.platform.management.adapters;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
- * 
+ *
  */
 public interface HttpSessionMetricMBean {
 

@@ -28,9 +28,9 @@ public class UsecaseContext {
 
     protected UsecaseContext(UsecaseSchedulerService usecaseSchedulerService,
             Usecase usecase, String repositoryName) {
-        this.scheduler = usecaseSchedulerService;
+        scheduler = usecaseSchedulerService;
         this.usecase = usecase;
-        this.runner = new RepositoryRunner(repositoryName);
+        runner = new RepositoryRunner(repositoryName);
     }
 
     protected boolean isEnabled = true;
@@ -59,7 +59,7 @@ public class UsecaseContext {
 
     protected class RepositoryRunner extends UnrestrictedSessionRunner {
 
-        public RepositoryRunner(String repositoryName) {
+        protected RepositoryRunner(String repositoryName) {
             super(repositoryName);
         }
 
@@ -70,7 +70,6 @@ public class UsecaseContext {
             try {
                 UsecaseContext.this.runner.runUnrestricted();
             } catch (ClientException e) {
-                ;
             } finally {
                 currentThread.setContextClassLoader(lastLoader);
             }
@@ -78,7 +77,7 @@ public class UsecaseContext {
 
         @Override
         public synchronized void run() throws ClientException {
-            if (isEnabled == false) {
+            if (!isEnabled) {
                 return;
             }
             Date startingDate = new Date();
@@ -107,10 +106,12 @@ public class UsecaseContext {
     protected final RepositoryRunner runner;
 
     public boolean isInError() {
-        if (lastFailedDate == null)
+        if (lastFailedDate == null) {
             return false;
-        if (lastSucceedDate != null)
+        }
+        if (lastSucceedDate != null) {
             return lastFailedDate.after(lastSucceedDate);
+        }
         return true;
     }
 
@@ -160,7 +161,6 @@ public class UsecaseContext {
                 try {
                     UsecaseContext.this.runner.runUnrestricted();
                 } catch (ClientException e) {
-                    ;
                 } finally {
                     currentThread.setContextClassLoader(lastLoader);
                 }

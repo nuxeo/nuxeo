@@ -22,7 +22,6 @@ import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.PostCommitEventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
-import org.nuxeo.ecm.platform.ec.notification.NotificationImpl;
 import org.nuxeo.ecm.platform.ec.notification.email.EmailHelper;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationService;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationServiceHelper;
@@ -34,23 +33,20 @@ import org.nuxeo.runtime.api.Framework;
 
 public class NotificationEventListener implements PostCommitEventListener {
 
-    private static final Log log = LogFactory
-            .getLog(NotificationEventListener.class);
+    private static final Log log = LogFactory.getLog(NotificationEventListener.class);
 
     private DocumentViewCodecManager docLocator;
 
     public void handleEvent(EventBundle events) throws ClientException {
 
-        NotificationService service = NotificationServiceHelper
-                .getNotificationService();
+        NotificationService service = NotificationServiceHelper.getNotificationService();
         if (service == null) {
             log.error("Unable to get NotificationService, exiting");
             return;
         }
 
         for (Event event : events) {
-            List<Notification> notifs = service.getNotificationsForEvents(event
-                    .getName());
+            List<Notification> notifs = service.getNotificationsForEvents(event.getName());
             if (notifs != null && !notifs.isEmpty()) {
                 try {
                     handleNotifications(event, notifs);
@@ -72,14 +68,12 @@ public class NotificationEventListener implements PostCommitEventListener {
         if (ctx instanceof DocumentEventContext) {
             docCtx = (DocumentEventContext) ctx;
         } else {
-            log
-                    .warn("Can not handle notification on a event that is not bound to a DocumentEventContext");
+            log.warn("Can not handle notification on a event that is not bound to a DocumentEventContext");
             return;
         }
 
         CoreSession coreSession = event.getContext().getCoreSession();
-        Map<String, Serializable> properties = event.getContext()
-                .getProperties();
+        Map<String, Serializable> properties = event.getContext().getProperties();
         Map<Notification, List<String>> targetUsers = new HashMap<Notification, List<String>>();
 
         if (eventId.equals("documentPublicationApproved")
@@ -87,14 +81,14 @@ public class NotificationEventListener implements PostCommitEventListener {
             DocumentModel publishedDoc = getDocFromPath(coreSession,
                     (String) properties.get("sectionPath"));
             if (publishedDoc == null) {
-                log.error("unable to find published doc, existing");
+                log.error("unable to find published doc, exiting");
                 return;
             }
             gatherConcernedUsersForDocument(coreSession, publishedDoc, notifs,
                     targetUsers);
         } else {
-            gatherConcernedUsersForDocument(coreSession, docCtx
-                    .getSourceDocument(), notifs, targetUsers);
+            gatherConcernedUsersForDocument(coreSession,
+                    docCtx.getSourceDocument(), notifs, targetUsers);
         }
 
         for (Notification notif : targetUsers.keySet()) {
@@ -138,45 +132,48 @@ public class NotificationEventListener implements PostCommitEventListener {
 
         if (!isDeleteEvent(event.getName())) {
             DocumentView docView = new DocumentViewImpl(doc);
-            eventInfo.put("docUrl", getDocLocator().getUrlFromDocumentView(
-                    docView,
-                    true,
-                    NotificationServiceHelper.getNotificationService()
-                            .getServerUrlPrefix()));
+            eventInfo.put(
+                    "docUrl",
+                    getDocLocator().getUrlFromDocumentView(
+                            docView,
+                            true,
+                            NotificationServiceHelper.getNotificationService().getServerUrlPrefix()));
 
             eventInfo.put("docTitle", doc.getTitle());
         }
 
         if (isInterestedInNotification(notification)) {
             try {
-                sendNotification(event,ctx);
+                sendNotification(event, ctx);
                 if (log.isDebugEnabled()) {
                     log.debug("notification " + notification.getName()
                             + " sent to " + notification.getSubject());
                 }
             } catch (ClientException e) {
-                log.error("An error occurred while trying to send user notification",e);
+                log.error(
+                        "An error occurred while trying to send user notification",
+                        e);
             }
 
         }
     }
 
-    public void sendNotification(Event event, DocumentEventContext ctx) throws ClientException {
+    public void sendNotification(Event event, DocumentEventContext ctx)
+            throws ClientException {
 
         String eventId = event.getName();
-        log.debug("Recieved a message for notification sender with eventId : "+ eventId);
+        log.debug("Recieved a message for notification sender with eventId : "
+                + eventId);
 
         Map<String, Serializable> eventInfo = ctx.getProperties();
         String userDest = (String) eventInfo.get("destination");
-        NotificationImpl notif = (NotificationImpl) eventInfo
-                .get("notification");
+        NotificationImpl notif = (NotificationImpl) eventInfo.get("notification");
 
         // send email
-        NuxeoPrincipal recepient = NotificationServiceHelper.getUsersService()
-                .getPrincipal(userDest);
+        NuxeoPrincipal recepient = NotificationServiceHelper.getUsersService().getPrincipal(
+                userDest);
         // XXX hack, principals have only one model
-        DataModel model = recepient.getModel().getDataModels().values()
-                .iterator().next();
+        DataModel model = recepient.getModel().getDataModels().values().iterator().next();
         String email = (String) model.getData("email");
         String subjectTemplate = notif.getSubjectTemplate();
         String mailTemplate = notif.getTemplate();
@@ -191,16 +188,15 @@ public class NotificationEventListener implements PostCommitEventListener {
         String authorUsername = (String) eventInfo.get("author");
 
         if (authorUsername != null) {
-            NuxeoPrincipal author = NotificationServiceHelper.getUsersService()
-                    .getPrincipal(authorUsername);
+            NuxeoPrincipal author = NotificationServiceHelper.getUsersService().getPrincipal(
+                    authorUsername);
             mail.put("principalAuthor", author);
         }
 
         mail.put("document", ctx.getSourceDocument());
-        String subject = notif.getSubject() == null ? "Notification" : notif
-                .getSubject();
-        subject = NotificationServiceHelper.getNotificationService()
-                .getEMailSubjectPrefix()
+        String subject = notif.getSubject() == null ? "Notification"
+                : notif.getSubject();
+        subject = NotificationServiceHelper.getNotificationService().getEMailSubjectPrefix()
                 + subject;
         mail.put("subject", subject);
         mail.put("template", mailTemplate);
@@ -251,8 +247,8 @@ public class NotificationEventListener implements PostCommitEventListener {
         } else {
             // it is a group - get all users and send
             // notifications to them
-            List<String> usersOfGroup = NotificationServiceHelper
-                    .getUsersService().getUsersInGroup(recipient.substring(6));
+            List<String> usersOfGroup = NotificationServiceHelper.getUsersService().getUsersInGroup(
+                    recipient.substring(6));
             if (usersOfGroup != null && !usersOfGroup.isEmpty()) {
                 users.addAll(usersOfGroup);
             }
@@ -289,20 +285,18 @@ public class NotificationEventListener implements PostCommitEventListener {
             Map<Notification, List<String>> targetUsers) throws Exception {
         for (Notification notification : notifs) {
             if (!notification.getAutoSubscribed()) {
-                List<String> userGroup = NotificationServiceHelper
-                        .getNotificationService().getSubscribers(
-                                notification.getName(), doc.getId());
+                List<String> userGroup = NotificationServiceHelper.getNotificationService().getSubscribers(
+                        notification.getName(), doc.getId());
                 for (String subscriptor : userGroup) {
                     if (subscriptor != null) {
                         if (isUser(subscriptor)) {
-                            storeUserForNotification(notification, subscriptor
-                                    .substring(5), targetUsers);
+                            storeUserForNotification(notification,
+                                    subscriptor.substring(5), targetUsers);
                         } else {
                             // it is a group - get all users and send
                             // notifications to them
-                            List<String> usersOfGroup = NotificationServiceHelper
-                                    .getUsersService().getUsersInGroup(
-                                            subscriptor.substring(6));
+                            List<String> usersOfGroup = NotificationServiceHelper.getUsersService().getUsersInGroup(
+                                    subscriptor.substring(6));
                             if (usersOfGroup != null && !usersOfGroup.isEmpty()) {
                                 for (String usr : usersOfGroup) {
                                     storeUserForNotification(notification, usr,
@@ -349,8 +343,7 @@ public class NotificationEventListener implements PostCommitEventListener {
     public DocumentViewCodecManager getDocLocator() {
         if (docLocator == null) {
             try {
-                docLocator = Framework
-                        .getService(DocumentViewCodecManager.class);
+                docLocator = Framework.getService(DocumentViewCodecManager.class);
             } catch (Exception e) {
                 log.info("Could not get service for document view manager");
             }

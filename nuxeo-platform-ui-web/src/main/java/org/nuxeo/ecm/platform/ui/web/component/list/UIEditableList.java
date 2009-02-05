@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -846,7 +847,6 @@ public class UIEditableList extends UIInput implements NamingContainer {
 
         EditableModel model = getEditableModel();
         if (model.isDirty()) {
-            Boolean setDiff = getDiff();
             // remove empty values if needed
             Boolean removeEmpty = getRemoveEmpty();
             Object data = model.getWrappedData();
@@ -860,16 +860,24 @@ public class UIEditableList extends UIInput implements NamingContainer {
                     }
                 }
             }
+        }
+
+        Object submitted = model.getWrappedData();
+        if (submitted == null) {
+            // set submitted to empty list to force validation
+            submitted = Collections.emptyList();
+        }
+        setSubmittedValue(submitted);
+
+        // execute validate now that value is submitted
+        executeValidate(context);
+
+        if (isValid() && isLocalValueSet()) {
+            Boolean setDiff = getDiff();
             if (setDiff) {
                 // set list diff instead of the whole list
-                // XXX AT: if the component is required, no validation error
-                // will occur when submitting a diff.
-                setSubmittedValue(model.getListDiff());
-            } else {
-                setSubmittedValue(model.getWrappedData());
+                setValue(model.getListDiff());
             }
-            // execute validate now that value is submitted
-            executeValidate(context);
         }
 
         try {

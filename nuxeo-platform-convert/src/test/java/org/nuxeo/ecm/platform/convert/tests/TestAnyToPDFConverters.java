@@ -10,20 +10,19 @@ import org.nuxeo.ecm.core.convert.api.ConverterCheckResult;
 import org.nuxeo.runtime.api.Framework;
 
 
-
 public class TestAnyToPDFConverters extends BaseConverterTest {
 
     private static final Log log = LogFactory.getLog(TestAnyToPDFConverters.class);
 
     protected void doTestPDFConverter(String srcMT, String fileName)
-    throws Exception {
+            throws Exception {
 
         ConversionService cs = Framework.getLocalService(ConversionService.class);
 
         String converterName = cs.getConverterName(srcMT, "application/pdf");
         assertEquals("any2pdf", converterName);
 
-        ConverterCheckResult check =  cs.isConverterAvailable(converterName);
+        ConverterCheckResult check = cs.isConverterAvailable(converterName);
         assertNotNull(check);
         if (!check.isAvailable()) {
             log.warn("Skipping JOD based converter tests since OOo is not installed");
@@ -43,11 +42,9 @@ public class TestAnyToPDFConverters extends BaseConverterTest {
         assertTrue(text.contains("Hello"));
     }
 
-
     public void testAnyToTextConverter() throws Exception {
-
         ConversionService cs = Framework.getLocalService(ConversionService.class);
-        ConverterCheckResult check =  cs.isConverterAvailable("any2pdf");
+        ConverterCheckResult check = cs.isConverterAvailable("any2pdf");
         assertNotNull(check);
         if (!check.isAvailable()) {
             log.warn("Skipping JOD based converter tests since OOo is not installed");
@@ -58,12 +55,13 @@ public class TestAnyToPDFConverters extends BaseConverterTest {
 
         //doTestPDFConverter("text/html",  "hello.html");
         //doTestPDFConverter("text/xml",  "hello.xml");
-        doTestPDFConverter("application/vnd.ms-excel",  "hello.xls");
+        doTestPDFConverter("application/vnd.ms-excel", "hello.xls");
         doTestPDFConverter("application/vnd.sun.xml.writer", "hello.sxw");
-        doTestPDFConverter("application/vnd.oasis.opendocument.text",  "hello.odt");
-        doTestPDFConverter("application/vnd.sun.xml.calc",  "hello.sxc");
+        doTestPDFConverter("application/vnd.oasis.opendocument.text", "hello.odt");
+        doTestPDFConverter("application/vnd.sun.xml.calc", "hello.sxc");
         doTestPDFConverter("application/vnd.oasis.opendocument.spreadsheet", "hello.ods");
-        doTestPDFConverter("application/vnd.sun.xml.impress",  "hello.sxi");
-        doTestPDFConverter("application/vnd.oasis.opendocument.presentation",  "hello.odp");
+        doTestPDFConverter("application/vnd.sun.xml.impress", "hello.sxi");
+        doTestPDFConverter("application/vnd.oasis.opendocument.presentation", "hello.odp");
     }
+
 }

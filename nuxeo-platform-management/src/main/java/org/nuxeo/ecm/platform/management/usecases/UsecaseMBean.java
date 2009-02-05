@@ -20,7 +20,7 @@ import java.util.Date;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
- * 
+ *
  */
 public interface UsecaseMBean {
 

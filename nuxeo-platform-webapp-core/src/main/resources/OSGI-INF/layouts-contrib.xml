@@ -634,7 +634,7 @@
           <widget>url</widget>
         </row>
         <row>
-          <widget>template</widget>
+          <widget>theme</widget>
         </row>
         <row>
           <widget>email</widget>
@@ -673,14 +673,15 @@
         </properties>
       </widget>
 
-      <widget name="template" type="template">
+      <widget name="theme" type="template">
         <translated>true</translated>
         <fields>
-          <field>webc:template</field>
+          <field>webc:theme</field>
+          <field>webc:themePage</field>
         </fields>
         <properties mode="any">
           <property name="template">
-            /widgets/site_template_widget.xhtml
+            /widgets/site_theme_widget.xhtml
           </property>
         </properties>
       </widget>

@@ -7,5 +7,6 @@ Bundle-Category: core,stateful
 Nuxeo-Component: OSGI-INF/nuxeo-platform-publishing-framework.xml,
   OSGI-INF/nuxeo-platform-publishing-contrib.xml,
   OSGI-INF/publisher-contrib.xml
-Require-Bundle: org.nuxeo.ecm.platform.publishing.api
+Require-Bundle: org.nuxeo.ecm.platform.publishing.api,
+  org.nuxeo.ecm.core.api
 

@@ -29,6 +29,7 @@ import org.nuxeo.ecm.platform.scheduler.core.service.SchedulerRegistryService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.management.ManagementRuntimeException;
 import org.nuxeo.runtime.management.ObjectNameFactory;
+import org.nuxeo.runtime.management.ResourcePublisher;
 import org.nuxeo.runtime.management.ResourcePublisherService;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -37,7 +38,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
- * 
+ *
  */
 public class UsecaseSchedulerService extends DefaultComponent implements
         UsecaseScheduler {
@@ -90,8 +91,9 @@ public class UsecaseSchedulerService extends DefaultComponent implements
         }
 
         protected void doUnschedule() {
-            if (registry == null)
+            if (registry == null) {
                 return;
+            }
             registry.unregisterSchedule(this);
         }
     }
@@ -122,8 +124,9 @@ public class UsecaseSchedulerService extends DefaultComponent implements
         }
 
         protected void doUnlisten() {
-            if (service == null)
+            if (service == null) {
                 return;
+            }
             service.removeEventListener(this);
         }
     }
@@ -133,10 +136,6 @@ public class UsecaseSchedulerService extends DefaultComponent implements
     protected class ManagementPublisher {
 
         protected ResourcePublisherService service;
-
-        protected void setService(ResourcePublisherService service) {
-            this.service = service;
-        }
 
         protected void doPublish() {
             service.registerResource("usecase-scheduler",
@@ -188,14 +187,9 @@ public class UsecaseSchedulerService extends DefaultComponent implements
                             return runnerRegistry.isEnabled();
                         }
                     });
-            for (UsecaseContext context : runnerRegistry.scheduledUsecasesContext.values()) {
-                doPublishContext(context);
-            }
         }
 
         protected void doUnpublish() {
-            if (service == null)
-                return;
             service.unregisterResource("usecase-scheduler",
                     ObjectNameFactory.formatQualifiedName(NAME)
                             + ",management=quality");
@@ -274,7 +268,7 @@ public class UsecaseSchedulerService extends DefaultComponent implements
 
         protected void doRun() {
 
-            if (isEnabled == false) {
+            if (!isEnabled) {
                 return;
             }
 
@@ -309,12 +303,16 @@ public class UsecaseSchedulerService extends DefaultComponent implements
 
     @Override
     public void activate(ComponentContext context) throws Exception {
+
+        managementPublisher.service = (ResourcePublisherService) Framework.getLocalService(ResourcePublisher.class);
+        managementPublisher.doPublish();
         scheduleEventListener.doListen();
     }
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
         scheduleEventListener.doUnlisten();
+        managementPublisher.doUnpublish();
     }
 
     public void enable() {

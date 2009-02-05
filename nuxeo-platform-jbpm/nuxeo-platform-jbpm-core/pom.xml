@@ -84,8 +84,9 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
+      <groupId>net.sf.opencsv</groupId>
+      <artifactId>opencsv</artifactId>
+      <version>1.7</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -93,13 +94,6 @@
       <artifactId>hsqldb</artifactId>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>net.sf.opencsv</groupId>
-      <artifactId>opencsv</artifactId>
-      <version>1.7</version>
-      <scope>test</scope>
-    </dependency>
-
   </dependencies>
 
 </project>

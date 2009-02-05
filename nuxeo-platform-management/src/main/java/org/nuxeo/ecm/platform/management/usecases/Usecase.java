@@ -21,9 +21,11 @@ import org.nuxeo.ecm.core.api.CoreSession;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
- *
  */
 public interface Usecase {
+
     void init(Object service);
+
     void runCase(CoreSession session) throws ClientException;
+
 }

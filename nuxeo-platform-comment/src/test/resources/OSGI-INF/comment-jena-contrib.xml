@@ -1,9 +1,8 @@
 <?xml version="1.0"?>
-
 <component name="test.comment.contribs">
 
   <extension target="org.nuxeo.ecm.platform.comment.service.CommentService"
-    point="config">
+      point="config">
     <config>
       <converterClass>
         org.nuxeo.ecm.platform.comment.impl.CommentConverterImpl
@@ -20,20 +19,19 @@
 
   <!-- relation adapters -->
   <extension target="org.nuxeo.ecm.platform.relations.services.RelationService"
-    point="resourceadapters">
+      point="resourceadapters">
     <!-- XXX AT: this namespace should have an ending slash -->
     <adapter namespace="http://www.nuxeo.org/comments/uid"
-      class="org.nuxeo.ecm.platform.relations.adapters.DocumentModelResourceAdapter" />
+        class="org.nuxeo.ecm.platform.relations.adapters.DocumentModelResourceAdapter"/>
     <!-- XXX AT: this namespace should have an ending slash so that it can be
         the standard adapter already registered -->
     <adapter namespace="http://www.nuxeo.org/document/uid"
-      class="org.nuxeo.ecm.platform.relations.adapters.DocumentModelResourceAdapter" />
+        class="org.nuxeo.ecm.platform.relations.adapters.DocumentModelResourceAdapter"/>
   </extension>
-
 
   <!-- relation graph -->
   <extension target="org.nuxeo.ecm.platform.relations.services.RelationService"
-    point="graphs">
+      point="graphs">
     <graph name="documentComments" type="jena">
       <namespaces>
         <namespace name="comment">http://www.nuxeo.org/comments/uid</namespace>

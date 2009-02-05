@@ -34,7 +34,6 @@ public class TestPDFToHtml extends NXRuntimeTestCase {
 
         cs = Framework.getLocalService(ConversionService.class);
         assertNotNull(cs);
-
     }
 
     protected static BlobHolder getBlobFromPath(String path) {
@@ -44,7 +43,6 @@ public class TestPDFToHtml extends NXRuntimeTestCase {
     }
 
     public void testConverter() throws Exception {
-
         String converterName = cs.getConverterName("application/pdf", "text/html");
         assertEquals("pdf2html", converterName);
 
@@ -52,8 +50,7 @@ public class TestPDFToHtml extends NXRuntimeTestCase {
                 .getLocalService(CommandLineExecutorService.class);
         assertNotNull(cles);
 
-
-        ConverterCheckResult check =  cs.isConverterAvailable(converterName);
+        ConverterCheckResult check = cs.isConverterAvailable(converterName);
         assertNotNull(check);
         if (!check.isAvailable()) {
             log.warn("Skipping PDF2Html tests since commandLine is not installed");
@@ -84,7 +81,6 @@ public class TestPDFToHtml extends NXRuntimeTestCase {
 
         String htmlContent = mainBlob.getString();
         assertTrue(htmlContent.contains("Hello"));
-
     }
 
 }

@@ -143,7 +143,7 @@ public class CommandLineExecutorComponent extends DefaultComponent implements
     }
 
     /*
-     * Service interface *
+     * Service interface
      */
     public ExecResult execCommand(String commandName, CmdParameters params)
             throws CommandNotAvailable {

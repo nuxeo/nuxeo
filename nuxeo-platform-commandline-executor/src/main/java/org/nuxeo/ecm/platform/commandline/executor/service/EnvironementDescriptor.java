@@ -44,7 +44,7 @@ public class EnvironementDescriptor implements Serializable {
             workingDirectory = System.getProperty("java.io.tmpdir");
         }
         if (!workingDirectory.endsWith("/")) {
-            workingDirectory = workingDirectory + "/";
+            workingDirectory += "/";
         }
         return workingDirectory;
     }
