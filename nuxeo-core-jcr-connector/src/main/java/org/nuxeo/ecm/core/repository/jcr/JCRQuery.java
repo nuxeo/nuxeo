@@ -25,12 +25,12 @@ import javax.jcr.query.QueryManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jackrabbit.core.query.QueryImpl;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.query.Query;
 import org.nuxeo.ecm.core.query.QueryException;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.QueryResult;
+import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.query.sql.SQLQueryParser;
 import org.nuxeo.ecm.core.query.sql.model.Expression;
 import org.nuxeo.ecm.core.query.sql.model.FromClause;
@@ -39,6 +39,7 @@ import org.nuxeo.ecm.core.query.sql.model.Operand;
 import org.nuxeo.ecm.core.query.sql.model.Operator;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
 import org.nuxeo.ecm.core.query.sql.model.OrderByExpr;
+import org.nuxeo.ecm.core.query.sql.model.OrderByList;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.query.sql.model.SelectClause;
 import org.nuxeo.ecm.core.query.sql.model.WhereClause;
@@ -73,11 +74,20 @@ public class JCRQuery implements Query {
     public QueryResult execute(boolean countTotal) throws QueryException {
         try {
             sqlQuery = SQLQueryParser.parse(rawQuery);
+            Boolean orderByPath = null;
+            if (sqlQuery.orderBy != null) {
+                OrderByList orderByList = sqlQuery.orderBy.elements;
+                if (orderByList.size() == 1) {
+                    OrderByExpr orderBy = orderByList.get(0);
+                    if (NXQL.ECM_PATH.equals(orderBy.reference.name)) {
+                        // do ORDER BY ecm:path "by hand"
+                        orderByPath = Boolean.valueOf(!orderBy.isDescending);
+                    }
+                }
+            }
             javax.jcr.query.Query jcrQuery = buildJcrQuery(sqlQuery);
-            QueryImpl jq = (QueryImpl) jcrQuery;
-            jq.setLimit(limit);
-            jq.setOffset(offset);
-            return new JCRQueryResult(this, jcrQuery.execute(), countTotal);
+            return new JCRQueryResult(this, jcrQuery.execute(), countTotal,
+                    orderByPath, limit, offset);
         } catch (RepositoryException e) {
             throw new QueryException("Failed to execute query", e);
         } catch (QueryParseException e) {

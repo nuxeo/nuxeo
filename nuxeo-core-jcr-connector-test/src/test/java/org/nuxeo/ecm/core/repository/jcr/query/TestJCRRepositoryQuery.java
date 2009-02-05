@@ -59,8 +59,4 @@ public class TestJCRRepositoryQuery extends QueryTestCase {
         // XXX also total size computation is not done yet
     }
 
-    @Override
-    public void testOrderByPath() throws Exception {
-        // XXX JCR doesn't allow order by ecm:path yet
-    }
 }

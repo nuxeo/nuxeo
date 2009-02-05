@@ -19,6 +19,8 @@
 package org.nuxeo.ecm.core.repository.jcr;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,12 +63,20 @@ public class JCRQueryResult implements QueryResult {
 
     private final JCRQuery query;
 
-    private Node node;
-
     private final long totalSize;
 
+    /** When not null, order documents models by path asc (true) or desc (false) */
+    protected final Boolean orderByPath;
+
+    protected final int limit;
+
+    protected final int offset;
+
+    private Node node;
+
     public JCRQueryResult(JCRQuery query, javax.jcr.query.QueryResult qr,
-            boolean countTotal) throws RepositoryException {
+            boolean countTotal, Boolean orderByPath, long limit, long offset)
+            throws RepositoryException {
         jcrQueryResult = qr;
         iterator = qr.getNodes();
         this.query = query;
@@ -76,6 +86,9 @@ public class JCRQueryResult implements QueryResult {
         } else {
             totalSize = -1;
         }
+        this.orderByPath = orderByPath;
+        this.limit = (int) limit;
+        this.offset = (int) offset;
     }
 
     public javax.jcr.query.QueryResult jcrQueryResult() {
@@ -313,10 +326,37 @@ public class JCRQueryResult implements QueryResult {
                     log.error("Could not create document model for doc " + doc);
                 }
             }
+            if (orderByPath != null) {
+                Collections.sort(list, new PathComparator(
+                        orderByPath.booleanValue()));
+            }
+            if (limit != 0) {
+                // do limit/offset by hand
+                int size = list.size();
+                list.subList(0, offset > size ? size : offset).clear();
+                size = list.size();
+                if (limit < size) {
+                    list.subList(limit, size).clear();
+                }
+            }
             return new DocumentModelListImpl(list, totalSize);
         } catch (Exception e) {
-            e.printStackTrace();
             throw new QueryException("getDocumentModels failed", e);
+        }
+    }
+
+    public static class PathComparator implements Comparator<DocumentModel> {
+
+        private final int sign;
+
+        public PathComparator(boolean asc) {
+            this.sign = asc ? 1 : -1;
+        }
+
+        public int compare(DocumentModel doc1, DocumentModel doc2) {
+            String p1 = doc1.getPathAsString();
+            String p2 = doc2.getPathAsString();
+            return sign * p1.compareTo(p2);
         }
     }
 

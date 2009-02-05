@@ -509,7 +509,7 @@ public class XPathBuilder {
             }
         } else {
             if (NXQL.ECM_PATH.equals(name)) {
-                name = JcrConstants.JCR_PATH;
+                name = NodeConstants.ECM_PATH.rawname;
             } else if (NXQL.ECM_UUID.equals(name)) {
                 name = JcrConstants.JCR_UUID;
             } else if (NXQL.ECM_NAME.equals(name)) {

@@ -21,6 +21,8 @@ package org.nuxeo.ecm.core.repository.jcr.jackrabbit;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 import javax.jcr.NamespaceException;
@@ -141,6 +143,9 @@ public class SearchIndex extends
                 parentId = getParentId(node);
             }
             addParent(doc, parentId, resolver, indexFormatVersion);
+
+            // ecm:path
+            addPath(doc, getPath(node, resolver), resolver, indexFormatVersion);
 
             // ecm:mixinType
             Set<String> facets = getFacets(dataNode);
@@ -398,6 +403,53 @@ public class SearchIndex extends
         }
     }
 
+    private String getPath(NodeState node, NamePathResolver resolver)
+            throws RepositoryException {
+        try {
+            ItemStateManager itemStateManager = getContext().getItemStateManager();
+            List<String> names = new LinkedList<String>();
+            int size = 0;
+            while (true) {
+                NodeId pid = node.getParentId();
+                if (pid == null) {
+                    break;
+                }
+                NodeState parent;
+                parent = (NodeState) itemStateManager.getItemState(pid);
+                if (parent == null) {
+                    break;
+                }
+                pid = parent.getParentId();
+                if (pid == null) {
+                    // parent is the root
+                    break;
+                }
+                ChildNodeEntry childNodeEntry = parent.getChildNodeEntry(node.getNodeId());
+                // we get the local name only, as we don't have a session
+                // mapping to interpret the namespace
+                String name = childNodeEntry.getName().getLocalName();
+                names.add(name);
+                size += name.length() + 1;
+                // then go up another time to skip the ecm:children
+                node = (NodeState) itemStateManager.getItemState(pid);
+            }
+            StringBuilder buf = new StringBuilder(size);
+            Collections.reverse(names);
+            for (String name : names) {
+                buf.append('/');
+                buf.append(name);
+            }
+            if (buf.length() == 0) {
+                buf.append('/');
+            }
+            return buf.toString();
+        } catch (ItemStateException e) {
+            String msg = "Error while indexing node: " + node.getNodeId() +
+                    " of type: " + node.getNodeTypeName();
+            throw new RepositoryException(msg, e);
+        }
+    }
+
     private void addParent(Document doc, String parentId,
             NamePathResolver resolver, IndexFormatVersion indexFormatVersion)
             throws RepositoryException {
@@ -405,6 +457,14 @@ public class SearchIndex extends
             return;
         }
         doc.add(createStringField(NodeConstants.ECM_PARENT_ID.qname, parentId,
+                resolver, indexFormatVersion));
+        // TODO addLength for V3
+    }
+
+    private void addPath(Document doc, String path,
+            NamePathResolver resolver, IndexFormatVersion indexFormatVersion)
+            throws RepositoryException {
+        doc.add(createStringField(NodeConstants.ECM_PATH.qname, path,
                 resolver, indexFormatVersion));
         // TODO addLength for V3
     }
