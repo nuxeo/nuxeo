@@ -416,48 +416,48 @@ In this chapter we will go deeper into WebEngine model by proposing 7 samples on
 After installing WebEngine you can find samples inside nxserver/examples directory.
 To access these samples through your browser you need to copy sample folders in nxserver/web/deploy directory. Then follow the instruction in each tutorial.
 
-To correctly understand the tutorials you need to look into all `.groovy` and `.ftl` files you find in sample modules. Each sample is well documented in the corresponding Main.groovy class using java docs.
+To correctly understand the tutorials you need to look into all `.groovy` and `.ftl` files you find in the corresponding sample modules. Each sample is well documented in the corresponding Main.groovy class using java docs.
 
 ==== Tutorial 1 - JAX-RS: Hello World
 
 This tutorial provides two samples: the first one is demonstrating how to create a JAX-RS root resource, and the second one how to use WebEngine extensions to define a singleton root resource by using a configuration file (without using @Path annotation).
 
-You can access these samples at: http://localhost:8080/sample1 and http://localhost:8080/sample1/singleton
+You can access this tutorial at: http://localhost:8080/sample1 and http://localhost:8080/sample1/singleton
 
 ==== Tutorial 2 - Web Module: Hello World.
 
 This tutorial demonstrates how to create a Hello World module. This is the simplest module. It requires only one Groovy class which represents the Resource Module (the module entry point).
 
-You can access the sample at: http://localhost:8080/sample2
+You can access the tutorial sample at: http://localhost:8080/sample2
 
 ==== Tutorial 3 - Using Templates
 
 This tutorial demonstrates how to use templates to render dynamic content.
 
-You can access the sample at: http://localhost:8080/sample3
+You can access the tutorial sample at: http://localhost:8080/sample3
 
 ==== Tutorial 4 - Web Object Model
 
 This tutorial demonstrates the basics of the WebEngine Object Model.
 You can see how to create new Module Resources, Object Resources, Adapter Resources and views.
 
-You can access the sample at: http://localhost:8080/sample4
+You can access the tutorial sample at: http://localhost:8080/sample4
 
 ==== Tutorial 5 - Working with Nuxeo Platform Documents
 
 This tutorial demonstrates how to access Nuxeo Platform Documents through WebEngine.
 
-You can access the sample at: http://localhost:8080/sample5
+You can access the tutorial sample at: http://localhost:8080/sample5
 
 ==== Tutorial 6 - Module Extensibility
 
 This tutorial demonstrates how modules can be extended. The module defined here will extend the one in Tutorial 5.
 
-You can access the sample at: http://localhost:8080/sample6
+You can access the tutorial sample at: http://localhost:8080/sample6
 
 ==== Tutorial 7 - Managing Links
 
 This tutorial demonstrates the way links you are using in your templates can be managed to create easy to maintain and modular applications.
 
-You can access the sample at: http://localhost:8080/sample7
+You can access the tutorial sample at: http://localhost:8080/sample7
 
