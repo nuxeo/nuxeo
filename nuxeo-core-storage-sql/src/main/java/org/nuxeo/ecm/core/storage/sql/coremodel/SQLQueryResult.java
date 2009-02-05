@@ -19,16 +19,23 @@ package org.nuxeo.ecm.core.storage.sql.coremodel;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
+import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelFactory;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.DocumentIterator;
 import org.nuxeo.ecm.core.model.EmptyDocumentIterator;
@@ -51,14 +58,24 @@ public class SQLQueryResult implements QueryResult {
 
     protected final long totalSize;
 
+    /** When not null, order documents models by path asc (true) or desc (false) */
+    protected final Boolean orderByPath;
+
+    protected final int limit;
+
+    protected final int offset;
+
     protected Serializable currentId;
 
-    public SQLQueryResult(SQLSession session, List<Serializable> list,
-            long totalSize) {
+    public SQLQueryResult(SQLSession session, PartialList<Serializable> pl,
+            Boolean orderByPath, long limit, long offset) {
         this.session = session;
-        it = list.iterator();
-        size = list.size();
-        this.totalSize = totalSize;
+        it = pl.list.iterator();
+        size = pl.list.size();
+        this.totalSize = pl.totalSize;
+        this.orderByPath = orderByPath;
+        this.limit = (int) limit;
+        this.offset = (int) offset;
     }
 
     public long count() {
@@ -83,11 +100,39 @@ public class SQLQueryResult implements QueryResult {
                 Document doc = session.getDocumentById(currentId);
                 list.add(DocumentModelFactory.createDocumentModel(doc, schemas));
             } catch (DocumentException e) {
-                log.error("Could not create document model for doc: " +
-                        currentId + ": " + e.getMessage());
+                log.error("Could not create document model for doc: "
+                        + currentId + ": " + e.getMessage());
+            }
+        }
+        if (orderByPath != null) {
+            Collections.sort(list, new PathComparator(
+                    orderByPath.booleanValue()));
+        }
+        if (limit != 0) {
+            // do limit/offset by hand
+            int size = list.size();
+            list.subList(0, offset > size ? size : offset).clear();
+            size = list.size();
+            if (limit < size) {
+                list.subList(limit, size).clear();
             }
         }
         return new DocumentModelListImpl(list, totalSize);
+    }
+
+    public static class PathComparator implements Comparator<DocumentModel> {
+
+        private final int sign;
+
+        public PathComparator(boolean asc) {
+            this.sign = asc ? 1 : -1;
+        }
+
+        public int compare(DocumentModel doc1, DocumentModel doc2) {
+            String p1 = doc1.getPathAsString();
+            String p2 = doc2.getPathAsString();
+            return sign * p1.compareTo(p2);
+        }
     }
 
     public DocumentIterator getDocuments(int start) {

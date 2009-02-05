@@ -383,6 +383,39 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
                 "dc:description"));
     }
 
+    public void testOrderByPath() throws Exception {
+        String sql;
+        DocumentModelList dml;
+        createDocs();
+
+        sql = "SELECT * FROM Document ORDER BY ecm:path";
+        dml = session.query(sql);
+        assertEquals(7, dml.size());
+        assertEquals("/testfolder1", dml.get(0).getPathAsString());
+        assertEquals("/testfolder1/testfile1", dml.get(1).getPathAsString());
+        assertEquals("/testfolder1/testfile2", dml.get(2).getPathAsString());
+        assertEquals("/testfolder1/testfile3", dml.get(3).getPathAsString());
+        assertEquals("/testfolder2", dml.get(4).getPathAsString());
+        assertEquals("/testfolder2/testfolder3", dml.get(5).getPathAsString());
+        assertEquals("/testfolder2/testfolder3/testfile4",
+                dml.get(6).getPathAsString());
+
+        sql = "SELECT * FROM Document ORDER BY ecm:path DESC";
+        dml = session.query(sql);
+        assertEquals(7, dml.size());
+        assertEquals("/testfolder2/testfolder3/testfile4",
+                dml.get(0).getPathAsString());
+        assertEquals("/testfolder1", dml.get(6).getPathAsString());
+
+        // then with batching
+
+        sql = "SELECT * FROM Document ORDER BY ecm:path";
+        dml = session.query(sql, null, 2, 3, false);
+        assertEquals(2, dml.size());
+        assertEquals("/testfolder1/testfile3", dml.get(0).getPathAsString());
+        assertEquals("/testfolder2", dml.get(1).getPathAsString());
+    }
+
     public void testBatching() throws Exception {
         doBatching(true);
     }
