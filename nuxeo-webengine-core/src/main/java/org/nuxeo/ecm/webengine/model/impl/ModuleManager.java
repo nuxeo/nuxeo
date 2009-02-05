@@ -88,6 +88,7 @@ public class ModuleManager {
     }
 
     public synchronized void registerModule(ModuleConfiguration descriptor) {
+        log.info("Registering web module: " + descriptor.name);
         modules.put(descriptor.name, descriptor);
         String path = descriptor.path;
         if (!path.startsWith("/")) {
