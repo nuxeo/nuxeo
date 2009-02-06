@@ -109,26 +109,31 @@ public class LifeCycleServiceImpl extends DefaultComponent implements
 
     public void initialize(Document doc, String initialStateName)
             throws LifeCycleException {
+        String lifeCycleName;
         LifeCycle documentLifeCycle = getLifeCycleFor(doc);
         if (documentLifeCycle == null) {
-            return;
-        }
-
-        // set initial life cycle state
-        if (initialStateName == null) {
-            initialStateName = documentLifeCycle.getDefaultInitialStateName();
+            lifeCycleName = "";
+            if (initialStateName == null) {
+                initialStateName = "";
+            }
         } else {
-            // check it's a valid initial state
-            if (!documentLifeCycle.getInitialStateNames().contains(
-                    initialStateName)) {
-                throw new LifeCycleException(
-                        String.format(
-                                "State '%s' is not a valid initial state for lifecycle %s",
-                                initialStateName, documentLifeCycle.getName()));
+            lifeCycleName = documentLifeCycle.getName();
+            // set initial life cycle state
+            if (initialStateName == null) {
+                initialStateName = documentLifeCycle.getDefaultInitialStateName();
+            } else {
+                // check it's a valid initial state
+                if (!documentLifeCycle.getInitialStateNames().contains(
+                        initialStateName)) {
+                    throw new LifeCycleException(
+                            String.format(
+                                    "State '%s' is not a valid initial state for lifecycle %s",
+                                    initialStateName, lifeCycleName));
+                }
             }
         }
         doc.setCurrentLifeCycleState(initialStateName);
-        doc.setLifeCyclePolicy(documentLifeCycle.getName());
+        doc.setLifeCyclePolicy(lifeCycleName);
     }
 
     public void followTransition(Document doc, String transitionName)

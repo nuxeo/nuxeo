@@ -861,6 +861,24 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         // ecm:fulltext tested below
     }
 
+    public void testEmptyLifecycle() throws Exception {
+        DocumentModelList dml;
+        createDocs();
+        String sql = "SELECT * FROM Document WHERE ecm:currentLifeCycleState <> 'deleted'";
+
+        dml = session.query(sql);
+        assertEquals(7, dml.size());
+
+        // create a doc with no lifecycle associated
+        DocumentModel doc = new DocumentModelImpl("/testfolder1", "mydoc",
+                "MyDocType");
+        doc = session.createDocument(doc);
+        session.save();
+        assertEquals("", doc.getCurrentLifeCycleState());
+        dml = session.query(sql);
+        assertEquals(8, dml.size());
+    }
+
     public void testSQLFulltext() throws Exception {
         createDocs();
         String query;
