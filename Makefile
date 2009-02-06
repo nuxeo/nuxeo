@@ -3,10 +3,10 @@ clean:
 	rm -rf test
 
 jetty:
-	mvn package -Pjetty
+	mvn install -Pjetty
 
 tomcat:
 	mvn package -Ptomcat
 
 gf3:
-	mvn package -Pgf3
+	mvn install -Pgf3

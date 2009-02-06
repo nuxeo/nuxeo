@@ -14,7 +14,6 @@
     </artifacts>
   </artifactSet>
 
-
   <artifactSet id="third-party-libs">
     <artifacts>
       <artifact group="javax.servlet" name="servlet-api" version="2.4"/>
@@ -26,7 +25,6 @@
       <artifact group="jotm" name="jotm" version="2.0.10"/>
     </artifacts>
   </artifactSet>
-
 
   <assemble>
     <set>base-template</set>
@@ -45,4 +43,3 @@
   </assemble>
 
 </assembly>
-
