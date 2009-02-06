@@ -968,7 +968,12 @@
           <targetJdk>1.5</targetJdk>
           <excludes>
             <exclude>**/parser.java</exclude>
+            <exclude>**/Base64.java</exclude>
+            <exclude>**/MockContext.java</exclude>
           </excludes>
+          <rulesets>
+            <ruleset>/pmd.xml</ruleset>
+          </rulesets>
         </configuration>
       </plugin>
       <plugin>
