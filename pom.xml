@@ -16,6 +16,7 @@
   </scm>
 
   <modules>
+    <module>nuxeo-core-folder-versioning</module>
     <module>nuxeo-http-client</module>
     <module>nuxeo-platform-annotations</module>
     <module>nuxeo-platform-audit-web-access</module>
