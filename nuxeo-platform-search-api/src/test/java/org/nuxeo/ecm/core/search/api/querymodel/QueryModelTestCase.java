@@ -55,8 +55,6 @@ public class QueryModelTestCase extends RepositoryOSGITestCase {
 
     private QueryModel statelessModelWithFloatParam;
 
-    private QueryModel navQueryModel;
-
     protected QueryModel statefulModel;
 
     protected DocumentModel documentModel;
@@ -112,9 +110,6 @@ public class QueryModelTestCase extends RepositoryOSGITestCase {
 
         statelessModelWithFloatParam = new QueryModel(
                 service.getQueryModelDescriptor("statelessModelWithFloatParam"));
-
-        navQueryModel = new QueryModel(
-                service.getQueryModelDescriptor("byCoverageNavQueryModel"));
 
     }
 
@@ -493,33 +488,6 @@ public class QueryModelTestCase extends RepositoryOSGITestCase {
         assertEquals(
                 "SELECT * FROM Document WHERE intparameter = 3 AND (foo < 'bar' or NOT x = 1) AND textparameter = 'zork'",
                 descriptor.getQuery(doc));
-    }
-
-    public void testStatefulQueryNav() throws ClientException {
-        QueryModelDescriptor descriptor = service.getQueryModelDescriptor("byCoverageNavQueryModel");
-        QueryModel qm = initializeStatefulQueryModel(descriptor);
-
-        DocumentModel doc = qm.getDocumentModel();
-        doc.setProperty("querynav", "coverage", "toto");
-        assertEquals("SELECT * FROM Document WHERE dc:coverage LIKE 'toto%'",
-                descriptor.getQuery(doc));
-
-        // this is valid NXQL
-        SQLQueryParser.parse(descriptor.getQuery(doc));
-
-    }
-
-    public void testStatefulQueryNavWithEcmPath() throws ClientException {
-        QueryModelDescriptor descriptor = service.getQueryModelDescriptor("ecmPathTest");
-        QueryModel qm = initializeStatefulQueryModel(descriptor);
-
-        DocumentModel doc = qm.getDocumentModel();
-        doc.setProperty("querynav", "coverage", "toto");
-        assertEquals("SELECT * FROM Document WHERE ecm:path STARTSWITH 'toto'",
-                descriptor.getQuery(doc));
-
-        // this is valid NXQL
-        SQLQueryParser.parse(descriptor.getQuery(doc));
     }
 
 }
