@@ -8,3 +8,4 @@ target
 *.orig
 .pydevproject
 *.pyc
+nuxeo-platform-ear/ftest/funkload/log/*
