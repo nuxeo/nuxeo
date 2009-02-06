@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.nuxeo</groupId>
   <artifactId>nuxeo-ecm</artifactId>
@@ -554,7 +554,7 @@
 
       <!-- others -->
       <dependency>
-      <groupId>com.h2database</groupId>
+        <groupId>com.h2database</groupId>
         <artifactId>h2</artifactId>
         <version>1.1.104</version>
         <scope>provided</scope>
@@ -643,7 +643,7 @@
         <artifactId>opencsv</artifactId>
         <version>1.7</version>
         <scope>provided</scope>
-      </dependency> 
+      </dependency>
       <dependency>
         <groupId>org.osgi</groupId>
         <artifactId>osgi-core</artifactId>
@@ -789,7 +789,7 @@
         <version>4.0.5.GA</version>
         <scope>provided</scope>
       </dependency>
-      
+
       <dependency>
         <groupId>com.google.gwt</groupId>
         <artifactId>gwt-user</artifactId>
@@ -971,7 +971,27 @@
         <artifactId>jboss-packaging-maven-plugin</artifactId>
         <extensions>true</extensions>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-pmd-plugin</artifactId>
+        <configuration>
+          <aggregate>true</aggregate>
+          <targetJdk>1.5</targetJdk>
+          <excludes>
+            <exclude>**/parser.java</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jxr-plugin</artifactId>
+        <configuration>
+          <aggregate>true</aggregate>
+          <linkJavadoc>true</linkJavadoc>
+        </configuration>
+      </plugin>
     </plugins>
+
     <pluginManagement>
       <plugins>
         <plugin>
@@ -1022,12 +1042,12 @@
           </configuration>
           </plugin>
         -->
-      <!-- version should be also set in module for enabling mevenide to load it -->
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>jboss-packaging-maven-plugin</artifactId>
-        <version>2.0-beta-1</version>
-      </plugin>
+        <!-- version should be also set in module for enabling mevenide to load it -->
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>jboss-packaging-maven-plugin</artifactId>
+          <version>2.0-beta-1</version>
+        </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-nuxeo-plugin</artifactId>
@@ -1068,7 +1088,7 @@
           <artifactId>maven-eclipse-plugin</artifactId>
           <version>2.4</version>
         </plugin>
-            
+
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>gwt-maven-plugin</artifactId>
@@ -1103,6 +1123,7 @@
         </plugins>
       </build>
     </profile>
+
     <profile>
       <id>release-profile</id>
       <activation>
@@ -1215,19 +1236,11 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-jxr-plugin</artifactId>
-            <configuration>
-              <aggregate>true</aggregate>
-              <linkJavadoc>true</linkJavadoc>
-            </configuration>
           </plugin>
-          <!--plugin>
+          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-pmd-plugin</artifactId>
-            <configuration>
-            <aggregate>true</aggregate>
-            <targetJdk>1.5</targetJdk>
-            </configuration>
-            </plugin-->
+          </plugin>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-surefire-report-plugin</artifactId>
@@ -1264,6 +1277,7 @@
         </plugins>
       </reporting>
     </profile>
+
     <profile>
       <id>local-deployment</id>
       <activation>
@@ -1284,6 +1298,7 @@
         </snapshotRepository>
       </distributionManagement>
     </profile>
+
     <!-- build number using build time stamp for apogee -->
     <profile>
       <id>timestamp-rev-in-mf</id>
