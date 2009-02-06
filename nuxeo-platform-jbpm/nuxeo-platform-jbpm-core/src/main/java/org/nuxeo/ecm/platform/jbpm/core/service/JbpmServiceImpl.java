@@ -33,7 +33,6 @@ import org.jbpm.db.GraphSession;
 import org.jbpm.graph.def.ProcessDefinition;
 import org.jbpm.graph.exe.ProcessInstance;
 import org.jbpm.taskmgmt.exe.TaskInstance;
-import org.jbpm.taskmgmt.exe.TaskMgmtInstance;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -125,7 +124,7 @@ public class JbpmServiceImpl implements JbpmService {
                     if (filter != null) {
                         tis = filter.filter(context, null, tis, currentUser);
                     }
-                    eagerLoadPooledActor(tis);
+                    eagerLoadTaskInstances(tis);
                     // remove duplicates
                     HashSet<TaskInstance> setTis = new HashSet<TaskInstance>();
                     setTis.addAll(tis);
@@ -139,7 +138,7 @@ public class JbpmServiceImpl implements JbpmService {
         }
     }
 
-    private void eagerLoadPooledActor(Collection<TaskInstance> tis) {
+    private void eagerLoadTaskInstances(Collection<TaskInstance> tis) {
         for (TaskInstance ti : tis) {
             eagerLoadTaskInstance(ti);
         }
@@ -407,6 +406,12 @@ public class JbpmServiceImpl implements JbpmService {
         if (ti.getVariableInstances() != null) {
             ti.getVariableInstances().size();
         }
+        if (ti.getComments() != null) {
+            ti.getComments().size();
+        }
+        if (ti.getToken() != null) {
+            ti.getToken().getId();
+        }
     }
 
     protected CoreSession getCoreSession(String repositoryName,
@@ -447,7 +452,7 @@ public class JbpmServiceImpl implements JbpmService {
                     context.setActorId(NuxeoPrincipal.PREFIX
                             + principal.getName());
                 }
-                TaskInstance ti = context.getTaskInstance(taskInstanceId);
+                TaskInstance ti = context.getTaskInstanceForUpdate(taskInstanceId);
                 if (taskVariables != null) {
                     for (String k : taskVariables.keySet()) {
                         ti.setVariableLocally(k, taskVariables.get(k));
@@ -529,7 +534,7 @@ public class JbpmServiceImpl implements JbpmService {
                     context.setActorId(NuxeoPrincipal.PREFIX
                             + principal.getName());
                 }
-                Collection<TaskInstance> tis = context.getProcessInstance(
+                Collection<TaskInstance> tis = context.getProcessInstanceForUpdate(
                         processInstanceId).getTaskMgmtInstance().getTaskInstances();
                 ArrayList<TaskInstance> result = new ArrayList<TaskInstance>();
                 for (TaskInstance ti : tis) {
@@ -553,7 +558,7 @@ public class JbpmServiceImpl implements JbpmService {
                     throws NuxeoJbpmException {
                 Session session = context.getSession();
                 for (TaskInstance ti : taskInstances) {
-                    session.saveOrUpdate(ti);
+                    session.merge(ti);
                 }
                 return null;
             }

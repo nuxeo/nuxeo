@@ -70,6 +70,13 @@ public interface JbpmService {
         directive, validated
     }
 
+    /**
+     * Name hibernate queries.
+     *
+     * They are located in the <code>nuxeo.hibernate.queries.hbm.xml</code>
+     * @author arussel
+     *
+     */
     public enum HibernateQueries {
         NuxeoHibernateQueries_getProcessInstancesForDoc, NuxeoHibernateQueries_getTaskInstancesForDoc
     }
@@ -86,6 +93,8 @@ public interface JbpmService {
 
     /**
      * Execute a JbpmOperation.
+     *
+     * The JbpmOperation will be executed inside a context block.
      *
      * @param operation
      * @return The object returned by the run method of the JbpmOperation.

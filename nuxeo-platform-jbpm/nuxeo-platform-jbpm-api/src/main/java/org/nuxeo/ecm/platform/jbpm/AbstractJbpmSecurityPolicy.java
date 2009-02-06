@@ -20,8 +20,8 @@
 package org.nuxeo.ecm.platform.jbpm;
 
 import org.jbpm.graph.exe.ProcessInstance;
+import org.jbpm.taskmgmt.exe.SwimlaneInstance;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.platform.jbpm.JbpmService.VariableName;
 
 /**
  * @author Anahide Tchertchian
@@ -35,7 +35,9 @@ public abstract class AbstractJbpmSecurityPolicy implements JbpmSecurityPolicy {
     }
 
     protected String getInitiator(ProcessInstance pi) {
-        return getStringVariable(VariableName.initiator.name(), pi);
+        SwimlaneInstance swimlane = pi.getTaskMgmtInstance().getSwimlaneInstance(
+                JbpmService.VariableName.initiator.name());
+        return swimlane.getActorId();
     }
 
     protected String getStringVariable(String name, ProcessInstance pi) {

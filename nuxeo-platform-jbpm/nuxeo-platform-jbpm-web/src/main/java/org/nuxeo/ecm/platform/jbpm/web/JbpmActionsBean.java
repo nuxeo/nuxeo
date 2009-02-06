@@ -41,6 +41,8 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
+import org.jbpm.JbpmContext;
+import org.jbpm.graph.exe.Comment;
 import org.jbpm.graph.exe.ProcessInstance;
 import org.jbpm.taskmgmt.exe.TaskInstance;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -51,10 +53,14 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.event.EventProducer;
+import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.jbpm.AbstractJbpmHandlerHelper;
 import org.nuxeo.ecm.platform.jbpm.JbpmEventNames;
+import org.nuxeo.ecm.platform.jbpm.JbpmOperation;
 import org.nuxeo.ecm.platform.jbpm.JbpmSecurityPolicy;
 import org.nuxeo.ecm.platform.jbpm.JbpmService;
+import org.nuxeo.ecm.platform.jbpm.NuxeoJbpmException;
 import org.nuxeo.ecm.platform.jbpm.TaskCreateDateComparator;
 import org.nuxeo.ecm.platform.jbpm.TaskListFilter;
 import org.nuxeo.ecm.platform.jbpm.VirtualTaskInstance;
@@ -63,6 +69,7 @@ import org.nuxeo.ecm.platform.ui.web.invalidations.AutomaticDocumentBasedInvalid
 import org.nuxeo.ecm.platform.ui.web.invalidations.DocumentContextBoundActionBean;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author Anahide Tchertchian
@@ -113,7 +120,6 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
 
     protected Boolean showAddVirtualTaskForm;
 
-    // TODO: use it for notifications
     protected String userComment;
 
     public boolean getCanCreateProcess() throws ClientException {
@@ -205,7 +211,7 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
                         endLifeCycle);
             }
             jbpmService.createProcessInstance(principal, pd, dm, map, null);
-
+            notifyEventListeners(JbpmEventNames.WORKFLOW_NEW_STARTED, "");
             // TODO: add feedback?
 
             Events.instance().raiseEvent(JbpmEventNames.WORKFLOW_NEW_STARTED);
@@ -471,9 +477,19 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
         return null;
     }
 
-    public String validateTask(TaskInstance taskInstance, String transition)
+    public String validateTask(final TaskInstance taskInstance, String transition)
             throws ClientException {
         if (taskInstance != null) {
+            if (userComment != null && !"".equals(userComment)) {
+                final Comment comment = new Comment(NuxeoPrincipal.PREFIX + currentUser.getName(), userComment);
+                jbpmService.executeJbpmOperation(new JbpmOperation(){
+                    public Serializable run(JbpmContext context)
+                            throws NuxeoJbpmException {
+                        TaskInstance ti = context.getTaskInstanceForUpdate(taskInstance.getId());
+                        ti.addComment(comment);
+                        return null;
+                    }});
+            }
             // add marker that task was validated
             Map<String, Serializable> taskVariables = new HashMap<String, Serializable>();
             taskVariables.put(JbpmService.TaskVariableName.validated.name(),
@@ -484,16 +500,31 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
             facesMessages.add(FacesMessage.SEVERITY_INFO,
                     resourcesAccessor.getMessages().get(
                             "label.review.task.ended"));
-
+            notifyEventListeners(JbpmEventNames.WORKFLOW_TASK_COMPLETED, userComment);
             Events.instance().raiseEvent(JbpmEventNames.WORKFLOW_TASK_COMPLETED);
             resetCurrentData();
         }
         return null;
     }
 
-    public String rejectTask(TaskInstance taskInstance, String transition)
+    public String rejectTask(final TaskInstance taskInstance, String transition)
             throws ClientException {
         if (taskInstance != null) {
+            if (userComment != null && !"".equals(userComment)) {
+                final Comment comment = new Comment(NuxeoPrincipal.PREFIX + currentUser.getName(), userComment);
+                jbpmService.executeJbpmOperation(new JbpmOperation(){
+                    public Serializable run(JbpmContext context)
+                            throws NuxeoJbpmException {
+                        TaskInstance ti = context.getTaskInstanceForUpdate(taskInstance.getId());
+                        ti.addComment(comment);
+                        return null;
+                    }});
+            } else {
+                facesMessages.add(FacesMessage.SEVERITY_ERROR,
+                        resourcesAccessor.getMessages().get(
+                                "label.review.task.enterComment"));
+                return null;
+            }
             // add marker that task was rejected
             Map<String, Serializable> taskVariables = new HashMap<String, Serializable>();
             taskVariables.put(JbpmService.TaskVariableName.validated.name(),
@@ -503,6 +534,7 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
             facesMessages.add(FacesMessage.SEVERITY_INFO,
                     resourcesAccessor.getMessages().get(
                             "label.review.task.ended"));
+            notifyEventListeners(JbpmEventNames.WORKFLOW_TASK_REJECTED, userComment);
             Events.instance().raiseEvent(JbpmEventNames.WORKFLOW_TASK_REJECTED);
             resetCurrentData();
         }
@@ -547,7 +579,7 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
             jbpmService.deleteProcessInstance(currentUser, pid);
             facesMessages.add(FacesMessage.SEVERITY_INFO,
                     resourcesAccessor.getMessages().get("workflowAbandoned"));
-
+            notifyEventListeners(JbpmEventNames.WORKFLOW_ABANDONED, userComment);
             Events.instance().raiseEvent(JbpmEventNames.WORKFLOW_ABANDONED);
             resetCurrentData();
         }
@@ -579,4 +611,16 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
         resetCurrentData();
     }
 
+    public void notifyEventListeners(String name, String comment) throws ClientException {
+        EventProducer eventProducer;
+        try {
+            eventProducer = Framework.getService(EventProducer.class);
+        } catch (Exception e) {
+            throw new ClientException(e);
+        }
+        DocumentEventContext ctx = new DocumentEventContext(documentManager,
+                currentUser, getCurrentDocument());
+        ctx.getProperties().put("comment", comment);
+        eventProducer.fireEvent(ctx.newEvent(name));
+    }
 }

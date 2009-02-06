@@ -40,6 +40,8 @@ import org.nuxeo.ecm.platform.jbpm.JbpmService.VariableName;
 import org.nuxeo.runtime.api.Framework;
 
 /**
+ * Abstract Class providing helpers methods.
+ *
  * @author arussel
  *
  */
