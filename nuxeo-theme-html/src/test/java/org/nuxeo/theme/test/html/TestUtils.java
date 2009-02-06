@@ -174,17 +174,21 @@ public class TestUtils extends NXRuntimeTestCase {
 
         PresetType preset = new PresetType("default font", "11px Verdana",
                 "test fonts", "font");
-        PresetType customPreset = new CustomPresetType("custom color", "red",
+        PresetType customPreset1 = new CustomPresetType("custom color", "red",
                 "theme1", "color");
+        PresetType customPreset2 = new CustomPresetType("custom bg", "url(image.png)",
+                "theme1", "background");
         Manager.getTypeRegistry().register(preset);
-        Manager.getTypeRegistry().register(customPreset);
-
+        Manager.getTypeRegistry().register(customPreset1);
+        Manager.getTypeRegistry().register(customPreset2);
+        
         properties.setProperty("font", "\"default font (test fonts)\"");
-        properties.setProperty("color", "\"custom color\"");
+        properties.setProperty("color", "\"custom color\" #dc0 \"custom color\" #123");
+        properties.setProperty("background", "\"custom color\" \"custom bg\" no-repeat");
         style.setPropertiesFor("horizontal menu", "a", properties);
 
         assertEquals(
-                ".nxStyle1HorizontalMenu a {color:red;font:11px Verdana;}\n",
+                ".nxStyle1HorizontalMenu a {color:red #dc0 red #123;background:red url(image.png) no-repeat;font:11px Verdana;}\n",
                 Utils.styleToCss(style, style.getSelectorViewNames(), true, // resolvePresets
                         false, // ignoreViewName
                         false, // ignoreClassName

@@ -39,7 +39,6 @@ import org.nuxeo.theme.elements.ThemeElement;
 import org.nuxeo.theme.formats.Format;
 import org.nuxeo.theme.formats.styles.Style;
 import org.nuxeo.theme.presets.PresetManager;
-import org.nuxeo.theme.presets.PresetType;
 import org.nuxeo.theme.properties.OrderedProperties;
 import org.nuxeo.theme.themes.ThemeManager;
 import org.w3c.css.sac.CSSException;
@@ -310,15 +309,7 @@ public final class Utils {
                         sb.append(' ');
                     }
                     if (resolvePresets) {
-                        PresetType preset = null;
-                        String presetName = PresetManager.extractPresetName(
-                                themeName, value);
-                        if (presetName != null) {
-                            preset = PresetManager.getPresetByName(presetName);
-                        }
-                        if (preset != null) {
-                            value = preset.getValue();
-                        }
+                        value = PresetManager.resolvePresets(themeName, value);
                     }
                     sb.append(value).append(';');
                     if (indent) {

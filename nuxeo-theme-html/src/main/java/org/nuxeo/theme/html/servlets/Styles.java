@@ -25,7 +25,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.nuxeo.theme.ApplicationType;
 import org.nuxeo.theme.Manager;
-import org.nuxeo.theme.formats.Format;
 import org.nuxeo.theme.formats.styles.Style;
 import org.nuxeo.theme.html.Utils;
 import org.nuxeo.theme.themes.ThemeManager;
