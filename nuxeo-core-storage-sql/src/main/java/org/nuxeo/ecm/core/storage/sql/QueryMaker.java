@@ -864,6 +864,8 @@ public class QueryMaker {
 
         private static final long serialVersionUID = 1L;
 
+        public static final String PATH_SEP = "/";
+
         public final StringBuilder buf = new StringBuilder();
 
         public final List<String> joins = new LinkedList<String>();
@@ -904,11 +906,7 @@ public class QueryMaker {
                     : null;
             Operator op = node.operator;
             if (op == Operator.STARTSWITH) {
-                if (!NXQL.ECM_PATH.equals(name)) {
-                    throw new QueryMakerException("STARTSWITH requires "
-                            + NXQL.ECM_PATH + "as left argument");
-                }
-                visitExpressionStartsWith(node);
+                visitExpressionStartsWith(node, name);
             } else if (NXQL.ECM_ISPROXY.equals(name)) {
                 visitExpressionIsProxy(node);
             } else if (NXQL.ECM_ISVERSION.equals(name)) {
@@ -960,15 +958,28 @@ public class QueryMaker {
             buf.append(')');
         }
 
-        protected void visitExpressionStartsWith(Expression node) {
+        protected void visitExpressionStartsWith(Expression node, String name) {
+            if (name == null) {
+                throw new QueryMakerException("Illegal left argument for "
+                        + Operator.STARTSWITH + ": " + node.lvalue);
+            }
             if (!(node.rvalue instanceof StringLiteral)) {
                 throw new QueryMakerException(Operator.STARTSWITH
                         + " requires literal path as right argument");
             }
             String path = ((StringLiteral) node.rvalue).value;
-            if (path.length() > 1 && path.endsWith("/")) {
-                path = path.substring(0, path.length() - 1);
+            if (path.length() > 1 && path.endsWith(PATH_SEP)) {
+                path = path.substring(0, path.length() - PATH_SEP.length());
             }
+            if (NXQL.ECM_PATH.equals(name)) {
+                visitExpressionStartsWithPath(node, path);
+            } else {
+                visitExpressionStartsWithNonPath(node, name, path);
+            }
+        }
+
+        protected void visitExpressionStartsWithPath(Expression node,
+                String path) {
             // find the id from the path
             Serializable id;
             try {
@@ -986,6 +997,38 @@ public class QueryMaker {
                 buf.append("NX_IN_TREE(").append(hierId).append(", ?) = ");
                 whereParams.add(id);
                 buf.append(dialect.toBooleanValueString(true));
+            }
+        }
+
+        protected void visitExpressionStartsWithNonPath(Expression node,
+                String name, String path) {
+            PropertyInfo propertyInfo = model.getPropertyInfo(name);
+            if (propertyInfo == null) {
+                throw new QueryMakerException("Unknown field: " + name);
+            }
+            boolean isArray = propertyInfo.propertyType.isArray();
+            if (isArray) {
+                // use EXISTS with subselect clause
+                Table table = database.getTable(propertyInfo.fragmentName);
+                buf.append(String.format(
+                        "EXISTS (SELECT 1 FROM %s WHERE %s = %s AND ",
+                        table.getQuotedName(), joinedHierId, table.getColumn(
+                                model.MAIN_KEY).getFullQuotedName()));
+            }
+            buf.append('(');
+            allowArray = true;
+            node.lvalue.accept(this);
+            buf.append(" = ");
+            node.rvalue.accept(this);
+            buf.append(" OR ");
+            node.lvalue.accept(this);
+            buf.append(" LIKE ");
+            // TODO escape % chars...
+            new StringLiteral(path + PATH_SEP + '%').accept(this);
+            allowArray = false;
+            buf.append(')');
+            if (isArray) {
+                buf.append(')');
             }
         }
 

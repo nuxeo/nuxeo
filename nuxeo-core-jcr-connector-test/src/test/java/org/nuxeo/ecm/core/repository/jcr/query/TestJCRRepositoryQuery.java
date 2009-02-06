@@ -53,4 +53,9 @@ public class TestJCRRepositoryQuery extends QueryTestCase {
         // TODO blob indexing configuration
     }
 
+    @Override
+    public void testStartsWithNonPath() {
+        // not done for JCR
+    }
+
 }

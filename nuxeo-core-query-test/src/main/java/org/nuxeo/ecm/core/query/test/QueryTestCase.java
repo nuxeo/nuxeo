@@ -154,6 +154,8 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         file1.setPropertyValue("filename", filename);
         Calendar cal1 = getCalendar(2007, 3, 1, 12, 0, 0);
         file1.setPropertyValue("dc:created", cal1);
+        file1.setPropertyValue("dc:coverage", "foo/bar");
+        file1.setPropertyValue("dc:subjects", new String[] { "foo", "gee/moo" });
         file1 = session.createDocument(file1);
 
         DocumentModel file2 = new DocumentModelImpl("/testfolder1",
@@ -164,6 +166,7 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         file2.setPropertyValue("dc:created", cal2);
         file2.setPropertyValue("dc:contributors",
                 new String[] { "bob", "pete" });
+        file2.setPropertyValue("dc:coverage", "football");
         file2 = session.createDocument(file2);
 
         DocumentModel file3 = new DocumentModelImpl("/testfolder1",
@@ -517,6 +520,32 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         sql = "SELECT * FROM document WHERE dc:title LIKE 'testfile%' AND ecm:path STARTSWITH '/'";
         dml = session.query(sql);
         assertEquals(4, dml.size());
+    }
+
+    public void testStartsWithNonPath() throws Exception {
+        String sql;
+        createDocs();
+
+        sql = "SELECT * FROM Document WHERE dc:coverage STARTSWITH 'foo'";
+        assertEquals(1, session.query(sql).size());
+
+        sql = "SELECT * FROM Document WHERE dc:coverage STARTSWITH 'foo/bar'";
+        assertEquals(1, session.query(sql).size());
+
+        sql = "SELECT * FROM Document WHERE dc:coverage STARTSWITH 'foo/bar/baz'";
+        assertEquals(0, session.query(sql).size());
+
+        sql = "SELECT * FROM Document WHERE dc:subjects STARTSWITH 'foo'";
+        assertEquals(1, session.query(sql).size());
+
+        sql = "SELECT * FROM Document WHERE dc:subjects STARTSWITH 'gee'";
+        assertEquals(1, session.query(sql).size());
+
+        sql = "SELECT * FROM Document WHERE dc:subjects STARTSWITH 'gee/moo'";
+        assertEquals(1, session.query(sql).size());
+
+        sql = "SELECT * FROM Document WHERE dc:subjects STARTSWITH 'gee/moo/blah'";
+        assertEquals(0, session.query(sql).size());
     }
 
     public void testReindexEditedDocument() throws Exception {
