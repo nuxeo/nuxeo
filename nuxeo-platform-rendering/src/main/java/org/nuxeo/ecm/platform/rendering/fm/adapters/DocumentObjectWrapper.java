@@ -23,10 +23,12 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyException;
+import org.nuxeo.ecm.core.api.model.impl.ArrayProperty;
 import org.nuxeo.ecm.core.api.model.impl.ListProperty;
 import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
 import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
 
+import freemarker.ext.beans.ArrayModel;
 import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.TemplateModel;
 import freemarker.template.TemplateModelException;
@@ -56,7 +58,20 @@ public class DocumentObjectWrapper extends DefaultObjectWrapper {
             if (p.isScalar()) {
                 return new PropertyWrapper(this).wrap(p);
             } else if (p.isList()) {
-                return new ListPropertyTemplate(this, (ListProperty) obj);
+                if (obj instanceof ListProperty) {
+                    return new ListPropertyTemplate(this, (ListProperty) obj);
+                } else if (obj instanceof ArrayProperty) {
+                    Object value;
+                    try {
+                        value = ((ArrayProperty)obj).getValue();
+                    } catch (PropertyException e) {
+                        throw new IllegalArgumentException("Cannot get array from array property " + obj);
+                    }
+                    if (value == null) {
+                        return TemplateModel.NOTHING;
+                    }
+                    return new ArrayModel(value,this);
+                }
             } else if (p.getClass() == BlobProperty.class) {
                 try {
                     Blob blob = (Blob)p.getValue();
