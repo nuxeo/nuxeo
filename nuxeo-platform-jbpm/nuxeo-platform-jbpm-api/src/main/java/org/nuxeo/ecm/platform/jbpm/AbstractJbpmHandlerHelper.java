@@ -40,7 +40,7 @@ import org.nuxeo.ecm.platform.jbpm.JbpmService.VariableName;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Abstract Class providing helpers methods.
+ * Abstract Class providing helpers methods to manipulates document.
  *
  * @author arussel
  *

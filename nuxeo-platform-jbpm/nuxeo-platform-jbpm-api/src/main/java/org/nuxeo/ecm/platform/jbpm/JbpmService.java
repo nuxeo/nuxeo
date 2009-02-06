@@ -53,6 +53,7 @@ public interface JbpmService {
 
     /**
      * The variable used as process instance variables.
+     *
      * @author arussel
      *
      */
@@ -74,6 +75,7 @@ public interface JbpmService {
      * Name hibernate queries.
      *
      * They are located in the <code>nuxeo.hibernate.queries.hbm.xml</code>
+     *
      * @author arussel
      *
      */
@@ -132,8 +134,8 @@ public interface JbpmService {
      * default transition.
      *
      * @param taskInstanceId
-     * @param transition
-     * @param taskVariables TODO
+     * @param transition the transition to follow
+     * @param taskVariables the variables attached to the task.
      * @param variables A list a variables to add to the process instance.
      * @param transientVariables the list of transient variables.
      * @param principal the user ending the task. Might be different from
@@ -173,8 +175,8 @@ public interface JbpmService {
     /**
      * Delete the process instance and related tasks.
      *
-     * If you want don't want to delete the process, add a abandon state and
-     * suitable transitions.
+     * If you don't want to delete the process, add a abandon state and suitable
+     * transitions.
      *
      * @param principal the canceller.
      */
@@ -182,11 +184,7 @@ public interface JbpmService {
             throws NuxeoJbpmException;
 
     /**
-     * Return a list of all current process instances for this user.
-     *
-     * <p>
-     * A current process instance is an unfinished process. The user is the
-     * process instances initiator.
+     * Return a list of all current process instances this user has started.
      *
      * @param principal
      * @return A list of ProcessInstance
@@ -285,11 +283,11 @@ public interface JbpmService {
             throws NuxeoJbpmException;
 
     /**
-     * Return a list of document used in this process.
+     * Return the document used in this process.
      *
      * @param pi the process instance.
      * @param user the user.
-     * @return a list of DocumentModel.
+     * @return a DocumentModel.
      * @throws NuxeoJbpmException
      */
     DocumentModel getDocumentModel(ProcessInstance pi, NuxeoPrincipal user)
@@ -321,8 +319,25 @@ public interface JbpmService {
             NuxeoPrincipal user, JbpmListFilter jbpmListFilter)
             throws NuxeoJbpmException;
 
+    /**
+     * Return a map, key is the type of document, value is a list of process
+     * definitions.
+     *
+     * @return
+     */
     Map<String, List<String>> getTypeFilterConfiguration();
 
+    /**
+     * Return if this user has this permission for this process instance and document.
+     *
+     * @param pi
+     * @param action
+     * @param dm
+     * @param principal
+     * @see securityPolicy extention point
+     * @return
+     * @throws NuxeoJbpmException
+     */
     Boolean getPermission(ProcessInstance pi, JbpmSecurityPolicy.Action action,
             DocumentModel dm, NuxeoPrincipal principal)
             throws NuxeoJbpmException;
