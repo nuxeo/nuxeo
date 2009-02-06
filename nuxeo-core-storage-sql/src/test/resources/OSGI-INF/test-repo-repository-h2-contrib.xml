@@ -13,8 +13,8 @@
           <fulltext analyzer="org.apache.lucene.analysis.fr.FrenchAnalyzer"/>
         </indexing>
         <xa-datasource>org.h2.jdbcx.JdbcDataSource</xa-datasource>
-        <!-- Directory name mentioned in SQLRepositoryTestCase -->
-        <property name="URL">jdbc:h2:/tmp/nxsqltests-h2/nuxeo</property>
+        <!-- Property name mentioned in SQLBackendHelper -->
+        <property name="URL">jdbc:h2:${nuxeo.test.h2.path}</property>
         <property name="User">sa</property>
         <property name="Password"></property>
       </repository>
