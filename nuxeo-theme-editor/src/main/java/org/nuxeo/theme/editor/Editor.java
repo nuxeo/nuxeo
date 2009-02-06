@@ -281,15 +281,7 @@ public class Editor {
                     }
                     css.append(propertyName);
                     css.append(':');
-                    PresetType preset = null;
-                    String presetName = PresetManager.extractPresetName(
-                            themeName, value);
-                    if (presetName != null) {
-                        preset = PresetManager.getPresetByName(presetName);
-                    }
-                    if (preset != null) {
-                        value = preset.getValue();
-                    }
+                    value = PresetManager.resolvePresets(themeName, value);
                     css.append(value);
                     css.append(';');
                 }
