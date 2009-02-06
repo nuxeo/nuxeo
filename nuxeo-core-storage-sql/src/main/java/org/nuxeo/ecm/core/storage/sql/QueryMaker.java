@@ -298,8 +298,8 @@ public class QueryMaker {
         }
 
         // Do we have to join with the proxies table?
-        considerProxies = info.proxyClause != Boolean.FALSE &&
-                info.immutableClause != Boolean.FALSE;
+        considerProxies = info.proxyClause != Boolean.FALSE
+                && info.immutableClause != Boolean.FALSE;
 
         // Do we need to add the versions table too?
         if (info.needsVersionsTable || info.immutableClause != null) {
@@ -320,8 +320,8 @@ public class QueryMaker {
             String alias = dialect.storesUpperCaseIdentifiers() ? "_NXHIER"
                     : "_nxhier";
             hierTable = new TableAlias(hier, alias);
-            String hierfrom = hier.getQuotedName() + " " +
-                    hierTable.getQuotedName(); // TODO dialect
+            String hierfrom = hier.getQuotedName() + " "
+                    + hierTable.getQuotedName(); // TODO dialect
             hierId = hierTable.getColumn(model.MAIN_KEY).getFullQuotedName();
             // joined (data)
             joinedHierTable = hier;
@@ -394,8 +394,8 @@ public class QueryMaker {
          * Add clauses for proxy / version matches.
          */
 
-        if (info.proxyClause == Boolean.TRUE &&
-                info.immutableClause != Boolean.FALSE) {
+        if (info.proxyClause == Boolean.TRUE
+                && info.immutableClause != Boolean.FALSE) {
             whereClauses.add(String.format("%s IS NOT NULL",
                     database.getTable(model.PROXY_TABLE_NAME).getColumn(
                             model.MAIN_KEY).getFullQuotedName()));
@@ -512,7 +512,8 @@ public class QueryMaker {
         select.setOrderBy(orderBy);
 
         List<Column> whatColumns = Collections.singletonList(hierTable.getColumn(model.MAIN_KEY));
-        selectInfo = new SQLInfoSelect(select.getStatement(), whatColumns, null, null);
+        selectInfo = new SQLInfoSelect(select.getStatement(), whatColumns,
+                null, null);
     }
 
     protected Column findColumn(String name, boolean allowArray,
@@ -547,8 +548,8 @@ public class QueryMaker {
         }
         if (NXQL.ECM_MIXINTYPE.equals(name)) {
             // toplevel ones have been extracted by the analyzer
-            throw new QueryMakerException("Cannot use non-toplevel " +
-                    name + " in query");
+            throw new QueryMakerException("Cannot use non-toplevel " + name
+                    + " in query");
         }
         if (NXQL.ECM_UUID.equals(name)) {
             return hierTable.getColumn(model.MAIN_KEY);
@@ -564,8 +565,8 @@ public class QueryMaker {
                     model.MISC_LIFECYCLE_STATE_KEY);
         }
         if (NXQL.ECM_FULLTEXT.equals(name)) {
-            throw new QueryMakerException(NXQL.ECM_FULLTEXT +
-                    " must be used as left-hand operand");
+            throw new QueryMakerException(NXQL.ECM_FULLTEXT
+                    + " must be used as left-hand operand");
         }
         if (NXQL.ECM_VERSIONLABEL.equals(name)) {
             return database.getTable(model.VERSION_TABLE_NAME).getColumn(
@@ -660,8 +661,8 @@ public class QueryMaker {
                     if (expr.rvalue instanceof Reference) {
                         expr = new Expression(expr.rvalue, op, expr.lvalue);
                     }
-                    if (expr.lvalue instanceof Reference &&
-                            expr.rvalue instanceof StringLiteral) {
+                    if (expr.lvalue instanceof Reference
+                            && expr.rvalue instanceof StringLiteral) {
                         String name = ((Reference) expr.lvalue).name;
                         String value = ((StringLiteral) expr.rvalue).value;
                         if (NXQL.ECM_PRIMARYTYPE.equals(name)) {
@@ -671,8 +672,8 @@ public class QueryMaker {
                         if (NXQL.ECM_MIXINTYPE.equals(name)) {
                             if (FACET_IMMUTABLE.equals(value)) {
                                 Boolean im = Boolean.valueOf(isEq);
-                                if (immutableClause != null &&
-                                        immutableClause != im) {
+                                if (immutableClause != null
+                                        && immutableClause != im) {
                                     throw new QueryCannotMatchException();
                                 }
                                 immutableClause = im;
@@ -683,14 +684,15 @@ public class QueryMaker {
                             return;
                         }
                     }
-                    if (expr.lvalue instanceof Reference &&
-                            expr.rvalue instanceof IntegerLiteral) {
+                    if (expr.lvalue instanceof Reference
+                            && expr.rvalue instanceof IntegerLiteral) {
                         String name = ((Reference) expr.lvalue).name;
                         long v = ((IntegerLiteral) expr.rvalue).value;
                         if (NXQL.ECM_ISPROXY.equals(name)) {
                             if (v != 0 && v != 1) {
-                                throw new QueryMakerException(NXQL.ECM_ISPROXY +
-                                        " requires literal 0 or 1 as right argument");
+                                throw new QueryMakerException(
+                                        NXQL.ECM_ISPROXY
+                                                + " requires literal 0 or 1 as right argument");
                             }
                             Boolean pr = Boolean.valueOf(v == 1);
                             if (proxyClause != null && proxyClause != pr) {
@@ -707,16 +709,16 @@ public class QueryMaker {
                     if (expr.rvalue instanceof Reference) {
                         expr = new Expression(expr.rvalue, op, expr.lvalue);
                     }
-                    if (expr.lvalue instanceof Reference &&
-                            expr.rvalue instanceof LiteralList) {
+                    if (expr.lvalue instanceof Reference
+                            && expr.rvalue instanceof LiteralList) {
                         String name = ((Reference) expr.lvalue).name;
                         if (NXQL.ECM_PRIMARYTYPE.equals(name)) {
                             Set<String> set = new HashSet<String>();
                             for (Literal literal : (LiteralList) expr.rvalue) {
                                 if (!(literal instanceof StringLiteral)) {
                                     throw new QueryMakerException(
-                                            NXQL.ECM_PRIMARYTYPE +
-                                                    " IN requires string literals");
+                                            NXQL.ECM_PRIMARYTYPE
+                                                    + " IN requires string literals");
                                 }
                                 set.add(((StringLiteral) literal).value);
                             }
@@ -741,14 +743,14 @@ public class QueryMaker {
                             for (Literal literal : (LiteralList) expr.rvalue) {
                                 if (!(literal instanceof StringLiteral)) {
                                     throw new QueryMakerException(
-                                            NXQL.ECM_MIXINTYPE +
-                                                    " IN requires string literals");
+                                            NXQL.ECM_MIXINTYPE
+                                                    + " IN requires string literals");
                                 }
                                 String value = ((StringLiteral) literal).value;
                                 if (FACET_IMMUTABLE.equals(value)) {
                                     Boolean im = Boolean.valueOf(isIn);
-                                    if (immutableClause != null &&
-                                            immutableClause != im) {
+                                    if (immutableClause != null
+                                            && immutableClause != im) {
                                         throw new QueryCannotMatchException();
                                     }
                                     immutableClause = im;
@@ -762,8 +764,8 @@ public class QueryMaker {
                                     mixinsAnyRequired.addAll(set);
                                 } else {
                                     throw new QueryMakerException(
-                                            NXQL.ECM_MIXINTYPE +
-                                                    " cannot have more than one IN clause");
+                                            NXQL.ECM_MIXINTYPE
+                                                    + " cannot have more than one IN clause");
                                 }
                             } else {
                                 mixinsExcluded.addAll(set);
@@ -842,8 +844,8 @@ public class QueryMaker {
 
         @Override
         public void visitFunction(Function node) {
-            throw new QueryMakerException("Function not supported: " +
-                    node.toString());
+            throw new QueryMakerException("Function not supported: "
+                    + node.toString());
         }
 
         @Override
@@ -903,8 +905,8 @@ public class QueryMaker {
             Operator op = node.operator;
             if (op == Operator.STARTSWITH) {
                 if (!NXQL.ECM_PATH.equals(name)) {
-                    throw new QueryMakerException("STARTSWITH requires " +
-                            NXQL.ECM_PATH + "as left argument");
+                    throw new QueryMakerException("STARTSWITH requires "
+                            + NXQL.ECM_PATH + "as left argument");
                 }
                 visitExpressionStartsWith(node);
             } else if (NXQL.ECM_ISPROXY.equals(name)) {
@@ -913,9 +915,9 @@ public class QueryMaker {
                 visitExpressionIsVersion(node);
             } else if (NXQL.ECM_FULLTEXT.equals(name)) {
                 visitExpressionFulltext(node);
-            } else if ((op == Operator.EQ || op == Operator.NOTEQ ||
-                    op == Operator.IN || op == Operator.NOTIN) &&
-                    name != null && !name.startsWith(NXQL.ECM_PREFIX)) {
+            } else if ((op == Operator.EQ || op == Operator.NOTEQ
+                    || op == Operator.IN || op == Operator.NOTIN)
+                    && name != null && !name.startsWith(NXQL.ECM_PREFIX)) {
                 PropertyInfo propertyInfo = model.getPropertyInfo(name);
                 if (propertyInfo == null) {
                     throw new QueryMakerException("Unknown field: " + name);
@@ -960,8 +962,8 @@ public class QueryMaker {
 
         protected void visitExpressionStartsWith(Expression node) {
             if (!(node.rvalue instanceof StringLiteral)) {
-                throw new QueryMakerException(Operator.STARTSWITH +
-                        " requires literal path as right argument");
+                throw new QueryMakerException(Operator.STARTSWITH
+                        + " requires literal path as right argument");
             }
             String path = ((StringLiteral) node.rvalue).value;
             if (path.length() > 1 && path.endsWith("/")) {
@@ -989,17 +991,17 @@ public class QueryMaker {
 
         protected void visitExpressionIsProxy(Expression node) {
             if (node.operator != Operator.EQ && node.operator != Operator.NOTEQ) {
-                throw new QueryMakerException(NXQL.ECM_ISPROXY +
-                        " requires = or <> operator");
+                throw new QueryMakerException(NXQL.ECM_ISPROXY
+                        + " requires = or <> operator");
             }
             if (!(node.rvalue instanceof IntegerLiteral)) {
-                throw new QueryMakerException(NXQL.ECM_ISPROXY +
-                        " requires literal 0 or 1 as right argument");
+                throw new QueryMakerException(NXQL.ECM_ISPROXY
+                        + " requires literal 0 or 1 as right argument");
             }
             long v = ((IntegerLiteral) node.rvalue).value;
             if (v != 0 && v != 1) {
-                throw new QueryMakerException(NXQL.ECM_ISPROXY +
-                        " requires literal 0 or 1 as right argument");
+                throw new QueryMakerException(NXQL.ECM_ISPROXY
+                        + " requires literal 0 or 1 as right argument");
             }
             boolean bool = node.operator == Operator.EQ ^ v == 0;
             if (considerProxies) {
@@ -1014,17 +1016,17 @@ public class QueryMaker {
 
         protected void visitExpressionIsVersion(Expression node) {
             if (node.operator != Operator.EQ && node.operator != Operator.NOTEQ) {
-                throw new QueryMakerException(NXQL.ECM_ISVERSION +
-                        " requires = or <> operator");
+                throw new QueryMakerException(NXQL.ECM_ISVERSION
+                        + " requires = or <> operator");
             }
             if (!(node.rvalue instanceof IntegerLiteral)) {
-                throw new QueryMakerException(NXQL.ECM_ISVERSION +
-                        " requires literal 0 or 1 as right argument");
+                throw new QueryMakerException(NXQL.ECM_ISVERSION
+                        + " requires literal 0 or 1 as right argument");
             }
             long v = ((IntegerLiteral) node.rvalue).value;
             if (v != 0 && v != 1) {
-                throw new QueryMakerException(NXQL.ECM_ISVERSION +
-                        " requires literal 0 or 1 as right argument");
+                throw new QueryMakerException(NXQL.ECM_ISVERSION
+                        + " requires literal 0 or 1 as right argument");
             }
             boolean bool = node.operator == Operator.EQ ^ v == 0;
             buf.append(database.getTable(model.VERSION_TABLE_NAME).getColumn(
@@ -1034,12 +1036,12 @@ public class QueryMaker {
 
         protected void visitExpressionFulltext(Expression node) {
             if (node.operator != Operator.EQ && node.operator != Operator.LIKE) {
-                throw new QueryMakerException(NXQL.ECM_FULLTEXT +
-                        " requires = or LIKE operator");
+                throw new QueryMakerException(NXQL.ECM_FULLTEXT
+                        + " requires = or LIKE operator");
             }
             if (!(node.rvalue instanceof StringLiteral)) {
-                throw new QueryMakerException(NXQL.ECM_FULLTEXT +
-                        " requires literal string as right argument");
+                throw new QueryMakerException(NXQL.ECM_FULLTEXT
+                        + " requires literal string as right argument");
             }
             String fulltextQuery = ((StringLiteral) node.rvalue).value;
             // TODO parse query language for fulltext
