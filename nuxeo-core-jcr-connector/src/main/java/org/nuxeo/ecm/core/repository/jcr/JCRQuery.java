@@ -74,6 +74,7 @@ public class JCRQuery implements Query {
     public QueryResult execute(boolean countTotal) throws QueryException {
         try {
             sqlQuery = SQLQueryParser.parse(rawQuery);
+            SQLQuery query = sqlQuery;
             Boolean orderByPath = null;
             if (sqlQuery.orderBy != null) {
                 OrderByList orderByList = sqlQuery.orderBy.elements;
@@ -82,10 +83,12 @@ public class JCRQuery implements Query {
                     if (NXQL.ECM_PATH.equals(orderBy.reference.name)) {
                         // do ORDER BY ecm:path "by hand"
                         orderByPath = Boolean.valueOf(!orderBy.isDescending);
+                        query = new SQLQuery(sqlQuery.select,
+                                sqlQuery.from, sqlQuery.where, null);
                     }
                 }
             }
-            javax.jcr.query.Query jcrQuery = buildJcrQuery(sqlQuery);
+            javax.jcr.query.Query jcrQuery = buildJcrQuery(query);
             return new JCRQueryResult(this, jcrQuery.execute(), countTotal,
                     orderByPath, limit, offset);
         } catch (RepositoryException e) {

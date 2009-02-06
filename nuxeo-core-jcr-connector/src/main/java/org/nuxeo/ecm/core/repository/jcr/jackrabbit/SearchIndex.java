@@ -166,6 +166,9 @@ public class SearchIndex extends
                 // ecm:path
                 addPath(doc, getPath(node));
 
+                // ecm:name
+                addName(doc, getName(node));
+
                 // ecm:mixinType
                 Set<String> facets = getFacets(dataNode);
                 if (isProxy || isVersion) {
@@ -390,6 +393,12 @@ public class SearchIndex extends
             // TODO addLength for V3
         }
 
+        private void addName(Document doc, String name)
+                throws RepositoryException {
+            doc.add(createStringField(NodeConstants.ECM_NAME.qname, name));
+            // TODO addLength for V3
+        }
+
         private void addVersionLabel(Document doc, String label) {
             doc.add(createStringField(NodeConstants.ECM_VERSION_LABEL.qname,
                     label));
@@ -474,6 +483,39 @@ public class SearchIndex extends
             }
         }
 
+        /**
+         * Finds the local name.
+         *
+         * @param node the node state
+         * @return the name
+         * @throws RepositoryException
+         */
+        private String getName(NodeState node) throws RepositoryException {
+            try {
+                NodeId pid = node.getParentId();
+                if (pid == null) {
+                    return "";
+                }
+                NodeState parent;
+                parent = (NodeState) itemStateManager.getItemState(pid);
+                if (parent == null) {
+                    return "";
+                }
+                pid = parent.getParentId();
+                if (pid == null) {
+                    // parent is the root
+                    return "";
+                }
+                ChildNodeEntry childNodeEntry = parent.getChildNodeEntry(node.getNodeId());
+                // we get the local name only, as we don't have a session
+                // mapping to interpret the namespace
+                return childNodeEntry.getName().getLocalName();
+            } catch (ItemStateException e) {
+                String msg = "Error while indexing node: " + node.getNodeId()
+                        + " of type: " + node.getNodeTypeName();
+                throw new RepositoryException(msg, e);
+            }
+        }
     }
 
 }

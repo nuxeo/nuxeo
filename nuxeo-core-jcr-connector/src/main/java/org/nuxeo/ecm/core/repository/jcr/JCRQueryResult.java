@@ -35,7 +35,6 @@ import javax.jcr.ValueFormatException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jackrabbit.core.query.lucene.QueryResultImpl;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelFactory;
@@ -81,8 +80,15 @@ public class JCRQueryResult implements QueryResult {
         iterator = qr.getNodes();
         this.query = query;
         if (countTotal) {
-            totalSize = ((QueryResultImpl) qr).getTotalSize();
-            // may return -1 but that's ok
+            long count = 0;
+            NodeIterator it = qr.getNodes();
+            while (it.hasNext()) {
+                if ("/ecm:root".equals(it.nextNode().getPath())) {
+                    continue;
+                }
+                count++;
+            }
+            totalSize = count;
         } else {
             totalSize = -1;
         }

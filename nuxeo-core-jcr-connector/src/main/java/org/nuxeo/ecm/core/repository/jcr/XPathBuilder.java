@@ -513,7 +513,7 @@ public class XPathBuilder {
             } else if (NXQL.ECM_UUID.equals(name)) {
                 name = JcrConstants.JCR_UUID;
             } else if (NXQL.ECM_NAME.equals(name)) {
-                name = JcrConstants.JCR_NAME;
+                name = NodeConstants.ECM_NAME.rawname;
             } else if (NXQL.ECM_PRIMARYTYPE.equals(name)) {
                 name = JcrConstants.JCR_PRIMARYTYPE;
                 fixer = TypeFixer.INSTANCE;
