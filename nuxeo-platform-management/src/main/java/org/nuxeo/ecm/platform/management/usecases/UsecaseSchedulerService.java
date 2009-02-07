@@ -41,7 +41,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
  *
  */
 public class UsecaseSchedulerService extends DefaultComponent implements
-        UsecaseScheduler {
+        UsecaseScheduler, UsecaseSchedulerMBean {
 
     protected static ComponentName NAME = new ComponentName(
             UsecaseScheduler.class.getCanonicalName());
@@ -133,6 +133,51 @@ public class UsecaseSchedulerService extends DefaultComponent implements
 
     protected final ScheduleEventListener scheduleEventListener = new ScheduleEventListener();
 
+    protected Set<String> doExtractUseCasesName(
+            Collection<UsecaseContext> runners) {
+        Set<String> names = new HashSet<String>();
+        for (UsecaseContext runner : runners) {
+            names.add(runner.shortcutName);
+        }
+        return names;
+    }
+
+    public Set<String> getScheduledUseCases() {
+        return doExtractUseCasesName(runnerRegistry.scheduledUsecasesContext.values());
+    }
+
+    public int getScheduledUseCasesCount() {
+        return runnerRegistry.scheduledUsecasesContext.size();
+    }
+
+    public Set<String> getUseCasesInError() {
+        return doExtractUseCasesName(runnerRegistry.failedUsecasesContext);
+    }
+
+    public int getUseCasesInErrorCount() {
+        return runnerRegistry.failedUsecasesContext.size();
+    }
+
+    public Set<String> getUseCasesInSuccess() {
+        return doExtractUseCasesName(runnerRegistry.succeedUsecasesContext);
+    }
+
+    public int getUseCasesInSuccessCount() {
+        return runnerRegistry.succeedUsecasesContext.size();
+    }
+
+    public void disable() {
+        runnerRegistry.disable();
+    }
+
+    public void enable() {
+        runnerRegistry.enable();
+    }
+
+    public boolean isEnabled() {
+        return runnerRegistry.isEnabled();
+    }
+    
     protected class ManagementPublisher {
 
         protected ResourcePublisherService service;
@@ -140,53 +185,7 @@ public class UsecaseSchedulerService extends DefaultComponent implements
         protected void doPublish() {
             service.registerResource("usecase-scheduler",
                     ObjectNameFactory.formatQualifiedName(NAME),
-                    UsecaseSchedulerMBean.class, new UsecaseSchedulerMBean() {
-
-                        protected Set<String> doExtractUseCasesName(
-                                Collection<UsecaseContext> runners) {
-                            Set<String> names = new HashSet<String>();
-                            for (UsecaseContext runner : runners) {
-                                names.add(runner.shortcutName);
-                            }
-                            return names;
-                        }
-
-                        public Set<String> getScheduledUseCases() {
-                            return doExtractUseCasesName(runnerRegistry.scheduledUsecasesContext.values());
-                        }
-
-                        public int getScheduledUseCasesCount() {
-                            return runnerRegistry.scheduledUsecasesContext.size();
-                        }
-
-                        public Set<String> getUseCasesInError() {
-                            return doExtractUseCasesName(runnerRegistry.failedUsecasesContext);
-                        }
-
-                        public int getUseCasesInErrorCount() {
-                            return runnerRegistry.failedUsecasesContext.size();
-                        }
-
-                        public Set<String> getUseCasesInSuccess() {
-                            return doExtractUseCasesName(runnerRegistry.succeedUsecasesContext);
-                        }
-
-                        public int getUseCasesInSuccessCount() {
-                            return runnerRegistry.succeedUsecasesContext.size();
-                        }
-
-                        public void disable() {
-                            runnerRegistry.disable();
-                        }
-
-                        public void enable() {
-                            runnerRegistry.enable();
-                        }
-
-                        public boolean isEnabled() {
-                            return runnerRegistry.isEnabled();
-                        }
-                    });
+                    UsecaseSchedulerMBean.class, UsecaseSchedulerService.this);
         }
 
         protected void doUnpublish() {
@@ -313,18 +312,6 @@ public class UsecaseSchedulerService extends DefaultComponent implements
     public void deactivate(ComponentContext context) throws Exception {
         scheduleEventListener.doUnlisten();
         managementPublisher.doUnpublish();
-    }
-
-    public void enable() {
-        runnerRegistry.enable();
-    }
-
-    public void disable() {
-        runnerRegistry.disable();
-    }
-
-    public Boolean isEnabled() {
-        return runnerRegistry.isEnabled();
     }
 
     public static final String USECASES_EXT_KEY = "usecases";
