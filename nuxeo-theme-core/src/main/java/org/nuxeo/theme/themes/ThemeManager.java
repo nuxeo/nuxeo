@@ -708,6 +708,7 @@ public final class ThemeManager implements Registrable {
         if (themeDescriptor == null) {
             throw new ThemeIOException("Theme not found: " + src);
         }
+        final String oldThemeName = themeDescriptor.getName();
         themeDescriptor.setLoadingFailed(true);
         String themeName = ThemeParser.registerTheme(src);
         if (themeName == null) {
@@ -718,6 +719,9 @@ public final class ThemeManager implements Registrable {
         themeDescriptor.setLastLoaded(new Date());
         themeModified();
         updateThemeDescriptors();
+        if (!themeName.equals(oldThemeName)) {
+            themes.remove(oldThemeName);
+        }
     }
 
     public static void saveTheme(final String src) throws ThemeIOException {
