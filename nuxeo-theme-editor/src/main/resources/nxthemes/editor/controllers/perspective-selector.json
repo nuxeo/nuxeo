@@ -2,6 +2,6 @@
      "type": "behaviour",
      "rules": {
        "form": {
-         "submit": "select perspective"
+         "change": "select perspective"
        }
     }}

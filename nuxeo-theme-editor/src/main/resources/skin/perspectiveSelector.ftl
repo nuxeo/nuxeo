@@ -1,8 +1,7 @@
 
 <div id="nxthemesPerspectiveSelector">
 
-  <form class="nxthemesPerspectiveSelector" action="javascript:void(0)"
-            submit="return false">
+  <form class="nxthemesPerspectiveSelector" action="javascript:void(0)">
 
   <label>Perspective:</label>
 
@@ -13,8 +12,6 @@
   </#list>
 
   </select>
-
-  <button type="submit">OK</button>
 
   </form>
 </div>
