@@ -93,7 +93,7 @@ public class ThemeDescriptor implements Type {
     }
 
     public boolean isReloadable() {
-        return isLoaded();
+        return isLoaded() && !isCustomized();
     }
 
     public boolean isSaveable() {

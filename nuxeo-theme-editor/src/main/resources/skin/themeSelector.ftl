@@ -12,11 +12,14 @@
         src="${skinPath}/img/r-theme-tab.png" /></td>
       <td class="separator"></td>
     </#list>
+      
     <td class="ltab"><img alt="" width="5" height="5" src="${skinPath}/img/l-theme-tab.png" /></td>
     <td class="tab" style=" width: 120px"><a style="font-weight: bold;" href="javascript:void(0)" onclick="javascript:NXThemesEditor.addTheme()">add theme</a></td>
     <td class="rtab"><img alt="" width="5" height="5" src="${skinPath}/img/r-theme-tab.png" /></td>
   </tr>
 </table>
+
+
 
 <div class="nxthemesTabs nxthemesPageTabs">
   <ul>

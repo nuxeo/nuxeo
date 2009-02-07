@@ -1009,9 +1009,9 @@ public final class ThemeManager implements Registrable {
         return themeDescriptors;
     }
 
-    public static ThemeDescriptor getThemeDescriptor(String themeName) {
+    public static ThemeDescriptor getThemeDescriptor(String src) {
         return (ThemeDescriptor) Manager.getTypeRegistry().lookup(
-                TypeFamily.THEME, themeName);
+                TypeFamily.THEME, src);
     }
 
     // Template engines

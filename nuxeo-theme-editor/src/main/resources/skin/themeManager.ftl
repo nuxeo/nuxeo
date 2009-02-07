@@ -43,6 +43,20 @@
         </#if>
       </p>
       
+      <#if theme.customized>
+        <p><em>This theme is currently being hidden by another theme with the same name. </em></p>
+      
+      <#else>
+      
+        <#if theme.custom>
+          <p><em>This theme can be saved by clicking on the SAVE button.</em></p>
+        </#if>
+      
+        <#if !theme.saveable>
+          <p><em>This theme cannot be saved directly, use the DOWNLOAD button instead.</em></p>
+        </#if>
+      </#if>
+      
       <p>
         <#if theme.saveable>
           <button onclick="NXThemesEditor.saveTheme('${theme.src}', 2)">
@@ -65,7 +79,7 @@
         <#if theme.reloadable>
           <button onclick="NXThemesEditor.loadTheme('${theme.src}')">
           <img src="${skinPath}/img/theme-reload.png" width="16" height="16" />
-          Restore
+          Reload
           </button>
         </#if>
         <#if theme.loadable>
