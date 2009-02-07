@@ -10,12 +10,6 @@
     </layout>
   </appender>
 
-
-  <category name="org.nuxeo">
-    <priority value="TRACE" />
-  </category>
-
-
   <root>
     <priority value="INFO" />
     <appender-ref ref="CONSOLE" />
