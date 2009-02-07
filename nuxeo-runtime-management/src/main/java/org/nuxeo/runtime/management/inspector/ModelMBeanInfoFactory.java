@@ -5,8 +5,6 @@ import java.util.Map;
 
 import javax.management.modelmbean.ModelMBeanInfo;
 
-import org.jsesoft.ri.ReflectionInspector;
-
 public class ModelMBeanInfoFactory {
 
     public ModelMBeanInfoFactory() {
@@ -20,18 +18,7 @@ public class ModelMBeanInfoFactory {
         if (infos.containsKey(resourceClass)) {
             return infos.get(resourceClass);
         }
-
-        ModelMBeanInspectorStrategy inspectorStrategy = new ModelMBeanInspectorStrategy(
-                resourceClass);
-
-        ReflectionInspector inspector = new ReflectionInspector();
-
-        inspector.setInspectee(resourceClass);
-        inspector.setStrategy(inspectorStrategy);
-        boolean reply = inspector.inspect();
-
-        assert reply : "inspection failed";
-        ModelMBeanInfo info = inspectorStrategy.getMBeanInfo();
+        ModelMBeanInfo info = new ModelMBeanIntrospector(resourceClass).introspect();
         infos.put(resourceClass, info);
         return info;
     }

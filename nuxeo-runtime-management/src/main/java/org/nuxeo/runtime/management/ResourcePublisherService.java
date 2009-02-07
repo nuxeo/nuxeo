@@ -17,6 +17,7 @@
 package org.nuxeo.runtime.management;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -25,11 +26,11 @@ import java.util.Map.Entry;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
+import javax.management.modelmbean.RequiredModelMBean;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jsesoft.mmbi.NamedModelMBean;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.management.inspector.ModelMBeanInfoFactory;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -170,12 +171,12 @@ public class ResourcePublisherService extends DefaultComponent implements
 
         protected ModelMBeanInfoFactory mbeanInfoFactory = new ModelMBeanInfoFactory();
 
-        protected NamedModelMBean doBind(MBeanServer server, ObjectName name,
+        protected RequiredModelMBean doBind(MBeanServer server, ObjectName name,
                 Object instance, Class<?> clazz) throws Exception {
-            NamedModelMBean mbean = new NamedModelMBean();
+            RequiredModelMBean mbean = new RequiredModelMBean();
             mbean.setManagedResource(instance, "ObjectReference");
             mbean.setModelMBeanInfo(mbeanInfoFactory.getModelMBeanInfo(clazz));
-            mbean.setInstance(server.registerMBean(mbean, name));
+            server.registerMBean(mbean, name);
             return mbean;
         }
 
@@ -198,9 +199,6 @@ public class ResourcePublisherService extends DefaultComponent implements
         protected void doUnbind(Resource resource) {
             if (resource.mbean == null) {
                 throw new IllegalStateException(resource + " is not bound");
-            }
-            if (resource.mbean.getInstance() == null) {
-                return;
             }
             try {
                 MBeanServer server = serverLocatorService.lookupServer(resource.managementName);
@@ -327,11 +325,11 @@ public class ResourcePublisherService extends DefaultComponent implements
     }
 
     public Set<String> getShortcutsName() {
-        return shortcutsRegistry.registry.keySet();
+        return new HashSet<String>(shortcutsRegistry.registry.keySet());
     }
 
     public Set<ObjectName> getResourcesName() {
-        return resourcesRegistry.registry.keySet();
+        return new HashSet<ObjectName>(resourcesRegistry.registry.keySet());
     }
 
     public ObjectName lookupName(String name) {

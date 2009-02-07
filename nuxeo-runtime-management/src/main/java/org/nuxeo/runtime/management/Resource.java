@@ -17,8 +17,7 @@
 package org.nuxeo.runtime.management;
 
 import javax.management.ObjectName;
-
-import org.jsesoft.mmbi.NamedModelMBean;
+import javax.management.modelmbean.RequiredModelMBean;
 
 /**
  * @authorStephane Lacoin (Nuxeo EP Software Engineer)
@@ -32,7 +31,7 @@ public class Resource {
 
     protected final Class<?> clazz;
 
-    protected NamedModelMBean mbean;
+    protected RequiredModelMBean mbean;
 
     /**
      * @param descriptor

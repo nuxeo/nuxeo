@@ -25,8 +25,6 @@ import javax.management.MBeanServer;
 import javax.management.MBeanServerFactory;
 import javax.management.ObjectName;
 
-import org.jsesoft.mmbi.NamedModelMBean;
-import org.nuxeo.runtime.management.inspector.ModelMBeanInfoFactory;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 

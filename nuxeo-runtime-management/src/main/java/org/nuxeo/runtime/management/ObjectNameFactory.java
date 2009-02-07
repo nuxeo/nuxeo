@@ -38,17 +38,27 @@ public class ObjectNameFactory {
 
     public static String formatQualifiedName(String domainName,
             String typeName, String instanceName) {
+        int lastDotIndex = instanceName.lastIndexOf('.');
+        if (lastDotIndex > 0) {
+            String packageName = instanceName.substring(0, lastDotIndex);
+            instanceName = instanceName.substring(lastDotIndex+1);
+            return formatQualifiedName(domainName,typeName,packageName,instanceName);
+        }
         return String.format("%s:name=%s,type=%s", domainName, instanceName,
                 typeName);
     }
 
+    public static String formatQualifiedName(String domainName,String typeName, String packageName, String instanceName) {
+        return String.format("%s:package=%s,name=%s,type=%s", domainName, packageName, instanceName,
+                typeName);
+    }
     public static String formatQualifiedName(String typeName,
             String instanceName) {
         return formatQualifiedName(NUXEO_DOMAIN_NAME, typeName, instanceName);
     }
 
-    public static String formatQualifiedName(ComponentName name) {
-        return formatQualifiedName("nx", name.getType(), name.getName());
+    public static String formatQualifiedName(ComponentName componentName) {
+        return formatQualifiedName(componentName.getType(), componentName.getName());
     }
 
     public static String formatQualifiedName(String instanceName) {
@@ -75,6 +85,7 @@ public class ObjectNameFactory {
         return name;
     }
 
+    @SuppressWarnings("unchecked")
     public static String formatShortName(ObjectName name) {
         String shortName = removeDotPart(name.getKeyProperty("name"));
         String typeName = name.getKeyProperty("type");
