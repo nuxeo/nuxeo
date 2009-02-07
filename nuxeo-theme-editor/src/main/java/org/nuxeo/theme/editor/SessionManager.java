@@ -34,6 +34,8 @@ public class SessionManager extends AbstractComponent {
 
     private static String STYLE_CATEGORY = "org.nuxeo.theme.editor.style_category";
 
+    private static String PRESET_EDIT_MODE = "org.nuxeo.theme.editor.preset_edit_mode";
+    
     private static String PRESET_GROUP = "org.nuxeo.theme.editor.preset_group";
 
     private static String CLIPBOARD_ELEMENT_ID = "org.nuxeo.theme.editor.clipboard_element";
@@ -92,6 +94,14 @@ public class SessionManager extends AbstractComponent {
         getUserSession().put(STYLE_CATEGORY, category);
     }
 
+    public static synchronized String getPresetEditMode() {
+        return (String) getUserSession().get(PRESET_EDIT_MODE);
+    }
+
+    public static synchronized void setPresetEditMode(String mode) {
+        getUserSession().put(PRESET_EDIT_MODE, mode);
+    }
+    
     public static synchronized String getPresetGroup() {
         return (String) getUserSession().get(PRESET_GROUP);
     }

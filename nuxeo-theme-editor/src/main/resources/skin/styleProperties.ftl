@@ -39,14 +39,13 @@
             <input type="hidden" name="viewName" value="${selected_view_name}" />
           </p>
 
-            <#if selected_style_selector>
               <div class="nxthemesButtonSelector" style="padding: 3px">
                 <span>categories: </span>
                 <#list style_categories as category>
                   ${category.rendered}
                 </#list>
               </div>
-            </#if>
+       
      
             <#if element_style_properties>
               <div style="height: 220px; margin-top: 5px; margin-bottom: 15px; overflow-y: scroll; overflow-x: hidden">

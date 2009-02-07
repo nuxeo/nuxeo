@@ -9,11 +9,24 @@
 
 <h1 class="nxthemesEditor">Presets</h1>
 
+    <div class="nxthemesButtonSelector"
+      style="margin-to: -10px">
+      <span>View mode:</span>
+      <#if preset_edit_mode == 'custom presets'>            
+          <a href="javascript:void(0)" onclick="NXThemesPresetManager.setPresetEditMode('palettes')">Palettes</a>
+          <a href="javascript:void(0)" class="selected">Custom presets</a>
+      <#else>
+          <a href="javascript:void(0)" class="selected">Palettes</a>
+          <a href="javascript:void(0)" onclick="NXThemesPresetManager.setPresetEditMode('custom presets')">Custom presets</a>
+      </#if>
+    </div>
+    
 <table cellpadding="0" cellspacing="0" style="width: 100%"><tr>
 
 <td style="vertical-align: top; width: 200px; padding-right: 5px;">
 
-<h2 class="nxthemesEditor">Themes</h2>
+<#if preset_edit_mode == 'custom presets'>
+
 <ul class="nxthemesSelector">
 <#list themeManager.getThemeNames() as theme_name>
 <li <#if theme_name = current_theme_name>class="selected"</#if>><a href="javascript:void(0)" 
@@ -23,7 +36,8 @@
 </#list>
 </ul>
 
-<h2 class="nxthemesEditor" style="padding-top: 10px">Palettes</h2>
+<#else>
+
 <ul class="nxthemesSelector">
 <#list preset_groups as group>
 <li <#if group = selected_preset_group>class="selected"</#if>><a href="javascript:void(0)" 
@@ -32,15 +46,18 @@
   ${group}</a></li>
 </#list>
 </ul>
+</#if>
 
 </td>
 <td style="padding-left: 10px; vertical-align: top;">
 
-<#assign presets = This.getCustomPresets(current_theme_name)>
+<#if preset_edit_mode == 'custom presets'>
 
 <h2 class="nxthemesEditor">Theme: ${current_theme_name}</h2>
 
-<table cellspacing="5" cellpadding="4" style="margin-bottom: 10px; width: 100%">
+<#assign presets = This.getCustomPresets(current_theme_name)>
+
+<table cellspacing="5" cellpadding="4" style="width: 100%">
 <#assign count = 0 />
 <#assign row = 1 /> 
 
@@ -243,12 +260,15 @@ ${preset_info.preview}
 </#if>
 
 
+<#else>
+
 
 <#if selected_preset_group>
 <!-- Palettes -->
-<h2 class="nxthemesEditor" style="padding-top: 10px">${selected_preset_group}</h2>
 
-<table cellspacing="5" cellpadding="4" style="margin-bottom: 30px; width: 100%">
+<h2 class="nxthemesEditor">Palette: ${selected_preset_group}</h2>
+
+<table cellspacing="2" cellpadding="2" style="margin-bottom: 30px; width: 100%">
 <#assign count = 0 /> 
 <#assign row = 1 /> 
 
@@ -295,6 +315,8 @@ ${preset_info.preview}</div>
 </#if>
         
 </table>
+</#if>
+
 </#if>
 
 </td></tr></table>

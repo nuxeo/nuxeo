@@ -1098,6 +1098,22 @@ if (typeof NXThemesPresetManager == "undefined") {
     }
 }
 
+NXThemesPresetManager.setPresetEditMode = function(mode) {
+    var url = nxthemesBasePath + "/nxthemes-editor/select_preset_edit_mode"; 
+    new Ajax.Request(url, {
+         method: 'post',
+         parameters: {
+             mode: mode
+         },
+         onSuccess: function(req) {
+        	 NXThemes.getViewById("preset manager").refresh();
+         },
+         onFailure: function(r) {
+             var text = r.responseText;
+             window.alert(text);
+         }         
+    });
+};
 
 NXThemesPresetManager.selectPresetGroup = function(group) {
     var url = nxthemesBasePath + "/nxthemes-editor/select_preset_group"; 

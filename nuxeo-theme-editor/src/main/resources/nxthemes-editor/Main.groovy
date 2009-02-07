@@ -68,6 +68,7 @@ public class Main extends ModuleRoot {
     return getTemplate("presetManager.ftl").arg(
             "current_theme_name", getCurrentThemeName(path)).arg(            
             "preset_groups", getPresetGroups()).arg(
+            "preset_edit_mode", getPresetEditMode()).arg(         
             "selected_preset_group", getSelectedPresetGroup())
   }
   
@@ -471,6 +472,14 @@ public class Main extends ModuleRoot {
       } 
   }
 
+  @POST
+  @Path("select_preset_edit_mode")
+  public void selectPresetEditMode() {
+      FormData form = ctx.getForm()
+      String mode = form.getString("mode")        
+      SessionManager.setPresetEditMode(mode)
+  }
+  
   @POST
   @Path("add_preset")
   public String addPreset() {
@@ -1224,6 +1233,10 @@ public class Main extends ModuleRoot {
           presets.add(new PresetInfo(preset))
       }
       return presets
+  }
+
+  public static String getPresetEditMode() {
+      return SessionManager.getPresetEditMode()
   }
   
   public static List<String> getUnidentifiedPresetNames(String themeName) {
