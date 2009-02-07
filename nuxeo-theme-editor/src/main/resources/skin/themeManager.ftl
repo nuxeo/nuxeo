@@ -9,7 +9,7 @@
 
 <table cellpadding="0" cellspacing="0" style="width: 100%"><tr>
 
-<td style="vertical-align: top; width: 200px; padding-right: 5px; border-right: 1px dashed #ccc">
+<td style="vertical-align: top; width: 200px; padding-right: 5px;">
 
 
 <ul class="nxthemesSelector">

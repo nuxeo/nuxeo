@@ -11,7 +11,7 @@
 
 <table cellpadding="0" cellspacing="0" style="width: 100%"><tr>
 
-<td style="vertical-align: top; width: 200px; padding-right: 5px; border-right: 1px dashed #ccc">
+<td style="vertical-align: top; width: 200px; padding-right: 5px;">
 
 <h2 class="nxthemesEditor">Themes</h2>
 <ul class="nxthemesSelector">
@@ -23,7 +23,7 @@
 </#list>
 </ul>
 
-<h2 class="nxthemesEditor" style="border-top: 1px dashed #ccc; padding-top: 10px">Palettes</h2>
+<h2 class="nxthemesEditor" style="padding-top: 10px">Palettes</h2>
 <ul class="nxthemesSelector">
 <#list preset_groups as group>
 <li <#if group = selected_preset_group>class="selected"</#if>><a href="javascript:void(0)" 
@@ -246,7 +246,7 @@ ${preset_info.preview}
 
 <#if selected_preset_group>
 <!-- Palettes -->
-<h2 class="nxthemesEditor" style="border-top: 1px dashed #ccc; padding-top: 10px">${selected_preset_group}</h2>
+<h2 class="nxthemesEditor" style="padding-top: 10px">${selected_preset_group}</h2>
 
 <table cellspacing="5" cellpadding="4" style="margin-bottom: 30px; width: 100%">
 <#assign count = 0 /> 
