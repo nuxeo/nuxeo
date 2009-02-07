@@ -9,8 +9,7 @@
 
 <h1 class="nxthemesEditor">Presets</h1>
 
-    <div class="nxthemesButtonSelector"
-      style="margin-to: -10px">
+    <div class="nxthemesButtonSelector">
       <span>View mode:</span>
       <#if preset_edit_mode == 'custom presets'>            
           <a href="javascript:void(0)" onclick="NXThemesPresetManager.setPresetEditMode('palettes')">Palettes</a>
@@ -53,7 +52,7 @@
 
 <#if preset_edit_mode == 'custom presets'>
 
-<h2 class="nxthemesEditor">Theme: ${current_theme_name}</h2>
+<h2 class="nxthemesEditor" style="text-transform: uppercase">${current_theme_name}</h2>
 
 <#assign presets = This.getCustomPresets(current_theme_name)>
 
@@ -146,8 +145,8 @@ ${preset_info.preview}
 <#assign preset_names=This.getUnidentifiedPresetNames(current_theme_name)>
 
 <#if preset_names>
-<h3 class="nxthemesEditorFocus">Presets that must be registered ...</h3>
-<table cellspacing="5" cellpadding="4" style="margin-bottom: 30px; width: 100%">
+<h3 class="nxthemesEditorFocus">These presets need to be defined:</h3>
+<table cellspacing="5" cellpadding="4" style="width: 100%">
 <#assign count = 0 />
 <#assign row = 1 /> 
 
@@ -186,9 +185,9 @@ ${preset_info.preview}
 <#assign colors=This.getHardcodedColors(current_theme_name)>
 
 <#if colors>
-<h3 class="nxthemesEditorFocus">Colors that are not yet registered as presets ...</h3>
+<h3 class="nxthemesEditorFocus">These colors could be registered as presets:</h3>
 
-<table cellspacing="5" cellpadding="4" style="margin-bottom: 30px; width: 100%">
+<table cellspacing="5" cellpadding="4" style="width: 100%">
 <#assign count = 0 />
 <#assign row = 1 />
 <#assign row = (count % 10) +1 /> 
@@ -227,7 +226,7 @@ ${preset_info.preview}
 <#if images>
 <h3 class="nxthemesEditorFocus">Images that are not yet registered as presets ...</h3>
 
-<table cellspacing="5" cellpadding="4" style="margin-bottom: 30px; width: 100%">
+<table cellspacing="5" cellpadding="4" style="width: 100%">
 <#assign count = 0 />
 <#assign row = 1 />
 <#assign row = (count % 10) +1 /> 
@@ -266,9 +265,9 @@ ${preset_info.preview}
 <#if selected_preset_group>
 <!-- Palettes -->
 
-<h2 class="nxthemesEditor">Palette: ${selected_preset_group}</h2>
+<h2 class="nxthemesEditor" style="text-transform: uppercase">${selected_preset_group}</h2>
 
-<table cellspacing="2" cellpadding="2" style="margin-bottom: 30px; width: 100%">
+<table cellspacing="2" cellpadding="2" style="width: 100%">
 <#assign count = 0 /> 
 <#assign row = 1 /> 
 

@@ -369,7 +369,7 @@ public class Editor {
     }
 
     public static String addTheme(String name) throws ThemeException,
-            NodeException {
+            NodeException, ThemeIOException {
         ThemeManager themeManager = Manager.getThemeManager();
         if (themeManager.getThemeByName(name) != null) {
             throw new ThemeException("The theme name is already taken: " + name);
@@ -394,14 +394,18 @@ public class Editor {
         ThemeDescriptor themeDescriptor = new ThemeDescriptor();
         themeDescriptor.setName(name);
         final String path = ThemeManager.getCustomThemePath(name);
-        if (path != null) {
-            final String src = String.format("file://%s", path);
-            themeDescriptor.setSrc(src);
+        if (path == null) {
+            throw new ThemeException("Could not get file path for theme: "
+                    + name);
         }
+        final String src = String.format("file://%s", path);
+        themeDescriptor.setSrc(src);
         TypeRegistry typeRegistry = Manager.getTypeRegistry();
         typeRegistry.register(themeDescriptor);
         // register the theme
         themeManager.registerTheme(theme);
+        // save the theme
+        ThemeManager.saveTheme(themeDescriptor.getSrc());
         return String.format("%s/%s", name, "default");
     }
 

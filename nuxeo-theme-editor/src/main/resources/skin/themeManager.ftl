@@ -35,10 +35,10 @@
 
 <#list themes as theme>
   <#if theme.name = current_theme_name>
-      <h2 class="nxthemesEditor">${theme.name}</h2>
+      <h2 class="nxthemesEditor" style="text-transform: uppercase">${theme.name}</h2>
       <p>        
         URL: ${theme.src}
-        <#if theme.loadingFailed>
+        <#if theme.lastLoaded && theme.loadingFailed>
           <span class="nxthemesEmphasize">LOADING FAILED</span>
         </#if>
       </p>

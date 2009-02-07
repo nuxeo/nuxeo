@@ -24,7 +24,7 @@
 </td>
 <td style="padding-left: 10px; vertical-align: top;">
 
-<h2 class="nxthemesEditor">${current_theme_name}</h2>
+<h2 class="nxthemesEditor" style="text-transform: uppercase">${current_theme_name}</h2>
 <h3 class="nxthemesEditor">Named styles</h3>
 <ul>
 <#list named_styles as style>

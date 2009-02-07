@@ -651,7 +651,6 @@ NXThemesEditor.addTheme = function() {
          },
          onSuccess: function(r) {
              var text = r.responseText;
-             NXThemesEditor.highlightSaveButton();
              NXThemesEditor.selectTheme(text, "theme selector");
              NXThemesEditor.refreshCanvas();
          },
@@ -950,7 +949,8 @@ NXThemesEditor.repairTheme = function(themeName) {
          },
          onFailure: function(r) {
              NXThemes.getViewById("theme manager").refresh();
-             NXThemesEditor.writeMessage("The theme could not be cleaned up.");
+             var text = r.responseText;
+             window.alert(text);
          }         
     });
 };
@@ -973,7 +973,8 @@ NXThemesEditor.loadTheme = function(src) {
          },
          onFailure: function(r) {
            NXThemes.getViewById("theme manager").refresh();
-           NXThemesEditor.writeMessage("The theme could not be loaded.");
+           var text = r.responseText;
+           window.alert(text);
          }          
     });
 };
@@ -992,8 +993,9 @@ NXThemesEditor.saveTheme = function(src, indent) {
          },
          onFailure: function(r) {
            NXThemes.getViewById("theme manager").refresh();
-           NXThemesEditor.writeMessage("The theme could not be saved.");
-         }         
+           var text = r.responseText;
+           window.alert(text);
+         }              
     });
 };
 
