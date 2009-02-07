@@ -10,7 +10,6 @@
 
 <td style="vertical-align: top; width: 200px; padding-right: 5px;">
 
-<h2 class="nxthemesEditor">Themes</h2>
 <ul class="nxthemesSelector">
 <#list themeManager.getThemeNames() as theme_name>
 <li <#if theme_name = current_theme_name>class="selected"</#if>><a href="javascript:void(0)" 

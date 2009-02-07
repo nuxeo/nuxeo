@@ -37,7 +37,7 @@
   <#if theme.name = current_theme_name>
       <h2 class="nxthemesEditor" style="text-transform: uppercase">${theme.name}</h2>
       <p>        
-        URL: ${theme.src}
+        SOURCE: ${theme.src}
         <#if theme.lastLoaded && theme.loadingFailed>
           <span class="nxthemesEmphasize">LOADING FAILED</span>
         </#if>
@@ -55,16 +55,13 @@
         <#if !theme.saveable>
           <p><em>This theme cannot be saved directly, use the DOWNLOAD button instead.</em></p>
         </#if>
-      </#if>
-      
-      <p>
-        <#if theme.saveable>
-          <button onclick="NXThemesEditor.saveTheme('${theme.src}', 2)">
-            <img src="${skinPath}/img/theme-save.png" width="16" height="16" />
-            Save
-          </button>
-        </#if> 
 
+      <p>
+        <button <#if !theme.saveable>disabled="disabled"</#if> onclick="NXThemesEditor.saveTheme('${theme.src}', 2)">
+          <img src="${skinPath}/img/theme-save.png" width="16" height="16" />
+          Save
+        </button>
+        
         <#if theme.exportable>  
           <button onclick="window.location='${basePath}/nxthemes-editor/xml_export?theme=${theme.name}&amp;download=1&amp;indent=2'">
             <img src="${skinPath}/img/theme-download.png" width="16" height="16" />
@@ -72,30 +69,32 @@
           </button>
           <button onclick="window.location='${basePath}/nxthemes-editor/xml_export?theme=${theme.name}'">
             <img src="${skinPath}/img/theme-code.png" width="16" height="16" />
-            Show source
+            Show XML
           </button>
         </#if>
       
-        <#if theme.reloadable>
-          <button onclick="NXThemesEditor.loadTheme('${theme.src}')">
-          <img src="${skinPath}/img/theme-reload.png" width="16" height="16" />
-          Restore from source
-          </button>
-        </#if>
-        <#if theme.loadable>
-          <button onclick="NXThemesEditor.loadTheme('${theme.src}')">
-          <img src="${skinPath}/img/theme-load.png" width="16" height="16" />          
-          Load from source
-          </button>
-        </#if>
-
         <#if theme.repairable>
           <button onclick="NXThemesEditor.repairTheme('${theme.name}')">
             <img src="${skinPath}/img/cleanup-16.png" width="16" height="16" />
             Clean up
           </button>
         </#if>
+        
+        <#if theme.reloadable>
+          <button onclick="NXThemesEditor.loadTheme('${theme.src}')">
+          <img src="${skinPath}/img/theme-reload.png" width="16" height="16" />
+          Restore from file
+          </button>
+        </#if>
+        <#if theme.loadable>
+          <button onclick="NXThemesEditor.loadTheme('${theme.src}')">
+          <img src="${skinPath}/img/theme-load.png" width="16" height="16" />          
+          Load from file
+          </button>
+        </#if>
       </p>
+    
+    </#if>
   </#if>
 </#list>
 
