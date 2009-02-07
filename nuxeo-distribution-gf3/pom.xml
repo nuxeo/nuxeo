@@ -77,7 +77,6 @@
                   <groupId>org.glassfish.jdbc.jdbc-ra.jdbc-ra-distribution</groupId>
                   <artifactId>jdbc-ra</artifactId>
                   <version>${gf3.version}</version>
-
                   <type>zip</type>
                 </artifactItem>
               </artifactItems>

@@ -1,0 +1,14 @@
+# $Id: groups.txt 52528 2008-01-29 11:21:00Z bdelbosc $
+#
+
+# The nuxeo admin group
+admin:Administrator
+
+# members group
+members:user1,user2,user3,user4,user5,user7,user8,user9
+members:user10,user11,user12,user13,user14,user15,user17,user18,user19
+members:user20,user21,user22,user23,user24,user25,user27,user28,user29
+members:user30,user31,user32,user33,user34,user35,user37,user38,user39
+members:user40,user41,user42,user43,user44,user45,user47,user48,user49
+members:user50
+
