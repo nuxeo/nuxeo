@@ -9,4 +9,9 @@
     <attribute name="ToName">java:/NuxeoDS</attribute>
     <attribute name="FromName">java:/nxaudit-logs</attribute>
   </mbean>
+  <mbean code="org.jboss.naming.NamingAlias"
+    name="jboss.jca:name=nxaudits,service=DataSourceBinding">
+    <attribute name="ToName">java:/NuxeoDS</attribute>
+    <attribute name="FromName">jdbc/nxaudits</attribute>
+  </mbean>
 </datasources>
