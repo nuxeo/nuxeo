@@ -25,6 +25,7 @@ import java.util.Set;
 import org.nuxeo.ecm.core.api.event.CoreEvent;
 import org.nuxeo.ecm.core.listener.AbstractEventListener;
 import org.nuxeo.ecm.core.listener.CoreEventListenerService;
+import org.nuxeo.ecm.platform.scheduler.core.interfaces.SchedulerRegistry;
 import org.nuxeo.ecm.platform.scheduler.core.service.SchedulerRegistryService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.management.ManagementRuntimeException;
@@ -52,7 +53,7 @@ public class ProbeSchedulerService extends DefaultComponent implements
         super(); // enables breaking
     }
 
-    protected class Schedule implements
+    protected class Scheduler implements
             org.nuxeo.ecm.platform.scheduler.core.interfaces.Schedule {
         public String getCronExpression() {
             return "0 0/5 * * * ?";
@@ -81,8 +82,7 @@ public class ProbeSchedulerService extends DefaultComponent implements
         protected SchedulerRegistryService registry;
 
         protected void doSchedule() {
-            registry = (SchedulerRegistryService) Framework.getRuntime().getComponent(
-                    SchedulerRegistryService.class.getCanonicalName());
+            registry = (SchedulerRegistryService)Framework.getLocalService(SchedulerRegistry.class);
             if (registry == null) {
                 throw new ManagementRuntimeException(
                         "no scheduler registry service available");
@@ -98,7 +98,7 @@ public class ProbeSchedulerService extends DefaultComponent implements
         }
     }
 
-    protected final Schedule schedule = new Schedule();
+    protected final Scheduler scheduler = new Scheduler();
 
     protected class ScheduleEventListener extends AbstractEventListener {
 
@@ -203,7 +203,7 @@ public class ProbeSchedulerService extends DefaultComponent implements
             }
             service.registerResource(context.shortcutName,
                     context.qualifiedName, ProbeMBean.class,
-                    context.getMBean());
+                    context);
         }
 
         protected void doUnpublishContext(ProbeContext context) {
@@ -282,7 +282,7 @@ public class ProbeSchedulerService extends DefaultComponent implements
             }
         }
 
-        protected Boolean isEnabled = true;
+        protected boolean isEnabled = true;
 
         public void enable() {
             isEnabled = true;
@@ -301,7 +301,7 @@ public class ProbeSchedulerService extends DefaultComponent implements
 
     @Override
     public void activate(ComponentContext context) throws Exception {
-
+        scheduler.doSchedule();
         managementPublisher.service = (ResourcePublisherService) Framework.getLocalService(ResourcePublisher.class);
         managementPublisher.doPublish();
         scheduleEventListener.doListen();
@@ -309,6 +309,8 @@ public class ProbeSchedulerService extends DefaultComponent implements
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
+        runnerRegistry.isEnabled = false;
+        scheduler.doSchedule();
         scheduleEventListener.doUnlisten();
         managementPublisher.doUnpublish();
     }

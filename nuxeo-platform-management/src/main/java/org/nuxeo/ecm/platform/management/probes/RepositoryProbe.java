@@ -31,7 +31,7 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
  */
 public class RepositoryProbe implements Probe {
 
-    public void runCase(CoreSession session) throws ClientException {
+    public void runProbe(CoreSession session) throws ClientException {
         DocumentModel rootDocument = session.getRootDocument();
         DocumentModel model = session.createDocumentModel(
                 rootDocument.getPathAsString(),

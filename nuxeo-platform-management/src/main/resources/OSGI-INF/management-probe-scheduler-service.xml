@@ -10,19 +10,7 @@
 
   <require>org.nuxeo.runtime.management.ResourcePublisher</require>
   <require>org.nuxeo.ecm.platform.scheduler.core.service.SchedulerRegistryService</require>
-
-  <extension-point name="schedule">
-    <schedule id="managementProbeSchedule">
-      <cronExpression>0 0/5 * * * ?</cronExpression>
-      <eventId>MananagementProbeSchedule</eventId>
-      <eventCategory>default</eventCategory>
-      <password></password>
-      <username>scheduler</username>
-    </schedule>
-  </extension-point>
-
-  <require>org.nuxeo.ecm.core.listener.CoreEventListenerService
-  </require>
+  <require>org.nuxeo.ecm.core.listener.CoreEventListenerService</require>
 
   <extension-point name="probes">
     <object class="org.nuxeo.ecm.platform.management.probes.ProbeDescriptor" />

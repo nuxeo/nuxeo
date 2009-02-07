@@ -28,7 +28,7 @@ public class TestRepositoryProbe extends RepositoryOSGITestCase {
    public void testRun() throws Exception {
        openRepositoryWithSystemPrivileges();
        RepositoryProbe probe = new RepositoryProbe();
-       probe.runCase(getCoreSession());
+       probe.runProbe(getCoreSession());
    }
 
 }

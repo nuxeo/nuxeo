@@ -21,7 +21,7 @@ import java.util.Date;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 
-public class ProbeContext {
+public class ProbeContext implements ProbeMBean {
 
     @SuppressWarnings("unused")
     private final ProbeSchedulerService scheduler;
@@ -57,6 +57,64 @@ public class ProbeContext {
 
     protected Exception lastFailedCause;
 
+    public long getFailedCount() {
+        return failedCount;
+    }
+
+    public long getLastDuration() {
+        return lastDuration;
+    }
+
+    public Exception getLastFailedCause() {
+        return lastFailedCause;
+    }
+
+    public Date getLastFailedDate() {
+        return lastFailedDate;
+    }
+
+    public Date getLastRunnedDate() {
+        return lastRunnedDate;
+    }
+
+    public Date getLastSucceedDate() {
+        return lastSucceedDate;
+    }
+
+    public long getRunnedCount() {
+        return runnedCount;
+    }
+
+    public long getSucceedCount() {
+        return succeedCount;
+    }
+
+    public void disable() {
+        ProbeContext.this.isEnabled = false;
+    }
+
+    public void enable() {
+        ProbeContext.this.isEnabled = true;
+    }
+
+    public boolean isEnabled() {
+        return ProbeContext.this.isEnabled;
+    }
+
+    public boolean isInError() {
+        if (lastFailedDate == null) {
+            return false;
+        }
+        if (lastSucceedDate != null) {
+            return lastFailedDate.after(lastSucceedDate);
+        }
+        return true;
+    }
+
+    protected Long doGetDuration(Date fromDate, Date toDate) {
+        return toDate.getTime() - fromDate.getTime();
+    }
+
     protected class RepositoryRunner extends UnrestrictedSessionRunner {
 
         protected RepositoryRunner(String repositoryName) {
@@ -82,7 +140,7 @@ public class ProbeContext {
             }
             Date startingDate = new Date();
             try {
-                usecase.runCase(session);
+                usecase.runProbe(session);
                 succeedCount += 1;
                 lastSucceedDate = startingDate;
             } catch (ClientException e) {
@@ -105,83 +163,16 @@ public class ProbeContext {
 
     protected final RepositoryRunner runner;
 
-    public boolean isInError() {
-        if (lastFailedDate == null) {
-            return false;
+    public void run() {
+        Thread currentThread = Thread.currentThread();
+        ClassLoader lastLoader = currentThread.getContextClassLoader();
+        currentThread.setContextClassLoader(ProbeContext.class.getClassLoader());
+        try {
+            runner.runUnrestricted();
+        } catch (ClientException e) {
+        } finally {
+            currentThread.setContextClassLoader(lastLoader);
         }
-        if (lastSucceedDate != null) {
-            return lastFailedDate.after(lastSucceedDate);
-        }
-        return true;
-    }
-
-    protected ProbeMBean getMBean() {
-        return new ProbeMBean() {
-
-            public boolean isInError() {
-                return ProbeContext.this.isInError();
-            }
-
-            public long getFailedCount() {
-                return failedCount;
-            }
-
-            public long getLastDuration() {
-                return lastDuration;
-            }
-
-            public Exception getLastFailedCause() {
-                return lastFailedCause;
-            }
-
-            public Date getLastFailedDate() {
-                return lastFailedDate;
-            }
-
-            public Date getLastRunnedDate() {
-                return lastRunnedDate;
-            }
-
-            public Date getLastSucceedDate() {
-                return lastSucceedDate;
-            }
-
-            public long getRunnedCount() {
-                return runnedCount;
-            }
-
-            public long getSucceedCount() {
-                return succeedCount;
-            }
-
-            public void run() {
-                Thread currentThread = Thread.currentThread();
-                ClassLoader lastLoader = currentThread.getContextClassLoader();
-                currentThread.setContextClassLoader(ProbeContext.class.getClassLoader());
-                try {
-                    ProbeContext.this.runner.runUnrestricted();
-                } catch (ClientException e) {
-                } finally {
-                    currentThread.setContextClassLoader(lastLoader);
-                }
-            }
-
-            public void disable() {
-                ProbeContext.this.isEnabled = false;
-            }
-
-            public void enable() {
-                ProbeContext.this.isEnabled = true;
-            }
-
-            public boolean isEnabled() {
-                return ProbeContext.this.isEnabled;
-            }
-        };
-    }
-
-    protected Long doGetDuration(Date fromDate, Date toDate) {
-        return toDate.getTime() - fromDate.getTime();
     }
 
 }

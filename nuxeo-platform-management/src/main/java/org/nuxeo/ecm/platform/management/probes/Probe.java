@@ -26,6 +26,6 @@ public interface Probe {
 
     void init(Object service);
 
-    void runCase(CoreSession session) throws ClientException;
+    void runProbe(CoreSession session) throws ClientException;
 
 }
