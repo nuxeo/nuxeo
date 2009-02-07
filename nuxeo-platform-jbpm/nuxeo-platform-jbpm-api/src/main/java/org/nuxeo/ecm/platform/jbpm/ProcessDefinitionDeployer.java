@@ -22,12 +22,27 @@ package org.nuxeo.ecm.platform.jbpm;
 import java.net.URL;
 
 /**
+ * A deployer of process definition.
+ *
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
  *
  */
 public interface ProcessDefinitionDeployer {
 
+    /**
+     * Deploy this process definition
+     *
+     * @param url the url of the process definition.
+     * @throws Exception
+     */
     void deploy(URL url) throws Exception;
 
+    /**
+     * Is this process definition deployable ?
+     *
+     * @param url the url of the process definition
+     * @return
+     * @throws Exception
+     */
     boolean isDeployable(URL url) throws Exception;
 }

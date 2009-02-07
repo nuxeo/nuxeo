@@ -7,7 +7,6 @@
     <schema name="base" src="schema/base.xsd"/>
     <schema name="querymodel_common" src="schema/querymodel-common.xsd" />
     <schema name="querymodel_test" src="schema/querymodel-test.xsd" />
-    <schema name="querynav" src="schema/querynav.xsd" />
   </extension>
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService"
@@ -22,9 +21,6 @@
       <!-- override because the standard one references common and dublincore
       which produce errors -->
       <prefetch/>
-    </doctype>
-     <doctype name="QueryNav" extends="Document">
-      <schema name="querynav" />
     </doctype>
   </extension>
 
@@ -172,38 +168,6 @@
         </predicate>
 
       </whereClause>
-    </queryModel>
-
-
-    <queryModel name="byCoverageNavQueryModel" docType="QueryNav">
-      <max>10</max>
-      <whereClause>
-        <predicate parameter="dc:coverage" operator="STARTSWITH">
-          <field schema="querynav" name="coverage" />
-        </predicate>
-      </whereClause>
-      <sortColumn>
-        <field schema="advanced_search" name="sortColumn" />
-      </sortColumn>
-      <sortAscending>
-        <field schema="advanced_search" name="sortAscending" />
-      </sortAscending>
-    </queryModel>
-
-
-  <queryModel name="ecmPathTest" docType="QueryNav">
-      <max>10</max>
-      <whereClause>
-        <predicate parameter="ecm:path" operator="STARTSWITH">
-          <field schema="querynav" name="coverage" />
-        </predicate>
-      </whereClause>
-      <sortColumn>
-        <field schema="advanced_search" name="sortColumn" />
-      </sortColumn>
-      <sortAscending>
-        <field schema="advanced_search" name="sortAscending" />
-      </sortAscending>
     </queryModel>
 
   </extension>

@@ -121,19 +121,7 @@ public class PredicateDescriptor {
             }
             if (operator.equals("LIKE")) {
                 value = escaper.escape(value);
-            } else if (operator.equals("STARTSWITH")) {
-                if (!"ecm:path".equals(parameter)) {
-                    // manage STARTSWITH compatibility
-                    operator="LIKE";
-                    if (value.startsWith("'"))  {
-                        value=value.substring(0, value.length()-1) + "%'";
-                    } else if (value.startsWith("\""))  {
-                        value=value.substring(0, value.length()-1) + "%\"";
-                    }
-                    value = escaper.escape(value);
-                }
             }
-
             return serializeUnary(operator, value);
 
         } else if (operator.equals("BETWEEN")) {

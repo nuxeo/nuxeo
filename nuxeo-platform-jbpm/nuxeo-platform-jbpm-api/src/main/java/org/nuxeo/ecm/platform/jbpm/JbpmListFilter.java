@@ -24,6 +24,12 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
 /**
+ * Filter of list.
+ *
+ * This filter allows to select only part of a list. It is used as parameter in
+ * methods of {@link JbpmService}. Inside the filter method, the jbpmContext is
+ * alive.
+ *
  * @author arussel
  *
  */
