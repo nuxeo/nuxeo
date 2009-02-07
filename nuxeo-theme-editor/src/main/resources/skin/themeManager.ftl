@@ -5,7 +5,14 @@
 
 <div id="nxthemesThemeManager" class="nxthemesScreen">
 
+<form style="float: right; margin: 5px" action="javascript:void(0)">
+  <div>
+    <button onclick="javascript:NXThemesEditor.addTheme()">Add theme</button>
+  </div>
+</form>
+
 <h1 class="nxthemesEditor">Themes</h1>
+
 
 <table cellpadding="0" cellspacing="0" style="width: 100%"><tr>
 

@@ -641,7 +641,7 @@ NXThemesEditor.switchPage = function(info) {
 };
 
 NXThemesEditor.addTheme = function() {
-    var name = prompt("Please enter a theme name:", "");
+    var name = prompt("Enter a theme name:", "");
     if (name === "") {
         window.alert("Theme names cannot be empty.");
         return "";
@@ -659,7 +659,7 @@ NXThemesEditor.addTheme = function() {
          onSuccess: function(r) {
              var text = r.responseText;
              NXThemesEditor.selectTheme(text, "theme selector");
-             NXThemesEditor.refreshCanvas();
+             NXThemes.getViewById("theme manager").refresh();
          },
          onFailure: function(r) {
              var text = r.responseText;
