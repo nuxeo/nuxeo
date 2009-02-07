@@ -73,8 +73,8 @@ public class ObjectNameFactory {
         return formatQualifiedName(name) + ",management=inventory";
     }
     
-    public static String formatUsecaseQualifiedName(ComponentName name) {
-        return formatQualifiedName(name) + ",management=usecase";
+    public static String formatProbeQualifiedName(ComponentName name) {
+        return formatQualifiedName(name) + ",management=probe";
     }
 
     public static String removeDotPart(String name) {
@@ -173,8 +173,8 @@ public class ObjectNameFactory {
         return name + "-inventory";
     }
     
-    public static String formatUsecaseShortName(String name) {
-        return name + "-usecase";
+    public static String formatProbeShortName(String name) {
+        return name + "-probe";
     }
 
 }
