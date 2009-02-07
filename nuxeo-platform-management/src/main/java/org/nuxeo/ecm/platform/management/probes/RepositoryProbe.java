@@ -14,7 +14,7 @@
  * Contributors:
  *     matic
  */
-package org.nuxeo.ecm.platform.management.usecases;
+package org.nuxeo.ecm.platform.management.probes;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -29,13 +29,13 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
  *
  */
-public class RepositoryUsecase implements Usecase {
+public class RepositoryProbe implements Probe {
 
     public void runCase(CoreSession session) throws ClientException {
         DocumentModel rootDocument = session.getRootDocument();
         DocumentModel model = session.createDocumentModel(
                 rootDocument.getPathAsString(),
-                RepositoryUsecase.class.getSimpleName(), "File");
+                RepositoryProbe.class.getSimpleName(), "File");
         DocumentRef ref = model.getRef();
         model.setProperty("dublincore", "title", "huum");
         model.setProperty("uid", "major_version",1L);

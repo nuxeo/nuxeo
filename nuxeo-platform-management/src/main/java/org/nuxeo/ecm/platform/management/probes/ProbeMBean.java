@@ -14,7 +14,7 @@
  * Contributors:
  *     matic
  */
-package org.nuxeo.ecm.platform.management.usecases;
+package org.nuxeo.ecm.platform.management.probes;
 
 import java.util.Date;
 
@@ -22,7 +22,7 @@ import java.util.Date;
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
  *
  */
-public interface UsecaseMBean {
+public interface ProbeMBean {
 
     boolean isEnabled();
 

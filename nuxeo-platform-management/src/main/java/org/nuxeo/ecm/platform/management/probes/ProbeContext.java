@@ -14,20 +14,20 @@
  * Contributors:
  *     matic
  */
-package org.nuxeo.ecm.platform.management.usecases;
+package org.nuxeo.ecm.platform.management.probes;
 
 import java.util.Date;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 
-public class UsecaseContext {
+public class ProbeContext {
 
     @SuppressWarnings("unused")
-    private final UsecaseSchedulerService scheduler;
+    private final ProbeSchedulerService scheduler;
 
-    protected UsecaseContext(UsecaseSchedulerService usecaseSchedulerService,
-            Usecase usecase, String repositoryName) {
+    protected ProbeContext(ProbeSchedulerService usecaseSchedulerService,
+            Probe usecase, String repositoryName) {
         scheduler = usecaseSchedulerService;
         this.usecase = usecase;
         runner = new RepositoryRunner(repositoryName);
@@ -39,7 +39,7 @@ public class UsecaseContext {
 
     protected String qualifiedName;
 
-    protected final Usecase usecase;
+    protected final Probe usecase;
 
     protected long runnedCount = 0L;
 
@@ -68,7 +68,7 @@ public class UsecaseContext {
             ClassLoader lastLoader = currentThread.getContextClassLoader();
             currentThread.setContextClassLoader(RepositoryRunner.class.getClassLoader());
             try {
-                UsecaseContext.this.runner.runUnrestricted();
+                ProbeContext.this.runner.runUnrestricted();
             } catch (ClientException e) {
             } finally {
                 currentThread.setContextClassLoader(lastLoader);
@@ -115,11 +115,11 @@ public class UsecaseContext {
         return true;
     }
 
-    protected UsecaseMBean getMBean() {
-        return new UsecaseMBean() {
+    protected ProbeMBean getMBean() {
+        return new ProbeMBean() {
 
             public boolean isInError() {
-                return UsecaseContext.this.isInError();
+                return ProbeContext.this.isInError();
             }
 
             public long getFailedCount() {
@@ -157,9 +157,9 @@ public class UsecaseContext {
             public void run() {
                 Thread currentThread = Thread.currentThread();
                 ClassLoader lastLoader = currentThread.getContextClassLoader();
-                currentThread.setContextClassLoader(UsecaseContext.class.getClassLoader());
+                currentThread.setContextClassLoader(ProbeContext.class.getClassLoader());
                 try {
-                    UsecaseContext.this.runner.runUnrestricted();
+                    ProbeContext.this.runner.runUnrestricted();
                 } catch (ClientException e) {
                 } finally {
                     currentThread.setContextClassLoader(lastLoader);
@@ -167,15 +167,15 @@ public class UsecaseContext {
             }
 
             public void disable() {
-                UsecaseContext.this.isEnabled = false;
+                ProbeContext.this.isEnabled = false;
             }
 
             public void enable() {
-                UsecaseContext.this.isEnabled = true;
+                ProbeContext.this.isEnabled = true;
             }
 
             public boolean isEnabled() {
-                return UsecaseContext.this.isEnabled;
+                return ProbeContext.this.isEnabled;
             }
         };
     }

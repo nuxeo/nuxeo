@@ -14,7 +14,7 @@
  * Contributors:
  *     matic
  */
-package org.nuxeo.ecm.platform.management.usecases;
+package org.nuxeo.ecm.platform.management.probes;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -22,7 +22,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
  */
-public interface Usecase {
+public interface Probe {
 
     void init(Object service);
 

@@ -14,7 +14,7 @@
  * Contributors:
  *     matic
  */
-package org.nuxeo.ecm.platform.management.usecases;
+package org.nuxeo.ecm.platform.management.probes;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -40,15 +40,15 @@ import org.nuxeo.runtime.model.DefaultComponent;
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
  *
  */
-public class UsecaseSchedulerService extends DefaultComponent implements
-        UsecaseScheduler, UsecaseSchedulerMBean {
+public class ProbeSchedulerService extends DefaultComponent implements
+        ProbeScheduler, ProbeSchedulerMBean {
 
     protected static ComponentName NAME = new ComponentName(
-            UsecaseScheduler.class.getCanonicalName());
+            ProbeScheduler.class.getCanonicalName());
 
-    protected static String SCHEDULE_ID = UsecaseScheduler.class.getSimpleName();
+    protected static String SCHEDULE_ID = ProbeScheduler.class.getSimpleName();
 
-    public UsecaseSchedulerService() {
+    public ProbeSchedulerService() {
         super(); // enables breaking
     }
 
@@ -133,37 +133,37 @@ public class UsecaseSchedulerService extends DefaultComponent implements
 
     protected final ScheduleEventListener scheduleEventListener = new ScheduleEventListener();
 
-    protected Set<String> doExtractUseCasesName(
-            Collection<UsecaseContext> runners) {
+    protected Set<String> doExtractProbesName(
+            Collection<ProbeContext> runners) {
         Set<String> names = new HashSet<String>();
-        for (UsecaseContext runner : runners) {
+        for (ProbeContext runner : runners) {
             names.add(runner.shortcutName);
         }
         return names;
     }
 
-    public Set<String> getScheduledUseCases() {
-        return doExtractUseCasesName(runnerRegistry.scheduledUsecasesContext.values());
+    public Set<String> getScheduledProbes() {
+        return doExtractProbesName(runnerRegistry.scheduledProbesContext.values());
     }
 
-    public int getScheduledUseCasesCount() {
-        return runnerRegistry.scheduledUsecasesContext.size();
+    public int getScheduledProbesCount() {
+        return runnerRegistry.scheduledProbesContext.size();
     }
 
-    public Set<String> getUseCasesInError() {
-        return doExtractUseCasesName(runnerRegistry.failedUsecasesContext);
+    public Set<String> getProbesInError() {
+        return doExtractProbesName(runnerRegistry.failedProbesContext);
     }
 
-    public int getUseCasesInErrorCount() {
-        return runnerRegistry.failedUsecasesContext.size();
+    public int getProbesInErrorCount() {
+        return runnerRegistry.failedProbesContext.size();
     }
 
-    public Set<String> getUseCasesInSuccess() {
-        return doExtractUseCasesName(runnerRegistry.succeedUsecasesContext);
+    public Set<String> getProbesInSuccess() {
+        return doExtractProbesName(runnerRegistry.succeedProbesContext);
     }
 
-    public int getUseCasesInSuccessCount() {
-        return runnerRegistry.succeedUsecasesContext.size();
+    public int getProbesInSuccessCount() {
+        return runnerRegistry.succeedProbesContext.size();
     }
 
     public void disable() {
@@ -183,31 +183,30 @@ public class UsecaseSchedulerService extends DefaultComponent implements
         protected ResourcePublisherService service;
 
         protected void doPublish() {
-            service.registerResource("usecase-scheduler",
-                    ObjectNameFactory.formatQualifiedName(NAME),
-                    UsecaseSchedulerMBean.class, UsecaseSchedulerService.this);
+            service.registerResource("probe-scheduler",
+                    ObjectNameFactory.formatProbeQualifiedName(NAME),
+                    ProbeSchedulerMBean.class, ProbeSchedulerService.this);
         }
 
         protected void doUnpublish() {
-            service.unregisterResource("usecase-scheduler",
-                    ObjectNameFactory.formatQualifiedName(NAME)
-                            + ",management=quality");
-            for (UsecaseContext context : runnerRegistry.scheduledUsecasesContext.values()) {
+            service.unregisterResource("probe-scheduler",
+                    ObjectNameFactory.formatProbeQualifiedName(NAME));
+            for (ProbeContext context : runnerRegistry.scheduledProbesContext.values()) {
                 doUnpublishContext(context);
             }
             service = null;
         }
 
-        protected void doPublishContext(UsecaseContext context) {
+        protected void doPublishContext(ProbeContext context) {
             if (service == null) {
                 return;
             }
             service.registerResource(context.shortcutName,
-                    context.qualifiedName, UsecaseMBean.class,
+                    context.qualifiedName, ProbeMBean.class,
                     context.getMBean());
         }
 
-        protected void doUnpublishContext(UsecaseContext context) {
+        protected void doUnpublishContext(ProbeContext context) {
             if (service == null) {
                 return;
             }
@@ -215,12 +214,12 @@ public class UsecaseSchedulerService extends DefaultComponent implements
                     context.qualifiedName);
         }
 
-        protected void doQualifyNames(UsecaseContext context,
-                UsecaseDescriptor descriptor) {
-            context.shortcutName = ObjectNameFactory.formatUsecaseShortName(descriptor.getShortcutName());
+        protected void doQualifyNames(ProbeContext context,
+                ProbeDescriptor descriptor) {
+            context.shortcutName = ObjectNameFactory.formatProbeShortName(descriptor.getShortcutName());
             context.qualifiedName = descriptor.getQualifiedName();
             if (context.qualifiedName == null) {
-                context.qualifiedName = ObjectNameFactory.formatUsecaseQualifiedName(new ComponentName(
+                context.qualifiedName = ObjectNameFactory.formatProbeQualifiedName(new ComponentName(
                         descriptor.getServiceClass().getCanonicalName()));
             }
         }
@@ -230,36 +229,36 @@ public class UsecaseSchedulerService extends DefaultComponent implements
 
     protected class RunnerRegistry {
 
-        protected final Map<Class<? extends Usecase>, UsecaseContext> scheduledUsecasesContext = new HashMap<Class<? extends Usecase>, UsecaseContext>();
+        protected final Map<Class<? extends Probe>, ProbeContext> scheduledProbesContext = new HashMap<Class<? extends Probe>, ProbeContext>();
 
-        protected Set<UsecaseContext> failedUsecasesContext = new HashSet<UsecaseContext>();
+        protected Set<ProbeContext> failedProbesContext = new HashSet<ProbeContext>();
 
-        protected Set<UsecaseContext> succeedUsecasesContext = new HashSet<UsecaseContext>();
+        protected Set<ProbeContext> succeedProbesContext = new HashSet<ProbeContext>();
 
-        protected void doRegisterUseCase(UsecaseDescriptor descriptor) {
-            Class<? extends Usecase> usecaseClass = descriptor.getUsecaseClass();
+        protected void doRegisterProbe(ProbeDescriptor descriptor) {
+            Class<? extends Probe> probeClass = descriptor.getProbeClass();
             Class<?> serviceClass = descriptor.getServiceClass();
             Object service = Framework.getLocalService(serviceClass);
-            Usecase usecase;
+            Probe probe;
             try {
-                usecase = usecaseClass.newInstance();
+                probe = probeClass.newInstance();
             } catch (Exception e) {
                 throw new ManagementRuntimeException(
-                        "Cannot create management use case for " + descriptor);
+                        "Cannot create management probe for " + descriptor);
             }
-            usecase.init(service);
-            UsecaseContext context = new UsecaseContext(
-                    UsecaseSchedulerService.this, usecase, "default");
+            probe.init(service);
+            ProbeContext context = new ProbeContext(
+                    ProbeSchedulerService.this, probe, "default");
             managementPublisher.doQualifyNames(context, descriptor);
             managementPublisher.doPublishContext(context);
-            scheduledUsecasesContext.put(usecaseClass, context);
+            scheduledProbesContext.put(probeClass, context);
         }
 
-        protected void doUnregisterUseCase(UsecaseDescriptor descriptor) {
-            Class<? extends Usecase> usecaseClass = descriptor.getUsecaseClass();
-            UsecaseContext context = scheduledUsecasesContext.remove(usecaseClass);
+        protected void doUnregisterProbe(ProbeDescriptor descriptor) {
+            Class<? extends Probe> probeClass = descriptor.getProbeClass();
+            ProbeContext context = scheduledProbesContext.remove(probeClass);
             if (context == null) {
-                throw new IllegalArgumentException("not registered use case"
+                throw new IllegalArgumentException("not registered probe"
                         + descriptor);
             }
             managementPublisher.doUnpublishContext(context);
@@ -271,14 +270,14 @@ public class UsecaseSchedulerService extends DefaultComponent implements
                 return;
             }
 
-            for (UsecaseContext context : scheduledUsecasesContext.values()) {
+            for (ProbeContext context : scheduledProbesContext.values()) {
                 try {
                     context.runner.runWithSafeClassLoader();
-                    failedUsecasesContext.remove(context);
-                    succeedUsecasesContext.add(context);
+                    failedProbesContext.remove(context);
+                    succeedProbesContext.add(context);
                 } catch (Exception e) {
-                    succeedUsecasesContext.remove(context);
-                    failedUsecasesContext.add(context);
+                    succeedProbesContext.remove(context);
+                    failedProbesContext.add(context);
                 }
             }
         }
@@ -314,14 +313,14 @@ public class UsecaseSchedulerService extends DefaultComponent implements
         managementPublisher.doUnpublish();
     }
 
-    public static final String USECASES_EXT_KEY = "usecases";
+    public static final String PROBES_EXT_KEY = "probes";
 
     @Override
     public void registerContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
-        if (extensionPoint.equals(USECASES_EXT_KEY)) {
-            runnerRegistry.doRegisterUseCase((UsecaseDescriptor) contribution);
+        if (extensionPoint.equals(PROBES_EXT_KEY)) {
+            runnerRegistry.doRegisterProbe((ProbeDescriptor) contribution);
         }
     }
 
@@ -329,23 +328,23 @@ public class UsecaseSchedulerService extends DefaultComponent implements
     public void unregisterContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
-        if (extensionPoint.equals(USECASES_EXT_KEY)) {
-            runnerRegistry.doUnregisterUseCase((UsecaseDescriptor) contribution);
+        if (extensionPoint.equals(PROBES_EXT_KEY)) {
+            runnerRegistry.doUnregisterProbe((ProbeDescriptor) contribution);
         }
     }
 
-    public UsecaseContext getScheduledRunner(
-            Class<? extends Usecase> usecaseClass) {
-        UsecaseContext runner = runnerRegistry.scheduledUsecasesContext.get(usecaseClass);
+    public ProbeContext getScheduledRunner(
+            Class<? extends Probe> usecaseClass) {
+        ProbeContext runner = runnerRegistry.scheduledProbesContext.get(usecaseClass);
         if (runner == null) {
-            throw new IllegalArgumentException("no usecase scheduled for "
+            throw new IllegalArgumentException("no probe scheduled for "
                     + usecaseClass);
         }
         return runner;
     }
 
-    public Collection<UsecaseContext> getScheduledUsecasesContext() {
-        return runnerRegistry.scheduledUsecasesContext.values();
+    public Collection<ProbeContext> getScheduledProbesContext() {
+        return runnerRegistry.scheduledProbesContext.values();
     }
 
 }

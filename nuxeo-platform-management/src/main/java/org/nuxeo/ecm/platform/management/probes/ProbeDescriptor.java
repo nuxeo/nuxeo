@@ -14,7 +14,7 @@
  * Contributors:
  *     matic
  */
-package org.nuxeo.ecm.platform.management.usecases;
+package org.nuxeo.ecm.platform.management.probes;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -24,7 +24,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  *
  */
 @XObject("usecase")
-public class UsecaseDescriptor {
+public class ProbeDescriptor {
 
     @XNode("@name")
     private String shortcutName;
@@ -36,7 +36,7 @@ public class UsecaseDescriptor {
     private Class<?> serviceClass;
 
     @XNode("@class")
-    private Class<? extends Usecase> usecaseClass;
+    private Class<? extends Probe> usecaseClass;
 
     public String getShortcutName() {
         return shortcutName;
@@ -46,7 +46,7 @@ public class UsecaseDescriptor {
         return qualifiedName;
     }
 
-    public Class<? extends Usecase> getUsecaseClass() {
+    public Class<? extends Probe> getProbeClass() {
         return usecaseClass;
     }
 

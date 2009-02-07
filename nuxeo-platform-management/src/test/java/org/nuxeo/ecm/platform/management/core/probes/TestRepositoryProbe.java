@@ -14,31 +14,21 @@
  * Contributors:
  *     matic
  */
-package org.nuxeo.ecm.platform.management.usecases;
+package org.nuxeo.ecm.platform.management.core.probes;
 
-import java.util.Set;
+import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
+import org.nuxeo.ecm.platform.management.probes.RepositoryProbe;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
+ *
  */
-public interface UsecaseSchedulerMBean {
+public class TestRepositoryProbe extends RepositoryOSGITestCase {
 
-    Set<String> getScheduledUseCases();
-
-    int getScheduledUseCasesCount();
-
-    Set<String> getUseCasesInError();
-
-    int getUseCasesInErrorCount();
-
-    Set<String> getUseCasesInSuccess();
-
-    int getUseCasesInSuccessCount();
-
-    void enable();
-
-    void disable();
-
-    boolean isEnabled();
+   public void testRun() throws Exception {
+       openRepositoryWithSystemPrivileges();
+       RepositoryProbe probe = new RepositoryProbe();
+       probe.runCase(getCoreSession());
+   }
 
 }

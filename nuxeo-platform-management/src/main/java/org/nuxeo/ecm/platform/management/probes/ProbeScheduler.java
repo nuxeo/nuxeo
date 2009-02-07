@@ -14,19 +14,19 @@
  * Contributors:
  *     matic
  */
-package org.nuxeo.ecm.platform.management.usecases;
+package org.nuxeo.ecm.platform.management.probes;
 
 import java.util.Collection;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
  */
-public interface UsecaseScheduler {
+public interface ProbeScheduler {
 
     void enable();
 
     void disable();
 
-    Collection<UsecaseContext> getScheduledUsecasesContext();
+    Collection<ProbeContext> getScheduledProbesContext();
 
 }
