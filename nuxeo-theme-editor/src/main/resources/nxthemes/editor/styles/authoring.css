@@ -196,7 +196,7 @@ html, body {
   z-index: 10;
   top: 0;
   left: 0;
-  height: 105px;
+  height: 95px;
   width: 100%;
 }
 
@@ -331,7 +331,7 @@ html, body {
 /* canvas mode */
 #nxthemesCanvasModeArea {
   position: absolute;
-  top: 75px;
+  top: 54px;
   right: 0;
   background-color: #fff;
   padding: 4px 10px;
@@ -894,7 +894,7 @@ div.nxthemesFragment b {
 
 #nxthemesThemeManager, #nxthemesPresetManager, #nxthemesStyleManager {
   position: absolute;
-  top: 105px;
+  top: 95px;
   left: 0;
   right: 0;
   background-color: #fff;
@@ -1113,7 +1113,7 @@ img.nxthemesAlignSection:hover {
 
 #nxthemesWaitAnimation {
   position: absolute;
-  top: 59px;
+  top: 38px;
   right: 5px;
   padding: 0;
   font:  12px Arial, sans-serif;
