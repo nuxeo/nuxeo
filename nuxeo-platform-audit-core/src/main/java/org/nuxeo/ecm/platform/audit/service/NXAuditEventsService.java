@@ -60,6 +60,7 @@ import org.nuxeo.ecm.platform.audit.service.PersistenceProvider.RunCallback;
 import org.nuxeo.ecm.platform.audit.service.extension.EventDescriptor;
 import org.nuxeo.ecm.platform.audit.service.extension.ExtendedInfoDescriptor;
 import org.nuxeo.ecm.platform.audit.service.extension.HibernateOptionsDescriptor;
+import org.nuxeo.ecm.platform.audit.service.management.AuditEventMetricFactory;
 import org.nuxeo.ecm.platform.el.ExpressionContext;
 import org.nuxeo.ecm.platform.el.ExpressionEvaluator;
 import org.nuxeo.runtime.api.Framework;
@@ -126,6 +127,9 @@ public class NXAuditEventsService extends DefaultComponent implements
         }
     }
 
+    protected final AuditEventMetricFactory eventMetricFactory =
+        new AuditEventMetricFactory(this);
+
     protected void doRegisterEvent(EventDescriptor desc) {
         String eventName = desc.getName();
         Boolean eventEnabled = desc.getEnabled();
@@ -134,6 +138,7 @@ public class NXAuditEventsService extends DefaultComponent implements
         }
         if (eventEnabled) {
             eventNames.add(eventName);
+            eventMetricFactory.registerResource(eventName);
             if (log.isDebugEnabled())
                 log.debug("Registered event: " + eventName);
         } else if (eventNames.contains(eventName) && !eventEnabled) {
@@ -171,6 +176,9 @@ public class NXAuditEventsService extends DefaultComponent implements
 
     protected void doUnregisterEvent(EventDescriptor desc) {
         eventNames.remove(desc.getName());
+        if (desc.getEnabled()) {
+            eventMetricFactory.unregisterResource(desc.getName());
+        }
         if (log.isDebugEnabled()) {
             log.debug("Unregistered event: " + desc.getName());
         }
@@ -191,8 +199,7 @@ public class NXAuditEventsService extends DefaultComponent implements
     }
 
     protected void doPutExtendedInfos(LogEntry entry,
-            EventContext eventContext, DocumentModel source,
-            Principal principal) {
+            EventContext eventContext, DocumentModel source, Principal principal) {
         ExpressionContext context = new ExpressionContext();
         if (eventContext != null) {
             expressionEvaluator.bindValue(context, "message", eventContext);
