@@ -112,7 +112,7 @@ public final class ThemeRepairer {
                 if (formatsByElementTypes.isEmpty()) {
                     formatsByElementTypes.put(elementType, format);
                 } else if (!formatsByElementTypes.containsKey(elementType)) {
-                    log.info("Created format of type '"
+                    log.debug("Created format of type '"
                             + format.getFormatType().getTypeName()
                             + "' for element: '" + element.computeXPath()
                             + "' ");
@@ -145,7 +145,7 @@ public final class ThemeRepairer {
             layout = (Layout) FormatFactory.create("layout");
             Manager.getThemeManager().registerFormat(layout);
             ElementFormatter.setFormat(element, layout);
-            log.info("Added layout to element: " + xpath);
+            log.debug("Added layout to element: " + xpath);
         }
 
         if (ElementFormatter.getFormatFor(element, "widget") == null) {
@@ -172,7 +172,7 @@ public final class ThemeRepairer {
                             for (String key : propertiesToMove) {
                                 layout.setProperty(key,
                                         styleProperties.getProperty(key));
-                                log.info("Moved property '"
+                                log.debug("Moved property '"
                                         + key
                                         + "' from <style> to <layout> for element "
                                         + xpath);
@@ -205,7 +205,7 @@ public final class ThemeRepairer {
                 for (String key : LAYOUT_PROPERTIES) {
                     if (styleProperties.containsKey(key)) {
                         styleProperties.remove(key);
-                        log.info("Removed property: '" + key
+                        log.debug("Removed property: '" + key
                                 + "' from <style> for element " + xpath);
                     }
                 }
@@ -230,14 +230,14 @@ public final class ThemeRepairer {
 
                 for (String propertyName : stylePropertiesToRemove) {
                     styleProperties.remove(propertyName);
-                    log.info("Removed style property: '" + propertyName
+                    log.debug("Removed style property: '" + propertyName
                             + " in path: " + path + "' for element " + xpath);
                 }
             }
 
             for (String path : pathsToClear) {
                 style.clearPropertiesFor(viewName, path);
-                log.info("Removed empty style path: '" + path
+                log.debug("Removed empty style path: '" + path
                         + "' for element " + xpath);
             }
         }
@@ -264,7 +264,7 @@ public final class ThemeRepairer {
 
         for (String propertyName : layoutPropertiesToRemove) {
             layoutProperties.remove(propertyName);
-            log.info("Removed property '" + propertyName
+            log.debug("Removed property '" + propertyName
                     + "' from <layout> for element " + xpath);
         }
     }

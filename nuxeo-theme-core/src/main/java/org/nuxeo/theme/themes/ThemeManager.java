@@ -719,9 +719,17 @@ public final class ThemeManager implements Registrable {
         themeDescriptor.setLastLoaded(new Date());
         themeModified();
         updateThemeDescriptors();
+        // remove or restore customized themes
         if (!themeName.equals(oldThemeName)) {
             themes.remove(oldThemeName);
+            for (ThemeDescriptor themeDef : getThemeDescriptors()) {
+                if (oldThemeName.equals(themeDef.getName())
+                        && !themeDef.isCustomized()) {
+                    loadTheme(themeDef.getSrc());
+                }
+            }
         }
+        log.debug("Loaded theme: " + src);
     }
 
     public static void saveTheme(final String src) throws ThemeIOException {
@@ -760,6 +768,7 @@ public final class ThemeManager implements Registrable {
         } catch (IOException e) {
             throw new ThemeIOException("Could not save theme to " + src, e);
         }
+        log.debug("Saved theme: " + src);
     }
 
     public static void repairTheme(ThemeElement theme) throws ThemeIOException {
@@ -769,6 +778,7 @@ public final class ThemeManager implements Registrable {
             throw new ThemeIOException("Could not repair theme: "
                     + theme.getName(), e);
         }
+        log.debug("Repaired theme: " + theme.getName());
     }
 
     public static String renderElement(URL url) throws ThemeException {
