@@ -79,13 +79,13 @@
         <#if theme.reloadable>
           <button onclick="NXThemesEditor.loadTheme('${theme.src}')">
           <img src="${skinPath}/img/theme-reload.png" width="16" height="16" />
-          Reload
+          Restore from source
           </button>
         </#if>
         <#if theme.loadable>
           <button onclick="NXThemesEditor.loadTheme('${theme.src}')">
           <img src="${skinPath}/img/theme-load.png" width="16" height="16" />          
-          Load
+          Load from source
           </button>
         </#if>
 
