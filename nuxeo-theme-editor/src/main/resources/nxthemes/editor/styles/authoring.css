@@ -215,7 +215,7 @@ html, body {
 #nxthemesThemeSelector {
   position: absolute;
   top: 8px;
-  right: 280px;
+  right: 270px;
 }
 
 #nxthemesCanvasArea {
@@ -266,7 +266,7 @@ html, body {
 .nxthemesPerspectiveSelector select {
   font: 11px Arial, sans-serif;
   border: 1px solid #000;
-  width: 140px;
+  width: 180px;
 }
 
 /* Theme selector drop-down list */
@@ -278,7 +278,7 @@ html, body {
 .nxthemesThemeSelector select {
   font: 11px Arial, sans-serif;
   border: 1px solid #000;
-  width: 140px;
+  width: 150px;
 }
 
 .nxthemesAreaStyle {
