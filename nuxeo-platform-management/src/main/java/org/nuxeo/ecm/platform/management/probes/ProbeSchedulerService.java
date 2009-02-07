@@ -82,7 +82,8 @@ public class ProbeSchedulerService extends DefaultComponent implements
         protected SchedulerRegistryService registry;
 
         protected void doSchedule() {
-            registry = (SchedulerRegistryService)Framework.getLocalService(SchedulerRegistry.class);
+            registry = (SchedulerRegistryService)Framework.getRuntime().getComponent(
+                    SchedulerRegistryService.class.getCanonicalName());
             if (registry == null) {
                 throw new ManagementRuntimeException(
                         "no scheduler registry service available");

@@ -121,13 +121,12 @@ public class ProbeContext implements ProbeMBean {
             super(repositoryName);
         }
 
-        public void runWithSafeClassLoader() {
+        public void runWithSafeClassLoader() throws ClientException {
             Thread currentThread = Thread.currentThread();
             ClassLoader lastLoader = currentThread.getContextClassLoader();
             currentThread.setContextClassLoader(RepositoryRunner.class.getClassLoader());
             try {
                 ProbeContext.this.runner.runUnrestricted();
-            } catch (ClientException e) {
             } finally {
                 currentThread.setContextClassLoader(lastLoader);
             }
