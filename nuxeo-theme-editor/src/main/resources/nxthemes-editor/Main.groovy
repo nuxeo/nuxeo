@@ -46,9 +46,16 @@ public class Main extends ModuleRoot {
     public Object renderThemeSelector(@QueryParam("org.nuxeo.theme.application.path") String path) {
       return getTemplate("themeSelector.ftl").arg(
               "current_theme_name", getCurrentThemeName(path)).arg(
-              "themes", getThemes(path)).arg(
-              "pages", getPages(path))
+              "themes", getThemes(path))
     }
+
+  @GET
+  @Path("pageSelector")
+  public Object renderPageSelector(@QueryParam("org.nuxeo.theme.application.path") String path) {
+    return getTemplate("pageSelector.ftl").arg(
+            "current_theme_name", getCurrentThemeName(path)).arg(
+            "pages", getPages(path))
+  }
 
   @GET
   @Path("canvasModeSelector")

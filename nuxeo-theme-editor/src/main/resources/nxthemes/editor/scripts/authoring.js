@@ -625,10 +625,17 @@ NXThemesEditor.selectPerspective = function(info) {
 };
 
 NXThemesEditor.switchTheme = function(info) {
+    var form = Event.findElement(info, "form");
+    var name = Form.findFirstElement(form).getValue();
+    NXThemesEditor.selectTheme(name, "theme selector");
+    NXThemesEditor.refreshCanvas();
+};
+
+NXThemesEditor.switchPage = function(info) {
     var target = Event.element(info);
     var name = target.getAttribute("name");
     if (name !== null) {
-        NXThemesEditor.selectTheme(name, "theme selector");
+        NXThemesEditor.selectTheme(name, "page selector");
         NXThemesEditor.refreshCanvas();
     }
 };
@@ -1062,8 +1069,8 @@ NXThemes.addActions({
     'paste element': NXThemesEditor.pasteElement,
     'delete element': NXThemesEditor.deleteElement,
     'select perspective': NXThemesEditor.selectPerspective,
-    'cancel event': function(info) {Event.stop(info);},
     'switch theme': NXThemesEditor.switchTheme,
+    'switch page': NXThemesEditor.switchPage,
     'set canvas mode': NXThemesEditor.setCanvasMode,
     'set size': NXThemesEditor.setSize,
     'add section': NXThemesEditor.addSection,
@@ -1076,7 +1083,8 @@ NXThemes.addActions({
     'delete theme or page': NXThemesEditor.deleteThemeOrPage,
     'set element widget': NXThemesEditor.setElementWidget,
     'set area style': NXThemesEditor.setAreaStyle,
-    'change element style': NXThemesEditor.changeElementStyle
+    'change element style': NXThemesEditor.changeElementStyle,
+    'cancel event': function(info) {Event.stop(info);}
 });
 
 // Filters

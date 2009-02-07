@@ -49,6 +49,12 @@
           label="Exit" />
       </div>
 
+      <!--  theme selector -->
+      <@nxthemes_panel identifier="theme selector"
+        url="${basePath}/nxthemes-editor/themeSelector"
+        controlledBy="editor perspectives,theme switcher"
+        visibleInPerspectives="edit canvas,edit padding" />
+        
       <@nxthemes_panel identifier="perspective selector"
         url="${basePath}/nxthemes-editor/perspectiveSelector"
         controlledBy="editor perspectives,perspective selector"
@@ -58,12 +64,12 @@
         <img src="${basePath}/skin/nxthemes-editor/img/loader.gif" alt="" width="16" height="16" /> loading ...
       </div>
 
-      <!--  theme selector -->
-      <@nxthemes_panel identifier="theme selector"
-        url="${basePath}/nxthemes-editor/themeSelector"
-        controlledBy="editor perspectives,theme switcher"
+      <!--  page selector -->
+      <@nxthemes_panel identifier="page selector"
+        url="${basePath}/nxthemes-editor/pageSelector"
+        controlledBy="editor perspectives,page switcher"
         visibleInPerspectives="edit canvas,edit padding" />
-
+        
       <!-- canvas mode selector -->
       <@nxthemes_panel identifier="canvas mode selector"
         url="${basePath}/nxthemes-editor/canvasModeSelector"
@@ -117,7 +123,8 @@
     <@nxthemes_controller resource="toolbox-mover.json" />
 
     <@nxthemes_controller resource="theme-switcher.json" />
-
+    <@nxthemes_controller resource="page-switcher.json" />
+    
     <@nxthemes_controller resource="link-disabler.json" />
 
     <!-- element editor -->

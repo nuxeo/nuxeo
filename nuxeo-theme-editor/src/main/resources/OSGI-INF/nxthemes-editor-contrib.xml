@@ -99,6 +99,12 @@
       </path>
     </resource>
 
+    <resource name="page-switcher.json">
+      <path>
+        nxthemes/editor/controllers/page-switcher.json
+      </path>
+    </resource>    
+
     <resource name="area-style-actions.json">
       <path>
         nxthemes/editor/controllers/area-style-actions.json

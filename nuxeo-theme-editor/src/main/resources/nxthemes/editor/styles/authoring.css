@@ -212,6 +212,12 @@ html, body {
   right: 4px;
 }
 
+#nxthemesThemeSelector {
+  position: absolute;
+  top: 8px;
+  right: 280px;
+}
+
 #nxthemesCanvasArea {
   padding: 0;
   position: absolute;
@@ -243,40 +249,36 @@ html, body {
   color: #000;
 }
 
-/* Theme selector tabs */
-
-#nxthemesThemeSelectorArea {
+/* Page selector tabs */
+#nxthemesPageSelectorArea {
   position: absolute;
   top: 35px;
   width: 100%;
 }
 
-#nxthemesThemeSelector ul {
-  list-style: none;
-}
 
-#nxthemesThemeSelector li.theme {
-  border: 1px solid #ccc;
-  display: inline;
-}
-
-#nxthemesThemeSelector ul.pages li {
-  border: 1px solid #ccc;
-  display: inline;
-}
-
-/* Perspective selector menu */
+/* Perspective selector drop-down list */
 .nxthemesPerspectiveSelector {
   font: 12px Arial, sans-serif;
   color: #fff;
 }
-
-.nxthemesPerspectiveSelector select, .nxthemesPerspectiveSelector button {
+	
+.nxthemesPerspectiveSelector select {
   font: 11px Arial, sans-serif;
+  border: 1px solid #000;
+  width: 140px;
 }
 
-.nxthemesPerspectiveSelector button, .nxthemesPerspectiveSelector select {
+/* Theme selector drop-down list */
+.nxthemesThemeSelector {
+  font: 12px Arial, sans-serif;
+  color: #fff;
+}
+
+.nxthemesThemeSelector select {
+  font: 11px Arial, sans-serif;
   border: 1px solid #000;
+  width: 140px;
 }
 
 .nxthemesAreaStyle {
@@ -587,75 +589,6 @@ div.nxthemesEditorFrame {
 }
 
 .nxthemesEditTabs img {
-  border: none;
-}
-
-
-/* Theme tabs */
-.nxthemesThemeTabs {
-  font: 10px Arial, sans-serif;
-  background-color: #000;
-  width: 100%;
-  margin-bottom: -2px;
-  margin-top: 0;
-  text-align: center;
-  border-top: 3px solid #000;
-}
-
-.nxthemesThemeTabs img {
-  vertical-align: top;
-  border: none;
-  text-decoration: none;
-}
-
-.nxthemesThemeTabs a {
-  text-decoration: none;
-  color: #444 !important;
-  font-size: 12px;
-}
-
-.nxthemesThemeTabs a:hover {
-  color: #000 !important;
-}
-
-.nxthemesThemeTabs tr {
-  background-color: #000;
-}
-
-.nxthemesThemeTabs .tab {
-  padding: 2px 0;
-  background-color: #e3e3e3;
-  border-bottom: 1px solid #ccc;
-}
-
-.nxthemesThemeTabs .tab.selected {
-  background-color: #fff;
-  border-bottom: 1px solid #fff;
-}
-
-.nxthemesThemeTabs .tab.selected a {
-  color: #000 !important;
-}
-
-.nxthemesThemeTabs .tab.default a {
-  text-decoration: underline !important;
-}
-
-.nxthemesThemeTabs .ltab, .nxthemesThemeTabs .rtab {
-  background-color: #e3e3e3;
-  vertical-align: top;
-  width: 5px;
-  border-bottom: 1px solid #ccc;
-}
-
-.nxthemesThemeTabs .ltab.selected, .nxthemesThemeTabs .rtab.selected {
-  background-color: #fff;
-  border-bottom: 1px solid #fff;
-}
-
-.nxthemesThemeTabs .separator {
-  background-color: #000;
-  width: 4px;
   border: none;
 }
 

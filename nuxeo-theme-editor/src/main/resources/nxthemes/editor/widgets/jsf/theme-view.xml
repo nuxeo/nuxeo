@@ -54,6 +54,12 @@
           label="Exit" />
       </div>
 
+      <!--  theme selector -->
+      <nxthemes:panel identifier="theme selector"
+        url="/nuxeo/site/nxthemes-editor/themeSelector"
+        controlledBy="editor perspectives,theme switcher"
+        visibleInPerspectives="edit canvas,edit padding" />
+        
       <nxthemes:panel identifier="perspective selector"
         url="/nuxeo/site/nxthemes-editor/perspectiveSelector"
         controlledBy="editor perspectives,perspective selector"
@@ -63,12 +69,12 @@
         <img src="/nuxeo/site/skin/nxthemes-editor/img/loader.gif" alt="" width="16" height="16" /> loading ...
       </div>
 
-      <!--  theme selector -->
-      <nxthemes:panel identifier="theme selector"
-        url="/nuxeo/site/nxthemes-editor/themeSelector"
-        controlledBy="editor perspectives,theme switcher"
+      <!--  page selector -->
+      <nxthemes:panel identifier="page selector"
+        url="/nuxeo/site/nxthemes-editor/pageSelector"
+        controlledBy="editor perspectives,page switcher"
         visibleInPerspectives="edit canvas,edit padding" />
-
+        
       <!-- canvas mode selector -->
       <nxthemes:panel identifier="canvas mode selector"
         url="/nuxeo/site/nxthemes-editor/canvasModeSelector"
@@ -124,7 +130,8 @@
     <nxthemes:controller resource="toolbox-mover.json" />
 
     <nxthemes:controller resource="theme-switcher.json" />
-
+    <nxthemes:controller resource="page-switcher.json" />
+    
     <nxthemes:controller resource="link-disabler.json" />
 
     <!-- element editor -->
