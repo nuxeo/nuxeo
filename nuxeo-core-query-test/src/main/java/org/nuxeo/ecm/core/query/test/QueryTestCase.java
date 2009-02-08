@@ -955,4 +955,28 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         assertIdSet(dml, file1.getId());
     }
 
+    public void testFullTextCopy() throws Exception {
+        createDocs();
+        String query;
+        DocumentModelList dml;
+        DocumentModel folder1 = session.getDocument(new PathRef("/testfolder1"));
+        DocumentModel file1 = session.getDocument(new PathRef(
+                "/testfolder1/testfile1"));
+        file1.setProperty("dublincore", "title", "hello world");
+        session.saveDocument(file1);
+        session.save();
+
+        query = "SELECT * FROM File WHERE ecm:fulltext = 'world'";
+
+        dml = session.query(query);
+        assertIdSet(dml, file1.getId());
+
+        // copy
+        DocumentModel copy = session.copy(file1.getRef(), folder1.getRef(),
+                "file1Copy");
+
+        dml = session.query(query);
+        assertIdSet(dml, file1.getId(), copy.getId());
+    }
+
 }
