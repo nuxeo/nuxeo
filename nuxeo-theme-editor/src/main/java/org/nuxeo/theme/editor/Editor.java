@@ -222,6 +222,11 @@ public class Editor {
         ThemeManager.saveTheme(src, indent);
     }
 
+    public static void deleteTheme(String src) throws ThemeIOException {
+        ThemeManager themeManager = Manager.getThemeManager();
+        themeManager.deleteTheme(src);
+    }
+
     public static void saveChanges() throws ThemeIOException {
         ThemeManager themeManager = Manager.getThemeManager();
         Long lastModified = themeManager.getLastModified();

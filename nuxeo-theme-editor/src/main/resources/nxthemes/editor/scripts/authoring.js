@@ -48,7 +48,7 @@ NXThemesEditor.setCanvasMode =  function(info) {
     NXThemesEditor.refreshCanvas();
 };
 
-NXThemesEditor.deleteThemeOrPage = function(info) {
+NXThemesEditor.deletePage = function(info) {
     var id =  info.target.getAttribute('id');
     if (id === null) {
       return;
@@ -1006,6 +1006,29 @@ NXThemesEditor.saveTheme = function(src, indent) {
     });
 };
 
+NXThemesEditor.deleteTheme = function(src) {
+    var ok = confirm("Deleting theme, are you sure?");
+    if (!ok) {
+        return;
+    }
+    var url = nxthemesBasePath + "/nxthemes-editor/delete_theme"; 
+    new Ajax.Request(url, {
+         method: 'post',
+         parameters: {
+             src: src
+         },
+         onSuccess: function(r) {
+           NXThemes.getViewById("theme manager").refresh();
+           NXThemesEditor.writeMessage("Theme deleted.");
+         },
+         onFailure: function(r) {
+           NXThemes.getViewById("theme manager").refresh();
+           var text = r.responseText;
+           window.alert(text);
+         }              
+    });
+};
+
 NXThemesEditor.saveChanges = function() {
     var url = nxthemesBasePath + "/nxthemes-editor/save_changes"; 
     new Ajax.Request(url, {
@@ -1080,7 +1103,7 @@ NXThemes.addActions({
     'align element': NXThemesEditor.alignElement,
     'split element': NXThemesEditor.splitElement,
     'set element padding': NXThemesEditor.setElementPadding,
-    'delete theme or page': NXThemesEditor.deleteThemeOrPage,
+    'delete page': NXThemesEditor.deletePage,
     'set element widget': NXThemesEditor.setElementWidget,
     'set area style': NXThemesEditor.setAreaStyle,
     'change element style': NXThemesEditor.changeElementStyle,

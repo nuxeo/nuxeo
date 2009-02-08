@@ -127,16 +127,16 @@ public final class ThemeManager implements Registrable {
         return (themeName.matches("^([a-z]|[a-z][a-z0-9_\\-]*?[a-z0-9])$"));
     }
 
-    public static String getCustomThemePath(String themeName) {
-        String path = null;
+    public static String getCustomThemePath(String themeName)
+            throws ThemeIOException {
+        String themeFileName = String.format("theme-%s.xml", themeName);
+        File file = new File(CUSTOM_THEME_DIR, themeFileName);
         try {
-            String themeFileName = String.format("theme-%s.xml", themeName);
-            File themeFile = new File(CUSTOM_THEME_DIR, themeFileName);
-            path = themeFile.getCanonicalPath();
+            return file.getCanonicalPath();
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new ThemeIOException("Could not get custom theme path: "
+                    + themeName, e);
         }
-        return path;
     }
 
     public static List<File> getCustomThemeFiles() {
@@ -732,6 +732,80 @@ public final class ThemeManager implements Registrable {
         log.debug("Loaded theme: " + src);
     }
 
+    public void deleteTheme(String src) throws ThemeIOException {
+        TypeRegistry typeRegistry = Manager.getTypeRegistry();
+        ThemeDescriptor themeDescriptor = (ThemeDescriptor) typeRegistry.lookup(
+                TypeFamily.THEME, src);
+
+        if (themeDescriptor == null) {
+            throw new ThemeIOException("Theme not found: " + src);
+        }
+
+        if (themeDescriptor.isXmlConfigured()) {
+            throw new ThemeIOException(
+                    "Themes registered as contributions cannot be deleted: "
+                            + src);
+        }
+
+        final ThemeManager themeManager = Manager.getThemeManager();
+        final String themeName = themeDescriptor.getName();
+        ThemeElement theme = themeManager.getThemeByName(themeName);
+        if (theme == null) {
+            throw new ThemeIOException("Theme not found: " + themeName);
+        }
+
+        URL url = null;
+        try {
+            url = new URL(src);
+        } catch (MalformedURLException e) {
+            throw new ThemeIOException(e);
+        }
+        
+        if (!url.getProtocol().equals("file")) {
+            throw new ThemeIOException("Theme source is not that of a file: " + src);
+        }
+
+        final File file = new File(url.getFile());
+        if (!file.exists()) {
+            throw new ThemeIOException("File not found: " + src);
+        }
+
+        final String themeFileName = String.format("theme-%s.bak", themeName);
+        final File backupFile = new File(CUSTOM_THEME_DIR, themeFileName);
+        if (backupFile.exists()) {
+            if (!backupFile.delete()) {
+                throw new ThemeIOException("Error while deleting backup file: "
+                        + backupFile.getPath());
+            }
+        }
+        if (!file.renameTo(backupFile)) {
+            throw new ThemeIOException("Error while creating backup file: "
+                    + backupFile.getPath());
+        }
+
+        try {
+            themeManager.destroyElement(theme);
+        } catch (NodeException e) {
+            throw new ThemeIOException("Failed to delete theme: " + themeName,
+                    e);
+        } catch (ThemeException e) {
+            throw new ThemeIOException("Failed to delete theme: " + themeName,
+                    e);
+        }
+
+        themes.remove(themeName);
+        deleteThemeDescriptor(src);
+
+        updateThemeDescriptors();
+
+        for (ThemeDescriptor themeDef : getThemeDescriptors()) {
+            if (themeName.equals(themeDef.getName())
+                    && !themeDef.isCustomized()) {
+                loadTheme(themeDef.getSrc());
+            }
+        }
+    }
+
     public static void saveTheme(final String src) throws ThemeIOException {
         saveTheme(src, DEFAULT_THEME_INDENT);
     }
@@ -1026,6 +1100,11 @@ public final class ThemeManager implements Registrable {
     public static ThemeDescriptor getThemeDescriptor(String src) {
         return (ThemeDescriptor) Manager.getTypeRegistry().lookup(
                 TypeFamily.THEME, src);
+    }
+
+    public static void deleteThemeDescriptor(String src) {
+        ThemeDescriptor themeDef = getThemeDescriptor(src);
+        Manager.getTypeRegistry().unregister(themeDef);
     }
 
     // Template engines

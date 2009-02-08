@@ -99,6 +99,11 @@
           Load from file
           </button>
         </#if>
+        
+        <button <#if !theme.custom>disabled="disabled"</#if> onclick="NXThemesEditor.deleteTheme('${theme.src}')">
+          <img src="${skinPath}/img/theme-delete.png" width="16" height="16" />          
+          Delete theme
+        </button>
       </p>
     
     </#if>

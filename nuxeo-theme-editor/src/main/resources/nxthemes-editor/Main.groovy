@@ -650,6 +650,18 @@ public class Main extends ModuleRoot {
   }
   
   @POST
+  @Path("delete_theme")
+  public void deleteTheme() {
+      FormData form = ctx.getForm()
+      String src = form.getString("src")      
+      try {
+          Editor.deleteTheme(src)
+      } catch (Exception e) {
+          throw new ThemeEditorException(e.getMessage(), e)
+      }
+  }
+  
+  @POST
   @Path("save_changes")
   public void saveChanges() {
       try {
