@@ -35,13 +35,17 @@ public final class CreateInitialSection extends StandaloneFilter {
         if (!(element instanceof PageElement)) {
             return info;
         }
+        final String viewMode = info.getViewMode();
+        if (!"layout".equals(viewMode)) {
+            return info;
+        }
         final StringBuilder html = new StringBuilder();
         if (element.hasChildren()) {
             return info;
         }
         html.append(
                 "<a href=\"javascript:void(0)\" class=\"nxthemesAddSection\" title=\"Add a section\"><div sectionid=\"").append(
-                info.getElement().getUid().toString()).append("\"></div></a>");
+                info.getElement().getUid().toString()).append("\"> Add a section</div></a>");
         info.setMarkup(html.toString());
         return info;
     }

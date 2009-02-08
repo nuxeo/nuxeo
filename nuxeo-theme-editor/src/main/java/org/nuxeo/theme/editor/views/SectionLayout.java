@@ -69,7 +69,7 @@ public class SectionLayout extends DefaultLayoutView {
 
         html.append(
                 "<a href=\"javascript:void(0)\" class=\"nxthemesAddSection\" title=\"Add a section\"><div sectionid=\"").append(
-                sectionId).append("\" ></div></a>");
+                sectionId).append("\" > Add a section</div></a>");
 
         html.append("</div>");
         return html.toString();

@@ -1332,16 +1332,25 @@ option.locked {
 }
 
 .nxthemesAddSection div {
-  background-image: url(${basePath}/skin/nxthemes-editor/img/add.png);
+  background: url(/skin/nxthemes-editor/img/add.png) no-repeat;
   height: 14px;
-  width: 14px;
+  display: inline;
   margin-left: 10px;
   margin-bottom: 20px;
+  padding-left: 20px;
+}
+
+.nxthemesAddSection {
+ text-decoration: none;
+ font: 13px Arial;
+ color: #fff;
 }
 
 .nxthemesAddSection:hover div {
-  background-image: url(${basePath}/skin/nxthemes-editor/img/add-hover.png);
+  background-image: url(/skin/nxthemes-editor/img/add-hover.png);
+  color: #000
 }
+
 
 div.nxthemesDraggable * {
   cursor: pointer;
