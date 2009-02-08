@@ -1138,8 +1138,8 @@ NXThemesPresetManager.setEditMode = function(mode) {
          parameters: {
              mode: mode
          },
-         onSuccess: function(req) {
-        	 NXThemes.getViewById("style manager").refresh();
+         onSuccess: function(r) {
+        	 NXThemes.getViewById("preset manager").refresh();
          },
          onFailure: function(r) {
              var text = r.responseText;
@@ -1833,7 +1833,7 @@ NXThemesStyleManager.setEditMode = function(mode) {
              mode: mode
          },
          onSuccess: function(req) {
-        	 NXThemes.getViewById("preset manager").refresh();
+        	 NXThemes.getViewById("style manager").refresh();
          },
          onFailure: function(r) {
              var text = r.responseText;
