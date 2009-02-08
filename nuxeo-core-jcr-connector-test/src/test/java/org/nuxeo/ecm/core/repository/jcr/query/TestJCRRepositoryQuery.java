@@ -44,8 +44,8 @@ public class TestJCRRepositoryQuery extends QueryTestCase {
     }
 
     @Override
-    public void testQueryWithProxies() {
-        // JCR cannot do queries on proxies or versions
+    public void testQueryWithProxiesNegativeMultiple() {
+        // JCR cannot do negative queries on multi-valued properties
     }
 
     @Override

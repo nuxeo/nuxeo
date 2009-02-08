@@ -650,7 +650,6 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         assertEquals(expected, actual);
     }
 
-    // this is disabled for JCR
     public void testQueryWithProxies() throws Exception {
         createDocs();
         DocumentModel proxy = publishDoc();
@@ -736,6 +735,20 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
                 filter, 99);
         assertEquals(0, dml.size()); // contradictory clauses
 
+        // "deep" isProxy
+        dml = session.query("SELECT * FROM Document WHERE (dc:title = 'blah' OR ecm:isProxy = 1)");
+        assertIdSet(dml, proxyId);
+        dml = session.query("SELECT * FROM Document WHERE ecm:isProxy = 0 AND (dc:title = 'testfile1_Title' OR ecm:isProxy = 1)");
+        assertEquals(1, dml.size());
+    }
+
+    // this is disabled for JCR
+    public void testQueryWithProxiesNegativeMultiple() throws Exception {
+        createDocs();
+        publishDoc();
+        DocumentModelList dml;
+        Filter filter;
+
         dml = session.query("SELECT * FROM Document WHERE ecm:mixinType <> 'Immutable' AND ecm:isProxy = 0");
         assertEquals(7, dml.size()); // 7 folder/docs
 
@@ -754,12 +767,6 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
                 "SELECT * FROM Document WHERE ecm:mixinType <> 'Immutable'",
                 filter, 99);
         assertEquals(0, dml.size()); // contradictory clauses
-
-        // "deep" isProxy
-        dml = session.query("SELECT * FROM Document WHERE (dc:title = 'blah' OR ecm:isProxy = 1)");
-        assertIdSet(dml, proxyId);
-        dml = session.query("SELECT * FROM Document WHERE ecm:isProxy = 0 AND (dc:title = 'testfile1_Title' OR ecm:isProxy = 1)");
-        assertEquals(1, dml.size());
     }
 
     public void testQuerySpecialFields() throws Exception {

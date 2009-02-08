@@ -33,6 +33,7 @@ import org.apache.jackrabbit.core.NodeId;
 import org.apache.jackrabbit.core.PropertyId;
 import org.apache.jackrabbit.core.query.lucene.FieldNames;
 import org.apache.jackrabbit.core.query.lucene.IndexFormatVersion;
+import org.apache.jackrabbit.core.query.lucene.LongField;
 import org.apache.jackrabbit.core.query.lucene.NamePathResolverImpl;
 import org.apache.jackrabbit.core.query.lucene.NamespaceMappings;
 import org.apache.jackrabbit.core.query.lucene.SingletonTokenStream;
@@ -181,6 +182,12 @@ public class SearchIndex extends
                 if (isVersion) {
                     addVersionLabel(doc, label);
                 }
+
+                // ecm:isProxy
+                addIsProxy(doc, isProxy);
+
+                // ecm:isCheckedInVersion
+                addIsVersion(doc, isVersion);
             }
 
             // log.warn("Indexing doc: " + doc);
@@ -332,6 +339,11 @@ public class SearchIndex extends
             return createField(propName, string, PropertyType.STRING);
         }
 
+        private Field createLongField(Name propName, long value) {
+            return createField(propName, LongField.longToString(value),
+                    PropertyType.LONG);
+        }
+
         // see NodeIndexer.createFieldWithoutNorms
         private Field createField(Name name, String string, int propertyType) {
             String propName = name.getLocalName();
@@ -402,6 +414,16 @@ public class SearchIndex extends
         private void addVersionLabel(Document doc, String label) {
             doc.add(createStringField(NodeConstants.ECM_VERSION_LABEL.qname,
                     label));
+        }
+
+        private void addIsProxy(Document doc, boolean isProxy) {
+            doc.add(createLongField(NodeConstants.ECM_ISPROXY.qname,
+                    isProxy ? 1 : 0));
+        }
+
+        private void addIsVersion(Document doc, boolean isVersion) {
+            doc.add(createLongField(NodeConstants.ECM_ISCHECKEDINVERSION.qname,
+                    isVersion ? 1 : 0));
         }
 
         private Set<String> getFacets(NodeState node) {

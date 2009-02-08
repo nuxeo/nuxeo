@@ -53,6 +53,8 @@ public interface NodeConstants {
     JCRName ECM_MIXIN_TYPE = new JCRName("mixinType", NS_ECM_SYSTEM_URI, NS_ECM_SYSTEM_PREFIX);
     JCRName ECM_PARENT_ID = new JCRName("parentId", NS_ECM_SYSTEM_URI, NS_ECM_SYSTEM_PREFIX);
     JCRName ECM_PATH = new JCRName("path", NS_ECM_SYSTEM_URI, NS_ECM_SYSTEM_PREFIX);
+    JCRName ECM_ISPROXY = new JCRName("isProxy", NS_ECM_SYSTEM_URI, NS_ECM_SYSTEM_PREFIX);
+    JCRName ECM_ISCHECKEDINVERSION = new JCRName("isCheckedInVersion", NS_ECM_SYSTEM_URI, NS_ECM_SYSTEM_PREFIX);
 
     // ------------- QNames ---------------------
     JCRName ECM_NT_BASE = new JCRName("base", NS_ECM_TYPES_URI, NS_ECM_TYPES_PREFIX);

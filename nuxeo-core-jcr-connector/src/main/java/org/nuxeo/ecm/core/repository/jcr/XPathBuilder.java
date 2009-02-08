@@ -210,34 +210,6 @@ public class XPathBuilder {
                         operator(expr.operator)).append(" '").append(
                         ((StringLiteral) expr.rvalue).value).append("'");
                 return true;
-            } else if (name.equals(NXQL.ECM_ISVERSION)) {
-                boolean eq;
-                if (expr.operator == Operator.EQ) {
-                    eq = true;
-                } else if (expr.operator == Operator.NOTEQ) {
-                    eq = false;
-                } else {
-                    throw new QueryException("Invalid query: " +
-                            NXQL.ECM_ISVERSION +
-                            " support only = and != operators");
-                }
-                boolean value;
-                if (expr.rvalue.getClass() == IntegerLiteral.class) {
-                    value = ((IntegerLiteral) expr.rvalue).value != 0;
-                } else {
-                    throw new QueryException("Invalid query: " +
-                            NXQL.ECM_ISVERSION + " support integer values");
-                }
-                if ((eq && value) || (!eq && !value)) { // we need to find
-                    // versions
-                    xq.predicate.append(" @").append(
-                            NodeConstants.ECM_FROZEN_NODE_UUID.rawname);
-                } else { // avoid versions
-                    xq.predicate.append(" not(@").append(
-                            NodeConstants.ECM_FROZEN_NODE_UUID.rawname).append(
-                            ") ");
-                }
-                return true;
             } else if (expr.rvalue.getClass() == DateLiteral.class) { // dates
                 // *[@dc:created > "2008-06-03T00:00:00.000+01:00" and
                 // @dc:created < xs:dateTime("2008-06-04T00:00:00.000+01:00")]
