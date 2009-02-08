@@ -628,6 +628,7 @@ NXThemesEditor.switchTheme = function(info) {
     var form = Event.findElement(info, "form");
     var name = Form.findFirstElement(form).getValue();
     NXThemesEditor.selectTheme(name, "theme selector");
+    NXThemes.getViewById("page selector").refresh();
     NXThemesEditor.refreshCanvas();
 };
 
@@ -687,7 +688,7 @@ NXThemesEditor.addPage = function(themeName) {
          onSuccess: function(r) {
              var text = r.responseText;
              NXThemesEditor.highlightSaveButton();
-             NXThemesEditor.selectTheme(text, "theme selector");
+             NXThemesEditor.selectTheme(text, "page selector");
              NXThemesEditor.refreshCanvas();
          },
          onFailure: function(r) {
