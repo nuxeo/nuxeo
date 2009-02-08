@@ -11,12 +11,12 @@
 
     <div class="nxthemesButtonSelector">
       <span>View mode:</span>
-      <#if preset_edit_mode == 'by theme'>            
-          <a href="javascript:void(0)" onclick="NXThemesPresetManager.setPresetEditMode('palettes')">Palettes</a>
+      <#if preset_manager_mode == 'by theme'>            
+          <a href="javascript:void(0)" onclick="NXThemesPresetManager.setEditMode('palettes')">Palettes</a>
           <a href="javascript:void(0)" class="selected">By theme</a>
       <#else>
           <a href="javascript:void(0)" class="selected">Palettes</a>
-          <a href="javascript:void(0)" onclick="NXThemesPresetManager.setPresetEditMode('by theme')">By theme</a>
+          <a href="javascript:void(0)" onclick="NXThemesPresetManager.setEditMode('by theme')">By theme</a>
       </#if>
     </div>
     
@@ -24,7 +24,7 @@
 
 <td style="vertical-align: top; width: 200px; padding-right: 5px;">
 
-<#if preset_edit_mode == 'by theme'>
+<#if preset_manager_mode == 'by theme'>
 
 <ul class="nxthemesSelector">
 <#list themeManager.getThemeNames() as theme_name>
@@ -50,7 +50,7 @@
 </td>
 <td style="padding-left: 10px; vertical-align: top;">
 
-<#if preset_edit_mode == 'by theme'>
+<#if preset_manager_mode == 'by theme'>
 
 <h2 class="nxthemesEditor" style="text-transform: uppercase">${current_theme_name}</h2>
 

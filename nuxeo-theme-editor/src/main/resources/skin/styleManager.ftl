@@ -6,6 +6,17 @@
 
 <h1 class="nxthemesEditor">Styles</h1>
 
+    <div class="nxthemesButtonSelector">
+      <span>View mode:</span>
+      <#if style_manager_mode == 'named styles'>            
+          <a href="javascript:void(0)" onclick="NXThemesStyleManager.setEditMode('unused styles')">Unused styles</a>
+          <a href="javascript:void(0)" class="selected">Named styles</a>
+      <#else>
+          <a href="javascript:void(0)" class="selected">Unused styles</a>
+          <a href="javascript:void(0)" onclick="NXThemesStyleManager.setEditMode('named styles')">Named styles</a>
+      </#if>
+    </div>
+
 <table cellpadding="0" cellspacing="0" style="width: 100%"><tr>
 
 <td style="vertical-align: top; width: 200px; padding-right: 5px;">
@@ -24,12 +35,18 @@
 <td style="padding-left: 10px; vertical-align: top;">
 
 <h2 class="nxthemesEditor" style="text-transform: uppercase">${current_theme_name}</h2>
-<h3 class="nxthemesEditor">Named styles</h3>
+
+<#if style_manager_mode = 'named styles'>
+
 <ul>
 <#list named_styles as style>
   <li>${style.name}</li>
 </#list>
 </ul>
+
+<#else>
+
+<p><em>These styles are associated with non existing views. They can probably be cleaned up.</em><p>
 
 <#assign styles=themeManager.getStyles(current_theme_name)>
 <#list styles as style>
@@ -37,11 +54,9 @@
 <#assign views=themeManager.getUnusedStyleViews(style)>
 <#if views>
 
-<h3 class="nxthemesEditorFocus">Unused view style ...</h3>
-
 <#list views as view>
 
-<form style="padding: 10px 8px 16px 8px" class="unusedViews" action="javascript:void(0)" submit="return false">
+<form class="unusedViews" action="javascript:void(0)" submit="return false">
   <div>
     <input type="hidden" name="theme_name" value="${current_theme_name}" />
     <input type="hidden" name="style_uid" value="#{style.uid}" />
@@ -49,7 +64,7 @@
   </div>
    
   <div style="font-size: 11px; font-weight: bold">
-    ${view}
+    '${view}' view
   </div>
   
   <pre style="margin: 4px 0 6px 0; font-size: 10px; background-color: #ffc; border: 1px solid #fc0">${This.renderStyleView(style, view)}</pre>
@@ -65,6 +80,8 @@
 
 </#if>
 </#list>
+
+</#if>
 
 </td></tr></table>
 

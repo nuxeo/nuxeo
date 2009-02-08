@@ -1131,15 +1131,15 @@ if (typeof NXThemesPresetManager == "undefined") {
     }
 }
 
-NXThemesPresetManager.setPresetEditMode = function(mode) {
-    var url = nxthemesBasePath + "/nxthemes-editor/select_preset_edit_mode"; 
+NXThemesPresetManager.setEditMode = function(mode) {
+    var url = nxthemesBasePath + "/nxthemes-editor/select_preset_manager_mode"; 
     new Ajax.Request(url, {
          method: 'post',
          parameters: {
              mode: mode
          },
          onSuccess: function(req) {
-        	 NXThemes.getViewById("preset manager").refresh();
+        	 NXThemes.getViewById("style manager").refresh();
          },
          onFailure: function(r) {
              var text = r.responseText;
@@ -1823,6 +1823,23 @@ NXThemesStyleManager.deleteUnusedStyleView = function(info) {
              window.alert(text);
          }
     });     
+};
+
+NXThemesStyleManager.setEditMode = function(mode) {
+    var url = nxthemesBasePath + "/nxthemes-editor/select_style_manager_mode"; 
+    new Ajax.Request(url, {
+         method: 'post',
+         parameters: {
+             mode: mode
+         },
+         onSuccess: function(req) {
+        	 NXThemes.getViewById("preset manager").refresh();
+         },
+         onFailure: function(r) {
+             var text = r.responseText;
+             window.alert(text);
+         }         
+    });
 };
 
 //actions

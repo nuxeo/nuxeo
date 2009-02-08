@@ -75,7 +75,7 @@ public class Main extends ModuleRoot {
     return getTemplate("presetManager.ftl").arg(
             "current_theme_name", getCurrentThemeName(path)).arg(            
             "preset_groups", getPresetGroups()).arg(
-            "preset_edit_mode", getPresetEditMode()).arg(         
+            "preset_manager_mode", getPresetManagerMode()).arg(         
             "selected_preset_group", getSelectedPresetGroup())
   }
   
@@ -84,6 +84,7 @@ public class Main extends ModuleRoot {
   public Object renderStyleManager(@QueryParam("org.nuxeo.theme.application.path") String path) {
     return getTemplate("styleManager.ftl").arg(
             "named_styles", getNamedStyles(path)).arg(
+            "style_manager_mode", getStyleManagerMode()).arg(            
             "current_theme_name", getCurrentThemeName(path))
   }  
   
@@ -480,11 +481,11 @@ public class Main extends ModuleRoot {
   }
 
   @POST
-  @Path("select_preset_edit_mode")
-  public void selectPresetEditMode() {
+  @Path("select_preset_manager_mode")
+  public void selectPresetManagerMode() {
       FormData form = ctx.getForm()
       String mode = form.getString("mode")        
-      SessionManager.setPresetEditMode(mode)
+      SessionManager.setPresetManagerMode(mode)
   }
   
   @POST
@@ -720,6 +721,14 @@ public class Main extends ModuleRoot {
       FormData form = ctx.getForm()
       String selector = form.getString("selector")      
       SessionManager.setStyleSelector(selector)      
+  }
+  
+  @POST
+  @Path("select_style_manager_mode")
+  public void selectStyleManagerMode() {
+      FormData form = ctx.getForm()
+      String mode = form.getString("mode")        
+      SessionManager.setStyleManagerMode(mode)
   }
   
   @POST
@@ -1254,8 +1263,12 @@ public class Main extends ModuleRoot {
       return presets
   }
 
-  public static String getPresetEditMode() {
-      return SessionManager.getPresetEditMode()
+  public static String getPresetManagerMode() {
+      return SessionManager.getPresetManagerMode()
+  }
+  
+  public static String getStyleManagerMode() {
+      return SessionManager.getStyleManagerMode()
   }
   
   public static List<String> getUnidentifiedPresetNames(String themeName) {
