@@ -69,16 +69,33 @@ public abstract class NXRuntimeTestCase extends MockObjectTestCase {
         super(name);
     }
 
-    private File workingDir;
+    protected File workingDir;
 
     private static int counter = 0;
 
-    private StandaloneBundleLoader bundleLoader;
+    protected StandaloneBundleLoader bundleLoader;
 
     private Set<URI> readUris;
 
-    private Map<String, BundleFile> bundles;
+    protected Map<String, BundleFile> bundles;
 
+    protected boolean restart = false;
+    
+    /**
+     * Restart the runtime and preserve home directory
+     * @throws Exception
+     */
+    protected void restart() throws Exception {
+        restart = true;
+        try {
+            tearDown();
+            setUp();
+        } finally {
+            restart = false;
+        }
+    }
+
+    
     @Override
     protected void setUp() throws Exception {
         super.setUp();
@@ -95,7 +112,10 @@ public abstract class NXRuntimeTestCase extends MockObjectTestCase {
     protected void tearDown() throws Exception {
         wipeRuntime();
         if (workingDir != null) {
-            FileUtils.deleteTree(workingDir);
+            if (!restart) {
+                FileUtils.deleteTree(workingDir);
+                workingDir = null;
+            }
         }
         readUris = null;
         bundles = null;
@@ -111,8 +131,10 @@ public abstract class NXRuntimeTestCase extends MockObjectTestCase {
 
     protected void initOsgiRuntime() throws Exception {
         try {
-            workingDir = File.createTempFile("NXOSGITestFramework", generateId());
-            workingDir.delete();
+            if (!restart) {
+                workingDir = File.createTempFile("NXOSGITestFramework", generateId());
+                workingDir.delete();
+            }            
         } catch (IOException e) {
             log.error("Could not init working directory", e);
             throw e;
