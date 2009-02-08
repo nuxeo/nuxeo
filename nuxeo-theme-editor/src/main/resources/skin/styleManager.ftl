@@ -1,21 +1,20 @@
 <div>
-
 <#assign themeManager=This.getThemeManager()>
 
 <div id="nxthemesStyleManager">
 
-<h1 class="nxthemesEditor">Styles</h1>
+<div class="nxthemesButtonSelector" style="float: right">
+  <span>View mode:</span>
+  <#if style_manager_mode == 'named styles'>            
+      <a href="javascript:void(0)" onclick="NXThemesStyleManager.setEditMode('unused styles')">Unused styles</a>
+      <a href="javascript:void(0)" class="selected">Named styles</a>
+  <#else>
+      <a href="javascript:void(0)" class="selected">Unused styles</a>
+      <a href="javascript:void(0)" onclick="NXThemesStyleManager.setEditMode('named styles')">Named styles</a>
+  </#if>
+</div>
 
-    <div class="nxthemesButtonSelector">
-      <span>View mode:</span>
-      <#if style_manager_mode == 'named styles'>            
-          <a href="javascript:void(0)" onclick="NXThemesStyleManager.setEditMode('unused styles')">Unused styles</a>
-          <a href="javascript:void(0)" class="selected">Named styles</a>
-      <#else>
-          <a href="javascript:void(0)" class="selected">Unused styles</a>
-          <a href="javascript:void(0)" onclick="NXThemesStyleManager.setEditMode('named styles')">Named styles</a>
-      </#if>
-    </div>
+<h1 class="nxthemesEditor">Styles</h1>
 
 <table cellpadding="0" cellspacing="0" style="width: 100%"><tr>
 

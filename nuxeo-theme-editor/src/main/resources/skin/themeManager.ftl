@@ -1,13 +1,14 @@
 <div>
-
 <#assign themeManager=This.getThemeManager()>
 <#assign themes=themeManager.getThemeDescriptors()>
 
 <div id="nxthemesThemeManager" class="nxthemesScreen">
 
-<form style="float: right; margin: 5px" action="javascript:void(0)">
+<form style="float: right;" action="javascript:void(0)">
   <div>
-    <button onclick="javascript:NXThemesEditor.addTheme()">Add theme</button>
+    <button onclick="javascript:NXThemesEditor.addTheme()">
+    <img src="${skinPath}/img/add-theme-16.png" width="16" height="16" />
+    Add theme</button>
   </div>
 </form>
 
@@ -17,7 +18,6 @@
 <table cellpadding="0" cellspacing="0" style="width: 100%"><tr>
 
 <td style="vertical-align: top; width: 200px; padding-right: 5px;">
-
 
 <ul class="nxthemesSelector">
 <#list themes as theme>

@@ -1,5 +1,4 @@
 <div>
-
 <#assign themeManager=This.getThemeManager()>
 
 <!-- preset menu -->
@@ -7,21 +6,20 @@
       
 <div id="nxthemesPresetManager">
 
-<h1 class="nxthemesEditor">Presets</h1>
+<div class="nxthemesButtonSelector" style="float: right">
+  <span>View mode:</span>
+  <#if preset_manager_mode == 'by theme'>            
+      <a href="javascript:void(0)" onclick="NXThemesPresetManager.setEditMode('palettes')">Palettes</a>
+      <a href="javascript:void(0)" class="selected">By theme</a>
+  <#else>
+      <a href="javascript:void(0)" class="selected">Palettes</a>
+      <a href="javascript:void(0)" onclick="NXThemesPresetManager.setEditMode('by theme')">By theme</a>
+  </#if>
+</div>
 
-    <div class="nxthemesButtonSelector">
-      <span>View mode:</span>
-      <#if preset_manager_mode == 'by theme'>            
-          <a href="javascript:void(0)" onclick="NXThemesPresetManager.setEditMode('palettes')">Palettes</a>
-          <a href="javascript:void(0)" class="selected">By theme</a>
-      <#else>
-          <a href="javascript:void(0)" class="selected">Palettes</a>
-          <a href="javascript:void(0)" onclick="NXThemesPresetManager.setEditMode('by theme')">By theme</a>
-      </#if>
-    </div>
+<h1 class="nxthemesEditor">Presets</h1>
     
 <table cellpadding="0" cellspacing="0" style="width: 100%"><tr>
-
 <td style="vertical-align: top; width: 200px; padding-right: 5px;">
 
 <#if preset_manager_mode == 'by theme'>
