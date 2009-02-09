@@ -177,6 +177,21 @@ public class Dialect {
     }
 
     /**
+     * Specifies what columns of the fulltext table have to be indexed.
+     *
+     * @return 0 for none, 1 for the synthetic one, 2 for the individual ones
+     */
+    public int getFulltextIndexedColumns() {
+        if (dialect instanceof PostgreSQLDialect) {
+            return 1;
+        }
+        if (dialect instanceof MySQLDialect) {
+            return 2;
+        }
+        return 0;
+    }
+
+    /**
      * Gets the modifier between CREATE and INDEX to create a fulltext index.
      */
     public String getFulltextIndexEarlyModifier() {
@@ -184,6 +199,27 @@ public class Dialect {
             return " FULLTEXT";
         }
         return "";
+    }
+
+    /**
+     * Gets the final modifier after CREATE INDEX x ON y, to create a fulltext
+     * index.
+     *
+     * @param quotedNames the quoted column names of the indexed columns
+     */
+    public String getFulltextIndexFinalModifier(List<String> quotedNames) {
+        if (dialect instanceof PostgreSQLDialect) {
+            return String.format(" USING GIN(%s)",
+                    quotedNames.get(0));
+        }
+        return "";
+    }
+
+    /**
+     * Do we have the usual columns enumeration in fulltext indexes?
+     */
+    public boolean hasNormalColumnsInFulltextIndex() {
+        return !(dialect instanceof PostgreSQLDialect);
     }
 
     /**

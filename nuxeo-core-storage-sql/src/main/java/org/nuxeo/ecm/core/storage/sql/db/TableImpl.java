@@ -269,9 +269,14 @@ public class TableImpl implements Table {
             buf.append(indexName);
             buf.append(" ON ");
             buf.append(getQuotedName());
-            buf.append(" (");
-            buf.append(StringUtils.join(qcols, ", "));
-            buf.append(')');
+            if (!fulltext || dialect.hasNormalColumnsInFulltextIndex()) {
+                buf.append(" (");
+                buf.append(StringUtils.join(qcols, ", "));
+                buf.append(')');
+            }
+            if (fulltext) {
+                buf.append(dialect.getFulltextIndexFinalModifier(qcols));
+            }
             sqls.add(buf.toString());
         }
         return sqls;

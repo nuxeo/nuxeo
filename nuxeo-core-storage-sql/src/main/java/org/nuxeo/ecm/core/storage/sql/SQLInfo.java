@@ -455,8 +455,13 @@ public class SQLInfo {
          * fulltext
          */
         table = database.getTable(model.FULLTEXT_TABLE_NAME);
-        table.addFulltextIndex(model.FULLTEXT_SIMPLETEXT_KEY,
-                model.FULLTEXT_BINARYTEXT_KEY);
+        int fulltextIndexedColumns = dialect.getFulltextIndexedColumns();
+        if (fulltextIndexedColumns == 1) {
+            table.addFulltextIndex(model.FULLTEXT_FULLTEXT_KEY);
+        } else if (fulltextIndexedColumns == 2) {
+            table.addFulltextIndex(model.FULLTEXT_SIMPLETEXT_KEY,
+                    model.FULLTEXT_BINARYTEXT_KEY);
+        }
     }
 
     /**
