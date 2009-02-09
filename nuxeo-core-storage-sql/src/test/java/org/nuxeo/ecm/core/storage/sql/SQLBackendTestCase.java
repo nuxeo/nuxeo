@@ -85,8 +85,8 @@ public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
         RepositoryDescriptor descriptor = new RepositoryDescriptor();
         descriptor.xaDataSourceName = "org.h2.jdbcx.JdbcDataSource";
         Map<String, String> properties = new HashMap<String, String>();
-        properties.put("URL", String.format("jdbc:h2:%s",
-                SQLBackendHelper.H2_PATH));
+        properties.put("URL", String.format("jdbc:h2:${%s}",
+                SQLBackendHelper.H2_PATH_PROPERTY));
         properties.put("User", SQLBackendHelper.H2_DATABASE_USER);
         properties.put("Password", SQLBackendHelper.H2_DATABASE_PASSWORD);
         descriptor.properties = properties;

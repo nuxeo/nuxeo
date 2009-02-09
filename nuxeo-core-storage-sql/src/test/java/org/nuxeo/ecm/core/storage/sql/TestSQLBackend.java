@@ -487,6 +487,36 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals("old", nodea.getSimpleProperty("tst:title").getString());
     }
 
+    public void testSaveOnCommit() throws Exception {
+        Session session = repository.getConnection(); // init
+        session.save();
+
+        XAResource xaresource = ((SessionImpl) session).getXAResource();
+
+        // first transaction
+        Xid xid = new DummyXid("1");
+        xaresource.start(xid, XAResource.TMNOFLAGS);
+        Node root = session.getRootNode();
+        assertNotNull(root);
+        session.addChildNode(root, "foo", null, "TestDoc", false);
+        // let end do an implicit save
+        xaresource.end(xid, XAResource.TMSUCCESS);
+        xaresource.prepare(xid);
+        xaresource.commit(xid, false);
+
+        // should have saved, clearing caches should be harmless
+        ((SessionImpl) session).clearCaches();
+
+        // second transaction
+        xid = new DummyXid("2");
+        xaresource.start(xid, XAResource.TMNOFLAGS);
+        Node foo = session.getNodeByPath("/foo", null);
+        assertNotNull(foo);
+        xaresource.end(xid, XAResource.TMSUCCESS);
+        xaresource.prepare(xid);
+        xaresource.commit(xid, false);
+    }
+
     public void testMove() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
@@ -812,4 +842,3 @@ class DummyXid implements Xid {
         return new byte[0];
     }
 }
-

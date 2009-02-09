@@ -154,6 +154,8 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         file1.setPropertyValue("filename", filename);
         Calendar cal1 = getCalendar(2007, 3, 1, 12, 0, 0);
         file1.setPropertyValue("dc:created", cal1);
+        file1.setPropertyValue("dc:coverage", "foo/bar");
+        file1.setPropertyValue("dc:subjects", new String[] { "foo", "gee/moo" });
         file1 = session.createDocument(file1);
 
         DocumentModel file2 = new DocumentModelImpl("/testfolder1",
@@ -164,6 +166,7 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         file2.setPropertyValue("dc:created", cal2);
         file2.setPropertyValue("dc:contributors",
                 new String[] { "bob", "pete" });
+        file2.setPropertyValue("dc:coverage", "football");
         file2 = session.createDocument(file2);
 
         DocumentModel file3 = new DocumentModelImpl("/testfolder1",
@@ -383,6 +386,39 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
                 "dc:description"));
     }
 
+    public void testOrderByPath() throws Exception {
+        String sql;
+        DocumentModelList dml;
+        createDocs();
+
+        sql = "SELECT * FROM Document ORDER BY ecm:path";
+        dml = session.query(sql);
+        assertEquals(7, dml.size());
+        assertEquals("/testfolder1", dml.get(0).getPathAsString());
+        assertEquals("/testfolder1/testfile1", dml.get(1).getPathAsString());
+        assertEquals("/testfolder1/testfile2", dml.get(2).getPathAsString());
+        assertEquals("/testfolder1/testfile3", dml.get(3).getPathAsString());
+        assertEquals("/testfolder2", dml.get(4).getPathAsString());
+        assertEquals("/testfolder2/testfolder3", dml.get(5).getPathAsString());
+        assertEquals("/testfolder2/testfolder3/testfile4",
+                dml.get(6).getPathAsString());
+
+        sql = "SELECT * FROM Document ORDER BY ecm:path DESC";
+        dml = session.query(sql);
+        assertEquals(7, dml.size());
+        assertEquals("/testfolder2/testfolder3/testfile4",
+                dml.get(0).getPathAsString());
+        assertEquals("/testfolder1", dml.get(6).getPathAsString());
+
+        // then with batching
+
+        sql = "SELECT * FROM Document ORDER BY ecm:path";
+        dml = session.query(sql, null, 2, 3, false);
+        assertEquals(2, dml.size());
+        assertEquals("/testfolder1/testfile3", dml.get(0).getPathAsString());
+        assertEquals("/testfolder2", dml.get(1).getPathAsString());
+    }
+
     public void testBatching() throws Exception {
         doBatching(true);
     }
@@ -484,6 +520,32 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         sql = "SELECT * FROM document WHERE dc:title LIKE 'testfile%' AND ecm:path STARTSWITH '/'";
         dml = session.query(sql);
         assertEquals(4, dml.size());
+    }
+
+    public void testStartsWithNonPath() throws Exception {
+        String sql;
+        createDocs();
+
+        sql = "SELECT * FROM Document WHERE dc:coverage STARTSWITH 'foo'";
+        assertEquals(1, session.query(sql).size());
+
+        sql = "SELECT * FROM Document WHERE dc:coverage STARTSWITH 'foo/bar'";
+        assertEquals(1, session.query(sql).size());
+
+        sql = "SELECT * FROM Document WHERE dc:coverage STARTSWITH 'foo/bar/baz'";
+        assertEquals(0, session.query(sql).size());
+
+        sql = "SELECT * FROM Document WHERE dc:subjects STARTSWITH 'foo'";
+        assertEquals(1, session.query(sql).size());
+
+        sql = "SELECT * FROM Document WHERE dc:subjects STARTSWITH 'gee'";
+        assertEquals(1, session.query(sql).size());
+
+        sql = "SELECT * FROM Document WHERE dc:subjects STARTSWITH 'gee/moo'";
+        assertEquals(1, session.query(sql).size());
+
+        sql = "SELECT * FROM Document WHERE dc:subjects STARTSWITH 'gee/moo/blah'";
+        assertEquals(0, session.query(sql).size());
     }
 
     public void testReindexEditedDocument() throws Exception {
@@ -588,7 +650,6 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         assertEquals(expected, actual);
     }
 
-    // this is disabled for JCR
     public void testQueryWithProxies() throws Exception {
         createDocs();
         DocumentModel proxy = publishDoc();
@@ -674,6 +735,20 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
                 filter, 99);
         assertEquals(0, dml.size()); // contradictory clauses
 
+        // "deep" isProxy
+        dml = session.query("SELECT * FROM Document WHERE (dc:title = 'blah' OR ecm:isProxy = 1)");
+        assertIdSet(dml, proxyId);
+        dml = session.query("SELECT * FROM Document WHERE ecm:isProxy = 0 AND (dc:title = 'testfile1_Title' OR ecm:isProxy = 1)");
+        assertEquals(1, dml.size());
+    }
+
+    // this is disabled for JCR
+    public void testQueryWithProxiesNegativeMultiple() throws Exception {
+        createDocs();
+        publishDoc();
+        DocumentModelList dml;
+        Filter filter;
+
         dml = session.query("SELECT * FROM Document WHERE ecm:mixinType <> 'Immutable' AND ecm:isProxy = 0");
         assertEquals(7, dml.size()); // 7 folder/docs
 
@@ -692,12 +767,6 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
                 "SELECT * FROM Document WHERE ecm:mixinType <> 'Immutable'",
                 filter, 99);
         assertEquals(0, dml.size()); // contradictory clauses
-
-        // "deep" isProxy
-        dml = session.query("SELECT * FROM Document WHERE (dc:title = 'blah' OR ecm:isProxy = 1)");
-        assertIdSet(dml, proxyId);
-        dml = session.query("SELECT * FROM Document WHERE ecm:isProxy = 0 AND (dc:title = 'testfile1_Title' OR ecm:isProxy = 1)");
-        assertEquals(1, dml.size());
     }
 
     public void testQuerySpecialFields() throws Exception {
@@ -799,6 +868,24 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         // ecm:fulltext tested below
     }
 
+    public void testEmptyLifecycle() throws Exception {
+        DocumentModelList dml;
+        createDocs();
+        String sql = "SELECT * FROM Document WHERE ecm:currentLifeCycleState <> 'deleted'";
+
+        dml = session.query(sql);
+        assertEquals(7, dml.size());
+
+        // create a doc with no lifecycle associated
+        DocumentModel doc = new DocumentModelImpl("/testfolder1", "mydoc",
+                "MyDocType");
+        doc = session.createDocument(doc);
+        session.save();
+        assertEquals("", doc.getCurrentLifeCycleState());
+        dml = session.query(sql);
+        assertEquals(8, dml.size());
+    }
+
     public void testSQLFulltext() throws Exception {
         createDocs();
         String query;
@@ -866,6 +953,30 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         query = "SELECT * FROM File WHERE ecm:fulltext = 'restaurant'";
         dml = session.query(query);
         assertIdSet(dml, file1.getId());
+    }
+
+    public void testFullTextCopy() throws Exception {
+        createDocs();
+        String query;
+        DocumentModelList dml;
+        DocumentModel folder1 = session.getDocument(new PathRef("/testfolder1"));
+        DocumentModel file1 = session.getDocument(new PathRef(
+                "/testfolder1/testfile1"));
+        file1.setProperty("dublincore", "title", "hello world");
+        session.saveDocument(file1);
+        session.save();
+
+        query = "SELECT * FROM File WHERE ecm:fulltext = 'world'";
+
+        dml = session.query(query);
+        assertIdSet(dml, file1.getId());
+
+        // copy
+        DocumentModel copy = session.copy(file1.getRef(), folder1.getRef(),
+                "file1Copy");
+
+        dml = session.query(query);
+        assertIdSet(dml, file1.getId(), copy.getId());
     }
 
 }

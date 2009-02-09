@@ -24,6 +24,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import org.hibernate.HibernateException;
@@ -35,6 +38,7 @@ import org.hibernate.dialect.PostgreSQLDialect;
 import org.hibernate.dialect.SQLServerDialect;
 import org.hibernate.exception.SQLExceptionConverter;
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 
 /**
@@ -74,23 +78,19 @@ public class Dialect {
             try {
                 dialect = new H2Dialect();
             } catch (Exception e) {
-                throw new StorageException("Cannot instantiate dialect for: " +
-                        connection, e);
+                throw new StorageException("Cannot instantiate dialect for: "
+                        + connection, e);
             }
         } else {
             try {
                 dialect = DialectFactory.determineDialect(databaseName,
                         databaseMajor);
             } catch (HibernateException e) {
-                throw new StorageException("Cannot determine dialect for: " +
-                        connection, e);
+                throw new StorageException("Cannot determine dialect for: "
+                        + connection, e);
             }
         }
         dialectName = dialect.getClass().getSimpleName();
-    }
-
-    public String getDatabaseName() {
-        return databaseName;
     }
 
     @Override
@@ -209,9 +209,9 @@ public class Dialect {
      * Does the dialect support UPDATE t SET ... FROM t, u WHERE ... ?
      */
     public boolean supportsUpdateFrom() {
-        if (dialect instanceof PostgreSQLDialect ||
-                dialect instanceof MySQLDialect ||
-                dialect instanceof SQLServerDialect) {
+        if (dialect instanceof PostgreSQLDialect
+                || dialect instanceof MySQLDialect
+                || dialect instanceof SQLServerDialect) {
             return true;
         }
         if (dialect instanceof DerbyDialect) {
@@ -229,8 +229,8 @@ public class Dialect {
         if (dialect instanceof PostgreSQLDialect) {
             return false;
         }
-        if (dialect instanceof MySQLDialect ||
-                dialect instanceof SQLServerDialect) {
+        if (dialect instanceof MySQLDialect
+                || dialect instanceof SQLServerDialect) {
             return true;
         }
         // not reached
@@ -238,8 +238,8 @@ public class Dialect {
     }
 
     public boolean needsOrderByKeysAfterDistinct() {
-        return dialect instanceof PostgreSQLDialect ||
-                dialect instanceof H2Dialect;
+        return dialect instanceof PostgreSQLDialect
+                || dialect instanceof H2Dialect;
     }
 
     /**
@@ -416,6 +416,288 @@ public class Dialect {
 
         // this is needed by Java 6
         public void free() {
+        }
+    }
+
+    /**
+     * Gets the additional statements to execute (stored procedures and
+     * triggers) when creating the database.
+     */
+    public Collection<ConditionalStatement> getConditionalStatements(
+            Model model, Database database) {
+        List<ConditionalStatement> statements = new LinkedList<ConditionalStatement>();
+        if ("Apache Derby".equals(databaseName)) {
+            DerbyStoredProcedureInfoMaker maker = new DerbyStoredProcedureInfoMaker(
+                    model, database);
+            statements.add(maker.makeInTree());
+            statements.add(maker.makeAccessAllowed());
+        } else if ("H2".equals(databaseName)) {
+            H2StoredProcedureInfoMaker maker = new H2StoredProcedureInfoMaker(
+                    model, database);
+            statements.add(maker.makeInTree());
+            statements.add(maker.makeAccessAllowed());
+        } else if ("PostgreSQL".equals(databaseName)) {
+            PostgreSQLstoredProcedureInfoMaker maker = new PostgreSQLstoredProcedureInfoMaker(
+                    model, database);
+            statements.add(maker.makeInTree());
+            statements.add(maker.makeAccessAllowed());
+        }
+        return statements;
+    }
+
+    /**
+     * Class holding info about a conditional statement whose execution may
+     * depend on a preceding one to check if it's needed.
+     */
+    public static class ConditionalStatement {
+
+        /**
+         * Does this have to be executed early or late?
+         */
+        public final boolean early;
+
+        /**
+         * If {@code TRUE}, then always to the {@link #preStatement}, if {@code
+         * FALSE} never do it, if {@code null} then use {@link #checkStatement}
+         * to decide.
+         */
+        public final Boolean doPre;
+
+        /**
+         * If this returns something, then do the {@link #preStatement}.
+         */
+        public final String checkStatement;
+
+        /**
+         * Statement to execute before the actual statement.
+         */
+        public final String preStatement;
+
+        /**
+         * Main statement.
+         */
+        public final String statement;
+
+        public ConditionalStatement(boolean early, Boolean doPre,
+                String checkStatement, String preStatement, String statement) {
+            this.early = early;
+            this.doPre = doPre;
+            this.checkStatement = checkStatement;
+            this.preStatement = preStatement;
+            this.statement = statement;
+        }
+    }
+
+    public class DerbyStoredProcedureInfoMaker {
+
+        private final String idType;
+
+        private final String methodSuffix;
+
+        private final String className = "org.nuxeo.ecm.core.storage.sql.db.DerbyFunctions";
+
+        private final Model model;
+
+        private final Database database;
+
+        public DerbyStoredProcedureInfoMaker(Model model, Database database) {
+            this.model = model;
+            this.database = database;
+            switch (model.idGenPolicy) {
+            case APP_UUID:
+                idType = "VARCHAR(36)";
+                methodSuffix = "String";
+                break;
+            case DB_IDENTITY:
+                idType = "INTEGER";
+                methodSuffix = "Long";
+                break;
+            default:
+                throw new AssertionError(model.idGenPolicy);
+            }
+        }
+
+        public ConditionalStatement makeInTree() {
+            return makeFunction("NX_IN_TREE",
+                    "(ID %s, BASEID %<s) RETURNS SMALLINT", "isInTree"
+                            + methodSuffix, "READS SQL DATA");
+        }
+
+        public ConditionalStatement makeAccessAllowed() {
+            return makeFunction(
+                    "NX_ACCESS_ALLOWED",
+                    "(ID %s, PRINCIPALS VARCHAR(10000), PERMISSIONS VARCHAR(10000)) RETURNS SMALLINT",
+                    "isAccessAllowed" + methodSuffix, "READS SQL DATA");
+        }
+
+        protected ConditionalStatement makeFunction(String functionName,
+                String proto, String methodName, String info) {
+            proto = String.format(proto, idType);
+            return new ConditionalStatement(
+                    true, // early
+                    null, // do a drop check
+                    String.format(
+                            "SELECT ALIAS FROM SYS.SYSALIASES WHERE ALIAS = '%s' AND ALIASTYPE = 'F'",
+                            functionName), //
+                    String.format("DROP FUNCTION %s", functionName), //
+                    String.format("CREATE FUNCTION %s%s " //
+                            + "LANGUAGE JAVA " //
+                            + "PARAMETER STYLE JAVA " //
+                            + "EXTERNAL NAME '%s.%s' " //
+                            + "%s", //
+                            functionName, proto, //
+                            className, methodName, info));
+        }
+
+        public ConditionalStatement makeTrigger(String triggerName, String body) {
+            return new ConditionalStatement(
+                    false, // late
+                    null, // do a drop check
+                    String.format(
+                            "SELECT TRIGGERNAME FROM SYS.SYSTRIGGERS WHERE TRIGGERNAME = '%s'",
+                            triggerName), //
+                    String.format("DROP TRIGGER %s", triggerName), //
+                    String.format("CREATE TRIGGER %s %s", triggerName, body));
+
+        }
+    }
+
+    public class H2StoredProcedureInfoMaker {
+
+        private final String methodSuffix;
+
+        private static final String h2Functions = "org.nuxeo.ecm.core.storage.sql.db.H2Functions";
+
+        private final Model model;
+
+        private final Database database;
+
+        public H2StoredProcedureInfoMaker(Model model, Database database) {
+            this.model = model;
+            this.database = database;
+            switch (model.idGenPolicy) {
+            case APP_UUID:
+                methodSuffix = "String";
+                break;
+            case DB_IDENTITY:
+                methodSuffix = "Long";
+                break;
+            default:
+                throw new AssertionError(model.idGenPolicy);
+            }
+        }
+
+        public ConditionalStatement makeInTree() {
+            return makeFunction("NX_IN_TREE", "isInTree" + methodSuffix);
+        }
+
+        public ConditionalStatement makeAccessAllowed() {
+            return makeFunction("NX_ACCESS_ALLOWED", "isAccessAllowed"
+                    + methodSuffix);
+        }
+
+        protected ConditionalStatement makeFunction(String functionName,
+                String methodName) {
+            return new ConditionalStatement( //
+                    true, // early
+                    Boolean.TRUE, // always drop
+                    null, //
+                    String.format("DROP ALIAS IF EXISTS %s", functionName), //
+                    String.format("CREATE ALIAS %s FOR \"%s.%s\"",
+                            functionName, h2Functions, methodName));
+        }
+    }
+
+    public class PostgreSQLstoredProcedureInfoMaker {
+
+        private final String idType;
+
+        private final Model model;
+
+        private final Database database;
+
+        public PostgreSQLstoredProcedureInfoMaker(Model model, Database database) {
+            this.model = model;
+            this.database = database;
+            switch (model.idGenPolicy) {
+            case APP_UUID:
+                idType = "varchar(36)";
+                break;
+            case DB_IDENTITY:
+                idType = "integer";
+                break;
+            default:
+                throw new AssertionError(model.idGenPolicy);
+            }
+        }
+
+        public ConditionalStatement makeInTree() {
+            return new ConditionalStatement(
+                    true, // early
+                    Boolean.FALSE, // no drop needed
+                    null, //
+                    null, //
+                    String.format(
+                            "CREATE OR REPLACE FUNCTION NX_IN_TREE(id %s, baseid %<s) " //
+                                    + "RETURNS boolean " //
+                                    + "AS $$ " //
+                                    + "DECLARE" //
+                                    + "  curid %<s := id; " //
+                                    + "BEGIN" //
+                                    + "  IF baseid IS NULL OR id IS NULL OR baseid = id THEN" //
+                                    + "    RETURN false;" //
+                                    + "  END IF;" //
+                                    + "  LOOP" //
+                                    + "    SELECT parentid INTO curid FROM hierarchy WHERE hierarchy.id = curid;" //
+                                    + "    IF curid IS NULL THEN" //
+                                    + "      RETURN false; " //
+                                    + "    ELSIF curid = baseid THEN" //
+                                    + "      RETURN true;" //
+                                    + "    END IF;" //
+                                    + "  END LOOP;" //
+                                    + "END " //
+                                    + "$$ " //
+                                    + "LANGUAGE plpgsql " //
+                                    + "STABLE " //
+                            , idType));
+        }
+
+        public ConditionalStatement makeAccessAllowed() {
+            return new ConditionalStatement(
+                    true, // early
+                    Boolean.FALSE, // no drop needed
+                    null, //
+                    null, //
+                    String.format(
+                            "CREATE OR REPLACE FUNCTION NX_ACCESS_ALLOWED" //
+                                    + "(id %s, users varchar[], permissions varchar[]) " //
+                                    + "RETURNS boolean " //
+                                    + "AS $$ " //
+                                    + "DECLARE" //
+                                    + "  curid %<s := id;" //
+                                    + "  newid %<s;" //
+                                    + "  r record;" //
+                                    + "  first boolean := true;" //
+                                    + "BEGIN" //
+                                    + "  WHILE curid IS NOT NULL LOOP" //
+                                    + "    FOR r in SELECT acls.grant, acls.permission, acls.user FROM acls WHERE acls.id = curid ORDER BY acls.pos LOOP"
+                                    + "      IF r.permission = ANY(permissions) AND r.user = ANY(users) THEN" //
+                                    + "        RETURN r.grant;" //
+                                    + "      END IF;" //
+                                    + "    END LOOP;" //
+                                    + "    SELECT parentid INTO newid FROM hierarchy WHERE hierarchy.id = curid;" //
+                                    + "    IF first AND newid IS NULL THEN" //
+                                    + "      SELECT versionableid INTO newid FROM versions WHERE versions.id = curid;" //
+                                    + "    END IF;" //
+                                    + "    first := false;" //
+                                    + "    curid := newid;" //
+                                    + "  END LOOP;" //
+                                    + "  RETURN false; " //
+                                    + "END " //
+                                    + "$$ " //
+                                    + "LANGUAGE plpgsql " //
+                                    + "STABLE " //
+                            , idType));
         }
     }
 

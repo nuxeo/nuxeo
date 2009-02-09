@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -68,10 +69,14 @@ public class SQLBackendHelper {
      * ----- H2 configuration -----
      */
 
-    /* Constants mentioned in the ...-h2-contrib.xml file: */
+    /** This property is mentioned in the ...-h2-contrib.xml file. */
+    protected static final String H2_PATH_PROPERTY = "nuxeo.test.h2.path";
 
-    /** This directory will be deleted and recreated. */
-    protected static final String H2_PATH = "/tmp/nxsqltests-h2/nuxeo";
+    private static File h2TempDir;
+
+    private static String h2Path;
+
+    protected static final boolean H2_DELETE_ON_TEARDOWN = true;
 
     protected static final String H2_DATABASE_USER = "sa";
 
@@ -203,21 +208,30 @@ public class SQLBackendHelper {
      * ----- H2 -----
      */
 
-    protected static void setUpRepositoryH2() {
-        File parent = new File(H2_PATH).getParentFile();
-        FileUtils.deleteTree(parent);
-        parent.mkdirs();
+    protected static void setUpRepositoryH2() throws IOException {
+        h2TempDir = File.createTempFile("nxsqltests-h2-", null);
+        h2TempDir.delete();
+        h2TempDir.mkdir();
+        h2Path = new File(h2TempDir, "nuxeo").getAbsolutePath();
+        // this property is mentioned in the ...-h2-contrib.xml file
+        // it will be expanded by RepositoryImpl.getXADataSource
+        System.setProperty(H2_PATH_PROPERTY, h2Path);
     }
 
     protected static void tearDownRepositoryH2() throws Exception {
         Connection connection = DriverManager.getConnection(String.format(
-                "jdbc:h2:%s", H2_PATH), H2_DATABASE_USER, H2_DATABASE_PASSWORD);
+                "jdbc:h2:%s", h2Path), H2_DATABASE_USER, H2_DATABASE_PASSWORD);
         Statement st = connection.createStatement();
         String sql = "SHUTDOWN";
-        log.debug(sql);
+        log.trace(sql);
         st.execute(sql);
         st.close();
-        // no connection.close() as everything was shutdown
+        connection.close();
+        if (H2_DELETE_ON_TEARDOWN) {
+            FileUtils.deleteTree(h2TempDir);
+        }
+        h2TempDir = null;
+        h2Path = null;
     }
 
     /*

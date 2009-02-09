@@ -45,7 +45,10 @@ import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.QueryResult;
 import org.nuxeo.ecm.core.query.UnsupportedQueryTypeException;
+import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.query.sql.SQLQueryParser;
+import org.nuxeo.ecm.core.query.sql.model.OrderByExpr;
+import org.nuxeo.ecm.core.query.sql.model.OrderByList;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
@@ -354,9 +357,30 @@ public class SQLSession implements Session {
         public QueryResult execute(QueryFilter queryFilter, boolean countTotal)
                 throws QueryException {
             try {
-                PartialList<Serializable> lwts = session.query(sqlQuery,
+                SQLQuery query = sqlQuery;
+                Boolean orderByPath = null;
+                long limit = 0;
+                long offset = 0;
+                if (sqlQuery.orderBy != null) {
+                    OrderByList orderByList = sqlQuery.orderBy.elements;
+                    if (orderByList.size() == 1) {
+                        OrderByExpr orderBy = orderByList.get(0);
+                        if (NXQL.ECM_PATH.equals(orderBy.reference.name)) {
+                            // do ORDER BY ecm:path "by hand"
+                            orderByPath = Boolean.valueOf(!orderBy.isDescending);
+                            query = new SQLQuery(sqlQuery.select,
+                                    sqlQuery.from, sqlQuery.where, null);
+                            query.setLimit(0);
+                            query.setOffset(0);
+                            limit = sqlQuery.getLimit();
+                            offset = sqlQuery.getOffset();
+                        }
+                    }
+                }
+                PartialList<Serializable> list = session.query(query,
                         queryFilter, countTotal);
-                return new SQLQueryResult(SQLSession.this, lwts.list, lwts.totalSize);
+                return new SQLQueryResult(SQLSession.this, list, orderByPath,
+                        limit, offset);
             } catch (StorageException e) {
                 throw new QueryException(e.getMessage(), e);
             }

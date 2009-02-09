@@ -45,4 +45,9 @@ public class TestSQLRepositoryQuery extends QueryTestCase {
     public void testSQLFulltextBlob() throws Exception {
         // fulltext disabled
     }
+
+    @Override
+    public void testFullTextCopy() throws Exception {
+        // fulltext disabled
+    }
 }

@@ -192,6 +192,12 @@ public class Model {
 
     public static final String LOCK_KEY = "lock";
 
+    /** Special (non-schema-based) simple fragments present in all types. */
+    public static final String[] COMMON_SIMPLE_FRAGMENTS = new String[] { MISC_TABLE_NAME };
+
+    /** Special (non-schema-based) collection fragments present in all types. */
+    public static final String[] COMMON_COLLECTION_FRAGMENTS = new String[] { ACL_TABLE_NAME };
+
     public static class PropertyInfo {
 
         public final PropertyType propertyType;
@@ -220,7 +226,7 @@ public class Model {
     private final BinaryManager binaryManager;
 
     /** The id generation policy. */
-    protected final IdGenPolicy idGenPolicy;
+    public final IdGenPolicy idGenPolicy;
 
     /** Is the hierarchy table separate from the main table. */
     protected final boolean separateMainTable;
@@ -646,10 +652,12 @@ public class Model {
                 }
             }
             inferTypePropertyInfos(typeName, documentType.getSchemaNames());
-            // all documents have ACLs too
-            addTypeCollectionFragment(typeName, ACL_TABLE_NAME);
-            // all documents have MISC too
-            addTypeCollectionFragment(typeName, MISC_TABLE_NAME);
+            for (String fragmentName : COMMON_SIMPLE_FRAGMENTS) {
+                addTypeSimpleFragment(typeName, fragmentName);
+            }
+            for (String fragmentName : COMMON_COLLECTION_FRAGMENTS) {
+                addTypeCollectionFragment(typeName, fragmentName);
+            }
             log.debug("Fragments for " + typeName + ": " +
                     getTypeFragments(typeName));
 
