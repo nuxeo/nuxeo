@@ -42,6 +42,8 @@
     <module>nuxeo-platform-userworkspace</module>
     <module>nuxeo-platform-virtualnavigation</module>
     <module>nuxeo-platform-webdav-server</module>
+    <module>nuxeo-platform-nxwss</module>
+    <module>nuxeo-platform-nxwss-rootfilter</module>
     <module>nuxeo-platform-webwidgets-providers</module>
     <module>nuxeo-platform-xmlrpc-connector</module>
     <module>nuxeo-portlets</module>
