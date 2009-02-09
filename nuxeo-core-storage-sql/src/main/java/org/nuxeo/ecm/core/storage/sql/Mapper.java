@@ -441,6 +441,7 @@ public class Mapper {
                 }
                 return id;
             } finally {
+                // http://bugs.mysql.com/35489 with JDBC 4 and driver <= 5.1.6
                 ps.close();
             }
         } catch (SQLException e) {

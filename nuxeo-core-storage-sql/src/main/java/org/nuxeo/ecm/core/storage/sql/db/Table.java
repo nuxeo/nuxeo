@@ -57,6 +57,20 @@ public interface Table extends Serializable {
     void addIndex(String... columnNames);
 
     /**
+     * Adds a fulltext index on one or several columns.
+     *
+     * @param columnNames the column names
+     */
+    void addFulltextIndex(String... columnNames);
+
+    /**
+     * Checks if the table has some fulltext indexes.
+     *
+     * @return {@code true} if the table has some fulltext indexes
+     */
+    boolean hasFulltextIndex();
+
+    /**
      * Computes the SQL statement to create the table.
      *
      * @return the SQL create string.

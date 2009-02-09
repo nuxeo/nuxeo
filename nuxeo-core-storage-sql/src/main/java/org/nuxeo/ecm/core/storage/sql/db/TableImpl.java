@@ -50,6 +50,9 @@ public class TableImpl implements Table {
     /** Logical names of indexed columns. */
     private final List<String[]> indexedColumns;
 
+    /** Those of the indexed columns that concern fulltext. */
+    private final List<String[]> fulltextIndexedColumns;
+
     /**
      * Creates a new empty table.
      */
@@ -60,6 +63,7 @@ public class TableImpl implements Table {
         // we use a LinkedHashMap to have deterministic ordering
         columns = new LinkedHashMap<String, Column>();
         indexedColumns = new LinkedList<String[]>();
+        fulltextIndexedColumns = new LinkedList<String[]>();
     }
 
     public Dialect getDialect() {
@@ -111,6 +115,15 @@ public class TableImpl implements Table {
         indexedColumns.add(columnNames);
     }
 
+    public void addFulltextIndex(String... columnNames) {
+        indexedColumns.add(columnNames);
+        fulltextIndexedColumns.add(columnNames);
+    }
+
+    public boolean hasFulltextIndex() {
+        return !fulltextIndexedColumns.isEmpty();
+    }
+
     /**
      * Computes the SQL statement to create the table.
      *
@@ -130,7 +143,7 @@ public class TableImpl implements Table {
         // unique
         // check
         buf.append(')');
-        buf.append(dialect.getTableTypeString());
+        buf.append(dialect.getTableTypeString(this));
         return buf.toString();
     }
 
@@ -233,6 +246,7 @@ public class TableImpl implements Table {
             }
         }
         for (String[] columnNames : indexedColumns) {
+            boolean fulltext = fulltextIndexedColumns.contains(columnNames);
             List<String> qcols = new LinkedList<String>();
             List<String> pcols = new LinkedList<String>();
             for (String name : columnNames) {
@@ -248,6 +262,9 @@ public class TableImpl implements Table {
             StringBuilder buf = new StringBuilder();
             buf.append("CREATE");
             // buf.append(unique ? " UNIQUE" : "");
+            if (fulltext) {
+                buf.append(dialect.getFulltextIndexEarlyModifier());
+            }
             buf.append(" INDEX ");
             buf.append(indexName);
             buf.append(" ON ");

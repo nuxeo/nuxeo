@@ -100,6 +100,14 @@ public class TableAlias implements Table {
         throw new UnsupportedOperationException();
     }
 
+    public void addFulltextIndex(String... columnNames) {
+        throw new UnsupportedOperationException();
+    }
+
+    public boolean hasFulltextIndex() {
+        throw new UnsupportedOperationException();
+    }
+
     public String getCreateSql() {
         throw new UnsupportedOperationException();
     }

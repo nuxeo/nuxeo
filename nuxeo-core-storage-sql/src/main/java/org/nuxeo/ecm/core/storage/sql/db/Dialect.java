@@ -177,6 +177,16 @@ public class Dialect {
     }
 
     /**
+     * Gets the modifier between CREATE and INDEX to create a fulltext index.
+     */
+    public String getFulltextIndexEarlyModifier() {
+        if (dialect instanceof MySQLDialect) {
+            return " FULLTEXT";
+        }
+        return "";
+    }
+
+    /**
      * Gets the type of a fulltext column has known by JDBC.
      * <p>
      * This is used for setNull.
@@ -224,8 +234,12 @@ public class Dialect {
         return dialect.getNullColumnString();
     }
 
-    // this is just for MySQL to add its ENGINE=InnoDB
-    public String getTableTypeString() {
+    public String getTableTypeString(Table table) {
+        if (dialect instanceof MySQLDialect && table.hasFulltextIndex()) {
+            // the fulltext table in MySQL needs to be MyISAM, doh!
+            return " ENGINE=MyISAM";
+        }
+        // this is just for MySQL to add its ENGINE=InnoDB
         return dialect.getTableTypeString();
     }
 
@@ -391,6 +405,10 @@ public class Dialect {
         if (dialect instanceof PostgreSQLDialect) {
             String whereExpr = String.format("NX_CONTAINS(%s, ?)",
                     ftColumn.getFullQuotedName());
+            return new String[] { null, null, whereExpr, fulltextQuery };
+        }
+        if (dialect instanceof MySQLDialect) {
+            String whereExpr = "MATCH (`fulltext`.`simpletext`, `fulltext`.`binarytext`) AGAINST (?)";
             return new String[] { null, null, whereExpr, fulltextQuery };
         }
         throw new UnsupportedOperationException();

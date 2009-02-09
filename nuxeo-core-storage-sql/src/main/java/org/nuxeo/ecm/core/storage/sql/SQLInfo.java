@@ -450,6 +450,13 @@ public class SQLInfo {
         selectProxiesByTargetAndParent = makeSelect(table,
                 new String[] { model.PROXY_TARGET_KEY }, hierTable,
                 new String[] { model.HIER_PARENT_KEY });
+
+        /*
+         * fulltext
+         */
+        table = database.getTable(model.FULLTEXT_TABLE_NAME);
+        table.addFulltextIndex(model.FULLTEXT_SIMPLETEXT_KEY,
+                model.FULLTEXT_BINARYTEXT_KEY);
     }
 
     /**
