@@ -316,8 +316,8 @@ public class SQLInfo {
         Column mainColumn = table.getColumn(model.MAIN_KEY);
         for (String key : keys) {
             Column column = table.getColumn(key);
-            values.add(column.getQuotedName() + " = " +
-                    column.getFreeVariableSetter());
+            values.add(column.getQuotedName() + " = "
+                    + column.getFreeVariableSetter());
             columns.add(column);
         }
         columns.add(mainColumn);
@@ -332,13 +332,13 @@ public class SQLInfo {
         List<String> values = new ArrayList<String>(keys.size());
         for (String key : keys) {
             Column column = table.getColumn(key);
-            values.add(column.getQuotedName() + " = " +
-                    column.getFreeVariableSetter());
+            values.add(column.getQuotedName() + " = "
+                    + column.getFreeVariableSetter());
         }
         Update update = new Update(table);
         update.setNewValues(StringUtils.join(values, ", "));
-        update.setWhere(table.getColumn(model.MAIN_KEY).getQuotedName() +
-                " = ?");
+        update.setWhere(table.getColumn(model.MAIN_KEY).getQuotedName()
+                + " = ?");
         return update;
     }
 
@@ -410,8 +410,8 @@ public class SQLInfo {
             if (tableName.equals(model.HIER_TABLE_NAME)) {
                 continue;
             }
-            if (tableName.equals(model.MAIN_TABLE_NAME) &&
-                    !model.separateMainTable) {
+            if (tableName.equals(model.MAIN_TABLE_NAME)
+                    && !model.separateMainTable) {
                 // merged into already-generated hierarchy
                 continue;
             }
@@ -597,8 +597,8 @@ public class SQLInfo {
 
         protected void newPrimitiveField(String key, PropertyType type) {
             // TODO find a way to put these exceptions in model
-            if (tableName.equals(model.VERSION_TABLE_NAME) &&
-                    key.equals(model.VERSION_VERSIONABLE_KEY)) {
+            if (tableName.equals(model.VERSION_TABLE_NAME)
+                    && key.equals(model.VERSION_VERSIONABLE_KEY)) {
                 newMainKeyReference(key, true);
                 return;
             }
@@ -617,14 +617,14 @@ public class SQLInfo {
             switch (type) {
             case STRING:
                 // hack, make this more configurable
-                if (tableName.equals(model.VERSION_TABLE_NAME) &&
-                        key.equals(model.VERSION_LABEL_KEY)) {
+                if (tableName.equals(model.VERSION_TABLE_NAME)
+                        && key.equals(model.VERSION_LABEL_KEY)) {
                     // these are columns that need to be searchable, as some
                     // databases (Derby) don't allow matches on CLOB columns
                     sqlType = Types.VARCHAR;
-                } else if (tableName.equals(model.mainTableName) ||
-                        tableName.equals(model.ACL_TABLE_NAME) ||
-                        tableName.equals(model.MISC_TABLE_NAME)) {
+                } else if (tableName.equals(model.mainTableName)
+                        || tableName.equals(model.ACL_TABLE_NAME)
+                        || tableName.equals(model.MISC_TABLE_NAME)) {
                     // or VARCHAR for system tables // TODO size?
                     sqlType = Types.VARCHAR;
                 } else if (tableName.equals(model.FULLTEXT_TABLE_NAME)) {
@@ -752,8 +752,8 @@ public class SQLInfo {
             for (Column column : table.getColumns()) {
                 String key = column.getKey();
                 String qname = column.getQuotedName();
-                if (key.equals(model.HIER_PARENT_KEY) ||
-                        key.equals(model.HIER_CHILD_NAME_KEY)) {
+                if (key.equals(model.HIER_PARENT_KEY)
+                        || key.equals(model.HIER_CHILD_NAME_KEY)) {
                     wheres.add(qname + " = ?");
                     whereColumns.add(column);
                 } else {
@@ -779,16 +779,16 @@ public class SQLInfo {
             for (Column column : table.getColumns()) {
                 String key = column.getKey();
                 String qname = column.getQuotedName();
-                if (key.equals(model.HIER_PARENT_KEY) ||
-                        key.equals(model.HIER_CHILD_NAME_KEY)) {
+                if (key.equals(model.HIER_PARENT_KEY)
+                        || key.equals(model.HIER_CHILD_NAME_KEY)) {
                     wheresRegular.add(qname + " = ?");
                     wheresProperties.add(qname + " = ?");
                     whereColumns.add(column);
                 } else if (key.equals(model.HIER_CHILD_ISPROPERTY_KEY)) {
-                    wheresRegular.add(qname + " = " +
-                            dialect.toBooleanValueString(false));
-                    wheresProperties.add(qname + " = " +
-                            dialect.toBooleanValueString(true));
+                    wheresRegular.add(qname + " = "
+                            + dialect.toBooleanValueString(false));
+                    wheresProperties.add(qname + " = "
+                            + dialect.toBooleanValueString(true));
                 } else {
                     whats.add(qname);
                     whatColumns.add(column);
@@ -823,15 +823,15 @@ public class SQLInfo {
             Select select = new Select(table);
             select.setWhat(StringUtils.join(whats, ", "));
             select.setFrom(table.getQuotedName());
-            String where = table.getColumn(model.HIER_PARENT_KEY).getQuotedName() +
-                    " = ?";
+            String where = table.getColumn(model.HIER_PARENT_KEY).getQuotedName()
+                    + " = ?";
             select.setWhere(where);
             selectChildrenIdsAndTypesSql = select.getStatement();
             selectChildrenIdsAndTypesWhatColumns = whatColumns;
             // now only complex properties
-            where += " AND " +
-                    table.getColumn(model.HIER_CHILD_ISPROPERTY_KEY).getQuotedName() +
-                    " = " + dialect.toBooleanValueString(true);
+            where += " AND "
+                    + table.getColumn(model.HIER_CHILD_ISPROPERTY_KEY).getQuotedName()
+                    + " = " + dialect.toBooleanValueString(true);
             select.setWhere(where);
             selectComplexChildrenIdsAndTypesSql = select.getStatement();
         }
@@ -902,8 +902,8 @@ public class SQLInfo {
                 insert.addColumn(column);
                 String quotedName = column.getQuotedName();
                 String key = column.getKey();
-                if (key.equals(model.MAIN_KEY) ||
-                        key.equals(model.HIER_PARENT_KEY)) {
+                if (key.equals(model.MAIN_KEY)
+                        || key.equals(model.HIER_PARENT_KEY)) {
                     // explicit id/parent value (id if not identity column)
                     selectWhats.add("?");
                     copyHierColumns.add(column);
@@ -918,8 +918,8 @@ public class SQLInfo {
                     copyHierColumnsExplicitName.add(column);
                     // version creation copies name
                     selectWhatsCreateVersion.add(quotedName);
-                } else if (key.equals(model.MAIN_BASE_VERSION_KEY) ||
-                        key.equals(model.MAIN_CHECKED_IN_KEY)) {
+                } else if (key.equals(model.MAIN_BASE_VERSION_KEY)
+                        || key.equals(model.MAIN_CHECKED_IN_KEY)) {
                     selectWhats.add(quotedName);
                     selectWhatsExplicitName.add(quotedName);
                     // version creation sets those null
@@ -1066,8 +1066,9 @@ public class SQLInfo {
         List<Column> opaqueColumns = new LinkedList<Column>();
         List<String> whats = new LinkedList<String>();
         List<String> wheres = new LinkedList<String>();
-        String join = table.getColumn(model.MAIN_KEY).getFullQuotedName() +
-                " = " + joinTable.getColumn(model.MAIN_KEY).getFullQuotedName();
+        String join = table.getColumn(model.MAIN_KEY).getFullQuotedName()
+                + " = "
+                + joinTable.getColumn(model.MAIN_KEY).getFullQuotedName();
         wheres.add(join);
         for (Column column : table.getColumns()) {
             String qname = column.getFullQuotedName();
