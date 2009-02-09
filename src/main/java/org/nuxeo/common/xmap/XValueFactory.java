@@ -204,7 +204,7 @@ public abstract class XValueFactory {
 
         public String serialize(Context context, Object value) {
             Class<?> clazz = (Class<?>) value;
-            return clazz.toString();
+            return clazz.getName();
         }
     };
 
