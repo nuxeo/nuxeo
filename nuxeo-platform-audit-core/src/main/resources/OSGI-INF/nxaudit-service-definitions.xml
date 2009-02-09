@@ -54,9 +54,6 @@
 
     <object class="org.nuxeo.ecm.platform.audit.service.extension.EventDescriptor" />
 
-    <event name="loginSuccess" />
-    <event name="loginFailed" />
-    <event name="logout" />
   </extension-point>
 
   <extension-point name="extendedInfo">
