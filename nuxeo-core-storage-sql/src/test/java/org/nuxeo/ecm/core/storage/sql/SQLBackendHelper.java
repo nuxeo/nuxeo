@@ -40,7 +40,7 @@ public class SQLBackendHelper {
 
     private static final Log log = LogFactory.getLog(SQLBackendHelper.class);
 
-    protected static enum Database {
+    public static enum Database {
         DERBY, //
         H2, //
         MYSQL, //

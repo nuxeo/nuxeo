@@ -839,6 +839,7 @@ class DummyXid implements Xid {
     }
 
     public byte[] getBranchQualifier() {
-        return new byte[0];
+        // MySQL JDBC driver crashes on 0-length branch qualifier, doh!
+        return new byte[] { 0 };
     }
 }

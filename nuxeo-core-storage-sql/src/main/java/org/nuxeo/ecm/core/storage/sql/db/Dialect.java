@@ -33,6 +33,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.dialect.DerbyDialect;
 import org.hibernate.dialect.DialectFactory;
 import org.hibernate.dialect.H2Dialect;
+import org.hibernate.dialect.MySQL5InnoDBDialect;
 import org.hibernate.dialect.MySQLDialect;
 import org.hibernate.dialect.PostgreSQLDialect;
 import org.hibernate.dialect.SQLServerDialect;
@@ -87,6 +88,12 @@ public class Dialect {
                 throw new StorageException("Cannot instantiate dialect for: "
                         + connection, e);
             }
+        } else if ("MySQL".equals(databaseName)) {
+            if (databaseMajor != 5) {
+                throw new StorageException(String.format(
+                        "MySQL version %s is not supported", databaseMajor));
+            }
+            dialect = new MySQL5InnoDBDialect();
         } else {
             try {
                 dialect = DialectFactory.determineDialect(databaseName,
@@ -562,6 +569,13 @@ public class Dialect {
             statements.add(maker.makeContainsFullText());
             statements.add(maker.makeConsolidateFullText());
             statements.add(maker.makeFTTrigger());
+        } else if ("MySQL".equals(databaseName)) {
+            MySQLstoredProcedureInfoMaker maker = new MySQLstoredProcedureInfoMaker(
+                    model, database);
+            // statements.add(maker.makeDebugTable());
+            // statements.add(maker.makeNxDebug());
+            statements.add(maker.makeInTree());
+            statements.add(maker.makeAccessAllowed());
         }
         return statements;
     }
@@ -860,7 +874,7 @@ public class Dialect {
                                     + "    SELECT parentid INTO curid FROM hierarchy WHERE hierarchy.id = curid;" //
                                     + "    IF curid IS NULL THEN" //
                                     + "      RETURN false; " //
-                                    + "    ELSIF curid = baseid THEN" //
+                                    + "    ELSEIF curid = baseid THEN" //
                                     + "      RETURN true;" //
                                     + "    END IF;" //
                                     + "  END LOOP;" //
@@ -983,6 +997,131 @@ public class Dialect {
                                     + "VOLATILE " //
                             , ftft.getQuotedName(), ftst.getQuotedName(),
                             ftbt.getQuotedName()));
+        }
+    }
+
+    public class MySQLstoredProcedureInfoMaker {
+
+        private final String idType;
+
+        private final Model model;
+
+        private final Database database;
+
+        public MySQLstoredProcedureInfoMaker(Model model, Database database) {
+            this.model = model;
+            this.database = database;
+            switch (model.idGenPolicy) {
+            case APP_UUID:
+                idType = "varchar(36)";
+                break;
+            case DB_IDENTITY:
+                idType = "integer";
+                break;
+            default:
+                throw new AssertionError(model.idGenPolicy);
+            }
+        }
+
+        public ConditionalStatement makeDebugTable() {
+            return new ConditionalStatement(
+                    true, // early
+                    Boolean.TRUE, // always drop
+                    null, //
+                    "DROP TABLE IF EXISTS NX_DEBUG_TABLE", //
+                    "CREATE TABLE NX_DEBUG_TABLE (id INTEGER AUTO_INCREMENT PRIMARY KEY, log VARCHAR(10000))");
+        }
+
+        public ConditionalStatement makeNxDebug() {
+            return new ConditionalStatement(
+                    true, // early
+                    Boolean.TRUE, // always drop
+                    null, //
+                    "DROP PROCEDURE IF EXISTS NX_DEBUG", //
+                    String.format("CREATE PROCEDURE NX_DEBUG(line VARCHAR(10000)) " //
+                            + "LANGUAGE SQL " //
+                            + "BEGIN " //
+                            + "  INSERT INTO NX_DEBUG_TABLE (log) values (line);" //
+                            + "END" //
+                    ));
+        }
+
+        public ConditionalStatement makeInTree() {
+            return new ConditionalStatement(
+                    true, // early
+                    Boolean.TRUE, // always drop
+                    null, //
+                    "DROP FUNCTION IF EXISTS NX_IN_TREE", //
+                    String.format(
+                            "CREATE FUNCTION NX_IN_TREE(id %s, baseid %<s) " //
+                                    + "RETURNS BOOLEAN " //
+                                    + "LANGUAGE SQL " //
+                                    + "READS SQL DATA " //
+                                    + "BEGIN" //
+                                    + "  DECLARE curid %<s DEFAULT id;" //
+                                    + "  IF baseid IS NULL OR id IS NULL OR baseid = id THEN" //
+                                    + "    RETURN FALSE;" //
+                                    + "  END IF;" //
+                                    + "  LOOP" //
+                                    + "    SELECT parentid INTO curid FROM hierarchy WHERE hierarchy.id = curid;" //
+                                    + "    IF curid IS NULL THEN" //
+                                    + "      RETURN FALSE; " //
+                                    + "    ELSEIF curid = baseid THEN" //
+                                    + "      RETURN TRUE;" //
+                                    + "    END IF;" //
+                                    + "  END LOOP;" //
+                                    + "END" //
+                            , idType));
+        }
+
+        public ConditionalStatement makeAccessAllowed() {
+            return new ConditionalStatement(
+                    true, // early
+                    Boolean.TRUE, // always drop
+                    null, //
+                    "DROP FUNCTION IF EXISTS NX_ACCESS_ALLOWED", //
+                    String.format(
+                            "CREATE FUNCTION NX_ACCESS_ALLOWED" //
+                                    + "(id %s, users VARCHAR(10000), perms VARCHAR(10000)) " //
+                                    + "RETURNS BOOLEAN " //
+                                    + "BEGIN" //
+                                    + "  DECLARE allusers VARCHAR(10000) DEFAULT CONCAT('|',users,'|');" //
+                                    + "  DECLARE allperms VARCHAR(10000) DEFAULT CONCAT('|',perms,'|');" //
+                                    + "  DECLARE first BOOLEAN DEFAULT TRUE;" //
+                                    + "  DECLARE curid %<s DEFAULT id;" //
+                                    + "  DECLARE newid %<s;" //
+                                    + "  DECLARE gr BIT;" //
+                                    + "  DECLARE pe VARCHAR(1000);" //
+                                    + "  DECLARE us VARCHAR(1000);" //
+                                    + "  WHILE curid IS NOT NULL DO" //
+                                    + "    BEGIN" //
+                                    + "      DECLARE done BOOLEAN DEFAULT FALSE;" //
+                                    + "      DECLARE cur CURSOR FOR" //
+                                    + "        SELECT `grant`, `permission`, `user` FROM `acls`" //
+                                    + "        WHERE `acls`.`id` = curid ORDER BY `pos`;" //
+                                    + "      DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;" //
+                                    + "      OPEN cur;" //
+                                    + "      REPEAT " //
+                                    + "        FETCH cur INTO gr, pe, us;" //
+                                    + "        IF NOT done THEN" //
+                                    + "          IF LOCATE(CONCAT('|',us,'|'), allusers) <> 0 AND LOCATE(CONCAT('|',pe,'|'), allperms) <> 0 THEN" //
+                                    + "            CLOSE cur;" //
+                                    + "            RETURN gr;" //
+                                    + "          END IF;" //
+                                    + "        END IF;" //
+                                    + "      UNTIL done END REPEAT;" //
+                                    + "      CLOSE cur;" //
+                                    + "    END;" //
+                                    + "    SELECT parentid INTO newid FROM hierarchy WHERE hierarchy.id = curid;" //
+                                    + "    IF first AND newid IS NULL THEN" //
+                                    + "      SELECT versionableid INTO newid FROM versions WHERE versions.id = curid;" //
+                                    + "    END IF;" //
+                                    + "    SET first = FALSE;" //
+                                    + "    SET curid = newid;" //
+                                    + "  END WHILE;" //
+                                    + "  RETURN FALSE; " //
+                                    + "END" //
+                            , idType));
         }
     }
 

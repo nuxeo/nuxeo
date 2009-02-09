@@ -325,10 +325,12 @@ public class Mapper {
             ResultSet rs = metadata.getColumns(null, null, tableName, "%");
             Map<String, Integer> columnTypes = new HashMap<String, Integer>();
             while (rs.next()) {
-                String schema = rs.getString("TABLE_SCHEM").toUpperCase();
-                if ("INFORMATION_SCHEMA".equals(schema)) {
-                    // H2 returns some system tables (locks)
-                    continue;
+                String schema = rs.getString("TABLE_SCHEM");
+                if (schema != null) { // null for MySQL, doh!
+                    if ("INFORMATION_SCHEMA".equals(schema.toUpperCase())) {
+                        // H2 returns some system tables (locks)
+                        continue;
+                    }
                 }
                 String columnName = rs.getString("COLUMN_NAME").toUpperCase();
                 int sqlType = rs.getInt("DATA_TYPE");
