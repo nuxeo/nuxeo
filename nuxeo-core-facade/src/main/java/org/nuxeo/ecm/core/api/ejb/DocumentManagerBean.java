@@ -53,6 +53,7 @@ import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.RollbackClientException;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.ejb.local.DocumentManagerLocal;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -579,6 +580,7 @@ public class DocumentManagerBean extends AbstractSession implements
             return super.publishDocument(docToPublish, section,
                     overwriteExistingProxy);
         } catch (ClientException e) {
+
             throw new RollbackClientException(e);
         }
     }

@@ -14,17 +14,18 @@
  * Contributors:
  *     arussel
  */
-package org.nuxeo.ecm.core.api.ejb;
-
-import javax.ejb.ApplicationException;
-
-import org.nuxeo.ecm.core.api.ClientException;
+package org.nuxeo.ecm.core.api;
 
 /**
+ * An application that should rollback the transaction if any.
+ *
+ * In an ejb container, the nuxeo-core-api module is package with the
+ * nuxeo-core-facade module. The facade has a ejb-jar.xml that declare this
+ * exception has rollback=true.
+ *
  * @author arussel
  *
  */
-@ApplicationException(rollback = true)
 public class RollbackClientException extends ClientException {
 
     private static final long serialVersionUID = 1L;
