@@ -19,6 +19,7 @@
   
   <properties>
     <nuxeo.ear.assembly>nuxeo</nuxeo.ear.assembly>
+    <nuxeo.ear>${nuxeo.ear.assembly}.ear</nuxeo.ear>
   </properties>
 
   <dependencies>
@@ -554,6 +555,33 @@
     </dependency>
   </dependencies>
 
+  <profiles>
+    <profile>
+      <id>derby</id>
+      <properties>
+        <nuxeo.ear>${nuxeo.ear.assembly}-derby.ear</nuxeo.ear>
+      </properties>
+    </profile>
+    <profile>
+      <id>mysql</id>
+      <properties>
+        <nuxeo.ear>${nuxeo.ear.assembly}-mysql.ear</nuxeo.ear>
+      </properties>
+    </profile>
+    <profile>
+      <id>postgresql</id>
+      <properties>
+        <nuxeo.ear>${nuxeo.ear.assembly}-postgresql.ear</nuxeo.ear>
+      </properties>
+    </profile>
+    <profile>
+      <id>oracle</id>
+      <properties>
+        <nuxeo.ear>${nuxeo.ear.assembly}-oracle.ear</nuxeo.ear>
+      </properties>
+    </profile>
+  </profiles>
+
   <build>
     <plugins>
       <!-- build zip artifacts with resources -->
@@ -576,6 +604,10 @@
               src/main/assemble/resources/web-stateless.xml
             </descriptor>
             <descriptor>src/main/assemble/resources/mono.xml</descriptor>
+            <descriptor>src/main/assemble/resources/db-derby.xml</descriptor>
+            <descriptor>src/main/assemble/resources/db-postgresql.xml</descriptor>
+            <descriptor>src/main/assemble/resources/db-mysql.xml</descriptor>
+            <descriptor>src/main/assemble/resources/db-oracle.xml</descriptor>
           </descriptors>
         </configuration>
         <executions>
@@ -610,7 +642,7 @@
               <runPreprocessor>false</runPreprocessor>
               <format>directory</format>
               <outputDirectory>target</outputDirectory>
-              <targetFile>${nuxeo.ear.assembly}.ear</targetFile>
+              <targetFile>${nuxeo.ear}</targetFile>
               <descriptor>
                 ${basedir}/src/main/assemble/${nuxeo.ear.assembly}.xml
               </descriptor>
@@ -618,29 +650,26 @@
           </execution>
         </executions>
       </plugin>
-      <!--plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>build-helper-maven-plugin</artifactId>
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
         <executions>
-        <execution>
-        <id>attach-artifacts</id>
-        <phase>package</phase>
-        <goals>
-        <goal>attach-artifact</goal>
-        </goals>
-        <configuration>
-        <artifacts>
-        <artifact>
-        <file>
-        ${project.build.directory}/nuxeo-platform-ear-${pom.version}.ear
-        </file>
-        <type>ear</type>
-        </artifact>
-        </artifacts>
-        </configuration>
-        </execution>
+          <execution>
+            <id>move-compass-config</id>
+            <phase>package</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <tasks>
+                <echo message="Move compass.cfg.xml to right place if exists..." />
+                <move file="${project.build.directory}/${nuxeo.ear}/compass.cfg.xml" 
+                  todir="${project.build.directory}/${nuxeo.ear}/system/nuxeo-platform-search-compass-plugin-${version}.jar/"
+                  failonerror="false"/>
+              </tasks>
+            </configuration>
+          </execution>
         </executions>
-        </plugin-->
+      </plugin>
       <!-- copy nuxeo libraries that must go into $JBOSS/server/default/lib/ -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -674,20 +703,35 @@
             </configuration>
           </execution>
           <execution>
-            <id>copy-postgresql-jdbc-driver</id>
+            <id>copy-jdbc-drivers</id>
             <phase>package</phase>
             <goals>
               <goal>copy</goal>
             </goals>
             <configuration>
               <outputDirectory>
-                ${project.build.directory}/postgresql-jdbc-lib
+                ${project.build.directory}/thirdparty-jdbc-lib
               </outputDirectory>
               <artifactItems>
                 <artifactItem>
                   <groupId>postgresql</groupId>
                   <artifactId>postgresql</artifactId>
+                  <version>8.3-603.jdbc4</version>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>postgresql</groupId>
+                  <artifactId>postgresql</artifactId>
                   <version>8.2-507.jdbc3</version>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>mysql</groupId>
+                  <artifactId>mysql-connector-java</artifactId>
+                  <version>5.1.6</version>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.apache.derby</groupId>
+                  <artifactId>derby</artifactId>
+                  <version>10.4.2.0</version>
                 </artifactItem>
               </artifactItems>
             </configuration>

@@ -2,7 +2,7 @@ Sample Oracle Setup (Thin client)
 =================================
 You need ::
  - the appropriate thin client driver for your version of Oracle database, 
-   which you can downlod from Oracle's web pages. Put in in the lib/ 
+   which you can download from Oracle's web pages. Put in in the lib/ 
    subdirectory if you intend to use the ant deployment script
  - a valid user that can create tables, sequences and views
 
