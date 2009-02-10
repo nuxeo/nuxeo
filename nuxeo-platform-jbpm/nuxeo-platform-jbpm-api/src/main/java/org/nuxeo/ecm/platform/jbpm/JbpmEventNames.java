@@ -72,6 +72,8 @@ public final class JbpmEventNames {
      */
     public static final String WORKFLOW_TASK_REJECTED = "workflowTaskRejected";
 
+    public static final String WORKFLOW_TASK_ASSIGNED = "worfklowTaskAssigned";
+
     /**
      * Fired when an assignment has been updated.
      */

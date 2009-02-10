@@ -29,6 +29,10 @@
   </node>
   <task-node name="validate node">
     <task name="validate">
+      <event type="task-create">
+        <action
+          class="org.nuxeo.ecm.platform.jbpm.core.helper.TaskNotificationHandler" />
+      </event>
       <controller
         class="org.nuxeo.ecm.platform.jbpm.core.node.VirtualTaskInstanceController" />
       <assignment pooled-actors="#{participant.actors}" />

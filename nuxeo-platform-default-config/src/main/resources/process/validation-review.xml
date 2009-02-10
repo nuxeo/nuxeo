@@ -40,6 +40,10 @@
 
   <task-node name="validate node">
     <task name="validate">
+      <event type="task-create">
+        <action
+          class="org.nuxeo.ecm.platform.jbpm.core.helper.TaskNotificationHandler" />
+      </event>
       <controller
         class="org.nuxeo.ecm.platform.jbpm.core.node.VirtualTaskInstanceController" />
       <assignment pooled-actors="#{participant.actors}" />
@@ -51,6 +55,10 @@
 
   <task-node name="validate after reject node">
     <task name="validate-after-reject">
+      <event type="task-create">
+        <action
+          class="org.nuxeo.ecm.platform.jbpm.core.helper.TaskNotificationHandler" />
+      </event>
       <controller
         class="org.nuxeo.ecm.platform.jbpm.core.node.ValidateRejectController" />
       <assignment pooled-actors="#{contextInstance.variables['previousActorId']}" />

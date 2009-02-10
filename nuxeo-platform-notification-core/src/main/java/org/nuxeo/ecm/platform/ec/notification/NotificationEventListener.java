@@ -4,8 +4,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.mail.MessagingException;
 
@@ -15,6 +17,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.event.Event;
@@ -29,6 +32,7 @@ import org.nuxeo.ecm.platform.notification.api.Notification;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.platform.url.api.DocumentViewCodecManager;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
 public class NotificationEventListener implements PostCommitEventListener {
@@ -36,6 +40,8 @@ public class NotificationEventListener implements PostCommitEventListener {
     private static final Log log = LogFactory.getLog(NotificationEventListener.class);
 
     private DocumentViewCodecManager docLocator;
+
+    private UserManager userManager;
 
     public void handleEvent(EventBundle events) throws ClientException {
 
@@ -97,14 +103,28 @@ public class NotificationEventListener implements PostCommitEventListener {
                     sendNotificationSignalForUser(notif, user, event, docCtx);
                 }
             } else {
-                String recipient = (String) properties.get("recipients");
-                if (recipient == null || recipient.trim().length() <= 0) {
-                    // nobody to send notification to
-                    log.warn("An autosubscribed notification [" + eventId
-                            + "] was requested but found no target adress");
-                    continue;
+                String[] recipients = (String[]) properties.get(NotificationConstants.RECIPIENTS_KEY);
+                if (recipients == null) {
+                    return;
                 }
-                List<String> users = getUsersForMultiRecipients(recipient);
+                Set<String> users = new HashSet<String>();
+                for (String recipient : recipients) {
+                    if (recipient == null) {
+                        continue;
+                    }
+                    if (recipient.contains(NuxeoPrincipal.PREFIX)) {
+                        users.add(recipient.replace(NuxeoPrincipal.PREFIX, ""));
+                    } else if (recipient.contains(NuxeoGroup.PREFIX)) {
+                        List<String> groupMembers = getGroupMembers(recipient.replace(
+                                NuxeoGroup.PREFIX, ""));
+                        for(String member : groupMembers) {
+                            users.add(member);
+                        }
+                    } else {
+                        users.add(recipient);
+                    }
+
+                }
                 for (String user : users) {
                     sendNotificationSignalForUser(notif, user, event, docCtx);
                 }
@@ -114,32 +134,50 @@ public class NotificationEventListener implements PostCommitEventListener {
 
     }
 
+    protected UserManager getUserManager() {
+        if(userManager == null) {
+            try {
+                userManager = Framework.getService(UserManager.class);
+            } catch (Exception e) {
+                throw new IllegalStateException("UserManager service not deployed.", e);
+            }
+        }
+        return userManager;
+    }
+    protected List<String> getGroupMembers(String groupId) throws ClientException {
+        return getUserManager().getUsersInGroup(groupId);
+    }
+
     private void sendNotificationSignalForUser(Notification notification,
             String subscriptor, Event event, DocumentEventContext ctx)
             throws ClientException {
 
-        log.debug("Producing notification message...........");
+        log.debug("Producing notification message.");
 
         Map<String, Serializable> eventInfo = ctx.getProperties();
 
-        eventInfo.put("destination", subscriptor);
-        eventInfo.put("notification", notification);
-        eventInfo.put("docId", ctx.getSourceDocument().getId());
-        eventInfo.put("dateTime", new Date(event.getTime()));
-        eventInfo.put("author", ctx.getPrincipal().getName());
+        eventInfo.put(NotificationConstants.DESTINATION_KEY, subscriptor);
+        eventInfo.put(NotificationConstants.NOTIFICATION_KEY, notification);
+        eventInfo.put(NotificationConstants.DOCUMENT_ID_KEY,
+                ctx.getSourceDocument().getId());
+        eventInfo.put(NotificationConstants.DATE_TIME_KEY, new Date(
+                event.getTime()));
+        eventInfo.put(NotificationConstants.AUTHOR_KEY,
+                ctx.getPrincipal().getName());
 
         DocumentModel doc = ctx.getSourceDocument();
 
         if (!isDeleteEvent(event.getName())) {
             DocumentView docView = new DocumentViewImpl(doc);
             eventInfo.put(
-                    "docUrl",
+                    NotificationConstants.DOCUMENT_URL_KEY,
                     getDocLocator().getUrlFromDocumentView(
                             docView,
                             true,
                             NotificationServiceHelper.getNotificationService().getServerUrlPrefix()));
 
-            eventInfo.put("docTitle", doc.getTitle());
+            eventInfo.put(NotificationConstants.DOCUMENT_TITLE_KEY,
+                    doc.getTitle());
         }
 
         if (isInterestedInNotification(notification)) {
@@ -166,12 +204,16 @@ public class NotificationEventListener implements PostCommitEventListener {
                 + eventId);
 
         Map<String, Serializable> eventInfo = ctx.getProperties();
-        String userDest = (String) eventInfo.get("destination");
-        NotificationImpl notif = (NotificationImpl) eventInfo.get("notification");
+        String userDest = (String) eventInfo.get(NotificationConstants.DESTINATION_KEY);
+        NotificationImpl notif = (NotificationImpl) eventInfo.get(NotificationConstants.NOTIFICATION_KEY);
 
         // send email
         NuxeoPrincipal recepient = NotificationServiceHelper.getUsersService().getPrincipal(
                 userDest);
+        if(recepient == null) {
+            log.error("Couldn't find user: " + userDest + " to send her a mail.");
+            return;
+        }
         // XXX hack, principals have only one model
         DataModel model = recepient.getModel().getDataModels().values().iterator().next();
         String email = (String) model.getData("email");
@@ -185,16 +227,16 @@ public class NotificationEventListener implements PostCommitEventListener {
         Map<String, Object> mail = new HashMap<String, Object>();
         mail.put("mail.to", email);
 
-        String authorUsername = (String) eventInfo.get("author");
+        String authorUsername = (String) eventInfo.get(NotificationConstants.AUTHOR_KEY);
 
         if (authorUsername != null) {
             NuxeoPrincipal author = NotificationServiceHelper.getUsersService().getPrincipal(
                     authorUsername);
-            mail.put("principalAuthor", author);
+            mail.put(NotificationConstants.PRINCIPAL_AUTHOR_KEY, author);
         }
 
-        mail.put("document", ctx.getSourceDocument());
-        String subject = notif.getSubject() == null ? "Notification"
+        mail.put(NotificationConstants.DOCUMENT_KEY, ctx.getSourceDocument());
+        String subject = notif.getSubject() == null ? NotificationConstants.NOTIFICATION_KEY
                 : notif.getSubject();
         subject = NotificationServiceHelper.getNotificationService().getEMailSubjectPrefix()
                 + subject;
@@ -208,7 +250,7 @@ public class NotificationEventListener implements PostCommitEventListener {
             log.debug("Mail prop: " + key);
         }
 
-        mail.put("eventId", eventId);
+        mail.put(NotificationConstants.EVENT_ID_KEY, eventId);
 
         try {
             EmailHelper.sendmail(mail);
@@ -228,34 +270,6 @@ public class NotificationEventListener implements PostCommitEventListener {
         return coreSession.getDocument(new PathRef(path));
     }
 
-    private List<String> getUsersForMultiRecipients(String recipient)
-            throws ClientException {
-        String[] recipients = recipient.split("\\|");
-        List<String> users = new ArrayList<String>();
-
-        for (String user : recipients) {
-            users.addAll(getUsersForRecipient(user));
-        }
-        return users;
-    }
-
-    private List<String> getUsersForRecipient(String recipient)
-            throws ClientException {
-        List<String> users = new ArrayList<String>();
-        if (isUser(recipient)) {
-            users.add(recipient.substring(5));
-        } else {
-            // it is a group - get all users and send
-            // notifications to them
-            List<String> usersOfGroup = NotificationServiceHelper.getUsersService().getUsersInGroup(
-                    recipient.substring(6));
-            if (usersOfGroup != null && !usersOfGroup.isEmpty()) {
-                users.addAll(usersOfGroup);
-            }
-        }
-        return users;
-    }
-
     /**
      * Adds the concerned users to the list of targeted users for these
      * notifications.
@@ -264,7 +278,7 @@ public class NotificationEventListener implements PostCommitEventListener {
             DocumentModel doc, List<Notification> notifs,
             Map<Notification, List<String>> targetUsers) throws Exception {
         if (doc.getPath().segmentCount() > 1) {
-            log.debug("Searching document.... : " + doc.getName());
+            log.debug("Searching document: " + doc.getName());
             getInterstedUsers(doc, notifs, targetUsers);
             DocumentModel parent = getDocumentParent(coreSession, doc);
             gatherConcernedUsersForDocument(coreSession, parent, notifs,

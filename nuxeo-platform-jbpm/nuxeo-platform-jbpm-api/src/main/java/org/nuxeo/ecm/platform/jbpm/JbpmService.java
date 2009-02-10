@@ -58,7 +58,15 @@ public interface JbpmService {
      *
      */
     public enum VariableName {
-        documentId, documentRepositoryName, endLifecycleTransition, initiator, participants, participant
+        documentId, documentRepositoryName, endLifecycleTransition, initiator, participants, participant,
+        /**
+         * A document, used as a transient variable name
+         */
+        document,
+        /**
+         * A principal, used as a transient variable name
+         */
+        principal
     }
 
     /**
@@ -328,7 +336,8 @@ public interface JbpmService {
     Map<String, List<String>> getTypeFilterConfiguration();
 
     /**
-     * Return if this user has this permission for this process instance and document.
+     * Return if this user has this permission for this process instance and
+     * document.
      *
      * @param pi
      * @param action

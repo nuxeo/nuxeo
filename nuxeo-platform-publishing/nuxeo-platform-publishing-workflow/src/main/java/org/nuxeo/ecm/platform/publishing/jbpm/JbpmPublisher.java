@@ -31,6 +31,8 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.event.EventProducer;
+import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.jbpm.JbpmEventNames;
 import org.nuxeo.ecm.platform.jbpm.JbpmService;
 import org.nuxeo.ecm.platform.jbpm.NuxeoJbpmException;
@@ -59,6 +61,8 @@ public class JbpmPublisher extends AbstractPublisher implements Publisher {
     };
 
     private JbpmService jbpmService;
+
+    private EventProducer eventProducer;
 
     private PublishingService publishingService;
 
@@ -153,7 +157,7 @@ public class JbpmPublisher extends AbstractPublisher implements Publisher {
                 notifyEvent(PublishingEvent.documentWaitingPublication,
                         newProxy, coreSession);
                 restrictPermission(newProxy, principal, coreSession);
-                createTask(newProxy);
+                createTask(newProxy, coreSession, principal);
                 throw new DocumentWaitingValidationException();
             } catch (PublishingValidatorException e) {
                 throw new PublishingException(e);
@@ -166,8 +170,8 @@ public class JbpmPublisher extends AbstractPublisher implements Publisher {
         }
     }
 
-    protected void createTask(DocumentModel document)
-            throws PublishingValidatorException, NuxeoJbpmException {
+    protected void createTask(DocumentModel document, CoreSession session,
+            NuxeoPrincipal principal) throws PublishingValidatorException, NuxeoJbpmException, PublishingException {
         TaskInstance ti = new TaskInstance();
         String[] actorIds = getPublishingService().getValidatorsFor(document);
         List<String> prefixedActorIds = new ArrayList<String>();
@@ -188,7 +192,27 @@ public class JbpmPublisher extends AbstractPublisher implements Publisher {
         ti.setName(TASK_NAME);
         ti.setCreate(new Date());
         getJbpmService().saveTaskInstances(Collections.singletonList(ti));
+        DocumentEventContext ctx = new DocumentEventContext(session, principal,
+                document);
+        ctx.setProperty("recipients", actorIds);
+        try {
+            getEventProducer().fireEvent(
+                    ctx.newEvent(JbpmEventNames.WORKFLOW_TASK_ASSIGNED));
+        } catch (ClientException e) {
+            throw new PublishingException(e);
+        }
         Events.instance().raiseEvent(JbpmEventNames.WORKFLOW_TASK_START);
+    }
+
+    public EventProducer getEventProducer() throws ClientException {
+        if (eventProducer == null) {
+            try {
+                eventProducer = Framework.getService(EventProducer.class);
+            } catch (Exception e) {
+                throw new ClientException(e);
+            }
+        }
+        return eventProducer;
     }
 
     protected void restrictPermission(DocumentModel newProxy,

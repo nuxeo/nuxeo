@@ -155,6 +155,10 @@ public abstract class AbstractJbpmHandlerHelper implements ActionHandler,
     }
 
     public static String getProcessACLName(Long pid) {
-        return JbpmService.ACL_PREFIX + String.valueOf(pid);
+        return JbpmService.ACL_PREFIX + pid;
+    }
+
+    public Object getTransientVariable(String name) {
+        return executionContext.getContextInstance().getTransientVariable(name);
     }
 }
