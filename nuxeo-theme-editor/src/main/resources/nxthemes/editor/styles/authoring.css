@@ -1285,7 +1285,7 @@ a.addPreset {
   text-align: right;
   padding: 4px 10px;
   font-size: 11px;
-  color: #333;
+  color: #333 !important;
   display: block;
 }
 
