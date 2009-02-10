@@ -6,7 +6,7 @@ from lxml.etree import ElementTree
 from optparse import OptionParser
 
 def edit_files(options, blacklist = ('.svn',)):
-    """Recursively scan xml files and update the given properites"""
+    """Recursively scan xml files and update the given properties"""
 
     datasource_map = {
         'connection-url': options.url,

@@ -1,0 +1,2 @@
+Deprecated method. Prefer use of maven profiles.
+For example: "mvn package -Poracle" for a pre-configured EAR for Oracle 
