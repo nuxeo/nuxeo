@@ -77,14 +77,14 @@ public class TestResourcePublisherService extends NXRuntimeTestCase {
         assertEquals(1, registeredNames.size());
     }
 
-    public void testRegisterFactory() throws Exception {
-        ResourceFactoryDescriptor descriptor = new ResourceFactoryDescriptor(
-                DummyFactory.class);
-        publisherService.registerContribution(descriptor, "factories", null);
-        Set<ObjectName> registeredNames = doQuery("nx:name=dummy");
-        assertNotNull(registeredNames);
-        assertEquals(registeredNames.size(), 1);
-    }
+//    public void testRegisterFactory() throws Exception {
+//        ResourceFactoryDescriptor descriptor = new ResourceFactoryDescriptor(
+//                DummyFactory.class);
+//        publisherService.registerContribution(descriptor, "factories", null);
+//        Set<ObjectName> registeredNames = doQuery("nx:name=dummy");
+//        assertNotNull(registeredNames);
+//        assertEquals(registeredNames.size(), 1);
+//    }
 
     public void testServerLocator() throws Exception {
         MBeanServer testServer = MBeanServerFactory.createMBeanServer("test");

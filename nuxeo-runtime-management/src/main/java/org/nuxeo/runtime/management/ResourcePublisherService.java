@@ -37,6 +37,8 @@ import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.osgi.framework.FrameworkEvent;
+import org.osgi.framework.FrameworkListener;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
@@ -102,7 +104,6 @@ public class ResourcePublisherService extends DefaultComponent implements
                         + factoryClass, e);
             }
             factory.configure(ResourcePublisherService.this, descriptor);
-            factory.registerResources();
             registry.put(factoryClass, factory);
         }
 
@@ -110,6 +111,11 @@ public class ResourcePublisherService extends DefaultComponent implements
             registry.remove(descriptor.getFactoryClass());
         }
 
+        protected void doRegisterResources() {
+            for (ResourceFactory factory:registry.values()) {
+                factory.registerResources();
+            }
+        }
     }
 
     protected final FactoriesRegistry factoriesRegistry = new FactoriesRegistry();
@@ -365,6 +371,14 @@ public class ResourcePublisherService extends DefaultComponent implements
     @Override
     public void activate(ComponentContext context) throws Exception {
         serverLocatorService = (ServerLocatorService) Framework.getLocalService(ServerLocator.class);
+        context.getRuntimeContext().getBundle().getBundleContext().addFrameworkListener(new FrameworkListener() {
+            public void frameworkEvent(FrameworkEvent event) {
+                if(event.getType() != FrameworkEvent.STARTED) {
+                    return;
+                }
+                factoriesRegistry.doRegisterResources();
+            }
+        });
     }
 
     @Override
