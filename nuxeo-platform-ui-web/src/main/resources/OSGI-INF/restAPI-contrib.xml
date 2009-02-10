@@ -136,6 +136,35 @@
         <urlPattern>/{repo}/{parentdocid}/createDocument</urlPattern>
       </urlPatterns>
     </restletPlugin>
+    
+    <documentation>
+      Allows deleting documents via Restlet API:
+      GET /nuxeo/restAPI/{repoId}/{docId}/deleteDocumentRestlet
+    </documentation>
+    <restletPlugin
+        name="deleteDocumentRestlet"
+        class="org.nuxeo.ecm.platform.ui.web.restAPI.DeleteDocumentRestlet"
+        enabled="true"
+        useSeam="false">
+      <urlPatterns>
+        <urlPattern>/{repo}/{docid}/deleteDocumentRestlet</urlPattern>
+      </urlPatterns>
+    </restletPlugin>
+    
+    <documentation>
+      Allows to update document properties via Restlet API:
+      GET /nuxeo/restAPI/{repoId}/{docId}/updateDocumentRestlet?prop1=value1
+      example : http://127.0.0.1:8080/nuxeo/restAPI/default/1fee4b3e-8b8e-494e-b0a5-eef5113fb5a7/updateDocumentRestlet?dublincore:description=No%20comment
+    </documentation>
+    <restletPlugin
+        name="updateDocumentRestlet"
+        class="org.nuxeo.ecm.platform.ui.web.restAPI.UpdateDocumentRestlet"
+        enabled="true"
+        useSeam="false">
+      <urlPatterns>
+        <urlPattern>/{repo}/{docid}/updateDocumentRestlet</urlPattern>
+      </urlPatterns>
+    </restletPlugin>
 
     <documentation>
       GET /nuxeo/restAPI/creationContainerList
