@@ -18,26 +18,28 @@ package org.nuxeo.ecm.platform.audit.service.management;
 
 import javax.management.ObjectName;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.platform.audit.api.NXAuditEvents;
 import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.management.ObjectNameFactory;
-import org.nuxeo.runtime.management.ResourcePublisher;
+import org.nuxeo.runtime.management.ResourceFactory;
+import org.nuxeo.runtime.management.ResourceFactoryDescriptor;
 import org.nuxeo.runtime.management.ResourcePublisherService;
 
 /**
  * @author matic
  * 
  */
-public class AuditEventMetricFactory {
+public class AuditEventMetricFactory implements ResourceFactory {
 
-    protected final NXAuditEventsService auditService;
+    protected NXAuditEventsService auditService;
 
     protected ResourcePublisherService publisherService;
 
-    public AuditEventMetricFactory(NXAuditEventsService auditService) {
-        this.auditService = auditService;
+    public void configure(ResourcePublisherService service,
+            ResourceFactoryDescriptor descriptor) {
+        publisherService = service;
+        auditService = (NXAuditEventsService)Framework.getLocalService(NXAuditEvents.class);
     }
 
     public static String formatQualifiedName(String name) {
@@ -54,26 +56,20 @@ public class AuditEventMetricFactory {
         return ObjectNameFactory.getObjectName(formatQualifiedName(name));
     }
 
-    public boolean checkForPublisher() {
-        if (publisherService != null) return true;
-        publisherService = (ResourcePublisherService)Framework.getLocalService(ResourcePublisher.class);
-        return publisherService != null;
+    protected void doRegisterResource(String name) {
+        publisherService.registerResource(formatShortcutName(name),
+                formatQualifiedName(name), AuditEventMetricMBean.class,
+                new AuditEventMetricMBeanAdapter(auditService, name));
     }
-    
-    protected static Log log = LogFactory.getLog(AuditEventMetricFactory.class);
-    
-    public void unregisterResource(String name) {
-        if (publisherService == null) return;
+
+    protected void doUnregisterResource(String name) {
         publisherService.unregisterResource(name, formatQualifiedName(name));
     }
 
-
-    public void registerResource(String eventName) {
-        if (checkForPublisher()) {
-            log.warn("no resource publisher available for publishing metric of event " + eventName);
+    public void registerResources() {
+        for (String name : auditService.getAuditableEventNames()) {
+            doRegisterResource(name);
         }
-        publisherService.registerResource(formatShortcutName(eventName),
-                formatQualifiedName(eventName), AuditEventMetricMBean.class,
-                new AuditEventMetricMBeanAdapter(auditService, eventName));
     }
+
 }
