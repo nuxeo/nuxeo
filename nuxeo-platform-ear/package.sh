@@ -53,7 +53,7 @@ case "$ASSEMBLY" in
   ;;
 
     help)
-        echo "Usage: $0 {help|<target config>}"
+        echo "Usage: $0 {help|<target config>} [-Pmaven_profile]"
         echo "target config can be :"
         echo "nuxeo : building standard nuxeo.ear"
         echo "nuxeo-core : building ear for nuxeo core server"
@@ -65,7 +65,7 @@ case "$ASSEMBLY" in
         echo "nuxeo-2parts : building 2 ears for stateful (platform) and stateless parts (web)"
         ;;
     *)
-        echo "Usage: $0 {help|nuxeo|nuxeo-simplewebapp|nuxeo-core|nuxeo-indexing|nuxeo-webplatform|nuxeo-3parts|nuxeo-2parts}"
+        echo "Usage: $0 {help|nuxeo|nuxeo-simplewebapp|nuxeo-core|nuxeo-indexing|nuxeo-webplatform|nuxeo-3parts|nuxeo-2parts} [-Pmaven_profile]"
         exit 1
         ;;
 esac
