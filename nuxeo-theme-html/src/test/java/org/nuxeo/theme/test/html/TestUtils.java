@@ -174,7 +174,7 @@ public class TestUtils extends NXRuntimeTestCase {
 
         PresetType preset = new PresetType("default font", "11px Verdana",
                 "test fonts", "font");
-        PresetType customPreset1 = new CustomPresetType("custom color", "red",
+        PresetType customPreset1 = new CustomPresetType("custom color", "#f00",
                 "theme1", "color");
         PresetType customPreset2 = new CustomPresetType("custom bg", "url(image.png)",
                 "theme1", "background");
@@ -188,7 +188,7 @@ public class TestUtils extends NXRuntimeTestCase {
         style.setPropertiesFor("horizontal menu", "a", properties);
 
         assertEquals(
-                ".nxStyle1HorizontalMenu a {color:red #dc0 red #123;background:red url(image.png) no-repeat;font:11px Verdana;}\n",
+                ".nxStyle1HorizontalMenu a {color:#f00 #dc0 #f00 #123;background:#f00 url(image.png) no-repeat;font:11px Verdana;}\n",
                 Utils.styleToCss(style, style.getSelectorViewNames(), true, // resolvePresets
                         false, // ignoreViewName
                         false, // ignoreClassName
@@ -199,9 +199,7 @@ public class TestUtils extends NXRuntimeTestCase {
     public void testExtractCssColors() {
         assertEquals("#fc0", Utils.extractCssColors("#fc0").get(0));
         assertEquals("#f00", Utils.extractCssColors("#FF0000").get(0));
-        assertEquals("#fc0", Utils.extractCssColors("1px solid #FFCC00").get(0));
-        assertEquals("#fc0", Utils.extractCssColors("#fc0 #cf0 #fcz").get(0));
-        assertEquals("#cf0", Utils.extractCssColors("#fc0 #cf0 #fcz").get(1));
+        assertEquals("#fc0", Utils.extractCssColors("#FFcC00").get(0));
         assertEquals("#010203", Utils.extractCssColors("rgb(1,2,3)").get(0));
         assertEquals("#010203", Utils.extractCssColors("rgb( 1, 2, 3 )").get(0));
     }
@@ -218,20 +216,18 @@ public class TestUtils extends NXRuntimeTestCase {
         assertEquals("url(/image.png)", Utils.extractCssImages(
                 "url  ( \' /image.png \' )").get(0));
         assertEquals("url(image1.png)", Utils.extractCssImages(
-                "url(image1.png) url(image2.png)").get(0));
-        assertEquals("url(image2.png)", Utils.extractCssImages(
-                "url(\'image1.png\') url(\"image2.png\")").get(1));
+                "  url(image1.png)  ").get(0));
     }
 
     public void testReplaceColor() {
         assertEquals("\"orange\"", Utils.replaceColor("#fc0", "#fc0",
                 "\"orange\""));
-        assertEquals("#fc0 \"yellow\" #fc0", Utils.replaceColor(
-                "#fc0 #ff0 #fc0", "#ff0", "\"yellow\""));
-        assertEquals("#fc0 \"yellow\" #fc0", Utils.replaceColor(
-                "#fc0 #ffff00 #fc0", "#ff0", "\"yellow\""));
-        assertEquals("\"yellow\" \"yellow\" #fc0", Utils.replaceColor(
-                "rgb(255, 255,0) #FFFF00 #fc0", "#ff0", "\"yellow\""));
+        assertEquals("\"yellow\"", Utils.replaceColor(
+                "#FF0", "#ff0", "\"yellow\""));
+        assertEquals("\"yellow\"", Utils.replaceColor(
+                "#ffff00", "#ff0", "\"yellow\""));
+        assertEquals("\"yellow\"", Utils.replaceColor(
+                "rgb(255, 255,0)", "#ff0", "\"yellow\""));
     }
 
     public void testNamedStyles() {

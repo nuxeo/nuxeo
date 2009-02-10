@@ -72,13 +72,13 @@ public final class Utils {
             "(.*?)\\{(.*?)\\}", Pattern.DOTALL);
 
     private static final Pattern hexColorPattern = Pattern.compile(
-            ".*?#(\\p{XDigit}{3,6}).*?", Pattern.DOTALL);
+            "^#(\\p{XDigit}{3,6})$", Pattern.DOTALL);
 
     private static final Pattern rgbColorPattern = Pattern.compile(
-            ".*?rgb\\s*\\(\\s*([0-9,\\s]+)\\s*\\).*?", Pattern.DOTALL);
+            "^rgb\\s*\\(\\s*([0-9,\\s]+)\\s*\\)$", Pattern.DOTALL);
 
     private static final Pattern imageUrlPattern = Pattern.compile(
-            ".*?url\\s*\\([\\s,\",\']*(.*?)[\\s,\",\']*\\).*?", Pattern.DOTALL);
+            "^url\\s*\\([\\s,\",\']*(.*?)[\\s,\",\']*\\)$", Pattern.DOTALL);
 
     private static final Pattern rgbDigitPattern = Pattern.compile("([0-9]{1,3},[0-9]{1,3},[0-9]{1,3})");
 
@@ -346,6 +346,8 @@ public final class Utils {
         CSSStyleSheet css = null;
         try {
             css = parser.parseStyleSheet(is);
+        } catch (NumberFormatException e) {
+            log.error("Error while converting CSS value: \n" + cssSource);
         } catch (CSSException e) {
             log.error("Invalid CSS: \n" + cssSource);
         } catch (IOException e) {
@@ -382,12 +384,13 @@ public final class Utils {
 
     public static List<String> extractCssColors(String value) {
         final List<String> colors = new ArrayList<String>();
+        value = value.trim();
         Matcher m = hexColorPattern.matcher(value);
-        while (m.find()) {
+        if (m.matches()) {
             colors.add("#" + optimizeHexColor(m.group(1)));
         }
         m = rgbColorPattern.matcher(value);
-        while (m.find()) {
+        if (m.matches()) {
             colors.add("#" + optimizeHexColor(rgbToHex(m.group(1))));
         }
         return colors;
@@ -395,8 +398,9 @@ public final class Utils {
 
     public static List<String> extractCssImages(String value) {
         final List<String> images = new ArrayList<String>();
+        value = value.trim();
         Matcher m = imageUrlPattern.matcher(value);
-        while (m.find()) {
+        if (m.matches()) {
             images.add(String.format("url(%s)", m.group(1)));
         }
         return images;
@@ -404,14 +408,15 @@ public final class Utils {
 
     public static String replaceColor(String text, String before, String after) {
         Matcher m = hexColorPattern.matcher(text);
-        while (m.find()) {
+        text = text.trim();
+        if (m.matches()) {
             String found = "#" + optimizeHexColor(m.group(1));
             if (found.equals(before)) {
                 text = text.replace(String.format("#%s", m.group(1)), after);
             }
         }
         m = rgbColorPattern.matcher(text);
-        while (m.find()) {
+        if (m.matches()) {
             String found = "#" + optimizeHexColor(rgbToHex(m.group(1)));
             if (found.equals(before)) {
                 text = text.replace(String.format("rgb(%s)", m.group(1)), after);
@@ -421,8 +426,9 @@ public final class Utils {
     }
 
     public static String replaceImage(String text, String before, String after) {
+        text = text.trim();
         Matcher m = imageUrlPattern.matcher(text);
-        while (m.find()) {
+        if (m.matches()) {
             String found = String.format("url(%s)", m.group(1));
             if (found.equals(before)) {
                 text = text.replace(String.format("url(%s)", m.group(1)), after);
