@@ -552,15 +552,18 @@ public class Editor {
     }
 
     public static void createNamedStyle(Element element, String styleName,
-            String themeName) {
+            String themeName) throws ThemeException {
         ThemeManager themeManager = Manager.getThemeManager();
         Style style = (Style) themeManager.getNamedObject(themeName, "style",
                 styleName);
-        if (style == null) {
-            style = themeManager.createStyle();
-            style.setName(styleName);
-            themeManager.setNamedObject(themeName, "style", style);
+        if (style != null) {
+            throw new ThemeException("Style name is already taken: "
+                    + styleName);
         }
+        style = themeManager.createStyle();
+        style.setName(styleName);
+        themeManager.setNamedObject(themeName, "style", style);
+
         themeManager.makeElementUseNamedStyle(element, styleName, themeName);
         EventManager eventManager = Manager.getEventManager();
         eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(
