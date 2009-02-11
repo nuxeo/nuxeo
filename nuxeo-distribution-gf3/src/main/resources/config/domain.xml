@@ -28,6 +28,11 @@
       <property name="databaseName" value="nxcomments"/>
     </jdbc-connection-pool>
 
+    <jdbc-connection-pool name="NXAudit" datasource-classname="org.apache.derby.jdbc.EmbeddedDataSource" res-type="javax.sql.DataSource"  non-transactional-connections="true">
+      <property name="connectionAttributes" value=";create=true"/>
+      <property name="databaseName" value="nxaudits"/>
+    </jdbc-connection-pool>
+
     <jdbc-resource enabled="true" pool-name="NXSQLDirectoryPool"
       jndi-name="jdbc/nxsqldirectory" object-type="user" />
 
@@ -38,7 +43,7 @@
       jndi-name="jdbc/comment-relations" object-type="user" />
 
     <jdbc-resource enabled="true" pool-name="NXAudit"
-          jndi-name="jdbc/nxaudit" object-type="user" />
+          jndi-name="jdbc/nxaudits" object-type="user" />
           
     <!-- repository is not yet deployed as a resource adapter for now
     #############
