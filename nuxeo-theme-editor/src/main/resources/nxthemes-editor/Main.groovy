@@ -46,7 +46,8 @@ public class Main extends ModuleRoot {
     public Object renderThemeSelector(@QueryParam("org.nuxeo.theme.application.path") String path) {
       return getTemplate("themeSelector.ftl").arg(
               "current_theme_name", getCurrentThemeName(path)).arg(
-              "themes", getThemes(path))
+              "registered_themes", getRegisteredThemes(path)).arg(
+              "custom_themes", getCustomThemes(path))
     }
 
   @GET
@@ -1355,22 +1356,25 @@ public class Main extends ModuleRoot {
     return pages
   }
 
-  public static List<ThemeElement> getThemes(applicationPath) {
+  public static List<ThemeElement> getRegisteredThemes(applicationPath) {
+      final boolean custom = false
+      return getThemes(custom, applicationPath);
+  }
+  
+  public static List<ThemeElement> getCustomThemes(applicationPath) {
+      final boolean custom = true
+      return getThemes(custom, applicationPath);
+  }
+  
+  public static List<ThemeElement> getThemes(custom, applicationPath) {
     String defaultTheme = getDefaultTheme(applicationPath)
     def themes = []
-    if (!defaultTheme.contains("/")) {
-      return themes
-    }
     String defaultThemeName = defaultTheme.split("/")[0]
     String defaultPageName = defaultTheme.split("/")[1]
     String currentThemeName = getCurrentThemeName(applicationPath)
-    for (themeName in Manager.getThemeManager().getThemeNames()) {
-      String link = String.format("%s/%s", themeName, defaultPageName)
-      String className = themeName.equals(currentThemeName) ? "selected" : ""
-      if (link.equals(defaultThemeName)) {
-        className += " default"
-      }
-      themes.add(new ThemeInfo(themeName, link, className))
+    for (name in Manager.getThemeManager().getThemeNames(custom)) {
+      String path = String.format("%s/%s", name, defaultPageName)
+      themes.add(new ThemeInfo(name, path))
     }
     return themes
   }

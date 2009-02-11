@@ -179,8 +179,22 @@ public final class ThemeManager implements Registrable {
         return defaultTheme;
     }
 
+    public Set<String> getThemeNames(boolean custom) {
+        Set<String> names = new HashSet<String>();
+        for (ThemeDescriptor themeDef : getThemeDescriptors()) {
+            // Skip customized themes
+            if (themeDef.isCustomized()) {
+                continue;
+            }
+            if (custom ^ !themeDef.isCustom()) {
+                names.add(themeDef.getName());
+            }
+        }
+        return names;
+    }
+
     public Set<String> getThemeNames() {
-        return new HashSet<String>(themes.keySet());
+        return getThemeNames(false);
     }
 
     public Set<String> getPageNames(final String themeName) {
@@ -760,9 +774,10 @@ public final class ThemeManager implements Registrable {
         } catch (MalformedURLException e) {
             throw new ThemeIOException(e);
         }
-        
+
         if (!url.getProtocol().equals("file")) {
-            throw new ThemeIOException("Theme source is not that of a file: " + src);
+            throw new ThemeIOException("Theme source is not that of a file: "
+                    + src);
         }
 
         final File file = new File(url.getFile());

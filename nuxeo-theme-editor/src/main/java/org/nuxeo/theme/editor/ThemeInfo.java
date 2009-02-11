@@ -17,25 +17,19 @@ package org.nuxeo.theme.editor;
 public class ThemeInfo {
     public String name;
 
-    public String link;
-
-    public String className;
+    public String path;
 
     public String getName() {
         return name;
     }
 
-    public String getLink() {
-        return link;
+    public String getPath() {
+        return path;
     }
 
-    public String getClassName() {
-        return className;
-    }
-
-    public ThemeInfo(String name, String link, String className) {
+    public ThemeInfo(String name, String path) {
         this.name = name;
-        this.link = link;
-        this.className = className;
+        this.path = path;
     }
+    
 }

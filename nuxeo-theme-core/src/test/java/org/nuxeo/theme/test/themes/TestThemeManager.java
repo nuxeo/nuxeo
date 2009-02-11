@@ -37,10 +37,12 @@ import org.nuxeo.theme.nodes.NodeException;
 import org.nuxeo.theme.perspectives.PerspectiveManager;
 import org.nuxeo.theme.perspectives.PerspectiveType;
 import org.nuxeo.theme.test.DummyFragment;
+import org.nuxeo.theme.themes.ThemeDescriptor;
 import org.nuxeo.theme.themes.ThemeException;
 import org.nuxeo.theme.themes.ThemeIOException;
 import org.nuxeo.theme.themes.ThemeManager;
 import org.nuxeo.theme.themes.ThemeParser;
+import org.nuxeo.theme.types.TypeFamily;
 import org.nuxeo.theme.types.TypeRegistry;
 
 public class TestThemeManager extends NXRuntimeTestCase {
@@ -96,10 +98,29 @@ public class TestThemeManager extends NXRuntimeTestCase {
 
     public void testGetThemeNames() {
         assertTrue(themeManager.getThemeNames().isEmpty());
-        ThemeElement theme = new ThemeElement();
-        theme.setName("default");
-        themeManager.registerTheme(theme);
-        assertTrue(themeManager.getThemeNames().contains("default"));
+        ThemeDescriptor themeDescriptor1=  new ThemeDescriptor();
+        themeDescriptor1.setName("theme1");
+        themeDescriptor1.setConfigured(true);
+        typeRegistry.register(themeDescriptor1);
+        assertTrue(themeManager.getThemeNames(false).contains("theme1"));
+        assertTrue(themeManager.getThemeNames(true).isEmpty());
+        
+        ThemeDescriptor themeDescriptor2 =  new ThemeDescriptor();
+        themeDescriptor2.setName("theme2");
+        themeDescriptor2.setConfigured(false);
+        typeRegistry.register(themeDescriptor2);
+        assertFalse(themeManager.getThemeNames(false).contains("theme2"));
+        assertTrue(themeManager.getThemeNames(true).contains("theme2"));
+       
+        // customize theme2
+        ThemeDescriptor themeDescriptor3 =  new ThemeDescriptor();
+        themeDescriptor3.setName("theme3");
+        themeDescriptor3.setConfigured(false);
+        themeDescriptor2.setCustomized(true);
+        typeRegistry.register(themeDescriptor3);
+        assertFalse(themeManager.getThemeNames(false).contains("theme3"));
+        assertTrue(themeManager.getThemeNames(true).contains("theme3"));
+        assertFalse(themeManager.getThemeNames(true).contains("theme2"));
     }
 
     public void testGetPageNames() throws NodeException {
