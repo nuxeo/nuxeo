@@ -24,10 +24,12 @@ import java.util.Date;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.model.Property;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.impl.ListProperty;
 import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
 import org.nuxeo.ecm.core.schema.types.primitives.DateType;
 
+import freemarker.ext.beans.ArrayModel;
 import freemarker.template.SimpleDate;
 import freemarker.template.TemplateDateModel;
 import freemarker.template.TemplateModel;
@@ -62,7 +64,20 @@ public class PropertyWrapper {
                 }
                 return wrapper.wrap(value);
             } else if (property.isList()) {
-                return new ListPropertyTemplate(wrapper, (ListProperty) property);
+                if (property.isContainer()) {
+                    return new ListPropertyTemplate(wrapper, (ListProperty) property);
+                } else {
+                    Object value;
+                    try {
+                        value = property.getValue();
+                    } catch (PropertyException e) {
+                        throw new IllegalArgumentException("Cannot get array from array property " + property);
+                    }
+                    if (value == null) {
+                        return TemplateModel.NOTHING;
+                    }
+                    return new ArrayModel(value, wrapper);
+                }
             } else if (property.getClass() == BlobProperty.class) {
                 return new BlobTemplate(wrapper, (Blob)property.getValue());
             } else {
