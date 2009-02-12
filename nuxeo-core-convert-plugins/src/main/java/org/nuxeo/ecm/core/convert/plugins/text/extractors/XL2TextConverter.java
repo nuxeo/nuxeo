@@ -91,7 +91,7 @@ public class XL2TextConverter implements Converter {
             break;
         }
 
-        if (cellValue.length() > 0) {
+        if ((cellValue != null) && (cellValue.length() > 0)) {
             sb.append(cellValue).append(CELL_SEP);
         }
     }
