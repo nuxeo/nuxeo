@@ -155,7 +155,7 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
         String proxy = httpRequest.getParameter(proxyKey);
 
         if (casTicket == null) {
-            // no ticket found
+            log.debug("No ticket found");
             return null;
         }
 
