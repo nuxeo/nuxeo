@@ -994,9 +994,8 @@ public class QueryMaker {
                 // tree
                 buf.append("0 = 1");
             } else {
-                buf.append("NX_IN_TREE(").append(hierId).append(", ?) = ");
+                buf.append(dialect.getInTreeSql(hierId));
                 whereParams.add(id);
-                buf.append(dialect.toBooleanValueString(true));
             }
         }
 

@@ -14,7 +14,7 @@
         <property name="DatabaseName">nuxeojunittests</property>
         <property name="User">nuxeo</property>
         <property name="Password">nuxeo</property>
-        <property name="UseCursors">true</property>
+        <property name="UseCursors/Boolean">true</property>
       </repository>
     </repository>
   </extension>

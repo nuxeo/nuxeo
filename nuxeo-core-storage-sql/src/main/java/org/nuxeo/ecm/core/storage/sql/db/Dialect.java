@@ -173,6 +173,13 @@ public class Dialect {
         if (dialect instanceof DerbyDialect && sqlType == Types.CLOB) {
             return "clob"; // different from DB2Dialect
         }
+        if (dialect instanceof SQLServerDialect) {
+            if (sqlType == Types.VARCHAR) {
+                return "NVARCHAR(" + length + ')';
+            } else if (sqlType == Types.CLOB) {
+                return "NVARCHAR(MAX)";
+            }
+        }
         return dialect.getTypeName(sqlType, length, precision, scale);
     }
 
@@ -351,7 +358,8 @@ public class Dialect {
 
     public boolean needsOrderByKeysAfterDistinct() {
         return dialect instanceof PostgreSQLDialect
-                || dialect instanceof H2Dialect;
+                || dialect instanceof H2Dialect
+                || dialect instanceof SQLServerDialect;
     }
 
     /**
@@ -382,10 +390,28 @@ public class Dialect {
      *         permissions) that is true if access is allowed
      */
     public String getSecurityCheckSql(String idColumnName) {
-        String sql = String.format("NX_ACCESS_ALLOWED(%s, ?, ?)", idColumnName);
+        return getBooleanResult(String.format("NX_ACCESS_ALLOWED(%s, ?, ?)",
+                idColumnName));
+    }
+
+    /**
+     * Gets the expression to use to check tree membership.
+     *
+     * @param the quoted name of the id column to use
+     * @return an SQL expression with one parameters for the based id that is
+     *         true if the document is under base id
+     */
+    public String getInTreeSql(String idColumnName) {
+        return getBooleanResult(String.format("NX_IN_TREE(%s, ?)", idColumnName));
+    }
+
+    protected String getBooleanResult(String sql) {
         if (dialect instanceof DerbyDialect) {
             // dialect has no boolean functions
             sql += " = 1";
+        }
+        if (dialect instanceof SQLServerDialect) {
+            sql = "dbo." + sql + " = 1";
         }
         return sql;
     }
@@ -640,6 +666,8 @@ public class Dialect {
             MSSQLstoredProcedureInfoMaker maker = new MSSQLstoredProcedureInfoMaker(
                     model, database);
             statements.add(maker.makeCascadeDeleteTrigger());
+            statements.add(maker.makeAccessAllowed());
+            statements.add(maker.makeInTree());
         }
         return statements;
     }
@@ -1202,10 +1230,10 @@ public class Dialect {
             this.database = database;
             switch (model.idGenPolicy) {
             case APP_UUID:
-                idType = "varchar(36)";
+                idType = "NVARCHAR(36)";
                 break;
             case DB_IDENTITY:
-                idType = "integer";
+                idType = "INTEGER";
                 break;
             default:
                 throw new AssertionError(model.idGenPolicy);
@@ -1235,6 +1263,80 @@ public class Dialect {
                                     + "    FROM [hierarchy] h" //
                                     + "    JOIN cte" //
                                     + "    ON cte.id = h.id; " //
+                                    + "END" //
+                            , idType));
+        }
+
+        public ConditionalStatement makeAccessAllowed() {
+            return new ConditionalStatement(
+                    false, // late
+                    Boolean.TRUE, // always drop
+                    null, //
+                    "IF OBJECT_ID('dbo.NX_ACCESS_ALLOWED', 'FN') IS NOT NULL DROP FUNCTION dbo.NX_ACCESS_ALLOWED", //
+                    String.format(
+                            "CREATE FUNCTION NX_ACCESS_ALLOWED" //
+                                    + "(@id %s, @users NVARCHAR(4000), @perms NVARCHAR(4000)) " //
+                                    + "RETURNS TINYINT AS " //
+                                    + "BEGIN" //
+                                    + "  DECLARE @allusers NVARCHAR(4000);" //
+                                    + "  DECLARE @allperms NVARCHAR(4000);" //
+                                    + "  DECLARE @first TINYINT;" //
+                                    + "  DECLARE @curid %<s;" //
+                                    + "  DECLARE @newid %<s;" //
+                                    + "  DECLARE @gr TINYINT;" //
+                                    + "  DECLARE @pe VARCHAR(1000);" //
+                                    + "  DECLARE @us VARCHAR(1000);" //
+                                    + "  SET @allusers = N'|' + @users + N'|';" //
+                                    + "  SET @allperms = N'|' + @perms + N'|';" //
+                                    + "  SET @first = 1;" //
+                                    + "  SET @curid = @id;" //
+                                    + "  WHILE @curid IS NOT NULL BEGIN" //
+                                    + "    DECLARE @cur CURSOR;" //
+                                    + "    SET @cur = CURSOR FAST_FORWARD FOR" //
+                                    + "      SELECT [grant], [permission], [user] FROM [acls]" //
+                                    + "      WHERE [id] = @curid ORDER BY [pos];" //
+                                    + "    OPEN @cur;" //
+                                    + "    FETCH FROM @cur INTO @gr, @pe, @us;" //
+                                    + "    WHILE @@FETCH_STATUS = 0 BEGIN" //
+                                    + "      IF @allusers LIKE (N'%%|' + @us + N'|%%')" //
+                                    + "        AND @allperms LIKE (N'%%|' + @pe + N'|%%')" //
+                                    + "      BEGIN" //
+                                    + "        CLOSE @cur;" //
+                                    + "        RETURN @gr;" //
+                                    + "      END;" //
+                                    + "      FETCH FROM @cur INTO @gr, @pe, @us;" //
+                                    + "    END;" //
+                                    + "    CLOSE @cur;" //
+                                    + "    SET @newid = (SELECT [parentid] FROM [hierarchy] WHERE [id] = @curid);" //
+                                    + "    IF @first = 1 AND @newid IS NULL BEGIN" //
+                                    + "      SET @newid = (SELECT [versionableid] FROM [versions] WHERE [id] = @curid);" //
+                                    + "    END;" //
+                                    + "    SET @first = 0;" //
+                                    + "    SET @curid = @newid;" //
+                                    + "  END;" //
+                                    + "  RETURN 0; " //
+                                    + "END" //
+                            , idType));
+        }
+
+        public ConditionalStatement makeInTree() {
+            return new ConditionalStatement(
+                    false, // late
+                    Boolean.TRUE, // always drop
+                    null, //
+                    "IF OBJECT_ID('dbo.NX_IN_TREE', 'FN') IS NOT NULL DROP FUNCTION dbo.NX_IN_TREE", //
+                    String.format(
+                            "CREATE FUNCTION NX_IN_TREE(@id %s, @baseid %<s) " //
+                                    + "RETURNS TINYINT AS " //
+                                    + "BEGIN" //
+                                    + "  DECLARE @curid %<s;" //
+                                    + "  IF @baseid IS NULL OR @id IS NULL OR @baseid = @id RETURN 0;" //
+                                    + "  SET @curid = @id;" //
+                                    + "  WHILE @curid IS NOT NULL BEGIN" //
+                                    + "    SET @curid = (SELECT [parentid] FROM [hierarchy] WHERE [id] = @curid);" //
+                                    + "    IF @curid = @baseid RETURN 1;" //
+                                    + "  END;" //
+                                    + "  RETURN 0;" //
                                     + "END" //
                             , idType));
         }
