@@ -245,8 +245,16 @@ public class TableImpl implements Table {
                 s = s.replace(" foreign key ", " FOREIGN KEY ");
                 s = s.replace(" references ", " REFERENCES ");
                 buf.append(s);
-                // if (dialect.supportsCascadeDelete())
-                buf.append(" ON DELETE CASCADE");
+                if (dialect.supportsCircularCascadeDeleteConstraints()
+                        || (Model.MAIN_KEY.equals(fc.getPhysicalName()) && Model.MAIN_KEY.equals(column.getPhysicalName()))) {
+                    // MS SQL Server can't have circular ON DELETE CASCADE.
+                    // Use a trigger INSTEAD OF DELETE to cascade deletes
+                    // recursively for:
+                    // - hierarchy.parentid
+                    // - versions.versionableid
+                    // - proxies.versionableid
+                    buf.append(" ON DELETE CASCADE");
+                }
                 sqls.add(buf.toString());
             }
         }
@@ -301,7 +309,7 @@ public class TableImpl implements Table {
             buf.append("IF EXISTS ");
         }
         buf.append(getQuotedName());
-        buf.append(dialect.getCascadeConstraintsString());
+        buf.append(dialect.getCascadeDropConstraintsString());
         if (dialect.supportsIfExistsAfterTableName()) {
             buf.append(" IF EXISTS");
         }

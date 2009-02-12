@@ -20,9 +20,13 @@ package org.nuxeo.ecm.core.storage.sql;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -44,7 +48,8 @@ public class SQLBackendHelper {
         DERBY, //
         H2, //
         MYSQL, //
-        POSTGRESQL
+        POSTGRESQL, //
+        MSSQL
     }
 
     /**
@@ -134,6 +139,22 @@ public class SQLBackendHelper {
     public static final String PG_DATABASE_PASSWORD = "nuxeo";
 
     /*
+     * ----- MS SQL Server configuration -----
+     */
+
+    protected static final String MSSQL_HOST_PROPERTY = "nuxeo.test.mssql.host";
+
+    public static final String MSSQL_HOST = "172.16.245.128";
+
+    public static final String MSSQL_PORT = "1433";
+
+    public static final String MSSQL_DATABASE = "nuxeojunittests";
+
+    public static final String MSSQL_DATABASE_OWNER = "nuxeo";
+
+    public static final String MSSQL_DATABASE_PASSWORD = "nuxeo";
+
+    /*
      * ----- API -----
      */
 
@@ -156,6 +177,9 @@ public class SQLBackendHelper {
         case POSTGRESQL:
             setUpRepositoryPostgreSQL();
             return;
+        case MSSQL:
+            setUpRepositoryMSSQL();
+            return;
         }
         throw new RuntimeException(); // not reached
     }
@@ -173,6 +197,9 @@ public class SQLBackendHelper {
             return;
         case POSTGRESQL:
             tearDownRepositoryPostgreSQL();
+            return;
+        case MSSQL:
+            tearDownRepositoryMSSQL();
             return;
         }
         throw new RuntimeException(); // not reached
@@ -290,4 +317,40 @@ public class SQLBackendHelper {
     protected static void tearDownRepositoryPostgreSQL() {
     }
 
+    /*
+     * ----- MS SQL Server -----
+     */
+
+    protected static void setUpRepositoryMSSQL() throws Exception {
+        Class.forName("net.sourceforge.jtds.jdbc.Driver");
+        String url = String.format(
+                "jdbc:jtds:sqlserver://%s:%s/%s;user=%s;password=%s;",
+                MSSQL_HOST, MSSQL_PORT, MSSQL_DATABASE, MSSQL_DATABASE_OWNER,
+                MSSQL_DATABASE_PASSWORD);
+        Connection connection = DriverManager.getConnection(url);
+        DatabaseMetaData metadata = connection.getMetaData();
+        List<String> tableNames = new LinkedList<String>();
+        ResultSet rs = metadata.getTables(null, null, "%",
+                new String[] { "TABLE" });
+        while (rs.next()) {
+            tableNames.add(rs.getString("TABLE_NAME"));
+        }
+        // remove hierarchy last because of foreign keys
+        if (tableNames.remove("hierarchy")) {
+            tableNames.add("hierarchy");
+        }
+        Statement st = connection.createStatement();
+        for (String tableName : tableNames) {
+            String sql = String.format("DROP TABLE [%s]", tableName);
+            log.debug(sql);
+            st.execute(sql);
+
+        }
+        st.close();
+        connection.close();
+        System.setProperty(MSSQL_HOST_PROPERTY, MSSQL_HOST);
+    }
+
+    protected static void tearDownRepositoryMSSQL() throws Exception {
+    }
 }

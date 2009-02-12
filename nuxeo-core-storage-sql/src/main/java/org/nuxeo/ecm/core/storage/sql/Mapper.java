@@ -363,6 +363,7 @@ public class Mapper {
                         if (t == Types.BIT && //
                                 (sqlType == Types.SMALLINT // Derby
                                 || sqlType == Types.BOOLEAN // H2
+                                || sqlType == Types.TINYINT // MS SQL Server
                                 )) {
                             continue;
                         }

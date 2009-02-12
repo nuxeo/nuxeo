@@ -64,6 +64,8 @@ public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
             return prepareDescriptorMySQL();
         case POSTGRESQL:
             return prepareDescriptorPostgreSQL();
+        case MSSQL:
+            return prepareDescriptorMSSQL();
         }
         throw new RuntimeException(); // not reached
     }
@@ -117,6 +119,20 @@ public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
         properties.put("Password", SQLBackendHelper.PG_DATABASE_PASSWORD);
         descriptor.properties = properties;
         descriptor.fulltextAnalyzer = "english";
+        return descriptor;
+    }
+
+    protected RepositoryDescriptor prepareDescriptorMSSQL() {
+        RepositoryDescriptor descriptor = new RepositoryDescriptor();
+        descriptor.xaDataSourceName = "net.sourceforge.jtds.jdbcx.JtdsDataSource";
+        Map<String, String> properties = new HashMap<String, String>();
+        properties.put("ServerName", SQLBackendHelper.MSSQL_HOST);
+        properties.put("PortNumber/Integer", SQLBackendHelper.MSSQL_PORT);
+        properties.put("DatabaseName", SQLBackendHelper.MSSQL_DATABASE);
+        properties.put("User", SQLBackendHelper.MSSQL_DATABASE_OWNER);
+        properties.put("Password", SQLBackendHelper.MSSQL_DATABASE_PASSWORD);
+        properties.put("UseCursors/Boolean", "true");
+        descriptor.properties = properties;
         return descriptor;
     }
 

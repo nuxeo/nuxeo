@@ -142,6 +142,31 @@ public class TestSQLBackend extends SQLBackendTestCase {
         // the following gets a complete list but skips deleted ones
         List<Node> children = session.getChildren(root, null, false);
         assertEquals(1, children.size());
+        session.save();
+    }
+
+    public void testRecursiveRemoval() throws Exception {
+        int DEPTH = 70;
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+        Node node = root;
+        Serializable[] ids = new Serializable[DEPTH];
+        for (int i = 0; i < DEPTH; i++) {
+            node = session.addChildNode(node, String.valueOf(i), null,
+                    "TestDoc", false);
+            ids[i] = node.getId();
+        }
+        session.save(); // TODO shouldn't be needed
+        // delete the second one
+        session.removeNode(session.getNodeById(ids[1]));
+        session.save();
+        session.close();
+
+        // check all children were really deleted recursively
+        session = repository.getConnection();
+        for (int i = 1; i < DEPTH; i++) {
+            assertNull(session.getNodeById(ids[i]));
+        }
     }
 
     public void testBasics() throws Exception {
@@ -203,8 +228,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(Arrays.asList("3"), Arrays.asList(tags));
 
         // delete the node
-        //session.removeNode(nodea);
-        //session.save();
+        // session.removeNode(nodea);
+        // session.save();
     }
 
     public void testPropertiesSameName() throws Exception {
