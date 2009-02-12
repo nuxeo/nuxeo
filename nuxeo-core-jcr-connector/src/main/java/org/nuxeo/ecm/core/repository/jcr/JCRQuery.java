@@ -44,6 +44,7 @@ import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.query.sql.model.SelectClause;
 import org.nuxeo.ecm.core.query.sql.model.WhereClause;
 
+
 /**
  * @author Bogdan Stefanescu
  * @author Florent Guillaume
@@ -62,6 +63,8 @@ public class JCRQuery implements Query {
 
     private long offset;
 
+    private boolean limitSetByUser = false;
+    
     public JCRQuery(JCRSession session, String query) {
         rawQuery = query;
         this.session = session;
@@ -74,6 +77,10 @@ public class JCRQuery implements Query {
     public QueryResult execute(boolean countTotal) throws QueryException {
         try {
             sqlQuery = SQLQueryParser.parse(rawQuery);
+            if (!limitSetByUser) {
+                this.limit = sqlQuery.limit;
+                this.offset = sqlQuery.offset;
+            }
             SQLQuery query = sqlQuery;
             Boolean orderByPath = null;
             if (sqlQuery.orderBy != null) {
@@ -100,10 +107,12 @@ public class JCRQuery implements Query {
 
     public void setLimit(long limit) {
         this.limit = limit;
+        limitSetByUser = true;
     }
 
     public void setOffset(long offset) {
         this.offset = offset;
+        limitSetByUser = true;
     }
 
     public static String buildJCRQueryString(SQLQuery sqlQuery) {
