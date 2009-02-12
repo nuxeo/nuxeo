@@ -21,37 +21,44 @@ This modules is tied with the Nuxeo EP code page.
 
 TODO:
 
-Folder
+Base
 
-* membersManagementPage().createUser(name, ... group).save()
+* search() (return Result)
+
+Folder
 
 * emptyTrash()
 
-* dashBoard()
+* dashboard()
 
 * search()
 
-* sort( title/author/status =
+* sort(title/author/status)
 
 * viewRandomDocument()
 
-* cut files + replace WGPerf
-
 * next() previous()
 
-* dashBoard -> DashBoard.wsRefresh()
+Dashboard
 
-* search() -> result
+* wsRefresh()
 
-* viewMetadata ->
 
-* viewFile -> DocumentFilePage.add
+Document
 
-* viewComment -> DocumentCommentPage.add
+* viewMetadata
+
+* viewFile
+   .add(filename, path)
+
+* viewComment
+   .add(comment)
 
 * relation
+   .add(uid)
 
-* publish
+* publish(section_uid)
+
 
 """
 from webunit.utility import Upload
