@@ -97,8 +97,8 @@ public class TableImpl implements Table {
             String key, Model model) {
         String physicalName = database.getColumnPhysicalName(name);
         if (columns.containsKey(physicalName)) {
-            throw new IllegalArgumentException("duplicate column " +
-                    physicalName);
+            throw new IllegalArgumentException("duplicate column "
+                    + physicalName);
         }
         Column column = new Column(this, physicalName, type, sqlType, key,
                 model);
@@ -205,9 +205,10 @@ public class TableImpl implements Table {
         for (Column column : columns.values()) {
             if (column.isPrimary()) {
                 StringBuilder buf = new StringBuilder();
-                String constraintName = dialect.openQuote() + name +
-                        (dialect.storesUpperCaseIdentifiers() ? "_PK" : "_pk") +
-                        dialect.closeQuote();
+                String constraintName = dialect.openQuote()
+                        + name
+                        + (dialect.storesUpperCaseIdentifiers() ? "_PK" : "_pk")
+                        + dialect.closeQuote();
                 buf.append("ALTER TABLE ");
                 buf.append(getQuotedName());
                 String s = dialect.getAddPrimaryKeyConstraintString(constraintName);
@@ -223,10 +224,14 @@ public class TableImpl implements Table {
             Table ft = column.getForeignTable();
             if (ft != null) {
                 Column fc = ft.getColumn(column.getForeignKey());
-                String constraintName = dialect.openQuote() + name + "_" +
-                        column.getPhysicalName() + "_" + ft.getName() +
-                        (dialect.storesUpperCaseIdentifiers() ? "_FK" : "_fk") +
-                        dialect.closeQuote();
+                String constraintName = dialect.openQuote()
+                        + name
+                        + "_"
+                        + column.getPhysicalName()
+                        + "_"
+                        + ft.getName()
+                        + (dialect.storesUpperCaseIdentifiers() ? "_FK" : "_fk")
+                        + dialect.closeQuote();
                 StringBuilder buf = new StringBuilder();
                 buf.append("ALTER TABLE ");
                 buf.append(getQuotedName());
@@ -240,8 +245,16 @@ public class TableImpl implements Table {
                 s = s.replace(" foreign key ", " FOREIGN KEY ");
                 s = s.replace(" references ", " REFERENCES ");
                 buf.append(s);
-                // if (dialect.supportsCascadeDelete())
-                buf.append(" ON DELETE CASCADE");
+                if (dialect.supportsCircularCascadeDeleteConstraints()
+                        || (Model.MAIN_KEY.equals(fc.getPhysicalName()) && Model.MAIN_KEY.equals(column.getPhysicalName()))) {
+                    // MS SQL Server can't have circular ON DELETE CASCADE.
+                    // Use a trigger INSTEAD OF DELETE to cascade deletes
+                    // recursively for:
+                    // - hierarchy.parentid
+                    // - versions.versionableid
+                    // - proxies.versionableid
+                    buf.append(" ON DELETE CASCADE");
+                }
                 sqls.add(buf.toString());
             }
         }
@@ -254,11 +267,11 @@ public class TableImpl implements Table {
                 qcols.add(col.getQuotedName());
                 pcols.add(col.getPhysicalName());
             }
-            String indexName = dialect.openQuote() +
-                    (dialect.qualifyIndexName() ? name + "_" : "") +
-                    StringUtils.join(pcols, '_') +
-                    (dialect.storesUpperCaseIdentifiers() ? "_IDX" : "_idx") +
-                    dialect.closeQuote();
+            String indexName = dialect.openQuote()
+                    + (dialect.qualifyIndexName() ? name + "_" : "")
+                    + StringUtils.join(pcols, '_')
+                    + (dialect.storesUpperCaseIdentifiers() ? "_IDX" : "_idx")
+                    + dialect.closeQuote();
             StringBuilder buf = new StringBuilder();
             buf.append("CREATE");
             // buf.append(unique ? " UNIQUE" : "");
@@ -296,7 +309,7 @@ public class TableImpl implements Table {
             buf.append("IF EXISTS ");
         }
         buf.append(getQuotedName());
-        buf.append(dialect.getCascadeConstraintsString());
+        buf.append(dialect.getCascadeDropConstraintsString());
         if (dialect.supportsIfExistsAfterTableName()) {
             buf.append(" IF EXISTS");
         }

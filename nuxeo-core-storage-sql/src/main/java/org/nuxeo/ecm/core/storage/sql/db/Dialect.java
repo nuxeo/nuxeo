@@ -209,8 +209,7 @@ public class Dialect {
      */
     public String getFulltextIndexFinalModifier(List<String> quotedNames) {
         if (dialect instanceof PostgreSQLDialect) {
-            return String.format(" USING GIN(%s)",
-                    quotedNames.get(0));
+            return String.format(" USING GIN(%s)", quotedNames.get(0));
         }
         return "";
     }
@@ -302,8 +301,15 @@ public class Dialect {
         return dialect.supportsIfExistsAfterTableName();
     }
 
-    public String getCascadeConstraintsString() {
+    public String getCascadeDropConstraintsString() {
         return dialect.getCascadeConstraintsString();
+    }
+
+    public boolean supportsCircularCascadeDeleteConstraints() {
+        if (dialect instanceof SQLServerDialect) {
+            return false;
+        }
+        return true;
     }
 
     // "ADD COLUMN" or "ADD"
@@ -630,6 +636,10 @@ public class Dialect {
             // statements.add(maker.makeNxDebug());
             statements.add(maker.makeInTree());
             statements.add(maker.makeAccessAllowed());
+        } else if ("Microsoft SQL Server".equals(databaseName)) {
+            MSSQLstoredProcedureInfoMaker maker = new MSSQLstoredProcedureInfoMaker(
+                    model, database);
+            statements.add(maker.makeCascadeDeleteTrigger());
         }
         return statements;
     }
@@ -1174,6 +1184,57 @@ public class Dialect {
                                     + "    SET curid = newid;" //
                                     + "  END WHILE;" //
                                     + "  RETURN FALSE; " //
+                                    + "END" //
+                            , idType));
+        }
+    }
+
+    public class MSSQLstoredProcedureInfoMaker {
+
+        private final String idType;
+
+        private final Model model;
+
+        private final Database database;
+
+        public MSSQLstoredProcedureInfoMaker(Model model, Database database) {
+            this.model = model;
+            this.database = database;
+            switch (model.idGenPolicy) {
+            case APP_UUID:
+                idType = "varchar(36)";
+                break;
+            case DB_IDENTITY:
+                idType = "integer";
+                break;
+            default:
+                throw new AssertionError(model.idGenPolicy);
+            }
+        }
+
+        public ConditionalStatement makeCascadeDeleteTrigger() {
+            return new ConditionalStatement(
+                    false, // late
+                    Boolean.TRUE, // always drop
+                    null, //
+                    "IF OBJECT_ID('dbo.nxTrigCascadeDelete', 'TR') IS NOT NULL DROP TRIGGER dbo.nxTrigCascadeDelete", //
+                    String.format(
+                            "CREATE TRIGGER nxTrigCascadeDelete ON [hierarchy] " //
+                                    + "INSTEAD OF DELETE AS " //
+                                    + "BEGIN" //
+                                    + "  SET NOCOUNT ON;" //
+                                    + "  WITH cte(id, parentid) AS (" //
+                                    + "    SELECT id, parentid" //
+                                    + "    FROM deleted" //
+                                    + "  UNION ALL" //
+                                    + "    SELECT h.id, h.parentid" //
+                                    + "    FROM [hierarchy] h" //
+                                    + "    JOIN cte ON cte.id = h.parentid" //
+                                    + "  )" //
+                                    + "  DELETE FROM [hierarchy]" //
+                                    + "    FROM [hierarchy] h" //
+                                    + "    JOIN cte" //
+                                    + "    ON cte.id = h.id; " //
                                     + "END" //
                             , idType));
         }

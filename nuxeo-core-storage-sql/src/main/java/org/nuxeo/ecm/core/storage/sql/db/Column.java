@@ -274,6 +274,7 @@ public class Column implements Serializable {
         case Types.BIT:
         case Types.SMALLINT: // Derby
         case Types.BOOLEAN: // H2
+        case Types.TINYINT: // MS SQL Server
             ps.setBoolean(index, ((Boolean) value).booleanValue());
             return;
         case Types.TIMESTAMP:
@@ -331,6 +332,7 @@ public class Column implements Serializable {
         case Types.BIT:
         case Types.SMALLINT: // Derby
         case Types.BOOLEAN: // H2
+        case Types.TINYINT: // MS SQL Server
             result = rs.getBoolean(index);
             break;
         default:
