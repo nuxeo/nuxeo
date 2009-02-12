@@ -640,6 +640,12 @@
         <nuxeo.ear>${nuxeo.ear.assembly}-oracle.ear</nuxeo.ear>
       </properties>
     </profile>
+    <profile>
+      <id>h2</id>
+      <properties>
+        <nuxeo.ear>${nuxeo.ear.assembly}-h2.ear</nuxeo.ear>
+      </properties>
+    </profile>
   </profiles>
 
   <build>
@@ -668,6 +674,7 @@
             <descriptor>src/main/assemble/resources/db-postgresql.xml</descriptor>
             <descriptor>src/main/assemble/resources/db-mysql.xml</descriptor>
             <descriptor>src/main/assemble/resources/db-oracle.xml</descriptor>
+            <descriptor>src/main/assemble/resources/db-h2.xml</descriptor>
           </descriptors>
         </configuration>
         <executions>
@@ -713,26 +720,6 @@
           </execution>
         </executions>
       </plugin>
-<!--      <plugin>-->
-<!--        <artifactId>maven-antrun-plugin</artifactId>-->
-<!--        <executions>-->
-<!--          <execution>-->
-<!--            <id>move-compass-config</id>-->
-<!--            <phase>package</phase>-->
-<!--            <goals>-->
-<!--              <goal>run</goal>-->
-<!--            </goals>-->
-<!--            <configuration>-->
-<!--              <tasks>-->
-<!--                <echo message="Move compass.cfg.xml to right place if exists..." />-->
-<!--                <move file="${project.build.directory}/${nuxeo.ear}/compass.cfg.xml" -->
-<!--                  todir="${project.build.directory}/${nuxeo.ear}/system/nuxeo-platform-search-compass-plugin-${version}.jar/"-->
-<!--                  failonerror="false"/>-->
-<!--              </tasks>-->
-<!--            </configuration>-->
-<!--          </execution>-->
-<!--        </executions>-->
-<!--      </plugin>-->
       <!-- copy nuxeo libraries that must go into $JBOSS/server/default/lib/ -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
