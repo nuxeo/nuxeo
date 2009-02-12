@@ -24,9 +24,11 @@
        <needStartingURLSaving>true</needStartingURLSaving>
        <parameters>
          <parameter name="ticketKey">ticket</parameter>
+         <parameter name="ticketKey">proxy</parameter>
          <parameter name="appURL">http://127.0.0.1:8080/nuxeo/nxstartup.faces</parameter>
          <parameter name="serviceLoginURL">http://127.0.0.1:8080/cas/login</parameter>
          <parameter name="serviceValidateURL">http://127.0.0.1:8080/cas/serviceValidate</parameter>
+         <parameter name="proxyValidateURL">http://127.0.0.1:8080/cas/proxyValidate</parameter>
          <parameter name="serviceKey">service</parameter>
        </parameters>
       </authenticationPlugin>

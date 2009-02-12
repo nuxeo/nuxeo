@@ -13,6 +13,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
+ *     Academie de Rennes - proxy CAS support
  *
  * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
  */
@@ -33,25 +34,55 @@ import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPluginLogoutExtension;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 import org.xml.sax.SAXException;
+
+import edu.yale.its.tp.cas.client.ProxyTicketValidator;
 import edu.yale.its.tp.cas.client.ServiceTicketValidator;
 
+/**
+ * @author Thierry Delprat
+ * @author Olivier Adam
+ * @author M.-A. Darche
+ */
 public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
         NuxeoAuthenticationPluginLogoutExtension {
 
     protected String ticketKey = "ticket";
+
+    protected String proxyKey = "proxy";
+
     protected String appURL = "http://127.0.0.1:8080/nuxeo/";
+
     protected String serviceLoginURL = "http://127.0.0.1:8080/cas/login";
-    protected String serviceValidateURL = "http://127.0.0.1:8080/cas/validate";
+
+    protected String serviceValidateURL = "http://127.0.0.1:8080/cas/serviceValidate";
+
+    /**
+     * We tell the CAS server whether we want a plain text (CAS 1.0) or XML (CAS
+     * 2.0) response by making the request either to the '.../validate' or
+     * '.../serviceValidate' URL. The older protocol supports only the CAS 1.0
+     * functionality, which is left around as the legacy '.../validate' URL.
+     */
+    protected String proxyValidateURL = "http://127.0.0.1:8080/cas/proxyValidate";
+
     protected String serviceKey = "service";
+
     protected String logoutURL = "";
+
     protected String defaultCasServer = "";
 
     protected final static String CAS_SERVER_HEADER_KEY = "CasServer";
+
     protected final static String CAS_SERVER_PATTERN_KEY = "$CASSERVER";
+
     protected final static String NUXEO_SERVER_PATTERN_KEY = "$NUXEO";
+
     protected final static String LOGIN_ACTION = "Login";
+
     protected final static String LOGOUT_ACTION = "Logout";
+
     protected final static String VALIDATE_ACTION = "Valid";
+
+    protected final static String PROXY_VALIDATE_ACTION = "ProxyValid";
 
     private static final Log log = LogFactory.getLog(Cas2Authenticator.class);
 
@@ -68,6 +99,8 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
             url = logoutURL;
         } else if (action.equals(VALIDATE_ACTION)) {
             url = serviceValidateURL;
+        } else if (action.equals(PROXY_VALIDATE_ACTION)) {
+            url = proxyValidateURL;
         }
 
         if (url.contains(CAS_SERVER_PATTERN_KEY)) {
@@ -86,8 +119,8 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
 
     public Boolean handleLoginPrompt(HttpServletRequest httpRequest,
             HttpServletResponse httpResponse, String baseURL) {
-        // redirect to CAS Login screen
-        // passing our application URL as service name
+        // Redirect to CAS Login screen
+        // assing our application URL as service name
         String location = null;
         try {
             // httpResponse.sendRedirect(serviceLoginURL + "?" + serviceKey +
@@ -96,7 +129,8 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
                     + serviceKey + "=" + getAppURL(httpRequest);
             httpResponse.sendRedirect(location);
         } catch (IOException e) {
-            log.error("Unable to redirect to CAS login screen to " + location,e);
+            log.error("Unable to redirect to CAS login screen to " + location,
+                    e);
             return false;
         }
         return true;
@@ -117,12 +151,23 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
             HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
         String casTicket = httpRequest.getParameter(ticketKey);
 
+        // Retrieve the proxy parameter for knowing if the caller is à proxy CAS
+        String proxy = httpRequest.getParameter(proxyKey);
+
         if (casTicket == null) {
-            log.debug("No ticket found");
+            // no ticket found
             return null;
         }
 
-        String userName = checkCasTicket(casTicket, httpRequest);
+        String userName;
+
+        if (proxy == null) {
+            // no ticket found
+            userName = checkCasTicket(casTicket, httpRequest);
+        } else {
+            userName = checkProxyCasTicket(casTicket, httpRequest);
+        }
+
         if (userName == null) {
             return null;
         }
@@ -137,6 +182,9 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
         if (parameters.containsKey(CAS2Parameters.TICKET_NAME_KEY)) {
             ticketKey = parameters.get(CAS2Parameters.TICKET_NAME_KEY);
         }
+        if (parameters.containsKey(CAS2Parameters.PROXY_NAME_KEY)) {
+            proxyKey = parameters.get(CAS2Parameters.PROXY_NAME_KEY);
+        }
         if (parameters.containsKey(CAS2Parameters.NUXEO_APP_URL_KEY)) {
             appURL = parameters.get(CAS2Parameters.NUXEO_APP_URL_KEY);
         }
@@ -145,6 +193,9 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
         }
         if (parameters.containsKey(CAS2Parameters.SERVICE_VALIDATE_URL_KEY)) {
             serviceValidateURL = parameters.get(CAS2Parameters.SERVICE_VALIDATE_URL_KEY);
+        }
+        if (parameters.containsKey(CAS2Parameters.PROXY_VALIDATE_URL_KEY)) {
+            proxyValidateURL = parameters.get(CAS2Parameters.PROXY_VALIDATE_URL_KEY);
         }
         if (parameters.containsKey(CAS2Parameters.SERVICE_NAME_KEY)) {
             serviceKey = parameters.get(CAS2Parameters.SERVICE_NAME_KEY);
@@ -176,8 +227,44 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
         return true;
     }
 
+    private String checkProxyCasTicket(String ticket,
+            HttpServletRequest httpRequest) {
+        // Get the service passed by the portlet
+        String service = httpRequest.getParameter(serviceKey);
+        if (service == null) {
+            log.error("checkProxyCasTicket: no service name in the URL");
+            return null;
+        }
+
+        ProxyTicketValidator proxyValidator = new ProxyTicketValidator();
+        proxyValidator.setCasValidateUrl(getServiceURL(httpRequest,
+                PROXY_VALIDATE_ACTION));
+        proxyValidator.setService(service);
+        proxyValidator.setServiceTicket(ticket);
+        try {
+            proxyValidator.validate();
+        } catch (IOException e) {
+            log.error("checkProxyCasTicket failed with IOException:", e);
+            return null;
+        } catch (SAXException e) {
+            log.error("checkProxyCasTicket failed with SAXException:", e);
+            return null;
+        } catch (ParserConfigurationException e) {
+            log.error(
+                    "checkProxyCasTicket failed with ParserConfigurationException:",
+                    e);
+            return null;
+        }
+        log.debug("checkProxyCasTicket: validation executed without error");
+        String username = proxyValidator.getUser();
+        log.debug("checkProxyCasTicket: validation returned username = "
+                + username);
+        return username;
+    }
+
     // Cas2 Ticket management
     private String checkCasTicket(String ticket, HttpServletRequest httpRequest) {
+
         ServiceTicketValidator ticketValidator = new ServiceTicketValidator();
         ticketValidator.setCasValidateUrl(getServiceURL(httpRequest,
                 VALIDATE_ACTION));
@@ -192,13 +279,14 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
             log.error("checkCasTicket failed with SAXException:", e);
             return null;
         } catch (ParserConfigurationException e) {
-            log.error("checkCasTicket failed with ParserConfigurationException:", e);
+            log.error(
+                    "checkCasTicket failed with ParserConfigurationException:",
+                    e);
             return null;
         }
-
-        log.debug("checkCasTicket : valdiation executed without error");
+        log.debug("checkCasTicket : validation executed without error");
         String username = ticketValidator.getUser();
-        log.debug("checkCasTicket : valdiation returned username = " + username);
+        log.debug("checkCasTicket: validation returned username = " + username);
         return username;
     }
 
