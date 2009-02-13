@@ -134,7 +134,7 @@ nxthemes css is not used in login.jsp */
   
 .labelCorp ul{
   margin:0;
-  padding:0 0 0 150px;
+  padding:0;
   }
 
 .labelCorp li {
