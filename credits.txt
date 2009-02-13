@@ -22,6 +22,7 @@ Russian: Jane Smorodnik
 Arabic: Taieb Felfel
 Japanese: Damien Dupraz
 Spanish: Daniel Tellez
+Vietnamese: Le Tuan Dat and Daniel Tellez
 
 Third-party libraries
 ---------------------
