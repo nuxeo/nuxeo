@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -42,6 +42,7 @@ import javax.transaction.xa.XAResource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jackrabbit.core.XASessionImpl;
+import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.model.Document;
@@ -60,7 +61,7 @@ import org.nuxeo.ecm.core.utils.SIDGenerator;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author M.-A. Darche
  */
 public class JCRSession implements Session {
 
@@ -77,8 +78,8 @@ public class JCRSession implements Session {
 
     private long sid; // the session id
 
-    public JCRSession(JCRRepository repository, Map<String, Serializable> context)
-            throws DocumentException {
+    public JCRSession(JCRRepository repository,
+            Map<String, Serializable> context) throws DocumentException {
         this(repository, null, context);
     }
 
@@ -195,7 +196,8 @@ public class JCRSession implements Session {
             return new org.nuxeo.ecm.core.repository.jcr.JCRQuery(this, query);
         }
         if (Query.Type.XPATH == qType) {
-            return new org.nuxeo.ecm.core.repository.jcr.JCRQueryXPath(this, query, params);
+            return new org.nuxeo.ecm.core.repository.jcr.JCRQueryXPath(this,
+                    query, params);
         }
 
         throw new UnsupportedQueryTypeException(qType);
@@ -263,7 +265,7 @@ public class JCRSession implements Session {
      * Resolves the given path relative to the given reference node.
      * <p>
      * The node must be a JCRDocument node.
-     *
+     * 
      * @param ref
      * @param relPath
      * @return
@@ -309,9 +311,8 @@ public class JCRSession implements Session {
                     + '/' + ModelAdapter.getChildPath(dstName);
 
             if (dstContainer.hasChild(dstName)) {
-                // we have a conflict, generate a new locally unique name based
-                // on the title of the document
-                dstName = generateDocumentName(src.getString("title"));
+                // We have a conflict, generate a new locally unique name based
+                dstName = generateDocumentName(src.getName(), dstContainer);
                 dstPath = ((JCRDocument) dstContainer).getNode().getPath()
                         + '/' + ModelAdapter.getChildPath(dstName);
             }
@@ -406,19 +407,19 @@ public class JCRSession implements Session {
                 queryString = "/";
             } else {
                 String path = ((JCRDocument) folder).getNode().getPath();
-                queryString = "/jcr:root/" + JCRQueryXPath.quotePath(path) +
-                        '/' + NodeConstants.ECM_CHILDREN.rawname;
+                queryString = "/jcr:root/" + JCRQueryXPath.quotePath(path)
+                        + '/' + NodeConstants.ECM_CHILDREN.rawname;
             }
-            queryString += "/element(*, " +
-                    NodeConstants.ECM_NT_DOCUMENT_PROXY.rawname + ")[@" +
-                    attribute.rawname + " = '" + value + "']";
+            queryString += "/element(*, "
+                    + NodeConstants.ECM_NT_DOCUMENT_PROXY.rawname + ")[@"
+                    + attribute.rawname + " = '" + value + "']";
             javax.jcr.query.Query query = session.getWorkspace().getQueryManager().createQuery(
                     queryString, javax.jcr.query.Query.XPATH);
             QueryResult result = query.execute();
             return result.getNodes();
         } catch (RepositoryException e) {
-            throw new DocumentException("Failed to find proxy nodes for " +
-                    doc.getUUID(), e);
+            throw new DocumentException("Failed to find proxy nodes for "
+                    + doc.getUUID(), e);
         }
     }
 
@@ -446,38 +447,15 @@ public class JCRSession implements Session {
         return System.identityHashCode(this) + ":" + sid + ':' + sessionStr;
     }
 
-    public static String generateDocumentName(String title) {
-        if (title == null) {
-            return "doc-" + String.valueOf(System.currentTimeMillis());
+    public String generateDocumentName(String name, Document parent)
+            throws DocumentException {
+        if (name == null || name.length() == 0) {
+            name = IdUtils.generateStringId();
         }
-
-        // generate the ID from the title
-        char[] chars = title.toCharArray();
-
-        for (int i = 0; i < chars.length; i++) {
-            char ch = chars[i];
-            if (Character.isWhitespace(ch)) {
-                chars[i] = '_';
-            } else if (!Character.isLetterOrDigit(ch)) {
-                switch (chars[i]) {
-                case '-':
-                    chars[i] = '-';
-                    break;
-                case '.':
-                    chars[i] = '.';
-                    break;
-                case '_':
-                    chars[i] = '_';
-                    break;
-                default:
-                    chars[i] = '_';
-                    break;
-                }
-            }
+        if (parent.hasChild(name)) {
+            name = name + '.' + String.valueOf(System.currentTimeMillis());
         }
-
-        return String.valueOf(chars) + '.'
-                + String.valueOf(System.currentTimeMillis());
+        return name;
     }
 
     @Override
