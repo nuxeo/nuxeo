@@ -65,8 +65,15 @@ public class DocumentTreeNodeImpl implements DocumentTreeNode {
 
     public DocumentTreeNodeImpl(DocumentModel document, Filter filter,
             Filter leafFilter, Sorter sorter, QueryModel queryModel) {
+        this(document.getSessionId(), document, filter, leafFilter, sorter,
+                queryModel);
+    }
+    
+    public DocumentTreeNodeImpl(String sessionId, DocumentModel document,
+            Filter filter, Filter leafFilter, Sorter sorter,
+            QueryModel queryModel) {
         this.document = document;
-        this.sessionId = document.getSessionId();
+        this.sessionId = sessionId;
         this.filter = filter;
         this.leafFilter = leafFilter;
         this.sorter = sorter;
@@ -142,7 +149,7 @@ public class DocumentTreeNodeImpl implements DocumentTreeNode {
             for (DocumentModel child : documents) {
                 String identifier = child.getId();
                 DocumentTreeNodeImpl childNode = new DocumentTreeNodeImpl(
-                        child, filter, leafFilter, sorter, queryModel);
+                        session.getSessionId(), child, filter, leafFilter, sorter, queryModel);
                 children.put(identifier, childNode);
             }
         } catch (ClientException e) {
