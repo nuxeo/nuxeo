@@ -412,6 +412,17 @@ div.schedule-compact-default td.inactive-day td.header, div.schedule-compact-def
   visibility: visible;
 }
 
+
+/* Hides from IE5-mac \*/
+* html .buggybox {
+  height: 1%;
+}
+
+/* End hide from IE5-mac */
+
+
+/* Context menu classes (temporary) */
+
 #contextMenu {
   position: absolute;
   visibility: hidden;
@@ -425,9 +436,41 @@ div.schedule-compact-default td.inactive-day td.header, div.schedule-compact-def
   left: 0;
 }
 
-/* Hides from IE5-mac \*/
-* html .buggybox {
-  height: 1%;
+.ctxMenuStyle {
+      list-style: none;
+      padding: 1px;
+      margin: 0px;
+      background-color: #fff;
+      border: 1px solid #999;
+      width: 100px;
 }
-
-/* End hide from IE5-mac */
+.ctxMenuItemStyle {
+      margin: 0px;
+      color: #000;
+      display: block;
+      cursor: default;
+      padding: 3px;
+      border: 1px solid #fff;
+      background-color: transparent;
+      font-size: 9pt;
+}
+.ctxMenuItemHoverStyle {
+      margin: 0px;
+      color: #000;
+      display: block;
+      cursor: default;
+      padding: 3px;
+      border: 1px solid #0a246a;
+      background-color: #b6bdd2;
+      font-size: 9pt;
+}
+.ctxMenuImg {
+      vertical-align:middle;
+      padding-right:2px;
+}
+.ctxMenuShadow {
+  background-color:#000;
+  position:absolute;
+  opacity:0.2;
+  z-index:499;
+}
