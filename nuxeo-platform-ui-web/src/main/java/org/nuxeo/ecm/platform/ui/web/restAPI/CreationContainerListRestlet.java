@@ -33,6 +33,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.LiveEditConstants;
 import org.nuxeo.runtime.api.Framework;
+import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -76,5 +77,6 @@ public class CreationContainerListRestlet extends BaseNuxeoRestlet implements
             docElement.addElement(docPathTag).setText(parent.getPathAsString());
         }
         res.setEntity(resultDocument.asXML(), MediaType.TEXT_XML);
+        res.getEntity().setCharacterSet(CharacterSet.UTF_8);
     }
 }
