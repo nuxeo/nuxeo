@@ -40,17 +40,18 @@ class Nuxeo(NuxeoTestCase):
         import_path = self.conf_get('testWriter', 'import_path')
         self.files = [os.path.join(import_path, item)
                       for item in os.listdir(import_path)]
-
+        self.search = self.conf_getInt('testReader', 'search', 1)
 
     def testInit(self):
-        # create a workspace and a folder, grant rights to members
-        p = (LoginPage(self)
-             .login(self.cred_admin[0], self.cred_admin[1])
-             .getRootWorkspaces()
-             .createWorkspace(self.ws_title, 'A description')
-             .rights().grant('ReadWrite', 'members')
-             .view()
-             .createFolder(self.dir_title, 'A description'))
+        p = LoginPage(self).login(self.cred_admin[0], self.cred_admin[1])
+        ret = p.viewDocumentPath(self.dir_path, raiseOn404=False)
+        if ret is None:
+            # create a workspace and a folder, grant rights to members
+            p = (p.getRootWorkspaces()
+                 .createWorkspace(self.ws_title, 'A description')
+                 .rights().grant('ReadWrite', 'members')
+                 .view()
+                 .createFolder(self.dir_title, 'A description'))
         # create users
         login = self.cred_member[0]
         pwd = self.cred_member[1]
@@ -60,13 +61,12 @@ class Nuxeo(NuxeoTestCase):
         group = 'members'
         p = p.memberManagement()
         while True:
-            p.createUser(login, 'bob@foo.com', pwd, groups='members',
+            p.createUser(login, login + '@127.0.0.1', pwd, groups='members',
                          firstname="first", lastname=login.capitalize())
             login, pwd = xmlrpc_get_credential(host, port, group)
             if login == first_login:
                 break
         p.logout()
-
 
     def testWriter(self):
         lipsum = self._lipsum
@@ -86,12 +86,32 @@ class Nuxeo(NuxeoTestCase):
         p.logout()
 
     def testReader(self):
-        p = (BasePage(self)
-             .viewDocumentPath(self.dir_path)
-             .login(self.cred_member[0], self.cred_member[1]))
-        # TODO: view random doc
-        # TODO: view dashboard
-        # TODO: optional search
+        p = LoginPage(self).login(self.cred_member[0], self.cred_member[1])
+
+        for i in range(self.nb_write):
+            p = (FolderPage(self).viewDocumentPath(self.dir_path)
+                 .sort(random.choice(['title', 'author', 'date', 'lifecycle']))
+                 .sort(random.choice(['title', 'author', 'date', 'lifecycle']))
+                 .viewRandomDocument(pattern=self.tag.capitalize()))
+            p = (p.edit()
+                 .metadata()
+                 .files()
+                 .publish()
+                 .relations()
+                 .workflow()
+                 .mySubscriptions()
+                 .comments()
+                 .history())
+
+        p.dashboard()
+
+        p.getRootWorkspaces()
+        if self.search:
+            p = (p.search('scrum', 'Search with empty results')
+                 .search('"' + self.dir_title + '"', 'Search one document')
+                 .search('cephalus', 'Search few documents')
+                 .search(self.tag, 'Search all documents'))
+
         p.logout()
 
 if __name__ in ('main', '__main__'):

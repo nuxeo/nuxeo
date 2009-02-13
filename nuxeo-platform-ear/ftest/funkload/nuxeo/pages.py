@@ -16,8 +16,7 @@
 # 02111-1307, USA.
 #
 """
-This modules is tied with the Nuxeo EP code page.
-
+This modules is tied with the Nuxeo EP application.
 
 TODO:
 
@@ -29,24 +28,13 @@ Folder
 
 * emptyTrash()
 
-* dashboard()
-
-* search()
-
-* sort(title/author/status)
-
-* viewRandomDocument()
-
 * next() previous()
 
 Dashboard
 
 * wsRefresh()
 
-
 Document
-
-* viewMetadata
 
 * viewFile
    .add(filename, path)
@@ -58,9 +46,8 @@ Document
    .add(uid)
 
 * publish(section_uid)
-
-
 """
+import random
 from webunit.utility import Upload
 from utils import extractToken, extractJsfState
 from funkload.utils import Data
@@ -72,12 +59,27 @@ class BasePage:
     def __init__(self, fl):
         self.fl = fl
 
+    # helpers
+    def getDocUid(self):
+        fl = self.fl
+        uid = extractToken(fl.getBody(), "var currentDocURL='default/", "'")
+        fl.assert_(uid, 'Current document uid not found.')
+        return uid
+
+    def getConversationId(self):
+        fl = self.fl
+        cId = extractToken(fl.getBody(), "var currentConversationId='", "'")
+        fl.assert_(cId, 'Current conversation id not found')
+        return cId
+
     def available(self):
         """Check if the server is available."""
         fl = self.fl
         fl.get(fl.server_url + '/login.jsp',
                description="Check if the server is alive")
 
+
+    # pages
     def logout(self):
         """Log out the current user."""
         fl = self.fl
@@ -85,6 +87,7 @@ class BasePage:
                description="Log out")
         fl.assert_('login' in fl.getLastUrl(),
                      "Not redirected to login page.")
+        return LoginPage(self.fl)
 
     def login(self, user, password):
         fl = self.fl
@@ -118,13 +121,21 @@ class BasePage:
                    'Invalid login expected for %s:%s.' %  (user, password))
         return self
 
-    def viewDocumentPath(self, path, description=None):
+    def viewDocumentPath(self, path, description=None, raiseOn404=True):
+        """This method return None when raiseOn404 is False and the document
+        does not exist"""
         fl = self.fl
         if not description:
             description = "View document path:" + path
-        fl.get(fl.server_url + "/nxpath/default/default-domain/" +
+        ok_codes = [200, 301, 302, 303, 307]
+        if not raiseOn404:
+            ok_codes.append(404)
+        resp = fl.get(fl.server_url + "/nxpath/default/default-domain/" +
                path + "@view_documents",
-               description=description)
+               description=description, ok_codes=ok_codes)
+        if resp.code == 404:
+            fl.logi('Document ' + path + ' does not exists.')
+            return None
         return self
 
     def viewDocumentUid(self, uid, tab='', description=None):
@@ -135,6 +146,9 @@ class BasePage:
                '/view_documents?tabId=' + tab + '=&conversationId=0NXMAIN1',
                description=description)
         return self
+
+    def getRootWorkspaces(self):
+        return self.viewDocumentPath("workspaces")
 
     def memberManagement(self):
         fl = self.fl
@@ -149,6 +163,7 @@ class BasePage:
 
     def createUser(self, username, email, password, firstname='',
                    lastname='', company='', groups=''):
+        """This method does not raise exception if user already exists"""
         fl = self.fl
         fl.assert_('j_id177' in fl.getBody())
         fl.post(fl.server_url + "/view_users.faces", params=[
@@ -201,18 +216,98 @@ class BasePage:
             description="Back to member management")
         return self
 
-    def getDocUid(self):
+    def dashboard(self):
         fl = self.fl
-        uid = extractToken(fl.getBody(), "var currentDocURL='default/", "'")
-        fl.assert_(uid, 'Current document uid not found.')
-        return uid
+        fl.post(fl.server_url + "/view_documents.faces", params=[
+            ['j_id16', 'j_id16'],
+            ['j_id16:j_id18', ''],
+            ['j_id16:j_id19', 'KEYWORDS'],
+            ['javax.faces.ViewState', fl.getLastJsfState()],
+            ['j_id16:j_id26:0:j_id28', 'j_id16:j_id26:0:j_id28']],
+                description="View dashboard")
+        return self
 
-    def getConversationId(self):
+    def search(self, query, description=None):
         fl = self.fl
-        cId = extractToken(fl.getBody(), "var currentConversationId='", "'")
-        fl.assert_(cId, 'Current conversation id not found')
-        return cId
+        description = description and description or 'Search ' + query
 
+        if 'j_id15' in fl.getBody():
+            # search again
+            fl.post(fl.server_url + "/search/search_results_simple.faces",
+                    params=[['j_id15', 'j_id15'],
+                            ['j_id15:j_id17', query],
+                            ['j_id15:j_id18', 'KEYWORDS'],
+                            ['j_id15:j_id19', 'Search'],
+                            ['javax.faces.ViewState', fl.getLastJsfState()]],
+                    description=description)
+        else:
+            # search from a document page
+            fl.post(fl.server_url + "/view_documents.faces", params=[
+                ['j_id16', 'j_id16'],
+                ['j_id16:j_id18', query],
+                ['j_id16:j_id19', 'KEYWORDS'],
+                ['j_id16:j_id20', 'Search'],
+                ['javax.faces.ViewState', fl.getLastJsfState()]],
+                    description=description)
+        fl.assert_('SEARCH_DOCUMENT_LIST' in fl.getBody(),
+                     'Not a search result page')
+        return self
+
+
+    def edit(self):
+        ret = self.viewDocumentUid(self.getDocUid(), tab='TAB_EDIT',
+                                   description="View edit tab")
+        self.fl.assert_('document_edit' in self.fl.getBody())
+        return ret
+
+    def metadata(self):
+        ret = self.viewDocumentUid(self.getDocUid(), tab='TAB_METADATA_EDIT',
+                                   description="View metadata tab")
+        self.fl.assert_('metadata_edit' in self.fl.getBody())
+        return ret
+
+    def files(self):
+        return self.viewDocumentUid(self.getDocUid(), tab='TAB_FILES_EDIT',
+                                    description="View files tab")
+
+    def publish(self):
+        return self.viewDocumentUid(self.getDocUid(), tab='TAB_PUBLISH',
+                                    description="View publish tab")
+
+    def relations(self):
+        return self.viewDocumentUid(self.getDocUid(), tab='TAB_RELATIONS',
+                                    description="View relations tab")
+
+    def workflow(self):
+        ret = self.viewDocumentUid(self.getDocUid(), tab='TAB_CONTENT_JBPM',
+                                   description="View workflow tab")
+        self.fl.assert_('startWorkflow' in self.fl.getBody())
+        return ret
+
+    def mySubscriptions(self):
+        ret = self.viewDocumentUid(self.getDocUid(),
+                                   tab='TAB_MY_SUBSCRIPTIONS',
+                                   description="View my subscriptions tab")
+        self.fl.assert_('notifications' in self.fl.getBody())
+        return ret
+
+    def manageSubscriptions(self):
+        """Only available for manager."""
+        ret = self.viewDocumentUid(self.getDocUid(),
+                                   tab='TAB_MANAGE_SUBSCRIPTIONS',
+                                   description="View manage subscriptions tab")
+        self.fl.assert_('add_subscriptions' in self.fl.getBody())
+        return ret
+
+    def comments(self):
+        ret = self.viewDocumentUid(self.getDocUid(), tab='view_comments',
+                                   description="View comments tab")
+        return ret
+
+    def history(self):
+        return self.viewDocumentUid(self.getDocUid(),
+                                    tab='TAB_CONTENT_HISTORY',
+                                    description="View history tab")
 
 
 class LoginPage(BasePage):
@@ -221,8 +316,6 @@ class LoginPage(BasePage):
 
 class FolderPage(BasePage):
     """Folder page"""
-    def getRootWorkspaces(self):
-        return self.viewDocumentPath("workspaces")
 
     def createWorkspace(self, title, description):
         fl = self.fl
@@ -334,7 +427,6 @@ class FolderPage(BasePage):
         fl.assert_('SELECTION_ADDTOLIST' in fl.getBody())
         return self
 
-
     def deleteItem(self, title):
         fl = self.fl
         folder_uid = self.getDocUid()
@@ -388,15 +480,18 @@ class FolderPage(BasePage):
 
         params = [
             ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['AJAXREQUEST', 'add_rights_form:nxl_user_group_suggestion:j_id264'],
+            ['AJAXREQUEST',
+             'add_rights_form:nxl_user_group_suggestion:j_id264'],
             ['add_rights_form', 'add_rights_form'],
-            ['add_rights_form:nxl_user_group_suggestion:nxw_selection_suggest', user],
+            ['add_rights_form:nxl_user_group_suggestion:nxw_selection_suggest',
+             user],
             ['add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox_selection',
              '0'],
             ['add_rights_form:j_id309', 'Grant'],
             ['add_rights_form:j_id314', 'Read'],
             ['suggestionInputSelectorId', 'nxw_selection_suggest'],
-            ['add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox:j_id272', 'add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox:j_id272'],
+            ['add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox:j_id272',
+             'add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox:j_id272'],
             ['suggestionSelectionListId', 'nxw_selection_list']]
         fl.post(server_url + "/view_documents.faces", params,
                   description="Grant perm select user " + user)
@@ -423,7 +518,43 @@ class FolderPage(BasePage):
         fl.assert_('Rights updated' in fl.getBody())
         return self
 
+    def sort(self, column):
+        fl = self.fl
+        server_url = fl.server_url
+        fl.assert_('CHILDREN_DOCUMENT_LIST' in fl.getBody(),
+                   'Not a folder listing page.')
+        options = {'date': [['CHILDREN_DOCUMENT_LIST:dataTable:j_id253',
+                             'CHILDREN_DOCUMENT_LIST:dataTable:j_id253'],
+                            ['sortColumn', 'dc:modified']],
+                   'author': [['CHILDREN_DOCUMENT_LIST:dataTable:j_id265',
+                               'CHILDREN_DOCUMENT_LIST:dataTable:j_id265'],
+                              ['sortColumn', 'dc:creator']],
+                   'lifecycle':[['CHILDREN_DOCUMENT_LIST:dataTable:j_id277',
+                                 'CHILDREN_DOCUMENT_LIST:dataTable:j_id277'],
+                                ['sortColumn', 'ecm:currentLifeCycleState']],
+                   'title': [['CHILDREN_DOCUMENT_LIST:dataTable:j_id235',
+                              'CHILDREN_DOCUMENT_LIST:dataTable:j_id235'],
+                             ['sortColumn', 'dc:title']]
+                   }
+        fl.assert_(column in options.keys(), 'Invalid sort column')
+        # date
+        fl.post(server_url + "/view_documents.faces", params=[
+            ['CHILDREN_DOCUMENT_LIST', 'CHILDREN_DOCUMENT_LIST'],
+            ['javax.faces.ViewState', fl.getLastJsfState()],
+            ['providerName', 'CURRENT_DOC_CHILDREN']] + options[column],
+                description="Sort by " + column)
+        return self
+
+    def viewRandomDocument(self, pattern):
+        fl = self.fl
+        hrefs = fl.listHref(content_pattern=pattern,
+                            url_pattern='\/view_documents')
+        fl.assert_(len(hrefs), "No doc found with pattern: " + pattern)
+        doc_url = random.choice(hrefs)
+        fl.get(doc_url, description="View a random document")
+        return DocumentPage(self.fl)
 
 
 class DocumentPage(BasePage):
     """Document page."""
+

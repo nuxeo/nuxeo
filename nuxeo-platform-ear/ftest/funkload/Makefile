@@ -7,7 +7,8 @@ else
 	FLOPS = $(EXT)
 endif
 
-all: start rest page stop
+# all test except bench
+all: start rest page test-nuxeo stop
 
 start:
 	-$(MONCTL) restart
@@ -18,6 +19,7 @@ stop:
 	-$(MONCTL) stop
 	-$(CREDCTL) stop
 
+# test rest and pages libs
 rest:
 	fl-run-test -v --simple-fetch test_rest.py -e testWriter $(FLOPS)
 	fl-run-test -v --simple-fetch test_rest.py -e testReader $(FLOPS)
@@ -25,17 +27,24 @@ rest:
 page:
 	fl-run-test -v --simple-fetch test_pages.py $(FLOPS)
 
-nux:
-	fl-run-test -dv --simple-fetch test_nuxeo.py -e testInit $(FLOPS)
-	fl-run-test -dv --simple-fetch test_nuxeo.py -e testWriter $(FLOPS)
-	fl-run-test -dv --simple-fetch test_nuxeo.py -e testReader $(FLOPS)
+# test nuxeo ep
+init:
+	fl-run-test -v --simple-fetch test_nuxeo.py -e testInit $(FLOPS)
+
+writer:
+	fl-run-test -v --simple-fetch test_nuxeo.py -e testWriter $(FLOPS)
+
+reader:
+	fl-run-test -v --simple-fetch test_nuxeo.py -e testReader $(FLOPS)
+
+test-nuxeo: init writer reader
 
 
-bench: nuxeo bench-writer warmum bench-reader
+bench-nuxeo: start test-nuxeo bench-writer warmum bench-reader stop
 
-
+# bench nuxeo ep
 bench-writer:
-	-fl-run-bench -c 1:5:10:15:20 -D 60 -m 0.7 -M 1 -s 1 test_nuxeo.py Nuxeo.testWriter $(FLOPS)
+	-fl-run-bench --simple-fetch -c 1:2:3:4:5 -D 60 -m 0.2 -M 1 -s 1 test_nuxeo.py Nuxeo.testWriter $(FLOPS)
 	-fl-build-report log/nuxeo-bench.xml --html -o target/report
 	-./finalize-report.sh test_writer
 

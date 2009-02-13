@@ -51,7 +51,22 @@ class Pages(NuxeoTestCase):
         p = BasePage(self).viewDocumentPath("workspaces")
         p = p.login('Administrator', 'Administrator')
         # TODO assert we are on workspaces
+        ret = p.viewDocumentPath("workspaces/that/does/not/exists",
+                                 raiseOn404=False)
+        self.assert_(ret is None, "Expecting None for a 404.")
         p.logout()
+
+    def testNavigation(self):
+        p = (LoginPage(self)
+             .login('Administrator', 'Administrator')
+             .getRootWorkspaces())
+        p = (p.metadata()
+             .rights()
+             .history())
+        p = (p.dashboard()
+             .getRootWorkspaces()
+             .search('workspaces')
+             .logout())
 
     def testFolderPage(self):
         title = self._lipsum.getSubject(uniq=True, prefix=self.tag)
@@ -61,8 +76,14 @@ class Pages(NuxeoTestCase):
              .createWorkspace(self.ws_title, 'A description')
              .rights().grant('ReadWrite', 'members')
              .view()
-             .createFolder(self.dir_title, 'A description')
-             .createFile(title, description))
+             .createFolder(self.dir_title, 'A description'))
+        fuid = p.getDocUid()
+        p.createFile(title, description)
+        p = (p.viewDocumentUid(fuid)
+             .sort('author')
+             .sort('title')
+             .sort('lifecycle')
+             .sort('date'))
         p = (p.getRootWorkspaces()
              .deleteItem(self.ws_title)
              .logout())
