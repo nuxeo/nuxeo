@@ -29,6 +29,7 @@
           getSyndicationSearch.faces
         </parameter>
         <parameter name="ForcePromptURL_Restlet">restAPI/</parameter>
+        <parameter name="ForcePromptURL_Restlet">site/api/</parameter>
       </parameters>
     </authenticationPlugin>
 
