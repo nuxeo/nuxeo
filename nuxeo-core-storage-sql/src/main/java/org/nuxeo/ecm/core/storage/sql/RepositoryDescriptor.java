@@ -42,6 +42,9 @@ public class RepositoryDescriptor {
     @XNode("indexing/fulltext@analyzer")
     public String fulltextAnalyzer;
 
+    @XNode("indexing/fulltext@catalog")
+    public String fulltextCatalog;
+
     @XNode("xa-datasource")
     public String xaDataSourceName;
 

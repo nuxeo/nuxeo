@@ -145,6 +145,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         session.save();
     }
 
+    // TODO XXX this fails with MySQL
     public void testRecursiveRemoval() throws Exception {
         int DEPTH = 70;
         Session session = repository.getConnection();

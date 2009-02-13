@@ -9,6 +9,9 @@
     <repository name="test"
       factory="org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryFactory">
       <repository>
+        <indexing>
+          <fulltext catalog="nuxeo" analyzer="french"/>
+        </indexing>
         <xa-datasource>net.sourceforge.jtds.jdbcx.JtdsDataSource</xa-datasource>
         <property name="ServerName">${nuxeo.test.mssql.host}</property>
         <property name="DatabaseName">nuxeojunittests</property>

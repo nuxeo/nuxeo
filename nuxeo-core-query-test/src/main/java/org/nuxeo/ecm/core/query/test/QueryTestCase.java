@@ -886,8 +886,18 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         assertEquals(8, dml.size());
     }
 
+    /**
+     * Let databases with asynchronous fulltext indexers sleep a bit to give
+     * them time to do their indexing.
+     * <p>
+     * Needed for MS SQL Server.
+     */
+    protected void sleepForFulltext() {
+    }
+
     public void testSQLFulltext() throws Exception {
         createDocs();
+        sleepForFulltext();
         String query;
         DocumentModelList dml;
         DocumentModel file1 = session.getDocument(new PathRef(
@@ -905,6 +915,7 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         file1.setProperty("dublincore", "title", "hello world");
         session.saveDocument(file1);
         session.save();
+        sleepForFulltext();
 
         dml = session.query(query);
         assertIdSet(dml, file1.getId());
@@ -912,6 +923,7 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         file2.setProperty("dublincore", "description", "the world is my oyster");
         session.saveDocument(file2);
         session.save();
+        sleepForFulltext();
 
         dml = session.query(query);
         assertIdSet(dml, file1.getId(), file2.getId());
@@ -919,6 +931,7 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         file3.setProperty("dublincore", "title", "brave new world");
         session.saveDocument(file3);
         session.save();
+        sleepForFulltext();
 
         dml = session.query(query);
         assertIdSet(dml, file1.getId(), file2.getId()); // file3 is a Note
@@ -929,16 +942,19 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
 
         query = "SELECT * FROM Document WHERE ecm:fulltext = 'world' "
                 + "AND dc:contributors = 'pete'";
+        sleepForFulltext();
         dml = session.query(query);
         assertIdSet(dml, file2.getId());
 
         // multi-valued field
         query = "SELECT * FROM Document WHERE ecm:fulltext = 'bzzt'";
+        sleepForFulltext();
         dml = session.query(query);
         assertEquals(0, dml.size());
         file1.setProperty("dublincore", "subjects", new String[] { "bzzt" });
         session.saveDocument(file1);
         session.save();
+        sleepForFulltext();
         query = "SELECT * FROM Document WHERE ecm:fulltext = 'bzzt'";
         dml = session.query(query);
         assertIdSet(dml, file1.getId());
@@ -946,6 +962,7 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
 
     public void testSQLFulltextBlob() throws Exception {
         createDocs();
+        sleepForFulltext();
         String query;
         DocumentModelList dml;
         DocumentModel file1 = session.getDocument(new PathRef(
@@ -965,6 +982,7 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         file1.setProperty("dublincore", "title", "hello world");
         session.saveDocument(file1);
         session.save();
+        sleepForFulltext();
 
         query = "SELECT * FROM File WHERE ecm:fulltext = 'world'";
 
@@ -974,6 +992,7 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         // copy
         DocumentModel copy = session.copy(file1.getRef(), folder1.getRef(),
                 "file1Copy");
+        sleepForFulltext();
 
         dml = session.query(query);
         assertIdSet(dml, file1.getId(), copy.getId());

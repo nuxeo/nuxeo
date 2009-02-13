@@ -118,7 +118,7 @@ public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
         properties.put("User", SQLBackendHelper.PG_DATABASE_OWNER);
         properties.put("Password", SQLBackendHelper.PG_DATABASE_PASSWORD);
         descriptor.properties = properties;
-        descriptor.fulltextAnalyzer = "english";
+        descriptor.fulltextAnalyzer = "french";
         return descriptor;
     }
 
@@ -133,6 +133,8 @@ public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
         properties.put("Password", SQLBackendHelper.MSSQL_DATABASE_PASSWORD);
         properties.put("UseCursors/Boolean", "true");
         descriptor.properties = properties;
+        descriptor.fulltextAnalyzer = "french";
+        descriptor.fulltextCatalog = "nuxeo";
         return descriptor;
     }
 

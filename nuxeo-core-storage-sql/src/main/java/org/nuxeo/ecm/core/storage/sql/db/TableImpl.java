@@ -259,7 +259,6 @@ public class TableImpl implements Table {
             }
         }
         for (String[] columnNames : indexedColumns) {
-            boolean fulltext = fulltextIndexedColumns.contains(columnNames);
             List<String> qcols = new LinkedList<String>();
             List<String> pcols = new LinkedList<String>();
             for (String name : columnNames) {
@@ -272,25 +271,15 @@ public class TableImpl implements Table {
                     + StringUtils.join(pcols, '_')
                     + (dialect.storesUpperCaseIdentifiers() ? "_IDX" : "_idx")
                     + dialect.closeQuote();
-            StringBuilder buf = new StringBuilder();
-            buf.append("CREATE");
-            // buf.append(unique ? " UNIQUE" : "");
-            if (fulltext) {
-                buf.append(dialect.getFulltextIndexEarlyModifier());
+            String createIndexSql;
+            if (fulltextIndexedColumns.contains(columnNames)) {
+                createIndexSql = dialect.getCreateFulltextIndexSql(indexName,
+                        getQuotedName(), qcols);
+            } else {
+                createIndexSql = dialect.getCreateIndexSql(indexName,
+                        getQuotedName(), qcols);
             }
-            buf.append(" INDEX ");
-            buf.append(indexName);
-            buf.append(" ON ");
-            buf.append(getQuotedName());
-            if (!fulltext || dialect.hasNormalColumnsInFulltextIndex()) {
-                buf.append(" (");
-                buf.append(StringUtils.join(qcols, ", "));
-                buf.append(')');
-            }
-            if (fulltext) {
-                buf.append(dialect.getFulltextIndexFinalModifier(qcols));
-            }
-            sqls.add(buf.toString());
+            sqls.add(createIndexSql);
         }
         return sqls;
     }

@@ -25,6 +25,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +39,7 @@ import org.hibernate.dialect.MySQLDialect;
 import org.hibernate.dialect.PostgreSQLDialect;
 import org.hibernate.dialect.SQLServerDialect;
 import org.hibernate.exception.SQLExceptionConverter;
+import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
@@ -61,9 +63,15 @@ public class Dialect {
 
     protected final String fulltextAnalyzer;
 
-    private static final String DEFAULT_FULLTEXT_ANALYSER_PG = "english";
+    protected final String fulltextCatalog;
 
-    private static final String DEFAULT_FULLTEXT_ANALYSER_H2 = "org.apache.lucene.analysis.standard.StandardAnalyzer";
+    private static final String DEFAULT_FULLTEXT_ANALYZER_PG = "english";
+
+    private static final String DEFAULT_FULLTEXT_ANALYZER_H2 = "org.apache.lucene.analysis.standard.StandardAnalyzer";
+
+    private static final String DEFAULT_FULLTEXT_ANALYZER_MSSQL = "english";
+
+    private static final String DEFAULT_FULLTEXT_CATALOG_MSSQL = "nuxeo";
 
     /**
      * Creates a {@code Dialect} by connecting to the datasource to check what
@@ -104,17 +112,28 @@ public class Dialect {
             }
         }
         dialectName = dialect.getClass().getSimpleName();
-        String analyzer = repositoryDescriptor.fulltextAnalyzer;
-        if (analyzer == null) {
+        String ftAnalyzer = repositoryDescriptor.fulltextAnalyzer;
+        if (ftAnalyzer == null) {
             // suitable defaults
             if (dialect instanceof PostgreSQLDialect) {
-                analyzer = DEFAULT_FULLTEXT_ANALYSER_PG;
+                ftAnalyzer = DEFAULT_FULLTEXT_ANALYZER_PG;
             }
             if (dialect instanceof H2Dialect) {
-                analyzer = DEFAULT_FULLTEXT_ANALYSER_H2;
+                ftAnalyzer = DEFAULT_FULLTEXT_ANALYZER_H2;
+            }
+            if (dialect instanceof SQLServerDialect) {
+                ftAnalyzer = DEFAULT_FULLTEXT_ANALYZER_MSSQL;
             }
         }
-        fulltextAnalyzer = analyzer;
+        fulltextAnalyzer = ftAnalyzer;
+        String ftCatalog = repositoryDescriptor.fulltextCatalog;
+        if (ftCatalog == null) {
+            if (dialect instanceof SQLServerDialect) {
+                ftCatalog = DEFAULT_FULLTEXT_CATALOG_MSSQL;
+            }
+        }
+        fulltextCatalog = ftCatalog;
+
     }
 
     @Override
@@ -184,6 +203,137 @@ public class Dialect {
     }
 
     /**
+     * Gets a CREATE INDEX statement for a normal index.
+     */
+    public String getCreateIndexSql(String indexName, String quotedName,
+            List<String> qcols) {
+        StringBuilder buf = new StringBuilder();
+        buf.append("CREATE INDEX ");
+        buf.append(indexName);
+        buf.append(" ON ");
+        buf.append(quotedName);
+        buf.append(" (");
+        buf.append(StringUtils.join(qcols, ", "));
+        buf.append(')');
+        return buf.toString();
+    }
+
+    /**
+     * Gets a CREATE INDEX statement for a fulltext index.
+     */
+    public String getCreateFulltextIndexSql(String indexName, String tableName,
+            List<String> columnNames) {
+        StringBuilder buf = new StringBuilder();
+        buf.append("CREATE");
+        if (dialect instanceof MySQLDialect
+                || dialect instanceof SQLServerDialect) {
+            buf.append(" FULLTEXT");
+        }
+        buf.append(" INDEX");
+        if (dialect instanceof PostgreSQLDialect
+                || dialect instanceof MySQLDialect) {
+            buf.append(' ');
+            buf.append(indexName);
+        }
+        buf.append(" ON ");
+        buf.append(tableName);
+
+        // column names
+        if (dialect instanceof MySQLDialect) {
+            buf.append(" (");
+            buf.append(StringUtils.join(columnNames, ", "));
+            buf.append(')');
+        }
+        if (dialect instanceof SQLServerDialect) {
+            buf.append(" (");
+            Iterator<String> it = columnNames.iterator();
+            while (it.hasNext()) {
+                buf.append(it.next());
+                buf.append(" LANGUAGE ");
+                buf.append(getQuotedFulltextAnalyzer());
+                if (it.hasNext()) {
+                    buf.append(", ");
+                }
+            }
+            buf.append(')');
+        }
+
+        // trailer
+        if (dialect instanceof PostgreSQLDialect) {
+            buf.append(String.format(" USING GIN(%s)", columnNames.get(0)));
+        }
+        if (dialect instanceof SQLServerDialect) {
+            String fulltextUniqueIndex = "[fulltext_pk]";
+            buf.append(String.format(" KEY INDEX %s ON [%s]",
+                    fulltextUniqueIndex, fulltextCatalog));
+        }
+
+        return buf.toString();
+    }
+
+    /**
+     * Gets the information needed to do a a fulltext match, either with a
+     * direct expression in the WHERE clause, or using a join with an additional
+     * table.
+     * <p>
+     * Returns a String array with:
+     * <ul>
+     * <li>the expression to join with, or {@code null}; this expression has one
+     * % parameters for the table alias,</li>
+     * <li>a potential query paramenter for it,</li>
+     * <li>the where expression to add to the WHERE clause (may be {@code null}
+     * if none is required when a join is enough); this expression has one %
+     * parameters for the table alias,</li>
+     * <li>a potential query paramenter for it.</li>
+     * </ul>
+     *
+     * @param ftColumn the column containing the fulltext to match
+     * @param mainColumn the column with the main id, for joins
+     * @param fulltextQuery the query to do
+     * @return a String array with the table join expression, the join param,
+     *         the where expression and the where parm
+     *
+     */
+    public String[] getFulltextMatch(Column ftColumn, Column mainColumn,
+            String fulltextQuery) {
+        if (dialect instanceof DerbyDialect) {
+            String qname = ftColumn.getFullQuotedName();
+            if (ftColumn.getSqlType() == Types.CLOB) {
+                String colFmt = getClobCast(false);
+                if (colFmt != null) {
+                    qname = String.format(colFmt, qname, Integer.valueOf(255));
+                }
+            }
+            String whereExpr = String.format("NX_CONTAINS(%s, ?) = 1", qname);
+            return new String[] { null, null, whereExpr, fulltextQuery };
+        }
+        if (dialect instanceof H2Dialect) {
+            String queryTable = String.format("NXFT_SEARCH('%s', '%s', ?)",
+                    "PUBLIC", ftColumn.getTable().getName());
+            String whereExpr = String.format("%%s.KEY = %s",
+                    mainColumn.getFullQuotedName());
+            return new String[] { (queryTable + " %s"), fulltextQuery,
+                    whereExpr, null };
+        }
+        if (dialect instanceof PostgreSQLDialect) {
+            String whereExpr = String.format("NX_CONTAINS(%s, ?)",
+                    ftColumn.getFullQuotedName());
+            return new String[] { null, null, whereExpr, fulltextQuery };
+        }
+        if (dialect instanceof MySQLDialect) {
+            String whereExpr = "MATCH (`fulltext`.`simpletext`, `fulltext`.`binarytext`) AGAINST (?)";
+            return new String[] { null, null, whereExpr, fulltextQuery };
+        }
+        if (dialect instanceof SQLServerDialect) {
+            String whereExpr = String.format(
+                    "FREETEXT([fulltext].*, ?, LANGUAGE %s)",
+                    getQuotedFulltextAnalyzer());
+            return new String[] { null, null, whereExpr, fulltextQuery };
+        }
+        throw new UnsupportedOperationException();
+    }
+
+    /**
      * Specifies what columns of the fulltext table have to be indexed.
      *
      * @return 0 for none, 1 for the synthetic one, 2 for the individual ones
@@ -192,40 +342,11 @@ public class Dialect {
         if (dialect instanceof PostgreSQLDialect) {
             return 1;
         }
-        if (dialect instanceof MySQLDialect) {
+        if (dialect instanceof MySQLDialect
+                || dialect instanceof SQLServerDialect) {
             return 2;
         }
         return 0;
-    }
-
-    /**
-     * Gets the modifier between CREATE and INDEX to create a fulltext index.
-     */
-    public String getFulltextIndexEarlyModifier() {
-        if (dialect instanceof MySQLDialect) {
-            return " FULLTEXT";
-        }
-        return "";
-    }
-
-    /**
-     * Gets the final modifier after CREATE INDEX x ON y, to create a fulltext
-     * index.
-     *
-     * @param quotedNames the quoted column names of the indexed columns
-     */
-    public String getFulltextIndexFinalModifier(List<String> quotedNames) {
-        if (dialect instanceof PostgreSQLDialect) {
-            return String.format(" USING GIN(%s)", quotedNames.get(0));
-        }
-        return "";
-    }
-
-    /**
-     * Do we have the usual columns enumeration in fulltext indexes?
-     */
-    public boolean hasNormalColumnsInFulltextIndex() {
-        return !(dialect instanceof PostgreSQLDialect);
     }
 
     /**
@@ -265,6 +386,13 @@ public class Dialect {
      * For PostgreSQL, it's a text search configuration name.
      */
     public String getFulltextAnalyzer() {
+        return fulltextAnalyzer;
+    }
+
+    public String getQuotedFulltextAnalyzer() {
+        if (!Character.isDigit(fulltextAnalyzer.charAt(0))) {
+            return String.format("'%s'", fulltextAnalyzer);
+        }
         return fulltextAnalyzer;
     }
 
@@ -424,62 +552,6 @@ public class Dialect {
      */
     public boolean isFulltextTableNeeded() {
         return !(dialect instanceof H2Dialect);
-    }
-
-    /**
-     * Gets the information needed to do a a fulltext match, either with a
-     * direct expression in the WHERE clause, or using a join with an additional
-     * table.
-     * <p>
-     * Returns a String array with:
-     * <ul>
-     * <li>the expression to join with, or {@code null}; this expression has one
-     * % parameters for the table alias,</li>
-     * <li>a potential query paramenter for it,</li>
-     * <li>the where expression to add to the WHERE clause (may be {@code null}
-     * if none is required when a join is enough); this expression has one %
-     * parameters for the table alias,</li>
-     * <li>a potential query paramenter for it.</li>
-     * </ul>
-     *
-     * @param ftColumn the column containing the fulltext to match
-     * @param mainColumn the column with the main id, for joins
-     * @param fulltextQuery the query to do
-     * @return a String array with the table join expression, the join param,
-     *         the where expression and the where parm
-     *
-     */
-    public String[] getFulltextMatch(Column ftColumn, Column mainColumn,
-            String fulltextQuery) {
-        if (dialect instanceof DerbyDialect) {
-            String qname = ftColumn.getFullQuotedName();
-            if (ftColumn.getSqlType() == Types.CLOB) {
-                String colFmt = getClobCast(false);
-                if (colFmt != null) {
-                    qname = String.format(colFmt, qname, Integer.valueOf(255));
-                }
-            }
-            String whereExpr = String.format("NX_CONTAINS(%s, ?) = 1", qname);
-            return new String[] { null, null, whereExpr, fulltextQuery };
-        }
-        if (dialect instanceof H2Dialect) {
-            String queryTable = String.format("NXFT_SEARCH('%s', '%s', ?)",
-                    "PUBLIC", ftColumn.getTable().getName());
-            String whereExpr = String.format("%%s.KEY = %s",
-                    mainColumn.getFullQuotedName());
-            return new String[] { (queryTable + " %s"), fulltextQuery,
-                    whereExpr, null };
-        }
-        if (dialect instanceof PostgreSQLDialect) {
-            String whereExpr = String.format("NX_CONTAINS(%s, ?)",
-                    ftColumn.getFullQuotedName());
-            return new String[] { null, null, whereExpr, fulltextQuery };
-        }
-        if (dialect instanceof MySQLDialect) {
-            String whereExpr = "MATCH (`fulltext`.`simpletext`, `fulltext`.`binarytext`) AGAINST (?)";
-            return new String[] { null, null, whereExpr, fulltextQuery };
-        }
-        throw new UnsupportedOperationException();
     }
 
     /**
@@ -668,6 +740,7 @@ public class Dialect {
             statements.add(maker.makeCascadeDeleteTrigger());
             statements.add(maker.makeAccessAllowed());
             statements.add(maker.makeInTree());
+            statements.add(maker.makeFTCatalog());
         }
         return statements;
     }
@@ -1339,6 +1412,21 @@ public class Dialect {
                                     + "  RETURN 0;" //
                                     + "END" //
                             , idType));
+        }
+
+        public ConditionalStatement makeFTCatalog() {
+            return new ConditionalStatement(true, // early
+                    null, // do a check
+                    // strange inverted condition because this is designed to
+                    // test drops
+                    String.format(
+                            "IF EXISTS(SELECT name FROM sys.fulltext_catalogs WHERE name = '%s') "
+                                    + "SELECT * FROM sys.tables WHERE 1 = 0 "
+                                    + "ELSE SELECT 1", //
+                            fulltextCatalog), //
+                    String.format("CREATE FULLTEXT CATALOG [%s]",
+                            fulltextCatalog), //
+                    "SELECT 1");
         }
     }
 

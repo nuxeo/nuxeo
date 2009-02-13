@@ -142,6 +142,8 @@ public class SQLBackendHelper {
      * ----- MS SQL Server configuration -----
      */
 
+    /* Constants mentioned in the ...-mssql-contrib.xml file: */
+
     protected static final String MSSQL_HOST_PROPERTY = "nuxeo.test.mssql.host";
 
     public static final String MSSQL_HOST = "172.16.245.128";
