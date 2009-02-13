@@ -31,6 +31,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.search.api.client.querymodel.Escaper;
+import org.nuxeo.ecm.core.search.api.client.querymodel.LuceneMinimalEscaper;
 import org.nuxeo.runtime.model.RuntimeContext;
 
 @XObject(value = "whereClause")
@@ -47,7 +48,8 @@ public class WhereClauseDescriptor {
     @XNode("fixedPart")
     protected String fixedPart;
 
-    private Escaper escaper;
+    // default escaper instance
+    protected Escaper escaper = new LuceneMinimalEscaper();
 
     public PredicateDescriptor[] getPredicates() {
         return predicates;

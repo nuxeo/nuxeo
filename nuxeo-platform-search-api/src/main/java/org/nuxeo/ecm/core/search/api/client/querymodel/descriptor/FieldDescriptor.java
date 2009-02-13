@@ -45,6 +45,9 @@ public class FieldDescriptor {
     @XNode("@schema")
     protected String schema;
 
+    @XNode("@xpath")
+    protected String xpath;
+
     private String fieldType;
 
     public FieldDescriptor() {
@@ -55,6 +58,10 @@ public class FieldDescriptor {
         this.schema = schema;
     }
 
+    public FieldDescriptor(String xpath) {
+        this.xpath = xpath;
+    }
+
     public String getName() {
         return name;
     }
@@ -63,13 +70,12 @@ public class FieldDescriptor {
         return schema;
     }
 
+    public String getXpath() {
+        return xpath;
+    }
+
     public String getPlainStringValue(DocumentModel model) {
-        Object rawValue;
-        try {
-            rawValue = model.getProperty(schema, name);
-        } catch (ClientException e) {
-            rawValue = null;
-        }
+        Object rawValue = getRawValue(model);
         if (rawValue == null) {
             return null;
         }
@@ -81,12 +87,7 @@ public class FieldDescriptor {
     }
 
     public Integer getIntValue(DocumentModel model) {
-        Object rawValue;
-        try {
-            rawValue = model.getProperty(schema, name);
-        } catch (ClientException e) {
-            rawValue = null;
-        }
+        Object rawValue = getRawValue(model);
         if (rawValue == null || "".equals(rawValue)) {
             return null;
         } else if (rawValue instanceof Integer) {
@@ -98,33 +99,43 @@ public class FieldDescriptor {
         }
     }
 
-    public String getFieldType() throws ClientException {
+    public String getFieldType(DocumentModel model) throws ClientException {
         try {
             SchemaManager typeManager = Framework.getService(SchemaManager.class);
-            Schema schemaObj = typeManager.getSchema(schema);
-            if (schemaObj == null) {
-                throw new ClientException("failed to obtain schema: " + schema);
+            Field field = null;
+            if (xpath != null) {
+                if (model != null)
+                    field = model.getProperty(xpath).getField();
+            } else {
+                Schema schemaObj = typeManager.getSchema(schema);
+                if (schemaObj == null) {
+                    throw new ClientException("failed to obtain schema: " + schema);
+                }
+                field = schemaObj.getField(name);
             }
-            Field field = schemaObj.getField(name);
             if (field == null) {
                 throw new ClientException("failed to obtain field: " + schema + ":" + name);
             }
             return field.getType().getName();
         } catch (Exception e) {
-            throw new ClientException("failed to get field type for " + schema + ":" + name, e);
+            throw new ClientException("failed to get field type for " + (xpath != null ? xpath : (schema + ":" + name)), e);
         }
     }
 
     public Object getRawValue(DocumentModel model) {
         try {
-            return model.getProperty(schema, name);
+            if (xpath != null) {
+                return model.getPropertyValue(xpath);
+            } else {
+                return model.getProperty(schema, name);
+            }
         } catch (ClientException e) {
             return null;
         }
     }
 
     public String getStringValue(DocumentModel model) throws ClientException {
-        Object rawValue = model.getProperty(schema, name);
+        Object rawValue = getRawValue(model);
         if (rawValue == null) {
             return null;
         }
@@ -145,7 +156,7 @@ public class FieldDescriptor {
                 return null;
             }
             if (fieldType == null) {
-                fieldType = getFieldType();
+                fieldType = getFieldType(model);
             }
             if ("long".equals(fieldType) || "integer".equals(fieldType) || "double".equals(fieldType)) {
                 return value;
@@ -159,12 +170,7 @@ public class FieldDescriptor {
 
     @SuppressWarnings("unchecked")
     public List<String> getListValue(DocumentModel model) {
-        Object rawValue;
-        try {
-            rawValue = model.getProperty(schema, name);
-        } catch (ClientException e) {
-            rawValue = null;
-        }
+        Object rawValue = getRawValue(model);
         if (rawValue == null) {
             return null;
         }
@@ -186,12 +192,7 @@ public class FieldDescriptor {
     }
 
     public Boolean getBooleanValue(DocumentModel model) {
-        Object rawValue;
-        try {
-            rawValue = model.getProperty(schema, name);
-        } catch (ClientException e) {
-            rawValue = null;
-        }
+        Object rawValue = getRawValue(model);
         if (rawValue == null) {
             return null;
         } else {

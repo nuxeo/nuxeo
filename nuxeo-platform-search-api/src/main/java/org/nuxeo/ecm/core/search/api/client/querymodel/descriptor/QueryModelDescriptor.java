@@ -104,6 +104,17 @@ public class QueryModelDescriptor {
         this.whereClause = whereClause;
     }
 
+    public QueryModelDescriptor(String name, String docType, Integer max,
+            WhereClauseDescriptor whereClause, FieldDescriptor sortColumnField,
+            FieldDescriptor sortAscendingField) {
+        this.name = name;
+        this.docType = docType;
+        this.max = max;
+        this.whereClause = whereClause;
+        this.sortColumnField = sortColumnField;
+        this.sortAscendingField = sortAscendingField;
+    }
+
     public boolean isStateless() {
         return pattern != null;
     }

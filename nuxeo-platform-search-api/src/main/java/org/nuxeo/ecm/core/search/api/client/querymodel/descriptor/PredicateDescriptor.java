@@ -85,10 +85,16 @@ public class PredicateDescriptor {
                     "subClause predicate needs exactly one field");
         }
         FieldDescriptor fieldDescriptor = values[0];
-        if (!fieldDescriptor.getFieldType().equals("string")) {
-            throw new ClientException(String.format(
-                    "type of field %s.%s is not string",
-                    fieldDescriptor.getSchema(), fieldDescriptor.getName()));
+        if (!fieldDescriptor.getFieldType(model).equals("string")) {
+            if (fieldDescriptor.getXpath() != null) {
+                throw new ClientException(String.format(
+                        "type of field %s is not string",
+                        fieldDescriptor.getXpath()));
+            } else {
+                throw new ClientException(String.format(
+                        "type of field %s.%s is not string",
+                        fieldDescriptor.getSchema(), fieldDescriptor.getName()));
+            }
         }
         return "(" + fieldDescriptor.getRawValue(model) + ")";
     }

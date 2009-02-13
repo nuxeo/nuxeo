@@ -34,6 +34,7 @@ import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.search.api.client.query.QueryException;
 import org.nuxeo.ecm.core.search.api.client.querymodel.descriptor.FieldDescriptor;
 import org.nuxeo.ecm.core.search.api.client.querymodel.descriptor.QueryModelDescriptor;
@@ -212,26 +213,63 @@ public class QueryModel implements Serializable {
         }
     }
 
+    public Object getPropertyValue(String xpath) {
+        try {
+            return documentModel.getPropertyValue(xpath);
+        } catch (PropertyException e) {
+            throw new ClientRuntimeException(e);
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
+    }
+
+    public void setPropertyValue(String xpath, Serializable value) {
+        try {
+            documentModel.setPropertyValue(xpath, value);
+        } catch (PropertyException e) {
+            throw new ClientRuntimeException(e);
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
+    }
+
     public void setSortColumn(String value) {
         FieldDescriptor fd = getDescriptor().getSortColumnField();
-        setProperty(fd.getSchema(), fd.getName(), value);
+        if (fd.getXpath() != null) {
+            setPropertyValue(fd.getXpath(), value);
+        } else {
+            setProperty(fd.getSchema(), fd.getName(), value);
+        }
     }
 
     public String getSortColumn() {
         FieldDescriptor fd = getDescriptor().getSortColumnField();
-        return (String) getProperty(fd.getSchema(), fd.getName());
+        if (fd.getXpath() != null) {
+            return (String) getPropertyValue(fd.getXpath());
+        } else {
+            return (String) getProperty(fd.getSchema(), fd.getName());
+        }
     }
 
     public boolean getSortAscending() {
         FieldDescriptor fd = getDescriptor().getSortAscendingField();
-        Boolean result = (Boolean) getProperty(fd.getSchema(), fd.getName());
+        Boolean result;
+        if (fd.getXpath() != null) {
+            result = (Boolean) getPropertyValue(fd.getXpath());
+        } else {
+            result = (Boolean) getProperty(fd.getSchema(), fd.getName());
+        }
         return Boolean.TRUE.equals(result);
     }
 
     public void setSortAscending(boolean sortAscending) {
         FieldDescriptor fd = getDescriptor().getSortAscendingField();
-        setProperty(fd.getSchema(), fd.getName(),
-                Boolean.valueOf(sortAscending));
+        if (fd.getXpath() != null) {
+            setPropertyValue(fd.getXpath(), Boolean.valueOf(sortAscending));
+        } else {
+            setProperty(fd.getSchema(), fd.getName(),
+                    Boolean.valueOf(sortAscending));
+        }
     }
 
     public boolean isSortable() {
