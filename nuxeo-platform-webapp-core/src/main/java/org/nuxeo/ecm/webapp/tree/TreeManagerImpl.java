@@ -41,7 +41,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
 /**
  * Component for tree service, handing registries for trees managing
  * {@link DocumentModel} object.
- *
+ * 
  * @author Anahide Tchertchian
  */
 public class TreeManagerImpl extends DefaultComponent implements TreeManager {
@@ -60,7 +60,7 @@ public class TreeManagerImpl extends DefaultComponent implements TreeManager {
 
     protected Map<String, Sorter> sorters;
 
-    protected Map<String, QueryModelDescriptor> queryModelDescriptors;
+    protected Map<String, String> queryModelNames;
 
     @SuppressWarnings("unchecked")
     @Override
@@ -77,7 +77,7 @@ public class TreeManagerImpl extends DefaultComponent implements TreeManager {
         filters = new HashMap<String, Filter>();
         leafFilters = new HashMap<String, Filter>();
         sorters = new HashMap<String, Sorter>();
-        queryModelDescriptors = new HashMap<String, QueryModelDescriptor>();
+        queryModelNames = new HashMap<String, String>();
     }
 
     @Override
@@ -85,7 +85,7 @@ public class TreeManagerImpl extends DefaultComponent implements TreeManager {
         filters = null;
         leafFilters = null;
         sorters = null;
-        queryModelDescriptors = null;
+        queryModelNames = null;
         super.deactivate(context);
     }
 
@@ -121,13 +121,13 @@ public class TreeManagerImpl extends DefaultComponent implements TreeManager {
             log.info("Registering sorter for plugin " + name);
             sorters.put(name, buildSorter(plugin));
             // query model
-            if (queryModelDescriptors.containsKey(name)) {
+            if (queryModelNames.containsKey(name)) {
                 // FIXME handle merge?
                 log.info("Overriding query model for plugin " + name);
-                queryModelDescriptors.remove(name);
+                queryModelNames.remove(name);
             }
             log.info("Registering query model for plugin " + name);
-            queryModelDescriptors.put(name, buildQueryModelDescriptor(plugin));
+            queryModelNames.put(name, plugin.getQueryModelName());
         }
     }
 
@@ -154,9 +154,9 @@ public class TreeManagerImpl extends DefaultComponent implements TreeManager {
                 sorters.remove(name);
             }
             // query model
-            if (queryModelDescriptors.containsKey(name)) {
+            if (queryModelNames.containsKey(name)) {
                 log.info("Unregistering query model for plugin " + name);
-                queryModelDescriptors.remove(name);
+                queryModelNames.remove(name);
             }
         }
     }
@@ -250,8 +250,7 @@ public class TreeManagerImpl extends DefaultComponent implements TreeManager {
     }
 
     protected QueryModelDescriptor buildQueryModelDescriptor(
-            TreeManagerPluginDescriptor plugin) {
-        String queryModelName = plugin.getQueryModelName();
+            String queryModelName) {
         if (queryModelName == null || "".equals(queryModelName)) {
             return null;
         }
@@ -273,6 +272,7 @@ public class TreeManagerImpl extends DefaultComponent implements TreeManager {
     }
 
     public QueryModelDescriptor getQueryModelDescriptor(String pluginName) {
-        return queryModelDescriptors.get(pluginName);
+        // lazily compute the descriptor to allow for runtime overriding
+        return buildQueryModelDescriptor(queryModelNames.get(pluginName));
     }
 }
