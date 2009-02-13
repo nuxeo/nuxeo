@@ -4,10 +4,6 @@
     point="repositories">
     <repository name="test" />
   </extension>
-  <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
-    point="lifecyclemanager">
-    <lifecyclemanager class="org.nuxeo.ecm.core.repository.jcr.JCRLifeCycleManager" />
-  </extension>
   <extension target="org.nuxeo.ecm.core.repository.RepositoryService"
     point="repository">
     <repository name="test" forceReloadTypes="false"
@@ -33,7 +29,7 @@
           <PersistenceManager
             class="org.apache.jackrabbit.core.state.obj.ObjectPersistenceManager">
           </PersistenceManager>
-          <SearchIndex class="org.apache.jackrabbit.core.query.lucene.SearchIndex">
+          <SearchIndex class="org.nuxeo.ecm.core.repository.jcr.jackrabbit.SearchIndex">
             <param name="path" value="${wsp.home}/index" />
           </SearchIndex>
         </Workspace>

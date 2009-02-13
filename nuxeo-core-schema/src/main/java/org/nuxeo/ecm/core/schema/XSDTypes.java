@@ -67,7 +67,7 @@ public class XSDTypes {
         xsdBaseTypes.put("hexBinary", BinaryType.INSTANCE);
     }
 
-    static public SimpleType getType(String name) {
+    public static SimpleType getType(String name) {
         return xsdBaseTypes.get(name);
     }
 

@@ -27,6 +27,9 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import javax.transaction.xa.XAResource;
+import javax.transaction.xa.Xid;
+
 import org.nuxeo.ecm.core.storage.StorageException;
 
 /**
@@ -139,6 +142,36 @@ public class TestSQLBackend extends SQLBackendTestCase {
         // the following gets a complete list but skips deleted ones
         List<Node> children = session.getChildren(root, null, false);
         assertEquals(1, children.size());
+        session.save();
+    }
+
+    // TODO XXX this fails with MySQL
+    // Stupid MySQL limitations:
+    // "Cascading operations may not be nested more than 15 levels deep."
+    // "Currently, triggers are not activated by cascaded foreign key
+    // actions."
+    public void testRecursiveRemoval() throws Exception {
+        int DEPTH = 70;
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+        Node node = root;
+        Serializable[] ids = new Serializable[DEPTH];
+        for (int i = 0; i < DEPTH; i++) {
+            node = session.addChildNode(node, String.valueOf(i), null,
+                    "TestDoc", false);
+            ids[i] = node.getId();
+        }
+        session.save(); // TODO shouldn't be needed
+        // delete the second one
+        session.removeNode(session.getNodeById(ids[1]));
+        session.save();
+        session.close();
+
+        // check all children were really deleted recursively
+        session = repository.getConnection();
+        for (int i = 1; i < DEPTH; i++) {
+            assertNull(session.getNodeById(ids[i]));
+        }
     }
 
     public void testBasics() throws Exception {
@@ -147,6 +180,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         Node nodea = session.addChildNode(root, "foo", null, "TestDoc", false);
 
         nodea.setSingleProperty("tst:title", "hello world");
+        nodea.setSingleProperty("tst:rate", Double.valueOf(1.5));
         Calendar cal = new GregorianCalendar(2008, Calendar.JULY, 14, 12, 34,
                 56);
         nodea.setSingleProperty("tst:created", cal);
@@ -156,6 +190,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
         assertEquals("hello world",
                 nodea.getSimpleProperty("tst:title").getString());
+        assertEquals(Double.valueOf(1.5),
+                nodea.getSimpleProperty("tst:rate").getValue());
         assertNotNull(nodea.getSimpleProperty("tst:created").getValue());
         String[] subjects = nodea.getCollectionProperty("tst:subjects").getStrings();
         String[] tags = nodea.getCollectionProperty("tst:tags").getStrings();
@@ -166,6 +202,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
         // now modify a property and re-save
         nodea.setSingleProperty("tst:title", "another");
+        nodea.setSingleProperty("tst:rate", Double.valueOf(3.14));
         nodea.setCollectionProperty("tst:subjects", new String[] { "z", "c" });
         nodea.setCollectionProperty("tst:tags", new String[] { "3" });
         session.save();
@@ -188,14 +225,16 @@ public class TestSQLBackend extends SQLBackendTestCase {
         nodea = session.getChildNode(root, "foo", false);
         assertEquals("another",
                 nodea.getSimpleProperty("tst:title").getString());
+        assertEquals(Double.valueOf(3.14),
+                nodea.getSimpleProperty("tst:rate").getValue());
         subjects = nodea.getCollectionProperty("tst:subjects").getStrings();
         tags = nodea.getCollectionProperty("tst:tags").getStrings();
         assertEquals(Arrays.asList("z", "c"), Arrays.asList(subjects));
         assertEquals(Arrays.asList("3"), Arrays.asList(tags));
 
         // delete the node
-        session.removeNode(nodea);
-        session.save();
+        // session.removeNode(nodea);
+        // session.save();
     }
 
     public void testPropertiesSameName() throws Exception {
@@ -439,6 +478,73 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(1, childrena2.size());
         childrenb2 = session2.getChildren(folderb2, null, false);
         assertEquals(1, childrenb2.size());
+    }
+
+    public void testRollback() throws Exception {
+        Session session = repository.getConnection();
+        XAResource xaresource = ((SessionImpl) session).getXAResource();
+        Node root = session.getRootNode();
+        Node nodea = session.addChildNode(root, "foo", null, "TestDoc", false);
+        nodea.setSingleProperty("tst:title", "old");
+        assertEquals("old", nodea.getSimpleProperty("tst:title").getString());
+        session.save();
+
+        /*
+         * rollback before save (underlying XAResource saw no updates)
+         */
+        Xid xid = new DummyXid("1");
+        xaresource.start(xid, XAResource.TMNOFLAGS);
+        nodea = session.getNodeByPath("/foo", null);
+        nodea.setSingleProperty("tst:title", "new");
+        xaresource.end(xid, XAResource.TMSUCCESS);
+        xaresource.prepare(xid);
+        xaresource.rollback(xid);
+        nodea = session.getNodeByPath("/foo", null);
+        assertEquals("old", nodea.getSimpleProperty("tst:title").getString());
+
+        /*
+         * rollback after save (underlying XAResource does a rollback too)
+         */
+        xid = new DummyXid("2");
+        xaresource.start(xid, XAResource.TMNOFLAGS);
+        nodea = session.getNodeByPath("/foo", null);
+        nodea.setSingleProperty("tst:title", "new");
+        session.save();
+        xaresource.end(xid, XAResource.TMSUCCESS);
+        xaresource.prepare(xid);
+        xaresource.rollback(xid);
+        nodea = session.getNodeByPath("/foo", null);
+        assertEquals("old", nodea.getSimpleProperty("tst:title").getString());
+    }
+
+    public void testSaveOnCommit() throws Exception {
+        Session session = repository.getConnection(); // init
+        session.save();
+
+        XAResource xaresource = ((SessionImpl) session).getXAResource();
+
+        // first transaction
+        Xid xid = new DummyXid("1");
+        xaresource.start(xid, XAResource.TMNOFLAGS);
+        Node root = session.getRootNode();
+        assertNotNull(root);
+        session.addChildNode(root, "foo", null, "TestDoc", false);
+        // let end do an implicit save
+        xaresource.end(xid, XAResource.TMSUCCESS);
+        xaresource.prepare(xid);
+        xaresource.commit(xid, false);
+
+        // should have saved, clearing caches should be harmless
+        ((SessionImpl) session).clearCaches();
+
+        // second transaction
+        xid = new DummyXid("2");
+        xaresource.start(xid, XAResource.TMNOFLAGS);
+        Node foo = session.getNodeByPath("/foo", null);
+        assertNotNull(foo);
+        xaresource.end(xid, XAResource.TMSUCCESS);
+        xaresource.prepare(xid);
+        xaresource.commit(xid, false);
     }
 
     public void testMove() throws Exception {
@@ -743,5 +849,27 @@ public class TestSQLBackend extends SQLBackendTestCase {
                 nodea.getSimpleProperty("ecm:wfInProgress").getValue());
         assertEquals("beeep",
                 nodea.getSimpleProperty("ecm:wfIncOption").getValue());
+    }
+}
+
+class DummyXid implements Xid {
+
+    private final byte[] bytes;
+
+    public DummyXid(String id) {
+        this.bytes = id.getBytes();
+    }
+
+    public byte[] getGlobalTransactionId() {
+        return bytes;
+    }
+
+    public int getFormatId() {
+        return 0;
+    }
+
+    public byte[] getBranchQualifier() {
+        // MySQL JDBC driver crashes on 0-length branch qualifier, doh!
+        return new byte[] { 0 };
     }
 }

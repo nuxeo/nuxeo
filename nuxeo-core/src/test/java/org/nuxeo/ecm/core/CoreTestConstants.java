@@ -31,4 +31,8 @@ public class CoreTestConstants {
 
     public static final String SCHEMA_BUNDLE = "org.nuxeo.ecm.core.schema";
 
+    // Commented-out: breaks surefire
+    //private CoreTestConstants() {
+    //}
+
 }

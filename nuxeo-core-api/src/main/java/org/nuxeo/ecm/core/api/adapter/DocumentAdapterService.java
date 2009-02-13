@@ -66,7 +66,7 @@ public class DocumentAdapterService extends DefaultComponent {
         log.info("Registered document adapter factory " + dae);
     }
 
-    public  void unregisterAdapterFactory(Class<?> itf) {
+    public void unregisterAdapterFactory(Class<?> itf) {
         DocumentAdapterDescriptor dae = adapters.remove(itf);
         if (dae != null) {
             log.info("Unregistered document adapter factory: " + dae);
@@ -76,10 +76,11 @@ public class DocumentAdapterService extends DefaultComponent {
     public static void registerPropertyFactory(PropertyFactoryDescriptor descriptor) {
         try {
             DefaultPropertyFactory.getInstance().registerFactory(
-                    descriptor.schema, descriptor.type, (PropertyFactory)descriptor.klass.newInstance());
+                    descriptor.schema, descriptor.type,
+                    (PropertyFactory) descriptor.klass.newInstance());
         } catch (Exception e) {
             log.error(
-                    "Failed to instantiate the prioperty type for "
+                    "Failed to instantiate the property type for "
                             + descriptor.schema + ':' + descriptor.type);
         }
     }
@@ -87,7 +88,6 @@ public class DocumentAdapterService extends DefaultComponent {
     public static void unregisterPropertyFactory(PropertyFactoryDescriptor descriptor) {
         DefaultPropertyFactory.getInstance().unregisterFactory(descriptor.schema, descriptor.type);
     }
-
 
     public PropertyFactory getPropertyFactory(String schema, String type) {
         String key = schema != null && schema.length() > 0 ? schema + ':' + type : type;
@@ -128,7 +128,7 @@ public class DocumentAdapterService extends DefaultComponent {
         } else if (extensionPoint.equals("sessionAdapters")) {
             SessionAdapterDescriptor desc = (SessionAdapterDescriptor) contribution;
             try {
-                SessionAdapterFactory<?> factory = (SessionAdapterFactory<?>)desc.factory.newInstance();
+                SessionAdapterFactory<?> factory = (SessionAdapterFactory<?>) desc.factory.newInstance();
                 SessionAdapterFactory.registerAdapter(desc.itf, factory);
             } catch (Exception e) {
                 log.error("Failed to register session adapter", e);

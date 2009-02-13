@@ -53,7 +53,7 @@ public class Node {
      */
     private final Map<String, BaseProperty> propertyCache;
 
-    private transient Boolean isVersion;
+    private Boolean isVersion;
 
     /**
      * Creates a Node.
@@ -76,7 +76,7 @@ public class Node {
             fragments = rowGroup.fragments;
         }
         // memory-sensitive
-        this.propertyCache = new ReferenceMap(ReferenceMap.HARD,
+        propertyCache = new ReferenceMap(ReferenceMap.HARD,
                 ReferenceMap.SOFT);
     }
 
@@ -245,13 +245,13 @@ public class Node {
 
     public void setSingleProperty(String name, Serializable value)
             throws StorageException {
-        SimpleProperty property = (SimpleProperty) getSimpleProperty(name);
+        SimpleProperty property = getSimpleProperty(name);
         property.setValue(value);
     }
 
     public void setCollectionProperty(String name, Serializable[] value)
             throws StorageException {
-        CollectionProperty property = (CollectionProperty) getCollectionProperty(name);
+        CollectionProperty property = getCollectionProperty(name);
         property.setValue(value);
     }
 
@@ -303,7 +303,7 @@ public class Node {
         protected final String posKey;
 
         public PositionComparator(Model model) {
-            this.posKey = model.HIER_CHILD_POS_KEY;
+            posKey = model.HIER_CHILD_POS_KEY;
         }
 
         public int compare(Node n1, Node n2) {

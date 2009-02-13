@@ -32,7 +32,7 @@ import java.util.Map;
 public interface CoreEvent {
 
     /**
-     * Returns the date when the event occured.
+     * Returns the date when the event occurred.
      *
      * @return a java date object
      */

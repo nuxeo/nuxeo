@@ -23,7 +23,8 @@ import junit.framework.TestCase;
 
 public class TestAdapter extends TestCase {
 
-    public interface AnInterface {
+    @SuppressWarnings({"InterfaceNeverImplemented"})
+    private interface AnInterface {
     }
 
     public void test() {

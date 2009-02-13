@@ -70,13 +70,11 @@ public abstract class ComplexProperty extends AbstractProperty implements
      * <p>
      * If you want to change the way a property is fetched / stored you must overwride this method.
      *
-     * @param name the child to return
      * @return the child. Cannot return null
      * @throws UnsupportedOperationException
      *
      */
-    protected Property internalGetChild(Field field)
-            throws UnsupportedOperationException {
+    protected Property internalGetChild(Field field) {
         return null; // we don't store property that are not in the cache
     }
 
@@ -91,15 +89,14 @@ public abstract class ComplexProperty extends AbstractProperty implements
     public Serializable normalize(Object value)
             throws PropertyConversionException {
         if (isNormalized(value)) {
-            return (Serializable)value;
+            return (Serializable) value;
         }
         throw new PropertyConversionException(value.getClass(), Map.class, getPath());
     }
 
-    public Property get(int index) throws PropertyNotFoundException,
-        UnsupportedOperationException {
-            throw new UnsupportedOperationException(
-                    "accessing children by index is not allowed for complex properties");
+    public Property get(int index) {
+        throw new UnsupportedOperationException(
+                "accessing children by index is not allowed for complex properties");
     }
 
     public final Property getNonPhantomChild(Field field) {
@@ -145,8 +142,7 @@ public abstract class ComplexProperty extends AbstractProperty implements
         return Collections.unmodifiableCollection(children.values());
     }
 
-    public Property get(String name) throws PropertyNotFoundException,
-            UnsupportedOperationException {
+    public Property get(String name) throws PropertyNotFoundException {
         Field field = getType().getField(name);
         if (field == null) {
             throw new PropertyNotFoundException(name, "");
@@ -176,8 +172,8 @@ public abstract class ComplexProperty extends AbstractProperty implements
         if (value == null) { // IGNORE null values - properties will be considered PHANTOMS
             return;
         }
-        Map<String, Serializable> map = (Map<String, Serializable>)value;
-        for (Map.Entry<String, Serializable> entry : map.entrySet()) {
+        Map<String, Serializable> map = (Map<String, Serializable>) value;
+        for (Entry<String, Serializable> entry : map.entrySet()) {
             Property property = get(entry.getKey());
             property.init(entry.getValue());
         }
@@ -206,27 +202,24 @@ public abstract class ComplexProperty extends AbstractProperty implements
         if (!(value instanceof Map)) {
             throw new InvalidPropertyValueException(getPath());
         }
-        Map<String, Object> map = (Map<String, Object>)value;
-        for (Map.Entry<String, Object> entry : map.entrySet()) {
+        Map<String, Object> map = (Map<String, Object>) value;
+        for (Entry<String, Object> entry : map.entrySet()) {
             Property property = get(entry.getKey());
             property.setValue(entry.getValue());
         }
     }
 
-    public Property add(Object value) throws InvalidPropertyValueException,
-            UnsupportedOperationException {
+    public Property add(Object value) {
         throw new UnsupportedOperationException(
                 "add(value) operation not supported on map properties");
     }
 
-    public Property add(int index, Object value) throws
-            InvalidPropertyValueException, UnsupportedOperationException {
+    public Property add(int index, Object value) {
         throw new UnsupportedOperationException(
                 "add(value, index) operation not supported on map properties");
     }
 
-    public Property add() throws InvalidPropertyValueException,
-            UnsupportedOperationException {
+    public Property add() {
         throw new UnsupportedOperationException(
                 "add() operation not supported on map properties");
     }
@@ -260,7 +253,7 @@ public abstract class ComplexProperty extends AbstractProperty implements
         if (!(property instanceof ComplexProperty)) {
             return false;
         }
-        ComplexProperty cp = (ComplexProperty)property;
+        ComplexProperty cp = (ComplexProperty) property;
         if (isContainer()) {
             if (!cp.isContainer()) {
                 return false;
@@ -315,7 +308,7 @@ public abstract class ComplexProperty extends AbstractProperty implements
         throw new UnsupportedOperationException();
     }
 
-    public Set<java.util.Map.Entry<String, Property>> entrySet() {
+    public Set<Entry<String, Property>> entrySet() {
         return children.entrySet();
     }
 

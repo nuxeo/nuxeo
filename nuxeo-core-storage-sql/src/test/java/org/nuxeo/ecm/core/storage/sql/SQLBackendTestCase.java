@@ -21,7 +21,6 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
@@ -59,24 +58,39 @@ public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
         switch (SQLBackendHelper.DATABASE) {
         case DERBY:
             return prepareDescriptorDerby();
+        case H2:
+            return prepareDescriptorH2();
         case MYSQL:
             return prepareDescriptorMySQL();
         case POSTGRESQL:
             return prepareDescriptorPostgreSQL();
+        case MSSQL:
+            return prepareDescriptorMSSQL();
         }
         throw new RuntimeException(); // not reached
     }
 
     protected RepositoryDescriptor prepareDescriptorDerby() {
         RepositoryDescriptor descriptor = new RepositoryDescriptor();
-        String className = org.apache.derby.jdbc.EmbeddedXADataSource.class.getName();
-        descriptor.xaDataSourceName = className;
+        descriptor.xaDataSourceName = "org.apache.derby.jdbc.EmbeddedXADataSource";
         Map<String, String> properties = new HashMap<String, String>();
         properties.put("createDatabase", "create");
         properties.put("databaseName", new File(
                 SQLBackendHelper.DERBY_DIRECTORY).getAbsolutePath());
         properties.put("user", "sa");
         properties.put("password", "");
+        descriptor.properties = properties;
+        return descriptor;
+    }
+
+    protected RepositoryDescriptor prepareDescriptorH2() {
+        RepositoryDescriptor descriptor = new RepositoryDescriptor();
+        descriptor.xaDataSourceName = "org.h2.jdbcx.JdbcDataSource";
+        Map<String, String> properties = new HashMap<String, String>();
+        properties.put("URL", String.format("jdbc:h2:${%s}",
+                SQLBackendHelper.H2_PATH_PROPERTY));
+        properties.put("User", SQLBackendHelper.H2_DATABASE_USER);
+        properties.put("Password", SQLBackendHelper.H2_DATABASE_PASSWORD);
         descriptor.properties = properties;
         return descriptor;
     }
@@ -104,6 +118,23 @@ public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
         properties.put("User", SQLBackendHelper.PG_DATABASE_OWNER);
         properties.put("Password", SQLBackendHelper.PG_DATABASE_PASSWORD);
         descriptor.properties = properties;
+        descriptor.fulltextAnalyzer = "french";
+        return descriptor;
+    }
+
+    protected RepositoryDescriptor prepareDescriptorMSSQL() {
+        RepositoryDescriptor descriptor = new RepositoryDescriptor();
+        descriptor.xaDataSourceName = "net.sourceforge.jtds.jdbcx.JtdsDataSource";
+        Map<String, String> properties = new HashMap<String, String>();
+        properties.put("ServerName", SQLBackendHelper.MSSQL_HOST);
+        properties.put("PortNumber/Integer", SQLBackendHelper.MSSQL_PORT);
+        properties.put("DatabaseName", SQLBackendHelper.MSSQL_DATABASE);
+        properties.put("User", SQLBackendHelper.MSSQL_DATABASE_OWNER);
+        properties.put("Password", SQLBackendHelper.MSSQL_DATABASE_PASSWORD);
+        properties.put("UseCursors/Boolean", "true");
+        descriptor.properties = properties;
+        descriptor.fulltextAnalyzer = "french";
+        descriptor.fulltextCatalog = "nuxeo";
         return descriptor;
     }
 

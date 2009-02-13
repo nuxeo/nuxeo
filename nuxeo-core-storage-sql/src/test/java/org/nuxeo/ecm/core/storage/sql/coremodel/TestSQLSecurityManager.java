@@ -31,7 +31,7 @@ import junit.framework.TestCase;
  */
 public class TestSQLSecurityManager extends TestCase {
 
-    public void testAclRowsToACP() throws Exception {
+    public void testAclRowsToACP() {
         ACLRow acl1 = new ACLRow(0, "local", true, "Read", "bob", null);
         ACLRow acl2 = new ACLRow(1, "wf", false, "Write", "steve", null);
         ACLRow acl3 = new ACLRow(2, "wf", true, "Zap", "pete", null);
@@ -62,7 +62,7 @@ public class TestSQLSecurityManager extends TestCase {
         assertEquals("pete", ace.getUsername());
     }
 
-    public void testAcpToAclRows() throws Exception {
+    public void testAcpToAclRows() {
         ACPImpl acp = new ACPImpl();
         ACL acl = new ACLImpl("local");
         acp.addACL(acl);
@@ -96,7 +96,7 @@ public class TestSQLSecurityManager extends TestCase {
         assertEquals("pete", aclrow.user);
     }
 
-    public void testUpdateAclRows() throws Exception {
+    public void testUpdateAclRows() {
         // existing:
         ACLRow acl1 = new ACLRow(0, "local", true, "Read", "bob", null);
         ACLRow acl2 = new ACLRow(1, "wf", false, "Write", "steve", null);

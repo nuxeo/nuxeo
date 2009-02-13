@@ -24,6 +24,7 @@ import junit.framework.TestCase;
 import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.model.Operator;
+import org.nuxeo.ecm.core.query.sql.model.Reference;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.query.sql.model.StringLiteral;
 import org.nuxeo.ecm.core.query.sql.model.WhereClause;
@@ -34,7 +35,7 @@ import org.nuxeo.ecm.core.query.sql.model.WhereClause;
  */
 public class TestQueryParser2 extends TestCase {
 
-    static final String[] CANONICAL_QUERIES = new String[] {
+    static final String[] CANONICAL_QUERIES = {
             "SELECT * FROM document",
             "SELECT title FROM document",
             "SELECT title, author FROM document",
@@ -64,7 +65,7 @@ public class TestQueryParser2 extends TestCase {
             "SELECT p FROM t WHERE title = '%test'",
     };
 
-    static final String[] GOOD_QUERIES = new String[] {
+    static final String[] GOOD_QUERIES = {
         "SELECT * FROM document",
         "SELECT title FROM document",
         "SELECT title, author FROM document",
@@ -157,7 +158,7 @@ public class TestQueryParser2 extends TestCase {
         "SELECT * FROM Document WHERE NOT ecm:path STARTSWITH '/some/path'",
     };
 
-    static final String[] CASE_INDEPENDENCY_GOOD_QUERIES = new String[] {
+    static final String[] CASE_INDEPENDENCY_GOOD_QUERIES = {
         "Select title from document",
         "select title From document",
         "SELECT q FROM t where q != 1",
@@ -197,14 +198,14 @@ public class TestQueryParser2 extends TestCase {
         "SELECT * FROM document WHERE ecm:path startswith '/'",
     };
 
-    static final String[] BAD_QUERIES = new String[] {
+    static final String[] BAD_QUERIES = {
             "SELECT * FROM document WHERE ecm:path STARTSWITH",
             "SELECT * FROM document WHERE ecm:path STARTWITH '/'",
             "SELECT * WHERE ecm:path STARTWITH '/'",
             "SELECT * WHERE ecm:path STARTSWITH",
             "SELECT * WHERE ecm:path STARTSWITH xxx" };
 
-    static final String[] BAD_QUERIES_OLD = new String[] {
+    static final String[] BAD_QUERIES_OLD = {
             "SELECT * FROM document WHERE LOCATION STARTSWITH '/a'",
             "SELECT * FROM document WHERE LOCATION STARTSWITH '/alpha/beta'" ,
             "SELECT * WHERE location STARTWITH '/'",
@@ -264,8 +265,8 @@ public class TestQueryParser2 extends TestCase {
         WhereClause whereClause = query.getWhereClause();
         assertEquals(Operator.STARTSWITH, whereClause.predicate.operator);
 
-        StringLiteral sleft = (StringLiteral) whereClause.predicate.lvalue;
-        assertEquals("ecm:path", sleft.value);
+        Reference sleft = (Reference) whereClause.predicate.lvalue;
+        assertEquals("ecm:path", sleft.name);
         StringLiteral sright = (StringLiteral) whereClause.predicate.rvalue;
         assertEquals("/test", sright.value);
     }

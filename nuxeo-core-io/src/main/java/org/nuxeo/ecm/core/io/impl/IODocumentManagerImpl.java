@@ -72,11 +72,9 @@ public class IODocumentManagerImpl implements IODocumentManager {
                 throw new ClientException("cannot get repository: " + repo);
             }
             systemSession = repository.open();
+        } catch (ClientException e) {
+            throw e;
         } catch (Exception e) {
-            // hmmm...
-            if (e instanceof ClientException) {
-                throw (ClientException) e;
-            }
             throw new ClientException(
                     "Failed to open core session to repository " + repo, e);
         }

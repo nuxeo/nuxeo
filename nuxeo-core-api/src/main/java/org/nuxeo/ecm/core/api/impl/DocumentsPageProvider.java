@@ -234,7 +234,7 @@ public class DocumentsPageProvider implements PagedDocumentsProvider {
     public String getCurrentPageStatus() {
         int total = getNumberOfPages();
         int current = currentPageIndex + 1;
-        if (total == PagedDocumentsProvider.UNKNOWN_SIZE) {
+        if (total == UNKNOWN_SIZE) {
             return String.format("%d", current);
         } else {
             return String.format("%d/%d", current, total);

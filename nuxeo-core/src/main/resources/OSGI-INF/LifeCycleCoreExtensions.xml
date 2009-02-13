@@ -12,11 +12,9 @@
   <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
     point="lifecycle">
 
-    <documentation>
-      Nuxeo core default life cycle definition.
-    </documentation>
+    <documentation>Nuxeo core default life cycle definition.</documentation>
 
-    <lifecycle name="default" initial="project">
+    <lifecycle name="default" defaultInitial="project">
       <transitions>
         <transition name="approve" destinationState="approved">
           <description>Approve the content</description>
@@ -35,7 +33,7 @@
         </transition>
       </transitions>
       <states>
-        <state name="project" description="Default state">
+        <state name="project" description="Default state" initial="true">
           <transitions>
             <transition>approve</transition>
             <transition>obsolete</transition>

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Bogdan Stefanescu
+ *     Florent Guillaume
  */
 
 package org.nuxeo.ecm.core.repository.jcr;
@@ -26,12 +25,12 @@ import javax.jcr.query.QueryManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jackrabbit.core.query.QueryImpl;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.query.Query;
 import org.nuxeo.ecm.core.query.QueryException;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.QueryResult;
+import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.query.sql.SQLQueryParser;
 import org.nuxeo.ecm.core.query.sql.model.Expression;
 import org.nuxeo.ecm.core.query.sql.model.FromClause;
@@ -40,13 +39,15 @@ import org.nuxeo.ecm.core.query.sql.model.Operand;
 import org.nuxeo.ecm.core.query.sql.model.Operator;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
 import org.nuxeo.ecm.core.query.sql.model.OrderByExpr;
+import org.nuxeo.ecm.core.query.sql.model.OrderByList;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.query.sql.model.SelectClause;
 import org.nuxeo.ecm.core.query.sql.model.WhereClause;
 
+
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author Bogdan Stefanescu
+ * @author Florent Guillaume
  */
 public class JCRQuery implements Query {
 
@@ -58,33 +59,60 @@ public class JCRQuery implements Query {
 
     private final String rawQuery;
 
+    private long limit;
+
+    private long offset;
+
+    private boolean limitSetByUser = false;
+    
     public JCRQuery(JCRSession session, String query) {
         rawQuery = query;
         this.session = session;
     }
 
     public QueryResult execute() throws QueryException {
-        //log.debug("SQL query: " + rawQuery);
+        return execute(false);
+    }
+
+    public QueryResult execute(boolean countTotal) throws QueryException {
         try {
             sqlQuery = SQLQueryParser.parse(rawQuery);
-            //log.info("!nxql Query: " + sqlQuery.getStatement());
-            javax.jcr.query.Query jcrQuery = buildJcrQuery(sqlQuery);
-            //log.info("!jcr Query: " + jcrQuery.getStatement());
-            // run query within a controlable thread
-            // use
-            if (sqlQuery.limit > 0) {
-                QueryImpl jq = (QueryImpl) jcrQuery;
-                // TODO the following is only available in Jackrabbit 1.4
-                // jq.setLimit(sqlQuery.limit);
-                // jq.setOffset(sqlQuery.offset);
+            if (!limitSetByUser) {
+                this.limit = sqlQuery.limit;
+                this.offset = sqlQuery.offset;
             }
-            javax.jcr.query.QueryResult qr = jcrQuery.execute();
-            return new JCRQueryResult(this, qr);
+            SQLQuery query = sqlQuery;
+            Boolean orderByPath = null;
+            if (sqlQuery.orderBy != null) {
+                OrderByList orderByList = sqlQuery.orderBy.elements;
+                if (orderByList.size() == 1) {
+                    OrderByExpr orderBy = orderByList.get(0);
+                    if (NXQL.ECM_PATH.equals(orderBy.reference.name)) {
+                        // do ORDER BY ecm:path "by hand"
+                        orderByPath = Boolean.valueOf(!orderBy.isDescending);
+                        query = new SQLQuery(sqlQuery.select,
+                                sqlQuery.from, sqlQuery.where, null);
+                    }
+                }
+            }
+            javax.jcr.query.Query jcrQuery = buildJcrQuery(query);
+            return new JCRQueryResult(this, jcrQuery.execute(), countTotal,
+                    orderByPath, limit, offset);
         } catch (RepositoryException e) {
             throw new QueryException("Failed to execute query", e);
         } catch (QueryParseException e) {
             throw new QueryException(e);
         }
+    }
+
+    public void setLimit(long limit) {
+        this.limit = limit;
+        limitSetByUser = true;
+    }
+
+    public void setOffset(long offset) {
+        this.offset = offset;
+        limitSetByUser = true;
     }
 
     public static String buildJCRQueryString(SQLQuery sqlQuery) {
@@ -188,7 +216,7 @@ public class JCRQuery implements Query {
         if (operand instanceof Expression) {
             Expression expression = (Expression) operand;
 
-            if (expression.lvalue.toString().equals("'ecm:path'")) {
+            if (expression.lvalue.toString().equals("ecm:path")) {
                 if (expression.operator.equals(Operator.STARTSWITH)) {
                     // log.info(operand);
 
@@ -213,12 +241,29 @@ public class JCRQuery implements Query {
     }
 
     public javax.jcr.query.Query buildJcrQuery(SQLQuery sqlQuery)
-            throws QueryException {
+    throws QueryException {
+        return buildXPathJcrQuery(sqlQuery);
+        //return buildSqlJcrQuery(sqlQuery);
+    }
+
+    public javax.jcr.query.Query buildSqlJcrQuery(SQLQuery sqlQuery)
+    throws QueryException {
         try {
             final String jcrQuery = buildJCRQueryString(sqlQuery);
-            //log.info("!JCR query: " + jcrQuery);
             final QueryManager qm = session.jcrSession().getWorkspace().getQueryManager();
             return qm.createQuery(jcrQuery, javax.jcr.query.Query.SQL);
+        } catch (RepositoryException e) {
+            throw new QueryException("Invalid JCR query", e);
+        }
+    }
+
+    public javax.jcr.query.Query buildXPathJcrQuery(SQLQuery sqlQuery)
+    throws QueryException {
+        try {
+            final String jcrQuery = XPathBuilder.fromNXQL(sqlQuery);
+            //System.out.println(">>>>> "+jcrQuery);
+            final QueryManager qm = session.jcrSession().getWorkspace().getQueryManager();
+            return qm.createQuery(jcrQuery, javax.jcr.query.Query.XPATH);
         } catch (RepositoryException e) {
             throw new QueryException("Invalid JCR query", e);
         }

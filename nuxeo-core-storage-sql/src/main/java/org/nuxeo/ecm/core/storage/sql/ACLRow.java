@@ -52,7 +52,7 @@ public class ACLRow implements Serializable {
 
     @Override
     public String toString() {
-        return this.getClass().getSimpleName() + '(' + pos + ',' + name + ',' +
+        return getClass().getSimpleName() + '(' + pos + ',' + name + ',' +
                 (grant ? "GRANT" : "DENY") + ',' + permission + ',' + user +
                 ',' + group + ')';
     }

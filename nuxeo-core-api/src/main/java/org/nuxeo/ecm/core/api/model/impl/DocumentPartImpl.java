@@ -84,7 +84,6 @@ public class DocumentPartImpl extends ComplexProperty implements DocumentPart {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public Schema getType() {
         return schema;
     }
@@ -117,7 +116,7 @@ public class DocumentPartImpl extends ComplexProperty implements DocumentPart {
     }
 
     public void importValues(Map<String, Serializable> values) throws PropertyException {
-        init((Serializable)values);
+        init((Serializable) values);
     }
 
     public void accept(PropertyVisitor visitor, Object arg) throws PropertyException {
@@ -135,11 +134,11 @@ public class DocumentPartImpl extends ComplexProperty implements DocumentPart {
         return factory.createProperty(parent, field, flags);
     }
 
-    public PropertyDiff exportDiff() throws PropertyException {
+    public PropertyDiff exportDiff() {
         return null;
     }
 
-    public void importDiff(PropertyDiff diff) throws PropertyException {
+    public void importDiff(PropertyDiff diff) {
     }
 
     private void readObject(ObjectInputStream in)
@@ -220,7 +219,7 @@ public class DocumentPartImpl extends ComplexProperty implements DocumentPart {
         //schema = TypeService.getSchemaManager().getSchema(schemaName);
         schema = Framework.getLocalService(SchemaManager.class).getSchema(schemaName);
         // read factory
-        factory = (PropertyFactory)in.readObject();
+        factory = (PropertyFactory) in.readObject();
         if (factory == null) {
             factory = DefaultPropertyFactory.getInstance();
         }
@@ -246,11 +245,11 @@ public class DocumentPartImpl extends ComplexProperty implements DocumentPart {
             Property prop = createProperty(parent, field, flags);
             ((AbstractProperty) prop).data = data;
             if (!prop.isContainer()) {
-                prop.init((Serializable)in.readObject());
+                prop.init((Serializable) in.readObject());
             } else if (prop.isList()) {
-                deserializeChildren((ListProperty)prop, in);
+                deserializeChildren((ListProperty) prop, in);
             } else {
-                deserializeChildren((ComplexProperty)prop, in);
+                deserializeChildren((ComplexProperty) prop, in);
             }
             // add property to parent
             parent.children.add(prop);
@@ -269,18 +268,18 @@ public class DocumentPartImpl extends ComplexProperty implements DocumentPart {
         ComplexType type = parent.getType();
         for (int i=0; i<size; i++) {
             // read name
-            String name = (String)in.readObject();
+            String name = (String) in.readObject();
             Object data = in.readObject();
             // read flags
             int flags = in.readInt();
             Property prop = createProperty(parent, type.getField(name), flags);
-            ((AbstractProperty)prop).data = data;
+            ((AbstractProperty) prop).data = data;
             if (!prop.isContainer()) {
-                prop.init((Serializable)in.readObject());
+                prop.init((Serializable) in.readObject());
             } else if (prop.isList()) {
-                deserializeChildren((ListProperty)prop, in);
+                deserializeChildren((ListProperty) prop, in);
             } else {
-                deserializeChildren((ComplexProperty)prop, in);
+                deserializeChildren((ComplexProperty) prop, in);
             }
             // add property to parent
             parent.children.put(prop.getName(), prop);

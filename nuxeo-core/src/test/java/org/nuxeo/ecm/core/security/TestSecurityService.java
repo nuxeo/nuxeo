@@ -24,6 +24,8 @@ import java.util.List;
 
 import org.nuxeo.ecm.core.CoreTestConstants;
 import org.nuxeo.ecm.core.NXCore;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.security.PermissionProvider;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.UserVisiblePermission;
@@ -54,13 +56,14 @@ public class TestSecurityService extends NXRuntimeTestCase {
     }
 
     // TODO: Make this test independent of the permissions-contrib.xml file.
-    public void testGetPermissionsToCheck() throws Exception {
+    public void testGetPermissionsToCheck() {
         List<String> perms = Arrays.asList(service.getPermissionsToCheck(SecurityConstants.READ));
-        assertEquals(3, perms.size());
+        assertEquals(4, perms.size());
         assertTrue(perms.contains(SecurityConstants.READ));
+        assertTrue(perms.contains(SecurityConstants.EVERYTHING));
     }
 
-    public void testDefaultPermissions() throws Exception {
+    public void testDefaultPermissions() {
         PermissionProvider pp = service.getPermissionProvider();
 
         String[] groups = pp.getPermissionGroups("Read");
@@ -173,7 +176,7 @@ public class TestSecurityService extends NXRuntimeTestCase {
                 Arrays.asList(orderedVisiblePermissions));
     }
 
-    public void testOverridedPermissions2() throws Exception {
+    public void testOverriddenPermissions2() throws Exception {
         // deploy a new atomic permission and a new compound permission
         deployContrib(CoreTestConstants.CORE_TESTS_BUNDLE,
                 "permissions-override2-contrib.xml");
@@ -244,6 +247,17 @@ public class TestSecurityService extends NXRuntimeTestCase {
         assertEquals("Remove",deleteVP.getDenyPermission());
         assertEquals("ReadRemove",deleteVP.getPermission());
 
+    }
+
+    public void testGetPrincipalsToCheck() throws Exception {
+        NuxeoPrincipal principal = new UserPrincipal("bob", Arrays.asList(
+                "vps", "males"));
+        String[] principals = SecurityService.getPrincipalsToCheck(principal);
+        assertEquals(4, principals.length);
+        assertTrue(Arrays.asList(principals).contains("bob"));
+        assertTrue(Arrays.asList(principals).contains("vps"));
+        assertTrue(Arrays.asList(principals).contains("males"));
+        assertTrue(Arrays.asList(principals).contains(SecurityConstants.EVERYONE));
     }
 
 }

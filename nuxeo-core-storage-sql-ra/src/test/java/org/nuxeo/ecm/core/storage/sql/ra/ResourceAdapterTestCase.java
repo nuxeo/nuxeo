@@ -40,7 +40,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  */
 public class ResourceAdapterTestCase extends BaseTestCase {
 
-    private static Log log = LogFactory.getLog(ResourceAdapterTestCase.class);
+    private static final Log log = LogFactory.getLog(ResourceAdapterTestCase.class);
 
     private PublicNXRuntimeTestCase runtimeTestCase;
 
@@ -95,28 +95,39 @@ public class ResourceAdapterTestCase extends BaseTestCase {
         file.delete();
     }
 
-    public void testRepo() throws Exception {
-        log.info("Test Repo ----------------");
+    public void testSaveOnCommit() throws Exception {
         InitialContext context = new InitialContext();
-
         TransactionManager tm = (TransactionManager) context.lookup("java:/TransactionManager");
-        tm.begin();
-
         Repository repository = (Repository) context.lookup("java:NuxeoRepository/test");
         assertNotNull(repository);
-        log.info("Got repo " + repository);
 
-        Session session = repository.getConnection();
-        Node root = session.getRootNode();
-        assertNotNull(root);
-
-        /* Now check the core APIs that this also implements */
+        // check the core APIs that Repository also implements
         org.nuxeo.ecm.core.model.Repository repo = (org.nuxeo.ecm.core.model.Repository) repository;
-        SecurityManager sm = repo.getSecurityManager();
+        SecurityManager sm = repo.getNuxeoSecurityManager();
         assertNotNull(sm);
 
+        // first transaction
+        tm.begin();
+        Session session = repository.getConnection();
+        log.info("using " + session);
+        Node root = session.getRootNode();
+        assertNotNull(root);
+        session.addChildNode(root, "foo", null, "TestDoc", false);
+        // let commit do an implicit save
         tm.commit();
-        log.info("End ----------------");
+
+        // second transaction
+        tm.begin();
+        // we can't know what the JCA pool does, test two sessions to be sure,
+        // at least one of them will be different than the initial one above if
+        // the implicit save failed
+        Session session1 = repository.getConnection();
+        Session session2 = repository.getConnection();
+        Node foo1 = session1.getNodeByPath("/foo", null);
+        Node foo2 = session2.getNodeByPath("/foo", null);
+        assertNotNull(foo1);
+        assertNotNull(foo2);
+        tm.commit();
     }
 
 }

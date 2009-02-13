@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.core.api.impl;
 
+import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Map;
 
@@ -30,9 +31,11 @@ import org.nuxeo.common.utils.Path;
  * @author bdelbosc
  */
 public class DocumentModelTreeNodeComparator implements
-        Comparator<DocumentModelTreeNodeImpl> {
+        Comparator<DocumentModelTreeNodeImpl>, Serializable {
 
-    protected Map<String, String> titles;
+    private static final long serialVersionUID = 1L;
+
+    protected final Map<String, String> titles;
 
     /**
      * Expecting a path/title mapping.
@@ -40,19 +43,17 @@ public class DocumentModelTreeNodeComparator implements
      * @param titles
      */
     public DocumentModelTreeNodeComparator(Map<String, String> titles) {
-        super();
         this.titles = titles;
     }
 
     protected String getTitlePath(DocumentModelTreeNodeImpl node) {
         Path path = node.getDocument().getPath();
-        String parentPath;
         String titlePath = "/";
 
         for (int i = 1; i <= path.segmentCount(); i++) {
-            parentPath = path.uptoSegment(i).toString();
+            String parentPath = path.uptoSegment(i).toString();
             if (titles.containsKey(parentPath)) {
-                titlePath += titles.get(parentPath.toString()) + "/";
+                titlePath += titles.get(parentPath) + "/";
             } else {
                 titlePath += path.segment(i - 1) + "/";
             }

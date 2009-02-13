@@ -27,7 +27,7 @@ public class TypeBindingException extends TypeException {
 
     private static final long serialVersionUID = 3412654918664885706L;
 
-    private String typeName;
+    private final String typeName;
 
 
     public TypeBindingException(String typeName) {
@@ -42,10 +42,6 @@ public class TypeBindingException extends TypeException {
 
     public String getTypeName() {
         return typeName;
-    }
-
-    public void setTypeName(String typeName) {
-        this.typeName = typeName;
     }
 
 }

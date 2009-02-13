@@ -146,7 +146,7 @@ public abstract class DynamicObjectAdapter implements ObjectAdapter {
         return ObjectAdapterManager.getInstance().get(accessor.getType());
     }
 
-    public Serializable getDefaultValue() throws PropertyNotFoundException {
+    public Serializable getDefaultValue() {
         return null;
     }
 

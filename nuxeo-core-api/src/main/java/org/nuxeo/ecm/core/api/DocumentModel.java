@@ -40,15 +40,16 @@ import org.nuxeo.ecm.core.schema.DocumentType;
  * to a schema. All the information about a document (like security) is
  * expressed using schemas (and implicitly data models).
  * <p>
- * Data models are lazy loaded as they are needed. At document model creation
+ * Data models are lazily loaded as they are needed. At document model creation
  * only data models corresponding to the default schemas are loaded. The default
  * schemas are configured in the type manager through extension points.
  * <p>
  * The user may overwrite the default schemas by passing the schemas to be used
  * at model creation via {@link CoreSession#getDocument(DocumentRef, String[])}
  * <p>
- * How a lazy data model is loaded depends on the implementation. <br>
- * Anyway the API is already providing a mechanism to handle this as follow:
+ * How a lazy data model is loaded depends on the implementation.
+ * <p>
+ * Anyway the API already provides a mechanism to handle this as follow:
  *
  * <pre><code>
  * public DataModel getDataModel(String schema) {
@@ -65,13 +66,29 @@ import org.nuxeo.ecm.core.schema.DocumentType;
  * }
  * </code></pre>
  *
+ * @see CoreSession
+ * @see DataModel
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface DocumentModel extends Serializable {
 
+    int REFRESH_LOCK = 1;
+    int REFRESH_LIFE_CYCLE = 2;
+    int REFRESH_PREFETCH = 4;
+    int REFRESH_ACP_IF_LOADED = 8; // refresh now only if already loaded
+    int REFRESH_ACP_LAZY = 16; // refresh later in lazy mode
+    int REFRESH_ACP = 32; // refresh now
+    int REFRESH_CONTENT_IF_LOADED = 64; // refresh now only if already loaded
+    int REFRESH_CONTENT_LAZY = 128; // refresh later in lazy mode
+    int REFRESH_CONTENT = 256; // refresh now
+    int REFRESH_STATE = REFRESH_LIFE_CYCLE | REFRESH_LOCK;
+    int REFRESH_IF_LOADED = REFRESH_STATE | REFRESH_PREFETCH | REFRESH_ACP_IF_LOADED | REFRESH_CONTENT_IF_LOADED;
+    int REFRESH_LAZY = REFRESH_STATE | REFRESH_PREFETCH | REFRESH_ACP_LAZY | REFRESH_CONTENT_LAZY;
+    int REFRESH_ALL = REFRESH_STATE | REFRESH_PREFETCH | REFRESH_ACP | REFRESH_CONTENT;
+    int REFRESH_DEFAULT = REFRESH_STATE | REFRESH_PREFETCH | REFRESH_ACP_IF_LOADED | REFRESH_CONTENT_LAZY;
+
     /**
-     * Get the document type object.
+     * Gets the document type object.
      *
      * @return the document type object
      */
@@ -124,8 +141,9 @@ public interface DocumentModel extends Serializable {
      * Get a text suitable to be shown in a UI for this document.
      *
      * @return the title or the internal name if no title could be found
+     * @throws ClientException
      */
-    String getTitle();
+    String getTitle() throws ClientException;
 
     /**
      * Gets the document path as a string.
@@ -163,7 +181,7 @@ public interface DocumentModel extends Serializable {
     Set<String> getDeclaredFacets();
 
     /**
-     * Gets a list with the actual fetched data models.
+     * Gets a list with the currently fetched data models.
      *
      * @return the data models that are already fetched as a collection
      */
@@ -183,8 +201,9 @@ public interface DocumentModel extends Serializable {
      *
      * @param schema the schema name
      * @return the data model or null if no such schema is supported
+     * @throws ClientException
      */
-    DataModel getDataModel(String schema);
+    DataModel getDataModel(String schema) throws ClientException;
 
     /**
      * Sets path info.
@@ -254,8 +273,9 @@ public interface DocumentModel extends Serializable {
      * recommended since it caches the ACP for later usage.
      *
      * @return the security data model or null if none
+     * @throws ClientException
      */
-    ACP getACP();
+    ACP getACP() throws ClientException;
 
     /**
      * Sets the ACP for this document model.
@@ -266,8 +286,9 @@ public interface DocumentModel extends Serializable {
      * @see {@link CoreSession#setACP(DocumentRef, ACP, boolean)}
      * @param acp the ACP to set
      * @param overwrite whether to overwrite the old ACP or not
+     * @throws ClientException
      */
-    void setACP(ACP acp, boolean overwrite);
+    void setACP(ACP acp, boolean overwrite) throws ClientException;
 
     /**
      * Gets a property from the given schema.
@@ -278,8 +299,9 @@ public interface DocumentModel extends Serializable {
      * @param schemaName the schema name
      * @param name the property name
      * @return the property value or null if no such property exists
+     * @throws ClientException
      */
-    Object getProperty(String schemaName, String name);
+    Object getProperty(String schemaName, String name) throws ClientException;
 
     /**
      * Sets the property value from the given schema.
@@ -289,8 +311,9 @@ public interface DocumentModel extends Serializable {
      * @param schemaName the schema name
      * @param name the property name
      * @param value the property value
+     * @throws ClientException
      */
-    void setProperty(String schemaName, String name, Object value);
+    void setProperty(String schemaName, String name, Object value) throws ClientException;
 
     /**
      * Gets the values from the given data model as a map.
@@ -300,8 +323,9 @@ public interface DocumentModel extends Serializable {
      *
      * @param schemaName the data model schema name
      * @return the values map
+     * @throws ClientException
      */
-    Map<String, Object> getProperties(String schemaName);
+    Map<String, Object> getProperties(String schemaName) throws ClientException;
 
     /**
      * Sets values for the given data model.
@@ -310,8 +334,9 @@ public interface DocumentModel extends Serializable {
      *
      * @param schemaName the schema name
      * @param data the values to set
+     * @throws ClientException
      */
-    void setProperties(String schemaName, Map<String, Object> data);
+    void setProperties(String schemaName, Map<String, Object> data) throws ClientException;
 
     /**
      * Checks whether this document model has the given schema.
@@ -347,8 +372,9 @@ public interface DocumentModel extends Serializable {
      * Checks if this document can be downloaded.
      *
      * @return true if the document has downloadable content, false otherwise
+     * @throws ClientException
      */
-    boolean isDownloadable();
+    boolean isDownloadable() throws ClientException;
 
     /**
      * Checks if this document is a version.
@@ -474,8 +500,9 @@ public interface DocumentModel extends Serializable {
      * Copies all the data from a source document.
      *
      * @param sourceDoc
+     * @throws ClientException
      */
-    void copyContent(DocumentModel sourceDoc);
+    void copyContent(DocumentModel sourceDoc) throws ClientException;
 
     /**
      * Returns the name of the repository in which the document is stored.
@@ -494,8 +521,9 @@ public interface DocumentModel extends Serializable {
      * We will use the last modification time if present for the timestamp.
      *
      * @return the cache key as a string
+     * @throws ClientException
      */
-    String getCacheKey();
+    String getCacheKey() throws ClientException;
 
     /**
      * Returns the source document identifier.
@@ -567,38 +595,47 @@ public interface DocumentModel extends Serializable {
      * @param schema the schema
      * @return the document aprt or null if none exists for that schema
      * TODO throw an exception if schema is not impl  by the doc?
+     * @throws ClientException
      */
-    DocumentPart getPart(String schema);
+    DocumentPart getPart(String schema) throws ClientException;
 
     /**
-     * Get this document parts
+     * Gets this document's parts.
+     *
      * @return
+     * @throws ClientException
      */
-    DocumentPart[] getParts();
+    DocumentPart[] getParts() throws ClientException;
 
     /**
-     * Get a property given a xpath
+     * Gets a property given a xpath.
+     *
      * @param xpath
      * @return
      * @throws PropertyException
+     * @throws ClientException
      */
-    Property getProperty(String xpath) throws PropertyException;
+    Property getProperty(String xpath) throws PropertyException, ClientException;
 
     /**
-     * Get a property value given a xpath
-     * @param path
+     * Gets a property value given a xpath.
+     *
+     * @param xpath
      * @return
      * @throws PropertyException
+     * @throws ClientException
      */
-    Serializable getPropertyValue(String xpath) throws PropertyException;
+    Serializable getPropertyValue(String xpath) throws PropertyException, ClientException;
 
     /**
-     * Set a p[roperty value given a xpath
-     * @param path
+     * Sets a property value given a xpath.
+     *
+     * @param xpath
      * @param value
      * @throws PropertyException
+     * @throws ClientException
      */
-    void setPropertyValue(String xpath, Serializable value) throws PropertyException;
+    void setPropertyValue(String xpath, Serializable value) throws PropertyException, ClientException;
 
     /**
      * Returns the flags set on the document model.
@@ -608,16 +645,58 @@ public interface DocumentModel extends Serializable {
     long getFlags();
 
     /**
-     * Clone operation
-     * @return
-     * @throws CloneNotSupportedException
-     */
-    DocumentModel clone() throws CloneNotSupportedException;
-
-    /**
-     * Clear any prefetched or cached document data. This will force the document to lazy update
-     * it's data when required.
+     * Clears any prefetched or cached document data.
+     * <p>
+     * This will force the document to lazily update its data when required.
      */
     void reset();
+
+    /**
+     * Refresh document data from server.
+     * <p>
+     * The data models will be removed and all prefetch and system data will be refreshed from the server
+     * <p>
+     * The refreshed data contains:
+     * <ul>
+     * <li> document life cycle
+     * <li> document lock state, acp if required
+     * <li> document prefetch map
+     * <li> acp if required - otherwise acp info will be cleared so that it will be refetched in lazy way
+     * <li> document parts if required - otherwise parts data will be removed to be refreshed lazy
+     * </ul>
+     * The refresh flags are:
+     * <ul>
+     * <li> {@link DocumentModel#REFRESH_LIFE_CYCLE}
+     * <li> {@link DocumentModel#REFRESH_LOCK}
+     *
+     * <li> {@link DocumentModel#REFRESH_PREFETCH}
+     * <li> {@link DocumentModel#REFRESH_ACP_IF_LOADED}
+     * <li> {@link DocumentModel#REFRESH_ACP_LAZY}
+     * <li> {@link DocumentModel#REFRESH_ACP}
+     * <li> {@link DocumentModel#REFRESH_CONTENT_IF_LOADED}
+     * <li> {@link DocumentModel#REFRESH_CONTENT_LAZY}
+     * <li> {@link DocumentModel#REFRESH_CONTENT}
+     * <li> {@link DocumentModel#REFRESH_STATE} same as REFRESH_LIFE_CYCLE | REFRESH_LOCK
+     * <li> {@link DocumentModel#REFRESH_DEFAULT} same as REFRESH_STATE | REFRESH_DEFAULT | REFRESH_ACP_IF_LOADED | REFRESH_CONTENT_IF_LOADED
+     * <li> {@link DocumentModel#REFRESH_ALL} same as REFRESH_STATE | REFRESH_PREFTECH | REFRESH_ACP | REFRESH_CONTENT
+     * </ul>
+     * If XX_IF_LOADED is used then XX will be refreshed only if already loaded in the document - otherwise a lazy refresh will be done
+     *
+     * @param refreshFlags the refresh flags
+     * @param schemas the document parts (schemas) that should be refreshed now
+     */
+    void refresh(int refreshFlags, String[] schemas) throws ClientException;
+
+    /**
+     * Same as {@code DocumentModel.refresh(REFRESH_DEFAULT)}.
+     *
+     * @throws ClientException
+     */
+    void refresh() throws ClientException;
+
+    /**
+     * Clone operation. Must be made public instead of just protected as in Object.
+     */
+    DocumentModel clone() throws CloneNotSupportedException;
 
 }

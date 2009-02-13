@@ -32,30 +32,25 @@ public class TestApiHeavyLoad extends TestConnection {
     private static final Log log = LogFactory.getLog(TestApiHeavyLoad.class);
 
     protected void doDeployments() throws Exception {
-        deployContrib(CoreFacadeTestConstants.CORE_BUNDLE,
+        deployContrib(Constants.CORE_BUNDLE,
                 "OSGI-INF/CoreService.xml");
-        deployContrib(CoreFacadeTestConstants.CORE_BUNDLE,
+        deployContrib(Constants.CORE_BUNDLE,
                 "OSGI-INF/SecurityService.xml");
-        deployContrib(CoreFacadeTestConstants.CORE_FACADE_TESTS_BUNDLE,
+        deployContrib(Constants.CORE_BUNDLE,
+                "OSGI-INF/RepositoryService.xml");
+
+        deployContrib(Constants.CORE_FACADE_TESTS_BUNDLE,
                 "TypeService.xml");
-        deployContrib(CoreFacadeTestConstants.CORE_FACADE_TESTS_BUNDLE,
+        deployContrib(Constants.CORE_FACADE_TESTS_BUNDLE,
                 "permissions-contrib.xml");
-        deployContrib(CoreFacadeTestConstants.CORE_FACADE_TESTS_BUNDLE,
-                "RepositoryService.xml");
-        deployContrib(CoreFacadeTestConstants.CORE_FACADE_TESTS_BUNDLE,
+        deployContrib(Constants.CORE_FACADE_TESTS_BUNDLE,
                 "test-CoreExtensions.xml");
-        deployContrib(CoreFacadeTestConstants.CORE_FACADE_TESTS_BUNDLE,
+        deployContrib(Constants.CORE_FACADE_TESTS_BUNDLE,
                 "CoreTestExtensions.xml");
-        deployContrib(CoreFacadeTestConstants.CORE_FACADE_TESTS_BUNDLE,
+        deployContrib(Constants.CORE_FACADE_TESTS_BUNDLE,
                 "DemoRepository.xml");
-        deployContrib(CoreFacadeTestConstants.CORE_FACADE_TESTS_BUNDLE,
-                "LifeCycleService.xml");
-        deployContrib(CoreFacadeTestConstants.CORE_FACADE_TESTS_BUNDLE,
-                "LifeCycleServiceExtensions.xml");
-        deployContrib(CoreFacadeTestConstants.CORE_FACADE_TESTS_BUNDLE,
-                "CoreEventListenerService.xml");
-        deployContrib(CoreFacadeTestConstants.CORE_FACADE_TESTS_BUNDLE,
-                "DocumentAdapterService.xml");
+
+        deployBundle("org.nuxeo.ecm.core.event");
     }
 
     @Override
@@ -156,16 +151,7 @@ public class TestApiHeavyLoad extends TestConnection {
         int pageSize = 10;
         DocumentModelIterator docsIt = coreSession.querySimpleFtsIt("file", null, pageSize);
 
-        int count = 0;
-        while (docsIt.hasNext()) {
-            DocumentModel dm = docsIt.next();
-            assertEquals("file#_" + count, dm.getName());
-            assertEquals("file_" + count, dm.getProperty("dublincore", "title"));
-            count++;
-        }
-
-        // total docs = root + folder + children(50)
-        assertEquals(50, count);
+        assertEquals(50, docsIt.size());
     }
 
     public void OBSOLETEtestFtsQueryWithinPath() throws ClientException {

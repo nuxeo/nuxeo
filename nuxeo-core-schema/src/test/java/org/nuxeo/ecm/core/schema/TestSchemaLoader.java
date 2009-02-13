@@ -61,7 +61,8 @@ public class TestSchemaLoader extends NXRuntimeTestCase {
         return (SchemaManagerImpl) getTypeService().getTypeManager();
     }
 
-    // FIXME: this tests makes too string assumptions on how the fields will be ordered when we iterate over them (fails under Java 6)
+    // FIXME: this tests makes too string assumptions on how the fields will be
+    // ordered when we iterate over them (fails under Java 6)
     public void XXXtestXSDReader() throws Exception {
         URL url = getResource("schema/schema.xsd");
 

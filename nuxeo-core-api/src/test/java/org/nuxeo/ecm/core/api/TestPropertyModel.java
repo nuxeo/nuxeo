@@ -65,6 +65,7 @@ public class TestPropertyModel extends TestCase {
 
     protected RuntimeService runtime;
     protected Schema schema;
+    protected DocumentPartImpl dp;
 
     static <T> ArrayList<T> arrayList(T ... args) {
         ArrayList<T> list = new ArrayList<T>(args.length);
@@ -72,7 +73,7 @@ public class TestPropertyModel extends TestCase {
         return list;
     }
 
-    class Name {
+    private static class Name {
         String firstName;
         String lastName;
         HashMap<String,Serializable> getMap() {
@@ -83,7 +84,7 @@ public class TestPropertyModel extends TestCase {
         }
     }
 
-    class Author {
+    private static class Author {
         Name name = new Name();
         Long age;
 
@@ -100,7 +101,7 @@ public class TestPropertyModel extends TestCase {
         }
     }
 
-    class FileName implements Serializable {
+    private class FileName implements Serializable {
         private static final long serialVersionUID = -3238719896844696496L;
         String name;
         String extension;
@@ -113,7 +114,7 @@ public class TestPropertyModel extends TestCase {
         }
     }
 
-    class BlobFile implements Serializable {
+    private class BlobFile implements Serializable {
         private static final long serialVersionUID = 4486693420148155780L;
         final FileName fileName = new FileName();
         StringBlob blob;
@@ -126,14 +127,15 @@ public class TestPropertyModel extends TestCase {
         }
     }
 
-    class Book {
-        String title;
-        Calendar creationDate;
-        Long price;
-        String[] keywords;
-        ArrayList<String> references;
-        ArrayList<Author> authors;
-        BlobFile file;
+    private class Book {
+
+        private String title;
+        private Calendar creationDate;
+        private Long price;
+        private String[] keywords;
+        private ArrayList<String> references;
+        private ArrayList<Author> authors;
+        private BlobFile file;
 
         HashMap<String,Serializable> getMap() {
             HashMap<String, Serializable> map = new HashMap<String, Serializable>();
@@ -160,69 +162,6 @@ public class TestPropertyModel extends TestCase {
         }
     }
 
-    protected void clearMap(Map<String, Serializable> map) {
-        Iterator<Map.Entry<String, Serializable>> it = map.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry<String, Serializable> entry = it.next();
-            Serializable v = entry.getValue();
-            if (v == null) {
-                it.remove();
-            } else if (v instanceof Map) {
-                clearMap((Map<String, Serializable>)v);
-            } else if (v instanceof List) {
-                for (Serializable el : (List<Serializable>)v) {
-                    if (el instanceof Map) {
-                        clearMap((Map<String, Serializable>)el);
-                    }
-                }
-            }
-        }
-    }
-
-    protected boolean valueEquals(Object o1, Object o2) {
-        if (o1 == null && o2 == null) {
-            return true;
-        }
-        if (o1 == null) {
-            return o2 == null;
-        }
-        if (o2 == null) {
-            return o1 == null;
-        }
-        if (o1 instanceof Map) {
-            if (!(o2 instanceof Map)) {
-                return false;
-            }
-            Map<String,Serializable> map1 = (Map<String,Serializable>)o1;
-            Map<String,Serializable> map2 = (Map<String,Serializable>)o2;
-            if (map1.size() != map2.size()) {
-                return false;
-            }
-            for (String key : map1.keySet()) {
-                if (!valueEquals(map1.get(key), map2.get(key))) {
-                    return false;
-                }
-            }
-        } else if (o1 instanceof List) {
-            if (!(o2 instanceof List)) {
-                return false;
-            }
-            List<Serializable> list1 = (List<Serializable>)o1;
-            List<Serializable> list2 = (List<Serializable>)o2;
-            if (list1.size() != list2.size()) {
-                return false;
-            }
-            for (int i=0; i<list1.size(); i++) {
-                if (!valueEquals(list1.get(i), list2.get(i))) {
-                    return false;
-                }
-            }
-        } else if (!o1.equals(o2)) {
-            return false;
-        }
-        return true;
-    }
-
     @Override
     protected void setUp() throws Exception {
         // Duplicated from NXRuntimeTestCase
@@ -237,6 +176,7 @@ public class TestPropertyModel extends TestCase {
         SchemaManagerImpl mgr = new SchemaManagerImpl();
         XSDLoader loader = new XSDLoader(mgr);
         schema = loader.loadSchema("test", "book", getResource("TestSchema.xsd"));
+        dp = new DocumentPartImpl(schema);
         // set a custom service provider to be able to lookup services without loading the framework
         DefaultServiceProvider provider = new DefaultServiceProvider();
         provider.registerService(SchemaManager.class, mgr);
@@ -249,6 +189,68 @@ public class TestPropertyModel extends TestCase {
         Framework.shutdown();
     }
 
+    @SuppressWarnings("unchecked")
+    protected static void clearMap(Map<String, Serializable> map) {
+        Iterator<Map.Entry<String, Serializable>> it = map.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<String, Serializable> entry = it.next();
+            Serializable v = entry.getValue();
+            if (v == null) {
+                it.remove();
+            } else if (v instanceof Map) {
+                clearMap((Map<String, Serializable>) v);
+            } else if (v instanceof List) {
+                for (Serializable el : (List<Serializable>) v) {
+                    if (el instanceof Map) {
+                        clearMap((Map<String, Serializable>) el);
+                    }
+                }
+            }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    protected static boolean valueEquals(Object o1, Object o2) {
+        if (o1 == null && o2 == null) {
+            return true;
+        }
+        if (o1 == null || o2 == null) {
+            return false;
+        }
+        if (o1 instanceof Map) {
+            if (!(o2 instanceof Map)) {
+                return false;
+            }
+            Map<String, Serializable> map1 = (Map<String, Serializable>) o1;
+            Map<String, Serializable> map2 = (Map<String, Serializable>) o2;
+            if (map1.size() != map2.size()) {
+                return false;
+            }
+            for (String key : map1.keySet()) {
+                if (!valueEquals(map1.get(key), map2.get(key))) {
+                    return false;
+                }
+            }
+        } else if (o1 instanceof List) {
+            if (!(o2 instanceof List)) {
+                return false;
+            }
+            List<Serializable> list1 = (List<Serializable>) o1;
+            List<Serializable> list2 = (List<Serializable>) o2;
+            if (list1.size() != list2.size()) {
+                return false;
+            }
+            for (int i=0; i<list1.size(); i++) {
+                if (!valueEquals(list1.get(i), list2.get(i))) {
+                    return false;
+                }
+            }
+        } else if (!o1.equals(o2)) {
+            return false;
+        }
+        return true;
+    }
+
     // Duplicated from NXRuntimeTestCase
     public static URL getResource(String resource) {
         return Thread.currentThread().getContextClassLoader().getResource(
@@ -256,8 +258,6 @@ public class TestPropertyModel extends TestCase {
     }
 
     public void testPath() throws Exception {
-        DocumentPartImpl dp = new DocumentPartImpl(schema);
-
         String path = dp.get("file").get("fileName").getPath();
         assertEquals("/book:file/fileName", path);
 
@@ -268,8 +268,6 @@ public class TestPropertyModel extends TestCase {
     }
 
     public void testPropertyAccess() throws Exception {
-        DocumentPartImpl dp = new DocumentPartImpl(schema);
-
         // test complex property access
         Property prop = dp.get("title");
         assertTrue(prop.isScalar());
@@ -322,11 +320,7 @@ public class TestPropertyModel extends TestCase {
         // test raw values
         Map<String, Serializable> expected = new Book().getMap();
         expected.put("book:price", 111L);
-//        assertEquals(expected,  dp.getValue());
-//        System.out.println(expected);
-//        System.out.println(dp.getValue());
         assertTrue(valueEquals(expected,  dp.getValue()));
-
 
         // test resolve path
         prop = dp.resolvePath("title");
@@ -359,8 +353,6 @@ public class TestPropertyModel extends TestCase {
     }
 
     public void testPropertyValueAccess() throws Exception {
-        DocumentPartImpl dp = new DocumentPartImpl(schema);
-
         // test setters
         Property prop = dp.get("title");
         prop.setValue("The title");
@@ -373,7 +365,7 @@ public class TestPropertyModel extends TestCase {
         assertEquals("jpg", dp.getValue("book:file/fileName/extension"));
 
         Author author = new Author();
-        author.age = (long)100;
+        author.age = 100L;
         author.name = new Name();
         author.name.firstName = "Toto";
         prop = dp.get("authors").add(author.getMap());
@@ -400,7 +392,6 @@ public class TestPropertyModel extends TestCase {
     }
 
     public void testReadOnlyValue() throws Exception {
-        DocumentPartImpl dp = new DocumentPartImpl(schema);
         Property prop = dp.resolvePath("file/fileName/extension");
         try {
             prop.setReadOnly(true);
@@ -412,8 +403,6 @@ public class TestPropertyModel extends TestCase {
     }
 
     public void testFlags() throws Exception {
-        DocumentPartImpl dp = new DocumentPartImpl(schema);
-
         dp.setValue("file/fileName/extension", "ejb");
         assertTrue(dp.get("file").isDirty());
         assertTrue(dp.get("file").get("fileName").isDirty());
@@ -427,8 +416,6 @@ public class TestPropertyModel extends TestCase {
     }
 
     public void testDefaultFactories() throws Exception {
-        DocumentPartImpl dp = new DocumentPartImpl(schema);
-
         Book book = new Book();
         Author author = new Author();
         author.name.firstName = "John";
@@ -436,7 +423,7 @@ public class TestPropertyModel extends TestCase {
         book.authors.add(author);
         book.title = "My Title";
         book.creationDate = Calendar.getInstance();
-        book.price = new Long(100);
+        book.price = 100L;
         BlobFile file = new BlobFile();
         file.fileName.extension = "xml";
         book.file = file;
@@ -455,8 +442,6 @@ public class TestPropertyModel extends TestCase {
      * Compatibility test - this should be removed when ListDiff will be no more used in nuxeo
      */
     public void testListDiffCompatibility() throws Exception {
-        DocumentPartImpl dp = new DocumentPartImpl(schema);
-
         Book book = new Book();
         book.authors = new ArrayList<Author>();
         book.authors.add(new Author(1));
@@ -496,9 +481,6 @@ public class TestPropertyModel extends TestCase {
      * Compatibility test - this should be removed when ListDiff will be no more used in nuxeo
      */
     public void testListDiffCompatibilityForScalarList() throws Exception {
-        DocumentPartImpl dp = new DocumentPartImpl(schema);
-
-        Book book = new Book();
         ArrayList<String> references = arrayList("a", "b", "c", "d", "e");
         dp.get("references").init(references);
 
@@ -512,14 +494,12 @@ public class TestPropertyModel extends TestCase {
 
         prop.setValue(ld);
 
-        List<?> list = (List<?>)prop.getValue(List.class);
+        List<?> list = (List<?>) prop.getValue(List.class);
 
         assertEquals(arrayList("b", "a", "d", "g", "e", "f"), list);
     }
 
     public void testScalarList() throws Exception {
-        DocumentPartImpl dp = new DocumentPartImpl(schema);
-
         ArrayList<String> references = arrayList("a", "b", "c", "d", "e");
         dp.get("references").init(references);
 
@@ -547,8 +527,6 @@ public class TestPropertyModel extends TestCase {
     }
 
     public void testBlob()  throws Exception {
-        DocumentPartImpl dp = new DocumentPartImpl(schema);
-
         Book book = new Book();
         BlobFile file = new BlobFile();
         file.fileName.extension = "xml";
@@ -578,8 +556,6 @@ public class TestPropertyModel extends TestCase {
     }
 
     public void testSerialization()  throws Exception {
-        DocumentPartImpl dp = new DocumentPartImpl(schema);
-
         Book book = new Book();
         BlobFile file = new BlobFile();
         file.fileName.extension = "xml";
@@ -594,16 +570,17 @@ public class TestPropertyModel extends TestCase {
 
         ObjectInputStream in = new ObjectInputStream(
                 new ByteArrayInputStream(baos.toByteArray()));
-        DocumentPartImpl dp2 = (DocumentPartImpl)in.readObject();
+        DocumentPartImpl dp2 = (DocumentPartImpl) in.readObject();
 
-        // blobs are equals only if they are the same object so we need to remove them before doing the assertion
-        Blob blob1 = (Blob)dp.get("file").get("blob").remove();
-        Blob blob2 = (Blob)dp2.get("file").get("blob").remove();
+        // blobs are equals only if they are the same object so we need
+        // to remove them before doing the assertion
+        Blob blob1 = (Blob) dp.get("file").get("blob").remove();
+        Blob blob2 = (Blob) dp2.get("file").get("blob").remove();
         // remove array also for the same reason as the blob
-        Object[] keywords1 = (Object[])dp.get("keywords").remove();
-        Object[] keywords2 = (Object[])dp2.get("keywords").remove();
-        ArrayList<?> references1 = (ArrayList<?>)dp.get("references").remove();
-        ArrayList<?> references2 = (ArrayList<?>)dp2.get("references").remove();
+        Object[] keywords1 = (Object[]) dp.get("keywords").remove();
+        Object[] keywords2 = (Object[]) dp2.get("keywords").remove();
+        ArrayList<?> references1 = (ArrayList<?>) dp.get("references").remove();
+        ArrayList<?> references2 = (ArrayList<?>) dp2.get("references").remove();
 
         assertEquals(dp2.getValue(), dp.getValue());
 
@@ -618,9 +595,8 @@ public class TestPropertyModel extends TestCase {
         assertEquals(references1, references2);
     }
 
+    @SuppressWarnings("unchecked")
     public void testDirtyChildren() throws Exception {
-        DocumentPartImpl dp = new DocumentPartImpl(schema);
-
         Iterator<Property> it = dp.getDirtyChildren();
         assertFalse(it.hasNext());
 
@@ -673,9 +649,8 @@ public class TestPropertyModel extends TestCase {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public void testInit() throws Exception {
-        DocumentPartImpl dp = new DocumentPartImpl(schema);
-
         Book book = new Book();
         Author author = new Author();
         author.name.firstName = "John";
@@ -689,7 +664,10 @@ public class TestPropertyModel extends TestCase {
         book.references = arrayList("a", "b");
 
         HashMap<String, Serializable> map = book.getMap();
-        ((Map)((Map)map.get("book:file")).get("fileName")).remove("name"); // remove name so that it will be a phantom
+        // remove name so that it will be a phantom
+        Map<String, Serializable> map2 = (Map<String, Serializable>) map.get("book:file");
+        Map<String, Serializable> map3 = (Map<String, Serializable>) map2.get("fileName");
+        map3.remove("name");
 
         dp.init(map);
 
@@ -708,7 +686,7 @@ public class TestPropertyModel extends TestCase {
         assertEquals("xml", dp.getValue("file/fileName/extension"));
         assertEquals("My Title", dp.getValue("title"));
         assertEquals("John", dp.getValue("authors/author[0]/name/firstName"));
-        Object[] ar = (Object[])dp.getValue("keywords");
+        Object[] ar = (Object[]) dp.getValue("keywords");
         assertEquals("a", ar[0]);
         assertEquals("b", ar[1]);
         assertEquals("a", dp.getValue("references/reference[0]"));
@@ -723,10 +701,7 @@ public class TestPropertyModel extends TestCase {
         assertEquals(2, dp.get("references").size());
     }
 
-
     public void testExport() throws Exception {
-        DocumentPartImpl dp = new DocumentPartImpl(schema);
-
         Book book = new Book();
         Author author = new Author();
         author.name.firstName = "John";
@@ -739,7 +714,8 @@ public class TestPropertyModel extends TestCase {
         book.keywords = new String[] {"a", "b"};
 
         HashMap<String, Serializable> map = book.getMap();
-        ((Map)((Map)map.get("book:file")).get("fileName")).remove("name"); // remove name so that it will be a phantom
+        // remove name so that it will be a phantom
+        ((Map) ((Map) map.get("book:file")).get("fileName")).remove("name");
 
         // remove null values - since they are related to phantom props
         clearMap(map);

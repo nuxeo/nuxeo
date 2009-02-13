@@ -28,13 +28,16 @@ import javax.transaction.xa.Xid;
  */
 public class TransactionalSession implements XAResource {
 
+    private final SessionImpl session;
+
     private final Mapper mapper;
 
     private final PersistenceContext context;
 
     private boolean inTransaction;
 
-    TransactionalSession(Mapper mapper, PersistenceContext context) {
+    TransactionalSession(SessionImpl session, Mapper mapper, PersistenceContext context) {
+        this.session = session;
         this.mapper = mapper;
         this.context = context;
     }
@@ -60,7 +63,17 @@ public class TransactionalSession implements XAResource {
     }
 
     public void end(Xid xid, int flags) throws XAException {
-        mapper.end(xid, flags);
+        try {
+            if (flags != TMFAIL) {
+                try {
+                    session.flush();
+                } catch (Exception e) {
+                    throw new XAException(e.toString());
+                }
+            }
+        } finally {
+            mapper.end(xid, flags);
+        }
     }
 
     public int prepare(Xid xid) throws XAException {
@@ -79,6 +92,7 @@ public class TransactionalSession implements XAResource {
     public void rollback(Xid xid) throws XAException {
         try {
             mapper.rollback(xid);
+            context.rollback();
         } finally {
             inTransaction = false;
             context.notifyInvalidations();

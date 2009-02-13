@@ -19,30 +19,35 @@
 
 package org.nuxeo.ecm.core.api.operation;
 
+import java.io.Serializable;
+
 import org.nuxeo.ecm.core.api.DocumentRef;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class Modification {
-    public final static int ADD_CHILD = 1;
-    public final static int REMOVE_CHILD = 2;
-    public final static int ORDER_CHILD = 4;
-    public final static int CONTAINER_MODIFICATION = ADD_CHILD | REMOVE_CHILD | ORDER_CHILD;
+public class Modification implements Serializable {
 
-    public final static int CREATE = 8;
-    public final static int REMOVE = 16;
-    public final static int MOVE = 32;
-    public final static int EXISTENCE_MODIFICATION = CREATE | REMOVE | MOVE;
+    private static final long serialVersionUID = 9222943443571217778L;
 
-    public final static int CONTENT = 64;
-    public final static int SECURITY = 128;
-    public final static int STATE = 256;
-    public final static int UPDATE_MODIFICATION =CONTENT | SECURITY | STATE;
+    public static final int ADD_CHILD = 1;
+    public static final int REMOVE_CHILD = 2;
+    public static final int ORDER_CHILD = 4;
+    public static final int CONTAINER_MODIFICATION = ADD_CHILD | REMOVE_CHILD | ORDER_CHILD;
+
+    public static final int CREATE = 8;
+    public static final int REMOVE = 16;
+    public static final int MOVE = 32;
+    public static final int EXISTENCE_MODIFICATION = CREATE | REMOVE | MOVE;
+
+    public static final int CONTENT = 64;
+    public static final int SECURITY = 128;
+    public static final int STATE = 256;
+    public static final int UPDATE_MODIFICATION = CONTENT | SECURITY | STATE;
 
     public int type;
-    public DocumentRef ref;
+    public final DocumentRef ref;
 
     public Modification(DocumentRef ref, int type) {
         this.ref = ref;
@@ -95,7 +100,7 @@ public class Modification {
 
     @Override
     public String toString() {
-        return ref+" ["+type+"]";
+        return ref + " [" + type + ']';
     }
 
 }

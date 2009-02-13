@@ -31,9 +31,13 @@ import org.nuxeo.ecm.core.api.DocumentException;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public abstract class JCRHelper {
+public class JCRHelper {
 
     static int cnt = 0;
+
+    // Utility class.
+    private JCRHelper() {
+    }
 
     public static void saveNode(Node node) throws DocumentException {
         try {

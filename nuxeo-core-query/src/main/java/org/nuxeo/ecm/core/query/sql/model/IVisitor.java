@@ -60,6 +60,8 @@ public interface IVisitor extends Serializable {
 
     void visitExpression(Expression node);
 
+    void visitMultiExpression(MultiExpression node);
+
     void visitReference(Reference node);
 
     void visitReferenceList(ReferenceList node);

@@ -30,9 +30,9 @@ import org.nuxeo.ecm.core.schema.types.Field;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class StringProperty extends JCRScalarProperty  {
+class StringProperty extends JCRScalarProperty  {
 
-    public StringProperty(JCRNodeProxy parent, Property property, Field field) {
+    StringProperty(JCRNodeProxy parent, Property property, Field field) {
         super(parent, property, field);
     }
 

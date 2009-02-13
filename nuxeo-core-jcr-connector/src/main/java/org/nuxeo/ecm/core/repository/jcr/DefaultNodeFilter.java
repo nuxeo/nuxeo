@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.core.repository.jcr;
 
 import javax.jcr.Node;
+import javax.jcr.RepositoryException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -29,7 +30,7 @@ public class DefaultNodeFilter implements NodeFilter {
 
     public static final DefaultNodeFilter INSTANCE = new DefaultNodeFilter();
 
-    public boolean accept(Node node) throws Exception {
+    public boolean accept(Node node) throws RepositoryException {
         return !ModelAdapter.isContainerNode(node);
     }
 

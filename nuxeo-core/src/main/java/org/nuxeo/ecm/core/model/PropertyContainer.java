@@ -40,6 +40,7 @@ public interface PropertyContainer {
      *
      * @param path the path to test
      * @return true if the property at the given path exists, false otherwise
+     * @throws DocumentException if any error occurs
      */
     boolean isPropertySet(String path) throws DocumentException;
 
@@ -59,7 +60,7 @@ public interface PropertyContainer {
      *
      * @param name the property name to retrieve
      * @return the property object
-     * @throws DocumentException
+     * @throws DocumentException if any error occurs
      */
     Property getProperty(String name) throws DocumentException;
 
@@ -67,8 +68,7 @@ public interface PropertyContainer {
      * Removes the property with the given name.
      *
      * @param name the property to remove
-     * @throws NoSuchPropertyException if the given property doesn't exists
-     * @throws DocumentException
+     * @throws DocumentException if any error occurs
      */
     void removeProperty(String name) throws DocumentException;
 
@@ -89,9 +89,7 @@ public interface PropertyContainer {
      *
      * @param name the name of the property to set
      * @param value the value to set
-     * @throws NoSuchPropertyException if the given property is not specified by
-     *             the parent schema
-     * @throws DocumentException if any other error occurs
+     * @throws DocumentException if any error occurs
      */
     void setPropertyValue(String name, Object value) throws DocumentException;
 
@@ -106,9 +104,7 @@ public interface PropertyContainer {
      * @param name the name of the property to set
      * @return the property value or <code>null</code> if the property is not
      *         set.
-     * @throws NoSuchPropertyException if the given property is not specified by
-     *             the parent schema
-     * @throws DocumentException if any other error occurs
+     * @throws DocumentException if any error occurs
      */
     Object getPropertyValue(String name) throws DocumentException;
 
@@ -118,8 +114,7 @@ public interface PropertyContainer {
      * This is a shortcut for <code>getScalar(name).getString()</code>
      *
      * @see {@link SimpleProperty#getString()};
-     * @throws NoSuchPropertyException if the property with that name doesn't
-     *             exists
+     * @throws DocumentException if any error occurs
      */
     String getString(String name) throws DocumentException;
 
@@ -129,8 +124,7 @@ public interface PropertyContainer {
      * This is a shortcut for <code>getScalar(name).getBoolean()</code>
      *
      * @see {@link SimpleProperty#getBoolean()};
-     * @throws NoSuchPropertyException if the property with that name doesn't
-     *             exists
+     * @throws DocumentException if any error occurs
      */
     boolean getBoolean(String name) throws DocumentException;
 
@@ -140,8 +134,7 @@ public interface PropertyContainer {
      * This is a shortcut for <code>getScalar(name).getDouble()</code>
      *
      * @see {@link SimpleProperty#getDouble()};
-     * @throws NoSuchPropertyException if the property with that name doesn't
-     *             exists
+     * @throws DocumentException if any error occurs
      */
     double getDouble(String name) throws DocumentException;
 
@@ -151,8 +144,7 @@ public interface PropertyContainer {
      * This is a shortcut for <code>getScalar(name).getLong()</code>
      *
      * @see {@link SimpleProperty#getLong()};
-     * @throws NoSuchPropertyException if the property with that name doesn't
-     *             exists
+     * @throws DocumentException if any error occurs
      */
     long getLong(String name) throws DocumentException;
 
@@ -162,16 +154,14 @@ public interface PropertyContainer {
      * This is a shortcut for <code>getScalar(name).getDate()</code>
      *
      * @see {@link SimpleProperty#getDate()};
-     * @throws NoSuchPropertyException if the property with that name doesn't
-     *             exists
+     * @throws DocumentException if any error occurs
      */
     Calendar getDate(String name) throws DocumentException;
 
     /**
      * Gets the value of the named content property.
      *
-     * @throws NoSuchPropertyException if the property with that name doesn't
-     *             exists
+     * @throws DocumentException if any error occurs
      */
     Blob getContent(String name) throws DocumentException;
 
@@ -183,8 +173,7 @@ public interface PropertyContainer {
      * This is a shortcut to create or set string properties.
      *
      * @see {@link SimpleProperty#setString(String)}
-     * @throws NoSuchPropertyException if the property with that name doesn't
-     *             exists
+     * @throws DocumentException if any error occurs
      */
     void setString(String name, String value) throws DocumentException;
 
@@ -196,8 +185,7 @@ public interface PropertyContainer {
      * This is a shortcut to create or set boolean properties.
      *
      * @see {@link SimpleProperty#setBoolean(boolean)}
-     * @throws NoSuchPropertyException if the property with that name doesn't
-     *             exists
+     * @throws DocumentException if any error occurs
      */
     void setBoolean(String name, boolean value) throws DocumentException;
 
@@ -209,8 +197,7 @@ public interface PropertyContainer {
      * This is a shortcut to create or set long properties.
      *
      * @see {@link SimpleProperty#setLong(long)}
-     * @throws NoSuchPropertyException if the property with that name doesn't
-     *             exists
+     * @throws DocumentException if any error occurs
      */
     void setLong(String name, long value) throws DocumentException;
 
@@ -222,8 +209,7 @@ public interface PropertyContainer {
      * This is a shortcut to create or set double properties
      *
      * @see {@link SimpleProperty#setDouble(double)}
-     * @throws NoSuchPropertyException if the property with that name doesn't
-     *             exists
+     * @throws DocumentException if any error occurs
      */
     void setDouble(String name, double value) throws DocumentException;
 
@@ -235,8 +221,7 @@ public interface PropertyContainer {
      * This is a shortcut to create or set date properties.
      *
      * @see {@link SimpleProperty#setDate(Calendar)}
-     * @throws NoSuchPropertyException if the property with that name doesn't
-     *             exists
+     * @throws DocumentException if any error occurs
      */
     void setDate(String name, Calendar value) throws DocumentException;
 
@@ -245,8 +230,7 @@ public interface PropertyContainer {
      * <p>
      * If the property with that name doesn't exists, it will be created
      *
-     * @throws NoSuchPropertyException if the property with that name doesn't
-     *             exists
+     * @throws DocumentException if any error occurs
      */
     void setContent(String name, Blob value) throws DocumentException;
 
@@ -275,7 +259,6 @@ public interface PropertyContainer {
      * The property tree is recursively traversed and all property exported as
      * entry of the Map.
      *
-     * @return the exported properties as a java Map
      * @throws DocumentException if any error occurs
      */
     void importMap(Map<String, Map<String, Object>> map)
@@ -288,7 +271,7 @@ public interface PropertyContainer {
      *
      * @param schemas
      * @return
-     * @throws DocumentException
+     * @throws DocumentException if any error occurs
      */
     Map<String, Object> exportFlatMap(String[] schemas)
             throws DocumentException;
@@ -297,7 +280,7 @@ public interface PropertyContainer {
      * Imports a flat map of properties into this document.
      *
      * @param map
-     * @throws DocumentException
+     * @throws DocumentException if any error occurs
      */
     void importFlatMap(Map<String, Object> map) throws DocumentException;
 
@@ -307,7 +290,7 @@ public interface PropertyContainer {
      * The returned properties are existing.
      *
      * @return the existing properties in this container
-     * @throws DocumentException
+     * @throws DocumentException if any error occurs
      */
     Collection<Property> getProperties() throws DocumentException;
 
@@ -317,7 +300,7 @@ public interface PropertyContainer {
      * The returned properties are existing.
      *
      * @return the existing properties in this container
-     * @throws DocumentException
+     * @throws DocumentException if any error occurs
      */
     Iterator<Property> getPropertyIterator() throws DocumentException;
 

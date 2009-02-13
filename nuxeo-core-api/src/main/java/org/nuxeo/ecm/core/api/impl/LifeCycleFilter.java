@@ -28,9 +28,9 @@ import org.nuxeo.ecm.core.api.Filter;
 
 /**
  * A filter based on the document's life cycle.
- * 
+ *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- * 
+ *
  */
 public class LifeCycleFilter implements Filter {
 
@@ -42,12 +42,12 @@ public class LifeCycleFilter implements Filter {
 
     /**
      * Generic constructor.
-     * 
+     *
      * To be accepted, the document must have its lifecycle state in the {@code
      * required} list and the {@code excluded} list must not contain its
      * lifecycle state.
-     * 
-     * @param required the list of accepted lifecycle states
+     *
+     * @param accepted the list of accepted lifecycle states
      * @param excluded the list of excluded lifecycle states
      */
     public LifeCycleFilter(List<String> accepted, List<String> excluded) {
@@ -57,7 +57,7 @@ public class LifeCycleFilter implements Filter {
 
     /**
      * Convenient constructor to filter on a lifecycle state.
-     * 
+     *
      * @param lifeCycle the lifecycle to filter on
      * @param isRequired if {@code true} accepted documents must have this
      *            lifecycle state, if {@code false} accepted documents must not

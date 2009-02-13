@@ -18,10 +18,15 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -30,8 +35,8 @@ import org.nuxeo.common.utils.FileUtils;
 /**
  * Helper to set up and tear down a test database.
  * <p>
- * This can be used also to use another test database than Derby, for instance
- * PostgreSQL.
+ * This can be used also to use another test database than H2, for instance
+ * Derby or PostgreSQL.
  *
  * @author Florent Guillaume
  */
@@ -39,16 +44,18 @@ public class SQLBackendHelper {
 
     private static final Log log = LogFactory.getLog(SQLBackendHelper.class);
 
-    protected static enum Database {
+    public static enum Database {
         DERBY, //
+        H2, //
         MYSQL, //
-        POSTGRESQL;
-    };
+        POSTGRESQL, //
+        MSSQL
+    }
 
     /**
      * Change this to use another SQL database for tests.
      */
-    public static final Database DATABASE = Database.DERBY;
+    public static final Database DATABASE = Database.H2;
 
     protected static String REPOSITORY_NAME = "test";
 
@@ -62,6 +69,23 @@ public class SQLBackendHelper {
     protected static final String DERBY_DIRECTORY = "target/test/derby";
 
     protected static final String DERBY_LOG = "target/test/derby.log";
+
+    /*
+     * ----- H2 configuration -----
+     */
+
+    /** This property is mentioned in the ...-h2-contrib.xml file. */
+    protected static final String H2_PATH_PROPERTY = "nuxeo.test.h2.path";
+
+    private static File h2TempDir;
+
+    private static String h2Path;
+
+    protected static final boolean H2_DELETE_ON_TEARDOWN = true;
+
+    protected static final String H2_DATABASE_USER = "sa";
+
+    protected static final String H2_DATABASE_PASSWORD = "";
 
     /*
      * ----- MySQL configuration -----
@@ -115,6 +139,24 @@ public class SQLBackendHelper {
     public static final String PG_DATABASE_PASSWORD = "nuxeo";
 
     /*
+     * ----- MS SQL Server configuration -----
+     */
+
+    /* Constants mentioned in the ...-mssql-contrib.xml file: */
+
+    protected static final String MSSQL_HOST_PROPERTY = "nuxeo.test.mssql.host";
+
+    public static final String MSSQL_HOST = "172.16.245.128";
+
+    public static final String MSSQL_PORT = "1433";
+
+    public static final String MSSQL_DATABASE = "nuxeojunittests";
+
+    public static final String MSSQL_DATABASE_OWNER = "nuxeo";
+
+    public static final String MSSQL_DATABASE_PASSWORD = "nuxeo";
+
+    /*
      * ----- API -----
      */
 
@@ -128,11 +170,17 @@ public class SQLBackendHelper {
         case DERBY:
             setUpRepositoryDerby();
             return;
+        case H2:
+            setUpRepositoryH2();
+            return;
         case MYSQL:
             setUpRepositoryMySQL();
             return;
         case POSTGRESQL:
             setUpRepositoryPostgreSQL();
+            return;
+        case MSSQL:
+            setUpRepositoryMSSQL();
             return;
         }
         throw new RuntimeException(); // not reached
@@ -143,11 +191,17 @@ public class SQLBackendHelper {
         case DERBY:
             tearDownRepositoryDerby();
             return;
+        case H2:
+            tearDownRepositoryH2();
+            return;
         case MYSQL:
             tearDownRepositoryMySQL();
             return;
         case POSTGRESQL:
             tearDownRepositoryPostgreSQL();
+            return;
+        case MSSQL:
+            tearDownRepositoryMSSQL();
             return;
         }
         throw new RuntimeException(); // not reached
@@ -164,6 +218,8 @@ public class SQLBackendHelper {
         parent.mkdirs();
         System.setProperty("derby.stream.error.file",
                 new File(DERBY_LOG).getAbsolutePath());
+        // the following noticeably improves performance
+        System.setProperty("derby.system.durability", "test");
     }
 
     protected static void tearDownRepositoryDerby() throws Exception {
@@ -175,6 +231,36 @@ public class SQLBackendHelper {
             }
         }
         throw new RuntimeException("Expected Derby shutdown exception");
+    }
+
+    /*
+     * ----- H2 -----
+     */
+
+    protected static void setUpRepositoryH2() throws IOException {
+        h2TempDir = File.createTempFile("nxsqltests-h2-", null);
+        h2TempDir.delete();
+        h2TempDir.mkdir();
+        h2Path = new File(h2TempDir, "nuxeo").getAbsolutePath();
+        // this property is mentioned in the ...-h2-contrib.xml file
+        // it will be expanded by RepositoryImpl.getXADataSource
+        System.setProperty(H2_PATH_PROPERTY, h2Path);
+    }
+
+    protected static void tearDownRepositoryH2() throws Exception {
+        Connection connection = DriverManager.getConnection(String.format(
+                "jdbc:h2:%s", h2Path), H2_DATABASE_USER, H2_DATABASE_PASSWORD);
+        Statement st = connection.createStatement();
+        String sql = "SHUTDOWN";
+        log.trace(sql);
+        st.execute(sql);
+        st.close();
+        connection.close();
+        if (H2_DELETE_ON_TEARDOWN) {
+            FileUtils.deleteTree(h2TempDir);
+        }
+        h2TempDir = null;
+        h2Path = null;
     }
 
     /*
@@ -218,8 +304,8 @@ public class SQLBackendHelper {
         Connection connection = DriverManager.getConnection(url, PG_SUPER_USER,
                 PG_SUPER_PASSWORD);
         Statement st = connection.createStatement();
-        String sql;
-        sql = String.format("DROP DATABASE IF EXISTS \"%s\"", PG_DATABASE);
+        String sql = String.format("DROP DATABASE IF EXISTS \"%s\"",
+                PG_DATABASE);
         log.debug(sql);
         st.execute(sql);
         sql = String.format("CREATE DATABASE \"%s\" OWNER \"%s\"", PG_DATABASE,
@@ -233,4 +319,40 @@ public class SQLBackendHelper {
     protected static void tearDownRepositoryPostgreSQL() {
     }
 
+    /*
+     * ----- MS SQL Server -----
+     */
+
+    protected static void setUpRepositoryMSSQL() throws Exception {
+        Class.forName("net.sourceforge.jtds.jdbc.Driver");
+        String url = String.format(
+                "jdbc:jtds:sqlserver://%s:%s/%s;user=%s;password=%s;",
+                MSSQL_HOST, MSSQL_PORT, MSSQL_DATABASE, MSSQL_DATABASE_OWNER,
+                MSSQL_DATABASE_PASSWORD);
+        Connection connection = DriverManager.getConnection(url);
+        DatabaseMetaData metadata = connection.getMetaData();
+        List<String> tableNames = new LinkedList<String>();
+        ResultSet rs = metadata.getTables(null, null, "%",
+                new String[] { "TABLE" });
+        while (rs.next()) {
+            tableNames.add(rs.getString("TABLE_NAME"));
+        }
+        // remove hierarchy last because of foreign keys
+        if (tableNames.remove("hierarchy")) {
+            tableNames.add("hierarchy");
+        }
+        Statement st = connection.createStatement();
+        for (String tableName : tableNames) {
+            String sql = String.format("DROP TABLE [%s]", tableName);
+            log.debug(sql);
+            st.execute(sql);
+
+        }
+        st.close();
+        connection.close();
+        System.setProperty(MSSQL_HOST_PROPERTY, MSSQL_HOST);
+    }
+
+    protected static void tearDownRepositoryMSSQL() throws Exception {
+    }
 }

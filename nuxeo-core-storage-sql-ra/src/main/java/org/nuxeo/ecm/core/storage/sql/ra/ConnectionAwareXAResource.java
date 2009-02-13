@@ -29,9 +29,9 @@ import javax.transaction.xa.Xid;
  */
 public class ConnectionAwareXAResource implements XAResource {
 
-    private XAResource xaresource;
+    private final XAResource xaresource;
 
-    private ManagedConnectionImpl managedConnection;
+    private final ManagedConnectionImpl managedConnection;
 
     public ConnectionAwareXAResource(XAResource xaresource,
             ManagedConnectionImpl managedConnection) {

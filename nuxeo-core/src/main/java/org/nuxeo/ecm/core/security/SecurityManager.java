@@ -43,7 +43,7 @@ public interface SecurityManager {
     * The merged ACP is checked (this means all parents ACP + the local one)
     * but this doesn't check user groups or permission groups.
     * <p>
-    * If the ACP is not explicitely denying or granting the permission false is returned
+    * If the ACP is not explicitly denying or granting the permission false is returned
     * (the default behavior is to deny).
     *
     * @param doc the document

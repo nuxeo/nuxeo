@@ -29,11 +29,11 @@ public class PropertyRuntimeException extends RuntimeException {
     private static final long serialVersionUID = -4188122987347256698L;
 
     public PropertyRuntimeException(String message) {
-        super (message);
+        super(message);
     }
 
     public PropertyRuntimeException(String message, Throwable cause) {
-        super (message, cause);
+        super(message, cause);
     }
 
 }

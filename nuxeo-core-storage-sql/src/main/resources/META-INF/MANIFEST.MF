@@ -7,5 +7,6 @@ Bundle-Localization: bundle
 Require-Bundle: org.nuxeo.runtime,
  org.nuxeo.ecm.core.schema,
  org.nuxeo.ecm.core
+Bundle-Category: core
 Export-Package: org.nuxeo.ecm.core.storage.sql
 Eclipse-LazyStart: true

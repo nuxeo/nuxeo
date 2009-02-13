@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.core.api;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -28,7 +29,6 @@ import junit.framework.TestCase;
 
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.FacetFilter;
-
 
 public class TestFacetFilter extends TestCase {
 
@@ -61,5 +61,53 @@ public class TestFacetFilter extends TestCase {
         assertTrue(new FacetFilter(required, excluded).accept(model));
         excluded = Arrays.asList("B", "E");
         assertFalse(new FacetFilter(required, excluded).accept(model));
+    }
+
+    public void testAnd() {
+        FacetFilter f1, f2;
+
+        f1 = new FacetFilter(Collections.<String> emptyList(),
+                Collections.<String> emptyList());
+        assertEquals(Boolean.TRUE, f1.shortcut);
+
+        f1 = new FacetFilter(Arrays.asList("B"), Arrays.asList("B"));
+        assertEquals(Boolean.FALSE, f1.shortcut);
+
+        f1 = new FacetFilter("A", true);
+        f2 = new FacetFilter("B", true);
+        checkAnd(f1, f2, set("A", "B"), set(), null);
+
+        f1 = new FacetFilter("A", true);
+        f2 = new FacetFilter("B", false);
+        checkAnd(f1, f2, set("A"), set("B"), null);
+
+        f1 = new FacetFilter("A", false);
+        f2 = new FacetFilter("B", true);
+        checkAnd(f1, f2, set("B"), set("A"), null);
+
+        f1 = new FacetFilter("A", false);
+        f2 = new FacetFilter("B", false);
+        checkAnd(f1, f2, set(), set("A", "B"), null);
+
+        f1 = new FacetFilter(Arrays.asList("A"), Arrays.asList("B"));
+        f2 = new FacetFilter(Arrays.asList("C"), Arrays.asList("D"));
+        checkAnd(f1, f2, set("A", "C"), set("B", "D"), null);
+
+        f1 = new FacetFilter(Arrays.asList("A"), Arrays.asList("B"));
+        f2 = new FacetFilter(Arrays.asList("C"), Arrays.asList("A"));
+        checkAnd(f1, f2, set("A", "C"), set("B", "A"), Boolean.FALSE);
+
+    }
+
+    protected static Set<String> set(String... strings) {
+        return new HashSet<String>(Arrays.asList(strings));
+    }
+
+    protected void checkAnd(FacetFilter f1, FacetFilter f2, Set<String> req,
+            Set<String> exc, Boolean sc) {
+        FacetFilter f = new FacetFilter(f1, f2);
+        assertEquals(req, f.required);
+        assertEquals(exc, f.excluded);
+        assertEquals(sc, f.shortcut);
     }
 }

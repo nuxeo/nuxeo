@@ -29,6 +29,9 @@ public class TestJCRRepositoryQuery extends QueryTestCase {
     public void deployRepository() throws Exception {
         deployContrib(CoreJCRConnectorTestConstants.TESTS_BUNDLE,
                 "query-repository-contrib.xml");
+        deployContrib(CoreJCRConnectorTestConstants.BUNDLE,
+                "CustomVersioningService.xml");
+        deployBundle("org.nuxeo.ecm.core.event");
     }
 
     @Override
@@ -36,8 +39,23 @@ public class TestJCRRepositoryQuery extends QueryTestCase {
     }
 
     @Override
-    public void testQueryWithIn() {
-        // JCR cannot do IN queries
+    public void testQueryNegativeMultiple() {
+        // JCR cannot do negative queries on multi-valued properties
+    }
+
+    @Override
+    public void testQueryWithProxiesNegativeMultiple() {
+        // JCR cannot do negative queries on multi-valued properties
+    }
+
+    @Override
+    public void testSQLFulltextBlob() {
+        // TODO blob indexing configuration
+    }
+
+    @Override
+    public void testStartsWithNonPath() {
+        // not done for JCR
     }
 
 }

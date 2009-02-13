@@ -87,7 +87,7 @@ public interface CompositeType extends ComplexType {
     String[] getSchemaNames();
 
     /**
-     * Gets all the schemas (inherited ones too) of this composite type.
+     * Gets all the schemas (including inherited schemas) of this composite type.
      *
      * @return the composite type schemas
      */

@@ -42,7 +42,6 @@ public final class StringType extends PrimitiveType {
         return true;
     }
 
-    @Override
     public Object convert(Object value) {
         return value.toString();
     }

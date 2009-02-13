@@ -32,6 +32,8 @@ import java.util.List;
  */
 public interface NuxeoPrincipal extends Principal, Serializable {
 
+    String PREFIX = "user:";
+
     /**
      * Gets the first name of this principal.
      *
@@ -80,8 +82,7 @@ public interface NuxeoPrincipal extends Principal, Serializable {
     /**
      * Recursively test if the user is member of this group.
      *
-     * @param group
-     *            The name of the group
+     * @param group The name of the group
      * @return
      */
     boolean isMemberOf(String group) throws ClientException;
@@ -117,16 +118,14 @@ public interface NuxeoPrincipal extends Principal, Serializable {
     /**
      * Sets the principalId.
      *
-     * @param principalId
-     *            a new principalId for this instance
+     * @param principalId a new principalId for this instance
      */
     void setPrincipalId(String principalId);
 
     DocumentModel getModel();
 
     /**
-     * @param model
-     *            The model to set.
+     * @param model The model to set.
      * @throws ClientException
      */
     void setModel(DocumentModel model) throws ClientException;

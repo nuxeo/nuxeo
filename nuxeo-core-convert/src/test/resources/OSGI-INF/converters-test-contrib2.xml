@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.convert.tests.2">
+
+
+  <extension target="org.nuxeo.ecm.core.convert.service.ConversionServiceImpl"
+    point="converter">
+    <converter name="dummy2" class="org.nuxeo.ecm.core.convert.tests.DummyTestConverter">
+      <sourceMimeType>test/me</sourceMimeType>
+      <sourceMimeType>text/xml</sourceMimeType>
+      <destinationMimeType>foo/bar</destinationMimeType>
+    </converter>
+
+    <converter name="dummyChain">
+      <sourceMimeType>text/plain</sourceMimeType>
+      <destinationMimeType>foo/bar</destinationMimeType>
+      <conversionSteps>
+        <step>test/me</step>
+      </conversionSteps>
+    </converter>
+
+
+    <converter name="dummy3" class="org.nuxeo.ecm.core.convert.tests.DummyTestConverter">
+      <sourceMimeType>test/me</sourceMimeType>
+      <sourceMimeType>text/xml</sourceMimeType>
+      <destinationMimeType>jacky/chan</destinationMimeType>
+    </converter>
+
+
+    <converter name="dummyChain2">
+      <conversionSteps>
+        <subconverter>dummy1</subconverter>
+        <subconverter>dummy3</subconverter>
+      </conversionSteps>
+    </converter>
+
+
+
+    <converter name="custom" class="org.nuxeo.ecm.core.convert.tests.DummyTestConverter">
+      <sourceMimeType>something</sourceMimeType>
+      <destinationMimeType>somethingelse</destinationMimeType>
+    </converter>
+
+    <converter name="wildcard" class="org.nuxeo.ecm.core.convert.tests.DummyTestConverter">
+      <sourceMimeType>*</sourceMimeType>
+      <destinationMimeType>somethingelse</destinationMimeType>
+    </converter>
+
+
+
+  </extension>
+
+
+</component>

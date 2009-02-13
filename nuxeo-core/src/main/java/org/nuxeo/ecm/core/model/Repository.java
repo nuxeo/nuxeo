@@ -38,7 +38,7 @@ public interface Repository {
 
     SchemaManager getTypeManager();
 
-    SecurityManager getSecurityManager();
+    SecurityManager getNuxeoSecurityManager();
 
     void initialize() throws DocumentException;
 
@@ -49,7 +49,6 @@ public interface Repository {
     /**
      * TODO: hide shutdown from public API.
      *
-     * @throws Exception
      */
     void shutdown();
 

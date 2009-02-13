@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo Core Resource
+Bundle-SymbolicName: org.nuxeo.ecm.core.blob;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Localization: bundle
+Require-Bundle: org.nuxeo.runtime
+Eclipse-LazyStart: true

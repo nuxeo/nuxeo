@@ -93,7 +93,6 @@ public class FileBlob extends DefaultStreamBlob implements Serializable {
         return file;
     }
 
-
     @Override
     public long getLength() {
         return file == null ? 0L : file.length();
@@ -167,6 +166,7 @@ public class FileBlob extends DefaultStreamBlob implements Serializable {
                 file.delete();
             }
         }
+        super.finalize();
     }
 
 }

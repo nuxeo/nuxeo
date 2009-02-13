@@ -33,7 +33,7 @@ public class SchemaDescriptor {
     public String name;
 
     @XNode("@lazy")
-    public final boolean isLazy = true;
+    public boolean isLazy = true;
 
     public SchemaDescriptor() {
     }

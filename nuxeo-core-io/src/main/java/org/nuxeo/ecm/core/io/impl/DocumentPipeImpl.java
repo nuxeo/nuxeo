@@ -96,10 +96,6 @@ public class DocumentPipeImpl implements DocumentPipe {
         return DocumentTranslationMapImpl.merge(maps);
     }
 
-    /**
-     * @param maps
-     * @throws IOException
-     */
     private void readAndWriteDocs(List<DocumentTranslationMap> maps)
             throws IOException {
         if (pageSize == 0) {

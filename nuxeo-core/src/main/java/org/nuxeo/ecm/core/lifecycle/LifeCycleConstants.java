@@ -29,12 +29,17 @@ package org.nuxeo.ecm.core.lifecycle;
 public final class LifeCycleConstants {
 
     public static final String LIFECYCLE_SCHEMA_URI = "http://www.nuxeo.org/ecm/schemas/lifecycle";
+
     public static final String LIFECYCLE_SCHEMA_PREFIX = "lc";
+
     public static final String LIFECYCLE_SCHEMA_NAME = "lifecycle";
 
     // JCR2 names.
     public static final String LIFECYCLE_POLICY_PROP = "lifecyclePolicy";
+
     public static final String LIFECYCLE_STATE_PROP = "currentLifecycleState";
+
+    public static final String INITIAL_LIFECYCLE_STATE_OPTION_NAME = "initialLifecycleState";
 
     // Constant utility class
     private LifeCycleConstants() {

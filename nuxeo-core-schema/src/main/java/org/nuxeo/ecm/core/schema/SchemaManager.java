@@ -26,7 +26,6 @@ import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.TypeHelper;
 
-
 /**
  * A Type Manager manages ECM document types, schemas and field types.
  *
@@ -54,7 +53,7 @@ public interface SchemaManager extends TypeProvider {
     Schema unregisterSchema(String name);
 
     /**
-     * Get the field given a prefixed name.
+     * Gets the field given a prefixed name.
      *
      * @param prefixedName
      * @return the field or null if none
@@ -105,7 +104,6 @@ public interface SchemaManager extends TypeProvider {
      */
     // XXX: This should be refactored to get a serializable InputStream.
     String getXmlSchemaDefinition(String name);
-
 
     void registerHelper(String schema, String type, TypeHelper helper);
 

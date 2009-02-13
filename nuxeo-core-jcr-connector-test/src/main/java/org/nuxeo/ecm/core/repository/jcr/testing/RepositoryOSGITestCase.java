@@ -24,10 +24,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.NXCore;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentException;
+import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.event.impl.EventServiceImpl;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.model.Session;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
@@ -55,10 +60,11 @@ public abstract class RepositoryOSGITestCase extends NXRuntimeTestCase {
         // the core bundles
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core.api");
+        deployBundle("org.nuxeo.ecm.core.event");
         deployBundle("org.nuxeo.ecm.core");
         // backend
         deployBundle("org.nuxeo.ecm.core.jcr");
-//      assertNotNull(Framework.getService(CoreEventListenerService.class));
+        // assertNotNull(Framework.getService(CoreEventListenerService.class));
     }
 
     @Override
@@ -68,7 +74,7 @@ public abstract class RepositoryOSGITestCase extends NXRuntimeTestCase {
         super.tearDown();
     }
 
-    public void openRepository() throws Exception {
+    protected void openRepositoryAsUser(String userName) throws Exception {
         if (repository == null) {
             // the repository should be deployed the last
             // after any other bundle that is doctypes
@@ -77,7 +83,15 @@ public abstract class RepositoryOSGITestCase extends NXRuntimeTestCase {
             repository = NXCore.getRepositoryService().getRepositoryManager().getRepository(
                     REPOSITORY_NAME);
         }
-        openCoreSession("Administrator");
+        openCoreSession(userName);
+    }
+
+    public void openRepository() throws Exception {
+        openRepositoryAsUser("Administrator");
+    }
+
+    public void openRepositoryWithSystemPrivileges() throws Exception {
+        openRepositoryAsUser(null);
     }
 
     public CoreSession getCoreSession() {
@@ -88,14 +102,14 @@ public abstract class RepositoryOSGITestCase extends NXRuntimeTestCase {
         return repository;
     }
 
-    protected void openCoreSession(String userName) throws Exception {
+    protected void openCoreSession(String userName) throws ClientException {
         Map<String, Serializable> ctx = new HashMap<String, Serializable>();
         ctx.put("username", userName);
         coreSession = CoreInstance.getInstance().open(REPOSITORY_NAME, ctx);
         assertNotNull(coreSession);
     }
 
-    public void changeUser(String newUser) throws Exception {
+    public void changeUser(String newUser) throws ClientException {
         releaseCoreSession();
         openCoreSession(newUser);
     }
@@ -107,15 +121,29 @@ public abstract class RepositoryOSGITestCase extends NXRuntimeTestCase {
         }
     }
 
-    public void releaseCoreSession() throws Exception {
+    public void releaseCoreSession() {
         if (coreSession != null) {
             CoreInstance.getInstance().close(coreSession);
             coreSession = null;
         }
     }
 
-    protected Session getSession() throws Exception {
+    protected Session getSession() throws DocumentException {
         return repository.getSession(null);
     }
 
+    protected EventServiceImpl eventService;
+
+    protected void waitForEventsDispatched() {
+        if (eventService == null) {
+            eventService = (EventServiceImpl) Framework.getLocalService(EventService.class);
+        }
+        do {
+            try {
+                Thread.sleep(100);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }  while (eventService.getActiveAsyncTaskCount() > 0);
+    }
 }

@@ -34,16 +34,6 @@ public class TestTypeMapping extends RepositoryTestCase {
     Document doc;
     Session session;
 
-    @Override
-    protected void setUp() throws Exception {
-        // do nothing
-    }
-
-    @Override
-    protected void tearDown() throws Exception {
-        // do nothing
-    }
-
     protected void start() throws Exception {
         super.setUp();
     }

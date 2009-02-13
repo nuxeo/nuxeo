@@ -44,6 +44,8 @@ public class LifeCycleStateConfiguration {
 
     private static final String ATTR_STATE_DESCRIPTION = "description";
 
+    private static final String ATTR_STATE_INITIAL = "initial";
+
     /** The DOM element holding the states. */
     private final Element element;
 
@@ -71,7 +73,8 @@ public class LifeCycleStateConfiguration {
             states.add(new LifeCycleStateImpl(
                     element.getAttribute(ATTR_STATE_NAME),
                     element.getAttribute(ATTR_STATE_DESCRIPTION),
-                    getAllowedTransitionsFor(element)));
+                    getAllowedTransitionsFor(element),
+                    Boolean.valueOf(element.getAttribute(ATTR_STATE_INITIAL))));
         }
         return states;
     }

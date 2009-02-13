@@ -24,9 +24,9 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.Map.Entry;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -51,7 +51,8 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
 
     private Map<String, Set<String>> mergedGroups;
 
-    private final List<PermissionVisibilityDescriptor> registeredPermissionsVisibility = new LinkedList<PermissionVisibilityDescriptor>();
+    private final List<PermissionVisibilityDescriptor> registeredPermissionsVisibility
+            = new LinkedList<PermissionVisibilityDescriptor>();
 
     private Map<String, PermissionVisibilityDescriptor> mergedPermissionsVisibility;
 
@@ -175,7 +176,7 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
         return null;
     }
 
-    synchronized protected void computeMergedGroups() {
+    protected synchronized void computeMergedGroups() {
         if (mergedPermissions == null) {
             computeMergedPermissions();
         }
@@ -239,7 +240,7 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
                 new String[mergedPermissions.size()]);
     }
 
-    synchronized protected void computeMergedPermissions() {
+    protected synchronized void computeMergedPermissions() {
         mergedPermissions = new HashMap<String, MergedPermissionDescriptor>();
         for (PermissionDescriptor pd : registeredPermissions) {
             MergedPermissionDescriptor mpd = mergedPermissions
@@ -253,8 +254,8 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
         }
     }
 
-    synchronized public void registerDescriptor(PermissionDescriptor descriptor)
-            throws Exception {
+    public synchronized void registerDescriptor(
+            PermissionDescriptor descriptor) throws Exception {
         // check that all included permission have previously been registered
         Set<String> alreadyRegistered = new HashSet<String>();
         for (PermissionDescriptor registeredPerm : registeredPermissions) {
@@ -265,10 +266,9 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
                 // TODO: OG: use a specific exception sub class instead of the
                 // base type
                 throw new Exception(
-                        String
-                                .format(
-                                        "Permission '%s' included by '%s' is not a registered permission",
-                                        includePerm, descriptor.getName()));
+                        String.format(
+                                "Permission '%s' included by '%s' is not a registered permission",
+                                 includePerm, descriptor.getName()));
             }
         }
         // invalidate merged permission
@@ -278,7 +278,7 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
         registeredPermissions.add(descriptor);
     }
 
-    synchronized public void unregisterDescriptor(
+    public synchronized void unregisterDescriptor(
             PermissionDescriptor descriptor) {
         int lastOccurence = registeredPermissions.lastIndexOf(descriptor);
         if (lastOccurence != -1) {
@@ -290,14 +290,14 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
         }
     }
 
-    synchronized public void registerDescriptor(
+    public synchronized void registerDescriptor(
             PermissionVisibilityDescriptor descriptor) throws Exception {
         // invalidate cached merged descriptors
         mergedPermissionsVisibility = null;
         registeredPermissionsVisibility.add(descriptor);
     }
 
-    synchronized public void unregisterDescriptor(
+    public synchronized void unregisterDescriptor(
             PermissionVisibilityDescriptor descriptor) throws Exception {
         int lastOccurence = registeredPermissionsVisibility
                 .lastIndexOf(descriptor);

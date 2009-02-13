@@ -30,7 +30,7 @@ import org.nuxeo.ecm.core.schema.types.Field;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class BooleanProperty extends JCRScalarProperty {
+class BooleanProperty extends JCRScalarProperty {
 
     BooleanProperty(JCRNodeProxy parent, Property property, Field field) {
         super(parent, property, field);

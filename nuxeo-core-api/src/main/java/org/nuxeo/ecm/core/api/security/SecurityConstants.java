@@ -60,4 +60,6 @@ public interface SecurityConstants {
 
     static final String VIEW_WORKLFOW = "ReviewParticipant";
 
+    static final String UNLOCK = "Unlock";
+
 }

@@ -38,10 +38,8 @@ public class TestCore extends NXRuntimeTestCase {
         super.setUp();
         deployBundle(CoreTestConstants.SCHEMA_BUNDLE);
         deployContrib(CoreTestConstants.CORE_BUNDLE, "OSGI-INF/CoreService.xml");
-        deployContrib(CoreTestConstants.CORE_BUNDLE,
-                "OSGI-INF/RepositoryService.xml");
-        deployContrib(CoreTestConstants.CORE_BUNDLE,
-                "OSGI-INF/CoreExtensions.xml");
+        deployContrib(CoreTestConstants.CORE_BUNDLE, "OSGI-INF/RepositoryService.xml");
+        deployContrib(CoreTestConstants.CORE_BUNDLE, "OSGI-INF/CoreExtensions.xml");
         typeManager = NXSchema.getSchemaManager();
     }
 

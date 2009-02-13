@@ -27,9 +27,6 @@ package org.nuxeo.ecm.core.api;
  */
 public class DocumentSecurityException extends ClientException {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1768798758788L;
 
     public DocumentSecurityException(String message) {

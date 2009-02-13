@@ -34,9 +34,8 @@ public class StringProperty extends ScalarProperty {
 
     private static final long serialVersionUID = -3586917845281930368L;
 
-
     public StringProperty(Property parent, Field field, int flags) {
-        super (parent, field, flags);
+        super(parent, field, flags);
     }
 
     @Override
@@ -53,18 +52,18 @@ public class StringProperty extends ScalarProperty {
         throw new PropertyConversionException(value.getClass(), String.class);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T convertTo(Serializable value, Class<T> toType)
             throws PropertyConversionException {
         if (toType == String.class) {
-            return (T)value;
+            return (T) value;
         }
         throw new PropertyConversionException(value.getClass(), toType);
     }
 
     @Override
-    public Object newInstance() throws InstantiationException,
-            IllegalAccessException {
+    public Object newInstance() {
         return "";
     }
 

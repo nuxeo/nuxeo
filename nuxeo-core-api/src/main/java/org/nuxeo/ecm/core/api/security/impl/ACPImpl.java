@@ -87,13 +87,14 @@ public class ACPImpl implements ACP {
 
     /**
      * This method must append the ACL and not insert it since it is used to
-     * append the inherited ACL which is the less signifiant ACL.
+     * append the inherited ACL which is the less significant ACL.
      */
     public void addACL(ACL acl) {
+        assert acl != null;
         ACL oldACL = getACL(acl.getName());
-        if (acl != null && !acl.equals(oldACL)) {
+        if (!acl.equals(oldACL)) {
             // replace existing ACL instance different from acl having the same
-            // name if any
+            // name, if any
             if (oldACL != null) {
                 oldACL.clear();
                 oldACL.addAll(acl);

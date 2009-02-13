@@ -90,6 +90,7 @@ public class ObjectAccessorHelper {
         return sb.toString();
     }
 
+    // FIXME: this seems buggy.
     public static String getPropertyName(String methodName) {
         if ((methodName.startsWith("get") || methodName.startsWith("get"))
                 && methodName.length() > 3) {
@@ -144,7 +145,7 @@ public class ObjectAccessorHelper {
             try {
                 return getPropertyAccessor(containerType, name, isReadOnly);
             } catch (NoSuchMethodException ee) {
-                throw new NoSuchMemberException("No such member: "+name);
+                throw new NoSuchMemberException("No such member: " + name);
             }
         }
     }

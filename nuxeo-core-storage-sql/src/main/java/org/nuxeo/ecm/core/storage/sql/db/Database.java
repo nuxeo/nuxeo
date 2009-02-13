@@ -27,10 +27,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-import javax.sound.midi.Sequence;
-
 /**
- * A collection of {@link Table}s and {@link Sequence}s.
+ * A collection of {@link Table}s.
  *
  * @author Florent Guillaume
  */
@@ -56,7 +54,7 @@ public class Database implements Serializable {
             throw new IllegalArgumentException("Duplicate table name: " +
                     physicalName);
         }
-        Table table = new Table(this, physicalName);
+        Table table = new TableImpl(this, physicalName);
         tables.put(name, table);
         return table;
     }
@@ -90,7 +88,7 @@ public class Database implements Serializable {
         buf.append('(');
         for (Iterator<Table> iter = tables.values().iterator(); iter.hasNext();) {
             Table table = iter.next();
-            buf.append(table.getPhysicalName());
+            buf.append(table.getName());
             if (iter.hasNext()) {
                 buf.append(',');
             }

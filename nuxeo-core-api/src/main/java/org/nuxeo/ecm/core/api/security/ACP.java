@@ -26,7 +26,7 @@ import java.util.Set;
  *
  * Access control policy (ACP) control the permissions access on a resource.
  * <p>
- * An ACP may contains several ACLs (acess control list) identified by names.
+ * An ACP may contains several ACLs (access control list) identified by names.
  * <p>
  * The list of ACLs is ordered so that when checking permissions the ACL are
  * consulted in an ascending order. (The ACL on position 0 is consulted first).
@@ -42,32 +42,31 @@ import java.util.Set;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 public interface ACP extends Serializable, Cloneable {
 
     /**
      * Check whether this ACP grant the given permission on the given user,
-     * denies it or doesn't specifiy a rule.
+     * denies it or doesn't specify a rule.
      * <p>
      * This is checking only the ACLs on that ACP. Parents if any are not
      * checked.
      *
-     * @param principal the pricipal to check
+     * @param principal the principal to check
      * @param permission the permission to check
      * @return Access.GRANT if granted, Access.DENY if denied or Access.UNKNOWN
      *         if no rule for that permission exists. Never returns null.
-     *
-     * @see ACP#checkPermission(String, String)
      */
     Access getAccess(String principal, String permission);
 
     /**
-     * Check the access on the ACLs for each set of the given permissions and
-     * principals. This differs for an iterative check using getAccess(String
-     * principal, String pemission) in the order of checks - so that in this
-     * case each ACE is fully checked against the given users and permissions
-     * before passing to the next ACE.
+     * Checks the access on the ACLs for each set of the given permissions and
+     * principals.
+     * <p>
+     * This differs for an iterative check using getAccess(String principal,
+     * String permission) in the order of checks - so that in this case each ACE
+     * is fully checked against the given users and permissions before passing
+     * to the next ACE.
      *
      * @param principals
      * @param permissions
@@ -77,9 +76,10 @@ public interface ACP extends Serializable, Cloneable {
 
     /**
      * Replaces the modifiable user entries (associated with the
-     * currentDocument) related to the current ACP. Considers that all the
-     * passed entries are modifiable and attempts to set them as local entries
-     * related to the current document.
+     * currentDocument) related to the current ACP.
+     * <p>
+     * Considers that all the passed entries are modifiable and attempts to set
+     * them as local entries related to the current document.
      *
      * @param userEntries
      */
@@ -87,22 +87,24 @@ public interface ACP extends Serializable, Cloneable {
 
     /**
      * Replaces the modifiable user entries (associated with the
-     * currentDocument) related to the current ACP. Considers that all the
-     * passed entries are modifiable and attempts to set them as local entries
-     * related to the current document.
+     * currentDocument) related to the current ACP.
+     * <p>
+     * Considers that all the passed entries are modifiable and attempts to set
+     * them as local entries related to the current document.
      * <p>
      * The current behavior reset <strong>completely</strong> the current ACL.
      *
-     * @param overwrite overwrite the whole current ACL
-     * @param localEntries
+     * @param userEntries
+     * @param overwrite if true, will overwrite the whole current ACL
      */
     void setRules(UserEntry[] userEntries, boolean overwrite);
 
     /**
      * Replaces the modifiable user entries (associated with the
-     * currentDocument) related to the ACP. Considers that all the passed
-     * entries are modifiable and attempts to set them as entries related to the
-     * current document.
+     * currentDocument) related to the ACP.
+     * <p>
+     * Considers that all the passed entries are modifiable and attempts to set
+     * them as entries related to the current document.
      *
      * @param aclName
      * @param userEntries
@@ -111,13 +113,14 @@ public interface ACP extends Serializable, Cloneable {
 
     /**
      * Replaces the modifiable user entries (associated with the
-     * currentDocument) related to the ACP. Considers that all the passed
-     * entries are modifiable and attempts to set them as entries related to the
-     * current document.
+     * currentDocument) related to the ACP.
+     * <p>
+     * Considers that all the passed entries are modifiable and attempts to set
+     * them as entries related to the current document.
      *
      * @param aclName
      * @param userEntries
-     * @param overwrite overwrite the whole ACL
+     * @param overwrite if true, will overwrite the whole ACL
      */
     void setRules(String aclName, UserEntry[] userEntries, boolean overwrite);
 
@@ -152,8 +155,8 @@ public interface ACP extends Serializable, Cloneable {
     /**
      * Returns the usernames having a given permission.
      *
-     * @param perm : the permission name.
-     * @return a list of usernames.
+     * @param perm the permission name.
+     * @return a list of usernames
      */
     String[] listUsernamesForPermission(String perm);
 
@@ -161,8 +164,8 @@ public interface ACP extends Serializable, Cloneable {
      * Returns the usernames granted to perform an operation based on a list of
      * permissions.
      *
-     * @param perms: the list of permissions.
-     * @return a list of usernames.
+     * @param perms the list of permissions.
+     * @return a list of usernames
      */
     String[] listUsernamesForAnyPermission(Set<String> perms);
 

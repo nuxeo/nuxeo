@@ -41,6 +41,7 @@ import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.storage.Credentials;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.db.Dialect;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author Florent Guillaume
@@ -241,7 +242,7 @@ public class RepositoryImpl implements Repository {
 
         for (Entry<String, String> entry : repositoryDescriptor.properties.entrySet()) {
             String propertyName = entry.getKey();
-            Object value = entry.getValue();
+            Object value = Framework.expandVars(entry.getValue());
             Class<?>[] sig;
             /*
              * Special syntax to set non-String values: fooBar/Integer=123
@@ -337,7 +338,7 @@ public class RepositoryImpl implements Repository {
             Connection connection = null;
             try {
                 connection = xaconnection.getConnection();
-                dialect = new Dialect(connection);
+                dialect = new Dialect(connection, repositoryDescriptor);
             } finally {
                 if (connection != null) {
                     connection.close();

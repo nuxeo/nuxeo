@@ -25,11 +25,6 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
 
-import org.nuxeo.ecm.core.api.model.Property;
-import org.nuxeo.ecm.core.api.model.impl.ComplexProperty;
-import org.nuxeo.ecm.core.api.model.impl.MapProperty;
-import org.nuxeo.ecm.core.api.model.impl.primitives.StringProperty;
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
@@ -136,21 +131,6 @@ public class TypeAnnotationRegistry<T> {
             this.provider = provider;
             this.data = data;
         }
-    }
-
-    public static void main(String[] args) {
-        TypeAnnotationRegistry<String> mgr = new TypeAnnotationRegistry<String>();
-        mgr.put(Property.class, "prop");
-        mgr.put(ComplexProperty.class, "cprop");
-
-        System.out.println(mgr.get(MapProperty.class));
-        System.out.println(mgr.get(StringProperty.class));
-
-        mgr.remove(Property.class);
-
-        System.out.println(mgr.get(MapProperty.class));
-        System.out.println(mgr.get(StringProperty.class));
-
     }
 
 }

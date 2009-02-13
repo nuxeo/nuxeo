@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Bogdan Stefanescu
+ *     Florent Guillaume
  */
 
 package org.nuxeo.ecm.core.api;
@@ -27,16 +26,32 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.api.impl.DocsQueryProviderDef;
+import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.operation.Operation;
+import org.nuxeo.ecm.core.api.operation.ProgressMonitor;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecuritySummaryEntry;
 import org.nuxeo.ecm.core.schema.DocumentType;
 
 /**
+ * A session to the Nuxeo Core.
+ * <p>
+ * The session is opened and closed by a client and gives the
+ * client the possibility to interact with the core.
+ * <p>
+ * The core a session connects to can be located in a separate (remote) JVM or
+ * in the current one.
+ * <p>
+ * To create remote or local sessions, you need to
+ * use a specific {@link CoreSessionFactory}
+ * object. These objects are usually specified using extension points but
+ * you can also use them programatically.
  *
+ * @see DocumentModel
+ * @see DocumentRef
  *
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author Bogdan Stefanescu
+ * @author Florent Guillaume
  */
 public interface CoreSession {
 
@@ -160,7 +175,7 @@ public interface CoreSession {
      * to use.
      * <p>
      * Same as the previous method with the difference that the default schemas
-     * are overwriten by the given schemas.
+     * are overwritten by the given schemas.
      *
      * @param docRef the document reference
      * @param schemas the initial schemas to use to populate the document model
@@ -208,7 +223,7 @@ public interface CoreSession {
     DocumentModelList getChildren(DocumentRef parent) throws ClientException;
 
     /**
-     * Gets the children of the given parent.
+     * Gets an iterator to the children of the given parent.
      *
      * @param parent the parent reference
      * @return iterator over the children collection or null if the specified
@@ -231,6 +246,10 @@ public interface CoreSession {
     DocumentModelList getChildren(DocumentRef parent, String type)
             throws ClientException;
 
+    /**
+     * Gets an iterator to the children of the given parent filtered according to the given
+     * document type.
+     */
     DocumentModelIterator getChildrenIterator(DocumentRef parent, String type)
             throws ClientException;
 
@@ -249,8 +268,8 @@ public interface CoreSession {
             throws ClientException;
 
     /**
-     * Same as the previous method but the result is filtered and then sorted
-     * using the specified filter and sorter.
+     * Same as {@link #getChildren(DocumentRef, String, String)} but the result
+     * is filtered and then sorted using the specified filter and sorter.
      *
      * @param parent the parent reference
      * @param type the wanted type
@@ -310,7 +329,8 @@ public interface CoreSession {
             String perm, Filter filter) throws ClientException;
 
     /**
-     * Same as the previous method without specific permission filtering.
+     * Same as {@link #getChildren(DocumentRef, String, String, Filter, Sorter)}
+     * without specific permission filtering.
      *
      * @param parent the parent reference
      * @param type the wanted type
@@ -338,16 +358,17 @@ public interface CoreSession {
      * Same as {@link CoreSession#getFolders(DocumentRef)} but returns a lazy
      * loading iterator over the list of children.
      *
-     * @param parent
-     * @return
+     * @param parent the parent reference
+     * @return a list of children if any, an empty one if none or null if the
+     *         given parent is not a folder
      * @throws ClientException
      */
     DocumentModelIterator getFoldersIterator(DocumentRef parent)
             throws ClientException;
 
     /**
-     * Same as the previous method but use an optional filter and sorter on the
-     * result.
+     * Same as {@link CoreSession#getFolders(DocumentRef)} but uses an optional filter
+     * and sorter on the result.
      *
      * @param parent the parent reference
      * @param filter the filter to use or null if none
@@ -360,8 +381,8 @@ public interface CoreSession {
             Sorter sorter) throws ClientException;
 
     /**
-     * Same as {@link CoreSession#getChildren(DocumentRef)} but returns a lazy
-     * loading iterator over the list of children.
+     * Same as {@link CoreSession#getChildren(DocumentRef)} but returns only
+     * non-folder documents.
      *
      * @param parent the parent reference
      * @return a list of children if any, an empty one if none or null if the
@@ -371,8 +392,7 @@ public interface CoreSession {
     DocumentModelList getFiles(DocumentRef parent) throws ClientException;
 
     /**
-     * Same as {@link CoreSession#getFiles(DocumentRef)} but returns only
-     * non-folder documents.
+     * Same as {@link CoreSession#getFiles(DocumentRef)} but returns an iterator.
      *
      * @param parent
      * @return
@@ -382,7 +402,7 @@ public interface CoreSession {
             throws ClientException;
 
     /**
-     * Same as the previous method but uses an optional filter and sorter on the
+     * Same as {@link #getFiles} but uses an optional filter and sorter on the
      * result.
      *
      * @param parent the parent reference
@@ -423,10 +443,8 @@ public interface CoreSession {
      * <p>
      * This operation makes no difference between non-existence and permission
      * problems.
-     * </p>
      * <p>
      * If the parent is null or its path is null, then root is considered.
-     * </p>
      *
      * @param docRef the reference to the document to test for existence
      * @return true if the referenced document exists, false otherwise
@@ -452,7 +470,6 @@ public interface CoreSession {
      * Creates a document model using type name.
      * <p>
      * Used to fetch initial datamodels from the type definition.
-     *
      * <p>
      * DocumentModel creation notifies a
      * {@link DocumentEventTypes.EMPTY_DOCUMENTMODEL_CREATED} so that core event
@@ -787,7 +804,7 @@ public interface CoreSession {
      * Gets the full content of the given field in the given document from the
      * given session.
      * <p>
-     * This method is supposed to be called from the client to lazy load content
+     * This method is supposed to be called from the client to lazily load content
      * fields data.
      *
      * @param docRef the document reference
@@ -835,7 +852,7 @@ public interface CoreSession {
     /**
      * Gets the last version of a document.
      *
-     * @param docRef the document reference
+     * @param docRef the reference to the document
      * @return the version
      * @throws ClientException if any error occurs
      */
@@ -845,7 +862,7 @@ public interface CoreSession {
      * Gets the document corresponding to the last version for the given
      * document.
      *
-     * @param docRef
+     * @param docRef the reference to the document
      * @return the document model corresponding to the version
      * @throws ClientException
      */
@@ -855,7 +872,7 @@ public interface CoreSession {
     /**
      * Gets the head (live) document for this document.
      *
-     * @param docRef the document reference
+     * @param docRef the reference to the document
      * @return the version
      * @throws ClientException if any error occurs
      */
@@ -864,7 +881,7 @@ public interface CoreSession {
     /**
      * Gets the references of the versions of the document.
      *
-     * @param docRef the document reference
+     * @param docRef the reference to the document
      * @return a list of version references
      * @throws ClientException
      * @since 1.4.1
@@ -875,7 +892,7 @@ public interface CoreSession {
     /**
      * Retrieves all the versions for a specified document.
      *
-     * @param docRef the ref to the document
+     * @param docRef the reference to the document
      * @return the list of {@see DocumentModel} representing versions, empty
      *         list if none is found.
      * @throws ClientException
@@ -885,7 +902,7 @@ public interface CoreSession {
     /**
      * Retrieves all the versions for a specified document.
      *
-     * @param docRef the ref to the document
+     * @param docRef the reference to the document
      * @return the list of {@see VersionModel} representing versions, empty list
      *         if none is found.
      */
@@ -895,7 +912,7 @@ public interface CoreSession {
     /**
      * Returns a document that represents the specified version of the document.
      *
-     * @param docRef the document reference
+     * @param docRef the reference to the document
      * @param version the version for which we want the corresponding document
      * @return
      * @throws ClientException
@@ -916,8 +933,7 @@ public interface CoreSession {
     /**
      * Checks out a versioned document.
      *
-     * @param docRef the ref to the document
-     * @return the next displayed page
+     * @param docRef the reference to the document
      * @throws ClientException
      */
     void checkOut(DocumentRef docRef) throws ClientException;
@@ -925,9 +941,8 @@ public interface CoreSession {
     /**
      * Checks in a modified document, creating a new version.
      *
-     * @param docRef the ref to the document
+     * @param docRef the reference to the document
      * @param version the version descriptor
-     * @return the next displayed page
      * @throws ClientException
      */
     void checkIn(DocumentRef docRef, VersionModel version)
@@ -945,7 +960,7 @@ public interface CoreSession {
     /**
      * Creates a proxy for the given version of the given document.
      *
-     * @param docRef the document
+     * @param docRef the reference to the document
      * @param version the version
      * @return the proxy
      * @throws ClientException if any error occurs
@@ -972,10 +987,7 @@ public interface CoreSession {
      * @param max number of document to retrieve
      * @return the query result
      * @throws ClientException
-     *
-     * @deprecated use search service
      */
-    @Deprecated
     DocumentModelList query(String query, int max) throws ClientException;
 
     /**
@@ -986,10 +998,7 @@ public interface CoreSession {
      * @param filter the filter to apply to result
      * @return the query result
      * @throws ClientException
-     *
-     * @deprecated use search service
      */
-    @Deprecated
     DocumentModelList query(String query, Filter filter) throws ClientException;
 
     /**
@@ -1001,18 +1010,37 @@ public interface CoreSession {
      * @param max number of document to retrieve
      * @return the query result
      * @throws ClientException
-     *
-     * @deprecated use search service
      */
-    @Deprecated
     DocumentModelList query(String query, Filter filter, int max)
             throws ClientException;
 
     /**
-     * @deprecated use SearchService instead. See
-     *             {@url http://doc.nuxeo.org/reference/html/search-service.html}
+     * Executes the given NXQL query and returns the result that matches the
+     * filter.
+     *
+     * @param query the query to execute
+     * @param filter the filter to apply to result
+     * @param limit the maximum number of documents to retrieve, or 0 for all of
+     *            them
+     * @param offset the offset (starting at 0) into the list of documents
+     * @param countTotal if {@code true}, return a {@link DocumentModelList}
+     *            that includes a total size of the underlying list (size if
+     *            there was no limit or offset)
+     * @return the query result
+     * @throws ClientException
      */
-    @Deprecated
+    DocumentModelList query(String query, Filter filter, long limit,
+            long offset, boolean countTotal) throws ClientException;
+
+    /**
+     * Executes the given NXQL query and returns an iterators of results.
+     *
+     * @param query the query to execute
+     * @param filter the filter to apply to result
+     * @param max number of document to retrieve
+     * @return the query result iterator
+     * @throws ClientException
+     */
     DocumentModelIterator queryIt(String query, Filter filter, int max)
             throws ClientException;
 
@@ -1224,9 +1252,7 @@ public interface CoreSession {
     /**
      * Publishes the document in a section overwriting any existing proxy to the
      * same document. This is simmilar to publishDocument(docToPublish, section,
-     * true).
-     * <p>
-     * If the document is already a proxy, then it's simply copied.
+     * true);
      *
      * @param docToPublish
      * @param section
@@ -1261,14 +1287,7 @@ public interface CoreSession {
     VersionModel isPublished(DocumentModel document, DocumentModel section);
 
     /**
-     * Gets all proxies to document docRef. If folderRef is not null, the search
-     * will be limited to its children.
-     * <p>
-     * If the document is a version, then only proxies to that version will be
-     * looked up.
-     * <p>
-     * If the document is a proxy, then all similar proxies (pointing to any
-     * version of the same base document) are retrieved.
+     * Gets all proxies to document docRef inside folder folderRef.
      *
      * @param docRef the target document for the proxies
      * @param folderRef the folder where proxies are located
@@ -1389,6 +1408,53 @@ public interface CoreSession {
      * @return the command result
      * @throws ClientException if any error occurs
      */
-    public <T> T run(Operation<T> cmd) throws ClientException;
+    <T> T run(Operation<T> cmd) throws ClientException;
+
+    /**
+     * Run a command and notify the given monitor about the execution progress
+     *
+     * @param <T>
+     * @param op
+     * @param monitor
+     * @return
+     * @throws ClientException
+     */
+    <T> T run(Operation<T> op, ProgressMonitor monitor) throws ClientException;
+
+    /**
+     * Internal method - it is used internally by
+     * {@link DocumentModel#refresh()}
+     * <p>
+     * Get fresh data from a document given a description of what kind of data
+     * should be refetched.
+     * <p>
+     * The refresh information is specified using a bit mask. See
+     * {@link DocumentModel} for all accepted flags.
+     * <p>
+     * When the flag {@link DocumentModel#REFRESH_CONTENT_IF_LOADED} is
+     * specified a third argument must be passed representing the schema names
+     * for document parts to refresh. This argument is ignored if the flag is
+     * not specified or no schema names are provided
+     * <p>
+     * The result is an array defined as follows:
+     * <ul>
+     * <li> on index 0 - the prefetch data
+     * <li> on index 1 - the lock state info
+     * <li> on index 2 - the life cycle state info
+     * <li> on index 3 - the life cycle policy
+     * <li> on index 4 - the ACP
+     * <li> on index 5 - an array of {@link DocumentPart} objects
+     * </ul>
+     *
+     * @param ref the document reference
+     * @param refreshFlags refresh flags as defined in {@link DocumentModel}
+     * @param schemas the schema names if a partial content refresh is required
+     * @return an array containing the refreshed data - this array will always
+     *         have 5 elements.
+     *
+     * @throws ClientException
+     */
+    Object[] refreshDocument(DocumentRef ref, int refreshFlags, String[] schemas)
+            throws ClientException;
 
 }

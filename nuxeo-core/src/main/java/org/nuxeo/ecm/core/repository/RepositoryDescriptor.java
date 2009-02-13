@@ -42,13 +42,13 @@ public class RepositoryDescriptor {
     private String name;
 
     @XNode("@factory")
-    private Class factoryClass;
+    private Class<RepositoryFactory> factoryClass;
 
     private String home;
     private String config;
 
     @XNode("@securityManager")
-    private Class securityManager;
+    private Class<SecurityManager> securityManager;
 
     @XNode("@forceReloadTypes")
     private boolean forceReloadTypes = false;
@@ -60,7 +60,8 @@ public class RepositoryDescriptor {
     public RepositoryDescriptor() {
     }
 
-    public RepositoryDescriptor(String name, Class factoryClass, String home, String config,
+    public RepositoryDescriptor(String name,
+            Class<RepositoryFactory> factoryClass, String home, String config,
             boolean forceReloadTypes) {
         this.name = name;
         this.factoryClass = factoryClass;
@@ -69,16 +70,10 @@ public class RepositoryDescriptor {
         this.forceReloadTypes = forceReloadTypes;
     }
 
-    /**
-     * @return the name
-     */
     public String getName() {
         return name;
     }
 
-    /**
-     * @param name the name to set
-     */
     public void setName(String name) {
         this.name = name;
     }
@@ -92,9 +87,6 @@ public class RepositoryDescriptor {
         return home;
     }
 
-    /**
-     * @param home the home directory to set
-     */
     public void setHomeDirectory(String home) {
         this.home = home;
     }
@@ -115,32 +107,23 @@ public class RepositoryDescriptor {
         }
     }
 
-    /**
-     * @param config the config to set
-     */
     public void setConfigurationFile(String config) {
         this.config = config;
     }
 
-    /**
-     * @param factoryClass the factoryClass to set
-     */
-    public void setFactoryClass(Class factoryClass) {
+    public void setFactoryClass(Class<RepositoryFactory> factoryClass) {
         this.factoryClass = factoryClass;
     }
 
-    /**
-     * @return the factoryClass
-     */
-    public Class getFactoryClass() {
+    public Class<RepositoryFactory> getFactoryClass() {
         return factoryClass;
     }
 
-    public void setSecurityManagerClass(Class securityManager) {
+    public void setSecurityManagerClass(Class<SecurityManager> securityManager) {
         this.securityManager = securityManager;
     }
 
-    public Class getSecurityManagerClass() {
+    public Class<SecurityManager> getSecurityManagerClass() {
         return securityManager;
     }
 
@@ -149,7 +132,7 @@ public class RepositoryDescriptor {
         if (securityManager == null) {
             return null;
         }
-        return (SecurityManager) securityManager.newInstance();
+        return securityManager.newInstance();
     }
 
     public final Repository create() throws Exception {
@@ -159,7 +142,7 @@ public class RepositoryDescriptor {
     public final RepositoryFactory getFactory() throws IllegalAccessException,
             InstantiationException {
         assert factoryClass != null;
-        return (RepositoryFactory) factoryClass.newInstance();
+        return factoryClass.newInstance();
     }
 
     public boolean getForceReloadTypes() {

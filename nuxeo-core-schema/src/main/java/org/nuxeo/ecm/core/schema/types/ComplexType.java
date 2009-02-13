@@ -173,7 +173,6 @@ public interface ComplexType extends Type {
      */
     int getFieldsCount();
 
-
     TypeRef<? extends ComplexType> getRef();
 
 }

@@ -9,6 +9,9 @@
     <repository name="test"
       factory="org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryFactory">
       <repository>
+        <indexing>
+          <fulltext analyzer="french"/>
+        </indexing>
         <xa-datasource>org.postgresql.xa.PGXADataSource</xa-datasource>
         <property name="ServerName">localhost</property>
         <property name="DatabaseName">nuxeojunittests</property>
@@ -16,10 +19,5 @@
         <property name="Password">nuxeo</property>
       </repository>
     </repository>
-  </extension>
-  <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
-    point="lifecyclemanager">
-    <lifecyclemanager
-      class="org.nuxeo.ecm.core.storage.sql.coremodel.SQLLifeCycleManager" />
   </extension>
 </component>

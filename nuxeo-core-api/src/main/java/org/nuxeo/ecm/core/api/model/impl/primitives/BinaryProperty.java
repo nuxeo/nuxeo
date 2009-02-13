@@ -40,14 +40,13 @@ public class BinaryProperty extends ScalarProperty {
     private static final long serialVersionUID = 1036197257646828836L;
 
     public BinaryProperty(Property parent, Field field, int flags) {
-        super (parent, field, flags);
+        super(parent, field, flags);
     }
 
     @Override
     public boolean isNormalized(Object value) {
         return value == null || value instanceof InputStream;
     }
-
 
     @Override
     public Serializable normalize(Object value)
@@ -66,6 +65,7 @@ public class BinaryProperty extends ScalarProperty {
 //        }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T convertTo(Serializable value, Class<T> toType)
             throws PropertyConversionException {
@@ -73,18 +73,18 @@ public class BinaryProperty extends ScalarProperty {
             return null;
         }
         if (InputStream.class.isAssignableFrom(toType)) {
-            return (T)value;
+            return (T) value;
         }
         if (toType == String.class) {
             try {
-                return (T)FileUtils.read((InputStream)value);
+                return (T) FileUtils.read((InputStream) value);
             } catch (IOException e) {
                 throw new PropertyError("Failed to read given input stream", e);
             }
         }
         if (toType == byte[].class) {
             try {
-                return (T)FileUtils.readBytes((InputStream)value);
+                return (T) FileUtils.readBytes((InputStream) value);
             } catch (IOException e) {
                 throw new PropertyError("Failed to read given input stream", e);
             }
@@ -93,8 +93,7 @@ public class BinaryProperty extends ScalarProperty {
     }
 
     @Override
-    public Object newInstance() throws InstantiationException,
-            IllegalAccessException {
+    public Object newInstance() {
         return new ByteArrayInputStream("".getBytes()); // TODO not serializable
     }
 

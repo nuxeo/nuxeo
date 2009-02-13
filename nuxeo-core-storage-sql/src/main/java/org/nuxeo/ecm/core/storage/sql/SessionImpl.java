@@ -41,12 +41,12 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.query.QueryResult;
+import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.storage.Credentials;
+import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
-import org.nuxeo.ecm.core.storage.sql.coremodel.SQLQueryResult;
 
 /**
  * The session is the main high level access point to data from the underlying
@@ -84,7 +84,7 @@ public class SessionImpl implements Session {
         model = mapper.getModel();
         context = new PersistenceContext(mapper, invalidators);
         live = true;
-        transactionalSession = new TransactionalSession(mapper, context);
+        transactionalSession = new TransactionalSession(this, mapper, context);
         computeRootNode();
     }
 
@@ -165,13 +165,18 @@ public class SessionImpl implements Session {
 
     public void save() throws StorageException {
         checkLive();
-        context.save();
+        flush();
         if (!transactionalSession.isInTransaction()) {
             context.notifyInvalidations();
             // as we don't have a way to know when the next non-transactional
             // statement will start, process invalidations immediately
             context.processInvalidations();
         }
+    }
+
+    protected void flush() throws StorageException {
+        context.updateFulltext(this);
+        context.save();
     }
 
     public Node getNodeById(Serializable id) throws StorageException {
@@ -334,14 +339,14 @@ public class SessionImpl implements Session {
         hierMap.put(model.HIER_CHILD_ISPROPERTY_KEY,
                 Boolean.valueOf(complexProp));
 
-        SimpleFragment mainRow = (SimpleFragment) context.createSimpleFragment(
+        SimpleFragment mainRow = context.createSimpleFragment(
                 model.mainTableName, id, mainMap);
 
         SimpleFragment hierRow;
         if (model.separateMainTable) {
             // TODO put it in a collection context instead
-            hierRow = (SimpleFragment) context.createSimpleFragment(
-                    model.hierTableName, id, hierMap);
+            hierRow = context.createSimpleFragment(model.hierTableName, id,
+                    hierMap);
         } else {
             hierRow = null;
         }
@@ -529,9 +534,10 @@ public class SessionImpl implements Session {
         return nodes;
     }
 
-    public List<Serializable> query(SQLQuery query) throws StorageException {
+    public PartialList<Serializable> query(SQLQuery query, QueryFilter queryFilter,
+            boolean countTotal) throws StorageException {
         try {
-            return mapper.query(query, this);
+            return mapper.query(query, queryFilter, countTotal, this);
         } catch (SQLException e) {
             throw new StorageException("Invalid query: " + query, e);
         }
@@ -542,7 +548,7 @@ public class SessionImpl implements Session {
         return context.getContextOrNull(tableName);
     }
 
-    private void checkLive() throws IllegalStateException {
+    private void checkLive() {
         if (!live) {
             throw new IllegalStateException("Session is not live");
         }
@@ -583,13 +589,13 @@ public class SessionImpl implements Session {
         hierMap.put(model.HIER_CHILD_NAME_KEY, "");
         hierMap.put(model.HIER_CHILD_ISPROPERTY_KEY, Boolean.FALSE);
 
-        SimpleFragment mainRow = (SimpleFragment) context.createSimpleFragment(
+        SimpleFragment mainRow = context.createSimpleFragment(
                 model.mainTableName, id, mainMap);
 
         SimpleFragment hierRow;
         if (model.separateMainTable) {
-            hierRow = (SimpleFragment) context.createSimpleFragment(
-                    model.hierTableName, id, hierMap);
+            hierRow = context.createSimpleFragment(model.hierTableName, id,
+                    hierMap);
         } else {
             hierRow = null;
         }

@@ -51,12 +51,14 @@ public class TestSerialization extends TestCase {
         check("SELECT * FROM Document ");
     }
 
+    @SuppressWarnings("unchecked")
     public void testSerializableArrayMap() throws Exception {
         SerializableArrayMap<String, Operand> elements = new SerializableArrayMap<String, Operand>();
         elements.put("abc", new StringLiteral("table"));
         assertEquals(1, elements.size());
 
-        SerializableArrayMap<String, Operand> elements2 = (SerializableArrayMap<String, Operand>) SerializableHelper.serializeUnserialize(elements);
+        SerializableArrayMap<String, Operand> elements2
+                = (SerializableArrayMap<String, Operand>) SerializableHelper.serializeUnserialize(elements);
         assertEquals(1, elements2.size());
     }
 
@@ -90,14 +92,14 @@ public class TestSerialization extends TestCase {
         String queryString = "SELECT * FROM Document WHERE kw1='vie' AND kw2='mechante'";
         SQLQuery parsed = SQLQueryParser.parse(queryString);
         assertEquals(
-                "SELECT * FROM Document WHERE kw1 = 'vie' AND kw2 = 'mechante'",
+                "SELECT * FROM Document WHERE kw1='vie' AND kw2='mechante'",
                 parsed.toString());
         assertEquals(0, parsed.getSelectClause().elements.size());
         assertEquals(1, parsed.getFromClause().elements.size());
 
         SQLQuery dumped = (SQLQuery) SerializableHelper.serializeUnserialize(parsed);
         assertEquals(
-                "SELECT * FROM Document WHERE kw1 = 'vie' AND kw2 = 'mechante'",
+                "SELECT * FROM Document WHERE kw1='vie' AND kw2='mechante'",
                 dumped.toString());
         assertEquals(0, dumped.getSelectClause().elements.size());
         assertEquals(1, dumped.getFromClause().elements.size());

@@ -42,19 +42,21 @@ import java.io.Writer;
  * content instead of returning the content bytes.
  * <p>
  * The same is true when setting the content for a document: you set a content
- * source and not directly the content bytes. Ex: <code><pre>
- * File file = new File(&quot;/tmp/index.html&quot;);
+ * source and not directly the content bytes. Ex:
+ * <code><pre>
+ * File file = new File("/tmp/index.html");
  * FileBlob fb = new FileBlob(file);
- * fb.setContentType(&quot;text/html&quot;);
- * fb.setEncoding(&quot;UTF-8&quot;); // this specifies that content bytes will be stored as UTF-8
+ * fb.setContentType("text/html");
+ * fb.setEncoding("UTF-8"); // this specifies that content bytes will be stored as UTF-8
  * document.setContent(fb);
- * </pre></code> Then you may want to retrieve the content as follow: <code><pre>
+ * </pre></code>
+ * Then you may want to retrieve the content as follow:
+ * <code><pre>
  * Blob blob = document.getContent();
  * htmlDoc = blob.getString(); // the content is decoded from UTF-8 into a java string
  * </pre></code>
  *
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public interface Blob {
 

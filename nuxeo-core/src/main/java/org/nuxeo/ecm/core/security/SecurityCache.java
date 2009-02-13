@@ -26,8 +26,9 @@ import org.nuxeo.ecm.core.model.Document;
 
 // TODO: this class is not finished, and not used. (Same for CacheEntry).
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * Unfinished class. Don't use.
  *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class SecurityCache {
 

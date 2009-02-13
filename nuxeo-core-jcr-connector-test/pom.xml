@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.core</groupId>
     <artifactId>nuxeo-core-parent</artifactId>
-    <version>1.4.4-SNAPSHOT</version>
+    <version>1.5-SNAPSHOT</version>
   </parent>
 
   <artifactId>nuxeo-core-jcr-connector-test</artifactId>
@@ -40,8 +40,11 @@
       <scope>compile</scope>
     </dependency>
 
-    <!-- Use of compile scope for external dependencies because this module must only be used
-      with a test scope (except in [module]-test where you may use compile scope)-->
+    <!-- 
+    Use of compile scope for external dependencies because this module must
+    only be used with a test scope (except in [module]-test where you may use
+    compile scope)
+    -->
     <dependency>
       <groupId>jmock</groupId>
       <artifactId>jmock</artifactId>
@@ -53,7 +56,7 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>jsr170</groupId>
+      <groupId>javax.jcr</groupId>
       <artifactId>jcr</artifactId>
       <scope>compile</scope>
     </dependency>
@@ -81,6 +84,11 @@
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-query-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+     <dependency>
+      <groupId>javax.transaction</groupId>
+      <artifactId>jta</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

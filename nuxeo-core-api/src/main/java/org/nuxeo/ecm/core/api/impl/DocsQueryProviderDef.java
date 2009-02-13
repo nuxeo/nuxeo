@@ -29,12 +29,9 @@ import org.nuxeo.ecm.core.api.DocumentRef;
  */
 public class DocsQueryProviderDef implements Serializable {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 6296251214655196508L;
 
-    public static enum DefType {
+    public enum DefType {
         TYPE_CHILDREN, TYPE_CHILDREN_NON_FOLDER, TYPE_CHILDREN_FOLDERS, TYPE_QUERY, TYPE_QUERY_FTS
     }
 
@@ -46,9 +43,6 @@ public class DocsQueryProviderDef implements Serializable {
 
     private String startingPath;
 
-    /**
-     *
-     */
     // Private constructor, there are no other defs than those defined inhere.
     public DocsQueryProviderDef(DefType type) {
         this.type = type;

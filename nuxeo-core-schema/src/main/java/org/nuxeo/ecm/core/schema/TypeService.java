@@ -62,11 +62,10 @@ public class TypeService extends DefaultComponent {
 
     //TODO: use a static Services class in runtime to use as only entry point to service lookups
     // and register singleton services there
-    // or use a ServiceRef<T> for each singleton sertvice we need to get quickly
+    // or use a ServiceRef<T> for each singleton service we need to get quickly
     public static SchemaManager getSchemaManager() {
         return schemaManagerInstance;
     }
-
 
     public SchemaManager getTypeManager() {
         return typeManager;
@@ -205,8 +204,8 @@ public class TypeService extends DefaultComponent {
     protected void registerSchema(SchemaBindingDescriptor sd)
             throws IOException, TypeException, SAXException {
         if (sd.src != null && sd.src.length() > 0) {
-            RuntimeContext schemaContext = sd.context == null ? context
-                    .getRuntimeContext() : sd.context;
+            RuntimeContext schemaContext = sd.context == null ? context.getRuntimeContext()
+                    : sd.context;
             URL url = schemaContext.getLocalResource(sd.src);
             if (url == null) { // try asking the class loader
                 url = schemaContext.getResource(sd.src);

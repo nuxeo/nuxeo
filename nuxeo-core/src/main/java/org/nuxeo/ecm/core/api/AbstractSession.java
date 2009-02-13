@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -31,39 +31,46 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.common.collections.ScopedMap;
 import org.nuxeo.common.utils.IdUtils;
+import org.nuxeo.common.utils.Null;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.CoreService;
 import org.nuxeo.ecm.core.NXCore;
-import org.nuxeo.ecm.core.api.event.CoreEvent;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
-import org.nuxeo.ecm.core.api.event.impl.CoreEventImpl;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.core.api.impl.DocsQueryProviderDef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelIteratorImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
+import org.nuxeo.ecm.core.api.impl.FacetFilter;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.impl.VersionModelImpl;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
+import org.nuxeo.ecm.core.api.model.impl.DocumentPartImpl;
 import org.nuxeo.ecm.core.api.operation.Operation;
+import org.nuxeo.ecm.core.api.operation.OperationHandler;
 import org.nuxeo.ecm.core.api.operation.ProgressMonitor;
+import org.nuxeo.ecm.core.api.operation.Status;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.SecuritySummaryEntry;
 import org.nuxeo.ecm.core.api.security.UserEntry;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.api.security.impl.UserEntryImpl;
+import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.core.lifecycle.LifeCycleConstants;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleEventTypes;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleService;
-import org.nuxeo.ecm.core.listener.CoreEventListenerService;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.DocumentIterator;
 import org.nuxeo.ecm.core.model.DocumentVersionProxy;
@@ -71,12 +78,16 @@ import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.ecm.core.model.PathComparator;
 import org.nuxeo.ecm.core.model.Property;
 import org.nuxeo.ecm.core.model.Session;
+import org.nuxeo.ecm.core.query.FilterableQuery;
 import org.nuxeo.ecm.core.query.Query;
+import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.QueryResult;
 import org.nuxeo.ecm.core.repository.RepositoryInitializationHandler;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.NXSchema;
+import org.nuxeo.ecm.core.schema.PrefetchInfo;
+import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.ecm.core.utils.SIDGenerator;
@@ -99,7 +110,7 @@ import org.nuxeo.runtime.services.streaming.StreamManager;
  * @author Florent Guillaume
  */
 public abstract class AbstractSession implements CoreSession,
-        SecurityConstants, Serializable {
+        SecurityConstants, OperationHandler, Serializable {
 
     public static final NuxeoPrincipal ANONYMOUS = new UserPrincipal(
             "anonymous");
@@ -118,18 +129,22 @@ public abstract class AbstractSession implements CoreSession,
 
     protected Map<String, Serializable> sessionContext;
 
-    protected ProgressMonitor monitor = DefaultProgressMonitor.INSTANCE;
+    /**
+     * Private access to protected it again direct access since this field is lazy loaded.
+     * You must use {@link #getEventService()} to get the service
+     */
+    private transient EventService eventService;
 
     /**
      * Used to check permissions.
      */
-    private transient SecurityService __securityService;
+    private transient SecurityService securityService;
 
     protected SecurityService getSecurityService() {
-        if (__securityService == null) {
-            __securityService = NXCore.getSecurityService();
+        if (securityService == null) {
+            securityService = NXCore.getSecurityService();
         }
-        return __securityService;
+        return securityService;
     }
 
     /**
@@ -161,13 +176,13 @@ public abstract class AbstractSession implements CoreSession,
         // this session is valid until the disconnect method is called
         sessionId = createSessionId();
         sessionContext.put("SESSION_ID", sessionId);
-        // register this session locally -> this way document models can retirve
-        // their session
-        // on the server side
+        // register this session locally -> this way document models can
+        // retrieve
+        // their session on the server side
         CoreInstance.getInstance().registerSession(sessionId, this);
 
         // <------------ begin repository initialization
-        // we need to intialize the repository if this is the first time it is
+        // we need to initialize the repository if this is the first time it is
         // accessed in this JVM session
         // for this we get the session and test if the "REPOSITORY_FIRST_ACCESS"
         // is set after the session is created
@@ -190,9 +205,13 @@ public abstract class AbstractSession implements CoreSession,
                         // check
                         sessionContext.put("principal", new SimplePrincipal(
                                 "system"));
-                        handler.initializeRepository(this);
                         try {
+                            handler.initializeRepository(this);
                             session.save();
+                        } catch (ClientException e) {
+                            // shouldn't remove the root? ... to restart with an
+                            // empty repository
+                            log.error("Failed to initialize repository content , e");
                         } catch (DocumentException e) {
                             log.error("Unable to save session after repository init : "
                                     + e.getMessage());
@@ -222,8 +241,8 @@ public abstract class AbstractSession implements CoreSession,
      * be unique in the system)
      *
      * <ul>
-     * <li> A is the repository name (uniquely identify the repository in the
-     * system)
+     * <li>A is the repository name (which uniquely identifies the repository
+     * in the system)
      * <li>B is the time of the session creation in milliseconds
      * </ul>
      *
@@ -275,22 +294,53 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    protected Map<String, Serializable> getContextMapEventInfo(DocumentModel doc) {
+        Map<String, Serializable> options = new HashMap<String, Serializable>();
+        if (doc != null) {
+            ScopedMap ctxData = doc.getContextData();
+            if (ctxData != null) {
+                options.putAll(ctxData.getDefaultScopeValues());
+                options.putAll(ctxData.getScopeValues(ScopeType.REQUEST));
+            }
+        }
+        return options;
+    }
+
+    public DocumentEventContext newEventContext(DocumentModel source) {
+        DocumentEventContext ctx = new DocumentEventContext(this, getPrincipal(), source);
+        ctx.setProperty(CoreEventConstants.REPOSITORY_NAME, repositoryName);
+        ctx.setProperty(CoreEventConstants.SESSION_ID, sessionId);
+        return ctx;
+    }
+
+    public EventService getEventService() {
+        if (eventService == null) {
+            try {
+                eventService = Framework.getLocalService(EventService.class);
+            } catch (Exception e) {
+                throw new Error("Nuxeo is missconfigured - Core Event Service was not found");
+            }
+        }
+        return eventService;
+    }
+
+    public void fireEvent(Event event) throws ClientException {
+        getEventService().fireEvent(event);
+    }
+
+    @SuppressWarnings("unchecked")
     protected void notifyEvent(String eventId, DocumentModel source,
-            Map<String, Object> options, String category, String comment,
-            boolean withLifeCycle) {
+            Map<String, Serializable> options, String category, String comment,
+            boolean withLifeCycle) throws ClientException {
 
-        // Default category
-        if (category == null) {
-            category = DocumentEventCategories.EVENT_DOCUMENT_CATEGORY;
+        DocumentEventContext ctx = new DocumentEventContext(this, getPrincipal(), source);
+
+        // compatibility with old code (< 5.2.M4) - import info from old event model
+        if (options != null) {
+            ctx.setProperties(options);
         }
-
-        if (options == null) {
-            options = new HashMap<String, Object>();
-        }
-
-        // Name of the current repository
-        options.put(CoreEventConstants.REPOSITORY_NAME, repositoryName);
-
+        ctx.setProperty(CoreEventConstants.REPOSITORY_NAME, repositoryName);
+        ctx.setProperty(CoreEventConstants.SESSION_ID, sessionId);
         // Document life cycle
         if (source != null && withLifeCycle) {
             String currentLifeCycleState = null;
@@ -300,23 +350,51 @@ public abstract class AbstractSession implements CoreSession,
                 // FIXME no lifecycle -- this shouldn't generated an
                 // exception (and ClientException logs the spurious error)
             }
-            options.put(CoreEventConstants.DOC_LIFE_CYCLE,
+            ctx.setProperty(CoreEventConstants.DOC_LIFE_CYCLE,
                     currentLifeCycleState);
         }
-        // Add the session ID
-        options.put(CoreEventConstants.SESSION_ID, sessionId);
-
-        CoreEvent coreEvent = new CoreEventImpl(eventId, source, options,
-                getPrincipal(), category, comment);
-
-        CoreEventListenerService service = NXCore.getCoreEventListenerService();
-
-        if (service != null) {
-            service.notifyEventListeners(coreEvent);
-        } else {
-            log.debug("No CoreEventListenerService, cannot notify event "
-                    + eventId);
+        if (comment != null) {
+            ctx.setProperty("comment", comment);
         }
+        ctx.setProperty("category", category == null ?
+                DocumentEventCategories.EVENT_DOCUMENT_CATEGORY : category);
+        // compat code: mark SAVE event as a commit event
+        Event event = ctx.newEvent(eventId);
+        if (DocumentEventTypes.SESSION_SAVED.equals(eventId)) {
+            event.setIsCommitEvent(true);
+        }
+        // compat code: set isLocal on event if JMS is blocked
+        if (source != null) {
+            Boolean blockJms = (Boolean)source.getContextData("BLOCK_JMS_PRODUCING");
+            if (blockJms != null  && blockJms) {
+                event.setLocal(true);
+            }
+        }
+        fireEvent(event);
+    }
+
+    /**
+     * Copied from obsolete VersionChangeNotifier
+     *
+     * Sends change notifications to core event listeners. The event contains
+     * info with older document (before version change) and newer doc (current
+     * document).
+     *
+     * @param oldDocument
+     * @param newDocument
+     * @param options additional info to pass to the event
+     */
+    protected void notifyVersionChange(DocumentModel oldDocument,
+            DocumentModel newDocument, Map<String, Serializable> options) throws ClientException {
+        final Map<String, Serializable> info = new HashMap<String, Serializable>();
+        if (options != null) {
+            info.putAll(options);
+        }
+        info.put(VersioningChangeNotifier.EVT_INFO_NEW_DOC_KEY, newDocument);
+        info.put(VersioningChangeNotifier.EVT_INFO_OLD_DOC_KEY, oldDocument);
+        notifyEvent(VersioningChangeNotifier.CORE_EVENT_ID_VERSIONING_CHANGE,
+                newDocument, info, DocumentEventCategories.EVENT_CLIENT_NOTIF_CATEGORY,
+                null, false);
     }
 
     public boolean hasPermission(DocumentRef docRef, String permission)
@@ -446,12 +524,17 @@ public abstract class AbstractSession implements CoreSession,
                     null, null, true);
 
             Document doc = getSession().copy(srcDoc, dstDoc, name);
+            if (doc.isLocked()) { // if we copy a locked document - the new
+                // document will be locked too! - fixing
+                // this
+                doc.unlock();
+            }
 
-            Map<String, Object> options = new HashMap<String, Object>();
+            Map<String, Serializable> options = new HashMap<String, Serializable>();
 
             // notify document created by copy
             DocumentModel docModel = readModel(doc, null);
-            options.put(CoreEventConstants.DOCUMENT, doc);
+
             String comment = srcDoc.getRepository().getName() + ':'
                     + src.toString();
             notifyEvent(DocumentEventTypes.DOCUMENT_CREATED_BY_COPY, docModel,
@@ -461,7 +544,7 @@ public abstract class AbstractSession implements CoreSession,
             // notify document copied
             comment = doc.getRepository().getName() + ':'
                     + docModel.getRef().toString();
-            options.put(CoreEventConstants.DOCUMENT, srcDoc);
+
             notifyEvent(DocumentEventTypes.DOCUMENT_DUPLICATED, srcDocModel,
                     options, null, comment, true);
 
@@ -504,9 +587,8 @@ public abstract class AbstractSession implements CoreSession,
             docModel = createDocument(docModel);
             Document doc = resolveReference(docModel.getRef());
 
-            Map<String, Object> options = new HashMap<String, Object>();
+            Map<String, Serializable> options = new HashMap<String, Serializable>();
             // notify document created by copy
-            options.put(CoreEventConstants.DOCUMENT, doc);
             String comment = srcDoc.getRepository().getName() + ':'
                     + src.toString();
             notifyEvent(DocumentEventTypes.DOCUMENT_CREATED_BY_COPY, docModel,
@@ -515,7 +597,6 @@ public abstract class AbstractSession implements CoreSession,
             // notify document copied
             comment = doc.getRepository().getName() + ':'
                     + docModel.getRef().toString();
-            options.put(CoreEventConstants.DOCUMENT, srcDoc);
             notifyEvent(DocumentEventTypes.DOCUMENT_DUPLICATED, srcDocModel,
                     options, null, comment, true);
 
@@ -561,8 +642,7 @@ public abstract class AbstractSession implements CoreSession,
 
             // notify document moved
             DocumentModel docModel = readModel(doc, null);
-            Map<String, Object> options = new HashMap<String, Object>();
-            options.put(CoreEventConstants.DOCUMENT, doc);
+            Map<String, Serializable> options = new HashMap<String, Serializable>();
             options.put(CoreEventConstants.PARENT_PATH,
                     srcDocModel.getParentRef());
             notifyEvent(DocumentEventTypes.DOCUMENT_MOVED, docModel, options,
@@ -599,10 +679,9 @@ public abstract class AbstractSession implements CoreSession,
             checkPermission(doc, WRITE_SECURITY);
             DocumentModel docModel = readModel(doc, null);
 
-            Map<String, Object> options = new HashMap<String, Object>();
-            options.put(CoreEventConstants.DOCUMENT, doc);
-            options.put(CoreEventConstants.OLD_ACP, docModel.getACP().clone());
-            options.put(CoreEventConstants.NEW_ACP, newAcp.clone());
+            Map<String, Serializable> options = new HashMap<String, Serializable>();
+            options.put(CoreEventConstants.OLD_ACP, (Serializable)docModel.getACP().clone());
+            options.put(CoreEventConstants.NEW_ACP, (Serializable)newAcp.clone());
 
             notifyEvent(DocumentEventTypes.BEFORE_DOC_SECU_UPDATE, docModel,
                     options, null, null, true);
@@ -624,7 +703,7 @@ public abstract class AbstractSession implements CoreSession,
     }
 
     private DocumentModel createDocumentModelFromTypeName(String typeName,
-            Map<String, Object> options) throws ClientException {
+            Map<String, Serializable> options) throws ClientException {
         try {
             DocumentType docType = getSession().getTypeManager().getDocumentType(
                     typeName);
@@ -635,7 +714,7 @@ public abstract class AbstractSession implements CoreSession,
             DocumentModel docModel = DocumentModelFactory.createDocumentModel(
                     sessionId, docType);
             if (options == null) {
-                options = new HashMap<String, Object>();
+                options = new HashMap<String, Serializable>();
             }
             // do not forward this event on the JMS Bus
             options.put("BLOCK_JMS_PRODUCING", true);
@@ -649,13 +728,13 @@ public abstract class AbstractSession implements CoreSession,
 
     public DocumentModel createDocumentModel(String typeName)
             throws ClientException {
-        Map<String, Object> options = new HashMap<String, Object>();
+        Map<String, Serializable> options = new HashMap<String, Serializable>();
         return createDocumentModelFromTypeName(typeName, options);
     }
 
     public DocumentModel createDocumentModel(String parentPath, String id,
             String typeName) throws ClientException {
-        Map<String, Object> options = new HashMap<String, Object>();
+        Map<String, Serializable> options = new HashMap<String, Serializable>();
         options.put(CoreEventConstants.PARENT_PATH, parentPath);
         options.put(CoreEventConstants.DOCUMENT_MODEL_ID, id);
         DocumentModel model = createDocumentModelFromTypeName(typeName, options);
@@ -665,7 +744,13 @@ public abstract class AbstractSession implements CoreSession,
 
     public DocumentModel createDocumentModel(String typeName,
             Map<String, Object> options) throws ClientException {
-        return createDocumentModelFromTypeName(typeName, options);
+
+        Map<String, Serializable> serializableOptions = new HashMap<String, Serializable>();
+
+        for (Entry<String, Object> entry : options.entrySet()) {
+            serializableOptions.put(entry.getKey(), (Serializable)entry.getValue());
+        }
+        return createDocumentModelFromTypeName(typeName, serializableOptions);
     }
 
     public DocumentModel createDocument(DocumentModel docModel)
@@ -687,7 +772,16 @@ public abstract class AbstractSession implements CoreSession,
         try {
             Document folder = resolveReference(parentRef);
             checkPermission(folder, ADD_CHILDREN);
-            notifyEvent(DocumentEventTypes.ABOUT_TO_CREATE, docModel, null,
+
+            // get initial life cycle state info
+            String initialLifecycleState = null;
+            Object lifecycleStateinfo = docModel.getContextData(LifeCycleConstants.INITIAL_LIFECYCLE_STATE_OPTION_NAME);
+            if (lifecycleStateinfo instanceof String) {
+                initialLifecycleState = (String) lifecycleStateinfo;
+            }
+
+            Map<String, Serializable> options = getContextMapEventInfo(docModel);
+            notifyEvent(DocumentEventTypes.ABOUT_TO_CREATE, docModel, options,
                     null, null, false); // no lifecycle yet
             name = generateDocumentName(folder, name);
             Document doc = folder.addChild(name, typeName);
@@ -696,7 +790,7 @@ public abstract class AbstractSession implements CoreSession,
             LifeCycleService service = NXCore.getLifeCycleService();
             if (service != null) {
                 try {
-                    service.initialize(doc);
+                    service.initialize(doc, initialLifecycleState);
                 } catch (Exception e) {
                     throw new ClientException(
                             "Failed to initialize document lifecycle", e);
@@ -709,18 +803,9 @@ public abstract class AbstractSession implements CoreSession,
             docModel = writeModel(doc, docModel);
 
             // re-read docmodel
-            Map<String, Object> options = new HashMap<String, Object>();
-            options.put(CoreEventConstants.DOCUMENT, doc);
             notifyEvent(DocumentEventTypes.DOCUMENT_CREATED, docModel, options,
                     null, null, true);
             docModel = writeModel(doc, docModel);
-
-            // final Map<String, Object> ancestorOptions = new HashMap<String,
-            // Object>();
-            // ancestorOptions.put("newDocument", docModel);
-            // notifyAncestors(doc,
-            // DocumentEventTypes.CONTENT_SUBDOCUMENT_CREATED,
-            // ancestorOptions);
 
             return docModel;
         } catch (DocumentException e) {
@@ -744,7 +829,7 @@ public abstract class AbstractSession implements CoreSession,
             name = IdUtils.generateStringId();
         }
         if (parent.hasChild(name)) {
-            name = name + '.' + String.valueOf(System.currentTimeMillis());
+            name += '.' + String.valueOf(System.currentTimeMillis());
         }
         return name;
     }
@@ -997,8 +1082,7 @@ public abstract class AbstractSession implements CoreSession,
             }
             docs.add(readModel(doc, null));
         }
-        DocumentModelList list = new DocumentModelListImpl(docs);
-        return list;
+        return new DocumentModelListImpl(docs);
     }
 
     public DocumentModelList getFiles(DocumentRef parent)
@@ -1179,38 +1263,89 @@ public abstract class AbstractSession implements CoreSession,
     }
 
     public DocumentModelList query(String query) throws ClientException {
-        return query(query, null, 0);
+        return query(query, null, 0, 0, false);
     }
 
-    @Deprecated
     public DocumentModelList query(String query, int max)
             throws ClientException {
-        return query(query, null, max);
+        return query(query, null, max, 0, false);
     }
 
-    @Deprecated
     public DocumentModelList query(String query, Filter filter)
             throws ClientException {
-        return query(query, filter, 0);
+        return query(query, filter, 0, 0, false);
     }
 
-    @Deprecated
     public DocumentModelList query(String query, Filter filter, int max)
             throws ClientException {
+        return query(query, filter, max, 0, false);
+    }
+
+    public DocumentModelList query(String query, Filter filter, long limit,
+            long offset, boolean countTotal) throws ClientException {
+        SecurityService securityService = getSecurityService();
+        Principal principal = getPrincipal();
         try {
             Query compiledQuery = getSession().createQuery(query,
                     Query.Type.NXQL);
-            DocumentModelList retrievedDocs = compiledQuery.execute().getDocumentModels();
-            final DocumentModelList docs = new DocumentModelListImpl();
+            if (limit != 0) {
+                compiledQuery.setLimit(limit);
+                compiledQuery.setOffset(offset);
+            }
+            QueryResult results;
+            boolean postFilterPermission;
+            boolean postFilterFilter;
+            boolean postFilterPolicies;
+            String permission = BROWSE;
+            if (compiledQuery instanceof FilterableQuery) {
+                postFilterPermission = false;
+                postFilterPolicies = !securityService.arePoliciesExpressibleInQuery();
+                postFilterFilter = filter != null
+                        && !(filter instanceof FacetFilter);
+                String[] principals;
+                if (principal.getName().equals("system")) {
+                    principals = null; // means: no security check needed
+                } else {
+                    principals = SecurityService.getPrincipalsToCheck(principal);
+                }
+                String[] permissions = securityService.getPermissionsToCheck(permission);
+                QueryFilter queryFilter = new QueryFilter(principals,
+                        permissions,
+                        filter instanceof FacetFilter ? (FacetFilter) filter
+                                : null,
+                        securityService.getPoliciesQueryTransformers());
+                results = ((FilterableQuery) compiledQuery).execute(
+                        queryFilter, countTotal);
+            } else {
+                postFilterPermission = true;
+                postFilterPolicies = securityService.arePoliciesRestrictingPermission(permission);
+                postFilterFilter = filter != null;
+                results = compiledQuery.execute(countTotal);
+            }
+            if (!postFilterPermission && !postFilterFilter
+                    && !postFilterPolicies) {
+                // the backend has done all the needed filtering
+                return results.getDocumentModels();
+            }
+            // post-filter the results if the query couldn't do it
+            final DocumentModelList docs = new DocumentModelListImpl(
+                    Collections.<DocumentModel> emptyList(),
+                    results.getTotalSize());
             int nbr = 0;
-            for (DocumentModel model : retrievedDocs) {
-                if (hasPermission(model.getRef(), BROWSE)) {
-                    if (filter == null || filter.accept(model)) {
-                        docs.add(model);
-                        nbr++;
+            for (DocumentModel model : results.getDocumentModels()) {
+                if (postFilterPermission || postFilterPolicies) {
+                    if (!hasPermission(model.getRef(), permission)) {
+                        continue;
                     }
                 }
-                if (max != 0 && nbr >= max) {
+                if (postFilterFilter) {
+                    if (!filter.accept(model)) {
+                        continue;
+                    }
+                }
+                docs.add(model);
+                nbr++;
+                if (limit != 0 && nbr >= limit) {
                     break;
                 }
             }
@@ -1223,7 +1358,6 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
-    @Deprecated
     public DocumentModelIterator queryIt(String query, Filter filter, int max)
             throws ClientException {
         DocsQueryProviderDef def = new DocsQueryProviderDef(
@@ -1366,25 +1500,28 @@ public abstract class AbstractSession implements CoreSession,
             Document doc = resolveReference(docRef);
             removeDocument(doc);
         } catch (DocumentException e) {
-            throw new ClientException("Failed to fetch document " + docRef +
-                    " before removal", e);
+            throw new ClientException("Failed to fetch document " + docRef
+                    + " before removal", e);
         }
     }
 
     protected void removeDocument(Document doc) throws ClientException {
         try {
             if (!canRemoveDocument(doc)) {
-                throw new DocumentSecurityException("Permission denied: cannot remove document " + doc.getUUID());
+                throw new DocumentSecurityException(
+                        "Permission denied: cannot remove document "
+                                + doc.getUUID());
             }
             removeNotifyOneDoc(doc);
+
         } catch (DocumentException e) {
             try {
-                throw new ClientException("Failed to remove document " +
-                        doc.getUUID(), e);
+                throw new ClientException("Failed to remove document "
+                        + doc.getUUID(), e);
             } catch (DocumentException e2) {
                 log.error("Failed to remove doc", e);
-                throw new ClientException("Failed to remove and " +
-                        "even to get UUID " + doc.toString());
+                throw new ClientException("Failed to remove and "
+                        + "even to get UUID " + doc.toString());
             }
         }
     }
@@ -1393,8 +1530,7 @@ public abstract class AbstractSession implements CoreSession,
             DocumentException {
         // XXX notify with options if needed
         DocumentModel docModel = readModel(doc, null);
-        Map<String, Object> options = new HashMap<String, Object>();
-        options.put(CoreEventConstants.DOCUMENT, doc);
+        Map<String, Serializable> options = new HashMap<String, Serializable>();
         if (docModel != null) {
             options.put("docTitle", docModel.getTitle());
         }
@@ -1409,7 +1545,6 @@ public abstract class AbstractSession implements CoreSession,
         }
         doc.remove();
         if (!doc.isVersion()) {
-            options.remove(CoreEventConstants.DOCUMENT);
             notifyEvent(DocumentEventTypes.DOCUMENT_REMOVED, docModel, options,
                     null, null, false);
         }
@@ -1453,7 +1588,7 @@ public abstract class AbstractSession implements CoreSession,
 
     public void save() throws ClientException {
         try {
-            final Map<String, Object> options = new HashMap<String, Object>();
+            final Map<String, Serializable> options = new HashMap<String, Serializable>();
             getSession().save();
             notifyEvent(DocumentEventTypes.SESSION_SAVED, null, options, null,
                     null, true);
@@ -1476,54 +1611,36 @@ public abstract class AbstractSession implements CoreSession,
             Document doc = resolveReference(docModel.getRef());
             checkPermission(doc, WRITE_PROPERTIES);
 
-            // add Document context data to core event
-            final ScopedMap ctxData = docModel.getContextData();
-            final Map<String, Object> options = new HashMap<String, Object>();
-            options.putAll(ctxData.getDefaultScopeValues());
-            options.putAll(ctxData.getScopeValues(ScopeType.REQUEST));
+            // add document context data to core event
+            Map<String, Serializable> options = getContextMapEventInfo(docModel);
 
             // TODO make this configurable or put in other place
+            final ScopedMap ctxData = docModel.getContextData();
             Boolean createSnapshot = (Boolean) ctxData.getScopedValue(
                     ScopeType.REQUEST,
                     VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY);
             DocumentModel oldDoc = null;
             if (createSnapshot != null && createSnapshot) {
                 // FIXME: remove this - pass the flag as an arg or create
-                // anotehr method!!!
-                save(); // creating versions failes if the documents involved
-                // are nmot saved
+                // another method!!!
+                save();
+                // creating versions fails if documents involved are not saved
                 oldDoc = createDocumentSnapshot(docModel);
                 // ok, now it is consumed
                 ctxData.putScopedValue(ScopeType.REQUEST,
                         VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, null);
             }
 
-            options.put(CoreEventConstants.DOCUMENT, doc);
             notifyEvent(DocumentEventTypes.BEFORE_DOC_UPDATE, docModel,
                     options, null, null, true);
-
-            // modify document - DO NOT write doc twice -> since internal
-            // document listeners was removed
-            // docModel = writeModel(doc, docModel);
 
             docModel = writeModel(doc, docModel);
 
             notifyEvent(DocumentEventTypes.DOCUMENT_UPDATED, docModel, options,
                     null, null, true);
 
-            // Send events for parents that their content got modified
-            // final Map<String, Object> ancestorOptions = new HashMap<String,
-            // Object>();
-            // ancestorOptions.put("newDocument", docModel);
-            // notifyAncestors(doc,
-            // DocumentEventTypes.CONTENT_SUBDOCUMENT_UPDATED,
-            // ancestorOptions);
-
-            // NXGED-395: v. change notification to be sent after docModel
-            // changes
             if (oldDoc != null) {
-                VersioningChangeNotifier.notifyVersionChange(oldDoc, docModel,
-                        options);
+                notifyVersionChange(oldDoc, docModel, options);
             }
 
             return docModel;
@@ -1532,22 +1649,6 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
-    /*
-     * Recursive method that sends a given eventName for all parents of the
-     * document that was modified.
-     *
-     * @param doc @throws DocumentException
-     */
-    /*
-     * private void notifyAncestors(Document doc, String eventName, Map<String,
-     * Object> options) throws DocumentException, ClientException { if (doc !=
-     * null) { log.debug("Document notified : " + doc.getName()); Document
-     * parent = doc.getParent(); if (parent != null) { DocumentModel parentModel =
-     * readModel(parent, null); if (options == null) { options = new HashMap<String,
-     * Object>(); } options.put(CoreEventConstants.DOCUMENT, parent);
-     * notifyEvent(eventName, parentModel, options, null, null, true);
-     * notifyAncestors(parent, eventName, options); } } }
-     */
     public boolean isDirty(DocumentRef docRef) throws ClientException {
         try {
             Document doc = resolveReference(docRef);
@@ -1595,22 +1696,15 @@ public abstract class AbstractSession implements CoreSession,
         String vlabel = generateVersionLabelFor(docRef);
         newVersion.setLabel(vlabel);
 
-        // if session is not saved (i.e. there are pending changes), checkin
-        // might fail
-        // moved the decision to save in JCRDocument.checkin()
-        // save();
-
         checkIn(docRef, newVersion);
         log.debug("doc checked in " + doc.getTitle());
         checkOut(docRef);
         log.debug("doc checked out " + doc.getTitle());
 
-        // send notifications about new version
-        // TODO we need to make it clearer the fact that this event is
+        // TODO we need to make it clearer that this event is
         // about new version snapshot and not about versioning fields change
         // (i.e. major, minor version increment)
         DocumentModel oldDoc = getDocumentWithVersion(docRef, newVersion);
-        // VersioningChangeNotifier.notifyVersionChange(oldDoc, doc);
 
         return oldDoc;
     }
@@ -1706,6 +1800,10 @@ public abstract class AbstractSession implements CoreSession,
                     // discard root default version
                     continue;
                 }
+                if (docVersion.getType() == null) {
+                    throw new IllegalStateException("FAILED TO GET VERSIONS FOR"
+                            + docRef + " with path: " + doc.getPath());
+                }
                 DocumentModel versionModel = readModel(docVersion, null);
                 versions.add(versionModel);
             }
@@ -1773,7 +1871,7 @@ public abstract class AbstractSession implements CoreSession,
             // we're about to overwrite the document, make sure it's archived
             createDocumentSnapshot(docModel);
 
-            final Map<String, Object> options = new HashMap<String, Object>();
+            final Map<String, Serializable> options = new HashMap<String, Serializable>();
 
             // FIXME: the fields are hardcoded. should be moved in versioning
             // component
@@ -1788,7 +1886,6 @@ public abstract class AbstractSession implements CoreSession,
                         VersioningDocument.CURRENT_DOCUMENT_MINOR_VERSION_KEY,
                         minorVer);
             }
-            options.put(CoreEventConstants.DOCUMENT, doc);
             notifyEvent(DocumentEventTypes.BEFORE_DOC_RESTORE, docModel,
                     options, null, null, true);
             writeModel(doc, docModel);
@@ -1853,8 +1950,7 @@ public abstract class AbstractSession implements CoreSession,
             // WRITE_PROPERTIES
             checkPermission(doc, WRITE_PROPERTIES);
             DocumentModel docModel = readModel(doc, null);
-            Map<String, Object> options = new HashMap<String, Object>();
-            options.put(CoreEventConstants.DOCUMENT, doc);
+            Map<String, Serializable> options = new HashMap<String, Serializable>();
             notifyEvent(DocumentEventTypes.ABOUT_TO_CHECKOUT, docModel,
                     options, null, null, true);
 
@@ -1927,18 +2023,10 @@ public abstract class AbstractSession implements CoreSession,
             log.debug("Created proxy for version " + vlabel
                     + " of the document " + doc.getPath());
 
-            Map<String, Object> options = new HashMap<String, Object>();
+            Map<String, Serializable> options = new HashMap<String, Serializable>();
 
-            // No need - this notification is sent from the ActionBean
-            // // save in history
-            // DocumentModel docModel = readModel(doc, null);
-            // options.put(CoreEventConstants.DOCUMENT, doc);
-            // notifyEvent(DocumentEventTypes.DOCUMENT_PUBLISHED, docModel,
-            // options, null, null, true);
-
-            // notify for reindexation
+            // notify for reindexing
             DocumentModel proxyModel = readModel(proxy, null);
-            options.put(CoreEventConstants.DOCUMENT, proxy);
             notifyEvent(DocumentEventTypes.DOCUMENT_PROXY_PUBLISHED,
                     proxyModel, options, null, null, true);
 
@@ -1947,7 +2035,6 @@ public abstract class AbstractSession implements CoreSession,
                     options, null, null, true);
 
             DocumentModel sectionModel = readModel(section, null);
-            options.put(CoreEventConstants.DOCUMENT, section);
             notifyEvent(DocumentEventTypes.SECTION_CONTENT_PUBLISHED,
                     sectionModel, options, null, null, true);
 
@@ -2166,15 +2253,14 @@ public abstract class AbstractSession implements CoreSession,
         String currentLifeCycleState;
         try {
             Document doc = resolveReference(docRef);
-            try {
-                checkPermission(doc, READ_LIFE_CYCLE);
-                currentLifeCycleState = doc.getCurrentLifeCycleState();
-            } catch (LifeCycleException e) {
-                ClientException ce = new ClientException(
-                        "Failed to get life cycle " + docRef, e);
-                ce.fillInStackTrace();
-                throw ce;
-            }
+
+            checkPermission(doc, READ_LIFE_CYCLE);
+            currentLifeCycleState = doc.getCurrentLifeCycleState();
+        } catch (LifeCycleException e) {
+            ClientException ce = new ClientException(
+                    "Failed to get life cycle " + docRef, e);
+            ce.fillInStackTrace();
+            throw ce;
         } catch (DocumentException e) {
             throw new ClientException("Failed to get content data " + docRef, e);
         }
@@ -2185,15 +2271,14 @@ public abstract class AbstractSession implements CoreSession,
         String lifecyclePolicy;
         try {
             Document doc = resolveReference(docRef);
-            try {
-                checkPermission(doc, READ_LIFE_CYCLE);
-                lifecyclePolicy = doc.getLifeCyclePolicy();
-            } catch (LifeCycleException e) {
-                ClientException ce = new ClientException(
-                        "Failed to get life cycle policy" + docRef, e);
-                ce.fillInStackTrace();
-                throw ce;
-            }
+
+            checkPermission(doc, READ_LIFE_CYCLE);
+            lifecyclePolicy = doc.getLifeCyclePolicy();
+        } catch (LifeCycleException e) {
+            ClientException ce = new ClientException(
+                    "Failed to get life cycle policy" + docRef, e);
+            ce.fillInStackTrace();
+            throw ce;
         } catch (DocumentException e) {
             throw new ClientException("Failed to get content data " + docRef, e);
         }
@@ -2202,37 +2287,34 @@ public abstract class AbstractSession implements CoreSession,
 
     public boolean followTransition(DocumentRef docRef, String transition)
             throws ClientException {
-        boolean operationResult = false;
+        boolean operationResult;
         try {
             Document doc = resolveReference(docRef);
-            try {
-                checkPermission(doc, WRITE_LIFE_CYCLE);
-                String formerStateName = doc.getCurrentLifeCycleState();
-                operationResult = doc.followTransition(transition);
+            checkPermission(doc, WRITE_LIFE_CYCLE);
+            String formerStateName = doc.getCurrentLifeCycleState();
+            operationResult = doc.followTransition(transition);
 
-                if (operationResult) {
-                    // Construct a map holding meta information about the event.
-                    Map<String, Object> options = new HashMap<String, Object>();
-                    options.put(LifeCycleEventTypes.OPTION_NAME_FROM,
-                            formerStateName);
-                    options.put(LifeCycleEventTypes.OPTION_NAME_TO,
-                            doc.getCurrentLifeCycleState());
-                    options.put(LifeCycleEventTypes.OPTION_NAME_TRANSITION,
-                            transition);
-                    options.put(CoreEventConstants.DOCUMENT, doc);
-                    DocumentModel docModel = readModel(doc, null);
-                    notifyEvent(LifeCycleEventTypes.LIFECYCLE_TRANSITION_EVENT,
-                            docModel, options,
-                            DocumentEventCategories.EVENT_LIFE_CYCLE_CATEGORY,
-                            null, true);
-                }
-            } catch (LifeCycleException e) {
-                ClientException ce = new ClientException(
-                        "Unable to follow transition <" + transition +
-                                "> for document : " + docRef, e);
-                ce.fillInStackTrace();
-                throw ce;
+            if (operationResult) {
+                // Construct a map holding meta information about the event.
+                Map<String, Serializable> options = new HashMap<String, Serializable>();
+                options.put(LifeCycleEventTypes.OPTION_NAME_FROM,
+                        formerStateName);
+                options.put(LifeCycleEventTypes.OPTION_NAME_TO,
+                        doc.getCurrentLifeCycleState());
+                options.put(LifeCycleEventTypes.OPTION_NAME_TRANSITION,
+                        transition);
+                DocumentModel docModel = readModel(doc, null);
+                notifyEvent(LifeCycleEventTypes.LIFECYCLE_TRANSITION_EVENT,
+                        docModel, options,
+                        DocumentEventCategories.EVENT_LIFE_CYCLE_CATEGORY,
+                        null, true);
             }
+        } catch (LifeCycleException e) {
+            ClientException ce = new ClientException(
+                    "Unable to follow transition <" + transition
+                            + "> for document : " + docRef, e);
+            ce.fillInStackTrace();
+            throw ce;
         } catch (DocumentException e) {
             throw new ClientException("Failed to get content data " + docRef, e);
         }
@@ -2244,16 +2326,15 @@ public abstract class AbstractSession implements CoreSession,
         Collection<String> allowedStateTransitions;
         try {
             Document doc = resolveReference(docRef);
-            try {
-                checkPermission(doc, READ_LIFE_CYCLE);
-                allowedStateTransitions = doc.getAllowedStateTransitions();
-            } catch (LifeCycleException e) {
-                ClientException ce = new ClientException(
-                        "Unable to get allowed state transitions for document : " +
-                                docRef, e);
-                ce.fillInStackTrace();
-                throw ce;
-            }
+
+            checkPermission(doc, READ_LIFE_CYCLE);
+            allowedStateTransitions = doc.getAllowedStateTransitions();
+        } catch (LifeCycleException e) {
+            ClientException ce = new ClientException(
+                    "Unable to get allowed state transitions for document : "
+                            + docRef, e);
+            ce.fillInStackTrace();
+            throw ce;
         } catch (DocumentException e) {
             throw new ClientException("Failed to get content data " + docRef, e);
         }
@@ -2286,13 +2367,8 @@ public abstract class AbstractSession implements CoreSession,
 
             Document parentDoc = doc.getParent();
             while (parentDoc != null) {
-                // docRef construction as in DocumentModelFactory
                 final DocumentRef parentDocRef = new IdRef(parentDoc.getUUID());
                 docRefs.add(parentDocRef);
-
-                // we don't actually read the parent doc data so not need to
-                // :: checkPermission(parentDoc, READ);
-
                 parentDoc = parentDoc.getParent();
             }
         } catch (DocumentException e) {
@@ -2334,8 +2410,7 @@ public abstract class AbstractSession implements CoreSession,
             checkPermission(doc, WRITE_PROPERTIES);
             doc.setLock(key);
             DocumentModel docModel = readModel(doc, null);
-            Map<String, Object> options = new HashMap<String, Object>();
-            options.put(CoreEventConstants.DOCUMENT, doc);
+            Map<String, Serializable> options = new HashMap<String, Serializable>();
             notifyEvent(DocumentEventTypes.DOCUMENT_LOCKED, docModel, options,
                     null, null, true);
         } catch (DocumentException e) {
@@ -2355,14 +2430,11 @@ public abstract class AbstractSession implements CoreSession,
             }
             String username = getPrincipal().getName();
 
-            // TODO: isAdministrator() should be replaced by a check on the
-            // UNLOCK permission to be given to the "administrators" group in
-            // the default ACLs
-            if (isAdministrator() || lockDetails[0].equals(username)) {
+            if (hasPermission(docRef, UNLOCK)
+                    || lockDetails[0].equals(username)) {
                 String lockKey = doc.unlock();
                 DocumentModel docModel = readModel(doc, null);
-                Map<String, Object> options = new HashMap<String, Object>();
-                options.put(CoreEventConstants.DOCUMENT, doc);
+                Map<String, Serializable> options = new HashMap<String, Serializable>();
                 notifyEvent(DocumentEventTypes.DOCUMENT_UNLOCKED, docModel,
                         options, null, null, true);
                 return lockKey;
@@ -2380,8 +2452,7 @@ public abstract class AbstractSession implements CoreSession,
             return true;
         }
         if (principal instanceof NuxeoPrincipal) {
-            return ((NuxeoPrincipal) principal).getGroups().contains(
-                    SecurityConstants.ADMINISTRATORS);
+            return ((NuxeoPrincipal) principal).isAdministrator();
         }
         return false;
     }
@@ -2442,12 +2513,10 @@ public abstract class AbstractSession implements CoreSession,
                 DocumentModel newDocument = copy(docRef, sectionRef,
                         docToPublish.getName());
 
-                Map<String, Object> options = new HashMap<String, Object>();
-                options.put(CoreEventConstants.DOCUMENT, newDocument);
+                Map<String, Serializable> options = new HashMap<String, Serializable>();
                 notifyEvent(DocumentEventTypes.DOCUMENT_PROXY_PUBLISHED,
                         newDocument, options, null, null, true);
 
-                options.put(CoreEventConstants.DOCUMENT, section);
                 notifyEvent(DocumentEventTypes.SECTION_CONTENT_PUBLISHED,
                         section, options, null, null, true);
 
@@ -2466,26 +2535,11 @@ public abstract class AbstractSession implements CoreSession,
                     overwriteExistingProxy);
             return newProxy;
         }
-
-        /*
-         * -- this cannot resolve unwanted transition 'approved -> project'
-         * LifeCycleService lifeCycleService = NXCore.getLifeCycleService();
-         *
-         * try { String currentLifeCycle =
-         * lifeCycleService.getCurrentLifeCycleState(resolveReference(docToPublish.getRef()));
-         * lifeCycleService.setCurrentLifeCycleState(
-         * resolveReference(newProxy.getRef()), currentLifeCycle); } catch
-         * (LifeCycleException e) { throw new ClientException(e); } catch
-         * (DocumentException e) { throw new ClientException(e); }
-         */
-        // XXX OG: why this method does commit? The client should be able to
-        // decide when she wants to do the commit
-        // save();
     }
 
     public VersionModel isPublished(DocumentModel document,
             DocumentModel section) {
-        // TODO Auto-generated method stub
+        // FIXME: this is very useful API
         return null;
     }
 
@@ -2509,7 +2563,8 @@ public abstract class AbstractSession implements CoreSession,
 
             DocumentModel parent = getDirectAccessibleParent(doc.getRef());
             if (parent == null || "/".equals(parent.getPathAsString())) {
-                return getRootDocument(); // return Root instead of null
+                // return Root instead of null
+                return getRootDocument();
             } else {
                 return getSuperSpace(parent);
             }
@@ -2590,6 +2645,8 @@ public abstract class AbstractSession implements CoreSession,
 
         doc.setSystemProp(systemProperty, value);
         // FIXME BS: why this save() is done explicitely here?
+        // AT: because this is ******* code used by versioning, save should
+        // be moved there.
         save();
     }
 
@@ -2601,12 +2658,11 @@ public abstract class AbstractSession implements CoreSession,
             }
             Document doc = resolveReference(parent);
             doc.orderBefore(src, dest);
-            Map<String, Object> options = new HashMap<String, Object>();
+            Map<String, Serializable> options = new HashMap<String, Serializable>();
 
             // send event on container passing the reordered child as parameter
             DocumentModel docModel = readModel(doc, null);
             String comment = src;
-            options.put(CoreEventConstants.DOCUMENT, doc);
             options.put(CoreEventConstants.REORDERED_CHILD, src);
             notifyEvent(DocumentEventTypes.DOCUMENT_CHILDREN_ORDER_CHANGED,
                     docModel, options, null, comment, true);
@@ -2615,17 +2671,136 @@ public abstract class AbstractSession implements CoreSession,
             throw new ClientException("Failed to resolve documents: " + src
                     + ", " + dest, e);
         }
-        // save();
     }
 
     public <T> T run(Operation<T> op) throws ClientException {
+        return run(op, null);
+    }
+
+    public <T> T run(Operation<T> op, ProgressMonitor monitor)
+            throws ClientException {
+        // double s = System.currentTimeMillis();
+        T result = op.run(this, this, monitor);
+        // System.out.println(">>>>> OPERATION "+op.getName()+" took: "+
+        // ((System.currentTimeMillis()-s)/1000));
+        Status status = op.getStatus();
+        if (status.isOk()) {
+            return result;
+        } else {
+            Throwable t = status.getException();
+            if (t != null) {
+                if (t instanceof ClientException) {
+                    throw (ClientException) t;
+                } else {
+                    throw new ClientException(status.getMessage(), t);
+                }
+            } else {
+                String msg = status.getMessage();
+                if (msg == null) {
+                    msg = "Unknown Error";
+                }
+                throw new ClientException(msg);
+            }
+        }
+    }
+
+    public void startOperation(Operation<?> operation) {
+        //TODO rework operations
+//        CoreEventListenerService service = NXCore.getCoreEventListenerService();
+//        service.fireOperationStarted(operation);
+    }
+
+    public void endOperation(Operation<?> operation) {
+        //TODO rework operations
+//        CoreEventListenerService service = NXCore.getCoreEventListenerService();
+//        service.fireOperationTerminated(operation);
+    }
+
+    public Object[] refreshDocument(DocumentRef ref, int refreshFlags,
+            String[] schemas) throws ClientException {
+        Object[] result = new Object[6];
+
         try {
-            return op.run(this, monitor, (Object[]) null);
+
+            Document doc = resolveReference(ref);
+            if (doc == null) {
+                throw new ClientException("No Such Document: " + ref);
+            }
+
+            boolean readPermChecked = false;
+            if ((refreshFlags & DocumentModel.REFRESH_PREFETCH) != 0) {
+                if (!readPermChecked) {
+                    checkPermission(doc, READ);
+                    readPermChecked = true;
+                }
+                PrefetchInfo info = doc.getType().getPrefetchInfo();
+                if (info != null) {
+                    Schema[] pschemas = info.getSchemas();
+                    if (pschemas != null) {
+                        // TODO: this should be returned as document parts of
+                        // the document
+                    }
+                    Field[] fields = info.getFields();
+                    if (fields != null) {
+                        Map<String, Serializable> prefetch = new HashMap<String, Serializable>();
+                        // TODO : should use documentpartreader
+                        for (Field field : fields) {
+                            Object value = doc.getPropertyValue(field.getName().getPrefixedName());
+                            prefetch.put(field.getDeclaringType().getName()
+                                    + '.' + field.getName().getLocalName(),
+                                    value == null ? Null.VALUE
+                                            : (Serializable) value);
+                        }
+                        result[0] = prefetch;
+                    }
+                }
+            }
+
+            if ((refreshFlags & DocumentModel.REFRESH_LOCK) != 0) {
+                if (!readPermChecked) {
+                    checkPermission(doc, READ);
+                    readPermChecked = true;
+                }
+                result[1] = doc.getLock();
+            }
+
+            if ((refreshFlags & DocumentModel.REFRESH_LIFE_CYCLE) != 0) {
+                checkPermission(doc, READ_LIFE_CYCLE);
+                result[2] = doc.getCurrentLifeCycleState();
+                result[3] = doc.getLifeCyclePolicy();
+            }
+
+            if ((refreshFlags & DocumentModel.REFRESH_ACP) != 0) {
+                checkPermission(doc, READ_SECURITY);
+                result[4] = getSession().getSecurityManager().getMergedACP(doc);
+            }
+
+            if ((refreshFlags & (DocumentModel.REFRESH_CONTENT)) != 0) {
+                if (!readPermChecked) {
+                    checkPermission(doc, READ);
+                    readPermChecked = true;
+                }
+                if (schemas == null) {
+                    schemas = doc.getType().getSchemaNames();
+                }
+                DocumentType type = doc.getType();
+                DocumentPart[] parts = new DocumentPart[schemas.length];
+                for (int i = 0; i < schemas.length; i++) {
+                    DocumentPart part = new DocumentPartImpl(
+                            type.getSchema(schemas[i]));
+                    doc.readDocumentPart(part);
+                    parts[i] = part;
+                }
+                result[5] = parts;
+            }
+
         } catch (ClientException e) {
             throw e;
         } catch (Exception e) {
-            throw new ClientException(e);
+            throw new ClientException("Failed to get refresh data", e);
         }
+        return result;
+
     }
 
 }

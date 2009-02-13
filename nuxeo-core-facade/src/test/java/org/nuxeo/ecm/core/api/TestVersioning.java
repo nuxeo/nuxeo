@@ -47,25 +47,27 @@ public class TestVersioning extends NXRuntimeTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        deployContrib(CoreFacadeTestConstants.CORE_FACADE_TESTS_BUNDLE,
-                "CoreService.xml");
-        deployContrib(CoreFacadeTestConstants.CORE_FACADE_TESTS_BUNDLE,
+        deployContrib(Constants.CORE_BUNDLE,
+                "OSGI-INF/CoreService.xml");
+        deployContrib(Constants.CORE_BUNDLE,
+                "OSGI-INF/SecurityService.xml");
+        deployContrib(Constants.CORE_BUNDLE,
+                "OSGI-INF/RepositoryService.xml");
+        deployContrib(Constants.CORE_BUNDLE,
+                "OSGI-INF/LifeCycleService.xml");
+
+        deployContrib(Constants.CORE_FACADE_TESTS_BUNDLE,
                 "TypeService.xml");
-        deployContrib(CoreFacadeTestConstants.CORE_FACADE_TESTS_BUNDLE,
-                "SecurityService.xml");
-        deployContrib(CoreFacadeTestConstants.CORE_FACADE_TESTS_BUNDLE,
-                "RepositoryService.xml");
-        deployContrib(CoreFacadeTestConstants.CORE_FACADE_TESTS_BUNDLE,
+        deployContrib(Constants.CORE_FACADE_TESTS_BUNDLE,
                 "test-CoreExtensions.xml");
-        deployContrib(CoreFacadeTestConstants.CORE_FACADE_TESTS_BUNDLE,
+        deployContrib(Constants.CORE_FACADE_TESTS_BUNDLE,
                 "CoreTestExtensions.xml");
-        deployContrib(CoreFacadeTestConstants.CORE_FACADE_TESTS_BUNDLE,
-                "LifeCycleService.xml");
-        deployContrib(CoreFacadeTestConstants.CORE_FACADE_TESTS_BUNDLE,
+        deployContrib(Constants.CORE_FACADE_TESTS_BUNDLE,
                 "LifeCycleServiceExtensions.xml");
-        deployContrib(CoreFacadeTestConstants.CORE_FACADE_TESTS_BUNDLE,
+        deployContrib(Constants.CORE_FACADE_TESTS_BUNDLE,
                 "DemoRepository.xml");
 
+        deployBundle("org.nuxeo.ecm.core.event");
         deployCustomVersioning();
 
         Map<String, Serializable> ctx = new HashMap<String, Serializable>();

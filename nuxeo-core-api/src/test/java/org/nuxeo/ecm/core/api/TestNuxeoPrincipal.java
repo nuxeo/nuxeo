@@ -40,4 +40,18 @@ public class TestNuxeoPrincipal extends TestCase {
         assertEquals("nuxeo", principal.getCompany());
     }
 
+    public void testEquals() {
+        NuxeoPrincipal john1 = new UserPrincipal("john");
+        NuxeoPrincipal john2 = new UserPrincipal("john");
+        NuxeoPrincipal jim = new UserPrincipal("jim");
+
+        assertEquals(john1, john2);
+        assertEquals(john1.hashCode(), john2.hashCode());
+        assertFalse(john1.equals(jim));
+        assertFalse(jim.equals(john1));
+
+        jim.setName("john");
+        assertEquals(john1, jim);
+    }
+
 }

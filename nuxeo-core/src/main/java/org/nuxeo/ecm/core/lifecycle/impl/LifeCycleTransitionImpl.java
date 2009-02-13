@@ -49,24 +49,12 @@ public class LifeCycleTransitionImpl implements LifeCycleTransition {
         return destinationStateName;
     }
 
-    public void setDestinationStateName(String stateName) {
-        destinationStateName = stateName;
-    }
-
     public String getDescription() {
         return description;
     }
 
     public String getName() {
         return name;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
 }

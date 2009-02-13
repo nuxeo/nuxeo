@@ -35,9 +35,8 @@ public class BlobPropertyAccessor implements PropertyAccessor {
 
     public static final String TYPE = "content";
 
-
     public void read(Node node, Property property) throws Exception {
-        String key = (String)property.getRoot().getData();
+        String key = (String) property.getRoot().getData();
         int p = key.indexOf(':');
         if (p == -1) {
             throw new IllegalStateException("No session URI passed through context");

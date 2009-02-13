@@ -22,8 +22,6 @@ package org.nuxeo.ecm.core.jcr.search;
 import java.util.Calendar;
 import java.util.TimeZone;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.Session;
@@ -37,8 +35,6 @@ import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryTestCase;
  * @author <a href="mailto:fg@nuxeo.com">Florent Guillaume</a>
  */
 public class TestSQLWithDate extends RepositoryTestCase {
-
-    private static final Log log = LogFactory.getLog(TestSQLWithDate.class);
 
     private Session session;
 
@@ -64,7 +60,7 @@ public class TestSQLWithDate extends RepositoryTestCase {
         super.tearDown();
     }
 
-    private Calendar getCalendar(int year, int month, int day,
+    private static Calendar getCalendar(int year, int month, int day,
             int hours, int minutes, int seconds) {
         Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("Europe/Paris"));
         cal.set(Calendar.YEAR, year);

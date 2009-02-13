@@ -30,11 +30,11 @@ public class PropertyException extends ClientException {
     private static final long serialVersionUID = 4457374575384629415L;
 
     public PropertyException(String message) {
-        super (message);
+        super(message);
     }
 
     public PropertyException(String message, Throwable cause) {
-        super (message, cause);
+        super(message, cause);
     }
 
 }

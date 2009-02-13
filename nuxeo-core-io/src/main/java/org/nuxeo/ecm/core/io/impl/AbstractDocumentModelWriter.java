@@ -241,7 +241,7 @@ public abstract class AbstractDocumentModelWriter extends AbstractDocumentWriter
     }
 
     @SuppressWarnings("unchecked")
-    protected void loadSchema(ExportedDocument xdoc, Schema schema,
+    protected static void loadSchema(ExportedDocument xdoc, Schema schema,
             DocumentModel doc, Element schemaElement) throws ClientException {
         String schemaName = schemaElement.attributeValue(ExportConstants.NAME_ATTR);
         Map<String, Object> data = new HashMap<String, Object>();
@@ -262,7 +262,7 @@ public abstract class AbstractDocumentModelWriter extends AbstractDocumentWriter
     }
 
     @SuppressWarnings("unchecked")
-    private Object getElementData(ExportedDocument xdoc, Element element,
+    private static Object getElementData(ExportedDocument xdoc, Element element,
             Type type) {
         if (type.isSimpleType()) {
             return type.decode(element.getText());
@@ -280,7 +280,7 @@ public abstract class AbstractDocumentModelWriter extends AbstractDocumentWriter
                 if (klass.isPrimitive()) {
                     return PrimitiveArrays.toPrimitiveArray(list, klass);
                 } else {
-                    return list.toArray((Object[])Array.newInstance(klass, list.size()));
+                    return list.toArray((Object[]) Array.newInstance(klass, list.size()));
                 }
             }
             return list;

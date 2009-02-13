@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -25,7 +26,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.nuxeo.ecm.core.storage.StorageException;
-import org.nuxeo.ecm.core.storage.sql.Fragment.State;
 
 /**
  * A type of fragment corresponding to a single row in a table.
@@ -42,6 +42,16 @@ public class SimpleFragment extends Fragment {
     public static final SimpleFragment UNKNOWN = new SimpleFragment(null,
             State.DETACHED, null, null);
 
+    private static enum OpaqueValue {
+        OPAQUE_VALUE
+    }
+
+    /**
+     * A database value we don't care about reading. When present in a fragment,
+     * it won't be written, but any other value will be.
+     */
+    public static final Serializable OPAQUE = OpaqueValue.OPAQUE_VALUE;
+
     /** The map actually holding the data. */
     private final Map<String, Serializable> map;
 
@@ -52,7 +62,6 @@ public class SimpleFragment extends Fragment {
      * Constructs an empty {@link SimpleFragment} of the given table with the
      * given id (which may be a temporary one).
      *
-     * @param tableName the table name
      * @param id the id
      * @param state the initial state for the fragment
      * @param context the persistence context to which the row is tied, or
@@ -104,7 +113,7 @@ public class SimpleFragment extends Fragment {
      *
      * @return the dirty fields
      */
-    public List<String> getDirty() {
+    public Collection<String> getDirty() {
         List<String> dirty = new LinkedList<String>();
         for (Entry<String, Serializable> entry : map.entrySet()) {
             String key = entry.getKey();

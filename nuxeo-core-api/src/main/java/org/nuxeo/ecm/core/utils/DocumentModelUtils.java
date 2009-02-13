@@ -22,6 +22,10 @@ package org.nuxeo.ecm.core.utils;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Schema;
@@ -33,6 +37,8 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
 public final class DocumentModelUtils {
+
+    private static final Log log = LogFactory.getLog(DocumentModelUtils.class);
 
     // Utility class.
     private DocumentModelUtils() {
@@ -64,12 +70,24 @@ public final class DocumentModelUtils {
         return join(items, ".");
     }
 
+    /**
+     * The given propertyName should have 'schema_name:property_name' format.
+     *
+     * @param doc
+     * @param propertyName
+     * @return <code>null</code> if any error occurs.
+     */
     public static Object getPropertyValue(DocumentModel doc, String propertyName) {
         try {
             String schemaName = getSchemaName(propertyName);
             String fieldName = getFieldName(propertyName);
             return doc.getProperty(schemaName, fieldName);
         } catch (Exception e) {
+            log.warn("Error trying to get property " + propertyName + ". "
+                    + e.getMessage());
+            if (log.isDebugEnabled()) {
+                log.debug(e);
+            }
             return null;
         }
     }
@@ -162,7 +180,12 @@ public final class DocumentModelUtils {
         }
         final Map<String, Object> allProps = new HashMap<String, Object>();
         for (String schemaName : schemas) {
-            Map<String, Object> props = docModel.getProperties(schemaName);
+            Map<String, Object> props;
+            try {
+                props = docModel.getProperties(schemaName);
+            } catch (ClientException e) {
+                throw new ClientRuntimeException(e);
+            }
             allProps.putAll(props);
         }
         return allProps;

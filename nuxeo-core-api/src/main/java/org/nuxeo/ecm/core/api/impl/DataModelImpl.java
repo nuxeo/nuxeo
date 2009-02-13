@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.core.api.impl;
 
 import java.io.Serializable;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -28,10 +27,12 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyException;
+import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.model.impl.AbstractProperty;
 import org.nuxeo.ecm.core.api.model.impl.DefaultPropertyFactory;
 
@@ -47,7 +48,7 @@ public class DataModelImpl implements DataModel {
 
     private static final Log log = LogFactory.getLog(DataModelImpl.class);
 
-    private DocumentPart dp;
+    private final DocumentPart dp;
 
     /**
      * Builds an empty data model.
@@ -72,7 +73,7 @@ public class DataModelImpl implements DataModel {
             try {
                 dp.init((Serializable) data);
             } catch (PropertyException e) {
-                log.error(e);
+                throw new ClientRuntimeException(e);
             }
         }
     }
@@ -93,51 +94,29 @@ public class DataModelImpl implements DataModel {
         return dp.getSchema().getName();
     }
 
-    public Object getData(String key) {
-        try {
-            return dp.getValue(key);
-        } catch (Exception e) {
-            log.error(e);
-            return null;
-        }
+    public Object getData(String key) throws PropertyException {
+        return dp.getValue(key);
     }
 
-    public void setData(String key, Object value) {
-        try {
-            dp.setValue(key, value);
-        } catch (Exception e) {
-            log.error(e);
-        }
+    public void setData(String key, Object value) throws PropertyException {
+        dp.setValue(key, value);
     }
 
-    public Map<String, Object> getMap() {
-        try {
-            return (Map<String, Object>) dp.getValue();
-        } catch (PropertyException e) {
-            log.error(e);
-            return null;
-        }
+    @SuppressWarnings("unchecked")
+    public Map<String, Object> getMap() throws PropertyException {
+        return (Map<String, Object>) dp.getValue();
     }
 
-    public void setMap(Map<String, Object> data) {
-        try {
-            dp.setValue(data);
-        } catch (PropertyException e) {
-            log.error(e);
-        }
+    public void setMap(Map<String, Object> data) throws PropertyException {
+        dp.setValue(data);
     }
 
     public boolean isDirty() {
         return dp.isDirty();
     }
 
-    public boolean isDirty(String name) {
-        try {
-            return dp.get(name).isDirty();
-        } catch (Exception e) {
-            log.error(e);
-            return false;
-        }
+    public boolean isDirty(String name) throws PropertyNotFoundException {
+        return dp.get(name).isDirty();
     }
 
     public Collection<String> getDirtyFields() {
@@ -152,61 +131,28 @@ public class DataModelImpl implements DataModel {
 
     @Override
     public String toString() {
-        // to make it easier to introspect DocumentModel contents with the
-        // debugger
         StringBuilder buf = new StringBuilder();
         buf.append(DocumentModelImpl.class.getSimpleName());
         buf.append(" {");
         buf.append(" schema: ");
         buf.append(getSchema());
-        buf.append("- Details N/A yet }");
-        // try {
-        // Map<String,Object> map = (Map<String,Object>)dp.getValue();
-        // for (String fieldName : map.keySet()) {
-        // buf.append(", ");
-        // if (isDirty(fieldName)) {
-        // buf.append('*');
-        // }
-        // buf.append(fieldName);
-        // buf.append('=');
-        // buf.append(map.get(fieldName));
-        // }
-        // buf.append(" }");
-        // } catch (Exception e) {
-        // log.error(e);
-        // }
-
+        buf.append(dp != null ? "," + dp.size() + " fields" :  " N/A yet.");
         return buf.toString();
     }
 
-    public void setDirty(String name) {
-        try {
-            ((AbstractProperty) dp.get(name)).setIsModified();
-        } catch (Exception e) {
-            log.error(e);
-        }
+    public void setDirty(String name) throws PropertyNotFoundException {
+        ((AbstractProperty) dp.get(name)).setIsModified();
     }
 
-    public Object getValue(String path) throws ParseException {
-        try {
-            return dp.getValue(path);
-        } catch (PropertyException e) {
-            ParseException ee = new ParseException("get value failed", 0);
-            ee.initCause(e);
-            throw ee;
-        }
+    public Object getValue(String path) throws PropertyException {
+        return dp.getValue(path);
     }
 
-    public Object setValue(String path, Object value) throws ParseException {
-        try {
-            Property prop = dp.resolvePath(path);
-            Object oldValue = prop.getValue();
-            prop.setValue(value);
-            return oldValue;
-        } catch (Exception e) {
-            log.error(e);
-            return null;
-        }
+    public Object setValue(String path, Object value) throws PropertyException {
+        Property prop = dp.resolvePath(path);
+        Object oldValue = prop.getValue();
+        prop.setValue(value);
+        return oldValue;
     }
 
 }

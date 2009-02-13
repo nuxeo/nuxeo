@@ -83,6 +83,12 @@ public class MockDocument implements Document {
 
     // not implemented (useless)
 
+    public void setLifeCyclePolicy(String policy) {
+    }
+
+    public void setCurrentLifeCycleState(String state) {
+    }
+
     public boolean followTransition(String transition)
             throws LifeCycleException {
         return false;

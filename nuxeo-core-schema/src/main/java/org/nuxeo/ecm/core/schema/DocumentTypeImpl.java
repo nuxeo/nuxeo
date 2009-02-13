@@ -26,7 +26,6 @@ import java.util.Set;
 import org.nuxeo.ecm.core.schema.types.CompositeTypeImpl;
 import org.nuxeo.runtime.api.Framework;
 
-
 /**
  * Implementation of a document type.
  * <p>
@@ -44,7 +43,7 @@ public class DocumentTypeImpl extends CompositeTypeImpl implements DocumentType 
 
     private static final long serialVersionUID = 4257192861843860742L;
 
-    private static final String[] EMPTY_FACETS = new String[] {};
+    private static final String[] EMPTY_FACETS = {};
 
     protected int unstructured;
 
@@ -110,16 +109,10 @@ public class DocumentTypeImpl extends CompositeTypeImpl implements DocumentType 
         subtypes = null;
     }
 
-    /**
-     * @param prefetchInfo the prefetchInfo to set.
-     */
     public void setPrefetchInfo(PrefetchInfo prefetchInfo) {
         this.prefetchInfo = prefetchInfo;
     }
 
-    /**
-     * @return the prefetchInfo.
-     */
     public PrefetchInfo getPrefetchInfo() {
         return prefetchInfo;
     }
@@ -161,9 +154,9 @@ public class DocumentTypeImpl extends CompositeTypeImpl implements DocumentType 
         }
     }
 
-    public void setDeclaredFacets(String[] facetAr) {
-        declaredFacets = facetAr == null ? EMPTY_FACETS : facetAr;
-        facets = null;
+    public void setDeclaredFacets(String[] facets) {
+        declaredFacets = facets == null ? EMPTY_FACETS : facets;
+        this.facets = null;
     }
 
     protected Set<String> buildFacets() {
@@ -217,6 +210,7 @@ public class DocumentTypeImpl extends CompositeTypeImpl implements DocumentType 
                     return true;
                 }
             }
+
             // TODO: expand *
             return false;
         }

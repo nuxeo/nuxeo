@@ -88,7 +88,7 @@ public class JNDILookupHelper implements Serializable {
 
             initialContext = loadInitialContext();
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -99,7 +99,7 @@ public class JNDILookupHelper implements Serializable {
         } catch (Throwable t) {
             log.error("Cannot create InitialContext for: "
                     + serverContainerLocation);
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
 
         return ctx;
@@ -125,7 +125,7 @@ public class JNDILookupHelper implements Serializable {
 
             return initialContext.lookup(location);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 }

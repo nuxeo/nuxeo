@@ -94,11 +94,10 @@ public interface Type extends Serializable, ValueConverter {
      */
     Schema getSchema();
 
-
     /**
      * Get the type helper. Must never return null
      * <p>
-     * The type helper is used to handle operations on value of that type
+     * The type helper is used to handle operations on value of that type.
      *
      * @return the type helper
      */
@@ -227,20 +226,6 @@ public interface Type extends Serializable, ValueConverter {
      *         cannot be converted
      */
     String encode(Object object);
-
-    /**
-     * Sets the value converter to be used by this type.
-     *
-     * @param converter the value converter
-     */
-    void setConverter(ValueConverter converter);
-
-    /**
-     * Gets the value converter used on this type.
-     *
-     * @return the valuer converter
-     */
-    ValueConverter getConverter();
 
     /**
      * Creates a new instance according to this type and filled with default

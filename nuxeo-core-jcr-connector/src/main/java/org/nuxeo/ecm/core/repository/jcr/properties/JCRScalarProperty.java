@@ -96,7 +96,6 @@ public abstract class JCRScalarProperty implements Property {
         }
     }
 
-
     public Object getValue() throws DocumentException {
         if (property == null) {
             return field.getDefaultValue();
@@ -123,7 +122,6 @@ public abstract class JCRScalarProperty implements Property {
     public boolean isPropertySet(String name) throws DocumentException {
         throw new UnsupportedOperationException("scalar nproperties cannot contains children");
     }
-
 
     protected abstract javax.jcr.Property create(Object value) throws DocumentException;
 

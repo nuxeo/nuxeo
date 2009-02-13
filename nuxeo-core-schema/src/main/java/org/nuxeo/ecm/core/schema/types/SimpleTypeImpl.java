@@ -100,7 +100,6 @@ public class SimpleTypeImpl extends AbstractType implements SimpleType {
         return getPrimitiveType().encode(value);
     }
 
-    @Override
     public Object convert(Object value) throws TypeException {
         return getPrimitiveType().convert(value);
     }

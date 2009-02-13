@@ -18,6 +18,8 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -123,6 +125,11 @@ public class Context {
         isCollection = model.isCollectionFragment(tableName);
     }
 
+    @Override
+    public String toString() {
+        return "Context(" + tableName + ')';
+    }
+
     public String getTableName() {
         return tableName;
     }
@@ -136,6 +143,9 @@ public class Context {
         // it if a transaction is in progress
         int n = pristine.size();
         pristine.clear();
+        modified.clear(); // not empty when rolling back before save
+        modifiedInTransaction.clear();
+        deletedInTransaction.clear();
         return n;
     }
 
@@ -163,6 +173,7 @@ public class Context {
      * @return the created row
      * @throws StorageException if the row is already in the context
      */
+    // FIXME: do we want to throw StorageException or IllegalStateException ?
     public SimpleFragment create(Serializable id, Map<String, Serializable> map)
             throws StorageException {
         if (pristine.containsKey(id) || modified.containsKey(id)) {
@@ -234,8 +245,7 @@ public class Context {
      * hierarchy fragments in lists of children.
      */
     protected Fragment getIfPresent(Serializable id) {
-        Fragment fragment;
-        fragment = pristine.get(id);
+        Fragment fragment = pristine.get(id);
         if (fragment != null) {
             return fragment;
         }
@@ -281,6 +291,52 @@ public class Context {
         // subclasses change this
         // TODO XXX there are other references to id (versionableid,
         // targetid, etc).
+    }
+
+    /**
+     * Finds the documents having dirty text or dirty binaries that have to be
+     * reindexed as fulltext.
+     *
+     * @param dirtyStrings set of ids that will be modified
+     * @param dirtyBinaries set of ids that will be modified
+     * @throws StorageException
+     */
+    public void findDirtyDocuments(Set<Serializable> dirtyStrings,
+            Set<Serializable> dirtyBinaries) throws StorageException {
+        for (Fragment fragment : modified.values()) {
+            Serializable docId = null;
+            switch (fragment.getState()) {
+            case CREATED:
+                docId = persistenceContext.getContainingDocument(fragment.getId());
+                dirtyStrings.add(docId);
+                dirtyBinaries.add(docId);
+                break;
+            case MODIFIED:
+                Collection<String> dirty;
+                if (isCollection) {
+                    dirty = Collections.singleton(null);
+                } else {
+                    dirty = ((SimpleFragment) fragment).getDirty();
+                }
+                for (String key : dirty) {
+                    PropertyType type = model.getFulltextFieldType(tableName,
+                            key);
+                    if (type == null) {
+                        continue;
+                    }
+                    if (docId == null) {
+                        docId = persistenceContext.getContainingDocument(fragment.getId());
+                    }
+                    if (type == PropertyType.STRING) {
+                        dirtyStrings.add(docId);
+                    } else if (type == PropertyType.BINARY) {
+                        dirtyBinaries.add(docId);
+                    }
+                }
+                break;
+            default:
+            }
+        }
     }
 
     /**

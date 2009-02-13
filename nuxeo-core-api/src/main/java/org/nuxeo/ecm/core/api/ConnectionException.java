@@ -25,9 +25,6 @@ package org.nuxeo.ecm.core.api;
  */
 public class ConnectionException extends ClientException {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = -4332586426137845735L;
 
 }

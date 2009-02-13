@@ -276,19 +276,15 @@ public class SchemaManagerImpl implements SchemaManager {
         }
     }
 
-    /**
-     * @param prefetchInfo the prefetchInfo to set.
-     */
     public void setPrefetchInfo(PrefetchInfo prefetchInfo) {
         this.prefetchInfo = prefetchInfo;
     }
 
-    /**
-     * @return the prefetchInfo.
-     */
     public PrefetchInfo getPrefetchInfo() {
         return prefetchInfo;
     }
+
+    // Document Types
 
     public void registerDocumentType(DocumentType docType) {
         log.info("Register document type: " + docType.getName());
@@ -308,6 +304,12 @@ public class SchemaManagerImpl implements SchemaManager {
                     return;
                 }
             }
+            registerDocumentType(superType, dtd);
+        }
+    }
+
+    private DocumentType registerDocumentType(DocumentType superType, DocumentTypeDescriptor dtd) {
+        synchronized (docTypeReg) {
             try {
                 String[] schemaNames = getSchemaNames(dtd.schemas);
                 DocumentType docType = new DocumentTypeImpl(superType,
@@ -315,15 +317,27 @@ public class SchemaManagerImpl implements SchemaManager {
                 docType.setChildrenTypes(dtd.childrenTypes);
                 // use global prefetch info if not a local one was defined
                 docType.setPrefetchInfo(dtd.prefetch != null ? new PrefetchInfo(dtd.prefetch)
-                        : prefetchInfo);
+                : prefetchInfo);
                 docTypeReg.put(dtd.name, docType);
                 facetsCache = null;
                 log.info("Registered document type: " + dtd.name);
                 registerPendingDocTypes(docType);
+                return docType;
             } catch (Exception e) {
                 log.error("Error registering document type: " + dtd.name, e);
                 // TODO: use component dependencies instead?
             }
+            return null;
+        }
+    }
+
+    private void registerPendingDocTypes(DocumentType superType) {
+        List<DocumentTypeDescriptor> list = pendingDocTypes.remove(superType.getName());
+        if (list == null) {
+            return;
+        }
+        for (DocumentTypeDescriptor dtd : list) {
+            registerDocumentType(superType, dtd);
         }
     }
 
@@ -365,21 +379,6 @@ public class SchemaManagerImpl implements SchemaManager {
         }
     }
 
-    private void registerPendingDocTypes(DocumentType superType) {
-        List<DocumentTypeDescriptor> list = pendingDocTypes.remove(superType.getName());
-        if (list == null) {
-            return;
-        }
-        for (DocumentTypeDescriptor dtd : list) {
-            String[] schemaNames = getSchemaNames(dtd.schemas);
-            DocumentType docType = new DocumentTypeImpl(superType, dtd.name,
-                    schemaNames, dtd.facets);
-            docTypeReg.put(dtd.name, docType);
-            log.info("Registered document type: " + dtd.name);
-            registerPendingDocTypes(docType);
-        }
-    }
-
     private void postponeDocTypeRegistration(DocumentTypeDescriptor dtd) {
         List<DocumentTypeDescriptor> list = pendingDocTypes.get(dtd.superTypeName);
         if (list == null) {
@@ -408,6 +407,8 @@ public class SchemaManagerImpl implements SchemaManager {
             return docTypeReg.size();
         }
     }
+
+    // Misc
 
     public void clear() {
         synchronized (docTypeReg) {
@@ -454,7 +455,7 @@ public class SchemaManagerImpl implements SchemaManager {
     }
 
     /**
-     * Same remarks as in {@link getDocumentTypeNamesExtending}.
+     * Same remarks as in {@link #getDocumentTypeNamesExtending}.
      *
      * Tested in nuxeo-core
      */
@@ -485,11 +486,12 @@ public class SchemaManagerImpl implements SchemaManager {
     }
 
     /**
-     * Implementation details: there is a cache on each server for this
-     * Assumes that types never change in the lifespan of this server process
-     * and that the Core server has finished loading its types.
-     *
-     * This is tested in nuxeo-core and SearchBackendTestCase (hence compass plugin)
+     * Implementation details: there is a cache on each server for this Assumes
+     * that types never change in the lifespan of this server process and that
+     * the Core server has finished loading its types.
+     * <p>
+     * This is tested in nuxeo-core and SearchBackendTestCase (hence compass
+     * plugin).
      */
     public Set<String> getDocumentTypeNamesExtending(String docTypeName) {
         Set<String> res = inheritanceCache.get(docTypeName);
@@ -522,6 +524,7 @@ public class SchemaManagerImpl implements SchemaManager {
             return res;
         }
     }
+
     public String getXmlSchemaDefinition(String name) {
         File file = getSchemaFile(name);
         if (file != null) {
@@ -560,4 +563,5 @@ public class SchemaManagerImpl implements SchemaManager {
             return helpers.get(schema + ':' + type);
         }
     }
+
 }

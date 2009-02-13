@@ -38,12 +38,17 @@ import org.nuxeo.ecm.core.model.NoSuchPropertyException;
 import org.nuxeo.ecm.core.model.Property;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.model.Session;
+import org.nuxeo.ecm.core.query.FilterableQuery;
 import org.nuxeo.ecm.core.query.Query;
 import org.nuxeo.ecm.core.query.QueryException;
+import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.QueryResult;
 import org.nuxeo.ecm.core.query.UnsupportedQueryTypeException;
+import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.query.sql.SQLQueryParser;
+import org.nuxeo.ecm.core.query.sql.model.OrderByExpr;
+import org.nuxeo.ecm.core.query.sql.model.OrderByList;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
@@ -52,6 +57,8 @@ import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.security.SecurityManager;
+import org.nuxeo.ecm.core.security.SecurityService;
+import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Binary;
 import org.nuxeo.ecm.core.storage.sql.CollectionProperty;
@@ -59,6 +66,7 @@ import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.Node;
 import org.nuxeo.ecm.core.storage.sql.SimpleProperty;
 import org.nuxeo.ecm.core.versioning.DocumentVersion;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * This class is the bridge between the Nuxeo SPI Session and the actual
@@ -76,7 +84,9 @@ public class SQLSession implements Session {
 
     private SQLDocument root;
 
-    private String userSessionId;
+    private final String userSessionId;
+
+    private final SecurityService securityService;
 
     public SQLSession(org.nuxeo.ecm.core.storage.sql.Session session,
             Repository repository, Map<String, Serializable> context)
@@ -98,6 +108,7 @@ public class SQLSession implements Session {
         root = newDocument(rootNode);
 
         userSessionId = (String) context.get("SESSION_ID");
+        securityService = Framework.getLocalService(SecurityService.class);
     }
 
     /*
@@ -171,7 +182,7 @@ public class SQLSession implements Session {
     }
 
     public SecurityManager getSecurityManager() {
-        return repository.getSecurityManager();
+        return repository.getNuxeoSecurityManager();
     }
 
     public Document getDocumentByUUID(String uuid) throws DocumentException {
@@ -228,7 +239,7 @@ public class SQLSession implements Session {
         }
     }
 
-    private static Pattern dotDigitsPattern = Pattern.compile("(.*)\\.[0-9]+$");
+    private static final Pattern dotDigitsPattern = Pattern.compile("(.*)\\.[0-9]+$");
 
     protected String findFreeName(Node parentNode, String name)
             throws StorageException {
@@ -319,7 +330,7 @@ public class SQLSession implements Session {
         }
     }
 
-    protected class SQLSessionQuery implements Query {
+    protected class SQLSessionQuery implements FilterableQuery {
 
         protected final SQLQuery sqlQuery;
 
@@ -327,12 +338,51 @@ public class SQLSession implements Session {
             this.sqlQuery = sqlQuery;
         }
 
+        public void setLimit(long limit) {
+            sqlQuery.setLimit(limit);
+        }
+
+        public void setOffset(long offset) {
+            sqlQuery.setOffset(offset);
+        }
+
         public QueryResult execute() throws QueryException {
+            return execute(null, false);
+        }
+
+        public QueryResult execute(boolean countTotal) throws QueryException {
+            return execute(null, countTotal);
+        }
+
+        public QueryResult execute(QueryFilter queryFilter, boolean countTotal)
+                throws QueryException {
             try {
-                List<Serializable> ids = session.query(sqlQuery);
-                return new SQLQueryResult(SQLSession.this, ids);
+                SQLQuery query = sqlQuery;
+                Boolean orderByPath = null;
+                long limit = 0;
+                long offset = 0;
+                if (sqlQuery.orderBy != null) {
+                    OrderByList orderByList = sqlQuery.orderBy.elements;
+                    if (orderByList.size() == 1) {
+                        OrderByExpr orderBy = orderByList.get(0);
+                        if (NXQL.ECM_PATH.equals(orderBy.reference.name)) {
+                            // do ORDER BY ecm:path "by hand"
+                            orderByPath = Boolean.valueOf(!orderBy.isDescending);
+                            query = new SQLQuery(sqlQuery.select,
+                                    sqlQuery.from, sqlQuery.where, null);
+                            query.setLimit(0);
+                            query.setOffset(0);
+                            limit = sqlQuery.getLimit();
+                            offset = sqlQuery.getOffset();
+                        }
+                    }
+                }
+                PartialList<Serializable> list = session.query(query,
+                        queryFilter, countTotal);
+                return new SQLQueryResult(SQLSession.this, list, orderByPath,
+                        limit, offset);
             } catch (StorageException e) {
-                throw new QueryException(e);
+                throw new QueryException(e.getMessage(), e);
             }
         }
     }

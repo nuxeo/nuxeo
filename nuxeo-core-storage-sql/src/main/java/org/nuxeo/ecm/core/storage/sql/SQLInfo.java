@@ -36,12 +36,12 @@ import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.db.Column;
 import org.nuxeo.ecm.core.storage.sql.db.Database;
 import org.nuxeo.ecm.core.storage.sql.db.Delete;
-import org.nuxeo.ecm.core.storage.sql.db.DerbyFunctions;
 import org.nuxeo.ecm.core.storage.sql.db.Dialect;
 import org.nuxeo.ecm.core.storage.sql.db.Insert;
 import org.nuxeo.ecm.core.storage.sql.db.Select;
 import org.nuxeo.ecm.core.storage.sql.db.Table;
 import org.nuxeo.ecm.core.storage.sql.db.Update;
+import org.nuxeo.ecm.core.storage.sql.db.Dialect.ConditionalStatement;
 
 /**
  * This singleton generates and holds the actual SQL DDL and DML statements for
@@ -78,10 +78,6 @@ public class SQLInfo {
     private final Map<String, String> insertSqlMap; // statement
 
     private final Map<String, List<Column>> insertColumnsMap;
-
-    private final Map<String, String> updateByIdSqlMap; // statement
-
-    private final Map<String, List<Column>> updateByIdColumnsMap;
 
     private final Map<String, String> deleteSqlMap; // statement
 
@@ -127,11 +123,11 @@ public class SQLInfo {
 
     private final Map<String, Column> copyIdColumnMap;
 
-    private String selectVersionIdByLabelSql;
+    private final String selectVersionIdByLabelSql;
 
     private final List<Column> selectVersionIdByLabelWhereColumns;
 
-    private Column selectVersionIdByLabelWhatColumn;
+    private final Column selectVersionIdByLabelWhatColumn;
 
     protected final Map<String, SQLInfoSelect> selectFragmentById;
 
@@ -189,9 +185,6 @@ public class SQLInfo {
 
         insertSqlMap = new HashMap<String, String>();
         insertColumnsMap = new HashMap<String, List<Column>>();
-
-        updateByIdSqlMap = new HashMap<String, String>();
-        updateByIdColumnsMap = new HashMap<String, List<Column>>();
 
         deleteSqlMap = new HashMap<String, String>();
 
@@ -314,21 +307,39 @@ public class SQLInfo {
 
     // ----- update -----
 
-    public SQLInfoSelect getUpdateById(String tableName, List<String> keys) {
+    // TODO these two methods are redundant with one another
+
+    public SQLInfoSelect getUpdateById(String tableName, Collection<String> keys) {
         Table table = database.getTable(tableName);
         List<String> values = new LinkedList<String>();
         List<Column> columns = new LinkedList<Column>();
         Column mainColumn = table.getColumn(model.MAIN_KEY);
         for (String key : keys) {
             Column column = table.getColumn(key);
-            values.add(column.getQuotedName() + " = ?");
+            values.add(column.getQuotedName() + " = "
+                    + column.getFreeVariableSetter());
             columns.add(column);
         }
         columns.add(mainColumn);
         Update update = new Update(table);
         update.setNewValues(StringUtils.join(values, ", "));
         update.setWhere(mainColumn.getQuotedName() + " = ?");
-        return new SQLInfoSelect(update.getStatement(), columns, null);
+        return new SQLInfoSelect(update.getStatement(), columns, null, null);
+    }
+
+    public Update getUpdateByIdForKeys(String tableName, Set<String> keys) {
+        Table table = database.getTable(tableName);
+        List<String> values = new ArrayList<String>(keys.size());
+        for (String key : keys) {
+            Column column = table.getColumn(key);
+            values.add(column.getQuotedName() + " = "
+                    + column.getFreeVariableSetter());
+        }
+        Update update = new Update(table);
+        update.setNewValues(StringUtils.join(values, ", "));
+        update.setWhere(table.getColumn(model.MAIN_KEY).getQuotedName()
+                + " = ?");
+        return update;
     }
 
     // ----- delete -----
@@ -399,8 +410,8 @@ public class SQLInfo {
             if (tableName.equals(model.HIER_TABLE_NAME)) {
                 continue;
             }
-            if (tableName.equals(model.MAIN_TABLE_NAME) &&
-                    !model.separateMainTable) {
+            if (tableName.equals(model.MAIN_TABLE_NAME)
+                    && !model.separateMainTable) {
                 // merged into already-generated hierarchy
                 continue;
             }
@@ -411,12 +422,13 @@ public class SQLInfo {
          * versions
          */
         Table table = database.getTable(model.VERSION_TABLE_NAME);
-        selectVersionsByVersionable = makeSelect(table,
-                model.VERSION_VERSIONABLE_KEY);
-        table.addIndex(model.VERSION_VERSIONABLE_KEY);
         selectVersionsByLabel = makeSelect(table,
                 model.VERSION_VERSIONABLE_KEY, model.VERSION_LABEL_KEY);
+        table.addIndex(model.VERSION_VERSIONABLE_KEY);
         // don't index versionable+label, a simple label scan will suffice
+        selectVersionsByVersionable = makeSelect(table, new String[] {
+                model.VERSION_CREATED_KEY, ORDER_ASC },
+                model.VERSION_VERSIONABLE_KEY);
         selectVersionsByVersionableLastFirst = makeSelect(table, new String[] {
                 model.VERSION_CREATED_KEY, ORDER_DESC },
                 model.VERSION_VERSIONABLE_KEY);
@@ -438,6 +450,18 @@ public class SQLInfo {
         selectProxiesByTargetAndParent = makeSelect(table,
                 new String[] { model.PROXY_TARGET_KEY }, hierTable,
                 new String[] { model.HIER_PARENT_KEY });
+
+        /*
+         * fulltext
+         */
+        table = database.getTable(model.FULLTEXT_TABLE_NAME);
+        int fulltextIndexedColumns = dialect.getFulltextIndexedColumns();
+        if (fulltextIndexedColumns == 1) {
+            table.addFulltextIndex(model.FULLTEXT_FULLTEXT_KEY);
+        } else if (fulltextIndexedColumns == 2) {
+            table.addFulltextIndex(model.FULLTEXT_SIMPLETEXT_KEY,
+                    model.FULLTEXT_BINARYTEXT_KEY);
+        }
     }
 
     /**
@@ -578,8 +602,8 @@ public class SQLInfo {
 
         protected void newPrimitiveField(String key, PropertyType type) {
             // TODO find a way to put these exceptions in model
-            if (tableName.equals(model.VERSION_TABLE_NAME) &&
-                    key.equals(model.VERSION_VERSIONABLE_KEY)) {
+            if (tableName.equals(model.VERSION_TABLE_NAME)
+                    && key.equals(model.VERSION_VERSIONABLE_KEY)) {
                 newMainKeyReference(key, true);
                 return;
             }
@@ -598,15 +622,18 @@ public class SQLInfo {
             switch (type) {
             case STRING:
                 // hack, make this more configurable
-                if (tableName.equals(model.VERSION_TABLE_NAME) &&
-                        key.equals(model.VERSION_LABEL_KEY)) {
+                if (tableName.equals(model.VERSION_TABLE_NAME)
+                        && key.equals(model.VERSION_LABEL_KEY)) {
                     // these are columns that need to be searchable, as some
                     // databases (Derby) don't allow matches on CLOB columns
                     sqlType = Types.VARCHAR;
-                } else if (tableName.equals(model.mainTableName) ||
-                        tableName.equals(model.mainTableName)) {
+                } else if (tableName.equals(model.mainTableName)
+                        || tableName.equals(model.ACL_TABLE_NAME)
+                        || tableName.equals(model.MISC_TABLE_NAME)) {
                     // or VARCHAR for system tables // TODO size?
                     sqlType = Types.VARCHAR;
+                } else if (tableName.equals(model.FULLTEXT_TABLE_NAME)) {
+                    sqlType = Column.ExtendedTypes.FULLTEXT;
                 } else {
                     sqlType = Types.CLOB;
                 }
@@ -683,7 +710,6 @@ public class SQLInfo {
         protected void postProcess() {
             postProcessSelectById();
             postProcessInsert();
-            postProcessUpdateById();
             postProcessDelete();
             postProcessCopy();
         }
@@ -731,8 +757,8 @@ public class SQLInfo {
             for (Column column : table.getColumns()) {
                 String key = column.getKey();
                 String qname = column.getQuotedName();
-                if (key.equals(model.HIER_PARENT_KEY) ||
-                        key.equals(model.HIER_CHILD_NAME_KEY)) {
+                if (key.equals(model.HIER_PARENT_KEY)
+                        || key.equals(model.HIER_CHILD_NAME_KEY)) {
                     wheres.add(qname + " = ?");
                     whereColumns.add(column);
                 } else {
@@ -758,16 +784,16 @@ public class SQLInfo {
             for (Column column : table.getColumns()) {
                 String key = column.getKey();
                 String qname = column.getQuotedName();
-                if (key.equals(model.HIER_PARENT_KEY) ||
-                        key.equals(model.HIER_CHILD_NAME_KEY)) {
+                if (key.equals(model.HIER_PARENT_KEY)
+                        || key.equals(model.HIER_CHILD_NAME_KEY)) {
                     wheresRegular.add(qname + " = ?");
                     wheresProperties.add(qname + " = ?");
                     whereColumns.add(column);
                 } else if (key.equals(model.HIER_CHILD_ISPROPERTY_KEY)) {
-                    wheresRegular.add(qname + " = " +
-                            dialect.toBooleanValueString(false));
-                    wheresProperties.add(qname + " = " +
-                            dialect.toBooleanValueString(true));
+                    wheresRegular.add(qname + " = "
+                            + dialect.toBooleanValueString(false));
+                    wheresProperties.add(qname + " = "
+                            + dialect.toBooleanValueString(true));
                 } else {
                     whats.add(qname);
                     whatColumns.add(column);
@@ -791,8 +817,8 @@ public class SQLInfo {
         // children ids and types
         protected void postProcessSelectChildrenIdsAndTypes() {
             assert !model.separateMainTable; // otherwise join needed
-            ArrayList<Column> whatColumns = new ArrayList<Column>(2);
-            ArrayList<String> whats = new ArrayList<String>(2);
+            List<Column> whatColumns = new ArrayList<Column>(2);
+            List<String> whats = new ArrayList<String>(2);
             Column column = table.getColumn(model.MAIN_KEY);
             whatColumns.add(column);
             whats.add(column.getQuotedName());
@@ -802,15 +828,15 @@ public class SQLInfo {
             Select select = new Select(table);
             select.setWhat(StringUtils.join(whats, ", "));
             select.setFrom(table.getQuotedName());
-            String where = table.getColumn(model.HIER_PARENT_KEY).getQuotedName() +
-                    " = ?";
+            String where = table.getColumn(model.HIER_PARENT_KEY).getQuotedName()
+                    + " = ?";
             select.setWhere(where);
             selectChildrenIdsAndTypesSql = select.getStatement();
             selectChildrenIdsAndTypesWhatColumns = whatColumns;
             // now only complex properties
-            where += " AND " +
-                    table.getColumn(model.HIER_CHILD_ISPROPERTY_KEY).getQuotedName() +
-                    " = " + dialect.toBooleanValueString(true);
+            where += " AND "
+                    + table.getColumn(model.HIER_CHILD_ISPROPERTY_KEY).getQuotedName()
+                    + " = " + dialect.toBooleanValueString(true);
             select.setWhere(where);
             selectComplexChildrenIdsAndTypesSql = select.getStatement();
         }
@@ -849,28 +875,6 @@ public class SQLInfo {
             identityFetchColumnMap.put(tableName, identityColumn);
         }
 
-        protected void postProcessUpdateById() {
-            List<String> newValues = new LinkedList<String>();
-            List<Column> updateByIdColumns = new LinkedList<Column>();
-            List<String> wheres = new LinkedList<String>();
-            List<Column> whereColumns = new LinkedList<Column>();
-            for (Column column : table.getColumns()) {
-                if (column.getKey().equals(model.MAIN_KEY)) {
-                    wheres.add(column.getQuotedName() + " = ?");
-                    whereColumns.add(column);
-                } else {
-                    newValues.add(column.getQuotedName() + " = ?");
-                    updateByIdColumns.add(column);
-                }
-            }
-            updateByIdColumns.addAll(whereColumns);
-            Update update = new Update(table);
-            update.setNewValues(StringUtils.join(newValues, ", "));
-            update.setWhere(StringUtils.join(wheres, " AND "));
-            updateByIdSqlMap.put(tableName, update.getStatement());
-            updateByIdColumnsMap.put(tableName, updateByIdColumns);
-        }
-
         protected void postProcessDelete() {
             Delete delete = new Delete(table);
             List<String> wheres = new LinkedList<String>();
@@ -903,8 +907,8 @@ public class SQLInfo {
                 insert.addColumn(column);
                 String quotedName = column.getQuotedName();
                 String key = column.getKey();
-                if (key.equals(model.MAIN_KEY) ||
-                        key.equals(model.HIER_PARENT_KEY)) {
+                if (key.equals(model.MAIN_KEY)
+                        || key.equals(model.HIER_PARENT_KEY)) {
                     // explicit id/parent value (id if not identity column)
                     selectWhats.add("?");
                     copyHierColumns.add(column);
@@ -919,8 +923,8 @@ public class SQLInfo {
                     copyHierColumnsExplicitName.add(column);
                     // version creation copies name
                     selectWhatsCreateVersion.add(quotedName);
-                } else if (key.equals(model.MAIN_BASE_VERSION_KEY) ||
-                        key.equals(model.MAIN_CHECKED_IN_KEY)) {
+                } else if (key.equals(model.MAIN_BASE_VERSION_KEY)
+                        || key.equals(model.MAIN_CHECKED_IN_KEY)) {
                     selectWhats.add(quotedName);
                     selectWhatsExplicitName.add(quotedName);
                     // version creation sets those null
@@ -983,19 +987,6 @@ public class SQLInfo {
 
     }
 
-    public Update getUpdateByIdForKeys(String tableName, Set<String> keys) {
-        Table table = database.getTable(tableName);
-        List<String> values = new ArrayList<String>(keys.size());
-        for (String key : keys) {
-            values.add(table.getColumn(key).getQuotedName() + " = ?");
-        }
-        Update update = new Update(table);
-        update.setNewValues(StringUtils.join(values, ", "));
-        update.setWhere(table.getColumn(model.MAIN_KEY).getQuotedName() +
-                " = ?");
-        return update;
-    }
-
     public static class SQLInfoSelect {
 
         public final String sql;
@@ -1004,12 +995,16 @@ public class SQLInfo {
 
         public final List<Column> whereColumns;
 
+        public final List<Column> opaqueColumns;
+
         public SQLInfoSelect(String sql, List<Column> whatColumns,
-                List<Column> whereColumns) {
+                List<Column> whereColumns, List<Column> opaqueColumns) {
             this.sql = sql;
             this.whatColumns = new ArrayList<Column>(whatColumns);
             this.whereColumns = whereColumns == null ? null
                     : new ArrayList<Column>(whereColumns);
+            this.opaqueColumns = opaqueColumns == null ? null
+                    : new ArrayList<Column>(opaqueColumns);
         }
     }
 
@@ -1029,6 +1024,7 @@ public class SQLInfo {
         List<String> freeColumnsList = Arrays.asList(freeColumns);
         List<Column> whatColumns = new LinkedList<Column>();
         List<Column> whereColumns = new LinkedList<Column>();
+        List<Column> opaqueColumns = new LinkedList<Column>();
         List<String> whats = new LinkedList<String>();
         List<String> wheres = new LinkedList<String>();
         for (Column column : table.getColumns()) {
@@ -1036,10 +1032,16 @@ public class SQLInfo {
             if (freeColumnsList.contains(column.getKey())) {
                 whereColumns.add(column);
                 wheres.add(qname + " = ?");
+            } else if (column.isOpaque()) {
+                opaqueColumns.add(column);
             } else {
                 whatColumns.add(column);
                 whats.add(qname);
             }
+        }
+        if (whats.isEmpty()) {
+            // only opaque columns, don't generate an illegal SELECT
+            whats.add(table.getColumn(model.MAIN_KEY).getQuotedName());
         }
         Select select = new Select(table);
         select.setWhat(StringUtils.join(whats, ", "));
@@ -1054,7 +1056,7 @@ public class SQLInfo {
         }
         select.setOrderBy(StringUtils.join(orders, ", "));
         return new SQLInfoSelect(select.getStatement(), whatColumns,
-                whereColumns);
+                whereColumns, opaqueColumns.isEmpty() ? null : opaqueColumns);
     }
 
     /**
@@ -1066,20 +1068,28 @@ public class SQLInfo {
         List<String> freeColumnsList = Arrays.asList(freeColumns);
         List<Column> whatColumns = new LinkedList<Column>();
         List<Column> whereColumns = new LinkedList<Column>();
+        List<Column> opaqueColumns = new LinkedList<Column>();
         List<String> whats = new LinkedList<String>();
         List<String> wheres = new LinkedList<String>();
-        String join = table.getColumn(model.MAIN_KEY).getFullQuotedName() +
-                " = " + joinTable.getColumn(model.MAIN_KEY).getFullQuotedName();
+        String join = table.getColumn(model.MAIN_KEY).getFullQuotedName()
+                + " = "
+                + joinTable.getColumn(model.MAIN_KEY).getFullQuotedName();
         wheres.add(join);
         for (Column column : table.getColumns()) {
             String qname = column.getFullQuotedName();
             if (freeColumnsList.contains(column.getKey())) {
                 whereColumns.add(column);
                 wheres.add(qname + " = ?");
+            } else if (column.isOpaque()) {
+                opaqueColumns.add(column);
             } else {
                 whatColumns.add(column);
                 whats.add(qname);
             }
+        }
+        if (whats.isEmpty()) {
+            // only opaque columns, don't generate an illegal SELECT
+            whats.add(table.getColumn(model.MAIN_KEY).getQuotedName());
         }
         for (String name : joinCriteria) {
             Column column = joinTable.getColumn(name);
@@ -1091,144 +1101,14 @@ public class SQLInfo {
         select.setFrom(table.getQuotedName() + ", " + joinTable.getQuotedName());
         select.setWhere(StringUtils.join(wheres, " AND "));
         return new SQLInfoSelect(select.getStatement(), whatColumns,
-                whereColumns);
+                whereColumns, opaqueColumns.isEmpty() ? null : opaqueColumns);
     }
 
     /**
-     * Class to hold info about a stored procedure and how to create it.
+     * Gets the statements to execute (stored procedures and triggers).
      */
-    public static class StoredProcedureInfo {
-
-        /**
-         * If {@code null}, use {@link #checkDropStatement} to check if drop or
-         * not.
-         */
-        public final Boolean dropFlag;
-
-        /** If this statement's execution returns something, then do the drop. */
-        public final String checkDropStatement;
-
-        public final String dropStatement;
-
-        public final String createStatement;
-
-        public StoredProcedureInfo(Boolean dropFlag, String checkDropStatement,
-                String dropStatement, String createStatement) {
-            this.dropFlag = dropFlag;
-            this.checkDropStatement = checkDropStatement;
-            this.dropStatement = dropStatement;
-            this.createStatement = createStatement;
-        }
+    public Collection<ConditionalStatement> getConditionalStatements() {
+        return dialect.getConditionalStatements(model, database);
     }
 
-    public class DerbyStoredProcedureInfoMaker {
-
-        public final String idType;
-
-        public final String methodSuffix;
-
-        public final String className;
-
-        public DerbyStoredProcedureInfoMaker() {
-            switch (model.idGenPolicy) {
-            case APP_UUID:
-                idType = "VARCHAR(36)";
-                methodSuffix = "String";
-                break;
-            case DB_IDENTITY:
-                idType = "INTEGER";
-                methodSuffix = "Long";
-                break;
-            default:
-                throw new AssertionError(model.idGenPolicy);
-            }
-            className = DerbyFunctions.class.getName();
-        }
-
-        public StoredProcedureInfo make(String functionName, String proto,
-                String methodName) {
-            proto = String.format(proto, idType);
-            return new StoredProcedureInfo(
-                    null, // do a drop check
-                    String.format(
-                            "SELECT ALIAS FROM SYS.SYSALIASES WHERE ALIAS = '%s' AND ALIASTYPE = 'F'",
-                            functionName), //
-                    String.format("DROP FUNCTION %s", functionName), //
-                    String.format("CREATE FUNCTION %s%s " //
-                            + "LANGUAGE JAVA " //
-                            + "PARAMETER STYLE JAVA " //
-                            + "EXTERNAL NAME '%s.%s%s' " //
-                            + "READS SQL DATA", //
-                            functionName, proto, //
-                            className, methodName, methodSuffix));
-        }
-    }
-
-    public class PostgreSQLstoredProcedureInfoMaker {
-
-        public final String idType;
-
-        public PostgreSQLstoredProcedureInfoMaker() {
-            switch (model.idGenPolicy) {
-            case APP_UUID:
-                idType = "varchar(36)";
-                break;
-            case DB_IDENTITY:
-                idType = "integer";
-                break;
-            default:
-                throw new AssertionError(model.idGenPolicy);
-            }
-        }
-
-        public StoredProcedureInfo makeInTree() {
-            return new StoredProcedureInfo(
-                    //
-                    Boolean.FALSE, // no drop needed
-                    null,
-                    null, //
-                    String.format(
-                            "CREATE OR REPLACE FUNCTION NX_IN_TREE(id %s, baseid %<s) " //
-                                    + "RETURNS boolean " //
-                                    + "AS $$ " //
-                                    + "DECLARE" //
-                                    + "  cur %<s := id; " //
-                                    + "BEGIN" //
-                                    + "  IF baseid IS NULL OR id IS NULL OR baseid = id THEN" //
-                                    + "    RETURN false;" //
-                                    + "  END IF;" //
-                                    + "  LOOP" //
-                                    + "    SELECT parentid INTO cur FROM hierarchy WHERE hierarchy.id = cur;" //
-                                    + "    IF cur IS NULL THEN" //
-                                    + "      RETURN false; " //
-                                    + "    ELSIF cur = baseid THEN" //
-                                    + "      RETURN true;" //
-                                    + "    END IF;" //
-                                    + "  END LOOP;" //
-                                    + "END " //
-                                    + "$$ " //
-                                    + "LANGUAGE plpgsql " //
-                                    + "STABLE " //
-                            , idType));
-        }
-    }
-
-    /**
-     * Gets the statements creating the appropriate stored procedures.
-     */
-    public Collection<StoredProcedureInfo> getStoredProceduresSqls() {
-        List<StoredProcedureInfo> spis = new LinkedList<StoredProcedureInfo>();
-        String databaseName = dialect.getDatabaseName();
-        if ("Apache Derby".equals(databaseName)) {
-            DerbyStoredProcedureInfoMaker maker = new DerbyStoredProcedureInfoMaker();
-            spis.add(maker.make("NX_IN_TREE",
-                    "(ID %s, BASEID %<s) RETURNS SMALLINT", "isInTree"));
-            spis.add(maker.make("NX_CAN_BROWSE", "(ID %s) RETURNS SMALLINT",
-                    "canBrowse"));
-        } else if ("PostgreSQL".equals(databaseName)) {
-            PostgreSQLstoredProcedureInfoMaker maker = new PostgreSQLstoredProcedureInfoMaker();
-            spis.add(maker.makeInTree());
-        }
-        return spis;
-    }
 }

@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelTree;
 import org.nuxeo.ecm.core.api.DocumentModelTreeNode;
@@ -36,7 +37,7 @@ public class DocumentModelTreeImpl extends ArrayList<DocumentModelTreeNode>
 
     private static final long serialVersionUID = -6980985131163070762L;
 
-    protected Map<String, String> pathTitles;
+    protected final Map<String, String> pathTitles;
 
     public DocumentModelTreeImpl() {
         super();
@@ -52,7 +53,12 @@ public class DocumentModelTreeImpl extends ArrayList<DocumentModelTreeNode>
                 level);
         add(node);
         String path = document.getPathAsString();
-        String title = (String) document.getProperty("dublincore", "title");
+        String title;
+        try {
+            title = (String) document.getProperty("dublincore", "title");
+        } catch (ClientException e) {
+            title = null;
+        }
         title = (title != null) ? title.toLowerCase() : title;
         pathTitles.put(path, title);
     }

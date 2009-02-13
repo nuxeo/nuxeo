@@ -47,7 +47,6 @@ public class DateType extends PrimitiveType {
         return object instanceof Date || object instanceof Calendar;
     }
 
-    @Override
     public Object convert(Object value) {
         if (value instanceof Date) {
             return value;

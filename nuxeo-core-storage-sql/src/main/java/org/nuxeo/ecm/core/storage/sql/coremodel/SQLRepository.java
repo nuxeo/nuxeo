@@ -45,8 +45,6 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class SQLRepository implements Repository {
 
-    private static final long serialVersionUID = 1L;
-
     private final RepositoryImpl repository;
 
     private final SchemaManager schemaManager;
@@ -119,7 +117,7 @@ public class SQLRepository implements Repository {
         return schemaManager;
     }
 
-    public SecurityManager getSecurityManager() {
+    public SecurityManager getNuxeoSecurityManager() {
         return securityManager;
     }
 
