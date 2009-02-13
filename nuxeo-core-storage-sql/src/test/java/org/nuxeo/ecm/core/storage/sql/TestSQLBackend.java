@@ -146,6 +146,10 @@ public class TestSQLBackend extends SQLBackendTestCase {
     }
 
     // TODO XXX this fails with MySQL
+    // Stupid MySQL limitations:
+    // "Cascading operations may not be nested more than 15 levels deep."
+    // "Currently, triggers are not activated by cascaded foreign key
+    // actions."
     public void testRecursiveRemoval() throws Exception {
         int DEPTH = 70;
         Session session = repository.getConnection();
