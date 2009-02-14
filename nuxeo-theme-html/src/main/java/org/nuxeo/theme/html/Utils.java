@@ -72,10 +72,10 @@ public final class Utils {
             "(.*?)\\{(.*?)\\}", Pattern.DOTALL);
 
     private static final Pattern hexColorPattern = Pattern.compile(
-            "^#(\\p{XDigit}{3,6})$", Pattern.DOTALL);
+            ".*?#(\\p{XDigit}{3,6}).*?", Pattern.DOTALL);
 
     private static final Pattern rgbColorPattern = Pattern.compile(
-            "^rgb\\s*\\(\\s*([0-9,\\s]+)\\s*\\)$", Pattern.DOTALL);
+            ".*?rgb\\s*\\(\\s*([0-9,\\s]+)\\s*\\).*?", Pattern.DOTALL);
 
     private static final Pattern imageUrlPattern = Pattern.compile(
             "^url\\s*\\([\\s,\",\']*(.*?)[\\s,\",\']*\\)$", Pattern.DOTALL);
@@ -386,11 +386,11 @@ public final class Utils {
         final List<String> colors = new ArrayList<String>();
         value = value.trim();
         Matcher m = hexColorPattern.matcher(value);
-        if (m.matches()) {
+        while (m.find()) {
             colors.add("#" + optimizeHexColor(m.group(1)));
         }
         m = rgbColorPattern.matcher(value);
-        if (m.matches()) {
+        while (m.find()) {
             colors.add("#" + optimizeHexColor(rgbToHex(m.group(1))));
         }
         return colors;
@@ -409,14 +409,14 @@ public final class Utils {
     public static String replaceColor(String text, String before, String after) {
         Matcher m = hexColorPattern.matcher(text);
         text = text.trim();
-        if (m.matches()) {
+        while (m.find()) {
             String found = "#" + optimizeHexColor(m.group(1));
             if (found.equals(before)) {
                 text = text.replace(String.format("#%s", m.group(1)), after);
             }
         }
         m = rgbColorPattern.matcher(text);
-        if (m.matches()) {
+        while (m.find()) {
             String found = "#" + optimizeHexColor(rgbToHex(m.group(1)));
             if (found.equals(before)) {
                 text = text.replace(String.format("rgb(%s)", m.group(1)), after);
