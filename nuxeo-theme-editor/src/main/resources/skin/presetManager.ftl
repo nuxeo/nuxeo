@@ -21,6 +21,12 @@
   <img src="${skinPath}/img/theme-16.png" width="16" height="16" />
   ${theme_name}</a></li>
 </#list>
+<#list themeManager.getThemeNames(true) as theme_name>
+<li <#if theme_name = current_theme_name>class="selected"</#if>><a href="javascript:void(0)" 
+  onclick="NXThemesEditor.selectTheme('${theme_name}', 'preset manager')">
+  <img src="${skinPath}/img/theme-16.png" width="16" height="16" />
+  ${theme_name}</a></li>
+</#list>
 </ul>
 
 <#else>
@@ -54,7 +60,7 @@
 
 <#assign presets = This.getCustomPresets(current_theme_name)>
 
-<table cellspacing="5" cellpadding="4" style="width: 100%">
+<table cellspacing="0" cellpadding="1" style="width: 100%">
 <#assign count = 0 />
 <#assign row = 1 /> 
 
@@ -144,7 +150,7 @@ ${preset_info.preview}
 
 <#if preset_names>
 <h3 class="nxthemesEditorFocus">These presets need to be defined:</h3>
-<table cellspacing="5" cellpadding="4" style="width: 100%">
+<table cellspacing="0" cellpadding="1" style="width: 100%">
 <#assign count = 0 />
 <#assign row = 1 /> 
 

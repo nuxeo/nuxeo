@@ -17,6 +17,12 @@
   <img src="${skinPath}/img/theme-16.png" width="16" height="16" />
   ${theme_name}</a></li>
 </#list>
+<#list themeManager.getThemeNames(true) as theme_name>
+<li <#if theme_name = current_theme_name>class="selected"</#if>><a href="javascript:void(0)" 
+  onclick="NXThemesEditor.selectTheme('${theme_name}', 'style manager')">
+  <img src="${skinPath}/img/theme-16.png" width="16" height="16" />
+  ${theme_name}</a></li>
+</#list>
 </ul>
 
 
