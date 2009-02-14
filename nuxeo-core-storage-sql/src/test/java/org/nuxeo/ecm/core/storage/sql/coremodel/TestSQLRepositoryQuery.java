@@ -18,7 +18,7 @@
 package org.nuxeo.ecm.core.storage.sql.coremodel;
 
 import org.nuxeo.ecm.core.query.test.QueryTestCase;
-import org.nuxeo.ecm.core.storage.sql.SQLBackendHelper;
+import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 
 /**
  * @author Florent Guillaume
@@ -27,27 +27,21 @@ public class TestSQLRepositoryQuery extends QueryTestCase {
 
     @Override
     public void deployRepository() throws Exception {
-        SQLRepositoryHelper.setUpRepository();
+        DatabaseHelper.setUp();
         deployContrib("org.nuxeo.ecm.core.storage.sql.tests",
-                SQLRepositoryHelper.getDeploymentContrib());
+                DatabaseHelper.getDeploymentContrib());
         deployBundle("org.nuxeo.ecm.core.event");
 
     }
 
     @Override
     public void undeployRepository() throws Exception {
-        SQLRepositoryHelper.tearDownRepository();
+        DatabaseHelper.tearDown();
     }
 
     @Override
     protected void sleepForFulltext() {
-        if (SQLBackendHelper.DATABASE == SQLBackendHelper.Database.MSSQL) {
-            // MS SQL Server has asynchronous indexing of fulltext
-            try {
-                Thread.sleep(10 * 1000);
-            } catch (InterruptedException e) {
-            }
-        }
+        DatabaseHelper.sleepForFulltext();
     }
 
     @Override

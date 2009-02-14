@@ -25,6 +25,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
@@ -45,15 +46,15 @@ public abstract class SQLRepositoryTestCase extends NXRuntimeTestCase {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core");
-        SQLRepositoryHelper.setUpRepository();
+        DatabaseHelper.setUp();
         deployContrib("org.nuxeo.ecm.core.storage.sql.tests",
-                SQLRepositoryHelper.getDeploymentContrib());
+                DatabaseHelper.getDeploymentContrib());
     }
 
     @Override
     protected void tearDown() throws Exception {
         super.tearDown();
-        SQLRepositoryHelper.tearDownRepository();
+        DatabaseHelper.tearDown();
     }
 
     public void openSession() throws ClientException {

@@ -36,7 +36,7 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
-import org.nuxeo.ecm.core.storage.sql.SQLBackendHelper;
+import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 
 /**
  * @author Florent Guillaume
@@ -114,13 +114,8 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
      * Sleep 1s, useful for stupid databases (like MySQL) that don't have
      * subsecond resolution in TIMESTAMP fields.
      */
-    public void stupidSleep() {
-        if (SQLBackendHelper.DATABASE == SQLBackendHelper.Database.MYSQL) {
-            try {
-                Thread.sleep(1001);
-            } catch (InterruptedException e) {
-            }
-        }
+    public void maybeSleepToNextSecond() {
+        DatabaseHelper.maybeSleepToNextSecond();
     }
 
     // SUPNXP-60: Suppression d'une version d'un document.
@@ -147,8 +142,8 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         DocumentModel lastversion = session.getLastDocumentVersion(file.getRef());
         assertNotNull(lastversion);
 
-        log.info("removing version with label: " +
-                lastversion.getVersionLabel());
+        log.info("removing version with label: "
+                + lastversion.getVersionLabel());
 
         assertTrue(lastversion.isVersion());
         session.removeDocument(lastversion.getRef());
@@ -176,8 +171,8 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
                 VERSION_INDEX);
         assertNotNull(firstversion);
 
-        log.info("removing version with label: " +
-                firstversion.getVersionLabel());
+        log.info("removing version with label: "
+                + firstversion.getVersionLabel());
 
         assertTrue(firstversion.isVersion());
         session.removeDocument(firstversion.getRef());
@@ -233,8 +228,8 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
                 VERSION_INDEX);
         assertNotNull(lastversion);
 
-        log.info("removing version with label: " +
-                lastversion.getVersionLabel());
+        log.info("removing version with label: "
+                + lastversion.getVersionLabel());
 
         assertTrue(lastversion.isVersion());
         session.removeDocument(lastversion.getRef());
@@ -256,7 +251,7 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         file.setProperty("file", "filename", "B");
         file.putContextData(ScopeType.REQUEST,
                 VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, Boolean.TRUE);
-        stupidSleep();
+        maybeSleepToNextSecond();
         file = session.saveDocument(file);
 
         checkVersions(file, "1", "2");
@@ -265,7 +260,7 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         file.setProperty("file", "filename", "C");
         file.putContextData(ScopeType.REQUEST,
                 VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, Boolean.TRUE);
-        stupidSleep();
+        maybeSleepToNextSecond();
         file = session.saveDocument(file);
 
         checkVersions(file, "1", "2", "3");
@@ -327,7 +322,7 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         version2.setLabel("v2");
 
         session.save();
-        stupidSleep();
+        maybeSleepToNextSecond();
         session.checkIn(childFile.getRef(), version2);
 
         List<VersionModel> versions2 = session.getVersionsForDocument(childFile.getRef());
@@ -515,7 +510,8 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         session.checkOut(file.getRef());
 
         // check security on version
-        DocumentModel version = session.getDocumentWithVersion(file.getRef(), vm);
+        DocumentModel version = session.getDocumentWithVersion(file.getRef(),
+                vm);
         acp = session.getACP(version.getRef());
         ACL[] acls = acp.getACLs();
         assertEquals(2, acls.length);
