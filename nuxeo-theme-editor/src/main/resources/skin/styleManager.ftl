@@ -3,16 +3,6 @@
 
 <div id="nxthemesStyleManager">
 
-<div class="nxthemesButtonSelector" style="float: right">
-  <span>View mode:</span>
-  <#if style_manager_mode == 'named styles'>            
-      <a href="javascript:void(0)" onclick="NXThemesStyleManager.setEditMode('unused styles')">Unused styles</a>
-      <a href="javascript:void(0)" class="selected">Named styles</a>
-  <#else>
-      <a href="javascript:void(0)" class="selected">Unused styles</a>
-      <a href="javascript:void(0)" onclick="NXThemesStyleManager.setEditMode('named styles')">Named styles</a>
-  </#if>
-</div>
 
 <h1 class="nxthemesEditor">Styles</h1>
 
@@ -32,6 +22,16 @@
 
 </td>
 <td style="padding-left: 10px; vertical-align: top;">
+
+<div class="nxthemesButtonSelector" style="padding: 5px 0 12px 0;">
+  <#if style_manager_mode == 'named styles'>            
+      <a href="javascript:void(0)" onclick="NXThemesStyleManager.setEditMode('unused styles')">Unused styles</a>
+      <a href="javascript:void(0)" class="selected">Named styles</a>
+  <#else>
+      <a href="javascript:void(0)" class="selected">Unused styles</a>
+      <a href="javascript:void(0)" onclick="NXThemesStyleManager.setEditMode('named styles')">Named styles</a>
+  </#if>
+</div>
 
 <h2 class="nxthemesEditor" style="text-transform: uppercase">${current_theme_name}</h2>
 

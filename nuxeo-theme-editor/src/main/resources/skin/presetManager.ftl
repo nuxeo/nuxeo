@@ -6,16 +6,6 @@
       
 <div id="nxthemesPresetManager">
 
-<div class="nxthemesButtonSelector" style="float: right">
-  <span>View mode:</span>
-  <#if preset_manager_mode == 'by theme'>            
-      <a href="javascript:void(0)" onclick="NXThemesPresetManager.setEditMode('palettes')">Palettes</a>
-      <a href="javascript:void(0)" class="selected">By theme</a>
-  <#else>
-      <a href="javascript:void(0)" class="selected">Palettes</a>
-      <a href="javascript:void(0)" onclick="NXThemesPresetManager.setEditMode('by theme')">By theme</a>
-  </#if>
-</div>
 
 <h1 class="nxthemesEditor">Presets</h1>
     
@@ -47,6 +37,16 @@
 
 </td>
 <td style="padding-left: 10px; vertical-align: top;">
+
+<div class="nxthemesButtonSelector" style="padding: 5px 0 12px 0;">
+  <#if preset_manager_mode == 'by theme'>            
+      <a href="javascript:void(0)" onclick="NXThemesPresetManager.setEditMode('palettes')">Palettes</a>
+      <a href="javascript:void(0)" class="selected">By theme</a>
+  <#else>
+      <a href="javascript:void(0)" class="selected">Palettes</a>
+      <a href="javascript:void(0)" onclick="NXThemesPresetManager.setEditMode('by theme')">By theme</a>
+  </#if>
+</div>
 
 <#if preset_manager_mode == 'by theme'>
 

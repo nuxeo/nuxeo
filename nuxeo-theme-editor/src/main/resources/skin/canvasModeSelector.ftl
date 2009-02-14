@@ -1,7 +1,7 @@
 <#assign view_mode = Context.getCookie("nxthemes.mode", "wysiwyg") />
 
 <div id="nxthemesCanvasModeArea">
-<div class="nxthemesButtonSelector">
+<div class="nxthemesButtonSelector" style="text-align: right">
   <#if view_mode == "wysiwyg">
     <a href="javascript:void(0)" name="fragment">show fragments</a>
   </#if>

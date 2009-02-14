@@ -39,7 +39,7 @@
             <input type="hidden" name="viewName" value="${selected_view_name}" />
           </p>
 
-              <div class="nxthemesButtonSelector" style="padding: 3px">
+              <div class="nxthemesButtonSelector" style="padding: 3px; text-align: right"">
                 <span>categories: </span>
                 <#list style_categories as category>
                   ${category.rendered}
