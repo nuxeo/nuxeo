@@ -65,12 +65,6 @@ public class Main extends ModuleRoot {
   }
 
   @GET
-  @Path("backToCanvas")
-  public Object renderBackToCanvas(@QueryParam("org.nuxeo.theme.application.path") String path) {
-    return getTemplate("backToCanvas.ftl")
-  }
-
-  @GET
   @Path("presetManager")
   public Object renderPresetManager(@QueryParam("org.nuxeo.theme.application.path") String path) {
     return getTemplate("presetManager.ftl").arg(

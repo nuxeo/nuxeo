@@ -103,9 +103,8 @@ NXThemesEditor.addFragment = function(typeName, destId) {
              dest_id: destId
          },
          onSuccess: function(r) {
-             NXThemesEditor.refreshCanvas();
              NXThemesEditor.highlightSaveButton();
-             NXThemesEditor.switchToEditCanvas();
+             NXThemesEditor.editCanvas();
          },
          onFailure: function(r) {
              var text = r.responseText;
@@ -698,13 +697,14 @@ NXThemesEditor.addPage = function(themeName) {
     });    
 };
 
-NXThemesEditor.switchToEditCanvas = function() {
+NXThemesEditor.switchToCanvas = function() {
     NXThemes.getControllerById('editor buttons').select('edit canvas');
     NXThemes.getControllerById('editor perspectives').switchTo('edit canvas');
 };
 
-NXThemesEditor.backToCanvas = function() {
-    NXThemesEditor.switchToEditCanvas();
+NXThemesEditor.editCanvas = function() {
+	NXThemesEditor.switchToCanvas();
+    NXThemesEditor.refreshCanvas();
 }
 
 NXThemesEditor.addPreset = function(themeName, category, view_id) {

@@ -26,24 +26,21 @@
       <div id="nxthemesTopButtons">
 
         <nxthemes:button identifier="edit canvas"
+          link="javascript:NXThemesEditor.editCanvas()"
           controlledBy="editor buttons"
-          switchTo="editor perspectives/edit canvas" label="Canvas" />
-
-        <nxthemes:button identifier="refresh"
-          link="javascript:NXThemesEditor.refresh()"
-          label="Refresh" />
+          switchTo="editor perspectives/edit canvas" label="Edit canvas" />
      
         <nxthemes:button identifier="manage presets"
           controlledBy="editor buttons"
-          switchTo="editor perspectives/manage presets" label="Presets" />
+          switchTo="editor perspectives/manage presets" label="Manage presets" />
 
         <nxthemes:button identifier="manage styles"
           controlledBy="editor buttons"
-          switchTo="editor perspectives/manage styles" label="Styles" />
+          switchTo="editor perspectives/manage styles" label="Manage styles" />
                 
         <nxthemes:button identifier="manage themes"
           controlledBy="editor buttons"
-          switchTo="editor perspectives/manage themes" label="Themes" />
+          switchTo="editor perspectives/manage themes" label="Manage themes" />
 
         <nxthemes:button identifier="save changes"
           link="javascript:NXThemesEditor.saveChanges()"
@@ -83,11 +80,6 @@
 
       <!--  Status message -->
       <div id="nxthemesStatusMessage" style="display:none"></div>
-
-      <nxthemes:panel identifier="back to canvas"
-        url="/nuxeo/site/nxthemes-editor/backToCanvas"
-        controlledBy="editor perspectives"
-        visibleInPerspectives="add fragments,edit element,manage presets,manage styles,manage themes" />
 
     </div>
 

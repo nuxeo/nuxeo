@@ -196,7 +196,7 @@ html, body {
   z-index: 10;
   top: 0;
   left: 0;
-  height: 95px;
+  height: 80px;
   width: 100%;
 }
 
@@ -225,28 +225,6 @@ html, body {
   top: 110px;
   min-height:100%;
   width: 100%;
-}
-
-#nxthemesBackToCanvas {
-  padding: 0 22px;
-  position: absolute;
-  top: 60px;
-  left: 20px;
-  font: 11px Arial, sans-serif;
-  text-transform: uppercase;
-  background-image: url(${basePath}/skin/nxthemes-editor/img/arrow_left.png);
-  background-repeat: no-repeat;
-  background-position: left center;
-}
-
-#nxthemesBackToCanvas a {
-  text-decoration: none;
-  color: #444;
-}
-
-#nxthemesBackToCanvas a:hover {
-  background-color: #fff;
-  color: #000;
 }
 
 /* Page selector tabs */
@@ -894,7 +872,7 @@ div.nxthemesFragment b {
 
 #nxthemesThemeManager, #nxthemesPresetManager, #nxthemesStyleManager {
   position: absolute;
-  top: 95px;
+  top: 80px;
   left: 0;
   right: 0;
   background-color: #fff;
