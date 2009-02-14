@@ -22,7 +22,7 @@ public abstract class DatabaseHelper {
     /**
      * Change this to use another SQL database for tests.
      */
-    private static final DatabaseHelper DATABASE = DatabasePostgreSQL.INSTANCE;
+    private static final DatabaseHelper DATABASE = DatabaseH2.INSTANCE;
 
     /*
      * ---- API implemented by actual helpers -----
