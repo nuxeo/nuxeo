@@ -5,16 +5,16 @@
  *--------------------------------------------------------------------------*/
 
 
-
 var WysiHat = {};
 
 WysiHat.Editor = {
-  attach: function(textarea, options) {
+  attach: function(textarea, options, block) {
     options = $H(options);
     textarea = $(textarea);
     textarea.hide();
 
     var model = options.get('model') || WysiHat.iFrame;
+    var initializer = block;
 
     return model.create(textarea, function(editArea) {
       var document = editArea.getDocument();
@@ -53,10 +53,24 @@ WysiHat.Editor = {
         editArea.fire("wysihat:paste");
       });
 
+      fun = function (event) {
+        var rg = editArea.selection.getRange();
+        if (editArea.lastRange != rg) {
+          editArea.fire("wysihat:cursormove");
+          editArea.lastRange = rg;
+        }
+      }
+      editArea.observe("wysihat:change", fun);
+      editArea.observe("wysihat:mouseup", fun);
+      editArea.observe("wysihat:mousemove", fun);
 
-      editArea.observe("wysihat:change", function(event) {
-        event.target.save();
-      });
+      if (Prototype.Browser.Gecko) {
+        editArea.execCommand('inserthtml', false, '-');
+        editArea.execCommand('undo', false, null);
+      }
+
+      if (initializer)
+        initializer(editArea);
 
       editArea.focus();
     });
@@ -68,12 +82,24 @@ WysiHat.Commands = {
     this.execCommand('bold', false, null);
   },
 
+  boldSelected: function() {
+    return this.queryCommandState('bold');
+  },
+
   underlineSelection: function() {
     this.execCommand('underline', false, null);
   },
 
+  underlineSelected: function() {
+    return this.queryCommandState('underline');
+  },
+
   italicSelection: function() {
     this.execCommand('italic', false, null);
+  },
+
+  italicSelected: function() {
+    return this.queryCommandState('italic');
   },
 
   strikethroughSelection: function() {
@@ -120,17 +146,9 @@ WysiHat.Commands = {
     document.execCommand(command, ui, value);
   },
 
-  queryStateCommands: $A(['bold', 'italic', 'underline', 'strikethrough']),
-
   queryCommandState: function(state) {
     var document = this.getDocument();
-
-    if (this.queryStateCommands.include(state))
-      return document.queryCommandState(state);
-    else if ((f = this['query' + state.capitalize()]))
-      return f.bind(this).call();
-    else
-      return false;
+    return document.queryCommandState(state);
   }
 };
 WysiHat.Persistence = (function() {
@@ -218,6 +236,7 @@ WysiHat.iFrame = {
     Object.extend(editArea, WysiHat.Persistence);
     Object.extend(editArea, WysiHat.Window);
     Object.extend(editArea, WysiHat.iFrame.Methods);
+    Object.extend(editArea, WysiHat.Actions.Methods);
 
     editArea.attach(textarea, callback);
 
@@ -789,22 +808,86 @@ WysiHat.Selection = Class.create((function() {
   };
 })());
 
+WysiHat.Actions = {}
+
+WysiHat.Actions.Methods = {
+  registerAction: function (action) {
+    /* Validate the action -- it should have a name and a handler function. */
+    if (!Object.isString(action.name)) {
+      throw new Error("Action name not a string");
+    }
+    if (!Object.isFunction(action.handler)) {
+      throw new Error("Action handler not a function");
+    }
+
+    /* A hash, keyed on action names, of actions registered to this editor. */
+    this.actions = this.actions || $H();
+
+    /* A hash, keyed on action name, of the current state of each action,
+     * based on the cursor location within the editor. */
+    this.states = this.states || $H();
+
+    this.actions[action.name] = action;
+    this.states[action.name] = null;
+
+    /* Subscribe this action's query function to the cursormove event. */
+    var editor = this;
+    if (Object.isFunction(action.query)) {
+      editor.observe(
+        'wysihat:cursormove',
+        function (event) {
+          var result = action.query(editor);
+          if (result == editor.states[action.name]) { return; }
+          editor.states[action.name] = result;
+          this.fire(
+            "wysihat:state:"+action.name,
+            {action: action, state: result}
+          );
+        }
+      );
+    }
+
+    return this;
+  },
+
+  invokeAction: function (name) {
+    var result = null;
+    if (action = this.actions[name]) {
+      data = $A(arguments).clone();
+      data.shift();
+      data.unshift(this);
+      result = action.handler.apply(action, data);
+      this.fire("wysihat:change");
+      this.focus();
+    }
+    return result;
+  }
+}
+
+WysiHat.Actions.Bold = {
+  name: 'bold',
+  handler: function (editor) { return editor.boldSelection(); },
+  query: function (editor) { return editor.boldSelected(); }
+};
+
+WysiHat.Actions.Underline = {
+  name: 'underline',
+  handler: function (editor) { return editor.underlineSelection(); },
+  query: function (editor) { return editor.underlineSelected(); }
+};
+
+WysiHat.Actions.Italic = {
+  name: 'italic',
+  handler: function (editor) { return editor.italicSelection(); },
+  query: function (editor) { return editor.italicSelected(); }
+};
 WysiHat.Toolbar = Class.create((function() {
   function initialize(editArea, options) {
     options = $H(options);
 
     this.editArea = editArea;
 
-    this.hasMouseDown = false;
     this.element = new Element('div', { 'class': 'editor_toolbar' });
-
-    var toolbar = this;
-    this.element.observe('mousedown', function(event) {
-      toolbar.mouseDown(event);
-    });
-    this.element.observe('mouseup', function(event) {
-      toolbar.mouseUp(event);
-    });
 
     insertToolbar(this, options);
 
@@ -824,81 +907,63 @@ WysiHat.Toolbar = Class.create((function() {
 
   function addButtonSet(set) {
     var toolbar = this;
-    $A(set).each(function(button) {
-      var options = button.first();
-      var handler = button.last();
-      toolbar.addButton(options, handler);
+    $A(set).each(function(buttonSpec){
+      toolbar.addButton(buttonSpec);
     });
 
     return this;
   }
 
-  function addButton(options, handler) {
-    options = $H(options);
-    var button = Element('a', { 'class': 'button', 'href': '#' }).update('<span>' + options.get('label') + '</span>');
-    button.addClassName(options.get('name'));
-
-    this.observeButtonClick(button, handler);
-    this.observeStateChanges(button, options.get('name'));
+  function addButton(buttonSpec) {
+    this.editArea.registerAction(buttonSpec.action);
+    var button = this.buildButtonElement(buttonSpec);
     this.element.appendChild(button);
-
     return this;
   }
 
-  function observeButtonClick(element, handler) {
+  function buildButtonElement(buttonSpec) {
     var toolbar = this;
-    $(element).observe('click', function(event) {
-      toolbar.hasMouseDown = true;
-      handler(toolbar.editArea);
-      toolbar.editArea.fire("wysihat:change");
-      Event.stop(event);
-      toolbar.hasMouseDown = false;
-    });
-    return this;
-  }
 
-  function observeStateChanges(element, command) {
-    this.editArea.observe("wysihat:mousemove", function(event) {
-      if (event.target.queryCommandState(command))
-        element.addClassName('selected');
-      else
-        element.removeClassName('selected');
-    });
-    return this;
-  }
+    var btn = Element(
+      'a', 
+      {"class": "button button" + buttonSpec.label, "href": "#"}
+    );
+    btn.update('<span>' + buttonSpec.label + '</span>');
 
-  function mouseDown(event) {
-    this.hasMouseDown = true;
-  }
+    btn.observe(
+      'click', 
+      function (event) { 
+        toolbar.editArea.invokeAction(buttonSpec.action.name);
+        Event.stop(event);
+      }
+    );
 
-  function mouseUp(event) {
-    this.editArea.focus();
-    this.hasMouseDown = false;
+    toolbar.editArea.observe(
+      'wysihat:state:'+buttonSpec.action.name,
+      function (event) {
+        if (event.memo.state) {
+          btn.addClassName('selected');
+        } else {
+          btn.removeClassName('selected');
+        }
+      }
+    );
+
+    return btn;
   }
 
   return {
     initialize:          initialize,
     addButtonSet:        addButtonSet,
     addButton:           addButton,
-    observeButtonClick:  observeButtonClick,
-    observeStateChanges: observeStateChanges,
-    mouseDown:           mouseDown,
-    mouseUp:             mouseUp
+    buildButtonElement:  buildButtonElement
   };
 })());
 
 WysiHat.Toolbar.ButtonSets = {};
 
 WysiHat.Toolbar.ButtonSets.Basic = $A([
-  [{ name: 'bold', label: "Bold" }, function(editor) {
-    editor.boldSelection();
-  }],
-
-  [{ name: 'underline', label: "Underline" }, function(editor) {
-    editor.underlineSelection();
-  }],
-
-  [{ name: 'italic', label: "Italic" }, function(editor) {
-    editor.italicSelection();
-  }]
+  { label: 'Bold', action: WysiHat.Actions.Bold },
+  { label: 'Underline', action: WysiHat.Actions.Underline },
+  { label: 'Italic', action: WysiHat.Actions.Italic }
 ]);
