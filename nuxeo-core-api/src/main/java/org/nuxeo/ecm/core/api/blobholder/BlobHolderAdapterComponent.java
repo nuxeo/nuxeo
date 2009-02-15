@@ -27,15 +27,15 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- * Runtime component to manage the pluggable factory for {@link DocumentAdapterFactory}
+ * Runtime component to manage the pluggable factory for {@link DocumentAdapterFactory}.
+ * <p>
  * Also provides the service interface {@link BlobHolderAdapterService}
  *
  * @author tiry
- *
  */
 public class BlobHolderAdapterComponent extends DefaultComponent  implements BlobHolderAdapterService{
 
-    protected static Map<String, BlobHolderFactory> factories = new HashMap<String, BlobHolderFactory>();
+    protected static final Map<String, BlobHolderFactory> factories = new HashMap<String, BlobHolderFactory>();
 
     public static final String BLOBHOLDERFACTORY_EP ="BlobHolderFactory";
 
@@ -54,17 +54,15 @@ public class BlobHolderAdapterComponent extends DefaultComponent  implements Blo
             ComponentInstance contributor) throws Exception {
     }
 
-
-
-    /** for test **/
+    /* for test */
 
     public static Set<String> getFactoryNames() {
         return factories.keySet();
     }
 
-    /** Service Interface **/
-    public BlobHolder getBlobHolderAdapter(DocumentModel doc) {
+    /* Service Interface */
 
+    public BlobHolder getBlobHolderAdapter(DocumentModel doc) {
         if (factories.containsKey(doc.getType())) {
             BlobHolderFactory factory = factories.get(doc.getType());
             return factory.getBlobHolder(doc);

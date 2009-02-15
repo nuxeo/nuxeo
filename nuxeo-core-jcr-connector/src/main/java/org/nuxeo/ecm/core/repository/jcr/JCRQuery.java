@@ -64,7 +64,7 @@ public class JCRQuery implements Query {
     private long offset;
 
     private boolean limitSetByUser = false;
-    
+
     public JCRQuery(JCRSession session, String query) {
         rawQuery = query;
         this.session = session;

@@ -32,7 +32,7 @@ public class TestCoreEvent extends TestCase {
         assertNull(ev.getCategory());
         assertNull(ev.getComment());
         assertNull(ev.getEventId());
-        assertEquals(ev.getInfo().size(), 2);
+        assertEquals(2, ev.getInfo().size());
         assertNull(ev.getPrincipal());
         assertNull(ev.getSource());
         assertNotNull(ev.getDate());

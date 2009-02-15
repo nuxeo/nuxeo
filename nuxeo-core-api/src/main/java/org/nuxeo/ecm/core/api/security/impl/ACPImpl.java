@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Collection;
 
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
@@ -370,7 +371,7 @@ public class ACPImpl implements ACP {
         for (ACL acl: acls) {
             copy.acls.add((ACL) acl.clone());
         }
-        copy.owners.addAll((ArrayList<String>) owners.clone());
+        copy.owners.addAll((Collection<String>) owners.clone());
         return copy;
     }
 

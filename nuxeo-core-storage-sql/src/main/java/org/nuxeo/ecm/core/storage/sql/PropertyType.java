@@ -59,13 +59,13 @@ public enum PropertyType {
 
     private final Serializable[] emptyArray;
 
-    private PropertyType(Class<?> klass) {
+    PropertyType(Class<?> klass) {
         this.klass = klass;
         arrayBaseType = null;
         emptyArray = null;
     }
 
-    private PropertyType(PropertyType arrayBaseType, Serializable[] emptyArray) {
+    PropertyType(PropertyType arrayBaseType, Serializable[] emptyArray) {
         klass = null;
         this.arrayBaseType = arrayBaseType;
         this.emptyArray = emptyArray;

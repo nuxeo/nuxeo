@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.repository;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Collection;
 
 import org.nuxeo.ecm.core.api.event.CoreEvent;
 import org.nuxeo.ecm.core.listener.AbstractEventListener;
@@ -40,7 +41,7 @@ public class FakeEventListener extends AbstractEventListener implements
         Map<String, ?> info = coreEvent.getInfo();
         if (info != null) {
             if (info.get("hits") != null) {
-                ((List<String>) info.get("hits")).add(getName());
+                ((Collection<String>) info.get("hits")).add(getName());
             }
         }
     }

@@ -40,7 +40,6 @@ public class DocumentModelTreeImpl extends ArrayList<DocumentModelTreeNode>
     protected final Map<String, String> pathTitles;
 
     public DocumentModelTreeImpl() {
-        super();
         pathTitles = new HashMap<String, String>();
     }
 

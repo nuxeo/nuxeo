@@ -657,8 +657,10 @@ public final class VerServUtils {
         while (piter.hasNext()) {
             PropertyImpl prop = (PropertyImpl) piter.nextProperty();
             // ignore some props that are not well guarded by the OPV
+            // FIXME: probable bug, can't compare a QName and a Name
             if (prop.getQName().equals(QName.JCR_VERSIONHISTORY)) {
                 continue;
+                // FIXME: probable bug, can't compare a QName and a Name
             } else if (prop.getQName().equals(QName.JCR_PREDECESSORS)) {
                 continue;
             }

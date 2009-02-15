@@ -30,13 +30,13 @@ import org.nuxeo.ecm.core.lifecycle.LifeCycleTransition;
 public class LifeCycleTransitionImpl implements LifeCycleTransition {
 
     /** Name of the transition. */
-    private String name;
+    private final String name;
 
     /** Description of the transition. */
-    private String description;
+    private final String description;
 
     /** Destination state name for this transition. */
-    private String destinationStateName;
+    private final String destinationStateName;
 
 
     public LifeCycleTransitionImpl(String name, String description, String destinationState) {

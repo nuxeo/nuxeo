@@ -73,7 +73,6 @@ public class SearchIndex extends
     private static SchemaManager schemaManager;
 
     public SearchIndex() {
-        super();
         schemaManager = Framework.getLocalService(SchemaManager.class);
     }
 
@@ -389,8 +388,7 @@ public class SearchIndex extends
             }
         }
 
-        private void addParent(Document doc, String parentId)
-                throws RepositoryException {
+        private void addParent(Document doc, String parentId) {
             if (parentId == null) {
                 return;
             }
@@ -399,14 +397,12 @@ public class SearchIndex extends
             // TODO addLength for V3
         }
 
-        private void addPath(Document doc, String path)
-                throws RepositoryException {
+        private void addPath(Document doc, String path) {
             doc.add(createStringField(NodeConstants.ECM_PATH.qname, path));
             // TODO addLength for V3
         }
 
-        private void addName(Document doc, String name)
-                throws RepositoryException {
+        private void addName(Document doc, String name) {
             doc.add(createStringField(NodeConstants.ECM_NAME.qname, name));
             // TODO addLength for V3
         }

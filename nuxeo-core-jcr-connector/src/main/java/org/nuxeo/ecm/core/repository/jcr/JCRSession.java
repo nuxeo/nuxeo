@@ -264,7 +264,7 @@ public class JCRSession implements Session {
      * Resolves the given path relative to the given reference node.
      * <p>
      * The node must be a JCRDocument node.
-     * 
+     *
      * @param ref
      * @param relPath
      * @return
@@ -445,7 +445,7 @@ public class JCRSession implements Session {
             name = IdUtils.generateStringId();
         }
         if (parent.hasChild(name)) {
-            name = name + '.' + String.valueOf(System.currentTimeMillis());
+            name = name + '.' + System.currentTimeMillis();
         }
         return name;
     }

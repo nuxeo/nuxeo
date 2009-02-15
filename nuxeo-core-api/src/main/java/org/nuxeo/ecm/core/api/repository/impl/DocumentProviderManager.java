@@ -35,7 +35,6 @@ import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
  * @author Max Stepanov
- *
  */
 public class DocumentProviderManager extends DefaultComponent implements DocumentProvider {
 
@@ -57,29 +56,29 @@ public class DocumentProviderManager extends DefaultComponent implements Documen
     }
 
     public void removeDocumentFromCache(DocumentRef ref) {
-        ((DocumentModelCache)session).uncacheDocument(ref);
+        ((DocumentModelCache) session).uncacheDocument(ref);
     }
 
     public DocumentModel getCachedDocument(String id) {
-        return ((DocumentModelCache)session).getCachedDocument(new IdRef(id));
+        return ((DocumentModelCache) session).getCachedDocument(new IdRef(id));
     }
 
     public DocumentModel getCachedDocument(DocumentRef ref) {
-        return ((DocumentModelCache)session).getCachedDocument(ref);
+        return ((DocumentModelCache) session).getCachedDocument(ref);
     }
 
     private DocumentModel cacheDocument(DocumentModel docModel) {
-        return ((DocumentModelCache)session).cacheDocument(docModel);
+        return ((DocumentModelCache) session).cacheDocument(docModel);
     }
 
     private DocumentModel cacheDocument(DocumentRef docRef, DocumentModel docModel) {
         System.err.println("#################### SHOULD NOT PASS HERE #################");
-        return ((DocumentModelCache)session).cacheDocument(docModel);
+        return ((DocumentModelCache) session).cacheDocument(docModel);
     }
 
     private DocumentModelList cacheDocumentList(DocumentModelList docList) {
         int length = docList.size();
-        for ( int i = 0; i < length; ++i) {
+        for (int i = 0; i < length; ++i) {
             DocumentModel docModel = docList.get(i);
             DocumentModel cachedDocModel = cacheDocument(docModel);
             if (cachedDocModel != docModel) {
@@ -104,7 +103,7 @@ public class DocumentProviderManager extends DefaultComponent implements Documen
 
     public DocumentModel getDocument(DocumentRef docRef, boolean force) throws ClientException {
         if (force) {
-            return ((DocumentModelCache)session).fetchDocument(docRef);
+            return ((DocumentModelCache) session).fetchDocument(docRef);
         } else {
             return session.getDocument(docRef);
         }

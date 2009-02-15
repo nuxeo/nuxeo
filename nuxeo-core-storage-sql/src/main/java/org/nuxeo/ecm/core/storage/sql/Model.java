@@ -207,11 +207,11 @@ public class Model {
     public static final String FULLTEXT_BINARYTEXT_KEY = "binarytext";
 
     /** Special (non-schema-based) simple fragments present in all types. */
-    public static final String[] COMMON_SIMPLE_FRAGMENTS = new String[] {
+    public static final String[] COMMON_SIMPLE_FRAGMENTS = {
             MISC_TABLE_NAME, FULLTEXT_TABLE_NAME };
 
     /** Special (non-schema-based) collection fragments present in all types. */
-    public static final String[] COMMON_COLLECTION_FRAGMENTS = new String[] { ACL_TABLE_NAME };
+    public static final String[] COMMON_COLLECTION_FRAGMENTS = { ACL_TABLE_NAME };
 
     public static class PropertyInfo {
 

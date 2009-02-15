@@ -69,7 +69,7 @@ public class ClientLoginModule implements LoginModule {
    /** Flag indicating if the shared password should be used */
    private boolean useFirstPass;
    private String username;
-   private char[] password = null;
+   private char[] password;
    private String principalClass;
 
    private LoginStack stack; // active login stack

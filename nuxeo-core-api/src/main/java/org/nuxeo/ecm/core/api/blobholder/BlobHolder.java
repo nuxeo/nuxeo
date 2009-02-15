@@ -26,16 +26,14 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 
 /**
- *
- * Interface for an object that holds a {@link Blob}
+ * Interface for an object that holds a {@link Blob}.
  *
  * @author tiry
- *
  */
 public interface BlobHolder {
 
     /**
-     * Returns the Blob held inside the object
+     * Returns the Blob held inside the object.
      *
      * @return
      * @throws ClientException
@@ -43,24 +41,22 @@ public interface BlobHolder {
     Blob getBlob() throws ClientException;
 
     /**
-     *
-     * Returns a filesystem like path to represent the held blob
+     * Returns a filesystem-like path to represent the held blob.
      *
      * @return
      */
     String getFilePath() throws ClientException;
 
     /**
-     * Returns the held blob modification date
+     * Returns the held blob modification date.
      *
      * @return
      * @throws ClientException
      */
-    Calendar getModificationDate() throws ClientException;;
-
+    Calendar getModificationDate() throws ClientException;
 
     /**
-     * Returns a hash for the held blob
+     * Returns a hash for the held blob.
      *
      * @return
      * @throws ClientException
@@ -68,26 +64,25 @@ public interface BlobHolder {
     String getHash() throws ClientException;
 
     /**
-     *
-     * Returns a list of Blob, if holder implementation support multiple blobs
+     * Returns a list of blobs, if holder implementation supports multiple blobs.
      *
      * @return
      */
     List<Blob> getBlobs() throws ClientException;
 
     /**
+     * Returns a named property.
      *
-     * Returns a named property
      * @param name
      * @return
      */
     Serializable getProperty(String name) throws ClientException;
 
-
     /**
-     * Returns all properties as a Map
+     * Returns all properties as a Map.
      *
      * @return
      */
     Map<String,Serializable> getProperties() throws ClientException;
+
 }

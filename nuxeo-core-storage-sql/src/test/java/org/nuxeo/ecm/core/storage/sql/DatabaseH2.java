@@ -34,7 +34,7 @@ import org.nuxeo.common.utils.FileUtils;
  */
 public class DatabaseH2 extends DatabaseHelper {
 
-    public static DatabaseHelper INSTANCE = new DatabaseH2();
+    public static final DatabaseHelper INSTANCE = new DatabaseH2();
 
     private static final Log log = LogFactory.getLog(DatabaseH2.class);
 

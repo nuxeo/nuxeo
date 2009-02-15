@@ -356,7 +356,7 @@ public class JCRQueryResult implements QueryResult {
         private final int sign;
 
         public PathComparator(boolean asc) {
-            this.sign = asc ? 1 : -1;
+            sign = asc ? 1 : -1;
         }
 
         public int compare(DocumentModel doc1, DocumentModel doc2) {

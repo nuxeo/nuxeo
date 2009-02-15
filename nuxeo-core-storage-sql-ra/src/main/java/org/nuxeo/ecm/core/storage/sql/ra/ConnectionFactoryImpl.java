@@ -83,7 +83,7 @@ public class ConnectionFactoryImpl implements Repository,
 
     public ConnectionFactoryImpl(
             ManagedConnectionFactoryImpl managedConnectionFactory,
-            ConnectionManager connectionManager) throws ResourceException {
+            ConnectionManager connectionManager) {
         this.managedConnectionFactory = managedConnectionFactory;
         this.connectionManager = connectionManager;
         managed = !(connectionManager instanceof ConnectionManagerImpl);

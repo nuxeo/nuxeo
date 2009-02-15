@@ -337,11 +337,11 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
         // change title1
         title1.setValue("yo");
-        assertEquals(null, title2.getString());
+        assertNull(title2.getString());
         // save session1 and queue its invalidations to others
         session1.save();
         // session2 has not saved (committed) yet, so still unmodified
-        assertEquals(null, title2.getString());
+        assertNull(title2.getString());
         session2.save();
         // after commit, invalidations have been processed
         assertEquals("yo", title2.getString());
@@ -752,7 +752,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertNotNull(nodeac3);
         SimpleProperty sp = nodeac3.getSimpleProperty("tst:title");
         assertNotNull(sp);
-        assertEquals(null, sp.getString());
+        assertNull(sp.getString());
 
     }
 

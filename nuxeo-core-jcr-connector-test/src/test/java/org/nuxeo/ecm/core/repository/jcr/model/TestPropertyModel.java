@@ -131,7 +131,7 @@ public class TestPropertyModel extends RepositoryOSGITestCase {
         Type type = field.getType();
         Type itemType = ((ListType) type).getFieldType();
         value = itemType.newInstance();
-        assertEquals(null, value);
+        assertNull(value);
 
         // complex
         field = tm.getField("tp:fileComplexList");
@@ -141,8 +141,8 @@ public class TestPropertyModel extends RepositoryOSGITestCase {
         assertEquals(2, map.size());
         assertTrue(map.containsKey("filename"));
         assertTrue(map.containsKey("blob"));
-        assertEquals(null, map.get("filename"));
-        assertEquals(null, map.get("blob"));
+        assertNull(map.get("filename"));
+        assertNull(map.get("blob"));
     }
 
     // NXP-2468

@@ -52,7 +52,7 @@ public class RepositoryDescriptor {
     public Map<String, String> properties;
 
     /** The possible id generation policies. */
-    public static enum IdGenPolicy {
+    public enum IdGenPolicy {
 
         /**
          * Let the Nuxeo application generate a random UUID.
@@ -65,9 +65,9 @@ public class RepositoryDescriptor {
          */
         DB_IDENTITY("database-identity");
 
-        private String value;
+        private final String value;
 
-        private IdGenPolicy(String value) {
+        IdGenPolicy(String value) {
             this.value = value;
         }
 

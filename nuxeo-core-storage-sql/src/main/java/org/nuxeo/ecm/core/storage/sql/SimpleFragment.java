@@ -42,7 +42,7 @@ public class SimpleFragment extends Fragment {
     public static final SimpleFragment UNKNOWN = new SimpleFragment(null,
             State.DETACHED, null, null);
 
-    private static enum OpaqueValue {
+    private enum OpaqueValue {
         OPAQUE_VALUE
     }
 

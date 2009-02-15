@@ -29,7 +29,7 @@ import org.nuxeo.ecm.core.convert.api.ConversionService;
 
 /**
  * XMap Descriptor for the {@link ConversionService} configuration.
- * 
+ *
  * @author tiry
  */
 @XObject("configuration")

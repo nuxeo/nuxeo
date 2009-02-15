@@ -1391,7 +1391,7 @@ public class Mapper {
                 }
                 childrenIds.add(new Serializable[] { childId, childType });
                 if (debugValues != null) {
-                    debugValues.add(String.valueOf(childId) + "/" + childType);
+                    debugValues.add(childId + "/" + childType);
                 }
             }
             if (debugValues != null) {

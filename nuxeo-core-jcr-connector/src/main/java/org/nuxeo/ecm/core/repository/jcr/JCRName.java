@@ -29,7 +29,7 @@ import org.apache.jackrabbit.spi.commons.name.NameFactoryImpl;
  */
 public final class JCRName {
 
-    public static NameFactory NAME_FACTORY = NameFactoryImpl.getInstance();
+    public static final NameFactory NAME_FACTORY = NameFactoryImpl.getInstance();
 
     public final Name qname;      // the JCR Name
     public final String uri;      // the uri (ex: 'http://nuxeo.org/ecm/names/')

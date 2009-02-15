@@ -36,13 +36,13 @@ import org.nuxeo.ecm.core.event.PostCommitEventListener;
  */
 public class PostCommitSynchronousRunner {
 
+    public static final int DEFAULT_TIME_OUT_MS = 300;
+
     private static final Log log = LogFactory.getLog(PostCommitSynchronousRunner.class);
 
-    protected List<PostCommitEventListener> listeners;
-    protected EventBundle event;
+    protected final List<PostCommitEventListener> listeners;
+    protected final EventBundle event;
     protected long timeout = 0;
-
-    public static int DEFAULT_TIME_OUT_MS = 300;
 
     public PostCommitSynchronousRunner(List<PostCommitEventListener> listeners,
             EventBundle event, long timeout) {
@@ -68,8 +68,7 @@ public class PostCommitSynchronousRunner {
         try {
             runner.join(timeout);
             if (runner.isAlive()) {
-                log
-                        .warn("One of the PostCommitListener is too slow, check your listeners ...");
+                log.warn("One of the PostCommitListener is too slow, check your listeners ...");
                 log.warn("Exit before the end of processing");
             }
         } catch (InterruptedException e) {

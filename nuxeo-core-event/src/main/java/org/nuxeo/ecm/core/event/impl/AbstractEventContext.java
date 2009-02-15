@@ -41,7 +41,7 @@ public abstract class AbstractEventContext implements EventContext {
     protected Object[] args;
     protected Map<String, Serializable> properties;
 
-    protected String repositoryName = null;
+    protected String repositoryName;
 
     /**
      * Constructor to be used by derived classes
@@ -100,4 +100,5 @@ public abstract class AbstractEventContext implements EventContext {
     public String getRepositoryName() {
         return repositoryName;
     }
+
 }

@@ -57,7 +57,8 @@ public abstract class Fragment implements Serializable {
     /**
      * The possible states of a fragment.
      */
-    public static enum State {
+    public enum State {
+
         /**
          * The fragment is not attached to a persistence context.
          */
@@ -126,7 +127,7 @@ public abstract class Fragment implements Serializable {
      * @param context the persistence context to which the fragment is tied, or
      *            {@code null}
      */
-    public Fragment(Serializable id, State state, Context context) {
+    protected Fragment(Serializable id, State state, Context context) {
         this.id = id;
         this.state = state;
         this.context = context;

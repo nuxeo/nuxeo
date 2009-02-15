@@ -257,6 +257,7 @@ public class JCRBlob extends StreamBlob {
             if (nt.getName().equals("nt:resource")) {
                 NodeType[] mixins = node.getMixinNodeTypes();
                 for (NodeType mixin : mixins) {
+                    // FIXME: probable bug, can't compare a String and a JCRName
                     if (NodeConstants.ECM_MIX_CONTENT.equals(mixin.getName())) {
                         return false;
                     }

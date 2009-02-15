@@ -247,8 +247,7 @@ public class EmbeddedFunctions {
         return join(words, ' ');
     }
 
-    protected static Set<String> parseFullText(String string)
-            throws SQLException {
+    protected static Set<String> parseFullText(String string) {
         if (string == null) {
             return Collections.emptySet();
         }

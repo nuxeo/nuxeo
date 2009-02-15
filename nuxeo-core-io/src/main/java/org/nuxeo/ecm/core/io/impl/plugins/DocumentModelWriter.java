@@ -50,7 +50,6 @@ public class DocumentModelWriter extends AbstractDocumentModelWriter {
      */
     public DocumentModelWriter(CoreSession session, String parentPath) {
         super(session, parentPath);
-
     }
 
     public DocumentModelWriter(CoreSession session, String parentPath,

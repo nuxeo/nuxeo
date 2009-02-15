@@ -50,7 +50,7 @@ public class MockDocument implements Document {
 
     final String creator;
 
-    String lock = null;
+    String lock;
 
     public MockDocument(String uuid, String creator) {
         this.uuid = uuid;

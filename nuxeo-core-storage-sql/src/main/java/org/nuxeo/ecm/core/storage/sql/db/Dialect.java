@@ -513,7 +513,7 @@ public class Dialect {
     /**
      * Gets the expression to use to check security.
      *
-     * @param the quoted name of the id column to use
+     * @param idColumnName the quoted name of the id column to use
      * @return an SQL expression with two parameters (principals and
      *         permissions) that is true if access is allowed
      */
@@ -525,7 +525,7 @@ public class Dialect {
     /**
      * Gets the expression to use to check tree membership.
      *
-     * @param the quoted name of the id column to use
+     * @param idColumnName the quoted name of the id column to use
      * @return an SQL expression with one parameters for the based id that is
      *         true if the document is under base id
      */
@@ -1319,6 +1319,7 @@ public class Dialect {
                     Boolean.TRUE, // always drop
                     null, //
                     "IF OBJECT_ID('dbo.nxTrigCascadeDelete', 'TR') IS NOT NULL DROP TRIGGER dbo.nxTrigCascadeDelete", //
+                    // FIXME: bad format string (parameter not used)
                     String.format(
                             "CREATE TRIGGER nxTrigCascadeDelete ON [hierarchy] " //
                                     + "INSTEAD OF DELETE AS " //

@@ -25,10 +25,9 @@ import java.util.Map;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 
-public class SimpleBlobHolderWithProperties extends SimpleBlobHolder implements
-        BlobHolder {
+public class SimpleBlobHolderWithProperties extends SimpleBlobHolder {
 
-    protected Map<String, Serializable> properties;
+    protected final Map<String, Serializable> properties;
 
     public SimpleBlobHolderWithProperties(Blob blob, Map<String, Serializable> properties) {
         super(blob);

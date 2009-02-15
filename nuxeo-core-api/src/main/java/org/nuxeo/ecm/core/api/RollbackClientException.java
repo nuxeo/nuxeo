@@ -31,7 +31,6 @@ public class RollbackClientException extends ClientException {
     private static final long serialVersionUID = 1L;
 
     public RollbackClientException() {
-        super();
     }
 
     public RollbackClientException(ClientException cause) {

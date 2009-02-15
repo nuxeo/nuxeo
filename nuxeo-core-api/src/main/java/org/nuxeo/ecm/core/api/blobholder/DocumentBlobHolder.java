@@ -27,21 +27,18 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
- *
- * {@link BlobHolder} implementation based on a {@link DocumentModel} and a XPath
+ * {@link BlobHolder} implementation based on a {@link DocumentModel} and a XPath.
  *
  * @author tiry
- *
  */
-public class DocumentBlobHolder extends AbstractBlobHolder implements
-        BlobHolder {
+public class DocumentBlobHolder extends AbstractBlobHolder {
 
-    protected DocumentModel doc;
-    protected String xPath;
+    protected final DocumentModel doc;
+    protected final String xPath;
 
     public DocumentBlobHolder(DocumentModel doc, String xPath) {
-        this.doc=doc;
-        this.xPath=xPath;
+        this.doc = doc;
+        this.xPath = xPath;
     }
 
     @Override
@@ -63,9 +60,9 @@ public class DocumentBlobHolder extends AbstractBlobHolder implements
     public String getHash() throws ClientException {
 
         Blob blob = getBlob();
-        if (blob!=null) {
+        if (blob != null) {
             String h = blob.getDigest();
-            if (h!=null) {
+            if (h != null) {
                 return h;
             }
         }

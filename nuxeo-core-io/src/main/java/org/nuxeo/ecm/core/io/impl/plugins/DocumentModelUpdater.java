@@ -30,6 +30,8 @@ import org.nuxeo.ecm.core.io.DocumentTranslationMap;
 import org.nuxeo.ecm.core.io.ExportedDocument;
 import org.nuxeo.ecm.core.io.impl.AbstractDocumentModelWriter;
 import org.nuxeo.ecm.core.io.impl.DocumentTranslationMapImpl;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * A writer that only updates existing docs. The doc ID is used to identity docs
@@ -41,6 +43,8 @@ import org.nuxeo.ecm.core.io.impl.DocumentTranslationMapImpl;
 // modify core session to add a batch create method and use it
 public class DocumentModelUpdater extends AbstractDocumentModelWriter {
 
+    private static final Log log = LogFactory.getLog(DocumentModelUpdater.class);
+
     /**
      *
      * @param session the session to the repository where to write
@@ -50,7 +54,6 @@ public class DocumentModelUpdater extends AbstractDocumentModelWriter {
      */
     public DocumentModelUpdater(CoreSession session, String parentPath) {
         super(session, parentPath);
-
     }
 
     public DocumentModelUpdater(CoreSession session, String parentPath,
@@ -72,7 +75,7 @@ public class DocumentModelUpdater extends AbstractDocumentModelWriter {
         try {
             doc = session.getDocument(new IdRef(id));
         } catch (Exception e) {
-            System.out.println("Cannot update document. No such document: "
+            log.error("Cannot update document. No such document: "
                     + id);
             return null;
         }
@@ -89,7 +92,7 @@ public class DocumentModelUpdater extends AbstractDocumentModelWriter {
                     "Failed to import document in repository: "
                             + e.getMessage());
             ioe.setStackTrace(e.getStackTrace());
-            e.printStackTrace();
+            log.error(e);
             return null;
         }
     }

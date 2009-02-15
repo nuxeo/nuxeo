@@ -30,7 +30,6 @@ public class OrderByList extends ArrayList<OrderByExpr> implements Operand {
     private static final long serialVersionUID = 1L;
 
     public OrderByList(OrderByExpr expr) {
-        super();
         add(expr);
     }
 

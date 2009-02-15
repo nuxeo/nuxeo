@@ -155,7 +155,7 @@ public class SQLInfo {
      * @param dialect the SQL dialect
      * @throws StorageException
      */
-    public SQLInfo(Model model, Dialect dialect) throws StorageException {
+    public SQLInfo(Model model, Dialect dialect) {
         this.model = model;
         this.dialect = dialect;
         sqlExceptionConverter = dialect.buildSQLExceptionConverter();

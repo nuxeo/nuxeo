@@ -53,7 +53,7 @@ import org.h2.value.DataType;
  */
 public class H2Fulltext {
 
-    private static Map<String, IndexWriter> indexWriters = new ConcurrentHashMap<String, IndexWriter>();
+    private static final Map<String, IndexWriter> indexWriters = new ConcurrentHashMap<String, IndexWriter>();
 
     private static final String FT_SCHEMA = "NXFT";
 
