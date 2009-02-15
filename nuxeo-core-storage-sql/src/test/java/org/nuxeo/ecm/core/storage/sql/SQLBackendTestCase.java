@@ -32,12 +32,12 @@ public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.schema");
-        DatabaseHelper.setUp();
+        DatabaseHelper.DATABASE.setUp();
 
         SchemaManager schemaManager = Framework.getService(SchemaManager.class);
         assertNotNull(schemaManager);
 
-        RepositoryDescriptor descriptor = DatabaseHelper.getRepositoryDescriptor();
+        RepositoryDescriptor descriptor = DatabaseHelper.DATABASE.getRepositoryDescriptor();
         repository = new RepositoryImpl(descriptor, schemaManager);
     }
 
@@ -46,7 +46,7 @@ public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
         if (repository != null) {
             repository.close();
         }
-        DatabaseHelper.tearDown();
+        DatabaseHelper.DATABASE.tearDown();
         super.tearDown();
     }
 

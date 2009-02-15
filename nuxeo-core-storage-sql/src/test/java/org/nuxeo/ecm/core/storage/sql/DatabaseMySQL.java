@@ -57,7 +57,7 @@ public class DatabaseMySQL extends DatabaseHelper {
     private static final String CONTRIB_XML = "OSGI-INF/test-repo-repository-mysql-contrib.xml";
 
     @Override
-    public void setUpRepository() throws Exception {
+    public void setUp() throws Exception {
         Class.forName("com.mysql.jdbc.Driver");
         String url = String.format("jdbc:mysql://%s:%s/%s", MYSQL_HOST,
                 MYSQL_PORT, MYSQL_SUPER_DATABASE);
@@ -81,12 +81,12 @@ public class DatabaseMySQL extends DatabaseHelper {
     }
 
     @Override
-    public String getContrib() {
+    public String getDeploymentContrib() {
         return CONTRIB_XML;
     }
 
     @Override
-    public RepositoryDescriptor getDescriptor() {
+    public RepositoryDescriptor getRepositoryDescriptor() {
         RepositoryDescriptor descriptor = new RepositoryDescriptor();
         descriptor.xaDataSourceName = "com.mysql.jdbc.jdbc2.optional.MysqlXADataSource";
         Map<String, String> properties = new HashMap<String, String>();
@@ -100,7 +100,7 @@ public class DatabaseMySQL extends DatabaseHelper {
     }
 
     @Override
-    public void sleepToNextSecond() {
+    public void maybeSleepToNextSecond() {
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {

@@ -62,7 +62,7 @@ public class DatabasePostgreSQL extends DatabaseHelper {
     private static final String CONTRIB_XML = "OSGI-INF/test-repo-repository-postgresql-contrib.xml";
 
     @Override
-    public void setUpRepository() throws Exception {
+    public void setUp() throws Exception {
         Class.forName("org.postgresql.Driver");
         String url = String.format("jdbc:postgresql://%s:%s/%s", PG_HOST,
                 PG_PORT, PG_SUPER_DATABASE);
@@ -82,12 +82,12 @@ public class DatabasePostgreSQL extends DatabaseHelper {
     }
 
     @Override
-    public String getContrib() {
+    public String getDeploymentContrib() {
         return CONTRIB_XML;
     }
 
     @Override
-    public RepositoryDescriptor getDescriptor() {
+    public RepositoryDescriptor getRepositoryDescriptor() {
         RepositoryDescriptor descriptor = new RepositoryDescriptor();
         descriptor.xaDataSourceName = "org.postgresql.xa.PGXADataSource";
         Map<String, String> properties = new HashMap<String, String>();

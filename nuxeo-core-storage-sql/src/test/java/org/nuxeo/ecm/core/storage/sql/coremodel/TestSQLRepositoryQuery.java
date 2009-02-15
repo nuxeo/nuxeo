@@ -27,21 +27,21 @@ public class TestSQLRepositoryQuery extends QueryTestCase {
 
     @Override
     public void deployRepository() throws Exception {
-        DatabaseHelper.setUp();
+        DatabaseHelper.DATABASE.setUp();
         deployContrib("org.nuxeo.ecm.core.storage.sql.tests",
-                DatabaseHelper.getDeploymentContrib());
+                DatabaseHelper.DATABASE.getDeploymentContrib());
         deployBundle("org.nuxeo.ecm.core.event");
 
     }
 
     @Override
     public void undeployRepository() throws Exception {
-        DatabaseHelper.tearDown();
+        DatabaseHelper.DATABASE.tearDown();
     }
 
     @Override
     protected void sleepForFulltext() {
-        DatabaseHelper.sleepForFulltext();
+        DatabaseHelper.DATABASE.sleepForFulltext();
     }
 
     @Override

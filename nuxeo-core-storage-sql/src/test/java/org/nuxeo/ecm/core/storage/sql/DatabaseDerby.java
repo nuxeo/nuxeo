@@ -42,7 +42,7 @@ public class DatabaseDerby extends DatabaseHelper {
     private static final String CONTRIB_XML = "OSGI-INF/test-repo-repository-derby-contrib.xml";
 
     @Override
-    public void setUpRepository() {
+    public void setUp() {
         File dbdir = new File(DERBY_DIRECTORY);
         File parent = dbdir.getParentFile();
         FileUtils.deleteTree(dbdir);
@@ -54,7 +54,7 @@ public class DatabaseDerby extends DatabaseHelper {
     }
 
     @Override
-    public void tearDownRepository() throws Exception {
+    public void tearDown() throws Exception {
         try {
             DriverManager.getConnection("jdbc:derby:;shutdown=true");
         } catch (SQLException e) {
@@ -66,12 +66,12 @@ public class DatabaseDerby extends DatabaseHelper {
     }
 
     @Override
-    public String getContrib() {
+    public String getDeploymentContrib() {
         return CONTRIB_XML;
     }
 
     @Override
-    public RepositoryDescriptor getDescriptor() {
+    public RepositoryDescriptor getRepositoryDescriptor() {
         RepositoryDescriptor descriptor = new RepositoryDescriptor();
         descriptor.xaDataSourceName = "org.apache.derby.jdbc.EmbeddedXADataSource";
         Map<String, String> properties = new HashMap<String, String>();

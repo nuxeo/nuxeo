@@ -56,7 +56,7 @@ public class DatabaseSQLServer extends DatabaseHelper {
     private static final String CONTRIB_XML = "OSGI-INF/test-repo-repository-mssql-contrib.xml";
 
     @Override
-    public void setUpRepository() throws Exception {
+    public void setUp() throws Exception {
         Class.forName("net.sourceforge.jtds.jdbc.Driver");
         String url = String.format(
                 "jdbc:jtds:sqlserver://%s:%s/%s;user=%s;password=%s;",
@@ -87,12 +87,12 @@ public class DatabaseSQLServer extends DatabaseHelper {
     }
 
     @Override
-    public String getContrib() {
+    public String getDeploymentContrib() {
         return CONTRIB_XML;
     }
 
     @Override
-    public RepositoryDescriptor getDescriptor() {
+    public RepositoryDescriptor getRepositoryDescriptor() {
         RepositoryDescriptor descriptor = new RepositoryDescriptor();
         descriptor.xaDataSourceName = "net.sourceforge.jtds.jdbcx.JtdsDataSource";
         Map<String, String> properties = new HashMap<String, String>();
@@ -110,7 +110,7 @@ public class DatabaseSQLServer extends DatabaseHelper {
 
     // MS SQL Server has asynchronous indexing of fulltext
     @Override
-    public void sleepAfterFulltext() {
+    public void sleepForFulltext() {
         try {
             Thread.sleep(10 * 1000);
         } catch (InterruptedException e) {

@@ -115,7 +115,7 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
      * subsecond resolution in TIMESTAMP fields.
      */
     public void maybeSleepToNextSecond() {
-        DatabaseHelper.maybeSleepToNextSecond();
+        DatabaseHelper.DATABASE.maybeSleepToNextSecond();
     }
 
     // SUPNXP-60: Suppression d'une version d'un document.

@@ -54,7 +54,7 @@ public class DatabaseH2 extends DatabaseHelper {
     private static final String CONTRIB_XML = "OSGI-INF/test-repo-repository-h2-contrib.xml";
 
     @Override
-    public void setUpRepository() throws IOException {
+    public void setUp() throws IOException {
         h2TempDir = File.createTempFile("nxsqltests-h2-", null);
         h2TempDir.delete();
         h2TempDir.mkdir();
@@ -65,7 +65,7 @@ public class DatabaseH2 extends DatabaseHelper {
     }
 
     @Override
-    public void tearDownRepository() throws Exception {
+    public void tearDown() throws Exception {
         Connection connection = DriverManager.getConnection(String.format(
                 "jdbc:h2:%s", h2Path), H2_DATABASE_USER, H2_DATABASE_PASSWORD);
         Statement st = connection.createStatement();
@@ -82,12 +82,12 @@ public class DatabaseH2 extends DatabaseHelper {
     }
 
     @Override
-    public String getContrib() {
+    public String getDeploymentContrib() {
         return CONTRIB_XML;
     }
 
     @Override
-    public RepositoryDescriptor getDescriptor() {
+    public RepositoryDescriptor getRepositoryDescriptor() {
         RepositoryDescriptor descriptor = new RepositoryDescriptor();
         descriptor.xaDataSourceName = "org.h2.jdbcx.JdbcDataSource";
         Map<String, String> properties = new HashMap<String, String>();

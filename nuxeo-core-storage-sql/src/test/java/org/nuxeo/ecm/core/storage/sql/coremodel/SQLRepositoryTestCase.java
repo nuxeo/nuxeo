@@ -46,15 +46,15 @@ public abstract class SQLRepositoryTestCase extends NXRuntimeTestCase {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core");
-        DatabaseHelper.setUp();
+        DatabaseHelper.DATABASE.setUp();
         deployContrib("org.nuxeo.ecm.core.storage.sql.tests",
-                DatabaseHelper.getDeploymentContrib());
+                DatabaseHelper.DATABASE.getDeploymentContrib());
     }
 
     @Override
     protected void tearDown() throws Exception {
         super.tearDown();
-        DatabaseHelper.tearDown();
+        DatabaseHelper.DATABASE.tearDown();
     }
 
     public void openSession() throws ClientException {

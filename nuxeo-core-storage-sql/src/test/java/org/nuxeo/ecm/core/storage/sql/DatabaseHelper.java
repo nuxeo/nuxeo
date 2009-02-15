@@ -22,59 +22,28 @@ public abstract class DatabaseHelper {
     /**
      * Change this to use another SQL database for tests.
      */
-    private static final DatabaseHelper DATABASE = DatabaseH2.INSTANCE;
+    public static final DatabaseHelper DATABASE = DatabaseH2.INSTANCE;
 
-    /*
-     * ---- API implemented by actual helpers -----
-     */
+    public abstract void setUp() throws Exception;
 
-    protected abstract void setUpRepository() throws Exception;
-
-    protected void tearDownRepository() throws Exception {
+    public void tearDown() throws Exception {
     }
 
-    protected abstract String getContrib();
+    public abstract String getDeploymentContrib();
 
-    protected abstract RepositoryDescriptor getDescriptor();
+    public abstract RepositoryDescriptor getRepositoryDescriptor();
 
     /**
      * For databases that do asynchronous fullext indexing, sleep a bit.
      */
-    protected void sleepAfterFulltext() {
+    public void sleepForFulltext() {
     }
 
     /**
      * For databases that don't have subsecond resolution, sleep a bit to get to
      * the next second.
      */
-    protected void sleepToNextSecond() {
+    public void maybeSleepToNextSecond() {
     }
 
-    /*
-     * ----- static API used from test cases -----
-     */
-
-    public static void setUp() throws Exception {
-        DATABASE.setUpRepository();
-    }
-
-    public static void tearDown() throws Exception {
-        DATABASE.tearDownRepository();
-    }
-
-    public static String getDeploymentContrib() {
-        return DATABASE.getContrib();
-    }
-
-    public static RepositoryDescriptor getRepositoryDescriptor() {
-        return DATABASE.getDescriptor();
-    }
-
-    public static void sleepForFulltext() {
-        DATABASE.sleepAfterFulltext();
-    }
-
-    public static void maybeSleepToNextSecond() {
-        DATABASE.sleepToNextSecond();
-    }
 }
