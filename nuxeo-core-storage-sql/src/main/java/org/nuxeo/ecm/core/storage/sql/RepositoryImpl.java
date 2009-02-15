@@ -19,8 +19,6 @@ package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -35,6 +33,7 @@ import javax.resource.cci.ResourceAdapterMetaData;
 import javax.sql.XAConnection;
 import javax.sql.XADataSource;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.schema.SchemaManager;
@@ -121,8 +120,8 @@ public class RepositoryImpl implements Repository {
      */
     public synchronized SessionImpl getConnection(ConnectionSpec connectionSpec)
             throws StorageException {
-        assert connectionSpec == null ||
-                connectionSpec instanceof ConnectionSpecImpl;
+        assert connectionSpec == null
+                || connectionSpec instanceof ConnectionSpecImpl;
 
         Credentials credentials = connectionSpec == null ? null
                 : ((ConnectionSpecImpl) connectionSpec).getCredentials();
@@ -212,11 +211,7 @@ public class RepositoryImpl implements Repository {
     }
 
     private XADataSource getXADataSource() throws StorageException {
-
-        /*
-         * Instantiate the datasource.
-         */
-
+        // instantiate the datasource
         String className = repositoryDescriptor.xaDataSourceName;
         Class<?> klass;
         try {
@@ -236,90 +231,22 @@ public class RepositoryImpl implements Repository {
         }
         XADataSource xadatasource = (XADataSource) instance;
 
-        /*
-         * Set JavaBean properties.
-         */
-
+        // set JavaBean properties
         for (Entry<String, String> entry : repositoryDescriptor.properties.entrySet()) {
-            String propertyName = entry.getKey();
+            String name = entry.getKey();
             Object value = Framework.expandVars(entry.getValue());
-            Class<?>[] sig;
-            /*
-             * Special syntax to set non-String values: fooBar/Integer=123
-             */
-            int sep = propertyName.indexOf('/');
-            if (sep < 0) {
-                sig = new Class[] { String.class };
-            } else {
-                String typeName = propertyName.substring(sep + 1);
-                if (!typeName.startsWith("java.lang.")) {
-                    typeName = "java.lang." +
-                            Character.toUpperCase(typeName.charAt(0)) +
-                            typeName.substring(1);
-                }
-                try {
-                    sig = new Class[] { Class.forName(typeName) };
-                } catch (ClassNotFoundException e) {
-                    log.error("Cannot find type " + typeName +
-                            " for property: " + propertyName, e);
-                    continue;
-                }
-                propertyName = propertyName.substring(0, sep);
-                // convert the String value to this type by calling valueOf
-                Method m;
-                try {
-                    m = sig[0].getMethod("valueOf", String.class);
-                } catch (Exception e) {
-                    log.error("Cannot get valueOf", e);
-                    continue;
-                }
-                try {
-                    value = m.invoke(null, value);
-                } catch (Exception e) {
-                    log.error("Cannot call " + typeName + ".valueOf(" + value +
-                            ")", e);
-                    continue;
-                }
+            if (name.contains("/")) {
+                // old syntax where non-String types were explicited
+                name = name.substring(0, name.indexOf('/'));
             }
-            String methodName = "set" +
-                    Character.toUpperCase(propertyName.charAt(0)) +
-                    propertyName.substring(1);
-            Method method;
-            try {
-                method = xadatasource.getClass().getMethod(methodName, sig);
-            } catch (NoSuchMethodException e) {
-                // try with the primitive type
-                // get primitive type
-                Field field;
-                try {
-                    field = sig[0].getField("TYPE");
-                } catch (Exception ee) {
-                    log.error("Cannot get field", ee);
-                    continue;
-                }
-                try {
-                    sig[0] = (Class<?>) field.get(null);
-                } catch (Exception ee) {
-                    log.error("Cannot fetch field", ee);
-                    continue;
-                }
-                // retry with this signature
-                try {
-                    method = xadatasource.getClass().getMethod(methodName, sig);
-                } catch (Exception ee) {
-                    log.error("Cannot get JavaBean method", ee);
-                    continue;
-                }
-            } catch (Exception e) {
-                log.error("Cannot get JavaBean method", e);
-                continue;
+            // transform to proper JavaBean convention
+            if (Character.isLowerCase(name.charAt(1))) {
+                name = Character.toLowerCase(name.charAt(0)) + name.substring(1);
             }
             try {
-                method.invoke(xadatasource, value);
+                BeanUtils.setProperty(xadatasource, name, value);
             } catch (Exception e) {
-                log.error("Cannot call JavaBean method " + className + "." +
-                        methodName + "(" + value + ")", e);
-                continue;
+                log.error(String.format("Cannot set %s = %s", name, value));
             }
         }
 

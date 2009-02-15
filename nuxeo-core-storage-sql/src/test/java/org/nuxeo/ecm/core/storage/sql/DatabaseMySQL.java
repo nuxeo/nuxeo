@@ -91,7 +91,7 @@ public class DatabaseMySQL extends DatabaseHelper {
         descriptor.xaDataSourceName = "com.mysql.jdbc.jdbc2.optional.MysqlXADataSource";
         Map<String, String> properties = new HashMap<String, String>();
         properties.put("ServerName", MYSQL_HOST);
-        properties.put("PortNumber/Integer", MYSQL_PORT);
+        properties.put("PortNumber", MYSQL_PORT);
         properties.put("DatabaseName", MYSQL_DATABASE);
         properties.put("User", MYSQL_DATABASE_OWNER);
         properties.put("Password", MYSQL_DATABASE_PASSWORD);

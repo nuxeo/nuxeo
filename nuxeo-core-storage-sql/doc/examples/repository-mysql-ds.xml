@@ -10,7 +10,7 @@
     <config-property name="name">default</config-property>
     <config-property name="xaDataSource" type="java.lang.String">com.mysql.jdbc.jdbc2.optional.MysqlXADataSource</config-property>
     <config-property name="property" type="java.lang.String">ServerName=localhost</config-property>
-    <config-property name="property" type="java.lang.String">PortNumber/Integer=3306</config-property>
+    <config-property name="property" type="java.lang.String">PortNumber=3306</config-property>
     <config-property name="property" type="java.lang.String">DatabaseName=nuxeo</config-property>
     <config-property name="property" type="java.lang.String">User=nuxeo</config-property>
     <config-property name="property" type="java.lang.String">Password=nuxeo</config-property>

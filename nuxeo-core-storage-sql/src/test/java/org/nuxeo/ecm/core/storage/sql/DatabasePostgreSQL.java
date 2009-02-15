@@ -92,7 +92,7 @@ public class DatabasePostgreSQL extends DatabaseHelper {
         descriptor.xaDataSourceName = "org.postgresql.xa.PGXADataSource";
         Map<String, String> properties = new HashMap<String, String>();
         properties.put("ServerName", PG_HOST);
-        properties.put("PortNumber/Integer", PG_PORT);
+        properties.put("PortNumber", PG_PORT);
         properties.put("DatabaseName", PG_DATABASE);
         properties.put("User", PG_DATABASE_OWNER);
         properties.put("Password", PG_DATABASE_PASSWORD);

@@ -97,11 +97,11 @@ public class DatabaseSQLServer extends DatabaseHelper {
         descriptor.xaDataSourceName = "net.sourceforge.jtds.jdbcx.JtdsDataSource";
         Map<String, String> properties = new HashMap<String, String>();
         properties.put("ServerName", MSSQL_HOST);
-        properties.put("PortNumber/Integer", MSSQL_PORT);
+        properties.put("PortNumber", MSSQL_PORT);
         properties.put("DatabaseName", MSSQL_DATABASE);
         properties.put("User", MSSQL_DATABASE_OWNER);
         properties.put("Password", MSSQL_DATABASE_PASSWORD);
-        properties.put("UseCursors/Boolean", "true");
+        properties.put("UseCursors", "true");
         descriptor.properties = properties;
         descriptor.fulltextAnalyzer = "french";
         descriptor.fulltextCatalog = "nuxeo";

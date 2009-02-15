@@ -10,7 +10,7 @@
     <config-property name="name">default</config-property>
     <config-property name="xaDataSource" type="java.lang.String">net.sourceforge.jtds.jdbcx.JtdsDataSource</config-property>
     <config-property name="property" type="java.lang.String">ServerName=localhost</config-property>
-    <config-property name="property" type="java.lang.String">PortNumber/Integer=1433</config-property>
+    <config-property name="property" type="java.lang.String">PortNumber=1433</config-property>
     <config-property name="property" type="java.lang.String">DatabaseName=nuxeo</config-property>
     <config-property name="property" type="java.lang.String">User=nuxeo</config-property>
     <config-property name="property" type="java.lang.String">Password=nuxeo</config-property>
