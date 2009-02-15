@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.PropertyType;
+import org.nuxeo.ecm.core.storage.sql.db.dialect.Dialect;
 
 /**
  * An alias for an existing table. The returned columns are wrapped.

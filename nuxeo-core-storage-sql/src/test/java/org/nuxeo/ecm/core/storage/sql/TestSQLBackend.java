@@ -145,18 +145,17 @@ public class TestSQLBackend extends SQLBackendTestCase {
         session.save();
     }
 
-    // TODO XXX this fails with MySQL
-    // Stupid MySQL limitations:
-    // "Cascading operations may not be nested more than 15 levels deep."
-    // "Currently, triggers are not activated by cascaded foreign key
-    // actions."
     public void testRecursiveRemoval() throws Exception {
-        int DEPTH = 70;
+        int depth = DatabaseHelper.DATABASE.getRecursiveRemovalDepthLimit();
+        if (depth == 0) {
+            // no limit
+            depth = 70;
+        }
         Session session = repository.getConnection();
         Node root = session.getRootNode();
         Node node = root;
-        Serializable[] ids = new Serializable[DEPTH];
-        for (int i = 0; i < DEPTH; i++) {
+        Serializable[] ids = new Serializable[depth];
+        for (int i = 0; i < depth; i++) {
             node = session.addChildNode(node, String.valueOf(i), null,
                     "TestDoc", false);
             ids[i] = node.getId();
@@ -169,7 +168,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
         // check all children were really deleted recursively
         session = repository.getConnection();
-        for (int i = 1; i < DEPTH; i++) {
+        for (int i = 1; i < depth; i++) {
             assertNull(session.getNodeById(ids[i]));
         }
     }

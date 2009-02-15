@@ -36,12 +36,12 @@ import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.db.Column;
 import org.nuxeo.ecm.core.storage.sql.db.Database;
 import org.nuxeo.ecm.core.storage.sql.db.Delete;
-import org.nuxeo.ecm.core.storage.sql.db.Dialect;
 import org.nuxeo.ecm.core.storage.sql.db.Insert;
 import org.nuxeo.ecm.core.storage.sql.db.Select;
 import org.nuxeo.ecm.core.storage.sql.db.Table;
 import org.nuxeo.ecm.core.storage.sql.db.Update;
-import org.nuxeo.ecm.core.storage.sql.db.Dialect.ConditionalStatement;
+import org.nuxeo.ecm.core.storage.sql.db.dialect.ConditionalStatement;
+import org.nuxeo.ecm.core.storage.sql.db.dialect.Dialect;
 
 /**
  * This singleton generates and holds the actual SQL DDL and DML statements for
@@ -58,8 +58,6 @@ public class SQLInfo {
     private final Model model;
 
     protected final Dialect dialect;
-
-    private final SQLExceptionConverter sqlExceptionConverter;
 
     public final Database database;
 
@@ -158,7 +156,6 @@ public class SQLInfo {
     public SQLInfo(Model model, Dialect dialect) {
         this.model = model;
         this.dialect = dialect;
-        sqlExceptionConverter = dialect.buildSQLExceptionConverter();
 
         database = new Database(dialect);
 
@@ -203,10 +200,6 @@ public class SQLInfo {
         selectVersionIdByLabelWhatColumn = null;
 
         initSQL();
-    }
-
-    public SQLExceptionConverter getSqlExceptionConverter() {
-        return sqlExceptionConverter;
     }
 
     public Database getDatabase() {

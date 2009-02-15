@@ -107,4 +107,12 @@ public class DatabaseMySQL extends DatabaseHelper {
         }
     }
 
+    @Override
+    public int getRecursiveRemovalDepthLimit() {
+        // Stupid MySQL limitations:
+        // "Cascading operations may not be nested more than 15 levels deep."
+        // "Currently, triggers are not activated by cascaded foreign key
+        // actions."
+        return 15;
+    }
 }

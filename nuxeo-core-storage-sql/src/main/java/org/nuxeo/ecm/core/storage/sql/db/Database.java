@@ -27,6 +27,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.nuxeo.ecm.core.storage.sql.db.dialect.Dialect;
+
 /**
  * A collection of {@link Table}s.
  *

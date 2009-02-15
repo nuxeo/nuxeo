@@ -46,4 +46,11 @@ public abstract class DatabaseHelper {
     public void maybeSleepToNextSecond() {
     }
 
+    /**
+     * For databases that fail to cascade deletes beyond a certain depth.
+     */
+    public int getRecursiveRemovalDepthLimit() {
+        return 0;
+    }
+
 }

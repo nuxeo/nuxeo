@@ -56,10 +56,10 @@ import org.nuxeo.ecm.core.storage.sql.Model.PropertyInfo;
 import org.nuxeo.ecm.core.storage.sql.SQLInfo.SQLInfoSelect;
 import org.nuxeo.ecm.core.storage.sql.db.Column;
 import org.nuxeo.ecm.core.storage.sql.db.Database;
-import org.nuxeo.ecm.core.storage.sql.db.Dialect;
 import org.nuxeo.ecm.core.storage.sql.db.Select;
 import org.nuxeo.ecm.core.storage.sql.db.Table;
 import org.nuxeo.ecm.core.storage.sql.db.TableAlias;
+import org.nuxeo.ecm.core.storage.sql.db.dialect.Dialect;
 
 /**
  * Transformer of NXQL queries into underlying SQL queries to the actual

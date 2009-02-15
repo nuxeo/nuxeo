@@ -59,7 +59,7 @@ import org.nuxeo.ecm.core.storage.sql.CollectionFragment.CollectionFragmentItera
 import org.nuxeo.ecm.core.storage.sql.Fragment.State;
 import org.nuxeo.ecm.core.storage.sql.SQLInfo.SQLInfoSelect;
 import org.nuxeo.ecm.core.storage.sql.db.Column;
-import org.nuxeo.ecm.core.storage.sql.db.Dialect.ConditionalStatement;
+import org.nuxeo.ecm.core.storage.sql.db.dialect.ConditionalStatement;
 import org.nuxeo.ecm.core.storage.sql.db.Table;
 import org.nuxeo.ecm.core.storage.sql.db.Update;
 
