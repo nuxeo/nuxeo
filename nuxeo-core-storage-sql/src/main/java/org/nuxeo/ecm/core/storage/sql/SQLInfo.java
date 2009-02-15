@@ -607,7 +607,12 @@ public class SQLInfo {
                 newMainKeyReference(key, true);
                 return;
             }
-            // TODO XXX also MAIN_BASE_VERSION_KEY is main key
+            if (tableName.equals(model.mainTableName)) {
+                if (key.equals(model.MAIN_BASE_VERSION_KEY)) {
+                    newMainKey(key); // not a foreign key
+                    return;
+                }
+            }
             if (tableName.equals(model.PROXY_TABLE_NAME)) {
                 if (key.equals(model.PROXY_TARGET_KEY)) {
                     newMainKeyReference(key, true);

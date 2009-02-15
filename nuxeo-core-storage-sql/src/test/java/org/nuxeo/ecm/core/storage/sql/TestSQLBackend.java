@@ -544,7 +544,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertNotNull(foo);
         xaresource.end(xid, XAResource.TMSUCCESS);
         xaresource.prepare(xid);
-        xaresource.commit(xid, false);
+        // Oracle needs a rollback as prepare() returns XA_RDONLY
+        xaresource.rollback(xid);
     }
 
     public void testMove() throws Exception {
@@ -854,22 +855,25 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
 class DummyXid implements Xid {
 
-    private final byte[] bytes;
+    private final byte[] gtrid;
+
+    private final byte[] bqual;
 
     public DummyXid(String id) {
-        this.bytes = id.getBytes();
-    }
-
-    public byte[] getGlobalTransactionId() {
-        return bytes;
+        gtrid = id.getBytes();
+        // MySQL JDBC driver needs a non 0-length branch qualifier
+        bqual = new byte[] { '0' };
     }
 
     public int getFormatId() {
         return 0;
     }
 
+    public byte[] getGlobalTransactionId() {
+        return gtrid;
+    }
+
     public byte[] getBranchQualifier() {
-        // MySQL JDBC driver crashes on 0-length branch qualifier, doh!
-        return new byte[] { 0 };
+        return bqual;
     }
 }

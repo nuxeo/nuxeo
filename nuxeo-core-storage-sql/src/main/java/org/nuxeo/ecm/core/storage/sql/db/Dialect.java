@@ -17,6 +17,10 @@
 
 package org.nuxeo.ecm.core.storage.sql.db;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Array;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -36,6 +40,7 @@ import org.hibernate.dialect.DialectFactory;
 import org.hibernate.dialect.H2Dialect;
 import org.hibernate.dialect.MySQL5InnoDBDialect;
 import org.hibernate.dialect.MySQLDialect;
+import org.hibernate.dialect.Oracle9Dialect;
 import org.hibernate.dialect.PostgreSQLDialect;
 import org.hibernate.dialect.SQLServerDialect;
 import org.hibernate.exception.SQLExceptionConverter;
@@ -169,6 +174,53 @@ public class Dialect {
         return dialect.toBooleanValueString(bool);
     }
 
+    protected String makeName(String prefix, String string, String suffix) {
+        int max = 999;
+        if (dialect instanceof Oracle9Dialect) {
+            max = 30;
+        }
+        if (prefix.length() + string.length() + suffix.length() > max) {
+            MessageDigest digest;
+            try {
+                digest = MessageDigest.getInstance("MD5");
+            } catch (NoSuchAlgorithmException e) {
+                throw new RuntimeException(e.toString(), e);
+            }
+            byte[] bytes;
+            try {
+                bytes = string.getBytes("UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                throw new RuntimeException(e.toString(), e);
+            }
+            digest.update(bytes, 0, bytes.length);
+            string = toHexString(digest.digest()).substring(0, 8);
+        }
+        suffix = storesUpperCaseIdentifiers() ? suffix : suffix.toLowerCase();
+        return prefix + string + suffix;
+    }
+
+    private static final char[] HEX_DIGITS = "0123456789ABCDEF".toCharArray();
+
+    private static String toHexString(byte[] bytes) {
+        StringBuilder buf = new StringBuilder(2 * bytes.length);
+        for (byte b : bytes) {
+            buf.append(HEX_DIGITS[(0xF0 & b) >> 4]);
+            buf.append(HEX_DIGITS[0x0F & b]);
+        }
+        return buf.toString();
+    }
+
+    public String getForeignKeyConstraintName(String tableName,
+            String foreignColumnName, String foreignTableName) {
+        return makeName(tableName + '_', foreignColumnName + '_'
+                + foreignTableName, "_FK");
+    }
+
+    public String getIndexName(String tableName, List<String> columnNames) {
+        return makeName(qualifyIndexName() ? tableName + '_' : "",
+                StringUtils.join(columnNames, '_'), "_IDX");
+    }
+
     public String getIdentitySelectString(String table, String column,
             int sqlType) {
         return dialect.getIdentitySelectString(table, column, sqlType);
@@ -197,6 +249,18 @@ public class Dialect {
                 return "NVARCHAR(" + length + ')';
             } else if (sqlType == Types.CLOB) {
                 return "NVARCHAR(MAX)";
+            }
+        }
+        if (dialect instanceof Oracle9Dialect) {
+            if (sqlType == Types.VARCHAR) {
+                if (length == 36) {
+                    // uuid
+                    return "VARCHAR2(36)";
+                } else {
+                    return "NVARCHAR2(" + length + ')';
+                }
+            } else if (sqlType == Types.CLOB) {
+                return "NCLOB";
             }
         }
         return dialect.getTypeName(sqlType, length, precision, scale);

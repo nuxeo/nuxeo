@@ -225,12 +225,8 @@ public class TableImpl implements Table {
             if (ft != null) {
                 Column fc = ft.getColumn(column.getForeignKey());
                 String constraintName = dialect.openQuote()
-                        + name
-                        + "_"
-                        + column.getPhysicalName()
-                        + "_"
-                        + ft.getName()
-                        + (dialect.storesUpperCaseIdentifiers() ? "_FK" : "_fk")
+                        + dialect.getForeignKeyConstraintName(name,
+                                column.getPhysicalName(), ft.getName())
                         + dialect.closeQuote();
                 StringBuilder buf = new StringBuilder();
                 buf.append("ALTER TABLE ");
@@ -267,10 +263,7 @@ public class TableImpl implements Table {
                 pcols.add(col.getPhysicalName());
             }
             String indexName = dialect.openQuote()
-                    + (dialect.qualifyIndexName() ? name + "_" : "")
-                    + StringUtils.join(pcols, '_')
-                    + (dialect.storesUpperCaseIdentifiers() ? "_IDX" : "_idx")
-                    + dialect.closeQuote();
+                    + dialect.getIndexName(name, pcols) + dialect.closeQuote();
             String createIndexSql;
             if (fulltextIndexedColumns.contains(columnNames)) {
                 createIndexSql = dialect.getCreateFulltextIndexSql(indexName,

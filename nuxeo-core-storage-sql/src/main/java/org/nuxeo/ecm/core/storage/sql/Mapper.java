@@ -357,13 +357,33 @@ public class Mapper {
                             // fulltext, keep our extend type info in the column
                             continue;
                         }
+                        if (sqlType == Types.OTHER
+                                && (t == Types.CLOB || t == Types.VARCHAR)) {
+                            continue;
+                            // Oracle turns NCLOB and NVARCHAR2 into OTHER
+                            // keep our original type
+                        }
+                        if (sqlType == Types.DECIMAL
+                                && (t == Types.BIT || t == Types.INTEGER)) {
+                            // Oracle turns BIT and INTEGER into NUMBER(...)
+                            // reflected as DECIMAL
+                            // keep our original type
+                            continue;
+                        }
+                        if (sqlType == Types.FLOAT && t == Types.DOUBLE) {
+                            // Oracle turns DOUBLE into FLOAT
+                            // keep our original type
+                            continue;
+                        }
+
                         // record the actual type
                         column.setSqlType(sqlType);
+
                         // some databases are known to change requested types
                         if (t == Types.BIT && //
                                 (sqlType == Types.SMALLINT // Derby
-                                || sqlType == Types.BOOLEAN // H2
-                                || sqlType == Types.TINYINT // MS SQL Server
+                                        || sqlType == Types.BOOLEAN // H2
+                                || sqlType == Types.TINYINT // MSSQLServer
                                 )) {
                             continue;
                         }
