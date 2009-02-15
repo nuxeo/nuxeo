@@ -1382,26 +1382,24 @@ public class Dialect {
                     Boolean.TRUE, // always drop
                     null, //
                     "IF OBJECT_ID('dbo.nxTrigCascadeDelete', 'TR') IS NOT NULL DROP TRIGGER dbo.nxTrigCascadeDelete", //
-                    // FIXME: bad format string (parameter not used)
-                    String.format(
-                            "CREATE TRIGGER nxTrigCascadeDelete ON [hierarchy] " //
-                                    + "INSTEAD OF DELETE AS " //
-                                    + "BEGIN" //
-                                    + "  SET NOCOUNT ON;" //
-                                    + "  WITH cte(id, parentid) AS (" //
-                                    + "    SELECT id, parentid" //
-                                    + "    FROM deleted" //
-                                    + "  UNION ALL" //
-                                    + "    SELECT h.id, h.parentid" //
-                                    + "    FROM [hierarchy] h" //
-                                    + "    JOIN cte ON cte.id = h.parentid" //
-                                    + "  )" //
-                                    + "  DELETE FROM [hierarchy]" //
-                                    + "    FROM [hierarchy] h" //
-                                    + "    JOIN cte" //
-                                    + "    ON cte.id = h.id; " //
-                                    + "END" //
-                            , idType));
+                    "CREATE TRIGGER nxTrigCascadeDelete ON [hierarchy] " //
+                            + "INSTEAD OF DELETE AS " //
+                            + "BEGIN" //
+                            + "  SET NOCOUNT ON;" //
+                            + "  WITH subtree(id, parentid) AS (" //
+                            + "    SELECT id, parentid" //
+                            + "    FROM deleted" //
+                            + "  UNION ALL" //
+                            + "    SELECT h.id, h.parentid" //
+                            + "    FROM [hierarchy] h" //
+                            + "    JOIN subtree ON subtree.id = h.parentid" //
+                            + "  )" //
+                            + "  DELETE FROM [hierarchy]" //
+                            + "    FROM [hierarchy] h" //
+                            + "    JOIN subtree" //
+                            + "    ON subtree.id = h.id; " //
+                            + "END" //
+            );
         }
 
         public ConditionalStatement makeAccessAllowed() {
