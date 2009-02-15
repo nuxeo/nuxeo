@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.publishing;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
 
+import java.io.Serializable;
 import java.util.Map;
 
 import javax.faces.application.FacesMessage;
@@ -50,7 +51,8 @@ import org.nuxeo.runtime.api.Framework;
 @Name("publishingActions")
 @Scope(CONVERSATION)
 public class PublishingActionsListenerBean extends InputController implements
-        ValidatorActionsService {
+        ValidatorActionsService, Serializable {
+
     private PublishingService publishingService;
 
     private static final long serialVersionUID = 1L;
@@ -74,7 +76,7 @@ public class PublishingActionsListenerBean extends InputController implements
     protected transient FacesMessages facesMessages;
 
     @In(create = true)
-    protected Map<String, String> messages;
+    protected transient Map<String, String> messages;
 
     protected String rejectPublishingComment;
 
