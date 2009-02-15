@@ -31,6 +31,8 @@
   </xsl:template>
   <xsl:template match="category[@name='org.hibernate.engine.StatefulPersistenceContext.ProxyWarnLog']">
   </xsl:template>
+  <xsl:template match="category[@name='org.hibernate.impl.SessionFactoryObjectFactory']">
+  </xsl:template>
   <xsl:template match="category[@name='org.hibernate.cache.EhCacheProvider']">
   </xsl:template>
   <xsl:template match="category[@name='org.hibernate.hql.ast.tree.FromElementType']">
@@ -128,6 +130,11 @@
     <xsl:text>
    </xsl:text>
     <category name="org.hibernate.engine.StatefulPersistenceContext.ProxyWarnLog">
+      <priority value="ERROR"/>
+    </category>
+    <xsl:text>
+   </xsl:text>
+    <category name="org.hibernate.impl.SessionFactoryObjectFactory">
       <priority value="ERROR"/>
     </category>
     <xsl:text>
