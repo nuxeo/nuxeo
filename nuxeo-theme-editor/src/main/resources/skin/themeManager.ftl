@@ -14,9 +14,7 @@
 
 <h1 class="nxthemesEditor">Themes</h1>
 
-
 <table cellpadding="0" cellspacing="0" style="width: 100%"><tr>
-
 <td style="vertical-align: top; width: 200px; padding-right: 5px;">
 
 <ul class="nxthemesSelector">
@@ -44,11 +42,21 @@
   <#if theme.name = current_theme_name>
       <h2 class="nxthemesEditor" style="text-transform: uppercase">${theme.name}</h2>
       <p>        
-        SOURCE: ${theme.src}
+        SOURCE: <strong>${theme.src}</strong>
         <#if theme.lastLoaded && theme.loadingFailed>
           <span class="nxthemesEmphasize">LOADING FAILED</span>
         </#if>
       </p>
+      
+      <#assign template_engines=theme.templateEngines>
+      <#if template_engines>
+      <p>
+        COMPATIBILITY:
+        <#list template_engines as template_engine>
+          <strong>${template_engine}</strong>
+        </#list>
+      </p>
+      </#if>
       
       <#if theme.customized>
         <p><em>This theme is currently being hidden by another theme with the same name. </em></p>
@@ -70,18 +78,18 @@
         </button>
         
         <#if theme.exportable>  
-          <button onclick="window.location='${basePath}/nxthemes-editor/xml_export?theme=${theme.name}&amp;download=1&amp;indent=2'">
+          <button onclick="window.location='${basePath}/nxthemes-editor/xml_export?src=${theme.src}&amp;download=1&amp;indent=2'">
             <img src="${skinPath}/img/theme-download.png" width="16" height="16" />
             Download
           </button>
-          <button onclick="window.location='${basePath}/nxthemes-editor/xml_export?theme=${theme.name}'">
+          <button onclick="window.location='${basePath}/nxthemes-editor/xml_export?src=${theme.src}'">
             <img src="${skinPath}/img/theme-code.png" width="16" height="16" />
             Show XML
           </button>
         </#if>
       
         <#if theme.repairable>
-          <button onclick="NXThemesEditor.repairTheme('${theme.name}')">
+          <button onclick="NXThemesEditor.repairTheme('${theme.src}')">
             <img src="${skinPath}/img/cleanup-16.png" width="16" height="16" />
             Clean up
           </button>

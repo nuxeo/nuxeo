@@ -14,6 +14,7 @@
 
 package org.nuxeo.theme.test.themes;
 
+import java.util.Date;
 import java.util.Properties;
 
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
@@ -22,6 +23,8 @@ import org.nuxeo.theme.Utils;
 import org.nuxeo.theme.elements.Element;
 import org.nuxeo.theme.elements.ElementFactory;
 import org.nuxeo.theme.elements.ElementFormatter;
+import org.nuxeo.theme.elements.PageElement;
+import org.nuxeo.theme.elements.ThemeElement;
 import org.nuxeo.theme.formats.FormatFactory;
 import org.nuxeo.theme.formats.layouts.Layout;
 import org.nuxeo.theme.formats.styles.Style;
@@ -30,6 +33,7 @@ import org.nuxeo.theme.fragments.FragmentFactory;
 import org.nuxeo.theme.nodes.NodeException;
 import org.nuxeo.theme.perspectives.PerspectiveType;
 import org.nuxeo.theme.test.DummyFragment;
+import org.nuxeo.theme.themes.ThemeDescriptor;
 import org.nuxeo.theme.themes.ThemeException;
 import org.nuxeo.theme.themes.ThemeManager;
 import org.nuxeo.theme.themes.ThemeSerializer;
@@ -39,8 +43,10 @@ public class TestThemeSerializer extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-service.xml");
-        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-contrib.xml");
+        deployContrib("org.nuxeo.theme.core",
+                "OSGI-INF/nxthemes-core-service.xml");
+        deployContrib("org.nuxeo.theme.core",
+                "OSGI-INF/nxthemes-core-contrib.xml");
         deployContrib("org.nuxeo.theme.core.tests", "fragment-config.xml");
         deployContrib("org.nuxeo.theme.core.tests", "view-config.xml");
     }
@@ -55,9 +61,9 @@ public class TestThemeSerializer extends NXRuntimeTestCase {
     }
 
     public void testSerializeTheme() throws ThemeException, NodeException {
-        Element theme = ElementFactory.create("theme");
+        ThemeElement theme = (ThemeElement) ElementFactory.create("theme");
         theme.setName("default");
-        Element page = ElementFactory.create("page");
+        PageElement page = (PageElement) ElementFactory.create("page");
         page.setName("default");
         page.setDescription("The default page");
         Element section = ElementFactory.create("section");
@@ -144,8 +150,15 @@ public class TestThemeSerializer extends NXRuntimeTestCase {
         cell.addChild(fragment1);
         cell.addChild(fragment2);
 
+        themeManager.registerTheme(theme);
+        themeManager.registerPage(theme, page);
+        ThemeDescriptor themeDef = new ThemeDescriptor();
+        themeDef.setName("default");
+        themeDef.setSrc("test-default.xml");
+        themeDef.setLastLoaded(new Date());
+        Manager.getTypeRegistry().register(themeDef);
         assertEquals(Utils.readResourceAsString("themeSerializerOutput.xml"),
-                new ThemeSerializer().serializeToXml(theme, 4));
+                new ThemeSerializer().serializeToXml("test-default.xml", 4));
     }
 
 }

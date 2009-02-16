@@ -1,5 +1,6 @@
 <div>
 <#assign themeManager=This.getThemeManager()>
+<#assign themes=themeManager.getThemeDescriptors()>
 
 <div id="nxthemesStyleManager">
 
@@ -11,20 +12,22 @@
 <td style="vertical-align: top; width: 200px; padding-right: 5px;">
 
 <ul class="nxthemesSelector">
-<#list themeManager.getThemeNames() as theme_name>
-<li <#if theme_name = current_theme_name>class="selected"</#if>><a href="javascript:void(0)" 
-  onclick="NXThemesEditor.selectTheme('${theme_name}', 'style manager')">
-  <img src="${skinPath}/img/theme-16.png" width="16" height="16" />
-  ${theme_name}</a></li>
-</#list>
-<#list themeManager.getThemeNames(true) as theme_name>
-<li <#if theme_name = current_theme_name>class="selected"</#if>><a href="javascript:void(0)" 
-  onclick="NXThemesEditor.selectTheme('${theme_name}', 'style manager')">
-  <img src="${skinPath}/img/theme-16.png" width="16" height="16" />
-  ${theme_name}</a></li>
+<#list themes as theme>
+<li <#if theme.name = current_theme_name>class="selected"</#if>><a href="javascript:void(0)" 
+  onclick="NXThemesEditor.selectTheme('${theme.name}', 'style manager')">
+  <#if theme.customized>
+    <img src="${skinPath}/img/customized-theme-16.png" width="16" height="16" />
+  <#else>
+    <#if theme.xmlConfigured>
+      <img src="${skinPath}/img/theme-16.png" width="16" height="16" />
+    </#if>
+    <#if theme.custom>
+      <img src="${skinPath}/img/custom-theme-16.png" width="16" height="16" />
+    </#if>
+  </#if>
+  ${theme.name}</a></li>
 </#list>
 </ul>
-
 
 </td>
 <td style="padding-left: 10px; vertical-align: top;">

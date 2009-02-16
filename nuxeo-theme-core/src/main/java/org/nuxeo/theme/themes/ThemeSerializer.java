@@ -34,6 +34,7 @@ import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.Utils;
 import org.nuxeo.theme.elements.Element;
 import org.nuxeo.theme.elements.ElementFormatter;
+import org.nuxeo.theme.elements.ThemeElement;
 import org.nuxeo.theme.formats.Format;
 import org.nuxeo.theme.formats.styles.Style;
 import org.nuxeo.theme.fragments.Fragment;
@@ -58,7 +59,7 @@ public class ThemeSerializer {
 
     private List<Element> elements;
 
-    public Document serialize(final Element theme) throws Exception {
+    public Document serialize(final String src) throws Exception {
         final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         try {
             dbf.setFeature("http://xml.org/sax/features/validation", false);
@@ -73,6 +74,7 @@ public class ThemeSerializer {
         elements = new ArrayList<Element>();
         final org.w3c.dom.Element root = doc.createElement(DOCROOT_NAME);
         final ThemeManager themeManager = Manager.getThemeManager();
+        ThemeElement theme = themeManager.getThemeBySrc(src);
 
         // Theme description and name
         final String description = theme.getDescription();
@@ -82,6 +84,21 @@ public class ThemeSerializer {
 
         final String themeName = theme.getName();
         root.setAttribute("name", themeName);
+
+        ThemeDescriptor themeDef = ThemeManager.getThemeDescriptor(src);
+        List<String> templateEngines = themeDef.getTemplateEngines();
+        if (templateEngines != null && templateEngines.size() > 0) {
+            final StringBuilder sb = new StringBuilder();
+            final Iterator<String> it = templateEngines.iterator();
+            while (it.hasNext()) {
+                sb.append(it.next());
+                if (it.hasNext()) {
+                    sb.append(",");
+                }
+            }
+            root.setAttribute("template-engines", sb.toString());
+        }
+
         doc.appendChild(root);
 
         // layout
@@ -312,15 +329,15 @@ public class ThemeSerializer {
         domParent.appendChild(domElement);
     }
 
-    public String serializeToXml(final Element theme) {
-        return serializeToXml(theme, 0);
+    public String serializeToXml(final String src) {
+        return serializeToXml(src, 0);
     }
 
-    public String serializeToXml(final Element theme, final int indent) {
+    public String serializeToXml(final String src, final int indent) {
         String xml = null;
         try {
             // serialize the theme into a document
-            serialize(theme);
+            serialize(src);
             // convert the document to XML
             StringWriter sw = new StringWriter();
             OutputFormat format = new OutputFormat(doc);

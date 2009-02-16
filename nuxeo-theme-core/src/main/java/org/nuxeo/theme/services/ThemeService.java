@@ -352,10 +352,10 @@ public class ThemeService extends DefaultComponent implements FrameworkListener 
                 log.error("Could not load theme, source not set. ");
                 continue;
             }
-
+            
             String themeName;
             try {
-                themeName = ThemeParser.registerTheme(src);
+                themeName = ThemeParser.registerTheme(themeDescriptor);
             } catch (ThemeIOException e) {
                 themeDescriptor.setLoadingFailed(true);
                 log.error("Could not register theme: " + src + " "
@@ -385,9 +385,11 @@ public class ThemeService extends DefaultComponent implements FrameworkListener 
                 continue;
             }
 
+            themeDescriptor.setSrc(src);
+            
             String themeName;
             try {
-                themeName = ThemeParser.registerTheme(src);
+                themeName = ThemeParser.registerTheme(themeDescriptor);
             } catch (ThemeIOException e) {
                 themeDescriptor.setLoadingFailed(true);
                 log.error("Could not register theme: " + src + " "
@@ -395,7 +397,6 @@ public class ThemeService extends DefaultComponent implements FrameworkListener 
                 continue;
             }
 
-            themeDescriptor.setSrc(src);
             themeDescriptor.setLoadingFailed(false);
             themeDescriptor.setLastLoaded(new Date());
             themeDescriptor.setName(themeName);

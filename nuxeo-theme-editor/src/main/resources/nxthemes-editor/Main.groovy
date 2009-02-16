@@ -46,8 +46,7 @@ public class Main extends ModuleRoot {
     public Object renderThemeSelector(@QueryParam("org.nuxeo.theme.application.path") String path) {
       return getTemplate("themeSelector.ftl").arg(
               "current_theme_name", getCurrentThemeName(path)).arg(
-              "registered_themes", getRegisteredThemes(path)).arg(
-              "custom_themes", getCustomThemes(path))
+              "themes", getThemes(path))
     }
 
   @GET
@@ -87,7 +86,7 @@ public class Main extends ModuleRoot {
   @Path("themeManager")
   public Object renderThemeManager(@QueryParam("org.nuxeo.theme.application.path") String path) {
     return getTemplate("themeManager.ftl").arg(
-            "current_theme_name", getCurrentThemeName(path))
+            "current_theme_name", getCurrentThemeName(path))     
   }
 
   @GET
@@ -214,21 +213,18 @@ public class Main extends ModuleRoot {
   
   @GET
   @Path("xml_export")
-  public Response xmlExport(@QueryParam("theme") String themeName, @QueryParam("download") Integer download, @QueryParam("indent") Integer indent) {
-      if (themeName == null) {
+  public Response xmlExport(@QueryParam("src") String src, @QueryParam("download") Integer download, @QueryParam("indent") Integer indent) {
+      if (src == null) {
           return
       }
-      ThemeElement theme = Manager.getThemeManager().getThemeByName(themeName)
-      if (theme == null) {
-          return;
-      }
+      ThemeDescriptor themeDef = Manager.getThemeManager().getThemeDescriptor(src)
 
       ThemeSerializer serializer = new ThemeSerializer();
       if (indent == null) {
           indent = 0
       }
       
-      String xml = serializer.serializeToXml(theme, indent);
+      String xml = serializer.serializeToXml(src, indent);
       if (xml == null) {
           return
       }
@@ -236,7 +232,7 @@ public class Main extends ModuleRoot {
       ResponseBuilder builder = Response.ok(xml)
       if (download != null) {
           builder.header("Content-disposition", String.format(
-                  "attachment; filename=theme-%s.xml", theme.getName()))
+                  "attachment; filename=theme-%s.xml", themeDef.getName()))
       }
       builder.type("text/xml")
       return builder.build()
@@ -612,9 +608,9 @@ public class Main extends ModuleRoot {
   @Path("repair_theme")
   public void repairTheme() {
 	  FormData form = ctx.getForm()
-      String themeName = form.getString("name")
+      String src = form.getString("src")
 	  try {
-	      Editor.repairTheme(themeName)
+	      Editor.repairTheme(src)
       } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }
@@ -1349,24 +1345,15 @@ public class Main extends ModuleRoot {
     }
     return pages
   }
-
-  public static List<ThemeElement> getRegisteredThemes(applicationPath) {
-      final boolean custom = false
-      return getThemes(custom, applicationPath);
-  }
   
-  public static List<ThemeElement> getCustomThemes(applicationPath) {
-      final boolean custom = true
-      return getThemes(custom, applicationPath);
-  }
-  
-  public static List<ThemeElement> getThemes(custom, applicationPath) {
-    String defaultTheme = getDefaultTheme(applicationPath)
+  public static List<ThemeInfo> getThemes(applicationPath) {
     def themes = []
+    String defaultTheme = getDefaultTheme(applicationPath)
     String defaultThemeName = defaultTheme.split("/")[0]
     String defaultPageName = defaultTheme.split("/")[1]
     String currentThemeName = getCurrentThemeName(applicationPath)
-    for (name in Manager.getThemeManager().getThemeNames(custom)) {
+    String templateEngine = getTemplateEngine(applicationPath)
+    for (name in ThemeManager.getThemeNames(templateEngine)) {
       String path = String.format("%s/%s", name, defaultPageName)
       themes.add(new ThemeInfo(name, path))
     }

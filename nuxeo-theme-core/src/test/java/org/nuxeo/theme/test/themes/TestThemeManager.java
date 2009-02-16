@@ -16,6 +16,7 @@ package org.nuxeo.theme.test.themes;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
@@ -42,7 +43,6 @@ import org.nuxeo.theme.themes.ThemeException;
 import org.nuxeo.theme.themes.ThemeIOException;
 import org.nuxeo.theme.themes.ThemeManager;
 import org.nuxeo.theme.themes.ThemeParser;
-import org.nuxeo.theme.types.TypeFamily;
 import org.nuxeo.theme.types.TypeRegistry;
 
 public class TestThemeManager extends NXRuntimeTestCase {
@@ -97,30 +97,49 @@ public class TestThemeManager extends NXRuntimeTestCase {
     }
 
     public void testGetThemeNames() {
-        assertTrue(themeManager.getThemeNames().isEmpty());
-        ThemeDescriptor themeDescriptor1=  new ThemeDescriptor();
+        assertTrue(ThemeManager.getThemeNames().isEmpty());
+        ThemeDescriptor themeDescriptor1 = new ThemeDescriptor();
         themeDescriptor1.setName("theme1");
         themeDescriptor1.setConfigured(true);
         typeRegistry.register(themeDescriptor1);
-        assertTrue(themeManager.getThemeNames(false).contains("theme1"));
-        assertTrue(themeManager.getThemeNames(true).isEmpty());
-        
-        ThemeDescriptor themeDescriptor2 =  new ThemeDescriptor();
+        assertTrue(ThemeManager.getThemeNames().contains("theme1"));
+
+        ThemeDescriptor themeDescriptor2 = new ThemeDescriptor();
         themeDescriptor2.setName("theme2");
         themeDescriptor2.setConfigured(false);
         typeRegistry.register(themeDescriptor2);
-        assertFalse(themeManager.getThemeNames(false).contains("theme2"));
-        assertTrue(themeManager.getThemeNames(true).contains("theme2"));
-       
+        assertTrue(ThemeManager.getThemeNames().contains("theme2"));
+
         // customize theme2
-        ThemeDescriptor themeDescriptor3 =  new ThemeDescriptor();
+        ThemeDescriptor themeDescriptor3 = new ThemeDescriptor();
         themeDescriptor3.setName("theme3");
         themeDescriptor3.setConfigured(false);
         themeDescriptor2.setCustomized(true);
         typeRegistry.register(themeDescriptor3);
-        assertFalse(themeManager.getThemeNames(false).contains("theme3"));
-        assertTrue(themeManager.getThemeNames(true).contains("theme3"));
-        assertFalse(themeManager.getThemeNames(true).contains("theme2"));
+        assertTrue(ThemeManager.getThemeNames().contains("theme3"));
+        assertFalse(ThemeManager.getThemeNames().contains("theme2"));
+
+        // template engines
+        ThemeDescriptor themeDescriptor4 = new ThemeDescriptor();
+        themeDescriptor4.setName("theme4");
+        themeDescriptor4.setConfigured(true);
+        typeRegistry.register(themeDescriptor4);
+        assertTrue(ThemeManager.getThemeNames().contains("theme4"));
+        assertTrue(ThemeManager.getThemeNames("jsf-facelets").contains("theme4"));
+        assertTrue(ThemeManager.getThemeNames("freemarker").contains("theme4"));
+
+        List<String> templateEngines = new ArrayList<String>();
+        templateEngines.add("jsf-facelets");
+        themeDescriptor4.setTemplateEngines(templateEngines);
+
+        assertTrue(ThemeManager.getThemeNames("jsf-facelets").contains("theme4"));
+        assertFalse(ThemeManager.getThemeNames("freemarker").contains("theme4"));
+
+        templateEngines.add("freemarker");
+        themeDescriptor4.setTemplateEngines(templateEngines);
+        assertTrue(ThemeManager.getThemeNames().contains("theme4"));
+        assertTrue(ThemeManager.getThemeNames("jsf-facelets").contains("theme4"));
+        assertTrue(ThemeManager.getThemeNames("freemarker").contains("theme4"));
     }
 
     public void testGetPageNames() throws NodeException {
@@ -171,7 +190,7 @@ public class TestThemeManager extends NXRuntimeTestCase {
         assertNull(ThemeManager.getThemeOf(cell));
     }
 
-    public void testBelongToSameThemef() throws NodeException {
+    public void testBelongToSameTheme() throws NodeException {
         Element theme1 = ElementFactory.create("theme");
         Element page11 = ElementFactory.create("page");
         Element page12 = ElementFactory.create("page");
@@ -374,7 +393,9 @@ public class TestThemeManager extends NXRuntimeTestCase {
 
     public void testRemoveOrphanedFormatsOnTestTheme() throws ThemeIOException,
             ThemeException {
-        ThemeParser.registerTheme("theme.xml");
+        ThemeDescriptor themeDef = new ThemeDescriptor();
+        themeDef.setSrc("theme.xml");
+        ThemeParser.registerTheme(themeDef);
         List<Format> formatsBefore = themeManager.listFormats();
         themeManager.removeOrphanedFormats();
         List<Format> formatsAfter = themeManager.listFormats();

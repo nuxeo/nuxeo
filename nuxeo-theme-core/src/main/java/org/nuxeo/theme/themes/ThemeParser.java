@@ -20,6 +20,7 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -71,8 +72,9 @@ public class ThemeParser {
 
     private static final XPath xpath = XPathFactory.newInstance().newXPath();
 
-    public static String registerTheme(final String src)
+    public static String registerTheme(final ThemeDescriptor themeDescriptor)
             throws ThemeIOException {
+        final String src = themeDescriptor.getSrc();
         String themeName = null;
         URL url = null;
         InputStream in = null;
@@ -89,7 +91,7 @@ public class ThemeParser {
 
         try {
             in = url.openStream();
-            themeName = registerTheme(in);
+            themeName = registerTheme(themeDescriptor, in);
         } catch (FileNotFoundException e) {
             throw new ThemeIOException("File not found: " + src, e);
         } catch (IOException e) {
@@ -110,8 +112,8 @@ public class ThemeParser {
         return themeName;
     }
 
-    private static String registerTheme(final InputStream in)
-            throws ThemeIOException, ThemeException {
+    private static String registerTheme(final ThemeDescriptor themeDescriptor,
+            final InputStream in) throws ThemeIOException, ThemeException {
         String themeName = null;
 
         final InputSource is = new InputSource(in);
@@ -170,9 +172,19 @@ public class ThemeParser {
         // create a new theme
         ThemeElement theme = (ThemeElement) ElementFactory.create("theme");
         theme.setName(themeName);
-        String description = docElem.getAttribute("description");
+        Node description = docElem.getAttributes().getNamedItem("description");
         if (description != null) {
-            theme.setDescription(description);
+            theme.setDescription(description.getNodeValue());
+        }
+
+        Node templateEngines = docElem.getAttributes().getNamedItem(
+                "template-engines");
+        if (templateEngines != null) {
+            themeDescriptor.setTemplateEngines(Arrays.asList(templateEngines.getNodeValue().split(
+                    ",")));
+            for (String s : themeDescriptor.getTemplateEngines()) {
+                System.out.println(s);
+            }
         }
 
         // register custom presets

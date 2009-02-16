@@ -943,12 +943,12 @@ NXThemesEditor.exit = function() {
   });
 };
 
-NXThemesEditor.repairTheme = function(themeName) {
+NXThemesEditor.repairTheme = function(src) {
     var url = nxthemesBasePath + "/nxthemes-editor/repair_theme"; 
     new Ajax.Request(url, {
          method: 'post',
          parameters: {
-             name: themeName
+    	     src: src
          },
          onSuccess: function(r) {
         	 NXThemesEditor.highlightSaveButton();

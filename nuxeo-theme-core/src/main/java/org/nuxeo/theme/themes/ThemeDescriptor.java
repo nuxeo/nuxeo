@@ -17,6 +17,7 @@ package org.nuxeo.theme.themes;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Date;
+import java.util.List;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -31,7 +32,7 @@ public class ThemeDescriptor implements Type {
     private boolean customized = false;
 
     private Date lastSaved;
-    
+
     private Date lastLoaded;
 
     private boolean loadingFailed = false;
@@ -39,6 +40,8 @@ public class ThemeDescriptor implements Type {
     private String name;
 
     private URL url;
+
+    private List<String> templateEngines;
 
     @XNode("src")
     public String src = "";
@@ -71,7 +74,7 @@ public class ThemeDescriptor implements Type {
         return !isXmlConfigured();
     }
 
-    private boolean isLoaded() {
+    public boolean isLoaded() {
         return lastLoaded != null;
     }
 
@@ -154,6 +157,22 @@ public class ThemeDescriptor implements Type {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public List<String> getTemplateEngines() {
+        return templateEngines;
+    }
+
+    public void setTemplateEngines(List<String> templateEngines) {
+        this.templateEngines = templateEngines;
+    }
+
+    public boolean isCompatibleWith(final String templateEngine) {
+        if (templateEngines == null || templateEngines.isEmpty()
+                || templateEngines.contains(templateEngine)) {
+            return true;
+        }
+        return false;
     }
 
 }

@@ -24,6 +24,7 @@ import org.nuxeo.theme.formats.Format;
 import org.nuxeo.theme.formats.styles.Style;
 import org.nuxeo.theme.presets.PresetManager;
 import org.nuxeo.theme.presets.PresetType;
+import org.nuxeo.theme.themes.ThemeDescriptor;
 import org.nuxeo.theme.themes.ThemeManager;
 import org.nuxeo.theme.themes.ThemeParser;
 
@@ -42,7 +43,9 @@ public class TestThemeParser extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-contrib.xml");
         deployContrib("org.nuxeo.theme.core.tests", "fragment-config.xml");
 
-        ThemeParser.registerTheme("theme.xml");
+        ThemeDescriptor themeDef = new ThemeDescriptor();
+        themeDef.setSrc("theme.xml");
+        ThemeParser.registerTheme(themeDef);
 
         themeManager = Manager.getThemeManager();
         theme1 = themeManager.getThemeByName("theme1");

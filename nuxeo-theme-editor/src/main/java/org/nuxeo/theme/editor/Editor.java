@@ -204,10 +204,10 @@ public class Editor {
                 element, null));
     }
 
-    public static void repairTheme(String themeName) throws ThemeIOException {
-        ThemeElement theme = Manager.getThemeManager().getThemeByName(themeName);
+    public static void repairTheme(String src) throws ThemeIOException, ThemeException {
+        ThemeElement theme = Manager.getThemeManager().getThemeBySrc(src);
         if (theme == null) {
-            throw new ThemeIOException("Unknown theme: " + themeName);
+            throw new ThemeIOException("Unknown theme: " + src);
         }
         ThemeManager.repairTheme(theme);
         EventManager eventManager = Manager.getEventManager();
@@ -218,16 +218,16 @@ public class Editor {
     }
 
     public static void saveTheme(String src, int indent)
-            throws ThemeIOException {
+            throws ThemeIOException, ThemeException {
         ThemeManager.saveTheme(src, indent);
     }
 
-    public static void deleteTheme(String src) throws ThemeIOException {
+    public static void deleteTheme(String src) throws ThemeIOException, ThemeException {
         ThemeManager themeManager = Manager.getThemeManager();
         themeManager.deleteTheme(src);
     }
 
-    public static void saveChanges() throws ThemeIOException {
+    public static void saveChanges() throws ThemeIOException, ThemeException {
         ThemeManager themeManager = Manager.getThemeManager();
         Long lastModified = themeManager.getLastModified();
         boolean ok = false;
@@ -735,7 +735,7 @@ public class Editor {
                 new EventContext(null, null));
     }
 
-    public static void loadTheme(String src) throws ThemeIOException {
+    public static void loadTheme(String src) throws ThemeIOException, ThemeException {
         Manager.getThemeManager().loadTheme(src);
         EventManager eventManager = Manager.getEventManager();
         eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(null,

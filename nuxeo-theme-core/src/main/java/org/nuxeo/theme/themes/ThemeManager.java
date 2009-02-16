@@ -179,22 +179,24 @@ public final class ThemeManager implements Registrable {
         return defaultTheme;
     }
 
-    public Set<String> getThemeNames(boolean custom) {
+    public static Set<String> getThemeNames(final String templateEngine) {
         Set<String> names = new HashSet<String>();
         for (ThemeDescriptor themeDef : getThemeDescriptors()) {
             // Skip customized themes
             if (themeDef.isCustomized()) {
                 continue;
             }
-            if (custom ^ !themeDef.isCustom()) {
-                names.add(themeDef.getName());
+            if (templateEngine != null
+                    && !themeDef.isCompatibleWith(templateEngine)) {
+                continue;
             }
+            names.add(themeDef.getName());
         }
         return names;
     }
 
-    public Set<String> getThemeNames() {
-        return getThemeNames(false);
+    public static Set<String> getThemeNames() {
+        return getThemeNames(null);
     }
 
     public Set<String> getPageNames(final String themeName) {
@@ -271,6 +273,18 @@ public final class ThemeManager implements Registrable {
         final String templateEngineName = path[3];
         return (TemplateEngineType) Manager.getTypeRegistry().lookup(
                 TypeFamily.TEMPLATE_ENGINE, templateEngineName);
+    }
+
+    public ThemeElement getThemeBySrc(final String src) throws ThemeException {
+        ThemeDescriptor themeDef = getThemeDescriptor(src);
+        if (themeDef.isCustomized()) {
+            throw new ThemeException("Cannot access customized theme: " + src);
+        }
+        if (!themeDef.isLoaded()) {
+            throw new ThemeException("Theme not loaded yet: " + src);
+        }
+        String themeName = themeDef.getName();
+        return getThemeByName(themeName);
     }
 
     public ThemeElement getThemeByUrl(final URL url) {
@@ -715,16 +729,14 @@ public final class ThemeManager implements Registrable {
     }
 
     // Theme management
-    public void loadTheme(String src) throws ThemeIOException {
-        TypeRegistry typeRegistry = Manager.getTypeRegistry();
-        ThemeDescriptor themeDescriptor = (ThemeDescriptor) typeRegistry.lookup(
-                TypeFamily.THEME, src);
+    public void loadTheme(String src) throws ThemeIOException, ThemeException {
+        ThemeDescriptor themeDescriptor = getThemeDescriptor(src);
         if (themeDescriptor == null) {
             throw new ThemeIOException("Theme not found: " + src);
         }
         final String oldThemeName = themeDescriptor.getName();
         themeDescriptor.setLoadingFailed(true);
-        String themeName = ThemeParser.registerTheme(src);
+        String themeName = ThemeParser.registerTheme(themeDescriptor);
         if (themeName == null) {
             throw new ThemeIOException("Could not parse theme: " + src);
         }
@@ -746,21 +758,13 @@ public final class ThemeManager implements Registrable {
         log.debug("Loaded theme: " + src);
     }
 
-    public void deleteTheme(String src) throws ThemeIOException {
-        TypeRegistry typeRegistry = Manager.getTypeRegistry();
-        ThemeDescriptor themeDescriptor = (ThemeDescriptor) typeRegistry.lookup(
-                TypeFamily.THEME, src);
-
-        if (themeDescriptor == null) {
-            throw new ThemeIOException("Theme not found: " + src);
-        }
-
+    public void deleteTheme(String src) throws ThemeIOException, ThemeException {
+        ThemeDescriptor themeDescriptor = getThemeDescriptor(src);
         if (themeDescriptor.isXmlConfigured()) {
             throw new ThemeIOException(
                     "Themes registered as contributions cannot be deleted: "
                             + src);
         }
-
         final ThemeManager themeManager = Manager.getThemeManager();
         final String themeName = themeDescriptor.getName();
         ThemeElement theme = themeManager.getThemeByName(themeName);
@@ -821,15 +825,14 @@ public final class ThemeManager implements Registrable {
         }
     }
 
-    public static void saveTheme(final String src) throws ThemeIOException {
+    public static void saveTheme(final String src) throws ThemeIOException,
+            ThemeException {
         saveTheme(src, DEFAULT_THEME_INDENT);
     }
 
     public static void saveTheme(final String src, final int indent)
-            throws ThemeIOException {
-        TypeRegistry typeRegistry = Manager.getTypeRegistry();
-        ThemeDescriptor themeDescriptor = (ThemeDescriptor) typeRegistry.lookup(
-                TypeFamily.THEME, src);
+            throws ThemeIOException, ThemeException {
+        ThemeDescriptor themeDescriptor = getThemeDescriptor(src);
 
         if (themeDescriptor == null) {
             throw new ThemeIOException("Theme not found: " + src);
@@ -841,9 +844,7 @@ public final class ThemeManager implements Registrable {
         }
 
         ThemeSerializer serializer = new ThemeSerializer();
-        String themeName = themeDescriptor.getName();
-        ThemeElement theme = Manager.getThemeManager().getThemeByName(themeName);
-        final String xml = serializer.serializeToXml(theme, indent);
+        final String xml = serializer.serializeToXml(src, indent);
 
         // Write the file
         URL url = null;
@@ -1112,12 +1113,17 @@ public final class ThemeManager implements Registrable {
         return themeDescriptors;
     }
 
-    public static ThemeDescriptor getThemeDescriptor(String src) {
-        return (ThemeDescriptor) Manager.getTypeRegistry().lookup(
+    public static ThemeDescriptor getThemeDescriptor(String src)
+            throws ThemeException {
+        ThemeDescriptor themeDef = (ThemeDescriptor) Manager.getTypeRegistry().lookup(
                 TypeFamily.THEME, src);
+        if (themeDef == null) {
+            throw new ThemeException("Unknown theme: " + src);
+        }
+        return themeDef;
     }
 
-    public static void deleteThemeDescriptor(String src) {
+    public static void deleteThemeDescriptor(String src) throws ThemeException {
         ThemeDescriptor themeDef = getThemeDescriptor(src);
         Manager.getTypeRegistry().unregister(themeDef);
     }
