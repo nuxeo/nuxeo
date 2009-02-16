@@ -1590,7 +1590,15 @@ public class Mapper {
         }
 
         if (isLogEnabled()) {
-            logSQL(queryMaker.selectInfo.sql, queryMaker.selectParams);
+            String sql = queryMaker.selectInfo.sql;
+            if (query.getLimit() != 0) {
+                sql += " -- LIMIT " + query.getLimit() + " OFFSET "
+                        + query.getOffset();
+            }
+            if (countTotal) {
+                sql += " -- COUNT TOTAL";
+            }
+            logSQL(sql, queryMaker.selectParams);
         }
         PreparedStatement ps = connection.prepareStatement(
                 queryMaker.selectInfo.sql, ResultSet.TYPE_SCROLL_INSENSITIVE,
@@ -1639,6 +1647,20 @@ public class Mapper {
                 available = rs.next();
                 limit--;
             }
+
+            // total size
+            if (countTotal && totalSize == -1) {
+                if (!available && rowNum != 0) {
+                    // last row read was the actual last
+                    totalSize = rowNum;
+                } else {
+                    // available if limit reached with some left
+                    // rowNum == 0 if skipped too far
+                    rs.last();
+                    totalSize = rs.getRow();
+                }
+            }
+
             if (isLogEnabled()) {
                 List<Serializable> debugIds = ids;
                 String end = "";
@@ -1654,20 +1676,10 @@ public class Mapper {
                     }
                     end = "...";
                 }
-                log("  -> " + debugIds + end);
-            }
-
-            // total size
-            if (countTotal && totalSize == -1) {
-                if (!available && rowNum != 0) {
-                    // last row read was the actual last
-                    totalSize = rowNum;
-                } else {
-                    // available if limit reached with some left
-                    // rowNum == 0 if skipped too far
-                    rs.last();
-                    totalSize = rs.getRow();
+                if (countTotal) {
+                    end += " (total " + totalSize + ')';
                 }
+                log("  -> " + debugIds + end);
             }
 
             return new PartialList<Serializable>(ids, totalSize);
