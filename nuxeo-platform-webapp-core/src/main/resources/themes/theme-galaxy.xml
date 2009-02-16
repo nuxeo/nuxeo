@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<theme name="galaxy">
+<theme name="galaxy" template-engines="jsf-facelets">
   <layout>
     <page name="default">
       <section>
