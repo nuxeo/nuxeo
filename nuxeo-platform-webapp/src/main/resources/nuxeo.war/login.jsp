@@ -2,6 +2,7 @@
 <!-- Nuxeo Enterprise Platform, svn $Revision: 22925 $ -->
 <%@ page contentType="text/html; charset=UTF-8"%>
 <%@ page language="java"%>
+<%@ page import="org.nuxeo.runtime.api.Framework"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <html>
@@ -65,7 +66,7 @@ H2 {
 
 .login {
   background:transparent url(/nuxeo/img/theme_galaxy/news_bg.png) 0 repeat-x;
-  border: 1px solid #4E9AE1;  
+  border: 1px solid #4E9AE1;
   padding:20px 75px 20px 70px;
   }
 
@@ -131,7 +132,7 @@ nxthemes css is not used in login.jsp */
   width:400px;
   padding-top:0px;
   }
-  
+
 .labelCorp ul{
   margin:0;
   padding:0 42px 0 0;
@@ -151,12 +152,12 @@ nxthemes css is not used in login.jsp */
   font:normal 9px "Lucida Grande", sans-serif;
   padding-top:0px;
   }
-  
+
 .labelCorp a:hover {
   text-decoration:underline;
   }
 
-  
+
 .block_container {
   margin-right:50px;
   border:none;
@@ -242,17 +243,17 @@ nxthemes css is not used in login.jsp */
                  </tr>
                  <tr>
                  <td></td>
-                 <td>   
+                 <td>
                                     <% // label.login.logIn %>
                 <input type="hidden" name="form_submitted_marker"
                     id="form_submitted_marker">
                     <input class="login_button" type="submit" name="Submit"
                     value="<fmt:message bundle="${messages}" key="label.login.logIn" />">
-               
+
               </td>
             </tr>
             <tr>
-              <td>        
+              <td>
           <c:if test="${param.loginFailed}">
             <div class="errorMessage">
                   <fmt:message bundle="${messages}" key="label.login.invalidUsernameOrPassword" />
@@ -269,7 +270,7 @@ nxthemes css is not used in login.jsp */
       </form>
       </td>
       <td class="news_container" align="right" valign="center">
-      <iframe class="block_container" src="http://www.nuxeo.com/nuxeoep_login/news/"></iframe>
+      <iframe class="block_container" style="display:none" onload="javascript:this.style.display='block';" src="http://www.nuxeo.com/nuxeoep_login/news/"></iframe>
       </td>
     </tr>
       <tr class="footer">
@@ -280,7 +281,15 @@ nxthemes css is not used in login.jsp */
         </td>
         <td align="right" class="version">
         <div class="loginLegal">
-        <fmt:message bundle="${messages}" key="label.login.welcomeToNuxeoEnterprise" />
+         <%
+         String productName = Framework.getProperty("org.nuxeo.ecm.product.name");
+         String productVersion = Framework.getProperty("org.nuxeo.ecm.product.version");
+         %>
+
+         <%=productName%>
+         &nbsp;
+         <%=productVersion%>
+
         </div>
         </td>
       </tr>
