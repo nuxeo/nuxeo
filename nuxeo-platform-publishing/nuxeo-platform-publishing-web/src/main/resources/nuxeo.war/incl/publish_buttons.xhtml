@@ -13,7 +13,7 @@ function confirmDeleteDocuments() {
 }
 </script>
 
-  <f:subview rendered="#{!empty publishActions.actionsForPublishDocument}">
+  <f:subview rendered="#{nxd:hasPermission(currentDocument, 'Write')}">
     <table class="dataInput" border="0">
       <tr>
         <td class="labelColumn">
@@ -27,7 +27,8 @@ function confirmDeleteDocuments() {
   </f:subview>
 
   <div id="selection_buttons">
-    <nxu:dataList var="sel_action" value="#{publishActions.actionsForPublishDocument}">
+    <nxu:dataList var="sel_action" value="#{publishActions.actionsForPublishDocument}"
+      rendered="#{nxd:hasPermission(currentDocument, 'Write')}">
       <span id="#{sel_action.id}">
         <nxh:commandButton
           styleClass="button"
