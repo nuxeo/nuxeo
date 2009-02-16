@@ -166,7 +166,8 @@ public class QueryModel implements Serializable {
             log.debug("execute query: " + query.replace('\n', ' '));
         }
 
-        DocumentModelList documentModelList = session.query(query, max);
+        DocumentModelList documentModelList = session.query(query, null, max,
+                0, true);
         int size = documentModelList.size();
         List<ResultItem> resultItems = new ArrayList<ResultItem>(size);
         for (DocumentModel doc : documentModelList) {
@@ -184,7 +185,7 @@ public class QueryModel implements Serializable {
             resultItems.add(new DocumentModelResultItem(doc));
         }
         ResultSet resultSet = new ResultSetImpl(query, session, 0, max,
-                resultItems, size, size);
+                resultItems, (int) documentModelList.totalSize(), size);
         return new SearchPageProvider(resultSet, isSortable(), sortInfo, query);
     }
 
