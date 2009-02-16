@@ -129,6 +129,11 @@ public interface PublishActions extends SelectDataModelListener {
     List<DocumentModelTreeNode> getSelectedSections();
 
     /**
+     * Returns true if there are selected sections.
+     */
+    boolean getHasSelectedSections();
+
+    /**
      * Returns true if authenticated user has all permissions on document.
      *
      * @throws ClientException

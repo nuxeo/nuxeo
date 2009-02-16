@@ -298,6 +298,11 @@
       <category>PUBLISH_DOCUMENT</category>
       <filter-id>not_review_documents</filter-id>
       <filter-id>edit</filter-id>
+      <filter id="publishingSectionSelected">
+        <rule grant="true">
+          <condition>#{publishActions.hasSelectedSections}</condition>
+        </rule>
+      </filter>
     </action>
 
     <!--  Actions for the document selection  -->

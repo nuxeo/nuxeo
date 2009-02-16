@@ -22,12 +22,6 @@
       rendered="#{currentPublishingSectionsModel.rowCount > 0}">
       <!-- id and selection -->
       <nxu:column styleClass="iconColumn" rendered="true">
-        <!-- XXX AT: select all buggy right now -->
-        <f:facet name="header">
-          <h:selectBooleanCheckbox rendered="false"
-            onclilck="selectDataTablePage('#{currentPublishingSectionsModel.name}', this.checked)">
-          </h:selectBooleanCheckbox>
-        </f:facet>
         <h:selectBooleanCheckbox value="#{row.selected}"
             onclick="selectSectionForPublish('#{row.data.document.id}', this.checked)"
             rendered="#{row.data.document.ref != currentDocument.parentRef}">

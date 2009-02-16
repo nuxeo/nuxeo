@@ -43,6 +43,7 @@ import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.annotations.remoting.WebRemote;
 import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.faces.FacesMessages;
+import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -95,9 +96,7 @@ public class PublishActionsBean implements PublishActions, Serializable {
 
     private static final String PUBLISH_DOCUMENT = "PUBLISH_DOCUMENT";
 
-    protected static final String DOMAIN_SECTIONS = "DOMAIN_SECTIONS";
-
-    private static final String DOMAIN_TYPE = "Domain";
+    private static final String DOMAIN_SECTIONS = "DOMAIN_SECTIONS";
 
     @In(create = true)
     protected transient NuxeoPrincipal currentUser;
@@ -180,7 +179,7 @@ public class PublishActionsBean implements PublishActions, Serializable {
      * Called by publish_buttons.xhtml
      */
     public List<Action> getActionsForPublishDocument() {
-        return webActions.getActionsList(PUBLISH_DOCUMENT);
+        return webActions.getUnfiltredActionsList(PUBLISH_DOCUMENT);
     }
 
     private Set<String> getTypeNamesForFacet(String facetName) {
@@ -206,7 +205,7 @@ public class PublishActionsBean implements PublishActions, Serializable {
         SelectionModelGetter selectionModelGetter = new SelectionModelGetter(
                 documentManager, navigationContext.getCurrentDocument(),
                 getSectionRootTypes(), getSectionTypes(),
-                queryModelActions.get("DOMAIN_SECTIONS"));
+                queryModelActions.get(DOMAIN_SECTIONS));
         selectionModelGetter.runUnrestricted();
         sectionsModel = selectionModelGetter.getDataModel();
     }
@@ -441,7 +440,22 @@ public class PublishActionsBean implements PublishActions, Serializable {
             getSelectedSections().remove(node);
         }
 
-        return "OK";
+        return computePublishSelectionActions();
+    }
+
+    private String computePublishSelectionActions() {
+        List<Action> availableActions = getActionsForPublishDocument();
+        List<String> availableActionIds = new ArrayList<String>();
+        for (Action a : availableActions) {
+            if (a.getAvailable()) {
+                availableActionIds.add(a.getId());
+            }
+        }
+        String res = "";
+        if (!availableActionIds.isEmpty()) {
+            res = StringUtils.join(availableActionIds.toArray(), "|");
+        }
+        return res;
     }
 
     /*
@@ -477,6 +491,14 @@ public class PublishActionsBean implements PublishActions, Serializable {
         }
     }
 
+    public boolean getHasSelectedSections() {
+        List<DocumentModelTreeNode> selected = getSelectedSections();
+        if (selected != null && !selected.isEmpty()) {
+            return true;
+        }
+        return false;
+    }
+
     public void notifyEvent(String eventId,
             Map<String, Serializable> properties, String comment,
             String category, DocumentModel dm) throws ClientException {
@@ -497,7 +519,8 @@ public class PublishActionsBean implements PublishActions, Serializable {
         properties.put(CoreEventConstants.DOC_LIFE_CYCLE,
                 dm.getCurrentLifeCycleState());
 
-        DocumentEventContext ctx = new DocumentEventContext(documentManager,documentManager.getPrincipal(), dm);
+        DocumentEventContext ctx = new DocumentEventContext(documentManager,
+                documentManager.getPrincipal(), dm);
 
         ctx.setProperties(properties);
         ctx.setComment(comment);
@@ -613,7 +636,8 @@ public class PublishActionsBean implements PublishActions, Serializable {
             return publishingService.hasValidationTask(
                     navigationContext.getCurrentDocument(), currentUser);
         } catch (PublishingException e) {
-            throw new IllegalStateException("Publishing service not deployed properly.", e);
+            throw new IllegalStateException(
+                    "Publishing service not deployed properly.", e);
         }
     }
 
@@ -621,7 +645,8 @@ public class PublishActionsBean implements PublishActions, Serializable {
         try {
             return publishingService.isPublished(navigationContext.getCurrentDocument());
         } catch (PublishingException e) {
-            throw new IllegalStateException("Publishing service not deployed properly.", e);
+            throw new IllegalStateException(
+                    "Publishing service not deployed properly.", e);
         }
     }
 }
