@@ -312,7 +312,9 @@ public abstract class Dialect {
      * When doing a SELECT DISTINCT that uses a ORDER BY, do the keys along
      * which we order have to be mentioned in the DISTINCT clause?
      */
-    public abstract boolean needsOrderByKeysAfterDistinct();
+    public boolean needsOrderByKeysAfterDistinct() {
+        return true;
+    }
 
     /**
      * When using a CLOB field in an expression, is some casting required and

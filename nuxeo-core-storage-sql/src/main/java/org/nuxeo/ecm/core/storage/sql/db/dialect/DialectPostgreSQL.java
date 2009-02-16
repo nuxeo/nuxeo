@@ -105,11 +105,6 @@ public class DialectPostgreSQL extends Dialect {
     }
 
     @Override
-    public boolean needsOrderByKeysAfterDistinct() {
-        return true;
-    }
-
-    @Override
     public String getSecurityCheckSql(String idColumnName) {
         return String.format("NX_ACCESS_ALLOWED(%s, ?, ?)", idColumnName);
     }

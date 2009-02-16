@@ -83,7 +83,7 @@ public class DialectOracle extends Dialect {
 
     @Override
     public int getFulltextIndexedColumns() {
-        throw new UnsupportedOperationException();
+        return 0; // TODO
     }
 
     @Override
@@ -97,8 +97,8 @@ public class DialectOracle extends Dialect {
     }
 
     @Override
-    public boolean needsOrderByKeysAfterDistinct() {
-        return false;
+    public String getClobCast(boolean inOrderBy) {
+        return "CAST(%s AS NVARCHAR2(%d))";
     }
 
     @Override
@@ -114,7 +114,61 @@ public class DialectOracle extends Dialect {
     @Override
     public Collection<ConditionalStatement> getConditionalStatements(
             Model model, Database database) {
+        String idType; // for function parameters
+        String declaredType; // for PL/SQL declarations
+        switch (model.idGenPolicy) {
+        case APP_UUID:
+            idType = "VARCHAR2";
+            declaredType = "VARCHAR2(36)";
+            break;
+        case DB_IDENTITY:
+            idType = "INTEGER";
+            declaredType = "INTEGER";
+            break;
+        default:
+            throw new AssertionError(model.idGenPolicy);
+        }
+
         List<ConditionalStatement> statements = new LinkedList<ConditionalStatement>();
+
+        statements.add(new ConditionalStatement(
+                true, // early
+                Boolean.FALSE, // no drop needed
+                null, //
+                null, //
+                String.format(
+                        "CREATE OR REPLACE FUNCTION NX_IN_TREE(id %s, baseid %<s) " //
+                                + "RETURN NUMBER IS " //
+                                + "  curid %s := id; " //
+                                + "BEGIN" //
+                                + "  IF baseid IS NULL OR id IS NULL OR baseid = id THEN" //
+                                + "    RETURN 0;" //
+                                + "  END IF;" //
+                                + "  LOOP" //
+                                + "    SELECT parentid INTO curid FROM hierarchy WHERE hierarchy.id = curid;" //
+                                + "    IF curid IS NULL THEN" //
+                                + "      RETURN 0; " //
+                                + "    ELSIF curid = baseid THEN" //
+                                + "      RETURN 1;" //
+                                + "    END IF;" //
+                                + "  END LOOP; " //
+                                + "END;" //
+                        , idType, declaredType)));
+
+        statements.add(new ConditionalStatement(
+                true, // early
+                Boolean.FALSE, // no drop needed
+                null, //
+                null, //
+                String.format(
+                        "CREATE OR REPLACE FUNCTION NX_ACCESS_ALLOWED" //
+                                + "(id %s, users VARCHAR2, permissions VARCHAR2) " //
+                                + "RETURN NUMBER IS " //
+                                + "BEGIN" //
+                                + "  RETURN 1; " // TODO
+                                + "END;" //
+                        , idType)));
+
         return statements;
     }
 

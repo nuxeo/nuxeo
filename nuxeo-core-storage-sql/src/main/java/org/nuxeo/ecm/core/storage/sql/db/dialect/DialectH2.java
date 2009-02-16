@@ -81,11 +81,6 @@ public class DialectH2 extends Dialect {
     }
 
     @Override
-    public boolean needsOrderByKeysAfterDistinct() {
-        return true;
-    }
-
-    @Override
     public String getClobCast(boolean inOrderBy) {
         if (!inOrderBy) {
             return "CAST(%s AS VARCHAR)";

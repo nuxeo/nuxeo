@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.storage.sql.test.repo.repository">
+  <extension target="org.nuxeo.ecm.core.api.repository.RepositoryManager"
+    point="repositories">
+    <repository name="test" />
+  </extension>
+  <extension target="org.nuxeo.ecm.core.repository.RepositoryService"
+    point="repository">
+    <repository name="test"
+      factory="org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryFactory">
+      <repository>
+        <xa-datasource>oracle.jdbc.xa.client.OracleXADataSource</xa-datasource>
+        <property name="URL">jdbc:oracle:thin:@172.16.245.130:1521:XE</property>
+        <property name="User">NUXEO</property>
+        <property name="Password">NUXEO</property>
+      </repository>
+    </repository>
+  </extension>
+</component>

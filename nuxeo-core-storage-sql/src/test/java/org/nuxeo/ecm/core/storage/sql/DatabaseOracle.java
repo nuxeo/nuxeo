@@ -39,7 +39,7 @@ public class DatabaseOracle extends DatabaseHelper {
 
     private static final Log log = LogFactory.getLog(DatabaseOracle.class);
 
-    public static final String ORACLE_URL = "jdbc:oracle:thin:@172.16.245.129:1521:XE";
+    public static final String ORACLE_URL = "jdbc:oracle:thin:@172.16.245.130:1521:XE";
 
     public static final String ORACLE_USER = "NUXEO";
 
