@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
@@ -164,7 +165,10 @@ public abstract class CommandLineBasedConverter implements ExternalConverter {
             ExecResult result = cls.execCommand(commandName, params);
 
             if (!result.isSuccessful()) {
-                throw new ConversionException("CommandLine returned code " + result.getReturnCode() + " : ", result.getError());
+                throw new ConversionException("CommandLine returned code "
+                        + result.getReturnCode() + ":\n  "
+                        + StringUtils.join(result.getOutput(), "\n  "),
+                        result.getError());
             }
 
             return new CmdReturn(params, result.getOutput());
