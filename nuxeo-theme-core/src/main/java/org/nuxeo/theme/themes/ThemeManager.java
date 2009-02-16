@@ -280,9 +280,6 @@ public final class ThemeManager implements Registrable {
         if (themeDef.isCustomized()) {
             throw new ThemeException("Cannot access customized theme: " + src);
         }
-        if (!themeDef.isLoaded()) {
-            throw new ThemeException("Theme not loaded yet: " + src);
-        }
         String themeName = themeDef.getName();
         return getThemeByName(themeName);
     }
