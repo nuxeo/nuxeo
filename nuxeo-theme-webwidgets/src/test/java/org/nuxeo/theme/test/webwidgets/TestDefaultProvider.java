@@ -19,7 +19,6 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 
-import org.nuxeo.theme.webwidgets.DefaultProvider;
 import org.nuxeo.theme.webwidgets.Provider;
 import org.nuxeo.theme.webwidgets.Widget;
 import org.nuxeo.theme.webwidgets.WidgetState;
@@ -27,7 +26,7 @@ import org.nuxeo.theme.webwidgets.WidgetState;
 public class TestDefaultProvider extends TestCase {
 
     public void testCreateWidget() {
-        Provider provider = new DefaultProvider();
+        Provider provider = new FakeDefaultProvider();
         Widget widget1 = provider.createWidget("test widget");
         Widget widget2 = provider.createWidget("test widget 2");
         assertEquals("test widget", widget1.getName());
@@ -37,7 +36,7 @@ public class TestDefaultProvider extends TestCase {
     }
 
     public void testGetWidgetByUid() {
-        Provider provider = new DefaultProvider();
+        Provider provider = new FakeDefaultProvider();
         Widget widget1 = provider.createWidget("test widget");
         Widget widget2 = provider.createWidget("test widget 2");
         assertEquals(widget1, provider.getWidgetByUid("0"));
@@ -45,7 +44,7 @@ public class TestDefaultProvider extends TestCase {
     }
 
     public void testAddAndGetWidgets() {
-        Provider provider = new DefaultProvider();
+        Provider provider = new FakeDefaultProvider();
         Widget widget1 = provider.createWidget("test widget");
         Widget widget2 = provider.createWidget("test widget 2");
         provider.addWidget(widget1, "region A", 0);
@@ -66,7 +65,7 @@ public class TestDefaultProvider extends TestCase {
     }
 
     public void testReorderWidgets() {
-        Provider provider = new DefaultProvider();
+        Provider provider = new FakeDefaultProvider();
         Widget widget1 = provider.createWidget("test widget");
         Widget widget2 = provider.createWidget("test widget");
         Widget widget3 = provider.createWidget("test widget");
@@ -100,7 +99,7 @@ public class TestDefaultProvider extends TestCase {
     }
 
     public void testRemoveWidgets() {
-        Provider provider = new DefaultProvider();
+        Provider provider = new FakeDefaultProvider();
         Widget widget1 = provider.createWidget("test widget");
         Widget widget2 = provider.createWidget("test widget");
         Widget widget3 = provider.createWidget("test widget");
@@ -124,7 +123,7 @@ public class TestDefaultProvider extends TestCase {
     }
 
     public void testMoveWidgets() {
-        Provider provider = new DefaultProvider();
+        Provider provider = new FakeDefaultProvider();
         Widget widget1 = provider.createWidget("test widget");
         Widget widget2 = provider.createWidget("test widget");
         Widget widget3 = provider.createWidget("test widget");
@@ -168,7 +167,7 @@ public class TestDefaultProvider extends TestCase {
     }
 
     public void testState() {
-        Provider provider = new DefaultProvider();
+        Provider provider = new FakeDefaultProvider();
         Widget widget = provider.createWidget("test widget");
         provider.setWidgetState(widget, WidgetState.DEFAULT);
         assertEquals(WidgetState.DEFAULT, provider.getWidgetState(widget));
@@ -177,7 +176,7 @@ public class TestDefaultProvider extends TestCase {
     }
 
     public void testPreferences() {
-        Provider provider = new DefaultProvider();
+        Provider provider = new FakeDefaultProvider();
         Widget widget = provider.createWidget("test widget");
         Map<String, String> preferences = new HashMap<String, String>();
         preferences.put("key1", "value 1");
