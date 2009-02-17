@@ -1,5 +1,6 @@
 CREDCTL := fl-credential-ctl credential.conf
 MONCTL := fl-monitor-ctl monitor.conf
+LOG_HOME := ../../target/ftest/funkload/log
 
 ifdef URL
 	FLOPS = -u $(URL) $(EXT)
@@ -7,13 +8,22 @@ else
 	FLOPS = $(EXT)
 endif
 
+ifdef REPORT_HOME
+	REPORT = $(REPORT_HOME)
+else
+	REPORT = ../../target/ftest/funkload/report
+endif
+
+
 # all test except bench
 all: start rest page test-nuxeo stop
 
 start:
+	-mkdir -p $(REPORT) $(LOG_HOME)
 	-$(MONCTL) restart
 	$(CREDCTL) restart
 	fl-run-test test_pages.py -v --simple-fetch -e testAvailable $(FLOPS)
+
 
 stop:
 	-$(MONCTL) stop
@@ -40,22 +50,20 @@ reader:
 test-nuxeo: init writer reader
 
 
-bench-nuxeo: start test-nuxeo bench-writer warmum bench-reader stop
-
 # bench nuxeo ep
+bench: start test-nuxeo bench-writer bench-reader stop
+
 bench-writer:
-	-fl-run-bench --simple-fetch -c 1:2:3:4:5 -D 60 -m 0.2 -M 1 -s 1 test_nuxeo.py Nuxeo.testWriter $(FLOPS)
-	-fl-build-report log/nuxeo-bench.xml --html -o target/report
-	-./finalize-report.sh test_writer
+	-fl-run-bench --simple-fetch -c 1:2:4:6 -D 60 -m 0.2 -M 1 -s 1 test_nuxeo.py Nuxeo.testWriter $(FLOPS)
+	-fl-build-report $(LOG_HOME)/nuxeo-bench.xml --html -o $(REPORT)
 
 warmup:
 	fl-run-test -v -m 0 -M 0 test_nuxeo.py -e testReader $(FLOPS)
 	-fl-run-bench -c 5 -D 1 -m 0 -M 0 -s 0 test_nuxeo.py Nuxeo.testReader $(FLOPS)
 
-bench-reader:
+bench-reader: warmup
 	-fl-run-bench --simple-fetch -c 1:5:10:15:20:25:30 -D 60 -m 0.1 -M 1 -s 1 test_nuxeo.py Nuxeo.testReader $(FLOPS)
-	-fl-build-report log/nx5-bench.xml --html -o target/report
-	-./finalize-report.sh test_reader
+	-fl-build-report $(LOG_HOME)/nuxeo-bench.xml --html -o $(REPORT)
 
 
 clean:

@@ -15,14 +15,9 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 # 02111-1307, USA.
 #
-"""
-This test suite contains scnerii to test/bench Nuxeo EP
+"""This test suite contains scnerii to test nuxeo/rest module.
 
-scenar test api
-scenar test init
-scenar test writer
-scenar test reader
-
+This suite is configured using the Rest.conf file.
 """
 import unittest
 from zipfile import ZipFile

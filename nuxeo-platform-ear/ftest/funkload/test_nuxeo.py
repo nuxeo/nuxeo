@@ -15,8 +15,9 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 # 02111-1307, USA.
 #
-"""
-This test suite contains scnerii to test/bench Nuxeo EP
+"""This test suite contains scnerii to test/bench a Nuxeo EP
+
+This suite is configured using the Nuxeo.conf file.
 """
 import os
 import random
@@ -40,6 +41,7 @@ class Nuxeo(NuxeoTestCase):
         import_path = self.conf_get('testWriter', 'import_path')
         self.files = [os.path.join(import_path, item)
                       for item in os.listdir(import_path)]
+        self.nb_read = self.conf_getInt('testReader', 'nb_doc')
         self.search = self.conf_getInt('testReader', 'search', 1)
 
     def testInit(self):
@@ -78,7 +80,7 @@ class Nuxeo(NuxeoTestCase):
         # create files
         for i in range(self.nb_write):
             file_path = random.choice(self.files)
-            extension = os.path.splitext(file_path)[1]
+            extension = os.path.splitext(file_path)[1][1:].upper()
             title = lipsum.getSubject(uniq=True, prefix=tag) + " " + extension
             description = tag + ' ' + self._lipsum.getParagraph()
             p.createFile(title, description, file_path)
@@ -88,7 +90,7 @@ class Nuxeo(NuxeoTestCase):
     def testReader(self):
         p = LoginPage(self).login(self.cred_member[0], self.cred_member[1])
 
-        for i in range(self.nb_write):
+        for i in range(self.nb_read):
             p = (FolderPage(self).viewDocumentPath(self.dir_path)
                  .sort(random.choice(['title', 'author', 'date', 'lifecycle']))
                  .sort(random.choice(['title', 'author', 'date', 'lifecycle']))

@@ -76,11 +76,19 @@ Layout
 
 * test_rest.py, Rest.conf
 
-  Test suite to check rest api.
+  Test suite to check rest api (nuxeo/rest.py):
+  Create a workspace, a folder and few documents, ExportTree on few documents.
 
 * test_pages.py, Page.conf
 
-  A test suite to check all pages.
+  A test suite to check the pages api (nuxeo/pages.py). Note that the test
+  suite will create a new member account named flnxtest.
+
+* test_nuxeo.py, Nuxeo.conf
+
+  A test suite used to test/bench a Nuxeo EP. This test will create many
+  members accounts (the ones present in the password.txt files) and will add
+  a new workspace and folder with few file documents.
 
 * credential.conf, passwd.txt, groups.txt
 
@@ -98,11 +106,16 @@ Running tests
 Requirement
 -------------
 
-* Install latest FunkLoad snapshots, if you have easy_install:
+* Install latest FunkLoad snapshots, on Lenny or Intrepid Ibex this can be
+  done like this::
 
+  sudo aptitude install python-dev python-xml python-setuptools \
+       python-webunit=1.3.8-1 python-docutils gnuplot
+  sudo aptitude install tcpwatch-httpproxy --without-recommends
   sudo easy_install -f http://funkload.nuxeo.org/snapshots/ -U funkload
 
-  or visit http://funkload.nuxeo.org/INSTALL
+
+For other distro visit http://funkload.nuxeo.org/INSTALL
 
 
 Running test
@@ -111,7 +124,7 @@ Running test
 Using a makefile
 
 * make
-  this is equivalent to "make start rest page stop"
+  this is equivalent to "make start rest page test-nuxeo stop"
 
 * make start
   Start local monitoring
@@ -122,11 +135,13 @@ Using a makefile
   Stop monitoring, credential server.
 
 * make rest
-  Create a workspace, a folder and few documents.
-  ExportTree on few documents
+  Run  the test_rest suite.
 
 * make page
-  Check all page object, Note that will create a flnxtest member account
+  Run the test_pages suite.
+
+* make test-nuxeo
+  Run the test_nuxeo suite.
 
 To run test on remote site use the URL option:
 
@@ -134,12 +149,24 @@ To run test on remote site use the URL option:
 
 To pass extra options to the funkload test runner using EXT:
 
-  make rest EXT="-dV"
+  make page EXT="-dV"
 
   This will run the test in debug mode and try to ouput response page in a
-  running Firefox.
+  running Firefox (See fl-run-test -h for more information).
+
+Note that log files are located in the target/ftest/funkload of the
+nuxeo-platform-ear.
 
 Benching
 ---------
 
-TODO: Add test suite for benching.
+* make bench
+  Full bench: init users and test layout, bench writer, bench reader.
+
+  This will produce an html report located in
+  ../../target/ftest/funkload/report
+
+* make bench-reader
+  Bench the reader part only.
+
+

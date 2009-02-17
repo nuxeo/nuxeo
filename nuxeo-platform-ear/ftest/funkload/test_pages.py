@@ -15,8 +15,9 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 # 02111-1307, USA.
 #
-"""
-This test suite contains scnerii to test/bench Nuxeo EP
+"""This test suite test the nuxeo/pages module.
+
+This suite is configured using the Pages.conf file.
 """
 import unittest
 from funkload.Lipsum import Lipsum
@@ -87,7 +88,6 @@ class Pages(NuxeoTestCase):
         p = (p.getRootWorkspaces()
              .deleteItem(self.ws_title)
              .logout())
-
 
     def testMemberManagementPage(self):
         p = LoginPage(self).login('Administrator', 'Administrator')
