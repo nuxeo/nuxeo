@@ -10,9 +10,9 @@
       factory="org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryFactory">
       <repository>
         <xa-datasource>oracle.jdbc.xa.client.OracleXADataSource</xa-datasource>
-        <property name="URL">jdbc:oracle:thin:@172.16.245.130:1521:XE</property>
-        <property name="User">NUXEO</property>
-        <property name="Password">NUXEO</property>
+        <property name="URL">${nuxeo.test.oracle.url}</property>
+        <property name="User">${nuxeo.test.oracle.user}</property>
+        <property name="Password">${nuxeo.test.oracle.password}</property>
       </repository>
     </repository>
   </extension>

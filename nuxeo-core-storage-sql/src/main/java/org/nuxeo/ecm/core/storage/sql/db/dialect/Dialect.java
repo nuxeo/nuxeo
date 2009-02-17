@@ -380,9 +380,11 @@ public abstract class Dialect {
      *
      * @param type the SQL type of the elements
      * @param elements the elements of the array
+     * @param connection the connection
      * @return an Array holding the elements
      */
-    public Array createArrayOf(int type, Object[] elements) throws SQLException {
+    public Array createArrayOf(int type, Object[] elements,
+            Connection connection) throws SQLException {
         throw new SQLException("Not supported");
     }
 

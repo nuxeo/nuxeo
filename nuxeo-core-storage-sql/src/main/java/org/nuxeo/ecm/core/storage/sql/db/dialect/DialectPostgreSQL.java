@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.core.storage.sql.db.dialect;
 
 import java.sql.Array;
+import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -120,7 +121,8 @@ public class DialectPostgreSQL extends Dialect {
     }
 
     @Override
-    public Array createArrayOf(int type, Object[] elements) throws SQLException {
+    public Array createArrayOf(int type, Object[] elements,
+            Connection connection) throws SQLException {
         if (elements == null || elements.length == 0) {
             return null;
         }

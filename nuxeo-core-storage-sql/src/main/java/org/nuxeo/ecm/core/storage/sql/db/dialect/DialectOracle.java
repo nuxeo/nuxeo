@@ -17,7 +17,11 @@
 
 package org.nuxeo.ecm.core.storage.sql.db.dialect;
 
+import java.lang.reflect.Constructor;
+import java.sql.Array;
+import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -112,6 +116,51 @@ public class DialectOracle extends Dialect {
     }
 
     @Override
+    public boolean supportsArrays() {
+        return true;
+    }
+
+    private static boolean initialized;
+
+    private static Constructor<?> arrayDescriptorConstructor;
+
+    private static Constructor<?> arrayConstructor;
+
+    private static void init() throws SQLException {
+        if (!initialized) {
+            try {
+                Class<?> arrayDescriptorClass = Class.forName("oracle.sql.ArrayDescriptor");
+                arrayDescriptorConstructor = arrayDescriptorClass.getConstructor(
+                        String.class, Connection.class);
+                Class<?> arrayClass = Class.forName("oracle.sql.ARRAY");
+                arrayConstructor = arrayClass.getConstructor(
+                        arrayDescriptorClass, Connection.class, Object.class);
+            } catch (Exception e) {
+                throw new SQLException(e.toString());
+            }
+            initialized = true;
+        }
+    }
+
+    // use reflection to avoid linking dependencies
+    @Override
+    public Array createArrayOf(int type, Object[] elements,
+            Connection connection) throws SQLException {
+        if (elements == null || elements.length == 0) {
+            return null;
+        }
+        init();
+        try {
+            Object arrayDescriptor = arrayDescriptorConstructor.newInstance(
+                    "NX_ARRAY", connection);
+            return (Array) arrayConstructor.newInstance(arrayDescriptor,
+                    connection, elements);
+        } catch (Exception e) {
+            throw new SQLException(e.toString());
+        }
+    }
+
+    @Override
     public Collection<ConditionalStatement> getConditionalStatements(
             Model model, Database database) {
         String idType; // for function parameters
@@ -130,6 +179,13 @@ public class DialectOracle extends Dialect {
         }
 
         List<ConditionalStatement> statements = new LinkedList<ConditionalStatement>();
+
+        statements.add(new ConditionalStatement( //
+                true, // early
+                Boolean.FALSE, // no drop needed
+                null, //
+                null, //
+                "CREATE OR REPLACE TYPE NX_ARRAY AS VARRAY(99) OF VARCHAR2(100);"));
 
         statements.add(new ConditionalStatement(
                 true, // early
@@ -162,12 +218,35 @@ public class DialectOracle extends Dialect {
                 null, //
                 String.format(
                         "CREATE OR REPLACE FUNCTION NX_ACCESS_ALLOWED" //
-                                + "(id %s, users VARCHAR2, permissions VARCHAR2) " //
+                                + "(id %s, users NX_ARRAY, permissions NX_ARRAY) " //
                                 + "RETURN NUMBER IS " //
+                                + "  curid %s := id;" //
+                                + "  newid %<s;" //
+                                + "  first BOOLEAN := TRUE;" //
                                 + "BEGIN" //
-                                + "  RETURN 1; " // TODO
+                                + "  WHILE curid IS NOT NULL LOOP" //
+                                + "    FOR r IN (SELECT * FROM acls WHERE acls.id = curid ORDER BY acls.pos) LOOP" //
+                                + "      FOR i IN permissions.FIRST .. permissions.LAST LOOP" //
+                                + "        IF r.permission = permissions(i) THEN" //
+                                + "          FOR j IN users.FIRST .. users.LAST LOOP" //
+                                + "            IF r.user = users(j) THEN" //
+                                + "              RETURN r.\"GRANT\";" //
+                                + "            END IF;" //
+                                + "          END LOOP;" //
+                                + "          EXIT;" //
+                                + "        END IF;" //
+                                + "      END LOOP;" //
+                                + "    END LOOP;" //
+                                + "    SELECT parentid INTO newid FROM hierarchy WHERE hierarchy.id = curid;" //
+                                + "    IF first AND newid IS NULL THEN" //
+                                + "      SELECT versionableid INTO newid FROM versions WHERE versions.id = curid;" //
+                                + "    END IF;" //
+                                + "    first := FALSE;" //
+                                + "    curid := newid;" //
+                                + "  END LOOP;" //
+                                + "  RETURN 0; " //
                                 + "END;" //
-                        , idType)));
+                        , idType, declaredType)));
 
         return statements;
     }

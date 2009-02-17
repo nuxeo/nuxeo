@@ -39,22 +39,31 @@ public class DatabaseOracle extends DatabaseHelper {
 
     private static final Log log = LogFactory.getLog(DatabaseOracle.class);
 
-    public static final String ORACLE_URL = "jdbc:oracle:thin:@172.16.245.130:1521:XE";
+    // ----- change this to test on a different Oracle instance -----
 
-    public static final String ORACLE_USER = "NUXEO";
+    private static final String URL = "jdbc:oracle:thin:@172.16.245.133:1521:XE";
 
-    public static final String ORACLE_PASSWORD = "NUXEO";
+    private static final String USER = "NUXEO";
+
+    private static final String PASSWORD = "NUXEO";
+
+    // -----
+
+    private static final String URL_PROPERTY = "nuxeo.test.oracle.url";
+
+    private static final String USER_PROPERTY = "nuxeo.test.oracle.user";
+
+    private static final String PASSWORD_PROPERTY = "nuxeo.test.oracle.password";
 
     private static final String CONTRIB_XML = "OSGI-INF/test-repo-repository-oracle-contrib.xml";
 
     @Override
     public void setUp() throws Exception {
         Class.forName("oracle.jdbc.driver.OracleDriver");
-        Connection connection = DriverManager.getConnection(ORACLE_URL,
-                ORACLE_USER, ORACLE_PASSWORD);
+        Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
         DatabaseMetaData metadata = connection.getMetaData();
         List<String> tableNames = new LinkedList<String>();
-        ResultSet rs = metadata.getTables(null, ORACLE_USER, "%",
+        ResultSet rs = metadata.getTables(null, USER, "%",
                 new String[] { "TABLE" });
         while (rs.next()) {
             String tableName = rs.getString("TABLE_NAME");
@@ -76,6 +85,9 @@ public class DatabaseOracle extends DatabaseHelper {
         }
         st.close();
         connection.close();
+        System.setProperty(URL_PROPERTY, URL);
+        System.setProperty(USER_PROPERTY, USER);
+        System.setProperty(PASSWORD_PROPERTY, PASSWORD);
     }
 
     @Override
@@ -88,9 +100,9 @@ public class DatabaseOracle extends DatabaseHelper {
         RepositoryDescriptor descriptor = new RepositoryDescriptor();
         descriptor.xaDataSourceName = "oracle.jdbc.xa.client.OracleXADataSource";
         Map<String, String> properties = new HashMap<String, String>();
-        properties.put("URL", ORACLE_URL);
-        properties.put("User", ORACLE_USER);
-        properties.put("Password", ORACLE_PASSWORD);
+        properties.put("URL", URL);
+        properties.put("User", USER);
+        properties.put("Password", PASSWORD);
         descriptor.properties = properties;
         // descriptor.fulltextAnalyzer = "french";
         // descriptor.fulltextCatalog = "nuxeo";

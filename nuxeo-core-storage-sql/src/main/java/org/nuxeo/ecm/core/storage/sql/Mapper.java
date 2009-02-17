@@ -1612,7 +1612,7 @@ public class Mapper {
                     ps.setTimestamp(i++, ts, cal); // cal passed for timezone
                 } else if (object instanceof String[]) {
                     Array array = sqlInfo.dialect.createArrayOf(Types.VARCHAR,
-                            (Object[]) object);
+                            (Object[]) object, connection);
                     ps.setArray(i++, array);
                 } else {
                     ps.setObject(i++, object);
