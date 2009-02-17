@@ -4,13 +4,13 @@
   <parent>
     <groupId>org.nuxeo.ecm.core</groupId>
     <artifactId>nuxeo-core-parent</artifactId>
-    <version>1.4.3</version>
+    <version>1.4.3.1-20090211</version>
   </parent>
 
   <artifactId>nuxeo-core-api</artifactId>
   <name>Nuxeo Core API</name>
   <description>Nuxeo Core: API.</description>
-  <version>1.4.3.1-SNAPSHOT</version>
+  <version>1.4.3.1-20090211</version>
 
   <dependencies>
     <dependency>

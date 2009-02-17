@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.core</groupId>
     <artifactId>nuxeo-core-parent</artifactId>
-    <version>1.4.3</version>
+    <version>1.4.3.1-20090211</version>
   </parent>
 
   <artifactId>nuxeo-core-storage-sql-mbean</artifactId>
@@ -16,7 +16,7 @@
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-storage-sql</artifactId>
-      <version>1.4.3.1-SNAPSHOT</version>
+      <version>1.4.3.1-20090211</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>
