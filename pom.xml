@@ -9,7 +9,7 @@
 
   <groupId>org.nuxeo.ecm.core</groupId>
   <artifactId>nuxeo-core-parent</artifactId>
-  <version>1.4.3.1-20090211</version>
+  <version>1.4.3</version>
   <name>Nuxeo Core Parent</name>
   <packaging>pom</packaging>
   <description>
