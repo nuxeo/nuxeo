@@ -233,4 +233,6 @@
       <snapshots>
         <enabled>false</enabled>
       </snapshots>
-    </pluginRepository></project>
+    </pluginRepository>
+  </pluginRepositories>
+</project>
