@@ -112,9 +112,9 @@ public class LifeCycleServiceImpl extends DefaultComponent implements
         String lifeCycleName;
         LifeCycle documentLifeCycle = getLifeCycleFor(doc);
         if (documentLifeCycle == null) {
-            lifeCycleName = "";
+            lifeCycleName = "undefined";
             if (initialStateName == null) {
-                initialStateName = "";
+                initialStateName = "undefined";
             }
         } else {
             lifeCycleName = documentLifeCycle.getName();

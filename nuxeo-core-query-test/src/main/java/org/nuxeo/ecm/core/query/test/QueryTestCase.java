@@ -881,7 +881,7 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
                 "MyDocType");
         doc = session.createDocument(doc);
         session.save();
-        assertEquals("", doc.getCurrentLifeCycleState());
+        assertEquals("undefined", doc.getCurrentLifeCycleState());
         dml = session.query(sql);
         assertEquals(8, dml.size());
     }
