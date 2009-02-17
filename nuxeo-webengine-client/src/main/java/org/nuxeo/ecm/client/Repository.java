@@ -12,37 +12,18 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     bstefanescu
+ *     matic
  */
 package org.nuxeo.ecm.client;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Map;
-
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * Repository is mapped to an atom ws
+ * @author matic
  *
  */
-public interface Connection {
+public interface Repository {
+    
+    Entry getRoot();
 
-    int getStatus();
-    
-    String getContentType();
-    
-    String getHeader(String key);
-    
-    Map<String,String> getHeaders();
-    
-    void close() throws IOException;
-    
-    InputStream getStream() throws IOException;
-    
-    String getContentAsString() throws IOException;
-
-    byte[] getContentAsBytes() throws IOException;
-
-    <T> T getContent(Class<T> objectType) throws IOException;
-    
-    Object getContent() throws IOException;
+    Feed[] getQueries();
 }

@@ -12,33 +12,15 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     bstefanescu
+ *     matic
  */
 package org.nuxeo.ecm.client;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author matic
  *
  */
-public interface Application {
+public interface Collection<T> {
 
-    Entry getEntry(Path path);
-
-    Feed list(Path path);
-    
-    boolean exists(Path path);
-    
-    void delete(Path path);
-    
-    Entry update(Entry entry);
-    
-    Entry create(Entry entry);
-    
-    Client getClient();
-    
-    Console getConsole();
-    
-    ContentHandlerRegistry getContentHandlerRegistry();
-    
-    
+    <T> getChildren();
 }

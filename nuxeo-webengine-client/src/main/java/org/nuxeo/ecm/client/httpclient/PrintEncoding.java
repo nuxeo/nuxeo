@@ -14,21 +14,16 @@
  * Contributors:
  *     matic
  */
-package org.nuxeo.ecm.client;
-
-import java.net.URL;
+package org.nuxeo.ecm.client.httpclient;
 
 /**
  * @author matic
- *
+ * 
  */
-public interface Client extends Console {
+public class PrintEncoding {
+    public static void main(String args[]) throws Exception {
+        System.out.println(System.getProperty("file.encoding"));
+        System.out.println(java.nio.charset.Charset.defaultCharset().name());
+    }
 
-    Connector getConnector();
-    
-    ContentHandlerRegistry getContentHandlerRegistry();
-    
-    URL getBaseURL();
-    
-    getWorkspace()
 }

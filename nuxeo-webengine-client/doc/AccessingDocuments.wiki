@@ -1,0 +1,4 @@
+Applications have to access documents using
+
+* CMIS Part I (Domain Model) methods
+* CMIS Part II (Rest Atom binding) atom mapping

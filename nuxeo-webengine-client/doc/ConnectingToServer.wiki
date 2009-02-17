@@ -1,0 +1,3 @@
+Documents are published by servers using a RESTFull services. 
+The Connector API define the minimal interface needed for interacting
+with the server.

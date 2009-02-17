@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
@@ -31,49 +30,48 @@
             <id>copy</id>
             <phase>compile</phase>
             <goals>
-		<goal>unpack</goal>
+              <goal>unpack</goal>
             </goals>
             <configuration>
-	      <artifactItems>
-	        <artifactItem>
+              <artifactItems>
+                <artifactItem>
                   <groupId>jline</groupId>
                   <artifactId>jline</artifactId>
                   <version>0.9.94</version>
-		</artifactItem>
-	        <!--artifactItem>
-                  <groupId>org.apache.httpcomponents</groupId>
-                  <artifactId>httpcore</artifactId>
-                  <version>4.0-beta3</version>
-		</artifactItem>
-	        <artifactItem>
+                </artifactItem>
+                <!--
+                  artifactItem> <groupId>org.apache.httpcomponents</groupId>
+                  <artifactId>httpcore</artifactId> <version>4.0-beta3</version>
+                  </artifactItem> <artifactItem>
                   <groupId>org.apache.httpcomponents</groupId>
                   <artifactId>httpcore-nio</artifactId>
-                  <version>4.0-beta3</version>
-		</artifactItem-->                
-	      </artifactItems>
+                  <version>4.0-beta3</version> </artifactItem
+                -->
+              </artifactItems>
               <outputDirectory>target/classes</outputDirectory>
             </configuration>
-          </execution>          
+          </execution>
         </executions>
       </plugin>
     </plugins>
   </build>
 
   <dependencies>
-    <!--dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpcore</artifactId>
-      <version>4.0-beta3</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpcore-nio</artifactId>
-      <version>4.0-beta3</version>
-    </dependency-->
+    <!--
+      dependency> <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpcore</artifactId> <version>4.0-beta3</version>
+      </dependency> <dependency> <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpcore-nio</artifactId> <version>4.0-beta3</version>
+      </dependency
+    -->
     <dependency>
       <groupId>jline</groupId>
       <artifactId>jline</artifactId>
       <version>0.9.91</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-httpclient</groupId>
+      <artifactId>commons-httpclient</artifactId>
     </dependency>
   </dependencies>
 

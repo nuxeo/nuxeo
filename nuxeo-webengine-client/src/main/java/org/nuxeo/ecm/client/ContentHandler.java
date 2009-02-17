@@ -32,6 +32,6 @@ public interface ContentHandler<T> {
     
     void write(T object, OutputStream out) throws IOException;
     
-    T read(InputStream out) throws IOException;
+    T read(InputStream in) throws IOException;
     
 }

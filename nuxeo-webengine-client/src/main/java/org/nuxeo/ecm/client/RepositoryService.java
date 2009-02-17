@@ -16,19 +16,12 @@
  */
 package org.nuxeo.ecm.client;
 
-import java.net.URL;
-
 /**
  * @author matic
  *
  */
-public interface Client extends Console {
+public interface RepositoryService {
 
-    Connector getConnector();
-    
-    ContentHandlerRegistry getContentHandlerRegistry();
-    
-    URL getBaseURL();
-    
-    getWorkspace()
+    Repository[] getRepositories();
+   
 }

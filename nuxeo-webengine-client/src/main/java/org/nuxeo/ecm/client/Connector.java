@@ -16,43 +16,35 @@
  */
 package org.nuxeo.ecm.client;
 
-import java.util.Map;
-
+import java.net.URL;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
+ * @apiviz.has org.nuxeo.ecm.client.Connector
+ * @apiviz.has org.nuxeo.ecm.client.Console
+ * @apiviz.has org.nuxeo.ecm.client.ContentHandlerRegistry
+ * @apiviz.uses org.nuxeo.ecm.client.Entry
+ * @apiviz.uses org.nuxeo.ecm.client.Feed
+ * 
  */
-public interface Entry {
+public interface Connector extends DiscoveryService {
 
-    Feed list(); // list entry content
-    Entry save(); // put()
-    Entry create(); // post()
-    void delete();
-    boolean exists();
+    Entry getEntry(String id);
+
+    Feed list(String id);
     
-    boolean isPhantom(); // not yet created
-    boolean isDirty(); // modified 
-    boolean isLocked();
+    boolean exists(String id);
     
-    Path getPath();
-    String getURL();
+    void delete(String id);
     
-    String getId();
-    long lastModified();    
-    String getType();
-    String[] getFacets();
-    boolean hasFacet();
-    String getState();
-    String getName();
-    String getTitle();
-    String getDescription(); //headline
-    String getAuthor();
-    Object getProperty(String key);
-    Map<String, Object> getProperties();
+    Entry update(Entry entry);
     
-    <T> T getContent(Class<T> clazz);
+    Entry create(Entry entry);
     
-    //<T> T getAdapter(Class<T> adapter);
+    Client getClient();
+    
+    ContentHandlerRegistry getContentHandlerRegistry();
+    
     
 }
