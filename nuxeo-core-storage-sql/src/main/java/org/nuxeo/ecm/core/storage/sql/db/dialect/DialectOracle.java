@@ -54,7 +54,7 @@ public class DialectOracle extends Dialect {
     @Override
     public String getTypeName(int sqlType, int length, int precision, int scale) {
         if (sqlType == Column.ExtendedTypes.FULLTEXT) {
-            sqlType = Types.CLOB;
+            return "CLOB";
         }
         if (sqlType == Types.VARCHAR) {
             if (length == 36) {
@@ -73,21 +73,23 @@ public class DialectOracle extends Dialect {
     @Override
     public String getCreateFulltextIndexSql(String indexName, String tableName,
             List<String> columnNames) {
-        StringBuilder buf = new StringBuilder();
-        buf.append("CREATE INDEX ON ");
-        buf.append(tableName);
-        return buf.toString();
+        return String.format(
+                "CREATE INDEX %s ON %s(%s) INDEXTYPE IS CTXSYS.CONTEXT "
+                        + "PARAMETERS('SYNC (ON COMMIT) TRANSACTIONAL')",
+                indexName, tableName, columnNames.get(0));
     }
 
     @Override
     public String[] getFulltextMatch(Column ftColumn, Column mainColumn,
             String fulltextQuery) {
-        throw new UnsupportedOperationException();
+        String whereExpr = String.format("CONTAINS(%s, ?) > 0",
+                ftColumn.getFullQuotedName());
+        return new String[] { null, null, whereExpr, fulltextQuery };
     }
 
     @Override
     public int getFulltextIndexedColumns() {
-        return 0; // TODO
+        return 1;
     }
 
     @Override
@@ -247,6 +249,19 @@ public class DialectOracle extends Dialect {
                                 + "  RETURN 0; " //
                                 + "END;" //
                         , idType, declaredType)));
+
+        statements.add(new ConditionalStatement( //
+                false, // late
+                Boolean.FALSE, // no drop
+                null, //
+                null, //
+                "CREATE OR REPLACE TRIGGER NX_TRIG_FT_UPDATE " //
+                        + "BEFORE INSERT OR UPDATE ON \"FULLTEXT\" "
+                        + "FOR EACH ROW " //
+                        + "BEGIN" //
+                        + "  :NEW.FULLTEXT := :NEW.SIMPLETEXT || :NEW.BINARYTEXT; " //
+                        + "END;" //
+        ));
 
         return statements;
     }
