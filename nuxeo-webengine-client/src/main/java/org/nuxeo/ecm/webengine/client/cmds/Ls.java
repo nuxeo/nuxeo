@@ -33,7 +33,7 @@ public class Ls extends AnnotatedCommand {
 
     @Override
     public void run(Client client, CommandLine cmdLine) throws Exception {
-        client.execute(this, cmdLine);
+        //TODO client.execute(this, cmdLine);
     }
     
     

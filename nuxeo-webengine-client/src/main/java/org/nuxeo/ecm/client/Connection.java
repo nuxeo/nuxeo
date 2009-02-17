@@ -13,31 +13,36 @@
  *
  * Contributors:
  *     bstefanescu
- *
- * $Id$
  */
+package org.nuxeo.ecm.client;
 
-package org.nuxeo.ecm.webengine.client.cmds;
-
-import org.nuxeo.ecm.webengine.client.Client;
-import org.nuxeo.ecm.webengine.client.command.AnnotatedCommand;
-import org.nuxeo.ecm.webengine.client.command.Cmd;
-import org.nuxeo.ecm.webengine.client.command.CommandLine;
-import org.nuxeo.ecm.webengine.client.command.CommandParameter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@Cmd(syntax="popd", synopsis="Pop directory stack")
-public class Popd extends AnnotatedCommand {
+public interface Connection {
 
-    @Override
-    public void run(Client client, CommandLine cmdLine) throws Exception {
-        CommandParameter param = cmdLine.getLastParameter();
-        if (param != null) {
-            //TODO client.popd(param.getValue());
-        }        
-    }
+    int getStatus();
+    
+    String getContentType();
+    
+    String getHeader(String key);
+    
+    Map<String,String> getHeaders();
+    
+    void close() throws IOException;
+    
+    InputStream getStream() throws IOException;
+    
+    String getContentAsString() throws IOException;
 
+    byte[] getContentAsBytes() throws IOException;
+
+    <T> T getContent(Class<T> objectType) throws IOException;
+    
+    Object getContent() throws IOException;
 }

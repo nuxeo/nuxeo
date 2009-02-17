@@ -42,7 +42,7 @@ import org.nuxeo.runtime.model.RuntimeContext;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
-import org.osgi.framework.BundleListener;
+import org.osgi.framework.SynchronousBundleListener;
 
 /**
  * TODO remove old WebEngine references and rename WebEngine2 to WebEngine
@@ -93,7 +93,7 @@ public class WebEngineComponent extends DefaultComponent { //implements Configur
         // start deploying web bundles
         final RuntimeContext ctx = context.getRuntimeContext();
         BundleContext bc = bundle.getBundleContext();
-        bundle.getBundleContext().addBundleListener(new BundleListener() {
+        bundle.getBundleContext().addBundleListener(new SynchronousBundleListener() {
             public void bundleChanged(BundleEvent event) {
                 try {
                     switch (event.getType()) {
@@ -111,7 +111,9 @@ public class WebEngineComponent extends DefaultComponent { //implements Configur
         synchronized (deployedBundles) {
             // deploy bundles already installed
             for (Bundle b : bc.getBundles()) {
-                deployModules(ctx, b);
+                if (b.getState() == Bundle.ACTIVE) {
+                    deployModules(ctx, b);
+                }
             }
         }
 

@@ -13,31 +13,27 @@
  *
  * Contributors:
  *     bstefanescu
- *
- * $Id$
  */
+package org.nuxeo.ecm.client;
 
-package org.nuxeo.ecm.webengine.client.cmds;
-
-import org.nuxeo.ecm.webengine.client.Client;
-import org.nuxeo.ecm.webengine.client.command.AnnotatedCommand;
-import org.nuxeo.ecm.webengine.client.command.Cmd;
-import org.nuxeo.ecm.webengine.client.command.CommandLine;
-import org.nuxeo.ecm.webengine.client.command.CommandParameter;
+import java.util.List;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@Cmd(syntax="popd", synopsis="Pop directory stack")
-public class Popd extends AnnotatedCommand {
+public interface ContentHandlerRegistry {
 
-    @Override
-    public void run(Client client, CommandLine cmdLine) throws Exception {
-        CommandParameter param = cmdLine.getLastParameter();
-        if (param != null) {
-            //TODO client.popd(param.getValue());
-        }        
-    }
-
+    void addContentHandler(ContentHandler<?> handler);
+    
+    void removeContentHandler(ContentHandler<?> handler);
+    
+    List<ContentHandler<?>>[] getContentHandlers();
+    
+    List<ContentHandler<?>> getContentHandler(String contentType);
+    
+    <T> List<ContentHandler<T>> getContentHandler(Class<T> objectType);
+    
+    <T> ContentHandler<T> getContentHandler(String contentType, Class<T> objectType);
+    
 }

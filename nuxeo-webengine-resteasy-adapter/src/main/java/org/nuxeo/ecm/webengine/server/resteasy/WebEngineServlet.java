@@ -106,6 +106,7 @@ public class WebEngineServlet extends HttpServlet {
 //                }
 //            }
 //        }
+        httpServletResponse.setHeader("Pragma", "no-cache");
         dispatcher.service(httpServletRequest, httpServletResponse);
     }
 

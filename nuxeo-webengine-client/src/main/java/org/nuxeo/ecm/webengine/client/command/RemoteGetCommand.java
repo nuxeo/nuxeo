@@ -13,31 +13,24 @@
  *
  * Contributors:
  *     bstefanescu
- *
- * $Id$
  */
-
-package org.nuxeo.ecm.webengine.client.cmds;
+package org.nuxeo.ecm.webengine.client.command;
 
 import org.nuxeo.ecm.webengine.client.Client;
-import org.nuxeo.ecm.webengine.client.command.AnnotatedCommand;
-import org.nuxeo.ecm.webengine.client.command.Cmd;
-import org.nuxeo.ecm.webengine.client.command.CommandLine;
-import org.nuxeo.ecm.webengine.client.command.CommandParameter;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@Cmd(syntax="popd", synopsis="Pop directory stack")
-public class Popd extends AnnotatedCommand {
-
+public class RemoteGetCommand extends RemoteCommand {
+    
+    public RemoteGetCommand(String path, String syntax, String synopsis) {     
+        super(path, syntax, synopsis);
+    }
+    
     @Override
     public void run(Client client, CommandLine cmdLine) throws Exception {
-        CommandParameter param = cmdLine.getLastParameter();
-        if (param != null) {
-            //TODO client.popd(param.getValue());
-        }        
+        client.get(path, cmdLine.toMap());
     }
 
 }

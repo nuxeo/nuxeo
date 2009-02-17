@@ -13,31 +13,28 @@
  *
  * Contributors:
  *     bstefanescu
- *
- * $Id$
  */
+package org.nuxeo.ecm.client;
 
-package org.nuxeo.ecm.webengine.client.cmds;
+import java.util.List;
 
-import org.nuxeo.ecm.webengine.client.Client;
-import org.nuxeo.ecm.webengine.client.command.AnnotatedCommand;
-import org.nuxeo.ecm.webengine.client.command.Cmd;
-import org.nuxeo.ecm.webengine.client.command.CommandLine;
-import org.nuxeo.ecm.webengine.client.command.CommandParameter;
 
 /**
+ * TODO: use Iterator<Entry> instead of List?
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@Cmd(syntax="popd", synopsis="Pop directory stack")
-public class Popd extends AnnotatedCommand {
-
-    @Override
-    public void run(Client client, CommandLine cmdLine) throws Exception {
-        CommandParameter param = cmdLine.getLastParameter();
-        if (param != null) {
-            //TODO client.popd(param.getValue());
-        }        
-    }
-
+public interface Feed extends List<Entry> {
+ 
+    String getId();
+    
+    String getTitle();
+    
+    String getURL(); //
+    
+    Path getPath(); //Path path
+    
+    long lastModified();
+    
 }

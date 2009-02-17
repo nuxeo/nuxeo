@@ -21,10 +21,12 @@ package org.nuxeo.ecm.webengine.client.command;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.webengine.client.Client;
+import org.nuxeo.ecm.webengine.client.Console;
 import org.nuxeo.ecm.webengine.client.util.StringUtils;
 
 /**
@@ -141,5 +143,24 @@ public class CommandLine {
         return buf.toString();
     }
 
+    
+    public Map<String, Object> toMap() {
+        // preserve params order
+        LinkedHashMap<String, Object> args = new LinkedHashMap<String, Object>();
+        int k = 0;
+        for (CommandParameter param : params) {
+            String key = param.getKey();
+            String value = param.getValue();
+            Object val = value;
+            if (key == null) {
+                key = "_"+(k++);
+            }
+            if (CommandToken.FILE.equals(param.token.valueType)) {
+                val = Console.getDefault().getClient().getFile(value);                
+            }
+            args.put(key, val);
+        }
+        return args;
+    }
 
 }

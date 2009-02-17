@@ -19,43 +19,77 @@
 
 package org.nuxeo.ecm.webengine.client.command;
 
-import java.net.URL;
-
+import org.nuxeo.ecm.client.Path;
 import org.nuxeo.ecm.webengine.client.Client;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class RemoteCommand extends Command {
+public abstract class RemoteCommand extends Command {
 
-    public static RemoteCommand parse(String line) {
+    protected Path path;
+    
+    public static RemoteCommand parse(String line) throws CommandException {
+        // GET \t PATH \t syntax \t synopsis
         int p = line.indexOf('\t');
-        if (p > -1) {
-            return new RemoteCommand(line.substring(0, p), line.substring(p+1));
+        int q = 0;
+        if (p == -1) {
+            throw new CommandException("Invalid command format: "+line);
         }
-        return new RemoteCommand(line, "");
+        String method = line.substring(q, p);
+        q = p+1;
+        p = line.indexOf(q, '\t');
+        if (p == -1) {
+            throw new CommandException("Invalid command format: "+line);
+        }
+        String path = line.substring(q, p);
+        q = p+1;
+        p = line.indexOf(q, '\t');
+        if (p == -1) {
+            throw new CommandException("Invalid command format: "+line);
+        }
+        String syntax = line.substring(q, p);
+        q = p+1;
+        p = line.indexOf(q, '\t');
+        String synopsis = "N/A";
+        if (p > -1) {
+            synopsis = line.substring(q, p);
+        }
+        if ("GET".equals(method)) {
+          return new RemoteGetCommand(path, syntax, synopsis); 
+        } else if ("POST".equals(method)) {
+            return new RemotePostCommand(path, syntax, synopsis);  
+        } else if ("PUT".equals(method)) {
+            return new RemotePutCommand(path, syntax, synopsis);
+        } else if ("DELETE".equals(method)) {
+            return new RemoteDeleteCommand(path, syntax, synopsis);
+        } else if ("HEAD".equals(method)) {
+            return new RemoteHeadCommand(path, syntax, synopsis);
+        } else { // unuspported method using GET
+            return new RemoteGetCommand(path, syntax, synopsis);
+        }
     }
     
-    public RemoteCommand(String syntax, String synopsis) {        
+    public RemoteCommand(String path, String syntax, String synopsis) {
+        if (path != null && path.length() > 0) {
+            this.path = new Path(path);
+        } else {
+            this.path = Path.EMPTY;
+        }
         this.synopsis = synopsis;        
         this.syntax = CommandSyntax.parse(syntax);
         this.aliases = this.syntax.getCommandToken().getNames();
     }
 
     @Override
-    protected URL getHelpUrl(Client client) {
+    public String getHelp(Client client) {
         try {
-            return client.getCommandUrl("/"+getName());
+            return client.getHelp(getName());
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
-    }
-    
-    @Override
-    public void run(Client client, CommandLine cmdLine) throws Exception {
-        client.execute(this, cmdLine);
     }
 
 }

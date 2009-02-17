@@ -20,11 +20,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Map;
 
+import org.nuxeo.ecm.client.Path;
 import org.nuxeo.ecm.webengine.client.Client;
 import org.nuxeo.ecm.webengine.client.Console;
-import org.nuxeo.ecm.webengine.client.command.CommandLine;
+import org.nuxeo.ecm.webengine.client.Result;
 import org.nuxeo.ecm.webengine.client.util.Base64;
+
+import com.sun.org.apache.xalan.internal.xsltc.compiler.util.ResultTreeType;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -53,29 +57,51 @@ public class JdkHttpClient extends Client {
     }
 
 
-    @Override
-    public int execute(String method, URL url, CommandLine cmdLine) {
+    
+    public Result execute(HttpURLConnection conn, String cmdId) throws Exception {
         InputStream in = null;
-        try {
-            HttpURLConnection conn = (HttpURLConnection)url.openConnection();
-            conn.setRequestMethod(method);
-            if (username != null) {
-                String authorizationString = "Basic " + Base64.encode(username+":"+password);
-                conn.setRequestProperty ("Authorization", authorizationString);
-            }
-            conn.setRequestProperty("Accept", "text/plain");
-            int ret = conn.getResponseCode();
-            if (ret == 200) {
-                in = conn.getInputStream();
-                Console.getDefault().println(in);
-            }
-            return ret;
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (in != null) { try { in.close(); } catch (IOException e) {e.printStackTrace();} } 
+        Result res = new Result(cmdId, conn);
+        //res.
+        int ret = conn.getResponseCode();        
+        if (ret == 200) {
+            in = conn.getInputStream();
+            Console.getDefault().println(in);
         }
-        return -1; // internal error
+        return res;        
+    }
+    
+    @Override
+    public Result get(Path path, Map<String,Object> args) {
+//        path = getPath(path);
+//        URL url = null;
+//        if ("GET".equals("GET")) {
+//            url = buildUrl(path, args);
+//        }
+//        InputStream in = null;
+//        try {
+//            HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+//            conn.setRequestMethod("GET");
+//            conn.setDoInput(true);
+//            //TODO if we need to upload files ...
+//            //conn.setDoOutput(true);            
+//            if (username != null) {
+//                String authorizationString = "Basic " + Base64.encode(username+":"+password);
+//                conn.setRequestProperty ("Authorization", authorizationString);
+//            }
+//            conn.setRequestProperty("Accept", "text/plain");
+//            return execute(conn, cmdId);
+//            int ret = conn.getResponseCode();
+//            if (ret == 200) {
+//                in = conn.getInputStream();
+//                Console.getDefault().println(in);
+//            }
+//            return ret;
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        } finally {
+//            if (in != null) { try { in.close(); } catch (IOException e) {e.printStackTrace();} } 
+//        }
+        return null; // internal error
     }    
 
     @Override
@@ -87,4 +113,57 @@ public class JdkHttpClient extends Client {
     public void onDisconnect() {
         
     }
+    
+    
+    public static URL getURL(URL url, String args) {
+        return  null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.nuxeo.ecm.webengine.client.Client#doDelete(org.nuxeo.ecm.client.Path, java.util.Map)
+     */
+    @Override
+    public Result doDelete(Path path, Map<String, Object> args) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.nuxeo.ecm.webengine.client.Client#doGet(org.nuxeo.ecm.client.Path, java.util.Map)
+     */
+    @Override
+    public Result doGet(Path path, Map<String, Object> args) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.nuxeo.ecm.webengine.client.Client#doHead(org.nuxeo.ecm.client.Path, java.util.Map)
+     */
+    @Override
+    public Result doHead(Path path, Map<String, Object> args) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.nuxeo.ecm.webengine.client.Client#doPost(org.nuxeo.ecm.client.Path, java.util.Map)
+     */
+    @Override
+    public Result doPost(Path path, Map<String, Object> args) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.nuxeo.ecm.webengine.client.Client#doPut(org.nuxeo.ecm.client.Path, java.util.Map)
+     */
+    @Override
+    public Result doPut(Path path, Map<String, Object> args) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    
+    
 }

@@ -67,15 +67,11 @@ public abstract class Command {
     }
 
     
-    protected URL getHelpUrl(Client client) {
-        return getClass().getResource("/META-INF/help/"+getName()+".help");
-    }
-    
     /**
      * @return the help.
      */
     public String getHelp(Client client) {
-        URL url = getHelpUrl(client);
+        URL url = getClass().getResource("/META-INF/help/"+getName()+".help");
         if (url == null) {
             return "N/A";
         }

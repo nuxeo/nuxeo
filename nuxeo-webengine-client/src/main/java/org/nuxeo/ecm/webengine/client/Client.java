@@ -25,16 +25,18 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import org.nuxeo.ecm.webengine.client.command.Command;
+import org.nuxeo.ecm.client.Path;
 import org.nuxeo.ecm.webengine.client.command.CommandException;
 import org.nuxeo.ecm.webengine.client.command.CommandLine;
 import org.nuxeo.ecm.webengine.client.command.CommandRegistry;
 import org.nuxeo.ecm.webengine.client.command.RemoteCommand;
 import org.nuxeo.ecm.webengine.client.util.FileUtils;
-import org.nuxeo.ecm.webengine.client.util.Path;
 
 
 /**
@@ -44,7 +46,7 @@ import org.nuxeo.ecm.webengine.client.util.Path;
 public abstract class Client {
 
     protected CommandRegistry registry;
-    protected URL url;
+    protected URL baseUrl;
     protected Path basePath;
     protected Path cwd;
     protected List<Path> pathStack;
@@ -108,10 +110,10 @@ public abstract class Client {
     
     public void connect(URL url) {
         try {
-            if (this.url != null) {
+            if (this.baseUrl != null) {
                 disconnect();
             }
-            this.url = url;
+            this.baseUrl = url;
             this.basePath = new Path(url.getPath()).makeAbsolute();
             onConnect();
             if (!loadRemoteCommands()) {
@@ -123,12 +125,12 @@ public abstract class Client {
         } catch (Exception e) {
             System.err.println("Failed to connect to "+url);
         }
-        this.url = null;
+        this.baseUrl = null;
         this.basePath = null;
     }
     
     public boolean isConnected() {
-        return url != null;
+        return baseUrl != null;
     }
     
     public void disconnect() {
@@ -136,7 +138,7 @@ public abstract class Client {
         cwd = Path.ROOT;
         pathStack = new ArrayList<Path>();
         registry = new CommandRegistry();
-        url = null;
+        baseUrl = null;
         basePath = null;
         Console.getDefault().updatePrompt();
     }
@@ -199,116 +201,247 @@ public abstract class Client {
     public File lpwd() {
         return workingDir;
     }
+
+
+    public String id() throws CommandException, IOException {
+        Result result = null; //get("id"); TODO
+        if (result.isOk()) {
+            return result.getContentAsString();
+        } else {
+            throw new CommandException("Operation failed with error code: "+result.getStatus());
+        }
+    }
+    
+    public String id(String path) throws CommandException, IOException {
+        pushd(path, false);
+        try {
+            Map<String,Object> map = new HashMap<String, Object>();
+            map.put("file", path);
+            Result result = null; //get("id"); TODO
+            if (result.isOk()) {
+                return result.getContentAsString();
+            } else {
+                throw new CommandException("Operation failed with error code: "+result.getStatus());
+            }
+        } finally {
+            popd(false);
+        }
+    }
+    
+    public List<String> ls() throws CommandException, IOException {
+        Result result = null; //get("ls");
+        if (result.isOk()) {
+            return result.getContentLines();
+        } else {
+            throw new CommandException("Operation failed with error code: "+result.getStatus());
+        }
+    }
+    
+    public List<String> ls(String path) throws CommandException, IOException {
+        pushd(path, false);
+        try {
+            Map<String,Object> map = new HashMap<String, Object>();
+            map.put("file", path);
+            Result result = get(new Path(path), null); //TODO
+            if (result.isOk()) {
+                return result.getContentLines();
+            } else {
+                throw new CommandException("Operation failed with error code: "+result.getStatus());
+            }
+        } finally {
+            popd(false);
+        }
+    }
     
     public void cd(String path) {
+        cd(path, true);
+    }
+    
+    public void cd(String path, boolean updateConsole) {
         if (path.startsWith("/")) {
             cwd = new Path(path);
         } else {
             cwd = cwd.append(path);
         }
         cwd = cwd.makeAbsolute();
-        Console.getDefault().updatePrompt();
+        if (updateConsole) {
+            Console.getDefault().updatePrompt();
+        }
     }
 
     public void pushd(String path) {
+        pushd(path, true);
+    }
+    
+    public void pushd(String path, boolean updateConsole) {
         pathStack.add(cwd);
         cd(path);
-        Console.getDefault().updatePrompt();
     }
 
-    public void popd(String path) {
+    public void popd() {
+        popd(true);
+    }
+    
+    public void popd(boolean updateConsole) {
         if (pathStack.isEmpty()) {
             cwd = Path.ROOT;
         } else {
             cwd = pathStack.remove(pathStack.size()-1);
         }
-        Console.getDefault().updatePrompt();
+        if (updateConsole) {
+            Console.getDefault().updatePrompt();
+        }
     }
 
     public Path pwd() {
         return cwd;
     }
 
-    public boolean loadRemoteCommands() throws CommandException, IOException {
-        HttpURLConnection conn = (HttpURLConnection)getCommandServiceUrl().openConnection();
+    
+    protected boolean loadRemoteCommands() throws CommandException, IOException {
+        URL url = buildUrl(cwd.append("@commands"));
+        HttpURLConnection conn = (HttpURLConnection)url.openConnection();
         InputStream in = conn.getInputStream();
         if (conn.getResponseCode() != 200) {
+            in.close();
             return false;
-        }
+        }        
         List<String> lines = FileUtils.readLines(in);
+        in.close();
         for (String line : lines) {
             RemoteCommand cmd = RemoteCommand.parse(line);
             registry.registerCommand(cmd);
         }
         return true;
+    }    
+        
+    public String getHelp(String cmdId) throws CommandException, IOException {
+        URL url = buildUrl(getAbsolutePath(new Path("@commands").append("help").append(cmdId)));
+        HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+        InputStream in = conn.getInputStream();
+        if (conn.getResponseCode() != 200) {
+            in.close();
+            throw new CommandException("Failed to get help. Error is "+conn.getResponseCode());
+        }
+        String help = FileUtils.read(in);
+        in.close();
+        return help;
+    }
+
+
+    public Result delete(Path path, Map<String,Object> args) throws CommandException {
+        if (baseUrl == null) {
+            throw new CommandException("Not Connected");
+        }
+        path = getAbsolutePath(path);
+        return doDelete(path, args);
     }
     
-    public URL getCommandServiceUrl() throws CommandException {
-        return buildUrl("commands");
+    public Result head(Path path, Map<String,Object> args) throws CommandException {
+        if (baseUrl == null) {
+            throw new CommandException("Not Connected");
+        }
+        path = getAbsolutePath(path);
+        return doHead(path, args);        
     }
     
-    public URL getCommandUrl(String cmd) throws CommandException {
-        return buildUrl("commands/"+cmd);
+    public Result get(Path path, Map<String,Object> args) throws CommandException {
+        if (baseUrl == null) {
+            throw new CommandException("Not Connected");
+        }
+        path = getAbsolutePath(path);
+        return doGet(path, args);    
     }
     
-    public URL getTargetUrl(String cmd) throws CommandException {
-        Path path = cwd.append("@commands").append(cmd);
-        return buildUrl(path);
-    }
-
-    public int execute(Command cmd, CommandLine cmdLine) throws CommandException {
-        return execute("GET", getTargetUrl(cmd.getName()), cmdLine);
-    }
-
-    public int execute(String method, Command cmd, CommandLine cmdLine) throws CommandException {
-        return execute(method, getTargetUrl(cmd.getName()), cmdLine);
-    }
-
-    public int execute(String cmdId, CommandLine cmdLine) throws CommandException {
-        return execute("GET", getTargetUrl(cmdId), cmdLine);
-    }
-
-    public int execute(String method, String cmdId, CommandLine cmdLine) throws CommandException {
-        return execute(method, getTargetUrl(cmdId), cmdLine);
-    }
-
-    public int execute(URL url, CommandLine cmdLine) {
-        return execute("GET", url, cmdLine);
+    public Result post(Path path, Map<String,Object> args) throws CommandException {
+        if (baseUrl == null) {
+            throw new CommandException("Not Connected");
+        }
+        path = getAbsolutePath(path);
+        return doPost(path, args);
     }
     
-    public abstract int execute(String method, URL url, CommandLine cmdLine);
+    public Result put(Path path, Map<String,Object> args) throws CommandException {
+        if (baseUrl == null) {
+            throw new CommandException("Not Connected");
+        }
+        path = getAbsolutePath(path);
+        return doPut(path, args);    
+    }
+    
+    /**
+     * Relative paths are converted to absolute paths
+     * @param path
+     * @param args
+     * @return
+     */
+    public abstract Result doDelete(Path path, Map<String,Object> args);    
+    public abstract Result doHead(Path path, Map<String,Object> args);
+    public abstract Result doGet(Path path, Map<String,Object> args);
+    public abstract Result doPost(Path path, Map<String,Object> args);
+    public abstract Result doPut(Path path, Map<String,Object> args);
+
     public abstract void onConnect();
     public abstract void onDisconnect();
 
     public String getHost() {
-        return url != null ? url.getHost() : null;
+        return baseUrl != null ? baseUrl.getHost() : null;
     }
     
     public Path getWorkingDirectory() {
         return cwd;
     }
     
-    public URL buildUrl(String path) throws CommandException {
-        if (url == null) {
-            throw new CommandException("Not connected");
-        }
-        try {
-            return new URL(url.getProtocol(), url.getHost(), url.getPort(), 
-                    basePath.append(path).toString());
-        } catch (MalformedURLException e) {
-            throw new CommandException("Malformed URL: "+url+"; path: "+basePath.append(path).toString());
+
+    public File getFile(String path) {
+        if (path.startsWith("/")) {
+            return new File(path);
+        } else {
+            return new File(workingDir, path);
         }
     }
-
-    public URL buildUrl(Path path) throws CommandException {
-        if (url == null) {
-            throw new CommandException("Not connected");
+    
+    public Path getAbsolutePath(Path path) {
+        if (path.isAbsolute()) {
+            return path;
         }
-        try {
-            return new URL(url.getProtocol(), url.getHost(), url.getPort(), 
-                    basePath.append(path).toString());
+        if (cwd.segmentCount() == 0) {
+            return basePath.append(cwd).append(path);
+        }
+        return basePath.append(path);
+    }
+
+    
+    
+    public URL buildUrl(Path path) throws CommandException {
+        return buildUrl(baseUrl.getProtocol(),baseUrl.getHost(), baseUrl.getPort(),
+                path.toString(), null);
+    }
+
+    public URL buildUrl(Path path, Map<String,Object>args) throws CommandException {
+        return buildUrl(baseUrl.getProtocol(),baseUrl.getHost(), baseUrl.getPort(),
+                path.toString(), args);
+    }
+
+    
+    public static URL buildUrl(String protocol, String host, int port, String path, Map<String,Object>args) throws CommandException {
+        try {            
+            if (args != null && !args.isEmpty()) {
+                StringBuilder buf = new StringBuilder();
+                buf.append(path).append('?');
+                try {
+                    for (Map.Entry<String,Object> entry : args.entrySet()) {
+                        buf.append(entry.getKey()).append('=').append(URLEncoder.encode(entry.getValue().toString(), "UTF-8")).append("&");
+                    }
+                    buf.setLength(buf.length()-1);
+                } catch (Exception e) {
+                    throw new CommandException("Failed to encode URL query: "+args, e);
+                }
+                path = buf.toString();
+            }
+            return new URL(protocol, host, port, path);
         } catch (MalformedURLException e) {
-            throw new CommandException("Malformed URL: "+url+"; path: "+basePath.append(path).toString());
+            throw new CommandException("Malformed URL: "+protocol+"://"+host+":"+port+"; path: "+path.toString());
         }
     }
 
@@ -321,8 +454,8 @@ public abstract class Client {
         } else {
             buf.append("disconnected: ");
         }
-        if (url != null) {
-            buf.append(url);
+        if (baseUrl != null) {
+            buf.append(baseUrl);
         }
         if (username != null) {
             buf.append("; username: ").append(username);            
