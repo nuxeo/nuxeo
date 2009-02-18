@@ -40,7 +40,7 @@ public class Manager {
 
     private static final Log log = LogFactory.getLog(Manager.class);
 
-    private static Service getService() {
+    public static Service getService() {
         return (Service) Framework.getRuntime().getComponent(Service.ID);
     }
 

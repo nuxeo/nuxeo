@@ -165,14 +165,18 @@ public class Main extends ModuleRoot {
         return category
     }
     
+    public static getService() {
+        return org.nuxeo.theme.webwidgets.Manager.getService()
+    }
+    
     public static Set<String> getWidgetCategories() {
-        Service service = Framework.getRuntime().getComponent("org.nuxeo.theme.webwidgets.Service")
+        Service service = getService()
         return service.getWidgetCategories()
     }
     
     public static List<WidgetType> getWidgetTypes() {
         String widgetCategory = getSelectedWidgetCategory()
-        Service service = Framework.getRuntime().getComponent("org.nuxeo.theme.webwidgets.Service")
+        Service service = getService()
         return service.getWidgetTypes(widgetCategory)
     }
         
