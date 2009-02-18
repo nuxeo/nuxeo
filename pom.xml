@@ -816,6 +816,16 @@
         <scope>provided</scope>
         <classifier>linux</classifier>
       </dependency>
+      <dependency>
+        <groupId>commons-httpclient</groupId>
+        <artifactId>commons-httpclient</artifactId>
+        <version>3.1</version>
+      </dependency>
+      <dependency>
+      	<groupId>jline</groupId>
+      	<artifactId>jline</artifactId>
+      	<version>0.9.94</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
