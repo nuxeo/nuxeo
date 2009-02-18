@@ -23,5 +23,9 @@ package org.nuxeo.ecm.client;
 public interface RepositoryService {
 
     Repository[] getRepositories();
-   
+    
+    Repository getDefaultRepository();
+    
+    Repository getRepository(String id);
+
 }

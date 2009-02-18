@@ -21,9 +21,25 @@ package org.nuxeo.ecm.client;
  * @author matic
  *
  */
-public interface Repository {
+public interface Repository  {
     
-    Entry getRoot();
+    Document getRoot();    
 
-    Feed[] getQueries();
+    DocumentFeed[] getQueries();
+
+    //DocumentFeed[] getFeeds();    
+
+//    RepositoryInfo getRepositoryInfo();
+//    
+//    Type getTypeDefinition(String type);
+//    
+//    Type[] getTypes();
+
+    
+    NavigationService getNavigationService();
+    
+    DocumentService getDocumentService();
+    
+    <T> T getService(Class<T> serviceType);
+    
 }

@@ -16,43 +16,39 @@
  */
 package org.nuxeo.ecm.client;
 
-import java.util.Map;
 
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface Entry {
+public interface Entry extends Adaptable {
+    
+    String getURI();// link rel="self"
 
-    Feed list(); // list entry content
-    Entry save(); // put()
-    Entry create(); // post()
-    void delete();
-    boolean exists();
+    String getId(); // atom:id
+
+    long lastModified(); //atom:edited <=> CMIS:lastModifiedDate     
+
+    long published(); // atom:published <=> lastCreatedDate
     
-    boolean isPhantom(); // not yet created
-    boolean isDirty(); // modified 
-    boolean isLocked();
+    String getTitle(); // atom:title <=> CMIS:name or other appropriate property
+
+    String getSummary(); // atom:summary = mandatory if content src is specified
     
-    Path getPath();
-    String getURL();
+    String[] getAuthors(); // atom:author <=> cmis:creator
+        
+    String[] getCategories(); // atom:categories
+
+    Content getContent(); //atom:content. @src <=> cmis-stream, @type
+
+    void setContent(Content content);
     
-    String getId();
-    long lastModified();    
-    String getType();
-    String[] getFacets();
-    boolean hasFacet();
-    String getState();
-    String getName();
-    String getTitle();
-    String getDescription(); //headline
-    String getAuthor();
-    Object getProperty(String key);
-    Map<String, Object> getProperties();
+    void removeContent();
     
-    <T> T getContent(Class<T> clazz);
-    
-    //<T> T getAdapter(Class<T> adapter);
-    
+    Document save(); // put - update properties + content?
+    Document create(); // post
+    void delete(); //delete
+    boolean exists(); // head
+
 }

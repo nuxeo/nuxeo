@@ -16,7 +16,6 @@
  */
 package org.nuxeo.ecm.client;
 
-import java.net.URL;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -28,19 +27,19 @@ import java.net.URL;
  * @apiviz.uses org.nuxeo.ecm.client.Feed
  * 
  */
-public interface Connector extends DiscoveryService {
+public interface Connector {
 
-    Entry getEntry(String id);
+    Document getEntry(String id);
 
-    Feed list(String id);
+    DocumentFeed list(String id);
     
     boolean exists(String id);
     
     void delete(String id);
     
-    Entry update(Entry entry);
+    Document update(Document entry);
     
-    Entry create(Entry entry);
+    Document create(Document entry);
     
     Client getClient();
     

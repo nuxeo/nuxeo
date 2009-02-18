@@ -12,31 +12,16 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     matic
+ *     bstefanescu
  */
 package org.nuxeo.ecm.client;
 
-import java.net.URL;
+import java.util.List;
 
 /**
- * mapped to APP document service used for introspection
- * @author matic
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface Client extends RepositoryService, Console {
-
-    URL getBaseURL();
-
-    Connector getConnector();
-    
-    ContentHandlerRegistry getContentHandlerRegistry();
-
-    RepositoryService getRepositoryService();
-    
-    Repository[] getRepositories();
-    
-    Repository getDefaultRepository();
-    
-    Repository getRepository(String id);
+public interface DocumentList extends List<Document> {
 
 }
