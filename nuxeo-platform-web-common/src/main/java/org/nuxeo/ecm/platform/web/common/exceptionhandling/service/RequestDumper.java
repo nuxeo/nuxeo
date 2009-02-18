@@ -16,14 +16,18 @@
  */
 package org.nuxeo.ecm.platform.web.common.exceptionhandling.service;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author arussel
- *
+ * 
  */
 public interface RequestDumper {
 
     String getDump(HttpServletRequest request);
+
+    void setNotListedAttributes(List<String> attributes);
 
 }

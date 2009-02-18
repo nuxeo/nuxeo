@@ -20,7 +20,13 @@
       target="org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService"
       point="requestdump">
     <requestdump
-        class="org.nuxeo.ecm.platform.web.common.exceptionhandling.service.DefaultRequestDumper"/>
+        class="org.nuxeo.ecm.platform.web.common.exceptionhandling.service.DefaultRequestDumper">
+        <!-- you can add names of attributes you don't want to see listed in the request dump.
+        <notListed>
+          <attribute>javax.servlet.forward.request_uri</attribute>
+        </notListed>
+         -->
+        </requestdump>
   </extension>
 
   <extension

@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.platform.web.common.exceptionhandling.service;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -31,9 +32,10 @@ import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
  * @author arussel
- *
+ * 
  */
-public class ExceptionHandlingComponent extends DefaultComponent implements ExceptionHandlingService {
+public class ExceptionHandlingComponent extends DefaultComponent implements
+        ExceptionHandlingService {
 
     private final NuxeoExceptionHandler exceptionHandler = new NuxeoExceptionHandler();
 
@@ -49,14 +51,17 @@ public class ExceptionHandlingComponent extends DefaultComponent implements Exce
         switch (ep) {
         case errorhandlers:
             ErrorHandlersDescriptor md = (ErrorHandlersDescriptor) contribution;
-            exceptionHandler.setBundleName( md.getBundle());
+            exceptionHandler.setBundleName(md.getBundle());
             exceptionHandler.setHandlers(md.getMessages());
             exceptionHandler.setLoggerName(md.getLoggerName());
             exceptionHandler.setDefaultErrorPage(md.getDefaultPage());
             break;
         case requestdump:
             RequestDumpDescriptor rdd = (RequestDumpDescriptor) contribution;
-            exceptionHandler.setRequestDumper(rdd.getKlass().newInstance());
+            RequestDumper dumper = rdd.getKlass().newInstance();
+            List<String> attributes = rdd.getAttributes();
+            dumper.setNotListedAttributes(attributes);
+            exceptionHandler.setRequestDumper(dumper);
             break;
         case listener:
             ListenerDescriptor ld = (ListenerDescriptor) contribution;
@@ -69,7 +74,8 @@ public class ExceptionHandlingComponent extends DefaultComponent implements Exce
     }
 
     public void forwardToErrorPage(final HttpServletRequest request,
-            final HttpServletResponse response, final Throwable t) throws IOException, ServletException {
+            final HttpServletResponse response, final Throwable t)
+            throws IOException, ServletException {
         exceptionHandler.handleException(request, response, t);
     }
 

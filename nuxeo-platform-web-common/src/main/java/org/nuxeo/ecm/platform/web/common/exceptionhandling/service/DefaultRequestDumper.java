@@ -16,23 +16,30 @@
  */
 package org.nuxeo.ecm.platform.web.common.exceptionhandling.service;
 
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author arussel
- *
+ * 
  */
 public class DefaultRequestDumper implements RequestDumper {
+
+    private List<String> attributes = new ArrayList<String>();
 
     @SuppressWarnings("unchecked")
     public String getDump(HttpServletRequest request) {
         StringBuilder builder = new StringBuilder();
         builder.append("\nRequest Attributes:\n\n");
         Enumeration<String> e = request.getAttributeNames();
-        while(e.hasMoreElements()) {
+        while (e.hasMoreElements()) {
             String name = e.nextElement();
+            if (attributes.contains(name)) {
+                continue;
+            }
             Object obj = request.getAttribute(name);
             builder.append(name);
             builder.append(" : ");
@@ -40,6 +47,10 @@ public class DefaultRequestDumper implements RequestDumper {
             builder.append("\n");
         }
         return builder.toString();
+    }
+
+    public void setNotListedAttributes(List<String> attributes) {
+        this.attributes = attributes;
     }
 
 }

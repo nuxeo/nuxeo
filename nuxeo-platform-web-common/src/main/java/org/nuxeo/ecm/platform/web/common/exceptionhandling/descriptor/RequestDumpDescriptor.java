@@ -16,13 +16,17 @@
  */
 package org.nuxeo.ecm.platform.web.common.exceptionhandling.descriptor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.service.RequestDumper;
 
 /**
  * @author arussel
- *
+ * 
  */
 @XObject("requestdump")
 public class RequestDumpDescriptor {
@@ -30,8 +34,15 @@ public class RequestDumpDescriptor {
     @XNode("@class")
     Class<? extends RequestDumper> klass;
 
+    @XNodeList(value = "notListed/attribute", type = ArrayList.class, componentType = String.class)
+    List<String> attributes = new ArrayList<String>();
+
     public Class<? extends RequestDumper> getKlass() {
         return klass;
+    }
+
+    public List<String> getAttributes() {
+        return attributes;
     }
 
 }
