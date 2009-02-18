@@ -421,7 +421,8 @@ div.schedule-compact-default td.inactive-day td.header, div.schedule-compact-def
 /* End hide from IE5-mac */
 
 
-/* Context menu classes (temporary) */
+/* Righ click context menu classes 
+   (some css properties not friend with xml theme file) */
 
 #contextMenu {
   position: absolute;
@@ -440,33 +441,33 @@ div.schedule-compact-default td.inactive-day td.header, div.schedule-compact-def
       list-style: none;
       padding: 1px;
       margin: 0px;
-      background-color: #fff;
-      border: 1px solid #999;
+      background-color: #232323;
       width: 100px;
+      font: 9px 'Lucida Grande', Verdana, Arial, sans-serif;
+
 }
 .ctxMenuItemStyle {
       margin: 0px;
-      color: #000;
+      color: #e7e7e7;
       display: block;
       cursor: default;
       padding: 3px;
-      border: 1px solid #fff;
-      background-color: transparent;
-      font-size: 9pt;
+      border-bottom: 1px solid #232323;
+      background:#282b2e url(/nuxeo/img/theme_galaxy/small_gray_bar.png) top left repeat-x;
 }
 .ctxMenuItemHoverStyle {
       margin: 0px;
-      color: #000;
+      color: #ffffff;
       display: block;
       cursor: default;
       padding: 3px;
-      border: 1px solid #0a246a;
-      background-color: #b6bdd2;
-      font-size: 9pt;
+      border-bottom: 1px solid #4e9ae1;
+      background-color: #4e9ae1;
 }
 .ctxMenuImg {
       vertical-align:middle;
-      padding-right:2px;
+      padding:1px;
+      padding-right:4px;
 }
 .ctxMenuShadow {
   background-color:#000;
