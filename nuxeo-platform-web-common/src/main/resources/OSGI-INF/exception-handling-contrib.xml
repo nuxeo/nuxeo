@@ -5,7 +5,7 @@
   <extension
       target="org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService"
       point="errorhandlers">
-    <errorHandlers bundle="messages" loggerName="nuxeo-error-log" defaultpage="nuxeo_error.jsp">
+    <errorHandlers bundle="messages" loggerName="nuxeo-error-log" defaultpage="/nuxeo_error.jsp">
       <handlers>
         <handler error=".*NoSuchDocumentException" message="Error.Document.Not.Found" code="404"/>
         <handler error="javax.jcr.ItemNotFoundException" message="Error.Document.NotFound" code="404"/>
