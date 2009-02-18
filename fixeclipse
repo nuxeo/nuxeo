@@ -6,7 +6,7 @@ NEW_MAIN=bin/main
 OLD_TEST=target/test-classes
 NEW_TEST=bin/test
 echo "Fixing eclipse classpath to use bin output directory instead of target..."
-find . -maxdepth 3 -name .classpath |
+find . -maxdepth 4 -name .classpath |
     xargs grep -El "path=\"$OLD_MAIN\"|output=\"$OLD_TEST\"" |
         while read i; do
             echo "$i"
@@ -16,7 +16,7 @@ find . -maxdepth 3 -name .classpath |
 echo "Done."
 
 echo "Replacing missing or badly generated files with .*.ok files..."
-find . -maxdepth 3 -name '.*.ok' |
+find . -maxdepth 4 -name '.*.ok' |
     while read file; do
         newfile="${file%.ok}"
         if diff -bB "$file" "$newfile" >/dev/null; then
