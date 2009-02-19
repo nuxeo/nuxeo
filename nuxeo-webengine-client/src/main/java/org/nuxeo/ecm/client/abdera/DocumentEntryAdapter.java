@@ -18,13 +18,12 @@ package org.nuxeo.ecm.client.abdera;
 
 import java.util.Map;
 
-import org.apache.abdera.model.Element;
+import org.apache.abdera.model.Entry;
 import org.jboss.util.NotImplementedException;
 import org.nuxeo.ecm.client.Content;
 import org.nuxeo.ecm.client.ContentManager;
 import org.nuxeo.ecm.client.DocumentEntry;
 import org.nuxeo.ecm.client.DocumentList;
-import org.nuxeo.ecm.client.Path;
 import org.nuxeo.ecm.client.Repository;
 
 /**
@@ -33,12 +32,12 @@ import org.nuxeo.ecm.client.Repository;
  */
 public class DocumentEntryAdapter implements DocumentEntry {
     
-    protected final Element abderaElement;
+    protected final Entry atomEntry;
     protected final ContentManager client;
 
-    public DocumentEntryAdapter(ContentManager client, Element abderaElement) {
+    public DocumentEntryAdapter(ContentManager client, Entry atomEntry) {
         this.client = client;
-        this.abderaElement = abderaElement;
+        this.atomEntry = atomEntry;
     }
 
     public DocumentEntry getChild(String name) {
@@ -79,10 +78,6 @@ public class DocumentEntryAdapter implements DocumentEntry {
     }
 
     public String getParentId() {
-        throw new UnsupportedOperationException("not yet");
-    }
-
-    public Path getPath() {
         throw new UnsupportedOperationException("not yet");
     }
 
@@ -163,7 +158,7 @@ public class DocumentEntryAdapter implements DocumentEntry {
     }
 
     public String getId() {
-        throw new UnsupportedOperationException("not yet");
+        return atomEntry.getId().toASCIIString();
     }
 
     public String getSummary() {
@@ -202,4 +197,7 @@ public class DocumentEntryAdapter implements DocumentEntry {
         throw new UnsupportedOperationException("not yet");
     }
 
+    public String toString() {
+        return "entry:" + getId();
+    }
 }

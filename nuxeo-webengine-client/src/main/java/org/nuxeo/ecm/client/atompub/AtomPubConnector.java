@@ -14,14 +14,14 @@
  * Contributors:
  *     matic
  */
-package org.nuxeo.ecm.client.httpclient;
+package org.nuxeo.ecm.client.atompub;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
 
 import org.apache.abdera.Abdera;
+import org.apache.abdera.ext.cmis.CmisExtensionFactory;
 import org.apache.abdera.model.Document;
 import org.apache.abdera.model.Element;
 import org.apache.abdera.model.Feed;
@@ -29,73 +29,95 @@ import org.apache.abdera.model.Service;
 import org.apache.abdera.model.Workspace;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.nuxeo.ecm.client.CannotConnectToServerException;
 import org.nuxeo.ecm.client.Command;
 import org.nuxeo.ecm.client.Connector;
-import org.nuxeo.ecm.client.ConnectorException;
 import org.nuxeo.ecm.client.ContentManager;
 import org.nuxeo.ecm.client.DocumentFeed;
+import org.nuxeo.ecm.client.QueryEntry;
 import org.nuxeo.ecm.client.Repository;
 import org.nuxeo.ecm.client.abdera.DocumentFeedAdapter;
+import org.nuxeo.ecm.client.abdera.QueryEntryTransformer;
 import org.nuxeo.ecm.client.abdera.RepositoryAdapter;
 import org.nuxeo.ecm.client.commands.AbstractCommand;
-import org.nuxeo.ecm.client.commands.QueryCommand;
+import org.nuxeo.ecm.client.commands.GetDocumentFeedCommand;
+import org.nuxeo.ecm.client.commands.GetQueriesCommand;
 import org.nuxeo.ecm.client.commands.RepositoriesCommand;
 
 /**
  * @author matic
  * 
  */
-public class HttpClientConnector implements Connector {
+public class AtomPubConnector implements Connector {
 
-    protected HttpClient support;
+    protected HttpClient httpClient;
+
+    protected Abdera abdera;
 
     public void init(ContentManager contentManager) {
         this.contentManager = contentManager;
-        this.support = new HttpClient();
+        this.httpClient = new HttpClient();
+        this.abdera = Abdera.getInstance();
+        this.abdera.getConfiguration().addExtensionFactory(
+                new CmisExtensionFactory());
     }
 
     protected ContentManager contentManager;
 
     @SuppressWarnings("unchecked")
-    public <T> T invoke(Command<T> command) {
+    public <T> T invoke(Command<T> command)
+            throws CannotConnectToServerException {
         if (command instanceof RepositoriesCommand) {
             return (T) doInvoke((RepositoriesCommand) command);
-        } else if (command instanceof QueryCommand) {
-            return (T) doInvoke((QueryCommand) command);
+        } else if (command instanceof GetQueriesCommand) {
+            return (T) doInvoke((GetQueriesCommand) command);
+        } else if (command instanceof GetDocumentFeedCommand) {
+            return (T) doInvoke((GetDocumentFeedCommand) command);
         }
         throw new UnsupportedOperationException("not yet");
     }
 
-    protected <T extends Element> T doGet(AbstractCommand<?> command) {
+
+ 
+
+    protected <T extends Element> T doGet(AbstractCommand<?> command)
+            throws CannotConnectToServerException {
         URL baseURL = contentManager.getBaseURL();
         String url = command.formatURL(baseURL);
         GetMethod method = new GetMethod(url);
         InputStream bodyStream = null;
         try {
+            httpClient.executeMethod(method);
             bodyStream = method.getResponseBodyAsStream();
-        } catch (IOException e) {
-            ConnectorException.wrap("Cannot connect to " + url, e);
+        } catch (Exception e) {
+            throw CannotConnectToServerException.wrap("Cannot connect to "
+                    + url, e);
         }
-        Document<T> document = new Abdera().getParser().parse(bodyStream);
+        Document<T> document = abdera.getParser().parse(bodyStream);
         return document.getRoot();
     }
-    
-    protected DocumentFeed[] doInvoke(QueryCommand command) {
+
+    protected List<QueryEntry> doInvoke(GetQueriesCommand command)
+            throws CannotConnectToServerException {
         Feed atomFeed = this.doGet(command);
-        DocumentFeed feed = new DocumentFeedAdapter(contentManager, atomFeed);
-        return feed.toArray(new DocumentFeed[feed.size()]);
+        return QueryEntryTransformer.transformEntries(atomFeed.getEntries(), contentManager);
     }
 
-
-
-    protected Repository[] doInvoke(RepositoriesCommand command) {
+    protected Repository[] doInvoke(RepositoriesCommand command)
+            throws CannotConnectToServerException {
         Service atomService = this.doGet(command);
         List<Workspace> atomWorkspaces = atomService.getWorkspaces();
         Repository[] repositories = new RepositoryAdapter[atomWorkspaces.size()];
         int index = 0;
-        for (Workspace atomWorkspace:atomWorkspaces) {
-            repositories[index++] = new RepositoryAdapter(contentManager,atomWorkspace);
+        for (Workspace atomWorkspace : atomWorkspaces) {
+            repositories[index++] = new RepositoryAdapter(contentManager,
+                    atomWorkspace);
         }
         return repositories;
+    }
+    
+    protected DocumentFeed doInvoke(GetDocumentFeedCommand command) throws CannotConnectToServerException {
+        Feed atomFeed = this.doGet(command);
+        return new DocumentFeedAdapter(contentManager,atomFeed);
     }
 }

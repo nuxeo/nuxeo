@@ -28,7 +28,7 @@ public interface DocumentEntry extends Entry {
     
     // client specific properties
     Repository getRepository(); // used by action methods: repo.getNavigationService().getChildren(getId());
-    Path getPath(); // client constructed path or null if unfilled
+    String getId(); // client constructed path or null if unfilled
     boolean isPhantom(); // not yet persisted TODO rename in isTransient() ?
     boolean isDirty(); // modified 
     boolean isLocked(); //locked

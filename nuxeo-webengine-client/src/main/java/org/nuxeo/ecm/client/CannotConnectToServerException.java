@@ -16,29 +16,19 @@
  */
 package org.nuxeo.ecm.client;
 
-import java.util.List;
-
-
 /**
- * Repository is mapped to an atom service or a workspace in 
- * 
  * @author matic
- * 
+ *
  */
-public interface Repository  {
-
-    String getRepositoryId();
-
-    DocumentEntry getRoot();
+public class CannotConnectToServerException extends ContentManagerException {
     
-    List<QueryEntry> getQueries() throws CannotConnectToServerException;
+    private static final long serialVersionUID = -5341514481335821610L;
 
-    DiscoveryService getDiscoveryService();
+    protected CannotConnectToServerException(String message, Exception e) {
+        super(message,e);
+    }
 
-    NavigationService getNavigationService();
-
-    ObjectService getObjectService();
-
-    <T> T getService(Class<T> serviceType);
-
+    public static CannotConnectToServerException wrap(String message, Exception e) {
+        return new CannotConnectToServerException(message,e);
+    }
 }

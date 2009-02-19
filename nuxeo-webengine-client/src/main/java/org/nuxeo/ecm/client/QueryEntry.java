@@ -18,17 +18,9 @@ package org.nuxeo.ecm.client;
 
 /**
  * @author matic
- *
+ * 
  */
-public class ConnectorException extends ContentManagerException {
-    
-    private static final long serialVersionUID = -5341514481335821610L;
+public interface QueryEntry extends Entry {
 
-    protected ConnectorException(String message, Exception e) {
-        super(message,e);
-    }
-
-    public static ConnectorException wrap(String message, Exception e) {
-        return new ConnectorException(message,e);
-    }
+    DocumentFeed getFeed() throws CannotConnectToServerException;
 }

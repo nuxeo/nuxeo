@@ -17,20 +17,24 @@
 package org.nuxeo.ecm.client.commands;
 
 import java.net.URL;
+import java.util.List;
 
-import org.nuxeo.ecm.client.DocumentEntry;
+import org.nuxeo.ecm.client.QueryEntry;
 
 /**
  * @author matic
  * 
  */
-public class QueryCommand extends AbstractCommand<DocumentEntry[]> {
+public class GetQueriesCommand extends AbstractCommand<List<QueryEntry>> {
 
     public final String repositoryId;
 
-    public QueryCommand(String repositoryId) {
-        super("discovery", "query");
+    public final String href;
+
+    public GetQueriesCommand(String repositoryId, String href) {
+        super("repository", "query");
         this.repositoryId = repositoryId;
+        this.href = href;
     }
 
     public String getRepositoryId() {
@@ -38,6 +42,6 @@ public class QueryCommand extends AbstractCommand<DocumentEntry[]> {
     }
 
     public String formatURL(URL baseURL) {
-        return baseURL.toExternalForm() + "/" + repositoryId;
+        return href;
     }
 }

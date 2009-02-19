@@ -30,6 +30,6 @@ public interface Connector {
 
     void init(ContentManager contentManager);
 
-    <T> T invoke(Command<T> operation) throws ConnectorException;
+    <T> T invoke(Command<T> operation) throws CannotConnectToServerException;
 
 }

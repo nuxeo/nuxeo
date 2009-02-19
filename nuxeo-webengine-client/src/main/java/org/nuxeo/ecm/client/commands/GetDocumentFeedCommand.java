@@ -14,16 +14,28 @@
  * Contributors:
  *     matic
  */
-package org.nuxeo.ecm.client.httpclient;
+package org.nuxeo.ecm.client.commands;
+
+import java.net.URL;
+
+import org.nuxeo.ecm.client.DocumentFeed;
 
 /**
  * @author matic
- * 
+ *
  */
-public class PrintEncoding {
-    public static void main(String args[]) throws Exception {
-        System.out.println(System.getProperty("file.encoding"));
-        System.out.println(java.nio.charset.Charset.defaultCharset().name());
+public class GetDocumentFeedCommand extends AbstractCommand<DocumentFeed> {
+    
+    protected final String href;
+    
+    public GetDocumentFeedCommand(String href) {
+        super("nuxeo","getDocumentFeed");
+        this.href = href;
+    }
+
+    @Override
+    public String formatURL(URL baseURL) {
+        return href;
     }
 
 }

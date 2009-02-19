@@ -22,29 +22,29 @@ import java.util.List;
 import org.apache.abdera.model.Entry;
 import org.apache.commons.collections.collection.TransformedCollection;
 import org.nuxeo.ecm.client.ContentManager;
-import org.nuxeo.ecm.client.DocumentEntry;
+import org.nuxeo.ecm.client.QueryEntry;
 
 
 /**
  * @author matic
  *
  */
-public class DocumentEntryTransformer implements org.apache.commons.collections.Transformer {
+public class QueryEntryTransformer implements org.apache.commons.collections.Transformer {
 
     protected final ContentManager contentManager;
     
-    DocumentEntryTransformer(ContentManager client) {
+    QueryEntryTransformer(ContentManager client) {
         this.contentManager = client;
     }
     public Object transform(Object input) {
         Entry atomEntry  = (Entry)input;
-        return new DocumentEntryAdapter(contentManager, atomEntry);
+        return new QueryEntryAdapter(contentManager, atomEntry);
     }
 
     @SuppressWarnings("unchecked")
-    public static List<DocumentEntry> transformEntries(List<Entry> entries, ContentManager contentManager) {
-        List<DocumentEntry> transformedElements = new ArrayList<DocumentEntry>(entries.size());
-        TransformedCollection.decorate(transformedElements, new DocumentEntryTransformer(contentManager)).addAll(entries);
+    public static List<QueryEntry> transformEntries(List<Entry> entries, ContentManager contentManager) {
+        List<QueryEntry> transformedElements = new ArrayList<QueryEntry>(entries.size());
+        TransformedCollection.decorate(transformedElements, new QueryEntryTransformer(contentManager)).addAll(entries);
         return transformedElements;
     }
 }

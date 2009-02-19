@@ -21,7 +21,7 @@ import java.net.URL;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.client.Connector;
-import org.nuxeo.ecm.client.ConnectorException;
+import org.nuxeo.ecm.client.CannotConnectToServerException;
 import org.nuxeo.ecm.client.ContentHandlerRegistry;
 import org.nuxeo.ecm.client.ContentManager;
 import org.nuxeo.ecm.client.NoSuchRepositoryException;
@@ -67,25 +67,25 @@ public class DefaultContentManager implements ContentManager, RepositoryService 
         return contentHandlerRegistry;
     }
 
-    public Repository getDefaultRepository() throws ConnectorException {
+    public Repository getDefaultRepository() throws CannotConnectToServerException {
         return doGetRepositories()[0];
     }
 
     protected Repository[] repositories;
 
-    protected Repository[] doGetRepositories() throws ConnectorException {
+    protected Repository[] doGetRepositories() throws CannotConnectToServerException {
         if (repositories != null) {
             return repositories;
         }
         return repositories = connector.invoke(new RepositoriesCommand());
     }
 
-    public Repository[] getRepositories() throws ConnectorException {
+    public Repository[] getRepositories() throws CannotConnectToServerException {
         return doGetRepositories();
     }
 
     public Repository getRepository(String id)
-            throws NoSuchRepositoryException, ConnectorException {
+            throws NoSuchRepositoryException, CannotConnectToServerException {
         for (Repository repository : doGetRepositories()) {
             if (repository.getRepositoryId().equals(id)) {
                 return repository;

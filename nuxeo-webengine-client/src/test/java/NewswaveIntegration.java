@@ -1,13 +1,16 @@
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 
-import junit.framework.TestCase;
+import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 
-import org.nuxeo.ecm.client.ConnectorException;
+import org.nuxeo.ecm.client.CannotConnectToServerException;
 import org.nuxeo.ecm.client.ContentManager;
+import org.nuxeo.ecm.client.DocumentFeed;
+import org.nuxeo.ecm.client.QueryEntry;
 import org.nuxeo.ecm.client.Repository;
-import org.nuxeo.ecm.client.httpclient.HttpClientConnector;
+import org.nuxeo.ecm.client.atompub.AtomPubConnector;
 import org.nuxeo.ecm.client.impl.CannotInstantiateConnectorException;
 import org.nuxeo.ecm.client.impl.DefaultContentManager;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
@@ -35,15 +38,14 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  */
 public class NewswaveIntegration extends NXRuntimeTestCase {
 
-    public NewswaveIntegration(URL url) throws CannotInstantiateConnectorException {
-        super("noop");
+    public NewswaveIntegration(String name, URL url) throws CannotInstantiateConnectorException {
+        super(name);
         managerUnderTest = new DefaultContentManager();
-        managerUnderTest.init(url, HttpClientConnector.class);
+        managerUnderTest.init(url, AtomPubConnector.class);
     }
 
     public void setUp() throws Exception {
         super.setUp();
-        testRepositories();
     }
     
     public void noop() {
@@ -52,18 +54,36 @@ public class NewswaveIntegration extends NXRuntimeTestCase {
 
     final ContentManager managerUnderTest;
 
-    public void testRepositories() throws ConnectorException {
+    public void checkRepositories() throws CannotConnectToServerException {
         Repository[] repositories = managerUnderTest.getRepositories();
         assertEquals(1, repositories.length);
         Repository defaultRepository = managerUnderTest.getDefaultRepository();
         assertEquals("default", defaultRepository.getRepositoryId());
+    }
+    
+    public void checkQueries() throws CannotConnectToServerException {
+        Repository defaultRepository = managerUnderTest.getDefaultRepository();
+        List<QueryEntry> queries = defaultRepository.getQueries();
+        assertTrue(queries.size() > 0);
+    }
+    
+    public void checkFeed() throws CannotConnectToServerException {
+        Repository defaultRepository = managerUnderTest.getDefaultRepository();
+        List<QueryEntry> queries = defaultRepository.getQueries();
+        assertTrue(queries.size() > 0);
+        QueryEntry firstQuery = queries.get(0);
+        DocumentFeed feed = firstQuery.getFeed();
+        assertEquals("Feed Title", feed.getTitle());
     }
 
     public static void main(String args[]) throws MalformedURLException, CannotInstantiateConnectorException {
         String host = args[0];
         URL baseURL;
         baseURL = new URL("http", host, 8080, "/cmis");
-        TestCase test = new NewswaveIntegration(baseURL); // eugen
-        TestRunner.run(test);
+        TestSuite suite= new TestSuite();
+        suite.addTest(new NewswaveIntegration("checkRepositories",baseURL));
+        suite.addTest(new NewswaveIntegration("checkQueries",baseURL));
+        suite.addTest(new NewswaveIntegration("checkFeed", baseURL));
+        TestRunner.run(suite);
     }
 }

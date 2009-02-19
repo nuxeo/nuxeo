@@ -14,31 +14,12 @@
  * Contributors:
  *     matic
  */
-package org.nuxeo.ecm.client;
-
-import java.util.List;
-
+package org.nuxeo.ecm.client.abdera;
 
 /**
- * Repository is mapped to an atom service or a workspace in 
- * 
  * @author matic
- * 
+ *
  */
-public interface Repository  {
-
-    String getRepositoryId();
-
-    DocumentEntry getRoot();
-    
-    List<QueryEntry> getQueries() throws CannotConnectToServerException;
-
-    DiscoveryService getDiscoveryService();
-
-    NavigationService getNavigationService();
-
-    ObjectService getObjectService();
-
-    <T> T getService(Class<T> serviceType);
+public class RepositoryAdaptor {
 
 }

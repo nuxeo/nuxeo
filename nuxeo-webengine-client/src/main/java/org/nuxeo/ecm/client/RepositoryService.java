@@ -24,10 +24,10 @@ package org.nuxeo.ecm.client;
  */
 public interface RepositoryService {
 
-    Repository[] getRepositories() throws ConnectorException;
+    Repository[] getRepositories() throws CannotConnectToServerException;
     
-    Repository getDefaultRepository() throws ConnectorException;
+    Repository getDefaultRepository() throws CannotConnectToServerException;
     
-    Repository getRepository(String id) throws NoSuchRepositoryException, ConnectorException;
+    Repository getRepository(String id) throws NoSuchRepositoryException, CannotConnectToServerException;
 
 }

@@ -22,5 +22,4 @@ package org.nuxeo.ecm.client;
  */
 public interface DiscoveryService {
 
-    DocumentEntry[] getQueries() throws ConnectorException;
 }
