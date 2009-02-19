@@ -28,6 +28,7 @@
 
   %{SERVLET-MAPPING}%
 
+  %{ERROR-PAGE}%
 
   %{SECURITY-CONSTRAINT}%
 
