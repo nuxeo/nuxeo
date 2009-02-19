@@ -16,6 +16,8 @@
  */
 package org.nuxeo.ecm.client.commands;
 
+import java.net.URL;
+
 import org.nuxeo.ecm.client.Repository;
 
 /**
@@ -24,6 +26,9 @@ import org.nuxeo.ecm.client.Repository;
  */
 public class RepositoriesCommand extends AbstractCommand<Repository[]>  {
 
+    public String formatURL(URL baseURL) {
+        return baseURL.toExternalForm();
+    }
     public RepositoriesCommand() {
         super("repository","getRepositories");
     }
