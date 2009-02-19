@@ -95,5 +95,12 @@
 			<url-pattern>/nxbigfile/*</url-pattern>
 		</servlet-mapping>
 	</extension>
+
+  <extension target="web#ERROR-PAGE">
+    <error-page>
+      <error-code>404</error-code>
+      <location>/page_not_found.jsp</location>
+    </error-page>
+  </extension>
 </fragment>
 
