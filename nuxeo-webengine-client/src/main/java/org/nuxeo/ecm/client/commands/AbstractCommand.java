@@ -12,17 +12,35 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     bstefanescu
+ *     matic
  */
-package org.nuxeo.ecm.client;
+package org.nuxeo.ecm.client.commands;
+
+import java.net.URL;
+
+import org.nuxeo.ecm.client.Command;
 
 /**
- * Expose CMIS Object Services
+ * @author matic
  * 
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-public interface ObjectService {
+public abstract class AbstractCommand<T> implements Command<T> {
+
+    protected final String serviceName;
+    protected final String methodName;
+
+    protected AbstractCommand(String serviceName, String methodName) {
+        this.serviceName = serviceName;
+        this.methodName = methodName;
+    }
     
+    public String getServiceName() {
+        return serviceName;
+    }
     
+    public String getMethodName() {
+        return methodName;
+    }
+
+    public abstract String formatURL(URL baseURL);
 }

@@ -17,15 +17,17 @@
 package org.nuxeo.ecm.client;
 
 /**
+ * Exposes the Repository Service has defined in CMIS Spec Part I
+ * 
  * @author matic
- *
+ * 
  */
 public interface RepositoryService {
 
-    Repository[] getRepositories();
+    Repository[] getRepositories() throws ConnectorException;
     
-    Repository getDefaultRepository();
+    Repository getDefaultRepository() throws ConnectorException;
     
-    Repository getRepository(String id);
+    Repository getRepository(String id) throws NoSuchRepositoryException, ConnectorException;
 
 }

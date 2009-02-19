@@ -12,29 +12,22 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     bstefanescu
+ *     matic
  */
 package org.nuxeo.ecm.client;
 
-import java.util.List;
-
-
 /**
- * TODO: use Iterator<Entry> instead of List?
  * 
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * Represents a method to be invoked at server side using the SOAP or AtomPub
+ * connector
+ * 
+ * @author matic
+ * 
+ *         R
  */
-public interface Feed extends List<Entry> {
- 
-    String getId();
-    
-    String getTitle();
-    
-    String getURL(); //
-    
-    Path getPath(); //Path path
-    
-    long lastModified();
-    
+public interface Command<T> {
+
+    String getServiceName();
+    String getMethodName();
+
 }

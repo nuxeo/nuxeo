@@ -12,17 +12,33 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     bstefanescu
+ *     matic
  */
 package org.nuxeo.ecm.client;
 
+import java.net.URL;
+
 /**
- * Expose CMIS Object Services
+ * @author matic
  * 
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-public interface ObjectService {
-    
-    
+public class NoSuchRepositoryException extends ContentManagerException {
+
+    private static final long serialVersionUID = -3017945902792388422L;
+
+    public final URL contentManagerURL;
+
+    public final String repositoryId;
+
+    public NoSuchRepositoryException(URL contentManagerURL, String id) {
+        super("no such repository " + id + " in "
+                + contentManagerURL.toExternalForm());
+        this.contentManagerURL = contentManagerURL;
+        this.repositoryId = id;
+    }
+
+    public String getRepositoryId() {
+        return repositoryId;
+    }
+
 }

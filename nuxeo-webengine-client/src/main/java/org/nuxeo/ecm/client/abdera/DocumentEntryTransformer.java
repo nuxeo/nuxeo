@@ -12,17 +12,28 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     bstefanescu
+ *     matic
  */
-package org.nuxeo.ecm.client;
+package org.nuxeo.ecm.client.abdera;
+
+import org.apache.abdera.model.Element;
+import org.nuxeo.ecm.client.ContentManager;
+
 
 /**
- * Expose CMIS Object Services
- * 
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author matic
  *
  */
-public interface ObjectService {
+public class DocumentEntryTransformer implements org.apache.commons.collections.Transformer {
+
+    protected final ContentManager client;
     
-    
+    DocumentEntryTransformer(ContentManager client) {
+        this.client = client;
+    }
+    public Object transform(Object input) {
+        Element abderaElement  = (Element)input;
+        return new DocumentEntryAdapter(client, abderaElement);
+    }
+
 }

@@ -18,9 +18,9 @@ package org.nuxeo.ecm.client;
 
 /**
  * @author matic
- *
+ * 
  */
-public interface Collection<T> {
+public interface DiscoveryService {
 
-    <T> getChildren();
+    DocumentEntry[] getQueries() throws ConnectorException;
 }

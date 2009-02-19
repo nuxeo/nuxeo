@@ -12,17 +12,23 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     bstefanescu
+ *     matic
  */
 package org.nuxeo.ecm.client;
 
 /**
- * Expose CMIS Object Services
- * 
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author matic
  *
  */
-public interface ObjectService {
+public class ConnectorException extends ContentManagerException {
     
-    
+    private static final long serialVersionUID = -5341514481335821610L;
+
+    protected ConnectorException(String message, Exception e) {
+        super(message,e);
+    }
+
+    public static ConnectorException wrap(String message, Exception e) {
+        return new ConnectorException(message,e);
+    }
 }

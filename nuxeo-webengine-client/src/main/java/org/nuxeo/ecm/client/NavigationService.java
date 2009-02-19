@@ -19,19 +19,22 @@ package org.nuxeo.ecm.client;
 import java.util.List;
 
 /**
+ * 
+ * Exposes the CMIS Navigation Service
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public interface NavigationService {
 
-    List<Document> getDescendants(Document folder);
+    List<DocumentEntry> getDescendants(DocumentEntry folder);
     
-    List<Document> getChildren(Document folder);
+    List<DocumentEntry> getChildren(DocumentEntry folder);
   
-    List<Document> getFolderParent(Document entry);
+    List<DocumentEntry> getFolderParent(DocumentEntry entry);
     
-    List<Document> getObjectParents(Document doc);
+    List<DocumentEntry> getObjectParents(DocumentEntry doc);
     
-    List<Document> getCheckedOutDocuments(Document folder);
+    List<DocumentEntry> getCheckedOutDocuments(DocumentEntry folder);
     
 }

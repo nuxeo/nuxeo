@@ -16,24 +16,41 @@
  */
 package org.nuxeo.ecm.client;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface ContentHandlerRegistry {
+public class ContentHandlerRegistry {
 
-    void addContentHandler(ContentHandler<?> handler);
+    protected final Set<ContentHandler<?>> registry =
+        new HashSet<ContentHandler<?>>();
     
-    void removeContentHandler(ContentHandler<?> handler);
+    public void addContentHandler(ContentHandler<?> handler) {
+        throw new UnsupportedOperationException("not yet");
+    }
     
-    List<ContentHandler<?>>[] getContentHandlers();
+    public void removeContentHandler(ContentHandler<?> handler) {
+        throw new UnsupportedOperationException("not yet");
+    }
     
-    List<ContentHandler<?>> getContentHandler(String contentType);
+    List<ContentHandler<?>>[] getContentHandlers() {
+        throw new UnsupportedOperationException("not yet");
+    }
     
-    <T> List<ContentHandler<T>> getContentHandler(Class<T> objectType);
+    List<ContentHandler<?>> getContentHandler(String contentType) {
+        throw new UnsupportedOperationException("not yet");
+    }
     
-    <T> ContentHandler<T> getContentHandler(String contentType, Class<T> objectType);
+    <T> List<ContentHandler<T>> getContentHandler(Class<T> objectType) {
+        throw new UnsupportedOperationException("not yet");
+    }
+    
+    <T> ContentHandler<T> getContentHandler(String contentType, Class<T> objectType) {
+        throw new UnsupportedOperationException("not yet");
+    }
     
 }

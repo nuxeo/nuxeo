@@ -24,7 +24,7 @@ import java.util.Map;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface Document extends Entry {
+public interface DocumentEntry extends Entry {
     
     // client specific properties
     Repository getRepository(); // used by action methods: repo.getNavigationService().getChildren(getId());
@@ -38,8 +38,8 @@ public interface Document extends Entry {
     //Type getType();
     String getTypeName(); // link type
     String getParentId();
-    Document getParent();    
-    Document getChild(String name); // throws Exception if not a folder?
+    DocumentEntry getParent();    
+    DocumentEntry getChild(String name); // throws Exception if not a folder?
     
     
     Object getProperty(String key); // cmis properties    
@@ -53,7 +53,7 @@ public interface Document extends Entry {
     <T> T getTypeAdapter();
     //<T extends MutableDocument> edit() TODO ?
 
-    Document newDocument(String type, String name);
+    DocumentEntry newDocument(String type, String name);
     
     void setProperty(String key, Object value);
     

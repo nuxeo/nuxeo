@@ -12,17 +12,24 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     bstefanescu
+ *     matic
  */
 package org.nuxeo.ecm.client;
 
+
 /**
- * Expose CMIS Object Services
- * 
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author matic
  *
  */
-public interface ObjectService {
+public abstract class ContentManagerException extends Exception {
+
+    private static final long serialVersionUID = -1328541867538528968L;
     
-    
+    protected ContentManagerException(String message) {
+        super(message);
+    }
+
+    protected ContentManagerException(String message, Exception e) {
+        super(message,e);
+    }
 }

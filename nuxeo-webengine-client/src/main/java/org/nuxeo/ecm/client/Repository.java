@@ -17,29 +17,23 @@
 package org.nuxeo.ecm.client;
 
 /**
- * Repository is mapped to an atom ws
+ * Repository is mapped to an atom service or a workspace in 
+ * 
  * @author matic
- *
+ * 
  */
 public interface Repository  {
-    
-    Document getRoot();    
 
-    DocumentFeed[] getQueries();
+    String getRepositoryId();
 
-    //DocumentFeed[] getFeeds();    
+    DocumentEntry getRoot();
 
-//    RepositoryInfo getRepositoryInfo();
-//    
-//    Type getTypeDefinition(String type);
-//    
-//    Type[] getTypes();
+    DiscoveryService getDiscoveryService();
 
-    
     NavigationService getNavigationService();
-    
-    DocumentService getDocumentService();
-    
+
+    ObjectService getObjectService();
+
     <T> T getService(Class<T> serviceType);
-    
+
 }

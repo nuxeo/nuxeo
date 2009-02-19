@@ -16,34 +16,20 @@
  */
 package org.nuxeo.ecm.client;
 
-
 /**
+ * 
+ * Invokes a content manager using a dedicated protocol, such as AtomPub or
+ * SOAP.
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * 
- * @apiviz.has org.nuxeo.ecm.client.Connector
- * @apiviz.has org.nuxeo.ecm.client.Console
- * @apiviz.has org.nuxeo.ecm.client.ContentHandlerRegistry
- * @apiviz.uses org.nuxeo.ecm.client.Entry
- * @apiviz.uses org.nuxeo.ecm.client.Feed
+ * @apiviz.uses org.nuxeo.ecm.client.Operation
  * 
  */
 public interface Connector {
 
-    Document getEntry(String id);
+    void init(ContentManager contentManager);
 
-    DocumentFeed list(String id);
-    
-    boolean exists(String id);
-    
-    void delete(String id);
-    
-    Document update(Document entry);
-    
-    Document create(Document entry);
-    
-    Client getClient();
-    
-    ContentHandlerRegistry getContentHandlerRegistry();
-    
-    
+    <T> T invoke(Command<T> operation) throws ConnectorException;
+
 }

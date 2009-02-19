@@ -18,25 +18,25 @@ package org.nuxeo.ecm.client;
 
 import java.net.URL;
 
+import org.nuxeo.ecm.client.impl.CannotInstantiateConnectorException;
+
 /**
  * mapped to APP document service used for introspection
+ * 
  * @author matic
- *
+ * 
+ * @apiviz.owns org.nuxeo.ecm.client.Connector
+ * @apiviz.owns org.nuxeo.ecm.client.ContentHandlerRegistry
+ * 
  */
-public interface Client extends RepositoryService, Console {
+public interface ContentManager extends RepositoryService, Console {
+
+    void init(URL baseURL, Class<? extends Connector> connectorClass) throws CannotInstantiateConnectorException;
 
     URL getBaseURL();
 
     Connector getConnector();
-    
-    ContentHandlerRegistry getContentHandlerRegistry();
 
-    RepositoryService getRepositoryService();
-    
-    Repository[] getRepositories();
-    
-    Repository getDefaultRepository();
-    
-    Repository getRepository(String id);
+    ContentHandlerRegistry getContentHandlerRegistry();
 
 }

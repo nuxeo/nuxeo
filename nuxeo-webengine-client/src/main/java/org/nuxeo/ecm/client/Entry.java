@@ -46,8 +46,8 @@ public interface Entry extends Adaptable {
     
     void removeContent();
     
-    Document save(); // put - update properties + content?
-    Document create(); // post
+    DocumentEntry save(); // put - update properties + content?
+    DocumentEntry create(); // post
     void delete(); //delete
     boolean exists(); // head
 

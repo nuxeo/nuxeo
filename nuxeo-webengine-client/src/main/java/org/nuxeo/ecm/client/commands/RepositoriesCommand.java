@@ -12,17 +12,21 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     bstefanescu
+ *     matic
  */
-package org.nuxeo.ecm.client;
+package org.nuxeo.ecm.client.commands;
+
+import org.nuxeo.ecm.client.Repository;
 
 /**
- * Expose CMIS Object Services
- * 
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author matic
  *
  */
-public interface ObjectService {
-    
-    
+public class RepositoriesCommand extends AbstractCommand<Repository[]>  {
+
+    public RepositoriesCommand() {
+        super("repository","getRepositories");
+    }
+
+
 }

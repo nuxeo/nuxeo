@@ -22,6 +22,6 @@ import java.util.List;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface DocumentList extends List<Document> {
+public interface DocumentList extends List<DocumentEntry> {
 
 }

@@ -12,17 +12,27 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     bstefanescu
+ *     matic
  */
-package org.nuxeo.ecm.client;
+package org.nuxeo.ecm.client.impl;
+
+import org.nuxeo.ecm.client.Connector;
+import org.nuxeo.ecm.client.ContentManagerException;
 
 /**
- * Expose CMIS Object Services
- * 
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author matic
  *
  */
-public interface ObjectService {
-    
-    
+public class CannotInstantiateConnectorException extends
+        ContentManagerException {
+
+    protected Class<? extends Connector> connectorClass;
+
+    public CannotInstantiateConnectorException(Class<? extends Connector> connectorClass, Exception e) {
+        super("Cannot instantiate connector for " + connectorClass);
+        this.connectorClass = connectorClass;
+    }
+
+    private static final long serialVersionUID = 5060709344706674038L;
+
 }
