@@ -5,7 +5,7 @@
     <set>resources</set>
     <outputFile>/</outputFile>
   </assemble>
-  <zipEntrySet id="resources">
+  <zipEntrySet id="resources" profile="vcs-profile">
     <artifact>
       org.nuxeo.ecm.platform:nuxeo-platform-ear:${project.version}:zip:resources-mono
     </artifact>
@@ -55,6 +55,15 @@
       org.nuxeo.ecm.platform:nuxeo-platform-ear:${project.version}:zip:resources-h2
     </artifact>
   </zipEntrySet>
+  <assemble>
+    <set>resources-jcr</set>
+    <outputFile>/</outputFile>
+  </assemble>
+  <zipEntrySet id="resources-jcr" profile="jcr-profile">
+    <artifact>
+      org.nuxeo.ecm.platform:nuxeo-platform-ear:${project.version}:zip:resources-jcr
+    </artifact>
+  </zipEntrySet>
 
   <!-- ARTIFACTS -->
   <assemble>
@@ -89,11 +98,11 @@
       <artifact group="org.nuxeo.ecm.webengine" name="nuxeo-webengine-sites" />
       <artifact group="org.nuxeo.ecm.webengine"
         name="nuxeo-webengine-resteasy-adapter" />
-      <!-- nuxeo-addons -->
+      <!-- add here nuxeo-addons -->
     </includes>
     <excludes>
       <artifact group="!org.nuxeo*" />
-      <artifact group="org.nuxeo.common" />
+<!--      <artifact group="org.nuxeo.common" />-->
       <artifact name="nuxeo-runtime-jboss-extensions" />
 
       <artifact name="nuxeo-platform-webapp" />
