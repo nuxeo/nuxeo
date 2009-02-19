@@ -9,13 +9,15 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventListener;
+import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.platform.comment.service.CommentServiceConfig;
 import org.nuxeo.ecm.platform.relations.api.RelationManager;
 import org.nuxeo.ecm.platform.relations.api.Resource;
 import org.nuxeo.ecm.platform.relations.api.Statement;
 import org.nuxeo.ecm.platform.relations.api.impl.StatementImpl;
 
-public class CommentRemovedEventListener extends AbstractCommentListener implements EventListener {
+public class CommentRemovedEventListener extends AbstractCommentListener
+        implements EventListener {
 
     private static final Log log = LogFactory.getLog(CommentRemovedEventListener.class);
 
@@ -24,7 +26,8 @@ public class CommentRemovedEventListener extends AbstractCommentListener impleme
             RelationManager relationManager, CommentServiceConfig config,
             DocumentModel docMessage) throws Exception {
         log.debug("Processing relations cleanup on Comment removal");
-        onCommentRemoved(relationManager, config, docMessage);
+        if ("Comment".equals(docMessage.getDocumentType().getName()))
+            onCommentRemoved(relationManager, config, docMessage);
     }
 
     private void onCommentRemoved(RelationManager relationManager,
@@ -43,8 +46,4 @@ public class CommentRemovedEventListener extends AbstractCommentListener impleme
         relationManager.remove(config.graphName, statementList);
     }
 
-    public void handleEvent(Event event) throws ClientException {
-        // TODO Auto-generated method stub
-
-    }
 }

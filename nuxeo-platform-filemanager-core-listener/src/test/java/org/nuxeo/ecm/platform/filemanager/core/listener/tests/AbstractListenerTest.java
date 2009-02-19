@@ -30,6 +30,7 @@ public class AbstractListenerTest extends RepositoryOSGITestCase {
 
          fileDoc = getCoreSession().createDocument(fileDoc);
 
+         getCoreSession().saveDocument(fileDoc);
          getCoreSession().save();
 
          return fileDoc;
