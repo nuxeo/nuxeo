@@ -90,14 +90,6 @@
       <artifact group="org.nuxeo.*" category="runtime,jboss4"
         includeDependsOnCategory="false" />
       <artifact group="org.nuxeo.*" category="core,search,web" />
-      <!-- Nuxeo-WebEngine -->
-<!--      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-rendering" />-->
-<!--      <artifact group="org.nuxeo.ecm.webengine" name="nuxeo-webengine-core" />-->
-<!--      <artifact group="org.nuxeo.ecm.webengine" name="nuxeo-webengine-admin" />-->
-<!--      <artifact group="org.nuxeo.ecm.webengine" name="nuxeo-webengine-wiki" />-->
-<!--      <artifact group="org.nuxeo.ecm.webengine" name="nuxeo-webengine-sites" />-->
-<!--      <artifact group="org.nuxeo.ecm.webengine"-->
-<!--        name="nuxeo-webengine-resteasy-adapter" />-->
       <!-- add here nuxeo-addons -->
     </includes>
     <excludes>
@@ -161,8 +153,11 @@
       <artifact group="jboss" name="jgroups" />
       <artifact group="bouncycastle" name="bcmail-jdk14" />
       <artifact group="bouncycastle" name="bcprov-jdk14" />
-      <!-- version is needed because of assembly plugin don't manage classifier here -->
-      <artifact group="net.sf.json-lib" name="json-lib" classifier="jdk15" version="2.2.1"/>
+      <!--
+        version required because maven-nuxeo-plugin don't manage classifier here
+      -->
+      <artifact group="net.sf.json-lib" name="json-lib" classifier="jdk15"
+        version="2.2.1" />
       <artifact group="org.apache.lucene" name="lucene-core" />
       <artifact group="net.sf.opencsv" name="opencsv" />
       <artifact group="org.slf4j" name="slf4j-api" />
@@ -193,47 +188,28 @@
     </artifacts>
   </artifactSet>
 
+  <!-- third party libraries based on dependencies -->
   <!--
-    third party libraries based on dependencies
-  <assemble>
-    <outputFile>lib2</outputFile>
-    <set>nuxeo-libs-via-dependency-tree</set>
-  </assemble>
-  <artifactSet id="nuxeo-libs-via-dependency-tree">
-    <import>**</import>
-    <includeDependencies>true</includeDependencies>
-    <includes>
-      <artifact scope="compile" />
-    </includes>
-    <excludes>
-      <artifact group="org.nuxeo.*" />
-    </excludes>
-  </artifactSet>
+    <assemble> <outputFile>lib2</outputFile>
+    <set>nuxeo-libs-via-dependency-tree</set> </assemble> <artifactSet
+    id="nuxeo-libs-via-dependency-tree"> <import>**</import>
+    <includeDependencies>true</includeDependencies> <includes> <artifact
+    scope="compile" /> </includes> <excludes> <artifact group="org.nuxeo.*" />
+    </excludes> </artifactSet>
   -->
 
+  <!-- CUSTOM RESOURCES -->
   <!--
-    CUSTOM RESOURCES
-  <assemble>
-    <outputFile>/</outputFile>
-    <set>custom-resources</set>
-  </assemble>
-  <fileSet id="custom-resources">
-    <directory>src/main/resources_custom</directory>
-  </fileSet>
+    <assemble> <outputFile>/</outputFile> <set>custom-resources</set>
+    </assemble> <fileSet id="custom-resources">
+    <directory>src/main/resources_custom</directory> </fileSet>
   -->
 
+  <!-- CUSTOM ARTIFACTS -->
   <!--
-    CUSTOM ARTIFACTS
-  <assemble>
-    <outputFile>plugins</outputFile>
-    <set>custom-plugins</set>
-  </assemble>
-  <artifactSet id="custom-plugins">
-    <import>**</import>
-    <includeDependencies>false</includeDependencies>
-    <includes>
-      <artifact group="com.custom.sample" />
-    </includes>
-  </artifactSet>
+    <assemble> <outputFile>plugins</outputFile> <set>custom-plugins</set>
+    </assemble> <artifactSet id="custom-plugins"> <import>**</import>
+    <includeDependencies>false</includeDependencies> <includes> <artifact
+    group="com.custom.sample" /> </includes> </artifactSet>
   -->
 </assembly>

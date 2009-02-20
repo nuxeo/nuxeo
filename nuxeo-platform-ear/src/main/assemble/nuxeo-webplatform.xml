@@ -119,7 +119,8 @@
     </artifacts>
   </artifactSet>
 
-  <!-- third party libraries based on dependencies
+  <!-- third party libraries based on dependencies -->
+  <!-- 
     <assemble>
     <outputFile>lib2</outputFile>
     <set>nuxeo-libs-via-dependency-tree</set>
