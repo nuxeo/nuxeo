@@ -770,6 +770,18 @@
         <scope>provided</scope>
       </dependency>
       <dependency>
+        <groupId>org.codehaus.groovy</groupId>
+        <artifactId>groovy</artifactId>
+        <version>1.5.1</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>javax.script</groupId>
+        <artifactId>groovy-engine</artifactId>
+        <version>1.0</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
         <groupId>org.resteasy</groupId>
         <artifactId>resteasy-jaxrs</artifactId>
         <version>1.0-beta-8-nx</version>
