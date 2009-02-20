@@ -10,9 +10,15 @@
 
   <artifactId>nuxeo-webengine-base</artifactId>
   <name>Nuxeo WebEngine Base</name>
-  <description>Base webengine module. This is defining the root web module.</description>
-      
+  <description>
+    Base webengine module. This is defining the root web module.
+  </description>
+
   <dependencies>
+    <dependency>
+      <groupId>org.resteasy</groupId>
+      <artifactId>jaxrs-api</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.webengine</groupId>
       <artifactId>nuxeo-webengine-core</artifactId>
@@ -22,7 +28,7 @@
       <artifactId>nuxeo-core-api</artifactId>
     </dependency>
   </dependencies>
-  
+
   <build>
     <plugins>
       <plugin>
@@ -52,9 +58,7 @@
         <version>2.2</version>
         <configuration>
           <archive>
-            <manifestFile>
-              src/main/resources/META-INF/MANIFEST.MF
-            </manifestFile>
+            <manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>
           </archive>
         </configuration>
       </plugin>
