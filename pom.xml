@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
@@ -15,7 +15,9 @@
   <version>5.2-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Nuxeo WebEngine</name>
-  <description>Nuxeo WebEngine is the lightweight content-centric web framework.</description>
+  <description>
+    Nuxeo WebEngine is the lightweight content-centric web framework.
+  </description>
 
   <modules>
     <module>nuxeo-platform-rendering</module>
@@ -111,77 +113,11 @@
         <version>${nuxeo.runtime.version}</version>
       </dependency>
 
-      <dependency>
-        <groupId>org.nuxeo.ecm.core</groupId>
-        <artifactId>nuxeo-core-client</artifactId>
-        <version>${nuxeo.core.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.core</groupId>
-        <artifactId>nuxeo-core-event</artifactId>
-        <version>${nuxeo.core.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.core</groupId>
-        <artifactId>nuxeo-core-event-compat</artifactId>
-        <version>${nuxeo.core.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-comment</artifactId>
-        <version>${nuxeo.platform.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-versioning-core</artifactId>
-        <version>${nuxeo.platform.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-web-common</artifactId>
-        <version>${nuxeo.platform.version}</version>
-      </dependency>
-
-      <!-- needed by web-common -->
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-api</artifactId>
-        <version>${nuxeo.platform.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-login</artifactId>
-        <version>${nuxeo.platform.version}</version>
-      </dependency>
-      <!-- END needed by web-common -->
-
       <!-- nuxeo-addons -->
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-shell-commands-base</artifactId>
         <version>${nuxeo.platform.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.codehaus.groovy</groupId>
-        <artifactId>groovy-all</artifactId>
-        <version>1.5.7</version>
-      </dependency>
-      <dependency>
-        <groupId>javax.script</groupId>
-        <artifactId>script-api</artifactId>
-        <version>1.0</version>
-      </dependency>
-      <dependency>
-        <groupId>org.resteasy</groupId>
-        <artifactId>resteasy-jaxrs</artifactId>
-        <version>1.0-beta-8-nx</version>
-      </dependency>
-      <dependency>
-        <groupId>org.resteasy</groupId>
-        <artifactId>jaxrs-api</artifactId>
-        <version>1.0-beta-8</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -221,14 +157,11 @@
             <link>http://doc.nuxeo.org/5.1/apidocs/</link>
             <link>http://java.sun.com/j2se/1.5.0/docs/api/</link>
             <link>http://java.sun.com/javaee/5/docs/api/</link>
-            <link> http://jakarta.apache.org/commons/collections/apidocs-COLLECTIONS_3_0/
-            </link>
             <link>
-              http://jakarta.apache.org/commons/fileupload/apidocs/
+              http://jakarta.apache.org/commons/collections/apidocs-COLLECTIONS_3_0/
             </link>
-            <link>
-              http://jakarta.apache.org/commons/httpclient/apidocs/
-            </link>
+            <link>http://jakarta.apache.org/commons/fileupload/apidocs/</link>
+            <link>http://jakarta.apache.org/commons/httpclient/apidocs/</link>
             <link>http://jakarta.apache.org/commons/logging/apidocs/</link>
             <link>http://jakarta.apache.org/commons/io/apidocs/</link>
             <link>http://junit.sourceforge.net/javadoc/</link>
@@ -273,8 +206,12 @@
   </distributionManagement>
 
   <scm>
-    <connection>scm:hg:http://hg.nuxeo.org/nuxeo/nuxeo-webengine#5.2</connection>
-    <developerConnection>scm:hg:https://hg.nuxeo.org/nuxeo/nuxeo-webengine#5.2</developerConnection>
+    <connection>
+      scm:hg:http://hg.nuxeo.org/nuxeo/nuxeo-webengine#5.2
+    </connection>
+    <developerConnection>
+      scm:hg:https://hg.nuxeo.org/nuxeo/nuxeo-webengine#5.2
+    </developerConnection>
     <url>http://hg.nuxeo.org/nuxeo/nuxeo-webengine#5.2/</url>
   </scm>
 
