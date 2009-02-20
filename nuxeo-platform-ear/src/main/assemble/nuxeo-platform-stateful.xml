@@ -6,7 +6,9 @@
     <outputFile>/</outputFile>
   </assemble>
   <zipEntrySet id="resources">
-    <artifact>org.nuxeo.ecm.platform:nuxeo-platform-ear:${project.version}:zip:resources-platform-stateful</artifact>
+    <artifact>
+      org.nuxeo.ecm.platform:nuxeo-platform-ear:${project.version}:zip:resources-platform-stateful
+    </artifact>
   </zipEntrySet>
   <assemble>
     <set>resources-derby</set>
@@ -79,6 +81,10 @@
       <artifact name="nuxeo-platform-audit-facade" />
       <artifact name="nuxeo-platform-placeful-facade" />
       <artifact name="nuxeo-platform-ear" />
+      
+      <!-- because of dependency of nuxeo-webengine-core on nuxeo-core -->
+      <artifact name="nuxeo-webengine-*" />
+      <artifact name="nuxeo-platform-rendering" />
     </excludes>
   </artifactSet>
 
@@ -122,10 +128,13 @@
       <artifact group="org.jboss.seam" name="jboss-seam-ui" />
       <artifact group="org.jboss.seam" name="jboss-seam-mail" />
       <artifact group="org.jboss.seam" name="jboss-seam-debug" />
-      <artifact group="jboss" name="jbpm" version="3.3.0.GA" />
+      <artifact group="org.jbpm.jbpm3" name="jbpm-jpdl" />
       <artifact group="jboss" name="jgroups" />
-      <!-- version is needed because of assembly plugin don't manage classifier here -->
-      <artifact group="net.sf.json-lib" name="json-lib" classifier="jdk15" version="2.2.1"/>
+      <!--
+        version required because maven-nuxeo-plugin don't manage classifier here
+      -->
+      <artifact group="net.sf.json-lib" name="json-lib" classifier="jdk15"
+        version="2.2.1" />
       <artifact group="org.apache.lucene" name="lucene-core" />
       <artifact group="net.sf.opencsv" name="opencsv" />
       <artifact group="org.slf4j" name="slf4j-api" />
@@ -140,44 +149,30 @@
     </artifacts>
   </artifactSet>
 
-  <!-- third party libraries based on dependencies
-    <assemble>
-    <outputFile>lib2</outputFile>
-    <set>nuxeo-libs-via-dependency-tree</set>
-    </assemble>
-    <artifactSet id="nuxeo-libs-via-dependency-tree">
-    <import>**</import>
-    <includeDependencies>true</includeDependencies>
-    <includes>
-    <artifact scope="compile" />
-    </includes>
-    <excludes>
-    <artifact group="org.nuxeo.*" />
-    </excludes>
-    </artifactSet>
+  <!-- third party libraries based on dependencies -->
+  <!--
+    <assemble> <outputFile>lib2</outputFile>
+    <set>nuxeo-libs-via-dependency-tree</set> </assemble> <artifactSet
+    id="nuxeo-libs-via-dependency-tree"> <import>**</import>
+    <includeDependencies>true</includeDependencies> <includes> <artifact
+    scope="compile" /> </includes> <excludes> <artifact group="org.nuxeo.*" />
+    </excludes> </artifactSet>
   -->
 
-  <!-- CUSTOM RESOURCES
-    <assemble>
-    <outputFile>/</outputFile>
-    <set>custom-resources-stateful</set>
-    </assemble>
-    <fileSet id="custom-resources-stateful">
-    <directory>src/main/resources_custom_stateful</directory>
-    </fileSet>
+  <!-- CUSTOM RESOURCES -->
+  <!--
+    <assemble> <outputFile>/</outputFile> <set>custom-resources-stateful</set>
+    </assemble> <fileSet id="custom-resources-stateful">
+    <directory>src/main/resources_custom_stateful</directory> </fileSet>
   -->
 
-  <!-- CUSTOM ARTIFACTS
-    <assemble>
-    <outputFile>plugins</outputFile>
-    <set>custom-plugins-stateful</set>
-    </assemble>
-    <artifactSet id="custom-plugins-stateful">
-    <import>**</import>
-    <includeDependencies>false</includeDependencies>
-    <includes>
-    <artifact group="com.custom.sample" category="core,stateful" />
-    </includes>
+  <!-- CUSTOM ARTIFACTS -->
+  <!--
+    <assemble> <outputFile>plugins</outputFile>
+    <set>custom-plugins-stateful</set> </assemble> <artifactSet
+    id="custom-plugins-stateful"> <import>**</import>
+    <includeDependencies>false</includeDependencies> <includes> <artifact
+    group="com.custom.sample" category="core,stateful" /> </includes>
     </artifactSet>
   -->
 </assembly>
