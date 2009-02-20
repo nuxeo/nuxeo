@@ -12,30 +12,24 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     matic
+ *     bstefanescu
  */
-package org.nuxeo.ecm.client.cm.app.commands;
+package org.nuxeo.ecm.cmis.client.app;
 
-import org.nuxeo.ecm.client.cm.DocumentEntry;
+import org.nuxeo.ecm.cmis.ContentManagerException;
 
 /**
- * @author matic
+ * 
+ * Invokes a content manager using a dedicated protocol, such as AtomPub or
+ * SOAP.
+ * 
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * 
+ * @apiviz.uses org.nuxeo.ecm.client.Operation
  * 
  */
-public class QueryCommand extends AbstractCommand<DocumentEntry[]> {
+public interface Connector {
 
-    public final String repositoryId;
+    <T> T invoke(Command<T> operation) throws ContentManagerException;
 
-    public QueryCommand(String repositoryId) {
-        super("discovery", "query");
-        this.repositoryId = repositoryId;
-    }
-
-    public String getRepositoryId() {
-        return repositoryId;
-    }
-
-    public String formatURL(String baseURL) {
-        return baseURL + "/" + repositoryId;
-    }
 }

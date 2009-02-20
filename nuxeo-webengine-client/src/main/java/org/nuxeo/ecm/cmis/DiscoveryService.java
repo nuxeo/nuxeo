@@ -14,26 +14,15 @@
  * Contributors:
  *     matic
  */
-package org.nuxeo.ecm.client.cm.app.abdera;
-
-import org.apache.abdera.model.Element;
-import org.nuxeo.ecm.client.cm.ContentManager;
+package org.nuxeo.ecm.cmis;
 
 
 /**
  * @author matic
- *
+ * 
  */
-public class DocumentEntryTransformer implements org.apache.commons.collections.Transformer {
+public interface DiscoveryService {
 
-    protected final ContentManager client;
+    //TODO
     
-    DocumentEntryTransformer(ContentManager client) {
-        this.client = client;
-    }
-    public Object transform(Object input) {
-        Element abderaElement  = (Element)input;
-        return new DocumentEntryAdapter(client, abderaElement);
-    }
-
 }

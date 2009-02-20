@@ -14,7 +14,7 @@
  * Contributors:
  *     matic
  */
-package org.nuxeo.ecm.client.cm.app.abdera;
+package org.nuxeo.ecm.cmis.client.app.abdera;
 
 import java.util.List;
 import java.util.Map;
@@ -22,10 +22,10 @@ import java.util.Map;
 import org.apache.abdera.model.Element;
 import org.jboss.util.NotImplementedException;
 import org.nuxeo.ecm.client.Content;
-import org.nuxeo.ecm.client.cm.ContentManager;
-import org.nuxeo.ecm.client.cm.DocumentEntry;
-import org.nuxeo.ecm.client.cm.Path;
-import org.nuxeo.ecm.client.cm.Repository;
+import org.nuxeo.ecm.cmis.ContentManager;
+import org.nuxeo.ecm.cmis.DocumentEntry;
+import org.nuxeo.ecm.cmis.Path;
+import org.nuxeo.ecm.cmis.Repository;
 
 /**
  * @author matic

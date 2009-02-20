@@ -14,12 +14,38 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.client.cm;
+package org.nuxeo.ecm.cmis.common;
+
+import java.util.Map;
+
+import org.nuxeo.ecm.cmis.ContentManager;
+import org.nuxeo.ecm.cmis.Repository;
+import org.nuxeo.ecm.cmis.Session;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface Query {
+public abstract class AbstractRepository implements Repository {
+
+    protected ContentManager cm;
+    protected String repositoryId;
+    
+    public AbstractRepository(ContentManager cm, String repositoryId) {
+        this.cm = cm;
+        this.repositoryId = repositoryId;
+    }
+    
+    public ContentManager getContentManager() {
+        return cm;
+    }
+
+    public String getRepositoryId() {
+        return repositoryId;
+    }
+
+    public abstract Session open();
+
+    public abstract Session open(Map<String, Object> ctx);
 
 }

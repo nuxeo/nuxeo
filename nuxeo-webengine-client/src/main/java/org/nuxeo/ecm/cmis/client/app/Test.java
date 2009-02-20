@@ -14,30 +14,34 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.client.cm;
+package org.nuxeo.ecm.cmis.client.app;
 
-import java.util.List;
-
-
+import org.nuxeo.ecm.cmis.ContentManager;
+import org.nuxeo.ecm.cmis.DocumentEntry;
+import org.nuxeo.ecm.cmis.Repository;
+import org.nuxeo.ecm.cmis.Session;
 
 /**
- * A list of documents that was returned by the server. This may describe different query results on the repository.
- * It may be seen like a virtual folder that has no physical support. 
- *
- * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface DocumentFeed extends List<DocumentEntry> {
- 
-    String getId(); // URI
-    
-    String getTitle(); // atom:title <=> CMIS:name
-    
-    long lastModified(); //atom:edited <=> cmis:lastModifiedDate
-    
-    String getAuthor(); // atom:author <=> cmis:createdBy
-    
-    String getURL(); // link
+public class Test {
+
+    public static void main(String[] args) throws Exception {
+        
+        ContentManager cm = new APPContentManager("http://localhost:8080/cmis");
+        
+        Repository repo = cm.getDefaultRepository();
+        Session session = repo.open();
+  
+        DocumentEntry entry = session.getRoot();
+        
+        entry =  entry.getChild("default-domain");
+        
+//        Document doc = entry.getDocument();
+//        
+//        NewsItem ni = entry.getDocument(NewsItem.class);
+        
+    }
     
 }

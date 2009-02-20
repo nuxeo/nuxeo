@@ -14,22 +14,20 @@
  * Contributors:
  *     matic
  */
-package org.nuxeo.ecm.client.cm.app.commands;
-
-import org.nuxeo.ecm.client.cm.Repository;
+package org.nuxeo.ecm.cmis.client.app;
 
 /**
+ * 
+ * Represents a method to be invoked at server side using the SOAP or AtomPub
+ * connector
+ * 
  * @author matic
- *
+ * 
+ *         R
  */
-public class RepositoriesCommand extends AbstractCommand<Repository[]>  {
+public interface Command<T> {
 
-    public String formatURL(String baseURL) {
-        return baseURL;
-    }
-    public RepositoriesCommand() {
-        super("repository","getRepositories");
-    }
-
+    String getServiceName();
+    String getMethodName();
 
 }

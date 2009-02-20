@@ -12,31 +12,30 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     bstefanescu
+ *     matic
  */
-package org.nuxeo.ecm.client.cm;
+package org.nuxeo.ecm.cmis.client.app.commands;
 
-import java.util.List;
-
+import org.nuxeo.ecm.cmis.DocumentEntry;
 
 /**
+ * @author matic
  * 
- * Exposes the CMIS Navigation Service
- * 
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-public interface NavigationService {
+public class QueryCommand extends AbstractCommand<DocumentEntry[]> {
 
-    List<DocumentEntry> getDescendants(DocumentEntry folder);
-    
-    List<DocumentEntry> getChildren(DocumentEntry folder);
-  
-    List<DocumentEntry> getFolderParent(DocumentEntry entry);
-    
-    List<DocumentEntry> getObjectParents(DocumentEntry doc);
-    
-    List<DocumentEntry> getCheckedOutDocuments(DocumentEntry folder);
-    
-    //TODO add the rest of methods
+    public final String repositoryId;
+
+    public QueryCommand(String repositoryId) {
+        super("discovery", "query");
+        this.repositoryId = repositoryId;
+    }
+
+    public String getRepositoryId() {
+        return repositoryId;
+    }
+
+    public String formatURL(String baseURL) {
+        return baseURL + "/" + repositoryId;
+    }
 }

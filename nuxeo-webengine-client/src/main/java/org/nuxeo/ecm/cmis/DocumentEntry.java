@@ -14,7 +14,7 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.client.cm;
+package org.nuxeo.ecm.cmis;
 
 import java.util.List;
 import java.util.Map;

@@ -14,7 +14,7 @@
  * Contributors:
  *     matic
  */
-package org.nuxeo.ecm.client.cm.app.abdera;
+package org.nuxeo.ecm.cmis.client.app.abdera;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,9 +24,9 @@ import java.util.ListIterator;
 
 import org.apache.abdera.model.Entry;
 import org.apache.commons.collections.collection.TransformedCollection;
-import org.nuxeo.ecm.client.cm.ContentManager;
-import org.nuxeo.ecm.client.cm.DocumentEntry;
-import org.nuxeo.ecm.client.cm.DocumentFeed;
+import org.nuxeo.ecm.cmis.ContentManager;
+import org.nuxeo.ecm.cmis.DocumentEntry;
+import org.nuxeo.ecm.cmis.DocumentFeed;
 
 
 /**

@@ -14,20 +14,22 @@
  * Contributors:
  *     matic
  */
-package org.nuxeo.ecm.client.cm.app;
+package org.nuxeo.ecm.cmis;
+
 
 /**
- * 
- * Represents a method to be invoked at server side using the SOAP or AtomPub
- * connector
- * 
  * @author matic
- * 
- *         R
+ *
  */
-public interface Command<T> {
+public  class ContentManagerException extends Exception {
 
-    String getServiceName();
-    String getMethodName();
+    private static final long serialVersionUID = -1328541867538528968L;
+    
+    public ContentManagerException(String message) {
+        super(message);
+    }
 
+    public ContentManagerException(String message, Exception e) {
+        super(message,e);
+    }
 }

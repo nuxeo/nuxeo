@@ -14,13 +14,13 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.client.cm.app;
+package org.nuxeo.ecm.cmis.client.app;
 
-import org.nuxeo.ecm.client.cm.ContentManager;
-import org.nuxeo.ecm.client.cm.ContentManagerException;
-import org.nuxeo.ecm.client.cm.NoSuchRepositoryException;
-import org.nuxeo.ecm.client.cm.Repository;
-import org.nuxeo.ecm.client.cm.app.commands.RepositoriesCommand;
+import org.nuxeo.ecm.cmis.ContentManager;
+import org.nuxeo.ecm.cmis.ContentManagerException;
+import org.nuxeo.ecm.cmis.NoSuchRepositoryException;
+import org.nuxeo.ecm.cmis.Repository;
+import org.nuxeo.ecm.cmis.client.app.commands.RepositoriesCommand;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

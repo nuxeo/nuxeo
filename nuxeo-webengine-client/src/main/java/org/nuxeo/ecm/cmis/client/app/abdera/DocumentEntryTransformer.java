@@ -14,22 +14,26 @@
  * Contributors:
  *     matic
  */
-package org.nuxeo.ecm.client.cm;
+package org.nuxeo.ecm.cmis.client.app.abdera;
+
+import org.apache.abdera.model.Element;
+import org.nuxeo.ecm.cmis.ContentManager;
 
 
 /**
  * @author matic
  *
  */
-public  class ContentManagerException extends Exception {
+public class DocumentEntryTransformer implements org.apache.commons.collections.Transformer {
 
-    private static final long serialVersionUID = -1328541867538528968L;
+    protected final ContentManager client;
     
-    public ContentManagerException(String message) {
-        super(message);
+    DocumentEntryTransformer(ContentManager client) {
+        this.client = client;
+    }
+    public Object transform(Object input) {
+        Element abderaElement  = (Element)input;
+        return new DocumentEntryAdapter(client, abderaElement);
     }
 
-    public ContentManagerException(String message, Exception e) {
-        super(message,e);
-    }
 }

@@ -14,7 +14,7 @@
  * Contributors:
  *     matic
  */
-package org.nuxeo.ecm.client.cm.app;
+package org.nuxeo.ecm.cmis.client.app;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,14 +28,14 @@ import org.apache.abdera.model.Service;
 import org.apache.abdera.model.Workspace;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
-import org.nuxeo.ecm.client.cm.ContentManagerException;
-import org.nuxeo.ecm.client.cm.DocumentFeed;
-import org.nuxeo.ecm.client.cm.Repository;
-import org.nuxeo.ecm.client.cm.app.abdera.DocumentFeedAdapter;
-import org.nuxeo.ecm.client.cm.app.abdera.RepositoryAdapter;
-import org.nuxeo.ecm.client.cm.app.commands.AbstractCommand;
-import org.nuxeo.ecm.client.cm.app.commands.QueryCommand;
-import org.nuxeo.ecm.client.cm.app.commands.RepositoriesCommand;
+import org.nuxeo.ecm.cmis.ContentManagerException;
+import org.nuxeo.ecm.cmis.DocumentFeed;
+import org.nuxeo.ecm.cmis.Repository;
+import org.nuxeo.ecm.cmis.client.app.abdera.DocumentFeedAdapter;
+import org.nuxeo.ecm.cmis.client.app.abdera.RepositoryAdapter;
+import org.nuxeo.ecm.cmis.client.app.commands.AbstractCommand;
+import org.nuxeo.ecm.cmis.client.app.commands.QueryCommand;
+import org.nuxeo.ecm.cmis.client.app.commands.RepositoriesCommand;
 
 
 

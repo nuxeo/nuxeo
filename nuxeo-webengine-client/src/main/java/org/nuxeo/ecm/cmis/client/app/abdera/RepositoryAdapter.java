@@ -14,15 +14,15 @@
  * Contributors:
  *     matic
  */
-package org.nuxeo.ecm.client.cm.app.abdera;
+package org.nuxeo.ecm.cmis.client.app.abdera;
 
 import java.util.Map;
 
 import org.apache.abdera.ext.cmis.CmisObject;
-import org.nuxeo.ecm.client.cm.ContentManager;
-import org.nuxeo.ecm.client.cm.Repository;
-import org.nuxeo.ecm.client.cm.Session;
-import org.nuxeo.ecm.client.cm.app.APPContentManager;
+import org.nuxeo.ecm.cmis.ContentManager;
+import org.nuxeo.ecm.cmis.Repository;
+import org.nuxeo.ecm.cmis.Session;
+import org.nuxeo.ecm.cmis.client.app.APPContentManager;
 
 /**
  * @author matic

@@ -12,32 +12,16 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     matic
+ *     bstefanescu
  */
-package org.nuxeo.ecm.client.cm;
-
+package org.nuxeo.ecm.cmis;
 
 /**
- * @author matic
- * 
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ *
  */
-public class NoSuchRepositoryException extends ContentManagerException {
+public interface Adaptable {
 
-    private static final long serialVersionUID = -3017945902792388422L;
-
-    public final String baseURL;
-
-    public final String repositoryId;
-
-    public NoSuchRepositoryException(String baseURL, String id) {
-        super("no such repository " + id + " in "
-                + baseURL);
-        this.baseURL = baseURL;
-        this.repositoryId = id;
-    }
-
-    public String getRepositoryId() {
-        return repositoryId;
-    }
-
+    <T> T getAdapter(Class<T> adapter);
+    
 }

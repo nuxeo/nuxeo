@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.client.cm;
+package org.nuxeo.ecm.cmis;
 
 import java.io.Serializable;
 import java.util.ArrayList;

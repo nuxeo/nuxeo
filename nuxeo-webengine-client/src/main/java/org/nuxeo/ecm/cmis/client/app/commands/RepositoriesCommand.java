@@ -14,15 +14,22 @@
  * Contributors:
  *     matic
  */
-package org.nuxeo.ecm.client.cm;
+package org.nuxeo.ecm.cmis.client.app.commands;
 
+import org.nuxeo.ecm.cmis.Repository;
 
 /**
  * @author matic
- * 
+ *
  */
-public interface DiscoveryService {
+public class RepositoriesCommand extends AbstractCommand<Repository[]>  {
 
-    //TODO
-    
+    public String formatURL(String baseURL) {
+        return baseURL;
+    }
+    public RepositoriesCommand() {
+        super("repository","getRepositories");
+    }
+
+
 }

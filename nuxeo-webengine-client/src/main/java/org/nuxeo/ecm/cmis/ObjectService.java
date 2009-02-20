@@ -14,14 +14,15 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.client.cm;
+package org.nuxeo.ecm.cmis;
 
 /**
+ * Expose CMIS Object Services
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface Adaptable {
-
-    <T> T getAdapter(Class<T> adapter);
+public interface ObjectService {
+    
     
 }

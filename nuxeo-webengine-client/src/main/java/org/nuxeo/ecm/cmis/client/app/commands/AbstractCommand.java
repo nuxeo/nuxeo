@@ -12,24 +12,33 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     bstefanescu
+ *     matic
  */
-package org.nuxeo.ecm.client.cm.app;
+package org.nuxeo.ecm.cmis.client.app.commands;
 
-import org.nuxeo.ecm.client.cm.ContentManagerException;
+import org.nuxeo.ecm.cmis.client.app.Command;
 
 /**
- * 
- * Invokes a content manager using a dedicated protocol, such as AtomPub or
- * SOAP.
- * 
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
- * @apiviz.uses org.nuxeo.ecm.client.Operation
+ * @author matic
  * 
  */
-public interface Connector {
+public abstract class AbstractCommand<T> implements Command<T> {
 
-    <T> T invoke(Command<T> operation) throws ContentManagerException;
+    protected final String serviceName;
+    protected final String methodName;
 
+    protected AbstractCommand(String serviceName, String methodName) {
+        this.serviceName = serviceName;
+        this.methodName = methodName;
+    }
+    
+    public String getServiceName() {
+        return serviceName;
+    }
+    
+    public String getMethodName() {
+        return methodName;
+    }
+
+    public abstract String formatURL(String baseURL);
 }

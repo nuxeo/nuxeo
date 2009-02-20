@@ -12,33 +12,24 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     matic
+ *     bstefanescu
  */
-package org.nuxeo.ecm.client.cm.app.commands;
+package org.nuxeo.ecm.cmis.common;
 
-import org.nuxeo.ecm.client.cm.app.Command;
+import org.nuxeo.ecm.cmis.Session;
 
 /**
- * @author matic
- * 
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ *
  */
-public abstract class AbstractCommand<T> implements Command<T> {
+public abstract class AbstractSession implements Session {
 
-    protected final String serviceName;
-    protected final String methodName;
-
-    protected AbstractCommand(String serviceName, String methodName) {
-        this.serviceName = serviceName;
-        this.methodName = methodName;
-    }
-    
-    public String getServiceName() {
-        return serviceName;
-    }
-    
-    public String getMethodName() {
-        return methodName;
+    /* (non-Javadoc)
+     * @see org.nuxeo.ecm.cmis.Session#getService(java.lang.Class)
+     */
+    public <T> T getService(Class<T> serviceType) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
-    public abstract String formatURL(String baseURL);
 }

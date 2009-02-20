@@ -14,15 +14,12 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.client.cm;
+package org.nuxeo.ecm.cmis;
 
 /**
- * Expose CMIS Object Services
- * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface ObjectService {
-    
-    
+public interface Query {
+
 }
