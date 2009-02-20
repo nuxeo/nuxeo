@@ -27,19 +27,34 @@ import org.nuxeo.ecm.client.Command;
 public abstract class AbstractCommand<T> implements Command<T> {
 
     protected final String serviceName;
+
     protected final String methodName;
 
     protected AbstractCommand(String serviceName, String methodName) {
         this.serviceName = serviceName;
         this.methodName = methodName;
     }
-    
+
     public String getServiceName() {
         return serviceName;
     }
-    
+
     public String getMethodName() {
         return methodName;
+    }
+
+    protected String serverTag;
+
+    public void setServerTag(String tag) {
+        this.serverTag = tag;
+    }
+
+    public String getServerTag() {
+        return serverTag;
+    }
+
+    public boolean hasServerTag() {
+        return serverTag != null;
     }
 
     public abstract String formatURL(URL baseURL);

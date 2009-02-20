@@ -27,6 +27,7 @@ import org.apache.abdera.model.Element;
 import org.apache.abdera.model.Feed;
 import org.apache.abdera.model.Service;
 import org.apache.abdera.model.Workspace;
+import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.nuxeo.ecm.client.CannotConnectToServerException;
@@ -42,6 +43,7 @@ import org.nuxeo.ecm.client.abdera.RepositoryAdapter;
 import org.nuxeo.ecm.client.commands.AbstractCommand;
 import org.nuxeo.ecm.client.commands.GetDocumentFeedCommand;
 import org.nuxeo.ecm.client.commands.GetQueriesCommand;
+import org.nuxeo.ecm.client.commands.RefreshDocumentFeedCommand;
 import org.nuxeo.ecm.client.commands.RepositoriesCommand;
 
 /**
@@ -71,14 +73,16 @@ public class AtomPubConnector implements Connector {
             return (T) doInvoke((RepositoriesCommand) command);
         } else if (command instanceof GetQueriesCommand) {
             return (T) doInvoke((GetQueriesCommand) command);
-        } else if (command instanceof GetDocumentFeedCommand) {
-            return (T) doInvoke((GetDocumentFeedCommand) command);
+        } else if (command instanceof RefreshDocumentFeedCommand) {
+            return (T) doInvoke((RefreshDocumentFeedCommand) command);
         }
         throw new UnsupportedOperationException("not yet");
     }
 
 
- 
+
+
+
 
     protected <T extends Element> T doGet(AbstractCommand<?> command)
             throws CannotConnectToServerException {
@@ -92,6 +96,10 @@ public class AtomPubConnector implements Connector {
         } catch (Exception e) {
             throw CannotConnectToServerException.wrap("Cannot connect to "
                     + url, e);
+        }
+        Header header = method.getResponseHeader("ETag");
+        if (header != null) {
+            command.setServerTag(header.getValue());
         }
         Document<T> document = abdera.getParser().parse(bodyStream);
         return document.getRoot();
@@ -118,6 +126,12 @@ public class AtomPubConnector implements Connector {
     
     protected DocumentFeed doInvoke(GetDocumentFeedCommand command) throws CannotConnectToServerException {
         Feed atomFeed = this.doGet(command);
-        return new DocumentFeedAdapter(contentManager,atomFeed);
+        return new DocumentFeedAdapter(contentManager,atomFeed,command.getServerTag());
     }
+    
+    private DocumentFeed doInvoke(RefreshDocumentFeedCommand command) throws CannotConnectToServerException {
+        Feed atomFeed = this.doGet(command);
+        return new DocumentFeedAdapter(contentManager,atomFeed,command.getServerTag());
+    }
+
 }
