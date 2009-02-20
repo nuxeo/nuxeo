@@ -22,10 +22,6 @@
   </properties>
 
   <dependencies>
-    <!--    <dependency>-->
-    <!--      <groupId>org.nuxeo.common</groupId>-->
-    <!--      <artifactId>nuxeo-common</artifactId>-->
-    <!--    </dependency>-->
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-api</artifactId>

@@ -5,7 +5,7 @@
     <set>resources</set>
     <outputFile>/</outputFile>
   </assemble>
-  <zipEntrySet id="resources" profile="vcs-profile">
+  <zipEntrySet id="resources">
     <artifact>
       org.nuxeo.ecm.platform:nuxeo-platform-ear:${project.version}:zip:resources-mono
     </artifact>
@@ -91,18 +91,18 @@
         includeDependsOnCategory="false" />
       <artifact group="org.nuxeo.*" category="core,search,web" />
       <!-- Nuxeo-WebEngine -->
-      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-rendering" />
-      <artifact group="org.nuxeo.ecm.webengine" name="nuxeo-webengine-core" />
-      <artifact group="org.nuxeo.ecm.webengine" name="nuxeo-webengine-admin" />
-      <artifact group="org.nuxeo.ecm.webengine" name="nuxeo-webengine-wiki" />
-      <artifact group="org.nuxeo.ecm.webengine" name="nuxeo-webengine-sites" />
-      <artifact group="org.nuxeo.ecm.webengine"
-        name="nuxeo-webengine-resteasy-adapter" />
+<!--      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-rendering" />-->
+<!--      <artifact group="org.nuxeo.ecm.webengine" name="nuxeo-webengine-core" />-->
+<!--      <artifact group="org.nuxeo.ecm.webengine" name="nuxeo-webengine-admin" />-->
+<!--      <artifact group="org.nuxeo.ecm.webengine" name="nuxeo-webengine-wiki" />-->
+<!--      <artifact group="org.nuxeo.ecm.webengine" name="nuxeo-webengine-sites" />-->
+<!--      <artifact group="org.nuxeo.ecm.webengine"-->
+<!--        name="nuxeo-webengine-resteasy-adapter" />-->
       <!-- add here nuxeo-addons -->
     </includes>
     <excludes>
       <artifact group="!org.nuxeo*" />
-<!--      <artifact group="org.nuxeo.common" />-->
+      <artifact group="org.nuxeo.common" />
       <artifact name="nuxeo-runtime-jboss-extensions" />
 
       <artifact name="nuxeo-platform-webapp" />
