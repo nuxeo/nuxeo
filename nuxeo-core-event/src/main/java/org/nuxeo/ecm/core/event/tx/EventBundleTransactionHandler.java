@@ -34,21 +34,21 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- *
+ * 
  * Helper class to encapsulate Transaction management
- *
+ * 
  * @author tiry
- *
+ * 
  */
 public class EventBundleTransactionHandler {
 
     protected UserTransaction tx;
 
     protected static final String UTName = "java:comp/UserTransaction";
+
     protected static final String UTNameAlternate = "UserTransaction";
 
-    private static final Log log = LogFactory
-            .getLog(EventBundleTransactionHandler.class);
+    private static final Log log = LogFactory.getLog(EventBundleTransactionHandler.class);
 
     protected static boolean isTxEnabled = true;
 
@@ -71,8 +71,7 @@ public class EventBundleTransactionHandler {
         }
         try {
             if (tx.getStatus() == STATUS_COMMITTED) {
-                log
-                        .error("Transaction is already commited, try to begin anyway");
+                log.error("Transaction is already commited, try to begin anyway");
             }
             tx.begin();
         } catch (Exception e) {
@@ -91,13 +90,15 @@ public class EventBundleTransactionHandler {
         }
 
         UserTransaction ut = null;
-        try {
-            ut = (UserTransaction) context.lookup(UTName);
-        } catch (NamingException ne) {
+        if (context != null) {
             try {
-                ut = (UserTransaction) context.lookup(UTNameAlternate);
-            } catch (NamingException ne2) {
-                isTxEnabled = false;
+                ut = (UserTransaction) context.lookup(UTName);
+            } catch (NamingException ne) {
+                try {
+                    ut = (UserTransaction) context.lookup(UTNameAlternate);
+                } catch (NamingException ne2) {
+                    isTxEnabled = false;
+                }
             }
         }
         return ut;
@@ -116,8 +117,7 @@ public class EventBundleTransactionHandler {
             tm = (TransactionManager) context.lookup("TransactionManager");
         } catch (NamingException ne) {
             try {
-                tm = (TransactionManager) context
-                        .lookup("java:/TransactionManager");
+                tm = (TransactionManager) context.lookup("java:/TransactionManager");
             } catch (NamingException ne2) {
                 isTxEnabled = false;
             }
@@ -182,7 +182,7 @@ public class EventBundleTransactionHandler {
                 } catch (Exception e) {
                     log.error("Error during Commit", e);
                 }
-            } else if (isUTTransactionMarkedRollback()){
+            } else if (isUTTransactionMarkedRollback()) {
                 try {
                     log.debug("Rolling back transaction");
                     tx.rollback();
@@ -190,7 +190,7 @@ public class EventBundleTransactionHandler {
                     log.error("Error during RollBack", e);
                 }
             } else {
-                //log.error("TX is in abnormal state)
+                // log.error("TX is in abnormal state)
             }
             tx = null;
         }
