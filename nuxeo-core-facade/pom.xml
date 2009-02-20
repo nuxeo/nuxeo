@@ -88,22 +88,20 @@
       <groupId>javax.script</groupId>
       <artifactId>groovy-engine</artifactId>
       <scope>test</scope>
-      <version>1.0</version>
     </dependency>
     <dependency>
       <groupId>org.codehaus.groovy</groupId>
       <artifactId>groovy</artifactId>
       <scope>test</scope>
-      <version>1.5.1</version>
     </dependency>
-    </dependencies>
+  </dependencies>
 
   <build>
     <plugins>
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <forkMode>always</forkMode> 
+          <forkMode>always</forkMode>
           <argLine>-Xms128m -Xmx256m</argLine>
         </configuration>
       </plugin>

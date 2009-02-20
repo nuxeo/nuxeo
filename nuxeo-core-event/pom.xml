@@ -40,13 +40,11 @@
     <dependency>
       <groupId>javax.script</groupId>
       <artifactId>groovy-engine</artifactId>
-      <version>1.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.codehaus.groovy</groupId>
       <artifactId>groovy</artifactId>
-      <version>1.5.1</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
