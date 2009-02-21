@@ -1364,14 +1364,5 @@ public class Main extends ModuleRoot {
       return Manager.getThemeManager()
   }
   
-  // handle errors
-  public Object handleError(WebApplicationException e) {
-      if (e instanceof ThemeEditorException) {
-          return Response.status(500).entity(e.getMessage()).build();
-      } else {
-          return super.handleError(e)
-      }
-  }
-  
 }
 

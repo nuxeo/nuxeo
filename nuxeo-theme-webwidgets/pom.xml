@@ -45,6 +45,10 @@
       <classifier>jdk15</classifier>
     </dependency>
     <dependency>
+      <groupId>org.resteasy</groupId>
+      <artifactId>jaxrs-api</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-test</artifactId>
       <scope>test</scope>
