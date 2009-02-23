@@ -12,33 +12,22 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     matic
+ *     bstefanescu
  */
-package org.nuxeo.ecm.cmis.client.app.commands;
+package org.nuxeo.ecm.cmis.client.app;
 
-import org.nuxeo.ecm.cmis.client.app.Command;
+import java.io.IOException;
 
 /**
- * @author matic
- * 
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ *
  */
-public abstract class AbstractCommand<T> implements Command<T> {
+public interface ContentHandler<T> {
 
-    protected final String serviceName;
-    protected final String methodName;
-
-    protected AbstractCommand(String serviceName, String methodName) {
-        this.serviceName = serviceName;
-        this.methodName = methodName;
-    }
+    Class<T> getObjectClass();
     
-    public String getServiceName() {
-        return serviceName;
-    }
+    T read(Response response) throws IOException;
     
-    public String getMethodName() {
-        return methodName;
-    }
-
-    public abstract String formatURL(String baseURL);
+    void write(T object, Request request) throws IOException;
+    
 }

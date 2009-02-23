@@ -18,18 +18,26 @@ package org.nuxeo.ecm.cmis.client.app;
 
 import org.nuxeo.ecm.cmis.ContentManagerException;
 
+
 /**
  * 
- * Invokes a content manager using a dedicated protocol, such as AtomPub or
- * SOAP.
+ * Invokes a remote content manager over HTTP protocols, such as AtomPub.
  * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
- * @apiviz.uses org.nuxeo.ecm.client.Operation
- * 
+ *  
  */
 public interface Connector {
-
-    <T> T invoke(Command<T> operation) throws ContentManagerException;
-
+    
+    APPContentManager getAPPContentManager();
+    
+    Response post(Request operation) throws ContentManagerException;
+    
+    Response put(Request operation) throws ContentManagerException;
+    
+    Response get(Request operation) throws ContentManagerException;
+    
+    Response head(Request operation) throws ContentManagerException;
+    
+    Response delete(Request operation) throws ContentManagerException;
+      
 }

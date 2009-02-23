@@ -30,8 +30,8 @@ import org.nuxeo.ecm.client.NoSuchRepositoryException;
  * The discovery mechanism used by the implementation to detect repositories is up to the implementors.
  * Repositories connected through APP will use APP discovery, local repositories will use repository specific java API etc.
  * <p>
- * For remote repositories this service may cache the list of repositories so that if repositories are added or removed on the server 
- * the modifications will not be reflected until the {@link #reload()} method is called.
+ * This service should not cache repositories, instead it should fetch every time is asked a new fresh repository list from remote.
+ * Caching informations should be implemented on a higher layer. 
  * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
@@ -43,11 +43,5 @@ public interface ContentManager {
     Repository getDefaultRepository() throws ContentManagerException;
     
     Repository getRepository(String id) throws NoSuchRepositoryException, ContentManagerException;
-    
-    /**
-     * TODO -> implementation detail?
-     * Flush any cache regarding the list of available repositories.
-     */
-    void reload();
     
 }

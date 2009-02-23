@@ -20,7 +20,7 @@ import org.nuxeo.ecm.cmis.ContentManager;
 import org.nuxeo.ecm.cmis.ContentManagerException;
 import org.nuxeo.ecm.cmis.NoSuchRepositoryException;
 import org.nuxeo.ecm.cmis.Repository;
-import org.nuxeo.ecm.cmis.client.app.commands.RepositoriesCommand;
+import org.nuxeo.ecm.cmis.client.app.httpclient.HttpClientConnector;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -31,8 +31,8 @@ public class APPContentManager implements ContentManager {
     protected String baseUrl;
     protected Connector connector;
 
-    protected Repository[] repositories;
-
+    protected ContentHandlerRegistry handlerRegistry;
+    
     public APPContentManager(String url) {
         this (url, null);
     }
@@ -40,8 +40,22 @@ public class APPContentManager implements ContentManager {
     protected APPContentManager(String url, Connector connector) {
         this.baseUrl = url;
         this.connector = connector == null ? new HttpClientConnector(this) : connector;
+        this.handlerRegistry = new ContentHandlerRegistry();
     }
     
+    
+    public ContentHandlerRegistry getContentHandlerRegistry() {
+        return handlerRegistry;
+    }
+    
+    public <T> ContentHandler<T> getContentHandler(Class<T> clazz) {
+        return handlerRegistry.getHandler(clazz);
+    }
+
+    public void registerContentHandler(ContentHandler<?> handler) {
+        handlerRegistry.registerHandler(handler);
+    }
+
     public String getBaseUrl() {
         return baseUrl;
     }
@@ -51,20 +65,18 @@ public class APPContentManager implements ContentManager {
     }
     
 
-    protected Repository[] doGetRepositories() throws ContentManagerException {
-        if (repositories != null) {
-            return repositories;
-        }
-        return repositories = connector.invoke(new RepositoriesCommand());
-    }
 
     public Repository[] getRepositories() throws ContentManagerException {
-        return doGetRepositories();
+        Request req = new Request(getBaseUrl());
+        Response resp = connector.get(req);
+        APPServiceDocument app = resp.getContent(APPServiceDocument.class);
+        // TODO app.getWorkspaces();
+        return null;
     }
 
     public Repository getRepository(String id)
             throws NoSuchRepositoryException, ContentManagerException {
-        for (Repository repository : doGetRepositories()) {
+        for (Repository repository : getRepositories()) {
             if (repository.getRepositoryId().equals(id)) {
                 return repository;
             }
@@ -72,21 +84,13 @@ public class APPContentManager implements ContentManager {
         throw new NoSuchRepositoryException(baseUrl, id);
     }    
     
-    /* (non-Javadoc)
-     * @see org.nuxeo.ecm.client.cm.ContentManager#getDefaultRepository()
-     */
     public Repository getDefaultRepository() throws ContentManagerException {
-        if (repositories.length > 0) {
-            return repositories[0]; 
+        Repository[] repos = getRepositories();
+        if (repos != null && repos.length > 0) {
+            return repos[0];
         }
         throw new NoSuchRepositoryException(baseUrl, "default");
     }
     
-    /* (non-Javadoc)
-     * @see org.nuxeo.ecm.client.cm.ContentManager#reload()
-     */
-    public void reload() {
-        // TODO Auto-generated method stub        
-    }
     
 }

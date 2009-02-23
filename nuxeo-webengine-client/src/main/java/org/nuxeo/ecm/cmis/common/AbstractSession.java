@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.cmis.common;
 
+import org.nuxeo.ecm.cmis.Repository;
 import org.nuxeo.ecm.cmis.Session;
 
 /**
@@ -24,12 +25,25 @@ import org.nuxeo.ecm.cmis.Session;
  */
 public abstract class AbstractSession implements Session {
 
-    /* (non-Javadoc)
-     * @see org.nuxeo.ecm.cmis.Session#getService(java.lang.Class)
-     */
-    public <T> T getService(Class<T> serviceType) {
-        // TODO Auto-generated method stub
-        return null;
+    protected AdapterManager adapters; 
+    protected Repository repository;
+    
+    protected AbstractSession(Repository repository) {
+        this.repository = repository;
+        this.adapters = new AdapterManager();
     }
-
+    
+    public AdapterManager getAdapterManager() {
+        return adapters;
+    }
+    
+    public Repository getRepository() {
+        return repository;
+    }
+    
+    public <T> T getService(Class<T> serviceType) {
+        return adapters.getAdapter(Session.class, serviceType);
+    }
+    
+    
 }

@@ -12,30 +12,14 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     matic
+ *     bstefanescu
  */
-package org.nuxeo.ecm.cmis.client.app.commands;
-
-import org.nuxeo.ecm.cmis.DocumentEntry;
+package org.nuxeo.ecm.cmis.client.app;
 
 /**
- * @author matic
- * 
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ *
  */
-public class QueryCommand extends AbstractCommand<DocumentEntry[]> {
+public class APPServiceDocument {
 
-    public final String repositoryId;
-
-    public QueryCommand(String repositoryId) {
-        super("discovery", "query");
-        this.repositoryId = repositoryId;
-    }
-
-    public String getRepositoryId() {
-        return repositoryId;
-    }
-
-    public String formatURL(String baseURL) {
-        return baseURL + "/" + repositoryId;
-    }
 }

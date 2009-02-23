@@ -12,22 +12,20 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     matic
+ *     bstefanescu
  */
-package org.nuxeo.ecm.cmis.client.app;
+package org.nuxeo.ecm.cmis.common;
+
 
 /**
- * 
- * Represents a method to be invoked at server side using the SOAP or AtomPub
- * connector
- * 
- * @author matic
- * 
- *         R
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ *
  */
-public interface Command<T> {
+public class AdapterManager {
 
-    String getServiceName();
-    String getMethodName();
-
+    
+    public <T> T getAdapter(Class<?> adaptee, Class<T> adapter) {
+        return null;
+    }
+    
 }
