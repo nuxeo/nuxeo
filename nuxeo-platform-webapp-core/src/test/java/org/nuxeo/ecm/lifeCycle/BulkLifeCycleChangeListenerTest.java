@@ -15,7 +15,7 @@ import org.nuxeo.runtime.api.Framework;
  * 
  * @author Julien Thimonier <jt@nuxeo.com>
  */
-public class MassLifeCycleChangeListenerTest extends RepositoryOSGITestCase {
+public class BulkLifeCycleChangeListenerTest extends RepositoryOSGITestCase {
 
     @Override
     protected void setUp() throws Exception {
