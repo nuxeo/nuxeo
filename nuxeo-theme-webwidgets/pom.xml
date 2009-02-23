@@ -72,7 +72,8 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <excludes>
-            <exclude>**/TestDefaultProvider.class</exclude>
+            <exclude>**/TestManager.class</exclude>
+            <exclude>**/TestProviderType.class</exclude>
           </excludes>
         </configuration>
       </plugin>
