@@ -56,6 +56,7 @@ public class MassLifeCycleChangeListener implements PostCommitEventListener {
                         docModelList = session.getChildren(doc.getRef());
                         String transition = (String)docCtx.getProperty(OPTION_NAME_TRANSITION);
                         changeDocumentsState(session, docModelList, transition);
+                        session.save();
                     } catch (ClientException e) {
                         log.error("Unable to get children", e);
                         return;
