@@ -37,4 +37,5 @@ public interface DocumentFeed extends DocumentList {
     
     String getURL(); // link
     
+    DocumentFeed refresh() throws CannotConnectToServerException;
 }
