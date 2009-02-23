@@ -20,8 +20,13 @@ package org.nuxeo.ecm.cmis;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface Adaptable {
+public class UnboundDocumentException extends ContentManagerException {
 
-    <T> T getAdapter(Class<T> adapter);
+    private static final long serialVersionUID = 1L;
+
+    public UnboundDocumentException(String message) {
+        super (message);
+    }
+       
     
 }
