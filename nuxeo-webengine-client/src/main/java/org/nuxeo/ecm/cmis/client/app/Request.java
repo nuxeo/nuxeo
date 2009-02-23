@@ -35,6 +35,10 @@ public class Request {
     public Request(String url) {
         this.url = url;
     }
+
+    public String getUrl() {
+        return url;
+    }
     
     public void setHeader(String key, String value) {
         if (headers == null) {

@@ -22,6 +22,7 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.DeleteMethod;
+import org.apache.commons.httpclient.methods.EntityEnclosingMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.HeadMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
@@ -31,6 +32,7 @@ import org.nuxeo.ecm.cmis.client.app.APPContentManager;
 import org.nuxeo.ecm.cmis.client.app.Connector;
 import org.nuxeo.ecm.cmis.client.app.Request;
 import org.nuxeo.ecm.cmis.client.app.Response;
+import org.nuxeo.ecm.cmis.client.app.SerializationManager;
 
 
 
@@ -50,6 +52,10 @@ public class HttpClientConnector implements Connector {
     
     public APPContentManager getAPPContentManager() {
         return cm;
+    }
+    
+    public SerializationManager getSerializationManager() {
+        return cm.getSerializationManager();
     }
     
     
@@ -77,9 +83,17 @@ public class HttpClientConnector implements Connector {
         }
     }
     
+    @SuppressWarnings("unchecked")
+    protected void setMethodContent(Request request, EntityEnclosingMethod method) throws ContentManagerException {
+        if (request != null) {
+            Object object = request.getContent();
+            method.setRequestEntity(new ObjectRequestEntity(getSerializationManager().getHandler(object.getClass()), object));
+        }
+    }
+        
     public Response get(Request request) throws ContentManagerException {
         try {
-            GetMethod method = new GetMethod();
+            GetMethod method = new GetMethod(request.getUrl());
             setMethodParams(method, request);
             setMethodHeaders(method, request);
             client.executeMethod(method);
@@ -91,7 +105,7 @@ public class HttpClientConnector implements Connector {
     
     public Response delete(Request request) throws ContentManagerException {
         try {
-            DeleteMethod method = new DeleteMethod();
+            DeleteMethod method = new DeleteMethod(request.getUrl());
             setMethodParams(method, request);
             setMethodHeaders(method, request);
             client.executeMethod(method);
@@ -103,7 +117,7 @@ public class HttpClientConnector implements Connector {
     
     public Response head(Request request) throws ContentManagerException {
         try {
-            HeadMethod method = new HeadMethod();
+            HeadMethod method = new HeadMethod(request.getUrl());
             setMethodParams(method, request);
             setMethodHeaders(method, request);
             client.executeMethod(method);
@@ -115,9 +129,10 @@ public class HttpClientConnector implements Connector {
     
     public Response post(Request request) throws ContentManagerException {
         try {
-            PostMethod method = new PostMethod();
+            PostMethod method = new PostMethod(request.getUrl());
             setMethodParams(method, request);
             setMethodHeaders(method, request);
+            setMethodContent(request, method);
             client.executeMethod(method);
             return new HttpClientResponse(this, method);
         } catch (Exception e) {
@@ -127,9 +142,10 @@ public class HttpClientConnector implements Connector {
     
     public Response put(Request request) throws ContentManagerException {
         try {
-            PutMethod method = new PutMethod();
+            PutMethod method = new PutMethod(request.getUrl());
             setMethodParams(method, request);
             setMethodHeaders(method, request);
+            setMethodContent(request, method);
             client.executeMethod(method);
             return new HttpClientResponse(this, method);
         } catch (Exception e) {

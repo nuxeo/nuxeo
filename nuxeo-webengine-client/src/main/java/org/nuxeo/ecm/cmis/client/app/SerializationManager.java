@@ -16,18 +16,27 @@
  */
 package org.nuxeo.ecm.cmis.client.app;
 
-import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+import org.nuxeo.ecm.cmis.ContentManagerException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface ContentHandler<T> {
+public interface SerializationManager {
 
-    Class<T> getObjectClass();
+    public void writeContent(Object object, OutputStream out) throws ContentManagerException;
     
-    T read(Response response) throws IOException;
+    public <T> T readContent(Class<T> type, InputStream in) throws ContentManagerException;
+  
+    public  <T> SerializationHandler<T> getHandler(Class<T> clazz);
     
-    void write(T object, Request request) throws IOException;
+    public  <T> SerializationHandler<T> getHandler(String contentType);
+        
+    public void registerHandler(SerializationHandler<?> handler);
+
+    public void unregisterHandler(Class<?> clazz);
     
 }

@@ -16,10 +16,22 @@
  */
 package org.nuxeo.ecm.cmis.client.app;
 
+import org.nuxeo.ecm.cmis.Repository;
+
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public class APPServiceDocument {
 
+    protected Repository[] repositories;
+    
+    public APPServiceDocument(Repository[] repositories) {
+        this.repositories = repositories;
+    }
+    
+    public Repository[] getRepositories() {
+        return repositories;
+    }
+    
 }

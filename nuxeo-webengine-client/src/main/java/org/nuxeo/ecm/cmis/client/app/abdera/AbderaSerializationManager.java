@@ -12,28 +12,29 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     matic
+ *     bstefanescu
  */
 package org.nuxeo.ecm.cmis.client.app.abdera;
 
-import org.apache.abdera.model.Element;
-import org.nuxeo.ecm.cmis.ContentManager;
-
+import org.apache.abdera.Abdera;
+import org.nuxeo.ecm.cmis.client.app.DefaultSerializationManager;
 
 /**
- * @author matic
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class DocumentEntryTransformer implements org.apache.commons.collections.Transformer {
+public class AbderaSerializationManager extends DefaultSerializationManager {
 
-    protected final ContentManager client;
+    protected Abdera abdera;
     
-    DocumentEntryTransformer(ContentManager client) {
-        this.client = client;
-    }
-    public Object transform(Object input) {
-        Element abderaElement  = (Element)input;
-        return new DocumentEntryAdapter(client, abderaElement);
+    public AbderaSerializationManager() {
+        this.abdera = new Abdera();
+        registerHandler(new APPServiceDocumentHandler(abdera));
     }
 
+    public Abdera getAbdera() {
+        return abdera;
+    }
+    
+    
 }

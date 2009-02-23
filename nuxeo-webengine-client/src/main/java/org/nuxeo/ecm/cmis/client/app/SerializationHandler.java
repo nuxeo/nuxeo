@@ -16,30 +16,22 @@
  */
 package org.nuxeo.ecm.cmis.client.app;
 
-import org.nuxeo.ecm.cmis.ContentManagerException;
-
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
- * 
- * Invokes a remote content manager over HTTP protocols, such as AtomPub.
- * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *  
+ *
  */
-public interface Connector {
+public interface SerializationHandler<T> {
+
+    Class<T> getObjectType();
+  
+    String getContentType();
     
-    APPContentManager getAPPContentManager();
+    T read(InputStream in) throws IOException;
     
-    SerializationManager getSerializationManager();
-        
-    Response post(Request operation) throws ContentManagerException;
+    void write(T object, OutputStream out) throws IOException;
     
-    Response put(Request operation) throws ContentManagerException;
-    
-    Response get(Request operation) throws ContentManagerException;
-    
-    Response head(Request operation) throws ContentManagerException;
-    
-    Response delete(Request operation) throws ContentManagerException;
-      
 }

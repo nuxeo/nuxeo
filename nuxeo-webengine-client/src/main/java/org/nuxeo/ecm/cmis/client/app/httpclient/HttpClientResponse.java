@@ -24,7 +24,6 @@ import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpMethod;
 import org.nuxeo.ecm.cmis.ContentManagerException;
 import org.nuxeo.ecm.cmis.client.app.Connector;
-import org.nuxeo.ecm.cmis.client.app.ContentHandler;
 import org.nuxeo.ecm.cmis.client.app.Response;
 
 /**
@@ -104,34 +103,16 @@ public class HttpClientResponse implements Response {
         }
     }
 
-//    public Object getContent() throws ContentManagerException {
-//        Header header = method.getResponseHeader("Content-Type");
-//        if (header == null) {
-//            throw new ContentManagerException("Unsupported response content type: content type is not defined");
-//        }
-//        String ctype = header.getElements()[0].getValue();
-//        ContentHandler<?> ch = connector.getAPPContentManager().getContentHandler(ctype);
-//        if (ch == null) {
-//            throw new ContentManagerException("Unsupported response content type: "+ctype);
-//        }
-//        try {
-//            return (T)ch.read(this);
-//        } catch (IOException e) {
-//            throw new ContentManagerException("Failed to unmarshall "+clazz, e);
-//        }
-//    }
-
     @SuppressWarnings("unchecked")
-    public <T> T getContent(Class<T> clazz) throws ContentManagerException {
-        ContentHandler<?> ch = connector.getAPPContentManager().getContentHandler(clazz);
-        if (ch == null) {
-            throw new ContentManagerException("Unsupported response content type: "+clazz);
-        }
+    public <T> T getContent(Class<T> clazz) throws ContentManagerException {        
+        InputStream in = getStream();
         try {
-            return (T)ch.read(this);
-        } catch (IOException e) {
-            throw new ContentManagerException("Failed to unmarshall "+clazz, e);
+            Object result = connector.getSerializationManager().readContent(clazz, in);
+            return (T)result;
+        } finally {
+            try {in.close();} catch (IOException e) { e.printStackTrace(); }
         }
+
     }
 
 }

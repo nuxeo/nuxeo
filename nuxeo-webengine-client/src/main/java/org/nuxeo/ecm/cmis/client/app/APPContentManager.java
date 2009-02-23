@@ -16,10 +16,12 @@
  */
 package org.nuxeo.ecm.cmis.client.app;
 
+
 import org.nuxeo.ecm.cmis.ContentManager;
 import org.nuxeo.ecm.cmis.ContentManagerException;
 import org.nuxeo.ecm.cmis.NoSuchRepositoryException;
 import org.nuxeo.ecm.cmis.Repository;
+import org.nuxeo.ecm.cmis.client.app.abdera.AbderaSerializationManager;
 import org.nuxeo.ecm.cmis.client.app.httpclient.HttpClientConnector;
 
 /**
@@ -31,31 +33,30 @@ public class APPContentManager implements ContentManager {
     protected String baseUrl;
     protected Connector connector;
 
-    protected ContentHandlerRegistry handlerRegistry;
+    protected SerializationManager serializationMgr;
     
     public APPContentManager(String url) {
-        this (url, null);
+        this (url, null, null);
     }
 
-    protected APPContentManager(String url, Connector connector) {
+    protected APPContentManager(String url, Connector connector, SerializationManager serializationMgr) {
         this.baseUrl = url;
-        this.connector = connector == null ? new HttpClientConnector(this) : connector;
-        this.handlerRegistry = new ContentHandlerRegistry();
+        this.connector = connector == null ? createConnector() : connector;
+        this.serializationMgr = serializationMgr == null ? createSerializationManager() : serializationMgr;
     }
     
-    
-    public ContentHandlerRegistry getContentHandlerRegistry() {
-        return handlerRegistry;
+    protected SerializationManager createSerializationManager() {
+        return new AbderaSerializationManager();
     }
     
-    public <T> ContentHandler<T> getContentHandler(Class<T> clazz) {
-        return handlerRegistry.getHandler(clazz);
+    protected Connector createConnector() {
+        return new HttpClientConnector(this);
     }
-
-    public void registerContentHandler(ContentHandler<?> handler) {
-        handlerRegistry.registerHandler(handler);
+    
+    public SerializationManager getSerializationManager() {
+        return serializationMgr;
     }
-
+    
     public String getBaseUrl() {
         return baseUrl;
     }
@@ -69,9 +70,11 @@ public class APPContentManager implements ContentManager {
     public Repository[] getRepositories() throws ContentManagerException {
         Request req = new Request(getBaseUrl());
         Response resp = connector.get(req);
+        if (!resp.isOk()) {
+            throw new ContentManagerException("Remote server returned error code: "+resp.getStatusCode());
+        }
         APPServiceDocument app = resp.getContent(APPServiceDocument.class);
-        // TODO app.getWorkspaces();
-        return null;
+        return app.getRepositories();
     }
 
     public Repository getRepository(String id)
