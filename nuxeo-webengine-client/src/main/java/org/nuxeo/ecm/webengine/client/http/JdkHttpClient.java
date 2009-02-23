@@ -26,9 +26,7 @@ import org.nuxeo.ecm.client.Path;
 import org.nuxeo.ecm.webengine.client.Client;
 import org.nuxeo.ecm.webengine.client.Console;
 import org.nuxeo.ecm.webengine.client.Result;
-import org.nuxeo.ecm.webengine.client.util.Base64;
 
-import com.sun.org.apache.xalan.internal.xsltc.compiler.util.ResultTreeType;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
