@@ -1,0 +1,24 @@
+Should be a feature offered by FUEL. Maybe we can reuse the mechanism in AFP.
+The goal is to be able to update clients with new items, avoid to send the whole feed at each refresh.
+
+The Feed Service maintains a cache with the 100 (configurable) latest operations (modified items that are in the feed).
+The Feed Service is subscribed to the core event loop.
+Each time something is modified, the feed service update its cache.
+The cache keep 2 status variables: timestamp of last modification and timestamp of oldest item in the cache.
+
+The server add an ETag Header in the response with a value corresponding to the 2 timestamps
+
+CNG request the feed using the feed URL:
+
+| Etag | Content Warehouse | Console |
+| There is no ETag in the request | the server send the usual answer |
+| The ETag header matches the last modified timetamp of the cache (meaning there is no modifications) | the server answer with "304 Not Modified". |
+| The ETag header is smaller than the "oldest item in cache" | the server answer 200 OK and send the whole feed |
+| The ETag header is larger than the "oldest item timestamp" and smaller than the "latest modification timestamp" | the server send "206 Partial Content" with a feed containing the items modified since the Etag value (TODO *check the spec to see what the response should include*) | CNG update the workspace accordingly: updating existing items (and moving them to the top) and adding new ones. |
+
+
+Note
+
+The console manage a menu of org.nuxeo.ecm.client.QueryEntry from the content manager by invoking the default org.nuxeo.ecm.client.Repository
+Each document feed view have a  org.nuxeo.ecm.client.DocumentFeed as model.
+org.nuxeo.ecm.client.DocumentFeed models is to be incrementally updated by a shared threads using the ETag header.

@@ -90,6 +90,10 @@ public class AtomPubConnector implements Connector {
         String url = command.formatURL(baseURL);
         GetMethod method = new GetMethod(url);
         InputStream bodyStream = null;
+        String serverTag = command.getServerTag();
+        if (serverTag != null) {
+            method.setRequestHeader(new Header("If-Range",serverTag));
+        }
         try {
             httpClient.executeMethod(method);
             bodyStream = method.getResponseBodyAsStream();
