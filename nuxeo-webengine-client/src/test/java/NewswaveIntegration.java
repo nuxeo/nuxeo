@@ -10,6 +10,7 @@ import org.nuxeo.ecm.client.ContentManager;
 import org.nuxeo.ecm.client.DocumentFeed;
 import org.nuxeo.ecm.client.QueryEntry;
 import org.nuxeo.ecm.client.Repository;
+import org.nuxeo.ecm.client.abdera.DocumentFeedAdapter;
 import org.nuxeo.ecm.client.atompub.AtomPubConnector;
 import org.nuxeo.ecm.client.impl.CannotInstantiateConnectorException;
 import org.nuxeo.ecm.client.impl.DefaultContentManager;
@@ -42,7 +43,7 @@ public class NewswaveIntegration extends NXRuntimeTestCase {
             throws CannotInstantiateConnectorException, MalformedURLException {
         super(name);
         managerUnderTest = new DefaultContentManager();
-        managerUnderTest.init(new URL("http","localhost",8080,"/cmis"), AtomPubConnector.class);
+        managerUnderTest.init(new URL("http","eugen",8080,"/cmis"), AtomPubConnector.class);
     }
 
     public NewswaveIntegration(String name, URL url)
@@ -91,7 +92,14 @@ public class NewswaveIntegration extends NXRuntimeTestCase {
         QueryEntry firstQuery = queries.get(0);
         DocumentFeed feed = firstQuery.getFeed();
         DocumentFeed refreshedFeed = feed.refresh();
-        assertEquals("Feed Title", refreshedFeed.getTitle());
+        assertNull(refreshedFeed);
+        DocumentFeedAdapter adapter = (DocumentFeedAdapter)feed;
+        String serverTag = adapter.getServerTag();
+        Long value = Long.parseLong(serverTag) - 1;
+        adapter.setServerTag(value.toString());
+        refreshedFeed = feed.refresh();
+        assertNotNull(refreshedFeed);
+        assertEquals(1, refreshedFeed.size()-feed.size());
     }
 
     public static void main(String args[]) throws MalformedURLException,
