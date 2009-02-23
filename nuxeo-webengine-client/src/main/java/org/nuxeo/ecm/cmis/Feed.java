@@ -28,7 +28,7 @@ import java.util.List;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface DocumentFeed extends List<DocumentEntry> {
+public interface Feed extends List<DocumentEntry> {
  
     String getId(); // URI
     

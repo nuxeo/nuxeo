@@ -14,7 +14,7 @@
  * Contributors:
  *     matic
  */
-package org.nuxeo.ecm.client.abdera;
+package org.nuxeo.ecm.cmis.client.app.abdera;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -51,7 +51,7 @@ public class DocumentFeedAdapter implements DocumentFeed {
                 atomFeed.getEntries(), contentManager);
         this.serverTag = serverTag;
     }
-
+    
     public DocumentFeedAdapter(ContentManager contentManager, Feed atomFeed,
             String serverTag, DocumentList lastEntries) {
         this.atomFeed = atomFeed;
@@ -159,7 +159,7 @@ public class DocumentFeedAdapter implements DocumentFeed {
     }
 
     public int size() {
-        return entries.size();
+        return atomFeed.getElements().size();
     }
 
     public List<DocumentEntry> subList(int fromIndex, int toIndex) {
@@ -172,14 +172,6 @@ public class DocumentFeedAdapter implements DocumentFeed {
 
     public <T> T[] toArray(T[] a) {
         return entries.toArray(a);
-    }
-
-    public void setServerTag(String value) {
-        serverTag = value;
-    }
-
-    public String getServerTag() {
-        return serverTag;
     }
 
     public DocumentFeed refresh() throws CannotConnectToServerException {

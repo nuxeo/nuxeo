@@ -73,6 +73,8 @@ public class AtomPubConnector implements Connector {
             return (T) doInvoke((RepositoriesCommand) command);
         } else if (command instanceof GetQueriesCommand) {
             return (T) doInvoke((GetQueriesCommand) command);
+        } else if (command instanceof GetDocumentFeedCommand) {
+            return (T) doInvoke((GetDocumentFeedCommand)command); 
         } else if (command instanceof RefreshDocumentFeedCommand) {
             return (T) doInvoke((RefreshDocumentFeedCommand) command);
         }
@@ -92,10 +94,14 @@ public class AtomPubConnector implements Connector {
         InputStream bodyStream = null;
         String serverTag = command.getServerTag();
         if (serverTag != null) {
+            method.setRequestHeader(new Header("If-Match", "*"));
             method.setRequestHeader(new Header("If-Range",serverTag));
         }
         try {
             httpClient.executeMethod(method);
+            if (method.getStatusCode() == 304) {
+                return null;
+            }
             bodyStream = method.getResponseBodyAsStream();
         } catch (Exception e) {
             throw CannotConnectToServerException.wrap("Cannot connect to "
@@ -135,7 +141,10 @@ public class AtomPubConnector implements Connector {
     
     private DocumentFeed doInvoke(RefreshDocumentFeedCommand command) throws CannotConnectToServerException {
         Feed atomFeed = this.doGet(command);
-        return new DocumentFeedAdapter(contentManager,atomFeed,command.getServerTag());
+        if (atomFeed == null) {
+            return null;
+        } 
+        return new DocumentFeedAdapter(contentManager,atomFeed,command.getServerTag(),command.getLastEntries());
     }
 
 }

@@ -19,11 +19,19 @@ package org.nuxeo.ecm.cmis.client.app.abdera;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.List;
 
 import org.apache.abdera.Abdera;
+import org.apache.abdera.ext.cmis.CmisRepositoryInfo;
 import org.apache.abdera.model.Document;
-import org.apache.abdera.model.Element;
+import org.apache.abdera.model.Service;
+import org.apache.abdera.model.Workspace;
+import org.nuxeo.ecm.client.Repository;
+import org.nuxeo.ecm.client.abdera.RepositoryAdapter;
+import org.nuxeo.ecm.cmis.ContentManager;
+import org.nuxeo.ecm.cmis.client.app.APPContentManager;
 import org.nuxeo.ecm.cmis.client.app.APPServiceDocument;
+import org.nuxeo.ecm.cmis.client.app.AppRepository;
 import org.nuxeo.ecm.cmis.client.app.SerializationHandler;
 
 /**
@@ -34,7 +42,10 @@ public class APPServiceDocumentHandler implements SerializationHandler<APPServic
 
     protected Abdera abdera;
     
-    public APPServiceDocumentHandler(Abdera abdera) {
+    protected ContentManager contentManager;
+    
+    public APPServiceDocumentHandler(APPContentManager contentManager, Abdera abdera) {
+        this.contentManager = contentManager;
         this.abdera = abdera;
     }
     
@@ -47,9 +58,15 @@ public class APPServiceDocumentHandler implements SerializationHandler<APPServic
     }
     
     public APPServiceDocument read(InputStream in) throws IOException {
-        Document<Element> element = abdera.getParser().parse(in);
-        //TODO
-        return null;
+        Document<Service> document = abdera.getParser().parse(in);
+        Service atomService = document.getRoot();
+        List<Workspace>  atomWorkspaces = atomService.getWorkspaces();
+        AppRepository repos[] = new AppRepository[atomWorkspaces.size()];
+        int i = 0;
+        for (i = 0; i < repos.length; i++) {
+            repos[i] = new AppRepository(contentManager, atomWorkspaces.get(i).getExtension(CmisRepositoryInfo.class).getRepositoryId());
+        }
+        return new APPServiceDocument(repos);
     }
     
     public void write(APPServiceDocument object, OutputStream out)
