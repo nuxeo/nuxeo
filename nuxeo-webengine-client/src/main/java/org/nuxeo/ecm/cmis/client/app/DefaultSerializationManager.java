@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.nuxeo.ecm.cmis.ContentManager;
 import org.nuxeo.ecm.cmis.ContentManagerException;
 
 /**
@@ -31,10 +32,14 @@ public class DefaultSerializationManager implements SerializationManager {
 
     protected ClassMap<SerializationHandler<?>> handlersByClass;
     
+    protected APPContentManager contentManager;
 
-    public DefaultSerializationManager() {
+    public DefaultSerializationManager(APPContentManager cm) {
         handlersByClass = new ClassMap<SerializationHandler<?>>();
+        contentManager = cm;
     }
+    
+    
     
     public synchronized <T> SerializationHandler<T>  getHandler(Class<T> clazz) {
         return (SerializationHandler<T>)handlersByClass.find(clazz);
@@ -76,6 +81,11 @@ public class DefaultSerializationManager implements SerializationManager {
         } catch (IOException e) {
             throw new ContentManagerException("Failed to read object: "+type, e);
         }
+    }
+
+
+    public ContentManager getContentManager() {
+           return contentManager;
     }
     
 }

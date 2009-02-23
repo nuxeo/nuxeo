@@ -1,4 +1,4 @@
-The entry point to be used is org.nuxeo.ecm.client.impl.DefaultContentManager
+The entry point to be used is  org.nuxeo.ecm.client.impl.DefaultContentManager
 The following snipset gives you an example of how connecting to the newswave content
 manager using the Atom Publication protocol.
 
@@ -20,3 +20,5 @@ Then, from each query entries you can fetch a document feed
 Synchronizing the feed with the server side can be done as follow 
 
  DocumentFeed synchedFeed = feed.refresh();
+
+New

@@ -14,32 +14,29 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.cmis.client.app.abdera;
+package org.nuxeo.ecm.cmis;
 
-import org.apache.abdera.Abdera;
-import org.apache.abdera.ext.cmis.CmisExtensionFactory;
-import org.nuxeo.ecm.cmis.client.app.APPContentManager;
-import org.nuxeo.ecm.cmis.client.app.DefaultSerializationManager;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class AbderaSerializationManager extends DefaultSerializationManager {
+public interface Content {
 
-    protected Abdera abdera;
+    String getName();
     
-    public AbderaSerializationManager(APPContentManager cm) {
-        super(cm);
-        this.abdera = new Abdera();
-        this.abdera.getConfiguration().addExtensionFactory(
-                new CmisExtensionFactory());
-        registerHandler(new APPServiceDocumentHandler(cm,abdera));
-    }
-
-    public Abdera getAbdera() {
-        return abdera;
-    }
+    int getLength();
     
+    String getType();
+    
+    byte[] getBytes();
+    
+    String getString();
+    
+    InputStream getStream();
+    
+    void transferTo(OutputStream out);
     
 }
