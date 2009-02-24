@@ -196,11 +196,22 @@ public class BundleImpl implements Bundle {
     }
 
     public void stop() throws BundleException {
-        state = STOPPING;
         try {
             setStopping();
             getActivator().stop(context);
             setStopped();
+        } catch (Exception e) {
+            throw new BundleException("Failed to stop activator: "
+                    + headers.get(Constants.BUNDLE_ACTIVATOR), e);
+        }
+    }
+    
+    public void shutdown() throws BundleException {
+        try {
+            state = STOPPING;
+            getActivator().stop(context);
+            lastModified = System.currentTimeMillis();
+            state = UNINSTALLED;
         } catch (Exception e) {
             throw new BundleException("Failed to stop activator: "
                     + headers.get(Constants.BUNDLE_ACTIVATOR), e);

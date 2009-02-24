@@ -40,7 +40,6 @@ import org.nuxeo.osgi.application.SharedClassLoader;
  */
 public class Loader {
 
-    protected static StandaloneApplication2 app;
 
     public static Environment createEnvironment() throws IOException {
         return createEnvironment(null);
@@ -166,9 +165,10 @@ public class Loader {
     }
 
     public static void shutdown() {
-        if (app != null) {
+        if (StandaloneApplication2.instance != null) {
             try {
-                app.shutdown();
+                StandaloneApplication2.instance.shutdown();
+                StandaloneApplication2.instance = null;
             } catch (IOException e) {
                 e.printStackTrace();
             }

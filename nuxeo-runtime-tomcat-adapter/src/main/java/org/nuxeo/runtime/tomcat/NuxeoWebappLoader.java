@@ -149,7 +149,16 @@ public class NuxeoWebappLoader extends WebappLoader implements Constants {
         if (!isStarted) {
             return;
         }
+        try {
         System.out.println("Stopping Nuxeo Framework");
+        Class<?> clazz = getClassLoader().loadClass("org.nuxeo.osgi.application.loader.Loader");
+        Method method = clazz.getMethod("shutdown");
+        method.invoke(null);
+    } catch (Throwable t) {
+        System.err.println("Failed to invoke nuxeo launcher");
+        t.printStackTrace();
+    }
+
     }
 
     protected void startFramework() {

@@ -27,7 +27,7 @@ import javax.naming.InitialContext;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public abstract class JndiServiceLocator implements ServiceLocator {
+public class JndiServiceLocator implements ServiceLocator {
 
     private static final long serialVersionUID = -8445946234540101788L;
 
@@ -61,7 +61,7 @@ public abstract class JndiServiceLocator implements ServiceLocator {
         return context.lookup(serviceId);
     }
 
-    protected static String createLocator(ServiceDescriptor sd) {
+    protected String createLocator(ServiceDescriptor sd) {
         return sd.getServiceClassName();
     }
 

@@ -135,6 +135,7 @@ public class StandaloneApplication2 extends OSGiAdapter {
                 mainTask.run();
             }
         }
+        isStarted = true;
     }
 
     public boolean isStarted() {
@@ -146,7 +147,11 @@ public class StandaloneApplication2 extends OSGiAdapter {
         if (!isStarted) {
             throw new IllegalStateException("OSGi Application was not started");
         }
-        super.shutdown();
+        try {        
+            super.shutdown();
+        } finally {
+            isStarted = false;
+        }
     }
 
     //TODO: this method doesn't work - it must be sync with the one from 

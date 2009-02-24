@@ -176,6 +176,14 @@ public class BundleRegistry {
     }
 
     public void shutdown() {
+        BundleRegistration[] regs = bundles.values().toArray(new BundleRegistration[bundles.size()]);
+        for (BundleRegistration reg : regs) {
+            try {
+                reg.bundle.shutdown();
+            } catch (BundleException e) {
+                log.error("Failed to stop bundle "+reg.bundle.getSymbolicName(), e);
+            }
+        }
     }
 
 }

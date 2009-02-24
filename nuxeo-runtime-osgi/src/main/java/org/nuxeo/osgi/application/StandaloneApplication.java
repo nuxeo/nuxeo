@@ -109,6 +109,7 @@ public class StandaloneApplication extends OSGiAdapter {
             startBundles(postBundles);
         }
         fireFrameworkEvent(new FrameworkEvent(FrameworkEvent.STARTED, getSystemBundle(), null));
+        isStarted = true;
     }
 
     public boolean isStarted() {
@@ -120,7 +121,11 @@ public class StandaloneApplication extends OSGiAdapter {
         if (!isStarted) {
             throw new IllegalStateException("OSGi Application was not started");
         }
-        super.shutdown();
+        try {        
+            super.shutdown();
+        } finally {
+            isStarted = false;
+        }
     }
 
     protected void startBundles(List<BundleFile> bundles) throws Exception {
