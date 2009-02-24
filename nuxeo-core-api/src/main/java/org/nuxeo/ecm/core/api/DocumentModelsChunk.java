@@ -49,11 +49,7 @@ public class DocumentModelsChunk implements Serializable {
     private final long max;
 
     /**
-     *
-     * @param list
-     * @param lastIndex
-     * @param hasMore
-     * @param max maximum number of items in the result. This number could be at most
+     * @param the max maximum number of items in the result. This number could be at most
      *   the total number of Documents before filtering.
      */
     DocumentModelsChunk(DocumentModelList list, int lastIndex, boolean hasMore, long max) {
@@ -64,15 +60,14 @@ public class DocumentModelsChunk implements Serializable {
     }
 
     /**
-     * @return number of elements from this chunk
+     * @return the number of elements from this chunk
      */
     public int getSize() {
         return list.size();
     }
 
     /**
-     * @param i
-     * @return element at position i
+     * @return the element at position i
      */
     public DocumentModel getItem(int i) {
         return list.get(i);
@@ -83,8 +78,7 @@ public class DocumentModelsChunk implements Serializable {
     }
 
     /**
-     *
-     * @return maximum number of items that could be retrieved from the source
+     * @return the maximum number of items that could be retrieved from the source
      */
     public long getMax() {
         return max;

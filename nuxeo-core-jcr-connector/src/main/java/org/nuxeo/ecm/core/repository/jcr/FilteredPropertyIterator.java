@@ -83,7 +83,6 @@ public class FilteredPropertyIterator implements PropertyIterator {
         throw new UnsupportedOperationException("remove");
     }
 
-
     public long getSize() {
         return -1; // unknown size
     }

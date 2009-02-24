@@ -48,7 +48,7 @@ public interface Query {
     }
 
     /**
-     * Makes a query to the backend. No fiter, permission or policy filterings
+     * Makes a query to the backend. No filter, permission or policy filtering
      * are done.
      *
      * @return a query result object describing the resulting documents
@@ -58,7 +58,7 @@ public interface Query {
     QueryResult execute() throws QueryException;
 
     /**
-     * Makes a query to the backend. No fiter, permission or policy filterings
+     * Makes a query to the backend. No filter, permission or policy filtering
      * are done.
      * <p>
      * The total number of documents can also be retrieved, it is then stored in

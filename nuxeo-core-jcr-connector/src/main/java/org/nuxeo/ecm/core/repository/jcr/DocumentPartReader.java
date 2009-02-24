@@ -51,7 +51,7 @@ public class DocumentPartReader {
         dp.setData(
                 doc.getRepository().getName() + ':' + doc.getSession().getUserSessionId());
 
-        // proxy document is forwarding props to refered doc
+        // proxy document is forwarding props to referred doc
         Node parent = doc.isProxy() ? ((JCRDocumentProxy)doc).getTargetNode()
                 : doc.getNode();
         for (Property prop : dp) {

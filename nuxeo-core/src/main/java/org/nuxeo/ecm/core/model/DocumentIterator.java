@@ -36,4 +36,5 @@ public interface DocumentIterator extends Iterator<Document> {
      *         <code>UNKNOWN_SIZE</code>
      */
     long getSize();
+
 }

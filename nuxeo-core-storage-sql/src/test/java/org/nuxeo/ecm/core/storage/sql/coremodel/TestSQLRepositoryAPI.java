@@ -2432,6 +2432,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals("myfile", content);
     }
 
+    @SuppressWarnings("unchecked")
     public void testDocumentModelTreeSort() throws Exception {
         // create a folder tree
         DocumentModel root = session.getRootDocument();

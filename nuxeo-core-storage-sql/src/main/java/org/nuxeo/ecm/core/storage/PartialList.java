@@ -34,4 +34,5 @@ public class PartialList<E> {
         this.list = list;
         this.totalSize = totalSize;
     }
+
 }

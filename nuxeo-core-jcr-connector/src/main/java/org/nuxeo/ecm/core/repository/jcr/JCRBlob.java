@@ -282,7 +282,7 @@ public class JCRBlob extends StreamBlob {
                 return;
             }
             // set first the filename, length and digest first - to catch node
-            // type incompatibility errors from the begining
+            // type incompatibility errors from the beginning
             String filename = value.getFilename();
             if (filename != null) {
                 node.setProperty(FILENAME, filename);

@@ -78,7 +78,7 @@ public class DocumentPartWriter {
      * @param prop the property to write
      * @param parent the parent node where to write the property
      * @return the node corresponding to the given property.
-     * If the property is mapped on a JCR property then the parent nod eis returned
+     *     If the property is mapped on a JCR property then the parent node is returned
      * @throws Exception
      */
     public static Node writeProperty(Node parent, Property prop) throws Exception {
@@ -103,14 +103,14 @@ public class DocumentPartWriter {
      * @param parent
      * @param prop
      * @return the node corresponding to the property.
-     * If the property is mapped on a JCR property then the parent node is returned
+     *     If the property is mapped on a JCR property then the parent node is returned
      * @throws Exception
      */
     public static Node writeScalarProperty(Node parent, Property prop) throws Exception {
         if (prop.isScalar()) {
             writePrimitiveProperty(parent, prop);
             return parent;
-        } else if (prop.isList()) { // for compatibilty -> remove this if scalar list mapping is fixed
+        } else if (prop.isList()) { // for compatibility -> remove this if scalar list mapping is fixed
             writeArrayProperty(parent, prop);
             return parent;
         } else {// a structured property - may be a blob

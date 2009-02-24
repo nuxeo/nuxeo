@@ -36,7 +36,7 @@ import java.io.Writer;
  * <p>
  * The encoding is used to decode Unicode text content that was stored in an
  * encoded form. If not encoding is specified, the default java encoding is
- * used. The encoding is ignored fot binary content.
+ * used. The encoding is ignored for binary content.
  * <p>
  * When retrieving the content from a document, it will be returned as source
  * content instead of returning the content bytes.
@@ -100,10 +100,9 @@ public interface Blob {
     /**
      * Persist this stream so that getStream() method can be called successfully
      * several times. The persistence is done in a temp file or in memory - this
-     * is up to the implemention.
+     * is up to the implementation.
      * <p>
      * Blobs that are already persistent return themselves.
-     *
      * <p>
      * Persistence should update the internal structure of the Blob to make it
      * persistent whenever possible and hence return itself whenever possible.

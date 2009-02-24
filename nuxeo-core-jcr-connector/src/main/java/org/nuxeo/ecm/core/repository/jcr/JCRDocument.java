@@ -72,7 +72,6 @@ import org.nuxeo.ecm.core.versioning.DocumentVersionIterator;
  * {@link Node}.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class JCRDocument extends AbstractDocument implements JCRNodeProxy {
 

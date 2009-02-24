@@ -59,10 +59,7 @@ public final class SQLQueryParser {
     }
 
     /**
-     * Return the string literal in a form ready to embed in an NXQL statement.
-     *
-     * @param s
-     * @return
+     * Returns the string literal in a form ready to embed in an NXQL statement.
      */
     public static String prepareStringLiteral(String s) {
         return "'" + s.replaceAll("'", "\\\\'") + "'";

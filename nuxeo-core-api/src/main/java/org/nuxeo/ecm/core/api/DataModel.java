@@ -83,10 +83,10 @@ public interface DataModel extends Serializable {
     /**
      * Gets all the fields set in this data model.
      * <p>
-     * This is not guaranteed that the returned mao contains all
+     * It is not guaranteed that the returned map will contain all
      * the fields defined by the schema. It may even be empty.
      * <p>
-     * The returned map is null if the data model was not yet loaded
+     * The returned map is null if the data model was not yet loaded.
      *
      * @return a read only map containing actual data in this object
      * @throws PropertyException
@@ -100,7 +100,6 @@ public interface DataModel extends Serializable {
      * @throws PropertyException
      */
     void setMap(Map<String, Object> data) throws PropertyException;
-
 
     /**
      * Tests whether or not this data model is dirty
@@ -137,7 +136,10 @@ public interface DataModel extends Serializable {
     Collection<String> getDirtyFields();
 
     /**
-     * Get a value given its path. the path is a subset of xpath: / and [] are supported
+     * Gets a value given its path.
+     * <p>
+     * The path is a subset of XPath: / and [] are supported.
+     *
      * @param path the property path
      * @return
      * @throws ParseException
@@ -146,7 +148,8 @@ public interface DataModel extends Serializable {
     Object getValue(String path) throws PropertyException;
 
     /**
-     * Set a value to a property given its path
+     * Sets a value to a property given its path.
+     *
      * @param path
      * @param value
      * @return

@@ -27,7 +27,6 @@ import java.util.List;
  * structure of the sections tree.
  *
  * @author <a href="mailto:npaslaru@nuxeo.com">Narcis Paslaru</a>
- *
  */
 public interface DocumentModelTree extends List<DocumentModelTreeNode>, Serializable {
 
