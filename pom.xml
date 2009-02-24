@@ -42,7 +42,7 @@
     <dependency>
       <groupId>org.nuxeo.build</groupId>
       <artifactId>nuxeo-webengine-apt</artifactId>
-      <version>1.2-SNAPSHOT</version>
+      <version>1.2</version>
       <scope>compile</scope>
       <!-- workaround for Mac OS X -->
       <exclusions>
