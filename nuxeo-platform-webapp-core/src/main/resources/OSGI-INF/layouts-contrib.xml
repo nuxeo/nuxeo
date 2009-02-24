@@ -665,9 +665,9 @@
       </widget>
 
       <widget name="url" type="text">
-        <widgetModes>
-          <mode value="any">view</mode>
-        </widgetModes>
+        <widgetModes>
+          <mode value="any">view</mode>
+        </widgetModes>
         <translated>true</translated>
         <fields>
           <field>webc:url</field>
