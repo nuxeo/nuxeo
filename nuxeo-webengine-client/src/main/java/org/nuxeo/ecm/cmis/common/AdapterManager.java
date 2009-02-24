@@ -16,16 +16,64 @@
  */
 package org.nuxeo.ecm.cmis.common;
 
+import java.util.HashMap;
+import java.util.Map;
+
 
 /**
+ * TODO implement unregister
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class AdapterManager {
+@SuppressWarnings("unchecked")
+public class AdapterManager implements ClassRegistry {
 
+    // adaptableClass => { adapterClass => adapterFactory }
+    protected Map<Class<?>, Map<Class<?>, AdapterFactory<?>>> registry; 
     
-    public <T> T getAdapter(Class<?> adaptee, Class<T> adapter) {
+    
+    public AdapterManager() {
+        this.registry = new HashMap<Class<?>, Map<Class<?>, AdapterFactory<?>>>();
+    }
+    
+    public synchronized void registerAdapter(Class<?> clazz, AdapterFactory<?> factory) {
+        Map<Class<?>, AdapterFactory<?>> adapters = registry.get(clazz);
+        if (adapters == null) {
+            adapters = new HashMap<Class<?>, AdapterFactory<?>>();
+        }
+        adapters.put(clazz, factory);
+        registry.put(clazz, adapters);
+    }
+    
+    public void unregisterAdapters(Class<?> clazz) {
+        //TODO
+    }
+
+    public void unregisterAdapterFactory(Class<?> factory) {
+        //TODO
+    }
+
+    public synchronized <T> AdapterFactory<T> getAdapterFactory(Class<?> adaptee, Class<T> adapter) {
+        Map<Class<?>, AdapterFactory<T>> adapters = 
+            (Map<Class<?>, AdapterFactory<T>>)ClassLookup.lookup(adaptee, this);        
+        if (adapters != null) {
+            return adapters.get(adapter);
+        }
         return null;
+    }
+    
+    public <T> T getAdapter(Object adaptee, Class<T> adapter) {
+        AdapterFactory<?> factory = getAdapterFactory(adaptee.getClass(), adapter);
+        return factory == null ? null : (T)factory.getAdapter(adaptee);
+    }
+    
+    public Object get(Class<?> clazz) {
+        return registry.get(clazz);
+    }
+    
+    public void put(Class<?> clazz, Object value) {
+        registry.put(clazz, (Map<Class<?>, AdapterFactory<?>>)value);
     }
     
 }

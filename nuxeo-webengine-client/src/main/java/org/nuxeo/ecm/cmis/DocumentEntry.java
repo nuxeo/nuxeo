@@ -26,7 +26,7 @@ import java.util.Map;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface DocumentEntry extends Entry {
+public interface DocumentEntry {
     
     String getURI();// link rel="self"
 

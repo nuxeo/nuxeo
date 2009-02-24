@@ -16,35 +16,30 @@
  */
 package org.nuxeo.ecm.cmis.common;
 
-import java.util.Map;
-
-import org.nuxeo.ecm.cmis.Repository;
-import org.nuxeo.ecm.cmis.Session;
+import org.nuxeo.ecm.cmis.ContentManager;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public abstract class AbstractRepository implements Repository {
+public abstract class AbstractContentManager implements ContentManager {
 
-    protected AbstractContentManager cm;
-    protected String repositoryId;
-    
-    public AbstractRepository(AbstractContentManager cm, String repositoryId) {
-        this.cm = cm;
-        this.repositoryId = repositoryId;
+    protected AdapterManager adapters;
+
+    public AbstractContentManager() {
+        this (null);
+    }
+
+    public AbstractContentManager(AdapterManager adapterManager) {
+        this.adapters = adapterManager == null ? createAdapterManager() : adapterManager;
     }
     
-    public AbstractContentManager getContentManager() {
-        return cm;
+    protected AdapterManager createAdapterManager() {
+        return new AdapterManager();
     }
-
-    public String getRepositoryId() {
-        return repositoryId;
+    
+    public AdapterManager getAdapterManager() {
+        return adapters;
     }
-
-    public abstract Session open();
-
-    public abstract Session open(Map<String, Object> ctx);
-
+    
 }

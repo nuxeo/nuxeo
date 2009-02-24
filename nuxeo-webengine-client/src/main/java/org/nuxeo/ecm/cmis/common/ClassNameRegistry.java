@@ -14,30 +14,18 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.cmis;
-
-import java.util.List;
-
-
+package org.nuxeo.ecm.cmis.common;
 
 /**
- * A list of documents that was returned by the server. This may describe different query results on the repository.
- * It may be seen like a virtual folder that has no physical support. 
- *
- * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface Feed extends List<DocumentEntry> {
- 
-    String getId(); // URI
+public interface ClassNameRegistry {
+
+    void put(String className, Object value);
     
-    String getTitle(); // atom:title <=> CMIS:name
+    Object get(String className);
     
-    long lastModified(); //atom:edited <=> cmis:lastModifiedDate
-    
-    String getAuthor(); // atom:author <=> cmis:createdBy
-    
-    String getURL(); // link
+    Class<?> loadClass(String className);
     
 }

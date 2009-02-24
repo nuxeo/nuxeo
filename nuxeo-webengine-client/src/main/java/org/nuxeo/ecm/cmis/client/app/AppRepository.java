@@ -19,8 +19,9 @@ package org.nuxeo.ecm.cmis.client.app;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.nuxeo.ecm.cmis.ContentManager;
+import org.nuxeo.ecm.cmis.DocumentFeed;
 import org.nuxeo.ecm.cmis.Session;
+import org.nuxeo.ecm.cmis.common.AbstractContentManager;
 import org.nuxeo.ecm.cmis.common.AbstractRepository;
 
 /**
@@ -32,7 +33,7 @@ public class AppRepository extends AbstractRepository {
     protected Map<String,String> collections = 
         new HashMap<String,String>();
 
-    public AppRepository(ContentManager cm, String id) {
+    public AppRepository(AbstractContentManager cm, String id) {
         super(cm, id);
     }
 
@@ -52,4 +53,9 @@ public class AppRepository extends AbstractRepository {
     public void addCollection(String name, String href) {
         collections.put(name, href);
     }
+    
+    public DocumentFeed getCollection(String id) {
+        return null;
+    }
+    
 }

@@ -12,15 +12,34 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     matic
+ *     bstefanescu
  */
 package org.nuxeo.ecm.cmis;
 
-/**
- * @author matic
- * 
- */
-public interface FeedsCollectionEntry  {
+import java.util.List;
 
-    Feed getFeed();
+
+
+/**
+ * The result of a document query.
+ * 
+ * A list of documents that was returned by the server. This is describing the outcome of queries on a repository.
+ * It may be seen like a virtual folder that has no physical support. 
+ *
+ * 
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ *
+ */
+public interface DocumentFeed extends List<DocumentEntry> {
+ 
+    String getId(); // URI
+    
+    String getTitle(); // atom:title <=> CMIS:name
+    
+    long lastModified(); //atom:edited <=> cmis:lastModifiedDate
+    
+    String getAuthor(); // atom:author <=> cmis:createdBy
+    
+    String getURL(); // link
+    
 }
