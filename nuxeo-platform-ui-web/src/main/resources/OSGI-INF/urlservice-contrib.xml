@@ -18,7 +18,7 @@
     </documentation>
 
     <urlPattern name="default" enabled="true">
-      <defaultURLPolicy>true</defaultURLPolicy>
+      <defaultURLPolicy>false</defaultURLPolicy>
       <needBaseURL>true</needBaseURL>
       <needRedirectFilter>true</needRedirectFilter>
       <needFilterPreprocessing>true</needFilterPreprocessing>
@@ -33,7 +33,7 @@
     </urlPattern>
 
     <urlPattern name="path" enabled="true">
-      <defaultURLPolicy>false</defaultURLPolicy>
+      <defaultURLPolicy>true</defaultURLPolicy>
       <needBaseURL>true</needBaseURL>
       <needRedirectFilter>true</needRedirectFilter>
       <needFilterPreprocessing>true</needFilterPreprocessing>
