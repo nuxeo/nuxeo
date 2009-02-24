@@ -38,8 +38,9 @@ class Pages(NuxeoTestCase):
         p = BasePage(self).available()
 
     def testLoginPage(self):
-        p = LoginPage(self).login('Administrator', 'Administrator')
-        p.logout()
+        p = (LoginPage(self).view()
+             .login('Administrator', 'Administrator')
+             .logout())
         p = LoginPage(self).loginInvalid('foo', 'bar')
 
     def testBasePageViewDocumentPath(self):

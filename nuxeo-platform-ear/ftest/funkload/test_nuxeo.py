@@ -88,7 +88,8 @@ class Nuxeo(NuxeoTestCase):
         p.logout()
 
     def testReader(self):
-        p = LoginPage(self).login(self.cred_member[0], self.cred_member[1])
+        p = (LoginPage(self).view()
+             .login(self.cred_member[0], self.cred_member[1]))
 
         for i in range(self.nb_read):
             p = (FolderPage(self).viewDocumentPath(self.dir_path)
