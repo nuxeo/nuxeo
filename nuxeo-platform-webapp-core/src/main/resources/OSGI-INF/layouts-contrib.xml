@@ -622,7 +622,7 @@
       </widget>
     </layout>
 
-        <layout name="webcontainer">
+    <layout name="webcontainer">
       <templates>
         <template mode="any">/layouts/workspace_layout_template.xhtml</template>
       </templates>
@@ -633,9 +633,10 @@
         <row>
           <widget>url</widget>
         </row>
-        <row>
+       <!--  Not needed yet        
+       <row>
           <widget>theme</widget>
-        </row>
+        </row> -->
         <row>
           <widget>email</widget>
         </row>
@@ -664,15 +665,16 @@
       </widget>
 
       <widget name="url" type="text">
+        <widgetModes>
+          <mode value="any">view</mode>
+        </widgetModes>
         <translated>true</translated>
         <fields>
           <field>webc:url</field>
         </fields>
-        <properties widgetMode="edit">
-          <property name="styleClass">dataInputText</property>
-        </properties>
       </widget>
 
+      <!--  Not needed yet        
       <widget name="theme" type="template">
         <translated>true</translated>
         <fields>
@@ -685,6 +687,7 @@
           </property>
         </properties>
       </widget>
+      -->
 
       <widget name="email" type="text">
         <translated>true</translated>
@@ -703,11 +706,14 @@
         </fields>
       </widget>
 
-      <widget name="welcomeText" type="textarea">
+      <widget name="welcomeText" type="htmltext">
         <translated>true</translated>
         <fields>
           <field>webc:welcomeText</field>
         </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
       </widget>
 
       <widget name="welcomeMedia" type="file">

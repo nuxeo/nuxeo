@@ -36,7 +36,8 @@
 
 	<div class="foldableBox">
       <h3 class="#{nxu:test(siteActions.webContainerChecked, 'unfolded', 'folded')}" >
-         <h:selectBooleanCheckbox onclick="toggleBox(this)" value="#{value.webcontainer.isWebContainer}"/> 
+         <h:selectBooleanCheckbox onclick="toggleBox(this)" value="#{value.webcontainer.isWebContainer}"/>
+         <h:outputText value="#{messages['label.select.web.workspace.checkbox']}"/>
       </h3>
         <div class="boxBody" style="#{nxu:test(layoutValue.webcontainer.isWebContainer, 'display: block', 'display: none')}">
           <table class="dataInput">
