@@ -17,20 +17,22 @@
 package org.nuxeo.ecm.cmis.client.app;
 
 
-import org.nuxeo.ecm.cmis.ContentManager;
 import org.nuxeo.ecm.cmis.ContentManagerException;
 import org.nuxeo.ecm.cmis.NoSuchRepositoryException;
 import org.nuxeo.ecm.cmis.Repository;
 import org.nuxeo.ecm.cmis.client.app.abdera.AbderaSerializationManager;
 import org.nuxeo.ecm.cmis.client.app.httpclient.HttpClientConnector;
+import org.nuxeo.ecm.cmis.common.AbstractContentManager;
+import org.nuxeo.ecm.cmis.common.AdapterManager;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class APPContentManager implements ContentManager {
+public class APPContentManager extends AbstractContentManager {
 
     protected String baseUrl;
+    protected AdapterManager adapterMgr;
     protected Connector connector;
 
     protected SerializationManager serializationMgr;
@@ -46,11 +48,15 @@ public class APPContentManager implements ContentManager {
     }
     
     protected SerializationManager createSerializationManager() {
-        return new AbderaSerializationManager();
+        return new AbderaSerializationManager(this);
     }
     
     protected Connector createConnector() {
         return new HttpClientConnector(this);
+    }
+
+    public AdapterManager getAdapterManager() {
+        return adapterMgr;
     }
     
     public SerializationManager getSerializationManager() {

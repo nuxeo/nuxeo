@@ -26,9 +26,6 @@ import org.apache.abdera.ext.cmis.CmisRepositoryInfo;
 import org.apache.abdera.model.Document;
 import org.apache.abdera.model.Service;
 import org.apache.abdera.model.Workspace;
-import org.nuxeo.ecm.client.Repository;
-import org.nuxeo.ecm.client.abdera.RepositoryAdapter;
-import org.nuxeo.ecm.cmis.ContentManager;
 import org.nuxeo.ecm.cmis.client.app.APPContentManager;
 import org.nuxeo.ecm.cmis.client.app.APPServiceDocument;
 import org.nuxeo.ecm.cmis.client.app.AppRepository;
@@ -42,7 +39,7 @@ public class APPServiceDocumentHandler implements SerializationHandler<APPServic
 
     protected Abdera abdera;
     
-    protected ContentManager contentManager;
+    protected APPContentManager contentManager;
     
     public APPServiceDocumentHandler(APPContentManager contentManager, Abdera abdera) {
         this.contentManager = contentManager;
@@ -64,7 +61,8 @@ public class APPServiceDocumentHandler implements SerializationHandler<APPServic
         AppRepository repos[] = new AppRepository[atomWorkspaces.size()];
         int i = 0;
         for (i = 0; i < repos.length; i++) {
-            repos[i] = new AppRepository(contentManager, atomWorkspaces.get(i).getExtension(CmisRepositoryInfo.class).getRepositoryId());
+            repos[i] = new AppRepository(contentManager, 
+                    atomWorkspaces.get(i).getExtension(CmisRepositoryInfo.class).getRepositoryId());
         }
         return new APPServiceDocument(repos);
     }
