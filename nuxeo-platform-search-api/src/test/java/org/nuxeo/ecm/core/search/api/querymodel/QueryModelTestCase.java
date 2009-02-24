@@ -67,6 +67,14 @@ public class QueryModelTestCase extends RepositoryOSGITestCase {
 
     private DocumentModel documentModelWithFixedPart;
 
+    private QueryModel statefulModelWithSingleStartswith;
+
+    private DocumentModel documentModelWithSingleStartswith;
+
+    private QueryModel statefulModelWithMultiStartswith;
+
+    private DocumentModel documentModelWithMultiStartswith;
+
     private QueryModelService service;
 
     private static final String TEST_BUNDLE = "org.nuxeo.ecm.platform.search.api.tests";
@@ -92,6 +100,12 @@ public class QueryModelTestCase extends RepositoryOSGITestCase {
 
         statefulModelWithFixedPart = initializeStatefulQueryModel(service.getQueryModelDescriptor("statefulModelWithFixedPart"));
         documentModelWithFixedPart = statefulModelWithFixedPart.getDocumentModel();
+
+        statefulModelWithSingleStartswith = initializeStatefulQueryModel(service.getQueryModelDescriptor("statefulModelWithSingleStartswith"));
+        documentModelWithSingleStartswith = statefulModelWithSingleStartswith.getDocumentModel();
+
+        statefulModelWithMultiStartswith = initializeStatefulQueryModel(service.getQueryModelDescriptor("statefulModelWithMultiStartswith"));
+        documentModelWithMultiStartswith = statefulModelWithMultiStartswith.getDocumentModel();
 
         statelessModel = new QueryModel(
                 service.getQueryModelDescriptor("statelessModel"));
@@ -488,6 +502,28 @@ public class QueryModelTestCase extends RepositoryOSGITestCase {
         assertEquals(
                 "SELECT * FROM Document WHERE intparameter = 3 AND (foo < 'bar' or NOT x = 1) AND textparameter = 'zork'",
                 descriptor.getQuery(doc));
+    }
+
+    public void testStatefulModelWithSingleStartswith() throws ClientException {
+        QueryModelDescriptor descriptor = statefulModelWithSingleStartswith.getDescriptor();
+        assertFalse(statefulModelWithSingleStartswith.getDescriptor().isStateless());
+        assertTrue(statefulModelWithSingleStartswith.getDescriptor().isStateful());
+
+        documentModelWithSingleStartswith.setProperty(QM_SCHEMA, "textfield", "/to/toto");
+        assertEquals(
+                "SELECT * FROM Document WHERE ecm:path STARTSWITH '/to/toto'",
+                descriptor.getQuery(documentModelWithSingleStartswith));
+    }
+
+    public void testStatefulModelWithMultiStartswith() throws ClientException {
+        QueryModelDescriptor descriptor = statefulModelWithMultiStartswith.getDescriptor();
+        assertFalse(statefulModelWithMultiStartswith.getDescriptor().isStateless());
+        assertTrue(statefulModelWithMultiStartswith.getDescriptor().isStateful());
+
+        documentModelWithMultiStartswith.setProperty(QM_SCHEMA, "listfield", new String[] { "/to/toto", "/tu/tutu" });
+        assertEquals(
+                "SELECT * FROM Document WHERE ecm:path STARTSWITH '/to/toto' OR ecm:path STARTSWITH '/tu/tutu'",
+                descriptor.getQuery(documentModelWithMultiStartswith));
     }
 
 }

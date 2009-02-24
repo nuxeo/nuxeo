@@ -170,6 +170,45 @@
       </whereClause>
     </queryModel>
 
+    <queryModel name="statefulModelWithSingleStartswith" docType="TestQuery">
+
+      <whereClause>
+
+        <predicate parameter="ecm:path" operator="STARTSWITH">
+          <field schema="querymodel_test" name="textfield"/>
+        </predicate>
+
+      </whereClause>
+
+      <sortColumn>
+        <field schema="querymodel_common" name="sortColumn" />
+      </sortColumn>
+
+      <sortAscending>
+        <field schema="querymodel_common" name="sortAscending" />
+      </sortAscending>
+
+    </queryModel>
+
+    <queryModel name="statefulModelWithMultiStartswith" docType="TestQuery">
+
+      <whereClause>
+
+        <predicate parameter="ecm:path" operator="STARTSWITH">
+          <field schema="querymodel_test" name="listfield"/>
+        </predicate>
+
+      </whereClause>
+
+      <sortColumn>
+        <field schema="querymodel_common" name="sortColumn" />
+      </sortColumn>
+
+      <sortAscending>
+        <field schema="querymodel_common" name="sortAscending" />
+      </sortAscending>
+
+    </queryModel>
   </extension>
 
 </component>
