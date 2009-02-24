@@ -52,7 +52,7 @@ public class WebEngineFormAuthenticator implements NuxeoAuthenticationPlugin, Lo
      * Gets the path info to be used to redirect after login.
      */
     protected String getLoginPathInfo(HttpServletRequest request) {
-        String path = request.getPathInfo();
+        String path = request.getRequestURI();
         if (path != null) {
             if (path.endsWith(LOGIN_KEY)) {
                 return path.substring(0, path.length()-LOGIN_KEY.length());
