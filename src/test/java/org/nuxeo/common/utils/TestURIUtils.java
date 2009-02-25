@@ -55,7 +55,9 @@ public class TestURIUtils extends TestCase {
     // FIXME: this tests makes too string assumptions on how the params will be
     // ordered (fails under Java 6)
     public void XXXtestAddParametersToURIQuery() {
-        String newUri = "http://localhost:8080/nuxeo/view_documents.faces?currentTab=TAB_CONTENT&documentId=4012a2d7-384e-4735-ab98-b06b598072fa&conversationId=0NXMAIN21&repositoryName=demo";
+        String newUri = "http://localhost:8080/nuxeo/view_documents.faces"
+                + "?currentTab=TAB_CONTENT&documentId=4012a2d7-384e-4735-ab98-b06b598072fa"
+                + "&conversationId=0NXMAIN21&repositoryName=demo";
         Map<String, String> newParams = new HashMap<String, String>();
         newParams.put("conversationId", "0NXMAIN21");
         assertEquals(newUri, URIUtils.addParametersToURIQuery(URI, newParams));
@@ -64,7 +66,8 @@ public class TestURIUtils extends TestCase {
     // FIXME: this tests makes too string assumptions on how the params will be
     // ordered (fails under Java 6)
     public void XXXtestAddParametersToPartialURIQuery() {
-        String newUri = "nuxeo/view_documents.faces?currentTab=TAB_CONTENT&documentId=4012a2d7-384e-4735-ab98-b06b598072fa&conversationId=0NXMAIN21&repositoryName=demo";
+        String newUri = "nuxeo/view_documents.faces?currentTab=TAB_CONTENT"
+            + "&documentId=4012a2d7-384e-4735-ab98-b06b598072fa&conversationId=0NXMAIN21&repositoryName=demo";
         Map<String, String> newParams = new HashMap<String, String>();
         newParams.put("conversationId", "0NXMAIN21");
         assertEquals(newUri, URIUtils.addParametersToURIQuery(PARTIAL_URI,

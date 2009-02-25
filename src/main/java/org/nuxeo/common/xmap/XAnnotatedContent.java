@@ -21,9 +21,6 @@ package org.nuxeo.common.xmap;
 
 import java.io.IOException;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
 import org.nuxeo.common.xmap.annotation.XContent;
 import org.w3c.dom.DocumentFragment;
 import org.w3c.dom.Element;
@@ -94,7 +91,6 @@ public class XAnnotatedContent extends XAnnotatedMember {
                 DOMHelper.loadFragment(e, value);
             }
         }
-
     }
 
 }

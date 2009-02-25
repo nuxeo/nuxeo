@@ -19,10 +19,8 @@
 
 package org.nuxeo.common.xmap;
 
-import java.util.List;
 import java.util.Map;
 
-import org.nuxeo.common.collections.PrimitiveArrays;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;

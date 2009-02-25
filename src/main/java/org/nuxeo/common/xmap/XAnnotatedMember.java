@@ -21,11 +21,9 @@ package org.nuxeo.common.xmap;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.w3c.dom.Element;
-import org.w3c.dom.Text;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class XAnnotatedMember {
 
@@ -57,7 +55,7 @@ public class XAnnotatedMember {
 
     public XAnnotatedMember(XMap xmap, XAccessor setter, XNode anno) {
         this.xmap = xmap;
-        this.accessor = setter;
+        accessor = setter;
         path = new Path(anno.value());
         trim = anno.trim();
         type = setter.getType();
@@ -91,8 +89,6 @@ public class XAnnotatedMember {
         }
     }
 
-
-
     public void process(Context ctx, Element element) throws Exception {
         Object value = getValue(ctx, element);
         if (value != null) {
@@ -119,7 +115,5 @@ public class XAnnotatedMember {
         }
         return null;
     }
-
-
 
 }
