@@ -73,7 +73,6 @@ import org.nuxeo.ecm.platform.relations.web.StatementInfo;
 import org.nuxeo.ecm.platform.relations.web.StatementInfoComparator;
 import org.nuxeo.ecm.platform.relations.web.StatementInfoImpl;
 import org.nuxeo.ecm.platform.relations.web.listener.RelationActions;
-import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.invalidations.AutomaticDocumentBasedInvalidation;
 import org.nuxeo.ecm.platform.ui.web.invalidations.DocumentContextBoundActionBean;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
@@ -109,9 +108,6 @@ public class RelationActionsBean  extends DocumentContextBoundActionBean impleme
 
     @In(create = true)
     protected RelationManager relationManager;
-
-    @In(create = true)
-    protected NavigationContext navigationContext;
 
     @In(create = true)
     protected transient ResourcesAccessor resourcesAccessor;
@@ -374,7 +370,7 @@ public class RelationActionsBean  extends DocumentContextBoundActionBean impleme
             object = new ResourceImpl(objectUri);
         } else if (objectType.equals("document")) {
             objectDocumentUid = objectDocumentUid.trim();
-            String repositoryName = navigationContext.getCurrentServerLocation().getName();
+            String repositoryName = getNavigationContext().getCurrentServerLocation().getName();
             String localName = repositoryName + "/" + objectDocumentUid;
             object = new QNameResourceImpl(
                     RelationConstants.DOCUMENT_NAMESPACE, localName);
