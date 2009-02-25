@@ -20,23 +20,22 @@ Nuxeo-Component: OSGI-INF/theme-contrib.xml,
   OSGI-INF/documentslists-contrib.xml,
   OSGI-INF/trashManagement-framework.xml,
   OSGI-INF/trashManagement-contrib.xml,
-  OSGI-INF/nxtreesorter-framework.xml,
-  OSGI-INF/nxtreesorter-contrib.xml,
   OSGI-INF/services-binding-contrib.xml,
   OSGI-INF/uiPermissionService-framework.xml,
   OSGI-INF/urlservice-contrib.xml,
   OSGI-INF/search-types-contrib.xml,
-  OSGI-INF/layouts-contrib.xml
+  OSGI-INF/layouts-contrib.xml,
+  OSGI-INF/exceptionhandling-contrib.xml,
+  OSGI-INF/lifecycle-listener-contrib.xml
 Require-Bundle: org.nuxeo.ecm.platform.types.api,
  org.nuxeo.ecm.platform.cache.web,
  org.nuxeo.ecm.platform.versioning.api,
  org.nuxeo.ecm.platform.ui,
- org.nuxeo.ecm.platform.workflow.api,
- org.nuxeo.ecm.platform.workflow.document.api,
  org.nuxeo.ecm.core.query,
  org.nuxeo.ecm.platform.search.api,
  org.nuxeo.ecm.directory.api,
  org.nuxeo.ecm.platform.forms.layout.client,
  org.nuxeo.ecm.platform.publishing.api,
- org.nuxeo.ecm.platform.ws
+ org.nuxeo.ecm.platform.ws,
+ org.nuxeo.ecm.platform.jbpm.web
 Nuxeo-RequiredBy: org.nuxeo.ecm.platform.placeful.theme

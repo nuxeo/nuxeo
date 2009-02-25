@@ -26,7 +26,6 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.search.api.client.IndexingException;
-import org.nuxeo.ecm.core.search.api.client.indexing.nxcore.IndexingThread;
 import org.nuxeo.ecm.core.search.api.client.indexing.resources.AbstractIndexableResource;
 import org.nuxeo.ecm.core.search.api.client.indexing.resources.document.NXCoreIndexableResource;
 import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.IndexableResourceConf;
@@ -88,14 +87,9 @@ public abstract class AbstractNXCoreIndexableResource extends
                     }
                 }
                 try {
-                    if (!isBoundToIndexingThread()) {
-                        log.debug("Opening a new Session against Nuxeo Core");
-                        RepositoryManager mgr = Framework.getService(RepositoryManager.class);
-                        coreSession = mgr.getRepository(docRepositoryName).open();
-                    } else {
-                        log.debug("Bound to indexing thread. Using core session from there....");
-                        coreSession = ((IndexingThread) Thread.currentThread()).getCoreSession(docRepositoryName);
-                    }
+                    log.debug("Opening a new Session against Nuxeo Core");
+                    RepositoryManager mgr = Framework.getService(RepositoryManager.class);
+                    coreSession = mgr.getRepository(docRepositoryName).open();
                 } catch (Exception e) {
                     throw new IndexingException(
                             "Could not open new core session: "
@@ -113,7 +107,7 @@ public abstract class AbstractNXCoreIndexableResource extends
     public void closeCoreSession() throws IndexingException {
         // Disconnect from Nuxeo Core
         try {
-            if (sid == null && !isBoundToIndexingThread()) {
+            if (sid == null) {
                 // Session is not managed externally, we must really close it
                 if (coreSession != null) {
                     log.debug("Closing Nuxeo Core connection..");

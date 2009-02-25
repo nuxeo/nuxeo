@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.dublincore.listener;
 
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_UPDATE;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_UPDATED;
 
@@ -27,12 +28,11 @@ import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.event.CoreEvent;
-import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
-import org.nuxeo.ecm.core.listener.AbstractEventListener;
-import org.nuxeo.ecm.core.listener.AsynchronousEventListener;
-import org.nuxeo.ecm.core.listener.DocumentModelEventListener;
+import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.EventListener;
+import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.dublincore.NXDublinCore;
 import org.nuxeo.ecm.platform.dublincore.service.DublinCoreStorageService;
 
@@ -42,8 +42,7 @@ import org.nuxeo.ecm.platform.dublincore.service.DublinCoreStorageService;
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  * @author <a href="mailto:rspivak@nuxeo.com">Ruslan Spivak</a>
  */
-public class DublinCoreListener extends AbstractEventListener implements
-        AsynchronousEventListener, DocumentModelEventListener {
+public class DublinCoreListener implements EventListener {
 
     private static final Log log = LogFactory.getLog(DublinCoreListener.class);
 
@@ -52,61 +51,58 @@ public class DublinCoreListener extends AbstractEventListener implements
      * <p>
      * Gets core events and updates DublinCore if needed.
      *
-     * @param coreEvent event fired at core layer
-     *
+     * @param coreEvent
+     *            event fired at core layer
      */
-    public void notifyEvent(CoreEvent coreEvent) {
-        Object source = coreEvent.getSource();
-        if (source instanceof DocumentModel) {
-            try {
+    public void handleEvent(Event event) throws ClientException {
 
-                DocumentModel doc = (DocumentModel) source;
-                String eventId = coreEvent.getEventId();
+        DocumentEventContext docCtx = null;
+        if (event.getContext() instanceof DocumentEventContext) {
+            docCtx = (DocumentEventContext) event.getContext();
+        } else {
+            return;
+        }
+        String eventId = event.getName();
 
-                if (!eventId.equals(DOCUMENT_UPDATED)
-                        && !eventId.equals(DOCUMENT_CREATED)
-                        && !eventId.equals(DocumentEventTypes.BEFORE_DOC_UPDATE)) {
-                    return;
-                }
+        if (!eventId.equals(DOCUMENT_UPDATED)
+                && !eventId.equals(DOCUMENT_CREATED)
+                && !eventId.equals(BEFORE_DOC_UPDATE)) {
+            return;
+        }
 
-                DublinCoreStorageService service = NXDublinCore.getDublinCoreStorageService();
-                log.debug("Processing event " + eventId);
-                if (service == null) {
-                    log.error("DublinCoreStorage service not found ... !");
-                    return;
-                }
+        DublinCoreStorageService service = NXDublinCore
+                .getDublinCoreStorageService();
+        log.debug("Processing event " + eventId);
+        if (service == null) {
+            log.error("DublinCoreStorage service not found ... !");
+            return;
+        }
 
-                Date eventDate = coreEvent.getDate();
-                Calendar cEventDate = Calendar.getInstance();
-                cEventDate.setTime(eventDate);
-                Boolean updateResult;
+        DocumentModel doc = docCtx.getSourceDocument();
+        Date eventDate = new Date(event.getTime());
+        Calendar cEventDate = Calendar.getInstance();
+        cEventDate.setTime(eventDate);
+        Boolean updateResult;
 
-                if (eventId.equals(DocumentEventTypes.BEFORE_DOC_UPDATE)) {
-                    updateResult = service.setModificationDate(doc, cEventDate,
-                            coreEvent);
-                    if (updateResult) {
-                        log.debug("Modification Date updated");
-                    }
-                    return;
-                }
+        if (eventId.equals(BEFORE_DOC_UPDATE)) {
+            updateResult = service.setModificationDate(doc, cEventDate, event);
+            if (updateResult) {
+                log.debug("Modification Date updated");
+            }
+            return;
+        }
 
-                if (eventId.equals(DOCUMENT_CREATED)) {
-                    updateResult = service.setCreationDate(doc, cEventDate,
-                            coreEvent);
-                    if (updateResult) {
-                        log.debug("Creation Date updated");
-                    }
-                    updateResult = service.setModificationDate(doc, cEventDate,
-                            coreEvent);
-                    if (updateResult) {
-                        log.debug("Modification Date updated");
-                    }
-                }
-
-            } catch (Exception e) {
-                log.error("An error occurred trying to notify: ", e);
+        if (eventId.equals(DOCUMENT_CREATED)) {
+            updateResult = service.setCreationDate(doc, cEventDate, event);
+            if (updateResult) {
+                log.debug("Creation Date updated");
+            }
+            updateResult = service.setModificationDate(doc, cEventDate, event);
+            if (updateResult) {
+                log.debug("Modification Date updated");
             }
         }
+
     }
 
 }

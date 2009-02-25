@@ -25,13 +25,10 @@ import org.nuxeo.ecm.core.api.ClientException;
 
 /**
  * Base Nuxeo web service interface.
- *
  * <p>
  * Defines the base API dealing with Web Service remote sessions.
- * </p>
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 public interface BaseNuxeoWebService extends Serializable {
 

@@ -36,12 +36,10 @@ public class TestScheduler extends NXRuntimeTestCase {
                 "test-DefaultPlatform.xml");
         // core services and registrations
         deployContrib("org.nuxeo.ecm.core", "OSGI-INF/CoreService.xml");
-        deployContrib("org.nuxeo.ecm.core.tests", "TypeService.xml");
+        deployContrib("org.nuxeo.ecm.core.jcr-connector", "TypeService.xml");
         deployContrib("org.nuxeo.ecm.core", "OSGI-INF/SecurityService.xml");
-        deployContrib("org.nuxeo.ecm.platform.scheduler.core.tests",
-                "test-RepositoryService.xml");
-        deployContrib("org.nuxeo.ecm.core",
-                "OSGI-INF/CoreEventListenerService.xml");
+        deployContrib("org.nuxeo.ecm.core", "OSGI-INF/RepositoryService.xml");
+
         deployContrib("org.nuxeo.ecm.platform.scheduler.core.tests",
                 "test-CoreExtensions.xml");
         deployContrib("org.nuxeo.ecm.platform.scheduler.core.tests",
@@ -52,6 +50,7 @@ public class TestScheduler extends NXRuntimeTestCase {
         // our event listener
         deployContrib("org.nuxeo.ecm.platform.scheduler.core.tests",
                 "test-eventlistener.xml");
+        deployBundle("org.nuxeo.ecm.core.event");
     }
 
     @Override

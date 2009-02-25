@@ -37,9 +37,8 @@ public interface CommentManager {
             throws ClientException;
 
     /**
-     * @deprecated CommentManager cannot find the author if invoked remote so
-     *             one should use CommentManager.createComment(docModel,
-     *             comment, author)
+     * @deprecated CommentManager cannot find the author if invoked remotely so
+     *             one should use {@link #createComment(DocumentModel, String, String)}
      */
     @Deprecated
     DocumentModel createComment(DocumentModel docModel, String comment)

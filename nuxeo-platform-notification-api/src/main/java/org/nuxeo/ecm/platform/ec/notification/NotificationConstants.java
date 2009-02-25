@@ -26,14 +26,17 @@ package org.nuxeo.ecm.platform.ec.notification;
  */
 public class NotificationConstants {
 
-    public static final String SENDER_KEY = "mail.from";
-
     public static final String SUBJECT_KEY = "subject";
 
     public static final String TEMPLATE_KEY = "template";
 
     public static final String SUBJECT_TEMPLATE_KEY = "subjectTemplate";
 
+    public static final String SENDER_KEY = "mail.from";
+
+    /**
+     * A string array of recipients a notifications should be sent to.
+     */
     public static final String RECIPIENTS_KEY = "recipients";
 
     public static final String DOCUMENT_KEY = "document";

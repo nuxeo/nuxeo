@@ -1,5 +1,4 @@
 <?xml version="1.0"?>
-
 <component name="org.nuxeo.ecm.platform.ui.web.rest.URLService.contrib">
   <documentation>
     Contributions for basic rest navigation through the application.
@@ -9,11 +8,12 @@
   </documentation>
 
   <extension target="org.nuxeo.ecm.platform.ui.web.rest.URLService"
-    point="urlpatterns">
+      point="urlpatterns">
+
     <documentation>
       Basic url pattern using the doc id codec: it places the application in the
       document context described by the url and sets a current tab.
-      
+
       Additional url pattern using the doc path codec.
     </documentation>
 

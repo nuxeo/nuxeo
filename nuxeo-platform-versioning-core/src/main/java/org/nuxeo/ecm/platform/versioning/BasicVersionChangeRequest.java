@@ -58,10 +58,14 @@ public abstract class BasicVersionChangeRequest implements VersionChangeRequest 
         return wfStateInitial;
     }
 
+    // Not used
+    @Deprecated
     public String getWfStateFinal() {
         return wfStateFinal;
     }
 
+    // Not used
+    @Deprecated
     public String getWfStateInitial() {
         return wfStateInitial;
     }

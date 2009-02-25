@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <component name="org.nuxeo.ecm.platform.forum.actions">
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
-    point="actions">
+      point="actions">
 
     <!--<action id="forum_moderation" link="/incl/tabs/document_review.xhtml"
       enabled="true" label="action.forum.moderation" icon="/icons/file.gif"
@@ -18,7 +17,7 @@
     </action>-->
 
     <action id="forumView" link="/incl/tabs/forum_content.xhtml" enabled="true"
-      label="action.forum.content" icon="/icons/file.gif">
+        label="action.forum.content" icon="/icons/file.gif">
       <category>VIEW_ACTION_LIST</category>
       <filter id="isForum">
         <rule grant="true">
@@ -42,6 +41,7 @@
         </rule>
       </filter>
     </action>
+
     <action id="newFile">
       <filter id="no_file_in_Forum">
         <rule grant="false">
@@ -52,7 +52,7 @@
 
     <!--  add the thread creation button -->
     <action id="newForumThread" link="#{documentActions.createDocument('Thread')}"
-      enabled="true" label="command.create.thread" icon="/icons/action_add.gif">
+        enabled="true" label="command.create.thread" icon="/icons/action_add.gif">
       <category>SUBVIEW_UPPER_LIST</category>
       <filter id="newThread">
         <rule grant="true">
@@ -63,7 +63,6 @@
     </action>
 
     <!-- Filter tabs for thread -->
-
     <action id="TAB_EDIT">
       <filter id="no_edit_on_thread">
         <rule grant="false">
@@ -71,6 +70,7 @@
         </rule>
       </filter>
     </action>
+
     <action id="TAB_RELATIONS">
       <filter id="no_relations_on_thread">
         <rule grant="false">
@@ -78,6 +78,7 @@
         </rule>
       </filter>
     </action>
+
     <action id="TAB_METADATA_EDIT">
       <filter id="no_metadata_on_thread">
         <rule grant="false">
@@ -85,6 +86,7 @@
         </rule>
       </filter>
     </action>
+
     <action id="TAB_CONTENT_HISTORY">
       <filter id="no_history_on_thread">
         <rule grant="false">
@@ -92,6 +94,7 @@
         </rule>
       </filter>
     </action>
+
     <action id="TAB_METADATA_VIEW">
       <filter id="no_metadata_view_on_thread">
         <rule grant="false">
@@ -99,6 +102,7 @@
         </rule>
       </filter>
     </action>
+
     <action id="view_comments">
       <filter id="no_comment_on_thread">
         <rule grant="false">
@@ -106,8 +110,9 @@
         </rule>
       </filter>
     </action>
+
     <action id="thread_rights" link="/incl/tabs/document_rights.xhtml" order="50"
-      enabled="true" label="action.view.rights" icon="/icons/file.gif">
+        enabled="true" label="action.view.rights" icon="/icons/file.gif">
       <category>VIEW_ACTION_LIST</category>
       <filter id="on_thread_rights">
         <rule grant="true">
@@ -116,8 +121,9 @@
         </rule>
       </filter>
     </action>
+
     <action id="TAB_THREAD" link="/incl/tabs/document_thread.xhtml"
-      enabled="true" label="action.view.thread">
+        enabled="true" label="action.view.thread">
       <category>VIEW_ACTION_LIST</category>
       <filter id="on_thread_view">
         <rule grant="true">
@@ -125,22 +131,18 @@
         </rule>
       </filter>
 
-
-
-
-
-     <!--<filter id="approved_thread">
-      <rule grant="true">
-        <condition>
-          document.getCurrentLifeCycleState().equals("approved")
-        </condition>
-      </rule>
-    </filter>-->
+      <!--<filter id="approved_thread">
+        <rule grant="true">
+          <condition>
+            document.getCurrentLifeCycleState().equals("approved")
+          </condition>
+        </rule>
+      </filter>-->
     </action>
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService" point="filters">
-     <filter id="view" append="true">
+    <filter id="view" append="true">
       <rule grant="false">
         <type>Thread</type>
       </rule>

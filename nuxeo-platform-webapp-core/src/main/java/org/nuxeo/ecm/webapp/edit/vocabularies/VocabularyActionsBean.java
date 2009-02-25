@@ -21,6 +21,7 @@ package org.nuxeo.ecm.webapp.edit.vocabularies;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
 
+import java.io.Serializable;
 import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -51,8 +52,9 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.datamodel.DataModel;
 import org.jboss.seam.annotations.datamodel.DataModelSelection;
-import org.jboss.seam.core.FacesMessages;
+import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.directory.Directory;
@@ -117,7 +119,7 @@ public class VocabularyActionsBean implements VocabularyActions {
     protected transient FacesMessages facesMessages;
 
     @In(create = true)
-    protected ResourcesAccessor resourcesAccessor;
+    protected transient ResourcesAccessor resourcesAccessor;
 
     @Begin(join = true)
     @Create
@@ -128,7 +130,7 @@ public class VocabularyActionsBean implements VocabularyActions {
 
     private void initDirService() {
         if (dirService == null) {
-            dirService= DirectoryHelper.getDirectoryService();
+            dirService = DirectoryHelper.getDirectoryService();
             if (dirService == null) { // can't throw
                 log.error("Failed to lookup directory service");
             }
@@ -168,7 +170,6 @@ public class VocabularyActionsBean implements VocabularyActions {
                 resourcesAccessor.getMessages().get(message));
         showAddEntryForm = false;
         return "view_vocabularies";
-
     }
 
     public String addVocabularyEntry() throws ClientException {
@@ -201,12 +202,11 @@ public class VocabularyActionsBean implements VocabularyActions {
                             selectedVocabularyEntry.getParent());
                 }
                 if (!vocabulary.query(filter).isEmpty()) {
-                    facesMessages.add(
+                    facesMessages.addToControl(
                             "id",
-                            FacesMessages.createFacesMessage(
-                                    FacesMessage.SEVERITY_INFO,
-                                    resourcesAccessor.getMessages().get(
-                                            "vocabulary.entry.identifier.already.exists")));
+                            FacesMessage.SEVERITY_INFO,
+                            resourcesAccessor.getMessages().get(
+                                    "vocabulary.entry.identifier.already.exists"));
                     return "view_vocabulary";
                 }
 
@@ -317,7 +317,10 @@ public class VocabularyActionsBean implements VocabularyActions {
         return "view_vocabularies";
     }
 
-    static class VocabularyComparator implements Comparator<String> {
+    private static class VocabularyComparator implements Comparator<String>,
+            Serializable {
+
+        private static final long serialVersionUID = -3178630590907764894L;
 
         // use locale?
         static final Collator collator = Collator.getInstance();
@@ -421,23 +424,41 @@ public class VocabularyActionsBean implements VocabularyActions {
     private VocabularyEntry getVocabularyEntry(DocumentModel vocabularyEntry)
             throws DirectoryException {
         String schemaName = dirService.getDirectorySchema(selectedVocabularyName);
-        VocabularyEntry result = new VocabularyEntry(
-                (String) vocabularyEntry.getProperty(schemaName,
-                        VocabularyConstants.VOCABULARY_ID),
-                (String) vocabularyEntry.getProperty(schemaName,
-                        VocabularyConstants.VOCABULARY_LABEL));
-        result.setObsolete(((Long) vocabularyEntry.getProperty(schemaName,
-                VocabularyConstants.VOCABULARY_OBSOLETE)).intValue() == 0 ? Boolean.FALSE
-                : Boolean.TRUE);
+        VocabularyEntry result;
+        try {
+            result = new VocabularyEntry(
+                    (String) vocabularyEntry.getProperty(schemaName,
+                            VocabularyConstants.VOCABULARY_ID),
+                    (String) vocabularyEntry.getProperty(schemaName,
+                            VocabularyConstants.VOCABULARY_LABEL));
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
+        try {
+            result.setObsolete(((Long) vocabularyEntry.getProperty(schemaName,
+                    VocabularyConstants.VOCABULARY_OBSOLETE)).intValue() == 0 ? Boolean.FALSE
+                    : Boolean.TRUE);
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
         // TODO VocabularyEntry ordering should be changed to use a Long
-        Integer ordering = ((Long) vocabularyEntry.getProperty(schemaName,
-                VocabularyConstants.VOCABULARY_ORDERING)).intValue();
+        Integer ordering;
+        try {
+            ordering = ((Long) vocabularyEntry.getProperty(schemaName,
+                    VocabularyConstants.VOCABULARY_ORDERING)).intValue();
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
         result.setOrdering(ordering.equals(VocabularyConstants.DEFAULT_VOCABULARY_ORDER) ? null
                 : ordering);
 
         if (isHierarchical()) {
-            result.setParent((String) vocabularyEntry.getProperty(schemaName,
-                    VocabularyConstants.VOCABULARY_PARENT));
+            try {
+                result.setParent((String) vocabularyEntry.getProperty(schemaName,
+                        VocabularyConstants.VOCABULARY_PARENT));
+            } catch (ClientException e) {
+                throw new ClientRuntimeException(e);
+            }
         }
         return result;
     }
@@ -593,8 +614,7 @@ public class VocabularyActionsBean implements VocabularyActions {
     }
 
     public boolean isHierarchical() throws DirectoryException {
-        return VocabularyConstants.VOCABULARY_TYPE_HIER.equals(
-                dirService.getDirectorySchema(selectedVocabularyName));
+        return VocabularyConstants.VOCABULARY_TYPE_HIER.equals(dirService.getDirectorySchema(selectedVocabularyName));
     }
 
     public boolean isNullParentAllowed() throws DirectoryException {
@@ -603,8 +623,7 @@ public class VocabularyActionsBean implements VocabularyActions {
         if (selectedVocabularyName == null) {
             return false;
         }
-        return selectedVocabularyName.equals(
-                dirService.getParentDirectoryName(selectedVocabularyName));
+        return selectedVocabularyName.equals(dirService.getParentDirectoryName(selectedVocabularyName));
     }
 
     private VocabularyEntry getEmptyVocabularyEntry() throws ClientException {

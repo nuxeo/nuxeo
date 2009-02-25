@@ -1,5 +1,4 @@
 <?xml version="1.0"?>
-
 <component name="org.nuxeo.ecm.platform.forum.coreTypes">
 
   <require>org.nuxeo.ecm.core.schema.TypeService</require>
@@ -10,22 +9,25 @@
   </extension>
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
-    <doctype name="Forum">
+
+    <doctype name="Forum" extends="Document">
       <schema name="common"/>
       <schema name="dublincore"/>
       <facet name="Folderish"/>
     </doctype>
-    <doctype name="Thread">
+
+    <doctype name="Thread" extends="Document">
       <schema name="common"/>
       <schema name="dublincore"/>
       <schema name="thread"/>
       <facet name="Commentable"/>
     </doctype>
-    <doctype name="Post">
+
+    <doctype name="Post" extends="Document">
       <schema name="common"/>
       <schema name="post"/>
       <schema name="dublincore"/>
-      <facet name="HiddenInNavigation" />
+      <facet name="HiddenInNavigation"/>
       <facet name="Commentable"/>
     </doctype>
   </extension>

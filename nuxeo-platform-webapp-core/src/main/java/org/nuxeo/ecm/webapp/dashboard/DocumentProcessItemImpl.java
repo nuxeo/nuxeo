@@ -21,8 +21,9 @@ package org.nuxeo.ecm.webapp.dashboard;
 
 import java.util.Date;
 
+import org.jbpm.graph.exe.ProcessInstance;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMProcessInstance;
 
 /**
  * Document process item implementation.
@@ -36,29 +37,33 @@ public class DocumentProcessItemImpl implements DocumentProcessItem {
 
     protected final DocumentModel documentModel;
 
-    protected final WMProcessInstance processInstance;
+    protected final ProcessInstance processInstance;
 
-    protected final String docTitle;
+    protected String docTitle;
 
     protected final Date procesinstanceStartDate;
 
     protected final String processInstanceName;
 
-    public DocumentProcessItemImpl(DocumentModel documentModel,
-            WMProcessInstance processInstance) {
+    public DocumentProcessItemImpl(ProcessInstance processInstance,
+            DocumentModel documentModel) {
         this.documentModel = documentModel;
         this.processInstance = processInstance;
-        docTitle = documentModel.getTitle();
-        processInstanceName = processInstance.getName();
-        procesinstanceStartDate = processInstance.getStartDate();
+        try {
+            docTitle = documentModel.getTitle();
+        } catch (ClientException e) {
+            docTitle = null;
+        }
+        processInstanceName = processInstance.getProcessDefinition().getName();
+        procesinstanceStartDate = processInstance.getStart();
     }
 
     public DocumentModel getDocumentModel() {
         return documentModel;
     }
 
-    public WMProcessInstance getProcessInstance() {
-       return processInstance;
+    public ProcessInstance getProcessInstance() {
+        return processInstance;
     }
 
     public String getDocTitle() {

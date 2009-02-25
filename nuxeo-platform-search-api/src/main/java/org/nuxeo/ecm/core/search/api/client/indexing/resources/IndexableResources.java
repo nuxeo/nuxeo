@@ -22,16 +22,12 @@ package org.nuxeo.ecm.core.search.api.client.indexing.resources;
 import java.io.Serializable;
 import java.util.List;
 
-
 /**
  * Indexable resources.
- *
  * <p>
  * Aggregates a set of indexable resources with a shared key.
- * </p>
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 public interface IndexableResources extends Serializable {
 

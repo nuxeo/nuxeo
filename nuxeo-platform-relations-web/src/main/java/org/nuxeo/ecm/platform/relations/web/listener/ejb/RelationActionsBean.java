@@ -44,36 +44,20 @@ import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.event.CoreEvent;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
-import org.nuxeo.ecm.core.api.event.impl.CoreEventImpl;
-import org.nuxeo.ecm.core.query.QueryParseException;
-import org.nuxeo.ecm.core.query.sql.SQLQueryParser;
-import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
-import org.nuxeo.ecm.core.search.api.client.SearchException;
-import org.nuxeo.ecm.core.search.api.client.SearchService;
-import org.nuxeo.ecm.core.search.api.client.common.SearchServiceDelegate;
-import org.nuxeo.ecm.core.search.api.client.query.ComposedNXQuery;
-import org.nuxeo.ecm.core.search.api.client.query.QueryException;
-import org.nuxeo.ecm.core.search.api.client.query.impl.ComposedNXQueryImpl;
-import org.nuxeo.ecm.core.search.api.client.search.results.ResultSet;
-import org.nuxeo.ecm.core.search.api.client.search.results.document.SearchPageProvider;
-import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
-import org.nuxeo.ecm.platform.events.api.DocumentMessage;
-import org.nuxeo.ecm.platform.events.api.DocumentMessageProducer;
-import org.nuxeo.ecm.platform.events.api.DocumentMessageProducerException;
-import org.nuxeo.ecm.platform.events.api.delegate.DocumentMessageProducerBusinessDelegate;
-import org.nuxeo.ecm.platform.events.api.impl.DocumentMessageImpl;
+import org.nuxeo.ecm.core.event.EventProducer;
+import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.relations.api.Literal;
 import org.nuxeo.ecm.platform.relations.api.Node;
 import org.nuxeo.ecm.platform.relations.api.QNameResource;
 import org.nuxeo.ecm.platform.relations.api.RelationManager;
 import org.nuxeo.ecm.platform.relations.api.Resource;
+import org.nuxeo.ecm.platform.relations.api.ResourceAdapter;
 import org.nuxeo.ecm.platform.relations.api.Statement;
 import org.nuxeo.ecm.platform.relations.api.Subject;
 import org.nuxeo.ecm.platform.relations.api.event.RelationEvents;
@@ -90,8 +74,10 @@ import org.nuxeo.ecm.platform.relations.web.StatementInfoComparator;
 import org.nuxeo.ecm.platform.relations.web.StatementInfoImpl;
 import org.nuxeo.ecm.platform.relations.web.listener.RelationActions;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
-import org.nuxeo.ecm.webapp.base.InputController;
-import org.nuxeo.ecm.webapp.helpers.EventNames;
+import org.nuxeo.ecm.platform.ui.web.invalidations.AutomaticDocumentBasedInvalidation;
+import org.nuxeo.ecm.platform.ui.web.invalidations.DocumentContextBoundActionBean;
+import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Seam component that manages statements involving current document as well as
@@ -107,12 +93,15 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
  */
 @Name("relationActions")
 @Scope(CONVERSATION)
-public class RelationActionsBean extends InputController implements
-        RelationActions, Serializable {
+@AutomaticDocumentBasedInvalidation
+public class RelationActionsBean extends DocumentContextBoundActionBean
+        implements RelationActions, Serializable {
 
     private static final long serialVersionUID = 2336539966097558178L;
 
     private static final Log log = LogFactory.getLog(RelationActionsBean.class);
+
+    protected static boolean includeStatementsInEvents = false;
 
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
@@ -121,13 +110,18 @@ public class RelationActionsBean extends InputController implements
     protected RelationManager relationManager;
 
     @In(create = true)
-    protected transient NavigationContext navigationContext;
+    protected NavigationContext navigationContext;
+
+    @In(create = true)
+    protected transient ResourcesAccessor resourcesAccessor;
+
+    @In(create = true, required = false)
+    protected FacesMessages facesMessages;
 
     @In(required = false)
     protected transient Principal currentUser;
 
     // statements lists
-
     protected List<Statement> incomingStatements;
 
     protected List<StatementInfo> incomingStatementsInfo;
@@ -163,8 +157,11 @@ public class RelationActionsBean extends InputController implements
     public DocumentModel getDocumentModel(Node node) throws ClientException {
         if (node.isQNameResource()) {
             QNameResource resource = (QNameResource) node;
+            Map<String, Serializable> context = new HashMap<String, Serializable>();
+            context.put(ResourceAdapter.CORE_SESSION_ID_CONTEXT_KEY,
+                    documentManager.getSessionId());
             Object o = relationManager.getResourceRepresentation(
-                    resource.getNamespace(), resource);
+                    resource.getNamespace(), resource, context);
             if (o instanceof DocumentModel) {
                 return (DocumentModel) o;
             }
@@ -188,7 +185,7 @@ public class RelationActionsBean extends InputController implements
         QNameResource documentResource = null;
         if (document != null) {
             documentResource = (QNameResource) relationManager.getResource(
-                    RelationConstants.DOCUMENT_NAMESPACE, document);
+                    RelationConstants.DOCUMENT_NAMESPACE, document, null);
         }
         return documentResource;
     }
@@ -220,7 +217,7 @@ public class RelationActionsBean extends InputController implements
         if (incomingStatementsInfo != null) {
             return incomingStatementsInfo;
         }
-        DocumentModel currentDoc = navigationContext.getCurrentDocument();
+        DocumentModel currentDoc = getCurrentDocument();
         Resource docResource = getDocumentResource(currentDoc);
         if (docResource == null) {
             incomingStatements = Collections.emptyList();
@@ -247,7 +244,7 @@ public class RelationActionsBean extends InputController implements
         if (outgoingStatementsInfo != null) {
             return outgoingStatementsInfo;
         }
-        DocumentModel currentDoc = navigationContext.getCurrentDocument();
+        DocumentModel currentDoc = getCurrentDocument();
         Resource docResource = getDocumentResource(currentDoc);
         if (docResource == null) {
             outgoingStatements = Collections.emptyList();
@@ -269,9 +266,6 @@ public class RelationActionsBean extends InputController implements
         return outgoingStatementsInfo;
     }
 
-    @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED,
-            EventNames.CONTENT_ROOT_SELECTION_CHANGED,
-            EventNames.DOCUMENT_CHANGED }, create = false, inject = false)
     public void resetStatements() {
         incomingStatements = null;
         incomingStatementsInfo = null;
@@ -338,21 +332,31 @@ public class RelationActionsBean extends InputController implements
     }
 
     protected void notifyEvent(String eventId, DocumentModel source,
-            Map<String, Object> options, String comment) {
-        CoreEvent coreEvent = new CoreEventImpl(eventId, source, options,
-                documentManager.getPrincipal(), RelationEvents.CATEGORY,
-                comment);
-        DocumentMessage msg = new DocumentMessageImpl(source, coreEvent);
+            Map<String, Serializable> options, String comment) {
+
+        EventProducer evtProducer = null;
+
         try {
-            DocumentMessageProducer producer = DocumentMessageProducerBusinessDelegate.getRemoteDocumentMessageProducer();
-            producer.produce(msg);
-        } catch (DocumentMessageProducerException e) {
-            log.error("Error when trying to notify");
+            evtProducer = Framework.getService(EventProducer.class);
+        } catch (Exception e) {
+            log.error("Unable to get EventProducer to send event notification",
+                    e);
+        }
+
+        DocumentEventContext docCtx = new DocumentEventContext(documentManager,
+                documentManager.getPrincipal(), source);
+        options.put("category", RelationEvents.CATEGORY);
+        options.put("comment", comment);
+
+        try {
+            evtProducer.fireEvent(docCtx.newEvent(eventId));
+        } catch (ClientException e) {
+            log.error("Error while trying to send notification message", e);
         }
     }
 
     public String addStatement() throws ClientException {
-        DocumentModel currentDoc = navigationContext.getCurrentDocument();
+        DocumentModel currentDoc = getCurrentDocument();
         Resource documentResource = getDocumentResource(currentDoc);
         if (documentResource == null) {
             throw new ClientException(
@@ -400,11 +404,13 @@ public class RelationActionsBean extends InputController implements
 
             // notifications
 
-            Map<String, Object> options = new HashMap<String, Object>();
+            Map<String, Serializable> options = new HashMap<String, Serializable>();
             String currentLifeCycleState = currentDoc.getCurrentLifeCycleState();
             options.put(CoreEventConstants.DOC_LIFE_CYCLE,
                     currentLifeCycleState);
-            putStatements(options, stmt);
+            if (includeStatementsInEvents) {
+                putStatements(options, stmt);
+            }
             options.put(RelationEvents.GRAPH_NAME_EVENT_KEY,
                     RelationConstants.GRAPH_NAME);
 
@@ -417,8 +423,10 @@ public class RelationActionsBean extends InputController implements
 
             // XXX AT: try to refetch it from the graph so that resources are
             // transformed into qname resources: useful for indexing
-            putStatements(options, relationManager.getStatements(
-                    RelationConstants.GRAPH_NAME, stmt));
+            if (includeStatementsInEvents) {
+                putStatements(options, relationManager.getStatements(
+                        RelationConstants.GRAPH_NAME, stmt));
+            }
 
             // after notification
             notifyEvent(RelationEvents.AFTER_RELATION_CREATION, currentDoc,
@@ -440,16 +448,18 @@ public class RelationActionsBean extends InputController implements
     }
 
     // for consistency for callers only
-    private static void putStatements(Map<String, Object> options,
+    private static void putStatements(Map<String, Serializable> options,
             List<Statement> statements) {
-        options.put(RelationEvents.STATEMENTS_EVENT_KEY, statements);
+        options.put(RelationEvents.STATEMENTS_EVENT_KEY,
+                (Serializable) statements);
     }
 
-    private static void putStatements(Map<String, Object> options,
+    private static void putStatements(Map<String, Serializable> options,
             Statement statement) {
         List<Statement> statements = new LinkedList<Statement>();
         statements.add(statement);
-        options.put(RelationEvents.STATEMENTS_EVENT_KEY, statements);
+        options.put(RelationEvents.STATEMENTS_EVENT_KEY,
+                (Serializable) statements);
     }
 
     public void toggleCreateForm(ActionEvent event) {
@@ -473,14 +483,16 @@ public class RelationActionsBean extends InputController implements
                 && outgoingStatementsInfo.contains(stmtInfo)) {
             Statement stmt = stmtInfo.getStatement();
             // notifications
-            Map<String, Object> options = new HashMap<String, Object>();
-            DocumentModel source = navigationContext.getCurrentDocument();
+            Map<String, Serializable> options = new HashMap<String, Serializable>();
+            DocumentModel source = getCurrentDocument();
             String currentLifeCycleState = source.getCurrentLifeCycleState();
             options.put(CoreEventConstants.DOC_LIFE_CYCLE,
                     currentLifeCycleState);
             options.put(RelationEvents.GRAPH_NAME_EVENT_KEY,
                     RelationConstants.GRAPH_NAME);
-            putStatements(options, stmt);
+            if (includeStatementsInEvents) {
+                putStatements(options, stmt);
+            }
 
             // before notification
             notifyEvent(RelationEvents.BEFORE_RELATION_REMOVAL, source,
@@ -514,63 +526,39 @@ public class RelationActionsBean extends InputController implements
     }
 
     public String searchDocuments() throws ClientException {
-        try {
-            log.debug("Making call to get documents list for keywords: "
-                    + searchKeywords);
-            // reset existing search results
-            resultDocuments = null;
-            List<String> constraints = new ArrayList<String>();
-            if (searchKeywords != null) {
-                searchKeywords = searchKeywords.trim();
-                if (searchKeywords.length() > 0) {
-                    if (!searchKeywords.equals("*")) {
-                        // full text search
-                        constraints.add(String.format("ecm:fulltext LIKE '%s'",
-                                searchKeywords));
-                    }
+        log.debug("Making call to get documents list for keywords: "
+                + searchKeywords);
+        // reset existing search results
+        resultDocuments = null;
+        List<String> constraints = new ArrayList<String>();
+        if (searchKeywords != null) {
+            searchKeywords = searchKeywords.trim();
+            if (searchKeywords.length() > 0) {
+                if (!searchKeywords.equals("*")) {
+                    // full text search
+                    constraints.add(String.format("ecm:fulltext LIKE '%s'",
+                            searchKeywords));
                 }
             }
-            // no folderish doc nor hidden doc
-            constraints.add("ecm:mixinType != 'Folderish'");
-            constraints.add("ecm:mixinType != 'HiddenInNavigation'");
-            // no archived revisions
-            constraints.add("ecm:isCheckedInVersion = 0");
-            // filter current document
-            DocumentModel currentDocument = navigationContext.getCurrentDocument();
-            if (currentDocument != null) {
-                constraints.add(String.format("ecm:id != '%s'",
-                        currentDocument.getId()));
-            }
-            // search keywords
-            String query = String.format("SELECT * FROM Document WHERE %s",
-                    StringUtils.join(constraints.toArray(), " AND "));
-            log.info("query: " + query);
-            SQLQuery nxqlQuery = SQLQueryParser.parse(query);
-            ComposedNXQuery cQuery = new ComposedNXQueryImpl(nxqlQuery);
-            SearchService searchService = SearchServiceDelegate.getRemoteSearchService();
-            ResultSet queryResults = searchService.searchQuery(cQuery, 0, 100);
-            if (queryResults != null) {
-                SearchPageProvider provider = new SearchPageProvider(
-                        queryResults);
-                resultDocuments = provider.getCurrentPage();
-            }
-            log.debug("FTQ query result contains: " + resultDocuments.size()
-                    + " docs.");
-            hasSearchResults = !resultDocuments.isEmpty();
-        } catch (QueryException e) {
-            facesMessages.add(FacesMessage.SEVERITY_WARN,
-                    resourcesAccessor.getMessages().get(
-                            "label.search.service.wrong.query"));
-            // throw EJBExceptionHandler.wrapException(e);
-            log.error("QueryException in search popup : " + e.getMessage());
-        } catch (QueryParseException e) {
-            facesMessages.add(FacesMessage.SEVERITY_WARN,
-                    resourcesAccessor.getMessages().get(
-                            "label.search.service.wrong.query"));
-            log.error("QueryParseException in search popup : " + e.getMessage());
-        } catch (SearchException e) {
-            throw EJBExceptionHandler.wrapException(e);
         }
+        // no folderish doc nor hidden doc
+        constraints.add("ecm:mixinType != 'Folderish'");
+        constraints.add("ecm:mixinType != 'HiddenInNavigation'");
+        // no archived revisions
+        constraints.add("ecm:isCheckedInVersion = 0");
+        // filter current document
+        DocumentModel currentDocument = getCurrentDocument();
+        if (currentDocument != null) {
+            constraints.add(String.format("ecm:uuid != '%s'",
+                    currentDocument.getId()));
+        }
+        // search keywords
+        String query = String.format("SELECT * FROM Document WHERE %s",
+                StringUtils.join(constraints.toArray(), " AND "));
+        log.debug("query: " + query);
+        resultDocuments = documentManager.query(query, 100);
+        hasSearchResults = !resultDocuments.isEmpty();
+        log.debug("query result contains: " + resultDocuments.size() + " docs.");
         return "create_relation_search_document";
     }
 
@@ -604,6 +592,11 @@ public class RelationActionsBean extends InputController implements
     @PostActivate
     public void readState() {
         log.debug("PostActivate");
+    }
+
+    @Override
+    protected void resetBeanCache(DocumentModel newCurrentDocumentModel) {
+        resetStatements();
     }
 
 }

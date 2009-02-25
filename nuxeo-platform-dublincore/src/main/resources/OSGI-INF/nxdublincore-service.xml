@@ -5,8 +5,6 @@
   <implementation
     class="org.nuxeo.ecm.platform.dublincore.service.DublinCoreStorageService" />
 
-  <require>org.nuxeo.ecm.core.listener.CoreEventListenerService</require>
-
   <documentation>
     The DublinCoreStorageService listen to Core event DOCUMENT_UPDATED and
     DOCUMENT_CREATED. If the target document has the dublincore schema, this
@@ -18,17 +16,17 @@
 
     @author Thierry Delprat (td@nuxeo.com)
   </documentation>
-  <extension target="org.nuxeo.ecm.core.listener.CoreEventListenerService"
-    point="listener">
-    <listener name="dclistener"
-      class="org.nuxeo.ecm.platform.dublincore.listener.DublinCoreListener"
-      order="120" />
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
     <documentation>
       Listen for Core event DOCUMENT_UPDATED and DOCUMENT_CREATED and call the
       DublinCoreStorageService.
 
       @author Thierry Delprat (td@nuxeo.com)
     </documentation>
+
+    <listener name="dclistener" async="false" postCommit="false" class="org.nuxeo.ecm.platform.dublincore.listener.DublinCoreListener" priority="120">
+    </listener>
 
   </extension>
 

@@ -26,14 +26,20 @@ import java.util.regex.Pattern;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.platform.usermanager.exceptions.GroupAlreadyExistsException;
+import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
 
+/**
+ * @author Anahide Tchertchian
+ *
+ */
 public interface UserManager {
 
-    public static enum MatchType {
-        EXACT, //
-        SUBSTRING;
+    enum MatchType {
+        EXACT, SUBSTRING
     }
 
     boolean checkUsernamePassword(String username, String password)
@@ -41,67 +47,212 @@ public interface UserManager {
 
     boolean validatePassword(String password) throws ClientException;
 
-    List<NuxeoPrincipal> getAvailablePrincipals() throws ClientException;
-
     /**
-     * Retrieves the principal with the given username.
+     * Retrieves the principal with the given username or null if it does not
+     * exist.
+     * <p>
+     * Can build principals for anonymous and virtual users as well as for users
+     * defined in the users directory.
      *
-     * @param username the username.
-     * @return the principal, or null if doesn't exist.
      * @throws ClientException
      */
     NuxeoPrincipal getPrincipal(String username) throws ClientException;
 
-    void createPrincipal(NuxeoPrincipal principal) throws ClientException;
-
-    void updatePrincipal(NuxeoPrincipal principal) throws ClientException;
-
-    void deletePrincipal(NuxeoPrincipal principal) throws ClientException;
-
-    List<NuxeoPrincipal> searchPrincipals(String name) throws ClientException;
-
-    List<NuxeoPrincipal> searchByMap(Map<String, Object> filter,
-            Set<String> pattern) throws ClientException;
-
-    List<NuxeoGroup> searchGroups(String pattern) throws ClientException;
-
-    List<NuxeoGroup> getAvailableGroups() throws ClientException;
-
+    /**
+     * Returns the nuxeo group with given name or null if it does not exist.
+     *
+     * @throws ClientException
+     */
     NuxeoGroup getGroup(String groupName) throws ClientException;
 
-    void createGroup(NuxeoGroup group) throws ClientException;
+    /**
+     * @deprecated see {@link #searchUsers(String)}
+     */
+    @Deprecated
+    List<NuxeoPrincipal> searchPrincipals(String pattern)
+            throws ClientException;
 
-    void deleteGroup(NuxeoGroup group) throws ClientException;
+    /**
+     * @deprecated see {@link #searchGroups(String)}
+     */
+    @Deprecated
+    List<NuxeoGroup> searchGroups(String pattern) throws ClientException;
 
-    void updateGroup(NuxeoGroup group) throws ClientException;
+    /**
+     * Returns the list of all user ids.
+     *
+     * @since 5.2M4
+     * @throws ClientException
+     */
+    List<String> getUserIds() throws ClientException;
 
-    void remove() throws ClientException;
+    /**
+     * Creates user from given model.
+     *
+     * @since 5.2M4
+     * @throws ClientException
+     * @throws UserAlreadyExistsException
+     */
+    DocumentModel createUser(DocumentModel userModel) throws ClientException,
+            UserAlreadyExistsException;
 
-    String getDefaultGroup();
+    /**
+     * Updates user represented by given model
+     *
+     * @param userModel
+     * @since 5.2M4
+     * @throws ClientException
+     */
+    void updateUser(DocumentModel userModel) throws ClientException;
 
-    void setDefaultGroup(String defaultGroup);
+    /**
+     * Deletes user represented by given model
+     *
+     * @since 5.2M4
+     * @throws DirectoryException if given entry does not exist
+     * @throws ClientException
+     */
+    void deleteUser(DocumentModel userModel) throws ClientException;
 
-    void setRootLogin(String defaultRootLogin) throws ClientException;
+    /**
+     * Deletes user with given id
+     *
+     * @since 5.2M4
+     * @throws DirectoryException if given entry does not exist
+     * @throws ClientException
+     */
+    void deleteUser(String userId) throws ClientException;
 
-    void setUserSortField(String sortField) throws ClientException;
+    /**
+     * Returns a bare user model.
+     * <p>
+     * Can be used for user creation/search screens.
+     *
+     * @since 5.2M4
+     * @throws ClientException
+     */
+    DocumentModel getBareUserModel() throws ClientException;
+
+    /**
+     * Returns the document model representing user with given id or null if it
+     * does not exist.
+     *
+     * @since 5.2M4
+     * @throws ClientException
+     */
+    DocumentModel getUserModel(String userName) throws ClientException;
+
+    /**
+     * Returns users matching given pattern
+     * <p>
+     * Pattern is used to field a filter and fulltext map according to users
+     * search fields configuration. Search is performed on each of these fields
+     * (OR).
+     *
+     * @since 5.2M4
+     * @throws ClientException
+     */
+    DocumentModelList searchUsers(String pattern) throws ClientException;
+
+    /**
+     * Returns users matching given criteria
+     *
+     * @param filter filter with field names as keys
+     * @param fulltext field names used for fulltext match
+     * @since 5.2M4
+     * @throws ClientException
+     */
+    DocumentModelList searchUsers(Map<String, Object> filter,
+            Set<String> fulltext) throws ClientException;
 
     String getUserListingMode() throws ClientException;
-
-    void setUserListingMode(String userListingMode) throws ClientException;
 
     String getUserSortField() throws ClientException;
 
     Pattern getUserPasswordPattern() throws ClientException;
 
-    void setUserPasswordPattern(Pattern userPasswordPattern) throws ClientException;
+    /**
+     * Returns the list of all groups ids.
+     *
+     * @since 5.2M4
+     * @throws ClientException
+     */
+    List<String> getGroupIds() throws ClientException;
+
+    /**
+     * Returns groups matching given criteria
+     *
+     * @param filter filter with field names as keys
+     * @param fulltext field names used for fulltext match
+     * @since 5.2M4
+     * @throws ClientException
+     */
+    DocumentModelList searchGroups(Map<String, Object> filter,
+            Set<String> fulltext) throws ClientException;
+
+    /**
+     * Creates a group from given model
+     *
+     * @return the created group model
+     * @since 5.2M4
+     * @throws ClientException
+     * @throws GroupAlreadyExistsException
+     */
+    DocumentModel createGroup(DocumentModel groupModel) throws ClientException,
+            GroupAlreadyExistsException;
+
+    /**
+     * Updates group represented by given model
+     *
+     * @since 5.2M4
+     * @throws DirectoryException if given entry does not exist
+     * @throws ClientException
+     */
+    void updateGroup(DocumentModel groupModel) throws ClientException;
+
+    /**
+     * Deletes group represented by given model
+     *
+     * @param groupModel
+     * @since 5.2M4
+     * @throws DirectoryException if given entry does not exist
+     * @throws ClientException
+     */
+    void deleteGroup(DocumentModel groupModel) throws ClientException;
+
+    /**
+     * Deletes group with given id
+     *
+     * @param groupId
+     * @since 5.2M4
+     * @throws DirectoryException if given entry does not exist
+     * @throws ClientException
+     */
+    void deleteGroup(String groupId) throws ClientException;
+
+    /**
+     * Returns a bare group model.
+     * <p>
+     * Can be used for group creation/search screens.
+     *
+     * @since 5.2M4
+     * @throws ClientException
+     */
+    DocumentModel getBareGroupModel() throws ClientException;
+
+    /**
+     * Return the group document model with this id or null if group does not
+     * exist.
+     *
+     * @param groupName the group identifier
+     * @since 5.2M4
+     * @throws ClientException
+     */
+    DocumentModel getGroupModel(String groupName) throws ClientException;
+
+    String getDefaultGroup();
 
     String getGroupListingMode() throws ClientException;
-
-    void setGroupListingMode(String groupListingMode) throws ClientException;
-
-    void setGroupSortField(String sortField) throws ClientException;
-
-    DocumentModel getModelForUser(String name) throws ClientException;
 
     /**
      * Returns the list of groups that belong to this group.
@@ -146,14 +297,6 @@ public interface UserManager {
     Boolean areUsersReadOnly() throws ClientException;
 
     /**
-     * Sets the user directory name.
-     *
-     * @param userDirectoryName the user directory name.
-     * @throws ClientException
-     */
-    void setUserDirectoryName(String userDirectoryName) throws ClientException;
-
-    /**
      * Gets the user directory name.
      *
      * @return the user directory name.
@@ -162,12 +305,20 @@ public interface UserManager {
     String getUserDirectoryName() throws ClientException;
 
     /**
-     * Sets the user email field.
+     * Returns the user directory schema name
      *
-     * @param userEmailField the email field.
+     * @since 5.2M4
      * @throws ClientException
      */
-    void setUserEmailField(String userEmailField) throws ClientException;
+    String getUserSchemaName() throws ClientException;
+
+    /**
+     * Returns the user directory id field
+     *
+     * @since 5.2M4
+     * @throws ClientException
+     */
+    String getUserIdField() throws ClientException;
 
     /**
      * Gets the user email field.
@@ -178,39 +329,13 @@ public interface UserManager {
     String getUserEmailField() throws ClientException;
 
     /**
-     * Sets the user search fields, the fields to use when a user search is
-     * done. All fields use substring match by default.
-     *
-     * @param userSearchFields the search fields.
-     * @throws ClientException
-     */
-    void setUserSearchFields(Set<String> userSearchFields) throws ClientException;
-
-
-    /**
-     * Sets the user search fields, the fields to use when a user search is
-     * done. The map values allow for selection between substring and exact match.
-     *
-     * @param userSearchFields map with field names as keys and values in exact / substring
-     */
-    void setUserSearchFields(Map<String, MatchType> userSearchFields) throws ClientException;
-
-    /**
-     * Gets the user search fields, the fields to use when a user search is
+     * Gets the user search fields, the fields to use when a principal search is
      * done.
      *
      * @return the search fields.
      * @throws ClientException
      */
     Set<String> getUserSearchFields() throws ClientException;
-
-    /**
-     * Sets the group directory name.
-     *
-     * @param groupDirectoryName the user directory name.
-     * @throws ClientException
-     */
-    void setGroupDirectoryName(String groupDirectoryName) throws ClientException;
 
     /**
      * Gets the group directory name.
@@ -221,12 +346,20 @@ public interface UserManager {
     String getGroupDirectoryName() throws ClientException;
 
     /**
-     * Sets the group members field.
+     * Returns the group directory schema name
      *
-     * @param groupMembersField the members field.
+     * @since 5.2M4
      * @throws ClientException
      */
-    void setGroupMembersField(String groupMembersField) throws ClientException;
+    String getGroupSchemaName() throws ClientException;
+
+    /**
+     * Returns the group directory id field
+     *
+     * @since 5.2M4
+     * @throws ClientException
+     */
+    String getGroupIdField() throws ClientException;
 
     /**
      * Gets the group members field.
@@ -237,28 +370,12 @@ public interface UserManager {
     String getGroupMembersField() throws ClientException;
 
     /**
-     * Sets the group sub-groups field.
-     *
-     * @param groupSubGroupsField the sub-groups field.
-     * @throws ClientException
-     */
-    void setGroupSubGroupsField(String groupSubGroupsField) throws ClientException;
-
-    /**
      * Gets the group sub-groups field.
      *
      * @return the sub-groups field.
      * @throws ClientException
      */
     String getGroupSubGroupsField() throws ClientException;
-
-    /**
-     * Sets the group parentGroups field.
-     *
-     * @param groupParentGroupsField the parentGroups field.
-     * @throws ClientException
-     */
-    void setGroupParentGroupsField(String groupParentGroupsField) throws ClientException;
 
     /**
      * Gets the group parent-groups field.
@@ -269,24 +386,83 @@ public interface UserManager {
     String getGroupParentGroupsField() throws ClientException;
 
     /**
-     * Sets the anonymous user properties.
-     *
-     * @param anonymousUser the anonymous user properties.
-     * @throws ClientException
-     */
-    void setAnonymousUser(Map<String, String> anonymousUser) throws ClientException;
-
-    /**
      * Gets the anonymous user id.
      *
-     * @return the anonymous user id, or null if none is defined.
+     * @return the anonymous user id, or the default one if none is defined.
      * @throws ClientException
      */
     String getAnonymousUserId() throws ClientException;
 
     /**
-     * The key in the anonymous user map that hold its id.
+     * Sets the given configuration on the service
+     *
+     * @param descriptor the descriptor as parsed from xml, merged from the
+     *            previous one if it exists.
      */
-    String ANONYMOUS_USER_ID_KEY = "__id__";
+    void setConfiguration(UserManagerDescriptor descriptor)
+            throws ClientException;
+
+    // DEPRECATED API
+
+    /**
+     * @deprecated use {@link #getUserModel(String)}
+     */
+    @Deprecated
+    DocumentModel getModelForUser(String name) throws ClientException;
+
+    /**
+     * @deprecated use {@link #getUserIds()} or {@link #searchUsers(null)}
+     */
+    @Deprecated
+    List<NuxeoPrincipal> getAvailablePrincipals() throws ClientException;
+
+    /**
+     * @deprecated use {@link #createUser(DocumentModel)}
+     */
+    @Deprecated
+    void createPrincipal(NuxeoPrincipal principal) throws ClientException;
+
+    /**
+     * @deprecated use {@link #updateUser(DocumentModel)}
+     */
+    @Deprecated
+    void updatePrincipal(NuxeoPrincipal principal) throws ClientException;
+
+    /**
+     * @deprecated use {@link #deleteUser(DocumentModel)}
+     */
+    @Deprecated
+    void deletePrincipal(NuxeoPrincipal principal) throws ClientException;
+
+    /**
+     * @deprecated use {@link #searchUsers(Map, Set)}
+     */
+    @Deprecated
+    List<NuxeoPrincipal> searchByMap(Map<String, Object> filter,
+            Set<String> pattern) throws ClientException;
+
+    /**
+     * @deprecated use {@link #getGroupIds()} or {@link #searchGroups(Map, Set)}
+     */
+    @Deprecated
+    List<NuxeoGroup> getAvailableGroups() throws ClientException;
+
+    /**
+     * @deprecated use {@link #createGroup(DocumentModel)}
+     */
+    @Deprecated
+    void createGroup(NuxeoGroup group) throws ClientException;
+
+    /**
+     * @deprecated use {@link #deleteGroup(DocumentModel)}
+     */
+    @Deprecated
+    void deleteGroup(NuxeoGroup group) throws ClientException;
+
+    /**
+     * @deprecated use {@link #updateGroup(DocumentModel)}
+     */
+    @Deprecated
+    void updateGroup(NuxeoGroup group) throws ClientException;
 
 }

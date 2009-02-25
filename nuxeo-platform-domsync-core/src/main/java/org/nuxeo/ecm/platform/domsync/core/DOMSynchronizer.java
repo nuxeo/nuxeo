@@ -131,11 +131,11 @@ public class DOMSynchronizer implements EventListener, IDOMMutationListener {
     }
 
     private void dispatchEvent(DOMMutationEvent event) {
-        if(dispatchLevel != 0) {
-            if(!event.equals(currentEvent)) {
+        if (dispatchLevel != 0) {
+            if (!event.equals(currentEvent)) {
                 System.err.println("Events don't match");
-                System.err.println("original "+currentEvent);
-                System.err.println("generated "+event);
+                System.err.println("original " + currentEvent);
+                System.err.println("generated " + event);
             }
             return;
         }
@@ -169,7 +169,7 @@ public class DOMSynchronizer implements EventListener, IDOMMutationListener {
             }
 
             if (event instanceof DOMNodeInsertedEvent) {
-                if(!(target instanceof Element) && !(target instanceof Document) ) {
+                if (!(target instanceof Element) && !(target instanceof Document)) {
                     System.err.println("!Unsupported target node type");
                     return;
                 }
@@ -189,14 +189,15 @@ public class DOMSynchronizer implements EventListener, IDOMMutationListener {
                 }
 
             } else if (event instanceof DOMNodeRemovedEvent) {
-                if(!(target instanceof Element) && !(target instanceof CharacterData) && !(target instanceof ProcessingInstruction)) {
+                if (!(target instanceof Element) && !(target instanceof CharacterData)
+                        && !(target instanceof ProcessingInstruction)) {
                     System.err.println("!Unsupported target node type");
                     return;
                 }
                 target.getParentNode().removeChild(target);
 
             } else if (event instanceof DOMAttrModifiedEvent) {
-                if(!(target instanceof Element)) {
+                if (!(target instanceof Element)) {
                     System.err.println("!Unsupported target node type");
                     return;
                 }
@@ -218,20 +219,21 @@ public class DOMSynchronizer implements EventListener, IDOMMutationListener {
                 }
 
             } else if (event instanceof DOMCharacterDataModifiedEvent) {
-                String data = ((DOMCharacterDataModifiedEvent)event).getNewValue();
+                String data = ((DOMCharacterDataModifiedEvent) event).getNewValue();
                 if (target instanceof CharacterData) {
-                    ((CharacterData)target).setData(data);
+                    ((CharacterData) target).setData(data);
                 } else if (target instanceof ProcessingInstruction) {
-                    ((ProcessingInstruction)target).setData(data);
+                    ((ProcessingInstruction) target).setData(data);
                 } else {
                     System.err.println("!Unsupported target node type");
                 }
 
             } else {
-                System.err.println("!Unsupported event "+event);
+                System.err.println("!Unsupported event " + event);
             }
         } finally {
             --dispatchLevel;
         }
     }
+
 }

@@ -27,9 +27,6 @@ import org.nuxeo.ecm.platform.util.RepositoryLocation;
 
 public class LinkedDocument implements Serializable {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1565438769754L;
 
     protected DocumentRef documentRef;

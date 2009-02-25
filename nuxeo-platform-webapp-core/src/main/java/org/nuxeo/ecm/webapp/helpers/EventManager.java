@@ -34,18 +34,15 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Startup;
 import org.jboss.seam.core.Events;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.ui.web.shield.NuxeoJavaBeanErrorHandler;
 
 /**
  * Knows what events need to be raised based on the user selected document.
  *
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
- *
  */
 @Name("eventManager")
 @Scope(APPLICATION)
 @Startup
-@NuxeoJavaBeanErrorHandler
 @Install(precedence=FRAMEWORK)
 public class EventManager implements Serializable {
 
@@ -103,7 +100,6 @@ public class EventManager implements Serializable {
      * call is ended. Intended to be used when a document gets selected. If the
      * docType is NULL then the GO_HOME event is fired.
      *
-     * @param docType
      * @return events fired
      */
     public static List<String> raiseEventsOnDocumentSelected(DocumentModel document) {
@@ -151,11 +147,10 @@ public class EventManager implements Serializable {
     }
 
     /**
-     * Fires the necessary events so that the nuxeo infrastructure componets get
+     * Fires the necessary events so that the nuxeo infrastructure components get
      * updated. The raised events will be processed immediately, before this
      * call is ended. Intended to be used when a document gets edited/changed.
      *
-     * @param docType
      * @return events fired
      */
     public static List<String> raiseEventsOnDocumentChange(DocumentModel document) {
@@ -175,10 +170,8 @@ public class EventManager implements Serializable {
     }
 
     /**
-     * Dispatch an event to get interested components informed when a changeable
+     * Dispatches an event to get interested components informed when a changeable
      * document was created (thus not saved) and before the form is displayed.
-     *
-     * @param changeableDocument
      */
     public static void raiseEventsOnDocumentCreate(DocumentModel document) {
         Events.instance().raiseEvent(EventNames.NEW_DOCUMENT_CREATED);
@@ -188,9 +181,8 @@ public class EventManager implements Serializable {
      * Fires the necessary events so that the nuxeo infrastructure components get
      * updated. The raised events will be processed immediately, before this
      * call is ended. Intended to be used when a the content of a folderish
-     *  document gets changed.
+     * document gets changed.
      *
-     * @param docType
      * @return events fired
      */
     public static List<String> raiseEventsOnDocumentChildrenChange(DocumentModel document) {

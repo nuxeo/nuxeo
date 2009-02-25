@@ -50,6 +50,7 @@ import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  * @Deprecated use {@link MetaMethodExpression}
  */
+@SuppressWarnings({"ALL"})
 @Deprecated
 public class MetaMethodBinding extends MethodBinding implements Serializable {
 

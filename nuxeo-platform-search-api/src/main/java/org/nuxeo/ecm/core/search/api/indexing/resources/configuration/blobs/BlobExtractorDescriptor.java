@@ -47,16 +47,8 @@ public class BlobExtractorDescriptor implements Serializable {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public Class<BlobExtractor> getKlass() {
         return klass;
-    }
-
-    public void setKlass(Class<BlobExtractor> klass) {
-        this.klass = klass;
     }
 
 }

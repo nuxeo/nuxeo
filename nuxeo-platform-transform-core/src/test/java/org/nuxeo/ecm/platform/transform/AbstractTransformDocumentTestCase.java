@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.platform.transform;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 import org.nuxeo.common.utils.SerializableHelper;
@@ -41,7 +40,7 @@ public abstract class AbstractTransformDocumentTestCase extends NXRuntimeTestCas
         assertTrue(stream.available() > 0);
     }
 
-    public void testInstanceSerialization() throws IOException {
+    public void testInstanceSerialization() {
         assertTrue(SerializableHelper.isSerializable(document));
     }
 

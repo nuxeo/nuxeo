@@ -21,36 +21,17 @@ jQuery.noConflict();
 
 (function(jQuery) {
 
- 	var menu, shadow, trigger, content, hash, currentTarget;
+   var menu, shadow, trigger, content, hash, currentTarget;
   var defaults = {
-    menuStyle: {
-      listStyle: 'none',
-      padding: '1px',
-      margin: '0px',
-      backgroundColor: '#fff',
-      border: '1px solid #999',
-      width: '100px'
-    },
-    itemStyle: {
-      margin: '0px',
-      color: '#000',
-      display: 'block',
-      cursor: 'default',
-      padding: '3px',
-      border: '1px solid #fff',
-      backgroundColor: 'transparent',
-      fontSize: '9pt'
-    },
-    itemHoverStyle: {
-      border: '1px solid #0a246a',
-      backgroundColor: '#b6bdd2'
-    },
+    menuStyle: {},
+    itemStyle: {},
+    itemHoverStyle: {},
     eventPosX: 'pageX',
     eventPosY: 'pageY',
     shadow : true,
     onContextMenu: null,
     onShowMenu: null
- 	};
+   };
 
   jQuery.fn.contextMenu = function(id, options) {
     if (!options)
@@ -66,16 +47,16 @@ jQuery.noConflict();
     }
     if (!shadow) {
       shadow = jQuery('<div></div>')
-                 .css({backgroundColor:'#000',position:'absolute',opacity:0.2,zIndex:499})
+                 .addClass('ctxMenuShadow')
                  .appendTo('body')
                  .hide();
     }
     hash = hash || [];
     hash.push({
       id : id,
-      menuStyle: jQuery.extend({}, defaults.menuStyle, options.menuStyle || {}),
-      itemStyle: jQuery.extend({}, defaults.itemStyle, options.itemStyle || {}),
-      itemHoverStyle: jQuery.extend({}, defaults.itemHoverStyle, options.itemHoverStyle || {}),
+//      menuStyle: jQuery.extend({}, defaults.menuStyle, options.menuStyle || {}),
+//      itemStyle: jQuery.extend({}, defaults.itemStyle, options.itemStyle || {}),
+//      itemHoverStyle: jQuery.extend({}, defaults.itemHoverStyle, options.itemHoverStyle || {}),
       bindings: options.bindings || null,
       shadow: options.shadow || options.shadow === false ? options.shadow : defaults.shadow,
       onContextMenu: options.onContextMenu || defaults.onContextMenu,
@@ -97,21 +78,24 @@ jQuery.noConflict();
   function display(index, trigger, e, options) {
     var cur = hash[index];
     content = jQuery('#'+cur.id).find('ul:first').clone(true);
-    content.css(cur.menuStyle).find('li').css(cur.itemStyle).hover(
+    //content.css(cur.menuStyle).find('li').css(cur.itemStyle).hover(
+    content.addClass('ctxMenuStyle').find('li').addClass('ctxMenuItemStyle').hover(
       function() {
-        jQuery(this).css(cur.itemHoverStyle);
+        jQuery(this).toggleClass('ctxMenuItemHoverStyle');
+        jQuery(this).toggleClass('ctxMenuItemStyle');
       },
       function(){
-        jQuery(this).css(cur.itemStyle);
+        jQuery(this).toggleClass('ctxMenuItemHoverStyle');
+        jQuery(this).toggleClass('ctxMenuItemStyle');
       }
-    ).find('img').css({verticalAlign:'middle',paddingRight:'2px'});
+    ).find('img').addClass('ctxMenuImg');
 
     // Send the content to the menu
     menu.html(content);
 
     // if there's an onShowMenu, run it now -- must run after content has been added
-		// if you try to alter the content variable before the menu.html(), IE6 has issues
-		// updating the content
+    // if you try to alter the content variable before the menu.html(), IE6 has issues
+    // updating the content
     if (!!cur.onShowMenu) menu = cur.onShowMenu(e, menu);
 
     // introspec binding from html menu
@@ -202,7 +186,7 @@ function getMenuItemsToHideCallBacks(actionsToRemove)
     }
 
      if (actionsToRemove.length>0)
-     	jQuery(deleteQuery, menu).remove();
+       jQuery(deleteQuery, menu).remove();
 
     // display menu
     menu.css({'left':menuX,'top':menuY}).show();
@@ -240,6 +224,6 @@ function setupContextMenu(target)
   if (window.addEventListener) {
     window.addEventListener("load", function (e) {jQuery(target).contextMenu("popupMenu")}, true);
   } else if (window.attachEvent) {
-	window.attachEvent("onload", function (e) {jQuery(target).contextMenu("popupMenu")});
+  window.attachEvent("onload", function (e) {jQuery(target).contextMenu("popupMenu")});
   }
 }

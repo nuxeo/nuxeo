@@ -103,7 +103,7 @@ public final class FaceletHandlerHelper {
         if (n < 1) {
             throw new IllegalArgumentException(base);
         }
-        StringBuffer newId = new StringBuffer();
+        StringBuilder newId = new StringBuilder();
         for (int i = 0; i < n; i++) {
             char c = base.charAt(i);
             if (i == 0) {

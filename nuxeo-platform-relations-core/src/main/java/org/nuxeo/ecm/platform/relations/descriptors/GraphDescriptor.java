@@ -31,12 +31,11 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Graph extension.
- *
+ * <p>
  * A new type of graph can implement this class to set XMap annotations for
  * custom options (?).
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 @XObject("graph")
 public class GraphDescriptor implements GraphDescription, Serializable {
@@ -44,30 +43,22 @@ public class GraphDescriptor implements GraphDescription, Serializable {
     private static final long serialVersionUID = 1L;
 
     @XNode("@name")
-    String name;
+    private String name;
 
     @XNode("@type")
-    String graphType;
+    private String graphType;
 
-    Map<String, String> options = new HashMap<String, String>();
+    private Map<String, String> options = new HashMap<String, String>();
 
     @XNodeMap(value = "namespaces/namespace", key = "@name", type = HashMap.class, componentType = String.class)
-    Map<String, String> namespaces = new HashMap<String, String>();
+    private Map<String, String> namespaces = new HashMap<String, String>();
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getGraphType() {
         return graphType;
-    }
-
-    public void setGraphType(String graphType) {
-        this.graphType = graphType;
     }
 
     public Map<String, String> getOptions() {
@@ -87,10 +78,6 @@ public class GraphDescriptor implements GraphDescription, Serializable {
 
     public Map<String, String> getNamespaces() {
         return namespaces;
-    }
-
-    public void setNamespaces(Map<String, String> namespaces) {
-        this.namespaces = namespaces;
     }
 
 }

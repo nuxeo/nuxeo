@@ -70,7 +70,7 @@ public abstract class NXClientTestCase extends TestCase {
         deployAll();
     }
 
-    private void shutdownRT() throws Exception {
+    private static void shutdownRT() throws Exception {
         Framework.shutdown();
     }
 
@@ -84,8 +84,7 @@ public abstract class NXClientTestCase extends TestCase {
         try {
             Framework.getRuntime().getContext().deploy(url);
         } catch (Exception e) {
-            log.error("cannot deploy bundle: " + bundle);
-            e.printStackTrace();
+            log.error("cannot deploy bundle: " + bundle, e);
         }
     }
 
@@ -95,7 +94,7 @@ public abstract class NXClientTestCase extends TestCase {
         try {
             Framework.getRuntime().getContext().undeploy(url);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("cannot undeploy bundle: " + bundle, e);
         }
     }
 
