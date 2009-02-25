@@ -27,8 +27,8 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  *
- * @deprecated TransformationService is deprecated use {@link org.nuxeo.ecm.core.convert.api.ConversionService}
- *
+ * @deprecated TransformationService is deprecated,
+ *    please use {@see org.nuxeo.ecm.core.convert.api.ConversionService}
  */
 @Deprecated
 public final class TransformServiceDelegate {
