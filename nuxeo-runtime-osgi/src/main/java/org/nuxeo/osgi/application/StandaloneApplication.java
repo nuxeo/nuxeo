@@ -121,7 +121,7 @@ public class StandaloneApplication extends OSGiAdapter {
         if (!isStarted) {
             throw new IllegalStateException("OSGi Application was not started");
         }
-        try {        
+        try {
             super.shutdown();
         } finally {
             isStarted = false;
@@ -137,7 +137,7 @@ public class StandaloneApplication extends OSGiAdapter {
     protected List<BundleFile> loadUserBundles(String key) throws Exception {
         if (options == null) {
             return null;
-        }        
+        }
         String bundlesString = options.getOption(key);
         if (bundlesString == null) {
             return null; // no bundles to load

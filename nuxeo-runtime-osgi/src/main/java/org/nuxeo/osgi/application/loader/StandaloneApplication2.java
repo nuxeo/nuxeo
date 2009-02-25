@@ -147,14 +147,14 @@ public class StandaloneApplication2 extends OSGiAdapter {
         if (!isStarted) {
             throw new IllegalStateException("OSGi Application was not started");
         }
-        try {        
+        try {
             super.shutdown();
         } finally {
             isStarted = false;
         }
     }
 
-    //TODO: this method doesn't work - it must be sync with the one from 
+    //TODO: this method doesn't work - it must be sync with the one from
     // StandaloneApplication
     protected void startBundles() throws Exception {
         String bundlesString = env.getProperty(Environment.BUNDLES);

@@ -205,7 +205,7 @@ public class BundleImpl implements Bundle {
                     + headers.get(Constants.BUNDLE_ACTIVATOR), e);
         }
     }
-    
+
     public void shutdown() throws BundleException {
         try {
             state = STOPPING;

@@ -42,14 +42,14 @@ public final class BundleManifestReader {
             = Pattern.compile("\\s*([^:\\s]+)\\s*:=\\s*([^;\\s]+)\\s*;?");
 
     public static String[] CUSTOM_HEADERS = new String[] {"Nuxeo-Component"};
-    
+
     static { // we can add dynamically new headers through system properties
         String h = System.getProperty("org.nuxeo.manifest.headers");
         if (h != null) {
             CUSTOM_HEADERS = StringUtils.split(h, ',', true);
         }
     }
-    
+
     // Utility class
     private BundleManifestReader() {
     }
@@ -139,7 +139,7 @@ public final class BundleManifestReader {
         // Nuxeo headers
         for (int i=0; i<CUSTOM_HEADERS.length; i++) {
             String key = CUSTOM_HEADERS[i];
-            val = attrs.getValue(key);    
+            val = attrs.getValue(key);
             if (val != null) {
                 headers.put(key, val);
             }

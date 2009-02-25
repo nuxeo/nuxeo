@@ -43,7 +43,7 @@ import org.nuxeo.osgi.application.SharedClassLoader;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class NuxeoWebappLoader extends WebappLoader implements Constants {   
+public class NuxeoWebappLoader extends WebappLoader implements Constants {
 
     protected boolean isStarted = false;
     protected String home = "nuxeo";
@@ -165,7 +165,7 @@ public class NuxeoWebappLoader extends WebappLoader implements Constants {
         File home = resolveHomeDirectory();
         if (home == null) {
             return;
-        }        
+        }
         if (systemBundle == null) {
             System.err.println("The attribute 'systemBundle' is not defined, Check your context.xml file. Nuxeo will not be started.");
             return; // systemBundle is required
@@ -178,12 +178,12 @@ public class NuxeoWebappLoader extends WebappLoader implements Constants {
         Properties env = createEnvironment(home);
 
         // load other system properties from the ${org.nuxeo.app.home}/system.properties if any is defined.
-        // The properties in system.properties dir supports variable expansion of existing system properties and 
+        // The properties in system.properties dir supports variable expansion of existing system properties and
         // of nuxeo environment properties.
-        // these can be used in the same manner as ${org.nuxeo.app.home} by external libs. 
+        // these can be used in the same manner as ${org.nuxeo.app.home} by external libs.
         // An example is derby that needs to know where in the filesystem to create its databases.
         loadSystemProperties(home);
-        
+
         try {
             File systemBundleFile = newFile(home, (String)env.get(SYSTEM_BUNDLE));
             SharedClassLoader loader = (SharedClassLoader)getClassLoader().getParent();
@@ -306,12 +306,12 @@ public class NuxeoWebappLoader extends WebappLoader implements Constants {
         return new File(path);
     }
 
-    
+
     protected void loadSystemProperties(File home) {
         File file = new File(home, "system.properties");
         if (!file.isFile()) { // no system properties to load
             return;
-        }        
+        }
         Properties props = new Properties();
         InputStream in = null;
         try {
@@ -331,10 +331,10 @@ public class NuxeoWebappLoader extends WebappLoader implements Constants {
             }
         }
     }
-    
+
     /**
      * Copied from org.nuxeo.runtime.api.Framework
-     * 
+     *
      * Expands any variable found in the given expression with the value
      * of the corresponding framework property.
      * <p>
@@ -396,5 +396,5 @@ public class NuxeoWebappLoader extends WebappLoader implements Constants {
         return result.toString();
     }
 
-    
+
 }

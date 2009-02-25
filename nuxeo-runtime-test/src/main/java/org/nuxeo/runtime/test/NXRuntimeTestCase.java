@@ -80,7 +80,7 @@ public abstract class NXRuntimeTestCase extends MockObjectTestCase {
     protected Map<String, BundleFile> bundles;
 
     protected boolean restart = false;
-    
+
     /**
      * Restart the runtime and preserve home directory
      * @throws Exception
@@ -95,7 +95,7 @@ public abstract class NXRuntimeTestCase extends MockObjectTestCase {
         }
     }
 
-    
+
     @Override
     protected void setUp() throws Exception {
         super.setUp();
@@ -134,7 +134,7 @@ public abstract class NXRuntimeTestCase extends MockObjectTestCase {
             if (!restart) {
                 workingDir = File.createTempFile("NXOSGITestFramework", generateId());
                 workingDir.delete();
-            }            
+            }
         } catch (IOException e) {
             log.error("Could not init working directory", e);
             throw e;
@@ -300,18 +300,18 @@ public abstract class NXRuntimeTestCase extends MockObjectTestCase {
     public void deployContrib(String bundle, String contrib) throws Exception {
         deployContrib(lookupBundle(bundle), contrib);
     }
-    
+
     /**
-     * Deploy an XML contribution from outside a bundle. This should be used by tests 
+     * Deploy an XML contribution from outside a bundle. This should be used by tests
      * wiling to deploy test contribution as part of a real bundle.
      * The bundle owner is important since the contribution may depend on resources deployed in that bundle.
-     * Note that the owner bundle MUST be an already deployed bundle. 
-     * @param bundle the bundle that becomes the contribution owner 
+     * Note that the owner bundle MUST be an already deployed bundle.
+     * @param bundle the bundle that becomes the contribution owner
      * @param contrib the contribution to deploy as part of the given bundle
-     * @throws Exception 
+     * @throws Exception
      */
     public RuntimeContext deployTestContrib(String bundle, String contrib) throws Exception {
-        Bundle b = bundleLoader.getOSGi().getRegistry().getBundle(bundle);        
+        Bundle b = bundleLoader.getOSGi().getRegistry().getBundle(bundle);
        if (b != null) {
            OSGiRuntimeContext ctx = new OSGiRuntimeContext(runtime, b);
            ctx.deploy(contrib);
@@ -322,7 +322,7 @@ public abstract class NXRuntimeTestCase extends MockObjectTestCase {
     }
 
     public RuntimeContext deployTestContrib(String bundle, URL contrib) throws Exception {
-        Bundle b = bundleLoader.getOSGi().getRegistry().getBundle(bundle);        
+        Bundle b = bundleLoader.getOSGi().getRegistry().getBundle(bundle);
        if (b != null) {
            OSGiRuntimeContext ctx = new OSGiRuntimeContext(runtime, b);
            ctx.deploy(contrib);

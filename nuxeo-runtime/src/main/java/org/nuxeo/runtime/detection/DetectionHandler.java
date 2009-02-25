@@ -31,7 +31,7 @@ public interface DetectionHandler {
 
     /**
      * A new peer was detected.
-     * 
+     *
      * @param peer the peer
      */
     void peerOnline(Peer peer);

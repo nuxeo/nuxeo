@@ -425,7 +425,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
             }
             file = new File(location);
         } else if (location.startsWith("file:")) { // nuxeo osgi adapter
-            try {                
+            try {
                 file = FileUtils.urlToFile(location);
             } catch (Exception e) {
                 componentDebugLog.error("getBundleFile: Unable to create " +

@@ -62,23 +62,23 @@ public class GF3Component extends DefaultComponent {
 //        System.setProperty(SystemPropertyConstants.INSTANCE_ROOT_PROPERTY, gf3Root);
         File file = new File(env.getConfig(), "domain.xml");
         if (file.exists()) {
-        	log.warn("Starting GF3 server:"+file.toURI().toURL());
+            log.warn("Starting GF3 server:"+file.toURI().toURL());
             server = new GlassFishServer(file.toURI().toURL());
         } else {
-        	log.warn("activate : Starting GF3 server with no domain.xml");
+            log.warn("activate : Starting GF3 server with no domain.xml");
             server = new GlassFishServer(8080);
         }
         file = new File(env.getConfig(), "default-web.xml");
         if (file.exists()) {
-        	log.warn("activate : GF3 server using default-web.xml:"+file.toURI().toURL());
+            log.warn("activate : GF3 server using default-web.xml:"+file.toURI().toURL());
             server.setDefaultWebXml(file.toURI().toURL());
         }
     }
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
-    	log.warn("deactivate : Stopping glassfish server");
-    	server.stop();
+        log.warn("deactivate : Stopping glassfish server");
+        server.stop();
         server = null;
     }
 
@@ -87,7 +87,7 @@ public class GF3Component extends DefaultComponent {
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
         if (XP_WEB_APP.equals(extensionPoint)) {
-        	log.warn("registerContribution : GF3 extension point is "+ XP_WEB_APP);
+            log.warn("registerContribution : GF3 extension point is "+ XP_WEB_APP);
             WebApplication app = (WebApplication)contribution;
             File home = Environment.getDefault().getHome();
             File webRoot = new File(home, app.getWebRoot());
@@ -110,10 +110,10 @@ public class GF3Component extends DefaultComponent {
                     webXmlFile,
                     Collections.singleton(webClasses.toURI().toURL()));
             log.warn("registerContribution : GF3 deploying scattered war : "+app.getName()+
-            		" with context path : "+app.getContextPath());
+                    " with context path : "+app.getContextPath());
             server.deployWar(war, app.getContextPath());
         } else if (XP_DATA_SOURCE.equals(extensionPoint)) {
-        	log.warn("registerContribution : GF3 ignoring extension point "+ XP_DATA_SOURCE);
+            log.warn("registerContribution : GF3 ignoring extension point "+ XP_DATA_SOURCE);
         }
     }
 
