@@ -47,8 +47,8 @@ Long story
 If the information above are not enough, please read the "Detailed Development
 Software Installation Instructions" annex:
 
-http://doc.nuxeo.org/5.1/books/nuxeo-book/html/dev-environment-installation.html
+http://doc.nuxeo.org/current/books/nuxeo-book/html/dev-environment-installation.html
 
 in the Nuxeo Book:
 
-http://doc.nuxeo.org/5.1/books/nuxeo-book/html/
+http://doc.nuxeo.org/current/books/nuxeo-book/html/
