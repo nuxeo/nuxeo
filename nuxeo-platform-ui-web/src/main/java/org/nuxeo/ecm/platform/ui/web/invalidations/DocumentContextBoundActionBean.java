@@ -18,7 +18,8 @@ public abstract class DocumentContextBoundActionBean {
 
     protected NavigationContext getNavigationContext() {
         if (navigationContext == null) {
-            navigationContext = (NavigationContext) Component.getInstance("navigationContext", ScopeType.CONVERSATION);
+            navigationContext = (NavigationContext) Component.getInstance(
+                    "navigationContext", ScopeType.CONVERSATION);
         }
         return navigationContext;
     }

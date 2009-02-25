@@ -9,11 +9,13 @@ import java.lang.annotation.Target;
 import javax.interceptor.Interceptors;
 
 /**
- * Annotation for Seam components that will use the automatic
- * Document based invalidation system.
+ * Annotation for Seam components that will use the automatic Document based
+ * invalidation system.
  *
  * On each call, the currentDocument will be passed to a invalidation method
- * (this method must be annotated with @DocumentContextInvalidation)
+ * (this method must be annotated with
+ *
+ * @DocumentContextInvalidation)
  *
  * @author tiry
  *

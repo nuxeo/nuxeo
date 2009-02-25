@@ -93,13 +93,12 @@ import org.nuxeo.runtime.api.Framework;
 @Name("relationActions")
 @Scope(CONVERSATION)
 @AutomaticDocumentBasedInvalidation
-public class RelationActionsBean  extends DocumentContextBoundActionBean implements
-        RelationActions, Serializable {
+public class RelationActionsBean extends DocumentContextBoundActionBean
+        implements RelationActions, Serializable {
 
     private static final long serialVersionUID = 2336539966097558178L;
 
     private static final Log log = LogFactory.getLog(RelationActionsBean.class);
-
 
     protected static boolean includeStatementsInEvents = false;
 
@@ -150,7 +149,6 @@ public class RelationActionsBean  extends DocumentContextBoundActionBean impleme
     protected boolean hasSearchResults = false;
 
     protected String searchKeywords;
-
 
     public DocumentModel getDocumentModel(Node node) throws ClientException {
         if (node.isQNameResource()) {
@@ -335,13 +333,14 @@ public class RelationActionsBean  extends DocumentContextBoundActionBean impleme
         EventProducer evtProducer = null;
 
         try {
-               evtProducer = Framework.getService(EventProducer.class);
-        }
-        catch (Exception e) {
-            log.error("Unable to get EventProducer to send event notification", e);
+            evtProducer = Framework.getService(EventProducer.class);
+        } catch (Exception e) {
+            log.error("Unable to get EventProducer to send event notification",
+                    e);
         }
 
-        DocumentEventContext docCtx = new DocumentEventContext(documentManager,documentManager.getPrincipal(),source);
+        DocumentEventContext docCtx = new DocumentEventContext(documentManager,
+                documentManager.getPrincipal(), source);
         options.put("category", RelationEvents.CATEGORY);
         options.put("comment", comment);
 
@@ -422,7 +421,7 @@ public class RelationActionsBean  extends DocumentContextBoundActionBean impleme
             // transformed into qname resources: useful for indexing
             if (includeStatementsInEvents) {
                 putStatements(options, relationManager.getStatements(
-                    RelationConstants.GRAPH_NAME, stmt));
+                        RelationConstants.GRAPH_NAME, stmt));
             }
 
             // after notification
@@ -447,14 +446,16 @@ public class RelationActionsBean  extends DocumentContextBoundActionBean impleme
     // for consistency for callers only
     private static void putStatements(Map<String, Serializable> options,
             List<Statement> statements) {
-        options.put(RelationEvents.STATEMENTS_EVENT_KEY, (Serializable)statements);
+        options.put(RelationEvents.STATEMENTS_EVENT_KEY,
+                (Serializable) statements);
     }
 
     private static void putStatements(Map<String, Serializable> options,
             Statement statement) {
         List<Statement> statements = new LinkedList<Statement>();
         statements.add(statement);
-        options.put(RelationEvents.STATEMENTS_EVENT_KEY, (Serializable) statements);
+        options.put(RelationEvents.STATEMENTS_EVENT_KEY,
+                (Serializable) statements);
     }
 
     public void toggleCreateForm(ActionEvent event) {
