@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.nuxeo</groupId>
   <artifactId>nuxeo-ecm</artifactId>
-  <version>5.2-SNAPSHOT</version>
+  <version>5.2-20090225</version>
   <packaging>pom</packaging>
   <name>Nuxeo ECM Projects</name>
   <url>http://maven.nuxeo.org/</url>
