@@ -65,56 +65,6 @@ public interface LifeCycleService {
             throws LifeCycleException;
 
     /**
-     * Returns the state of a given document.
-     *
-     * @param doc a document instance
-     * @return a string holding the life cycle state of the
-     * @throws LifeCycleException
-     * @deprecated use the Document method directly
-     * Not used. Remove in 5.2
-     */
-    @Deprecated
-    String getCurrentLifeCycleState(Document doc) throws LifeCycleException;
-
-    /**
-     * Sets the state of the given document.
-     *
-     * @param doc a document instance
-     * @param stateName the name of state as a string
-     * @throws LifeCycleException
-     * @deprecated use the Document method directly
-     * Not used. Remove in 5.2
-     */
-    @Deprecated
-    void setCurrentLifeCycleState(Document doc, String stateName)
-            throws LifeCycleException;
-
-    /**
-     * Returns the life cycle policy for the given document.
-     *
-     * @param doc the document instance
-     * @return the life cycle policy name
-     * @throws LifeCycleException TODO
-     * @deprecated use the Document method directly
-     * Not used. Remove in 5.2
-     */
-    @Deprecated
-    String getLifeCyclePolicy(Document doc) throws LifeCycleException;
-
-    /**
-     * Sets the life cycle policy for this document.
-     *
-     * @param doc the document instance
-     * @param policy the life cycle policy name
-     * @throws LifeCycleException
-     * @deprecated use the Document method directly
-     * Not used. Remove in 5.2
-     */
-    @Deprecated
-    void setLifeCycelPolicy(Document doc, String policy)
-            throws LifeCycleException;
-
-    /**
      * Returns a life cycle given its name.
      *
      * @param name the life cycle's name
@@ -151,24 +101,6 @@ public interface LifeCycleService {
      * @return a mapping from types to life cycle names
      */
     Map<String, String> getTypesMapping();
-
-    /**
-     * Sets the mapping for types to life cycle names.
-     *
-     * @param typesMapping a mapping from types to life cycle names
-     * @deprecated not used. remove in 5.2
-     */
-    @Deprecated
-    void setTypesMapping(Map<String, String> typesMapping);
-
-    /**
-     * Sets the mapping from life cycle names to life cycle instances.
-     *
-     * @param lifeCycles a mapping from life cycle names to life cycle instances
-     * @deprecated not used. remove in 5.2
-     */
-    @Deprecated
-    void setLifeCycles(Map<String, LifeCycle> lifeCycles);
 
     /**
      * Returns the life cycle a given document follows.

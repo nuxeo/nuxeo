@@ -20,10 +20,9 @@ package org.nuxeo.ecm.core.convert.api;
 import org.nuxeo.ecm.core.api.ClientException;
 
 /**
- * Exception raised by the {@link ConversionService}
+ * Base exception raised by the {@link ConversionService}.
  *
  * @author tiry
- *
  */
 public class ConversionException extends ClientException {
 
