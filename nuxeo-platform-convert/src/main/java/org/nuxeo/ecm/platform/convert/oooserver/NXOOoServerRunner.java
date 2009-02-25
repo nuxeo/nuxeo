@@ -27,7 +27,7 @@ import com.anwrt.ooserver.daemon.Logger;
 
 public class NXOOoServerRunner implements Runnable {
 
-    protected Config ooServerConfig=null;
+    protected Config ooServerConfig;
 
     public NXOOoServerRunner(Config ooServerConfig) {
         this.ooServerConfig= ooServerConfig;

@@ -21,61 +21,44 @@ package org.nuxeo.ecm.platform.convert.oooserver;
 
 public interface OOoDaemonService {
 
-
     /**
-     * Returns true in built-in Daemon is Enabled by configuration
-     *
-     * @return
+     * @return true in built-in Daemon is Enabled by configuration.
      */
     boolean isEnabled();
 
     /**
-     * Returns true if OpenOffice is configured and found
-     *
-     * @return
+     * @return true if OpenOffice is configured and found.
      */
     boolean isConfigured();
 
     /**
-     * Returns true if Daemon is running
-     * @return
+     * @return true if Daemon is running.
      */
     boolean isRunning();
 
     /**
-     * Returns number of OpenOffice workers
-     * @return
+     * @return the number of OpenOffice workers.
      */
     int getNbWorkers();
 
-
     /**
-     * Starts the daemon and resturn immediatly
-     * @return
+     * Starts the daemon and returns immediatly.
      */
     int startDaemon();
 
-
     /**
-     * Starts the Daemon and wait until Daemon is ready to accept calls
-     * @return
+     * Starts the Daemon and wait until Daemon is ready to accept calls.
      */
     boolean startDaemonAndWaitUntilReady();
 
     /**
-     * Stops the Daemon and returns immediatly
-     * @return
+     * Stops the Daemon and returns immediately.
      */
     void stopDaemon();
 
-
     /**
-     * Stops the Daemon and wait until it exists
-     * @return
+     * Stops the Daemon and wait until it exists.
      */
     boolean stopDaemonAndWaitForCompletion();
-
-
-
 
 }

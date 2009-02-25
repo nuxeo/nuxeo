@@ -56,6 +56,8 @@ import com.artofsolving.jodconverter.openoffice.converter.OpenOfficeDocumentConv
 
 public class JODBasedConverter implements ExternalConverter {
 
+    protected static final String TMP_PATH_PARAMETER = "TmpDirectory";
+
     private static final Log log = LogFactory.getLog(JODBasedConverter.class);
 
     private static final DocumentFormatRegistry formatRegistry = new XmlDocumentFormatRegistry();
@@ -63,8 +65,6 @@ public class JODBasedConverter implements ExternalConverter {
     private static final String DEFAULT_OOO_HOST_URL = "localhost";
 
     private static final int DEFAULT_OOO_HOST_PORT = 8100;
-
-    protected static final String TMP_PATH_PARAMETER = "TmpDirectory";
 
     // OOo doesn't support multi thread connection on the same port.
     private static OpenOfficeConnection connection;
@@ -78,20 +78,20 @@ public class JODBasedConverter implements ExternalConverter {
     }
 
     /**
-     * Returns the destination forma for the given plugin.
+     * Returns the destination format for the given plugin.
      * <p>
-     * It takes the actual destination mimetype of from the plugin
+     * It takes the actual destination mimetype from the plugin
      * configuration.
      *
      * @return the DestinationFormat for this given plugin.
-     * {@see org.nuxeo.ecm.platform.transform.interfaces.Plugin}
+     *         {@see org.nuxeo.ecm.platform.transform.interfaces.Plugin}
      */
     private DocumentFormat getDestinationFormat() {
         return formatRegistry.getFormatByMimeType(getDestinationMimeType());
     }
 
     /**
-     * Returns the DocumentFormat for the file given as a parameter.
+     * Returns the format for the file passed as a parameter.
      * <p>
      * We will ask the mimetype registry service to sniff its mimetype.
      *
@@ -159,7 +159,6 @@ public class JODBasedConverter implements ExternalConverter {
     }
 
     public OpenOfficeConnection getOOoConnection() {
-
         OOoDaemonService ods = Framework.getLocalService(OOoDaemonService.class);
         if (ods != null) {
             if (ods.isEnabled()) {
@@ -258,7 +257,7 @@ public class JODBasedConverter implements ExternalConverter {
     public BlobHolder convert(BlobHolder blobHolder,
             Map<String, Serializable> parameters) throws ConversionException {
 
-        Blob inputBlob = null;
+        Blob inputBlob;
         try {
             inputBlob = blobHolder.getBlob();
         }
@@ -376,9 +375,7 @@ public class JODBasedConverter implements ExternalConverter {
                                 blob.setFilename(file.getName());
                                 blobs.add(blob);
                             }
-
                         }
-
 
                     } else {
                         adaptFilterNameForHTML2PDF(sourceFormat, destinationFormat);
@@ -423,7 +420,6 @@ public class JODBasedConverter implements ExternalConverter {
                             }
                         }
                     }
-
                 }
             } else {
                 throw new ConversionException("Could not connect to the remote OpenOffice server @"
@@ -434,10 +430,8 @@ public class JODBasedConverter implements ExternalConverter {
         }
     }
 
-
     public void init(ConverterDescriptor descriptor) {
         this.descriptor = descriptor;
-
     }
 
     public ConverterCheckResult isConverterAvailable() {
@@ -463,19 +457,19 @@ public class JODBasedConverter implements ExternalConverter {
             finally {
                 releaseLock();
             }
-
         }
     }
 
     protected String getTmpDirectory() {
         String tmp = null;
         Map<String, String> parameters = descriptor.getParameters();
-        if ((parameters != null) && (parameters.containsKey(TMP_PATH_PARAMETER))) {
-            tmp = (String) parameters.get(TMP_PATH_PARAMETER);
+        if (parameters != null && parameters.containsKey(TMP_PATH_PARAMETER)) {
+            tmp = parameters.get(TMP_PATH_PARAMETER);
         }
         if (tmp == null) {
             tmp = System.getProperty("java.io.tmpdir");
         }
         return tmp;
     }
+
 }

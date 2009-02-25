@@ -28,6 +28,10 @@ public final class DocumentTestUtils {
 
     private static final int BYTE_ORDER_MARK_CHAR = 0xFEFF;
 
+    // Utility class.
+    private DocumentTestUtils() {
+    }
+
     // This is an utility class, but making ctor private somehow confuses
     // Maven Surefire.
 
@@ -35,7 +39,7 @@ public final class DocumentTestUtils {
      * Extracts the text from a PDF file.
      *
      * @param pdfFile
-     * @return the document content as plan text
+     * @return the document content as plain text
      * @throws IOException
      */
     public static String readPdfText(File pdfFile) throws IOException {

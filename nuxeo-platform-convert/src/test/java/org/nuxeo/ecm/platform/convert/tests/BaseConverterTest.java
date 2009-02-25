@@ -33,11 +33,18 @@ import org.pdfbox.util.PDFTextStripper;
 
 public abstract class BaseConverterTest extends NXRuntimeTestCase {
 
+    public BaseConverterTest() {
+    }
+
+    public BaseConverterTest(String name) {
+        super(name);
+    }
+
     protected static BlobHolder getBlobFromPath(String path, String srcMT) {
         File file = FileUtils.getResourceFileFromContext(path);
         assertTrue(file.length() > 0);
         Blob blob = new FileBlob(file);
-        if (srcMT!=null) {
+        if (srcMT != null) {
             blob.setMimeType(srcMT);
         }
         blob.setFilename(file.getName());
@@ -48,25 +55,15 @@ public abstract class BaseConverterTest extends NXRuntimeTestCase {
         return getBlobFromPath(path, null);
     }
 
-
-
-    public BaseConverterTest() {
-        super();
-    }
-
     @Override
     protected void setUp() throws Exception {
-           super.setUp();
-           deployBundle("org.nuxeo.ecm.core.api");
-           deployBundle("org.nuxeo.ecm.core.convert.api");
-           deployBundle("org.nuxeo.ecm.core.convert");
-           deployBundle("org.nuxeo.ecm.platform.mimetype.api");
-           deployBundle("org.nuxeo.ecm.platform.mimetype.core");
-           deployBundle("org.nuxeo.ecm.platform.convert");
-    }
-
-    public BaseConverterTest(String name) {
-        super(name);
+        super.setUp();
+        deployBundle("org.nuxeo.ecm.core.api");
+        deployBundle("org.nuxeo.ecm.core.convert.api");
+        deployBundle("org.nuxeo.ecm.core.convert");
+        deployBundle("org.nuxeo.ecm.platform.mimetype.api");
+        deployBundle("org.nuxeo.ecm.platform.mimetype.core");
+        deployBundle("org.nuxeo.ecm.platform.convert");
     }
 
     public static String readPdfText(File pdfFile) throws IOException {
@@ -76,8 +73,5 @@ public abstract class BaseConverterTest extends NXRuntimeTestCase {
         document.close();
         return text.trim();
     }
-
-
-
 
 }
