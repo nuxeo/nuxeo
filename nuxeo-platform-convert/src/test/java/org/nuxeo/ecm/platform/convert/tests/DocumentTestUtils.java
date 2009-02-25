@@ -28,10 +28,6 @@ public final class DocumentTestUtils {
 
     private static final int BYTE_ORDER_MARK_CHAR = 0xFEFF;
 
-    // Utility class.
-    private DocumentTestUtils() {
-    }
-
     // This is an utility class, but making ctor private somehow confuses
     // Maven Surefire.
 
