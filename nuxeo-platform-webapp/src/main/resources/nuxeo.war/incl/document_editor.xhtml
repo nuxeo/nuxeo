@@ -83,6 +83,11 @@
 </h:column>
 </h:dataTable>
 
-<ui:include src="/incl/document_versioning.xhtml" />
+<c:if test="#{!hideVersioningPanel}">
+  <c:if test="false">
+    The include below shouldn't be there and is only kept for backward compatibility
+  </c:if>
+  <ui:include src="/incl/document_versioning.xhtml" />
+</c:if>
 
 </div>
