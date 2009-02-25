@@ -5,6 +5,16 @@
   version="2.4">
 
   <filter>
+    <display-name>WebEngine Login Stack Cleaner</display-name>
+    <filter-name>WebEngineLoginStackCleaner</filter-name>
+    <filter-class>org.nuxeo.ecm.webengine.login.LoginStackCleaner</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>WebEngineLoginStackCleaner</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+  
+  <filter>
     <display-name>WebEngine Authentication Filter</display-name>
     <filter-name>NuxeoAuthenticationFilter</filter-name>
     <filter-class>
