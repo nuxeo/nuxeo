@@ -274,9 +274,6 @@
         <fields>
           <field>note:note</field>
         </fields>
-        <properties widgetMode="edit">
-          <property name="styleClass">dataInputText</property>
-        </properties>
       </widget>
     </layout>
 
@@ -711,9 +708,6 @@
         <fields>
           <field>webc:welcomeText</field>
         </fields>
-        <properties widgetMode="edit">
-          <property name="styleClass">dataInputText</property>
-        </properties>
       </widget>
 
       <widget name="welcomeMedia" type="file">
