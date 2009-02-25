@@ -61,7 +61,7 @@ public class WebException extends WebApplicationException {
     }
 
     /** use WebExeption.wrap() and not the constructor */
-    
+
     protected WebException(Throwable cause, Response.Status status) {
         super(cause, status);
     }
@@ -179,5 +179,5 @@ public class WebException extends WebApplicationException {
         pw.close();
         return Response.status(500).entity(sw.toString()).build();
     }
-    
+
 }

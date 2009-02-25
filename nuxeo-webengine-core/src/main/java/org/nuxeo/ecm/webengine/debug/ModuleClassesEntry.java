@@ -19,18 +19,17 @@ package org.nuxeo.ecm.webengine.debug;
 import java.io.File;
 
 /**
- * This handles module packages (class directories) 
+ * This handles module packages (class directories).
  * Packages have valid java names and excludes skin and i18n.
- * 
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class ModuleClassesEntry extends DirectoryEntry {
 
     public ModuleClassesEntry(File file) {
-        super (file);
+        super(file);
     }
-    
+
     @Override
     protected void collectChildren() {
         for (File f : file.listFiles()) {
@@ -39,10 +38,10 @@ public class ModuleClassesEntry extends DirectoryEntry {
                 if ("skin".equals(name) || "i18n".equals(name) || name.indexOf('-') != -1) {
                     continue;
                 } else {
-                	entries.add(new TreeEntry(f));
+                    entries.add(new TreeEntry(f));
                 }
             }
-        }  
+        }
     }
-    
+
 }

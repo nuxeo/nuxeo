@@ -57,7 +57,7 @@ public class WebEngineServlet extends HttpServlet {
 
     protected WebEngineDispatcher dispatcher;
 //    protected WebEngine engine;
-    
+
     protected void initializeBuiltinProviders(
             ResteasyProviderFactory providerFactory) {
         // RegisterBuiltin.register(providerFactory);

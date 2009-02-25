@@ -47,7 +47,7 @@ public class GWTHelper {
 
 
     public static JSONArray getChildren(CoreSession session) { // the roots
-        try {            
+        try {
             return getChildren(session, session.getRootDocument(), null);
         } catch (ClientException e) {
             throw WebException.wrap(e);
@@ -69,7 +69,7 @@ public class GWTHelper {
     public static JSONArray getChildren(CoreSession session, DocumentModel doc) {
         return getChildren(session, doc, doc.getId());
     }
-    
+
     public static JSONArray getChildren(CoreSession session, DocumentModel doc, String parentRef) {
         JSONArray list  = new JSONArray();
         if( doc == null ){
@@ -173,7 +173,7 @@ public class GWTHelper {
 
     public static JSONObject doc2JSon(DocumentModel doc, String... schemas) {
         try {
-            DocumentRef parentRef = doc.getParentRef(); 
+            DocumentRef parentRef = doc.getParentRef();
             JSONObject obj = new JSONObject();
             obj.put("id", doc.getId());
             obj.put("parentId", parentRef == null ? null : parentRef.reference());

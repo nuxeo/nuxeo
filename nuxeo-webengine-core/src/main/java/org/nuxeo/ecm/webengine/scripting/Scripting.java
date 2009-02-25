@@ -89,9 +89,9 @@ public class Scripting {
      * @return the scriptMgr
      */
     public ScriptEngineManager getEngineManager() {
-		if (scriptMgr == null) {
-			scriptMgr = new ScriptEngineManager();
-		}
+        if (scriptMgr == null) {
+            scriptMgr = new ScriptEngineManager();
+        }
         return scriptMgr;
     }
 

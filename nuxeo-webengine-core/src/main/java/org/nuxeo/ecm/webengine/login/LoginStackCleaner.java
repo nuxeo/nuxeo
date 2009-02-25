@@ -34,11 +34,11 @@ import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 public class LoginStackCleaner implements Filter {
 
     public void init(FilterConfig arg0) throws ServletException {
-        
+
     }
-    
+
     public void destroy() {
-        
+
     }
 
     public void doFilter(ServletRequest arg0, ServletResponse arg1,

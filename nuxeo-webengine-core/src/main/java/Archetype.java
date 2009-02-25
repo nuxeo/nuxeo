@@ -1,4 +1,3 @@
-
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -41,7 +40,7 @@ import org.w3c.dom.Node;
  *
  */
 public class Archetype {
-    
+
     private static final int BUFFER_SIZE = 1024 * 64; // 64K
     private static final int MAX_BUFFER_SIZE = 1024 * 1024; // 64K
     private static final int MIN_BUFFER_SIZE = 1024 * 8; // 64K
@@ -49,7 +48,7 @@ public class Archetype {
     static boolean batchMode = false;
     static String outDir = "${artifactId}";
     static File archive;
-    
+
     public static void main(String[] args) throws Exception {
         if (args.length == 0) {
             System.err.println("Syntax Error: you must specify a project template name");
@@ -60,9 +59,9 @@ public class Archetype {
             batchMode = true;
             if (args.length < 2) {
                 System.err.println("Syntax Error: you must specify a project template name");
-            }   
+            }
             tpl = args[++k];
-        }        
+        }
         k++;
         archive = new File(tpl);
         if (args.length > k) {
@@ -75,15 +74,15 @@ public class Archetype {
             System.exit(1);
         }
         // load archetype definition
-        InputStream in = new BufferedInputStream(zip.getInputStream(entry)); 
+        InputStream in = new BufferedInputStream(zip.getInputStream(entry));
         Document doc = load(in);
         zip.close();
         // process it
         processArchetype(doc, System.getProperties());
     }
-    
 
-    
+
+
     private static void expandVars(File file, Map<?,?> vars) throws IOException {
         String content = readFile(file);
         content = expandVars(content, vars);
@@ -182,7 +181,7 @@ public class Archetype {
         }
         return result.toString();
     }
-    
+
     public static String readFile(File file) throws IOException {
         FileInputStream in = null;
         try {
@@ -194,7 +193,7 @@ public class Archetype {
             }
         }
     }
-    
+
     public static String read(InputStream in) throws IOException {
         StringBuilder sb = new StringBuilder();
         byte[] buffer = createBuffer(in.available());
@@ -208,7 +207,7 @@ public class Archetype {
         }
         return sb.toString();
     }
-    
+
     public static void copyToFile(InputStream in, File file) throws IOException {
         OutputStream out = null;
         try {
@@ -235,14 +234,14 @@ public class Archetype {
         }
         return new byte[preferredSize];
     }
-    
+
     public static Document load(File file) throws Exception  {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
         DocumentBuilder builder = factory.newDocumentBuilder();
         return builder.parse(file);
     }
-    
+
     public static Document load(InputStream in) throws Exception  {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
@@ -261,7 +260,7 @@ public class Archetype {
                     if (label == null) {
                         label = key;
                     }
-                    String val = (String)vars.get(key); 
+                    String val = (String)vars.get(key);
                     String def = el.getAttribute("default");
                     if (def != null) {
                         def = expandVars(def, vars);
@@ -270,22 +269,22 @@ public class Archetype {
                     }
                     if (!batchMode && val == null && "true".equals(el.getAttribute("prompt"))) {
                         val = readVar(label, def);
-                    } 
-                    if (val == null) { 
+                    }
+                    if (val == null) {
                         val = def;
                     }
-                    vars.put(key, val); 
+                    vars.put(key, val);
                 }
             }
             node = node.getNextSibling();
         }
     }
-    
+
     public static void processResources(Element root, File dir, Map<Object,Object> vars) throws Exception  {
         Node node = root.getFirstChild();
         while (node != null) {
             if (node.getNodeType() == Node.ELEMENT_NODE) {
-                Element el = (Element)node;            
+                Element el = (Element)node;
                 if ("directory".equals(el.getNodeName())) {
                     String srcName = el.getAttribute("src");
                     if (srcName == null) {
@@ -317,7 +316,7 @@ public class Archetype {
                     File dst = new File(dir, targetName);
                     System.out.println("Renaming "+src + " to "+dst);
                     dst.getParentFile().mkdirs();
-                    src.renameTo(dst);                    
+                    src.renameTo(dst);
                 } else if ("template".equals(el.getNodeName())) {
                     String srcName = el.getAttribute("src");
                     if (srcName == null) {
@@ -326,7 +325,7 @@ public class Archetype {
                     File src = new File(dir, srcName);
                     System.out.println("Processing "+src);
                     expandVars(src, vars);
-                }        
+                }
             }
             node = node.getNextSibling();
         }
@@ -343,7 +342,7 @@ public class Archetype {
                 if ("vars".equals(el.getNodeName())) {
                     elVars = el;
                 } else if ("resources".equals(el.getNodeName())) {
-                    elRes = el;                    
+                    elRes = el;
                 }
             }
             node = node.getNextSibling();
@@ -434,7 +433,7 @@ public class Archetype {
     }
 
     public static void launch(String[] args) {
-      // launch an app.  
+      // launch an app.
     }
-    
+
 }

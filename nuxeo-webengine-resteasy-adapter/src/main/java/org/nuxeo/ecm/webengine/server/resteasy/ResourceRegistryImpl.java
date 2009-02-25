@@ -46,8 +46,8 @@ public class ResourceRegistryImpl implements ResourceRegistry {
     protected final Dispatcher dispatcher;
     protected final ResourceMethodRegistry registry;
     protected List<ResourceBinding> bindings;
-    
-    
+
+
     public ResourceRegistryImpl(Dispatcher dispatcher) {
         registry = (ResourceMethodRegistry)dispatcher.getRegistry();
         bindings = new ArrayList<ResourceBinding>();
@@ -148,5 +148,5 @@ public class ResourceRegistryImpl implements ResourceRegistry {
         dispatcher.getProviderFactory().addMessageBodyWriter(writer);
     }
 
-    
+
 }

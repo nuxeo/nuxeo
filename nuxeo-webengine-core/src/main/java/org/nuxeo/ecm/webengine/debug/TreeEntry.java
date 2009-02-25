@@ -31,15 +31,15 @@ public class TreeEntry extends DirectoryEntry {
 
     @Override
     protected void collectChildren() {
-    	if (!file.isDirectory()) { // may happens for missing directories in a project structure
-    		return;
-    	}
+        if (!file.isDirectory()) { // may happens for missing directories in a project structure
+            return;
+        }
         for (File f : file.listFiles()) {
-        	if (f.isDirectory()) {
-        		entries.add(new TreeEntry(f));
-        	} else {
-        		entries.add(new FileEntry(f));
-        	}
+            if (f.isDirectory()) {
+                entries.add(new TreeEntry(f));
+            } else {
+                entries.add(new FileEntry(f));
+            }
         }
     }
 

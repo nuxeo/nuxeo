@@ -128,8 +128,8 @@ public class FileChangeNotifier implements FileChangeListener {
                         FileChangeNotifier.this.filesCreated(created);
                     }
                     if (!modified.isEmpty()) {
-                        FileChangeNotifier.this.filesModified(modified);    
-                    }                    
+                        FileChangeNotifier.this.filesModified(modified);
+                    }
                 }
             } catch (Throwable t) {
                 log.error("Error while to notifying file change", t);
@@ -192,7 +192,7 @@ public class FileChangeNotifier implements FileChangeListener {
                     if (isDirectory) {
                         // this directory was removed and recreated as a file
                         isDirectory = false;
-                        removed.add(this.file); // because of this we must send first remove notif and then create 
+                        removed.add(this.file); // because of this we must send first remove notif and then create
                         created.add(this.file);
                     } else {
                         // TODO this file was removed and recreated as a directory

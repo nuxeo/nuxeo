@@ -68,7 +68,7 @@ public abstract class ModuleTracker implements Runnable {
             module.flushTypeCache();
         }
         if (skin.check()) { // skin changed - flush skin cache
-        	flushSkinCache(module);
+            flushSkinCache(module);
         }
     }
 
@@ -82,9 +82,9 @@ public abstract class ModuleTracker implements Runnable {
 //        module.flushTypeCache();
         ModuleConfiguration[] modules = module.getEngine().getModuleManager().getModules();
         for (ModuleConfiguration mc : modules) {
-        	if (mc.isLoaded()) {
-        		((ModuleImpl)mc.get()).flushTypeCache();
-        	}
+            if (mc.isLoaded()) {
+                ((ModuleImpl)mc.get()).flushTypeCache();
+            }
         }
     }
 
@@ -99,9 +99,9 @@ public abstract class ModuleTracker implements Runnable {
 //      module.flushSkinCache();
       ModuleConfiguration[] modules = module.getEngine().getModuleManager().getModules();
       for (ModuleConfiguration mc : modules) {
-      	if (mc.isLoaded()) {
-      		((ModuleImpl)mc.get()).flushSkinCache();
-      	}
+          if (mc.isLoaded()) {
+              ((ModuleImpl)mc.get()).flushSkinCache();
+          }
       }
   }
 

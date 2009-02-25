@@ -60,12 +60,12 @@ public class EngineService extends DefaultObject {
         System.out.println("open session2");
         CoreSession session2 = openSession("default");
         org.nuxeo.common.utils.Path path =  new org.nuxeo.common.utils.Path("/default-domain/workspaces");
-        
+
         System.out.println("modify doc in session1 without saving");
         DocumentModel w1 = session1.getDocument(new PathRef(path.toString()));
         w1.setPropertyValue("dc:title", "test1");
         System.out.println("saving doc in session 1");
-        session1.saveDocument(w1);        
+        session1.saveDocument(w1);
 
         System.out.println("modify doc in session2 and then save session");
         DocumentModel w2 = session2.getDocument(new PathRef(path.toString()));
@@ -76,9 +76,9 @@ public class EngineService extends DefaultObject {
 
         System.out.println("trying to save session 1 ...");
         session1.save();
-        
+
         System.out.println("session 1 saved => Test OK");
-        
+
         return "Test OK";
         } catch (Throwable t) {
             t.printStackTrace();

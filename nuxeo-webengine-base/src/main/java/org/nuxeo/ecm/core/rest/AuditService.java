@@ -37,7 +37,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Audit Service - manage document versions
  * TODO not yet implemented
- * <p/>
+ * <p>
  * Accepts the following methods:
  * <ul>
  * <li> GET - get audit records

@@ -205,7 +205,7 @@ public abstract class AbstractResourceType implements ResourceType {
             if (!"file".equals(url.getProtocol())) {
                 // TODO ScriptFile is not supporting URLs .. must refactor ScriptFile
                 return null;
-            }             
+            }
             try {
                 return new ScriptFile(new File(url.toURI()));
             } catch (Exception e) {

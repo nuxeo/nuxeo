@@ -34,5 +34,5 @@ public interface ResourceStore {
     boolean exists( final String name );
     long lastModified(String name);
     URL getURL( final String name );
-    
+
 }

@@ -38,7 +38,7 @@ import org.nuxeo.ecm.webengine.model.WebObject;
 /**
  * Load web types extracted from Groovy source files. Types are cached in
  * META-INF/groovy-web-types. When types are reloaded this file will be removed.
- *  
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
@@ -46,7 +46,7 @@ public class GroovyTypeLoader {
 
     public static final Log log = LogFactory.getLog(GroovyTypeLoader.class);
     public static final String CRLF = System.getProperty("line.separator");
-    public static final String WEB_TYPES_FILE = "META-INF/groovy-web-types"; 
+    public static final String WEB_TYPES_FILE = "META-INF/groovy-web-types";
 
     protected final WebLoader loader;
     protected final TypeRegistry typeReg;

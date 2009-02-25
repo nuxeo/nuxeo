@@ -33,21 +33,21 @@ import org.nuxeo.common.utils.FileUtils;
 public class FileResourceStore implements ResourceStore {
 
     private static final Log log = LogFactory.getLog(FileResourceStore.class);
-    
+
     protected File root;
 
     public FileResourceStore(File root) throws IOException {
         this.root = root.getCanonicalFile();
     }
-    
+
     public File getRoot() {
         return root;
     }
-    
+
     public final File getFile(String name) {
         return new File(root, name);
     }
-    
+
     public boolean exists(String name) {
         return getFile(name).exists();
     }
@@ -55,7 +55,7 @@ public class FileResourceStore implements ResourceStore {
     public long lastModified(String name) {
         return getFile(name).lastModified();
     }
-    
+
     public URL getURL(String name) {
         try {
             File file = getFile(name);
@@ -63,11 +63,11 @@ public class FileResourceStore implements ResourceStore {
                 return file.toURI().toURL();
             }
         } catch (IOException e) {
-            log.error("Failed to transform file to URL: "+name, e);            
+            log.error("Failed to transform file to URL: "+name, e);
         }
         return null;
     }
-    
+
     public byte[] getBytes(String name) {
         InputStream in = getStream(name);
         if (in != null) {
@@ -79,25 +79,25 @@ public class FileResourceStore implements ResourceStore {
         }
         return null;
     }
-    
+
     public InputStream getStream(String name) {
         try {
             return new FileInputStream(getFile(name));
-        } catch (IOException e) {             
+        } catch (IOException e) {
         }
         return null;
     }
-    
+
     public void remove(String name) {
         getFile(name).delete();
     }
-    
+
     public void put(String name, byte[] data) throws IOException {
         FileUtils.writeFile(getFile(name), data);
     }
-    
+
     public void put(String name, InputStream data) throws IOException {
         FileUtils.copyToFile(data, getFile(name));
     }
-    
+
 }

@@ -101,7 +101,7 @@ public class ModuleImpl implements Module {
             } else if ("ide".equals(devMode)) {
                 tracker = new IDEModuleTracker(this);
             } else {
-                tracker = new DefaultModuleTracker(this);                
+                tracker = new DefaultModuleTracker(this);
             }
         }
         return tracker;

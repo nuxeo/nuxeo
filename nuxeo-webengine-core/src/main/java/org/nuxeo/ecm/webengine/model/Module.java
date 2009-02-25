@@ -38,11 +38,11 @@ import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 public interface Module extends MessagesProvider {
 
     String getName();
-    
+
     File getRoot();
 
     Resource getRootObject(WebContext ctx);
-    
+
     WebEngine getEngine();
 
     void flushCache();
@@ -56,7 +56,7 @@ public interface Module extends MessagesProvider {
     Map<String,String> getMessages(String language);
 
     Messages getMessages();
-    
+
     List<ResourceBinding> getResourceBindings();
 
     /**

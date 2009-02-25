@@ -62,8 +62,9 @@ public interface WebContext extends Adaptable {
 
     /**
      * Gets the i18n message for the given key.
+     * <p>
      * The current module i18n messages are queried first then if no message is found
-     * the global message pool is queried (the one living in WEB-INF/i18n)
+     * the global message pool is queried (the one living in WEB-INF/i18n).
      * If no message is found  the key surrounded by exclamation marks is returned.
      *
      * @param key the message key
@@ -74,7 +75,7 @@ public interface WebContext extends Adaptable {
     String getMessage(String key, String ... args);
 
     /**
-     * Same as {@link #getMessage(String)} but use the given locale.
+     * Same as {@link #getMessage(String)} but uses the given locale.
      *
      * @param key the message key
      * @param locale the locale to use
@@ -102,7 +103,7 @@ public interface WebContext extends Adaptable {
     UserSession getUserSession();
 
     /**
-     * The Core Session (or Repository Session) corresponding to that request.
+     * Gets the Core Session (or Repository Session) corresponding to that request.
      *
      * @return the core session. Cannot return null
      */
@@ -144,8 +145,9 @@ public interface WebContext extends Adaptable {
     String getMethod();
 
     /**
-     * Gets the representation of the data form submitted by the user. This is
-     * providing access to both POST and GET parameters, or to multipart form
+     * Gets the representation of the data form submitted by the user.
+     * <p>
+     * This provides access to both POST and GET parameters, or to multipart form
      * data requests.
      *
      * @return the request form data. Cannot return null
@@ -177,15 +179,17 @@ public interface WebContext extends Adaptable {
     String getUrlPath();
 
     /**
-     * Get the login path for the current context.
+     * Gets the login path for the current context.
+     * <p>
      * This is the path you can use as a login form action to perform a login or a logout.
-     * After the login/logout is done the current page in that context will be served.  
-     * @return 
+     * After the login/logout is done the current page in that context will be served.
+     * @return
      */
     String getLoginPath();
-    
+
     /**
      * Get the path prefix that identify the current web application.
+     * <p>
      * The application path will include the base path (context + servlet path).
      *
      * @return the application path. Cannot be null
@@ -216,7 +220,6 @@ public interface WebContext extends Adaptable {
     StringBuilder getServerURL();
 
     /**
-     * TODO: should we remove this method from the context and create a specialized service to resolve document models to paths?
      * Get a suitable URI path for the given Nuxeo document, that can be used to invoke this document.
      * This method is working only for root objects that implement {@link ModuleResource}
      *
@@ -225,7 +228,9 @@ public interface WebContext extends Adaptable {
      * XXX can this method return null?
      * @throws ClassCastException if the module root is not implementing {@link ModuleResource}
      */
-    String getUrlPath(DocumentModel document) throws ClassCastException; 
+     // TODO: should we remove this method from the context and create a
+     // specialized service to resolve document models to paths?
+    String getUrlPath(DocumentModel document) throws ClassCastException;
 
     /**
      * Sets a context variable.
@@ -292,7 +297,7 @@ public interface WebContext extends Adaptable {
 
     AdapterResource newAdapter(Resource ctx, String adapterName, Object ...  args);
 
-    /** object stack API */
+    /* object stack API */
 
     Resource push(Resource obj);
 
@@ -306,7 +311,7 @@ public interface WebContext extends Adaptable {
 
     AdapterResource getTargetAdapter();
 
-    /** template and script resolver */
+    /* template and script resolver */
 
     /**
      * Resolves the given path into a file.

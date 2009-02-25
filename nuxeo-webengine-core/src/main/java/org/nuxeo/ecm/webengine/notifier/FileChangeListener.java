@@ -52,6 +52,6 @@ public interface FileChangeListener {
     void filesModified(List<File> entry) throws Exception;
 
     void filesCreated(List<File> entry) throws Exception;
-    
+
     void filesRemoved(List<File> entry) throws Exception;
 }
