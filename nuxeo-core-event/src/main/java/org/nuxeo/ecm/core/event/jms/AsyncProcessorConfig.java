@@ -26,7 +26,7 @@ import org.nuxeo.runtime.api.Framework;
  * - by the core directly
  * or
  * - by JMS bus
- * <p/>
+ * <p>
  * (mainly used for testing)
  *
  * @author tiry

@@ -28,7 +28,7 @@ import org.nuxeo.ecm.core.event.EventContext;
 
 /**
  * Base class to be used to create new context events.
- * <p/>
+ * <p>
  * This class handles context properties and event creation.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

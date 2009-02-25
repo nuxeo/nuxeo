@@ -27,7 +27,7 @@ import org.nuxeo.runtime.model.RuntimeContext;
 
 /**
  * PostCommitEventListenerTest test ScriptingPostCommitEventListener
- * 
+ *
  * @author <a href="mailto:jt@nuxeo.com">Julien THIMONIER</a>
  */
 public class PostCommitEventListenerTest extends RepositoryOSGITestCase {
