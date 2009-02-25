@@ -22,13 +22,14 @@ import javax.management.ObjectName;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
- * 
+ *
  */
 public interface ResourcePublisher {
 
     Set<String> getShortcutsName();
 
     Set<ObjectName> getResourcesName();
-    
+
     ObjectName lookupName(String name);
+
 }

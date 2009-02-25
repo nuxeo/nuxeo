@@ -18,7 +18,6 @@ package org.nuxeo.runtime.management;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
- * 
  */
 public class ManagementRuntimeException extends RuntimeException {
 
@@ -47,4 +46,5 @@ public class ManagementRuntimeException extends RuntimeException {
     public ManagementRuntimeException(Throwable cause) {
         super(cause);
     }
+
 }

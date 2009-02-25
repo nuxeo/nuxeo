@@ -42,7 +42,7 @@ import org.osgi.framework.FrameworkListener;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
- * 
+ *
  */
 public class ResourcePublisherService extends DefaultComponent implements
         ResourcePublisher, ResourcePublisherMBean {
@@ -312,14 +312,16 @@ public class ResourcePublisherService extends DefaultComponent implements
             Class<?> managementClass, Object instance) {
         resourcesRegistry.doRegisterResource(qualifiedName, managementClass,
                 instance);
-        if (shortName != null)
+        if (shortName != null) {
             shortcutsRegistry.doRegisterShortcut(shortName, qualifiedName);
+        }
     }
 
     public void unregisterResource(String shortName, String qualifiedName) {
         resourcesRegistry.doUnregisterResource(qualifiedName);
-        if (shortName != null)
+        if (shortName != null) {
             shortcutsRegistry.doUnregisterShortcut(shortName);
+        }
     }
 
     public void registerShortcut(String shortName, String qualifiedName) {
@@ -339,8 +341,9 @@ public class ResourcePublisherService extends DefaultComponent implements
     }
 
     public ObjectName lookupName(String name) {
-        if (!shortcutsRegistry.registry.containsKey(name))
+        if (!shortcutsRegistry.registry.containsKey(name)) {
             return ObjectNameFactory.getObjectName(name);
+        }
         return shortcutsRegistry.registry.get(name);
     }
 
@@ -401,7 +404,7 @@ public class ResourcePublisherService extends DefaultComponent implements
         }
         resourcesRegistry.doUnbind(resource);
     }
-    
+
     protected void bindForTest(MBeanServer server, ObjectName name, Object instance, Class<?> clazz) throws Exception {
         resourcesRegistry.doBind(server,name,instance,clazz);
     }

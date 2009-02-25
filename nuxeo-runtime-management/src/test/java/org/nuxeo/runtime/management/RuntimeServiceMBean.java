@@ -21,7 +21,7 @@ import java.util.Set;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
- * 
+ *
  */
 public interface RuntimeServiceMBean {
 

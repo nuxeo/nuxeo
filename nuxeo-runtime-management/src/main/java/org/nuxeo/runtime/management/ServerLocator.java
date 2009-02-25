@@ -21,7 +21,7 @@ import javax.management.ObjectName;
 
 /**
  * @author matic
- * 
+ *
  */
 public interface ServerLocator {
 

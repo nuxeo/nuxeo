@@ -20,7 +20,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
- * 
+ *
  */
 public class DummyService extends DefaultComponent implements Dummy,
         DummyMBean {

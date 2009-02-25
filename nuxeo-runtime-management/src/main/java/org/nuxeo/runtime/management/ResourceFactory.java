@@ -18,12 +18,12 @@ package org.nuxeo.runtime.management;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
- * 
+ *
  */
 public interface ResourceFactory {
 
     void configure(ResourcePublisherService service, ResourceFactoryDescriptor descriptor);
-    
+
     void registerResources();
 
 }

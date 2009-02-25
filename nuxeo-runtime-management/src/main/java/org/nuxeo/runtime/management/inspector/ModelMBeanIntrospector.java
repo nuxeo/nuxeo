@@ -44,7 +44,7 @@ import org.nuxeo.runtime.management.ManagementRuntimeException;
 
 /**
  * @author matic
- * 
+ *
  */
 public class ModelMBeanIntrospector {
 
@@ -67,8 +67,9 @@ public class ModelMBeanIntrospector {
     @SuppressWarnings("unchecked")
     ModelMBeanInfo introspect() {
 
-        if (managementInfo != null)
+        if (managementInfo != null) {
             return managementInfo;
+        }
 
         // Collect ifaces
         List<Class> ifaces = new ArrayList<Class>(1);
@@ -80,7 +81,7 @@ public class ModelMBeanIntrospector {
 
         // Introspect
         for (Class iface : ifaces) {
-            BeanInfo beanInfo = null;
+            BeanInfo beanInfo;
             try {
                 beanInfo = Introspector.getBeanInfo(iface);
             } catch (java.beans.IntrospectionException e) {
@@ -126,11 +127,12 @@ public class ModelMBeanIntrospector {
 
     protected void doCollectAttributes(Class<?> clazz, BeanInfo beanInfo) {
         for (PropertyDescriptor propertyInfo : beanInfo.getPropertyDescriptors()) {
-            if (propertyInfo.isHidden())
+            if (propertyInfo.isHidden()) {
                 continue;
+            }
             ModelMBeanAttributeInfo attributeInfo = null;
             try {
-                Descriptor descriptor = 
+                Descriptor descriptor =
                     doGetDescriptor(propertyInfo, "attribute");
                 Method readMethod = propertyInfo.getReadMethod();
                 Method writeMethod = propertyInfo.getWriteMethod();
@@ -159,8 +161,9 @@ public class ModelMBeanIntrospector {
 
     protected void doCollectOperations(Class<?> clazz, BeanInfo beanInfo) {
         for (MethodDescriptor methodInfo : beanInfo.getMethodDescriptors()) {
-            if (methodInfo.isHidden())
+            if (methodInfo.isHidden()) {
                 continue;
+            }
             Descriptor descriptor = doGetDescriptor(methodInfo, "operation");
             String name = methodInfo.getName();
             Method method = methodInfo.getMethod();
@@ -249,9 +252,9 @@ public class ModelMBeanIntrospector {
 //         if (writter != null) {
 //         descriptor.setField("setMethod", writter.getName());
 //         }
-//                
-//        
-//        
+//
+//
+//
 //         attributesInfo.put(attributeName, new ModelMBeanAttributeInfo(
 //         attributeName, attributeName, reader, writter));
 //    }

@@ -30,24 +30,24 @@ public class TestObjectNameFactory extends TestCase {
 
     public void testSimpleForm() {
         ObjectName name = ObjectNameFactory.getObjectName("simple");
-        assertEquals(name.getCanonicalName(), "nx:name=simple,type=service");
+        assertEquals("nx:name=simple,type=service", name.getCanonicalName());
     }
-    
+
     public void testAvaForm() {
         ObjectName name = ObjectNameFactory.getObjectName("name=value");
-        assertEquals(name.getCanonicalName(), "nx:name=value");
+        assertEquals("nx:name=value", name.getCanonicalName());
     }
-    
-    
+
+
     public void testFullForm() {
         ObjectName name = ObjectNameFactory.getObjectName("foo:name=value");
-        assertEquals(name.getCanonicalName(), "foo:name=value");
+        assertEquals("foo:name=value", name.getCanonicalName());
     }
-    
-    
+
     public void testShortName() {
         ObjectName name = ObjectNameFactory.getObjectName("foo:name=value,type=service,info=metric");
         String shortName = ObjectNameFactory.formatShortName(name);
         assertEquals("value-metric", shortName);
     }
+
 }

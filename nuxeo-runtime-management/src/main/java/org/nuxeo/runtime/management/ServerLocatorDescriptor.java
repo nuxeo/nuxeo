@@ -21,14 +21,14 @@ import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
  * @author matic
- * 
+ *
  */
 @XObject("locator")
 public class ServerLocatorDescriptor {
 
     public ServerLocatorDescriptor(String domainName, boolean isDefaultServer) {
         this.domainName = domainName;
-        this.isDefaulServer = isDefaultServer;
+        this.isDefaultServer = isDefaultServer;
     }
 
     @XNode("@domain")
@@ -37,11 +37,12 @@ public class ServerLocatorDescriptor {
     public String getDomainName() {
         return domainName;
     }
-    
+
     @XNode("@default")
-    protected boolean isDefaulServer = true;
-    
+    protected boolean isDefaultServer = true;
+
     public boolean isDefaultServer() {
-        return isDefaulServer;
+        return isDefaultServer;
     }
+
 }

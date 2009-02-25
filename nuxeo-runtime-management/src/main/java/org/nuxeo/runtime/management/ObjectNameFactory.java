@@ -27,7 +27,7 @@ import org.nuxeo.runtime.model.ComponentName;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
- * 
+ *
  */
 public class ObjectNameFactory {
 
@@ -64,15 +64,15 @@ public class ObjectNameFactory {
     public static String formatQualifiedName(String instanceName) {
         return formatQualifiedName("service", instanceName);
     }
-    
+
     public static String formatMetricQualifiedName(ComponentName name, String metricName) {
         return formatQualifiedName(name) + ",metric=" + metricName + ",management=metric";
     }
-    
+
     public static String formatInventoryQualifiedName(ComponentName name) {
         return formatQualifiedName(name) + ",management=inventory";
     }
-    
+
     public static String formatProbeQualifiedName(ComponentName name) {
         return formatQualifiedName(name) + ",management=probe";
     }
@@ -96,10 +96,12 @@ public class ObjectNameFactory {
         for (Map.Entry<String, String> keyEntry : keys.entrySet()) {
             String key = keyEntry.getKey();
             String value = keyEntry.getValue();
-            if (key.equals("name"))
+            if (key.equals("name")) {
                 continue;
-            if (key.equals("type") && value.equals("service"))
+            }
+            if (key.equals("type") && value.equals("service")) {
                 continue;
+            }
             shortName += "-" + keyEntry.getValue();
         }
         return shortName;
@@ -131,7 +133,7 @@ public class ObjectNameFactory {
         Matcher matcher = avaPattern.matcher(value);
         return matcher.matches();
     }
-    
+
     public static boolean isQualified(String name) {
         return hasDomain(name) && hasAttributeValueAssertion(name);
     }
@@ -164,15 +166,14 @@ public class ObjectNameFactory {
         }
     }
 
-
     public static String formatMetricShortName(String name) {
         return name + "-metric";
     }
-    
+
     public static String formatInventoryShortName(String name) {
         return name + "-inventory";
     }
-    
+
     public static String formatProbeShortName(String name) {
         return name + "-probe";
     }

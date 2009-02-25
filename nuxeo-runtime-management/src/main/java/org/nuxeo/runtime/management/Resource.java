@@ -20,8 +20,8 @@ import javax.management.ObjectName;
 import javax.management.modelmbean.RequiredModelMBean;
 
 /**
- * @authorStephane Lacoin (Nuxeo EP Software Engineer)
- * 
+ * @author Stephane Lacoin (Nuxeo EP Software Engineer)
+ *
  */
 public class Resource {
 
@@ -33,17 +33,11 @@ public class Resource {
 
     protected RequiredModelMBean mbean;
 
-    /**
-     * @param descriptor
-     * @param managementName
-     * @param managementClass
-     * @param serviceInstance
-     */
     public Resource(ObjectName managementName,
             Class<?> managementClass, Object serviceInstance) {
         this.managementName = managementName;
-        this.clazz = managementClass;
-        this.instance = serviceInstance;
+        clazz = managementClass;
+        instance = serviceInstance;
     }
 
     public Object getInstance() {
@@ -58,8 +52,8 @@ public class Resource {
         return clazz;
     }
 
-
     public boolean isRegistered() {
         return mbean != null;
     }
+
 }

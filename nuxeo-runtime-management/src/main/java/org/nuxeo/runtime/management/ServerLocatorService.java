@@ -61,7 +61,7 @@ public class ServerLocatorService extends DefaultComponent implements
         for (MBeanServer server : (List<MBeanServer>) MBeanServerFactory.findMBeanServer(null)) {
             if (server.getDefaultDomain().equals(domainName)) {
                 otherServers.put(domainName, server);
-                if (descriptor.isDefaulServer) {
+                if (descriptor.isDefaultServer) {
                     defaultServer = server;
                 }
                 return;
@@ -73,11 +73,10 @@ public class ServerLocatorService extends DefaultComponent implements
 
     protected void doUnregisterLocator(ServerLocatorDescriptor descriptor) {
         otherServers.remove(descriptor.domainName);
-        if (descriptor.isDefaulServer) {
+        if (descriptor.isDefaultServer) {
             defaultServer = ManagementFactory.getPlatformMBeanServer();
         }
     }
-
 
     @SuppressWarnings("unchecked")
     public MBeanServer lookupServer(ObjectName qualifiedName) {

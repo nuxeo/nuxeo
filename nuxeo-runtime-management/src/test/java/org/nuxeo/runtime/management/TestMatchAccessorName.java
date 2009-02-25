@@ -22,8 +22,8 @@ import java.util.regex.Pattern;
 import junit.framework.TestCase;
 
 /**
- * @authorStephane Lacoin (Nuxeo EP Software Engineer)
- * 
+ * @author Stephane Lacoin (Nuxeo EP Software Engineer)
+ *
  */
 public class TestMatchAccessorName extends TestCase {
 
@@ -34,4 +34,5 @@ public class TestMatchAccessorName extends TestCase {
         assertTrue(matcher.matches());
         assertEquals("Something",matcher.group(2));
     }
+
 }

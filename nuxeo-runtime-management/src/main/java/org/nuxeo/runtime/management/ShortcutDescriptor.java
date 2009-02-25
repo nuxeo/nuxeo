@@ -21,13 +21,12 @@ import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
  * @author matic
- * 
+ *
  */
 @XObject("shortcut")
 public class ShortcutDescriptor {
 
     public ShortcutDescriptor() {
-        ;
     }
 
     public ShortcutDescriptor(String shortName, String qualifiedName) {
@@ -40,7 +39,7 @@ public class ShortcutDescriptor {
 
     @XNode("@qualifiedName")
     private String qualifiedName;
-    
+
     @XNode("@locator")
     private String locator;
 
@@ -51,8 +50,9 @@ public class ShortcutDescriptor {
     public String getQualifiedName() {
         return qualifiedName;
     }
-    
+
     public String getLocator() {
         return locator;
     }
+
 }

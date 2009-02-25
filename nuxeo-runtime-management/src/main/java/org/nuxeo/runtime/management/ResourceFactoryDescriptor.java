@@ -21,7 +21,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
  * @author matic
- * 
+ *
  */
 @XObject("factory")
 public class ResourceFactoryDescriptor {
@@ -32,7 +32,6 @@ public class ResourceFactoryDescriptor {
     }
 
     public ResourceFactoryDescriptor() {
-        super();
     }
 
     @XNode("@name")
