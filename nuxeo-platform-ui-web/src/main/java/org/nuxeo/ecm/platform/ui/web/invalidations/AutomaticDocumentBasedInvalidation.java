@@ -13,9 +13,7 @@ import javax.interceptor.Interceptors;
  * invalidation system.
  *
  * On each call, the currentDocument will be passed to a invalidation method
- * (this method must be annotated with
- *
- * @DocumentContextInvalidation)
+ * (this method must be annotated with "@DocumentContextInvalidation")
  *
  * @author tiry
  *

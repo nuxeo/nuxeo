@@ -16,7 +16,8 @@ import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 
 /**
  *
- * Interceptor used for automatic injection/invalidation tied to currentDocumentModel
+ * Interceptor used for automatic injection/invalidation tied to
+ * currentDocumentModel
  *
  * @author tiry
  *
@@ -24,9 +25,6 @@ import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 @Interceptor(stateless = true, within = BijectionInterceptor.class)
 public class DocumentContextInvalidatorInterceptor extends AbstractInterceptor {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
 
     private static final Log log = LogFactory.getLog(DocumentContextInvalidatorInterceptor.class);
@@ -59,7 +57,7 @@ public class DocumentContextInvalidatorInterceptor extends AbstractInterceptor {
         } else {
             DocumentModel currentDoc = getCurrentDocumentModel();
             if (currentDoc != null) {
-                meth.invoke(target, getCurrentDocumentModel());
+                meth.invoke(target, currentDoc);
             } else {
                 log.error("Unable to get CurrentDocument");
             }
@@ -67,7 +65,6 @@ public class DocumentContextInvalidatorInterceptor extends AbstractInterceptor {
     }
 
     private DocumentModel getCurrentDocumentModel() {
-        //NavigationContext navigationContext = (NavigationContext) Contexts.getConversationContext().get("navigationContext");
         NavigationContext navigationContext = (NavigationContext) Component.getInstance(
                 "navigationContext", ScopeType.CONVERSATION);
         return navigationContext.getCurrentDocument();
