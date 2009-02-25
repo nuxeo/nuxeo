@@ -87,10 +87,10 @@ public class ConverterDescriptor implements Serializable {
 
     public void initConverter() throws Exception {
         if (instance == null) {
-            if ((className == null)
-                    || (converterType.equals(CHAINED_CONVERTER_TYPE))) {
+            if (className == null
+                    || converterType.equals(CHAINED_CONVERTER_TYPE)) {
 
-                if ((subConverters == null) || (subConverters.size() == 0)) {
+                if (subConverters == null || subConverters.size() == 0) {
                     // create a Chained converter based on mimetypes
                     instance = new ChainedConverter();
                 } else {
@@ -152,7 +152,7 @@ public class ConverterDescriptor implements Serializable {
         if (other.converterType != null) {
             converterType = other.converterType;
         }
-        if ((other.steps != null) && (other.steps.size() > 0)) {
+        if (other.steps != null && other.steps.size() > 0) {
             steps = other.steps;
         }
 

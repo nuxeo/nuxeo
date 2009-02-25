@@ -76,7 +76,7 @@ public class SimpleCachableBlobHolder extends SimpleBlobHolder implements
     }
 
     public String persist(String basePath) throws Exception {
-        if ((blobs == null) || (blobs.size() == 0)) {
+        if (blobs == null || blobs.size() == 0) {
             return null;
         }
         Path path = new Path(basePath);

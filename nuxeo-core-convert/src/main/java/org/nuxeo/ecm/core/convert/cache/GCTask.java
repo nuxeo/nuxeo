@@ -57,10 +57,10 @@ public class GCTask implements Runnable {
 
                 if (gcInterval < 0) {
                     // for tests
-                    log.debug("GC sleeps for " + (-gcInterval));
+                    log.debug("GC sleeps for " + -gcInterval);
                     Thread.sleep(-gcInterval);
                 } else {
-                    log.debug("GC sleeps for " + (gcInterval * 60 * 1000));
+                    log.debug("GC sleeps for " + gcInterval * 60 * 1000);
                     // GC Interval is stored in minutes
                     Thread.sleep(gcInterval * 60 * 1000);
                 }

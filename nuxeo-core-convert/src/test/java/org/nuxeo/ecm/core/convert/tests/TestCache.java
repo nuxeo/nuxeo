@@ -73,7 +73,6 @@ public class TestCache extends NXRuntimeTestCase {
         // check new cache entry was created
         assertEquals(1, cacheSize2 - cacheSize1);
 
-
         BlobHolder result2 = cs.convert("identity", bh, null);
 
         // check NO new cache entry was created

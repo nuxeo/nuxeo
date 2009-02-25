@@ -38,7 +38,7 @@ import org.nuxeo.ecm.core.convert.service.MimeTypeTranslationHelper;
  * <li>a chain of mime-types
  * <li>a chain of converter names
  * </ul>
- *
+ * <p>
  * This depends on the properties of the descriptor.
  *
  * @author tiry
@@ -98,8 +98,8 @@ public class ChainedConverter implements Converter {
         }
     }
 
-    /*
-     * Try to find a chain of converters that fits the mime-types chain
+    /**
+     * Tries to find a chain of converters that fits the mime-types chain.
      */
     protected BlobHolder convertBasedOnMimeTypes(BlobHolder blobHolder,
             Map<String, Serializable> parameters) throws ConversionException {

@@ -59,7 +59,9 @@ public class ConversionServiceImpl extends DefaultComponent implements
 
     protected static final GlobalConfigDescriptor config = new GlobalConfigDescriptor();
 
-    /** Component implementation * */
+    /**
+     * Component implementation *
+     */
 
     @Override
     public void registerContribution(Object contribution,
@@ -106,8 +108,8 @@ public class ConversionServiceImpl extends DefaultComponent implements
 
         if (converterDescriptors.containsKey(desc.getConverterName())) {
 
-            ConverterDescriptor existing = converterDescriptors.get(desc
-                    .getConverterName());
+            ConverterDescriptor existing = converterDescriptors.get(
+                    desc.getConverterName());
             desc = existing.merge(desc);
         }
         try {
@@ -180,7 +182,7 @@ public class ConversionServiceImpl extends DefaultComponent implements
             BlobHolder blobHolder, Map<String, Serializable> parameters)
             throws ConversionException {
 
-        String converterName = null;
+        String converterName;
         try {
             String srcMt = blobHolder.getBlob().getMimeType();
             converterName = MimeTypeTranslationHelper.getConverterName(srcMt,
@@ -222,19 +224,19 @@ public class ConversionServiceImpl extends DefaultComponent implements
         }
 
         ConverterDescriptor descriptor = converterDescriptors.get(converterName);
-        if (descriptor==null) {
+        if (descriptor == null) {
             throw new ConverterNotRegistred(converterName);
         }
 
         Converter converter = descriptor.getConverterInstance();
 
-        ConverterCheckResult result=null;
+        ConverterCheckResult result;
         if (converter instanceof ExternalConverter) {
             ExternalConverter exConverter = (ExternalConverter) converter;
-            result= exConverter.isConverterAvailable();
+            result = exConverter.isConverterAvailable();
         } else {
             // return success since there is nothing to test
-            result =  new ConverterCheckResult();
+            result = new ConverterCheckResult();
         }
 
         result.setSupportedInputMimeTypes(descriptor.getSourceMimeTypes());

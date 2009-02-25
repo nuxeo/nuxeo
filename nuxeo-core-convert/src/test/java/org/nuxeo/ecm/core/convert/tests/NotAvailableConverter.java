@@ -36,13 +36,10 @@ public class NotAvailableConverter implements ExternalConverter {
 
     public BlobHolder convert(BlobHolder blobHolder,
             Map<String, Serializable> parameters) throws ConversionException {
-        // TODO Auto-generated method stub
         return null;
     }
 
     public void init(ConverterDescriptor descriptor) {
-        // TODO Auto-generated method stub
-
     }
 
 }

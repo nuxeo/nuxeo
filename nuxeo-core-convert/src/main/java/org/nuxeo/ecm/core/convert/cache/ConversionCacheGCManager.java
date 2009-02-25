@@ -105,15 +105,12 @@ public class ConversionCacheGCManager {
             sortingMap.put(cacheEntry.getLastAccessedTime(), key);
         }
 
-        List<Date> accesTimeList = new ArrayList<Date>();
-
-        accesTimeList.addAll(sortingMap.keySet());
-
-        Collections.sort(accesTimeList);
+        List<Date> accessTimeList = new ArrayList<Date>();
+        accessTimeList.addAll(sortingMap.keySet());
+        Collections.sort(accessTimeList);
 
         long deletedVolume = 0;
-
-        for (Date accessDate : accesTimeList) {
+        for (Date accessDate : accessTimeList) {
             ConversionCacheEntry cacheEntry = ConversionCacheHolder.getCacheEntry(sortingMap.get(accessDate));
 
             long deletePotential = cacheEntry.getDiskSpaceUsageInKB();

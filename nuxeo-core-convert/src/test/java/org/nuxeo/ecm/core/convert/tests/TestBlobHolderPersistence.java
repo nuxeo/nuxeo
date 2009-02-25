@@ -33,16 +33,13 @@ import junit.framework.TestCase;
 
 public class TestBlobHolderPersistence extends TestCase {
 
-    public void testPersistence() throws Exception  {
-
+    public void testPersistence() throws Exception {
         List<Blob> blobs = new ArrayList<Blob>();
-        for (int i=0; i<10; i++) {
+        for (int i = 0; i < 10; i++) {
             Blob blob = new StringBlob("FileContent_" + i);
-            if (i==0) {
+            if (i == 0) {
                 blob.setFilename("index.html");
-            }
-            else
-            {
+            } else {
                 blob.setFilename("subFile" + i + ".txt");
             }
             blobs.add(blob);
@@ -74,12 +71,11 @@ public class TestBlobHolderPersistence extends TestCase {
                     assertTrue(subFile.getName().startsWith("subFile"));
                     assertTrue(new FileBlob(subFile).getString().startsWith("FileContent_"));
                 }
-                subFilesFound=true;
-            }
-            else {
+                subFilesFound = true;
+            } else {
                 assertTrue(file.getName().startsWith("index.html"));
                 assertTrue(new FileBlob(file).getString().startsWith("FileContent_"));
-                mainFileFound=true;
+                mainFileFound = true;
             }
         }
         assertTrue(mainFileFound);
@@ -98,7 +94,7 @@ public class TestBlobHolderPersistence extends TestCase {
         List<Blob> subBlobs = holder.getBlobs();
         mainBlob = subBlobs.remove(0);
 
-        for (Blob subBlob : subBlobs ) {
+        for (Blob subBlob : subBlobs) {
             assertTrue(subBlob.getFilename().startsWith("subFile"));
             assertTrue(subBlob.getString().startsWith("FileContent_"));
         }

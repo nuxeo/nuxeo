@@ -35,13 +35,13 @@ import org.nuxeo.ecm.core.convert.api.ConversionService;
 @XObject("configuration")
 public class GlobalConfigDescriptor implements Serializable {
 
-    private static final String CACHING_DIRECTORY = "convertcache";
-
-    private static final long serialVersionUID = 1L;
-
     public static final long DEFAULT_GC_INTERVAL_IN_MIN = 10;
 
     public static final int DEFAULT_DISK_CACHE_IN_KB = 10 * 1024;
+
+    private static final String CACHING_DIRECTORY = "convertcache";
+
+    private static final long serialVersionUID = 1L;
 
     private static final Log log = LogFactory.getLog(GlobalConfigDescriptor.class);
 

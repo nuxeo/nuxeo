@@ -43,13 +43,11 @@ public class TestService extends NXRuntimeTestCase {
     }
 
     public void testServiceRegistration() {
-
         ConversionService cs = Framework.getLocalService(ConversionService.class);
         assertNotNull(cs);
     }
 
     public void testServiceContrib() throws Exception {
-
         deployContrib("org.nuxeo.ecm.core.convert.tests", "OSGI-INF/converters-test-contrib1.xml");
         ConversionService cs = Framework.getLocalService(ConversionService.class);
 
@@ -133,7 +131,6 @@ public class TestService extends NXRuntimeTestCase {
         // ** not existing converter
         // check registration check
         boolean notRegistred = false;
-        boolean notAvailable = false;
 
         try {
             result = cs.isConverterAvailable("toto");
@@ -165,7 +162,7 @@ public class TestService extends NXRuntimeTestCase {
         assertNotNull(result.getInstallationMessage());
 
         notRegistred = false;
-        notAvailable = false;
+        boolean notAvailable = false;
         try {
             cs.convert("NotAvailableConverter", new SimpleBlobHolder(
                     new StringBlob("")), null);
@@ -204,7 +201,6 @@ public class TestService extends NXRuntimeTestCase {
     }
 
     public void testServiceConfig() throws Exception {
-
         deployContrib("org.nuxeo.ecm.core.convert.tests", "OSGI-INF/convert-service-config-test.xml");
         ConversionService cs = Framework.getLocalService(ConversionService.class);
 

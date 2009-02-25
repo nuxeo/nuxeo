@@ -23,7 +23,7 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
  * Extended interface for {@link BlobHolder} that can be cached.
  * <p>
  * A BlobHolder can be cached if it can be persisted to disk and reloaded from a
- * file. Converter need to return BlobHodlers that implement this interface to
+ * file. Converters need to return BlobHodlers that implement this interface to
  * make the result cachable.
  *
  * @author tiry
@@ -44,7 +44,6 @@ public interface CachableBlobHolder extends BlobHolder {
      * Reloads the {@link BlobHolder} from a file.
      *
      * @param path
-     *
      */
     void load(String path);
 

@@ -50,7 +50,6 @@ public class MimeTypeTranslationHelper {
         }
 
         for (String sMT : sMts) {
-
             List<ConvertOption> sco = srcMappings.get(sMT);
 
             if (sco == null) {
@@ -62,6 +61,7 @@ public class MimeTypeTranslationHelper {
 
             dco.add(new ConvertOption(desc.getConverterName(), sMT));
         }
+
         dstMappings.put(dMt, dco);
     }
 
@@ -81,7 +81,6 @@ public class MimeTypeTranslationHelper {
                 return co.getConverterName();
             }
         }
-
         return null;
     }
 

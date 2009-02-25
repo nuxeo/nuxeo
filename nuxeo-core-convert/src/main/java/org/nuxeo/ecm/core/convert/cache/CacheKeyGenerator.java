@@ -24,7 +24,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 
 /**
- * Simple helper to handle cache key generation
+ * Simple helper to handle cache key generation.
  *
  * @author tiry
  */
