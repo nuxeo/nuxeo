@@ -21,7 +21,7 @@
     <h:form enctype="multipart/form-data" id="document_create">
       <c:if test="#{!empty documentActions.changeableDocumentType.layout}">
         <ui:include src="/incl/document_editor.xhtml">
-          <ui:parameter name="hideVersioningPanel" value="true"/>
+          <ui:param name="hideVersioningPanel" value="true"/>
         </ui:include>
       </c:if>
       <c:if test="#{empty documentActions.changeableDocumentType.layout}">
