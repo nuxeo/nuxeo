@@ -1,5 +1,3 @@
-    
-
 <@extends src="base.ftl">
 
   <#macro mod_tree>
@@ -16,7 +14,7 @@
     $("#${id}").treeview({
       url: "${url}",
       root: "${root}"
-    })
+    });
   });
   </script>
     <ul id="${id}">
@@ -28,7 +26,6 @@
     <@superBlock/>
     <@mod_tree />
   </@block>
-  
 
   <@block name="content">
     <@tree id="myTree" root="/"/>

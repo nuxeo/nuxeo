@@ -12,8 +12,8 @@
 <#if This.hasFacet("Folderish")>
 
 <form action="${This.path}" method="POST">
-<table class="formFill"> 
-    <tbody> 
+<table class="formFill">
+    <tbody>
         <tr>
             <td>Name:</td>
             <td><input type="text" name="name" value="" size="40"></td>
@@ -42,10 +42,10 @@
           <td colspan="2" align="right"><input type="submit" value="Save"/></td>
         </tr>
     </tbody>
-</table>  
+</table>
 </form>
 <#else>
-Cannot create documents under non container documents
+Cannot create documents under non container documents.
 </#if>
 </div>
 

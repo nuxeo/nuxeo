@@ -32,8 +32,8 @@ import org.nuxeo.ecm.webengine.model.exceptions.IllegalParameterException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
 
 /**
- * Comment Service - manage document comments
- * <p/>
+ * Comment Service - manages document comments.
+ * <p>
  * Accepts the following methods:
  * <ul>
  * <li> POST - create a new comment

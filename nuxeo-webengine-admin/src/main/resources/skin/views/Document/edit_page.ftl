@@ -1,4 +1,3 @@
-
 <#if This.isRoot()>
 <h2><#if Root.parent>${Root.document.title}<#else>Repository</#if></h2>
 <#else>
@@ -8,8 +7,8 @@
 <div id="mainContentBox">
 
 <form action="${This.path}/@put" method="POST">
-<table class="formFill"> 
-    <tbody> 
+<table class="formFill">
+    <tbody>
         <!--tr>
             <td>Name:</td>
             <td><input type="text" name="name" value="" size="40"></td>
@@ -34,25 +33,25 @@
         <tr>
             <td colspan="2"><textarea name="dc:description" cols="54">${Document["dc:description"]}</textarea></td>
         </tr>
-<#if This.hasFacet("Versionable")>
+        <#if This.hasFacet("Versionable")>
         <tr>
             <td colspan="2">
-  <p class="entryEditOptions">
-    Version increment:
-    <input type="radio" name="versioning" value="major" checked> Major
-    &nbsp;&nbsp;
-    <input type="radio" name="versioning" value="minor"/> Minor
-    &nbsp;&nbsp;
-    <input type="radio" name="versioning" value=""/> None
-  </p>
-          </td>
+                <p class="entryEditOptions">
+                    Version increment:
+                    <input type="radio" name="versioning" value="major" checked> Major
+                    &nbsp;&nbsp;
+                    <input type="radio" name="versioning" value="minor"/> Minor
+                    &nbsp;&nbsp;
+                    <input type="radio" name="versioning" value=""/> None
+                </p>
+            </td>
         </tr>
-</#if>
+        </#if>
         <tr>
           <td colspan="2" align="right"><input type="submit" value="Save" class="buttonsGadget"/></td>
         </tr>
 
     </tbody>
-</table>  
+</table>
 </form>
 </div>

@@ -12,24 +12,24 @@
 <h2>Members</h2>
 
 <form method="POST" action="${This.path}/@put" accept-charset="utf-8">
-        <#if group>
-          <input type="hidden" name="groupName" value="${group.name}"/>
-          <#list usersGroup as user>
-            <li><a href="${This.previous.path}/user/${user}">${user}</a>
-          </#list>
-        <#else>
-<table>
-    <tbody>
+    <#if group>
+    <input type="hidden" name="groupName" value="${group.name}"/>
+    <#list usersGroup as user>
+    <li><a href="${This.previous.path}/user/${user}">${user}</a></li>
+    </#list>
+    <#else>
+    <table>
+        <tbody>
         <tr>
-            <td>Name</td> 
+            <td>Name</td>
             <td><input type="text" name="groupName" value=""/></td>
         </tr>
         <tr>
-          <td colspan="2"><input type="submit" value="Save"/></td>
+            <td colspan="2"><input type="submit" value="Save"/></td>
         </tr>
-    </tbody>
-</table>
-</#if>
+        </tbody>
+    </table>
+    </#if>
 </form>
 </div>
 

@@ -1,5 +1,3 @@
-
-
 <#assign sections = Session.getDocument(docRef("/default-domain/sections")) />
 
 <form name="publish" method="GET" action="${Document.urlPath}/@publish">

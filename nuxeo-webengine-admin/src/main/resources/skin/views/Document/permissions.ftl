@@ -25,6 +25,7 @@
     </#list>
 </table>
 </#if>
+
 <form method="POST" action="${This.path}/@permissions/add">
     Add a permission:
     <select name="action" size="1">

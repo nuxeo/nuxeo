@@ -1,4 +1,3 @@
-
 <#--assign tab = Context.getClientVariable("tab") /-->
 
 <#if tab>
