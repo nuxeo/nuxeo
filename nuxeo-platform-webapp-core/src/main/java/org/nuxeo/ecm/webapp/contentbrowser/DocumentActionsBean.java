@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -84,7 +84,8 @@ import org.nuxeo.ecm.webapp.pagination.ResultsProvidersCache;
 
 /**
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
- *
+ * @author M.-A. Darche
+ * 
  */
 @Name("documentActions")
 @Scope(CONVERSATION)
@@ -309,7 +310,7 @@ public class DocumentActionsBean extends InputController implements
      * values.
      * <p>
      * Method called from page action.
-     *
+     * 
      * @deprecated should update changeableDocument and use updateDocument
      */
     @Deprecated
@@ -412,15 +413,19 @@ public class DocumentActionsBean extends InputController implements
         return saveDocument(changeableDocument);
     }
 
+    @RequestParameter
+    protected String parentDocumentPath;
+
     public String saveDocument(DocumentModel newDocument)
             throws ClientException {
         try {
-            String parentPath;
-            if (currentDocument == null) {
-                // creating item at the root
-                parentPath = documentManager.getRootDocument().getPathAsString();
-            } else {
-                parentPath = navigationContext.getCurrentDocument().getPathAsString();
+            if (parentDocumentPath == null) {
+                if (currentDocument == null) {
+                    // creating item at the root
+                    parentDocumentPath = documentManager.getRootDocument().getPathAsString();
+                } else {
+                    parentDocumentPath = navigationContext.getCurrentDocument().getPathAsString();
+                }
             }
 
             String title = (String) newDocument.getProperty("dublincore",
@@ -430,7 +435,7 @@ public class DocumentActionsBean extends InputController implements
             }
             String name = IdUtils.generateId(title);
             // set parent path and name for document model
-            newDocument.setPathInfo(parentPath, name);
+            newDocument.setPathInfo(parentDocumentPath, name);
 
             newDocument = documentManager.createDocument(newDocument);
             documentManager.save();
@@ -512,15 +517,16 @@ public class DocumentActionsBean extends InputController implements
     }
 
     /**
-     * Handle row selection event after having ensured that the
-     * navigation context stills points to currentDocumentRef to protect against
-     * browsers' back button errors
-     *
+     * Handle row selection event after having ensured that the navigation
+     * context stills points to currentDocumentRef to protect against browsers'
+     * back button errors
+     * 
      * @throws ClientException if currentDocRef is not a valid document
      */
     @WebRemote
-    public String checkCurrentDocAndProcessSelectRow(String docRef, String providerName,
-            String listName, Boolean selection, String currentDocRef) throws ClientException {
+    public String checkCurrentDocAndProcessSelectRow(String docRef,
+            String providerName, String listName, Boolean selection,
+            String currentDocRef) throws ClientException {
         DocumentRef currentDocumentRef = new IdRef(currentDocRef);
         if (!currentDocumentRef.equals(navigationContext.getCurrentDocument().getRef())) {
             navigationContext.navigateToRef(currentDocumentRef);
@@ -563,12 +569,13 @@ public class DocumentActionsBean extends InputController implements
      * Handle complete table selection event after having ensured that the
      * navigation context stills points to currentDocumentRef to protect against
      * browsers' back button errors
-     *
+     * 
      * @throws ClientException if currentDocRef is not a valid document
      */
     @WebRemote
-    public String checkCurrentDocAndProcessSelectPage(String providerName, String listName,
-            Boolean selection, String currentDocRef) throws ClientException {
+    public String checkCurrentDocAndProcessSelectPage(String providerName,
+            String listName, Boolean selection, String currentDocRef)
+            throws ClientException {
         DocumentRef currentDocumentRef = new IdRef(currentDocRef);
         if (!currentDocumentRef.equals(navigationContext.getCurrentDocument().getRef())) {
             navigationContext.navigateToRef(currentDocumentRef);
