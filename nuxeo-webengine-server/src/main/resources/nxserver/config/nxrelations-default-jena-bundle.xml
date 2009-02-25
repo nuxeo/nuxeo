@@ -16,10 +16,14 @@
     <documentation>see http://jena.sourceforge.net/DB/</documentation>
     <graph name="default" type="jena">
       <option name="backend">sql</option>
-      <option name="databaseType">Derby</option>
+      <option name="databaseType">
+        ${org.nuxeo.ecm.sql.jena.databaseType}
+      </option>
       <option name="datasource">jdbc/nxrelations-default-jena</option>
       <option name="databaseDoCompressUri">false</option>
-      <option name="databaseTransactionEnabled">false</option>
+      <option name="databaseTransactionEnabled">
+        ${org.nuxeo.ecm.sql.jena.databaseTransactionEnabled}
+      </option>
       <namespaces>
         <namespace name="rdf">
           http://www.w3.org/1999/02/22-rdf-syntax-ns#

@@ -40,10 +40,14 @@
     point="graphs">
     <graph name="documentComments" type="jena">
       <option name="backend">sql</option>
-      <option name="databaseType">Derby</option>
+      <option name="databaseType">
+        ${org.nuxeo.ecm.sql.jena.databaseType}
+      </option>
       <option name="datasource">jdbc/comment-relations</option>
       <option name="databaseDoCompressUri">false</option>
-      <option name="databaseTransactionEnabled">false</option>
+      <option name="databaseTransactionEnabled">
+        ${org.nuxeo.ecm.sql.jena.databaseTransactionEnabled}
+      </option>
       <namespaces>
         <namespace name="comment">http://www.nuxeo.org/comments/uid</namespace>
         <namespace name="isCommentFor">
