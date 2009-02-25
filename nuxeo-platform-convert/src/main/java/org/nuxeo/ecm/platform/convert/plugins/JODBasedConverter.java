@@ -1,3 +1,22 @@
+/*
+ * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nuxeo - initial API and implementation
+ *
+ * $Id$
+ */
+
 package org.nuxeo.ecm.platform.convert.plugins;
 
 import java.io.File;
@@ -37,10 +56,7 @@ import com.artofsolving.jodconverter.openoffice.converter.OpenOfficeDocumentConv
 
 public class JODBasedConverter implements ExternalConverter {
 
-
     private static final Log log = LogFactory.getLog(JODBasedConverter.class);
-
-    private static final long serialVersionUID = 1L;
 
     private static final DocumentFormatRegistry formatRegistry = new XmlDocumentFormatRegistry();
 
@@ -59,17 +75,16 @@ public class JODBasedConverter implements ExternalConverter {
 
     protected String getDestinationMimeType() {
         return descriptor.getDestinationMimeType();
-
     }
+
     /**
-     * Returns the DestinationFormat for the given plugin.
+     * Returns the destination forma for the given plugin.
      * <p>
      * It takes the actual destination mimetype of from the plugin
      * configuration.
      *
-     * @see org.nuxeo.ecm.platform.transform.interfaces.Plugin
-     *
      * @return the DestinationFormat for this given plugin.
+     * {@see org.nuxeo.ecm.platform.transform.interfaces.Plugin}
      */
     private DocumentFormat getDestinationFormat() {
         return formatRegistry.getFormatByMimeType(getDestinationMimeType());
@@ -118,12 +133,11 @@ public class JODBasedConverter implements ExternalConverter {
 
     public String getOOoHostURL() {
         if (descriptor.getParameters().containsKey("ooo_host_name")) {
-            String host =  (String) descriptor.getParameters().get("ooo_host_name");
+            String host = (String) descriptor.getParameters().get("ooo_host_name");
             if (host.trim().startsWith("${")) {
                 // for Tests
                 return DEFAULT_OOO_HOST_URL;
-            }
-            else {
+            } else {
                 return host.trim();
             }
         } else {
@@ -147,18 +161,16 @@ public class JODBasedConverter implements ExternalConverter {
     public OpenOfficeConnection getOOoConnection() {
 
         OOoDaemonService ods = Framework.getLocalService(OOoDaemonService.class);
-        if (ods!=null) {
+        if (ods != null) {
             if (ods.isEnabled()) {
                 if (ods.isConfigured()) {
                     if (!ods.isRunning()) {
                         ods.startDaemonAndWaitUntilReady();
                     }
-                }
-                else {
+                } else {
                     log.debug("OOoDaemonService is not configured, expect OOo to be already running");
                 }
-            }
-            else {
+            } else {
                 log.debug("OOoDaemonService is not enabled, expect OOo to be already running");
             }
         }
@@ -246,190 +258,188 @@ public class JODBasedConverter implements ExternalConverter {
     public BlobHolder convert(BlobHolder blobHolder,
             Map<String, Serializable> parameters) throws ConversionException {
 
-        Blob inputBlob=null;
+        Blob inputBlob = null;
         try {
             inputBlob = blobHolder.getBlob();
         }
         catch (Exception e) {
-            log.error("Error while getting Blob",e);
+            log.error("Error while getting Blob", e);
             throw new ConversionException("Error while getting Blob", e);
         }
 
-         try {
+        try {
 
 
-             if (inputBlob==null) {
-                 return null;
-             }
+            if (inputBlob == null) {
+                return null;
+            }
 
-             // Acquire connection lock.
-             acquireLock();
+            // Acquire connection lock.
+            acquireLock();
 
-             getOOoConnection();
+            getOOoConnection();
 
-             // This plugin do deal only with one input source.
-             String sourceMimetype = inputBlob.getMimeType();
-             try {
-                 if (connection != null) {
-                     connection.connect();
-                 }
-             } catch (ConnectException e) {
-                 log.error("Could not connect to the remote OpenOffice server @"
-                         + getOOoHostURL() + ':' + getOOoHostPort());
-                 throw new ConversionException("Could not connect to the remote OpenOffice server @"
-                         + getOOoHostURL() + ':' + getOOoHostPort(), e);
-             }
+            // This plugin do deal only with one input source.
+            String sourceMimetype = inputBlob.getMimeType();
+            try {
+                if (connection != null) {
+                    connection.connect();
+                }
+            } catch (ConnectException e) {
+                log.error("Could not connect to the remote OpenOffice server @"
+                        + getOOoHostURL() + ':' + getOOoHostPort());
+                throw new ConversionException("Could not connect to the remote OpenOffice server @"
+                        + getOOoHostURL() + ':' + getOOoHostPort(), e);
+            }
 
-             if (connection != null && connection.isConnected()) {
-                 File sourceFile = null;
-                 File outFile = null;
-                 File[] files = null;
-                 try {
+            if (connection != null && connection.isConnected()) {
+                File sourceFile = null;
+                File outFile = null;
+                File[] files = null;
+                try {
 
-                     // Copy in a file to be able to read it several time
-                     sourceFile = File.createTempFile(
-                             "NXJOOoConverterDocumentIn", ".bin");
-                     InputStream stream = inputBlob.getStream();
-                     //if (stream.markSupported()) {
-                     //    stream.reset(); // works on a JCRBlobInputStream
-                     //}
-                     FileUtils.copyToFile(stream, sourceFile);
-                     DocumentFormat sourceFormat = null;
+                    // Copy in a file to be able to read it several time
+                    sourceFile = File.createTempFile(
+                            "NXJOOoConverterDocumentIn", ".bin");
+                    InputStream stream = inputBlob.getStream();
+                    //if (stream.markSupported()) {
+                    //    stream.reset(); // works on a JCRBlobInputStream
+                    //}
+                    FileUtils.copyToFile(stream, sourceFile);
+                    DocumentFormat sourceFormat = null;
 
-                     // TODO: JODconverter2.1.1 bug on excel file
-                     // have to check by extension
-                     // as the mimetype stored in the jodconv. jar is wrong
-                     // application/application/vnd.ms-excel
-                     // remove this test when the jodconv. is corrected
+                    // TODO: JODconverter2.1.1 bug on excel file
+                    // have to check by extension
+                    // as the mimetype stored in the jodconv. jar is wrong
+                    // application/application/vnd.ms-excel
+                    // remove this test when the jodconv. is corrected
 
-                     /*
-                      * initial code if (sources[0].getMimetype() != null) { //
-                      * Try to fetch it from the registry. //sourceFormat =
-                      * getSourceFormat(sources[0].getMimetype()); //sourceFormat =
-                      * getSourceFormat("application/application/vnd.ms-excel"); }
-                      */
+                    /*
+                    * initial code if (sources[0].getMimetype() != null) { //
+                    * Try to fetch it from the registry. //sourceFormat =
+                    * getSourceFormat(sources[0].getMimetype()); //sourceFormat =
+                    * getSourceFormat("application/application/vnd.ms-excel"); }
+                    */
 
-                     if (sourceMimetype != null) {
-                         if (sourceMimetype.equals("application/vnd.ms-excel")) {
-                             sourceFormat = getSourceFormatByExtension("xls");
-                         } else {
-                             // Try to fetch it from the registry.
-                             sourceFormat = getSourceFormat(sourceMimetype);
-                         }
-                     }
+                    if (sourceMimetype != null) {
+                        if (sourceMimetype.equals("application/vnd.ms-excel")) {
+                            sourceFormat = getSourceFormatByExtension("xls");
+                        } else {
+                            // Try to fetch it from the registry.
+                            sourceFormat = getSourceFormat(sourceMimetype);
+                        }
+                    }
 
-                     // If not found in the registry or not given as a parameter.
-                     // Try to sniff ! What does that smell ? :)
-                     if (sourceFormat == null) {
-                         sourceFormat = getSourceFormat(sourceFile);
-                     }
+                    // If not found in the registry or not given as a parameter.
+                    // Try to sniff ! What does that smell ? :)
+                    if (sourceFormat == null) {
+                        sourceFormat = getSourceFormat(sourceFile);
+                    }
 
-                     // From plugin settings because we know the destination
-                     // mimetype.
-                     DocumentFormat destinationFormat = getDestinationFormat();
+                    // From plugin settings because we know the destination
+                    // mimetype.
+                    DocumentFormat destinationFormat = getDestinationFormat();
 
-                     // allow HTML2PDF filtering
+                    // allow HTML2PDF filtering
 
-                     List<Blob> blobs = new ArrayList<Blob>();
+                    List<Blob> blobs = new ArrayList<Blob>();
 
-                     if (descriptor.getDestinationMimeType().equals("text/html")) {
-                         String tmpDirPath = getTmpDirectory();
-                         File myTmpDir = new File(tmpDirPath + "/JODConv_" + System.currentTimeMillis());
-                         boolean created = myTmpDir.mkdir();
-                         if (!created) {
-                             throw new ConversionException("Unable to create temp dir");
-                         }
+                    if (descriptor.getDestinationMimeType().equals("text/html")) {
+                        String tmpDirPath = getTmpDirectory();
+                        File myTmpDir = new File(tmpDirPath + "/JODConv_" + System.currentTimeMillis());
+                        boolean created = myTmpDir.mkdir();
+                        if (!created) {
+                            throw new ConversionException("Unable to create temp dir");
+                        }
 
-                         outFile = new File(myTmpDir.getAbsolutePath() + "/" + "NXJOOoConverterDocumentOut." + destinationFormat.getFileExtension());
+                        outFile = new File(myTmpDir.getAbsolutePath() + "/" + "NXJOOoConverterDocumentOut." + destinationFormat.getFileExtension());
 
-                         created = outFile.createNewFile();
-                         if (!created) {
-                             throw new ConversionException("Unable to create temp file");
-                         }
+                        created = outFile.createNewFile();
+                        if (!created) {
+                            throw new ConversionException("Unable to create temp file");
+                        }
 
-                         log.debug("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-                         log.debug("Input File = " + outFile.getAbsolutePath());
+                        log.debug("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+                        log.debug("Input File = " + outFile.getAbsolutePath());
                         // Perform the actual conversion.
-                         getOOoDocumentConverter().convert(sourceFile, sourceFormat,
-                                 outFile, destinationFormat);
+                        getOOoDocumentConverter().convert(sourceFile, sourceFormat,
+                                outFile, destinationFormat);
 
-                         files = myTmpDir.listFiles();
-                         for (File file : files) {
-                             Blob blob = StreamingBlob.createFromByteArray(
-                                     new FileSource(file).getBytes());
-                             if (file.getName().equals(outFile.getName())) {
-                                 blob.setFilename("index.html");
-                                 blobs.add(0,blob);
-                             }
-                             else {
-                                 blob.setFilename(file.getName());
-                                 blobs.add(blob);
-                             }
+                        files = myTmpDir.listFiles();
+                        for (File file : files) {
+                            Blob blob = StreamingBlob.createFromByteArray(
+                                    new FileSource(file).getBytes());
+                            if (file.getName().equals(outFile.getName())) {
+                                blob.setFilename("index.html");
+                                blobs.add(0, blob);
+                            } else {
+                                blob.setFilename(file.getName());
+                                blobs.add(blob);
+                            }
 
-                         }
-
-
-                     }
-                     else {
-                         adaptFilterNameForHTML2PDF(sourceFormat, destinationFormat);
-
-                         outFile = File.createTempFile("NXJOOoConverterDocumentOut",
-                                 '.' + destinationFormat.getFileExtension());
-
-                         // Perform the actual conversion.
-                         getOOoDocumentConverter().convert(sourceFile, sourceFormat,
-                                 outFile, destinationFormat);
+                        }
 
 
-                         // load the content in the file since it will be deleted
-                         // soon: TODO: find a way to stream it to the streaming
-                         // server without loading it all in memory
-                         Blob blob = StreamingBlob.createFromByteArray(
-                                 new FileSource(outFile).getBytes(),
-                                 getDestinationMimeType());
-                         blobs.add(blob);
-                     }
+                    } else {
+                        adaptFilterNameForHTML2PDF(sourceFormat, destinationFormat);
 
-                     return new SimpleCachableBlobHolder(blobs);
+                        outFile = File.createTempFile("NXJOOoConverterDocumentOut",
+                                '.' + destinationFormat.getFileExtension());
 
-                 } catch (Exception e) {
-                     log.error(String.format(
-                             "An error occured trying to convert a file to from %s to %s: %s",
-                             sourceMimetype, getDestinationMimeType(), e.getMessage()), e);
-                     throw new ConversionException("Error in JODConverter", e);
-                 } finally {
-                     releaseOOoConnection();
-                     if (sourceFile != null) {
-                         sourceFile.delete();
-                     }
-                     if (outFile != null) {
-                         outFile.delete();
-                     }
+                        // Perform the actual conversion.
+                        getOOoDocumentConverter().convert(sourceFile, sourceFormat,
+                                outFile, destinationFormat);
 
-                     if (files!=null) {
-                         for (File file : files) {
-                             if(file.exists()) {
-                                 file.delete();
-                             }
-                         }
-                     }
 
-                 }
-             }
-             else {
-                 throw new ConversionException("Could not connect to the remote OpenOffice server @"
-                         + getOOoHostURL() + ':' + getOOoHostPort());
-             }
-         } finally {
-             releaseLock();
-         }
+                        // load the content in the file since it will be deleted
+                        // soon: TODO: find a way to stream it to the streaming
+                        // server without loading it all in memory
+                        Blob blob = StreamingBlob.createFromByteArray(
+                                new FileSource(outFile).getBytes(),
+                                getDestinationMimeType());
+                        blobs.add(blob);
+                    }
+
+                    return new SimpleCachableBlobHolder(blobs);
+
+                } catch (Exception e) {
+                    log.error(String.format(
+                            "An error occured trying to convert a file to from %s to %s: %s",
+                            sourceMimetype, getDestinationMimeType(), e.getMessage()), e);
+                    throw new ConversionException("Error in JODConverter", e);
+                } finally {
+                    releaseOOoConnection();
+                    if (sourceFile != null) {
+                        sourceFile.delete();
+                    }
+                    if (outFile != null) {
+                        outFile.delete();
+                    }
+
+                    if (files != null) {
+                        for (File file : files) {
+                            if (file.exists()) {
+                                file.delete();
+                            }
+                        }
+                    }
+
+                }
+            } else {
+                throw new ConversionException("Could not connect to the remote OpenOffice server @"
+                        + getOOoHostURL() + ':' + getOOoHostPort());
+            }
+        } finally {
+            releaseLock();
+        }
     }
 
 
     public void init(ConverterDescriptor descriptor) {
-        this.descriptor=descriptor;
+        this.descriptor = descriptor;
 
     }
+
     public ConverterCheckResult isConverterAvailable() {
         acquireLock();
         try {
@@ -439,8 +449,7 @@ public class JODBasedConverter implements ExternalConverter {
 
             if (connection.isConnected()) {
                 return new ConverterCheckResult();
-            }
-            else {
+            } else {
                 return new ConverterCheckResult("OOo must be running in Listen mode", "Can not open connection");
             }
         }
@@ -459,12 +468,12 @@ public class JODBasedConverter implements ExternalConverter {
     }
 
     protected String getTmpDirectory() {
-        String tmp=null;
+        String tmp = null;
         Map<String, String> parameters = descriptor.getParameters();
-        if ((parameters!=null) &&(parameters.containsKey(TMP_PATH_PARAMETER))) {
+        if ((parameters != null) && (parameters.containsKey(TMP_PATH_PARAMETER))) {
             tmp = (String) parameters.get(TMP_PATH_PARAMETER);
         }
-        if (tmp==null) {
+        if (tmp == null) {
             tmp = System.getProperty("java.io.tmpdir");
         }
         return tmp;
