@@ -61,19 +61,19 @@ public class Context extends HashMap<String,Object> {
     public static void fireEvent(ContextEvent event) {
         for (ContextListener listener : contextListeners) {
             listener.onContextChanged(event);
-        }  
-    }    
+        }
+    }
 
     public static void addContextListener(ContextListener listener) {
         contextListeners.add(listener);
     }
-    
+
     public static void removeContextListener(ContextListener listener) {
         contextListeners.remove(listener);
-    }    
-    
+    }
+
     public static ContextListener[] getContextListeners() {
         return contextListeners.toArray(new ContextListener[contextListeners.size()]);
     }
-    
+
 }

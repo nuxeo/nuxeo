@@ -28,13 +28,13 @@ import org.nuxeo.ecm.platform.gwt.client.Application;
  */
 public interface UIApplication extends Application {
 
-    public View getView(String name);
-    
-    public void showView(String name);
-    
-    public void openInEditor(Object input);
-    
-    public View getActiveEditor();
-    
+    View getView(String name);
+
+    void showView(String name);
+
+    void openInEditor(Object input);
+
+    View getActiveEditor();
+
     //TODO add getView , showView etc
 }

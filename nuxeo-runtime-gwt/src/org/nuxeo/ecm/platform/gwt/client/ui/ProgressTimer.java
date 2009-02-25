@@ -26,16 +26,16 @@ import com.google.gwt.user.client.ui.PopupPanel;
 
 /**
  * This class is used to show the progress dialog if an async request was not completed after a given
- * time interval.   
- * 
+ * time interval.
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public class ProgressTimer {
-    
+
     protected Timer timer;
     protected PopupPanel busy;
-        
+
     public void cancel() {
         if (timer != null) {
             timer.cancel();
@@ -43,7 +43,7 @@ public class ProgressTimer {
         }
         hideBusy();
     }
-    
+
     public void start(int timeout) {
         if (timer != null) {
             return;
@@ -52,22 +52,22 @@ public class ProgressTimer {
             @Override
             public void run() {
                 if (timer != null) { // not canceled
-                    showBusy();  
+                    showBusy();
                 }
                 if (timer == null) { // canceled
                     hideBusy();
                 }
             }
         };
-        timer.schedule(timeout); 
+        timer.schedule(timeout);
     }
-    
+
     public void showBusy() {
         Framework.showLoading("Please Wait ...");
     }
-    
+
     public void hideBusy() {
         Framework.showLoading(null);
     }
-    
+
 }

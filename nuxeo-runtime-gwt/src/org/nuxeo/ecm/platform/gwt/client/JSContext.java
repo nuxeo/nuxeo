@@ -25,23 +25,23 @@ import com.google.gwt.core.client.JavaScriptObject;
 
 /**
  * A Java overlay type over a JS native type.
- *  
+ *
  * This native type is the one used to propagate configuration and events from JS code to java code.
- * 
- *   
+ *
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public class JSContext extends JavaScriptObject {
 
     private static JSContext current = createContext();
-    
+
     private native static JSContext createContext()/*-{
     if ($wnd.nx === undefined) {
-        $wnd.nx = {}; 
-    }    
-    $wnd.nx.fire = function (eventId, data) { 
-        return @org.nuxeo.ecm.platform.gwt.client.Framework::handleJSEvent(Ljava/lang/String;Ljava/lang/String;)(eventId, data); 
+        $wnd.nx = {};
+    }
+    $wnd.nx.fire = function (eventId, data) {
+        return @org.nuxeo.ecm.platform.gwt.client.Framework::handleJSEvent(Ljava/lang/String;Ljava/lang/String;)(eventId, data);
     };
     return $wnd.nx;
     }-*/;
@@ -49,20 +49,20 @@ public class JSContext extends JavaScriptObject {
     public static JSContext getCurrent() {
         return current;
     }
-    
-    
+
+
     // Overlay types always have protected, zero-arg constructors
     protected JSContext() { }
-    
-    //TODO: we really want to expose fire? May be a sendEvent to JS is better to expose there 
+
+    //TODO: we really want to expose fire? May be a sendEvent to JS is better to expose there
     public final native Object fire(String eventId, String data) /*-{
         return this.fire(eventId, data);
     }-*/;
-    
+
     public final native String getVersion() /*-{
         return this.version;
     }-*/;
-    
+
     public final native String getSkinPath() /*-{
         return this.skinPath;
     }-*/;
@@ -70,7 +70,7 @@ public class JSContext extends JavaScriptObject {
     public final native String getModulePath() /*-{
         return this.modulePath;
     }-*/;
-    
+
     public final native String getUserName() /*-{
         return this.userName;
     }-*/;
@@ -78,12 +78,12 @@ public class JSContext extends JavaScriptObject {
     public final native String getAnonymousUserName() /*-{
         return this.anonymousUserName;
     }-*/;
-    
+
     public final native String getProperty(String key) /*-{
         return this.settings[key];
     }-*/;
 
-  
+
     public final native Map<String, String> getRepositoryRoots() /*-{
         var map = @java.util.HashMap::new()();
         for (var key in this.repositoryRoots) {
@@ -92,5 +92,5 @@ public class JSContext extends JavaScriptObject {
         return map;
     }-*/;
 
-        
+
 }

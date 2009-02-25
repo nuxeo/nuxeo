@@ -32,7 +32,7 @@ import org.nuxeo.ecm.platform.gwt.client.ui.View;
 public class DefaultViewManager implements ViewManager {
 
     protected Container container;
-    protected ArrayList<ViewSite> sites = new ArrayList<ViewSite>();    
+    protected ArrayList<ViewSite> sites = new ArrayList<ViewSite>();
 
 
     public DefaultViewManager() {
@@ -45,17 +45,17 @@ public class DefaultViewManager implements ViewManager {
     public void setContainer(Container mgr) {
         this.container = mgr;
     }
-    
+
     public Container getContainer() {
         return container;
     }
-    
+
     public void open(Object input) {
         for (ViewSite vs : sites) {
             vs.open(container, input);
         }
     }
-    
+
     public View[] getViews() {
         View[] views = new View[sites.size()];
         int i = 0;
@@ -64,16 +64,16 @@ public class DefaultViewManager implements ViewManager {
         }
          return views;
     }
-    
+
     public int getViewsCount() {
         return sites.size();
     }
-    
+
     public void addView(String key, View view) {
         ViewSite vs = new ViewSite(key, view);
         sites.add(vs);
     }
-    
+
     public void removeView(View view) {
         Iterator<ViewSite> it = sites.iterator();
         while (it.hasNext()) {
@@ -84,12 +84,12 @@ public class DefaultViewManager implements ViewManager {
             }
         }
     }
-    
+
     public View getView(String name) {
         ViewSite vs = getViewSite(name);
         return vs == null ? null : vs.getView();
     }
-    
+
     public ViewSite getViewSiteByHandle(Object handle) {
         for (ViewSite vs : sites) {
             if (handle.equals(vs.getHandle())) {
@@ -98,7 +98,7 @@ public class DefaultViewManager implements ViewManager {
         }
         return null;
     }
-    
+
     public ViewSite getViewSite(String name) {
         for (ViewSite vs : sites) {
             if (name.equals(vs.getName())) {
@@ -107,7 +107,7 @@ public class DefaultViewManager implements ViewManager {
         }
         return null;
     }
-    
+
     public View getActiveView() {
         Object handle = container.getActiveSiteHandle();
         if (handle != null) {
@@ -116,34 +116,34 @@ public class DefaultViewManager implements ViewManager {
         }
         return null;
     }
-    
+
     public void hideView(String key) {
         ViewSite vs = getViewSite(key);
         if (vs != null) {
             container.disableSite(vs);
         }
     }
-    
+
     public void showView(String key) {
         ViewSite vs = getViewSite(key);
         if (vs != null) {
             container.enableSite(vs);
         }
     }
-    
+
     public void activateView(String key) {
         ViewSite vs = getViewSite(key);
         if (vs != null) {
             container.activateSite(vs);
         }
     }
-    
+
     public void deactivateView(String key) {
         ViewSite vs = getViewSite(key);
         if (vs != null) {
             container.deactivateSite(vs);
         }
-    }    
-    
+    }
+
 
 }

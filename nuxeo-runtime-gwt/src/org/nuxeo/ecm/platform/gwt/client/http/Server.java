@@ -34,9 +34,9 @@ public class Server {
     public static HttpRequest post(String uri) {
         return new HttpRequest(RequestBuilder.POST, uri);
     }
-    
-    
-    
+
+
+
 //  public static Request put(String uri) {
 //  return new Request(RequestBuilder.GET, uri);
 //}
@@ -49,5 +49,5 @@ public class Server {
 //  return new Request(RequestBuilder.GET, uri);
 //}
 
-    
+
 }

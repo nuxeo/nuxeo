@@ -32,13 +32,13 @@ import com.google.gwt.user.rebind.SourceWriter;
 /**
  * A source writer that is writing in memory.
  * Used to be able to add imports after begining to write
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public class JSourceWriter extends StringWriter implements SourceWriter {
 
-    protected String crlf = System.getProperty("line.separator"); 
+    protected String crlf = System.getProperty("line.separator");
     protected ClassSourceFileComposerFactory composer;
     protected int indent = 0;
     protected boolean inComment = false;
@@ -46,50 +46,50 @@ public class JSourceWriter extends StringWriter implements SourceWriter {
     protected ArrayList<String> imports = new ArrayList<String>();
     protected GeneratorContext context;
     protected PrintWriter printWriter;
-    
+
     public JSourceWriter(ClassSourceFileComposerFactory composer, GeneratorContext context, PrintWriter printWriter) {
         this.composer = composer;
         this.context = context;
         this.printWriter = printWriter;
     }
-    
+
     /**
      * @return the composer.
      */
     public ClassSourceFileComposerFactory getComposer() {
         return composer;
     }
-    
-    
+
+
     public void println() {
         write(crlf);
     }
-    
+
     public void println(String str) {
         print(str);
         write(crlf);
     }
-    
+
     public void print(String s) {
         tabs();
         if (inComment) write("* ");
         write(s);
     }
-    
+
     public void indent() {
         indent++;
     }
-    
-    public void outdent() { 
+
+    public void outdent() {
         indent--;
     }
-    
+
     public void indentln(String s) {
         indent();
         println(s);
-        outdent();  
+        outdent();
     }
-    
+
     public void tabs() {
         for (int j = 0; j < indent; ++j) {
             write("  ");
@@ -112,7 +112,7 @@ public class JSourceWriter extends StringWriter implements SourceWriter {
         }
         for (String intfName : interfaces) {
             composer.addImplementedInterface(intfName);
-        }        
+        }
         SourceWriter sw = composer.createSourceWriter(context, printWriter);
         // only to debug
 //        System.out.println("----------------------------------------------");
@@ -125,10 +125,10 @@ public class JSourceWriter extends StringWriter implements SourceWriter {
     public void addImport(String imp) {
         imports.add(imp);
     }
-    
+
     public void addImplementedInterface(String intfName) {
         interfaces.add(intfName);
     }
-    
-    
+
+
 }

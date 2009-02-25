@@ -27,8 +27,8 @@ import org.nuxeo.ecm.platform.gwt.client.ui.View;
  */
 public interface EditorPage {
 
-    public String getName();
-    
-    public View getView();
-    
+    String getName();
+
+    View getView();
+
 }

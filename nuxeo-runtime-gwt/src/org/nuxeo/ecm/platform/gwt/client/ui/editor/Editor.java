@@ -26,9 +26,9 @@ import org.nuxeo.ecm.platform.gwt.client.ui.ViewDescriptor;
 
 /**
  * An view that support input objects. Usually used by views to implement editors.
- * 
+ *
  * TODO: remove this class and use directly view descriptor?
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */

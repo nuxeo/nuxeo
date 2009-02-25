@@ -36,33 +36,33 @@ import com.google.gwt.user.client.ui.DialogBox;
 public class GetDocument extends HttpCommand {
 
     protected String id;
-    
-    
+
+
     public GetDocument(String id) {
         this.id = id;
     }
-    
+
     @Override
     protected void doExecute() throws Throwable {
         get(Framework.getResourcePath("/doc?ref="+id)).send();
     }
-    
+
     @Override
     public void onSuccess(HttpResponse response) {
          JSONValue json = response.asJSON();
          json = json.isObject().get("response").isObject().get("data");
          JSONArray ar = json.isArray();
          if (ar != null) {
-             json = ar.get(0);            
+             json = ar.get(0);
          }
          Document doc = new Document(json.isObject());
          openDocument(doc);
     }
-    
+
     protected void openDocument(Document doc) {
         UI.openInEditor(doc);
     }
-    
+
     @Override
     public void onFailure(Throwable cause) {
         if (cause instanceof ServerException) {
@@ -77,7 +77,7 @@ public class GetDocument extends HttpCommand {
             }
             super.onFailure(cause);
         }
-        
-    }   
-    
+
+    }
+
 }

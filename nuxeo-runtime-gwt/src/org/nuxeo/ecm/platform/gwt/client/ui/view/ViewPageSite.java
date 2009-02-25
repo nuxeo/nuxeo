@@ -30,38 +30,38 @@ import org.nuxeo.ecm.platform.gwt.client.ui.View;
 public class ViewPageSite extends ViewSite {
 
     protected ArrayList<View> views;
-    
+
     public ViewPageSite(String name, View view) {
         super (name, view);
         views = new ArrayList<View>();
         views.add(view);
     }
-    
-    
+
+
     public void addView(View view) {
         views.add(view);
     }
-    
+
     public void removeView(View view) {
         views.remove(view);
     }
-    
+
     public View[] getViews() {
         return views.toArray(new View[views.size()]);
     }
-    
+
     public boolean isEmpty() {
         return views.isEmpty();
     }
-    
+
     @Override
     protected View findViewForInput(Object input) {
         for (View v : views) {
             if (v.acceptInput(input)) {
                 return v;
-            }           
+            }
         }
         return null;
     }
-    
+
 }

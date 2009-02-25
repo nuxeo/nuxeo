@@ -29,17 +29,17 @@ import com.google.gwt.json.client.JSONValue;
  *
  */
 public class DocumentRef {
-    
+
     public String parentId;
     public String id;
     public String type;
     public String name;
     public String title;
     public boolean isFolder;
-    
+
     public DocumentRef() {
-    }    
-    
+    }
+
     public static DocumentRef fromJSON(JSONObject json) {
         DocumentRef doc = new DocumentRef();
         JSONValue val = json.get("id");
@@ -66,8 +66,8 @@ public class DocumentRef {
         if (val != null) {
             JSONBoolean b = val.isBoolean();
             doc.isFolder = b != null ? b.booleanValue() : false;
-        }       
-        return doc;        
+        }
+        return doc;
     }
 
     public static JSONObject toJSON(DocumentRef doc) {
@@ -85,10 +85,10 @@ public class DocumentRef {
            json.put("title", new JSONString(doc.title));
        }
        if (doc.parentId != null) {
-           json.put("parentId", new JSONString(doc.parentId));    
+           json.put("parentId", new JSONString(doc.parentId));
        }
        json.put("isFolder", JSONBoolean.getInstance(doc.isFolder));
        return json;
     }
-        
+
 }

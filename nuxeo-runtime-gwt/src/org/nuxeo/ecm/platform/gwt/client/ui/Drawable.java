@@ -23,7 +23,7 @@ import com.google.gwt.user.client.ui.Widget;
 
 /**
  * An object that can be drawn on the screen. It is providing an widget.
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
@@ -35,5 +35,5 @@ public interface Drawable {
      * @return the widget. cannot be null.
      */
     Widget getWidget();
-    
+
 }

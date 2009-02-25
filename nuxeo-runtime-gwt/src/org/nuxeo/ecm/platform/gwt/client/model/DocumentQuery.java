@@ -21,30 +21,30 @@ package org.nuxeo.ecm.platform.gwt.client.model;
 
 /**
  * Describe a NXQL query. Used as an input by search views.
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public class DocumentQuery {
 
     protected String query;
-    
+
     public DocumentQuery(String query) {
         this.query = query;
     }
-    
+
     public String getQuery() {
         return query;
     }
-    
+
     /**
      * @param query the query to set.
      */
     public void setQuery(String query) {
         this.query = query;
     }
-        
-    
+
+
     @Override
     public String toString() {
         return query;

@@ -26,11 +26,11 @@ package org.nuxeo.ecm.platform.gwt.client.model;
 public class Url {
 
     public String url;
-    
+
     public Url(String url) {
-        this.url = url; 
+        this.url = url;
     }
-    
+
     @Override
     public String toString() {
         return url;

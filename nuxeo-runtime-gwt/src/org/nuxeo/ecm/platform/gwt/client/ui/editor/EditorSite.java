@@ -29,16 +29,16 @@ import org.nuxeo.ecm.platform.gwt.client.ui.view.ViewSite;
 public class EditorSite extends ViewSite {
     protected Editor editor;
     protected static int cnt = 0;
-    
+
     public EditorSite(Editor editor) {
         this ("editor", editor);
     }
-    
+
     public EditorSite(String name, Editor editor) {
         super(name+"#"+(cnt++), editor.getView()); //TODO
         this.editor = editor;
     }
-    
+
     public void open(Container container, Object input) {
         this.container = container;
         if (handle == null) {
@@ -47,13 +47,13 @@ public class EditorSite extends ViewSite {
         if (!view.isInstalled()) {
             view.install(this, input);
             container.installWidget(this);
-            container.updateSiteTitle(this); 
+            container.updateSiteTitle(this);
             container.updateSiteIcon(this);
         } else {
             view.setInput(input);
         }
     }
-   
+
     public Editor getEditor() {
         return editor;
     }

@@ -33,8 +33,8 @@ import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Window;
 
 /**
- * Manage editors that can be tabbed and instantiated more than once in same time.  
- * 
+ * Manage editors that can be tabbed and instantiated more than once in same time.
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
@@ -44,12 +44,12 @@ public class DefaultEditorManager implements EditorManager, Extensible, SiteEven
     protected List<EditorSite> sites;
     protected Editor defaultEditor;
     protected Container container;
-    
-    
+
+
     public DefaultEditorManager() {
         this (null);
     }
-    
+
     public DefaultEditorManager(Container container) {
         editors = new ArrayList<Editor>();
         sites = new ArrayList<EditorSite>();
@@ -62,19 +62,19 @@ public class DefaultEditorManager implements EditorManager, Extensible, SiteEven
     public void setContainer(Container container) {
         this.container = container;
     }
-    
+
     /**
      * @return the container.
      */
     public Container getContainer() {
         return container;
     }
-    
+
     public View getEditorView(String name) {
         EditorSite vs = getEditorSite(name);
         return vs == null ? null : vs.getView();
     }
-    
+
     public EditorSite getEditorSiteByHandle(Object handle) {
         for (EditorSite vs : sites) {
             if (handle.equals(vs.getHandle())) {
@@ -83,7 +83,7 @@ public class DefaultEditorManager implements EditorManager, Extensible, SiteEven
         }
         return null;
     }
-    
+
     public EditorSite getEditorSite(String name) {
         for (EditorSite vs : sites) {
             if (name.equals(vs.getName())) {
@@ -92,15 +92,15 @@ public class DefaultEditorManager implements EditorManager, Extensible, SiteEven
         }
         return null;
     }
-    
+
     public void handleSiteEvent(Object handle, int event) {
         if (event == SITE_CLOSED) {
             siteClosed(handle);
-        }        
+        }
     }
-    
+
     /**
-     * Must be called by the implementation when closing a tab through mouse click or through API. 
+     * Must be called by the implementation when closing a tab through mouse click or through API.
      * to free up the associated editor view
      * @param id
      */
@@ -114,17 +114,17 @@ public class DefaultEditorManager implements EditorManager, Extensible, SiteEven
                 History.newItem("", false);
                 break;
             }
-        }        
+        }
     }
 
     public void addEditor(Editor editor) {
         editors.add(editor);
     }
-    
+
     public void removeEditor(Editor editor) {
         editors.remove(editor);
     }
-    
+
     public View[] getOpenedEditors() {
         int len = sites.size();
         View[] views = new View[len];
@@ -133,11 +133,11 @@ public class DefaultEditorManager implements EditorManager, Extensible, SiteEven
         }
          return views;
     }
-    
+
     public Editor[] getRegisteredEditors() {
         return editors.toArray(new Editor[editors.size()]);
     }
-    
+
 
     public EditorSite getActiveEditor() {
         Object handle = container.getActiveSiteHandle();
@@ -150,14 +150,14 @@ public class DefaultEditorManager implements EditorManager, Extensible, SiteEven
     public EditorSite openEditor(Object input) {
         return openEditor(input, false);
     }
-    
+
     public EditorSite openEditor(Object input, boolean newView) {
         EditorSite esite = null;
         for (Editor editor : editors) {
             if (editor.acceptInput(input)) {
                 esite = openEditor(editor, input, newView);
                 break;
-            }            
+            }
         }
         if (esite == null) {
             esite = openEditor(defaultEditor, input, newView);
@@ -171,22 +171,22 @@ public class DefaultEditorManager implements EditorManager, Extensible, SiteEven
     }
 
     protected EditorSite openEditor(Editor editor, Object input, boolean newView) {
-        if (!newView) {                
+        if (!newView) {
             for (EditorSite esite : sites) {
                 if (esite.editor == editor) {
                     // reuse view
                     esite.open(container, input); // change view input
                     return esite;
                 }
-            }                
+            }
         }
         EditorSite esite = new EditorSite(editor);
         esite.open(container, input);
         sites.add(esite);
         return esite;
-    }    
+    }
 
-    
+
     public void closeEditor(String id) {
         // close tab should notify us through siteClosed() when close is done.
         EditorSite site = getEditorSite(id);
@@ -198,7 +198,7 @@ public class DefaultEditorManager implements EditorManager, Extensible, SiteEven
         container.clear();
         sites.clear();
     }
- 
+
     public void registerExtension(String target, Object extension) {
         if (ExtensionPoints.EDITORS_XP.equals(target)) {
             editors.add((Editor)extension);
@@ -206,5 +206,5 @@ public class DefaultEditorManager implements EditorManager, Extensible, SiteEven
             defaultEditor = (Editor)extension;
         }
     }
-    
+
 }

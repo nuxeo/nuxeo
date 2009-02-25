@@ -26,15 +26,15 @@ package org.nuxeo.ecm.platform.gwt.client.ui;
  */
 public interface ExtensionPoints {
 
-    public final static String LEFT_AREA_XP = "LEFT_AREA";
-    public final static String RIGHT_AREA_XP = "RIGHT_AREA";
-    public final static String CONTENT_AREA_XP = "CONTENT_AREA";
-    public final static String HEADER_AREA_XP = "HEADER_AREA";
-    public final static String FOOTER_AREA_XP = "FOOTER_AREA";
+    final static String LEFT_AREA_XP = "LEFT_AREA";
+    final static String RIGHT_AREA_XP = "RIGHT_AREA";
+    final static String CONTENT_AREA_XP = "CONTENT_AREA";
+    final static String HEADER_AREA_XP = "HEADER_AREA";
+    final static String FOOTER_AREA_XP = "FOOTER_AREA";
 
-    public final static String VIEWS_XP = "VIEWS";
-    public final static String EDITORS_XP = "EDITORS";
-    public final static String DEFAULT_EDITOR_XP = "DEFAULT_EDITOR";
-    public final static String EDITOR_PAGES_XP = "EDITOR_PAGES";
-    
+    final static String VIEWS_XP = "VIEWS";
+    final static String EDITORS_XP = "EDITORS";
+    final static String DEFAULT_EDITOR_XP = "DEFAULT_EDITOR";
+    final static String EDITOR_PAGES_XP = "EDITOR_PAGES";
+
 }

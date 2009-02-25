@@ -27,22 +27,22 @@ import org.nuxeo.ecm.platform.gwt.client.ui.View;
  */
 public interface EditorManager {
 
-    public EditorSite openEditor(Object input);
-    
-    public EditorSite openEditor(Object input, boolean newView);
+    EditorSite openEditor(Object input);
 
-    public EditorSite getActiveEditor();
-    
-    public void closeEditor(String id);
-    
-    public void closeAll();
-    
-    public Editor[] getRegisteredEditors();
-    
-    public View[] getOpenedEditors();
-    
-    public void addEditor(Editor editor);
-    
-    public void removeEditor(Editor editor);
-    
+    EditorSite openEditor(Object input, boolean newView);
+
+    EditorSite getActiveEditor();
+
+    void closeEditor(String id);
+
+    void closeAll();
+
+    Editor[] getRegisteredEditors();
+
+    View[] getOpenedEditors();
+
+    void addEditor(Editor editor);
+
+    void removeEditor(Editor editor);
+
 }

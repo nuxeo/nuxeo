@@ -33,21 +33,21 @@ public class ViewSite implements Site {
     protected View view;
     protected Object handle;
     protected Container container;
-    
+
     public ViewSite(String name, View view) {
         this.name = name;
         this.view = view;
     }
-    
+
     public View getView() {
         return view;
     }
-    
+
     public String getName() {
         return name;
     }
-    
-    
+
+
     public Object getHandle() {
         return handle;
     }
@@ -56,11 +56,11 @@ public class ViewSite implements Site {
         String title = view.getTitle();
         return title == null ? name : title;
     }
-    
+
     public String getIcon() {
         return view.getIcon();
     }
-    
+
     public void open(Container container, Object input) {
         this.container = container;
         View v = findViewForInput(input);
@@ -68,72 +68,72 @@ public class ViewSite implements Site {
             if (handle != null) {
                 container.disableSite(this);
             }
-            return;            
+            return;
         }
         if (handle == null) {
             handle = container.createHandle(this);
-        }        
+        }
         if (!v.isInstalled() || v != view) {
             view = v;
             v.install(this, input);
             container.installWidget(this);
-            container.updateSiteTitle(this); 
+            container.updateSiteTitle(this);
             container.updateSiteIcon(this);
         } else {
             view = v; // set the current view before calling setInput()
             v.setInput(input);
         }
     }
-    
+
     protected View findViewForInput(Object input) {
         return view.acceptInput(input) ? view : null;
     }
 
-    
+
     public void updateIcon() {
         if (container != null) {
             container.updateSiteIcon(this);
-        }         
+        }
     }
-    
+
     public void updateTitle() {
         if (container != null) {
             container.updateSiteTitle(this);
         }
     }
-    
+
     public void updateWidget() {
         if (container != null) {
-            container.installWidget(this);        
-        }        
+            container.installWidget(this);
+        }
     }
-    
+
     public void enable() {
         container.enableSite(this);
     }
-    
+
     public void disable() {
         container.disableSite(this);
     }
-    
+
     public void activate() {
         container.activateSite(this);
     }
-    
+
     public void deactivate() {
         container.deactivateSite(this);
     }
-    
+
     public void close() {
         container.closeSite(this);
     }
-    
+
     public boolean isActive() {
         return container.isSiteActive(this);
     }
-    
+
     public boolean isEnabled() {
         return container.isSiteEnabled(this);
     }
-    
+
 }

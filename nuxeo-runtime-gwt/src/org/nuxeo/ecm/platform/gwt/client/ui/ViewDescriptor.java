@@ -30,12 +30,12 @@ public interface ViewDescriptor {
      * @param input
      * @return true if input can be handled by this editor
      */
-    public boolean acceptInput(Object input);
-    
+    boolean acceptInput(Object input);
+
     /**
      * Instantiate a new view.
      * @return
      */
-    public View getView();   
-    
+    View getView();
+
 }

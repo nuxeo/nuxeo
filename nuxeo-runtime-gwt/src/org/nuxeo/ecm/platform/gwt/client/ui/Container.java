@@ -21,7 +21,7 @@ package org.nuxeo.ecm.platform.gwt.client.ui;
 
 
 /**
- * Used to bridge view managers with underlying widget implementation 
+ * Used to bridge view managers with underlying widget implementation
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
@@ -29,7 +29,7 @@ public interface Container extends Drawable {
 
     void setSiteEventHandler(SiteEventHandler handler);
     SiteEventHandler getSiteEventHandler();
-    
+
     Object createHandle(Site site);
     void closeSite(Site site);
     void enableSite(Site site);
@@ -49,5 +49,5 @@ public interface Container extends Drawable {
 
     boolean isSiteActive(Site site);
     boolean isSiteEnabled(Site site);
-    
+
 }

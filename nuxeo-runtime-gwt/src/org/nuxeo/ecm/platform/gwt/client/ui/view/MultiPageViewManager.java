@@ -27,9 +27,9 @@ import org.nuxeo.ecm.platform.gwt.client.ui.View;
 
 
 /**
- * 
+ *
  * A view manager that can be used to build multi-page views (that are usually using tabs).
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
@@ -50,7 +50,7 @@ public class MultiPageViewManager extends DefaultViewManager {
         //container.clear(); // tabs impl dont know to hide tabs - we must reset them .. TODO
         super.open(input);
     }
-    
+
     @Override
     public void addView(String key, View view) {
         ViewPageSite site = (ViewPageSite)getViewSite(key);
@@ -61,20 +61,20 @@ public class MultiPageViewManager extends DefaultViewManager {
             site.addView(view);
         }
     }
-    
+
     @Override
     public void removeView(View view) {
         Iterator<ViewSite> it = sites.iterator();
         while (it.hasNext()) {
-            ViewPageSite s = (ViewPageSite)it.next(); 
+            ViewPageSite s = (ViewPageSite)it.next();
             if (view == s.getView()) {
                 if (s.isEmpty()) {
-                    it.remove();    
+                    it.remove();
                 } else {
                     s.removeView(view);
                 }
             }
         }
     }
-    
+
 }

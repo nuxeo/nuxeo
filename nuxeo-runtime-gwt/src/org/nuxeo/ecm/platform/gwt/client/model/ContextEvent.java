@@ -27,13 +27,13 @@ public class ContextEvent {
 
     public final static int INPUT = 2;
     public final static int PROP = 3;
-    
+
     public int type;
-    
+
     public Object data;
 
-    public Object source; 
-    
+    public Object source;
+
 
     public ContextEvent(int type) {
         this (type, null);
@@ -43,5 +43,5 @@ public class ContextEvent {
         this.type = type;
         this.data = data;
     }
-    
+
 }

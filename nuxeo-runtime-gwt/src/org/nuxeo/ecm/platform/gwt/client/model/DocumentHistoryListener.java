@@ -33,5 +33,5 @@ public class DocumentHistoryListener implements HistoryListener {
             new GetDocument(id).execute();
         }
     }
-    
+
 }
