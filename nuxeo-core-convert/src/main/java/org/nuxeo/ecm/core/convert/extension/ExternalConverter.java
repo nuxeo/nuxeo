@@ -33,7 +33,7 @@ import org.nuxeo.ecm.core.convert.api.ConverterCheckResult;
 public interface ExternalConverter extends Converter {
 
     /**
-     * Check if the converter is available.
+     * Checks if the converter is available.
      *
      * @return
      */

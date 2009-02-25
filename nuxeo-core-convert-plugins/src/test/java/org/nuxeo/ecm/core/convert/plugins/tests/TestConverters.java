@@ -32,7 +32,7 @@ public class TestConverters extends BaseConverterTest {
     public void testHTMLConverter2() throws Exception {
 
         String srcMT = "text/html";
-        String converter ="html2text";
+        String converter = "html2text";
         String fileName = "strange.html";
 
         ConversionService cs = Framework.getLocalService(ConversionService.class);
@@ -50,8 +50,8 @@ public class TestConverters extends BaseConverterTest {
         assertTrue(textResult.contains("Nuxeo propose aux organisations"));
 
         // System.out.println(result.getBlob().getString());
-
     }
+
     public void testXMLConverter() throws Exception {
         doTestTextConverter("text/xml", "xml2text", "hello.xml");
     }

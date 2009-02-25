@@ -91,13 +91,12 @@ public class XL2TextConverter implements Converter {
             break;
         }
 
-        if ((cellValue != null) && (cellValue.length() > 0)) {
+        if (cellValue != null && cellValue.length() > 0) {
             sb.append(cellValue).append(CELL_SEP);
         }
     }
 
     public void init(ConverterDescriptor descriptor) {
-        // TODO Auto-generated method stub
     }
 
 }

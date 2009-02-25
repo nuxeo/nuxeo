@@ -47,11 +47,11 @@ public class FullTextConverter implements Converter {
     public BlobHolder convert(BlobHolder blobHolder,
             Map<String, Serializable> parameters) throws ConversionException {
 
-        String srcMT=null;
+        String srcMT;
         try {
             srcMT = blobHolder.getBlob().getMimeType();
         } catch (ClientException e) {
-            throw new ConversionException("Unable to get source MimeType",e);
+            throw new ConversionException("Unable to get source MimeType", e);
         }
 
         if (TEXT_PLAIN_MT.equals(srcMT)) {
@@ -63,22 +63,21 @@ public class FullTextConverter implements Converter {
 
         String converterName = cs.getConverterName(srcMT, TEXT_PLAIN_MT);
 
-        if (converterName!=null) {
+        if (converterName != null) {
             if (converterName.equals(descriptor.getConverterName())) {
                 // Should never happen !
                 log.debug("Existing from converter to avoid a loop");
                 return new SimpleBlobHolder(new StringBlob(""));
             }
             return cs.convert(converterName, blobHolder, parameters);
-        }
-        else {
+        } else {
             log.debug("Unable to find full text extractor for source mime type" + srcMT);
             return new SimpleBlobHolder(new StringBlob(""));
         }
     }
 
     public void init(ConverterDescriptor descriptor) {
-        this.descriptor=descriptor;
+        this.descriptor = descriptor;
     }
 
 }

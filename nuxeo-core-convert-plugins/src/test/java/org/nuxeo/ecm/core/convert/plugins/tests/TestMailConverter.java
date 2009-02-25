@@ -30,7 +30,6 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author Anahide Tchertchian
- *
  */
 public class TestMailConverter extends BaseConverterTest {
 
@@ -62,7 +61,6 @@ public class TestMailConverter extends BaseConverterTest {
     }
 
     protected boolean textEquals(String txt1, String txt2) {
-
         txt1 = txt1.replaceAll("\n\r", " ");
         txt1 = txt1.replaceAll("\n", " ");
 
@@ -76,29 +74,24 @@ public class TestMailConverter extends BaseConverterTest {
     }
 
     public void testTextAndHtmlEmailTransformation() throws Exception {
-        BlobHolder bh = cs
-                .convert(
-                        CONVERTER_NAME,
-                        getBlobFromPath("test-docs/email/text_and_html_with_attachments.eml"),
-                        null);
+        BlobHolder bh = cs.convert(
+                CONVERTER_NAME,
+                getBlobFromPath("test-docs/email/text_and_html_with_attachments.eml"),
+                null);
         assertNotNull(bh);
         Blob result = bh.getBlob();
         assertNotNull(result);
         assertEquals("text/plain", result.getMimeType());
         Blob expected = getTestBlob("test-docs/email/text_and_html_with_attachments.txt");
 
-        System.out.println("result=" + result.getString());
-        System.out.println("expected=" + expected.getString());
-
         assertTrue(textEquals(expected.getString(), result.getString()));
     }
 
     public void testOnlyHtmlEmailTransformation() throws Exception {
-        BlobHolder bh = cs
-                .convert(
-                        CONVERTER_NAME,
-                        getBlobFromPath("test-docs/email/only_html_with_attachments.eml"),
-                        null);
+        BlobHolder bh = cs.convert(
+                CONVERTER_NAME,
+                getBlobFromPath("test-docs/email/only_html_with_attachments.eml"),
+                null);
         assertNotNull(bh);
         Blob result = bh.getBlob();
         assertNotNull(result);
@@ -106,7 +99,6 @@ public class TestMailConverter extends BaseConverterTest {
         Blob expected = getTestBlob("test-docs/email/only_html_with_attachments.txt");
 
         assertTrue(textEquals(expected.getString(), result.getString()));
-
     }
 
 }

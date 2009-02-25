@@ -100,9 +100,7 @@ public class HtmlParser extends AbstractSAXParser {
     }
 
     /**
-     * Returns parsed content.
-     *
-     * @return String Parsed content
+     * @return the parsed content (as a String).
      */
     public String getContents() {
         return filterAndJoin(buffer.toString());
