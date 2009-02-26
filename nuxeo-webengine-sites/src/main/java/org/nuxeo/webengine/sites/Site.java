@@ -19,7 +19,9 @@
 
 package org.nuxeo.webengine.sites;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.GET;
@@ -28,6 +30,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
@@ -90,8 +93,12 @@ public class Site extends DefaultObject {
         }
         ctx.getRequest().setAttribute("org.nuxeo.theme.theme",
                 theme + "/" + themePage);
-
-        return getTemplate("template_default.ftl").args(getSiteArgs(ws));
+        try {
+            return getTemplate("template_default.ftl").args(getSiteArgs(ws));
+        } catch (Exception e) {
+            WebException.wrap(e);
+        }
+        return null;
     }
 
     @Path("{page}")
@@ -145,8 +152,12 @@ public class Site extends DefaultObject {
         return null;
     }
 
-    protected Map<String, Object> getSiteArgs(DocumentModel doc) {
+    protected Map<String, Object> getSiteArgs(DocumentModel doc)
+            throws ClientException {
         Map<String, Object> root = new HashMap<String, Object>();
+        // MC: add constants
+        List<Object> pages = getLastModifiedWebPages(5, 50);
+        root.put("pages", pages);
         root.put("welcomeText", SiteHelper.getString(doc, "webc:welcomeText",
                 null));
         root.put("siteName", SiteHelper.getString(doc, "webc:name", null));
@@ -155,6 +166,43 @@ public class Site extends DefaultObject {
         return root;
     }
 
+    public List<Object> getLastModifiedWebPages(int noPages,
+            int noWordsFromContent) throws ClientException {
+        WebContext context = WebEngine.getActiveContext();
+        CoreSession session = context.getCoreSession();
+        DocumentModelList list = session.query(
+                String.format(
+                        "SELECT * FROM Document WHERE "
+                                + " ecm:primaryType like 'WebPage' AND "
+                                + " ecm:path STARTSWITH '/default-domain/workspaces/%s'"
+                                + " AND webp:pushtomenu = 'true' "
+                                + " AND ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0"
+                                + " AND ecm:currentLifeCycleState != 'deleted' ORDER BY dc:modified DESC",
+                        SiteHelper.getString(ws, "dc:title")), null, noPages,
+                0, true);
+
+        List<Object> pages = new ArrayList<Object>();
+        for (DocumentModel d : list) {
+            if (SiteHelper.getBoolean(d, "webp:pushtomenu", true)) {
+                try {
+                    Map<String, String> page = new HashMap<String, String>();
+                    page.put("name", SiteHelper.getString(d, "dc:title"));
+                    page.put("description", SiteHelper.getString(d,
+                            "dc:description"));
+                    page.put("content", getFistNWordsFromString(
+                            SiteHelper.getString(d, "webp:content"),
+                            noWordsFromContent));
+                    pages.add(page);
+                } catch (Exception e) {
+                    System.out.println("ignore page :" + d);
+                }
+            }
+        }
+        return pages;
+    }
+    
+
+    
     protected DocumentModel getWorkspaceByUrl(String url) {
         WebContext context = WebEngine.getActiveContext();
         CoreSession session = context.getCoreSession();
@@ -174,6 +222,17 @@ public class Site extends DefaultObject {
 
     public DocumentModel getWorkspace() {
         return ws;
+    }
+    
+    private String getFistNWordsFromString(String string, int n) {
+        String[] result = string.split(" ");
+        StringBuffer firstNwords = new StringBuffer();
+        for (int i = 0; i < ((n <= result.length) ? n : result.length); i++) {
+            firstNwords.append(result[i]);
+            firstNwords.append(" ");
+
+        }
+        return new String(firstNwords);
     }
 
 }

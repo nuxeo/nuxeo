@@ -37,5 +37,19 @@ Welcome Text:</br>
 ${welcomeText}
 -->
 
+<hr>
+5 last modified/created web pages in the site
+<hr>
+
+<table border=1>
+  <tr><th>Name<th>Description<th>Content
+  <#list pages as p>
+  <tr><td><a href="${This.path}/${p.name}"> ${p.name} &nbsp; </a>
+  <td> ${p.description}&nbsp;
+  <td>${p.content}&nbsp;
+   </#list>
+</table>
+
+
 </@block>
 </@theme>
