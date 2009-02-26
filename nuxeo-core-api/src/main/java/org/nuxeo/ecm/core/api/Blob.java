@@ -114,7 +114,7 @@ public interface Blob {
     Blob persist() throws IOException;
 
     /**
-     * Check whether this blob is persistent. (i.e. getStream() can be
+     * Checks whether this blob is persistent. (i.e. if {@code getStream()} can be
      * successfully called several times).
      *
      * @return true if persistent, false otherwise

@@ -1550,40 +1550,6 @@ public abstract class TestAPI extends TestConnection {
         assertEquals("second name", values[0]);
     }
 
-    // TODO: Fix this test!
-    public void XXXtestGetContentData() throws ClientException {
-        DocumentModel root = getRootDocument();
-
-        String name2 = "file#" + generateUnique();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
-                name2, "File");
-        childFile = createChildDocument(childFile);
-
-        remote.save();
-
-        childFile.setProperty("dublincore", "title", "f1");
-        childFile.setProperty("dublincore", "description", "desc 1");
-        childFile.setProperty("file", "filename", "second name");
-        childFile.setProperty("file", "content", new StringBlob("the content"));
-
-        remote.saveDocument(childFile);
-
-        /*
-         * this block is commented because the exception it generates makes the
-         * next block fail try { remote.getContentData(childFile.getRef(),
-         * "title"); fail("Content nodes must be of type: content"); } catch
-         * (ClientException e) { // do nothing }
-         */
-
-        byte[] content = remote.getContentData(childFile.getRef(), "content");
-        assertNotNull(content);
-
-        String strContent = String.valueOf(content);
-
-        assertNotNull(strContent);
-        assertEquals("the content", strContent);
-    }
-
     public void testDocumentReferenceEqualityDifferentInstances()
             throws ClientException {
         DocumentModel root = getRootDocument();

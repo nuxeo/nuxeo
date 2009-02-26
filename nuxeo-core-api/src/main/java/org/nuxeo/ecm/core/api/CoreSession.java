@@ -811,7 +811,10 @@ public interface CoreSession {
      * @param path the path of the content field. Must be the raw path of the
      *            property (i.e. in the prefixed form)
      * @return the content data as a byte array content source
+     *
+     * @deprecated not used will be removed in 5.2
      */
+    @Deprecated
     byte[] getContentData(DocumentRef docRef, String path)
             throws ClientException;
 

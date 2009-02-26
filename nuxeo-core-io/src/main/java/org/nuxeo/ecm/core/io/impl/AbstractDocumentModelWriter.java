@@ -298,7 +298,7 @@ public abstract class AbstractDocumentModelWriter extends AbstractDocumentWriter
                 if (xdoc.hasExternalBlobs()) {
                     blob = xdoc.getBlob(content);
                 }
-                if (blob == null) { // may be the blob is embedded like a Base64
+                if (blob == null) { // maybe the blob is embedded in Base64
                     // encoded data
                     byte[] bytes = Base64.decode(content);
                     blob = new StreamingBlob(new ByteArraySource(bytes));
