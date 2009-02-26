@@ -3,6 +3,8 @@
 
   <documentation>
     Defines the default JackRabbit repository used for development and testing.
+    Also defines the VersioningService implementation using the string property versioningService
+    @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
   </documentation>
 
   <extension target="org.nuxeo.ecm.core.repository.RepositoryService"
@@ -114,4 +116,11 @@
       </Repository>
     </repository>
   </extension>
+  
+  <!-- Versioning -->
+  <implementation class="org.nuxeo.ecm.core.repository.jcr.versioning.Versioning" />
+
+  <!-- property name="versioningService" value="org.nuxeo.ecm.core.repository.jcr.versioning.JCRVersioningService"/-->
+  <property name="versioningService" value="org.nuxeo.ecm.core.versioning.custom.CustomVersioningService" />
+  
 </component>
