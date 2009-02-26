@@ -149,6 +149,9 @@ public class Site extends DefaultObject {
         Map<String, Object> root = new HashMap<String, Object>();
         root.put("welcomeText", SiteHelper.getString(doc, "webc:welcomeText",
                 null));
+        root.put("siteName", SiteHelper.getString(doc, "webc:name", null));
+		root.put("description", SiteHelper.getString(doc, "dc:description",
+				null));
         return root;
     }
 
