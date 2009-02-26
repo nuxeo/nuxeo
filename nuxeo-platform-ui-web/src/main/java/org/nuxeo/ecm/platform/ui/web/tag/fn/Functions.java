@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.ui.web.tag.fn;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -109,6 +110,13 @@ public final class Functions {
 
     public static String join(String[] list, String separator) {
         return StringUtils.join(list, separator);
+    }
+
+    public static String joinCollection(Collection<Object> collection, String separator) {
+        if (collection == null) {
+            return null;
+        }
+        return StringUtils.join(collection.iterator(), separator);
     }
 
     public static String concat(String s1, String s2) {
