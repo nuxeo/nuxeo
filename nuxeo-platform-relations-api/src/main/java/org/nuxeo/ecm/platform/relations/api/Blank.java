@@ -23,7 +23,6 @@ package org.nuxeo.ecm.platform.relations.api;
  * Blank node.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public interface Blank extends Subject {
 
