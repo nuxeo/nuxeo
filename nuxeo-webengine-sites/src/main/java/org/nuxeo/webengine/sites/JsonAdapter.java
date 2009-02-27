@@ -79,7 +79,7 @@ public class JsonAdapter extends DefaultAdapter {
     }
 
 
-    protected Path getRelativPath(DocumentModel rootDoc, DocumentModel doc) {
+    public static Path getRelativPath(DocumentModel rootDoc, DocumentModel doc) {
         Path rootPath = rootDoc.getPath();
         Path docPath = doc.getPath();
         int n = rootPath.segmentCount();

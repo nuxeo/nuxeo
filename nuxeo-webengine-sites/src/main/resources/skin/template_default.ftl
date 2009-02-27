@@ -44,7 +44,7 @@ ${welcomeText}
 <table border=1>
   <tr><th>Name<th>Description<th>Content
   <#list pages as p>
-  <tr><td><a href="${This.path}/${p.name}"> ${p.name} &nbsp; </a>
+  <tr><td><a href="${This.path}/${p.path}"> ${p.name} &nbsp; </a>
   <td> ${p.description}&nbsp;
   <td>${p.content}&nbsp;
    </#list>

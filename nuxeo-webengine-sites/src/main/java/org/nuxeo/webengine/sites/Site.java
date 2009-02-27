@@ -30,7 +30,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
@@ -44,6 +43,7 @@ import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
+
 
 @WebObject(type = "site", guard = "user=Administrator", facets = {"Site"})
 @Produces("text/html; charset=UTF-8")
@@ -174,12 +174,11 @@ public class Site extends DefaultObject {
                 String.format(
                         "SELECT * FROM Document WHERE "
                                 + " ecm:primaryType like 'WebPage' AND "
-                                + " ecm:path STARTSWITH '/default-domain/workspaces/%s'"
+                                + " ecm:path STARTSWITH '%s'"
                                 + " AND webp:pushtomenu = 'true' "
                                 + " AND ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0"
                                 + " AND ecm:currentLifeCycleState != 'deleted' ORDER BY dc:modified DESC",
-                        SiteHelper.getString(ws, "dc:title")), null, noPages,
-                0, true);
+                        ws.getPathAsString()), null, noPages, 0, true);
 
         List<Object> pages = new ArrayList<Object>();
         for (DocumentModel d : list) {
@@ -187,6 +186,7 @@ public class Site extends DefaultObject {
                 try {
                     Map<String, String> page = new HashMap<String, String>();
                     page.put("name", SiteHelper.getString(d, "dc:title"));
+                    page.put("path", JsonAdapter.getRelativPath(ws, d).toString());
                     page.put("description", SiteHelper.getString(d,
                             "dc:description"));
                     page.put("content", getFistNWordsFromString(
@@ -235,4 +235,5 @@ public class Site extends DefaultObject {
         return new String(firstNwords);
     }
 
+    
 }
