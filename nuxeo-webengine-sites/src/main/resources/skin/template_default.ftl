@@ -13,7 +13,7 @@
 						${siteName}
 					</div>
 					<div style="font-size: medium;font-style: italic; color: white;">
-						${description}
+						${description} 
 					</div>
 				</td>
 			</tr>
@@ -21,7 +21,7 @@
 	</div>
 </div>
 
-
+<center><h4>${welcomeText}</h4></center>
 <!--
 Logo : <img src="${This.path}/logo" alt="logo">
 <hr>
