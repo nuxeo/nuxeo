@@ -64,6 +64,15 @@
       org.nuxeo.ecm.platform:nuxeo-platform-ear:${project.version}:zip:resources-jcr
     </artifact>
   </zipEntrySet>
+  <assemble>
+    <set>resources-jcr-postgresql</set>
+    <outputFile>/</outputFile>
+  </assemble>
+  <zipEntrySet id="resources-jcr-postgresql" profile="jcr-postgresql">
+    <artifact>
+      org.nuxeo.ecm.platform:nuxeo-platform-ear:${project.version}:zip:resources-jcr-postgresql
+    </artifact>
+  </zipEntrySet>
 
   <!-- ARTIFACTS -->
   <assemble>

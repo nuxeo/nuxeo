@@ -625,7 +625,7 @@
     </profile>
 
     <!--
-      Two following profiles allow to choose between default VSC and JCR
+      Three following profiles allow to choose between default VSC and JCR
       storage. DO NOT CALL those profiles, but set the "jcr" property to switch
       on JCR storage: "mvn package -Djcr"
     -->
@@ -638,6 +638,29 @@
       </activation>
       <properties>
         <nuxeo.ear>${nuxeo.ear.assembly}-jcr.ear</nuxeo.ear>
+      </properties>
+      <dependencies>
+        <!-- JCR Storage -->
+        <dependency>
+          <groupId>org.nuxeo.ecm.core</groupId>
+          <artifactId>nuxeo-core-jca</artifactId>
+          <type>rar</type>
+        </dependency>
+        <dependency>
+          <groupId>org.nuxeo.ecm.core</groupId>
+          <artifactId>nuxeo-core-jcr-connector</artifactId>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>jcr-postgresql</id>
+      <activation>
+        <property>
+          <name>jcr-pgsql</name>
+        </property>
+      </activation>
+      <properties>
+        <nuxeo.ear>${nuxeo.ear.assembly}-jcr-pgsql.ear</nuxeo.ear>
       </properties>
       <dependencies>
         <!-- JCR Storage -->
@@ -703,6 +726,7 @@
             <descriptor>src/main/assemble/resources/db-oracle.xml</descriptor>
             <descriptor>src/main/assemble/resources/db-h2.xml</descriptor>
             <descriptor>src/main/assemble/resources/jcr_storage.xml</descriptor>
+            <descriptor>src/main/assemble/resources/jcr_postgresql.xml</descriptor>
           </descriptors>
         </configuration>
         <executions>
