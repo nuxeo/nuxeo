@@ -225,7 +225,7 @@ public class Site extends DefaultObject {
     }
     
     private String getFistNWordsFromString(String string, int n) {
-        String[] result = string.split(" ");
+        String[] result = string.split(" ", n+1);
         StringBuffer firstNwords = new StringBuffer();
         for (int i = 0; i < ((n <= result.length) ? n : result.length); i++) {
             firstNwords.append(result[i]);
