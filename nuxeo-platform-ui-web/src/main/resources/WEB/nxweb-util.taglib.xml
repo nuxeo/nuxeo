@@ -56,6 +56,15 @@
     </function-signature>
   </function>
   <function>
+    <function-name>printWebContainerCompleteUrl</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.Functions
+    </function-class>
+    <function-signature>
+      java.lang.String printWebContainerCompleteUrl(java.lang.String)
+    </function-signature>
+  </function>
+  <function>
     <function-name>concat</function-name>
     <function-class>
       org.nuxeo.ecm.platform.ui.web.tag.fn.Functions

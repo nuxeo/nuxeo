@@ -661,7 +661,7 @@
         </properties>
       </widget>
 
-      <widget name="url" type="text">
+      <widget name="url" type="template">
         <widgetModes>
           <mode value="any">view</mode>
         </widgetModes>
@@ -669,6 +669,11 @@
         <fields>
           <field>webc:url</field>
         </fields>
+        <properties mode="any">
+          <property name="template">
+            /widgets/site_url_widget_template.xhtml
+          </property>
+        </properties>
       </widget>
 
       <!--  Not needed yet        
