@@ -302,15 +302,16 @@ public class StandaloneApplication extends OSGiAdapter {
         } catch (Throwable  e) {
             e.printStackTrace();
             System.exit(13);
-        } finally {
-            try {
-                if (app != null && app.isStarted()) {
-                    app.shutdown();
-                }
-            } catch (Exception e) {
-                System.err.println("Failed to stop framework");
-                e.printStackTrace();
-            }
+// this should not be called here because it will stop the server if the main thread is not blocking
+//        } finally {
+//            try {
+//                if (app != null && app.isStarted()) {
+//                    app.shutdown();
+//                }
+//            } catch (Exception e) {
+//                System.err.println("Failed to stop framework");
+//                e.printStackTrace();
+//            }
         }
     }
 
