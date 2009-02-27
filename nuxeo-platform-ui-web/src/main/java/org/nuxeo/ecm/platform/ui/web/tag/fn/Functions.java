@@ -32,7 +32,6 @@ import javax.faces.context.FacesContext;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
@@ -281,10 +280,6 @@ public final class Functions {
             size /= base;
         }
         return "" + size + " " + suffix[ex] + "B";
-    }
-    
-    public static String printWebContainerCompleteUrl(String lastUriName) {
-        return BaseURL.getBaseURL() + "site/sites/" + lastUriName;
     }
 
 }

@@ -6,7 +6,7 @@
   xmlns:nxdir="http://nuxeo.org/nxdirectory"
   xmlns:nxl="http://nuxeo.org/nxforms/layout" id="#{widget.id}">
 
-  <h:outputLink value="#{nxu:printWebContainerCompleteUrl(field_0)}" target="blank">
+  <h:outputLink value="#{baseURL}site/sites/#{field_0}" target="blank">
     <h:outputText value="#{field_0}" />
   </h:outputLink>
   
