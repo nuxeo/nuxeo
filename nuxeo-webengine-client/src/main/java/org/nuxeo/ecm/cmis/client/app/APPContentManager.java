@@ -20,7 +20,6 @@ package org.nuxeo.ecm.cmis.client.app;
 import org.nuxeo.ecm.cmis.ContentManagerException;
 import org.nuxeo.ecm.cmis.NoSuchRepositoryException;
 import org.nuxeo.ecm.cmis.Repository;
-import org.nuxeo.ecm.cmis.client.app.abdera.AbderaSerializationManager;
 import org.nuxeo.ecm.cmis.client.app.httpclient.HttpClientConnector;
 import org.nuxeo.ecm.cmis.common.AbstractContentManager;
 import org.nuxeo.ecm.cmis.common.AdapterManager;
@@ -48,21 +47,13 @@ public class APPContentManager extends AbstractContentManager {
     }
     
     protected SerializationManager createSerializationManager() {
-        return new AbderaSerializationManager(this);
+        return new DefaultSerializationManager();
     }
     
     protected Connector createConnector() {
         return new HttpClientConnector(this);
     }
 
-    public AdapterManager getAdapterManager() {
-        return adapterMgr;
-    }
-    
-    public SerializationManager getSerializationManager() {
-        return serializationMgr;
-    }
-    
     public String getBaseUrl() {
         return baseUrl;
     }
@@ -71,7 +62,17 @@ public class APPContentManager extends AbstractContentManager {
         return connector;
     }
     
-
+    public SerializationManager getSerializationManager() {
+        return serializationMgr;
+    }
+    
+    public void registerSerializationHandler(SerializationHandler<?> handler) {
+        serializationMgr.registerHandler(handler);
+    }
+    
+    public void unregisterSerializationHandler(Class<?> clazz) {
+        serializationMgr.unregisterHandler(clazz);
+    }
 
     public Repository[] getRepositories() throws ContentManagerException {
         Request req = new Request(getBaseUrl());
@@ -79,7 +80,7 @@ public class APPContentManager extends AbstractContentManager {
         if (!resp.isOk()) {
             throw new ContentManagerException("Remote server returned error code: "+resp.getStatusCode());
         }
-        APPServiceDocument app = resp.getContent(APPServiceDocument.class);
+        APPServiceDocument app = resp.getEntity(this, APPServiceDocument.class);
         return app.getRepositories();
     }
 

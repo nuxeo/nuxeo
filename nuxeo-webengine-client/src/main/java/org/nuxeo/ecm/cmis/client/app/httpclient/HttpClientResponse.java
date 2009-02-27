@@ -24,6 +24,7 @@ import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpMethod;
 import org.nuxeo.ecm.cmis.ContentManagerException;
 import org.nuxeo.ecm.cmis.client.app.Connector;
+import org.nuxeo.ecm.cmis.client.app.Feed;
 import org.nuxeo.ecm.cmis.client.app.Response;
 
 /**
@@ -104,15 +105,23 @@ public class HttpClientResponse implements Response {
     }
 
     @SuppressWarnings("unchecked")
-    public <T> T getContent(Class<T> clazz) throws ContentManagerException {        
+    public <T> T getEntity(Object context, Class<T> clazz) throws ContentManagerException {        
         InputStream in = getStream();
         try {
-            Object result = connector.getSerializationManager().readContent(clazz, in);
+            Object result = connector.getSerializationManager().readEntity(context, clazz, in);
             return (T)result;
         } finally {
             try {in.close();} catch (IOException e) { e.printStackTrace(); }
         }
-
+    }
+    
+    public <T> Feed<T> getFeed(Object context, Class<T> clazz) throws ContentManagerException {
+        InputStream in = getStream();
+        try {
+            return connector.getSerializationManager().readFeed(context, clazz, in);
+        } finally {
+            try {in.close();} catch (IOException e) { e.printStackTrace(); }
+        }
     }
 
 }

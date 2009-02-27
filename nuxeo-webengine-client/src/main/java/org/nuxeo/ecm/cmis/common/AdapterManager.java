@@ -30,19 +30,21 @@ import java.util.Map;
 public class AdapterManager implements ClassRegistry {
 
     // adaptableClass => { adapterClass => adapterFactory }
-    protected Map<Class<?>, Map<Class<?>, AdapterFactory<?>>> registry; 
+    protected Map<Class<?>, Map<Class<?>, AdapterFactory>> registry; 
     
     
     public AdapterManager() {
-        this.registry = new HashMap<Class<?>, Map<Class<?>, AdapterFactory<?>>>();
+        this.registry = new HashMap<Class<?>, Map<Class<?>, AdapterFactory>>();
     }
     
-    public synchronized void registerAdapter(Class<?> clazz, AdapterFactory<?> factory) {
-        Map<Class<?>, AdapterFactory<?>> adapters = registry.get(clazz);
+    public synchronized void registerAdapters(Class<?> clazz, AdapterFactory factory) {
+        Map<Class<?>, AdapterFactory> adapters = registry.get(clazz);
         if (adapters == null) {
-            adapters = new HashMap<Class<?>, AdapterFactory<?>>();
+            adapters = new HashMap<Class<?>, AdapterFactory>();
         }
-        adapters.put(clazz, factory);
+        for (Class<?> adapterType :  factory.getAdapterTypes()) {
+            adapters.put(adapterType, factory);    
+        }        
         registry.put(clazz, adapters);
     }
     
@@ -54,9 +56,9 @@ public class AdapterManager implements ClassRegistry {
         //TODO
     }
 
-    public synchronized <T> AdapterFactory<T> getAdapterFactory(Class<?> adaptee, Class<T> adapter) {
-        Map<Class<?>, AdapterFactory<T>> adapters = 
-            (Map<Class<?>, AdapterFactory<T>>)ClassLookup.lookup(adaptee, this);        
+    public synchronized AdapterFactory getAdapterFactory(Class<?> adaptee, Class<?> adapter) {
+        Map<Class<?>, AdapterFactory> adapters = 
+            (Map<Class<?>, AdapterFactory>)ClassLookup.lookup(adaptee, this);        
         if (adapters != null) {
             return adapters.get(adapter);
         }
@@ -64,8 +66,8 @@ public class AdapterManager implements ClassRegistry {
     }
     
     public <T> T getAdapter(Object adaptee, Class<T> adapter) {
-        AdapterFactory<?> factory = getAdapterFactory(adaptee.getClass(), adapter);
-        return factory == null ? null : (T)factory.getAdapter(adaptee);
+        AdapterFactory factory = getAdapterFactory(adaptee.getClass(), adapter);
+        return factory == null ? null : factory.getAdapter(adaptee, adapter);
     }
     
     public Object get(Class<?> clazz) {
@@ -73,7 +75,7 @@ public class AdapterManager implements ClassRegistry {
     }
     
     public void put(Class<?> clazz, Object value) {
-        registry.put(clazz, (Map<Class<?>, AdapterFactory<?>>)value);
+        registry.put(clazz, (Map<Class<?>, AdapterFactory>)value);
     }
     
 }

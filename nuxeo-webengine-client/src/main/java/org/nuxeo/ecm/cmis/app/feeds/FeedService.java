@@ -16,8 +16,9 @@
  */
 package org.nuxeo.ecm.cmis.app.feeds;
 
-import org.nuxeo.ecm.cmis.DocumentFeed;
+import org.nuxeo.ecm.cmis.ContentManagerException;
 import org.nuxeo.ecm.cmis.Session;
+import org.nuxeo.ecm.cmis.client.app.Feed;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -25,10 +26,7 @@ import org.nuxeo.ecm.cmis.Session;
  */
 public interface FeedService {
 
-    Session getSession();
-    
-    DocumentFeed getFeed(FeedDescriptor fd);
-    
-    FeedDescriptor[] getFeeds();
+    public Session getSession();
+    public Feed<FeedDescriptor> getFeeds() throws ContentManagerException;
     
 }

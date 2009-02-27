@@ -17,8 +17,9 @@
 package org.nuxeo.ecm.cmis.app.feeds;
 
 import org.nuxeo.ecm.cmis.ContentManagerException;
-import org.nuxeo.ecm.cmis.DocumentFeed;
+import org.nuxeo.ecm.cmis.DocumentEntry;
 import org.nuxeo.ecm.cmis.client.app.APPSession;
+import org.nuxeo.ecm.cmis.client.app.Feed;
 import org.nuxeo.ecm.cmis.client.app.Request;
 import org.nuxeo.ecm.cmis.client.app.Response;
 
@@ -52,38 +53,38 @@ public class FeedDescriptor {
         return pageSize;
     }
     
-    public DocumentFeed query() throws ContentManagerException {
+    public Feed<DocumentEntry> query() throws ContentManagerException {
         APPSession session = (APPSession)service.getSession();
         Request req = new Request(url);
         Response resp = session.getConnector().get(req);
-        return resp.getContent(DocumentFeed.class);
+        return resp.getFeed(service.getSession(), DocumentEntry.class);
     }
 
-    public DocumentFeed query(String query) throws ContentManagerException {
+    public Feed<DocumentEntry> query(String query) throws ContentManagerException {
         APPSession session = (APPSession)service.getSession();
         Request req = new Request(url);
         req.setParameter("query", query);
         Response resp = session.getConnector().get(req);
-        return resp.getContent(DocumentFeed.class);        
+        return resp.getFeed(service.getSession(), DocumentEntry.class);        
     }
 
-    public DocumentFeed query(int offset, int pageSize) throws ContentManagerException {
+    public Feed<DocumentEntry> query(int offset, int pageSize) throws ContentManagerException {
         APPSession session = (APPSession)service.getSession();
         Request req = new Request(url);
         req.setParameter("offset", Integer.toString(offset));
         req.setParameter("length", Integer.toString(pageSize));
         Response resp = session.getConnector().get(req);
-        return resp.getContent(DocumentFeed.class);        
+        return resp.getFeed(service.getSession(), DocumentEntry.class);
     }
 
-    public DocumentFeed query(String query, int offset, int pageSize) throws ContentManagerException {
+    public Feed<DocumentEntry> query(String query, int offset, int pageSize) throws ContentManagerException {
         APPSession session = (APPSession)service.getSession();
         Request req = new Request(url);
         req.setParameter("query", query);
         req.setParameter("offset", Integer.toString(offset));
         req.setParameter("length", Integer.toString(pageSize));
         Response resp = session.getConnector().get(req);
-        return resp.getContent(DocumentFeed.class);    
+        return resp.getFeed(service.getSession(), DocumentEntry.class);    
     }
 
 }

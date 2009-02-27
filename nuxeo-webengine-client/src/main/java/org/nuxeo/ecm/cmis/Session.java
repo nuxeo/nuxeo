@@ -16,7 +16,6 @@
  */
 package org.nuxeo.ecm.cmis;
 
-import java.util.List;
 
 
 /**
@@ -33,8 +32,6 @@ public interface Session {
     Repository getRepository();
     
     DocumentEntry getRoot();
-
-    List<Query> getQuerys();
     
     DiscoveryService getDiscoveryService();
 

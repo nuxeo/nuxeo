@@ -30,8 +30,10 @@ public interface SerializationHandler<T> {
   
     String getContentType();
     
-    T read(InputStream in) throws IOException;
+    T readEntity(Object context, InputStream in) throws IOException;
     
-    void write(T object, OutputStream out) throws IOException;
+    Feed<T> readFeed(Object context, InputStream in) throws IOException;
+    
+    void writeEntity(T object, OutputStream out) throws IOException;
     
 }

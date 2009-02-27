@@ -14,32 +14,33 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.cmis.client.app.abdera;
+package org.nuxeo.ecm.cmis.client.app;
 
-import org.apache.abdera.Abdera;
-import org.apache.abdera.ext.cmis.CmisExtensionFactory;
-import org.nuxeo.ecm.cmis.client.app.APPContentManager;
-import org.nuxeo.ecm.cmis.client.app.DefaultSerializationManager;
+import java.util.List;
+
+
 
 /**
+ * The result of a document query.
+ * 
+ * A list of documents that was returned by the server. This is describing the outcome of queries on a repository.
+ * It may be seen like a virtual folder that has no physical support. 
+ *
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class AbderaSerializationManager extends DefaultSerializationManager {
-
-    protected Abdera abdera;
+public interface Feed<T> {
+ 
+    String getId(); // URI
     
-    public AbderaSerializationManager(APPContentManager cm) {
-        super(cm);
-        this.abdera = new Abdera();
-        this.abdera.getConfiguration().addExtensionFactory(
-                new CmisExtensionFactory());
-        registerHandler(new APPServiceDocumentHandler(cm,abdera));
-    }
-
-    public Abdera getAbdera() {
-        return abdera;
-    }
+    String getTitle(); // atom:title 
     
+    long lastModified(); //atom:edited 
     
+    String getAuthor(); // atom:author 
+    
+    String getURL(); // link
+ 
+    List<T> getEntries();
 }

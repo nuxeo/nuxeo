@@ -50,7 +50,16 @@ public interface Response {
     * @return
     * @throws ContentManagerException
     */
-    <T> T getContent(Class<T> clazz) throws ContentManagerException;
+    <T> T getEntity(Object context, Class<T> clazz) throws ContentManagerException;
+    
+    /**
+     * Get a feed object constructed from the response
+     * @param <T>
+     * @param context
+     * @param clazz
+     * @return
+     */
+    <T> Feed<T> getFeed(Object context, Class<T> clazz) throws ContentManagerException;
     
     boolean isOk();
     

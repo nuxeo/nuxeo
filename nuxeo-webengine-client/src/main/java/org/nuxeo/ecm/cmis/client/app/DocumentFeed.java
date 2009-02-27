@@ -14,9 +14,11 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.cmis;
+package org.nuxeo.ecm.cmis.client.app;
 
 import java.util.List;
+
+import org.nuxeo.ecm.cmis.DocumentEntry;
 
 
 

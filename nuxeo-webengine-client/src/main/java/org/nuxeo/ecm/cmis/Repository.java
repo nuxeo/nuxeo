@@ -56,10 +56,6 @@ public interface Repository {
      * @return
      */
     String getRepositoryId();
-    
-    DocumentFeed getCollection(String id);
-    //TOO add more methods 
-    //RepositoryInfo getRepositoryInfo();
 
     
 }

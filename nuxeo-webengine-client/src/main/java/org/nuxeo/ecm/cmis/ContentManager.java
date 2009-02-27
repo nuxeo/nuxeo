@@ -17,7 +17,6 @@
 package org.nuxeo.ecm.cmis;
 
 import org.nuxeo.ecm.client.NoSuchRepositoryException;
-import org.nuxeo.ecm.cmis.common.AdapterManager;
 
 /**
  * The entry point to CMIS repositories exposed by a server.

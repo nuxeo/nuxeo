@@ -36,7 +36,7 @@ public abstract class AbstractSession implements Session {
     }
         
     public <T> T getService(Class<T> serviceType) {
-        return repository.getContentManager().getAdapterManager().getAdapter(Session.class, serviceType);
+        return repository.getContentManager().getAdapter(this, serviceType);
     }
     
     

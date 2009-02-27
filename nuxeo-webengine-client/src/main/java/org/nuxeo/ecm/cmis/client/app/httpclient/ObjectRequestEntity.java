@@ -49,7 +49,7 @@ public class ObjectRequestEntity<T> implements RequestEntity {
     }
 
     public void writeRequest(OutputStream out) throws IOException {
-        handler.write(obj, out);
+        handler.writeEntity(obj, out);
     }
     
 }

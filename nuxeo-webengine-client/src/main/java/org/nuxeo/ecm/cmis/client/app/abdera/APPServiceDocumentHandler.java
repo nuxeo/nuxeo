@@ -26,10 +26,11 @@ import org.apache.abdera.ext.cmis.CmisRepositoryInfo;
 import org.apache.abdera.model.Document;
 import org.apache.abdera.model.Service;
 import org.apache.abdera.model.Workspace;
-import org.nuxeo.ecm.cmis.client.app.APPContentManager;
 import org.nuxeo.ecm.cmis.client.app.APPServiceDocument;
 import org.nuxeo.ecm.cmis.client.app.AppRepository;
+import org.nuxeo.ecm.cmis.client.app.Feed;
 import org.nuxeo.ecm.cmis.client.app.SerializationHandler;
+import org.nuxeo.ecm.cmis.common.AbstractContentManager;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -37,14 +38,6 @@ import org.nuxeo.ecm.cmis.client.app.SerializationHandler;
  */
 public class APPServiceDocumentHandler implements SerializationHandler<APPServiceDocument> {
 
-    protected Abdera abdera;
-    
-    protected APPContentManager contentManager;
-    
-    public APPServiceDocumentHandler(APPContentManager contentManager, Abdera abdera) {
-        this.contentManager = contentManager;
-        this.abdera = abdera;
-    }
     
     public Class<APPServiceDocument> getObjectType() {
         return APPServiceDocument.class;
@@ -54,20 +47,26 @@ public class APPServiceDocumentHandler implements SerializationHandler<APPServic
         return "application/atom+xml";
     }
     
-    public APPServiceDocument read(InputStream in) throws IOException {
-        Document<Service> document = abdera.getParser().parse(in);
+    public APPServiceDocument readEntity(Object context, InputStream in) throws IOException {
+        AbstractContentManager cm = (AbstractContentManager) context;
+        Document<Service> document = Abdera.getInstance().getParser().parse(in);
         Service atomService = document.getRoot();
         List<Workspace>  atomWorkspaces = atomService.getWorkspaces();
         AppRepository repos[] = new AppRepository[atomWorkspaces.size()];
         int i = 0;
         for (i = 0; i < repos.length; i++) {
-            repos[i] = new AppRepository(contentManager, 
+            repos[i] = new AppRepository(cm, 
                     atomWorkspaces.get(i).getExtension(CmisRepositoryInfo.class).getRepositoryId());
         }
         return new APPServiceDocument(repos);
     }
     
-    public void write(APPServiceDocument object, OutputStream out)
+    public Feed<APPServiceDocument> readFeed(Object context, InputStream in)
+            throws IOException {
+        throw new UnsupportedOperationException("readFeed not supported for type APPServiceDocument");
+    }
+    
+    public void writeEntity(APPServiceDocument object, OutputStream out)
             throws IOException {
         throw new UnsupportedOperationException("Write content is not available for APPServiceDocument");
     }

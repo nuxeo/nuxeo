@@ -19,6 +19,7 @@ package org.nuxeo.ecm.cmis;
 import java.util.List;
 import java.util.Map;
 
+import org.nuxeo.ecm.client.Content;
 
 
 
@@ -46,55 +47,45 @@ public interface DocumentEntry {
 
     Content getContent(); //atom:content. @src <=> cmis-stream, @type
 
-    void setContent(Content content);
+    Content getContent(String key);
     
-    void removeContent();
-    
-    DocumentEntry save(); // put - update properties + content?
-    DocumentEntry create(); // post
-    void delete(); //delete
-    boolean exists(); // head
+    Content[] getContents(); 
+
     
     // -------------- CMIS specific
-    
-    // client specific properties
-    Repository getRepository(); // used by action methods: repo.getNavigationService().getChildren(getId());
-    Path getPath(); // client constructed path or null if unfilled
-    boolean isPhantom(); // not yet persisted TODO rename in isTransient() ?
-    boolean isDirty(); // modified 
-    boolean isLocked(); //locked
-    
-    
+
     String getName(); //cmis:name
     //Type getType();
     String getTypeName(); // link type
     String getParentId();
-    DocumentEntry getParent();    
-    DocumentEntry getChild(String name); // throws Exception if not a folder?
-    
-    
-    Object getProperty(String key); // cmis properties    
-    Map<String, Object> getProperties();        
-     
-    List<DocumentEntry> getChildren(); // list entry content
-    List<DocumentEntry> getDescendants();
-    List<DocumentEntry> getParentFolders();
-    List<DocumentEntry> getObjectParents();
-    
-    <T> T getTypeAdapter();
-    //<T extends MutableDocument> edit() TODO ?
-
-    DocumentEntry newDocument(String type, String name);
-    
-    void setProperty(String key, Object value);
-    
-    // nuxeo extensions
-    void removeContent(String content); //nuxeo specific
+    String getRepositoryId(); // the repository that owns that document
         
-    Content[] getContents(); // nuxeo specific
+    Path getPath(); // client constructed path or null if unfilled
+    boolean isTransient(); // not yet persisted
+    boolean isLocked(); //locked
     
     String getState();//TODO cmis token for state? move this in a property?
     String[] getFacets(); // set of facets of this document
-    boolean hasFacet(String facet);
+    boolean hasFacet(String facet);    
+            
+    Object getProperty(String key); // cmis properties    
+    Map<String, Object> getProperties();        
 
+    void bind(Session session);    
+    void unbind() throws UnboundDocumentException;      
+    boolean isBound();
+
+    Document getDocument() throws UnboundDocumentException;    
+    <T> T getDocument(Class<T> type) throws UnboundDocumentException;    
+    DocumentEntry newDocument(String type, String name);    
+
+    Repository getRepository() throws UnboundDocumentException; // the repository that owns that document
+    Session getSession() throws UnboundDocumentException; 
+    DocumentEntry getParent() throws UnboundDocumentException;    
+    DocumentEntry getChild(String name) throws UnboundDocumentException; // throws Exception if not a folder?
+    List<DocumentEntry> getChildren() throws UnboundDocumentException; // list entry content
+    List<DocumentEntry> getDescendants() throws UnboundDocumentException;
+    List<DocumentEntry> getParentFolders() throws UnboundDocumentException;
+    List<DocumentEntry> getObjectParents() throws UnboundDocumentException;
+    
 }

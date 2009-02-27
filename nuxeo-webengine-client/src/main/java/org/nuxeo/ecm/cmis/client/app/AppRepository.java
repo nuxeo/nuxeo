@@ -19,7 +19,6 @@ package org.nuxeo.ecm.cmis.client.app;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.nuxeo.ecm.cmis.DocumentFeed;
 import org.nuxeo.ecm.cmis.Session;
 import org.nuxeo.ecm.cmis.common.AbstractContentManager;
 import org.nuxeo.ecm.cmis.common.AbstractRepository;
@@ -42,20 +41,17 @@ public class AppRepository extends AbstractRepository {
      * open session and get document root
      */
     public Session open() {
-        throw new UnsupportedOperationException("not yet");
+        return new APPSession(this);
     }
 
     @Override
     public Session open(Map<String, Object> ctx) {
-        throw new UnsupportedOperationException("not yet");
+        return new APPSession(this); //TODO
     }
 
     public void addCollection(String name, String href) {
         collections.put(name, href);
     }
     
-    public DocumentFeed getCollection(String id) {
-        return null;
-    }
     
 }

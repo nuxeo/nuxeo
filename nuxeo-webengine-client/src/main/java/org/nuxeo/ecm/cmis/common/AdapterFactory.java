@@ -20,8 +20,10 @@ package org.nuxeo.ecm.cmis.common;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface AdapterFactory<T> {
+public interface AdapterFactory {
 
-    T getAdapter(Object obj);
+    Class<?>[] getAdapterTypes();
+    
+    <T> T getAdapter(Object obj, Class<T> adapterType);
     
 }

@@ -19,7 +19,6 @@ package org.nuxeo.ecm.cmis.client.app;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import org.nuxeo.ecm.cmis.ContentManager;
 import org.nuxeo.ecm.cmis.ContentManagerException;
 
 /**
@@ -28,11 +27,11 @@ import org.nuxeo.ecm.cmis.ContentManagerException;
  */
 public interface SerializationManager {
     
-    ContentManager getContentManager();
-
-    void writeContent(Object object, OutputStream out) throws ContentManagerException;
+    void writeEntity(Object object, OutputStream out) throws ContentManagerException;
     
-    <T> T readContent(Class<T> type, InputStream in) throws ContentManagerException;
+    <T> T readEntity(Object context, Class<T> type, InputStream in) throws ContentManagerException;
+    
+    <T> Feed<T> readFeed(Object context, Class<T> type, InputStream in) throws ContentManagerException;
   
     <T> SerializationHandler<T> getHandler(Class<T> clazz);
     

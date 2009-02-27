@@ -42,4 +42,16 @@ public abstract class AbstractContentManager implements ContentManager {
         return adapters;
     }
     
+    public synchronized AdapterFactory getAdapterFactory(Class<?> adaptee, Class<?> adapter) {
+        return adapters.getAdapterFactory(adaptee, adapter);
+    }
+    
+    public <T> T getAdapter(Object adaptee, Class<T> adapter) {
+        return adapters.getAdapter(adaptee, adapter);
+    }
+
+    public void registerAdapters(Class<?> clazz, AdapterFactory factory) {
+        adapters.registerAdapters(clazz, factory);
+    }
+        
 }
