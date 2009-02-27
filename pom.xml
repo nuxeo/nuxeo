@@ -8,12 +8,13 @@
   <version>5.1.7-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Nuxeo ECM Projects</name>
-  <url>http://maven.nuxeo.org/</url>
+  <description>Nuxeo ECM Platform and related components.</description>
+  
+  <url>http://www.nuxeo.com/en/products/platform</url>
   <organization>
     <name>Nuxeo SAS</name>
-    <url>http://www.nuxeo.com/en/</url>
+    <url>http://www.nuxeo.com/en</url>
   </organization>
-  <description>Nuxeo ECM Platform and related components.</description>
   <licenses>
     <license>
       <name>GNU LESSER GENERAL PUBLIC LICENSE, Version 2.1</name>
@@ -24,9 +25,31 @@
   <mailingLists>
     <mailingList>
       <name>Nuxeo ECM list</name>
+      <post>ecm@lists.nuxeo.com</post>
       <subscribe>http://lists.nuxeo.com/mailman/listinfo/ECM</subscribe>
       <unsubscribe>http://lists.nuxeo.com/mailman/listinfo/ECM</unsubscribe>
       <archive>http://lists.nuxeo.com/pipermail/ecm/</archive>
+      <otherArchives>
+        <otherArchive>http://dir.gmane.org/gmane.comp.cms.nuxeo.bugs</otherArchive>
+        <otherArchive>http://www.mail-archive.com/ecm@lists.nuxeo.com/</otherArchive>
+      </otherArchives>
+    </mailingList>
+    <mailingList>
+      <name>Nuxeo ECM checkins list</name>
+      <subscribe>http://lists.nuxeo.com/mailman/listinfo/ecm-checkins</subscribe>
+      <unsubscribe>http://lists.nuxeo.com/mailman/listinfo/ecm-checkins</unsubscribe>
+      <archive>http://lists.nuxeo.com/pipermail/ecm-checkins/</archive>
+      <otherArchives>
+        <otherArchive>http://dir.gmane.org/gmane.comp.cms.nuxeo.scm</otherArchive>
+        <otherArchive>http://www.mail-archive.com/ecm-checkins@lists.nuxeo.com/</otherArchive>
+      </otherArchives>
+    </mailingList>
+    <mailingList>
+      <name>Nuxeo ECM developers list</name>
+      <post>nuxeo-dev@lists.nuxeo.com</post>
+      <subscribe>http://lists.nuxeo.com/mailman/listinfo/nuxeo-dev</subscribe>
+      <unsubscribe>http://lists.nuxeo.com/mailman/listinfo/nuxeo-dev</unsubscribe>
+      <archive>http://lists.nuxeo.com/pipermail/nuxeo-dev/</archive>
     </mailingList>
   </mailingLists>
 
@@ -38,6 +61,12 @@
   <ciManagement>
     <system>Hudson</system>
     <url>http://qa.nuxeo.org/hudson/</url>
+    <notifiers>
+      <notifier>
+        <type>mail</type>
+        <configuration><address>ecm-qa@lists.nuxeo.com</address></configuration>
+      </notifier>
+    </notifiers>
   </ciManagement>
 
   <modules>
@@ -744,25 +773,6 @@
           <preparationGoals>clean install</preparationGoals>
         </configuration>
       </plugin>
-      <!--
-        <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>buildnumber-maven-plugin</artifactId>
-        <version>1.0-beta-1</version>
-        <executions>
-        <execution>
-        <phase>validate</phase>
-        <goals>
-        <goal>create</goal>
-        </goals>
-        </execution>
-        </executions>
-        <configuration>
-        <doCheck>false</doCheck>
-        <doUpdate>false</doUpdate>
-        </configuration>
-        </plugin>
-      -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-nuxeo-plugin</artifactId>
@@ -822,22 +832,12 @@
             </archive>
           </configuration>
         </plugin>
-        <!--
-          <plugin>
+        <!-- version should be also set in module for enabling mevenide to load it -->
+        <plugin>
           <groupId>org.codehaus.mojo</groupId>
-          <artifactId>dashboard-maven-plugin</artifactId>
-          <version>1.0-SNAPSHOT</version>
-          <configuration>
-          <configLocation>dashboard-config.xml</configLocation>
-          </configuration>
-          </plugin>
-        -->
-      <!-- version should be also set in module for enabling mevenide to load it -->
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>jboss-packaging-maven-plugin</artifactId>
-        <version>2.0-beta-1</version>
-      </plugin>
+          <artifactId>jboss-packaging-maven-plugin</artifactId>
+          <version>2.0-beta-1</version>
+        </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-nuxeo-plugin</artifactId>
@@ -1239,10 +1239,9 @@
   <developers>
     <developer>
       <id>Nuxeo</id>
-      <name>Nuxeo's Core Team</name>
-      <email>ecm@lists.nuxeo.com</email>
-      <organization>Nuxeo SAS</organization>
-      <organizationUrl>http://www.nuxeo.com/en/</organizationUrl>
+      <name>Nuxeo Developers Team</name>
+      <email>nuxeo-dev@lists.nuxeo.com</email>
+      <timezone>+1</timezone>
     </developer>
   </developers>
 
@@ -1275,25 +1274,11 @@
     </repository>
   </repositories>
 
-  <distributionManagement>
-    <site>
-      <id>maven-website</id>
-      <url>scpexe://gironde.nuxeo.com/home/mavenweb/site/</url>
-    </site>
-    <repository>
-      <id>nuxeo-release</id>
-      <url>scpexe://amour.nuxeo.com/home/nexus/repositories/nuxeo-release</url>
-    </repository>
-    <snapshotRepository>
-      <id>nuxeo-snapshot</id>
-      <url>scpexe://amour.nuxeo.com/home/nexus/repositories/nuxeo-snapshot</url>
-    </snapshotRepository>
-  </distributionManagement>
-
   <pluginRepositories>
     <pluginRepository>
       <id>public</id>
       <url>http://maven.nuxeo.org/public</url>
+      <name>Nuxeo virtual release repository</name>
       <releases>
         <enabled>true</enabled>
       </releases>
@@ -1313,5 +1298,20 @@
       </snapshots>
     </pluginRepository>
   </pluginRepositories>
+
+  <distributionManagement>
+    <site>
+      <id>maven-website</id>
+      <url>scpexe://gironde.nuxeo.com/home/mavenweb/site/</url>
+    </site>
+    <repository>
+      <id>nuxeo-release</id>
+      <url>scpexe://amour.nuxeo.com/home/nexus/repositories/nuxeo-release</url>
+    </repository>
+    <snapshotRepository>
+      <id>nuxeo-snapshot</id>
+      <url>scpexe://amour.nuxeo.com/home/nexus/repositories/nuxeo-snapshot</url>
+    </snapshotRepository>
+  </distributionManagement>
 
 </project>
