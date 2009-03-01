@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 1
-Bundle-Name: Nuxeo ECM Platform Site Add On
+Bundle-Name: Nuxeo WebEngine Core
 Bundle-SymbolicName: org.nuxeo.ecm.webengine.core;singleton:=true
 Bundle-Category: stateless
 Require-Bundle: freemarker,

@@ -6,10 +6,8 @@
     </module>
   </extension>
 
-
   <!-- Site Servlet mapping -->
   <extension target="web#SERVLET">
-
     <servlet>
       <servlet-name>Nuxeo WebEngine Servlet</servlet-name>
       <servlet-class>
@@ -20,6 +18,5 @@
       <servlet-name>Nuxeo WebEngine Servlet</servlet-name>
       <url-pattern>/site/*</url-pattern>
     </servlet-mapping>
-
   </extension>
 </fragment>

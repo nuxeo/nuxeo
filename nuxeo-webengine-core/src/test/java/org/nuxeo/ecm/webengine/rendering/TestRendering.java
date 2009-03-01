@@ -30,13 +30,14 @@ public class TestRendering extends NXRuntimeTestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
-        deployBundle("nuxeo-core-schema");
-        deployBundle("nuxeo-core-query");
-        deployBundle("nuxeo-core-api");
-        deployBundle("nuxeo-core");
-        deployBundle("nuxeo-platform-rendering");
-        deployBundle("nuxeo-webengine-core");
-        deployContrib("OSGI-INF/test-rendering-template-contrib.xml");
+        deployBundle("org.nuxeo.ecm.core.schema");
+        deployBundle("org.nuxeo.ecm.core.query");
+        deployBundle("org.nuxeo.ecm.core.api");
+        deployBundle("org.nuxeo.ecm.core");
+        deployBundle("org.nuxeo.ecm.platform.rendering");
+        deployBundle("org.nuxeo.ecm.webengine.core");
+
+        //deployContrib("org.nuxeo.ecm.webengine.core.tests", "test-rendering-template-contrib.xml");
     }
 
     public void testX() {}

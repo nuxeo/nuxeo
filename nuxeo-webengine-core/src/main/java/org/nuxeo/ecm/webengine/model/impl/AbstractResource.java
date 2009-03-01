@@ -41,7 +41,8 @@ import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-// DO NOT MODIFY class declaration! Cannot use WebResourceType<?> since groovy doesn't supports wildcards for now
+// DO NOT MODIFY class declaration! Cannot use WebResourceType<?> since groovy
+// doesn't supports wildcards for now
 @SuppressWarnings("unchecked")
 public abstract class AbstractResource<T extends ResourceType> implements Resource {
 
@@ -72,7 +73,6 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
     public boolean isAdapter() {
         return type.getClass() == AdapterTypeImpl.class;
     }
-
 
     public boolean isRoot() {
         return this == ctx.getRoot();

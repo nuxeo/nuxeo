@@ -28,6 +28,9 @@ import org.nuxeo.ecm.core.api.model.Property;
 
 public class SiteHelper {
 
+    private SiteHelper() {
+    }
+
     public static String getString(DocumentModel d, String xpath, String defaultValue) {
         try {
             return getString(d, xpath);

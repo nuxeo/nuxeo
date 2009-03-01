@@ -84,7 +84,7 @@ public class ModuleImpl implements Module {
     public ModuleImpl(WebEngine engine, ModuleImpl superModule, ModuleConfiguration config) throws Exception {
         this.engine = engine;
         this.superModule = superModule;
-        this.configuration = config;
+        configuration = config;
         skinPathPrefix = new StringBuilder()
             .append(engine.getSkinPathPrefix()).append('/').append(config.name).toString();
         fileCache = new ConcurrentHashMap<String, ScriptFile>();
@@ -320,7 +320,7 @@ public class ModuleImpl implements Module {
                 dirStack.addDirectory(skin);
             }
             if (superModule instanceof ModuleImpl) {
-                DirectoryStack ds = ((ModuleImpl)superModule).dirStack;
+                DirectoryStack ds = (superModule).dirStack;
                 if (ds != null) {
                     dirStack.getDirectories().addAll(ds.getDirectories());
                 }
@@ -435,11 +435,9 @@ public class ModuleImpl implements Module {
         }
     }
 
-
     @Override
     public String toString() {
         return getName();
     }
-
 
 }

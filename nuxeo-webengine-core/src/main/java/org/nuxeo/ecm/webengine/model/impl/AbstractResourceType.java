@@ -58,7 +58,7 @@ public abstract class AbstractResourceType implements ResourceType {
 
     protected AbstractResourceType(WebEngine engine, ModuleImpl module, AbstractResourceType superType, String name, ClassProxy clazz, int visibility) {
         templateCache = new ConcurrentHashMap<String, ScriptFile>();
-        this.owner = module;
+        owner = module;
         this.superType = superType;
         this.name = name;
         this.clazz = clazz;
@@ -193,8 +193,8 @@ public abstract class AbstractResourceType implements ResourceType {
     }
 
     protected ScriptFile findSkinTemplate(Module module, String name) {
-        return module.getFile(new StringBuilder().append("views").
-                append(File.separatorChar).append(this.name)
+        return module.getFile(new StringBuilder().append("views")
+                .append(File.separatorChar).append(this.name)
                 .append(File.separatorChar).append(name).toString());
     }
 
@@ -223,8 +223,7 @@ public abstract class AbstractResourceType implements ResourceType {
             path = path.substring(0, p);
             path = path.replace('.', File.separatorChar);
             return new StringBuilder().append(File.separatorChar).append(path)
-            .append(File.separatorChar)
-            .append(fileName).toString();
+                    .append(File.separatorChar).append(fileName).toString();
         }
         return new StringBuilder().append(File.separatorChar)
             .append(fileName).toString();

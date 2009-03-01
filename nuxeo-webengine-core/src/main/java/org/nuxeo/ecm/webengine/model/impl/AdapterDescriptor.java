@@ -65,7 +65,8 @@ public class AdapterDescriptor extends TypeDescriptor {
         this.name = name;
     }
 
-    public AdapterDescriptor(ClassProxy clazz, String name, String type, String superType, String targetType, String[] facets) {
+    public AdapterDescriptor(ClassProxy clazz, String name, String type, String superType,
+            String targetType, String[] facets) {
         super(clazz, type, superType);
         this.name = name;
         if (facets != null && facets.length > 0) {
@@ -119,7 +120,8 @@ public class AdapterDescriptor extends TypeDescriptor {
     }
 
     public static AdapterDescriptor fromAnnotation(ClassProxy clazz, WebAdapter type) {
-        return  new AdapterDescriptor(clazz, type.name(), type.type(), type.superType(), type.targetType(), type.facets());
+        return  new AdapterDescriptor(clazz, type.name(), type.type(), type.superType(),
+                type.targetType(), type.facets());
     }
 
 }

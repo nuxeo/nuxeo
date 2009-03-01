@@ -21,6 +21,7 @@ package org.nuxeo.ecm.webengine;
 
 import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
+import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
 import org.nuxeo.ecm.webengine.util.JSonHelper;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
@@ -36,9 +37,9 @@ public class TestJSon extends NXRuntimeTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        deployBundle("nuxeo-core-schema");
-        deployBundle("nuxeo-core-api");
-        deployBundle("nuxeo-core");
+        deployBundle("org.nuxeo.ecm.core.schema");
+        deployBundle("org.nuxeo.ecm.core.api");
+        deployBundle("org.nuxeo.ecm.core");
     }
 
     public void testEmpty() {
@@ -49,11 +50,12 @@ public class TestJSon extends NXRuntimeTestCase {
      * TODO: Test is not working because of life cycle that is missing ..
      * @throws Exception
      */
-    public void xxx_testJSon() throws Exception {
+    public void XXXtestJSon() throws Exception {
         final DocumentModelImpl doc = new DocumentModelImpl("/root/folder/wiki1", "test", "File");
         doc.addDataModel(new DataModelImpl("dublincore"));
-        doc.getPart("dublincore").get("title").setValue("The dublincore title for doc1");
-        doc.getPart("dublincore").get("description").setValue("A descripton *with* wiki code and a WikiName");
+        DocumentPart dc = doc.getPart("dublincore");
+        dc.get("title").setValue("The dublincore title for doc1");
+        dc.get("description").setValue("A descripton *with* wiki code and a WikiName");
         System.out.println(">> "+JSonHelper.toJSon(doc));
     }
 
