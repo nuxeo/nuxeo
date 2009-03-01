@@ -19,14 +19,14 @@ package org.nuxeo.ecm.webengine.debug;
 import java.io.File;
 
 /**
- * A DirectoryEntry that also checks fregular files - not only dircetories
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * A DirectoryEntry that also checks regular files - not only directories.
  *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class TreeEntry extends DirectoryEntry {
 
     public TreeEntry(File file) {
-        super (file);
+        super(file);
     }
 
     @Override

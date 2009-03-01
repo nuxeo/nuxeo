@@ -50,7 +50,7 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
     protected ClassProxy docObjectClass;
 
     public TypeRegistry(TypeRegistry parent, WebEngine engine, ModuleImpl module) {
-        super (parent);
+        super(parent);
         types = new ConcurrentHashMap<String, AbstractResourceType>();
         adapters = new ConcurrentHashMap<String, AdapterType>();
         this.module = module;

@@ -27,7 +27,7 @@ public class DefaultModuleTracker extends ModuleTracker {
     protected ModuleClassesEntry classes;
 
     public DefaultModuleTracker(ModuleImpl module) {
-        super (module);
+        super(module);
         classes = new ModuleClassesEntry(module.getRoot());
     }
 

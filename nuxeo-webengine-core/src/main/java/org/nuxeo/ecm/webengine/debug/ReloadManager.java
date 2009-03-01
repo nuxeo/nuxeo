@@ -41,12 +41,10 @@ public class ReloadManager {
     protected FileEntry deploy; // track deploy/undeploy modules
     private final Timer timer = new Timer("ReloadManager");
 
-
     public ReloadManager(WebEngine engine) {
         this.engine = engine;
         deploy = new FileEntry(engine.getDeploymentDirectory());
     }
-
 
     public void start() {
         String interval = Framework.getProperty("org.nuxeo.ecm.webengine.reloadInterval", "2000");
@@ -61,7 +59,6 @@ public class ReloadManager {
         timer.cancel();
         timer.purge();
     }
-
 
     private class Task extends TimerTask {
         @Override

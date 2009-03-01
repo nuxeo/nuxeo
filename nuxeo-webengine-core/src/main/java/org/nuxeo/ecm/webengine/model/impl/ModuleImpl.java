@@ -109,7 +109,8 @@ public class ModuleImpl implements Module {
 
     /**
      * Whether or not this module has a GUI and should be listed in available GUI module list.
-     * For example REST modules usually has no GUI
+     * For example, REST modules usually don't have a GUI.
+     *
      * @return true if headless (no GUI is provided), false otherwise
      */
     public boolean isHeadless() {
@@ -117,8 +118,7 @@ public class ModuleImpl implements Module {
     }
 
     /**
-     *
-     * @return null if no natures was specified
+     * @return the natures, or null if no natures were specified
      */
     public Set<String> getNatures() {
         return configuration.natures;
@@ -150,7 +150,6 @@ public class ModuleImpl implements Module {
         return rootType;
     }
 
-
     public Resource getRootObject(WebContext ctx) {
         try {
             ((AbstractWebContext)ctx).setModule(this);
@@ -177,7 +176,6 @@ public class ModuleImpl implements Module {
         }
         return typeReg;
     }
-
 
     public Class<?> loadClass(String className) throws ClassNotFoundException {
         return engine.loadClass(className);
@@ -258,7 +256,6 @@ public class ModuleImpl implements Module {
         return null;
     }
 
-
     public void loadConfiguration() {
         linkReg = new LinkRegistry();
         if (configuration.links != null) {
@@ -268,7 +265,6 @@ public class ModuleImpl implements Module {
         }
         configuration.links = null; // avoid storing unused data
     }
-
 
     public List<LinkDescriptor> getLinks(String category) {
         return linkReg.getLinks(category);
@@ -281,7 +277,6 @@ public class ModuleImpl implements Module {
     public LinkRegistry getLinkRegistry() {
         return linkReg;
     }
-
 
     public String getTemplateFileExt() {
         return configuration.templateFileExt;
