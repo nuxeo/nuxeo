@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Thierry Delprat
+ *     Florent Guillaume
  */
 
 package org.nuxeo.ecm.core.event.tx;
@@ -22,6 +21,7 @@ package org.nuxeo.ecm.core.event.tx;
 import static javax.transaction.Status.STATUS_ACTIVE;
 import static javax.transaction.Status.STATUS_COMMITTED;
 import static javax.transaction.Status.STATUS_MARKED_ROLLBACK;
+import static javax.transaction.Status.STATUS_ROLLEDBACK;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -34,39 +34,39 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- *
  * Helper class to encapsulate Transaction management
  *
- * @author tiry
- *
+ * @author Thierry Delprat
+ * @author Florent Guillaume
  */
 public class EventBundleTransactionHandler {
 
-    protected UserTransaction tx;
-
-    protected static final String UTName = "java:comp/UserTransaction";
-
-    protected static final String UTNameAlternate = "UserTransaction";
-
     private static final Log log = LogFactory.getLog(EventBundleTransactionHandler.class);
 
-    protected static boolean isTxEnabled = true;
+    private static final String UT_NAME = "UserTransaction";
+
+    private static final String UT_NAME_ALT = "java:comp/UserTransaction";
+
+    private static final String TM_NAME = "TransactionManager";
+
+    private static final String TM_NAME_ALT = "java:/TransactionManager";
+
+    protected UserTransaction tx;
+
+    protected boolean disabled;
 
     public void beginNewTransaction() {
-
-        if (!isTxEnabled) {
+        if (disabled) {
             return;
         }
-
         if (tx != null) {
             throw new UnsupportedOperationException(
-                    "There is already an uncomited transaction running");
+                    "There is already an uncommited transaction running");
         }
-
         tx = createUT();
         if (tx == null) {
-            log.error("No TransactionManager");
-            isTxEnabled = false;
+            log.debug("No TransactionManager");
+            disabled = true;
             return;
         }
         try {
@@ -77,28 +77,25 @@ public class EventBundleTransactionHandler {
         } catch (Exception e) {
             log.error("Unable to start transaction", e);
         }
-
     }
 
     protected UserTransaction createUT() {
-
         InitialContext context = null;
         try {
             context = new InitialContext();
         } catch (Exception e) {
-            isTxEnabled = false;
+            disabled = true;
+            return null;
         }
 
         UserTransaction ut = null;
-        if (context != null) {
+        try {
+            ut = (UserTransaction) context.lookup(UT_NAME);
+        } catch (NamingException ne) {
             try {
-                ut = (UserTransaction) context.lookup(UTName);
-            } catch (NamingException ne) {
-                try {
-                    ut = (UserTransaction) context.lookup(UTNameAlternate);
-                } catch (NamingException ne2) {
-                    isTxEnabled = false;
-                }
+                ut = (UserTransaction) context.lookup(UT_NAME_ALT);
+            } catch (NamingException ne2) {
+                disabled = true;
             }
         }
         return ut;
@@ -109,29 +106,28 @@ public class EventBundleTransactionHandler {
         try {
             context = new InitialContext();
         } catch (Exception e) {
-            isTxEnabled = false;
+            disabled = true;
+            return null;
         }
 
         TransactionManager tm = null;
         try {
-            tm = (TransactionManager) context.lookup("TransactionManager");
+            tm = (TransactionManager) context.lookup(TM_NAME);
         } catch (NamingException ne) {
             try {
-                tm = (TransactionManager) context.lookup("java:/TransactionManager");
+                tm = (TransactionManager) context.lookup(TM_NAME_ALT);
             } catch (NamingException ne2) {
-                isTxEnabled = false;
             }
         }
-
         if (tm == null) {
-            isTxEnabled = false;
+            disabled = true;
             return null;
         }
 
         try {
             return tm.getTransaction();
         } catch (SystemException e) {
-            isTxEnabled = false;
+            disabled = true;
             return null;
         }
     }
@@ -147,7 +143,9 @@ public class EventBundleTransactionHandler {
 
     private boolean isUTTransactionMarkedRollback() {
         try {
-            return tx.getStatus() == STATUS_MARKED_ROLLBACK;
+            int status = tx.getStatus();
+            return status == STATUS_MARKED_ROLLBACK
+                    || status == STATUS_ROLLEDBACK;
         } catch (SystemException e) {
             log.error("Error while getting tx status", e);
             return false;
@@ -155,43 +153,45 @@ public class EventBundleTransactionHandler {
     }
 
     public void rollbackTransaction() {
-        if (!isTxEnabled) {
+        if (disabled || tx == null) {
             return;
         }
-        if (tx != null) {
-            try {
-                if (!isUTTransactionMarkedRollback()) {
-                    tx.setRollbackOnly();
-                }
-                commitOrRollbackTransaction();
-            } catch (Exception e) {
-                log.error("Error while marking tx for rollback", e);
+        try {
+            if (!isUTTransactionMarkedRollback()) {
+                tx.setRollbackOnly();
             }
+            commitOrRollbackTransaction();
+        } catch (Exception e) {
+            log.error("Error while marking tx for rollback", e);
+        } finally {
             tx = null;
         }
     }
 
     public void commitOrRollbackTransaction() {
-        if (!isTxEnabled) {
+        if (disabled || tx == null) {
             return;
         }
-        if (tx != null) {
+        try {
             if (isUTTransactionActive()) {
                 try {
                     tx.commit();
                 } catch (Exception e) {
-                    log.error("Error during Commit", e);
+                    log.error("Error during commit", e);
                 }
-            } else if (isUTTransactionMarkedRollback()) {
+            } else {
                 try {
                     log.debug("Rolling back transaction");
                     tx.rollback();
                 } catch (Exception e) {
-                    log.error("Error during RollBack", e);
+                    // if the transaction was already rolledback due to
+                    // transaction timeout, we must still call tx.rollback but
+                    // this causes a spurious error message, so log at debug
+                    // level
+                    log.debug("Error during rollback", e);
                 }
-            } else {
-                // log.error("TX is in abnormal state)
             }
+        } finally {
             tx = null;
         }
     }
