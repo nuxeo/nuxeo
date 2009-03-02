@@ -182,9 +182,6 @@ public class ThemeParser {
         if (templateEngines != null) {
             themeDescriptor.setTemplateEngines(Arrays.asList(templateEngines.getNodeValue().split(
                     ",")));
-            for (String s : themeDescriptor.getTemplateEngines()) {
-                System.out.println(s);
-            }
         }
 
         // register custom presets
