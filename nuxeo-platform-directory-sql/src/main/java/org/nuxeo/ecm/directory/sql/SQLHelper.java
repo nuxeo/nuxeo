@@ -108,7 +108,7 @@ public class SQLHelper {
 
             if (dataFileName == null) {
                 // no dataFile found, do not try to execute it
-                log.warn(String.format("Table '%s': no data file found",
+                log.debug(String.format("Table '%s': no data file found",
                         tableName));
                 return true;
             }
