@@ -232,8 +232,12 @@ public class WebEngine implements ResourceLocator {
         }
     }
 
-    public List<File> getRegisteredModules() {
-        return registeredModules;
+    /**
+     * Make a copy to avoid concurrent modification exceptions
+     * @return
+     */
+    public File[] getRegisteredModules() {
+        return registeredModules.toArray(new File[registeredModules.size()]);
     }
 
     public ModuleManager getModuleManager() {
@@ -250,7 +254,8 @@ public class WebEngine implements ResourceLocator {
                         }
                     }
                     try {
-                        for (File mod : registeredModules) {
+                        // make a copy to avoid concurrent modifications with registerModule
+                        for (File mod : registeredModules.toArray(new File[registeredModules.size()])) {  
                             moduleMgr.loadModule(mod);
                         }
                     } catch (IOException e) {

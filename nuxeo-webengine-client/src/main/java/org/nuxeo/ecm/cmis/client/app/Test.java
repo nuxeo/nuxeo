@@ -27,7 +27,6 @@ import org.nuxeo.ecm.cmis.app.feeds.FeedDescriptor;
 import org.nuxeo.ecm.cmis.app.feeds.FeedService;
 import org.nuxeo.ecm.cmis.client.app.abdera.APPDocumentEntryHandler;
 import org.nuxeo.ecm.cmis.client.app.abdera.APPServiceDocumentHandler;
-import org.nuxeo.ecm.cmis.common.AdapterFactory;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
