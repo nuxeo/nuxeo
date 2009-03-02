@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Properties;
-import java.util.logging.Logger;
 
 import javax.resource.ResourceException;
 
@@ -65,7 +64,7 @@ import com.sun.web.security.RealmAdapter;
  */
 public class GlassFishServer extends AppServer {
 
-    private static final Logger log = Logger.getLogger("GlassFishServer");
+    //private static final Log log = LogFactory.getLog(GlassFishServer.class);
 
     public GlassFishServer(URL domainXmlUrl) {
         super(domainXmlUrl);
