@@ -41,6 +41,7 @@ import org.jboss.mx.util.MBeanProxyExt;
 import org.jboss.mx.util.MBeanServerLocator;
 import org.jboss.system.ServiceControllerMBean;
 import org.nuxeo.common.collections.DependencyTree;
+import org.nuxeo.common.logging.JavaUtilLoggingHelper;
 import org.nuxeo.runtime.jboss.deployment.preprocessor.ContainerDescriptor;
 import org.nuxeo.runtime.jboss.deployment.preprocessor.DeploymentPreprocessor;
 import org.nuxeo.runtime.jboss.deployment.preprocessor.FragmentDescriptor;
@@ -144,6 +145,7 @@ public class NuxeoDeployer extends EARDeployer implements NuxeoDeployerMBean {
     @Override
     @SuppressWarnings("unchecked")
     public void init(DeploymentInfo di) throws DeploymentException {
+        JavaUtilLoggingHelper.redirectToApacheCommons();
         if (!canPreprocess(di)) {
             super.init(di);
             return;
@@ -271,6 +273,12 @@ public class NuxeoDeployer extends EARDeployer implements NuxeoDeployerMBean {
             }
         }
         // ------------------ hack end -----------------------
+    }
+
+    @Override
+    public void destroy(DeploymentInfo di) throws DeploymentException {
+        super.destroy(di);
+        JavaUtilLoggingHelper.reset();
     }
 
     /**
