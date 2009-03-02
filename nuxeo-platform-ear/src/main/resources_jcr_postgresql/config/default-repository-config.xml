@@ -137,4 +137,9 @@
       </Repository>
     </repository>
   </extension>
+
+  <!-- Versioning -->
+  <implementation class="org.nuxeo.ecm.core.repository.jcr.versioning.Versioning" />
+
+  <property name="versioningService" value="org.nuxeo.ecm.core.versioning.custom.CustomVersioningService" />
 </component>
