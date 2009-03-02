@@ -14,7 +14,7 @@
  * Contributors:
  *    Stephane Lacoin (Nuxeo EP Software Engineer)
  */
-package org.nuxeo.ecm.platform.audit.service.extension;
+package org.nuxeo.ecm.platform.ec.placeful.service;
 
 import java.io.Serializable;
 

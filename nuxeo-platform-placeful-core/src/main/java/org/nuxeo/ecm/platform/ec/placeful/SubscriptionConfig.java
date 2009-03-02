@@ -16,7 +16,7 @@
  *
  * $Id: PlacefulServiceBean.java 19071 2007-05-21 16:20:16Z sfermigier $
  */
-package org.nuxeo.ecm.platform.ec.placeful.ejb;
+package org.nuxeo.ecm.platform.ec.placeful;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;

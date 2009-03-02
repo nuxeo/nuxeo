@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.platform.usermanager;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -207,7 +209,10 @@ public class FakeUserManagerImpl implements UserManager {
     }
 
     public NuxeoPrincipal getPrincipal(String username) throws ClientException {
-        throw new UnsupportedOperationException();
+        //throw new UnsupportedOperationException();
+    	NuxeoPrincipalImpl principal = new NuxeoPrincipalImpl("Administrator");
+    	principal.setGroups(Arrays.asList(new String[]{"Administrators"}));
+    	return principal;
     }
 
     public List<String> getTopLevelGroups() throws ClientException {

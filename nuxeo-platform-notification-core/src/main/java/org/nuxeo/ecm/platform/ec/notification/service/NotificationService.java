@@ -72,6 +72,8 @@ public class NotificationService extends DefaultComponent implements
 
     private static final Log log = LogFactory.getLog(NotificationService.class);
 
+    private EmailHelper emailHelper= new EmailHelper();
+    
     private static final String SUBSCRIPTION_NAME = "UserSubscription";
 
     // FIXME: performance issue when putting URLs in a Map.
@@ -200,7 +202,7 @@ public class NotificationService extends DefaultComponent implements
         paramMap.put("notification", notification);
         paramMap.put("docId", docId);
 
-        EJBPlacefulService serviceBean = NotificationServiceHelper.getPlacefulServiceBean();
+        PlacefulService serviceBean = NotificationServiceHelper.getPlacefulServiceBean();
         List<Annotation> subscriptions = new ArrayList<Annotation>();
         try {
             subscriptions = serviceBean.getAnnotationListByParamMap(paramMap,
@@ -237,7 +239,7 @@ public class NotificationService extends DefaultComponent implements
         if (docId != null) {
             paramMap.put("docId", docId);
         }
-        EJBPlacefulService serviceBean = NotificationServiceHelper.getPlacefulServiceBean();
+        PlacefulService serviceBean = NotificationServiceHelper.getPlacefulServiceBean();
 
         List<Annotation> subscriptions = serviceBean.getAnnotationListByParamMap(
                 paramMap, shortClassName);
@@ -254,7 +256,7 @@ public class NotificationService extends DefaultComponent implements
             NuxeoPrincipal principal, String notificationName)
             throws ClientException {
 
-        EJBPlacefulService serviceBean = NotificationServiceHelper.getPlacefulServiceBean();
+        PlacefulService serviceBean = NotificationServiceHelper.getPlacefulServiceBean();
         UserSubscription subscription = new UserSubscription(notification,
                 username, doc.getId());
         serviceBean.setAnnotation(subscription);
@@ -311,7 +313,7 @@ public class NotificationService extends DefaultComponent implements
 
     public void removeSubscription(String username, String notification,
             String docId) throws ClientException {
-        EJBPlacefulService serviceBean = NotificationServiceHelper.getPlacefulServiceBean();
+        PlacefulService serviceBean = NotificationServiceHelper.getPlacefulServiceBean();
         Map<String, Object> paramMap = new HashMap<String, Object>();
         paramMap.put("userId", username);
         paramMap.put("docId", docId);
@@ -336,7 +338,7 @@ public class NotificationService extends DefaultComponent implements
 
     public List<String> getUsersSubscribedToNotificationOnDocument(
             String notification, String docId) throws ClientException {
-        EJBPlacefulService serviceBean = NotificationServiceHelper.getPlacefulServiceBean();
+        PlacefulService serviceBean = NotificationServiceHelper.getPlacefulServiceBean();
         Map<String, Object> paramMap = new HashMap<String, Object>();
         paramMap.put("docId", docId);
         paramMap.put("notification", notification);
@@ -431,7 +433,7 @@ public class NotificationService extends DefaultComponent implements
         infoMap.put("template", mailTemplate);
 
         try {
-            EmailHelper.sendmail(infoMap);
+            emailHelper.sendmail(infoMap);
         } catch (Exception e) {
             throw new ClientException("Failed to send notification email ", e);
         }
@@ -464,7 +466,7 @@ public class NotificationService extends DefaultComponent implements
         for (String to : sendTo) {
             infoMap.put("mail.to", to);
             try {
-                EmailHelper.sendmail(infoMap);
+                emailHelper.sendmail(infoMap);
             } catch (Exception e) {
                 log.debug("Failed to send notification email " + e);
             }
@@ -491,4 +493,13 @@ public class NotificationService extends DefaultComponent implements
         return notificationRegistry.getNotificationsForEvent(eventId);
     }
 
+    public EmailHelper getEmailHelper() {
+        return emailHelper;
+    }
+
+    public void setEmailHelper(EmailHelper emailHelper) {
+        this.emailHelper = emailHelper;
+    }
+
+    
 }

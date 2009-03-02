@@ -14,16 +14,14 @@
  * Contributors:
  *     Stephane Lacoin (Nuxeo EP Software Engineer)
  */
-package org.nuxeo.ecm.platform.audit.service;
+package org.nuxeo.ecm.platform.ec.placeful.service;
 
 import java.util.Properties;
-
-import org.nuxeo.ecm.platform.audit.service.extension.HibernateOptionsDescriptor;
 
 public class ContainerManagedHibernateConfiguration implements
         HibernateConfiguration {
 
-    private HibernateOptionsDescriptor descriptor;
+    private HibernateOptionsDescriptor descriptor; 
 
     private String defaultDatasource = "jdbc/nxaudits";
 

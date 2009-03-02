@@ -30,6 +30,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.nuxeo.ecm.platform.ec.placeful.Annotation;
+import org.nuxeo.ecm.platform.ec.placeful.PlacefulServiceImpl;
 import org.nuxeo.ecm.platform.ec.placeful.ejb.interfaces.PlacefulServiceLocal;
 import org.nuxeo.ecm.platform.ec.placeful.ejb.interfaces.PlacefulServiceRemote;
 import org.nuxeo.ecm.platform.ec.placeful.interfaces.PlacefulService;
@@ -47,71 +48,38 @@ public class PlacefulServiceBean implements PlacefulServiceLocal, PlacefulServic
     @PersistenceContext(unitName = "nxplacefulservice")
     protected EntityManager em;
 
-    protected PlacefulService service;
+    protected PlacefulServiceImpl service;
 
     @PostConstruct
     public void initialize() {
-        service = (PlacefulService) Framework.getRuntime().getComponent(PlacefulService.ID);
+        service = (PlacefulServiceImpl) Framework.getRuntime().getComponent(PlacefulService.ID);
     }
 
     public Annotation getAnnotation(String id, String name) throws ClassNotFoundException {
-        String className = service.getAnnotationRegistry().get(name);
-        //Class klass = Thread.currentThread().getContextClassLoader().loadClass(className);
-        String shortClassName = className.substring(className.lastIndexOf('.') + 1);
-        Query query = em.createQuery("FROM " + shortClassName + " WHERE id=:id");
-        query.setParameter("id", id);
-        return (Annotation) query.getSingleResult();
+        return service.getAnnotation(em, id, name);
     }
 
     public List<Annotation> getAnnotationListByParamMap(
             Map<String, Object> paramMap, String name) throws ClassNotFoundException {
-        String className = service.getAnnotationRegistry().get(name);
-        //Class klass = Thread.currentThread().getContextClassLoader().loadClass(className);
-        String shortClassName = className.substring(className.lastIndexOf('.') + 1);
-        StringBuilder queryString = new StringBuilder("FROM " + shortClassName);
-        if (paramMap != null && !paramMap.isEmpty()) {
-            queryString.append(" WHERE ");
-            int size = paramMap.size();
-            int index = 1;
-            for (String key : paramMap.keySet()) {
-                queryString.append(key + "=:" + key);
-                if (index != size) {
-                    queryString.append(" and ");
-                }
-                index++;
-            }
-        }
-        Query query = em.createQuery(queryString.toString());
-
-        if (paramMap != null && !paramMap.isEmpty()) {
-            for (String key : paramMap.keySet()) {
-                query.setParameter(key, paramMap.get(key));
-            }
-        }
-
-        return query.getResultList();
+        return service.getAnnotationListByParamMap(em, paramMap, name);
     }
 
     public void removeAnnotationListByParamMap(Map<String, Object> paramMap,
             String name) throws ClassNotFoundException {
 
-        List<Annotation> annotationsToRemove = getAnnotationListByParamMap(
-                paramMap, name);
-        if (annotationsToRemove != null && !annotationsToRemove.isEmpty()) {
-            for (Annotation anno : annotationsToRemove) {
-                if (anno != null) {
-                    em.remove(anno);
-                }
-            }
-        }
+        service.removeAnnotationListByParamMap(em, paramMap, name);
     }
 
     public void setAnnotation(Annotation annotation) {
-        em.persist(annotation);
+        service.setAnnotation(em, annotation);
     }
 
     public void removeAnnotation(Annotation annotation) {
-        em.remove(annotation);
+        service.removeAnnotation(em,annotation);
+    }
+
+    public Map<String, String> getAnnotationRegistry() {
+        return service.getAnnotationRegistry();
     }
 
 }

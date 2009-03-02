@@ -4,8 +4,8 @@
     point="annotations">
 
     <annotation>
-      <class>org.nuxeo.ecm.platform.ec.notification.UserSubscription</class>
-      <class>org.nuxeo.ecm.webapp.theme.negotiation.LocalThemeConfig</class>
+      <class>org.nuxeo.ecm.platform.ec.placeful.SubscriptionConfig</class>
+      <!-- <class>org.nuxeo.ecm.platform.ec.placeful.ACPAnnotation</class> -->
     </annotation>
 
   </extension>
