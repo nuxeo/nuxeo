@@ -42,7 +42,7 @@
     <dependency>
       <groupId>org.glassfish.embedded</groupId>
       <artifactId>glassfish-embedded-all</artifactId>
-      <version>3.0-nx</version>
+      <version>3.0-b38</version>
       <type>jar</type>
     </dependency>
 

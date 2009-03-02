@@ -26,13 +26,15 @@ import java.util.ArrayList;
 import java.util.Properties;
 import java.util.logging.Logger;
 
+import javax.resource.ResourceException;
+
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.ActionReport.MessagePart;
+import org.glassfish.api.admin.CommandRunner;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.deployment.autodeploy.AutoDeployService;
 import org.glassfish.embed.AppServer;
 import org.glassfish.embed.impl.EmbeddedAPIClassLoaderServiceImpl;
-import org.glassfish.embed.impl.EmbeddedApplicationLifecycle;
 import org.glassfish.embed.impl.EmbeddedDomainXml;
 import org.glassfish.embed.impl.EmbeddedServerEnvironment;
 import org.glassfish.embed.impl.EmbeddedWebDeployer;
@@ -47,11 +49,9 @@ import org.nuxeo.common.Environment;
 
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import com.sun.enterprise.security.SecuritySniffer;
-import com.sun.enterprise.v3.admin.CommandRunner;
 import com.sun.enterprise.v3.admin.adapter.AdminConsoleAdapter;
 import com.sun.enterprise.v3.common.PlainTextActionReporter;
 import com.sun.enterprise.v3.server.APIClassLoaderServiceImpl;
-import com.sun.enterprise.v3.server.ApplicationLifecycle;
 import com.sun.enterprise.v3.server.DomainXml;
 import com.sun.enterprise.v3.server.DomainXmlPersistence;
 import com.sun.enterprise.v3.services.impl.LogManagerService;
@@ -59,8 +59,6 @@ import com.sun.enterprise.web.WebDeployer;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
 import com.sun.hk2.component.InhabitantsParser;
 import com.sun.web.security.RealmAdapter;
-
-import javax.resource.ResourceException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -89,7 +87,8 @@ public class GlassFishServer extends AppServer {
         PlainTextActionReporter reporter = new PlainTextActionReporter();
         CommandRunner commandRunner =
                 habitat.getComponent(CommandRunner.class);
-        return commandRunner.doCommand(command, args, reporter);
+        commandRunner.doCommand(command, args, reporter);
+        return reporter;
     }
 
     public String getVersion() {
@@ -162,7 +161,7 @@ public class GlassFishServer extends AppServer {
         }
 
         //TODO: workaround for a bug
-        parser.replace(ApplicationLifecycle.class, EmbeddedApplicationLifecycle.class);
+//        parser.replace(ApplicationLifecycle.class, EmbeddedApplicationLifecycle.class);
 
         parser.replace(APIClassLoaderServiceImpl.class, EmbeddedAPIClassLoaderServiceImpl.class);
         // we don't really parse domain.xml from disk
