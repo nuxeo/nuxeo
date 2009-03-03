@@ -716,7 +716,7 @@
                 <artifactItem>
                   <groupId>postgresql</groupId>
                   <artifactId>postgresql</artifactId>
-                  <version>8.3-603.jdbc4</version>
+                  <version>8.3-604.jdbc3</version>
                 </artifactItem>
                 <artifactItem>
                   <groupId>postgresql</groupId>
