@@ -24,6 +24,7 @@ import java.io.Serializable;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -1518,7 +1519,12 @@ public abstract class AbstractSession implements CoreSession,
 
     public DocumentModel saveDocument(DocumentModel docModel)
             throws ClientException {
+
+        ConflictVersioningDetector cvd = new ConflictVersioningDetector(docModel);
+
         try {
+            docModel = cvd.deconflictIncrementVersion();
+
             if (docModel.getRef() == null) {
                 throw new ClientException(String.format(
                         "cannot save document '%s' with null reference: "
@@ -1541,7 +1547,8 @@ public abstract class AbstractSession implements CoreSession,
                     ScopeType.REQUEST,
                     VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY);
             DocumentModel oldDoc = null;
-            if (createSnapshot != null && createSnapshot) {
+            // If conflict Detected no snapshot created
+            if (createSnapshot != null && createSnapshot && !cvd.isConflictDetected()) {
                 // FIXME: remove this - pass the flag as an arg or create
                 // anotehr method!!!
                 save(); // creating versions failes if the documents involved
@@ -1580,10 +1587,14 @@ public abstract class AbstractSession implements CoreSession,
                         options);
             }
 
-            return docModel;
-        } catch (DocumentException e) {
+        } catch (Exception e) {
             throw new ClientException("Failed to save document " + docModel, e);
+        } finally {
+            // Inform that the "transaction" is finished 
+            cvd.setConflictTransactionFinished();
         }
+
+        return docModel;
     }
 
     /*
