@@ -1550,9 +1550,9 @@ public abstract class AbstractSession implements CoreSession,
             // If conflict Detected no snapshot created
             if (createSnapshot != null && createSnapshot && !cvd.isConflictDetected()) {
                 // FIXME: remove this - pass the flag as an arg or create
-                // anotehr method!!!
-                save(); // creating versions failes if the documents involved
-                // are nmot saved
+                // another method!
+                save(); // creating versions fails if the documents involved
+                // are not saved
                 oldDoc = createDocumentSnapshot(docModel);
                 // ok, now it is consumed
                 ctxData.putScopedValue(ScopeType.REQUEST,
