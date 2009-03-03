@@ -16,7 +16,7 @@
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-storage-sql</artifactId>
-      <version>1.4.3.1-20090211</version>
+      <version>1.4.3.1-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>
