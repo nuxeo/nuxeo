@@ -1125,7 +1125,7 @@
 		  <tasks>
 		    <echo>Running ANT assembly</echo>
 		    <taskdef resource="org/nuxeo/build/ant/antlib.xml"/>
-			<antRun file="build.xml" optional="true" />
+			<antrun file="build.xml" optional="true" />
 		  </tasks>
 		</configuration>
 		</execution>
