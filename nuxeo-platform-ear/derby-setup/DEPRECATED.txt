@@ -1,2 +1,0 @@
-Deprecated method. Prefer use of maven profiles.
-For example: "mvn package -Pderby" for a pre-configured EAR for Derby 

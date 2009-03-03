@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
+<?xml version="1.0"?>
 <datasources>
   <!-- 
   Link datasource to point to NuxeoDS.
@@ -10,5 +9,9 @@
     <attribute name="ToName">java:/NuxeoDS</attribute>
     <attribute name="FromName">java:/nxaudit-logs</attribute>
   </mbean>
+  <mbean code="org.jboss.naming.NamingAlias"
+    name="jboss.jca:name=nxaudits,service=DataSourceBinding">
+    <attribute name="ToName">java:/NuxeoDS</attribute>
+    <attribute name="FromName">jdbc/nxaudits</attribute>
+  </mbean>
 </datasources>
-

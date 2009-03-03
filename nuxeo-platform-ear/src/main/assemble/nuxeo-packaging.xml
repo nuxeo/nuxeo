@@ -15,8 +15,6 @@
         output="system" />
       <artifactsSet pattern="nuxeo-platform-placeful-facade" unpack="true"
         output="system" />
-      <artifactsSet pattern="nuxeo-platform-search-compass-plugin" unpack="true"
-        output="system" />
       <!-- resources downloaded from an artifact -->
       <resourcesSet pattern="nuxeo-platform-ear" classifier="resources-common"
         output="/" />
@@ -72,8 +70,6 @@
       <artifacts name="nuxeo-runtime-jboss-extensions" />
     </excludes>
     <assembly type="directory" name="nuxeo-indexing.ear">
-      <artifactsSet pattern="nuxeo-platform-search-compass-plugin" unpack="true"
-        output="system" />
       <!-- resources downloaded from an artifact -->
       <resourcesSet pattern="nuxeo-platform-ear" classifier="resources-common"
         output="/" />

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<datasources>
+  <!-- UNIFIED DATASOURCE CONFIGURATION -->
+  <!--
+    This is the unified datasource configuration for H2. All datasources from
+    nuxeo points to this datasource so it will use only 1 database. If you wish
+    to use a different database for a service, comment out the link in the
+    relevant xxx-ds.xml file and add a datasource configuration.
+  -->
+  <!-- nuxeo datasource -->
+  <local-tx-datasource>
+    <jndi-name>NuxeoDS</jndi-name>
+    <connection-url>
+      jdbc:h2:${jboss.server.data.dir}/h2/nuxeo;create=true
+    </connection-url>
+    <driver-class>org.h2.Driver</driver-class>
+    <user-name>sa</user-name>
+    <password></password>
+  </local-tx-datasource>
+</datasources>
