@@ -1372,3 +1372,23 @@ div.nxthemesDraggable:hover div.nxthemesFrameRight {
   bottom: 0;
   background: url(${basePath}/skin/nxthemes-editor/img/frame-v.png) repeat-y;
 }
+
+ul.namedStyleSelector {
+  padding: 0;
+  margin: 0;
+}
+
+ul.namedStyleSelector li {
+  display: inline;
+}
+
+ul.namedStyleSelector li a {
+  text-decoration: none;
+  color: #000;
+  padding: 1px 10px;
+  border: 1px solid #666;
+  -moz-border-radius: 5px 5px 0 0;
+  -webkit-border-radius: 5px 5px 0 0;
+  border-radius: 5px 5px 0 0;
+  background-color: #eee;
+}
