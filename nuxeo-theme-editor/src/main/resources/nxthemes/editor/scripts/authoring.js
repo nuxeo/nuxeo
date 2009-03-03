@@ -1843,6 +1843,23 @@ NXThemesStyleManager.setEditMode = function(mode) {
     });
 };
 
+NXThemesStyleManager.selectNamedStyle = function(uid) {
+    var url = nxthemesBasePath + "/nxthemes-editor/select_named_style"; 
+      new Ajax.Request(url, {
+         method: 'post',
+         parameters: {
+             uid: uid
+         },
+         onSuccess: function(r) {
+             NXThemes.getViewById("style manager").refresh();
+         },
+         onFailure: function(r) {
+             var text = r.responseText;
+             window.alert(text);
+         }         
+      });
+};
+
 //actions
 NXThemes.addActions({
   'delete unused style view': NXThemesStyleManager.deleteUnusedStyleView

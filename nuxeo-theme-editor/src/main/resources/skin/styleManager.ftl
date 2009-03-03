@@ -46,11 +46,18 @@
 
 <#if style_manager_mode = 'named styles'>
 
-<ul>
+<ul style="margin: 0; padding: 0">
 <#list named_styles as style>
-  <li>${style.name}</li>
+  <li style="display: inline; padding-right: 5px"><a href="javascript:NXThemesStyleManager.selectNamedStyle('#{style.uid}')">${style.name}</a></li>
 </#list>
 </ul>
+
+<#if selected_named_style_css>
+<form>
+<textarea id="csseditor" name="cssSource" rows="15" cols="72"
+ style="width: 100%; height: 250px; font-size: 11px;">${selected_named_style_css}</textarea>
+</form>   
+</#if>
 
 <#else>
 

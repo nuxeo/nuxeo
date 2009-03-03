@@ -28,6 +28,8 @@ public class SessionManager extends AbstractComponent {
 
     private static String STYLE_LAYER_ID = "org.nuxeo.theme.editor.style_layer";
 
+    private static String NAMED_STYLE_ID = "org.nuxeo.theme.editor.named_style";
+
     private static String STYLE_SELECTOR = "org.nuxeo.theme.editor.style_selector";
 
     private static String STYLE_PROPERTY_CATEGORY = "org.nuxeo.theme.editor.style_property_category";
@@ -70,6 +72,14 @@ public class SessionManager extends AbstractComponent {
 
     public static synchronized void setStyleLayerId(String id) {
         getUserSession().put(STYLE_LAYER_ID, id);
+    }
+    
+    public static synchronized String getNamedStyleId() {
+        return (String) getUserSession().get(NAMED_STYLE_ID);
+    }
+
+    public static synchronized void setNamedStyleId(String id) {
+        getUserSession().put(NAMED_STYLE_ID, id);
     }
 
     public static synchronized String getStyleSelector() {

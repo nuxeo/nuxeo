@@ -78,7 +78,8 @@ public class Main extends ModuleRoot {
   public Object renderStyleManager(@QueryParam("org.nuxeo.theme.application.path") String path) {
     return getTemplate("styleManager.ftl").arg(
             "named_styles", getNamedStyles(path)).arg(
-            "style_manager_mode", getStyleManagerMode()).arg(            
+            "style_manager_mode", getStyleManagerMode()).arg(
+            "selected_named_style_css", getRenderedPropertiesForSelectedNamedStyle()).arg(
             "current_theme_name", getCurrentThemeName(path))
   }  
   
@@ -697,6 +698,17 @@ public class Main extends ModuleRoot {
           SessionManager.setStyleLayerId(uid)
       }
   }
+
+  @POST
+  @Path("select_named_style")
+  public void selectNamedStyle() {
+      FormData form = ctx.getForm()
+      String uid = form.getString("uid")      
+      Style style = (Style) ThemeManager.getFormatById(uid)
+      if (style != null) {
+          SessionManager.setNamedStyleId(uid)
+      }
+  }
   
   @POST
   @Path("select_style_property_category")
@@ -1115,6 +1127,18 @@ public class Main extends ModuleRoot {
   public static String getSelectedStyleLayerId() {
       return SessionManager.getStyleLayerId()
   } 
+
+  public static String getSelectedNamedStyleId() {
+      return SessionManager.getNamedStyleId()
+  } 
+
+  public static Style getSelectedNamedStyle() {
+      String selectedNamedStyleId = getSelectedNamedStyleId()
+      if (selectedNamedStyleId == null) {
+        return null
+      }
+      return (Style) ThemeManager.getFormatById(selectedNamedStyleId)
+  } 
   
   public static Style getStyleOfSelectedElement() {
       Element element = getSelectedElement()
@@ -1163,7 +1187,18 @@ public class Main extends ModuleRoot {
       return org.nuxeo.theme.html.Utils.styleToCss(style, viewNames, RESOLVE_PRESETS, IGNORE_VIEW_NAME, IGNORE_CLASSNAME, INDENT)
   }
   
-    
+  public static String getRenderedPropertiesForSelectedNamedStyle() {
+      Style style = getSelectedNamedStyle()
+      if (style == null) {
+          return ""
+      }
+      boolean RESOLVE_PRESETS = false
+      boolean IGNORE_VIEW_NAME = false
+      boolean IGNORE_CLASSNAME = true
+      boolean INDENT = true
+      return org.nuxeo.theme.html.Utils.styleToCss(style, style.getSelectorViewNames(), RESOLVE_PRESETS, IGNORE_VIEW_NAME, IGNORE_CLASSNAME, INDENT)
+  }
+
   public static Widget getWidgetOfSelectedElement() {
     Element element = getSelectedElement()
     if (element == null) {
