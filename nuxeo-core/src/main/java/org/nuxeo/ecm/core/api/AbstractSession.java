@@ -1886,6 +1886,11 @@ public abstract class AbstractSession implements CoreSession,
                         VersioningDocument.CURRENT_DOCUMENT_MINOR_VERSION_KEY,
                         minorVer);
             }
+            // add the uuid of the version being restored
+            Document docVersion = doc.getVersion(version.getLabel());
+            String versionUUID = docVersion.getUUID();
+            options.put(VersioningDocument.RESTORED_VERSION_UUID_KEY, versionUUID);
+
             notifyEvent(DocumentEventTypes.BEFORE_DOC_RESTORE, docModel,
                     options, null, null, true);
             writeModel(doc, docModel);
