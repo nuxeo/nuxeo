@@ -40,15 +40,6 @@ import org.nuxeo.ecm.platform.audit.web.listener.ejb.LinkedDocument;
 public interface ContentHistoryActions extends Serializable {
 
     /**
-     * Invalidates log entries.
-     * <p>
-     * The invalidation will be done lazily.
-     *
-     * @throws AuditException
-     */
-    void invalidateLogEntries() throws AuditException;
-
-    /**
      * Computes all log entries for current document.
      *
      * @throws AuditException
