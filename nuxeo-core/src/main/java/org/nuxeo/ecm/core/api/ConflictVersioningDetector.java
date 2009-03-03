@@ -88,7 +88,7 @@ public class ConflictVersioningDetector {
         };
 
         if (conflictState.equals(ConflictStateEnum.NO_CONFLICT_DETECTED)) {
-            log.info("No conflict decteted");
+            log.debug("No conflict decteted");
             conflictDetected = false;
             return doc;
         }
@@ -153,7 +153,8 @@ public class ConflictVersioningDetector {
                 item.lockConflictTransactionInProgress();
                 // Be sure that the previous document is not the same
                 if (item.getLastModificationDate() == lastModification) {
-                    return ConflictStateEnum.CONFLICT_DETECTED_AND_PREVIOUS_TRANSACTION_FINISHED;                }
+                    return ConflictStateEnum.CONFLICT_DETECTED_AND_PREVIOUS_TRANSACTION_FINISHED;
+                }
                 item.setLastModificationDate(lastModification);
                 return ConflictStateEnum.NO_CONFLICT_DETECTED;
             }
