@@ -19,14 +19,13 @@
     <!-- Top of the rounded box -->
 
     <div class="userClipboard">
-          <div class="userClipboardTabs">
-
+          <div class="tabsBar">
           <nxu:dataList var="docList" layout="unorderedList"
         value="#{clipboardActions.descriptorsForAvailableLists}"
         itemStyleClass="#{nxu:test(clipboardActions.currentSelectedListName == docList.name, 'selected', '')}">
           <h:commandLink value="" action="#{clipboardActions.selectList}">
             <f:param name="listIdToSelect" value="#{docList.name}" />
-            <nxu:graphicImage value="#{docList.imageURL}" title="#{messages[docList.title]}" />
+            <h:outputText value="#{messages[docList.title]}" />
           </h:commandLink>
         </nxu:dataList>
 
