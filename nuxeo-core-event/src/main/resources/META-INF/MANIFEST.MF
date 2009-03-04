@@ -8,4 +8,10 @@ Bundle-Category: core
 Require-Bundle: org.nuxeo.ecm.core.api
 Eclipse-LazyStart: true
 Nuxeo-Component: OSGI-INF/EventService.xml
+Export-Package: org.nuxeo.ecm.core.event,
+ org.nuxeo.ecm.core.event.impl,
+ org.nuxeo.ecm.core.event.jms,
+ org.nuxeo.ecm.core.event.script,
+ org.nuxeo.ecm.core.event.test,
+ org.nuxeo.ecm.core.event.tx
 

@@ -10,3 +10,9 @@ Nuxeo-Component: OSGI-INF/CompatibilityListener.xml,
  OSGI-INF/CoreEventListenerService.xml
 Require-Bundle: org.nuxeo.ecm.core.api
 Nuxeo-RequiredBy: org.nuxeo.ecm.core 
+Export-Package: org.nuxeo.ecm.core.event.compat,
+ org.nuxeo.ecm.core.jms,
+ org.nuxeo.ecm.core.listener,
+ org.nuxeo.ecm.core.listener.extensions,
+ org.nuxeo.ecm.core.listener.impl,
+ org.nuxeo.ecm.core.repository
