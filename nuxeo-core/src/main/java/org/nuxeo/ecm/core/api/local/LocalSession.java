@@ -23,6 +23,9 @@ import java.io.Serializable;
 import java.security.Principal;
 import java.util.HashMap;
 
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+
 import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.AbstractSession;
@@ -79,11 +82,21 @@ public class LocalSession extends AbstractSession {
             // store the principal in the core session context so that other core tools may retrieve it
             sessionContext.put("principal", principal);
 
-            Repository repo = NXCore.getRepositoryService()
-                    .getRepositoryManager().getRepository(repoName);
+            Repository repo = lookupRepository(repoName);
             return repo.getSession(sessionContext);
         } catch (Exception e) {
             throw new ClientException("Failed to load repository " + repoName, e);
+        }
+    }
+    
+    protected Repository lookupRepository(String name) throws Exception {
+        try {
+            //needed by glassfish
+            return (Repository) new InitialContext()
+            .lookup("NXRepository/" + name);
+        } catch (NamingException e) {
+            return NXCore.getRepositoryService()
+            .getRepositoryManager().getRepository(name);
         }
     }
 

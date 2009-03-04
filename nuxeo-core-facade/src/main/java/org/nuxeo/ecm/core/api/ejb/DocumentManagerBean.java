@@ -196,11 +196,6 @@ public class DocumentManagerBean extends AbstractSession implements
         if (session == null || !session.isLive()) {
             log.debug("Initializing session for repository: " + repositoryName);
             try {
-                NXCore.getRepository(repositoryName);
-            } catch (Exception e) {
-                throw ClientException.wrap(e);
-            }
-            try {
                 session = createSession(repositoryName, "default",
                         sessionContext);
             } catch (Exception e) {
