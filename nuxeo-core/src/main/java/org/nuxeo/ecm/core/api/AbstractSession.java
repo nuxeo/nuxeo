@@ -1534,18 +1534,25 @@ public abstract class AbstractSession implements CoreSession,
         if (docModel != null) {
             options.put("docTitle", docModel.getTitle());
         }
-        // for now we don't notify for versions themselves, as they have the
-        // same path as the working document
+
+        // notify different events depending on wether the document is a version
+        // or not
         if (!doc.isVersion()) {
             notifyEvent(DocumentEventTypes.ABOUT_TO_REMOVE, docModel, options,
                     null, null, true);
             CoreService coreService = Framework.getLocalService(CoreService.class);
             coreService.getVersionRemovalPolicy().removeVersions(getSession(),
                     doc, this);
+        } else {
+            notifyEvent(DocumentEventTypes.ABOUT_TO_REMOVE_VERSION, docModel, options,
+                    null, null, true);
         }
         doc.remove();
         if (!doc.isVersion()) {
             notifyEvent(DocumentEventTypes.DOCUMENT_REMOVED, docModel, options,
+                    null, null, false);
+        } else {
+            notifyEvent(DocumentEventTypes.VERSION_REMOVED, docModel, options,
                     null, null, false);
         }
     }
