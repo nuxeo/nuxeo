@@ -39,8 +39,14 @@ import org.nuxeo.runtime.api.Framework;
  * Client advertising is done in the Accept header:
  *  Accept : application/x-nuxeo-liveedit:mimetype1;mimetype2
  *
- *
  * @author Thierry Delprat
+ * 
+ * Starting the 5.2, the addon can send the standardized accept header, as 
+ * Accept : application/x-nuxeo-liveedit;ext0="mimetype1";ext1="mimetype2"..
+ * Also, the addon can still send the old way, so the both forms are accepted.
+ * See NXP-3257
+ * 
+ * @author rux
  */
 @Scope(SESSION)
 @Name("liveEditClientConfig")
@@ -93,8 +99,19 @@ public class LiveEditClientConfig implements Serializable {
                     String[] subTypes = acceptHeader.split(";");
 
                     for (String subType : subTypes) {
-                        String subMT = subType.replace("!", "/");
-                        advertizedLiveEditableMimeTypes.add(subMT);
+                        //accept both forms:
+                        //application/x-nuxeo-liveedit:mimetype1;mimetype2
+                        //application/x-nuxeo-liveedit;ext0="mimetype1";ext1="mimetype2"
+                        int equalQuoteIndex = subType.indexOf("=\"");
+                        String valueSubType = subType;
+                        if (equalQuoteIndex >= 0 && 
+                                subType.length() > (equalQuoteIndex + 3)) {
+                            valueSubType = 
+                                subType.substring(equalQuoteIndex + 2, 
+                                        subType.length() - 1);
+                        }
+                        advertizedLiveEditableMimeTypes.add(
+                                valueSubType.replace("!", "/"));
                     }
                 }
             }
