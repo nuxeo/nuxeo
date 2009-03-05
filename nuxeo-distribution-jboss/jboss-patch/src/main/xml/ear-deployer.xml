@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<server>
+   <!-- EAR deployer, remove if you are not using ear deployments -->
+   <mbean code="org.nuxeo.runtime.jboss.deployment.NuxeoDeployer"
+      name="jboss.j2ee:service=EARDeployer">
+      <!-- A flag indicating if ear deployments should have their own scoped
+      class loader to isolate their classes from other deployments.
+      -->
+      <attribute name="Isolated">false</attribute>
+      <!-- A flag indicating if the ear components should have in VM call
+      optimization disabled.
+      -->
+      <attribute name="CallByValue">false</attribute>
+      <!-- NXJBossExtensions: A flag indicating that the preprocessor
+           must always run before deploying the EAR.
+           On live systems you may want to avoid running the preprocessor
+           each time, and run it manually after modifying the EAR
+           either from the JMX console or by deleting the file
+           ".predeploy" and restarting JBoss.
+      -->
+      <attribute name="Debug">true</attribute>
+   </mbean>
+</server>
