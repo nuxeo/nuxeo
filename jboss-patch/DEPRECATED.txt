@@ -1,0 +1,2 @@
+This directory is deprecated.
+It has been moved to nuxeo/nuxeo-distribution/nuxeo-distribution-jboss/jboss-patch
