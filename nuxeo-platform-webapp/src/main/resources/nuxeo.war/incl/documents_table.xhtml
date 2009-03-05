@@ -41,7 +41,7 @@
            rendered="#{not empty row.data.lock}"/>
         <nxu:graphicImage
           value="#{nxd:iconPath(row.data)}" alt="#{row.data.type}"
-          title="#{nxd:fileDescription(currentDocument, 'file:content', 'file:filename')}"  />
+          title="#{nxd:fileDescription(row.data, 'file:content', 'file:filename')}"  />
         </div></div>
         <script type="text/javascript">
           <h:outputText
