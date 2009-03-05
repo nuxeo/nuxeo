@@ -16,7 +16,12 @@
  */
 package org.nuxeo.runtime.management;
 
+import java.io.IOException;
 import java.lang.management.ManagementFactory;
+import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.net.UnknownHostException;
+import java.rmi.registry.LocateRegistry;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +29,11 @@ import java.util.Map;
 import javax.management.MBeanServer;
 import javax.management.MBeanServerFactory;
 import javax.management.ObjectName;
+import javax.management.remote.JMXServiceURL;
+import javax.management.remote.rmi.RMIConnectorServer;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -55,17 +64,81 @@ public class ServerLocatorService extends DefaultComponent implements
         }
     }
 
-    @SuppressWarnings("unchecked")
     protected void doRegisterLocator(ServerLocatorDescriptor descriptor) {
+        MBeanServer server = descriptor.isExistingServer() == false ? doCreateServer(descriptor)
+                : doFindServer(descriptor);
+        otherServers.put(descriptor.getDomainName(), server);
+        if (descriptor.isDefaultServer) {
+            defaultServer = server;
+        }
+    }
+
+    protected String hostname;
+
+    protected String doGetHostname() {
+        if (hostname != null) {
+            return hostname;
+        }
+        try {
+            InetAddress addr = InetAddress.getLocalHost();
+            hostname = addr.getHostName();
+        } catch (UnknownHostException e) {
+            hostname = "localhost";
+        }
+        return hostname;
+    }
+
+    protected JMXServiceURL doFormatServerURL(ServerLocatorDescriptor descriptor) {
+        try {
+            return new JMXServiceURL("service:jmx:rmi:///jndi/rmi://localhost:1099/" + descriptor.domainName
+                    + "/jmxrmi");
+        } catch (MalformedURLException e) {
+            throw new ManagementRuntimeException("Cannot format url for "
+                    + descriptor.getDomainName());
+        }
+    }
+
+    protected String doFormatThreadName(ServerLocatorDescriptor descriptor) {
+        return "mbeanServer-" + descriptor.getDomainName();
+    }
+    
+    protected static final Log log = LogFactory.getLog(ServerLocatorService.class);
+
+    protected MBeanServer doCreateServer(final ServerLocatorDescriptor descriptor) {
+        MBeanServer server = MBeanServerFactory.createMBeanServer();
+        JMXServiceURL url = doFormatServerURL(descriptor);
+        final RMIConnectorServer connector;
+        try {
+            connector = new RMIConnectorServer(url, null, server);
+        } catch (IOException e1) {
+            throw new ManagementRuntimeException("Cannot start connector for "
+                    + descriptor.getDomainName());
+        }
+        try {
+            connector.start();
+        } catch (IOException e) {
+            try {
+                LocateRegistry.createRegistry(1099);
+            } catch (Exception e2) {
+                throw new ManagementRuntimeException("Cannot start RMI connector for " + descriptor.getDomainName(), e);
+            }
+            try {
+                connector.start();
+            } catch (Exception e2) {
+                throw new ManagementRuntimeException("Cannot start RMI connector for " + descriptor.getDomainName(), e2);
+            }
+        }
+        assert connector.isActive() == true;
+        return server;
+    }
+
+    @SuppressWarnings("unchecked")
+    protected MBeanServer doFindServer(ServerLocatorDescriptor descriptor) {
         String domainName = descriptor.getDomainName();
         for (MBeanServer server : (List<MBeanServer>) MBeanServerFactory.findMBeanServer(null)) {
-            if (server.getDefaultDomain().equals(domainName)) {
-                otherServers.put(domainName, server);
-                if (descriptor.isDefaultServer) {
-                    defaultServer = server;
-                }
-                return;
-            }
+            if (!server.getDefaultDomain().equals(domainName))
+                continue;
+            return server;
         }
         throw new ManagementRuntimeException(
                 "cannot locate mbean server containing domain " + domainName);

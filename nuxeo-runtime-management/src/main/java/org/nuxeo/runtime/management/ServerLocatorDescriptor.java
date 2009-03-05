@@ -26,6 +26,10 @@ import org.nuxeo.common.xmap.annotation.XObject;
 @XObject("locator")
 public class ServerLocatorDescriptor {
 
+    public ServerLocatorDescriptor() {
+        this.domainName = "";
+    }
+
     public ServerLocatorDescriptor(String domainName, boolean isDefaultServer) {
         this.domainName = domainName;
         this.isDefaultServer = isDefaultServer;
@@ -43,6 +47,13 @@ public class ServerLocatorDescriptor {
 
     public boolean isDefaultServer() {
         return isDefaultServer;
+    }
+    
+    @XNode("@exist")
+    protected boolean isExistingServer = true;
+    
+    public boolean isExistingServer() {
+        return isExistingServer;
     }
 
 }
