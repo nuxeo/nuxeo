@@ -5,11 +5,6 @@ import java.util.List;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 
-import org.nuxeo.ecm.client.CannotConnectToServerException;
-import org.nuxeo.ecm.client.ContentManager;
-import org.nuxeo.ecm.client.DocumentFeed;
-import org.nuxeo.ecm.client.QueryEntry;
-import org.nuxeo.ecm.client.Repository;
 import org.nuxeo.ecm.client.abdera.DocumentFeedAdapter;
 import org.nuxeo.ecm.client.atompub.AtomPubConnector;
 import org.nuxeo.ecm.client.impl.CannotInstantiateConnectorException;
