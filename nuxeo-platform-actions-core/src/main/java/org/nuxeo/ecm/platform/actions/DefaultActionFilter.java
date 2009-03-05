@@ -221,17 +221,17 @@ public class DefaultActionFilter implements ActionFilter {
         return false;
     }
 
-    protected final boolean checkGroups(Action action,
-            ActionContext context, String[] groups) {
+    protected final boolean checkGroups(Action action, ActionContext context,
+            String[] groups) {
         NuxeoPrincipal principal = context.getCurrentPrincipal();
         if (principal == null) {
-        	return false;
+            return false;
         }
-        List<String> principaGroups = principal.getGroups();
+        List<String> principalGroups = principal.getGroups();
         for (String group : groups) {
-        	if (principaGroups.contains(group)) {
-        		return true;
-        	}
+            if (principalGroups.contains(group)) {
+                return true;
+            }
         }
         return false;
     }
@@ -246,7 +246,7 @@ public class DefaultActionFilter implements ActionFilter {
     protected final boolean checkConditions(Action action,
             ActionContext context, String[] conditions) {
         DocumentModel doc = context.getCurrentDocument();
-        NuxeoPrincipal currentPrincipal = context.getCurrentPrincipal();        
+        NuxeoPrincipal currentPrincipal = context.getCurrentPrincipal();
 
         for (String condition : conditions) {
             boolean eval = false;
@@ -257,10 +257,9 @@ public class DefaultActionFilter implements ActionFilter {
                 ctx.put("document", doc);
                 ctx.put("principal", currentPrincipal);
                 // get custom context from ActionContext
-                for (String k : context.keySet())
-                {
-                	ctx.put(k, context.get(k));
-                }                
+                for (String k : context.keySet()) {
+                    ctx.put(k, context.get(k));
+                }
                 ctx.put("SeamContext", context.get("SeamContext"));
 
                 eval = (Boolean) exp.eval(ctx);
@@ -268,10 +267,8 @@ public class DefaultActionFilter implements ActionFilter {
                     return true;
                 }
             } catch (Exception e) {
-                // TODO: need more explicit error message
-                log.debug("evaluation of condition " + condition + " failed ("
-                        + e.getMessage() + ": returning false");
-                // e.printStackTrace();
+                log.error("evaluation of condition " + condition
+                        + " failed: returning false", e);
                 return false;
             }
         }
