@@ -1123,9 +1123,9 @@
 		</goals>
 		<configuration>
 		  <tasks>
-		    <echo>Running ANT assembly</echo>
+		    <echo>Running ANT assembly in ${basedir}</echo>
 		    <taskdef resource="org/nuxeo/build/ant/antlib.xml"/>
-			<antrun file="build.xml" optional="true" />
+			<antrun file="${basedir}/build.xml" optional="true" />
 		  </tasks>
 		</configuration>
 		</execution>
