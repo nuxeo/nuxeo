@@ -176,6 +176,18 @@ public class Editor {
                 element, null));
     }
 
+    public static void updateNamedStyleCss(Style style, String cssSource)
+            throws ThemeException {
+        if (style == null || style.getName() == null) {
+            throw new ThemeException("A named style is required.");
+        }
+        final String viewName = "*";
+        org.nuxeo.theme.html.Utils.loadCss(style, cssSource, viewName);
+        EventManager eventManager = Manager.getEventManager();
+        eventManager.notify(Events.STYLES_MODIFIED_EVENT, new EventContext(
+                style, null));
+    }
+
     public static void updateElementWidth(Format layout, String width) {
         layout.setProperty("width", width);
         EventManager eventManager = Manager.getEventManager();
@@ -204,7 +216,8 @@ public class Editor {
                 element, null));
     }
 
-    public static void repairTheme(String src) throws ThemeIOException, ThemeException {
+    public static void repairTheme(String src) throws ThemeIOException,
+            ThemeException {
         ThemeElement theme = Manager.getThemeManager().getThemeBySrc(src);
         if (theme == null) {
             throw new ThemeIOException("Unknown theme: " + src);
@@ -222,7 +235,8 @@ public class Editor {
         ThemeManager.saveTheme(src, indent);
     }
 
-    public static void deleteTheme(String src) throws ThemeIOException, ThemeException {
+    public static void deleteTheme(String src) throws ThemeIOException,
+            ThemeException {
         ThemeManager themeManager = Manager.getThemeManager();
         themeManager.deleteTheme(src);
     }
@@ -735,7 +749,8 @@ public class Editor {
                 new EventContext(null, null));
     }
 
-    public static void loadTheme(String src) throws ThemeIOException, ThemeException {
+    public static void loadTheme(String src) throws ThemeIOException,
+            ThemeException {
         Manager.getThemeManager().loadTheme(src);
         EventManager eventManager = Manager.getEventManager();
         eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(null,

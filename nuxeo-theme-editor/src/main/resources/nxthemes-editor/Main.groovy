@@ -79,6 +79,7 @@ public class Main extends ModuleRoot {
     return getTemplate("styleManager.ftl").arg(
             "named_styles", getNamedStyles(path)).arg(
             "style_manager_mode", getStyleManagerMode()).arg(
+            "selected_named_style", getSelectedNamedStyle()).arg(
             "selected_named_style_css", getRenderedPropertiesForSelectedNamedStyle()).arg(
             "current_theme_name", getCurrentThemeName(path))
   }  
@@ -246,10 +247,12 @@ public class Main extends ModuleRoot {
     SessionManager.setStyleEditMode(null);
     SessionManager.setStyleLayerId(null);
     SessionManager.setStyleSelector(null);
+    SessionManager.setNamedStyleId(null);
     SessionManager.setStylePropertyCategory(null);
     SessionManager.setStyleCategory(null);
     SessionManager.setPresetGroup(null);
     SessionManager.setClipboardElementId(null);
+
   }
   
   @POST
@@ -260,6 +263,7 @@ public class Main extends ModuleRoot {
     // clean up
     SessionManager.setStyleEditMode(null);
     SessionManager.setStyleLayerId(null);
+    SessionManager.setNamedStyleId(null);
     SessionManager.setStyleSelector(null);
     SessionManager.setStylePropertyCategory(null);
     SessionManager.setStyleCategory(null);
@@ -788,6 +792,20 @@ public class Main extends ModuleRoot {
       Style selectedStyleLayer = getSelectedStyleLayer()
 	  try {
 	      Editor.updateElementStyleCss(element, selectedStyleLayer, viewName, cssSource) 
+	  } catch (Exception e) {
+          throw new ThemeEditorException(e.getMessage(), e)
+      }
+  }
+  
+  @POST
+  @Path("update_named_style_css")
+  public void updateNamedStyleCss() {
+      FormData form = ctx.getForm()
+      String style_uid = form.getString("style_uid")
+      String cssSource = form.getString("css_source")
+      Style style = (Style) ThemeManager.getFormatById(style_uid)
+      try {
+	      Editor.updateNamedStyleCss(style, cssSource) 
 	  } catch (Exception e) {
           throw new ThemeEditorException(e.getMessage(), e)
       }

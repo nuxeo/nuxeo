@@ -53,10 +53,17 @@
 </ul>
 
 <#if selected_named_style_css>
-<form>
-<textarea id="namedStyleCssEditor" name="cssSource" rows="15" cols="72"
+<form id="nxthemesNamedStyleCSSEditor" class="nxthemesForm" style="padding: 0"
+      onsubmit="NXThemesStyleManager.updateNamedStyleCSS(this); return false">
+<div>
+  <textarea id="namedStyleCssEditor" name="cssSource" rows="15" cols="72"
  style="border: 1px solid #666; width: 100%; height: 250px; font-size: 11px;">${selected_named_style_css}</textarea>
-</form>   
+  <input type="hidden" name="style_uid" value="#{selected_named_style.uid}" />
+</div>
+<div>
+  <button type="submit">Save</button>
+</div>
+</form>
 </#if>
 
 <#else>
