@@ -20,10 +20,6 @@ This modules is tied with the Nuxeo EP application.
 
 TODO:
 
-Base
-
-* search() (return Result)
-
 Folder
 
 * emptyTrash()
@@ -36,14 +32,11 @@ Dashboard
 
 Document
 
-* viewFile
-   .add(filename, path)
+* files().add(filename, path)
 
-* viewComment
-   .add(comment)
+* comments().add(comment)
 
-* relation
-   .add(uid)
+* relation().add(uid)
 
 * publish(section_uid)
 """
@@ -319,6 +312,12 @@ class BasePage:
 
 class LoginPage(BasePage):
     """The Login page."""
+    def view(self):
+        fl = self.fl
+        fl.get(fl.server_url + '/login.jsp',
+               description='View Login page')
+        fl.assert_('user_password' in fl.getBody())
+        return self
 
 
 class FolderPage(BasePage):
@@ -339,16 +338,18 @@ class FolderPage(BasePage):
             ['document_create:nxl_heading:nxw_title', title],
             ['document_create:nxl_heading:nxw_description', description],
             ['document_create:nxl_file:nxw_file:nxw_file_file:choice', 'none'],
-            ['document_create:nxl_file:nxw_file:nxw_file_file:j_id292', Upload("")],
+            ['document_create:nxl_file:nxw_file:nxw_file_file:j_id286',
+             Upload("")],
             ['document_create:nxl_webcontainer:nxw_name', ''],
-            ['document_create:nxl_webcontainer:nxw_url', ''],
             ['document_create:nxl_webcontainer:nxw_email', ''],
             ['document_create:nxl_webcontainer:nxw_logo:choice', 'none'],
-            ['document_create:nxl_webcontainer:nxw_logo:j_id295', Upload("")],
+            ['document_create:nxl_webcontainer:nxw_logo:j_id289', Upload("")],
             ['document_create:nxl_webcontainer:nxw_welcomeText', ''],
-            ['document_create:nxl_webcontainer:nxw_welcomeMedia:choice', 'none'],
-            ['document_create:nxl_webcontainer:nxw_welcomeMedia:j_id298', Upload("")],
-            ['document_create:j_id266', 'Create'],
+            ['document_create:nxl_webcontainer:nxw_welcomeMedia:choice',
+             'none'],
+            ['document_create:nxl_webcontainer:nxw_welcomeMedia:j_id292',
+             Upload("")],
+            ['document_create:j_id260', 'Create'],
             ['javax.faces.ViewState', fl.getLastJsfState()]],
             description="Create workspace submit")
         fl.assert_('Workspace saved' in fl.getBody())
@@ -447,7 +448,7 @@ class FolderPage(BasePage):
         return self
 
     def view(self):
-        """Go to rights tab."""
+        """Default summary tab."""
         self.viewDocumentUid(self.getDocUid())
         return self
 

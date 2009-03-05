@@ -2,16 +2,16 @@
 <component name="default-repository-config">
 
   <documentation>
-    Defines the default JackRabbit repository used for development and testing.
-    Also defines the VersioningService implementation using the string property versioningService
-    @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+    Defines the default JackRabbit repository used for development and
+    testing.
   </documentation>
 
   <extension target="org.nuxeo.ecm.core.repository.RepositoryService"
     point="repository">
     <documentation>
-      Declare a JackRabbit repository to be used for development and tests.
-      The extension content is the jackrabbit XML configuration of the repository.
+      Declare a JackRabbit repository to be used for development and
+      tests. The extension content is the jackrabbit XML configuration
+      of the repository.
     </documentation>
     <repository name="default"
       factory="org.nuxeo.ecm.core.repository.jcr.JCRRepositoryFactory"
@@ -22,11 +22,12 @@
           virtual file system where the repository stores global state (e.g.
           registered namespaces, custom node types, etc.)
         -->
-        <FileSystem class="org.apache.jackrabbit.core.fs.local.LocalFileSystem">
+        <FileSystem
+          class="org.apache.jackrabbit.core.fs.local.LocalFileSystem">
           <param name="path" value="${rep.home}/repository" />
         </FileSystem>
         <!--
-        security configuration
+          security configuration
         -->
         <Security appName="Jackrabbit">
           <!--
@@ -37,7 +38,8 @@
             class="org.apache.jackrabbit.core.security.SimpleAccessManager">
             <!-- <param name="config" value="${rep.home}/access.xml"/> -->
           </AccessManager>
-          <LoginModule class="org.apache.jackrabbit.core.security.SimpleLoginModule">
+          <LoginModule
+            class="org.apache.jackrabbit.core.security.SimpleLoginModule">
             <!-- anonymous user name ('anonymous' is the default value) -->
             <param name="anonymousId" value="anonymous" />
             <!--
@@ -62,7 +64,8 @@
             virtual file system of the workspace: class: FQN of class
             implementing the FileSystem interface
           -->
-          <FileSystem class="org.apache.jackrabbit.core.fs.local.LocalFileSystem">
+          <FileSystem
+            class="org.apache.jackrabbit.core.fs.local.LocalFileSystem">
             <param name="path" value="${wsp.home}" />
           </FileSystem>
 
@@ -71,14 +74,22 @@
             implementing the PersistenceManager interface
           -->
           <PersistenceManager
-            class="org.apache.jackrabbit.core.state.obj.ObjectPersistenceManager">
+            class="org.apache.jackrabbit.core.persistence.bundle.PostgreSQLPersistenceManager">
+            <param name="driver" value="org.postgresql.Driver" />
+            <param name="url" value="jdbc:postgresql://localhost/nuxeo" />
+            <param name="user" value="nuxeo" />
+            <param name="password" value="password" />
+            <param name="schema" value="postgresql" />
+            <param name="schemaObjectPrefix" value="jcr_${wsp.name}_" />
+            <param name="externalBLOBs" value="true" />
           </PersistenceManager>
 
           <!--
             Search index and the file system it uses. class: FQN of class
             implementing the QueryHandler interface
           -->
-          <SearchIndex class="org.nuxeo.ecm.core.repository.jcr.jackrabbit.SearchIndex">
+          <SearchIndex
+            class="org.nuxeo.ecm.core.repository.jcr.jackrabbit.SearchIndex">
             <param name="path" value="${wsp.home}/index" />
           </SearchIndex>
         </Workspace>
@@ -91,7 +102,8 @@
             Configures the filesystem to use for versioning for the respective
             persistence manager
           -->
-          <FileSystem class="org.apache.jackrabbit.core.fs.local.LocalFileSystem">
+          <FileSystem
+            class="org.apache.jackrabbit.core.fs.local.LocalFileSystem">
             <param name="path" value="${rep.home}/version" />
           </FileSystem>
 
@@ -102,24 +114,32 @@
             future implementations.
           -->
           <PersistenceManager
-            class="org.apache.jackrabbit.core.state.obj.ObjectPersistenceManager">
+            class="org.apache.jackrabbit.core.persistence.bundle.PostgreSQLPersistenceManager">
+            <param name="driver" value="org.postgresql.Driver" />
+            <param name="url" value="jdbc:postgresql://localhost/nuxeo" />
+            <param name="user" value="nuxeo" />
+            <param name="password" value="password" />
+            <param name="schema" value="postgresql" />
+            <param name="schemaObjectPrefix" value="jcr_ver_" />
+            <param name="externalBLOBs" value="true" />
           </PersistenceManager>
+
         </Versioning>
 
         <!--
           Search index for content that is shared repository wide (/jcr:system
           tree, contains mainly versions)
         -->
-        <SearchIndex class="org.nuxeo.ecm.core.repository.jcr.jackrabbit.SearchIndex">
+        <SearchIndex
+          class="org.nuxeo.ecm.core.repository.jcr.jackrabbit.SearchIndex">
           <param name="path" value="${rep.home}/repository/index" />
         </SearchIndex>
       </Repository>
     </repository>
   </extension>
-  
+
   <!-- Versioning -->
   <implementation class="org.nuxeo.ecm.core.repository.jcr.versioning.Versioning" />
 
   <property name="versioningService" value="org.nuxeo.ecm.core.versioning.custom.CustomVersioningService" />
-  
 </component>
