@@ -16,12 +16,19 @@
 
   <profiles>
     <profile>
-      <id>nuxeo-jboss</id>
+      <id>nuxeo-ep</id>
       <activation>
         <activeByDefault>true</activeByDefault>
       </activation>
       <modules>
         <module>nuxeo-platform-ear</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>nuxeo-ep-jboss</id>
+      <modules>
+        <module>nuxeo-platform-ear</module>
+        <module>nuxeo-distribution-jboss</module>
       </modules>
     </profile>
   </profiles>
