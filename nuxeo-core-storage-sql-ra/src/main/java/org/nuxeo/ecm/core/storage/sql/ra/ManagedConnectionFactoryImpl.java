@@ -19,7 +19,9 @@ package org.nuxeo.ecm.core.storage.sql.ra;
 
 import java.io.PrintWriter;
 import java.util.HashMap;
+import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.StringTokenizer;
 
 import javax.resource.ResourceException;
 import javax.resource.cci.ConnectionFactory;
@@ -95,13 +97,13 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
         return repositoryDescriptor.xaDataSourceName;
     }
 
+    /**
+     * Properties are specified in the format key=val1[;key2=val2;...]
+     * @see #parseProperties(String) 
+     * @param property
+     */
     public void setProperty(String property) {
-        String[] split = property.split("=", 2);
-        if (split.length != 2) {
-            log.error("Invalid property: " + property);
-            return;
-        }
-        repositoryDescriptor.properties.put(split[0], split[1]);
+        parseProperties(property);
     }
 
     public String getProperty() {
@@ -261,6 +263,46 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
     protected SessionImpl getConnection(ConnectionSpecImpl connectionSpec)
             throws StorageException {
         return repository.getConnection(connectionSpec);
+    }
+
+    /**
+     * Parse a string of the form: key1=val1;key2=val2;...
+     * and collect the key, value pairs in the repository descriptor properties.
+     * A ; character may end the expression.
+     * Examples of valid expressions: 
+     * <code>key1=val1</code>, <code>key1=val1;</code>, <code>key1=val1;key2=val2</code>
+     * 
+     * Syntax errors are reported using the logger and will stop the parsing but already collected properties will be available.
+     * The ';' or '=' characters cannot be escaped so values or keys containing these characters will break the result.
+     *  
+     * @param expr the expression to parse
+     */
+    protected void parseProperties(String expr) {
+        try {
+            StringTokenizer tokenizer = new StringTokenizer(expr, ";=", true);
+            while (tokenizer.hasMoreTokens()) {
+                String key = tokenizer.nextToken();
+                String delim = tokenizer.nextToken();
+                if (!"=".equals(delim)) {
+                    log.error("Invalid property expression: "+expr);
+                }
+                if (!tokenizer.hasMoreTokens()) {
+                    repositoryDescriptor.properties.put(key, "");    
+                    break;
+                }
+                String val = tokenizer.nextToken();
+                repositoryDescriptor.properties.put(key, val);
+                if (!tokenizer.hasMoreTokens()) {
+                    break;
+                }
+                delim = tokenizer.nextToken();
+                if (!";".equals(delim)) {
+                    log.error("Invalid property expression: "+expr);
+                }            
+            }
+        } catch (NoSuchElementException e) {
+            log.error("Invalid property expression: "+expr);
+        }
     }
 
 }
