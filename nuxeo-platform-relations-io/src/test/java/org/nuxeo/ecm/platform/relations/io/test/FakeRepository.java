@@ -38,7 +38,7 @@ public class FakeRepository implements Repository {
         return "demo";
     }
 
-    public SecurityManager getSecurityManager() {
+    public SecurityManager getNuxeoSecurityManager() {
         return new FakeSecurityManager();
     }
 

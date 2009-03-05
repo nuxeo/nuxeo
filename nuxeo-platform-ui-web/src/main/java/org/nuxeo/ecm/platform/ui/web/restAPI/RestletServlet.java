@@ -77,11 +77,7 @@ public class RestletServlet extends HttpServlet {
             if (plugin.getUseSeam()) {
 
                 Filter seamFilter;
-                if (plugin.getUseConversation()) {
-                    seamFilter = new SeamRestletFilter(true);
-                } else {
-                    seamFilter = new SeamRestletFilter(false);
-                }
+                seamFilter = new SeamRestletFilter(plugin.getUseConversation());
 
                 Restlet seamRestlet = service.getContributedRestletByName(
                         restletName);

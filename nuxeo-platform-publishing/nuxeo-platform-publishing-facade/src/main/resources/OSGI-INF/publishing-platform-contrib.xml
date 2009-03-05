@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.publishing.service.binding.contrib">
+
+  <extension target="org.nuxeo.runtime.api.ServiceManagement"
+      point="services">
+    <documentation>Nuxeo platform publishing service.</documentation>
+
+    <service class="org.nuxeo.ecm.platform.publishing.api.PublishingService"
+        group="platform">
+      <locator>%PublishingServiceBean</locator>
+    </service>
+  </extension>
+
+</component>

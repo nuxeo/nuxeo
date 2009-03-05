@@ -163,16 +163,16 @@
 /* WaitDialog styles */
 
 .dialog {
-	display: block;
-	position: absolute;
+  display: block;
+  position: absolute;
 }
 
 .dialog table.table_window  {
   border-collapse: collapse;
   border-spacing: 0;
   width: 100%;
-	margin: 0px;
-	padding:0px;
+  margin: 0;
+  padding: 0;
 }
 
 .dialog table.table_window td , .dialog table.table_window th {
@@ -180,43 +180,39 @@
 }
 
 .dialog .title_window {
-  -moz-user-select:none;
+  -moz-user-select: none;
 }
 
-
 .overlay_waiter {
-	background-color: #CCCCFF;
-	filter:alpha(opacity=60);
-	-moz-opacity: 0.6;
-	opacity: 0.6;
+  background-color: #CCCCFF;
+  filter:alpha(opacity=60);
+  -moz-opacity: 0.6;
+  opacity: 0.6;
 }
 
 .waiter_content {
-	float:left;
-	margin:auto;
-	text-align:center;
-	background: no-repeat center center;
-        font: 13px arial;
-        border-width:1px;
-        border-color:red;
-        border-style:solid:
+  float:left;
+  margin:auto;
+  text-align:center;
+  background: no-repeat center center;
+  font: 13px arial;
+  border-width:0px;
+  border-style:solid;
 }
-#waiter_message
-{
+
+#waiter_message {
   color: #444;
   font-size: 10px;
   line-height: 12px;
   text-align: center;
 }
-#waiter_close
-{
+
+#waiter_close {
   color: #444;
   font-size: 9px;
   line-height: 100%;
   text-align: right;
 }
-
-
 
 /* PART I: Detailed Day Renderer */
 div.schedule-detailed-default table {
@@ -416,6 +412,18 @@ div.schedule-compact-default td.inactive-day td.header, div.schedule-compact-def
   visibility: visible;
 }
 
+
+/* Hides from IE5-mac \*/
+* html .buggybox {
+  height: 1%;
+}
+
+/* End hide from IE5-mac */
+
+
+/* Righ click context menu classes 
+   (some css properties not friend with xml theme file) */
+
 #contextMenu {
   position: absolute;
   visibility: hidden;
@@ -425,13 +433,45 @@ div.schedule-compact-default td.inactive-day td.header, div.schedule-compact-def
   border-width: 2px;
   border-color: black;
   color: green;
-  top: 0px;
-  left: 0px;
+  top: 0;
+  left: 0;
 }
 
-/* Hides from IE5-mac \*/
-* html .buggybox {
-  height: 1%;
-}
+.ctxMenuStyle {
+      list-style: none;
+      padding: 1px;
+      margin: 0px;
+      background-color: #232323;
+      width: 100px;
+      font: 9px 'Lucida Grande', Verdana, Arial, sans-serif;
 
-/* End hide from IE5-mac */
+}
+.ctxMenuItemStyle {
+      margin: 0px;
+      color: #e7e7e7;
+      display: block;
+      cursor: default;
+      padding: 3px;
+      border-bottom: 1px solid #232323;
+      background:#282b2e url(/nuxeo/img/theme_galaxy/small_gray_bar.png) top left repeat-x;
+}
+.ctxMenuItemHoverStyle {
+      margin: 0px;
+      color: #ffffff;
+      display: block;
+      cursor: default;
+      padding: 3px;
+      border-bottom: 1px solid #4e9ae1;
+      background-color: #4e9ae1;
+}
+.ctxMenuImg {
+      vertical-align:middle;
+      padding:1px;
+      padding-right:4px;
+}
+.ctxMenuShadow {
+  background-color:#000;
+  position:absolute;
+  opacity:0.2;
+  z-index:499;
+}

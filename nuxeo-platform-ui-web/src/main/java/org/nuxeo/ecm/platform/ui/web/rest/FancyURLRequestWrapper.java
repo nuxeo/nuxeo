@@ -53,8 +53,8 @@ public class FancyURLRequestWrapper extends HttpServletRequestWrapper {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Map getParameterMap() {
-        Map result = super.getParameterMap();
+    public Map<String, String> getParameterMap() {
+        Map<String, String> result = super.getParameterMap();
         if (result == null) {
             result = new HashMap<String, String>();
         }

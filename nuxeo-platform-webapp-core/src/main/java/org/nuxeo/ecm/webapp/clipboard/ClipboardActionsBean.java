@@ -51,12 +51,12 @@ import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.RequestParameter;
 import org.jboss.seam.annotations.Scope;
-import org.jboss.seam.annotations.WebRemote;
+import org.jboss.seam.annotations.remoting.WebRemote;
+import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.core.Events;
-import org.jboss.seam.core.FacesMessages;
-import org.jboss.seam.core.LocaleSelector;
+import org.jboss.seam.faces.FacesMessages;
+import org.jboss.seam.international.LocaleSelector;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -68,7 +68,6 @@ import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.platform.actions.Action;
-import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
 import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.webapp.base.InputController;
@@ -96,13 +95,9 @@ public class ClipboardActionsBean extends InputController implements
     private static final int BUFFER = 2048;
 
     private static final String SUMMARY_FILENAME = "INDEX.txt";
-
     private static final String SUMMARY_HEADER = ".";
-
     private static final String PASTE_OUTCOME = "after_paste";
-
     private static final String MOVE_OUTCOME = "after_move";
-
     public static final String DELETED_LIFECYCLE_STATE = "deleted";
 
     @In(create = true, required = false)
@@ -128,9 +123,9 @@ public class ClipboardActionsBean extends InputController implements
 
     private transient List<DocumentsListDescriptor> descriptorsForAvailableLists;
 
-    private Boolean canEditSelectedDocs = null;
+    private Boolean canEditSelectedDocs;
 
-    private transient Map<String, List<Action>> actionCache = null;
+    private transient Map<String, List<Action>> actionCache;
 
     // @Observer({EventNames.DOCUMENT_SELECTION_CHANGED})
     public void releaseClipboardableDocuments() {
@@ -271,7 +266,6 @@ public class ClipboardActionsBean extends InputController implements
     }
 
     public String removeWorkListItem(DocumentRef ref) throws ClientException {
-
         DocumentModel doc = documentManager.getDocument(ref);
         documentsListsManager.removeFromWorkingList(
                 getCurrentSelectedListName(), doc);
@@ -433,12 +427,6 @@ public class ClipboardActionsBean extends InputController implements
 
     /**
      * Creates the documents in the backend under the target parent.
-     *
-     * @param parent
-     * @param documents
-     * @return
-     * @throws ClientException
-     * @throws SecurityException
      */
     protected List<DocumentModel> recreateDocumentsWithNewParent(
             DocumentModel parent, List<DocumentModel> documents)
@@ -528,11 +516,7 @@ public class ClipboardActionsBean extends InputController implements
      * <p>
      * In general the currentDocument is the parent. Exceptions to this rule:
      * when the currentDocument is a domain or null. If Domain then content root
-     * is the parent. If NULL is passed then the JCR root is taken as parent.
-     *
-     * @param currentDocument
-     * @return
-     * @throws ClientException
+     * is the parent. If null is passed, then the JCR root is taken as parent.
      */
     protected DocumentModel getParent(DocumentModel currentDocument)
             throws ClientException {
@@ -594,8 +578,9 @@ public class ClipboardActionsBean extends InputController implements
                 }
 
                 // NXP-2334 : skip deleted docs
-                if (doc.getCurrentLifeCycleState().equals(DELETED_LIFECYCLE_STATE))
+                if (doc.getCurrentLifeCycleState().equals(DELETED_LIFECYCLE_STATE)) {
                     continue;
+                }
 
                 if (doc.isFolder() && !isEmptyFolder(doc, documentManager)) {
 
@@ -635,7 +620,7 @@ public class ClipboardActionsBean extends InputController implements
             context.responseComplete();
             return null;
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -664,8 +649,6 @@ public class ClipboardActionsBean extends InputController implements
      * <li>the content of the list can be added as children of the current
      * document
      * </ul>
-     *
-     * @throws ClientException
      */
     public boolean getCanPaste(String listName) throws ClientException {
 
@@ -730,8 +713,6 @@ public class ClipboardActionsBean extends InputController implements
      * <li>an element in the list can be removed from its folder and added as
      * child of the current document
      * </ul>
-     *
-     * @throws ClientException
      */
     public boolean getCanMove(String listName) throws ClientException {
 
@@ -798,8 +779,9 @@ public class ClipboardActionsBean extends InputController implements
         for (DocumentModel docChild : docList) {
 
             // NXP-2334 : skip deleted docs
-            if (docChild.getCurrentLifeCycleState().equals(DELETED_LIFECYCLE_STATE))
+            if (docChild.getCurrentLifeCycleState().equals(DELETED_LIFECYCLE_STATE)) {
                 continue;
+            }
 
             if (docChild.isFolder()
                     && !isEmptyFolder(docChild, documentManager)) {
@@ -845,17 +827,12 @@ public class ClipboardActionsBean extends InputController implements
                     return false;
                 }
             }
-
         }
         return true;
     }
 
     /**
      * Writes a summary file and puts it in the archive.
-     *
-     * @param out
-     * @param data
-     * @throws IOException
      */
     private void addSummaryToZip(ZipOutputStream out, byte[] data,
             SummaryImpl summary) throws IOException {
@@ -884,8 +861,18 @@ public class ClipboardActionsBean extends InputController implements
             DocumentModel doc, byte[] data, SummaryEntry parent,
             SummaryImpl summary) throws IOException {
 
-        String note = (String) doc.getProperty("note", "note");
-        String fileName = doc.getProperty("dublincore", "title") + ".html";
+        String note;
+        try {
+            note = (String) doc.getProperty("note", "note");
+        } catch (ClientException e1) {
+            note = null;
+        }
+        String fileName;
+        try {
+            fileName = doc.getProperty("dublincore", "title") + ".html";
+        } catch (ClientException e1) {
+            fileName = null;
+        }
         Blob content = new StringBlob(note);
 
         SummaryEntry summaryLeaf = new SummaryEntry(doc);

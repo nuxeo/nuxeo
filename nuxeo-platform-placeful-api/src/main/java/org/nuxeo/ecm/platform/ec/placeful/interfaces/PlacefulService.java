@@ -18,20 +18,35 @@
  */
 package org.nuxeo.ecm.platform.ec.placeful.interfaces;
 
+import java.util.List;
 import java.util.Map;
 
+import org.nuxeo.ecm.platform.ec.placeful.Annotation;
 import org.nuxeo.runtime.model.ComponentName;
 
 /**
- *
+ * 
  * @author <a href="mailto:rspivak@nuxeo.com">Ruslan Spivak</a>
- *
+ * 
  */
 public interface PlacefulService {
 
-    public static final ComponentName ID = new ComponentName(
-                "org.nuxeo.ecm.platform.ec.placeful.PlacefulService");
+    ComponentName ID = new ComponentName(
+            "org.nuxeo.ecm.platform.ec.placeful.PlacefulService");
 
     Map<String, String> getAnnotationRegistry();
+
+    Annotation getAnnotation(String uuid, String name)
+            throws ClassNotFoundException;
+
+    List<Annotation> getAnnotationListByParamMap(Map<String, Object> paramMap,
+            String name) throws ClassNotFoundException;
+
+    void setAnnotation(Annotation annotation);
+
+    void removeAnnotation(Annotation annotation);
+
+    void removeAnnotationListByParamMap(Map<String, Object> paramMap,
+            String name) throws ClassNotFoundException;
 
 }

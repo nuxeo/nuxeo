@@ -175,7 +175,12 @@ public class RemoteClientRepositoryCreator extends NXClientTestCase {
     private void printDocuments(DocumentModelList dmList, String logPrefix) {
         int i = 0;
         for (DocumentModel model : dmList) {
-            String title = (String) model.getProperty("dublincore", "title");
+            String title;
+            try {
+                title = (String) model.getProperty("dublincore", "title");
+            } catch (ClientException e) {
+                title = null;
+            }
             log.info(logPrefix + "title: " + title + "; path: "
                     + model.getPathAsString());
             i++;
@@ -188,7 +193,12 @@ public class RemoteClientRepositoryCreator extends NXClientTestCase {
             String logPrefix) {
         int i = 0;
         for (DocumentModel model : dmIterator) {
-            String title = (String) model.getProperty("dublincore", "title");
+            String title;
+            try {
+                title = (String) model.getProperty("dublincore", "title");
+            } catch (ClientException e) {
+                title = null;
+            }
             log.info(logPrefix + "title: " + title + "; path: "
                     + model.getPathAsString());
             i++;

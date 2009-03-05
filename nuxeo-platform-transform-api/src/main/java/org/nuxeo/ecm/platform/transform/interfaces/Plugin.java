@@ -39,7 +39,11 @@ import org.nuxeo.ecm.core.api.Blob;
  * instance). It greatly simplifies the TransformServiceCommon architecture.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
+ *
+ * @deprecated TransformationService is deprecated,
+ *      please use instead {@see org.nuxeo.ecm.core.convert.api.ConversionService}.
  */
+@Deprecated
 public interface Plugin extends Serializable {
 
     /**
@@ -146,7 +150,7 @@ public interface Plugin extends Serializable {
     /**
      * Is a given transform document a candidate for this plugin.
      *
-     * @param doc :
+     * @param doc
      *            a transform document instance.
      * @return true if candidate / false if not.
      */
@@ -155,7 +159,7 @@ public interface Plugin extends Serializable {
     /**
      * Is a given streaming blob instance a candidate for this plugin.
      *
-     * @param blob :
+     * @param blob
      *            a streaming blob instance
      * @return true if candidate / false if not.
      */

@@ -29,7 +29,9 @@ import java.util.Set;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.Directory;
+import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Reference;
 import org.nuxeo.ecm.directory.Session;
 
@@ -241,7 +243,6 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
         }
     }
 
-    @SuppressWarnings("unchecked")
     public void testGetEntries() throws Exception {
         Session session = getSession();
         try {
@@ -261,11 +262,8 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
             assertEquals(getCalendar(2007, 9, 7, 14, 36, 28, 0),
                     dm.getProperty(SCHEMA, "dateField"));
             assertEquals(Long.valueOf(3), dm.getProperty(SCHEMA, "intField"));
-            List<String> groups = (List<String>) dm.getProperty(SCHEMA,
-                    "groups");
-            assertEquals(2, groups.size());
-            assertTrue(groups.contains("group_1"));
-            assertTrue(groups.contains("members"));
+            // XXX: getEntries does not fetch references anymore => groups is
+            // null
 
             dm = entryMap.get("Administrator");
             assertNotNull(dm);
@@ -274,10 +272,6 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
             assertEquals(Long.valueOf(10), dm.getProperty(SCHEMA, "intField"));
             assertEquals(getCalendar(1982, 3, 25, 16, 30, 47, 123),
                     dm.getProperty(SCHEMA, "dateField"));
-            groups = (List<String>) dm.getProperty(SCHEMA, "groups");
-            assertEquals(1, groups.size());
-            assertTrue(groups.contains("administrators"));
-            // assertTrue(groups.contains("members"));
 
         } finally {
             session.close();
@@ -352,7 +346,12 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
         }
     }
 
-    public void testDeleteEntryExtended() throws Exception {
+    // XXX AT: disabled because SQL directories do not accept anymore creation
+    // of a second entry with the same id. The goal here is to accept an entry
+    // with an existing id, as long as parent id is different - e.g full id is
+    // the (parent id, id) tuple. But this constraint does not appear the
+    // directory configuration, so drop it for now.
+    public void XXXtestDeleteEntryExtended() throws Exception {
         Session session = getSession();
         try {
             // create a second entry with user_1 as key but with
@@ -427,9 +426,21 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
             assertEquals("user_1", docModel.getProperty(SCHEMA, "username"));
             assertEquals("pass_1", docModel.getProperty(SCHEMA, "password"));
 
-            // test that the groups (reference) of user_1 were fetched as well
+            // simple query does not fetch references by default => restart with
+            // an explicit fetch request
             List<String> groups = (List<String>) docModel.getProperty(SCHEMA,
                     "groups");
+            assertTrue(groups.isEmpty());
+
+            list = session.query(filter, null, null, true);
+            assertEquals(1, list.size());
+            docModel = list.get(0);
+            assertNotNull(docModel);
+            assertEquals("user_1", docModel.getProperty(SCHEMA, "username"));
+            assertEquals("pass_1", docModel.getProperty(SCHEMA, "password"));
+
+            // test that the groups (reference) of user_1 were fetched as well
+            groups = (List<String>) docModel.getProperty(SCHEMA, "groups");
             assertEquals(2, groups.size());
             assertTrue(groups.contains("members"));
             assertTrue(groups.contains("group_1"));
@@ -451,8 +462,7 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
             DocumentModel docModel = list.get(0);
             assertNotNull(docModel);
             assertEquals("user_1", docModel.getProperty(SCHEMA, "username"));
-        }
-        finally {
+        } finally {
             session.close();
         }
     }
@@ -566,6 +576,42 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
             // failed authentication: not existing user
             assertFalse(session.authenticate("NonExistingUser", "whatever"));
 
+        } finally {
+            session.close();
+        }
+    }
+
+    public void testCreateFromModel() throws Exception {
+        Session session = getSession();
+        try {
+            String schema = "user";
+            DocumentModel entry = BaseSession.createEntryModel(null, schema,
+                    null, null);
+            entry.setProperty("user", "username", "yo");
+
+            assertNull(session.getEntry("yo"));
+            session.createEntry(entry);
+            assertNotNull(session.getEntry("yo"));
+
+            // create one with existing same id, must fail
+            entry.setProperty("user", "username", "Administrator");
+            try {
+                assertTrue(session.hasEntry("Administrator"));
+                entry = session.createEntry(entry);
+                session.getEntry("Administrator");
+                fail("Should raise an error, entry already exists");
+            } catch (DirectoryException e) {
+            }
+        } finally {
+            session.close();
+        }
+    }
+
+    public void testHasEntry() throws Exception {
+        Session session = getSession();
+        try {
+            assertTrue(session.hasEntry("Administrator"));
+            assertFalse(session.hasEntry("foo"));
         } finally {
             session.close();
         }

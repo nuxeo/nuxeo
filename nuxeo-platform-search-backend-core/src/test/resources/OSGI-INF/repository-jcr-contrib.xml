@@ -4,10 +4,6 @@
     point="repositories">
     <repository name="test" />
   </extension>
-  <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
-    point="lifecyclemanager">
-    <lifecyclemanager class="org.nuxeo.ecm.core.repository.jcr.JCRLifeCycleManager" />
-  </extension>
   <extension target="org.nuxeo.ecm.core.repository.RepositoryService"
     point="repository">
     <repository name="test" forceReloadTypes="false"

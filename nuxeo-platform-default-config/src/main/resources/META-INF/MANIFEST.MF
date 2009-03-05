@@ -5,12 +5,7 @@ Bundle-SymbolicName: org.nuxeo.ecm.default.config
 Bundle-Localization: plugin
 Bundle-Vendor: Nuxeo
 Bundle-Category: web,stateful
-Nuxeo-Component: OSGI-INF/nxworkflow-definitions-contrib.xml,
-  OSGI-INF/nxworkflow-document-rules-contrib.xml,
-  OSGI-INF/nxworkflow-document-security-policy-contrib.xml,
-  OSGI-INF/nxdirectories-contrib.xml
+Nuxeo-Component: OSGI-INF/nxdirectories-contrib.xml,
+  OSGI-INF/jbpmService-contrib.xml
 Require-Bundle: org.nuxeo.ecm.directory.api,
- org.nuxeo.ecm.platform.workflow.api,
- org.nuxeo.ecm.platform.workflow,
- org.nuxeo.ecm.platform.workflow.document.api,
- org.nuxeo.ecm.platform.workflow.document
+  org.nuxeo.ecm.platform.jbpm.core

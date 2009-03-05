@@ -25,26 +25,24 @@
 
     <notification name="Workflow Change" channel="email" enabled="true" availableIn="Workspace"
       autoSubscribed="false" template="workflow" subject="Workflow event" label="label.nuxeo.notifications.workflow">
-      <event name="workflowStarted"/>
-      <event name="workflowEnded"/>
+      <event name="workflowNewProcessStarted"/>
+      <event name="workflowProcessEnded"/>
       <event name="workflowAbandoned"/>
-      <event name="workflowTaskAssigned"/>
-      <event name="workflowTaskUnassigned"/>
-      <event name="workflowTaskEnded"/>
-      <event name="workflowTaskRemoved"/>
-      <event name="workflowTaskSuspended"/>
+      <event name="workflowTaskCompleted"/>
       <event name="workflowTaskRejected"/>
+      <event name="worfklowTaskAssigned"/>
     </notification>
 
     <notification name="Approbation review started" channel="email" enabled="true" availableIn="Workspace"
-      autoSubscribed="true" template="aprobationWorkflowStarted" subject="Review started for ${docTitle}"
+      autoSubscribed="false" template="aprobationWorkflowStarted" subject="Review started for ${docTitle}"
       label="label.nuxeo.notifications.appReviewStarted">
-      <event name="approbationWorkflowStarted"/>
+      <event name="workflowNewProcessStarted"/>
     </notification>
 
-    <notification name="Task workflow returned" channel="email" enabled="true" availableIn="Workspace"
-      autoSubscribed="true" template="workflowTaskReturned" subject="Workflow task returned" label="label.nuxeo.notifications.task.assigned">
-      <event name="workflowTaskReturned"/>
+    <notification name="Task assigned" channel="email" enabled="true" availableIn="Workspace"
+      autoSubscribed="true" template="workflowTaskAssigned" subject="Task Assigned for ${docTitle}"
+      label="label.nuxeo.notifications.appReviewStarted">
+      <event name="worfklowTaskAssigned"/>
     </notification>
 
     <notification name="Email document" channel="email" enabled="true" availableIn="all"
@@ -66,7 +64,7 @@
     <template name="workflow" src="templates/workflow.ftl" />
     <template name="aprobationWorkflowStarted" src="templates/appReviewStarted.ftl" />
     <template name="emailDocument" src="templates/emailDocument.ftl" />
-    <template name="workflowTaskReturned" src="templates/workflowTaskReturned.ftl" />
+    <template name="workflowTaskAssigned" src="templates/workflowTaskAssigned.ftl"/>
 
     <template name="defaultNotifTemplate" src="templates/defaultNotifTemplate.ftl" />
 

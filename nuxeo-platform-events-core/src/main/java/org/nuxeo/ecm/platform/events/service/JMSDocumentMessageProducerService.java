@@ -36,7 +36,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
 /**
  * Service that produces JMS Message Document.
  *
- * @author : <a href="ja@nuxeo.com">Julien Anguenot</a>
+ * @author <a href="ja@nuxeo.com">Julien Anguenot</a>
  */
 public class JMSDocumentMessageProducerService extends DefaultComponent
         implements DocumentMessageProducer {
@@ -74,7 +74,7 @@ public class JMSDocumentMessageProducerService extends DefaultComponent
     }
 
     public void produceEventMessages(List<EventMessage> messages) {
-        if ((messages == null) || (messages.size() == 0)) {
+        if (messages == null || messages.isEmpty()) {
             log.debug("Incoming messages list is null. Cancelling...");
         }
 
@@ -105,14 +105,12 @@ public class JMSDocumentMessageProducerService extends DefaultComponent
         try {
             JMSDocumentMessageProducer.sendNXCoreEventMessages(events,
                     XA_TOPIC_CONNECTION_FACTORY, CORE_EVENTS_DESTINATION);
-            log.debug("produce() done !");
+            log.debug("produce() done!");
         } catch (DocumentMessageProducerException e) {
             log.error("En error occured while trying to send a JMS message on"
                     + "on the " + CORE_EVENTS_DESTINATION
-                    + " topic destination");
-            e.printStackTrace();
+                    + " topic destination", e);
         }
-
     }
 
     public void produce(NXCoreEvent event) {

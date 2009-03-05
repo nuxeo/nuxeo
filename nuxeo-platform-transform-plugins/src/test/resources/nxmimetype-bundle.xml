@@ -1,23 +1,22 @@
 <?xml version="1.0"?>
-
 <component
-  name="org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService">
+    name="org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService">
 
   <implementation
-    class="org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService" />
+      class="org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService"/>
   <service>
     <provide
-      interface="org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry" />
+        interface="org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry"/>
   </service>
   <extension-point name="mimetype">
-    <object class="org.nuxeo.ecm.platform.mimetype.service.MimetypeDescriptor" />
+    <object class="org.nuxeo.ecm.platform.mimetype.service.MimetypeDescriptor"/>
   </extension-point>
 
   <extension
-    target="org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService"
-    point="mimetype">
+      target="org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService"
+      point="mimetype">
     <mimetype normalized="application/msword" binary="True"
-      iconPath="word.png">
+        iconPath="word.png">
       <mimetypes>
         <mimetype>application/msword</mimetype>
         <mimetype>app-ms-word-whatever</mimetype>
@@ -30,8 +29,8 @@
   </extension>
 
   <extension
-    target="org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService"
-    point="mimetype">
+      target="org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService"
+      point="mimetype">
     <mimetype normalized="application/pdf" binary="True" iconPath="pdf.png">
       <mimetypes>
         <mimetype>application/pdf</mimetype>
@@ -43,12 +42,13 @@
   </extension>
 
   <extension
-    target="org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService"
-    point="mimetype">
+      target="org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService"
+      point="mimetype">
+
     <!-- OpenOffice.org 1.x document types -->
 
     <mimetype normalized="application/vnd.sun.xml.writer" binary="True"
-      iconPath="sxw.png">
+        iconPath="sxw.png">
       <mimetypes>
         <mimetype>application/vnd.sun.xml.writer</mimetype>
       </mimetypes>
@@ -58,7 +58,7 @@
     </mimetype>
 
     <mimetype normalized="application/vnd.sun.xml.impress" binary="True"
-      iconPath="sxi.png">
+        iconPath="sxi.png">
       <mimetypes>
         <mimetype>application/vnd.sun.xml.impress</mimetype>
       </mimetypes>
@@ -68,7 +68,7 @@
     </mimetype>
 
     <mimetype normalized="application/vnd.sun.xml.calc" binary="True"
-      iconPath="sxc.png">
+        iconPath="sxc.png">
       <mimetypes>
         <mimetype>application/vnd.sun.xml.calc</mimetype>
       </mimetypes>
@@ -80,7 +80,7 @@
     <!--  OpenOffice.org 2.x document types -->
 
     <mimetype normalized="application/vnd.oasis.opendocument.spreadsheet"
-      binary="True" iconPath="ods.png">
+        binary="True" iconPath="ods.png">
       <mimetypes>
         <mimetype>application/vnd.oasis.opendocument.spreadsheet</mimetype>
       </mimetypes>
@@ -90,7 +90,7 @@
     </mimetype>
 
     <mimetype normalized="application/vnd.oasis.opendocument.text" binary="True"
-      iconPath="odt.png">
+        iconPath="odt.png">
       <mimetypes>
         <mimetype>application/vnd.oasis.opendocument.text</mimetype>
       </mimetypes>
@@ -100,7 +100,7 @@
     </mimetype>
 
     <mimetype normalized="application/vnd.oasis.opendocument.presentation"
-      binary="True" iconPath="odp.png">
+        binary="True" iconPath="odp.png">
       <mimetypes>
         <mimetype>application/vnd.oasis.opendocument.presentation</mimetype>
       </mimetypes>
@@ -122,4 +122,3 @@
   </extension>
 
 </component>
-

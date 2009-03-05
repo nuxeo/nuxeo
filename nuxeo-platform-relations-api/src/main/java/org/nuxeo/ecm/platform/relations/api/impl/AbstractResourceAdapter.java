@@ -19,6 +19,9 @@
 
 package org.nuxeo.ecm.platform.relations.api.impl;
 
+import java.io.Serializable;
+import java.util.Map;
+
 import org.nuxeo.ecm.platform.relations.api.Resource;
 import org.nuxeo.ecm.platform.relations.api.ResourceAdapter;
 
@@ -29,7 +32,6 @@ import org.nuxeo.ecm.platform.relations.api.ResourceAdapter;
 public abstract class AbstractResourceAdapter implements ResourceAdapter {
 
     protected String namespace;
-
 
     public String getNamespace() {
         return namespace;
@@ -49,6 +51,16 @@ public abstract class AbstractResourceAdapter implements ResourceAdapter {
 
     public Class<?> getKlass() {
         return null;
+    }
+
+    public Resource getResource(Serializable object,
+            Map<String, Serializable> context) {
+        return getResource(object);
+    }
+
+    public Serializable getResourceRepresentation(Resource resource,
+            Map<String, Serializable> context) {
+        return (Serializable) getResourceRepresentation(resource);
     }
 
 }

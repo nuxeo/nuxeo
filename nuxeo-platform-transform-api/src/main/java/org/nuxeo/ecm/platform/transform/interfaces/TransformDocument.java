@@ -51,11 +51,6 @@ public interface TransformDocument extends Serializable {
      */
     Serializable getPropertyValue(String name);
 
-    /**
-     * TODO comment please
-     *
-     * @return TODO
-     */
     Map<String, Serializable> getProperties();
 
     /**

@@ -37,6 +37,10 @@ public class LoginPluginRegistry extends DefaultComponent {
     public static final ComponentName NAME =
         new ComponentName("org.nuxeo.ecm.platform.login.LoginPluginRegistry");
 
+    public static final String EP_PLUGIN = "plugin";
+
+    public static final String EP_CBFACTORY = "callbackFactory";
+
     private static final Log log = LogFactory.getLog(LoginPluginRegistry.class);
 
     private LoginPlugin currentLoginPlugin;
@@ -51,48 +55,32 @@ public class LoginPluginRegistry extends DefaultComponent {
         currentLoginPlugin = null;
     }
 
-    public static final String EP_PLUGIN = "plugin";
-
-    public static final String EP_CBFACTORY = "callbackFactory";
-
     @Override
     public void registerContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor) {
-
         if (extensionPoint.equals(EP_PLUGIN)) {
             log.info("registering Login Plugin ... ");
             registerPlugin((LoginPluginDescriptor) contribution);
-        }
-        else  if (extensionPoint.equals(EP_CBFACTORY)) {
+        } else if (extensionPoint.equals(EP_CBFACTORY)) {
             log.info("registering Callback factory ... ");
             registerCBFactory((CallbackFactoryDescriptor) contribution);
-        }
-        else
+        } else {
             log.error("Extension point " + extensionPoint + " is unknown!");
-
+        }
     }
 
     private void registerCBFactory(CallbackFactoryDescriptor cbfExtension) {
-
-
-        CallbackFactory factory = null;
-
         try {
-            factory = (CallbackFactory) cbfExtension.getClassName().newInstance();
-            callbackFactory = factory;
-        }
-        catch (Exception e) {
+            callbackFactory = (CallbackFactory) cbfExtension.getClassName().newInstance();
+        } catch (Exception e) {
             log.error("Unable to create Factory", e);
         }
-
-
     }
 
     private void registerPlugin(LoginPluginDescriptor pluginExtension) {
         Boolean enabled = pluginExtension.getEnabled();
-        Class className = pluginExtension.getClassName();
+        Class<LoginPlugin> className = pluginExtension.getClassName();
         String pluginName = pluginExtension.getPluginName();
-
 
         if (loginPluginStack.containsKey(pluginName)) {
             // merge
@@ -116,16 +104,14 @@ public class LoginPluginRegistry extends DefaultComponent {
         } else {
             LoginPlugin newLoginPlugin = null;
             try {
-                newLoginPlugin = (LoginPlugin) className.newInstance();
+                newLoginPlugin = className.newInstance();
             } catch (InstantiationException e) {
                 log.error("Unable to create LoginPlugin for class "
-                        + className.getName() + ":" + e.getMessage());
-                e.printStackTrace();
+                        + className.getName() + ":" + e.getMessage(), e);
                 return;
             } catch (IllegalAccessException e) {
                 log.error("Unable to create LoginPlugin for class "
-                        + className.getName() + ":" + e.getMessage());
-                e.printStackTrace();
+                        + className.getName() + ":" + e.getMessage(), e);
                 return;
             }
             newLoginPlugin.setParameters(pluginExtension.getParameters());
@@ -160,6 +146,7 @@ public class LoginPluginRegistry extends DefaultComponent {
         super.deactivate(context);
     }
   */
+
     @Deprecated
     public LoginPlugin getPlugin() {
         return currentLoginPlugin;
@@ -170,12 +157,10 @@ public class LoginPluginRegistry extends DefaultComponent {
         return currentLoginPlugin != null;
     }
 
-
-    public CallbackResult handleSpecifcCallbacks(CallbackHandler callbackHandler)
-    {
-        if (callbackFactory==null)
+    public CallbackResult handleSpecifcCallbacks(CallbackHandler callbackHandler) {
+        if (callbackFactory == null) {
             return null;
-
+        }
         return callbackFactory.handleSpecificCallbacks(callbackHandler);
     }
 

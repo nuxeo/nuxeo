@@ -33,25 +33,8 @@ public interface VersioningManager {
 
     /**
      * Get document incrementation options as defined by versioning rules.
-     * Versioning rules might specify that the workflow engine will be
-     * interrogated further (this is transparently) and the versioning service
-     * will process workflow response afterwards.
-     * <p>
      *
-     * The flow is like this:
-     *
-     * <pre>
-     *     client
-     *       -&gt; query versioning service
-     *          [-&gt; query workflow if specified by the rules
-     *           &lt;- process wf response ]
-     *       &lt;- return list of inc options
-     * </pre>
-     *
-     * @param docRef the reference to the document
-     * @param lifecycleState current lifecycle state of the document
-     * @param docType document type
-     *
+     * @param docModel the document
      * @return a list of version incrementation options available for the given
      *         document ref
      *
@@ -59,11 +42,11 @@ public interface VersioningManager {
      * @throws ClientException
      * @throws DocumentException
      */
-    VersionIncEditOptions getVersionIncEditOptions(DocumentModel docModel) throws VersioningException,
-            ClientException, DocumentException;
+    VersionIncEditOptions getVersionIncEditOptions(DocumentModel docModel)
+            throws VersioningException, ClientException, DocumentException;
 
     /**
-     * Get the label for the current version of a document, for the UI.
+     * Gets the label for the current version of a document, for the UI.
      *
      * @param document the document
      * @return the version label
@@ -83,13 +66,14 @@ public interface VersioningManager {
      */
     String getMinorVersionPropertyName(String documentType);
 
-    SnapshotOptions getCreateSnapshotOption(DocumentModel docModel) throws ClientException;
+    SnapshotOptions getCreateSnapshotOption(DocumentModel docModel)
+            throws ClientException;
 
-    DocumentModel incrementMinor(DocumentModel docModel) throws ClientException,
-            VersioningException;
+    DocumentModel incrementMinor(DocumentModel docModel)
+            throws ClientException, VersioningException;
 
-    DocumentModel incrementMajor(DocumentModel docModel) throws ClientException,
-            VersioningException;
+    DocumentModel incrementMajor(DocumentModel docModel)
+            throws ClientException, VersioningException;
 
     DocVersion getNextVersion(DocumentModel docModel) throws ClientException,
             VersioningException;

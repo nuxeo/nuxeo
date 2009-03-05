@@ -27,7 +27,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 
 /**
- * @deprecated ejb lookup is not done by hand anymore.
+ * @deprecated ejb lookup is not done by hand anymore. remove in 5.2
  */
 @Deprecated
 public final class EjbLocator {

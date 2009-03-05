@@ -18,6 +18,9 @@
     <doctype name="TestQuery" extends="Document">
       <schema name="querymodel_common" />
       <schema name="querymodel_test" />
+      <!-- override because the standard one references common and dublincore
+      which produce errors -->
+      <prefetch/>
     </doctype>
   </extension>
 
@@ -116,6 +119,10 @@
           <field schema="querymodel_test" name="listfield"/>
         </predicate>
 
+        <predicate parameter="someint" operator="=">
+          <field schema="querymodel_test" name="intfield"/>
+        </predicate>
+
       </whereClause>
 
 
@@ -144,6 +151,64 @@
       </whereClause>
     </queryModel>
 
+    <queryModel name="statefulModelWithSubClause" docType="TestQuery">
+
+      <whereClause>
+
+        <predicate parameter="intparameter" operator="=">
+          <field schema="querymodel_test" name="intfield"/>
+        </predicate>
+
+        <predicate type="subClause">
+          <field schema="querymodel_test" name="subclause"/>
+        </predicate>
+
+        <predicate parameter="textparameter" operator="=">
+          <field schema="querymodel_test" name="textfield" />
+        </predicate>
+
+      </whereClause>
+    </queryModel>
+
+    <queryModel name="statefulModelWithSingleStartswith" docType="TestQuery">
+
+      <whereClause>
+
+        <predicate parameter="ecm:path" operator="STARTSWITH">
+          <field schema="querymodel_test" name="textfield"/>
+        </predicate>
+
+      </whereClause>
+
+      <sortColumn>
+        <field schema="querymodel_common" name="sortColumn" />
+      </sortColumn>
+
+      <sortAscending>
+        <field schema="querymodel_common" name="sortAscending" />
+      </sortAscending>
+
+    </queryModel>
+
+    <queryModel name="statefulModelWithMultiStartswith" docType="TestQuery">
+
+      <whereClause>
+
+        <predicate parameter="ecm:path" operator="STARTSWITH">
+          <field schema="querymodel_test" name="listfield"/>
+        </predicate>
+
+      </whereClause>
+
+      <sortColumn>
+        <field schema="querymodel_common" name="sortColumn" />
+      </sortColumn>
+
+      <sortAscending>
+        <field schema="querymodel_common" name="sortAscending" />
+      </sortAscending>
+
+    </queryModel>
   </extension>
 
 </component>

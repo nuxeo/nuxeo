@@ -86,13 +86,13 @@ public class ResolvedResourcesImpl implements ResolvedResources {
     public List<ResolvedData> getMergedIndexableData() {
 
         // No resolved resources => no indexable data
-        if (resolvedResources.size() == 0) {
+        if (resolvedResources.isEmpty()) {
             return mergedData;
         }
 
         // We just add the result in a member of this instance so that the
         // computation will be done only once.
-        if (mergedData.size() == 0) {
+        if (mergedData.isEmpty()) {
             for (ResolvedResource resource : resolvedResources.values()) {
                 List<ResolvedData> one = resource.getIndexableData();
                 if (one != null) {
@@ -122,7 +122,7 @@ public class ResolvedResourcesImpl implements ResolvedResources {
 
     public ResolvedResource getIndexableResolvedResourceByConfName(String name) {
         // No resources
-        if (resolvedResources.size() == 0) {
+        if (resolvedResources.isEmpty()) {
             return null;
         }
         return resolvedResources.get(name);

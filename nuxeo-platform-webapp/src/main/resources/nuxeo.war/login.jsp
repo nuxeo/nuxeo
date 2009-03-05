@@ -2,6 +2,7 @@
 <!-- Nuxeo Enterprise Platform, svn $Revision: 22925 $ -->
 <%@ page contentType="text/html; charset=UTF-8"%>
 <%@ page language="java"%>
+<%@ page import="org.nuxeo.runtime.api.Framework"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <html>
@@ -9,208 +10,173 @@
 <fmt:setBundle basename="messages" var="messages"/>
 
 <head>
-<title>Nuxeo Enterprise Platform 5.1</title>
+<title>Nuxeo Enterprise Platform 5.2</title>
 <link rel="icon" type="image/png" href="/nuxeo/icons/favicon.png" />
 <style type="text/css">
 <!--
-      body {
-  font: normal 10px Verdana, sans-serif;
-  background: url(/nuxeo/img/login/login_blue_background.jpg) 0 0 repeat-x #0099e5;
-  color: white;
+ body {
+  font: normal 11px "Lucida Grande", sans-serif;
+  background: url(/nuxeo/img/theme_galaxy/chicago_black.jpg) 0 0 no-repeat #000;
+  color: #343434;
+  }
 
-}
+.topBar {
+  background:#323436 url(/nuxeo/img/theme_galaxy/small_gray_bar.png) repeat-x scroll left top;
+  width:100%;
+  height:36px;
+  }
+
+.topBar img {
+  margin-left:70px;
+  }
 
 table.loginForm {
   border-spacing:3px;
   padding:3px;
   }
 
+.leftColumn {
+  width:300px;
+  }
+
 H1 {
-       color:#0080ff;
-       font:bold 14px Verdana, sans-serif;
-       padding:0;
-       margin:0 0 10px 0;
-}
+  color:#343434;
+  font:bold 14px "Lucida Grande", sans-serif;
+  padding:0;
+  margin:2px 0 15px 0;
+  border-bottom:1px dotted #8B8B8B;
+  }
 
 H2 {
-       color:#999;
-       font:bold 10px Verdana, sans-serif;
-       padding:0;
-       margin:0 0 0 0;
-}
+  color:#999;
+  font:bold 10px "Lucida Grande", sans-serif;
+  padding:0;
+  margin:0 0 0 0;
+  }
 
 .extensionButtons {
-       padding:0;
-       margin:0 0 0 0;
-}
+  padding:0;
+  margin:0 0 0 0;
+  }
 
 .linkButtons {
-       padding:0;
-       margin:0 0 0 0;
-}
+  padding:0;
+  margin:0 0 0 0;
+  }
+
+.login {
+  background:transparent url(/nuxeo/img/theme_galaxy/news_bg.png) 0 repeat-x;
+  border: 1px solid #4E9AE1;
+  padding:20px 75px 20px 70px;
+  }
+
 
 .login_label {
-       font:bold 10px Verdana, sans-serif;
-       text-align: right;
-       color: #454545;
-       margin:0 4px 0 0;
-}
+  font:bold 10px "Lucida Grande", sans-serif;
+  text-align: right;
+  color: #454545;
+  margin:0 4px 0 0;
+  width:70px;
+  }
 
 .login_input {
-       border:1px inset #454545;
-       background: white;
-       padding:3px;
-       color: #454545;
-       margin:0 5px 5px 0px;
-       font:normal 10px Verdana, sans-serif;
-}
+  border:1px inset #454545;
+  background: white;
+  padding:3px;
+  color: #454545;
+  margin:0 10px 5px 0px;
+  font:normal 10px "Lucida Grande", sans-serif;
+  }
 
 /* this class is a repeat because defined in nxthemes-setup.xml but
 nxthemes css is not used in login.jsp */
 .login_button {
-       cursor:pointer;
-       color: #454545;
-       font-size: 10px;
-font-weight:bold;
-       background: url(/nuxeo/img/button_1.gif) 0 0 repeat-x #e3e6ea;
-       border-style: solid;
-       border-width: 1px;
-       border-color: #ccc #666 #666 #ccc;
-       padding: 2px 5px 2px 5px;
-       margin: 2px;
-}
+  cursor:pointer;
+  color: #454545;
+  font-size: 10px;
+  background: #CECFD1 url(/nuxeo/img/theme_galaxy/buttons.png) repeat-x scroll left top;
+  border:1px solid #BFC5CB;
+  padding: 2px 5px 2px 5px;
+  margin: 5px 10px 10px 0;
+  }
 
 .login_button:hover {
-       color: #fff;
-       font-size: 10px;
-       background: url(/nuxeo/img/button_2.gif) 0 0 repeat-x #3f89ef;
-       border-style: solid;
-       border-width: 1px;
-       border-color: #0099ff #0066cc #0066cc #0099ff;
-       padding: 2px 5px 2px 5px;
-       margin: 2px;
-}
+  border:1px solid #92999E;
+  color:#000000;
+  }
 
 .formTitle {
-       margin:0 0 20px 0;
-       text-align:center;
-       color:#0066ff;
-       font-size:14px;
-}
+  margin:0 0 20px 0;
+  text-align:center;
+  color:#4a4a4a;
+  font-size:14px;
+  }
+
+.footer {
+  color: #d6d6d6;
+  font-size: 9px;
+  }
 
 .loginLegal {
-       color: #999;
-       font-size: 9px;
-       padding: 0;
-       margin: 0 0 0 0;
-}
-
-.buttonsBar {
-  margin:15px 0 0 0;
-  padding-top:0px
-  line-height:normal;
-  width:138px;
+  padding: 0;
+  margin: 0 0 10px 0;
   }
 
-.buttonsBar ul {
+.version {
+  padding-right:50px;
+  }
+
+
+.labelCorp {
   margin:0;
-  padding:0px 0 0 0;
-  list-style:none;
-  }
-
-.buttonsBar li {
-  float:left;
-  background:url(/nuxeo/img/login/button_normal.gif) no-repeat left top;
-  margin:5px 0 0 0;
-  padding:10px 0 0 0;
-  }
-
-  .buttonsBar li:hover {
-  float:left;
-  background:url(/nuxeo/img/login/button_hover.gif) no-repeat left top;
-  }
-
-.buttonsBar a {
-  float:left;
-  width:138px;
-  text-decoration:none;
-  color:#FFF;
-  font:normal 9px Verdana, sans-serif;
-  text-align:center;
-  vertical-align:middle;
+  width:400px;
   padding-top:0px;
-  padding-bottom:10px;
   }
 
-.extensionsBar {
+.labelCorp ul{
   margin:0;
-  line-height:normal;
-  width:138px;
-
+  padding:0 42px 0 0;
   }
-.extensionsBar ul {
-  margin:5px 0 0 0;
-  padding:0px 0 0 0;
+
+.labelCorp li {
+  margin:0;
+  padding:0px 8px;
   list-style:none;
-
-
+  float:right;
   }
 
-.extensionsBar li {
-  float:left;
-  margin:0px 0 0 0;
-  padding:5px 0 0 0;
-  }
 
-.extensionsBar li.ie {
-  background:url(/nuxeo/img/login/ie_normal.gif) no-repeat left top;
-  }
-
-  .extensionsBar li.ie:hover {
-  background:url(/nuxeo/img/login/ie_hover.gif) no-repeat left top;
-  }
-
-.extensionsBar li.ff {
-  background:url(/nuxeo/img/login/ff_normal.gif) no-repeat left top;
-}
-
-  .extensionsBar li.ff:hover {
-  background:url(/nuxeo/img/login/ff_hover.gif) no-repeat left top;
-  }
-
-  .extensionsBar li.office {
-  background:url(/nuxeo/img/login/office_normal.gif) no-repeat left top;
-  }
-
-  .extensionsBar li.office:hover {
-  background:url(/nuxeo/img/login/office_hover.gif) no-repeat left top;
-  }
-
-.extensionsBar a {
-  float:left;
-  width:138px;
+.labelCorp a {
   text-decoration:none;
-  color:#FFF;
-  font:normal 9px Verdana, sans-serif;
-  text-align:left;
-  vertical-align:middle;
-  padding-top:7px;
-  padding-bottom:14px;
-  padding-left:48px;
+  color:#9a9a9a;
+  font:normal 9px "Lucida Grande", sans-serif;
+  padding-top:0px;
+  }
 
+.labelCorp a:hover {
+  text-decoration:underline;
+  }
+
+
+.block_container {
+  margin-right:50px;
+  border:none;
+  height:500px;
+  width:350px;
+  overflow:auto;
+  background:transparent url(/nuxeo/img/theme_galaxy/news_bg.png) repeat-x scroll 0 50%;
   }
 
 .errorMessage {
   color:#000;
-    font:bold 10px Verdana, sans-serif;
+  font:bold 10px "Lucida Grande", sans-serif;
   border:1px solid #666;
   background: url(/nuxeo/img/warning.gif) 2px 3px no-repeat #FFCC33;
-    margin-bottom:12px;
-    display:block;
-    padding:5px 5px 5px 23px;
-    text-align: center;
-}
-
+  margin-bottom:12px;
+  display:block;
+  padding:5px 5px 5px 23px;
+  text-align: center;
+  }
 -->
 
 </style>
@@ -218,52 +184,15 @@ font-weight:bold;
 
 <body style="margin:0;text-align:center;">
 
-
-<form method="post" action="nxstartup.faces"><!-- To prevent caching -->
-<%
-    response.setHeader("Cache-Control", "no-cache"); // HTTP 1.1
-    response.setHeader("Pragma", "no-cache"); // HTTP 1.0
-    response.setDateHeader("Expires", -1); // Prevents caching at the proxy server
-%> <!-- ;jsessionid=<%=request.getSession().getId()%> --> <!-- ImageReady Slices (login_cutted.psd) -->
-<table align="center" width="650" height="500" border="0"
-        cellpadding="0" cellspacing="0">
-        <tr>
-                <td colspan="6"><img src="/nuxeo/img/login/login_01.jpg"
-                        width="650" height="127" alt=""></td>
-        </tr>
-        <tr>
-                <td rowspan="5"><img src="/nuxeo/img/login/login_02.jpg"
-                        width="41" height="372" alt=""></td>
-                <td rowspan="3" background="/nuxeo/img/login/login_03.jpg"
-                        width="138" height="314" valign="middle">
-                <table cellspacing="0" cellpadding="0" border="0" align="center"
-                        width="138">
-                        <tr>
-                                <td align="left" valign="top">
-
-                <div class="extensionsBar">
-                <h2>
-                  <fmt:message bundle="${messages}" key="label.login.improveYourExperience" />
-                </h2>
-                <ul>
-                    <li class="ie"><a href="http://download.nuxeo.org/desktop-integration/drag-drop/msie/">
-                      <fmt:message bundle="${messages}" key="label.login.IEExtension" />
-                    </a></li>
-                    <li class="ff"><a href="https://download.nuxeo.com/browser/firefox/nuxeo-dragdrop-ff-extension.xpi">
-                      <fmt:message bundle="${messages}" key="label.login.firefoxExtension" />
-                    </a></li>
-                    <li class="office"><a href="http://doc.nuxeo.org/xwiki/bin/view/Main/Downloads#HLiveEdit">
-                      <fmt:message bundle="${messages}" key="label.login.liveEdit" />
-                    </a></li>
-                </ul>
-                </div>
-
-
-                <div class="buttonsBar">
-                <h2>
-                  <fmt:message bundle="${messages}" key="label.login.goFurther" />
-                </h2>
-                <ul>
+  <table cellspacing="0" cellpadding="0" border="0" width="100%" height="100%">
+    <tbody>
+      <tr class="topBar">
+        <td>
+          <img width="107" height="36" alt="Nuxeo EP" src="/nuxeo/img/theme_galaxy/nuxeo_5.2_logo.png"/>
+       </td>
+       <td align="right" class="leftColumn">
+       <div class="labelCorp">
+       <ul>
                     <li><a href="http://www.nuxeo.com/en">
                       <fmt:message bundle="${messages}" key="label.login.visitNuxeoCom" />
                     </a></li>
@@ -274,60 +203,57 @@ font-weight:bold;
                       <fmt:message bundle="${messages}" key="label.login.joinTheCommunity" />
                     </a></li>
                 </ul>
-                </div>
-                </td>
-            </tr>
-        </table>
-
-        </td>
-        <td colspan="4"><img src="/nuxeo/img/login/login_04.jpg"
-            width="471" height="48" alt=""></td>
-    </tr>
-    <tr>
-        <td rowspan="2"><img src="/nuxeo/img/login/login_05.jpg"
-            width="87" height="266" alt=""></td>
-        <td background="/nuxeo/img/login/login_06.jpg" width="303"
-            height="174">
-
-        <table cellpadding="0" border="0" align="center" class="loginForm">
-            <tr>
-                <td colspan="2" align="center">
-                <h2 class="formTitle"><fmt:message bundle="${messages}" key="label.login.welcomeToNuxeoEnterprise" /></h2>
-                </td>
-            </tr>
-            <tr>
-                <td align="right"><label class="login_label" for="username">
+                <div style="clear:both;" />
+          </div>
+       </td>
+      </tr>
+      <tr>
+        <td align="center">
+             <form method="post" action="nxstartup.faces"><!-- To prevent caching -->
+<%
+    response.setHeader("Cache-Control", "no-cache"); // HTTP 1.1
+    response.setHeader("Pragma", "no-cache"); // HTTP 1.0
+    response.setDateHeader("Expires", -1); // Prevents caching at the proxy server
+%> <!-- ;jsessionid=<%=request.getSession().getId()%> --> <!-- ImageReady Slices (login_cutted.psd) -->
+      <!--
+      <h2 class="formTitle"><fmt:message bundle="${messages}" key="label.login.welcomeToNuxeoEnterprise" /></h2>
+      -->
+          <table class="login">
+           <tr>
+             <td class="login_label">
+              <label for="username">
                   <fmt:message bundle="${messages}" key="label.login.username" />
-                </label></td>
-                <td><input class="login_input" type="text"
-                    name="user_name" id="username" size="22"></td>
+                </label>
+                </td>
+                <td>
+                <input class="login_input" type="text"
+                    name="user_name" id="username" size="22">
+            </td>
             </tr>
             <tr>
-                <td align="right"><label class="login_label" for="password">
+            <td class="login_label">
+              <label for="password">
                   <fmt:message bundle="${messages}" key="label.login.password" />
-                </label></td>
-                <td><input class="login_input" type="password"
-                    name="user_password" id="password" size="22"></td>
-            </tr>
-
-            <tr>
-                <td>&nbsp;</td>
-                <% // label.login.logIn %>
-                <td><input type="hidden" name="form_submitted_marker"
+                </label>
+                </td>
+                <td>
+                <input class="login_input" type="password"
+                    name="user_password" id="password" size="22">
+                 </td>
+                 </tr>
+                 <tr>
+                 <td></td>
+                 <td>
+                                    <% // label.login.logIn %>
+                <input type="hidden" name="form_submitted_marker"
                     id="form_submitted_marker">
                     <input class="login_button" type="submit" name="Submit"
-                    value="<fmt:message bundle="${messages}" key="label.login.logIn" />"></td>
+                    value="<fmt:message bundle="${messages}" key="label.login.logIn" />">
+
+              </td>
             </tr>
-
-        </table>
-
-        </td>
-        <td colspan="2" rowspan="2"><img
-            src="/nuxeo/img/login/login_07.jpg" width="81" height="266" alt=""></td>
-    </tr>
-    <tr>
-        <td background="/nuxeo/img/login/login_08.jpg" width="303"
-            height="92">
+            <tr>
+              <td>
           <c:if test="${param.loginFailed}">
             <div class="errorMessage">
                   <fmt:message bundle="${messages}" key="label.login.invalidUsernameOrPassword" />
@@ -338,43 +264,38 @@ font-weight:bold;
                   <fmt:message bundle="${messages}" key="label.login.missingUsername" />
             </div>
           </c:if>
-        </td>
+      </td>
     </tr>
-    <tr>
-        <td colspan="4" background="/nuxeo/img/login/login_09.jpg"
-            width="558" height="43" align="center">
-        <p class="loginLegal">
+    </table>
+      </form>
+      </td>
+      <td class="news_container" align="right" valign="center">
+      <iframe class="block_container" style="display:none" onload="javascript:this.style.display='block';" src="http://www.nuxeo.com/nuxeoep_login/news/"></iframe>
+      </td>
+    </tr>
+      <tr class="footer">
+        <td align="center" valign="bottom">
+         <div class="loginLegal">
             <fmt:message bundle="${messages}" key="label.login.copyright" />
-        </p>
+        </div>
         </td>
-        <td rowspan="2"><img src="/nuxeo/img/login/login_10.jpg"
-            width="51" height="58" alt=""></td>
-    </tr>
-    <tr>
-        <td colspan="4"><img src="/nuxeo/img/login/login_11.jpg"
-            width="558" height="15" alt=""></td>
-    </tr>
-    <tr>
-        <td colspan="6"><img src="/nuxeo/img/login/login_reflect.jpg"
-            alt=""></td>
-    </tr>
-    <tr>
-        <td><img src="/nuxeo/img/login/spacer.gif" width="41"
-            height="1" alt=""></td>
-        <td><img src="/nuxeo/img/login/spacer.gif" width="138"
-            height="1" alt=""></td>
-        <td><img src="/nuxeo/img/login/spacer.gif" width="87"
-            height="1" alt=""></td>
-        <td><img src="/nuxeo/img/login/spacer.gif" width="303"
-            height="1" alt=""></td>
-        <td><img src="/nuxeo/img/login/spacer.gif" width="30"
-            height="1" alt=""></td>
-        <td><img src="/nuxeo/img/login/spacer.gif" width="51"
-            height="1" alt=""></td>
-    </tr>
-</table>
-<!-- End ImageReady Slices --></form>
+        <td align="right" class="version">
+        <div class="loginLegal">
+         <%
+         String productName = Framework.getProperty("org.nuxeo.ecm.product.name");
+         String productVersion = Framework.getProperty("org.nuxeo.ecm.product.version");
+         %>
 
+         <%=productName%>
+         &nbsp;
+         <%=productVersion%>
+
+        </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 <!--   Current User = <%=request.getRemoteUser()%> -->
 </body>
 </html>
+

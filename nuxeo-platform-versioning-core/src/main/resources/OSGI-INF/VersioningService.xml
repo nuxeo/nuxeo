@@ -11,10 +11,7 @@
     The rules can specify options to be presented to the user for versions
     incrementation like "increment minor", "increment major", "no increment"
     etc, or can specify what to be incremented silently (without user direct
-    interaction) when a document is updated. Also the incrementation options
-    could be retrieved from the workflow if the rule specify workflow
-    interogation and there is an active workflow process for the document to be
-    updated.
+    interaction) when a document is updated.
 
     @version 1.0
     @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
@@ -67,8 +64,6 @@
         If there are no versioningRulEdit options defined for user selection
       </li>
     </documentation>
-    <object
-      class="org.nuxeo.ecm.platform.versioning.service.WFBasedRuleDescriptor" />
     <object
       class="org.nuxeo.ecm.platform.versioning.service.EditBasedRuleDescriptor" />
     <object

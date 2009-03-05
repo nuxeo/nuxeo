@@ -45,7 +45,7 @@ public class TestRegisterPlacefulService extends NXRuntimeTestCase {
     public void testRegistration() {
         Map<String, String> registry = placefulService.getAnnotationRegistry();
 
-        assertEquals(2, registry.size());
+        assertEquals(1, registry.size());
 
         assertTrue(registry.containsKey("SubscriptionConfig"));
 
@@ -53,9 +53,9 @@ public class TestRegisterPlacefulService extends NXRuntimeTestCase {
                 registry.get("SubscriptionConfig"));
 
 
-        assertTrue(registry.containsKey("ACPAnnotation"));
-
-        assertEquals("org.nuxeo.ecm.platform.ec.placeful.ACPAnnotation",
-                registry.get("ACPAnnotation"));
+//        assertTrue(registry.containsKey("ACPAnnotation"));
+//
+//        assertEquals("org.nuxeo.ecm.platform.ec.placeful.ACPAnnotation",
+//                registry.get("ACPAnnotation"));
     }
 }

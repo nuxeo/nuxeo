@@ -62,7 +62,7 @@ public abstract class ChainSelectBase extends UIInput implements
 
     protected static final String DISPLAY_ID = "id";
 
-    protected static final String DISPLaY_IDLABEL = "idAndLabel";
+    protected static final String DISPLAY_IDLABEL = "idAndLabel";
 
     protected static final String DEFAULT_KEYSEPARATOR = "/";
 
@@ -358,7 +358,6 @@ public abstract class ChainSelectBase extends UIInput implements
             }
         }
         return result;
-
     }
 
     private static void closeSession(Session session) {
@@ -462,7 +461,6 @@ public abstract class ChainSelectBase extends UIInput implements
         }
 
         return myDepth != 0 ? myDepth : getDirectories().length;
-
     }
 
     public void setDepth(int depth) {
@@ -476,7 +474,6 @@ public abstract class ChainSelectBase extends UIInput implements
         } else {
             return style;
         }
-
     }
 
     public void setStyle(String style) {
@@ -573,7 +570,7 @@ public abstract class ChainSelectBase extends UIInput implements
             return id;
         } else if (DISPLAY_LABEL.equals(display)) {
             return translatedLabel;
-        } else if (DISPLaY_IDLABEL.equals(display)) {
+        } else if (DISPLAY_IDLABEL.equals(display)) {
             return id + ' ' + translatedLabel;
         } else {
             throw new RuntimeException(
@@ -628,7 +625,6 @@ public abstract class ChainSelectBase extends UIInput implements
         } else {
             return true;
         }
-
     }
 
 }

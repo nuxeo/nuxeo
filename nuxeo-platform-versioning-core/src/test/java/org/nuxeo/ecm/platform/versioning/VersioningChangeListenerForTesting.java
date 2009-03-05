@@ -25,7 +25,8 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
-import org.nuxeo.ecm.platform.versioning.listeners.VersioningChangeListener;
+import org.nuxeo.ecm.platform.versioning.listeners.VersioningChangeEventListener;
+
 
 /**
  * Listener for testing purposes only. It checks the versions (major and minor)
@@ -33,8 +34,7 @@ import org.nuxeo.ecm.platform.versioning.listeners.VersioningChangeListener;
  *
  * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
  */
-public class VersioningChangeListenerForTesting extends
-        VersioningChangeListener {
+public class VersioningChangeListenerForTesting extends VersioningChangeEventListener {
 
     private static final Log log = LogFactory.getLog(VersioningChangeListenerForTesting.class);
 
@@ -43,11 +43,8 @@ public class VersioningChangeListenerForTesting extends
     // these are the values that should be checked against when event is
     // received
     private static long oldDoc_majV;
-
     private static long oldDoc_minV;
-
     private static long newDoc_majV;
-
     private static long newDoc_minV;
 
     protected DocumentModel newDoc;
@@ -96,4 +93,5 @@ public class VersioningChangeListenerForTesting extends
         newDoc_majV = new_maj;
         newDoc_minV = new_min;
     }
+
 }

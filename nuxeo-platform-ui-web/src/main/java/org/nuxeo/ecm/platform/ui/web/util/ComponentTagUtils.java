@@ -19,8 +19,6 @@
 
 package org.nuxeo.ecm.platform.ui.web.util;
 
-import org.jetbrains.annotations.NotNull;
-
 /**
  * Component tag utils.
  *
@@ -38,7 +36,7 @@ public final class ComponentTagUtils {
      *
      * @param value The value to evaluate (not null)
      */
-    public static boolean isValueReference(@NotNull String value) {
+    public static boolean isValueReference(String value) {
         return value.contains("#{")
                 && value.indexOf("#{") < value.indexOf('}');
     }
@@ -52,13 +50,13 @@ public final class ComponentTagUtils {
      *
      * @param value The value to evaluate (not null)
      */
-    public static boolean isMethodReference(@NotNull String value) {
+    public static boolean isMethodReference(String value) {
         boolean isValue = isValueReference(value);
         if (isValue) {
             if (value.contains("(")
-                    && value.indexOf("(") < value.indexOf(')')
+                    && value.indexOf('(') < value.indexOf(')')
                     // make sure it's not a function
-                    && (!value.contains(":") || value.indexOf(":") > value.indexOf("("))) {
+                    && (!value.contains(":") || value.indexOf(':') > value.indexOf('('))) {
                 return true;
             }
         }

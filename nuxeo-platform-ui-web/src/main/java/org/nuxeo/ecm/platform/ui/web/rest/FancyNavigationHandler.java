@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.seam.contexts.Contexts;
 import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 import org.nuxeo.runtime.api.Framework;
@@ -74,6 +75,10 @@ public class FancyNavigationHandler extends NavigationHandler {
             String baseUrl = BaseURL.getServerURL(httpRequest, false);
             if (localUrl != null && !localUrl.equals(baseUrl)) {
                 url = url.replaceFirst(localUrl, baseUrl);
+            }
+            if (Contexts.isEventContextActive()) {
+                // add conversation id before redirect
+                url = RestHelper.addMainConversationParameters(url);
             }
             try {
                 eContext.redirect(url);

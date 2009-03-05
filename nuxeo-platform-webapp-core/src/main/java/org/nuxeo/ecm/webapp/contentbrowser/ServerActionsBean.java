@@ -37,7 +37,6 @@ import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
-import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.nuxeo.runtime.api.Framework;
@@ -60,7 +59,7 @@ public class ServerActionsBean implements ServerActions, Serializable {
     private static final Log log = LogFactory.getLog(ServerActionsBean.class);
 
     @In(required = true, create = true)
-    protected NavigationContext navigationContext;
+    protected transient NavigationContext navigationContext;
 
     private transient RepositoryManager repositoryManager;
 
@@ -98,7 +97,7 @@ public class ServerActionsBean implements ServerActions, Serializable {
             return result;
 
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -122,7 +121,7 @@ public class ServerActionsBean implements ServerActions, Serializable {
                 return null;
             }
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
