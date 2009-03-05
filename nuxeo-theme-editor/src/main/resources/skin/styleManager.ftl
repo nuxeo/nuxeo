@@ -1,6 +1,9 @@
 <div>
 <#assign themeManager=This.getThemeManager()>
 <#assign themes=themeManager.getThemeDescriptors()>
+<#if selected_named_style>
+  <#assign selected_named_style_name = selected_named_style.name>
+</#if>
 
 <div id="nxthemesStyleManager">
 
@@ -46,13 +49,18 @@
 
 <#if style_manager_mode = 'named styles'>
 
+<#assign found=false>
+
 <ul class="namedStyleSelector">
 <#list named_styles as style>
-  <li><a href="javascript:NXThemesStyleManager.selectNamedStyle('#{style.uid}')">${style.name}</a></li>
+  <#if style.uid = selected_named_style.uid>
+    <#assign found=true>
+  </#if>
+  <li><a <#if style.name = selected_named_style_name>class="selected"</#if> href="javascript:NXThemesStyleManager.selectNamedStyle('#{style.uid}')">${style.name}</a></li>
 </#list>
 </ul>
 
-<#if selected_named_style_css>
+<#if found>
 <form id="nxthemesNamedStyleCSSEditor" class="nxthemesForm" style="padding: 0"
       onsubmit="NXThemesStyleManager.updateNamedStyleCSS(this); return false">
 <div>
