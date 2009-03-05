@@ -53,6 +53,19 @@
         <artifactId>maven-antrun-plugin</artifactId>
         <executions>
           <execution>
+            <id>DEPRECATED</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <tasks>
+                <echo message="DEPRECATED task." level="error" />
+                <echo message="You should use jboss-patch from nuxeo-distribution. Update your scripts." />
+              </tasks>
+            </configuration>
+          </execution>
+          <execution>
             <id>prepare-transform</id>
             <phase>generate-sources</phase><!-- this phase before generate-resources -->
             <goals>
@@ -164,7 +177,10 @@
             </goals>
             <configuration>
               <artifactItems>
-                <!-- Required by NXThemes - because of class isolation we must deploy them to the common lib dir otherwise tomcat will throw class not found exceptions -->
+                <!--
+                  Required by NXThemes - because of class isolation we must deploy them to the
+                  common lib directory otherwise tomcat will throw class not found exceptions
+                -->
                 <artifactItem>
                   <groupId>javax.el</groupId>
                   <artifactId>el-api</artifactId>
