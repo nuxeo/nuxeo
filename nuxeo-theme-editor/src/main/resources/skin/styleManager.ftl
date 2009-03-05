@@ -53,7 +53,7 @@
 
 <ul class="namedStyleSelector">
 <#list named_styles as style>
-  <#if style.uid = selected_named_style.uid>
+  <#if selected_named_style & style.uid = selected_named_style.uid>
     <#assign found=true>
   </#if>
   <li><a <#if style.name = selected_named_style_name>class="selected"</#if> href="javascript:NXThemesStyleManager.selectNamedStyle('#{style.uid}')">${style.name}</a></li>
