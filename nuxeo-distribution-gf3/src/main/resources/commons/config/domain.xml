@@ -1,6 +1,6 @@
 <domain log-root="${com.sun.aas.instanceRoot}/logs" application-root="${com.sun.aas.instanceRoot}/applications">
   <system-applications />
-  <applications />
+  <applications/>
   <resources>
     <!--jdbc-resource enabled="true" pool-name="DerbyPool" jndi-name="jdbc/__default" object-type="user" />
     <jdbc-connection-pool connection-validation-method="auto-commit" steady-pool-size="8" associate-with-thread="false" connection-leak-reclaim="false" idle-timeout-in-seconds="300" validate-atmost-once-period-in-seconds="0" lazy-connection-enlistment="false" connection-creation-retry-interval-in-seconds="10" max-pool-size="32" is-isolation-level-guaranteed="false" datasource-classname="org.apache.derby.jdbc.ClientDataSource" max-connection-usage-count="0" res-type="javax.sql.DataSource" name="DerbyPool" match-connections="false" is-connection-validation-required="false" fail-all-connections="false" allow-non-component-callers="false" statement-timeout-in-seconds="-1" non-transactional-connections="false" lazy-connection-association="false" max-wait-time-in-millis="60000" connection-creation-retry-attempts="0" pool-resize-quantity="2" wrap-jdbc-objects="false" connection-leak-timeout-in-seconds="0">
@@ -12,23 +12,27 @@
       <property name="connectionAttributes" value=";create=true" />
     </jdbc-connection-pool-->
 
-    <jdbc-connection-pool name="NXSQLDirectoryPool" datasource-classname="org.apache.derby.jdbc.EmbeddedDataSource" res-type="javax.sql.DataSource"  non-transactional-connections="true">
+    <jdbc-connection-pool name="NXSQLDirectoryPool" datasource-classname="org.apache.derby.jdbc.EmbeddedDataSource" 
+        res-type="javax.sql.DataSource"  non-transactional-connections="true">
       <property name="connectionAttributes" value=";create=true"/>
       <property name="databaseName" value="nxsqldirectory"/>
     </jdbc-connection-pool>
 
 
-    <jdbc-connection-pool name="NXRelationsPool" datasource-classname="org.apache.derby.jdbc.EmbeddedDataSource" res-type="javax.sql.DataSource"  non-transactional-connections="true">
+    <jdbc-connection-pool name="NXRelationsPool" datasource-classname="org.apache.derby.jdbc.EmbeddedDataSource" 
+        res-type="javax.sql.DataSource"  non-transactional-connections="true">
       <property name="connectionAttributes" value=";create=true"/>
       <property name="databaseName" value="nxrelations"/>
     </jdbc-connection-pool>
 
-    <jdbc-connection-pool name="NXCommentsPool" datasource-classname="org.apache.derby.jdbc.EmbeddedDataSource" res-type="javax.sql.DataSource"  non-transactional-connections="true">
+    <jdbc-connection-pool name="NXCommentsPool" datasource-classname="org.apache.derby.jdbc.EmbeddedDataSource" 
+        res-type="javax.sql.DataSource"  non-transactional-connections="true">
       <property name="connectionAttributes" value=";create=true"/>
       <property name="databaseName" value="nxcomments"/>
     </jdbc-connection-pool>
 
-    <jdbc-connection-pool name="NXAudit" datasource-classname="org.apache.derby.jdbc.EmbeddedDataSource" res-type="javax.sql.DataSource"  non-transactional-connections="true">
+    <jdbc-connection-pool name="NXAudit" datasource-classname="org.apache.derby.jdbc.EmbeddedDataSource" 
+        res-type="javax.sql.DataSource"  non-transactional-connections="true">
       <property name="connectionAttributes" value=";create=true"/>
       <property name="databaseName" value="nxaudits"/>
     </jdbc-connection-pool>
@@ -45,14 +49,31 @@
     <jdbc-resource enabled="true" pool-name="NXAudit"
           jndi-name="jdbc/nxaudits" object-type="user" />
           
-    <!-- repository is not yet deployed as a resource adapter for now
-    #############
-    <connector-connection-pool associate-with-thread="false" connection-creation-retry-attempts="0" connection-creation-retry-interval-in-seconds="10" connection-definition-name="org.nuxeo.ecm.core.model.Repository" connection-leak-reclaim="false" connection-leak-timeout-in-seconds="0" fail-all-connections="false" idle-timeout-in-seconds="300" is-connection-validation-required="false" lazy-connection-association="false" lazy-connection-enlistment="false" match-connections="true" max-connection-usage-count="0" max-pool-size="32" max-wait-time-in-millis="60000" name="NuxeoRepository" pool-resize-quantity="2" resource-adapter-name="nuxeo#nuxeo-core-jca-1_5_0-SNAPSHOT" steady-pool-size="8" transaction-support="XATransaction" validate-atmost-once-period-in-seconds="0">
+    <!-- repository RA -->
+    <!--connector-connection-pool associate-with-thread="false" connection-creation-retry-attempts="0" 
+        connection-creation-retry-interval-in-seconds="10" 
+        connection-definition-name="org.nuxeo.ecm.core.model.Repository" 
+        connection-leak-reclaim="false" 
+        connection-leak-timeout-in-seconds="0" 
+        fail-all-connections="false" 
+        idle-timeout-in-seconds="300" 
+        is-connection-validation-required="false" 
+        lazy-connection-association="false" 
+        lazy-connection-enlistment="false" 
+        match-connections="true" 
+        max-connection-usage-count="0" 
+        max-pool-size="32" 
+        max-wait-time-in-millis="60000"         
+        name="NuxeoRepository" 
+        pool-resize-quantity="2" 
+        resource-adapter-name="NXRepository-RA" 
+        steady-pool-size="8" 
+        transaction-support="XATransaction" 
+        validate-atmost-once-period-in-seconds="0">
       <property name="name" value="default"/>
     </connector-connection-pool>
-    <connector-resource enabled="true" jndi-name="NXRepository/default" object-type="user" pool-name="NuxeoRepository"/>
-    #############
-    -->
+    <connector-resource enabled="true" jndi-name="NXRepository/default" object-type="user" pool-name="NuxeoRepository"/-->
+    <!-- ===================== -->
 
   </resources>
   <servers>

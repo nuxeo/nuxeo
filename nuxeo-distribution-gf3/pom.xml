@@ -14,10 +14,33 @@
   <name>Nuxeo GF3 template</name>
   <description>Defines the skeleton of a glassfish3 nuxeo application</description>
 
+  <profiles>
+    <profile>
+      <id>ra</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+    </profile>
+    <profile>
+      <id>jcr</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+    </profile>
+    <profile>
+      <id>vcs</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+    </profile>    
+  </profiles>
+  
   <properties>
-    <gf3.version>3.0-nx</gf3.version>
+    <core.version>1.5-SNAPSHOT</core.version>
+    <gf3.version>3.0-b38</gf3.version>
     <application.name>${project.artifactId}-${project.version}</application.name>
   </properties>
+
 
   <repositories>
     <repository>
@@ -52,87 +75,72 @@
 
   <dependencies>
     <dependency>
+      <groupId>org.nuxeo.ecm.distribution</groupId>
+      <artifactId>nuxeo-distribution-server</artifactId>
+      <version>${project.version}</version>
+      <type>zip</type>      
+    </dependency>
+    <dependency>
       <groupId>org.glassfish.jdbc.jdbc-ra.jdbc-ra-distribution</groupId>
       <artifactId>jdbc-ra</artifactId>
       <version>${gf3.version}</version>
       <type>zip</type>
     </dependency>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-gf3-adapter</artifactId>
+      <version>${nuxeo.runtime.version}</version>
+    </dependency>
+    <!-- these dependencies are normally part of specific profiles but maven is limited when working with profiles 
+      and these will not be available when activating a profile from ant
+    -->
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-jca</artifactId>
+      <version>${core.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-jcr-connector</artifactId>
+      <version>${core.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-storage-sql</artifactId>
+      <version>${core.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-storage-sql-ra</artifactId>
+      <type>rar</type>
+      <version>${core.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-storage-sql-extensions</artifactId>
+      <version>${core.version}</version>
+    </dependency>
+    
+    <!-- stax needed by gf3 but only on java5 ... -->
+    <dependency>
+      <groupId>javax.xml.stream</groupId>
+      <artifactId>stax-api</artifactId>
+      <version>1.0-2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.woodstox</groupId>
+      <artifactId>wstx-asl</artifactId>
+      <version>3.2.7</version>
+    </dependency>
+    
   </dependencies>
 
   <build>
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>copy-jdbc</id>
-            <goals>
-              <goal>copy</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.build.directory}/dependency</outputDirectory>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>org.glassfish.jdbc.jdbc-ra.jdbc-ra-distribution</groupId>
-                  <artifactId>jdbc-ra</artifactId>
-                  <version>${gf3.version}</version>
-                  <type>zip</type>
-                </artifactItem>
-              </artifactItems>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
         <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
         <artifactId>maven-antrun-extended-plugin</artifactId>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>run</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-nuxeo-plugin</artifactId>
-        <extensions>false</extensions>
-        <executions>
-          <execution>
-            <id>assemble-app</id>
-            <phase>package</phase>
-            <goals>
-              <goal>assembly</goal>
-            </goals>
-            <configuration>
-              <runPreprocessor>false</runPreprocessor>
-              <!--format>directory</format-->
-              <format>zip</format>
-              <zipRoot>nxserver</zipRoot>
-              <outputDirectory>target</outputDirectory>
-              <targetFile>${application.name}</targetFile>
-              <descriptor>
-                ${basedir}/src/main/assemble/assembly.xml
-              </descriptor>
-            </configuration>
-          </execution>
-          <execution>
-            <id>attach-app</id>
-            <phase>package</phase>
-            <goals>
-              <goal>attach</goal>
-            </goals>
-            <configuration>
-              <file>${basedir}/target/${application.name}.zip</file>
-              <type>zip</type>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
     </plugins>
   </build>
 

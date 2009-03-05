@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Archiver-Version: Plexus Archiver
+Created-By: Apache Maven
+Built-By: bstefanescu
+Build-Jdk: 1.6.0_07
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo ECM Core RAR
+Bundle-SymbolicName: org.nuxeo.ecm.core.rar;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Localization: bundle
+Bundle-ClassPath: .,lib/connector-api.jar
+Bundle-Category: core
+Export-Package: org.nuxeo.ecm.core.jca
+Eclipse-LazyStart: true
+Require-Bundle: org.nuxeo.ecm.core
+

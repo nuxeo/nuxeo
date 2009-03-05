@@ -66,7 +66,13 @@ In the future, this application will provide a full installation of Nuxeo
 (including EJBs, JMS, etc).
 
 To build, run: "mvn package -Pgf3"
-  
+
+By default the build will generate a server based on jcr repository backendand without RA enabled.
+You can customize your builds using profiles as following:
+    - "mvn package -Pgf3,vcs" - a server using VCS repository backend
+    - "mvn package -Pgf3,vcs,ra" - a server using VCS repository bacend + RA support (this e,ans repository will take part of tx)
+    - "mvn package -Pgf3,jcr,ra" - a server using JCR based repository backend + RA support
+    
 6. Nuxeo Tomcat WebApp
   
 A Nuxeo Server packaged as an exploded WAR for Tomcat v6.
