@@ -65,7 +65,7 @@
       onsubmit="NXThemesStyleManager.updateNamedStyleCSS(this); return false">
 <div>
   <textarea id="namedStyleCssEditor" name="cssSource" rows="15" cols="72"
- style="border: 1px solid #666; width: 100%; height: 250px; font-size: 11px;">${selected_named_style_css}</textarea>
+ style="border: 1px solid #999; width: 100%; height: 250px; font-size: 11px;">${selected_named_style_css}</textarea>
   <input type="hidden" name="style_uid" value="#{selected_named_style.uid}" />
 </div>
 <div>
