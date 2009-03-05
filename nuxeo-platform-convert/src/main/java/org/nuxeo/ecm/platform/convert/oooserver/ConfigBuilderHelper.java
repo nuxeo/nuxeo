@@ -1,3 +1,22 @@
+/*
+ * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nuxeo - initial API and implementation
+ *
+ * $Id$
+ */
+
 package org.nuxeo.ecm.platform.convert.oooserver;
 
 import java.io.File;
@@ -11,23 +30,23 @@ import com.anwrt.ooserver.daemon.Config;
 
 public class ConfigBuilderHelper {
 
-    protected OOoServerDescriptor desc=null;
-
     private static String UNIX_OO_EXE = "soffice";
     private static String WIN_OO_EXE = "soffice.exe";
-    private static String[] UNIX_OO_PATHS = { "/usr/lib/openoffice/program" };
+    private static String[] UNIX_OO_PATHS = {"/usr/lib/openoffice/program"};
     private static String[] WIN_OO_PATHS = {
             "C:/Program Files/OpenOffice.org 2.2",
             "C:/Program Files/OpenOffice.org 2.3",
             "C:/Program Files/OpenOffice.org 2.4",
-            "C:/Program Files/OpenOffice.org 2.5" };
+            "C:/Program Files/OpenOffice.org 2.5"};
 
-    private Config ooServerConfig = null;
+    protected OOoServerDescriptor desc;
 
-    protected String ooCommandPath = null;
+    protected String ooCommandPath;
+
+    private Config ooServerConfig;
 
     public ConfigBuilderHelper(OOoServerDescriptor desc) {
-        this.desc=desc;
+        this.desc = desc;
     }
 
     protected static List<String> getSystemPaths() {
@@ -50,7 +69,7 @@ public class ConfigBuilderHelper {
             ooCommandPath = desc.getOooInstallationPath();
             File oo = new File(ooCommandPath + "/" + exeName);
             if (!oo.exists()) {
-                ooCommandPath=null;
+                ooCommandPath = null;
             }
         }
         if (ooCommandPath == null) {
@@ -74,26 +93,23 @@ public class ConfigBuilderHelper {
         return ooCommandPath;
     }
 
-
     protected ArrayList<String> getUserDirs() {
         ArrayList<String> userDirs = new ArrayList<String>();
 
-        for (int i = 0 ; i< desc.getOooWorkers() ; i++ ) {
-                userDirs.add("file://" + System.getProperty("java.io.tmpdir")
-                + "/nxooserver" + i);
+        for (int i = 0; i < desc.getOooWorkers(); i++) {
+            userDirs.add("file://" + System.getProperty("java.io.tmpdir")
+                    + "/nxooserver" + i);
         }
         return userDirs;
     }
 
     protected static void hackClassLoader(String ldPath) throws IOException {
-
         try {
-
             Field field = ClassLoader.class.getDeclaredField("usr_paths");
             field.setAccessible(true);
             String[] paths = (String[]) field.get(null);
-            for (int i = 0; i < paths.length; i++) {
-                if (ldPath.equals(paths[i])) {
+            for (String path : paths) {
+                if (ldPath.equals(path)) {
                     return;
                 }
             }
@@ -101,8 +117,8 @@ public class ConfigBuilderHelper {
             System.arraycopy(paths, 0, tmp, 0, paths.length);
             tmp[paths.length] = ldPath;
             field.set(null, tmp);
-            System.setProperty("java.library.path", System
-                    .getProperty("java.library.path"));
+            System.setProperty("java.library.path",
+                    System.getProperty("java.library.path"));
 
         } catch (IllegalAccessException e) {
             throw new IOException(
@@ -111,13 +127,10 @@ public class ConfigBuilderHelper {
             throw new IOException(
                     "Failed to get field handle to set library path");
         }
-
     }
 
-
-
     protected String getLibPath() {
-        if (desc.getJpipeLibPath()!=null) {
+        if (desc.getJpipeLibPath() != null) {
             return desc.getJpipeLibPath();
         }
         return getOOServerPath();
@@ -125,7 +138,7 @@ public class ConfigBuilderHelper {
 
     public Config getServerConfig() {
         if (ooServerConfig == null) {
-            if (getOOServerPath()==null) {
+            if (getOOServerPath() == null) {
                 return null;
             }
             ooServerConfig = new Config();
@@ -148,7 +161,4 @@ public class ConfigBuilderHelper {
         return ooServerConfig;
     }
 
-
-
 }
-

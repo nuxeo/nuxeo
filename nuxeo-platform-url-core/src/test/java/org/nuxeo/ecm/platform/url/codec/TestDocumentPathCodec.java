@@ -66,6 +66,16 @@ public class TestDocumentPathCodec extends TestCase {
         docView = getDocumentView("/", "view_domains");
         url = "nxpath/demo@view_domains?tabId=TAB_CONTENT";
         assertEquals(url, codec.getUrlFromDocumentView(docView));
+
+        // again with dot in view id
+        docView = getDocumentView("path/to/my/doc", "view.documents");
+        url = "nxpath/demo/path/to/my/doc@view.documents?tabId=TAB_CONTENT";
+        assertEquals(url, codec.getUrlFromDocumentView(docView));
+
+        // again with dot in repo name
+        docView = getDocumentView("path/to/my/doc.withdot", "view_documents");
+        url = "nxpath/demo/path/to/my/doc.withdot@view_documents?tabId=TAB_CONTENT";
+        assertEquals(url, codec.getUrlFromDocumentView(docView));
     }
 
     public void testGetDocumentViewFromUrl() {
@@ -104,6 +114,33 @@ public class TestDocumentPathCodec extends TestCase {
         docLoc = docView.getDocumentLocation();
         assertEquals("demo", docLoc.getServerLocationName());
         assertEquals(new PathRef("/"), docLoc.getDocRef());
+        assertEquals("view_domains", docView.getViewId());
+        assertNull(docView.getSubURI());
+
+        // again with dot in view id
+        url = "nxpath/demo@view.domains";
+        docView = codec.getDocumentViewFromUrl(url);
+        docLoc = docView.getDocumentLocation();
+        assertEquals("demo", docLoc.getServerLocationName());
+        assertEquals(new PathRef("/"), docLoc.getDocRef());
+        assertEquals("view.domains", docView.getViewId());
+        assertNull(docView.getSubURI());
+
+        // again with dot in repo name
+        url = "nxpath/demo.withdot@view_domains";
+        docView = codec.getDocumentViewFromUrl(url);
+        docLoc = docView.getDocumentLocation();
+        assertEquals("demo.withdot", docLoc.getServerLocationName());
+        assertEquals(new PathRef("/"), docLoc.getDocRef());
+        assertEquals("view_domains", docView.getViewId());
+        assertNull(docView.getSubURI());
+
+        // again with dot in doc name
+        url = "nxpath/demo/doc.withdot@view_domains";
+        docView = codec.getDocumentViewFromUrl(url);
+        docLoc = docView.getDocumentLocation();
+        assertEquals("demo", docLoc.getServerLocationName());
+        assertEquals(new PathRef("/doc.withdot"), docLoc.getDocRef());
         assertEquals("view_domains", docView.getViewId());
         assertNull(docView.getSubURI());
     }

@@ -379,8 +379,50 @@
         <padding>5px 4px 0px 0px</padding>
       </selector>
     </style>
+    
+    <style name="default tabs" inherit="default buttons">
+    <selector path=".tabsBar">
+        <border-bottom preset="tabsbar (Galaxy borders)"/>
+        <width>100%</width>
+        <margin-top>5px</margin-top>
+        <line-height>normal</line-height>
+        <float>left</float>
+      </selector>
+      <selector path=".tabsBar ul">
+        <margin>0</margin>
+        <padding>0px 10px 0 0</padding>
+        <list-style>none</list-style>
+      </selector>
+      <selector path=".tabsBar li">
+        <margin>0</margin>
+        <margin-right>5px</margin-right>
+        <padding>0</padding>
+        <float>left</float>
+      </selector>
+      <selector path=".tabsBar li.selected">
+      </selector>
+      <selector path=".tabsBar a, .tabsBar a:hover, .tabsBar a:visited">
+        <border preset="tabisnotselected (Galaxy borders)"/>
+        <color>#999999</color>
+        <background preset="white (Galaxy backgrounds)" />
+        <text-decoration>none</text-decoration>
+        <font-weight>normal</font-weight>
+        <display>block</display>
+        <padding>3px 7px</padding>
+        <float>left</float>
+      </selector>
+      <selector path=".tabsBar li.selected a, .tabsBar li.selected a:hover, .tabsBar li.selected a:visited">
+        <color>#ffffff</color>
+        <border preset="tabiselected (Galaxy borders)"/>
+        <background preset="tabiselected (Galaxy backgrounds)"/>
+      </selector>
+      <selector path=".tabsBar li a:hover">
+        <background preset="tabiselected (Galaxy backgrounds)"/>
+        <color>#ffffff</color>
+      </selector>
+    </style>
 
-    <style name="common style 1" inherit="default buttons">
+    <style name="common style 1" inherit="default tabs">
       <selector path="h1, h2, h3, h4, h5, h6, form, p">
         <margin>0</margin>
         <padding>0</padding>
@@ -1044,45 +1086,6 @@
       <selector path=".relationCommentColumn">
         <vertical-align>top</vertical-align>
       </selector>
-      <selector path=".tabsBar">
-        <border-bottom preset="tabsbar (Galaxy borders)"/>
-        <width>100%</width>
-        <margin-top>5px</margin-top>
-        <line-height>normal</line-height>
-        <float>left</float>
-      </selector>
-      <selector path=".tabsBar ul">
-        <margin>0</margin>
-        <padding>0px 10px 0 0</padding>
-        <list-style>none</list-style>
-      </selector>
-      <selector path=".tabsBar li">
-        <margin>0</margin>
-        <margin-right>5px</margin-right>
-        <padding>0</padding>
-        <float>left</float>
-      </selector>
-      <selector path=".tabsBar li.selected">
-      </selector>
-      <selector path=".tabsBar a, .tabsBar a:hover, .tabsBar a:visited">
-        <border preset="tabisnotselected (Galaxy borders)"/>
-        <color>#999999</color>
-        <background preset="white (Galaxy backgrounds)" />
-        <text-decoration>none</text-decoration>
-        <font-weight>normal</font-weight>
-        <display>block</display>
-        <padding>3px 7px</padding>
-        <float>left</float>
-      </selector>
-      <selector path=".tabsBar li.selected a, .tabsBar li.selected a:hover, .tabsBar li.selected a:visited">
-        <color>#ffffff</color>
-        <border preset="tabiselected (Galaxy borders)"/>
-        <background preset="tabiselected (Galaxy backgrounds)"/>
-      </selector>
-      <selector path=".tabsBar li a:hover">
-        <background preset="tabiselected (Galaxy backgrounds)"/>
-        <color>#ffffff</color>
-      </selector>
       <selector path=".subtabsBar">
         <font>normal 11px 'Lucida Grande', Verdana, sans-serif !important</font>
       </selector>
@@ -1350,7 +1353,7 @@
       </selector>
       <selector path=".clipboardFunctions" view="nuxeo5 tree explorer">
         <padding-top>10px</padding-top>
-        <border-top>1px dotted #999</border-top>
+        <border-top>2px solid #e7e7e7</border-top>
       </selector>
       <selector path=".clipboardFunction" view="nuxeo5 tree explorer">
         <padding>2px 2px 2px 2px</padding>
@@ -1418,11 +1421,8 @@
         <float>left</float>
       </selector>
       <selector path=".userClipboardContent" view="nuxeo5 tree explorer">
-        <border-color>#94D8FF</border-color>
         <margin>0px</margin>
-        <padding>0px 10px 10px 10px</padding>
-        <border-width>0 1px 1px 1px</border-width>
-        <border-style>none solid solid solid</border-style>
+        <padding>10px 10px 10px 10px</padding>
       </selector>
       <selector path=".userClipboard" view="nuxeo5 tree explorer">
         <height>1%</height>
@@ -1440,9 +1440,9 @@
         <font preset="default (Galaxy fonts)" />
       </selector>
     </style>
-    <style element="page[1]/section[2]/cell[1]/fragment[2]">
+    <style element="page[1]/section[2]/cell[1]/fragment[2]" inherit="default tabs">
       <selector path="div" view="nuxeo5 clip board">
-        <font preset="default (Galaxy fonts)" />
+        <font preset="small (Galaxy fonts)" />
       </selector>
       <selector path="a" view="nuxeo5 clip board">
         <color preset="link (Nuxeo psd colors)" />
@@ -1469,15 +1469,6 @@
       <selector path="#clipboardCopy" view="nuxeo5 clip board">
         <padding>3px</padding>
       </selector>
-      <selector path=".userClipboard h4" view="nuxeo5 clip board">
-        <height>16px</height>
-        <border-bottom>1px dotted #999</border-bottom>
-        <color>#4a4a4a</color>
-        <margin-bottom>2px</margin-bottom>
-        <margin-top>0px</margin-top>
-        <font-size>12px</font-size>
-        <padding>8px 2px 2px 2px</padding>
-      </selector>
       <selector path=".clipboardRemoveItem" view="nuxeo5 clip board">
         <float>right</float>
       </selector>
@@ -1493,7 +1484,7 @@
         <margin-right>4px</margin-right>
       </selector>
       <selector path=".clipboardFunctions" view="nuxeo5 clip board">
-        <border-top>1px dotted #999</border-top>
+        <border-top>2px solid #e7e7e7</border-top>
         <padding-top>10px</padding-top>
       </selector>
       <selector path=".clipboardFunction" view="nuxeo5 clip board">
@@ -1569,11 +1560,8 @@
         <float>left</float>
       </selector>
       <selector path=".userClipboardContent" view="nuxeo5 clip board">
-        <border-color>#94D8FF</border-color>
         <margin>0px</margin>
-        <padding>0px 10px 10px 10px</padding>
-        <border-width>0 1px 1px 1px</border-width>
-        <border-style>none solid solid solid</border-style>
+        <padding>10px 10px 10px 10px</padding>
       </selector>
       <selector path=".userClipboard" view="nuxeo5 clip board">
         <height>1%</height>

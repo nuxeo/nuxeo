@@ -23,7 +23,6 @@ package org.nuxeo.ecm.platform.relations.api;
  * Subject interface to identify subject nodes: resources and blank nodes.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public interface Subject extends Node {
 

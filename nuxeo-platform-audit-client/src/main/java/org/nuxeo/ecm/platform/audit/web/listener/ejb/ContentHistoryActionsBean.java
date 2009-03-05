@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.platform.audit.web.listener.ejb;
 
-import static org.jboss.seam.ScopeType.CONVERSATION;
 import static org.jboss.seam.ScopeType.EVENT;
 
 import java.util.ArrayList;
@@ -35,9 +34,7 @@ import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
-import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.annotations.web.RequestParameter;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -45,14 +42,12 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
-import org.nuxeo.ecm.platform.audit.api.AuditEventTypes;
 import org.nuxeo.ecm.platform.audit.api.AuditException;
 import org.nuxeo.ecm.platform.audit.api.FilterMapEntry;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.api.Logs;
 import org.nuxeo.ecm.platform.audit.api.delegate.AuditLogsServiceDelegate;
 import org.nuxeo.ecm.platform.audit.web.listener.ContentHistoryActions;
-import org.nuxeo.ecm.platform.audit.web.listener.events.EventNames;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
 
@@ -64,7 +59,7 @@ import org.nuxeo.ecm.platform.util.RepositoryLocation;
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 @Name("contentHistoryActions")
-@Scope(CONVERSATION)
+@Scope(EVENT)
 public class ContentHistoryActionsBean implements ContentHistoryActions {
 
     private static final long serialVersionUID = -6110545879809627627L;
@@ -110,20 +105,6 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
     @Destroy
     public void destroy() {
         if (log.isDebugEnabled()) log.debug("Removing Audit Seam component...");
-    }
-
-    @Observer(value = {EventNames.CONTENT_ROOT_SELECTION_CHANGED,
-            EventNames.DOCUMENT_CHANGED, EventNames.DOCUMENT_SELECTION_CHANGED,
-            EventNames.DOMAIN_SELECTION_CHANGED,
-            EventNames.LOCATION_SELECTION_CHANGED,
-            AuditEventTypes.HISTORY_CHANGED}, create = false, inject = false)
-    @BypassInterceptors
-    public void invalidateLogEntries() {
-        if (log.isDebugEnabled()) log.debug("Invalidate log entries.................");
-        logEntries = null;
-        latestLogEntries = null;
-        logEntriesComments = null;
-        logEntriesLinkedDocs = null;
     }
 
     @Factory(value = "latestLogEntries", scope = EVENT)

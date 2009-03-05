@@ -120,4 +120,12 @@ public class WhereClauseDescriptor {
         }
     }
 
+    public String getFixedPart() {
+        return fixedPart;
+    }
+
+    public void setFixedPart(String fixedPart) {
+        this.fixedPart = fixedPart;
+    }
+
 }

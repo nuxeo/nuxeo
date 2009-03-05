@@ -20,12 +20,18 @@ import java.util.Properties;
 
 import org.nuxeo.ecm.platform.audit.service.extension.HibernateOptionsDescriptor;
 
-
-public class ContainerManagedHibernateConfiguration implements HibernateConfiguration {
+public class ContainerManagedHibernateConfiguration implements
+        HibernateConfiguration {
 
     private HibernateOptionsDescriptor descriptor;
 
-    ContainerManagedHibernateConfiguration() {
+    private String defaultDatasource = "jdbc/nxaudits";
+
+    public ContainerManagedHibernateConfiguration() {
+    }
+
+    public ContainerManagedHibernateConfiguration(String defaultDatasource) {
+        this.defaultDatasource = defaultDatasource;
     }
 
     public void setDescriptor(HibernateOptionsDescriptor descriptor) {
@@ -36,7 +42,7 @@ public class ContainerManagedHibernateConfiguration implements HibernateConfigur
         if (descriptor != null) {
             return descriptor.getDatasource();
         }
-        return "jdbc/nxaudits";
+        return defaultDatasource;
     }
 
     public Properties getProperties() {

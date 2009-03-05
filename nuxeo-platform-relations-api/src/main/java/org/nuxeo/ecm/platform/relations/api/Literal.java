@@ -23,7 +23,6 @@ package org.nuxeo.ecm.platform.relations.api;
  * Literal node.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public interface Literal extends Node {
 
@@ -38,4 +37,5 @@ public interface Literal extends Node {
     String getValue();
 
     void setValue(String value);
+
 }

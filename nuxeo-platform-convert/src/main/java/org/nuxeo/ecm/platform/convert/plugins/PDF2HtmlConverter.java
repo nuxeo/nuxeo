@@ -36,31 +36,22 @@ import org.nuxeo.ecm.core.convert.extension.Converter;
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 
 /**
- *
- * Pdf2Html converter based on pdftohtml commandLine
+ * Pdf2Html converter based on the pdftohtml command-line executable.
  *
  * @author tiry
- *
  */
-public class PDF2HtmlConverter extends CommandLineBasedConverter implements
-        Converter {
+public class PDF2HtmlConverter extends CommandLineBasedConverter {
 
     @Override
     protected BlobHolder buildResult(List<String> cmdOutput, CmdParameters cmdParams) {
-
         String outputPath = cmdParams.getParameters().get("outDirPath");
-
         File outputDir = new File(outputPath);
-
         File[] files = outputDir.listFiles();
-
         List<Blob> blobs = new ArrayList<Blob>();
 
-        for (int i = 0 ; i<files.length; i++) {
-            File file = files[i];
-
-            Blob blob = new FileBlob(files[i]);
-            blob.setFilename(files[i].getName());
+        for (File file : files) {
+            Blob blob = new FileBlob(file);
+            blob.setFilename(file.getName());
 
             if (file.getName().equalsIgnoreCase("index.html")) {
                 blobs.add(0, blob);
@@ -92,7 +83,7 @@ public class PDF2HtmlConverter extends CommandLineBasedConverter implements
         Map<String, String> cmdStringParams = new HashMap<String, String>();
 
         String baseDir = getTmpDirectory(parameters);
-        Path tmpPath = (new Path(baseDir)).append("pdf2html_" + System.currentTimeMillis());
+        Path tmpPath = new Path(baseDir).append("pdf2html_" + System.currentTimeMillis());
 
         File outDir = new File(tmpPath.toString());
         boolean dirCreated = outDir.mkdir();

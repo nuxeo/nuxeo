@@ -117,8 +117,7 @@ public class PredicateDescriptor {
         if (operator.equals("=") || operator.equals("!=")
                 || operator.equals("<") || operator.equals(">")
                 || operator.equals("<=") || operator.equals(">=")
-                || operator.equals("<>") || operator.equals("STARTSWITH")
-                || operator.equals("LIKE")) {
+                || operator.equals("<>") || operator.equals("LIKE")) {
             // Unary predicate
             String value = values[0].getStringValue(model);
             if (value == null) {
@@ -171,6 +170,34 @@ public class PredicateDescriptor {
                         options.get(options.size() - 1)));
                 builder.append(')');
                 return builder.toString();
+            }
+        } else if (operator.equals("STARTSWITH")) {
+            String fieldType = values[0].getFieldType(model);
+            if (fieldType.equals("string")) {
+                String value = values[0].getStringValue(model);
+                if (value == null) {
+                    return "";
+                } else {
+                    return serializeUnary(operator, value);
+                }
+            } else {
+                List<String> options = values[0].getListValue(model);
+                if (options == null || options.isEmpty()) {
+                    return "";
+                } else if (options.size() == 1) {
+                    return serializeUnary(operator, options.get(0));
+                } else {
+                    StringBuilder builder = new StringBuilder();
+                    builder.append('(');
+                    for (int i = 0; i < options.size() - 1; i++) {
+                        builder.append(serializeUnary(operator, options.get(i)));
+                        builder.append(" OR ");
+                    }
+                    builder.append(serializeUnary(operator,
+                            options.get(options.size() - 1)));
+                    builder.append(')');
+                    return builder.toString();
+                }
             }
         } else if (operator.equals("EMPTY") || operator.equals("ISEMPTY")) {
             return parameter + " = ''";

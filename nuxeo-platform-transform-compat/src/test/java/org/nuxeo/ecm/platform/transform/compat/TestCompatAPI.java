@@ -1,3 +1,22 @@
+/*
+ * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nuxeo - initial API and implementation
+ *
+ * $Id$
+ */
+
 package org.nuxeo.ecm.platform.transform.compat;
 
 import java.io.File;
@@ -15,11 +34,9 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 
 /**
- *
- * Verify access to converters via old TransformService API
+ * Verify access to converters via old TransformService API.
  *
  * @author tiry
- *
  */
 public class TestCompatAPI extends NXRuntimeTestCase {
 
@@ -56,21 +73,20 @@ public class TestCompatAPI extends NXRuntimeTestCase {
         assertNotNull(ooPlugin);
         assertEquals("oo2text", ooPlugin.getName());
 
-        List<Plugin> plugins =  ts.getPluginByDestinationMimeTypes("text/plain");
+        List<Plugin> plugins = ts.getPluginByDestinationMimeTypes("text/plain");
         assertNotNull(plugins);
         boolean found = false;
         for (Plugin plugin : plugins) {
             if (plugin.getName().equals("oo2text")) {
-                found=true;
+                found = true;
                 break;
             }
         }
         assertTrue(found);
 
-        List<TransformDocument> tdocs =  ooPlugin.transform(null, ooBlob);
+        List<TransformDocument> tdocs = ooPlugin.transform(null, ooBlob);
         assertNotNull(tdocs);
         assertTrue(tdocs.get(0).getBlob().getString().contains("Hello"));
-
 
         Transformer tf = ts.getTransformerByName("oo2text");
         assertNotNull(tf);
@@ -78,6 +94,6 @@ public class TestCompatAPI extends NXRuntimeTestCase {
         tdocs = tf.transform(null, ooBlob);
         assertNotNull(tdocs);
         assertTrue(tdocs.get(0).getBlob().getString().contains("Hello"));
-
     }
+
 }

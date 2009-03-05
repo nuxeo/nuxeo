@@ -51,12 +51,12 @@ public final class NotificationServiceHelper {
 //        return Framework.getService(PlacefulService.class);
     }
 
-    public static EJBPlacefulService getPlacefulServiceBean()
+    public static PlacefulService getPlacefulServiceBean()
             throws ClientException {
-        EJBPlacefulService placefulService;
+        PlacefulService placefulService;
         try {
             placefulService = Framework.getService(
-                    EJBPlacefulService.class);
+                    PlacefulService.class);
         } catch (Exception e) {
             final String errMsg = "Error connecting to PlacefulService. "
                     + e.getMessage();

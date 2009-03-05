@@ -48,7 +48,7 @@ public class DocumentPathCodec extends AbstractDocumentViewCodec implements
     public static final String PREFIX = "nxpath";
 
     // nxpath/server/path/to/doc@view_id/?requestParams
-    public static final String URLPattern = "/(\\w+)(/([a-zA-Z_0-9/\\-]*))?(@([a-zA-Z_0-9\\-\\.]+))(/)?(\\?(.*)?)?";
+    public static final String URLPattern = "/([\\w\\.]+)(/([\\w/\\-\\.]*))?(@([\\w\\-\\.]+))(/)?(\\?(.*)?)?";
 
     public DocumentPathCodec() {
     }

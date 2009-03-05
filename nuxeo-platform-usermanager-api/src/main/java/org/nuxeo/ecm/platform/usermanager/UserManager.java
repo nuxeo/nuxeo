@@ -75,6 +75,7 @@ public interface UserManager {
     /**
      * @deprecated see {@link #searchGroups(String)}
      */
+    @Deprecated
     List<NuxeoGroup> searchGroups(String pattern) throws ClientException;
 
     /**

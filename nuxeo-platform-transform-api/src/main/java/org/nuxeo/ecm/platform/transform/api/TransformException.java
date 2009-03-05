@@ -24,7 +24,6 @@ import org.nuxeo.ecm.core.api.WrappedException;
  * Transform service general exception.
  *
  * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
- *
  */
 public class TransformException extends Exception {
 

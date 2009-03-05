@@ -47,6 +47,15 @@
     </function-signature>
   </function>
   <function>
+    <function-name>joinCollection</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.Functions
+    </function-class>
+    <function-signature>
+      java.lang.String joinCollection(java.util.Collection, java.lang.String)
+    </function-signature>
+  </function>
+  <function>
     <function-name>concat</function-name>
     <function-class>
       org.nuxeo.ecm.platform.ui.web.tag.fn.Functions

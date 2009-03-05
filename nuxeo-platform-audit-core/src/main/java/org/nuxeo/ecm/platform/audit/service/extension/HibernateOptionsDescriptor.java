@@ -37,4 +37,8 @@ public class HibernateOptionsDescriptor implements Serializable {
         return datasource;
     }
 
+    public void setDatasource(String datasource) {
+        this.datasource = datasource;
+    }
+
 }

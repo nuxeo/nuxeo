@@ -25,6 +25,8 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.nuxeo.ecm.platform.commandline.executor.service.executors.AbstractExecutor;
+
 /**
  * Wraps command parameters (String or File).
  *
@@ -45,7 +47,11 @@ public class CmdParameters implements Serializable {
     }
 
     public void addNamedParameter(String name, File file) {
-        addNamedParameter(name, file.getAbsolutePath());
+        if (AbstractExecutor.isWindows()){
+            addNamedParameter(name, "\"" + file.getAbsolutePath() + "\"");            
+        } else {
+            addNamedParameter(name, "'" + file.getAbsolutePath() + "'");            
+        }
     }
 
     public Map<String, String> getParameters() {

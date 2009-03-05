@@ -1,3 +1,22 @@
+/*
+ * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nuxeo - initial API and implementation
+ *
+ * $Id$
+ */
+
 package org.nuxeo.ecm.platform.convert.oooserver;
 
 import java.lang.Thread.UncaughtExceptionHandler;
@@ -20,17 +39,19 @@ import com.sun.star.uno.UnoRuntime;
 import com.sun.star.uno.XComponentContext;
 
 public class OOoDaemonManagerComponent extends DefaultComponent implements
-        OOoDaemonService , FrameworkListener {
+        OOoDaemonService, FrameworkListener {
 
     protected static Thread runner;
     protected static OOoServerDescriptor serverDescriptor = new OOoServerDescriptor();
-    protected static Config daemonConfig = null;
+    protected static Config daemonConfig;
     protected static boolean configured = false;
-    protected static String SERVER_CONFIG_EP ="oooServerConfig";
+    protected static String SERVER_CONFIG_EP = "oooServerConfig";
 
     private static final Log log = LogFactory.getLog(OOoDaemonManagerComponent.class);
 
-    /** Component impl **/
+    /**
+     * Component impl *
+     */
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
@@ -48,7 +69,7 @@ public class OOoDaemonManagerComponent extends DefaultComponent implements
             ComponentInstance contributor) throws Exception {
         if (SERVER_CONFIG_EP.equals(extensionPoint)) {
             OOoServerDescriptor desc = (OOoServerDescriptor) contribution;
-            serverDescriptor=desc;
+            serverDescriptor = desc;
             Log4JLogger.logInfoAsDebug = desc.getLogInfoAsDebug();
         }
     }
@@ -57,7 +78,8 @@ public class OOoDaemonManagerComponent extends DefaultComponent implements
             ComponentInstance contributor) throws Exception {
     }
 
-    /** Service interface **/
+    /* Service interface */
+
     protected Config getOrBuildConfig() {
         if (daemonConfig == null) {
             ConfigBuilderHelper helper = new ConfigBuilderHelper(
@@ -90,22 +112,22 @@ public class OOoDaemonManagerComponent extends DefaultComponent implements
             log.error("Daemon is not available, it can't be running");
             return false;
         }
-        if (runner==null || !runner.isAlive() )
-        {
+        if (runner == null || !runner.isAlive()) {
             return false;
         }
         int nbWorkers = getNbWorkers();
-        return (nbWorkers > 0);
+        return nbWorkers > 0;
     }
 
     protected class ThreadExceptionHandler implements UncaughtExceptionHandler {
 
         public void uncaughtException(Thread t, Throwable e) {
             log.error("OOo Daemon thread existed", e);
-            runner=null;
+            runner = null;
         }
 
     }
+
     public int startDaemon() {
         if (!isAvailable()) {
             log.error("Daemon is not available, don't try to start it");
@@ -196,8 +218,7 @@ public class OOoDaemonManagerComponent extends DefaultComponent implements
             log.error("Daemon is not available, can not get workers");
             return 0;
         }
-        if (runner==null || !runner.isAlive() )
-        {
+        if (runner == null || !runner.isAlive()) {
             return 0;
         }
 
@@ -224,33 +245,31 @@ public class OOoDaemonManagerComponent extends DefaultComponent implements
         }
     }
 
-    /** Startup listener **/
+    /**
+     * Startup listener.
+     */
     public void frameworkEvent(FrameworkEvent event) {
-         if (event.getType() == FrameworkEvent.STARTED) {
+        if (event.getType() == FrameworkEvent.STARTED) {
 
-             ClassLoader jbossCL =  Thread.currentThread().getContextClassLoader();
-             ClassLoader nuxeoCL = OOoDaemonManagerComponent.class.getClassLoader();
-             try
-             {
-                 Thread.currentThread().setContextClassLoader(nuxeoCL);
-                 log.debug("OOoDaemon Service initialization");
-                 if (serverDescriptor.isAutoStart()) {
-                     if (isAvailable()) {
-                         log.info("Starting OOo Daemon");
-                         startDaemon();
-                     }
-                     else
-                     {
-                         log.info("OOo Server is not well configured, can not start OpenOffice server Daemon");
-                     }
-                 }
-             }
-             finally
-             {
-                 Thread.currentThread().setContextClassLoader(jbossCL);
-                 log.debug("JBoss ClassLoader restored");
-             }
-         }
+            ClassLoader jbossCL = Thread.currentThread().getContextClassLoader();
+            ClassLoader nuxeoCL = OOoDaemonManagerComponent.class.getClassLoader();
+            try {
+                Thread.currentThread().setContextClassLoader(nuxeoCL);
+                log.debug("OOoDaemon Service initialization");
+                if (serverDescriptor.isAutoStart()) {
+                    if (isAvailable()) {
+                        log.info("Starting OOo Daemon");
+                        startDaemon();
+                    } else {
+                        log.info("OOo Server is not well configured, can not start OpenOffice server Daemon");
+                    }
+                }
+            }
+            finally {
+                Thread.currentThread().setContextClassLoader(jbossCL);
+                log.debug("JBoss ClassLoader restored");
+            }
+        }
     }
 
 }

@@ -28,7 +28,6 @@ import org.nuxeo.common.xmap.annotation.XObject;
 import org.w3c.dom.Element;
 
 /**
- *
  * @author janguenot
  */
 @XObject("transformer")

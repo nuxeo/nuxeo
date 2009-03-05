@@ -23,7 +23,6 @@ package org.nuxeo.ecm.platform.relations.api;
  * Node type enum.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public enum NodeType {
     LITERAL,

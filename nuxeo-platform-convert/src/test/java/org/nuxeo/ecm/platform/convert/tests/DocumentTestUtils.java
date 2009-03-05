@@ -35,7 +35,7 @@ public final class DocumentTestUtils {
      * Extracts the text from a PDF file.
      *
      * @param pdfFile
-     * @return the document content as plan text
+     * @return the document content as plain text
      * @throws IOException
      */
     public static String readPdfText(File pdfFile) throws IOException {

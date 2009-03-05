@@ -47,7 +47,7 @@ public interface RelationManager extends Serializable {
     Graph getGraphByName(String name) throws ClientException;
 
     /**
-     * Get a transient graph.
+     * Gets a transient graph.
      *
      * @param type The graph type.
      * @return the graph.
@@ -61,7 +61,6 @@ public interface RelationManager extends Serializable {
      * There can be several resources with different namespaces associated to an
      * incoming object. A document can for instance be used to refer to itself
      * as a precise version as well as to the set of all versions.
-     * </p>
      *
      * @throws ClientException
      * @deprecated use {@link #getResource(String, Serializable, Map)}
@@ -71,16 +70,14 @@ public interface RelationManager extends Serializable {
             throws ClientException;
 
     /**
-     * Gets a resource given a namespace and a serializable object
+     * Gets a resource given a namespace and a serializable object.
      * <p>
      * There can be several resources with different namespaces associated to an
      * incoming object. A document can for instance be used to refer to itself
      * as a precise version as well as to the set of all versions.
-     * </p>
      * <p>
      * Context can hold any object useful for the adapters, like a
      * {@link CoreSession}.
-     * </p>
      *
      * @since 5.2-M1
      * @throws ClientException
@@ -89,7 +86,7 @@ public interface RelationManager extends Serializable {
             Map<String, Serializable> context) throws ClientException;
 
     /**
-     * Computes all resources corresponding to the given object
+     * Computes all resources corresponding to the given object.
      *
      * @return the resources as a set
      * @throws ClientException
@@ -99,12 +96,10 @@ public interface RelationManager extends Serializable {
     Set<Resource> getAllResources(Object object) throws ClientException;
 
     /**
-     * Computes all resources corresponding to the given object
-     *
+     * Computes all resources corresponding to the given object.
      * <p>
      * Context can hold any object useful for the adapters, like a
      * {@link CoreSession}.
-     * </p>
      *
      * @since 5.2-M1
      * @return the resources as a set
@@ -125,11 +120,9 @@ public interface RelationManager extends Serializable {
 
     /**
      * Gets an object representing this resource given a namespace.
-     *
      * <p>
      * Context can hold any object useful for the adapters, like a
      * {@link CoreSession}.
-     * </p>
      *
      * @since 5.2-M1
      * @throws ClientException

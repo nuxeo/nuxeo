@@ -36,29 +36,23 @@ import org.nuxeo.ecm.core.convert.extension.Converter;
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 
 /**
- *
- * Pdf2Image converter based on imageMagick's convert commandLine
+ * Pdf2Image converter based on imageMagick's convert command-line executable.
  *
  * @author ldoguin
- *
  */
-public class PDF2ImageConverter extends CommandLineBasedConverter implements
-        Converter {
+public class PDF2ImageConverter extends CommandLineBasedConverter {
 
     @Override
     protected BlobHolder buildResult(List<String> cmdOutput, CmdParameters cmdParams) {
 
         String outputPath = cmdParams.getParameters().get("outDirPath");
-
         File outputDir = new File(outputPath);
-
         File[] files = outputDir.listFiles();
-
         List<Blob> blobs = new ArrayList<Blob>();
 
-        for (int i = 0 ; i<files.length; i++) {
-            Blob blob = new FileBlob(files[i]);
-            blob.setFilename(files[i].getName());
+        for (File file : files) {
+            Blob blob = new FileBlob(file);
+            blob.setFilename(file.getName());
             blobs.add(blob);
         }
         return new SimpleCachableBlobHolder(blobs);
@@ -84,7 +78,7 @@ public class PDF2ImageConverter extends CommandLineBasedConverter implements
         Map<String, String> cmdStringParams = new HashMap<String, String>();
 
         String baseDir = getTmpDirectory(parameters);
-        Path tmpPath = (new Path(baseDir)).append("pdf2image_" + System.currentTimeMillis());
+        Path tmpPath = new Path(baseDir).append("pdf2image_" + System.currentTimeMillis());
 
         File outDir = new File(tmpPath.toString());
         boolean dirCreated = outDir.mkdir();
@@ -93,7 +87,8 @@ public class PDF2ImageConverter extends CommandLineBasedConverter implements
         }
 
         cmdStringParams.put("outDirPath", outDir.getAbsolutePath());
-        cmdStringParams.put("targetFilePath", outDir.getAbsolutePath()+System.getProperty("file.separator")+parameters.get("targetFilePath").toString());
+        cmdStringParams.put("targetFilePath",
+                outDir.getAbsolutePath() + System.getProperty("file.separator") + parameters.get("targetFilePath").toString());
         return cmdStringParams;
     }
 

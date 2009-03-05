@@ -1,9 +1,6 @@
 package org.nuxeo.ecm.platform.ui.web.invalidations;
 
-import org.jboss.seam.Component;
-import org.jboss.seam.ScopeType;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 
 /**
  * Base class for Seam beans that use the Automatic invalidation system
@@ -13,15 +10,6 @@ import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 public abstract class DocumentContextBoundActionBean {
 
     private DocumentModel currentDocument;
-
-    private NavigationContext navigationContext;
-
-    protected NavigationContext getNavigationContext() {
-        if (navigationContext == null) {
-            navigationContext = (NavigationContext) Component.getInstance("navigationContext", ScopeType.CONVERSATION);
-        }
-        return navigationContext;
-    }
 
     protected DocumentModel getCurrentDocument() {
         return currentDocument;

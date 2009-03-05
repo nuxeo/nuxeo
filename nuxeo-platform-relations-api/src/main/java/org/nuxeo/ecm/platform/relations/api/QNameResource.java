@@ -23,7 +23,6 @@ package org.nuxeo.ecm.platform.relations.api;
  * Resource with a qualified name.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public interface QNameResource extends Resource {
 

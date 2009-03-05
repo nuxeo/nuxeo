@@ -7,7 +7,11 @@
 
   <implementation
     class="org.nuxeo.ecm.platform.ec.placeful.PlacefulServiceImpl" />
-
+  
+  <service>
+    <provide interface="org.nuxeo.ecm.platform.ec.placeful.interfaces.PlacefulService" />
+  </service>
+  
   <extension-point name="annotations">
     <documentation>
       This extension is used to register annotations (fully qualified entity

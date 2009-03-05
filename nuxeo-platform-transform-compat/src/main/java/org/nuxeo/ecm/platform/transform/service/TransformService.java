@@ -54,7 +54,6 @@ import org.nuxeo.runtime.model.Extension;
 
 /**
  * Backward compatibility implementation of the TransformService
- *
  */
 public class TransformService extends DefaultComponent implements
         TransformServiceCommon {
@@ -71,10 +70,10 @@ public class TransformService extends DefaultComponent implements
     protected ConversionService cs;
 
     protected ConversionService getConversionService() throws Exception {
-        if(cs==null) {
+        if (cs == null) {
             cs = Framework.getService(ConversionService.class);
         }
-        if (cs==null) {
+        if (cs == null) {
             throw new ClientException("Unable to locale ConversionService");
         }
         return cs;
@@ -116,22 +115,20 @@ public class TransformService extends DefaultComponent implements
         }
     }
 
-
-    protected void registerPluginAsConverter(PluginExtension descriptor, Extension extension)
-    {
-
+    protected void registerPluginAsConverter(PluginExtension descriptor, Extension extension) {
         String pluginName = descriptor.getName();
 
-        log.warn("Try to register a Transformer plugin with name " + pluginName);
-        log.warn("TransformService is now deprecated, please use ConversionService");
-        log.warn("wrapping the Transformer as a Converter");
+        log.warn("Trying to register a Transformer plugin with name " + pluginName
+                + ". TransformService is now deprecated, please use ConversionService. "
+                + "Wrapping the Transformer as a Converter.");
 
         ConverterDescriptor newDesc = ConversionServiceImpl.getConverterDesciptor(pluginName);
-        if (newDesc!=null) {
-            log.warn("Can not register a Transformer plugin with name " + pluginName + " because a converter with the same name already exists");
+        if (newDesc != null) {
+            log.warn("Can not register a Transformer plugin with name " + pluginName
+                    + " because a converter with the same name already exists.");
         }
 
-        Class<Plugin> pluginClass=null;
+        Class<Plugin> pluginClass;
         try {
             pluginClass = extension.getContext().loadClass(descriptor.getClassName());
         } catch (ClassNotFoundException e) {
@@ -143,23 +140,20 @@ public class TransformService extends DefaultComponent implements
         ConversionServiceImpl.registerConverter(converterDescriptor);
     }
 
-    protected void registerTransformerAsConverter(TransformerExtension descriptor,  Extension extension) throws ConversionException
-    {
-
+    protected void registerTransformerAsConverter(TransformerExtension descriptor, Extension extension) throws ConversionException {
         if (!SUPPORTED_TRANSFORMER_CLASS.equals(descriptor.getClassName())) {
             log.warn("only transformer based on " + SUPPORTED_TRANSFORMER_CLASS + " are supported by compatibility, skipping");
             return;
         }
         TransformerExtensionPluginsConfiguration pluginChain = descriptor.getPluginsChain();
 
-        if (pluginChain.getPluginsChain().size()==1) {
+        if (pluginChain.getPluginsChain().size() == 1) {
             log.warn("Skipping transformer registration since this is just a wrapper!!!");
             return;
         }
 
         ConverterDescriptor converterDescriptor = new TransformerCompatConverterDescriptor(descriptor);
         ConversionServiceImpl.registerConverter(converterDescriptor);
-
     }
 
     @Override
@@ -175,7 +169,7 @@ public class TransformService extends DefaultComponent implements
 
     public Plugin getPluginByName(String name) {
         ConverterDescriptor desc = ConversionServiceImpl.getConverterDesciptor(name);
-        if (desc==null) {
+        if (desc == null) {
             return null;
         }
         return new PluginWrappingConverter(desc);
@@ -190,12 +184,9 @@ public class TransformService extends DefaultComponent implements
             log.error("Error while accessing the ConversionService", e);
             return null;
         }
-
-
     }
 
     public List<Plugin> getPluginByDestinationMimeTypes(String destinationMT) {
-
         List<Plugin> plugins = new ArrayList<Plugin>();
         List<String> srcMTs = MimeTypeTranslationHelper.getSourceMimeTypes(destinationMT);
 
@@ -211,7 +202,7 @@ public class TransformService extends DefaultComponent implements
     public Transformer getTransformerByName(String name) {
 
         ConverterDescriptor desc = ConversionServiceImpl.getConverterDesciptor(name);
-        if (desc==null) {
+        if (desc == null) {
             return null;
         }
         return new TransformerWrappingConverter(desc);
@@ -238,11 +229,11 @@ public class TransformService extends DefaultComponent implements
             Blob... blobs) throws TransformException {
 
         TransformDocument[] tds = new TransformDocument[blobs.length];
-        for (int i=0; i < blobs.length; i++) {
+        for (int i = 0; i < blobs.length; i++) {
             tds[i] = new TransformDocumentImpl(blobs[i]);
         }
 
-        return transform(transformerName, options,tds);
+        return transform(transformerName, options, tds);
     }
 
     public void unregisterPlugin(String name) {
@@ -254,7 +245,7 @@ public class TransformService extends DefaultComponent implements
     public boolean isMimetypeSupportedByPlugin(String pluginName,
             String mimetype) {
         Plugin plugin = getPluginByName(pluginName);
-        if (plugin==null) {
+        if (plugin == null) {
             return false;
         }
         List<String> sourceMimetype = plugin.getSourceMimeTypes();

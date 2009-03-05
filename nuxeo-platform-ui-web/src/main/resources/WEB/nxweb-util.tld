@@ -35,6 +35,8 @@
       </li>
       <li> join(String[], String): performs a join on given array using given separator.
       </li>
+      <li> joinCollection(Collection, String): performs a join on given collection using given separator.
+      </li>
       <li> userIsMemberOf(String): tests if the user belongs to the named group.
       </li>
       <li> userFullName(String): returns the full name of a user given its id.

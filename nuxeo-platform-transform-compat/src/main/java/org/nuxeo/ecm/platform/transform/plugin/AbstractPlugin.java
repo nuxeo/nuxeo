@@ -38,6 +38,8 @@ import org.nuxeo.ecm.platform.transform.interfaces.TransformDocument;
  * @see org.nuxeo.ecm.platform.transform.interfaces.Plugin
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
+ * @deprecated TransformationService is deprecated,
+ *      please use instead {@see org.nuxeo.ecm.core.convert.api.ConversionService}.
  */
 @Deprecated
 public abstract class AbstractPlugin implements Plugin {

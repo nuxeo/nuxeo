@@ -1,3 +1,22 @@
+/*
+ * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nuxeo - initial API and implementation
+ *
+ * $Id$
+ */
+
 package org.nuxeo.ecm.platform.convert.oooserver;
 
 import java.io.Serializable;
@@ -8,38 +27,34 @@ import org.nuxeo.common.xmap.annotation.XObject;
 @XObject("OOoServer")
 public class OOoServerDescriptor implements Serializable {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
 
-
     @XNode("enableDaemon")
-    private boolean enabledDaemon=true;
+    private boolean enabledDaemon = true;
 
     @XNode("oooListenIP")
-    private String oooListenerIP="127.0.0.1";
+    private String oooListenerIP = "127.0.0.1";
 
     @XNode("oooListenPort")
-    private int oooListenerPort=8100;
+    private int oooListenerPort = 8100;
 
     @XNode("oooDaemonListenPort")
-    private int oooDaemonListenerPort=8101;
+    private int oooDaemonListenerPort = 8101;
 
     @XNode("oooWorkers")
     private int oooWorkers = 1;
 
     @XNode("oooInstallationPath")
-    private String oooInstallationPath=null;
+    private String oooInstallationPath;
 
     @XNode("oooWorkersRecycleInterval")
-    private int oooRecycleInterval=10;
+    private int oooRecycleInterval = 10;
 
     @XNode("autoStart")
-    private boolean autoStart=false;
+    private boolean autoStart = false;
 
     @XNode("jpipeLibPath")
-    private String jpipeLibPath=null;
+    private String jpipeLibPath;
 
     @XNode("logInfoAsDebug")
     private boolean logInfoAsDebug = true;
@@ -123,8 +138,5 @@ public class OOoServerDescriptor implements Serializable {
     public void setAutoStart(boolean autoStart) {
         this.autoStart = autoStart;
     }
-
-
-
 
 }
