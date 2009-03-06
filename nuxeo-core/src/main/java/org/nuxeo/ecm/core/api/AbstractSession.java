@@ -1583,7 +1583,7 @@ public abstract class AbstractSession implements CoreSession,
             }
             String latestRemoved = null;
             for (int i = 0; i < docs.length; i++) {
-                if (i == 0 || !paths[i].startsWith(latestRemoved)) {
+                if (i == 0 || !paths[i].startsWith(latestRemoved + "/")) {
                     removeDocument(docs[i]);
                     latestRemoved = paths[i];
                 }
