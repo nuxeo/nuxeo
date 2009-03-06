@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.Writer;
 import java.security.Principal;
 import java.text.MessageFormat;
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -52,6 +53,7 @@ import org.nuxeo.ecm.webengine.model.ResourceType;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
+import org.nuxeo.ecm.webengine.security.PermissionService;
 import org.nuxeo.ecm.webengine.session.UserSession;
 import org.nuxeo.runtime.api.Framework;
 
@@ -96,7 +98,9 @@ public abstract class AbstractWebContext implements WebContext {
     }
 
     public <T> T getAdapter(Class<T> adapter) {
-        if (Principal.class == adapter) {
+        if (CoreSession.class == adapter) {
+          return adapter.cast(getCoreSession());
+        } else if (Principal.class == adapter) {
             return adapter.cast(getPrincipal());
         } else if (Resource.class == adapter) {
             return adapter.cast(tail());
@@ -106,7 +110,7 @@ public abstract class AbstractWebContext implements WebContext {
             return adapter.cast(module);
         } else if (WebEngine.class == adapter) {
             return adapter.cast(engine);
-        }
+        } 
         return null;
     }
 
@@ -525,6 +529,10 @@ public abstract class AbstractWebContext implements WebContext {
                 popScriptFile();
             }
         }
+    }
+    
+    public boolean checkGuard(String guard) throws ParseException {
+        return PermissionService.parse(guard).check(this);
     }
 
     public Bindings createBindings(Map<String, Object> vars) {

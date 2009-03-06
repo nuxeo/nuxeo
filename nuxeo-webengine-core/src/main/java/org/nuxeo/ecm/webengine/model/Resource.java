@@ -19,12 +19,14 @@
 
 package org.nuxeo.ecm.webengine.model;
 
+import java.text.ParseException;
 import java.util.List;
 import java.util.Set;
 
 import javax.ws.rs.core.Response;
 
 import org.nuxeo.runtime.model.Adaptable;
+
 
 
 /**
@@ -88,6 +90,13 @@ public interface Resource extends Adaptable {
      */
     AdapterResource getActiveAdapter();
 
+    /**
+     * Check the given guard expression in the context of this resource
+     * @param guard
+     * @return
+     */
+    boolean checkGuard(String guard) throws ParseException;
+    
 //    Response getEntries();
 
 }
