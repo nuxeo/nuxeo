@@ -3,7 +3,7 @@
 
   <extension target="org.nuxeo.runtime.management.ServerLocator"
     point="locators">
-    <locator domain="nx" default="true" exist="false"/>
+    <locator domain="nx" default="true" exist="false" port="2009"/>
   </extension>
   
 </component>

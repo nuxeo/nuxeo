@@ -56,4 +56,10 @@ public class ServerLocatorDescriptor {
         return isExistingServer;
     }
 
+    @XNode("@rmiPort")
+    protected int rmiPort = 1099;
+
+    public int getRmiPort() {
+        return rmiPort;
+    }
 }
