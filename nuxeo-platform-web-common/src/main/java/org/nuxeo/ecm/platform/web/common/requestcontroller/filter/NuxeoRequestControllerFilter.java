@@ -56,11 +56,12 @@ public class NuxeoRequestControllerFilter implements Filter {
     protected String doFormatLogMessage(HttpServletRequest request, String info) {
         String remoteHost = request.getRemoteHost();
         Principal principal = request.getUserPrincipal();
+        String principalName = principal != null ? principal.getName() : "none";
         String uri = request.getRequestURI();
         HttpSession session = request.getSession(false);
         String sessionId = session != null ? session.getId() : "none";
         String threadName = Thread.currentThread().getName();
-        return "remote=" + remoteHost + ",principal=" + principal.getName()
+        return "remote=" + remoteHost + ",principal=" + principalName
                 + ",uri=" + uri + ",session="+sessionId+",thread="+threadName+",info=" + info;
     }
     
