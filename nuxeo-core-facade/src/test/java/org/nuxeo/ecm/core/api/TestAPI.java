@@ -1078,12 +1078,18 @@ public abstract class TestAPI extends TestConnection {
         String name4 = "file#" + generateUnique();
         DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
                 name4, "File");
+        // one more File object at the root, whose path is greater than the
+        // folder's and with name conflict resolved by core directly, see
+        // NXP-3240
+        DocumentModel childFile2 = new DocumentModelImpl(
+                root.getPathAsString(), name4, "File");
 
         List<DocumentModel> childDocs = new ArrayList<DocumentModel>();
         childDocs.add(childFolder);
         childDocs.add(folderChildFile);
         childDocs.add(folderChildFile2);
         childDocs.add(childFile);
+        childDocs.add(childFile2);
 
         List<DocumentModel> returnedChildDocs = createChildDocuments(childDocs);
 
@@ -1091,17 +1097,23 @@ public abstract class TestAPI extends TestConnection {
         assertEquals(name2, returnedChildDocs.get(1).getName());
         assertEquals(name3, returnedChildDocs.get(2).getName());
         assertEquals(name4, returnedChildDocs.get(3).getName());
+        // not the same here: conflict resolved by core session
+        String name5 = returnedChildDocs.get(4).getName();
+        assertNotSame(name4, name5);
+        assertTrue(name5.startsWith(name4));
 
         DocumentRef[] refs = { returnedChildDocs.get(0).getRef(),
                 returnedChildDocs.get(1).getRef(),
                 returnedChildDocs.get(2).getRef(),
-                returnedChildDocs.get(3).getRef() };
+                returnedChildDocs.get(3).getRef(),
+                returnedChildDocs.get(4).getRef() };
         remote.removeDocuments(refs);
 
         assertFalse(remote.exists(returnedChildDocs.get(0).getRef()));
         assertFalse(remote.exists(returnedChildDocs.get(1).getRef()));
         assertFalse(remote.exists(returnedChildDocs.get(2).getRef()));
         assertFalse(remote.exists(returnedChildDocs.get(3).getRef()));
+        assertFalse(remote.exists(returnedChildDocs.get(4).getRef()));
     }
 
     /*
@@ -1127,12 +1139,18 @@ public abstract class TestAPI extends TestConnection {
         String name4 = "file#" + generateUnique();
         DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
                 name4, "File");
+        // one more File object at the root, whose path is greater than the
+        // folder's and with name conflict resolved by core directly, see
+        // NXP-3240
+        DocumentModel childFile2 = new DocumentModelImpl(
+                root.getPathAsString(), name4, "File");
 
         List<DocumentModel> childDocs = new ArrayList<DocumentModel>();
         childDocs.add(childFolder);
         childDocs.add(folderChildFile);
         childDocs.add(folderChildFile2);
         childDocs.add(childFile);
+        childDocs.add(childFile2);
 
         List<DocumentModel> returnedChildDocs = createChildDocuments(childDocs);
 
@@ -1140,10 +1158,15 @@ public abstract class TestAPI extends TestConnection {
         assertEquals(name2, returnedChildDocs.get(1).getName());
         assertEquals(name3, returnedChildDocs.get(2).getName());
         assertEquals(name4, returnedChildDocs.get(3).getName());
+        // not the same here: conflict resolved by core session
+        String name5 = returnedChildDocs.get(4).getName();
+        assertNotSame(name4, name5);
+        assertTrue(name5.startsWith(name4));
 
         // here's the different ordering
         DocumentRef[] refs = { returnedChildDocs.get(1).getRef(),
                 returnedChildDocs.get(0).getRef(),
+                returnedChildDocs.get(4).getRef(),
                 returnedChildDocs.get(3).getRef(),
                 returnedChildDocs.get(2).getRef() };
         remote.removeDocuments(refs);
@@ -1152,6 +1175,7 @@ public abstract class TestAPI extends TestConnection {
         assertFalse(remote.exists(returnedChildDocs.get(1).getRef()));
         assertFalse(remote.exists(returnedChildDocs.get(2).getRef()));
         assertFalse(remote.exists(returnedChildDocs.get(3).getRef()));
+        assertFalse(remote.exists(returnedChildDocs.get(4).getRef()));
     }
 
     public void testSave() throws ClientException {

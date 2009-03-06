@@ -789,9 +789,9 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals(name2, returnedChildDocs.get(1).getName());
 
         /*
-         * Filter filter = new NameFilter(name2);
-         *  // get folder childs List<DocumentModel> retrievedChilds =
-         * session.getChildren(root.getRef(), null, null, filter, null);
+         * Filter filter = new NameFilter(name2); // get folder childs List<DocumentModel>
+         * retrievedChilds = session.getChildren(root.getRef(), null, null,
+         * filter, null);
          *
          * assertNotNull(retrievedChilds); assertEquals(1,
          * retrievedChilds.size());
@@ -828,9 +828,9 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals(name2, returnedChildDocs.get(1).getName());
 
         /*
-         * Filter filter = new NameFilter(name2);
-         *  // get folder childs DocumentModelIterator retrievedChilds =
-         * session.getChildrenIterator( root.getRef(), null, null, filter);
+         * Filter filter = new NameFilter(name2); // get folder childs
+         * DocumentModelIterator retrievedChilds = session.getChildrenIterator(
+         * root.getRef(), null, null, filter);
          *
          * assertNotNull(retrievedChilds);
          *
@@ -1411,12 +1411,18 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         String name4 = "file#" + generateUnique();
         DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
                 name4, "File");
+        // one more File object at the root, whose path is greater than the
+        // folder's and with name conflict resolved by core directly, see
+        // NXP-3240
+        DocumentModel childFile2 = new DocumentModelImpl(
+                root.getPathAsString(), name4, "File");
 
         List<DocumentModel> childDocs = new ArrayList<DocumentModel>();
         childDocs.add(childFolder);
         childDocs.add(folderChildFile);
         childDocs.add(folderChildFile2);
         childDocs.add(childFile);
+        childDocs.add(childFile2);
 
         List<DocumentModel> returnedChildDocs = createChildDocuments(childDocs);
 
@@ -1424,17 +1430,23 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals(name2, returnedChildDocs.get(1).getName());
         assertEquals(name3, returnedChildDocs.get(2).getName());
         assertEquals(name4, returnedChildDocs.get(3).getName());
+        // not the same here: conflict resolved by core session
+        String name5 = returnedChildDocs.get(4).getName();
+        assertNotSame(name4, name5);
+        assertTrue(name5.startsWith(name4));
 
         DocumentRef[] refs = { returnedChildDocs.get(0).getRef(),
                 returnedChildDocs.get(1).getRef(),
                 returnedChildDocs.get(2).getRef(),
-                returnedChildDocs.get(3).getRef() };
+                returnedChildDocs.get(3).getRef(),
+                returnedChildDocs.get(4).getRef() };
         session.removeDocuments(refs);
 
         assertFalse(session.exists(returnedChildDocs.get(0).getRef()));
         assertFalse(session.exists(returnedChildDocs.get(1).getRef()));
         assertFalse(session.exists(returnedChildDocs.get(2).getRef()));
         assertFalse(session.exists(returnedChildDocs.get(3).getRef()));
+        assertFalse(session.exists(returnedChildDocs.get(4).getRef()));
     }
 
     /*
@@ -1460,12 +1472,18 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         String name4 = "file#" + generateUnique();
         DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
                 name4, "File");
+        // one more File object at the root, whose path is greater than the
+        // folder's and with name conflict resolved by core directly, see
+        // NXP-3240
+        DocumentModel childFile2 = new DocumentModelImpl(
+                root.getPathAsString(), name4, "File");
 
         List<DocumentModel> childDocs = new ArrayList<DocumentModel>();
         childDocs.add(childFolder);
         childDocs.add(folderChildFile);
         childDocs.add(folderChildFile2);
         childDocs.add(childFile);
+        childDocs.add(childFile2);
 
         List<DocumentModel> returnedChildDocs = createChildDocuments(childDocs);
 
@@ -1473,10 +1491,15 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals(name2, returnedChildDocs.get(1).getName());
         assertEquals(name3, returnedChildDocs.get(2).getName());
         assertEquals(name4, returnedChildDocs.get(3).getName());
+        // not the same here: conflict resolved by core session
+        String name5 = returnedChildDocs.get(4).getName();
+        assertNotSame(name4, name5);
+        assertTrue(name5.startsWith(name4));
 
         // here's the different ordering
         DocumentRef[] refs = { returnedChildDocs.get(1).getRef(),
                 returnedChildDocs.get(0).getRef(),
+                returnedChildDocs.get(4).getRef(),
                 returnedChildDocs.get(3).getRef(),
                 returnedChildDocs.get(2).getRef() };
         session.removeDocuments(refs);
@@ -1485,6 +1508,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertFalse(session.exists(returnedChildDocs.get(1).getRef()));
         assertFalse(session.exists(returnedChildDocs.get(2).getRef()));
         assertFalse(session.exists(returnedChildDocs.get(3).getRef()));
+        assertFalse(session.exists(returnedChildDocs.get(4).getRef()));
     }
 
     public void testSave() throws ClientException {
@@ -2070,9 +2094,8 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertFalse(session.exists(new PathRef("folder2/file")));
         assertFalse(session.exists(new PathRef("folder1/fileMove")));
 
-        session.move(file.getRef(), folder2.getRef(), null); // move using
-                                                                // orig
-        // name
+        // move using orig name
+        session.move(file.getRef(), folder2.getRef(), null);
 
         assertFalse(session.exists(new PathRef("folder1/file")));
         assertTrue(session.exists(new PathRef("folder2/file")));
