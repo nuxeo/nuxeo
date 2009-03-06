@@ -205,7 +205,7 @@ public class JODBasedConverter implements ExternalConverter {
         super.finalize();
     }
 
-    private void acquireLock() {
+    private boolean acquireLock() {
         boolean acquired = false;
         try {
             acquired = conLock.tryLock(60, TimeUnit.SECONDS);
@@ -216,6 +216,7 @@ public class JODBasedConverter implements ExternalConverter {
                 log.error("Cannot acquire an OOo connection :: timeout");
             }
         }
+        return acquired;
     }
 
     private void releaseLock() {
@@ -434,8 +435,8 @@ public class JODBasedConverter implements ExternalConverter {
         this.descriptor = descriptor;
     }
 
-    public ConverterCheckResult isConverterAvailable() {
-        acquireLock();
+    public synchronized ConverterCheckResult isConverterAvailable() {
+        boolean locked = acquireLock();
         try {
             getOOoConnection();
             connection.connect();
@@ -455,7 +456,9 @@ public class JODBasedConverter implements ExternalConverter {
                 releaseOOoConnection();
             }
             finally {
-                releaseLock();
+                if (locked) {
+                    releaseLock();
+                }
             }
         }
     }
