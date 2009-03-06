@@ -244,8 +244,10 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         Collections.sort(importers);
         for (FileImporter importer : importers) {
             if (importer.isEnabled() && importer.matches(input.getMimeType())) {
-                return importer.create(documentManager, input, path, overwrite,
-                        fullName, getTypeService());
+                DocumentModel doc = importer.create(documentManager, input, path, overwrite, fullName, getTypeService());
+                if (doc!=null) {
+                    return doc;
+                }
             }
         }
         return null;

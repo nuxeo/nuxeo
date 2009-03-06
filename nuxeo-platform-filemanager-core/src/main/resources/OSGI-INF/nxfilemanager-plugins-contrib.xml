@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 <component
   name="org.nuxeo.ecm.platform.filemanager.service.FileManagerService.Plugins">
-
   <documentation>Component to carry default extension points.</documentation>
 
   <extension
@@ -29,6 +28,12 @@
       class="org.nuxeo.ecm.platform.filemanager.service.extension.DefaultFileImporter"
       order="100">
       <filter>.*</filter>
+    </plugin>
+
+    <plugin name="ExportedArchivePlugin"
+      class="org.nuxeo.ecm.platform.filemanager.service.extension.ExportedZipImporter"
+      order="10">
+      <filter>application/zip</filter>
     </plugin>
 
     <documentation>
