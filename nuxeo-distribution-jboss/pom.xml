@@ -49,7 +49,7 @@
               <tasks>
                 <resolveArtifact groupId="org.jboss" artifactId="jboss-as"
                   type="zip" property="jboss" />
-                <unzip src="${jboss}" dest="target/jboss" />
+                <unzip src="${jboss}" dest="${project.build.directory}/jboss" />
                 <ant antfile="build.xml" target="patch">
                   <property name="jboss.dir" value="${project.build.directory}/jboss" />
                 </ant>
@@ -78,7 +78,7 @@
             <configuration>
               <runPreprocessor>false</runPreprocessor>
               <format>zip</format>
-              <zipRoot>${application.name}</zipRoot>
+              <zipRoot>${application.name}-${application.version}</zipRoot>
               <outputDirectory>target</outputDirectory>
               <targetFile>${application.name}-${application.version}</targetFile>
               <descriptor>${basedir}/src/main/assemble/assembly.xml</descriptor>
@@ -91,14 +91,13 @@
               <goal>attach</goal>
             </goals>
             <configuration>
-              <file>${basedir}/target/${application.name}-${application.version}.zip</file>
+              <file>${project.build.directory}/${application.name}-${application.version}.zip</file>
               <type>zip</type>
             </configuration>
           </execution>
         </executions>
       </plugin>
     </plugins>
-
   </build>
 
 </project>
