@@ -41,7 +41,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author arussel
- * 
+ *
  */
 public class JbpmServiceTest extends RepositoryOSGITestCase {
 
@@ -126,6 +126,34 @@ public class JbpmServiceTest extends RepositoryOSGITestCase {
         List<TaskInstance> tis = service.getCurrentTaskInstances(administrator,
                 null);
         assertTrue(tis.isEmpty());
+    }
+
+    public void testMultipleTaskPerDocument() throws Exception {
+        DocumentModel dm = getDocument();
+        assertNotNull(dm);
+        // list process definition
+        List<ProcessDefinition> pds = service.getProcessDefinitions(
+                administrator, dm, null);
+        assertNotNull(pds);
+        assertEquals(2, pds.size());
+        List<VirtualTaskInstance> participants = new ArrayList<VirtualTaskInstance>();
+        String prefixedUser1 = NuxeoPrincipal.PREFIX + user1.getName();
+        participants.add(new VirtualTaskInstance(prefixedUser1, "dobob1",
+                "yobob1", null));
+        participants.add(new VirtualTaskInstance(prefixedUser1, "dobob2",
+                "yobob1", null));
+        // create process instance
+        service.createProcessInstance(administrator, "review_parallel", dm,
+                Collections.singletonMap("participants",
+                        (Serializable) participants), null);
+        List<TaskInstance> tasks = service.getTaskInstances(dm, administrator,
+                null);
+        tasks.get(0).end();
+        tasks = service.getTaskInstances(dm, administrator, null);
+        assertNotNull(tasks);
+        assertEquals(0, tasks.size());
+        tasks = service.getTaskInstances(dm, user1, null);
+        assertEquals(2, tasks.size());
     }
 
     public void testTaskManagement() throws Exception {

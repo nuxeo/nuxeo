@@ -360,11 +360,15 @@ public class JbpmServiceImpl implements JbpmService {
                             FROM_ORG_JBPM_TASKMGMT_EXE_TASK_INSTANCE_TI_WHERE_TI_END_IS_NULL).list();
                     tisSet.addAll(tis);
                 }
+                // we need to look at the variables of the process instance of
+                // the task. If there is no process instance we check the
+                // variable of the task itself. If there is a process instance,
+                // we check the variable, we add the process donePi to not check
+                // the variable again. If it belongs to our document, we add
+                // the process id to useDocument.
                 List<Long> donePi = new ArrayList<Long>();
                 List<Long> useDocument = new ArrayList<Long>();
                 ArrayList<TaskInstance> result = new ArrayList<TaskInstance>();
-                // we need to look at the variables of the process instance of
-                // the task.
                 for (TaskInstance ti : tisSet) {
                     ProcessInstance pi = ti.getProcessInstance();
                     if (pi == null) {// task created outside a process
@@ -385,6 +389,11 @@ public class JbpmServiceImpl implements JbpmService {
                                 && repoId.equals(dm.getRepositoryName())) {
                             useDocument.add(pi.getId());
                         }
+                        if (useDocument.contains(pi.getId())) {
+                            eagerLoadTaskInstance(ti);
+                            result.add(ti);
+                        }
+                    } else {
                         if (useDocument.contains(pi.getId())) {
                             eagerLoadTaskInstance(ti);
                             result.add(ti);
