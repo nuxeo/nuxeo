@@ -2408,18 +2408,18 @@ public abstract class TestAPI extends TestConnection {
                 "c_folder", "Folder");
         c_folder.setProperty("dublincore", "title", "C title for c_folder");
 
-        DocumentModel a1_folder = new DocumentModelImpl(a_folder.getPathAsString(),
-                "a1_folder", "Folder");
+        DocumentModel a1_folder = new DocumentModelImpl(
+                a_folder.getPathAsString(), "a1_folder", "Folder");
         a1_folder.setProperty("dublincore", "title", "ZZ title for a1_folder");
-        DocumentModel a2_folder = new DocumentModelImpl(a_folder.getPathAsString(),
-                "a2_folder", "Folder");
+        DocumentModel a2_folder = new DocumentModelImpl(
+                a_folder.getPathAsString(), "a2_folder", "Folder");
         a2_folder.setProperty("dublincore", "title", "AA title for a2_folder");
 
-        DocumentModel b1_folder = new DocumentModelImpl(b_folder.getPathAsString(),
-                "b1_folder", "Folder");
+        DocumentModel b1_folder = new DocumentModelImpl(
+                b_folder.getPathAsString(), "b1_folder", "Folder");
         b1_folder.setProperty("dublincore", "title", "A title for b1_folder");
-        DocumentModel b2_folder = new DocumentModelImpl(b_folder.getPathAsString(),
-                "b2_folder", "Folder");
+        DocumentModel b2_folder = new DocumentModelImpl(
+                b_folder.getPathAsString(), "b2_folder", "Folder");
         b2_folder.setProperty("dublincore", "title", "B title for b2_folder");
 
         a_folder = createChildDocument(a_folder);
@@ -2429,7 +2429,6 @@ public abstract class TestAPI extends TestConnection {
         a2_folder = createChildDocument(a2_folder);
         b1_folder = createChildDocument(b1_folder);
         b2_folder = createChildDocument(b2_folder);
-
 
         DocumentModelTreeImpl tree = new DocumentModelTreeImpl();
         tree.add(a_folder, 1);
@@ -2443,7 +2442,7 @@ public abstract class TestAPI extends TestConnection {
         // sort using title
         DocumentModelTreeNodeComparator comp = new DocumentModelTreeNodeComparator(
                 tree.getPathTitles());
-        Collections.sort((ArrayList)tree, comp);
+        Collections.sort((ArrayList) tree, comp);
 
         assertEquals(b_folder, tree.get(0).getDocument());
         assertEquals(b1_folder, tree.get(1).getDocument());
@@ -2454,7 +2453,6 @@ public abstract class TestAPI extends TestConnection {
         assertEquals(a_folder, tree.get(4).getDocument());
         assertEquals(a2_folder, tree.get(5).getDocument());
         assertEquals(a1_folder, tree.get(6).getDocument());
-
 
         remote.cancel();
     }

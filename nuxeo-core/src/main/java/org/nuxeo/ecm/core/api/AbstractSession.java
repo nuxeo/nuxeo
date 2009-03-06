@@ -1366,25 +1366,27 @@ public abstract class AbstractSession implements CoreSession,
             Document doc = resolveReference(docRef);
             removeDocument(doc);
         } catch (DocumentException e) {
-            throw new ClientException("Failed to fetch document " + docRef +
-                    " before removal", e);
+            throw new ClientException("Failed to fetch document " + docRef
+                    + " before removal", e);
         }
     }
 
     protected void removeDocument(Document doc) throws ClientException {
         try {
             if (!canRemoveDocument(doc)) {
-                throw new DocumentSecurityException("Permission denied: cannot remove document " + doc.getUUID());
+                throw new DocumentSecurityException(
+                        "Permission denied: cannot remove document "
+                                + doc.getUUID());
             }
             removeNotifyOneDoc(doc);
         } catch (DocumentException e) {
             try {
-                throw new ClientException("Failed to remove document " +
-                        doc.getUUID(), e);
+                throw new ClientException("Failed to remove document "
+                        + doc.getUUID(), e);
             } catch (DocumentException e2) {
                 log.error("Failed to remove doc", e);
-                throw new ClientException("Failed to remove and " +
-                        "even to get UUID " + doc.toString());
+                throw new ClientException("Failed to remove and "
+                        + "even to get UUID " + doc.toString());
             }
         }
     }
@@ -2228,8 +2230,8 @@ public abstract class AbstractSession implements CoreSession,
                 }
             } catch (LifeCycleException e) {
                 ClientException ce = new ClientException(
-                        "Unable to follow transition <" + transition +
-                                "> for document : " + docRef, e);
+                        "Unable to follow transition <" + transition
+                                + "> for document : " + docRef, e);
                 ce.fillInStackTrace();
                 throw ce;
             }
@@ -2249,8 +2251,8 @@ public abstract class AbstractSession implements CoreSession,
                 allowedStateTransitions = doc.getAllowedStateTransitions();
             } catch (LifeCycleException e) {
                 ClientException ce = new ClientException(
-                        "Unable to get allowed state transitions for document : " +
-                                docRef, e);
+                        "Unable to get allowed state transitions for document : "
+                                + docRef, e);
                 ce.fillInStackTrace();
                 throw ce;
             }

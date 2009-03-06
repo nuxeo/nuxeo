@@ -155,7 +155,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals(Arrays.asList("e", "f"), Arrays.asList((String[]) strings));
         Object participants = child.getProperty("testList", "participants");
         assertTrue(participants instanceof List);
-        assertEquals(Arrays.asList("c", "d"), (List<?>) participants);
+        assertEquals(Arrays.asList("c", "d"), participants);
     }
 
     public void testSystemProperties() throws Exception {
@@ -291,8 +291,8 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         checkComplexDocs(0, 10);
     }
 
-    protected void createComplexDocs(int iMin, int iMax) throws ClientException,
-            PropertyException {
+    protected void createComplexDocs(int iMin, int iMax)
+            throws ClientException, PropertyException {
         for (int i = iMin; i < iMax; i++) {
             DocumentModel doc = session.createDocumentModel("/", "doc" + i,
                     "ComplexDoc");
@@ -307,10 +307,12 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
                 vignette.put("width", Long.valueOf(j));
                 vignette.put("height", Long.valueOf(j));
                 vignette.put("content",
-                        StreamingBlob.createFromString(String.format("document %d, vignette %d", i, j)));
+                        StreamingBlob.createFromString(String.format(
+                                "document %d, vignette %d", i, j)));
                 vignettes.add(vignette);
             }
-            doc.setPropertyValue("cmpf:attachedFile", (Serializable) attachedFile);
+            doc.setPropertyValue("cmpf:attachedFile",
+                    (Serializable) attachedFile);
             doc = session.createDocument(doc);
 
             session.save();
@@ -366,7 +368,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         String title = (String) doc.getProperty("dublincore", "title");
         assertEquals("title2", title);
         Object participants = doc.getProperty("testList", "participants");
-        assertEquals(Arrays.asList("c", "d"), (List<?>) participants);
+        assertEquals(Arrays.asList("c", "d"), participants);
     }
 
     public void testMarkDirtyForList() throws Exception {
@@ -381,11 +383,13 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         doc = session.createDocument(doc);
         session.save();
 
-        doc.getProperty("cmpf:attachedFile/vignettes/vignette[0]/width").setValue(Long.valueOf(222));
+        doc.getProperty("cmpf:attachedFile/vignettes/vignette[0]/width").setValue(
+                Long.valueOf(222));
         session.saveDocument(doc);
         session.save();
 
-        doc.getProperty("cmpf:attachedFile/vignettes/vignette[0]/width").setValue(Long.valueOf(333));
+        doc.getProperty("cmpf:attachedFile/vignettes/vignette[0]/width").setValue(
+                Long.valueOf(333));
         session.saveDocument(doc);
         session.save();
 
@@ -394,7 +398,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         openSession();
         doc = session.getDocument(new PathRef("/doc"));
         assertEquals(Long.valueOf(333), doc.getProperty(
-        "cmpf:attachedFile/vignettes/vignette[0]/width").getValue());
+                "cmpf:attachedFile/vignettes/vignette[0]/width").getValue());
     }
 
     //
@@ -786,8 +790,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
 
         /*
          * Filter filter = new NameFilter(name2);
-         *
-         * // get folder childs List<DocumentModel> retrievedChilds =
+         *  // get folder childs List<DocumentModel> retrievedChilds =
          * session.getChildren(root.getRef(), null, null, filter, null);
          *
          * assertNotNull(retrievedChilds); assertEquals(1,
@@ -826,8 +829,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
 
         /*
          * Filter filter = new NameFilter(name2);
-         *
-         * // get folder childs DocumentModelIterator retrievedChilds =
+         *  // get folder childs DocumentModelIterator retrievedChilds =
          * session.getChildrenIterator( root.getRef(), null, null, filter);
          *
          * assertNotNull(retrievedChilds);
@@ -2068,7 +2070,8 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertFalse(session.exists(new PathRef("folder2/file")));
         assertFalse(session.exists(new PathRef("folder1/fileMove")));
 
-        session.move(file.getRef(), folder2.getRef(), null); // move using orig
+        session.move(file.getRef(), folder2.getRef(), null); // move using
+                                                                // orig
         // name
 
         assertFalse(session.exists(new PathRef("folder1/file")));
