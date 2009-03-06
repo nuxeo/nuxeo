@@ -31,13 +31,13 @@ public class BulkLifeCycleChangeListener implements PostCommitEventListener {
         }
         for (Event event : events) {
             if (LIFECYCLE_TRANSITION_EVENT.equals(event.getName())) {
-                processTransation(event);
+                processTransition(event);
             }
         }
 
     }
 
-    protected void processTransation(Event event) {
+    protected void processTransition(Event event) {
         log.debug("Processing lifecycle change in async listener");
         EventContext ctx = event.getContext();
         if (ctx instanceof DocumentEventContext) {
@@ -55,7 +55,8 @@ public class BulkLifeCycleChangeListener implements PostCommitEventListener {
                     try {
                         docModelList = session.getChildren(doc.getRef());
                         String transition = (String)docCtx.getProperty(OPTION_NAME_TRANSITION);
-                        changeDocumentsState(session, docModelList, transition);
+                        String targetState = (String)docCtx.getProperty(OPTION_NAME_TO);
+                        changeDocumentsState(session, docModelList, transition, targetState);
                         session.save();
                     } catch (ClientException e) {
                         log.error("Unable to get children", e);
@@ -67,17 +68,28 @@ public class BulkLifeCycleChangeListener implements PostCommitEventListener {
     }
 
     protected void changeDocumentsState(CoreSession documentManager, DocumentModelList docModelList,
-            String transition) throws ClientException {
+            String transition, String targetState) throws ClientException {
         for (DocumentModel docMod : docModelList) {
-            if (docMod.getAllowedStateTransitions().contains(transition)) {
+            boolean removed=false;
+            if (docMod.getCurrentLifeCycleState()==null) {
+                log.debug("Doc has no lifecycle, deleting ...");
+                documentManager.removeDocument(docMod.getRef());
+                removed=true;
+            } else if (docMod.getAllowedStateTransitions().contains(transition)) {
                 docMod.followTransition(transition);
             } else {
-                log.warn("Impossible to change state of " + docMod.getRef());
+                if (targetState.equals(docMod.getCurrentLifeCycleState())) {
+                    log.debug("Document" + docMod.getRef() + " is already in the target LifeCycle state");
+                }
+                else {
+                    log.debug("Impossible to change state of " + docMod.getRef() + " :removing");
+                    documentManager.removeDocument(docMod.getRef());
+                    removed=true;
+                }
             }
-
-            if (docMod.isFolder()) {
+            if (docMod.isFolder() & !removed) {
                 changeDocumentsState(documentManager, documentManager.getChildren(docMod
-                        .getRef()), transition);
+                        .getRef()), transition, targetState);
             }
         }
     }

@@ -514,36 +514,13 @@ public class DeleteActionsBean extends InputController implements
             DocumentModel document = documentManager.getDocument(docModel.getRef());
 
             // delete children
-
             if (document.getAllowedStateTransitions().contains(
                     DELETE_TRANSITION)) {
                 document.followTransition(DELETE_TRANSITION);
             } else {
-                // FIXME: should be checked sooner so that no exception is
-                // thrown
-                throw new ClientException("Impossible to move document="
-                        + docModel.getPathAsString()
-                        + " Life Cycle state " + DELETE_TRANSITION + " is not available");
+                log.warn("Document type " + document.getType() + " does not support " + DELETE_TRANSITION + " transaition : removing document");
+                documentManager.removeDocument(document.getRef());
             }
-            // JMS message preparation and sending
-            /*
-            if (document.isFolder()) {
-
-                DocumentRef parentRef = document.getRef();
-                String transition = DELETE_TRANSITION;
-                String aUser = currentUser.toString();
-                String repository = currentServerLocation.getName();
-
-                MassLifeCycleTransitionMessage msg = new MassLifeCycleTransitionMessage(
-                        aUser, transition, repository, parentRef);
-
-                try {
-                    getDocumentMessageProducer().produce(msg);
-
-                } catch (Exception e) {
-                    throw new ClientException(e);
-                }
-            }*/
         }
     }
 
