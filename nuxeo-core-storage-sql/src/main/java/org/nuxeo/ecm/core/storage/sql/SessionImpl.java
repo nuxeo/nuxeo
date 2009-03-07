@@ -230,7 +230,14 @@ public class SessionImpl implements Session {
             Serializable parentId, String name) throws StorageException {
         // TODO get all non-cached fragments at once using join / union
         FragmentsMap fragments = new FragmentsMap();
-        for (String fragmentName : model.getTypeSimpleFragments(typeName)) {
+        Iterable<String> fragmentNames = model.getTypeSimpleFragments(typeName);
+        if (fragmentNames == null) {
+            // don't crash if the database refers to an unknown type
+            log.error(String.format("Node %s (%s) has unknown type: %s", id,
+                    name, typeName));
+            return fragments;
+        }
+        for (String fragmentName : fragmentNames) {
             Fragment fragment = context.get(fragmentName, id, true);
             fragments.put(fragmentName, fragment);
         }
