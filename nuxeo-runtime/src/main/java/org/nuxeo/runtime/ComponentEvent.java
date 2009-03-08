@@ -116,8 +116,12 @@ public class ComponentEvent implements Serializable {
             return "COMPONENT_UNREGISTERED";
         case COMPONENT_EVENT:
             return "COMPONENT_EVENT";
+        case EXTENSION_REGISTERED:
+            return "EXTENSION_REGISTERED";
+        case EXTENSION_PENDING:
+            return "EXTENSION_PENDING";
         }
-        return "UNKNOWN";
+        return "UNKNOWN_" + id;
    }
 
     @Override
