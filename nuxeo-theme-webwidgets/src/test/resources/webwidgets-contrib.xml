@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<component name="org.nuxeo.theme.webwidgets">
+<component name="org.nuxeo.theme.test.webwidgets">
   <documentation>
     @author Jean-Marc Orliaguet (jmo@chalmers.se)
   </documentation>

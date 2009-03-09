@@ -14,25 +14,23 @@
 
 package org.nuxeo.theme.webwidgets;
 
-import org.nuxeo.common.xmap.annotation.XContent;
-import org.nuxeo.common.xmap.annotation.XNode;
-import org.nuxeo.common.xmap.annotation.XObject;
+public class WidgetException extends Exception {
 
-@XObject("widget-decoration")
-public class WidgetDecorationType {
+    private static final long serialVersionUID = 1L;
 
-    @XNode("@mode")
-    public String mode;
-
-    @XContent
-    public String content;
-
-    public String getContent() {
-        return content;
+    public WidgetException() {
     }
 
-    public String getMode() {
-        return mode;
+    public WidgetException(String message) {
+        super(message);
+    }
+
+    public WidgetException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public WidgetException(Throwable cause) {
+        super(cause);
     }
 
 }
