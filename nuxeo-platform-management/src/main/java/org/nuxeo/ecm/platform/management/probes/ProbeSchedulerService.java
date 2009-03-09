@@ -25,7 +25,6 @@ import java.util.Set;
 import org.nuxeo.ecm.core.api.event.CoreEvent;
 import org.nuxeo.ecm.core.listener.AbstractEventListener;
 import org.nuxeo.ecm.core.listener.CoreEventListenerService;
-import org.nuxeo.ecm.platform.scheduler.core.interfaces.SchedulerRegistry;
 import org.nuxeo.ecm.platform.scheduler.core.service.SchedulerRegistryService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.management.ManagementRuntimeException;

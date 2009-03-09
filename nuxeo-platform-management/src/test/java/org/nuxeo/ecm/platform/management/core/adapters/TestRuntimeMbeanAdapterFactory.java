@@ -17,11 +17,10 @@
 package org.nuxeo.ecm.platform.management.core.adapters;
 
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
-import org.nuxeo.ecm.platform.management.adapters.RepositorySessionMetricFactory;
 import org.nuxeo.ecm.platform.management.adapters.RuntimeInventoryFactory;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.management.ResourcePublisherService;
 import org.nuxeo.runtime.management.ResourceFactoryDescriptor;
+import org.nuxeo.runtime.management.ResourcePublisherService;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
@@ -47,19 +46,11 @@ public class TestRuntimeMbeanAdapterFactory extends RepositoryOSGITestCase {
 
     public void testRegisterFactories() throws Exception {
         doRegisterInventoryFactory();
-        doRegisterRepositorySessionMetricFactory();
     }
 
     public void doRegisterInventoryFactory() throws Exception {
         ResourceFactoryDescriptor factoryDescriptor = new ResourceFactoryDescriptor(
                 RuntimeInventoryFactory.class);
-        managementService.registerContribution(factoryDescriptor, "factories",
-                null);
-    }
-
-    public void doRegisterRepositorySessionMetricFactory() throws Exception {
-        ResourceFactoryDescriptor factoryDescriptor = new ResourceFactoryDescriptor(
-                RepositorySessionMetricFactory.class);
         managementService.registerContribution(factoryDescriptor, "factories",
                 null);
     }
