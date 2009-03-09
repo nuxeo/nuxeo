@@ -30,8 +30,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
 
-import javax.script.Bindings;
-import javax.script.SimpleBindings;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
@@ -495,7 +493,7 @@ public abstract class AbstractWebContext implements WebContext {
         }
         try {
             String template = script.getURL();
-            Bindings bindings = createBindings(map);
+            Map<String, Object> bindings = createBindings(map);
             if (log.isDebugEnabled()) {
                 log.debug("## Rendering: "+template);
             }
@@ -543,8 +541,8 @@ public abstract class AbstractWebContext implements WebContext {
         return PermissionService.parse(guard).check(this);
     }
 
-    public Bindings createBindings(Map<String, Object> vars) {
-        Bindings bindings = new SimpleBindings();
+    public Map<String, Object> createBindings(Map<String, Object> vars) {
+        HashMap<String, Object> bindings = new HashMap<String, Object>();
         if (vars != null) {
             bindings.putAll(vars);
         }
@@ -574,7 +572,7 @@ public abstract class AbstractWebContext implements WebContext {
         return null;
     }
 
-    protected void initializeBindings(Bindings bindings) {
+    protected void initializeBindings(Map<String, Object> bindings) {
         Resource obj = getTargetObject();
         bindings.put("Context", this);
         bindings.put("Module", module);
