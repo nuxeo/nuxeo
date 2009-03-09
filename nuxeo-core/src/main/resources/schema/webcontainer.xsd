@@ -23,7 +23,8 @@
   <xs:element name="logo" type="nxs:content"/>
 
   <xs:element name="useCaptcha" type="xs:boolean"/>
-
+  <xs:element name="moderationType" type="xs:string" default="aposteriori"/>
+	
 </xs:schema>
 
 
