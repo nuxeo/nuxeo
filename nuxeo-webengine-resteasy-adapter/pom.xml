@@ -52,11 +52,11 @@
     </dependency>
 
     <dependency>
-      <groupId>org.resteasy</groupId>
+      <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-jaxrs</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.resteasy</groupId>
+      <groupId>org.jboss.resteasy</groupId>
       <artifactId>jaxrs-api</artifactId>
     </dependency>
 

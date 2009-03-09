@@ -65,7 +65,7 @@
     </dependency>
 
     <dependency>
-      <groupId>org.resteasy</groupId>
+      <groupId>org.jboss.resteasy</groupId>
       <artifactId>jaxrs-api</artifactId>
     </dependency>
     <dependency>

@@ -27,8 +27,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Path;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.SecurityContext;
+import javax.ws.rs.core.UriInfo;
 
 import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.core.SynchronousDispatcher;
+import org.jboss.resteasy.core.ThreadLocalResteasyProviderFactory;
 import org.jboss.resteasy.plugins.providers.ByteArrayProvider;
 import org.jboss.resteasy.plugins.providers.DefaultTextPlain;
 import org.jboss.resteasy.plugins.providers.FormUrlEncodedProvider;
@@ -36,7 +41,17 @@ import org.jboss.resteasy.plugins.providers.InputStreamProvider;
 import org.jboss.resteasy.plugins.providers.StreamingOutputProvider;
 import org.jboss.resteasy.plugins.providers.StringTextStar;
 import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher;
+import org.jboss.resteasy.plugins.server.servlet.HttpServletInputMessage;
+import org.jboss.resteasy.plugins.server.servlet.HttpServletResponseWrapper;
+import org.jboss.resteasy.plugins.server.servlet.ServletSecurityContext;
+import org.jboss.resteasy.plugins.server.servlet.ServletUtil;
+import org.jboss.resteasy.specimpl.UriInfoImpl;
+import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.nuxeo.ecm.webengine.WebEngine;
+import org.nuxeo.ecm.webengine.model.WebContext;
+import org.nuxeo.ecm.webengine.session.UserSession;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -94,20 +109,74 @@ public class WebEngineServlet extends HttpServlet {
     protected void service(HttpServletRequest httpServletRequest,
             HttpServletResponse httpServletResponse) throws ServletException,
             IOException {
-//        if (engine == null) {
-//            synchronized (engine) {
-//                if (engine == null) {
-//                    try {
-//                        engine = Framework.getService(WebEngine.class);
-//                        engine.getModuleManager(); // force module loading
-//                    } catch (Exception e) {
-//                        throw new ServletException(e);
-//                    }
-//                }
-//            }
-//        }
         httpServletResponse.setHeader("Pragma", "no-cache");
-        dispatcher.service(httpServletRequest, httpServletResponse);
+        service(httpServletRequest.getMethod(), httpServletRequest, httpServletResponse);
+    }
+    
+    
+    public void service(String httpMethod, HttpServletRequest request, HttpServletResponse response) throws IOException
+    {        
+        WebContext ctx = null;
+        try
+       {
+          // classloader/deployment aware RestasyProviderFactory.  Used to have request specific
+          // ResteasyProviderFactory.getInstance()
+          ResteasyProviderFactory defaultInstance = ResteasyProviderFactory.getInstance();
+          if (defaultInstance instanceof ThreadLocalResteasyProviderFactory)
+          {
+             ThreadLocalResteasyProviderFactory.push(dispatcher.getProviderFactory()); //BS modif
+          }
+          HttpHeaders headers = ServletUtil.extractHttpHeaders(request);
+          UriInfoImpl uriInfo = ServletUtil.extractUriInfo(request, request.getServletPath()); // BS modif
+          //org.jboss.resteasy.specimpl.patch.UriInfoImpl uriInfo = org.jboss.resteasy.specimpl.patch.UriInfoImpl.create(request); // BS: resteasy bug -  it is not auto escaping @ in literal part of @Path expression 
+
+          HttpResponse theResponse = createServletResponse(response);
+          HttpRequest in = createHttpRequest(httpMethod, request, headers, uriInfo, theResponse);
+
+          // bs: initialize webengine context
+          ctx = new WebEngineContext(in, request);
+          WebEngine.setActiveContext(ctx);
+
+          try
+          {
+             ResteasyProviderFactory.pushContext(HttpServletRequest.class, request);
+             ResteasyProviderFactory.pushContext(HttpServletResponse.class, response);
+             ResteasyProviderFactory.pushContext(SecurityContext.class, new ServletSecurityContext(request));
+             dispatcher.invoke(in, theResponse);
+          }
+          finally
+          {
+             ResteasyProviderFactory.clearContextData();
+          }
+       }
+       finally
+       {
+          ResteasyProviderFactory defaultInstance = ResteasyProviderFactory.getInstance();
+          if (defaultInstance instanceof ThreadLocalResteasyProviderFactory)
+          {
+             ThreadLocalResteasyProviderFactory.pop();
+          }
+          // bs: cleanup webengine
+          if (ctx != null) {
+              UserSession us = ctx.getUserSession();
+              if (us != null) {
+                  us.terminateRequest(request);
+              }
+          }
+          ResteasyProviderFactory.clearContextData();
+          // bs: cleanup webengine context
+          WebEngine.setActiveContext(null);
+       }
+    }
+
+    protected HttpRequest createHttpRequest(String httpMethod, HttpServletRequest request, HttpHeaders headers, UriInfo uriInfo, HttpResponse theResponse)
+    {
+       return new HttpServletInputMessage(request, theResponse, headers, uriInfo, httpMethod.toUpperCase(), (SynchronousDispatcher) dispatcher);
+    }
+
+    protected HttpResponse createServletResponse(HttpServletResponse response)
+    {
+       return new HttpServletResponseWrapper(response, this.dispatcher.getProviderFactory());
     }
 
 }
