@@ -178,6 +178,7 @@ public class TestAction extends NXRuntimeTestCase {
         assertEquals("newConfirm", act1.getConfirm());
         assertEquals(3, act1.getCategories().length);
         assertTrue(Arrays.asList(act1.getCategories()).contains("OVERRIDE"));
+        assertTrue(Arrays.asList(act1.getCategories()).contains("view"));
         assertEquals(3, act1.getFilterIds().size());
         assertTrue(act1.getFilterIds().contains("MyCustomFilter"));
         assertTrue(act1.getFilterIds().contains("newFilter"));
