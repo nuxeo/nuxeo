@@ -101,6 +101,8 @@
       <artifact group="org.nuxeo.theme" name="nuxeo-theme-webengine" version="${nuxeo.theme.version}"/>
       <artifact group="org.nuxeo.theme" name="nuxeo-theme-html" version="${nuxeo.theme.version}"/>
       <artifact group="org.nuxeo.theme" name="nuxeo-theme-editor" version="${nuxeo.theme.version}"/>
+      <artifact group="org.nuxeo.theme" name="nuxeo-theme-webwidgets" version="${nuxeo.theme.version}"/>
+      <artifact group="org.nuxeo.theme" name="nuxeo-theme-webwidgets-ui" version="${nuxeo.theme.version}"/>
     </artifacts>
   </artifactSet>
 
