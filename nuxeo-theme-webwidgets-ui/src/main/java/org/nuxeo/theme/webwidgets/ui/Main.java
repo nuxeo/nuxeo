@@ -19,7 +19,6 @@ import net.sf.json.JSONObject;
 import org.nuxeo.ecm.webengine.forms.FormData;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.theme.webwidgets.Manager;
 import org.nuxeo.theme.webwidgets.WidgetData;
 import org.nuxeo.theme.webwidgets.WidgetType;
@@ -147,7 +146,7 @@ public class Main extends ModuleRoot {
         String providerName = form.getString("provider");
         String widgetUid = form.getString("widget_uid");
         String preferences_map = form.getString("preferences");
-        Map preferencesMap = JSONObject.fromObject(preferences_map);
+        Map<String, String> preferencesMap = (Map<String, String>) JSONObject.fromObject(preferences_map);
         Editor.updateWidgetPreferences(
                 providerName, widgetUid, preferencesMap);
     }
