@@ -30,8 +30,6 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.faces.application.FacesMessage;
-import javax.security.auth.login.LoginContext;
-import javax.security.auth.login.LoginException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -64,8 +62,6 @@ import org.nuxeo.ecm.core.api.event.impl.CoreEventImpl;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.core.api.impl.DocumentModelTreeImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelTreeNodeComparator;
-import org.nuxeo.ecm.core.api.repository.Repository;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.TypeService;
@@ -78,6 +74,8 @@ import org.nuxeo.ecm.platform.events.api.impl.DocumentMessageImpl;
 import org.nuxeo.ecm.platform.publishing.api.PublishActions;
 import org.nuxeo.ecm.platform.publishing.api.PublishingInformation;
 import org.nuxeo.ecm.platform.publishing.api.PublishingService;
+import org.nuxeo.ecm.platform.publishing.model.PublishingDocumentModelTreeImpl;
+import org.nuxeo.ecm.platform.publishing.model.PublishingDocumentTreeModelNodeImpl;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.ui.web.model.SelectDataModel;
@@ -95,7 +93,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * This Seam bean manages the publishing tab.
- *
+ * 
  * @author Narcis Paslaru
  * @author Florent Guillaume
  * @author Thierry Martins
@@ -278,6 +276,9 @@ public class PublishActionsBean implements PublishActions, Serializable {
                     if (sectionRef.equals(proxyParentRef)) {
                         String versionLabel = versioningManager.getVersionLabel(pProxy);
                         node.setVersion(versionLabel);
+                        if (versionLabel != null)
+                            ((PublishingDocumentTreeModelNodeImpl) node).setUnpublishable(documentManager.hasPermission(
+                                    sectionRef, SecurityConstants.WRITE));
                         // when looking at a proxy, don't check itself
                         if (!sectionRef.equals(currentParentRef)) {
                             addSelectedSection(node);
@@ -321,13 +322,10 @@ public class PublishActionsBean implements PublishActions, Serializable {
 
         int firstLevel = sectionRootPath.split("/").length + 1;
 
-        DocumentModelTreeImpl nodes = new DocumentModelTreeImpl();
+        PublishingDocumentModelTreeImpl nodes = new PublishingDocumentModelTreeImpl();
         for (DocumentModel currentSection : mainSections) {
-            if (documentManager.hasPermission(currentSection.getRef(),
-                    SecurityConstants.READ)) {
-                int currentLevel = currentSection.getPathAsString().split("/").length;
-                nodes.add(currentSection, currentLevel - firstLevel);
-            }
+            int currentLevel = currentSection.getPathAsString().split("/").length;
+            nodes.add(currentSection, currentLevel - firstLevel);
         }
         // sort sections using titles
         DocumentModelTreeNodeComparator comp = new DocumentModelTreeNodeComparator(
@@ -408,8 +406,8 @@ public class PublishActionsBean implements PublishActions, Serializable {
         for (DocumentModelTreeNode section : selectedSections) {
             DocumentModel proxy = getPublishedInSection(docToPublish,
                     section.getDocument());
-            boolean moderation = proxy == null ||
-                    new PublishingTasks(proxy, currentUser).getPublishingWorkItem() != null;
+            boolean moderation = proxy == null
+                    || new PublishingTasks(proxy, currentUser).getPublishingWorkItem() != null;
             boolean candidate = false;
             if (proxy == null) {
                 candidate = true;
@@ -526,15 +524,16 @@ public class PublishActionsBean implements PublishActions, Serializable {
                     documentManager.publishDocument(doc, target);
                     nbPublishedDocs++;
                 } else {
-                    log.info("Attempted to publish non-publishable document " +
-                            doc.getTitle());
+                    log.info("Attempted to publish non-publishable document "
+                            + doc.getTitle());
                 }
             }
         }
 
         Object[] params = { nbPublishedDocs };
-        facesMessages.add(FacesMessage.SEVERITY_INFO, "#0 " +
-                resourcesAccessor.getMessages().get("n_published_docs"), params);
+        facesMessages.add(FacesMessage.SEVERITY_INFO, "#0 "
+                + resourcesAccessor.getMessages().get("n_published_docs"),
+                params);
 
         if (nbPublishedDocs < docs2Publish.size()) {
             facesMessages.add(FacesMessage.SEVERITY_WARN,
@@ -876,8 +875,8 @@ public class PublishActionsBean implements PublishActions, Serializable {
      * Called by section_clipboard.xhtml
      */
     public List<Action> getActionsForSectionSelection() {
-        return webActions.getUnfiltredActionsList(DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION +
-                "_LIST");
+        return webActions.getUnfiltredActionsList(DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION
+                + "_LIST");
     }
 
     protected PublishingService getPublishingService() throws ClientException {

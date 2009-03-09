@@ -60,7 +60,7 @@
         </f:facet>
       <h:commandLink value="#{messages['command.document.unpublish']}"
         action="#{publishActions.unPublishDocument}"
-        rendered="#{nxd:hasPermission(row.data.document, 'Write') and row.data.version != null and row.data.document.ref != currentDocument.parentRef}"
+        rendered="#{row.data.version != null and row.data.unpublishable and row.data.document.ref != currentDocument.parentRef}"
         immediate="true">
         <f:param name="unPublishSectionRef" value="#{row.data.document.id}" />
       </h:commandLink>
