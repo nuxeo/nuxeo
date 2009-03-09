@@ -15,7 +15,7 @@
       persist: "cookie",
       control: "#navtreecontrol",
       //collapsed: false,
-      cookieId: "nxnavtree",
+      cookieId: "nxnavtree"
     });
   });
 </script>

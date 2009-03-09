@@ -20,6 +20,7 @@
 package org.nuxeo.webengine.sites;
 
 import java.io.Serializable;
+import java.util.GregorianCalendar;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -48,6 +49,17 @@ public class SiteHelper {
             }
         }
         return "";
+    }
+
+    public static GregorianCalendar getGregorianCalendar(DocumentModel d, String xpath) throws ClientException {
+        Property p = d.getProperty(xpath);
+        if (p != null) {
+            Serializable v = p.getValue();
+            if (v != null) {
+                return (GregorianCalendar) v;
+            }
+        }
+        return null;
     }
 
     public static Blob getBlob(DocumentModel d, String xpath) throws ClientException {

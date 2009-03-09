@@ -22,34 +22,9 @@
 </div>
 
 <center><h4>${welcomeText}</h4></center>
-<!--
-Logo : <img src="${This.path}/logo" alt="logo">
-<hr>
 
-
-Welcome Animation/Image</br>
-<img src="${This.path}/welcomeMedia" alt="Welcome Media">
-
-<hr>
-
-${siteName}
-Welcome Text:</br>
-${welcomeText}
--->
-
-<hr>
-5 last modified/created web pages in the site
-<hr>
-
-<table border=1>
-  <tr><th>Name<th>Description<th>Content
-  <#list pages as p>
-  <tr><td><a href="${This.path}/${p.path}"> ${p.name} &nbsp; </a>
-  <td> ${p.description}&nbsp;
-  <td>${p.content}&nbsp;
-   </#list>
-</table>
-
+<#include "includes/last_published_documents.ftl"/>
+<@lastPublished/>
 
 </@block>
 </@theme>

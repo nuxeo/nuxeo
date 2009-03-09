@@ -19,7 +19,9 @@
 
 package org.nuxeo.webengine.sites;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,8 +46,7 @@ import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 
-
-@WebObject(type = "site", guard = "user=Administrator", facets = {"Site"})
+@WebObject(type = "site", guard = "user=Administrator", facets = { "Site" })
 @Produces("text/html; charset=UTF-8")
 public class Site extends DefaultObject {
 
@@ -161,8 +162,8 @@ public class Site extends DefaultObject {
         root.put("welcomeText", SiteHelper.getString(doc, "webc:welcomeText",
                 null));
         root.put("siteName", SiteHelper.getString(doc, "webc:name", null));
-		root.put("description", SiteHelper.getString(doc, "dc:description",
-				null));
+        root.put("description", SiteHelper.getString(doc, "dc:description",
+                null));
         return root;
     }
 
@@ -186,12 +187,24 @@ public class Site extends DefaultObject {
                 try {
                     Map<String, String> page = new HashMap<String, String>();
                     page.put("name", SiteHelper.getString(d, "dc:title"));
-                    page.put("path", JsonAdapter.getRelativPath(ws, d).toString());
+                    page.put("path",
+                            JsonAdapter.getRelativPath(ws, d).toString());
                     page.put("description", SiteHelper.getString(d,
                             "dc:description"));
                     page.put("content", getFistNWordsFromString(
                             SiteHelper.getString(d, "webp:content"),
                             noWordsFromContent));
+                    page.put("author", SiteHelper.getString(d, "dc:creator"));
+
+                    GregorianCalendar modificationDate = SiteHelper.getGregorianCalendar(
+                            d, "dc:modified");
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
+                            "dd MMMM", getContext().getLocale());
+                    String formattedString = simpleDateFormat.format(modificationDate.getTime());
+                    String[] splittedFormatterdString = formattedString.split(" ");
+                    page.put("day", splittedFormatterdString[0]);
+                    page.put("month", splittedFormatterdString[1]);
+
                     pages.add(page);
                 } catch (Exception e) {
                     System.out.println("ignore page :" + d);
@@ -200,9 +213,7 @@ public class Site extends DefaultObject {
         }
         return pages;
     }
-    
 
-    
     protected DocumentModel getWorkspaceByUrl(String url) {
         WebContext context = WebEngine.getActiveContext();
         CoreSession session = context.getCoreSession();
@@ -223,9 +234,9 @@ public class Site extends DefaultObject {
     public DocumentModel getWorkspace() {
         return ws;
     }
-    
+
     private String getFistNWordsFromString(String string, int n) {
-        String[] result = string.split(" ", n+1);
+        String[] result = string.split(" ", n + 1);
         StringBuffer firstNwords = new StringBuffer();
         for (int i = 0; i < ((n <= result.length) ? n : result.length); i++) {
             firstNwords.append(result[i]);
@@ -235,5 +246,4 @@ public class Site extends DefaultObject {
         return new String(firstNwords);
     }
 
-    
 }
