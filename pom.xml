@@ -31,6 +31,7 @@
     <module>nuxeo-theme-editor</module>
     <module>nuxeo-theme-webengine</module>
     <module>nuxeo-theme-webwidgets</module>
+    <module>nuxeo-theme-webwidgets-ui</module>
   </modules>
 
   <organization>
@@ -105,6 +106,11 @@
       <dependency>
         <groupId>org.nuxeo.theme</groupId>
         <artifactId>nuxeo-theme-webwidgets</artifactId>
+        <version>${nuxeo.theme.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.theme</groupId>
+        <artifactId>nuxeo-theme-webwidgets-ui</artifactId>
         <version>${nuxeo.theme.version}</version>
       </dependency>
 
