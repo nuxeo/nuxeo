@@ -11,8 +11,8 @@
   </parent>
 
   <artifactId>nuxeo-theme-webwidgets</artifactId>
-  <name>Nuxeo Theme Web Widgets</name>
-  <description>Nuxeo Theme: Web widgets.</description>
+  <name>Nuxeo Theme Web Widgets Core</name>
+  <description>Nuxeo Theme: Web widgets Core.</description>
 
   <dependencies>
     <dependency>
