@@ -22,6 +22,7 @@ package org.nuxeo.ecm.webengine.model;
 import java.io.Writer;
 import java.security.Principal;
 import java.text.ParseException;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -74,6 +75,12 @@ public interface WebContext extends Adaptable {
      */
     String getMessage(String key);
 
+    /**
+     * The same as {@link #getMessage(String)} but with parameter support
+     * @param key
+     * @param args
+     * @return
+     */
     String getMessage(String key, String ... args);
 
     /**
@@ -87,6 +94,13 @@ public interface WebContext extends Adaptable {
 
     String getMessageL(String key, String locale, String ... args);
 
+    /**
+     * Get the context locale. The locale is computed from the Accept-Language language sent by the client. 
+     * This is a shortcut for {@link HttpServletRequest#getLocale()}
+     * @return the context locale
+     */
+    Locale getLocale();
+    
     /**
      * Gets the web engine instance.
      *

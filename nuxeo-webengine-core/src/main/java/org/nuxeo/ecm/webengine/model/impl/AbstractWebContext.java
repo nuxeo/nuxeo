@@ -26,6 +26,7 @@ import java.text.MessageFormat;
 import java.text.ParseException;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
 
@@ -65,6 +66,8 @@ public abstract class AbstractWebContext implements WebContext {
 
     private static final Log log = LogFactory.getLog(WebContext.class);
 
+    public static Locale DEFAULT_LOCALE = Locale.ENGLISH; // this should be made configurable through an extension point
+    
     protected final WebEngine engine;
     protected final UserSession us;
     protected final LinkedList<File> scriptExecutionStack;
@@ -149,7 +152,7 @@ public abstract class AbstractWebContext implements WebContext {
     public String getMessage(String key) {
         Messages messages = module.getMessages();
         try {
-            return messages.getString(key);
+            return messages.getString(key, getLocale().getLanguage());
         } catch (MissingResourceException e) {
             return '!' + key + '!';
         }
@@ -158,7 +161,7 @@ public abstract class AbstractWebContext implements WebContext {
     public String getMessage(String key, String ... args) {
         Messages messages = module.getMessages();
         try {
-            String msg = messages.getString(key);
+            String msg = messages.getString(key, getLocale().getLanguage());
             if (args != null && args.length > 0) { // format the string using given args
                 msg = MessageFormat.format(msg, (Object[]) args);
             }
@@ -188,6 +191,11 @@ public abstract class AbstractWebContext implements WebContext {
         } catch (MissingResourceException e) {
             return '!' + key + '!';
         }
+    }
+    
+    public Locale getLocale() { 
+        Locale locale = request.getLocale();
+        return locale == null ? DEFAULT_LOCALE : locale;
     }
 
     public Resource newObject(String typeName, Object ...  args) {
