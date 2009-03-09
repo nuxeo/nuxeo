@@ -125,8 +125,8 @@
       <artifact group="org.apache.lucene" name="lucene-core" />
       <artifact group="commons-collections" name="commons-collections" />
       <artifact group="concurrent" name="concurrent" />
-      <artifact group="org.resteasy" name="resteasy-jaxrs" version="1.0-beta-8-nx" />
-      <artifact group="org.resteasy" name="jaxrs-api" version="1.0-beta-8" />
+      <artifact group="org.jboss.resteasy" name="resteasy-jaxrs" version="1.0.2.GA-nx" />
+      <artifact group="org.jboss.resteasy" name="jaxrs-api" version="1.0.2.GA" />
     </artifacts>
   </artifactSet>
 
