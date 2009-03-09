@@ -107,23 +107,10 @@ public class Service extends DefaultComponent {
 
     private void registerDecoration(Extension extension) {
         final Object[] contribs = extension.getContributions();
-        final String[] modes = { "view", "edit" };
         for (Object contrib : contribs) {
             DecorationType decorationType = (DecorationType) contrib;
             final String decorationName = decorationType.getName();
             decorationTypes.put(decorationName, decorationType);
-            for (String mode : modes) {
-                if (decorationType.getPanelDecoration(mode) == null) {
-                    log.warn("Widget decoration '" + decorationName
-                            + "' has no panel decoration in '" + mode
-                            + "' mode");
-                }
-                if (decorationType.getWidgetDecoration(mode) == null) {
-                    log.warn("Widget decoration '" + decorationName
-                            + "' has no widget decoration in '" + mode
-                            + "' mode");
-                }
-            }
         }
     }
 
