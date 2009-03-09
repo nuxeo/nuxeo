@@ -21,13 +21,9 @@
 </script>
 
 <div class="sideblock general" style="padding: 20px;width: 200px;overflow: auto;">
-<div style="display: block; font-size: small" id="navtreecontrol">
-    <a title="Collapse the entire tree below" href="#">Collapse All</a> 
-    <a title="Expand the entire tree below" href="#">Expand All</a>
-</div>
  <div class="treeroot"></div>
   <ul id="treenav" class="treeview" style="font-size: small;">
   </ul>
- </div>
+</div>
 <!-- End Navigation Tree -->
 </#macro>
