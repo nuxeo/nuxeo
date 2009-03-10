@@ -23,10 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.UriInfo;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.jboss.resteasy.spi.HttpRequest;
-import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.impl.AbstractWebContext;
 
 /**
@@ -35,7 +32,7 @@ import org.nuxeo.ecm.webengine.model.impl.AbstractWebContext;
  */
 public class WebEngineContext extends AbstractWebContext {// extends HttpRequestImpl implements WebContext2 {
 
-    private static final Log log = LogFactory.getLog(WebContext.class);
+    //private static final Log log = LogFactory.getLog(WebContext.class);
 
     protected UriInfo uri;
     protected final HttpRequest jaxReq;

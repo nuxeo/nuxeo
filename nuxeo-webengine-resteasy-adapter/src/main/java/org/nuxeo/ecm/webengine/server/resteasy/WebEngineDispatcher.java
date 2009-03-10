@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.webengine.server.resteasy;
 
 import org.jboss.resteasy.core.SynchronousDispatcher;
+import org.jboss.resteasy.core.interception.InterceptorRegistry;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.nuxeo.ecm.webengine.ResourceRegistry;
 
@@ -44,54 +45,10 @@ public class WebEngineDispatcher extends SynchronousDispatcher {
         return resourceReg;
     }
 
-
-//    public void service(String httpMethod, HttpServletRequest request,
-//            HttpServletResponse response) throws ServletException {
-//
-//        // bs: is this needed anymore?
-//        // String path = request.getPathInfo();
-//        // if (path == null) path = "/";
-//
-//        HttpHeaders headers = ServletUtil.extractHttpHeaders(request);
-//        // UriInfoImpl uriInfo = ServletUtil.extractUriInfo(request,
-//        // servletMappingPrefix);
-//        // bs: using real servlet path
-//        //UriInfoImpl uriInfo = ServletUtil.extractUriInfo(request, request.getServletPath());
-//        UriInfoImpl uriInfo = UriInfoImpl.create(request);
-//
-//        HttpRequest in = new HttpServletInputMessage(headers,
-//                new HttpRequestLazyInputStream(request), uriInfo, httpMethod.toUpperCase());
-//        HttpResponse theResponse = new HttpServletResponseWrapper(response,
-//                super.getProviderFactory());
-////        double d = System.currentTimeMillis();
-//        WebContext ctx = null;
-//        try {
-//            // bs: initialize webengine context
-//            ctx = new WebEngineContext(in, request);
-//            WebEngine.setActiveContext(ctx);
-//
-//            ResteasyProviderFactory.pushContext(HttpServletRequest.class, request);
-//            ResteasyProviderFactory.pushContext(HttpServletResponse.class, response);
-//            ResteasyProviderFactory.pushContext(SecurityContext.class, new ServletSecurityContext(
-//                    request));
-//            super.invoke(in, theResponse);
-//        } finally {
-//            if (ctx != null) {
-//                UserSession us = ctx.getUserSession();
-//                if (us != null) {
-//                    us.terminateRequest(request);
-//                }
-//            }
-//            ResteasyProviderFactory.clearContextData();
-//            // bs: cleanup webengine context
-//            WebEngine.setActiveContext(null);
-////            System.out.println(">>>>>>>>>>>>"+((System.currentTimeMillis()-d)/1000));
-//        }
-//    }
-
     public void addInterceptors() {
-        super.getProviderFactory().getInterceptorRegistry().registerResourceMethodInterceptor(
-                new SecurityInterceptor());
+        InterceptorRegistry reg = super.getProviderFactory().getInterceptorRegistry();
+        reg.registerResourceMethodInterceptor(new SecurityInterceptor());
+        reg.registerResourceMethodInterceptor(new TransactionInterceptor());
     }
 
 }
