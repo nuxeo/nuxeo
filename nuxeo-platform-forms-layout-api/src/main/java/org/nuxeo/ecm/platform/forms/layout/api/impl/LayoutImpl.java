@@ -77,7 +77,9 @@ public class LayoutImpl implements Layout {
                 continue;
             }
             for (Widget widget : widgets) {
-                widgetMap.put(widget.getName(), widget);
+                if (widget != null) {
+                    widgetMap.put(widget.getName(), widget);
+                }
             }
         }
     }
