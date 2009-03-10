@@ -518,7 +518,11 @@ public class DeleteActionsBean extends InputController implements
                     DELETE_TRANSITION)) {
                 document.followTransition(DELETE_TRANSITION);
             } else {
-                log.warn("Document type " + document.getType() + " does not support " + DELETE_TRANSITION + " transaition : removing document");
+                log.warn("Document " + document.getId() + " of type "
+                        + document.getType() + " in state "
+                        + document.getCurrentLifeCycleState()
+                        + " does not support transition " + DELETE_TRANSITION
+                        + ", it will be deleted immediately");
                 documentManager.removeDocument(document.getRef());
             }
         }
