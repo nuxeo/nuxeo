@@ -65,7 +65,8 @@ public class DialectOracle extends Dialect {
             }
         }
         if (sqlType == Types.CLOB) {
-            return "NCLOB";
+            // return "NCLOB";
+            return "NVARCHAR2(2000)"; // until we get finer-grained config
         }
         return super.getTypeName(sqlType, length, precision, scale);
     }
@@ -250,7 +251,7 @@ public class DialectOracle extends Dialect {
                                 + "END;" //
                         , idType, declaredType)));
 
-        statements.add(new ConditionalStatement( //
+        statements.add(new ConditionalStatement(
                 false, // late
                 Boolean.FALSE, // no drop
                 null, //
