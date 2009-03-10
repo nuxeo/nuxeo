@@ -17,11 +17,21 @@
 
 package org.nuxeo.webengine.sites;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Produces;
+import java.util.List;
 
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Response;
+
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.rest.DocumentObject;
+import org.nuxeo.ecm.platform.comment.api.CommentableDocument;
+import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebObject;
+import org.nuxeo.webengine.utils.*;
 
 /**
  * @author stan
@@ -34,8 +44,61 @@ public class Page extends DocumentObject {
     @GET
     public Object doGet() {
         ctx.getRequest().setAttribute("org.nuxeo.theme.theme", "sites/page");
-        //ctx.getRequest().setAttribute("theme", "sites/page");
+        // ctx.getRequest().setAttribute("theme", "sites/page");
         return super.doGet();
     }
+
+    @POST
+    public Response doPost() {
+        String name = ctx.getForm().getString("comment");
+        return null;
+    }
+
+    @GET
+    @Path("comments")
+    public List<DocumentModel> getComments() {
+        CommentableDocument cDoc = this.getDocument().getAdapter(
+                CommentableDocument.class, true);
+        try {
+            return cDoc.getComments();
+        } catch (ClientException e) {
+            throw WebException.wrap("Failed to get all published comments", e);
+        }
+
+    }
+    
+    @GET
+    @Path("noComments")
+    public int getNoComments() {
+        CommentableDocument cDoc = this.getDocument().getAdapter(
+                CommentableDocument.class, true);
+        try {
+            return cDoc.getComments().size();
+        } catch (ClientException e) {
+            throw WebException.wrap("Failed to get all published comments", e);
+        }
+
+    }
+
+    public boolean isModerator() {
+        try {
+
+            return WebCommentUtils.isModeratedByCurrentUser(
+                    this.getCoreSession(), this.getDocument());
+        } catch (Exception e) {
+            throw WebException.wrap("Failed to delete comment", e);
+        }
+    }
+    
+    public boolean isUserWithCommentPermission() {
+        try {
+
+            return WebCommentUtils.currentUserHasCommentPermision(
+                    this.getCoreSession(), this.getDocument());
+        } catch (Exception e) {
+            throw WebException.wrap("Failed to delete comment", e);
+        }
+    }
+    
 
 }

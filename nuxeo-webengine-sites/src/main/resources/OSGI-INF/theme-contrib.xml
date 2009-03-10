@@ -20,6 +20,11 @@
       <format-type>widget</format-type>
       <template>widgets/files.ftl</template>
     </view>
+    
+    <view name="Page Posted comments" template-engine="freemarker">
+      <format-type>widget</format-type>
+      <template>widgets/comments.ftl</template>
+    </view>
 
   </extension>
 

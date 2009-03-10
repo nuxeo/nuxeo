@@ -7,6 +7,11 @@
   <extension target="org.nuxeo.ecm.platform.types.TypeService"
     point="types">
 
+    <type id="WebComment" coretype="WebComment">
+      <icon>/icons/forum_post.gif</icon>
+      <label>label.document.post</label>
+    </type>
+    
     <type id="WebPage" coretype="WebPage">
       <label>Web Page</label>
       <icon>/icons/folder.gif</icon>
@@ -14,6 +19,7 @@
       <default-view>view_documents</default-view>
       <subtypes>
         <type>WebPage</type>
+        <type>WebComment</type>
       </subtypes>
       <!-- new layout config -->
       <layouts mode="any">

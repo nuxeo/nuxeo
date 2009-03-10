@@ -124,6 +124,9 @@
     <widget element="page[3]/section[1]/cell[1]/fragment[3]">
       <view>Minisite Attached files</view>
     </widget>
+    <widget element="page[3]/section[1]/cell[1]/fragment[4]">
+      <view>Page Posted comments</view>
+    </widget>
     <style element="page[1]/section[1]"/>
     <style element="page[1]/section[1]/cell[1]"/>
     <style element="page[2]"/>
