@@ -127,10 +127,24 @@ public interface JbpmService {
             throws NuxeoJbpmException;
 
     /**
-     * Return a list of task instance for this process instance.
+     * Return a list of task instances assigned to one of the actors in the list
+     * or to its pool.
+     *
+     * @param actors a list used as actorId to retrieve the tasks.
+     * @param filter
+     * @return
+     * @throws NuxeoJbpmException
+     */
+    List<TaskInstance> getCurrentTaskInstances(List<String> actors,
+            JbpmActorsListFilter filter) throws NuxeoJbpmException;
+
+    /**
+     * Return a list of task instance for this process instance. It returns all
+     * task instances, not only the tasks for this principal. The principal is
+     * used as an argument to the filter.
      *
      * @param processInstanceId the id of the process instance.
-     * @param principal
+     * @param principal.
      * @return
      */
     List<TaskInstance> getTaskInstances(Long processInstanceId,
@@ -202,6 +216,20 @@ public interface JbpmService {
             JbpmListFilter filter) throws NuxeoJbpmException;
 
     /**
+     * Return a list of all current process instances that has been started by
+     * one of the actors in the list. The Principal passed to the jbpmListFilter
+     * will be null.
+     *
+     * @param actors
+     * @param filter
+     * @param principal the principal passed a
+     * @return
+     * @throws NuxeoJbpmException
+     */
+    List<ProcessInstance> getCurrentProcessInstances(List<String> actors,
+            JbpmActorsListFilter filter) throws NuxeoJbpmException;
+
+    /**
      * Return the process instance.
      *
      * @param processInstanceId the id of the process instance.
@@ -231,8 +259,8 @@ public interface JbpmService {
 
     /**
      * Return a list of available Process Definition Name available for this
-     * document and user. All process definition if dm is <code>null</code>. The
-     * returned process definition is always the latest.
+     * document and user. All process definition if dm is <code>null</code>.
+     * The returned process definition is always the latest.
      *
      * @param user the caller.
      * @param dm the document concerned by the process
@@ -314,6 +342,19 @@ public interface JbpmService {
      */
     List<TaskInstance> getTaskInstances(DocumentModel dm, NuxeoPrincipal user,
             JbpmListFilter jbpmListFilter) throws NuxeoJbpmException;
+
+    /**
+     * Return the list of task instances associated with this document assigned
+     * to one of the actor in the list or its pool.
+     *
+     * @param dm
+     * @param actors
+     * @param jbpmListFilter
+     * @return
+     * @throws NuxeoJbpmException
+     */
+    List<TaskInstance> getTaskInstances(DocumentModel dm, List<String> actors,
+            JbpmActorsListFilter jbpmActorsListFilter) throws NuxeoJbpmException;
 
     /**
      * Return the list of process instances associated with this document.

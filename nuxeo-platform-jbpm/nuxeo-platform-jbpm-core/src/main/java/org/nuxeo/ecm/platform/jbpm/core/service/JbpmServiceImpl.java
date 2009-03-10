@@ -40,6 +40,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.platform.jbpm.JbpmActorsListFilter;
 import org.nuxeo.ecm.platform.jbpm.JbpmListFilter;
 import org.nuxeo.ecm.platform.jbpm.JbpmOperation;
 import org.nuxeo.ecm.platform.jbpm.JbpmSecurityPolicy;
@@ -98,53 +99,44 @@ public class JbpmServiceImpl implements JbpmService {
     public List<TaskInstance> getCurrentTaskInstances(
             final NuxeoPrincipal currentUser, final JbpmListFilter filter)
             throws NuxeoJbpmException {
-        try {
-            return (List<TaskInstance>) executeJbpmOperation(new JbpmOperation() {
-                public ArrayList<TaskInstance> run(JbpmContext context)
-                        throws NuxeoJbpmException {
-                    if (currentUser == null) {
-                        throw new IllegalStateException("Null current user");
-                    }
-                    context.setActorId(NuxeoPrincipal.PREFIX
-                            + currentUser.getName());
-                    List<String> groups = currentUser.getAllGroups();
-                    List<String> prefixedGroup = new ArrayList<String>();
-                    for (String s : groups) {
-                        prefixedGroup.add(NuxeoGroup.PREFIX + s);
-                    }
-                    prefixedGroup.add(NuxeoPrincipal.PREFIX
-                            + currentUser.getName());
-                    ArrayList<TaskInstance> tis = new ArrayList<TaskInstance>();
-                    tis.addAll(context.getTaskMgmtSession().findTaskInstances(
-                            prefixedGroup));
-                    tis.addAll(context.getTaskMgmtSession().findPooledTaskInstances(
-                            prefixedGroup));
-
-                    // filter
-                    if (filter != null) {
-                        tis = filter.filter(context, null, tis, currentUser);
-                    }
-                    eagerLoadTaskInstances(tis);
-                    // remove duplicates
-                    HashSet<TaskInstance> setTis = new HashSet<TaskInstance>();
-                    setTis.addAll(tis);
-
-                    return toArrayList(setTis);
+        return (List<TaskInstance>) executeJbpmOperation(new JbpmOperation() {
+            public ArrayList<TaskInstance> run(JbpmContext context)
+                    throws NuxeoJbpmException {
+                if (currentUser == null) {
+                    throw new IllegalStateException("Null current user");
                 }
+                context.setActorId(NuxeoPrincipal.PREFIX
+                        + currentUser.getName());
+                List<String> groups = getActorsAndGroup(currentUser);
+                ArrayList<TaskInstance> tis = getPooledAndActorTaskInstances(
+                        context, groups);
+                // filter
+                if (filter != null) {
+                    tis = filter.filter(context, null, tis, currentUser);
+                }
+                return tis;
+            }
 
-            });
-        } catch (Exception e) {
-            throw new NuxeoJbpmException(e);
-        }
+        });
     }
 
-    private void eagerLoadTaskInstances(Collection<TaskInstance> tis) {
+    @SuppressWarnings("unchecked")
+    protected ArrayList<TaskInstance> getPooledAndActorTaskInstances(
+            JbpmContext context, List<String> groups) {
+        Set<TaskInstance> tis = new HashSet<TaskInstance>();
+        tis.addAll(context.getTaskMgmtSession().findTaskInstances(groups));
+        tis.addAll(context.getTaskMgmtSession().findPooledTaskInstances(groups));
+        eagerLoadTaskInstances(tis);
+        return toArrayList(tis);
+    }
+
+    protected void eagerLoadTaskInstances(Collection<TaskInstance> tis) {
         for (TaskInstance ti : tis) {
             eagerLoadTaskInstance(ti);
         }
     }
 
-    private <T> ArrayList<T> toArrayList(Collection<T> list) {
+    protected <T> ArrayList<T> toArrayList(Collection<T> list) {
         ArrayList<T> arrayList = new ArrayList<T>();
         for (T t : list) {
             arrayList.add(t);
@@ -157,7 +149,7 @@ public class JbpmServiceImpl implements JbpmService {
             final Map<String, Serializable> variables,
             final Map<String, Serializable> transientVariables)
             throws NuxeoJbpmException {
-        ProcessInstance pi = (ProcessInstance) executeJbpmOperation(new JbpmOperation() {
+        return (ProcessInstance) executeJbpmOperation(new JbpmOperation() {
             public ProcessInstance run(JbpmContext context)
                     throws NuxeoJbpmException {
                 String initiatorActorId = NuxeoPrincipal.PREFIX
@@ -195,45 +187,66 @@ public class JbpmServiceImpl implements JbpmService {
                 return pi;
             }
         });
-        return pi;
     }
 
     @SuppressWarnings("unchecked")
     public List<ProcessInstance> getCurrentProcessInstances(
             final NuxeoPrincipal principal, final JbpmListFilter filter)
             throws NuxeoJbpmException {
-        List<ProcessInstance> res = (List<ProcessInstance>) executeJbpmOperation(new JbpmOperation() {
+        return (List<ProcessInstance>) executeJbpmOperation(new JbpmOperation() {
             public ArrayList<ProcessInstance> run(JbpmContext context)
                     throws NuxeoJbpmException {
                 if (principal == null) {
                     throw new IllegalStateException("Null principal");
                 }
-                ArrayList<ProcessInstance> initiatorPD = new ArrayList<ProcessInstance>();
-                List<ProcessDefinition> pds = context.getGraphSession().findAllProcessDefinitions();
-                for (ProcessDefinition pd : pds) {
-                    List<ProcessInstance> pis = context.getGraphSession().findProcessInstances(
-                            pd.getId());
-                    for (ProcessInstance pi : pis) {
-                        String actorName = NuxeoPrincipal.PREFIX
-                                + principal.getName();
-                        Object initiator = pi.getContextInstance().getVariable(
-                                JbpmService.VariableName.initiator.name());
-                        if (actorName.equals(initiator)) {
-                            initiatorPD.add(pi);
-                        }
-                    }
-                }
-
+                List<String> actorsName = getActorsAndGroup(principal);
+                ArrayList<ProcessInstance> initiatorPD = getProcessInstances(
+                        context, actorsName);
                 if (filter != null) {
                     initiatorPD = filter.filter(context, null, initiatorPD,
                             principal);
                 }
-
                 return toArrayList(initiatorPD);
             }
         });
+    }
 
-        return res;
+    @SuppressWarnings("unchecked")
+    protected ArrayList<ProcessInstance> getProcessInstances(JbpmContext context,
+            List<String> actorsName) {
+        ArrayList<ProcessInstance> initiatorPD = new ArrayList<ProcessInstance>();
+        if(actorsName == null) {
+            return initiatorPD;
+        }
+        List<ProcessDefinition> pds = context.getGraphSession().findAllProcessDefinitions();
+        for (ProcessDefinition pd : pds) {
+            List<ProcessInstance> pis = context.getGraphSession().findProcessInstances(
+                    pd.getId());
+            for (ProcessInstance pi : pis) {
+                String initiator = (String) pi.getContextInstance().getVariable(
+                        JbpmService.VariableName.initiator.name());
+                if (initiator != null && actorsName.contains(initiator)) {
+                    initiatorPD.add(pi);
+                }
+            }
+        }
+        return initiatorPD;
+    }
+
+    private List<String> getActorsAndGroup(NuxeoPrincipal principal) {
+        List<String> actors = new ArrayList<String>();
+        String name = principal.getName();
+        if (!name.startsWith(NuxeoPrincipal.PREFIX)) {
+            name = NuxeoPrincipal.PREFIX + name;
+        }
+        actors.add(name);
+        for (String group : principal.getAllGroups()) {
+            if (!group.startsWith(NuxeoGroup.PREFIX)) {
+                group = NuxeoGroup.PREFIX + group;
+            }
+            actors.add(group);
+        }
+        return actors;
     }
 
     @SuppressWarnings("unchecked")
@@ -343,72 +356,25 @@ public class JbpmServiceImpl implements JbpmService {
                     throws NuxeoJbpmException {
                 Set<TaskInstance> tisSet = new HashSet<TaskInstance>();
                 if (user != null) {
-                    context.setActorId(NuxeoPrincipal.PREFIX + user.getName());
-                    List<String> groups = user.getAllGroups();
-                    List<String> prefixedActorsId = new ArrayList<String>();
-                    for (String s : groups) {
-                        prefixedActorsId.add(NuxeoGroup.PREFIX + s);
-                    }
-                    prefixedActorsId.add(NuxeoPrincipal.PREFIX + user.getName());
-                    List<TaskInstance> tis = context.getTaskMgmtSession().findTaskInstances(
-                            prefixedActorsId);
-                    tis.addAll(context.getTaskMgmtSession().findPooledTaskInstances(
-                            prefixedActorsId));
+                    List<TaskInstance> tis = getCurrentTaskInstances(user, null);
                     tisSet.addAll(tis);
                 } else {
                     List<TaskInstance> tis = context.getSession().createQuery(
                             FROM_ORG_JBPM_TASKMGMT_EXE_TASK_INSTANCE_TI_WHERE_TI_END_IS_NULL).list();
                     tisSet.addAll(tis);
                 }
-                // we need to look at the variables of the process instance of
-                // the task. If there is no process instance we check the
-                // variable of the task itself. If there is a process instance,
-                // we check the variable, we add the process donePi to not check
-                // the variable again. If it belongs to our document, we add
-                // the process id to useDocument.
-                List<Long> donePi = new ArrayList<Long>();
-                List<Long> useDocument = new ArrayList<Long>();
-                ArrayList<TaskInstance> result = new ArrayList<TaskInstance>();
-                for (TaskInstance ti : tisSet) {
-                    ProcessInstance pi = ti.getProcessInstance();
-                    if (pi == null) {// task created outside a process
-                        String docId = (String) ti.getVariable(JbpmService.VariableName.documentId.name());
-                        String repoId = (String) ti.getVariable(JbpmService.VariableName.documentRepositoryName.name());
-                        if (docId.equals(dm.getId())
-                                && repoId.equals(dm.getRepositoryName())) {
-                            eagerLoadTaskInstance(ti);
-                            result.add(ti);
-                        }
-                    } else if (!donePi.contains(pi.getId())) {
-                        String docId = (String) pi.getContextInstance().getVariable(
-                                JbpmService.VariableName.documentId.name());
-                        String repoId = (String) pi.getContextInstance().getVariable(
-                                JbpmService.VariableName.documentRepositoryName.name());
-                        donePi.add(pi.getId());
-                        if (docId.equals(dm.getId())
-                                && repoId.equals(dm.getRepositoryName())) {
-                            useDocument.add(pi.getId());
-                        }
-                        if (useDocument.contains(pi.getId())) {
-                            eagerLoadTaskInstance(ti);
-                            result.add(ti);
-                        }
-                    } else {
-                        if (useDocument.contains(pi.getId())) {
-                            eagerLoadTaskInstance(ti);
-                            result.add(ti);
-                        }
-                    }
-                }
+                ArrayList<TaskInstance> result = getTaskInstancesForDocument(
+                        dm, tisSet);
                 if (filter != null) {
                     result = filter.filter(context, dm, result, user);
                 }
                 return result;
             }
+
         });
     }
 
-    private void eagerLoadTaskInstance(TaskInstance ti) {
+    protected void eagerLoadTaskInstance(TaskInstance ti) {
         if (ti.getPooledActors() != null) {
             ti.getPooledActors().size();
         }
@@ -421,6 +387,51 @@ public class JbpmServiceImpl implements JbpmService {
         if (ti.getToken() != null) {
             ti.getToken().getId();
         }
+    }
+
+    private ArrayList<TaskInstance> getTaskInstancesForDocument(
+            final DocumentModel dm, Set<TaskInstance> tisSet) {
+        // we need to look at the variables of the process instance of
+        // the task. If there is no process instance we check the
+        // variable of the task itself. If there is a process instance,
+        // we check the variable, we add the process donePi to not check
+        // the variable again. If it belongs to our document, we add
+        // the process id to useDocument.
+        List<Long> donePi = new ArrayList<Long>();
+        List<Long> useDocument = new ArrayList<Long>();
+        ArrayList<TaskInstance> result = new ArrayList<TaskInstance>();
+        for (TaskInstance ti : tisSet) {
+            ProcessInstance pi = ti.getProcessInstance();
+            if (pi == null) {// task created outside a process
+                String docId = (String) ti.getVariable(JbpmService.VariableName.documentId.name());
+                String repoId = (String) ti.getVariable(JbpmService.VariableName.documentRepositoryName.name());
+                if (docId.equals(dm.getId())
+                        && repoId.equals(dm.getRepositoryName())) {
+                    eagerLoadTaskInstance(ti);
+                    result.add(ti);
+                }
+            } else if (!donePi.contains(pi.getId())) {// we haven't check this process instance
+                String docId = (String) pi.getContextInstance().getVariable(
+                        JbpmService.VariableName.documentId.name());
+                String repoId = (String) pi.getContextInstance().getVariable(
+                        JbpmService.VariableName.documentRepositoryName.name());
+                donePi.add(pi.getId());//we, now, have checked this process instance
+                if (docId.equals(dm.getId())
+                        && repoId.equals(dm.getRepositoryName())) {
+                    useDocument.add(pi.getId());//and it uses our document
+                }
+                if (useDocument.contains(pi.getId())) {//if it uses our document
+                    eagerLoadTaskInstance(ti);
+                    result.add(ti);//add it to the list
+                }
+            } else {//we have checked this process instance
+                if (useDocument.contains(pi.getId())) {//and if it uses our documetn
+                    eagerLoadTaskInstance(ti);
+                    result.add(ti);//then add it to the list
+                }
+            }
+        }
+        return result;
     }
 
     protected CoreSession getCoreSession(String repositoryName,
@@ -695,6 +706,63 @@ public class JbpmServiceImpl implements JbpmService {
                 }
                 return pds;
             }
+        });
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<ProcessInstance> getCurrentProcessInstances(
+            final List<String> actors, final JbpmActorsListFilter filter)
+            throws NuxeoJbpmException {
+        return (List<ProcessInstance>) executeJbpmOperation(new JbpmOperation() {
+            public Serializable run(JbpmContext context) {
+                ArrayList<ProcessInstance> processes = getProcessInstances(
+                        context, actors);
+                if (filter != null) {
+                    processes = filter.filter(context, null, processes, actors);
+                }
+                return processes;
+            }
+        });
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<TaskInstance> getCurrentTaskInstances(
+            final List<String> actors, final JbpmActorsListFilter filter)
+            throws NuxeoJbpmException {
+        return (List<TaskInstance>) executeJbpmOperation(new JbpmOperation() {
+            public ArrayList<TaskInstance> run(JbpmContext context)
+                    throws NuxeoJbpmException {
+                ArrayList<TaskInstance> tis = getPooledAndActorTaskInstances(
+                        context, actors);
+                // filter
+                if (filter != null) {
+                    tis = filter.filter(context, null, tis, actors);
+                }
+                return tis;
+            }
+
+        });
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<TaskInstance> getTaskInstances(final DocumentModel dm,
+            final List<String> actors, final JbpmActorsListFilter filter)
+            throws NuxeoJbpmException {
+        assert dm != null;
+        return (List<TaskInstance>) executeJbpmOperation(new JbpmOperation() {
+            public ArrayList<TaskInstance> run(JbpmContext context)
+                    throws NuxeoJbpmException {
+                Set<TaskInstance> tisSet = new HashSet<TaskInstance>();
+                List<TaskInstance> tis = getCurrentTaskInstances(actors, null);
+                tisSet.addAll(tis);
+                ArrayList<TaskInstance> result = getTaskInstancesForDocument(
+                        dm, tisSet);
+                if (filter != null) {
+                    result = filter.filter(context, dm, result, actors);
+                }
+                return result;
+            }
+
         });
     }
 }

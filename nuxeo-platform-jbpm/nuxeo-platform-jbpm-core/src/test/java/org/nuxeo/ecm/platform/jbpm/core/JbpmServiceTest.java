@@ -28,6 +28,7 @@ import org.jbpm.graph.exe.ProcessInstance;
 import org.jbpm.taskmgmt.exe.TaskInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
@@ -41,7 +42,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author arussel
- *
+ * 
  */
 public class JbpmServiceTest extends RepositoryOSGITestCase {
 
@@ -85,6 +86,11 @@ public class JbpmServiceTest extends RepositoryOSGITestCase {
     }
 
     public void testProcessInstanceLifecycle() throws Exception {
+        List<String> administratorList = new ArrayList<String>();
+        administratorList.add(NuxeoPrincipal.PREFIX + administrator.getName());
+        for (String group : administrator.getAllGroups()) {
+            administratorList.add(NuxeoGroup.PREFIX + group);
+        }
         DocumentModel dm = getDocument();
         assertNotNull(dm);
         // list process definition
@@ -110,12 +116,24 @@ public class JbpmServiceTest extends RepositoryOSGITestCase {
         assertEquals(pd.getContextInstance().getVariable(
                 JbpmService.VariableName.documentRepositoryName.name()),
                 dm.getRepositoryName());
+        // get process instance
+        List<ProcessInstance> pis1 = service.getCurrentProcessInstances(
+                administrator, null);
+        assertEquals(1, pis1.size());
+        List<ProcessInstance> pis2 = service.getCurrentProcessInstances(
+                administratorList, null);
+        assertEquals(1, pis2.size());
         // get tasks
         List<TaskInstance> tasks = service.getTaskInstances(dm, administrator,
                 null);
+        List<TaskInstance> tasks2 = service.getTaskInstances(dm,
+                administratorList, null);
+        assertEquals(tasks2.size(), tasks.size());
         assertNotNull(tasks);
         assertEquals(1, tasks.size());
         tasks = service.getCurrentTaskInstances(administrator, null);
+        tasks2 = service.getCurrentTaskInstances(administratorList, null);
+        assertEquals(tasks.size(), tasks.size());
         assertEquals(1, tasks.size());
         tasks.get(0).cancel();
         tasks = service.getCurrentTaskInstances(administrator, null);

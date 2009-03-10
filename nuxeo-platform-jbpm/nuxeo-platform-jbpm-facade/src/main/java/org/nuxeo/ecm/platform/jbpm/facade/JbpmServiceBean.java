@@ -31,6 +31,7 @@ import org.jbpm.graph.exe.ProcessInstance;
 import org.jbpm.taskmgmt.exe.TaskInstance;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.platform.jbpm.JbpmActorsListFilter;
 import org.nuxeo.ecm.platform.jbpm.JbpmListFilter;
 import org.nuxeo.ecm.platform.jbpm.JbpmOperation;
 import org.nuxeo.ecm.platform.jbpm.JbpmService;
@@ -178,6 +179,23 @@ public class JbpmServiceBean implements JbpmService {
     public List<ProcessDefinition> getProcessDefinitionsByType(String type)
             throws NuxeoJbpmException {
         return service.getProcessDefinitionsByType(type);
+    }
+
+    public List<ProcessInstance> getCurrentProcessInstances(
+            List<String> actors, JbpmActorsListFilter filter)
+            throws NuxeoJbpmException {
+        return service.getCurrentProcessInstances(actors, filter);
+    }
+
+    public List<TaskInstance> getCurrentTaskInstances(List<String> actors,
+            JbpmActorsListFilter filter) throws NuxeoJbpmException {
+        return service.getCurrentTaskInstances(actors, filter);
+    }
+
+    public List<TaskInstance> getTaskInstances(DocumentModel dm,
+            List<String> actors, JbpmActorsListFilter filter)
+            throws NuxeoJbpmException {
+        return service.getTaskInstances(dm, actors, filter);
     }
 
 }

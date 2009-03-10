@@ -119,7 +119,7 @@ public class JbpmPublisher extends AbstractPublisher implements Publisher {
     public boolean isPublished(DocumentModel proxy) throws PublishingException {
         try {
             List<TaskInstance> tis = getJbpmService().getTaskInstances(proxy,
-                    null, null);
+                    (NuxeoPrincipal) null, null);
             for (TaskInstance ti : tis) {
                 if (ti.getName().equals(TASK_NAME)) {
                     // if there is a task on this doc, then it is not yet
@@ -171,7 +171,8 @@ public class JbpmPublisher extends AbstractPublisher implements Publisher {
     }
 
     protected void createTask(DocumentModel document, CoreSession session,
-            NuxeoPrincipal principal) throws PublishingValidatorException, NuxeoJbpmException, PublishingException {
+            NuxeoPrincipal principal) throws PublishingValidatorException,
+            NuxeoJbpmException, PublishingException {
         TaskInstance ti = new TaskInstance();
         String[] actorIds = getPublishingService().getValidatorsFor(document);
         List<String> prefixedActorIds = new ArrayList<String>();

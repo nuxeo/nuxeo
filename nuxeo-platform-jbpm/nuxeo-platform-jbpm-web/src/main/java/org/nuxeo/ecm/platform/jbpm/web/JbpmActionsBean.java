@@ -624,7 +624,7 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
 
             // end process and tasks
             List<TaskInstance> tis = jbpmService.getTaskInstances(
-                    navigationContext.getCurrentDocument(), null, null);
+                    navigationContext.getCurrentDocument(), (NuxeoPrincipal) null, null);
             Set<String> recipients = new HashSet<String>();
             for (TaskInstance ti : tis) {
                 String actor = ti.getActorId();
