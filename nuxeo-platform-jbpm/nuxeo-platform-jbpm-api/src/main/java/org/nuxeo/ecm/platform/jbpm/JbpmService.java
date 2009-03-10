@@ -217,10 +217,10 @@ public interface JbpmService {
 
     /**
      * Return a list of all current process instances that has been started by
-     * one of the actors in the list. The Principal passed to the jbpmListFilter
-     * will be null.
+     * one of the actors in the list.
      *
-     * @param actors
+     * @param actors A list of string that would be used as actorId to retrieve
+     *            the process instances.
      * @param filter
      * @param principal the principal passed a
      * @return
@@ -354,7 +354,8 @@ public interface JbpmService {
      * @throws NuxeoJbpmException
      */
     List<TaskInstance> getTaskInstances(DocumentModel dm, List<String> actors,
-            JbpmActorsListFilter jbpmActorsListFilter) throws NuxeoJbpmException;
+            JbpmActorsListFilter jbpmActorsListFilter)
+            throws NuxeoJbpmException;
 
     /**
      * Return the list of process instances associated with this document.
