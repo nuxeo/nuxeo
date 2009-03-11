@@ -65,5 +65,14 @@ public interface CommentManager {
 
     void deleteComment(DocumentModel docModel, DocumentModel comment)
             throws ClientException;
+    
+    /**
+     * Gets documents in relation with a particular comment 
+     * @param docModel the comment
+     * @return the list of documents 
+     * @throws ClientException
+     */
+    List<DocumentModel> getDocumentsForComment(DocumentModel comment)
+            throws ClientException;
 
 }

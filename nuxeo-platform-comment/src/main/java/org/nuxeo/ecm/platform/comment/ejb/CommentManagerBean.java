@@ -143,5 +143,15 @@ public class CommentManagerBean implements CommentManager {
             throw ClientException.wrap(e);
         }
     }
+    
+    public List<DocumentModel> getDocumentsForComment(DocumentModel comment)
+            throws ClientException{
+        try {
+            return commentManager.getDocumentsForComment(comment);
+        } catch (Throwable e) {
+            throw ClientException.wrap(e);
+        }
+    }
+    
 
 }

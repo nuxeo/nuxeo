@@ -531,5 +531,54 @@ public class CommentManagerImpl implements CommentManager {
         }
 
     }
+    
+    public List<DocumentModel> getDocumentsForComment(DocumentModel comment)
+            throws ClientException {
+        RelationManager relationManager;
+        try {
+            relationManager = getRelationManager();
+        } catch (Exception e) {
+            throw new ClientException(e);
+        }
+        Resource commentResource = relationManager.getResource(
+                config.commentNamespace, comment, null);
+        if (commentResource == null) {
+            throw new ClientException(
+                    "Could not adapt document model to relation resource ; "
+                            + "check the service relation adapters configuration");
+        }
+        Resource predicate = new ResourceImpl(config.predicateNamespace);
+        Statement pattern = new StatementImpl(commentResource, predicate, null);
+
+        List<Statement> statementList = relationManager.getStatements(
+                config.graphName, pattern);
+        // XXX AT: BBB for when repository name was not included in the resource
+        // uri
+        Resource oldDocResource = new QNameResourceImpl(
+                config.commentNamespace, comment.getId());
+        Statement oldPattern = new StatementImpl(oldDocResource, predicate, null);
+        statementList.addAll(relationManager.getStatements(config.graphName,
+                oldPattern));
+
+        List<DocumentModel> docList = new ArrayList<DocumentModel>();
+        for (Statement stmt : statementList) {
+            QNameResourceImpl subject = (QNameResourceImpl) stmt.getObject();
+            DocumentModel docModel = null;
+            try {
+                docModel = (DocumentModel) relationManager.getResourceRepresentation(
+                        config.documentNamespace, subject, null);
+            } catch (Exception e) {
+                log.error("failed to retrieve documents from relations");
+            }
+            if (docModel == null) {
+                log.error("Could not adapt comment relation subject to a document "
+                        + "model; check the service relation adapters configuration");
+                continue;
+            }
+            docList.add(docModel);
+        }
+        return docList;
+
+    }
 
 }
