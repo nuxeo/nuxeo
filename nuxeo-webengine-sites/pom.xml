@@ -71,12 +71,10 @@
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>
-      <version>2.4</version>
     </dependency>
     <dependency>
       <groupId>commons-fileupload</groupId>
       <artifactId>commons-fileupload</artifactId>
-      <version>1.1.1</version>
     </dependency>
     <dependency>
       <groupId>net.sf.json-lib</groupId>

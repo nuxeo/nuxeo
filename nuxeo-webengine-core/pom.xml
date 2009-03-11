@@ -117,15 +117,6 @@
       <artifactId>jaxrs-api</artifactId>
     </dependency>
 
-<!-- needed for distribution
-      <dependency>
-         <groupId>javax.annotation</groupId>
-         <artifactId>jsr250-api</artifactId>
-         <version>1.0</version>
-      </dependency>
--->
-
-
     <!-- test scope -->
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
