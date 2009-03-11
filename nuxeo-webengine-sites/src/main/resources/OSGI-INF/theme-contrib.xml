@@ -92,5 +92,15 @@
       </src>
     </theme>
   </extension>
+  <!-- Palettes -->
+  <extension target="org.nuxeo.theme.services.ThemeService" point="presets">
+
+        <palette name="Sites borders" src="themes/palettes/sites-borders.properties" category="border" />
+    <palette name="Sites backgrounds" src="themes/palettes/sites-backgrounds.properties" category="background" />
+    <palette name="Sites fonts" src="themes/palettes/sites-fonts.properties" category="font" />
+
+
+  </extension>
+
 
 </component>

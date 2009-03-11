@@ -32,22 +32,10 @@
     <page name="page">
       <section>
         <cell>
-          <fragment type="generic fragment"/>
-        </cell>
-      </section>
-      <section>
-        <cell>
-          <fragment type="generic fragment"/>
-        </cell>
-        <cell>
           <fragment type="region fragment"/>
           <fragment type="generic fragment"/>
           <fragment type="generic fragment"/>
-        </cell>
-        <cell>
-          <cell>
-            <fragment type="generic fragment"/>
-          </cell>
+          <fragment type="generic fragment"/>
         </cell>
       </section>
     </page>
@@ -62,7 +50,7 @@
     <defaultBody/>
     <defaultSrc/>
   </properties>
-  <properties element="page[3]/section[2]/cell[2]/fragment[1]">
+  <properties element="page[3]/section[1]/cell[1]/fragment[1]">
     <name>content</name>
     <defaultBody/>
     <defaultSrc/>
@@ -105,28 +93,13 @@
       <width>100%</width>
     </layout>
     <layout element="page[2]/section[2]/cell[1]">
-      <padding-top/>
-      <padding-left/>
       <width>18%</width>
-      <padding-bottom/>
-      <padding-right/>
     </layout>
     <layout element="page[2]/section[2]/cell[2]">
       <width>64%</width>
+      <padding>0px 15px</padding>
     </layout>
     <layout element="page[2]/section[2]/cell[3]">
-      <width>18%</width>
-    </layout>
-    <layout element="page[3]/section[2]">
-      <width>100%</width>
-    </layout>
-    <layout element="page[3]/section[2]/cell[1]">
-      <width>18%</width>
-    </layout>
-    <layout element="page[3]/section[2]/cell[2]">
-      <width>64%</width>
-    </layout>
-    <layout element="page[3]/section[2]/cell[3]">
       <width>18%</width>
     </layout>
     <widget element="">
@@ -169,10 +142,13 @@
     <widget element="page[3]/section[1]/cell[1]">
       <view>cell frame</view>
     </widget>
-    <widget element="page[3]/section[2]/cell[1]/fragment[1]">
+    <widget element="page[3]/section[1]/cell[1]/fragment[1]">
+      <view>block region</view>
+    </widget>
+    <widget element="page[3]/section[1]/cell[1]/fragment[2]">
       <view>Minisite Tree</view>
     </widget>
-    <widget element="page[3]/section[2]/cell[2]/fragment[3]">
+    <widget element="page[3]/section[1]/cell[1]/fragment[3]">
       <view>Minisite Attached files</view>
     </widget>
     <widget element="page[2]/section[1]/cell[1]/fragment[1]">
@@ -193,51 +169,344 @@
     <widget element="page[2]/section[2]/cell[3]/cell[1]/fragment[1]">
       <view>Minisite Contextual</view>
     </widget>
+    <widget element="page[3]/section[1]/cell[1]/fragment[4]">
+      <view>Minisite Comments</view>
+    </widget>
     <widget element="page[2]/section[2]/cell[3]">
       <view>cell frame</view>
     </widget>
-    <widget element="page[3]/section[2]">
-      <view>section frame</view>
-    </widget>
-    <widget element="page[3]/section[2]/cell[1]">
-      <view>cell frame</view>
-    </widget>
-    <widget element="page[3]/section[2]/cell[2]">
-      <view>cell frame</view>
-    </widget>
-    <widget element="page[3]/section[2]/cell[3]">
-      <view>cell frame</view>
-    </widget>
-    <widget element="page[3]/section[1]/cell[1]/fragment[1]">
-      <view>Page Logo</view>
-    </widget>
-    <widget element="page[3]/section[2]/cell[2]/fragment[1]">
-      <view>Page Main</view>
-    </widget>
-    <widget element="page[3]/section[2]/cell[3]/fragment[1]">
-      <view>Minisite Tree</view>
-    </widget>
-    <widget element="page[3]/section[2]/cell[2]/fragment[2]">
-      <view>Page Lasts</view>
-    </widget>
-    <widget element="page[3]/section[2]/cell[3]/cell[1]/fragment[1]">
-      <view>Minisite Contextual</view>
-    </widget>
-    <style element="page[1]/section[1]"/>
-    <style element="page[1]/section[1]/cell[1]"/>
-    <style element="page[2]"/>
-    <style element="page[2]/section[1]"/>
-    <style element="page[2]/section[1]/cell[1]"/>
-    <style element="page[3]"/>
-    <style element="page[3]/section[1]"/>
-    <style element="page[3]/section[1]/cell[1]"/>
-    <style element="page[2]/section[2]"/>
-    <style element="page[2]/section[2]/cell[1]"/>
-    <style element="page[2]/section[2]/cell[2]"/>
-    <style element="page[2]/section[2]/cell[3]"/>
-    <style element="page[3]/section[2]"/>
-    <style element="page[3]/section[2]/cell[1]"/>
-    <style element="page[3]/section[2]/cell[2]"/>
-    <style element="page[3]/section[2]/cell[3]"/>
+     <!-- buttons -->
+    <style name="site buttons">
+      <selector path="input.button">
+        <background preset="buttons (Sites backgrounds)" />
+        <font preset="default (Sites fonts)" />
+        <margin>5px 10px 10px 0px</margin>
+        <color>#333333</color>
+        <border preset="buttons (Sites borders)" />
+        <padding>2px 5px 2px 5px</padding>
+        <cursor>pointer</cursor>
+      </selector>
+      <selector path="input.button:hover">
+        <color>#000000</color>
+        <border-color>#92999e</border-color>
+      </selector>
+      <selector path="input.button[disabled=disabled], input.button[disabled=disabled]:hover">
+        <color>#ccc</color>
+      </selector>
+    </style>
+     <style name="common site style">
+      <selector path="h1, h2, h3, h4, h5, h6, form, p">
+        <margin>0</margin>
+        <padding>0</padding>
+      </selector>
+      <selector path="h1">
+        <color>#4a4a4a</color>
+        <font preset="title1 (Sites fonts)" />
+        <overflow>auto</overflow>
+      </selector>
+      <selector path="h2">
+        <color>#4a4a4a</color>
+        <font preset="title 2 (Sites fonts)" />
+        <padding>0.5em 1em 0.5em 0</padding>
+      </selector>
+      <selector path="h3">
+        <color>#4a4a4a</color>
+        <font preset="title3 (Sites fonts)" />
+        <margin>0</margin>
+        <padding>13px 0px 10px 0px</padding>
+      </selector>
+      <selector path="h4">
+        <color>#4a4a4a</color>
+        <margin-top>5px</margin-top>
+      </selector>
+      <selector path="h4, h5, h6">
+        <font preset="title4+ (Sites fonts)" />
+      </selector>
+      <selector path="div">
+        <font preset="default (Sites fonts)" />
+        <line-height>1.25em</line-height>
+        <margin>0</margin>
+        <padding>0</padding>
+      </selector>
+      <selector path="input">
+        <margin>0</margin>
+      </selector>
+      <selector path="img">
+        <border>0</border>
+      </selector>
+      <selector path="textarea">
+        <padding>5px</padding>
+      </selector>
+       <selector path="a, a:link">
+        <color preset="link (Nuxeo psd colors)" />
+        <text-decoration>none</text-decoration>
+      </selector>
+      <selector path="a:visited">
+        <color preset="link.visited (Nuxeo psd colors)" />
+      </selector>
+      <selector path="a:active">
+        <color preset="link.active (Nuxeo psd colors)" />
+      </selector>
+      <selector path="a:hover">
+        <color preset="link (Nuxeo psd colors)" />
+        <text-decoration>underline</text-decoration>
+      </selector>
+      <selector path="table">
+        <font preset="default (Sites fonts)" />
+        <line-height>1.25em</line-height>
+        <margin>0</margin>
+      </selector>
+      <selector path="table thead th">
+        <padding>3px</padding>
+        <text-align>left</text-align>
+      </selector>
+      <selector path=".dataInput">
+        <margin-top>5px</margin-top>
+      </selector>
+       <selector path=".dataInput .button">
+        <margin>0 10px 0 0</margin>
+      </selector>
+      <selector path=".dataInput td">
+        <border>0px solid #FFF</border>
+        <padding>7px 4px</padding>
+      </selector>
+      <selector path=".dataInput textarea, .dataInput .dataInputText, .dataInput .dataInputTextNoSize">
+        <font>normal 11px Verdana, sans-serif</font>
+        <border>1px normal #666</border>
+        <vertical-align>top</vertical-align>
+        <padding>4px</padding>
+      </selector>
+       <selector path=".dataInput select">
+        <border>1px normal #666</border>
+        <vertical-align>top</vertical-align>
+        <padding>2px 1px 2px 1px</padding>
+      </selector>
+      <selector path=".dataOutput, .dataList">
+        <width>100%</width>
+      </selector>
+      <selector path=".dataOutput">
+        <border-collapse>collapse</border-collapse>
+        <margin-bottom>5px</margin-bottom>
+        <margin-top>7px</margin-top>
+      </selector>
+      <selector path=".dataOutput td">
+        <border-bottom preset="tablelines (Sites borders)"/>
+        <border-top preset="tablelines (Sites borders)"/>
+        <padding>5px 3px</padding>
+      </selector>
+      <selector path=".dataList">
+        <background>white</background>
+        <border-collapse>collapse</border-collapse>
+        <margin>0</margin>
+      </selector>
+      <selector path=".dataList td">
+        <border-bottom preset="tablelines (Sites borders)"/>
+        <border-top preset="tablelines (Sites borders)"/>
+        <padding>5px 3px</padding>
+      </selector>
+      <selector path=".dataList thead th">
+        <color>#606161</color>
+        <border-bottom preset="tablelines (Sites borders)"/>
+        <background preset="tablethead (Sites backgrounds)"/>
+        <padding>5px 3px</padding>
+        <text-align>left</text-align>
+      </selector>
+      <selector path=".dataList thead th a, .dataList thead th a:link">
+        <color>#606161</color>
+        <text-decoration>none</text-decoration>
+      </selector>
+      <selector path=".dataList thead th a:visited">
+        <color>#606161</color>
+      </selector>
+      <selector path=".dataList thead th a:active">
+        <color>#606161</color>
+      </selector>
+      <selector path=".dataList thead th a:hover">
+        <color>#606161</color>
+        <text-decoration>underline</text-decoration>
+      </selector>
+      <selector path=".dataInput textarea, .dataInput .dataInputText">
+        <width>500px</width>
+      </selector>
+      <selector path="table.dataOutput thead th a, table.dataOutput thead th a:hover, table.dataOutput thead th a:active, table.dataOutput thead th a:visited">
+        <color>#606161</color>
+      </selector>
+       <selector path=".dataOutput td table td">
+        <border>0px none transparent</border>
+      </selector>
+      <selector path="table.dataOutput thead th">
+        <color>#606161</color>
+        <border-bottom preset="tablelines (Sites borders)"/>
+        <background preset="tablethead (Sites backgrounds)"/>
+        <padding>5px 3px</padding>
+        <text-align>left</text-align>
+      </selector>
+      <selector path=".dataOutput .button">
+        <margin>2px 10px 2px 0px !important</margin>
+      </selector>
+      <selector path=".infoMessage">
+        <color>#003399</color>
+        <border>1px solid #0066cc</border>
+        <background>
+          url(/nuxeo/icons/tip.gif) 2px 3px no-repeat #f2f7fc
+        </background>
+        <margin-bottom>5px</margin-bottom>
+        <padding>5px 5px 5px 23px</padding>
+        <display>block</display>
+      </selector>
+      <selector path=".infoFeedback">
+        <font>bold 11px Verdana, sans-serif</font>
+        <color>#003399</color>
+        <border>2px solid #0066cc</border>
+        <background>
+          url(/nuxeo/icons/info.gif) 4px 5px no-repeat #f2f7fc
+        </background>
+        <padding>7px 7px 7px 24px</padding>
+      </selector>
+      <selector path=".error">
+        <color>red</color>
+        <font-weight>bold</font-weight>
+      </selector>
+      <selector path=".errorMessage">
+        <color>#000</color>
+        <border>1px solid #666</border>
+        <background>
+          url(/nuxeo/img/warning.gif) 2px 3px no-repeat #FFCC33
+        </background>
+        <width>480px</width>
+        <margin>2px 0 2px 0</margin>
+        <padding>3px 3px 3px 23px</padding>
+        <display>block</display>
+        <list-style>none</list-style>
+      </selector>
+       <selector path=".errorFeedback">
+        <font>bold 11px Verdana, sans-serif</font>
+        <color>#000</color>
+        <border>2px solid #666</border>
+        <background>
+          url(/nuxeo/img/warning.gif) 4px 5px no-repeat #FFCC33
+        </background>
+        <padding>7px 7px 7px 24px</padding>
+      </selector>
+      <selector path=".warningMessage">
+        <background>
+          url(/nuxeo/img/warning.gif) 2px 3px no-repeat #FFCC33
+        </background>
+        <width>500px</width>
+        <margin>2px 0 2px 0</margin>
+        <border>1px solid #666</border>
+        <color>#000</color>
+        <margin-bottom>12px</margin-bottom>
+        <display>block</display>
+        <padding>5px 5px 5px 23px</padding>
+        <list-style>none</list-style>
+      </selector>
+      <selector path=".warningFeedback">
+        <font>bold 11px Verdana, sans-serif</font>
+        <color>#000</color>
+        <border>2px solid #666</border>
+        <background>
+          url(/nuxeo/img/warning.gif) 4px 5px no-repeat #FFCC33
+        </background>
+        <padding>7px 7px 7px 24px</padding>
+      </selector>
+      <selector path=".facesStatusMessage">
+        <position>absolute</position>
+        <left>48%</left>
+        <top>19%</top>
+      </selector>
+       <selector path=".facesStatusMessage ul, .infoFeedback ul, .warningFeedback ul, .errorFeedback ul">
+        <list-style-type>none</list-style-type>
+        <padding>10px</padding>
+        <width>200px</width>
+      </selector>
+      <selector path=".iconColumn">
+        <width>20px</width>
+        <text-align>center</text-align>
+      </selector>
+      <selector path=".iconColumn img">
+        <position>relative</position>
+        <background>none</background>
+        <z-index>25</z-index>
+      </selector>
+      <selector path=".iconColumn .cell">
+        <background>none</background>
+        <width>40px</width>
+      </selector>
+      <selector path=".fieldColumn img">
+        <margin-right>4px</margin-right>
+        <margin-left>4px</margin-left>
+        <vertical-align>top</vertical-align>
+      </selector>
+      <selector path=".labelColumn">
+        <width>120px</width>
+      </selector>
+      <selector path=".buttonColumn">
+        <width>280px</width>
+        <text-align>center</text-align>
+      </selector>
+      <selector path=".radioColumn">
+        <width>8px</width>
+        <padding>0 0 0 5px</padding>
+        <vertical-align>top</vertical-align>
+      </selector>
+      <selector path=".boldColumn">
+        <font-weight>bold !important</font-weight>
+      </selector>  
+      <!-- rich faces tree -->
+      <selector path=".dr-tree-h-ic-div">
+        <margin-left>8px</margin-left>
+        <padding-left>10px</padding-left>
+      </selector>
+      <selector path=".treeNodeHighlightedClass">
+        <text-decoration>none</text-decoration>
+      </selector>
+      <selector path=".treeNodeSelectedClass">
+        <border>none</border>
+      </selector>
+      <!-- end of rich faces tree -->   
+      <selector path=".currentItemDescription">
+        <color>#454545</color>
+        <font-size>13px</font-size>
+      </selector>
+      <selector path=".buttonsGadget">
+        <margin>5px 0px 5px 135px</margin>
+      </selector>
+      <selector path=".currentDocumentDescription">
+        <padding>4px 0</padding>
+      </selector>
+      <selector path=".required">
+        <background>
+          url(/nuxeo/img/required.gif) top right no-repeat
+        </background>
+        <padding-right>8px</padding-right>
+      </selector>
+      <selector path=".closedContent">
+        <background>#FFF</background>
+        <border-color>#0066cc</border-color>
+        <margin>15px 0px 0px 0px</margin>
+        <padding>0px 10px 10px 10px</padding>
+        <border-style>solid</border-style>
+        <border-width>1px</border-width>
+      </selector>
+      <selector path=".dataRowEven">
+        <background>#fff</background>
+      </selector>
+      <selector path=".dataRowOdd">
+        <background preset="tableevenlines (Sites backgrounds)" />
+      </selector>
+    </style>
+    <style element="page[1]/section[1]" inherit="common site style"/>
+    <style element="page[1]/section[1]/cell[1]" inherit="common site style"/>
+    <style element="page[2]" inherit="common site style"/>
+    <style element="page[2]/section[1]" inherit="common site style"/>
+    <style element="page[2]/section[1]/cell[1]" inherit="common site style"/>
+    <style element="page[3]" inherit="common site style"/>
+    <style element="page[3]/section[1]" inherit="common site style"/>
+    <style element="page[3]/section[1]/cell[1]" inherit="common site style"/>
+    <style element="page[2]/section[2]" inherit="common site style"/>
+    <style element="page[2]/section[2]/cell[1]" inherit="common site style"/>
+    <style element="page[2]/section[2]/cell[2]" inherit="common site style"/>
+    <style element="page[2]/section[2]/cell[3]" inherit="common site style"/>
   </formats>
 </theme>
