@@ -19,6 +19,7 @@
   <properties>
     <nuxeo.common.version>1.5-SNAPSHOT</nuxeo.common.version>
     <nuxeo.runtime.version>1.5-SNAPSHOT</nuxeo.runtime.version>
+    <nuxeo.platform.version>${pom.version}</nuxeo.platform.version>
     <nuxeo.theme.version>${pom.version}</nuxeo.theme.version>
     <nuxeo.webengine.version>${pom.version}</nuxeo.webengine.version>
   </properties>
@@ -76,6 +77,11 @@
         <groupId>org.nuxeo.runtime</groupId>
         <artifactId>nuxeo-runtime-osgi</artifactId>
         <version>${nuxeo.runtime.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-rendering</artifactId>
+        <version>${nuxeo.platform.version}</version>
       </dependency>
 
       <dependency>
