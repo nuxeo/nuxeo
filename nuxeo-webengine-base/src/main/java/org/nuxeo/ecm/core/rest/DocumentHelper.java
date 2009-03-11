@@ -51,7 +51,7 @@ public class DocumentHelper {
                 throw new WebException("Invalid argument exception. Nos doc type specified");
             }
             String path = parent.getPathAsString();
-            // TODO  not the best method to create an unnamed doc - should refactor core API
+            // TODO not the best method to create an unnamed doc - should refactor core API
             if (name == null) {
                 name = form.getDocumentTitle();
                 if (name == null) {

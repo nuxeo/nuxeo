@@ -97,7 +97,7 @@ public class Main extends ModuleRoot {
         if (md != null) {
             return md.get().getRootObject(ctx);
         } else {
-            throw new WebResourceNotFoundException("No resource found");
+            throw new WebResourceNotFoundException("No resource found at " + path);
         }
     }
 
