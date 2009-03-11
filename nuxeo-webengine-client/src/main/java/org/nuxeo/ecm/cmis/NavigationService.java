@@ -20,23 +20,23 @@ import java.util.List;
 
 
 /**
- * 
+ *
  * Exposes the CMIS Navigation Service
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public interface NavigationService {
 
     List<DocumentEntry> getDescendants(DocumentEntry folder);
-    
+
     List<DocumentEntry> getChildren(DocumentEntry folder);
-  
+
     List<DocumentEntry> getFolderParent(DocumentEntry entry);
-    
+
     List<DocumentEntry> getObjectParents(DocumentEntry doc);
-    
+
     List<DocumentEntry> getCheckedOutDocuments(DocumentEntry folder);
-    
+
     //TODO add the rest of methods
 }

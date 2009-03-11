@@ -23,7 +23,7 @@ package org.nuxeo.ecm.cmis.common;
 public interface AdapterFactory {
 
     Class<?>[] getAdapterTypes();
-    
+
     <T> T getAdapter(Object obj, Class<T> adapterType);
-    
+
 }

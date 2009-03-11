@@ -57,8 +57,8 @@ public class Main {
                         error("Invalid option -p without value. Password requried.");
                     }
                     password = args[i];
-                } else if ("-e".equals(arg)) { // execute mode 
-                    // execute one command 
+                } else if ("-e".equals(arg)) { // execute mode
+                    // execute one command
                     execMode = true;
                     StringBuilder buf = new StringBuilder();
                     for (i++; i<args.length; i++) {
@@ -94,13 +94,13 @@ public class Main {
 
         Client client = new JdkHttpClient(url, null, username, password);
 
-        
+
         if (execMode) {
             Console.setDefault(new Console());
             Console.getDefault().start(client);
             JLineConsole.runCommand(client, command);
             return;
-        } 
+        }
         if (batchMode) {
             Console.setDefault(new Console());
             Console.getDefault().start(client);
@@ -134,7 +134,7 @@ public class Main {
         }
 
     }
-    
+
     static void error(String msg) {
         System.err.println(msg);
         System.exit(1);

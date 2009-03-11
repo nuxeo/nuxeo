@@ -20,36 +20,36 @@ package org.nuxeo.ecm.cmis;
 
 /**
  * A session is used by a client to access a repository.
- * 
+ *
  * The session provide a way to get the root of the repositories and all the other services defined by CMIS.
- * Also, this interface enable specific implementation to expose their own services through {@link #getService(Class)} 
- * 
+ * Also, this interface enable specific implementation to expose their own services through {@link #getService(Class)}
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public interface Session {
-    
+
     Repository getRepository();
-    
+
     DocumentEntry getRoot();
-    
+
     DiscoveryService getDiscoveryService();
 
     NavigationService getNavigationService();
 
     ObjectService getObjectService();
-    
+
     //TODO add the rest of services
 
     /**
      * Get a custom service given its interface.
      * Return null if no such service exists.
      * This can be used to extend the set of default CMIS services with custom services.
-     * 
+     *
      * @param <T>
      * @param serviceType the service interface
      * @return the service or null if no such service exists
      */
     <T> T getService(Class<T> serviceType);
-    
+
 }

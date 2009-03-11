@@ -26,7 +26,7 @@ import org.nuxeo.ecm.cmis.client.app.Feed;
  */
 public interface FeedService {
 
-    public Session getSession();
-    public Feed<FeedDescriptor> getFeeds() throws ContentManagerException;
-    
+    Session getSession();
+    Feed<FeedDescriptor> getFeeds() throws ContentManagerException;
+
 }

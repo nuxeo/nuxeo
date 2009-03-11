@@ -23,11 +23,11 @@ import org.nuxeo.ecm.webengine.client.Client;
  *
  */
 public class RemotePutCommand extends RemoteCommand {
-    
-    public RemotePutCommand(String path, String syntax, String synopsis) {     
+
+    public RemotePutCommand(String path, String syntax, String synopsis) {
         super(path, syntax, synopsis);
     }
-    
+
     @Override
     public void run(Client client, CommandLine cmdLine) throws Exception {
         client.put(path, cmdLine.toMap());

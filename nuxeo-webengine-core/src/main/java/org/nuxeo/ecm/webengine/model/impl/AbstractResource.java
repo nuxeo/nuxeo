@@ -222,7 +222,7 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
     public boolean checkGuard(String guard) throws ParseException {
         return PermissionService.parse(guard).check(this);
     }
-    
+
     @Override
     public String toString() {
         return type.getName()+" ["+path+"]";

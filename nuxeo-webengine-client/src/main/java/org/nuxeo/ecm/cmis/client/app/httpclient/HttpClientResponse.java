@@ -35,15 +35,15 @@ public class HttpClientResponse implements Response {
 
     final static int MIN_BUF_LEN = 32 * 1024;
     final static int MAX_BUF_LEN = 128 * 1024;
-    
+
     protected HttpMethod method;
     protected Connector connector;
-    
+
     public HttpClientResponse(Connector connector, HttpMethod method) {
         this.method = method;
         this.connector = connector;
     }
-    
+
 
     public String getHeader(String key) {
         Header h = method.getResponseHeader(key);
@@ -85,14 +85,14 @@ public class HttpClientResponse implements Response {
                 len = MAX_BUF_LEN;
             }
             byte[] buffer = new byte[len];
-            int read;        
+            int read;
             ByteArrayOutputStream baos = new ByteArrayOutputStream(len);
             while ((read = in.read(buffer)) != -1) {
                 baos.write(buffer, 0, read);
             }
             return baos.toByteArray();
         } catch (IOException e) {
-            throw new ContentManagerException("Failed to get response", e); 
+            throw new ContentManagerException("Failed to get response", e);
         } finally {
             if (in != null) {
                 try {
@@ -105,7 +105,7 @@ public class HttpClientResponse implements Response {
     }
 
     @SuppressWarnings("unchecked")
-    public <T> T getEntity(Object context, Class<T> clazz) throws ContentManagerException {        
+    public <T> T getEntity(Object context, Class<T> clazz) throws ContentManagerException {
         InputStream in = getStream();
         try {
             Object result = connector.getSerializationManager().readEntity(context, clazz, in);
@@ -114,7 +114,7 @@ public class HttpClientResponse implements Response {
             try {in.close();} catch (IOException e) { e.printStackTrace(); }
         }
     }
-    
+
     public <T> Feed<T> getFeed(Object context, Class<T> clazz) throws ContentManagerException {
         InputStream in = getStream();
         try {

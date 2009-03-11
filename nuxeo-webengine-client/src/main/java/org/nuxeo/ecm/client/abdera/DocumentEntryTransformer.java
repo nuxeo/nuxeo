@@ -32,7 +32,7 @@ import org.nuxeo.ecm.client.DocumentEntry;
 public class DocumentEntryTransformer implements org.apache.commons.collections.Transformer {
 
     protected final ContentManager contentManager;
-    
+
     DocumentEntryTransformer(ContentManager client) {
         this.contentManager = client;
     }

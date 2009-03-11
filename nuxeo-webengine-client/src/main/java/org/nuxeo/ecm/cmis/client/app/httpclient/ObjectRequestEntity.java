@@ -30,20 +30,20 @@ public class ObjectRequestEntity<T> implements RequestEntity {
 
     protected SerializationHandler<T> handler;
     protected T obj;
-    
+
     public ObjectRequestEntity(SerializationHandler<T> handler, T obj) {
         this.handler =  handler;
         this.obj = obj;
     }
-    
+
     public long getContentLength() {
         return -1;
     }
-    
+
     public String getContentType() {
         return handler.getContentType();
     }
-    
+
     public boolean isRepeatable() {
         return false;
     }
@@ -51,5 +51,5 @@ public class ObjectRequestEntity<T> implements RequestEntity {
     public void writeRequest(OutputStream out) throws IOException {
         handler.writeEntity(obj, out);
     }
-    
+
 }

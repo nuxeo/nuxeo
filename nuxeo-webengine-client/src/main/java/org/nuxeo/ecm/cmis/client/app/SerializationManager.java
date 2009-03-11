@@ -26,19 +26,19 @@ import org.nuxeo.ecm.cmis.ContentManagerException;
  *
  */
 public interface SerializationManager {
-    
+
     void writeEntity(Object object, OutputStream out) throws ContentManagerException;
-    
+
     <T> T readEntity(Object context, Class<T> type, InputStream in) throws ContentManagerException;
-    
+
     <T> Feed<T> readFeed(Object context, Class<T> type, InputStream in) throws ContentManagerException;
-  
+
     <T> SerializationHandler<T> getHandler(Class<T> clazz);
-    
+
     <T> SerializationHandler<T> getHandler(String contentType);
-        
+
     void registerHandler(SerializationHandler<?> handler);
 
     void unregisterHandler(Class<?> clazz);
-    
+
 }

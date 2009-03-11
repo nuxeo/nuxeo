@@ -66,7 +66,7 @@ public class FileUtils {
     public static List<String> readLines(File file) throws IOException {
         return readLines(new FileInputStream(file));
     }
-    
+
     public static List<String> readLines(InputStream in) throws IOException {
         List<String> lines = new ArrayList<String>();
         BufferedReader reader = null;
@@ -87,7 +87,7 @@ public class FileUtils {
         return lines;
     }
 
-    
+
     public static void copy(InputStream in, OutputStream out) throws IOException {
         byte[] buffer = createBuffer(in.available());
         int read;

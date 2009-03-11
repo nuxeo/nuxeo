@@ -23,7 +23,7 @@ package org.nuxeo.ecm.cmis.common;
 public interface ClassRegistry {
 
     void put(Class<?> clazz, Object value);
-    
+
     Object get(Class<?> clazz);
-    
+
 }

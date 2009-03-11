@@ -28,29 +28,29 @@ public class ContentHandlerRegistry {
 
     protected final Set<ContentHandler<?>> registry =
         new HashSet<ContentHandler<?>>();
-    
+
     public void addContentHandler(ContentHandler<?> handler) {
         throw new UnsupportedOperationException("not yet");
     }
-    
+
     public void removeContentHandler(ContentHandler<?> handler) {
         throw new UnsupportedOperationException("not yet");
     }
-    
+
     List<ContentHandler<?>>[] getContentHandlers() {
         throw new UnsupportedOperationException("not yet");
     }
-    
+
     List<ContentHandler<?>> getContentHandler(String contentType) {
         throw new UnsupportedOperationException("not yet");
     }
-    
+
     <T> List<ContentHandler<T>> getContentHandler(Class<T> objectType) {
         throw new UnsupportedOperationException("not yet");
     }
-    
+
     <T> ContentHandler<T> getContentHandler(String contentType, Class<T> objectType) {
         throw new UnsupportedOperationException("not yet");
     }
-    
+
 }

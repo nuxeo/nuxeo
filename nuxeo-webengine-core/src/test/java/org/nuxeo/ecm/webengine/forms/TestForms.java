@@ -37,7 +37,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 public abstract class TestForms extends NXRuntimeTestCase {
 
     protected FormManager formMgr;
- 
+
     @Override
     protected void setUp() throws Exception {
         super.setUp();

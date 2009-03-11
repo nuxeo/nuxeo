@@ -25,9 +25,9 @@ import org.nuxeo.ecm.client.DocumentFeed;
  *
  */
 public class GetDocumentFeedCommand extends AbstractCommand<DocumentFeed> {
-    
+
     protected final String href;
-    
+
     public GetDocumentFeedCommand(String href) {
         super("nuxeo","getDocumentFeed");
         this.href = href;

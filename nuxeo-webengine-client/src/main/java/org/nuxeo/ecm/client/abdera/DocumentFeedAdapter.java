@@ -31,7 +31,7 @@ import org.nuxeo.ecm.client.commands.RefreshDocumentFeedCommand;
 
 /**
  * @author matic
- * 
+ *
  */
 public class DocumentFeedAdapter implements DocumentFeed {
 

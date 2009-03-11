@@ -19,23 +19,23 @@ package org.nuxeo.ecm.client;
 
 
 /**
- * A list of documents that was returned by the server. This may describe different query results on the repository  
+ * A list of documents that was returned by the server. This may describe different query results on the repository
  *
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public interface DocumentFeed extends DocumentList {
- 
+
     String getId(); // URI
-    
+
     String getTitle(); // atom:title <=> CMIS:name
-    
+
     long lastModified(); //atom:edited <=> cmis:lastModifiedDate
-    
+
     String getAuthor(); // atom:author <=> cmis:createdBy
-    
+
     String getURL(); // link
-    
+
     DocumentFeed refresh() throws CannotConnectToServerException;
 }

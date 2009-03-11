@@ -36,7 +36,7 @@ import org.nuxeo.ecm.webengine.client.command.ExitException;
  */
 public class JLineConsole extends Console {
 
-    
+
     protected ConsoleReader console;
 
 
@@ -68,7 +68,7 @@ public class JLineConsole extends Console {
         return true;
     }
 
-    
+
     @Override
     public void start(Client client) throws IOException {
         super.start(client);
@@ -91,12 +91,12 @@ public class JLineConsole extends Console {
         console.printNewline();
     }
 
-    
+
     @Override
     public String promptPassword() throws IOException {
         return console.readLine(new Character('*'));
     }
-    
+
     @Override
     public void updatePrompt() {
         if (client.isConnected()) {
@@ -116,10 +116,10 @@ public class JLineConsole extends Console {
         console.flushConsole();
         console.printNewline();
     }
-    
+
     @Override
     public void flush() throws IOException {
         console.flushConsole();
     }
-    
+
 }

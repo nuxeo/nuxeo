@@ -71,7 +71,7 @@ public class WebCommentUtils {
 
         return false;
     }
-    
+
     /**
      * @return true if the current user has comment permission on this document
      * @throws Exception

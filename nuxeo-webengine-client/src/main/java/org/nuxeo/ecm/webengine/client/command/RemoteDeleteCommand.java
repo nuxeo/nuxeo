@@ -23,11 +23,11 @@ import org.nuxeo.ecm.webengine.client.Client;
  *
  */
 public class RemoteDeleteCommand extends RemoteCommand {
-    
-    public RemoteDeleteCommand(String path, String syntax, String synopsis) {     
+
+    public RemoteDeleteCommand(String path, String syntax, String synopsis) {
         super(path, syntax, synopsis);
     }
-    
+
     @Override
     public void run(Client client, CommandLine cmdLine) throws Exception {
         client.delete(path, cmdLine.toMap());

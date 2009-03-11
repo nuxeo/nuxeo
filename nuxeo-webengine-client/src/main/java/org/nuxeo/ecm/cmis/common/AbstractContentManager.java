@@ -33,19 +33,19 @@ public abstract class AbstractContentManager implements ContentManager {
     public AbstractContentManager(AdapterManager adapterManager) {
         this.adapters = adapterManager == null ? createAdapterManager() : adapterManager;
     }
-    
+
     protected AdapterManager createAdapterManager() {
         return new AdapterManager();
     }
-    
+
     public AdapterManager getAdapterManager() {
         return adapters;
     }
-    
+
     public synchronized AdapterFactory getAdapterFactory(Class<?> adaptee, Class<?> adapter) {
         return adapters.getAdapterFactory(adaptee, adapter);
     }
-    
+
     public <T> T getAdapter(Object adaptee, Class<T> adapter) {
         return adapters.getAdapter(adaptee, adapter);
     }
@@ -53,5 +53,5 @@ public abstract class AbstractContentManager implements ContentManager {
     public void registerAdapters(Class<?> clazz, AdapterFactory factory) {
         adapters.registerAdapters(clazz, factory);
     }
-        
+
 }

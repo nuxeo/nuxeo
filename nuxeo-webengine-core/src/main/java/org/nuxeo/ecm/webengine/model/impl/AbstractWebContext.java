@@ -65,7 +65,7 @@ public abstract class AbstractWebContext implements WebContext {
     private static final Log log = LogFactory.getLog(WebContext.class);
 
     public static Locale DEFAULT_LOCALE = Locale.ENGLISH; // this should be made configurable through an extension point
-    
+
     protected final WebEngine engine;
     protected final UserSession us;
     protected final LinkedList<File> scriptExecutionStack;
@@ -111,7 +111,7 @@ public abstract class AbstractWebContext implements WebContext {
             return adapter.cast(module);
         } else if (WebEngine.class == adapter) {
             return adapter.cast(engine);
-        } 
+        }
         return null;
     }
 
@@ -190,8 +190,8 @@ public abstract class AbstractWebContext implements WebContext {
             return '!' + key + '!';
         }
     }
-    
-    public Locale getLocale() { 
+
+    public Locale getLocale() {
         Locale locale = request.getLocale();
         return locale == null ? DEFAULT_LOCALE : locale;
     }
@@ -536,7 +536,7 @@ public abstract class AbstractWebContext implements WebContext {
             }
         }
     }
-    
+
     public boolean checkGuard(String guard) throws ParseException {
         return PermissionService.parse(guard).check(this);
     }

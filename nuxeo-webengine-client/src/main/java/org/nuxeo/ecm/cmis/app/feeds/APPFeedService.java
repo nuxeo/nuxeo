@@ -32,7 +32,7 @@ import org.nuxeo.ecm.cmis.common.AdapterFactory;
 public class APPFeedService implements FeedService {
 
     protected APPSession session;
-    
+
     public static void install(APPContentManager cm) {
         cm.registerAdapters(Session.class, new AdapterFactory() {
             public Class<?>[] getAdapterTypes() {
@@ -40,23 +40,23 @@ public class APPFeedService implements FeedService {
             }
             public <T> T getAdapter(Object obj, Class<T> adapter) {
                 return (T)new APPFeedService((APPSession)obj);
-            }            
+            }
         });
     }
-    
+
     public APPFeedService(APPSession session) {
         this.session = session;
     }
-    
+
     public APPSession getSession() {
         return session;
     }
-    
-    
+
+
     public Feed<FeedDescriptor> getFeeds() throws ContentManagerException {
         Request req = new Request(session.getBaseUrl()+"/feeds"); // TODO use atom collections
         Response resp = session.getConnector().get(req);
         return resp.getFeed(this, FeedDescriptor.class);
     }
-    
+
 }

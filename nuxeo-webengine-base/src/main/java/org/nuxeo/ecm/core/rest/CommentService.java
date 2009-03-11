@@ -46,7 +46,7 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
  * <ul>
  * <li> POST - create a new comment
  * </ul>
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * @author <a href="mailto:stan@nuxeo.com">Sun Seng David TAN</a>
  */
@@ -90,7 +90,7 @@ public class CommentService extends DefaultAdapter {
         }
     }
 
-  
+
     @DELETE
     public Response deleteComment() throws Exception {
 

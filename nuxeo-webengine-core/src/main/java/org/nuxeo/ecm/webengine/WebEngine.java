@@ -255,7 +255,7 @@ public class WebEngine implements ResourceLocator {
                     }
                     try {
                         // make a copy to avoid concurrent modifications with registerModule
-                        for (File mod : registeredModules.toArray(new File[registeredModules.size()])) {  
+                        for (File mod : registeredModules.toArray(new File[registeredModules.size()])) {
                             moduleMgr.loadModule(mod);
                         }
                     } catch (IOException e) {

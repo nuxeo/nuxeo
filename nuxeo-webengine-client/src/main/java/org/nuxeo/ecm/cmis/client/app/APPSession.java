@@ -33,61 +33,46 @@ public class APPSession extends AbstractSession {
 
     protected APPContentManager cm;
     protected Connector connector;
-    
+
     public APPSession(AppRepository repo) {
         super (repo);
         cm = (APPContentManager)repo.getContentManager();
-        this.connector = cm.getConnector(); // TODO clone connector to be able to use different logins        
+        this.connector = cm.getConnector(); // TODO clone connector to be able to use different logins
     }
-    
+
     public Connector getConnector() {
         return connector;
     }
-    
+
     public String getBaseUrl() {
         return cm.getBaseUrl();
     }
-    
-    /* (non-Javadoc)
-     * @see org.nuxeo.ecm.cmis.Session#getDiscoveryService()
-     */
+
     public DiscoveryService getDiscoveryService() {
         // TODO Auto-generated method stub
         return null;
     }
 
-    /* (non-Javadoc)
-     * @see org.nuxeo.ecm.cmis.Session#getNavigationService()
-     */
     public NavigationService getNavigationService() {
         // TODO Auto-generated method stub
         return null;
     }
 
-    /* (non-Javadoc)
-     * @see org.nuxeo.ecm.cmis.Session#getObjectService()
-     */
     public ObjectService getObjectService() {
         // TODO Auto-generated method stub
         return null;
     }
 
-    /* (non-Javadoc)
-     * @see org.nuxeo.ecm.cmis.Session#getQuerys()
-     */
     public List<Query> getQuerys() {
         // TODO Auto-generated method stub
         return null;
     }
 
-    /* (non-Javadoc)
-     * @see org.nuxeo.ecm.cmis.Session#getRoot()
-     */
     public DocumentEntry getRoot() {
         // TODO Auto-generated method stub
         return null;
     }
 
-    
-    
+
+
 }

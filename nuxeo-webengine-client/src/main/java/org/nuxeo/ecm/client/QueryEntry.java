@@ -18,7 +18,7 @@ package org.nuxeo.ecm.client;
 
 /**
  * @author matic
- * 
+ *
  */
 public interface QueryEntry extends Entry {
 

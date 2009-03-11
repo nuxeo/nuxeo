@@ -27,22 +27,22 @@ import org.nuxeo.ecm.cmis.ContentManagerException;
 public interface Response {
 
     int getStatusCode();
-    
+
     String getHeader(String key);
-    
+
     InputStream getStream() throws ContentManagerException;
-    
+
     byte[] getBytes() throws ContentManagerException;
-    
+
     String getString() throws ContentManagerException;
-    
+
     /**
-     * Unmarshall response content given the response content type 
+     * Unmarshall response content given the response content type
      * @return
      * @throws ContentManagerException
      */
     //Object getContent() throws ContentManagerException;
-    
+
    /**
     * Unmarshall the response content given a class for the resulting object
     * @param <T>
@@ -51,7 +51,7 @@ public interface Response {
     * @throws ContentManagerException
     */
     <T> T getEntity(Object context, Class<T> clazz) throws ContentManagerException;
-    
+
     /**
      * Get a feed object constructed from the response
      * @param <T>
@@ -60,7 +60,7 @@ public interface Response {
      * @return
      */
     <T> Feed<T> getFeed(Object context, Class<T> clazz) throws ContentManagerException;
-    
+
     boolean isOk();
-    
+
 }

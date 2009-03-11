@@ -112,10 +112,10 @@ public class WebEngineServlet extends HttpServlet {
         httpServletResponse.setHeader("Pragma", "no-cache");
         service(httpServletRequest.getMethod(), httpServletRequest, httpServletResponse);
     }
-    
-    
+
+
     public void service(String httpMethod, HttpServletRequest request, HttpServletResponse response) throws IOException
-    {        
+    {
         WebContext ctx = null;
         try
        {
@@ -128,7 +128,7 @@ public class WebEngineServlet extends HttpServlet {
           }
           HttpHeaders headers = ServletUtil.extractHttpHeaders(request);
           UriInfoImpl uriInfo = ServletUtil.extractUriInfo(request, request.getServletPath()); // BS modif
-          //org.jboss.resteasy.specimpl.patch.UriInfoImpl uriInfo = org.jboss.resteasy.specimpl.patch.UriInfoImpl.create(request); // BS: resteasy bug -  it is not auto escaping @ in literal part of @Path expression 
+          //org.jboss.resteasy.specimpl.patch.UriInfoImpl uriInfo = org.jboss.resteasy.specimpl.patch.UriInfoImpl.create(request); // BS: resteasy bug -  it is not auto escaping @ in literal part of @Path expression
 
           HttpResponse theResponse = createServletResponse(response);
           HttpRequest in = createHttpRequest(httpMethod, request, headers, uriInfo, theResponse);

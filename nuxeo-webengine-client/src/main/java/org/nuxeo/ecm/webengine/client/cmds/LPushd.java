@@ -37,7 +37,7 @@ public class LPushd extends AnnotatedCommand {
         CommandParameter param = cmdLine.getLastParameter();
         if (param != null) {
             client.lpushd(param.getValue());
-        }        
+        }
     }
 
 }

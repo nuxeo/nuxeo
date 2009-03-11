@@ -66,7 +66,7 @@ public abstract class Command {
         return syntax;
     }
 
-    
+
     /**
      * @return the help.
      */
@@ -78,7 +78,7 @@ public abstract class Command {
         InputStream in = null;
         try {
             in = url.openStream();
-            return FileUtils.read(in); 
+            return FileUtils.read(in);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

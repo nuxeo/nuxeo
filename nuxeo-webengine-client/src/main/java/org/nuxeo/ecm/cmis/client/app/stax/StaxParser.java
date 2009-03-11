@@ -32,17 +32,17 @@ public class StaxParser {
     public static void main(String[] args) throws Exception {
 
         System.out.println(FileUtils.read(new URL("http://dormeur:8081/cmis/feeds").openStream()));
-        
+
         XMLInputFactory factory = XMLInputFactory.newInstance();
         XMLStreamReader reader = factory.createXMLStreamReader(
                 new URL("http://dormeur:8081/cmis/feeds").openStream()
         );
-        
+
         while(reader.hasNext()) {
             System.out.println(">> "+reader.next());
             if (reader.getEventType()==1) System.out.println(reader.getLocalName());
             System.out.println("===============");
         }
     }
-    
+
 }

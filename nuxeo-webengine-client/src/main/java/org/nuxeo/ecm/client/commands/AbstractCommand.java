@@ -22,7 +22,7 @@ import org.nuxeo.ecm.client.Command;
 
 /**
  * @author matic
- * 
+ *
  */
 public abstract class AbstractCommand<T> implements Command<T> {
 

@@ -109,7 +109,7 @@ public class EngineService extends DefaultObject {
         System.out.println("creating doc in session2 and then save session");
         doc = new DocumentModelImpl(path.toString(), "doc2", "Folder");
         doc = session2.createDocument(doc);
-//        DocumentModel w2 = session2.getDocument(new PathRef(path.toString()));        
+//        DocumentModel w2 = session2.getDocument(new PathRef(path.toString()));
 //        w2.setPropertyValue("dc:title", "test2");
 //        session2.saveDocument(w2);
         session2.save();

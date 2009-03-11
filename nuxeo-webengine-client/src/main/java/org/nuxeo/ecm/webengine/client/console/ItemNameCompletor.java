@@ -27,7 +27,7 @@ import org.nuxeo.ecm.client.Path;
 
 /**
  * Auto-completes remote item names.
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */

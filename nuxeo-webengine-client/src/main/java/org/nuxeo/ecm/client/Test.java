@@ -30,13 +30,13 @@ public class Test {
 
         int i = 0;
         double s = 0;
-        
+
         for (i=0; i<n; i++) {
             "asdfgh".equals("asdfgh");
         }
-        
+
         s = System.currentTimeMillis();
-    for (i=0; i<n; i++) {        
+    for (i=0; i<n; i++) {
         "asdfgh".equals("asdfgh");
     }
     System.out.println("eq1>> "+((System.currentTimeMillis()-s)/1000));
@@ -46,7 +46,7 @@ public class Test {
         s1.equals(s2);
     }
     System.out.println("eq2>> "+((System.currentTimeMillis()-s)/1000));
-    
+
     s = System.currentTimeMillis();
     for (i=0; i<n; i++) {
         s1 = new String("asdfgh"); s2 = new String("asdfgh");
@@ -54,7 +54,7 @@ public class Test {
         if (s1.length() < s2.length()) {}
     }
     System.out.println("st>> "+((System.currentTimeMillis()-s)/1000));
-    
-    }    
-    
+
+    }
+
 }

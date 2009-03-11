@@ -96,7 +96,7 @@ public interface Resource extends Adaptable {
      * @return
      */
     boolean checkGuard(String guard) throws ParseException;
-    
+
 //    Response getEntries();
 
 }

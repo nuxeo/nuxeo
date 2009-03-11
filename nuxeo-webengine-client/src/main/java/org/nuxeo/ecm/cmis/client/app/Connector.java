@@ -20,26 +20,26 @@ import org.nuxeo.ecm.cmis.ContentManagerException;
 
 
 /**
- * 
+ *
  * Invokes a remote content manager over HTTP protocols, such as AtomPub.
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *  
+ *
  */
 public interface Connector {
-    
+
     APPContentManager getAPPContentManager();
-    
+
     SerializationManager getSerializationManager();
-        
+
     Response post(Request operation) throws ContentManagerException;
-    
+
     Response put(Request operation) throws ContentManagerException;
-    
+
     Response get(Request operation) throws ContentManagerException;
-    
+
     Response head(Request operation) throws ContentManagerException;
-    
+
     Response delete(Request operation) throws ContentManagerException;
-      
+
 }

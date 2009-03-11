@@ -29,7 +29,7 @@ import org.nuxeo.ecm.webengine.client.Client;
 public abstract class RemoteCommand extends Command {
 
     protected Path path;
-    
+
     public static RemoteCommand parse(String line) throws CommandException {
         // GET \t PATH \t syntax \t synopsis
         int p = line.indexOf('\t');
@@ -57,9 +57,9 @@ public abstract class RemoteCommand extends Command {
             synopsis = line.substring(q, p);
         }
         if ("GET".equals(method)) {
-          return new RemoteGetCommand(path, syntax, synopsis); 
+          return new RemoteGetCommand(path, syntax, synopsis);
         } else if ("POST".equals(method)) {
-            return new RemotePostCommand(path, syntax, synopsis);  
+            return new RemotePostCommand(path, syntax, synopsis);
         } else if ("PUT".equals(method)) {
             return new RemotePutCommand(path, syntax, synopsis);
         } else if ("DELETE".equals(method)) {
@@ -70,14 +70,14 @@ public abstract class RemoteCommand extends Command {
             return new RemoteGetCommand(path, syntax, synopsis);
         }
     }
-    
+
     public RemoteCommand(String path, String syntax, String synopsis) {
         if (path != null && path.length() > 0) {
             this.path = new Path(path);
         } else {
             this.path = Path.EMPTY;
         }
-        this.synopsis = synopsis;        
+        this.synopsis = synopsis;
         this.syntax = CommandSyntax.parse(syntax);
         this.aliases = this.syntax.getCommandToken().getNames();
     }

@@ -41,11 +41,11 @@ public class JdkHttpClient extends Client {
     public JdkHttpClient(URL baseUrl) throws IOException {
         super (baseUrl);
     }
-    
+
     public JdkHttpClient(String baseUrl, String username, String password) throws IOException {
         super (baseUrl, username, password);
     }
-    
+
     public JdkHttpClient(String baseUrl, String path, String username, String password) throws IOException {
         super (baseUrl, path, username, password);
     }
@@ -55,19 +55,19 @@ public class JdkHttpClient extends Client {
     }
 
 
-    
+
     public Result execute(HttpURLConnection conn, String cmdId) throws Exception {
         InputStream in = null;
         Result res = new Result(cmdId, conn);
         //res.
-        int ret = conn.getResponseCode();        
+        int ret = conn.getResponseCode();
         if (ret == 200) {
             in = conn.getInputStream();
             Console.getDefault().println(in);
         }
-        return res;        
+        return res;
     }
-    
+
     @Override
     public Result get(Path path, Map<String,Object> args) {
 //        path = getPath(path);
@@ -81,7 +81,7 @@ public class JdkHttpClient extends Client {
 //            conn.setRequestMethod("GET");
 //            conn.setDoInput(true);
 //            //TODO if we need to upload files ...
-//            //conn.setDoOutput(true);            
+//            //conn.setDoOutput(true);
 //            if (username != null) {
 //                String authorizationString = "Basic " + Base64.encode(username+":"+password);
 //                conn.setRequestProperty ("Authorization", authorizationString);
@@ -97,71 +97,56 @@ public class JdkHttpClient extends Client {
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        } finally {
-//            if (in != null) { try { in.close(); } catch (IOException e) {e.printStackTrace();} } 
+//            if (in != null) { try { in.close(); } catch (IOException e) {e.printStackTrace();} }
 //        }
         return null; // internal error
-    }    
+    }
 
     @Override
     public void onConnect() {
-        
+
     }
-    
+
     @Override
     public void onDisconnect() {
-        
+
     }
-    
-    
+
+
     public static URL getURL(URL url, String args) {
         return  null;
     }
 
-    /* (non-Javadoc)
-     * @see org.nuxeo.ecm.webengine.client.Client#doDelete(org.nuxeo.ecm.client.Path, java.util.Map)
-     */
     @Override
     public Result doDelete(Path path, Map<String, Object> args) {
         // TODO Auto-generated method stub
         return null;
     }
 
-    /* (non-Javadoc)
-     * @see org.nuxeo.ecm.webengine.client.Client#doGet(org.nuxeo.ecm.client.Path, java.util.Map)
-     */
     @Override
     public Result doGet(Path path, Map<String, Object> args) {
         // TODO Auto-generated method stub
         return null;
     }
 
-    /* (non-Javadoc)
-     * @see org.nuxeo.ecm.webengine.client.Client#doHead(org.nuxeo.ecm.client.Path, java.util.Map)
-     */
     @Override
     public Result doHead(Path path, Map<String, Object> args) {
         // TODO Auto-generated method stub
         return null;
     }
 
-    /* (non-Javadoc)
-     * @see org.nuxeo.ecm.webengine.client.Client#doPost(org.nuxeo.ecm.client.Path, java.util.Map)
-     */
     @Override
     public Result doPost(Path path, Map<String, Object> args) {
         // TODO Auto-generated method stub
         return null;
     }
 
-    /* (non-Javadoc)
-     * @see org.nuxeo.ecm.webengine.client.Client#doPut(org.nuxeo.ecm.client.Path, java.util.Map)
-     */
     @Override
     public Result doPut(Path path, Map<String, Object> args) {
         // TODO Auto-generated method stub
         return null;
     }
 
-    
-    
+
+
 }

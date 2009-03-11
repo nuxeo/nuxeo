@@ -27,7 +27,7 @@ import org.nuxeo.ecm.client.commands.GetDocumentFeedCommand;
 
 /**
  * @author matic
- * 
+ *
  */
 public class QueryEntryAdapter implements QueryEntry {
 

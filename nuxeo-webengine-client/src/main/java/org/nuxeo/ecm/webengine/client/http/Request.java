@@ -30,28 +30,28 @@ import java.util.Map;
 public class Request {
 
     protected String method;
-    protected String schema;    
+    protected String schema;
     protected String username;
     protected String password;
     protected String host;
     protected int port = 80;
     protected String path;
     protected StringBuilder query;
-    protected String fragment;    
+    protected String fragment;
     protected Map<String,String> headers;
-    
+
     protected String enctype;
     protected Map<String,Object> data;
-    
+
     public Request method(String method) {
         this.method = method;
         return this;
     }
-    
-    public Request get() { 
+
+    public Request get() {
         return method("GET");
     }
-    
+
     public Request get(String url) throws MalformedURLException {
         return get(new URL(url));
     }
@@ -60,10 +60,10 @@ public class Request {
         return get().url(url);
     }
 
-    public Request post() { 
+    public Request post() {
         return method("POST");
     }
-    
+
     public Request post(String url) throws MalformedURLException {
         return post(new URL(url));
     }
@@ -71,11 +71,11 @@ public class Request {
     public Request post(URL url) {
         return post().url(url);
     }
-    
-    public Request put() { 
+
+    public Request put() {
         return method("PUT");
     }
-    
+
     public Request put(String url) throws MalformedURLException {
         return put(new URL(url));
     }
@@ -83,11 +83,11 @@ public class Request {
     public Request put(URL url) {
         return put().url(url);
     }
-    
-    public Request delete() { 
+
+    public Request delete() {
         return method("DELETE");
     }
-    
+
     public Request delete(String url) throws MalformedURLException {
         return delete(new URL(url));
     }
@@ -95,11 +95,11 @@ public class Request {
     public Request delete(URL url) {
         return delete().url(url);
     }
-    
+
     public Request head() {
         return method("HEAD");
     }
-    
+
     public Request head(URL url) {
         return head().url(url);
     }
@@ -108,7 +108,7 @@ public class Request {
         return head(new URL(url));
     }
 
-    
+
     public Request url(String url) throws MalformedURLException {
         return url(new URL(url));
     }
@@ -139,16 +139,16 @@ public class Request {
         return this;
     }
 
-    
-    
-    
+
+
+
     public static void main(String[] args) throws Exception {
         //URL url = new URL("http://u:p@localhost:8080/the/path?k1=v1&k2=v2#anchor");
         URL url = new URL("http://u:p@localhost/the/path?k1=v1&k2=v2#anchor");
         System.out.println("> schema: "+url.getProtocol());
         System.out.println("> host: "+url.getHost());
         System.out.println("> port: "+url.getPort()+" - "+url.getDefaultPort());
-        System.out.println("> query: "+url.getQuery());      
+        System.out.println("> query: "+url.getQuery());
         System.out.println("> fragment: "+url.getRef());
         System.out.println("> user: "+url.getUserInfo());
     }

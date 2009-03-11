@@ -35,7 +35,7 @@ public class APPContentManager extends AbstractContentManager {
     protected Connector connector;
 
     protected SerializationManager serializationMgr;
-    
+
     public APPContentManager(String url) {
         this (url, null, null);
     }
@@ -45,11 +45,11 @@ public class APPContentManager extends AbstractContentManager {
         this.connector = connector == null ? createConnector() : connector;
         this.serializationMgr = serializationMgr == null ? createSerializationManager() : serializationMgr;
     }
-    
+
     protected SerializationManager createSerializationManager() {
         return new DefaultSerializationManager();
     }
-    
+
     protected Connector createConnector() {
         return new HttpClientConnector(this);
     }
@@ -57,19 +57,19 @@ public class APPContentManager extends AbstractContentManager {
     public String getBaseUrl() {
         return baseUrl;
     }
-    
+
     public Connector getConnector() {
         return connector;
     }
-    
+
     public SerializationManager getSerializationManager() {
         return serializationMgr;
     }
-    
+
     public void registerSerializationHandler(SerializationHandler<?> handler) {
         serializationMgr.registerHandler(handler);
     }
-    
+
     public void unregisterSerializationHandler(Class<?> clazz) {
         serializationMgr.unregisterHandler(clazz);
     }
@@ -92,8 +92,8 @@ public class APPContentManager extends AbstractContentManager {
             }
         }
         throw new NoSuchRepositoryException(baseUrl, id);
-    }    
-    
+    }
+
     public Repository getDefaultRepository() throws ContentManagerException {
         Repository[] repos = getRepositories();
         if (repos != null && repos.length > 0) {
@@ -101,6 +101,6 @@ public class APPContentManager extends AbstractContentManager {
         }
         throw new NoSuchRepositoryException(baseUrl, "default");
     }
-    
-    
+
+
 }

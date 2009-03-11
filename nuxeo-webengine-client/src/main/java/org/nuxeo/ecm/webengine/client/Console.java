@@ -32,18 +32,18 @@ import org.nuxeo.ecm.webengine.client.util.PwdReader;
 public class Console {
 
     protected static Console instance = null;
-    
+
     protected Client client;
 
-    
+
     public static Console getDefault() {
         return instance;
     }
-    
+
     public static void setDefault(Console console) {
         instance = console;
     }
-    
+
     public static CommandLine parseCommandLine(CommandRegistry reg, String line) throws CommandException {
         return new CommandLine(reg, line);
     }
@@ -53,7 +53,7 @@ public class Console {
     }
 
 
-    
+
     /**
      * Update the current context of the console.
      * On text console this will be a command line prompt.
@@ -61,16 +61,16 @@ public class Console {
     public void updatePrompt() {
         // do nothing
     }
-    
+
     /**
      * Read the stream an print the result on the screen.
-     * 
+     *
      * @param in
      */
     public void print(InputStream in) throws IOException {
         FileUtils.copy(in, System.out);
     }
-        
+
     /**
      * Read the stream an print the result on the screen.
      * On text console put a new line after printing the result.
@@ -91,12 +91,12 @@ public class Console {
 
     /**
      * Print a new line.
-     * On non text console does nothing 
+     * On non text console does nothing
      */
     public void println() throws IOException {
         System.out.println();
-    }    
-    
+    }
+
     /**
      * Flush pending printing if any.
      */
@@ -127,7 +127,7 @@ public class Console {
     public String promptPassword() throws IOException {
         return PwdReader.read();
     }
-    
+
     /**
      *  Start the console
      * @throws IOException
@@ -138,7 +138,7 @@ public class Console {
         }
         this.client = client;
     }
-    
+
     public CommandLine parseCommandLine(String line) throws CommandException {
         if (client != null) {
             return parseCommandLine(client.getRegistry(), line);
@@ -151,6 +151,6 @@ public class Console {
             return client.getRegistry();
         }
         throw new IllegalStateException("Console not started");
-    }    
+    }
 
 }

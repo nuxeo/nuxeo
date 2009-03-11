@@ -35,31 +35,31 @@ public class DefaultFeed<T> implements Feed<T> {
     public DefaultFeed() {
         this (new ArrayList<T>());
     }
-    
+
     public DefaultFeed(int size) {
         this (new ArrayList<T>(size));
     }
-    
+
     public DefaultFeed(List<T> entries) {
         this.entries = entries;
     }
-    
+
     public String getId() {
         return id;
     }
-    
+
     public String getTitle() {
         return title;
-    }    
+    }
 
     public String getURL() {
         return url;
     }
-    
+
     public String getAuthor() {
         return author;
     }
-    
+
     public List<T> getEntries() {
         return entries;
     }
@@ -68,7 +68,7 @@ public class DefaultFeed<T> implements Feed<T> {
         return lastModified;
     }
 
-    
+
     public void add(T entry) {
         entries.add(entry);
     }
@@ -76,21 +76,21 @@ public class DefaultFeed<T> implements Feed<T> {
     public void setId(String id) {
         this.id = id;
     }
-    
+
     public void setUrl(String url) {
         this.url = url;
     }
-    
+
     public void setTitle(String title) {
         this.title = title;
     }
-    
+
     public void setAuthor(String author) {
         this.author = author;
     }
-    
+
     public void setLastModified(long lastModified) {
         this.lastModified = lastModified;
     }
-    
+
 }

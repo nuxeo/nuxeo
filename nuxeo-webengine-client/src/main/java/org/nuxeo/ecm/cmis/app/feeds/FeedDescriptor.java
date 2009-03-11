@@ -33,26 +33,26 @@ public class FeedDescriptor {
     protected String url;
     protected String title;
     protected int pageSize; // recommended page size
-    
+
     public FeedDescriptor(FeedService service, String url, String title, int pageSize) {
         this.service = service;
         this.url = url;
         this.title = title;
         this.pageSize = pageSize;
     }
-    
+
     public String getTitle() {
         return title;
     }
-    
+
     public String getUrl() {
         return url;
     }
-    
+
     public int getPageSize() {
         return pageSize;
     }
-    
+
     public Feed<DocumentEntry> query() throws ContentManagerException {
         APPSession session = (APPSession)service.getSession();
         Request req = new Request(url);
@@ -65,7 +65,7 @@ public class FeedDescriptor {
         Request req = new Request(url);
         req.setParameter("query", query);
         Response resp = session.getConnector().get(req);
-        return resp.getFeed(service.getSession(), DocumentEntry.class);        
+        return resp.getFeed(service.getSession(), DocumentEntry.class);
     }
 
     public Feed<DocumentEntry> query(int offset, int pageSize) throws ContentManagerException {
@@ -84,7 +84,7 @@ public class FeedDescriptor {
         req.setParameter("offset", Integer.toString(offset));
         req.setParameter("length", Integer.toString(pageSize));
         Response resp = session.getConnector().get(req);
-        return resp.getFeed(service.getSession(), DocumentEntry.class);    
+        return resp.getFeed(service.getSession(), DocumentEntry.class);
     }
 
 }

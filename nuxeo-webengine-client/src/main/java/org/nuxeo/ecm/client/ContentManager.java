@@ -22,12 +22,12 @@ import org.nuxeo.ecm.client.impl.CannotInstantiateConnectorException;
 
 /**
  * mapped to APP document service used for introspection
- * 
+ *
  * @author matic
- * 
+ *
  * @apiviz.owns org.nuxeo.ecm.client.Connector
  * @apiviz.owns org.nuxeo.ecm.client.ContentHandlerRegistry
- * 
+ *
  */
 public interface ContentManager extends RepositoryService, Console {
 

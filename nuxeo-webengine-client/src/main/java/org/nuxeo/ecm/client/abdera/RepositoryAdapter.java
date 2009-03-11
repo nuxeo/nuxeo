@@ -33,7 +33,7 @@ import org.nuxeo.ecm.client.commands.GetQueriesCommand;
 
 /**
  * @author matic
- * 
+ *
  */
 public class RepositoryAdapter implements Repository, DiscoveryService {
 
@@ -57,7 +57,7 @@ public class RepositoryAdapter implements Repository, DiscoveryService {
     public String getRepositoryId() {
         return repositoryId;
     }
-    
+
     public NavigationService getNavigationService() {
         throw new UnsupportedOperationException("not yet");
     }

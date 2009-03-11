@@ -95,12 +95,12 @@ public interface WebContext extends Adaptable {
     String getMessageL(String key, String locale, String ... args);
 
     /**
-     * Get the context locale. The locale is computed from the Accept-Language language sent by the client. 
+     * Get the context locale. The locale is computed from the Accept-Language language sent by the client.
      * This is a shortcut for {@link HttpServletRequest#getLocale()}
      * @return the context locale
      */
     Locale getLocale();
-    
+
     /**
      * Gets the web engine instance.
      *
@@ -444,10 +444,10 @@ public interface WebContext extends Adaptable {
     /**
      * Check the given expression in this context and return true if the expression is verified or false otherwise.
      * Any valid guard expression is accepted
-     * @see org.nuxeo.ecm.webengine.security.Guard  
+     * @see org.nuxeo.ecm.webengine.security.Guard
      * @param guard the guard to check
      * @return
      */
     boolean checkGuard(String guard) throws ParseException;
-    
+
 }

@@ -66,7 +66,7 @@ public class Page extends DocumentObject {
         }
 
     }
-    
+
     @GET
     @Path("noComments")
     public int getNoComments() {
@@ -89,7 +89,7 @@ public class Page extends DocumentObject {
             throw WebException.wrap("Failed to delete comment", e);
         }
     }
-    
+
     public boolean isUserWithCommentPermission() {
         try {
 
@@ -99,6 +99,6 @@ public class Page extends DocumentObject {
             throw WebException.wrap("Failed to delete comment", e);
         }
     }
-    
+
 
 }

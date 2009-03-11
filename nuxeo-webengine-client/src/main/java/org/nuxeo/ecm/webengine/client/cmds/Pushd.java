@@ -37,7 +37,7 @@ public class Pushd extends AnnotatedCommand {
         CommandParameter param = cmdLine.getLastParameter();
         if (param != null) {
             client.pushd(param.getValue());
-        }        
+        }
     }
 
 }

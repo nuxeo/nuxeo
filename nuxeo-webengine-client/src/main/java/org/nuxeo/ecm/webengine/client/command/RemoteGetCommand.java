@@ -23,11 +23,11 @@ import org.nuxeo.ecm.webengine.client.Client;
  *
  */
 public class RemoteGetCommand extends RemoteCommand {
-    
-    public RemoteGetCommand(String path, String syntax, String synopsis) {     
+
+    public RemoteGetCommand(String path, String syntax, String synopsis) {
         super(path, syntax, synopsis);
     }
-    
+
     @Override
     public void run(Client client, CommandLine cmdLine) throws Exception {
         client.get(path, cmdLine.toMap());

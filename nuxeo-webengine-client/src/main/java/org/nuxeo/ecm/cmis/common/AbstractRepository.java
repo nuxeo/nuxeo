@@ -29,12 +29,12 @@ public abstract class AbstractRepository implements Repository {
 
     protected AbstractContentManager cm;
     protected String repositoryId;
-    
+
     public AbstractRepository(AbstractContentManager cm, String repositoryId) {
         this.cm = cm;
         this.repositoryId = repositoryId;
     }
-    
+
     public AbstractContentManager getContentManager() {
         return cm;
     }

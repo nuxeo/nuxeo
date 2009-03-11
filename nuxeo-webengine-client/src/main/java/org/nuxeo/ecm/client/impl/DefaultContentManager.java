@@ -31,14 +31,14 @@ import org.nuxeo.ecm.client.commands.RepositoriesCommand;
 
 /**
  * @author matic
- * 
+ *
  */
 public class DefaultContentManager implements ContentManager, RepositoryService {
 
     protected URL baseURL;
 
     protected Connector connector;
-  
+
 
     protected final ContentHandlerRegistry contentHandlerRegistry = new ContentHandlerRegistry();
 
@@ -54,7 +54,7 @@ public class DefaultContentManager implements ContentManager, RepositoryService 
         }
         connector.init(this);
     }
-    
+
     public URL getBaseURL() {
         return baseURL;
     }

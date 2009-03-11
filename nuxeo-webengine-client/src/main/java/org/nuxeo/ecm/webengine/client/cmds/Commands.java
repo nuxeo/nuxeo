@@ -40,7 +40,7 @@ public class Commands extends AnnotatedCommand implements Comparator<Command>{
     public int compare(Command o1, Command o2) {
         return o1.getName().compareTo(o2.getName());
     }
-    
+
     @Override
     public void run(Client client, CommandLine cmdLine) throws Exception {
         Command[] cmds = client.getRegistry().getCommands();
@@ -63,7 +63,7 @@ public class Commands extends AnnotatedCommand implements Comparator<Command>{
                 buf.append("]");
             }
             buf.append(" - ").append(cmd.getSynopsis());
-            Console.getDefault().println(buf.toString());    
+            Console.getDefault().println(buf.toString());
         }
     }
 

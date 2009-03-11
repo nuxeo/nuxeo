@@ -21,7 +21,7 @@ package org.nuxeo.ecm.client;
  *
  */
 public class CannotConnectToServerException extends ContentManagerException {
-    
+
     private static final long serialVersionUID = -5341514481335821610L;
 
     protected CannotConnectToServerException(String message, Exception e) {

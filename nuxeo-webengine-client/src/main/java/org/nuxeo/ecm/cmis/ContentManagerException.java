@@ -24,7 +24,7 @@ package org.nuxeo.ecm.cmis;
 public  class ContentManagerException extends Exception {
 
     private static final long serialVersionUID = -1328541867538528968L;
-    
+
     public ContentManagerException(String message) {
         super(message);
     }

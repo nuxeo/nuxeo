@@ -23,11 +23,11 @@ import org.nuxeo.ecm.webengine.client.Client;
  *
  */
 public class RemoteHeadCommand extends RemoteCommand {
-    
-    public RemoteHeadCommand(String path, String syntax, String synopsis) {     
+
+    public RemoteHeadCommand(String path, String syntax, String synopsis) {
         super(path, syntax, synopsis);
     }
-    
+
     @Override
     public void run(Client client, CommandLine cmdLine) throws Exception {
         client.head(path, cmdLine.toMap());

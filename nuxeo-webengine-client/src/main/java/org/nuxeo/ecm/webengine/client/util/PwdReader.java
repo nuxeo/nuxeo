@@ -22,14 +22,14 @@ import java.io.InputStreamReader;
 
 /**
  * In java 6 there is direct support for reading passwords form a console
- * <pre> 
+ * <pre>
  *  if ((cons = System.console()) != null &&
  *    (passwd = cons.readPassword("[%s]", "Password:")) != null) {
  *    ...
  *  }
  * </pre>
  * This can be for java < 6.
- * A separate thread is used to send to the console the backspace character to erase the last-typed character.  
+ * A separate thread is used to send to the console the backspace character to erase the last-typed character.
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
@@ -40,7 +40,7 @@ public class PwdReader {
         System.out.print("Password:  ");
         BufferedReader stdin = new BufferedReader(new
                 InputStreamReader(System.in));
-        consoleEraser.start();                       
+        consoleEraser.start();
         String pass = stdin.readLine();
         consoleEraser.halt();
         System.out.print("\b");
@@ -59,5 +59,5 @@ public class PwdReader {
             running = false;
         }
     }
-    
+
 }

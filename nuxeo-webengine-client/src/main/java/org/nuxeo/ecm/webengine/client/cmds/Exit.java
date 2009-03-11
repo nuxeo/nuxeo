@@ -33,7 +33,7 @@ import org.nuxeo.ecm.webengine.client.command.ExitException;
 public class Exit extends AnnotatedCommand {
 
     @Override
-    public void run(Client client, CommandLine cmdLine) throws Exception {        
+    public void run(Client client, CommandLine cmdLine) throws Exception {
         throw new ExitException();
     }
 

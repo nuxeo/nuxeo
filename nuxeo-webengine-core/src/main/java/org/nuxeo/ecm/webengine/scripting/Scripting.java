@@ -109,7 +109,7 @@ public class Scripting {
         }
         if ("groovy".equals(script.getExtension())) {
             return loader.getGroovyScripting().eval(script.file, args);
-        } else {            
+        } else {
             return _runScript(script, args);
         }
     }

@@ -26,17 +26,17 @@ import java.io.OutputStream;
 public interface Content {
 
     String getName();
-    
+
     int getLength();
-    
+
     String getType();
-    
+
     byte[] getBytes();
-    
+
     String getString();
-    
+
     InputStream getStream();
-    
+
     void transferTo(OutputStream out);
-    
+
 }
