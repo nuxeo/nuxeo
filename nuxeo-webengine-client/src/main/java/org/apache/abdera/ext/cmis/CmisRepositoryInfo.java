@@ -32,7 +32,7 @@ import org.apache.abdera.xpath.XPath;
  *
  */
 public class CmisRepositoryInfo extends ExtensibleElementWrapper {
-    
+
     public CmisRepositoryInfo(Element internal) {
         super(internal);
     }
@@ -54,7 +54,7 @@ public class CmisRepositoryInfo extends ExtensibleElementWrapper {
         }
         return elements.get(0).getText();
     }
-    
+
     public String getRepositoryId() {
         return getValue("repositoryId");
     }

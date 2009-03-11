@@ -26,18 +26,18 @@ import org.nuxeo.ecm.cmis.Session;
 public abstract class AbstractSession implements Session {
 
     protected AbstractRepository repository;
-    
+
     protected AbstractSession(AbstractRepository repository) {
         this.repository = repository;
     }
-    
+
     public Repository getRepository() {
         return repository;
     }
-        
+
     public <T> T getService(Class<T> serviceType) {
         return repository.getContentManager().getAdapter(this, serviceType);
     }
-    
-    
+
+
 }

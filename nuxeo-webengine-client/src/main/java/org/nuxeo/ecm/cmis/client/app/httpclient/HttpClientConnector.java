@@ -37,28 +37,28 @@ import org.nuxeo.ecm.cmis.client.app.SerializationManager;
 
 
 /**
- * 
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a> 
+ *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class HttpClientConnector implements Connector {
 
     protected HttpClient client;
-    protected APPContentManager cm;  
+    protected APPContentManager cm;
 
     public HttpClientConnector(APPContentManager cm) {
         this.cm = cm;
         this.client = new HttpClient();
     }
-    
+
     public APPContentManager getAPPContentManager() {
         return cm;
     }
-    
+
     public SerializationManager getSerializationManager() {
         return cm.getSerializationManager();
     }
-    
-    
+
+
     protected void setMethodParams(HttpMethod method, Request request) {
         List<String> params = request.getParameters();
         if (params != null) {
@@ -70,7 +70,7 @@ public class HttpClientConnector implements Connector {
                 }
                 method.setQueryString(qs);
             }
-        }        
+        }
     }
 
     protected void setMethodHeaders(HttpMethod method, Request request) {
@@ -82,7 +82,7 @@ public class HttpClientConnector implements Connector {
             }
         }
     }
-    
+
     @SuppressWarnings("unchecked")
     protected void setMethodContent(Request request, EntityEnclosingMethod method) throws ContentManagerException {
         if (request != null) {
@@ -90,7 +90,7 @@ public class HttpClientConnector implements Connector {
             method.setRequestEntity(new ObjectRequestEntity(getSerializationManager().getHandler(object.getClass()), object));
         }
     }
-        
+
     public Response get(Request request) throws ContentManagerException {
         try {
             GetMethod method = new GetMethod(request.getUrl());
@@ -102,7 +102,7 @@ public class HttpClientConnector implements Connector {
             throw new ContentManagerException("GET request failed", e);
         }
     }
-    
+
     public Response delete(Request request) throws ContentManagerException {
         try {
             DeleteMethod method = new DeleteMethod(request.getUrl());
@@ -114,7 +114,7 @@ public class HttpClientConnector implements Connector {
             throw new ContentManagerException("DELETE request failed", e);
         }
     }
-    
+
     public Response head(Request request) throws ContentManagerException {
         try {
             HeadMethod method = new HeadMethod(request.getUrl());
@@ -126,7 +126,7 @@ public class HttpClientConnector implements Connector {
             throw new ContentManagerException("HEAD request failed", e);
         }
     }
-    
+
     public Response post(Request request) throws ContentManagerException {
         try {
             PostMethod method = new PostMethod(request.getUrl());
@@ -139,7 +139,7 @@ public class HttpClientConnector implements Connector {
             throw new ContentManagerException("POST request failed", e);
         }
     }
-    
+
     public Response put(Request request) throws ContentManagerException {
         try {
             PutMethod method = new PutMethod(request.getUrl());
@@ -152,5 +152,5 @@ public class HttpClientConnector implements Connector {
             throw new ContentManagerException("PUT request failed", e);
         }
     }
-    
+
 }

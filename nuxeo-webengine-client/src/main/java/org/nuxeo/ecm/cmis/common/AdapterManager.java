@@ -22,7 +22,7 @@ import java.util.Map;
 
 /**
  * TODO implement unregister
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
@@ -30,24 +30,24 @@ import java.util.Map;
 public class AdapterManager implements ClassRegistry {
 
     // adaptableClass => { adapterClass => adapterFactory }
-    protected Map<Class<?>, Map<Class<?>, AdapterFactory>> registry; 
-    
-    
+    protected Map<Class<?>, Map<Class<?>, AdapterFactory>> registry;
+
+
     public AdapterManager() {
         this.registry = new HashMap<Class<?>, Map<Class<?>, AdapterFactory>>();
     }
-    
+
     public synchronized void registerAdapters(Class<?> clazz, AdapterFactory factory) {
         Map<Class<?>, AdapterFactory> adapters = registry.get(clazz);
         if (adapters == null) {
             adapters = new HashMap<Class<?>, AdapterFactory>();
         }
         for (Class<?> adapterType :  factory.getAdapterTypes()) {
-            adapters.put(adapterType, factory);    
-        }        
+            adapters.put(adapterType, factory);
+        }
         registry.put(clazz, adapters);
     }
-    
+
     public void unregisterAdapters(Class<?> clazz) {
         //TODO
     }
@@ -57,25 +57,25 @@ public class AdapterManager implements ClassRegistry {
     }
 
     public synchronized AdapterFactory getAdapterFactory(Class<?> adaptee, Class<?> adapter) {
-        Map<Class<?>, AdapterFactory> adapters = 
-            (Map<Class<?>, AdapterFactory>)ClassLookup.lookup(adaptee, this);        
+        Map<Class<?>, AdapterFactory> adapters =
+            (Map<Class<?>, AdapterFactory>)ClassLookup.lookup(adaptee, this);
         if (adapters != null) {
             return adapters.get(adapter);
         }
         return null;
     }
-    
+
     public <T> T getAdapter(Object adaptee, Class<T> adapter) {
         AdapterFactory factory = getAdapterFactory(adaptee.getClass(), adapter);
         return factory == null ? null : factory.getAdapter(adaptee, adapter);
     }
-    
+
     public Object get(Class<?> clazz) {
         return registry.get(clazz);
     }
-    
+
     public void put(Class<?> clazz, Object value) {
         registry.put(clazz, (Map<Class<?>, AdapterFactory>)value);
     }
-    
+
 }

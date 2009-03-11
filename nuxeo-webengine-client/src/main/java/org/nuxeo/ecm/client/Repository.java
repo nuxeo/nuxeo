@@ -20,17 +20,17 @@ import java.util.List;
 
 
 /**
- * Repository is mapped to an atom service or a workspace in 
- * 
+ * Repository is mapped to an atom service or a workspace in
+ *
  * @author matic
- * 
+ *
  */
 public interface Repository  {
 
     String getRepositoryId();
 
     DocumentEntry getRoot();
-    
+
     List<QueryEntry> getQueries() throws CannotConnectToServerException;
 
     DiscoveryService getDiscoveryService();

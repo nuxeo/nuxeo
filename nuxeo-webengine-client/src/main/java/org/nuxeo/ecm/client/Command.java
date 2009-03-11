@@ -17,12 +17,12 @@
 package org.nuxeo.ecm.client;
 
 /**
- * 
+ *
  * Represents a method to be invoked at server side using the SOAP or AtomPub
  * connector
- * 
+ *
  * @author matic
- * 
+ *
  *         R
  */
 public interface Command<T> {

@@ -289,7 +289,7 @@ public class Path implements Serializable {
             String[] newSegments = new String[segments.length-k];
             System.arraycopy(segments, k, newSegments, 0, newSegments.length);
            return  new Path(newSegments, flags | HAS_LEADING);
-        } 
+        }
         return new Path(segments, flags | HAS_LEADING);
     }
 
@@ -384,7 +384,7 @@ public class Path implements Serializable {
         }
 
         int flags = this.flags;
-        
+
         int myLen = segments.length;
         int tailLen = tail.segmentCount();
         int j = 0; int s = 0;
@@ -400,20 +400,20 @@ public class Path implements Serializable {
             }
         }
         if (j > 0) s = j;
-        
+
         int k = myLen - j;
         if (k < 0) {
             myLen = -k;
         } else {
             myLen = k;
         }
-        
+
         //concatenate the two segment arrays
         String[] newSegments = new String[myLen + tailLen-s];
-        if (k < 0) { 
+        if (k < 0) {
             for (int i = 0; i < myLen; i++) {
-                newSegments[i] = "..";    
-            }            
+                newSegments[i] = "..";
+            }
             flags &= ~HAS_LEADING;
         } else if (k > 0) {
             System.arraycopy(segments, 0, newSegments, 0, myLen);
@@ -422,7 +422,7 @@ public class Path implements Serializable {
             newSegments[myLen + i-s] = tail.segment(i);
         }
         //use my leading separators and the tail's trailing separator
-        
+
         return new Path(newSegments, (flags & HAS_LEADING) | (tail.hasTrailingSeparator() ? HAS_TRAILING : 0));
     }
 
@@ -526,7 +526,7 @@ public class Path implements Serializable {
 //            new org.nuxeo.common.utils.Path("/./abc//asdf/../file.ext");
 //        }
 //        System.out.println("old path: >>>> "+(System.currentTimeMillis()-s)/1000);
-        
+
         Path p = new Path("/commands");
         System.out.println(p);
         System.out.println(p=p.append("test"));

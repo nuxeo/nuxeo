@@ -30,16 +30,16 @@ import org.nuxeo.ecm.webengine.client.util.FileUtils;
 public class Result {
 
     protected String cmdId;
-    
+
     protected int status;
 
     protected String contentType;
-    
+
     protected int contentLength;
-    
-    protected InputStream in; 
-    
-    
+
+    protected InputStream in;
+
+
     public Result(String cmdId, HttpURLConnection conn) throws IOException {
         this (cmdId, conn, true);
     }
@@ -52,11 +52,11 @@ public class Result {
             in = conn.getInputStream();
         }
     }
-    
+
     public boolean hasContent() {
         return in != null;
     }
-        
+
     public void close() {
         try {
             in.close();
@@ -65,24 +65,24 @@ public class Result {
             e.printStackTrace();
         }
     }
-    
+
     public int getContentLength() {
         return contentLength;
     }
-    
+
     public String getType() {
         return contentType;
     }
-    
+
     public int getStatus() {
         return status;
     }
-    
+
     public boolean isOk() {
         return status == 200;
     }
-  
-    
+
+
     public String getContentAsString() throws IOException {
         return FileUtils.read(in);
     }

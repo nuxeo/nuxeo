@@ -37,7 +37,7 @@ public class Popd extends AnnotatedCommand {
         CommandParameter param = cmdLine.getLastParameter();
         if (param != null) {
             //TODO client.popd(param.getValue());
-        }        
+        }
     }
 
 }

@@ -19,7 +19,7 @@ package org.nuxeo.ecm.cmis;
 
 /**
  * @author matic
- * 
+ *
  */
 public class NoSuchRepositoryException extends ContentManagerException {
 

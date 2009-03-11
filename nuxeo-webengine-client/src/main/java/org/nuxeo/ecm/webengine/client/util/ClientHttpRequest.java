@@ -1,3 +1,22 @@
+/*
+ * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nuxeo - initial API and implementation
+ *
+ * $Id$
+ */
+
 package org.nuxeo.ecm.webengine.client.util;
 
 import java.io.File;
@@ -382,8 +401,8 @@ public class ClientHttpRequest {
     setParameter(name1, value1);
     return post(name2, value2, name3, value3, name4, value4);
   }
-  
-  
+
+
   /**
    * posts a new request to specified URL, with parameters that are passed in the argument
    * @param parameters request parameters
@@ -491,6 +510,6 @@ public class ClientHttpRequest {
   public static InputStream post(URL url, String name1, Object value1, String name2, Object value2, String name3, Object value3, String name4, Object value4) throws IOException {
     return new ClientHttpRequest(url).post(name1, value1, name2, value2, name3, value3, name4, value4);
   }
-  
-  
+
+
 }

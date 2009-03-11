@@ -23,13 +23,13 @@ import java.io.File;
 import java.io.Writer;
 import java.security.Principal;
 import java.text.MessageFormat;
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
 
-import javax.script.Bindings;
-import javax.script.SimpleBindings;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
@@ -52,6 +52,7 @@ import org.nuxeo.ecm.webengine.model.ResourceType;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
+import org.nuxeo.ecm.webengine.security.PermissionService;
 import org.nuxeo.ecm.webengine.session.UserSession;
 import org.nuxeo.runtime.api.Framework;
 
@@ -62,6 +63,8 @@ import org.nuxeo.runtime.api.Framework;
 public abstract class AbstractWebContext implements WebContext {
 
     private static final Log log = LogFactory.getLog(WebContext.class);
+
+    public static Locale DEFAULT_LOCALE = Locale.ENGLISH; // this should be made configurable through an extension point
 
     protected final WebEngine engine;
     protected final UserSession us;
@@ -96,7 +99,9 @@ public abstract class AbstractWebContext implements WebContext {
     }
 
     public <T> T getAdapter(Class<T> adapter) {
-        if (Principal.class == adapter) {
+        if (CoreSession.class == adapter) {
+          return adapter.cast(getCoreSession());
+        } else if (Principal.class == adapter) {
             return adapter.cast(getPrincipal());
         } else if (Resource.class == adapter) {
             return adapter.cast(tail());
@@ -145,7 +150,7 @@ public abstract class AbstractWebContext implements WebContext {
     public String getMessage(String key) {
         Messages messages = module.getMessages();
         try {
-            return messages.getString(key);
+            return messages.getString(key, getLocale().getLanguage());
         } catch (MissingResourceException e) {
             return '!' + key + '!';
         }
@@ -154,7 +159,7 @@ public abstract class AbstractWebContext implements WebContext {
     public String getMessage(String key, String ... args) {
         Messages messages = module.getMessages();
         try {
-            String msg = messages.getString(key);
+            String msg = messages.getString(key, getLocale().getLanguage());
             if (args != null && args.length > 0) { // format the string using given args
                 msg = MessageFormat.format(msg, (Object[]) args);
             }
@@ -184,6 +189,11 @@ public abstract class AbstractWebContext implements WebContext {
         } catch (MissingResourceException e) {
             return '!' + key + '!';
         }
+    }
+
+    public Locale getLocale() {
+        Locale locale = request.getLocale();
+        return locale == null ? DEFAULT_LOCALE : locale;
     }
 
     public Resource newObject(String typeName, Object ...  args) {
@@ -483,7 +493,7 @@ public abstract class AbstractWebContext implements WebContext {
         }
         try {
             String template = script.getURL();
-            Bindings bindings = createBindings(map);
+            Map<String, Object> bindings = createBindings(map);
             if (log.isDebugEnabled()) {
                 log.debug("## Rendering: "+template);
             }
@@ -527,8 +537,12 @@ public abstract class AbstractWebContext implements WebContext {
         }
     }
 
-    public Bindings createBindings(Map<String, Object> vars) {
-        Bindings bindings = new SimpleBindings();
+    public boolean checkGuard(String guard) throws ParseException {
+        return PermissionService.parse(guard).check(this);
+    }
+
+    public Map<String, Object> createBindings(Map<String, Object> vars) {
+        HashMap<String, Object> bindings = new HashMap<String, Object>();
         if (vars != null) {
             bindings.putAll(vars);
         }
@@ -558,7 +572,7 @@ public abstract class AbstractWebContext implements WebContext {
         return null;
     }
 
-    protected void initializeBindings(Bindings bindings) {
+    protected void initializeBindings(Map<String, Object> bindings) {
         Resource obj = getTargetObject();
         bindings.put("Context", this);
         bindings.put("Module", module);

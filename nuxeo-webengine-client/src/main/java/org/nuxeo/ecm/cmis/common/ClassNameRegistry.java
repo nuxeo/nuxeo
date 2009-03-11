@@ -23,9 +23,9 @@ package org.nuxeo.ecm.cmis.common;
 public interface ClassNameRegistry {
 
     void put(String className, Object value);
-    
+
     Object get(String className);
-    
+
     Class<?> loadClass(String className);
-    
+
 }

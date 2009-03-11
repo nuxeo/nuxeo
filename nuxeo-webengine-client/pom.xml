@@ -37,16 +37,7 @@
                 <artifactItem>
                   <groupId>jline</groupId>
                   <artifactId>jline</artifactId>
-                  <version>0.9.94</version>
                 </artifactItem>
-                <!--
-                  artifactItem> <groupId>org.apache.httpcomponents</groupId>
-                  <artifactId>httpcore</artifactId> <version>4.0-beta3</version>
-                  </artifactItem> <artifactItem>
-                  <groupId>org.apache.httpcomponents</groupId>
-                  <artifactId>httpcore-nio</artifactId>
-                  <version>4.0-beta3</version> </artifactItem
-                -->
               </artifactItems>
               <outputDirectory>target/classes</outputDirectory>
             </configuration>
@@ -75,7 +66,6 @@
     <dependency>
     	<groupId>nuxeo-cmis</groupId>
     	<artifactId>nuxeo-cmis</artifactId>
-    	<version>0.0.1-SNAPSHOT</version>
     </dependency>
     <dependency>
     	<groupId>commons-collections</groupId>

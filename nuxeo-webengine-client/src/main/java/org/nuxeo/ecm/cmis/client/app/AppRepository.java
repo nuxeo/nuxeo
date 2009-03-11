@@ -29,7 +29,7 @@ import org.nuxeo.ecm.cmis.common.AbstractRepository;
  */
 public class AppRepository extends AbstractRepository {
 
-    protected Map<String,String> collections = 
+    protected Map<String,String> collections =
         new HashMap<String,String>();
 
     public AppRepository(AbstractContentManager cm, String id) {
@@ -52,6 +52,6 @@ public class AppRepository extends AbstractRepository {
     public void addCollection(String name, String href) {
         collections.put(name, href);
     }
-    
-    
+
+
 }

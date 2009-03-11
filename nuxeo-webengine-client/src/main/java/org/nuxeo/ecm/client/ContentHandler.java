@@ -27,11 +27,11 @@ import java.io.OutputStream;
 public interface ContentHandler<T> {
 
     String getMimeType();
-    
+
     Class<T> getObjectType();
-    
+
     void write(T object, OutputStream out) throws IOException;
-    
+
     T read(InputStream in) throws IOException;
-    
+
 }

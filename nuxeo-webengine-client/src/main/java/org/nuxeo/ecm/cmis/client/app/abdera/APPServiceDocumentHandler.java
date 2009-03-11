@@ -38,7 +38,7 @@ import org.nuxeo.ecm.cmis.common.AbstractContentManager;
  */
 public class APPServiceDocumentHandler implements SerializationHandler<APPServiceDocument> {
 
-    
+
     public Class<APPServiceDocument> getObjectType() {
         return APPServiceDocument.class;
     }
@@ -46,7 +46,7 @@ public class APPServiceDocumentHandler implements SerializationHandler<APPServic
     public String getContentType() {
         return "application/atom+xml";
     }
-    
+
     public APPServiceDocument readEntity(Object context, InputStream in) throws IOException {
         AbstractContentManager cm = (AbstractContentManager) context;
         Document<Service> document = Abdera.getInstance().getParser().parse(in);
@@ -55,17 +55,17 @@ public class APPServiceDocumentHandler implements SerializationHandler<APPServic
         AppRepository repos[] = new AppRepository[atomWorkspaces.size()];
         int i = 0;
         for (i = 0; i < repos.length; i++) {
-            repos[i] = new AppRepository(cm, 
+            repos[i] = new AppRepository(cm,
                     atomWorkspaces.get(i).getExtension(CmisRepositoryInfo.class).getRepositoryId());
         }
         return new APPServiceDocument(repos);
     }
-    
+
     public Feed<APPServiceDocument> readFeed(Object context, InputStream in)
             throws IOException {
         throw new UnsupportedOperationException("readFeed not supported for type APPServiceDocument");
     }
-    
+
     public void writeEntity(APPServiceDocument object, OutputStream out)
             throws IOException {
         throw new UnsupportedOperationException("Write content is not available for APPServiceDocument");

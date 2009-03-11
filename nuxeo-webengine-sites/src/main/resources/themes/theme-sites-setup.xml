@@ -11,8 +11,21 @@
     <page name="workspace">
       <section>
         <cell>
+          <fragment type="generic fragment"/>
+        </cell>
+      </section>
+      <section>
+        <cell>
+          <fragment type="generic fragment"/>
+        </cell>
+        <cell>
           <fragment type="region fragment"/>
           <fragment type="generic fragment"/>
+        </cell>
+        <cell>
+          <cell>
+            <fragment type="generic fragment"/>
+          </cell>
         </cell>
       </section>
     </page>
@@ -20,6 +33,7 @@
       <section>
         <cell>
           <fragment type="region fragment"/>
+          <fragment type="generic fragment"/>
           <fragment type="generic fragment"/>
           <fragment type="generic fragment"/>
         </cell>
@@ -31,7 +45,7 @@
     <defaultBody/>
     <defaultSrc/>
   </properties>
-  <properties element="page[2]/section[1]/cell[1]/fragment[1]">
+  <properties element="page[2]/section[2]/cell[2]/fragment[1]">
     <name>content</name>
     <defaultBody/>
     <defaultSrc/>
@@ -75,6 +89,22 @@
       <width>100%</width>
       <text-align>left</text-align>
     </layout>
+    <layout element="page[2]/section[2]">
+      <width>100%</width>
+    </layout>
+    <layout element="page[2]/section[2]/cell[1]">
+      <padding-top/>
+      <padding-left/>
+      <width>18%</width>
+      <padding-bottom/>
+      <padding-right/>
+    </layout>
+    <layout element="page[2]/section[2]/cell[2]">
+      <width>64%</width>
+    </layout>
+    <layout element="page[2]/section[2]/cell[3]">
+      <width>18%</width>
+    </layout>
     <widget element="">
       <view>theme view</view>
       <charset>utf-8</charset>
@@ -100,10 +130,10 @@
     <widget element="page[2]/section[1]/cell[1]">
       <view>cell frame</view>
     </widget>
-    <widget element="page[2]/section[1]/cell[1]/fragment[1]">
-      <view>block region</view>
+    <widget element="page[2]/section[2]/cell[2]/fragment[1]">
+      <view>Minisite Main</view>
     </widget>
-    <widget element="page[2]/section[1]/cell[1]/fragment[2]">
+    <widget element="page[2]/section[2]/cell[1]/fragment[1]">
       <view>Minisite Tree</view>
     </widget>
     <widget element="page[3]">
@@ -124,6 +154,30 @@
     <widget element="page[3]/section[1]/cell[1]/fragment[3]">
       <view>Minisite Attached files</view>
     </widget>
+    <widget element="page[2]/section[1]/cell[1]/fragment[1]">
+      <view>Minisite Logo</view>
+    </widget>
+    <widget element="page[2]/section[2]">
+      <view>section frame</view>
+    </widget>
+    <widget element="page[2]/section[2]/cell[1]">
+      <view>cell frame</view>
+    </widget>
+    <widget element="page[2]/section[2]/cell[2]">
+      <view>cell frame</view>
+    </widget>
+    <widget element="page[2]/section[2]/cell[2]/fragment[2]">
+      <view>Minisite Lasts</view>
+    </widget>
+    <widget element="page[2]/section[2]/cell[3]/cell[1]/fragment[1]">
+      <view>Minisite Contextual</view>
+    </widget>
+    <widget element="page[3]/section[1]/cell[1]/fragment[4]">
+      <view>Minisite Comments</view>
+    </widget>
+    <widget element="page[2]/section[2]/cell[3]">
+      <view>cell frame</view>
+    </widget>
     <style element="page[1]/section[1]"/>
     <style element="page[1]/section[1]/cell[1]"/>
     <style element="page[2]"/>
@@ -132,5 +186,9 @@
     <style element="page[3]"/>
     <style element="page[3]/section[1]"/>
     <style element="page[3]/section[1]/cell[1]"/>
+    <style element="page[2]/section[2]"/>
+    <style element="page[2]/section[2]/cell[1]"/>
+    <style element="page[2]/section[2]/cell[2]"/>
+    <style element="page[2]/section[2]/cell[3]"/>
   </formats>
 </theme>

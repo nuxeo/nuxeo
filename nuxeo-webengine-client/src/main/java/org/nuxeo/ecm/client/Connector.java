@@ -17,14 +17,14 @@
 package org.nuxeo.ecm.client;
 
 /**
- * 
+ *
  * Invokes a content manager using a dedicated protocol, such as AtomPub or
  * SOAP.
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  * @apiviz.uses org.nuxeo.ecm.client.Operation
- * 
+ *
  */
 public interface Connector {
 

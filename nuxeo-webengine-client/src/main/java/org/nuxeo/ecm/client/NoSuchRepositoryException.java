@@ -20,7 +20,7 @@ import java.net.URL;
 
 /**
  * @author matic
- * 
+ *
  */
 public class NoSuchRepositoryException extends ContentManagerException {
 

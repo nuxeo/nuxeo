@@ -19,10 +19,10 @@ package org.nuxeo.ecm.cmis;
 
 /**
  * @author matic
- * 
+ *
  */
 public interface DiscoveryService {
 
     //TODO
-    
+
 }

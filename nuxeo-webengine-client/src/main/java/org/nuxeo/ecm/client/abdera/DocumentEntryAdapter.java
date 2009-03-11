@@ -31,7 +31,7 @@ import org.nuxeo.ecm.client.Repository;
  *
  */
 public class DocumentEntryAdapter implements DocumentEntry {
-    
+
     protected final Entry atomEntry;
     protected final ContentManager client;
 

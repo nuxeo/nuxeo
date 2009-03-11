@@ -23,10 +23,10 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import javax.script.Bindings;
 import javax.script.Compilable;
 import javax.script.CompiledScript;
 import javax.script.ScriptContext;
@@ -38,7 +38,6 @@ import javax.script.SimpleScriptContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.nuxeo.ecm.webengine.loader.WebLoader;
 
 /**
@@ -104,7 +103,7 @@ public class Scripting {
         return runScript(script, null);
     }
 
-    public Object runScript(ScriptFile script, Bindings args) throws Exception {
+    public Object runScript(ScriptFile script, Map<String, Object> args) throws Exception {
         if (log.isDebugEnabled()) {
             log.debug("## Running Script: "+script.getFile());
         }
@@ -116,16 +115,17 @@ public class Scripting {
     }
 
     //TODO: add an output stream to use as arg?
-    protected Object _runScript(ScriptFile script, Bindings args) throws Exception {
-        if (args == null) {
-            args = new SimpleBindings();
+    protected Object _runScript(ScriptFile script, Map<String, Object> args) throws Exception {
+        SimpleBindings bindings = new SimpleBindings();
+        if (args != null) {
+            bindings.putAll(args);
         }
         String ext = script.getExtension();
         // check for a script engine
         ScriptEngine engine = getEngineManager().getEngineByExtension(ext);
         if (engine != null) {
             ScriptContext ctx = new SimpleScriptContext();
-            ctx.setBindings(args, ScriptContext.ENGINE_SCOPE);
+            ctx.setBindings(bindings, ScriptContext.ENGINE_SCOPE);
             CompiledScript comp = getCompiledScript(engine, script.getFile()); // use cache for compiled scripts
             if (comp != null) {
                 return comp.eval(ctx);
@@ -135,7 +135,7 @@ public class Scripting {
                 try { // TODO use __result__ to pass return value for engine that doesn't returns like jython
                     Object result = engine.eval(reader, ctx);
                     if (result == null) {
-                        result = args.get("__result__");
+                        result = bindings.get("__result__");
                     }
                     return result;
                 } finally {

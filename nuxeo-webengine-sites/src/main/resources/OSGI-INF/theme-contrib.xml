@@ -12,6 +12,22 @@
   <!-- Views -->
   <extension target="org.nuxeo.theme.services.ThemeService"
     point="views">
+    <view name="Minisite Logo" template-engine="freemarker">
+      <format-type>widget</format-type>
+      <template>widgets/logo.ftl</template>
+    </view>
+    <view name="Minisite Main" template-engine="freemarker">
+      <format-type>widget</format-type>
+      <template>widgets/main.ftl</template>
+    </view>
+    <view name="Minisite Lasts" template-engine="freemarker">
+      <format-type>widget</format-type>
+      <template>widgets/last_documents.ftl</template>
+    </view>
+    <view name="Minisite Contextual" template-engine="freemarker">
+      <format-type>widget</format-type>
+      <template>widgets/contextual.ftl</template>
+    </view>
     <view name="Minisite Tree" template-engine="freemarker">
       <format-type>widget</format-type>
       <template>widgets/tree.ftl</template>
@@ -19,6 +35,11 @@
     <view name="Minisite Attached files" template-engine="freemarker">
       <format-type>widget</format-type>
       <template>widgets/files.ftl</template>
+    </view>
+    
+    <view name="Minisite Comments" template-engine="freemarker">
+      <format-type>widget</format-type>
+      <template>widgets/comments.ftl</template>
     </view>
 
   </extension>
@@ -56,10 +77,7 @@
     point="themes">
     <theme>
       <src>
-        <!--
-          file:///home/stan/hg/nuxeo2/nuxeo/nuxeo-webengine/nuxeo-webengine-sites/src/main/resources/themes/theme-sites.xml
-        -->
-        themes/theme-sites.xml
+        themes/theme-sites-setup.xml
       </src>
     </theme>
   </extension>

@@ -20,8 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * An HTTP operation. 
- *  
+ * An HTTP operation.
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
@@ -29,9 +29,9 @@ public class Request {
 
     protected String url;
     protected Object content;
-    protected List<String> headers;    
+    protected List<String> headers;
     protected List<String> params;
-    
+
     public Request(String url) {
         this.url = url;
     }
@@ -39,7 +39,7 @@ public class Request {
     public String getUrl() {
         return url;
     }
-    
+
     public void setHeader(String key, String value) {
         if (headers == null) {
             headers = new ArrayList<String>();
@@ -47,7 +47,7 @@ public class Request {
         headers.add(key);
         headers.add(value);
     }
-    
+
     public void setParameter(String key, String value) {
         if (params == null) {
             params = new ArrayList<String>();
@@ -55,22 +55,22 @@ public class Request {
         params.add(key);
         params.add(value);
     }
-    
-    
+
+
     public List<String> getHeaders() {
-        return headers; 
+        return headers;
     }
-    
+
     public List<String> getParameters() {
         return params;
     }
-    
+
     public void setContent(Object obj) {
-        this.content = obj; 
+        this.content = obj;
     }
-    
+
     public Object getContent() {
         return content;
-    }    
-      
+    }
+
 }

@@ -23,11 +23,11 @@ import org.nuxeo.ecm.webengine.client.Client;
  *
  */
 public class RemotePostCommand extends RemoteCommand {
-    
-    public RemotePostCommand(String path, String syntax, String synopsis) {     
+
+    public RemotePostCommand(String path, String syntax, String synopsis) {
         super(path, syntax, synopsis);
     }
-    
+
     @Override
     public void run(Client client, CommandLine cmdLine) throws Exception {
         client.post(path, cmdLine.toMap());

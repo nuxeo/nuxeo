@@ -143,7 +143,7 @@ public class CommandLine {
         return buf.toString();
     }
 
-    
+
     public Map<String, Object> toMap() {
         // preserve params order
         LinkedHashMap<String, Object> args = new LinkedHashMap<String, Object>();
@@ -156,7 +156,7 @@ public class CommandLine {
                 key = "_"+(k++);
             }
             if (CommandToken.FILE.equals(param.token.valueType)) {
-                val = Console.getDefault().getClient().getFile(value);                
+                val = Console.getDefault().getClient().getFile(value);
             }
             args.put(key, val);
         }

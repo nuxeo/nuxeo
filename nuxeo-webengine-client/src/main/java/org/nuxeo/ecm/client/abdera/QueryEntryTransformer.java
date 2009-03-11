@@ -32,7 +32,7 @@ import org.nuxeo.ecm.client.QueryEntry;
 public class QueryEntryTransformer implements org.apache.commons.collections.Transformer {
 
     protected final ContentManager contentManager;
-    
+
     QueryEntryTransformer(ContentManager client) {
         this.contentManager = client;
     }

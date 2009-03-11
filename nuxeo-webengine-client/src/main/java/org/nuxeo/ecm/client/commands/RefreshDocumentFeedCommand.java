@@ -28,21 +28,21 @@ import org.nuxeo.ecm.client.DocumentList;
 public class RefreshDocumentFeedCommand extends AbstractCommand<DocumentFeed> {
 
     protected String href;
-    
+
     protected DocumentList lastEntries;
-    
+
     public RefreshDocumentFeedCommand(String href, String serverTag, DocumentList lastEntries) {
         super("nuxeo", "refreshDocumentFeed");
         this.href = href;
         this.serverTag = serverTag;
         this.lastEntries = lastEntries;
     }
-    
+
     @Override
     public String formatURL(URL baseURL) {
         return href;
     }
-    
+
     public DocumentList getLastEntries() {
         return lastEntries;
     }

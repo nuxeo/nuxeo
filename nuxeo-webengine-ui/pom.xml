@@ -32,24 +32,20 @@
       <artifactId>nuxeo-webengine-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.resteasy</groupId>
+      <groupId>org.jboss.resteasy</groupId>
       <artifactId>jaxrs-api</artifactId>
-      <version>1.0-beta-8</version>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>
-      <version>2.4</version>
     </dependency>
     <dependency>
       <groupId>commons-fileupload</groupId>
       <artifactId>commons-fileupload</artifactId>
-      <version>1.1.1</version>
     </dependency>
     <dependency>
       <groupId>net.sf.json-lib</groupId>
       <artifactId>json-lib</artifactId>
-      <version>2.2.1</version>
       <classifier>jdk15</classifier>
     </dependency>
     <dependency>
@@ -61,7 +57,6 @@
     <dependency>
       <groupId>org.osgi</groupId>
       <artifactId>osgi-core</artifactId>
-      <version>4.1</version>
     </dependency>
 
     <dependency>
@@ -105,7 +100,6 @@
     <dependency>
       <groupId>commons-jexl</groupId>
       <artifactId>commons-jexl</artifactId>
-      <version>1.1</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

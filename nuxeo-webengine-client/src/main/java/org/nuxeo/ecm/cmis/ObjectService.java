@@ -18,11 +18,11 @@ package org.nuxeo.ecm.cmis;
 
 /**
  * Expose CMIS Object Services
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public interface ObjectService {
-    
-    
+
+
 }

@@ -35,16 +35,16 @@ import org.nuxeo.ecm.cmis.client.app.abdera.APPServiceDocumentHandler;
 public class Test {
 
     public static void main(String[] args) throws Exception {
-        
+
         Abdera.getInstance().getConfiguration().addExtensionFactory(
                 new CmisExtensionFactory());
-        
+
         APPContentManager cm = new APPContentManager("http://dormeur:8081/cmis");
         cm.registerSerializationHandler(new APPServiceDocumentHandler());
         cm.registerSerializationHandler(new APPFeedsHandler());
         cm.registerSerializationHandler(new APPDocumentEntryHandler());
         APPFeedService.install(cm);
-        
+
         Repository repo = cm.getDefaultRepository();
         Session session = repo.open();
         FeedService feedsvc = session.getService(FeedService.class);
@@ -53,27 +53,27 @@ public class Test {
         for (FeedDescriptor fd : feeds.getEntries()) {
             System.out.println(fd.getTitle()+" - "+fd.getUrl());
         }
-        
-        FeedDescriptor fd = feeds.getEntries().get(0);               
+
+        FeedDescriptor fd = feeds.getEntries().get(0);
         Feed<DocumentEntry> docs = fd.query();
-        
+
         int i = 1;
         System.out.println("### Docs in '"+fd.getTitle()+"'");
         for (DocumentEntry entry :  docs.getEntries()) {
             System.out.println(i+". "+entry.getTitle());
             i++;
         }
-        
-        
-        //DocumentEntry entry = session.getRoot();        
+
+
+        //DocumentEntry entry = session.getRoot();
         //entry =  entry.getChild("default-domain");
-        
-        
-        
+
+
+
 //        Document doc = entry.getDocument();
-//        
+//
 //        NewsItem ni = entry.getDocument(NewsItem.class);
-        
+
     }
-    
+
 }

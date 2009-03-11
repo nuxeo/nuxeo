@@ -22,11 +22,11 @@ package org.nuxeo.ecm.client;
  *
  */
 public interface Console {
-    
+
     /** callbacks to be used by the client */
-    
+
     String[] prompt(String message);
-    
+
     void message(String msg, int type);
 
 }

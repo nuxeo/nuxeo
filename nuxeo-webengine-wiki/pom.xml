@@ -25,7 +25,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
-        <version>2.0.2</version>
         <executions>
           <execution>
             <id>attach-sources</id>
@@ -38,7 +37,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
-        <version>2.2</version>
         <configuration>
           <archive>
             <manifestFile>
@@ -53,7 +51,6 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-ejb-plugin</artifactId>
-          <version>2.1</version>
           <configuration>
             <ejbVersion>3.0</ejbVersion>
             <archive>
@@ -69,7 +66,7 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.resteasy</groupId>
+      <groupId>org.jboss.resteasy</groupId>
       <artifactId>jaxrs-api</artifactId>
     </dependency>
     <dependency>
@@ -98,16 +95,15 @@
       <artifactId>nuxeo-webengine-base</artifactId>
     </dependency>
 	<dependency>
-      <groupId>org.wikimodel</groupId>
-      <artifactId>wem</artifactId>
-      <version>2.0.2</version>
-    </dependency>
-
-    <!-- test scope -->
-    <dependency>
-      <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-jcr-connector-test</artifactId>
-    </dependency>
+	  <groupId>org.wikimodel</groupId>
+	  <artifactId>wem</artifactId>
+	</dependency>
+	
+	<!-- test scope -->
+	<dependency>
+	  <groupId>org.nuxeo.ecm.core</groupId>
+	  <artifactId>nuxeo-core-jcr-connector-test</artifactId>
+	</dependency>
   </dependencies>
 
 </project>

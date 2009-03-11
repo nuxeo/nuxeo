@@ -36,8 +36,10 @@ import org.nuxeo.runtime.annotations.loader.BundleAnnotationsLoader;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
+import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.nuxeo.runtime.model.RegistrationInfo;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -46,12 +48,16 @@ import org.osgi.framework.SynchronousBundleListener;
 
 /**
  * TODO remove old WebEngine references and rename WebEngine2 to WebEngine
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class WebEngineComponent extends DefaultComponent { //implements ConfigurationChangedListener {
+public class WebEngineComponent extends DefaultComponent { // implements
+    // ConfigurationChangedListener
+    // {
 
-    public static final ComponentName NAME = new ComponentName(WebEngineComponent.class.getName());
+    public static final ComponentName NAME = new ComponentName(
+            WebEngineComponent.class.getName());
 
     public static final String RENDERING_EXTENSION_XP = "rendering-extension";
     public static final String RESOURCE_BINDING_XP = "resource";
@@ -63,16 +69,18 @@ public class WebEngineComponent extends DefaultComponent { //implements Configur
     protected Set<String> deployedBundles = new HashSet<String>();
     private WebEngine engine;
 
-
     @Override
     public void activate(ComponentContext context) throws Exception {
         super.activate(context);
 
-        //TODO: this should be moved into runtime - loads annotations from current bundle
-        //TODO: move this into runtime
+        // TODO: this should be moved into runtime - loads annotations from
+        // current bundle
+        // TODO: move this into runtime
         Bundle bundle = context.getRuntimeContext().getBundle();
-        bundle.getBundleContext().addBundleListener(BundleAnnotationsLoader.getInstance());
-        BundleAnnotationsLoader.getInstance().loadAnnotationsFromDeployedBundles(bundle);
+        bundle.getBundleContext().addBundleListener(
+                BundleAnnotationsLoader.getInstance());
+        BundleAnnotationsLoader.getInstance()
+                .loadAnnotationsFromDeployedBundles(bundle);
 
         String webDir = Framework.getProperty("org.nuxeo.ecm.web.root");
         File root = null;
@@ -82,9 +90,10 @@ public class WebEngineComponent extends DefaultComponent { //implements Configur
             root = new File(Framework.getRuntime().getHome(), "web");
         }
         root = root.getCanonicalFile();
-        log.info("Using web root: "+root);
+        log.info("Using web root: " + root);
 
-        ResourceRegistry registry = Framework.getLocalService(ResourceRegistry.class);
+        ResourceRegistry registry = Framework
+                .getLocalService(ResourceRegistry.class);
         if (registry == null) {
             throw new Error("Could not find a server implementation");
         }
@@ -93,21 +102,26 @@ public class WebEngineComponent extends DefaultComponent { //implements Configur
         // start deploying web bundles
         final RuntimeContext ctx = context.getRuntimeContext();
         BundleContext bc = bundle.getBundleContext();
-        bundle.getBundleContext().addBundleListener(new SynchronousBundleListener() {
-            public void bundleChanged(BundleEvent event) {
-                try {
-                    switch (event.getType()) {
-                    case BundleEvent.STARTED:
-                        synchronized (deployedBundles) {
-                            deployModules(ctx, event.getBundle());
+        bundle.getBundleContext().addBundleListener(
+                new SynchronousBundleListener() {
+                    public void bundleChanged(BundleEvent event) {
+                        try {
+                            switch (event.getType()) {
+                            case BundleEvent.STARTED:
+                                synchronized (deployedBundles) {
+                                    deployModules(ctx, event.getBundle());
+                                }
+                            }
+                        } catch (IOException e) {
+                            log
+                                    .error("Failed to deploy web modules in bundle: "
+                                            + event.getBundle()
+                                                    .getSymbolicName());
                         }
                     }
-                } catch (IOException e) {
-                    log.error("Failed to deploy web modules in bundle: "+event.getBundle().getSymbolicName());
-                }
-            }
-        });
-        // synchronize next block with the listener since they may run in parallel
+                });
+        // synchronize next block with the listener since they may run in
+        // parallel
         synchronized (deployedBundles) {
             // deploy bundles already installed
             for (Bundle b : bc.getBundles()) {
@@ -120,7 +134,8 @@ public class WebEngineComponent extends DefaultComponent { //implements Configur
         engine.start();
     }
 
-    protected void deployModules(RuntimeContext ctx, Bundle b) throws IOException {
+    protected void deployModules(RuntimeContext ctx, Bundle b)
+            throws IOException {
         String id = b.getSymbolicName();
         if (deployedBundles.contains(id)) {
             return; // already deployed
@@ -131,23 +146,33 @@ public class WebEngineComponent extends DefaultComponent { //implements Configur
         }
         File bf = ctx.getRuntime().getBundleFile(b);
         if (bf == null) {
-            log.warn("Bundle type not supported - cannot be resolved to a file. Bundle: "+b.getSymbolicName());
+            log
+                    .warn("Bundle type not supported - cannot be resolved to a file. Bundle: "
+                            + b.getSymbolicName());
             return;
         }
         deployedBundles.add(id);
         deployModule(id, bf, url);
     }
 
-    protected void deployModule(String bundleId, File bundleFile, URL moduleConfig) throws IOException {
+    protected void deployModule(String bundleId, File bundleFile,
+            URL moduleConfig) throws IOException {
+
+        if (checkHasNuxeoService(bundleId)) {
+            throw new WebException("This webengine module should not define a Nuxeo Service, please split up.");
+        }
+
         if (bundleFile.isDirectory()) { // exploded jar - deploy it as is.
             File cfg = new File(bundleFile, "module.xml");
             engine.registerModule(cfg);
         } else { // should be a JAR - we copy the bundle module content
-            File moduleRoot = new File(engine.getRootDirectory(), "modules/"+bundleId);
+            File moduleRoot = new File(engine.getRootDirectory(), "modules/"
+                    + bundleId);
             File cfg = new File(moduleRoot, "module.xml");
             if (moduleRoot.exists()) {
                 if (bundleFile.lastModified() < moduleRoot.lastModified()) {
-                    // already deployed and JAR was not modified since. ingore module
+                    // already deployed and JAR was not modified since. ingore
+                    // module
                     engine.registerModule(cfg);
                     return;
                 }
@@ -159,13 +184,34 @@ public class WebEngineComponent extends DefaultComponent { //implements Configur
             ZipUtils.unzip(bundleFile, moduleRoot);
             engine.registerModule(cfg);
         }
-        log.info("Deployed web module found in bundle: "+bundleId);
+        log.info("Deployed web module found in bundle: " + bundleId);
+    }
+
+    protected boolean checkHasNuxeoService(String bundleId) {
+
+        ComponentManager cpManager = Framework.getRuntime()
+                .getComponentManager();
+        RegistrationInfo regInfo = cpManager
+                .getRegistrationInfo(new ComponentName(bundleId));
+        if (null == regInfo) {
+            return false;
+        }
+
+        String[] serviceNames = regInfo.getProvidedServiceNames();
+
+        if (serviceNames == null || serviceNames.length == 0) {
+            return false;
+        }
+
+        return true;
+
     }
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
-        //TODO: move this in runtime
-        context.getRuntimeContext().getBundle().getBundleContext().removeBundleListener(BundleAnnotationsLoader.getInstance());
+        // TODO: move this in runtime
+        context.getRuntimeContext().getBundle().getBundleContext()
+                .removeBundleListener(BundleAnnotationsLoader.getInstance());
         engine.stop();
         engine = null;
         super.deactivate(context);
@@ -180,22 +226,24 @@ public class WebEngineComponent extends DefaultComponent { //implements Configur
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
         if (GUARD_XP.equals(extensionPoint)) {
-            GuardDescriptor gd = (GuardDescriptor)contribution;
-            PermissionService.getInstance().registerGuard(gd.getId(), gd.getGuard());
+            GuardDescriptor gd = (GuardDescriptor) contribution;
+            PermissionService.getInstance().registerGuard(gd.getId(),
+                    gd.getGuard());
         } else if (RESOURCE_BINDING_XP.equals(extensionPoint)) {
-            engine.addResourceBinding((ResourceBinding)contribution);
+            engine.addResourceBinding((ResourceBinding) contribution);
         } else if (extensionPoint.equals(RENDERING_EXTENSION_XP)) {
-            RenderingExtensionDescriptor fed = (RenderingExtensionDescriptor)contribution;
+            RenderingExtensionDescriptor fed = (RenderingExtensionDescriptor) contribution;
             try {
                 engine.registerRenderingExtension(fed.name, fed.newInstance());
             } catch (Exception e) {
                 throw new RuntimeServiceException(
-                        "Deployment Error. Failed to contribute freemarker template extension: "+fed.name);
+                        "Deployment Error. Failed to contribute freemarker template extension: "
+                                + fed.name);
             }
-//TODO
-//        } else if (extensionPoint.endsWith(FORM_XP)) {
-//            Form form = (Form)contribution;
-//            engine.getFormManager().registerForm(form);
+            // TODO
+            // } else if (extensionPoint.endsWith(FORM_XP)) {
+            // Form form = (Form)contribution;
+            // engine.getFormManager().registerForm(form);
         }
     }
 
@@ -204,17 +252,17 @@ public class WebEngineComponent extends DefaultComponent { //implements Configur
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
         if (GUARD_XP.equals(extensionPoint)) {
-            GuardDescriptor gd = (GuardDescriptor)contribution;
+            GuardDescriptor gd = (GuardDescriptor) contribution;
             PermissionService.getInstance().unregisterGuard(gd.getId());
         } else if (RESOURCE_BINDING_XP.equals(extensionPoint)) {
-            engine.removeResourceBinding((ResourceBinding)contribution);
+            engine.removeResourceBinding((ResourceBinding) contribution);
         } else if (extensionPoint.equals(RENDERING_EXTENSION_XP)) {
-            RenderingExtensionDescriptor fed = (RenderingExtensionDescriptor)contribution;
+            RenderingExtensionDescriptor fed = (RenderingExtensionDescriptor) contribution;
             engine.unregisterRenderingExtension(fed.name);
-//TODO
-//        } else if (extensionPoint.endsWith(FORM_XP)) {
-//            Form form = (Form)contribution;
-//            engine.getFormManager().unregisterForm(form.getId());
+            // TODO
+            // } else if (extensionPoint.endsWith(FORM_XP)) {
+            // Form form = (Form)contribution;
+            // engine.getFormManager().unregisterForm(form.getId());
         }
     }
 

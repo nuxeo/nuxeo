@@ -34,7 +34,7 @@ import org.nuxeo.ecm.cmis.client.app.SerializationHandler;
  */
 public class APPFeedsHandler implements SerializationHandler<FeedDescriptor> {
 
-        
+
     public Class<FeedDescriptor> getObjectType() {
         return FeedDescriptor.class;
     }
@@ -42,12 +42,12 @@ public class APPFeedsHandler implements SerializationHandler<FeedDescriptor> {
     public String getContentType() {
         return "application/atom+xml";
     }
-    
+
     public org.nuxeo.ecm.cmis.client.app.Feed<FeedDescriptor> readFeed(Object context,
             InputStream in) throws IOException {
         APPFeedService service = (APPFeedService)context;
         Document<Feed> document = Abdera.getInstance().getParser().parse(in);
-        List<Entry> entries = document.getRoot().getEntries();        
+        List<Entry> entries = document.getRoot().getEntries();
         DefaultFeed<FeedDescriptor> feeds = new DefaultFeed<FeedDescriptor>(entries.size());
         for (Entry entry : entries) {
             FeedDescriptor fd = new FeedDescriptor(service, entry.getSelfLinkResolvedHref().toASCIIString(), entry.getTitle(), 100); //TODO
@@ -55,12 +55,12 @@ public class APPFeedsHandler implements SerializationHandler<FeedDescriptor> {
         }
         return feeds;
     }
-    
+
     public FeedDescriptor readEntity(Object context, InputStream in) throws IOException {
         throw new UnsupportedOperationException("readEntity not supported in FeedsHandler");
     }
-    
-    
+
+
     public void writeEntity(FeedDescriptor object, OutputStream out)
             throws IOException {
         throw new UnsupportedOperationException("Write content is not available for APPServiceDocument");

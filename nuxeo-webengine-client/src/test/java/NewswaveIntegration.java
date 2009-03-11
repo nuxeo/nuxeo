@@ -30,7 +30,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
  * @author matic
- * 
+ *
  */
 public class NewswaveIntegration extends NXRuntimeTestCase {
 

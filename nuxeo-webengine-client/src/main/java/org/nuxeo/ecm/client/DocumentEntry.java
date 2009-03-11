@@ -25,43 +25,43 @@ import java.util.Map;
  *
  */
 public interface DocumentEntry extends Entry {
-    
+
     // client specific properties
     Repository getRepository(); // used by action methods: repo.getNavigationService().getChildren(getId());
     String getId(); // client constructed path or null if unfilled
     boolean isPhantom(); // not yet persisted TODO rename in isTransient() ?
-    boolean isDirty(); // modified 
+    boolean isDirty(); // modified
     boolean isLocked(); //locked
-    
-    
+
+
     String getName(); //cmis:name
     //Type getType();
     String getTypeName(); // link type
     String getParentId();
-    DocumentEntry getParent();    
+    DocumentEntry getParent();
     DocumentEntry getChild(String name); // throws Exception if not a folder?
-    
-    
-    Object getProperty(String key); // cmis properties    
-    Map<String, Object> getProperties();        
-     
+
+
+    Object getProperty(String key); // cmis properties
+    Map<String, Object> getProperties();
+
     DocumentList getChildren(); // list entry content
     DocumentList getDescendants();
     DocumentList getParentFolders();
     DocumentList getObjectParents();
-    
+
     <T> T getTypeAdapter();
     //<T extends MutableDocument> edit() TODO ?
 
     DocumentEntry newDocument(String type, String name);
-    
+
     void setProperty(String key, Object value);
-    
+
     // nuxeo extensions
     void removeContent(String content); //nuxeo specific
-        
+
     Content[] getContents(); // nuxeo specific
-    
+
     String getState();//TODO cmis token for state? move this in a property?
     String[] getFacets(); // set of facets of this document
     boolean hasFacet(String facet);

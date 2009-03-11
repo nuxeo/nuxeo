@@ -34,38 +34,38 @@ import org.nuxeo.ecm.cmis.common.ClassRegistry;
 public class DefaultSerializationManager implements SerializationManager, ClassRegistry {
 
     protected Map<Class<?>, SerializationHandler<?>> registry;
-    
+
     public DefaultSerializationManager() {
         registry = new HashMap<Class<?>, SerializationHandler<?>>();
     }
-    
-    
+
+
     public void put(Class<?> clazz, Object value) {
-        registry.put(clazz, (SerializationHandler<?>)value);    
+        registry.put(clazz, (SerializationHandler<?>)value);
     }
-    
+
     public Object get(Class<?> clazz) {
         return registry.get(clazz);
     }
-    
+
     public synchronized <T> SerializationHandler<T>  getHandler(Class<T> clazz) {
         return (SerializationHandler<T>)ClassLookup.lookup(clazz, this);
     }
-    
+
     public <T> SerializationHandler<T> getHandler(String contentType) {
         // TODO not yet implemented
         //return null;
         throw new UnsupportedOperationException("Not Yet Implemented");
     }
-        
+
     public synchronized void registerHandler(SerializationHandler<?> handler) {
         registry.put(handler.getObjectType(), handler);
     }
 
     public synchronized void unregisterHandler(Class<?> clazz) {
         registry.remove(clazz);
-    }    
-    
+    }
+
     public void writeEntity(Object object, OutputStream out) throws ContentManagerException {
         SerializationHandler ch = getHandler(object.getClass());
         if (ch == null) {
@@ -77,7 +77,7 @@ public class DefaultSerializationManager implements SerializationManager, ClassR
             throw new ContentManagerException("Failed to write object: "+object.getClass(), e);
         }
     }
-    
+
     public <T> T readEntity(Object context, Class<T> type, InputStream in) throws ContentManagerException {
         SerializationHandler ch = getHandler(type);
         if (ch == null) {
@@ -102,5 +102,5 @@ public class DefaultSerializationManager implements SerializationManager, ClassR
         }
     }
 
-    
+
 }

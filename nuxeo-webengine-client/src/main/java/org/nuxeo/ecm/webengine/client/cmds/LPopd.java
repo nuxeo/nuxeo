@@ -37,7 +37,7 @@ public class LPopd extends AnnotatedCommand {
         CommandParameter param = cmdLine.getLastParameter();
         if (param != null) {
             client.lpopd(param.getValue());
-        }        
+        }
     }
 
 }

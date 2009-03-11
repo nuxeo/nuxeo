@@ -48,7 +48,7 @@ import org.nuxeo.ecm.client.commands.RepositoriesCommand;
 
 /**
  * @author matic
- * 
+ *
  */
 public class AtomPubConnector implements Connector {
 
@@ -74,7 +74,7 @@ public class AtomPubConnector implements Connector {
         } else if (command instanceof GetQueriesCommand) {
             return (T) doInvoke((GetQueriesCommand) command);
         } else if (command instanceof GetDocumentFeedCommand) {
-            return (T) doInvoke((GetDocumentFeedCommand)command); 
+            return (T) doInvoke((GetDocumentFeedCommand)command);
         } else if (command instanceof RefreshDocumentFeedCommand) {
             return (T) doInvoke((RefreshDocumentFeedCommand) command);
         }
@@ -133,17 +133,17 @@ public class AtomPubConnector implements Connector {
         }
         return repositories;
     }
-    
+
     protected DocumentFeed doInvoke(GetDocumentFeedCommand command) throws CannotConnectToServerException {
         Feed atomFeed = this.doGet(command);
         return new DocumentFeedAdapter(contentManager,atomFeed,command.getServerTag());
     }
-    
+
     private DocumentFeed doInvoke(RefreshDocumentFeedCommand command) throws CannotConnectToServerException {
         Feed atomFeed = this.doGet(command);
         if (atomFeed == null) {
             return null;
-        } 
+        }
         return new DocumentFeedAdapter(contentManager,atomFeed,command.getServerTag(),command.getLastEntries());
     }
 

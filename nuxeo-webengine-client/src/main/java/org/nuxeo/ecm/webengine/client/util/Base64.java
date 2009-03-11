@@ -411,7 +411,7 @@ public class Base64
    public static String encode(String source)  {
        return encodeBytes(source.getBytes());
    }
-   
+
    /**
     * Encodes a byte array into Base64 notation.
     * Does not GZip-compress data.

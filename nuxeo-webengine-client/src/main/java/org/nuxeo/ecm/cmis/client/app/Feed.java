@@ -22,25 +22,25 @@ import java.util.List;
 
 /**
  * The result of a document query.
- * 
- * A list of documents that was returned by the server. This is describing the outcome of queries on a repository.
- * It may be seen like a virtual folder that has no physical support. 
  *
- * 
+ * A list of documents that was returned by the server. This is describing the outcome of queries on a repository.
+ * It may be seen like a virtual folder that has no physical support.
+ *
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public interface Feed<T> {
- 
+
     String getId(); // URI
-    
-    String getTitle(); // atom:title 
-    
-    long lastModified(); //atom:edited 
-    
-    String getAuthor(); // atom:author 
-    
+
+    String getTitle(); // atom:title
+
+    long lastModified(); //atom:edited
+
+    String getAuthor(); // atom:author
+
     String getURL(); // link
- 
+
     List<T> getEntries();
 }

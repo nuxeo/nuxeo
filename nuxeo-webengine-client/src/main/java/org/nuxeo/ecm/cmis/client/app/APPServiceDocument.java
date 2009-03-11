@@ -25,13 +25,13 @@ import org.nuxeo.ecm.cmis.Repository;
 public class APPServiceDocument {
 
     protected Repository[] repositories;
-    
+
     public APPServiceDocument(Repository[] repositories) {
         this.repositories = repositories;
     }
-    
+
     public Repository[] getRepositories() {
         return repositories;
     }
-    
+
 }

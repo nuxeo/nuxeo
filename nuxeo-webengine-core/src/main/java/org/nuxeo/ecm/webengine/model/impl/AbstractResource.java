@@ -21,11 +21,13 @@ package org.nuxeo.ecm.webengine.model.impl;
 
 import java.net.URI;
 import java.security.Principal;
+import java.text.ParseException;
 import java.util.List;
 import java.util.Set;
 
 import javax.ws.rs.core.Response;
 
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.AdapterResource;
 import org.nuxeo.ecm.webengine.model.LinkDescriptor;
@@ -36,6 +38,7 @@ import org.nuxeo.ecm.webengine.model.Template;
 import org.nuxeo.ecm.webengine.model.View;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
+import org.nuxeo.ecm.webengine.security.PermissionService;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -186,7 +189,9 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
     }
 
     public <A> A getAdapter(Class<A> adapter) {
-        if (adapter == Principal.class) {
+        if (adapter == CoreSession.class) {
+            return adapter.cast(ctx.getCoreSession());
+        } else if (adapter == Principal.class) {
             return adapter.cast(ctx.getPrincipal());
         }
         if (adapter == WebContext.class) {
@@ -212,6 +217,10 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
 
     public Template getTemplate(String fileName) {
         return new Template(this, getModule().getFile(fileName));
+    }
+
+    public boolean checkGuard(String guard) throws ParseException {
+        return PermissionService.parse(guard).check(this);
     }
 
     @Override

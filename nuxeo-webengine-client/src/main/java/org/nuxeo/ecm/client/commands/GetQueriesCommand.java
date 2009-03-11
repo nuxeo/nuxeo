@@ -23,7 +23,7 @@ import org.nuxeo.ecm.client.QueryEntry;
 
 /**
  * @author matic
- * 
+ *
  */
 public class GetQueriesCommand extends AbstractCommand<List<QueryEntry>> {
 

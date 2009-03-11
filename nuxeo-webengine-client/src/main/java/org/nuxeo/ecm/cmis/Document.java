@@ -26,14 +26,14 @@ import org.nuxeo.ecm.client.Content;
 public interface Document {
 
     DocumentEntry getEntry();
-    
+
     DocumentEntry save(); // put - update properties + content?
     DocumentEntry create(); // post
     void delete(); //delete
-    boolean isDirty(); // modified 
-    
+    boolean isDirty(); // modified
+
     void setContent(Content content);
-    
+
     void removeContent();
     void removeContent(String content); //nuxeo specific
     void setProperty(String key, Object value);

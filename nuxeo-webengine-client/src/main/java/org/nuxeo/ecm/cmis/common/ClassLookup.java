@@ -23,10 +23,10 @@ package org.nuxeo.ecm.cmis.common;
 /**
  * A Class keyed map sensible to class hierarchy.
  * This map provides an additional method {@link #lookup(Class)}
- * that can be used to lookup compatible to the given one 
+ * that can be used to lookup compatible to the given one
  * depending on the class hierarchy.
- *  
- *  
+ *
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */

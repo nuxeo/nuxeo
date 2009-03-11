@@ -27,13 +27,13 @@ import java.io.OutputStream;
 public interface SerializationHandler<T> {
 
     Class<T> getObjectType();
-  
+
     String getContentType();
-    
+
     T readEntity(Object context, InputStream in) throws IOException;
-    
+
     Feed<T> readFeed(Object context, InputStream in) throws IOException;
-    
+
     void writeEntity(T object, OutputStream out) throws IOException;
-    
+
 }

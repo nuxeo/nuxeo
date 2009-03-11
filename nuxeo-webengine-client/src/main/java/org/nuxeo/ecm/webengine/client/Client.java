@@ -58,7 +58,7 @@ public abstract class Client {
     public Client() throws IOException {
         this ((URL)null, null, null, null);
     }
-    
+
     public Client(URL baseUrl) throws IOException {
         this (baseUrl, null, null, null);
     }
@@ -70,11 +70,11 @@ public abstract class Client {
     public Client(String baseUrl, String username, String password) throws IOException {
         this (baseUrl, null, username, password);
     }
-    
-    public Client(String baseUrl, String path, String username, String password) throws IOException {        
+
+    public Client(String baseUrl, String path, String username, String password) throws IOException {
         this (baseUrl != null ? new URL(baseUrl) : null, path, username, password);
     }
-    
+
     public Client(URL baseUrl, String path, String username, String password) throws IOException {
         if (username == null && baseUrl != null) {
             String userInfo = baseUrl.getUserInfo();
@@ -88,8 +88,8 @@ public abstract class Client {
                 }
             }
         }
-        if (baseUrl != null) { // do URL cleanup 
-            baseUrl  = new URL(baseUrl.getProtocol(), baseUrl.getHost(), baseUrl.getPort(), baseUrl.getPath()); 
+        if (baseUrl != null) { // do URL cleanup
+            baseUrl  = new URL(baseUrl.getProtocol(), baseUrl.getHost(), baseUrl.getPort(), baseUrl.getPath());
         }
         this.registry = new CommandRegistry();
         this.username = username;
@@ -102,12 +102,12 @@ public abstract class Client {
             connect(baseUrl);
         }
     }
-    
-    
+
+
     public void connect(String url) throws MalformedURLException {
         connect(new URL(url));
     }
-    
+
     public void connect(URL url) {
         try {
             if (this.baseUrl != null) {
@@ -128,11 +128,11 @@ public abstract class Client {
         this.baseUrl = null;
         this.basePath = null;
     }
-    
+
     public boolean isConnected() {
         return baseUrl != null;
     }
-    
+
     public void disconnect() {
         onDisconnect();
         cwd = Path.ROOT;
@@ -154,7 +154,7 @@ public abstract class Client {
     public File getLocalWorkingDirectory() {
         return workingDir;
     }
-    
+
     public void lls(String path) {
         if (path == null) {
             //TODO
@@ -162,7 +162,7 @@ public abstract class Client {
             //TODO
         }
     }
-    
+
     public void lcd(String path) {
         File dir = null;
         try {
@@ -180,7 +180,7 @@ public abstract class Client {
             e.printStackTrace();
         }
     }
-    
+
     public void lpushd(String path) {
         wdStack.add(workingDir);
         lcd(path);
@@ -211,7 +211,7 @@ public abstract class Client {
             throw new CommandException("Operation failed with error code: "+result.getStatus());
         }
     }
-    
+
     public String id(String path) throws CommandException, IOException {
         pushd(path, false);
         try {
@@ -227,7 +227,7 @@ public abstract class Client {
             popd(false);
         }
     }
-    
+
     public List<String> ls() throws CommandException, IOException {
         Result result = null; //get("ls");
         if (result.isOk()) {
@@ -236,7 +236,7 @@ public abstract class Client {
             throw new CommandException("Operation failed with error code: "+result.getStatus());
         }
     }
-    
+
     public List<String> ls(String path) throws CommandException, IOException {
         pushd(path, false);
         try {
@@ -252,11 +252,11 @@ public abstract class Client {
             popd(false);
         }
     }
-    
+
     public void cd(String path) {
         cd(path, true);
     }
-    
+
     public void cd(String path, boolean updateConsole) {
         if (path.startsWith("/")) {
             cwd = new Path(path);
@@ -272,7 +272,7 @@ public abstract class Client {
     public void pushd(String path) {
         pushd(path, true);
     }
-    
+
     public void pushd(String path, boolean updateConsole) {
         pathStack.add(cwd);
         cd(path);
@@ -281,7 +281,7 @@ public abstract class Client {
     public void popd() {
         popd(true);
     }
-    
+
     public void popd(boolean updateConsole) {
         if (pathStack.isEmpty()) {
             cwd = Path.ROOT;
@@ -297,7 +297,7 @@ public abstract class Client {
         return cwd;
     }
 
-    
+
     protected boolean loadRemoteCommands() throws CommandException, IOException {
         URL url = buildUrl(cwd.append("@commands"));
         HttpURLConnection conn = (HttpURLConnection)url.openConnection();
@@ -305,7 +305,7 @@ public abstract class Client {
         if (conn.getResponseCode() != 200) {
             in.close();
             return false;
-        }        
+        }
         List<String> lines = FileUtils.readLines(in);
         in.close();
         for (String line : lines) {
@@ -313,8 +313,8 @@ public abstract class Client {
             registry.registerCommand(cmd);
         }
         return true;
-    }    
-        
+    }
+
     public String getHelp(String cmdId) throws CommandException, IOException {
         URL url = buildUrl(getAbsolutePath(new Path("@commands").append("help").append(cmdId)));
         HttpURLConnection conn = (HttpURLConnection)url.openConnection();
@@ -336,23 +336,23 @@ public abstract class Client {
         path = getAbsolutePath(path);
         return doDelete(path, args);
     }
-    
+
     public Result head(Path path, Map<String,Object> args) throws CommandException {
         if (baseUrl == null) {
             throw new CommandException("Not Connected");
         }
         path = getAbsolutePath(path);
-        return doHead(path, args);        
+        return doHead(path, args);
     }
-    
+
     public Result get(Path path, Map<String,Object> args) throws CommandException {
         if (baseUrl == null) {
             throw new CommandException("Not Connected");
         }
         path = getAbsolutePath(path);
-        return doGet(path, args);    
+        return doGet(path, args);
     }
-    
+
     public Result post(Path path, Map<String,Object> args) throws CommandException {
         if (baseUrl == null) {
             throw new CommandException("Not Connected");
@@ -360,22 +360,22 @@ public abstract class Client {
         path = getAbsolutePath(path);
         return doPost(path, args);
     }
-    
+
     public Result put(Path path, Map<String,Object> args) throws CommandException {
         if (baseUrl == null) {
             throw new CommandException("Not Connected");
         }
         path = getAbsolutePath(path);
-        return doPut(path, args);    
+        return doPut(path, args);
     }
-    
+
     /**
      * Relative paths are converted to absolute paths
      * @param path
      * @param args
      * @return
      */
-    public abstract Result doDelete(Path path, Map<String,Object> args);    
+    public abstract Result doDelete(Path path, Map<String,Object> args);
     public abstract Result doHead(Path path, Map<String,Object> args);
     public abstract Result doGet(Path path, Map<String,Object> args);
     public abstract Result doPost(Path path, Map<String,Object> args);
@@ -387,11 +387,11 @@ public abstract class Client {
     public String getHost() {
         return baseUrl != null ? baseUrl.getHost() : null;
     }
-    
+
     public Path getWorkingDirectory() {
         return cwd;
     }
-    
+
 
     public File getFile(String path) {
         if (path.startsWith("/")) {
@@ -400,7 +400,7 @@ public abstract class Client {
             return new File(workingDir, path);
         }
     }
-    
+
     public Path getAbsolutePath(Path path) {
         if (path.isAbsolute()) {
             return path;
@@ -411,8 +411,8 @@ public abstract class Client {
         return basePath.append(path);
     }
 
-    
-    
+
+
     public URL buildUrl(Path path) throws CommandException {
         return buildUrl(baseUrl.getProtocol(),baseUrl.getHost(), baseUrl.getPort(),
                 path.toString(), null);
@@ -423,9 +423,9 @@ public abstract class Client {
                 path.toString(), args);
     }
 
-    
+
     public static URL buildUrl(String protocol, String host, int port, String path, Map<String,Object>args) throws CommandException {
-        try {            
+        try {
             if (args != null && !args.isEmpty()) {
                 StringBuilder buf = new StringBuilder();
                 buf.append(path).append('?');
@@ -458,7 +458,7 @@ public abstract class Client {
             buf.append(baseUrl);
         }
         if (username != null) {
-            buf.append("; username: ").append(username);            
+            buf.append("; username: ").append(username);
         }
         buf.append("; path: ").append(cwd).append("]");
         return buf.toString();

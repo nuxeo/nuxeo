@@ -333,7 +333,7 @@ public class FormData implements FormInstance {
     @SuppressWarnings("unchecked")
     public void fillDocumentFromForm(DocumentModel doc) throws PropertyException {
         Map<String, String[]> map = request.getParameterMap();
-        for (Map.Entry<String,String[]> entry : map.entrySet()) {
+        for (Map.Entry<String, String[]> entry : map.entrySet()) {
             String key = entry.getKey();
             if (key.indexOf(':') > -1) { // an XPATH property
                 Property p;
@@ -351,8 +351,8 @@ public class FormData implements FormInstance {
     }
 
     public void fillDocumentFromMultiPartForm(DocumentModel doc) throws PropertyException {
-        Map<String,List<FileItem>> map = getMultiPartItems();
-        for (Map.Entry<String,List<FileItem>> entry : map.entrySet()) {
+        Map<String, List<FileItem>> map = getMultiPartItems();
+        for (Map.Entry<String, List<FileItem>> entry : map.entrySet()) {
             String key = entry.getKey();
             if (key.indexOf(':') > -1) { // an XPATH property
                 Property p;
@@ -383,7 +383,7 @@ public class FormData implements FormInstance {
             if (!p.isContainer()) { // an array
                 p.setValue(ar);
             } else {
-                Type elType = ((ListType)p.getType()).getFieldType();
+                Type elType = ((ListType) p.getType()).getFieldType();
                 if (elType.isSimpleType()) {
                     p.setValue(ar);
                 } else if ("content".equals(elType.getName())) {
