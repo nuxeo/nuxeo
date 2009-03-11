@@ -104,7 +104,6 @@ public class WebEngineServlet extends HttpServlet {
         initializeBuiltinProviders(dispatcher.getProviderFactory());
     }
 
-
     @Override
     protected void service(HttpServletRequest httpServletRequest,
             HttpServletResponse httpServletResponse) throws ServletException,
@@ -113,70 +112,59 @@ public class WebEngineServlet extends HttpServlet {
         service(httpServletRequest.getMethod(), httpServletRequest, httpServletResponse);
     }
 
-
-    public void service(String httpMethod, HttpServletRequest request, HttpServletResponse response) throws IOException
-    {
+    public void service(String httpMethod, HttpServletRequest request, HttpServletResponse response) throws IOException {
         WebContext ctx = null;
-        try
-       {
-          // classloader/deployment aware RestasyProviderFactory.  Used to have request specific
-          // ResteasyProviderFactory.getInstance()
-          ResteasyProviderFactory defaultInstance = ResteasyProviderFactory.getInstance();
-          if (defaultInstance instanceof ThreadLocalResteasyProviderFactory)
-          {
-             ThreadLocalResteasyProviderFactory.push(dispatcher.getProviderFactory()); //BS modif
-          }
-          HttpHeaders headers = ServletUtil.extractHttpHeaders(request);
-          UriInfoImpl uriInfo = ServletUtil.extractUriInfo(request, request.getServletPath()); // BS modif
-          //org.jboss.resteasy.specimpl.patch.UriInfoImpl uriInfo = org.jboss.resteasy.specimpl.patch.UriInfoImpl.create(request); // BS: resteasy bug -  it is not auto escaping @ in literal part of @Path expression
+        try {
+            // classloader/deployment aware RestasyProviderFactory.  Used to have request specific
+            // ResteasyProviderFactory.getInstance()
+            ResteasyProviderFactory defaultInstance = ResteasyProviderFactory.getInstance();
+            if (defaultInstance instanceof ThreadLocalResteasyProviderFactory) {
+                ThreadLocalResteasyProviderFactory.push(dispatcher.getProviderFactory()); //BS modif
+            }
+            HttpHeaders headers = ServletUtil.extractHttpHeaders(request);
+            UriInfoImpl uriInfo = ServletUtil.extractUriInfo(request, request.getServletPath()); // BS modif
+            //org.jboss.resteasy.specimpl.patch.UriInfoImpl uriInfo = org.jboss.resteasy.specimpl.patch.UriInfoImpl.create(request); // BS: resteasy bug -  it is not auto escaping @ in literal part of @Path expression
 
-          HttpResponse theResponse = createServletResponse(response);
-          HttpRequest in = createHttpRequest(httpMethod, request, headers, uriInfo, theResponse);
+            HttpResponse theResponse = createServletResponse(response);
+            HttpRequest in = createHttpRequest(httpMethod, request, headers, uriInfo, theResponse);
 
-          // bs: initialize webengine context
-          ctx = new WebEngineContext(in, request);
-          WebEngine.setActiveContext(ctx);
+            // bs: initialize webengine context
+            ctx = new WebEngineContext(in, request);
+            WebEngine.setActiveContext(ctx);
 
-          try
-          {
-             ResteasyProviderFactory.pushContext(HttpServletRequest.class, request);
-             ResteasyProviderFactory.pushContext(HttpServletResponse.class, response);
-             ResteasyProviderFactory.pushContext(SecurityContext.class, new ServletSecurityContext(request));
-             dispatcher.invoke(in, theResponse);
-          }
-          finally
-          {
-             ResteasyProviderFactory.clearContextData();
-          }
-       }
-       finally
-       {
-          ResteasyProviderFactory defaultInstance = ResteasyProviderFactory.getInstance();
-          if (defaultInstance instanceof ThreadLocalResteasyProviderFactory)
-          {
-             ThreadLocalResteasyProviderFactory.pop();
-          }
-          // bs: cleanup webengine
-          if (ctx != null) {
-              UserSession us = ctx.getUserSession();
-              if (us != null) {
-                  us.terminateRequest(request);
-              }
-          }
-          ResteasyProviderFactory.clearContextData();
-          // bs: cleanup webengine context
-          WebEngine.setActiveContext(null);
-       }
+            try {
+                ResteasyProviderFactory.pushContext(HttpServletRequest.class, request);
+                ResteasyProviderFactory.pushContext(HttpServletResponse.class, response);
+                ResteasyProviderFactory.pushContext(SecurityContext.class, new ServletSecurityContext(request));
+                dispatcher.invoke(in, theResponse);
+            } finally {
+                ResteasyProviderFactory.clearContextData();
+            }
+        }
+        finally {
+            ResteasyProviderFactory defaultInstance = ResteasyProviderFactory.getInstance();
+            if (defaultInstance instanceof ThreadLocalResteasyProviderFactory) {
+                ThreadLocalResteasyProviderFactory.pop();
+            }
+            // bs: cleanup webengine
+            if (ctx != null) {
+                UserSession us = ctx.getUserSession();
+                if (us != null) {
+                    us.terminateRequest(request);
+                }
+            }
+            ResteasyProviderFactory.clearContextData();
+            // bs: cleanup webengine context
+            WebEngine.setActiveContext(null);
+        }
     }
 
-    protected HttpRequest createHttpRequest(String httpMethod, HttpServletRequest request, HttpHeaders headers, UriInfo uriInfo, HttpResponse theResponse)
-    {
-       return new HttpServletInputMessage(request, theResponse, headers, uriInfo, httpMethod.toUpperCase(), (SynchronousDispatcher) dispatcher);
+    protected HttpRequest createHttpRequest(String httpMethod, HttpServletRequest request, HttpHeaders headers, UriInfo uriInfo, HttpResponse theResponse) {
+        return new HttpServletInputMessage(request, theResponse, headers, uriInfo, httpMethod.toUpperCase(), (SynchronousDispatcher) dispatcher);
     }
 
-    protected HttpResponse createServletResponse(HttpServletResponse response)
-    {
-       return new HttpServletResponseWrapper(response, this.dispatcher.getProviderFactory());
+    protected HttpResponse createServletResponse(HttpServletResponse response) {
+        return new HttpServletResponseWrapper(response, dispatcher.getProviderFactory());
     }
 
 }

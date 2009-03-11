@@ -56,9 +56,9 @@ import org.nuxeo.ecm.webengine.model.Resource;
  */
 public class TransactionInterceptor implements ResourceMethodInterceptor {
 
-    public static String UTX_NAME = System.getProperty("org.nuxeo.UserTransactionName", "UserTransaction");
+    public static final String UTX_NAME = System.getProperty("org.nuxeo.UserTransactionName", "UserTransaction");
 
-    private final static Log log = LogFactory.getLog(TransactionInterceptor.class);
+    private static final Log log = LogFactory.getLog(TransactionInterceptor.class);
 
     public boolean txDisabled = false;
 
@@ -67,9 +67,10 @@ public class TransactionInterceptor implements ResourceMethodInterceptor {
     }
 
     /**
-     * When a tx is required the transaction is created if not already exists
-     * When tx is supported a transaction is joined (in case of an error the transaction is marked as rollbacked)
-     * When a tx requires a new transaction a new tx is started
+     * When a tx is required, the transaction is created if not already exists.
+     * When tx is supported, a transaction is joined
+     * (in case of an error the transaction is marked as rollbacked).
+     * When a tx requires a new transaction, a new tx is started.
      */
     public Response invoke(ResourceMethodContext ctx) throws Failure,
     ApplicationException, WebApplicationException {
@@ -95,12 +96,10 @@ public class TransactionInterceptor implements ResourceMethodInterceptor {
         return ctx.proceed();
     }
 
-
     protected Response invoke(ResourceMethodContext ctx, UserTransaction utx, boolean isManagingTx) throws Failure,
     ApplicationException, WebApplicationException {
-        Response resp = null;
         try {
-            resp = ctx.proceed();
+            Response resp = ctx.proceed();
             if (isManagingTx) {
                 utx.commit();
             }
@@ -120,7 +119,6 @@ public class TransactionInterceptor implements ResourceMethodInterceptor {
         }
     }
 
-
     protected void safeRollback(UserTransaction utx, boolean isManagingTx) throws WebException {
         try {
             if (isManagingTx) {
@@ -134,10 +132,7 @@ public class TransactionInterceptor implements ResourceMethodInterceptor {
     }
 
     /**
-     * Return true if a new transaction is started or false if an existing transaction is used
-     * @param utx
-     * @return
-     * @throws WebException
+     * Returns true if a new transaction is started or false if an existing transaction is used.
      */
     protected boolean safeBeginTransaction(UserTransaction utx) throws WebException {
         try {

@@ -46,7 +46,7 @@ public class WebEngineDispatcher extends SynchronousDispatcher {
     }
 
     public void addInterceptors() {
-        InterceptorRegistry reg = super.getProviderFactory().getInterceptorRegistry();
+        InterceptorRegistry reg = getProviderFactory().getInterceptorRegistry();
         reg.registerResourceMethodInterceptor(new SecurityInterceptor());
         reg.registerResourceMethodInterceptor(new TransactionInterceptor());
     }

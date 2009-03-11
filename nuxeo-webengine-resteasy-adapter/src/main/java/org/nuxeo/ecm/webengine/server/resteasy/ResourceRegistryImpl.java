@@ -121,9 +121,8 @@ public class ResourceRegistryImpl implements ResourceRegistry {
     }
 
     public void clearRegistrations() {
-        Field f;
         try {
-            f = registry.getClass().getDeclaredField("rootSegment");
+            Field f = registry.getClass().getDeclaredField("rootSegment");
             if (!f.isAccessible()) {
                 f.setAccessible(true);
             }

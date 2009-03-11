@@ -68,7 +68,7 @@ public class SecurityInterceptor implements ResourceMethodInterceptor {
     }
 
     protected void checkAccess(ResourceMethodContext ctx, org.nuxeo.ecm.webengine.model.Guard ganno, Method m, Resource rs) {
-        Guard guard = null;
+        Guard guard;
         try {
             guard = cache.get(m);
             if (guard == null) {
