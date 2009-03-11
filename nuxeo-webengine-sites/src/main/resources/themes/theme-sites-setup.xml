@@ -22,6 +22,11 @@
           <fragment type="region fragment"/>
           <fragment type="generic fragment"/>
         </cell>
+        <cell>
+          <cell>
+            <fragment type="generic fragment"/>
+          </cell>
+        </cell>
       </section>
     </page>
     <page name="page">
@@ -95,7 +100,10 @@
       <padding-right/>
     </layout>
     <layout element="page[2]/section[2]/cell[2]">
-      <width>82%</width>
+      <width>64%</width>
+    </layout>
+    <layout element="page[2]/section[2]/cell[3]">
+      <width>18%</width>
     </layout>
     <widget element="">
       <view>theme view</view>
@@ -161,8 +169,14 @@
     <widget element="page[2]/section[2]/cell[2]/fragment[2]">
       <view>Minisite Lasts</view>
     </widget>
+    <widget element="page[2]/section[2]/cell[3]/cell[1]/fragment[1]">
+      <view>Minisite Contextual</view>
+    </widget>
     <widget element="page[3]/section[1]/cell[1]/fragment[4]">
       <view>Minisite Comments</view>
+    </widget>
+    <widget element="page[2]/section[2]/cell[3]">
+      <view>cell frame</view>
     </widget>
     <style element="page[1]/section[1]"/>
     <style element="page[1]/section[1]/cell[1]"/>
@@ -175,5 +189,6 @@
     <style element="page[2]/section[2]"/>
     <style element="page[2]/section[2]/cell[1]"/>
     <style element="page[2]/section[2]/cell[2]"/>
+    <style element="page[2]/section[2]/cell[3]"/>
   </formats>
 </theme>

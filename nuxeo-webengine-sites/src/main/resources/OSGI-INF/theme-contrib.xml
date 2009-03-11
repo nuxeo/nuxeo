@@ -24,6 +24,10 @@
       <format-type>widget</format-type>
       <template>widgets/last_documents.ftl</template>
     </view>
+    <view name="Minisite Contextual" template-engine="freemarker">
+      <format-type>widget</format-type>
+      <template>widgets/contextual.ftl</template>
+    </view>
     <view name="Minisite Tree" template-engine="freemarker">
       <format-type>widget</format-type>
       <template>widgets/tree.ftl</template>
