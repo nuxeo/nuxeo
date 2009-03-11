@@ -17,8 +17,9 @@
 	</copy>
 	
 	<resolveArtifact artifactId="nuxeo-runtime-gf3-adapter" todir="${out}/bundles" /> 
-	<resolveArtifact artifactId="stax-api" version="1.0-2" todir="${out}/lib" /> 
-	<resolveArtifact artifactId="wstx-asl" version="3.2.7" todir="${out}/lib" />    
+	<resolveArtifact artifactId="h2" todir="${out}/lib" /> 
+	<resolveArtifact groupId="javax.xml.stream" artifactId="stax-api" todir="${out}/lib" /> 
+	<resolveArtifact groupId="org.codehaus.woodstox" artifactId="wstx-asl" todir="${out}/lib" />    
 	<resolveArtifact groupId="org.glassfish.jdbc.jdbc-ra.jdbc-ra-distribution" artifactId="jdbc-ra" property="jdbc-ra" />
 	<unzip src="${jdbc-ra}" dest="${out}">
       <patternset>
