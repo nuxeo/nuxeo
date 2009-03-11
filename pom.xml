@@ -813,7 +813,7 @@
       <dependency>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs</artifactId>
-        <version>1.0.2.GA</version>
+        <version>1.0.2.GA-nx</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
