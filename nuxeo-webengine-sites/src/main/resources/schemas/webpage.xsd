@@ -7,8 +7,8 @@
   <element name="template" type="string"></element>
   <element name="tags" type="string"></element>
   <element name="content" type="string"></element>  
-  <element name="theme" type="string"/>
-  <element name="themePage" type="string"/>
+  <element name="theme" type="string" default="sites"/>
+  <element name="themePage" type="string" default="page"/>
   <element name="themePerspective" type="string"/>
   
 </schema>

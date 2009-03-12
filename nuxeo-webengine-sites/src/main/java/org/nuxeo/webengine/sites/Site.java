@@ -130,27 +130,41 @@ public class Site extends DefaultObject {
     @GET
     @Path("logo")
     public Response getLogo() {
+        Response resp = null;
         try {
             Blob blob = SiteHelper.getBlob(ws, "webc:logo");
-            return Response.ok().entity(blob).type(blob.getMimeType()).build();
+            if (blob != null) {
+                resp = Response.ok().entity(blob).type(blob.getMimeType()).build();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        // TODO return a default image
-        return null;
+        //return a default image, maybe you want to change this in future
+        if (resp == null) {
+            resp = redirect(getContext().getModule().getSkinPathPrefix() + 
+                    "/images/logo.gif");
+        }
+        return resp;
     }
 
     @GET
     @Path("welcomeMedia")
     public Response getWelcomeMedia() {
+        Response resp = null;
         try {
             Blob blob = SiteHelper.getBlob(ws, "webc:welcomeMedia");
-            return Response.ok().entity(blob).type(blob.getMimeType()).build();
+            if (blob != null) {
+                resp = Response.ok().entity(blob).type(blob.getMimeType()).build();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        // TODO return a default image
-        return null;
+        //return a default image, maybe you want to change this in future
+        if (resp == null) {
+            resp = redirect(getContext().getModule().getSkinPathPrefix() + 
+                    "/images/logo.gif");
+        }
+        return resp;
     }
 
     protected Map<String, Object> getSiteArgs(DocumentModel doc)

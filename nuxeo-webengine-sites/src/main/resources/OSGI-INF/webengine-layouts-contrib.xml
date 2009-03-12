@@ -12,14 +12,16 @@
         <row>
           <widget>pushtomenu</widget>
         </row>
+       <!--  Not needed yet        
         <row>
           <widget>theme</widget>
-        </row>
+        </row> -->
         <row>
           <widget>content</widget>
         </row>        
       </rows>
 
+       <!--  Not needed yet        
       <widget name="theme" type="template">
         <translated>true</translated>
         <fields>
@@ -31,7 +33,7 @@
             /widgets/site_theme_widget.xhtml
           </property>
         </properties>
-      </widget>
+      </widget> -->
 
       <widget name="pushtomenu" type="checkbox">
         <translated>true</translated>
@@ -51,9 +53,6 @@
         <fields>
           <field>webp:content</field>
         </fields>
-        <properties widgetMode="edit">
-          <property name="styleClass">dataInputText</property>
-        </properties>
       </widget>
 
     </layout>
