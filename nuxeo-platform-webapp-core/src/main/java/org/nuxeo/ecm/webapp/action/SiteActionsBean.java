@@ -1,19 +1,28 @@
 package org.nuxeo.ecm.webapp.action;
 
 
-import javax.faces.component.UISelectBoolean;
+import java.util.Map;
 
+import javax.faces.application.FacesMessage;
+import javax.faces.component.UIComponent;
+import javax.faces.component.UIInput;
+import javax.faces.context.FacesContext;
+import javax.faces.validator.ValidatorException;
+
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 
-import static org.jboss.seam.ScopeType.STATELESS;;
+import static org.jboss.seam.ScopeType.STATELESS;
 
 /**
  * Performs re-rendering of webcontainer layout widgets.
  *
  * @author Anahide Tchertchian
+ * @author rux added the site name validation
  */
 
 @Name("siteActions")
@@ -22,33 +31,65 @@ public class SiteActionsBean {
 
     private static final Log log = LogFactory.getLog(SiteActionsBean.class);
 
-    public static final String SCHEMA_NAME = "webcontainer";
+    /**
+     * Validates the web container fields. If the workspace is web container, it
+     * also needs to have name. The usual required JSF component can't be used,
+     * because it will block the validation no matter if the checkbox is set or
+     * not. As result, the widget validation is used. The both values need to be
+     * available in layout to be used.
+     * @param context
+     * @param component
+     * @param value
+     */
+    public void validateName(FacesContext context, UIComponent component,
+            Object value) {
 
-    public static final String ISWEBCONTAINER_PROPERTY_NAME = "isWebContainer";
+        Map<String, Object> attributes = component.getAttributes();
 
-    protected UISelectBoolean checkboxComponent;
-
-    public UISelectBoolean getCheckboxComponent() {
-        return checkboxComponent;
-    }
-
-    public void setCheckboxComponent(UISelectBoolean checkboxComponent) {
-        this.checkboxComponent = checkboxComponent;
-    }
-
-    public boolean isWebContainerChecked() {
-        Boolean checked = false;
-        if (checkboxComponent != null) {
-            UISelectBoolean checkbox = checkboxComponent;
-            Object currentValue = checkbox.getSubmittedValue();
-            if (currentValue == null) {
-                currentValue = checkbox.getValue();
-            }
-            if (currentValue != null) {
-                checked = Boolean.valueOf(currentValue.toString());
-            }
+        String wcId = (String) attributes.get("webContainerId");
+        if (wcId == null) {
+            log.debug("Cannot validate name: input wcId not found");
+            return;
         }
-        return checked;
+
+        UIInput wcComp = (UIInput) component.findComponent(wcId);
+        if (wcComp == null) {
+            log.debug("Cannot validate name: input wcId not found second time");
+            return;
+        }
+
+        Boolean propValue = (Boolean) wcComp.getLocalValue();
+        boolean isWC = false;
+        if (propValue != null) {
+            isWC = propValue;
+        }
+        if (!isWC) {
+            // no need validation if not web container
+            return;
+        }
+
+        String nameId = (String) attributes.get("nameId");
+        if (nameId == null) {
+            log.error("Cannot validate name: input id(s) not found");
+            return;
+        }
+
+        UIInput nameComp = (UIInput) component.findComponent(nameId);
+        if (nameComp == null) {
+            log.error("Cannot validate name: input(s) not found second time");
+            return;
+        }
+
+        Object nameObj = nameComp.getLocalValue();
+        
+        if (nameObj == null || StringUtils.isBlank(nameObj.toString())) {
+            FacesMessage message = new FacesMessage(
+                    FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(
+                            context, "label.error.need.name.webcontainer"),
+                    null);
+            throw new ValidatorException(message);
+        }
+
     }
 
 }

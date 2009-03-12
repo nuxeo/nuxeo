@@ -625,7 +625,13 @@
       </templates>
       <rows>
         <row>
+          <widget>isWebContainer</widget>
+        </row>
+        <row>
           <widget>name</widget>
+        </row>
+        <row>
+          <widget>nameValidator</widget>
         </row>
         <row>
           <widget>url</widget>
@@ -651,6 +657,12 @@
         </row>
       </rows>
 
+      <widget name="isWebContainer" type="checkbox">
+        <translated>true</translated>
+        <fields>
+          <field>webc:isWebContainer</field>
+        </fields>
+      </widget>
       <widget name="name" type="text">
         <translated>true</translated>
         <fields>
@@ -661,6 +673,21 @@
         </properties>
       </widget>
 
+      <widget name="nameValidator" type="template">
+        <labels>
+          <label mode="any"></label>
+        </labels>
+        <widgetModes>
+          <mode value="create">edit</mode>
+          <mode value="edit">edit</mode>
+          <mode value="any">hidden</mode>
+        </widgetModes>
+        <properties widgetMode="edit">
+          <property name="template">
+            /widgets/name_site_validator_widget_template.xhtml
+          </property>
+        </properties>
+      </widget>
       <widget name="url" type="template">
         <widgetModes>
           <mode value="any">view</mode>
@@ -728,7 +755,7 @@
           <field>webc:useCaptcha</field>
         </fields>
       </widget>
-
+      
     </layout>
 
   </extension>
