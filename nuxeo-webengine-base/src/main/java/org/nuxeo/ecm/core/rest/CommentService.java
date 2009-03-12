@@ -21,6 +21,7 @@
 package org.nuxeo.ecm.core.rest;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.FormParam;
@@ -32,12 +33,13 @@ import javax.ws.rs.core.Response;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.platform.comment.api.CommentableDocument;
+import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.forms.FormData;
 import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.ecm.webengine.model.exceptions.IllegalParameterException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Comment Service - manages document comments.
@@ -60,8 +62,7 @@ public class CommentService extends DefaultAdapter {
         }
 
         DocumentObject dobj = (DocumentObject) getTarget();
-        CommentableDocument cDoc = dobj.getDocument().getAdapter(
-                CommentableDocument.class, true);
+        CommentManager commentManager = getCommentManager(); 
         CoreSession session = dobj.getCoreSession();
         try {
             // create a new webComment on this page
@@ -70,7 +71,7 @@ public class CommentService extends DefaultAdapter {
                     session.getPrincipal().getName());
             webComment.setPropertyValue("webcmt:text", cText);
             webComment.setPropertyValue("webcmt:creationDate", new Date());
-            webComment = cDoc.addComment(webComment);
+            webComment = commentManager.createLocatedComment(dobj.getDocument(), webComment, getParentWorkspacePath(session, dobj.getDocument()));
             session.save();
             return redirect(getTarget().getPath());
         } catch (Exception e) {
@@ -96,14 +97,27 @@ public class CommentService extends DefaultAdapter {
 
         DocumentObject dobj = (DocumentObject) getTarget();
         CoreSession session = dobj.getCoreSession();
-        CommentableDocument cDoc = dobj.getDocument().getAdapter(
-                CommentableDocument.class, true);
         FormData form = ctx.getForm();
         String docId = form.getString(FormData.PROPERTY);
         DocumentModel comment = session.getDocument(new IdRef(docId));
-        cDoc.removeComment(comment);
+        CommentManager commentManager = getCommentManager();
+        commentManager.deleteComment(dobj.getDocument(), comment);
         return redirect(dobj.getPath());
 
     }
-
+    
+    public static CommentManager getCommentManager(){
+        return Framework.getLocalService(CommentManager.class);
+   }
+    
+    public static String getParentWorkspacePath(CoreSession session, DocumentModel doc)
+            throws Exception {
+        List<DocumentModel> parents = session.getParentDocuments(doc.getRef());
+        for (DocumentModel documentModel : parents) {
+            if (documentModel.getType().equals("Workspace")) {
+                return documentModel.getPathAsString();
+            }
+        }
+        return null;
+    }
 }

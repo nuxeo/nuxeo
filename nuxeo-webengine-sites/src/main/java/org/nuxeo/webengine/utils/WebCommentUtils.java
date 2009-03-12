@@ -24,6 +24,9 @@ import java.util.List;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.platform.comment.api.CommentManager;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Utilities for Comments implementation into WebEngine
@@ -86,5 +89,21 @@ public class WebCommentUtils {
         return false;
 
     }
-
+    
+    public static CommentManager getCommentManager() throws Exception {
+        CommentManager commentManager = Framework.getLocalService(CommentManager.class);
+        if (commentManager == null) {
+            throw new Exception("unable to get commentManager");
+        }
+        return commentManager;
+    }
+    
+    public static UserManager getUserManager() throws Exception {
+        UserManager userManager = Framework.getService(UserManager.class);
+        if (userManager == null) {
+            throw new Exception("unable to get userManager");
+        }
+        return userManager;
+    }
+    
 }

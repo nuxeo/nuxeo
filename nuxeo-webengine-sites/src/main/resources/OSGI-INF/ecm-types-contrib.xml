@@ -19,7 +19,6 @@
       <default-view>view_documents</default-view>
       <subtypes>
         <type>WebPage</type>
-        <type>WebComment</type>
       </subtypes>
       <!-- new layout config -->
       <layouts mode="any">

@@ -28,10 +28,10 @@ import javax.ws.rs.core.Response;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.rest.DocumentObject;
-import org.nuxeo.ecm.platform.comment.api.CommentableDocument;
+import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebObject;
-import org.nuxeo.webengine.utils.*;
+import org.nuxeo.webengine.utils.WebCommentUtils;
 
 /**
  * @author stan
@@ -57,24 +57,22 @@ public class Page extends DocumentObject {
     @GET
     @Path("comments")
     public List<DocumentModel> getComments() {
-        CommentableDocument cDoc = this.getDocument().getAdapter(
-                CommentableDocument.class, true);
         try {
-            return cDoc.getComments();
-        } catch (ClientException e) {
+            CommentManager commentManager = WebCommentUtils.getCommentManager();
+            return commentManager.getComments(this.getDocument());
+        } catch (Exception e) {
             throw WebException.wrap("Failed to get all published comments", e);
         }
 
     }
 
     @GET
-    @Path("noComments")
-    public int getNoComments() {
-        CommentableDocument cDoc = this.getDocument().getAdapter(
-                CommentableDocument.class, true);
+    @Path("numberComments")
+    public int getNumberCommentsOnPage() {
         try {
-            return cDoc.getComments().size();
-        } catch (ClientException e) {
+            CommentManager commentManager = WebCommentUtils.getCommentManager();
+            return commentManager.getComments(this.getDocument()).size();
+        } catch (Exception e) {
             throw WebException.wrap("Failed to get all published comments", e);
         }
 
@@ -92,13 +90,14 @@ public class Page extends DocumentObject {
 
     public boolean isUserWithCommentPermission() {
         try {
-
             return WebCommentUtils.currentUserHasCommentPermision(
                     this.getCoreSession(), this.getDocument());
         } catch (Exception e) {
             throw WebException.wrap("Failed to delete comment", e);
         }
     }
+    
+    
 
 
 }

@@ -32,6 +32,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
@@ -39,12 +40,16 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.rest.DocumentObject;
+import org.nuxeo.ecm.platform.comment.api.CommentManager;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
+import org.nuxeo.webengine.utils.WebCommentUtils;
 
 @WebObject(type = "site", guard = "user=Administrator", facets = { "Site" })
 @Produces("text/html; charset=UTF-8")
@@ -172,7 +177,9 @@ public class Site extends DefaultObject {
         Map<String, Object> root = new HashMap<String, Object>();
         // MC: add constants
         List<Object> pages = getLastModifiedWebPages(5, 50);
+        List<Object> comments = getLastCommentsFromPages(5, 50);
         root.put("pages", pages);
+        root.put("comments", comments);
         root.put("welcomeText", SiteHelper.getString(doc, "webc:welcomeText",
                 null));
         root.put("siteName", SiteHelper.getString(doc, "webc:name", null));
@@ -228,6 +235,50 @@ public class Site extends DefaultObject {
         return pages;
     }
 
+    public List<Object> getLastCommentsFromPages(int noComments,
+            int noWordsFromContent) throws ClientException {
+        WebContext context = WebEngine.getActiveContext();
+        CoreSession session = context.getCoreSession();
+        DocumentModelList comments = session.query(
+                String.format(
+                        "SELECT * FROM Document WHERE "
+                                + " ecm:primaryType like 'WebComment' "
+                                + " AND ecm:path STARTSWITH '%s'"
+                                + " AND ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0"
+                                + " AND ecm:currentLifeCycleState != 'deleted' ORDER BY dc:modified DESC",
+                        ws.getPathAsString() + "/"), null, noComments, 0, true);
+        List<Object> lastWebComments = new ArrayList<Object>();
+        for (DocumentModel documentModel : comments) {
+            Map<String, String> comment = new HashMap<String, String>();
+
+            GregorianCalendar creationDate = SiteHelper.getGregorianCalendar(
+                    documentModel, "webcmt:creationDate");
+
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd MMMM",
+                    getContext().getLocale());
+            String formattedString = simpleDateFormat.format(creationDate.getTime());
+            String[] splittedFormatterdString = formattedString.split(" ");
+            comment.put("day", splittedFormatterdString[0]);
+            comment.put("month", splittedFormatterdString[1]);
+            
+            try {
+                comment.put("author", getUserDetails(SiteHelper.getString(
+                        documentModel, "webcmt:author")));
+                comment.put("pageTitle", getPageTitleForComment(documentModel));
+            } catch (Exception e) {
+                throw new ClientException(e);
+            }
+            comment.put("content", getFistNWordsFromString(
+                    SiteHelper.getString(documentModel, "webcmt:text"),
+                    noWordsFromContent));
+            
+            lastWebComments.add(comment);
+
+        }
+
+        return lastWebComments;
+    }
+    
     protected DocumentModel getWorkspaceByUrl(String url) {
         WebContext context = WebEngine.getActiveContext();
         CoreSession session = context.getCoreSession();
@@ -259,5 +310,30 @@ public class Site extends DefaultObject {
         }
         return new String(firstNwords);
     }
+    
+    private String getUserDetails(String username) throws Exception{
+        UserManager userManager  = WebCommentUtils.getUserManager();
+        NuxeoPrincipal principal = userManager.getPrincipal(username);
+        if (principal == null)
+            return StringUtils.EMPTY;
+        if (StringUtils.isEmpty(principal.getFirstName())
+                && StringUtils.isEmpty(principal.getLastName())) {
+            return principal.toString();
+        }
+        return principal.getFirstName() + " " + principal.getLastName();
+    }
 
+    
+    private String getPageTitleForComment(DocumentModel comment)
+            throws Exception {
+        CommentManager commentManager = WebCommentUtils.getCommentManager();
+        List<DocumentModel> list = commentManager.getDocumentsForComment(comment);
+        if (list.size() != 0) {
+            return list.get(0).getTitle();
+        }
+        return StringUtils.EMPTY;
+    }
+    
+
+    
 }
