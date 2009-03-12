@@ -1,0 +1,295 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>createGroup</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">createGroup</td></tr>
+</thead><tbody>
+<!--@Test groups:CreateGroup,introduction|depends:CreateUsers-->
+<tr>
+	<td>open</td>
+	<td>/nuxeo/logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>Administrator</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>Administrator</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>//select[@class="langSelect"]</td>
+	<td>label=English (United Kingdom)</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@class='langSubmit']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>You are logged as Administrator</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Members management</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Groups</td>
+	<td></td>
+</tr>
+<!--création d'un groupe Johns-->
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Create a new group</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id="createGroup_form:groupName"]</td>
+	<td>Johns</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//div[@class="tabsContent"]/table//table//input</td>
+	<td>bre</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//div[@class="userAndGroupSearch"]//input[@value="Search"]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForCondition</td>
+	<td>var value = selenium.getText('//tr[@class="rightsAddManager"]/td[1]'); value.match(/Van/);</td>
+	<td>15000</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Add to group</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForCondition</td>
+	<td>var value = selenium.getText('//tr[@class="rightsAddManager"]/td[2]'); value.match(/Bree/);</td>
+	<td>15000</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//div[@class="tabsContent"]/table//table//input</td>
+	<td>jdo</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//div[@class="userAndGroupSearch"]//input[@value="Search"]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForCondition</td>
+	<td>var value = selenium.getText('//tr[@class="rightsAddManager"]/td[1]'); value.match(/John/);</td>
+	<td>15000</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Add to group</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForCondition</td>
+	<td>var value = selenium.getText('//tr[@class="rightsAddManager"]/td[2]'); value.match(/Doe/);</td>
+	<td>15000</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//div[@class="tabsContent"]/table//table//input</td>
+	<td>jsmith</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//div[@class="userAndGroupSearch"]//input[@value="Search"]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForCondition</td>
+	<td>var value = selenium.getText('//tr[@class="rightsAddManager"]/td[1]'); value.match(/Smith/);</td>
+	<td>15000</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Add to group</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForCondition</td>
+	<td>var value = selenium.getText('//tr[@class="rightsAddManager"]/td[2]'); value.match(/Smith/);</td>
+	<td>15000</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value="Save"]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Johns</td>
+	<td></td>
+</tr>
+<!--Vérification de la redirection sur la fiche du groupe-->
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Group's members</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=View</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=Edit</td>
+	<td></td>
+</tr>
+<!--création d'un groupe pour suppression-->
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Back to the list</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Create a new group</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@id="createGroup_form:groupName"]</td>
+	<td>Suppr</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//div[@class="tabsContent"]/table//table//input</td>
+	<td>jdo</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//div[@class="userAndGroupSearch"]//input[@value="Search"]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForCondition</td>
+	<td>var value = selenium.getText('//tr[@class="rightsAddManager"]/td[1]'); value.match(/John/);</td>
+	<td>15000</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Add to group</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForCondition</td>
+	<td>var value = selenium.getText('//tr[@class="rightsAddManager"]/td[2]'); value.match(/Doe/);</td>
+	<td>15000</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//div[@class="tabsContent"]/table//table//input</td>
+	<td>Smith</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//div[@class="userAndGroupSearch"]//input[@value="Search"]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForCondition</td>
+	<td>var value = selenium.getText('//tr[@class="rightsAddManager"]/td[1]'); value.match(/Smith/);</td>
+	<td>15000</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Add to group</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForCondition</td>
+	<td>var value = selenium.getText('//tr[@class="rightsAddManager"]/td[2]'); value.match(/Smith/);</td>
+	<td>15000</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//div[@class="tabsContent"]/table//table//input</td>
+	<td>lbramard</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//div[@class="userAndGroupSearch"]//input[@value="Search"]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForCondition</td>
+	<td>var value = selenium.getText('//tr[@class="rightsAddManager"]/td[1]'); value.match(/Lucien/);</td>
+	<td>15000</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Add to group</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForCondition</td>
+	<td>var value = selenium.getText('//tr[@class="rightsAddManager"]/td[2]'); value.match(/Bramard/);</td>
+	<td>15000</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value="Save"]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Suppr</td>
+	<td></td>
+</tr>
+<!--Vérification de la redirection sur la fiche du groupe-->
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Group's members</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=View</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=Edit</td>
+	<td></td>
+</tr>
+<!--Déconnexion-->
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Log out</td>
+	<td></td>
+</tr>
+
+</tbody></table>
+</body>
+</html>

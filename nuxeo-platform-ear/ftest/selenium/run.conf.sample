@@ -1,0 +1,4 @@
+# Configure test launching
+URL=http://127.0.0.1:8080/nuxeo/
+HIDE_FF=true
+#SUITES="suite1 suite2"
