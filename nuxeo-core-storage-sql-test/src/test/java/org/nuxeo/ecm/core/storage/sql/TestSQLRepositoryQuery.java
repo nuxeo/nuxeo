@@ -15,7 +15,7 @@
  *     Florent Guillaume
  */
 
-package org.nuxeo.ecm.core.storage.sql.coremodel;
+package org.nuxeo.ecm.core.storage.sql;
 
 import org.nuxeo.ecm.core.query.test.QueryTestCase;
 import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
@@ -28,7 +28,7 @@ public class TestSQLRepositoryQuery extends QueryTestCase {
     @Override
     public void deployRepository() throws Exception {
         DatabaseHelper.DATABASE.setUp();
-        deployContrib("org.nuxeo.ecm.core.storage.sql.tests",
+        deployContrib("org.nuxeo.ecm.core.storage.sql.test",
                 DatabaseHelper.DATABASE.getDeploymentContrib());
         deployBundle("org.nuxeo.ecm.core.event");
 

@@ -15,7 +15,7 @@
  *     Florent Guillaume
  */
 
-package org.nuxeo.ecm.core.storage.sql.coremodel;
+package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -25,7 +25,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
@@ -47,7 +46,7 @@ public abstract class SQLRepositoryTestCase extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core");
         DatabaseHelper.DATABASE.setUp();
-        deployContrib("org.nuxeo.ecm.core.storage.sql.tests",
+        deployContrib("org.nuxeo.ecm.core.storage.sql.test",
                 DatabaseHelper.DATABASE.getDeploymentContrib());
     }
 
