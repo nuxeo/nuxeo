@@ -48,9 +48,9 @@
 		          <nxl:layoutRowWidget>
 		            <td class="labelColumn">
 		              <h:outputText value="#{widget.label}" rendered="#{!widget.translated}"
-		                styleClass="#{nxu:test(widget.required and layoutValue.webcontainer.isWebContainer, 'required', '')}" />
+		                styleClass="#{nxu:test(widget.required, 'required', '')}" />
 		              <h:outputText value="#{messages[widget.label]}" rendered="#{widget.translated}"
-		                styleClass="#{nxu:test(widget.required and layoutValue.webcontainer.isWebContainer, 'required', '')}" />
+		                styleClass="#{nxu:test(widget.required, 'required', '')}" />
 		            </td>
 		            <td class="fieldColumn">
 		              <nxl:widget widget="#{widget}" mode="#{widget.mode}" value="#{value}" />
