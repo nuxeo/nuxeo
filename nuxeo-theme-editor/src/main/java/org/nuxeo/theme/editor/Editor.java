@@ -538,13 +538,8 @@ public class Editor {
 
     public static int duplicateElement(Element element) throws ThemeException,
             NodeException {
-        Element duplicate;
-        try {
-            duplicate = Manager.getThemeManager().duplicateElement(element,
-                    true);
-        } catch (ThemeException e) {
-            throw new ThemeException(e);
-        }
+        Element duplicate = Manager.getThemeManager().duplicateElement(element, true);
+
         // insert the duplicated element
         element.getParent().addChild(duplicate);
         duplicate.moveTo(element.getParent(), element.getOrder() + 1);

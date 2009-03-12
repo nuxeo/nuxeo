@@ -48,11 +48,10 @@ public class Manager {
         return getService().getProviderNames();
     }
 
-    public static Provider getProvider(String name) {
+    public static Provider getProvider(String name) throws WidgetException {
         ProviderType providerType = getProviderType(name);
         if (providerType == null) {
-            log.error("Provider unknown: " + name);
-            return null;
+            throw new WidgetException("Provider unknown: " + name);
         }
         String className = providerType.getClassName();
 
@@ -70,8 +69,7 @@ public class Manager {
             session.put(session_key, provider);
             return provider;
         } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+            throw new WidgetException("Provider cannot be created: " + name, e);
         }
     }
 
@@ -117,7 +115,8 @@ public class Manager {
             String region, int order) throws WidgetException {
         Provider provider = getProvider(providerName);
         if (!provider.canWrite()) {
-            return;
+            throw new WidgetException("No permission to add widget into: "
+                    + providerName);
         }
         Widget widget = provider.createWidget(widgetTypeName);
         provider.addWidget(widget, region, order);
@@ -158,7 +157,8 @@ public class Manager {
         return newId;
     }
 
-    public static void removeWidget(String providerName, String uid) throws WidgetException {
+    public static void removeWidget(String providerName, String uid)
+            throws WidgetException {
         Provider provider = getProvider(providerName);
         if (!provider.canWrite()) {
             return;
@@ -205,7 +205,7 @@ public class Manager {
     }
 
     public static void updateWidgetPreferences(String providerName, String uid,
-            Map<String, String> preferences)throws WidgetException {
+            Map<String, String> preferences) throws WidgetException {
         Provider provider = getProvider(providerName);
         if (!provider.canWrite()) {
             return;
@@ -295,10 +295,11 @@ public class Manager {
     }
 
     public static WidgetData getWidgetData(String providerName, String uid,
-            String dataName) {
+            String dataName) throws WidgetException {
         final Provider provider = getProvider(providerName);
         if (!provider.canRead()) {
-            return null;
+            throw new WidgetException(
+                    "Cannot read content of widget provider: " + providerName);
         }
         final Widget widget = provider.getWidgetByUid(uid);
         return getWidgetData(provider, widget, dataName);
@@ -316,7 +317,8 @@ public class Manager {
     }
 
     public static String uploadFile(HttpServletRequest request,
-            String providerName, String uid, String dataName) throws WidgetException {
+            String providerName, String uid, String dataName)
+            throws WidgetException {
         DiskFileItemFactory factory = new DiskFileItemFactory();
         ServletFileUpload upload = new ServletFileUpload(factory);
         List<?> fileItems = null;
@@ -348,7 +350,7 @@ public class Manager {
     }
 
     public static String getWidgetDataContent(String providerName, String uid,
-            String dataName) {
+            String dataName) throws WidgetException {
         WidgetData data = getWidgetData(providerName, uid, dataName);
         if (data == null) {
             return "";
@@ -363,7 +365,7 @@ public class Manager {
     }
 
     public static String getWidgetDataInfo(String providerName, String uid,
-            String dataName) {
+            String dataName) throws WidgetException {
         final WidgetData data = getWidgetData(providerName, uid, dataName);
         if (data != null) {
             final Map<String, String> fileInfo = new HashMap<String, String>();
@@ -378,41 +380,40 @@ public class Manager {
      * UI
      */
     public static String getPanelData(String providerName, String regionName,
-            String mode) {
+            String mode) throws WidgetException {
         final Provider provider = getProvider(providerName);
         final Map<String, Object> data = new HashMap<String, Object>();
         final List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
         final Map<String, Map<String, Object>> types = new HashMap<String, Map<String, Object>>();
 
-        if (provider != null) {
-            final List<Widget> widgets = provider.getWidgets(regionName);
-            final Set<String> widgetTypeNames = new HashSet<String>();
-            if (widgets != null) {
-                for (Widget widget : widgets) {
-                    widgetTypeNames.add(widget.getName());
-                }
+        if (provider == null) {
+            throw new WidgetException("Provider not found: " + providerName);
+        }
 
-                for (String widgetTypeName : widgetTypeNames) {
-                    WidgetType widgetType = getWidgetType(widgetTypeName);
-                    types.put(widgetTypeName, widgetType.getInfo());
-                }
-
-                if (provider.canRead()) {
-                    for (Widget widget : widgets) {
-                        final Map<String, Object> item = new HashMap<String, Object>();
-                        item.put("uid", widget.getUid());
-                        item.put("name", widget.getName());
-                        item.put("preferences", getWidgetPreferences(provider,
-                                widget));
-                        item.put("state",
-                                getWidgetState(provider, widget).getName());
-                        items.add(item);
-                    }
-                }
+        final List<Widget> widgets = provider.getWidgets(regionName);
+        final Set<String> widgetTypeNames = new HashSet<String>();
+        if (widgets != null) {
+            for (Widget widget : widgets) {
+                widgetTypeNames.add(widget.getName());
             }
 
-        } else {
-            log.error("Provider not found: " + providerName);
+            for (String widgetTypeName : widgetTypeNames) {
+                WidgetType widgetType = getWidgetType(widgetTypeName);
+                types.put(widgetTypeName, widgetType.getInfo());
+            }
+
+            if (provider.canRead()) {
+                for (Widget widget : widgets) {
+                    final Map<String, Object> item = new HashMap<String, Object>();
+                    item.put("uid", widget.getUid());
+                    item.put("name", widget.getName());
+                    item.put("preferences", getWidgetPreferences(provider,
+                            widget));
+                    item.put("state",
+                            getWidgetState(provider, widget).getName());
+                    items.add(item);
+                }
+            }
         }
 
         // Switch to default read mode if the user does not have write access.

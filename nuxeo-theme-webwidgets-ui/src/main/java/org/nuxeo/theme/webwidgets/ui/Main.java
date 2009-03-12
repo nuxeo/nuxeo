@@ -21,6 +21,7 @@ import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 import org.nuxeo.theme.webwidgets.Manager;
 import org.nuxeo.theme.webwidgets.WidgetData;
+import org.nuxeo.theme.webwidgets.WidgetException;
 import org.nuxeo.theme.webwidgets.WidgetType;
 
 @WebObject(type = "nxthemes-webwidgets")
@@ -41,8 +42,11 @@ public class Main extends ModuleRoot {
     public String getPanelData(@QueryParam("provider") String providerName,
             @QueryParam("region") String regionName,
             @QueryParam("mode") String mode) {
-        return Manager.getPanelData(providerName,
-                regionName, mode);
+        try {
+            return Manager.getPanelData(providerName, regionName, mode);
+        } catch (WidgetException e) {
+            throw new WidgetEditorException("Cannot get widget data", e);
+        }
     }
 
     @POST
@@ -53,8 +57,7 @@ public class Main extends ModuleRoot {
         String widgetName = form.getString("widget_name");
         String regionName = form.getString("region");
         int order = Integer.valueOf(form.getString("order"));
-        Editor.addWidget(providerName, widgetName,
-                regionName, order);
+        Editor.addWidget(providerName, widgetName, regionName, order);
     }
 
     @POST
@@ -67,9 +70,8 @@ public class Main extends ModuleRoot {
         String srcRegionName = form.getString("src_region");
         String destRegionName = form.getString("dest_region");
         int destOrder = Integer.valueOf(form.getString("dest_order"));
-        return Editor.moveWidget(srcProviderName,
-                destProviderName, srcUid, srcRegionName, destRegionName,
-                destOrder);
+        return Editor.moveWidget(srcProviderName, destProviderName, srcUid,
+                srcRegionName, destRegionName, destOrder);
     }
 
     @POST
@@ -88,8 +90,7 @@ public class Main extends ModuleRoot {
         String providerName = form.getString("provider");
         String widgetUid = form.getString("widget_uid");
         String state = form.getString("state");
-        Editor.setWidgetState(providerName,
-                widgetUid, state);
+        Editor.setWidgetState(providerName, widgetUid, state);
     }
 
     @POST
@@ -106,8 +107,11 @@ public class Main extends ModuleRoot {
             @QueryParam("provider") String providerName,
             @QueryParam("widget_uid") String widgetUid,
             @QueryParam("name") String dataName) {
-        return Manager.getWidgetDataInfo(
-                providerName, widgetUid, dataName);
+        try {
+            return Manager.getWidgetDataInfo(providerName, widgetUid, dataName);
+        } catch (WidgetException e) {
+            throw new WidgetEditorException("Cannot get widget data info", e);
+        }
     }
 
     @POST
@@ -116,13 +120,11 @@ public class Main extends ModuleRoot {
             @QueryParam("widget_uid") String widgetUid,
             @QueryParam("data") String dataName) {
         HttpServletRequest req = ctx.getRequest();
-        String res = Editor.uploadFile(req,
-                providerName, widgetUid, dataName);
+        String res = Editor.uploadFile(req, providerName, widgetUid, dataName);
         long timestamp = new Date().getTime();
         String src = String.format("nxwebwidgets://data/%s/%s/%s/%s",
                 providerName, widgetUid, dataName, timestamp);
-        Editor.setWidgetPreference(providerName,
-                widgetUid, dataName, src);
+        Editor.setWidgetPreference(providerName, widgetUid, dataName, src);
         return res;
     }
 
@@ -132,8 +134,12 @@ public class Main extends ModuleRoot {
             @QueryParam("widget_uid") String widgetUid,
             @QueryParam("data") String dataName,
             @QueryParam("provider") String providerName) {
-        WidgetData data = Manager.getWidgetData(
-                providerName, widgetUid, dataName);
+        WidgetData data = null;
+        try {
+            data = Manager.getWidgetData(providerName, widgetUid, dataName);
+        } catch (WidgetException e) {
+            throw new WidgetEditorException("Cannot get widget data info", e);
+        }
         ResponseBuilder builder = Response.ok(data.getContent());
         builder.type(data.getContentType());
         return builder.build();
@@ -147,8 +153,7 @@ public class Main extends ModuleRoot {
         String widgetUid = form.getString("widget_uid");
         String preferences_map = form.getString("preferences");
         Map<String, String> preferencesMap = (Map<String, String>) JSONObject.fromObject(preferences_map);
-        Editor.updateWidgetPreferences(
-                providerName, widgetUid, preferencesMap);
+        Editor.updateWidgetPreferences(providerName, widgetUid, preferencesMap);
     }
 
     @GET
