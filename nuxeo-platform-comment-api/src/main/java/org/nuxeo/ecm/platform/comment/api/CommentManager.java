@@ -74,5 +74,17 @@ public interface CommentManager {
      */
     List<DocumentModel> getDocumentsForComment(DocumentModel comment)
             throws ClientException;
+    
+    /**
+     * Creates a comment document model. It gives opportunity to save the comments in a 
+     * specified location
+     * @param docModel the document to comment
+     * @param comment the comment content
+     * @param path the location path 
+     * @return the comment document model.
+     * @throws ClientException
+     */
+    DocumentModel createLocatedComment(DocumentModel docModel,
+            DocumentModel comment, String path) throws ClientException;
 
 }
