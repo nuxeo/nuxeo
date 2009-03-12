@@ -221,11 +221,11 @@ public abstract class AbstractResourceType implements ResourceType {
         int p = path.lastIndexOf('.');
         if (p > -1) {
             path = path.substring(0, p);
-            path = path.replace('.', File.separatorChar);
-            return new StringBuilder().append(File.separatorChar).append(path)
-                    .append(File.separatorChar).append(fileName).toString();
+            path = path.replace('.', '/');
+            return new StringBuilder().append('/').append(path)
+                    .append('/').append(fileName).toString();
         }
-        return new StringBuilder().append(File.separatorChar)
+        return new StringBuilder().append('/')
             .append(fileName).toString();
     }
 
