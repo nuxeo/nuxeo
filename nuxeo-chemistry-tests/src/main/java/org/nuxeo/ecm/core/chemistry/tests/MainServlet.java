@@ -17,9 +17,6 @@
 package org.nuxeo.ecm.core.chemistry.tests;
 
 import java.io.IOException;
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.servlet.Servlet;
 
@@ -30,11 +27,7 @@ import org.apache.commons.logging.LogFactory;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
-import org.nuxeo.ecm.core.api.CoreInstance;
-import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 
 /**
  * Test class that runs a servlet on a repository initialized with a few simple
@@ -42,7 +35,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  *
  * @author Florent Guillaume
  */
-public class MainServlet extends NXRuntimeTestCase {
+public class MainServlet extends SQLRepositoryTestCase {
 
     private static final Log log = LogFactory.getLog(MainServlet.class);
 
@@ -56,10 +49,8 @@ public class MainServlet extends NXRuntimeTestCase {
 
     public static final String REPOSITORY_NAME = "test";
 
-    private CoreSession session;
-
     public static void main(String[] args) throws Exception {
-        MainServlet main = new MainServlet();
+        MainServlet main = new MainServlet("test");
         main.setUp();
         try {
             main.main();
@@ -68,35 +59,20 @@ public class MainServlet extends NXRuntimeTestCase {
         }
     }
 
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.ecm.core.schema");
-        deployBundle("org.nuxeo.ecm.core.api");
-        deployBundle("org.nuxeo.ecm.core");
-        deployBundle("org.nuxeo.ecm.core.event");
-
-        DatabaseHelper.DATABASE.setUp();
-        deployContrib("org.nuxeo.ecm.core.storage.sql.test",
-                DatabaseHelper.DATABASE.getDeploymentContrib());
-
-        Map<String, Serializable> context = new HashMap<String, Serializable>();
-        context.put("username", SecurityConstants.ADMINISTRATOR);
-        session = CoreInstance.getInstance().open(REPOSITORY_NAME, context);
+    protected MainServlet(String name) {
+        super(name);
     }
 
     @Override
-    public void tearDown() throws Exception {
-        try {
-            CoreInstance.getInstance().close(session);
-        } catch (Exception e) {
-            // ignore
-        }
-        try {
-            DatabaseHelper.DATABASE.tearDown();
-        } catch (Exception e) {
-            // ignore
-        }
+    protected void setUp() throws Exception {
+        super.setUp();
+        // deployBundle("org.nuxeo.ecm.core.event");
+        openSession();
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
+        closeSession();
         super.tearDown();
     }
 
@@ -109,9 +85,8 @@ public class MainServlet extends NXRuntimeTestCase {
         Repository repository = makeRepository();
         Server server = new Server(PORT);
         Servlet servlet = new CMISServlet(repository);
-        ServletHolder servletHolder = new ServletHolder(servlet);
         Context context = new Context(server, SERVLET_PATH, Context.SESSIONS);
-        context.addServlet(servletHolder, "/*");
+        context.addServlet(new ServletHolder(servlet), "/*");
         server.start();
         String url = "http://localhost:" + PORT + SERVLET_PATH + CMIS_SERVICE;
         log.info("CMIS server started, AtomPub service url: " + url);
