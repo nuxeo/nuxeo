@@ -1,4 +1,4 @@
-<table border="1" width="100%">
+<table width="100%">
   <tr>
     <td width="50%">
       <#include "includes/last_published_pages.ftl"/>
