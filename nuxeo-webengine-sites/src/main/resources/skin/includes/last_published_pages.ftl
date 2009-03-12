@@ -14,6 +14,7 @@
       <table>
         <tr><td><a href="${This.path}/${p.path}"> ${p.name} &nbsp; </a></td></tr>
         <tr><td>${p.author}&nbsp;</td></tr>
+        <tr><td>${p.numberComments} ${Context.getMessage("last.published.pages.comments")}</td></tr>
       </table>
     </td>
   </tr>

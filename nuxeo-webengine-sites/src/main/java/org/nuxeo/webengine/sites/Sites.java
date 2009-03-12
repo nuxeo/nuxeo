@@ -39,7 +39,7 @@ import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 
-@WebObject(type = "sites", guard = "user=Administrator", facets = { "Sites" })
+@WebObject(type = "sites", facets = { "Sites" })
 @Produces("text/html; charset=UTF-8")
 public class Sites extends DefaultObject {
 

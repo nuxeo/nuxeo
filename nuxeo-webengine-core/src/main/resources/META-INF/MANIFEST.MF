@@ -12,8 +12,7 @@ Nuxeo-Require: org.nuxeo.ecm.platform.rendering,
  org.nuxeo.ecm.core.api;
  org.nuxeo.ecm.platform.web.common
 Nuxeo-Component: OSGI-INF/webengine-framework.xml,
- OSGI-INF/authentication-contrib.xml,
- OSGI-INF/web-request-contrib.xml
+ OSGI-INF/authentication-contrib.xml
 Provide-Package: org.nuxeo.ecm.core.rest,
  org.nuxeo.ecm.core.rest.security,
  org.nuxeo.ecm.webengine,

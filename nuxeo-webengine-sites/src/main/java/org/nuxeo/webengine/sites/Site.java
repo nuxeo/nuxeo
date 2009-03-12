@@ -51,7 +51,7 @@ import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 import org.nuxeo.webengine.utils.WebCommentUtils;
 
-@WebObject(type = "site", guard = "user=Administrator", facets = { "Site" })
+@WebObject(type = "site", facets = { "Site" })
 @Produces("text/html; charset=UTF-8")
 public class Site extends DefaultObject {
 
@@ -225,6 +225,7 @@ public class Site extends DefaultObject {
                     String[] splittedFormatterdString = formattedString.split(" ");
                     page.put("day", splittedFormatterdString[0]);
                     page.put("month", splittedFormatterdString[1]);
+                    page.put("numberComments", getNumberCommentsForPage(d));
 
                     pages.add(page);
                 } catch (Exception e) {
@@ -334,6 +335,11 @@ public class Site extends DefaultObject {
         return StringUtils.EMPTY;
     }
     
+    private String getNumberCommentsForPage(DocumentModel page)
+            throws Exception {
+        CommentManager commentManager = WebCommentUtils.getCommentManager();
+        return Integer.toString(commentManager.getComments(page).size());
+    }
 
     
 }
