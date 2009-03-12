@@ -46,7 +46,7 @@
 </form>
 
 <#else>
-   <p style="text-align: center"><em>No element is selected.</em></p>
+   <p class="nxthemesEditor" style="text-align: center"><em>No element is selected.</em></p>
 </#if>
 
 </div>

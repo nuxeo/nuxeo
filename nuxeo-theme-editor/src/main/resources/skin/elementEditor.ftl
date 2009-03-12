@@ -58,7 +58,7 @@
   visibleInPerspectives="set description" />
 
 <#else>
-    <p>No element is selected.</p>
+    <p class="nxthemesEditor">No element is selected.</p>
 </#if>
 
 </div>

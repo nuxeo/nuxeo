@@ -7,7 +7,6 @@
 
 <div id="nxthemesStyleManager">
 
-
 <h1 class="nxthemesEditor">Styles</h1>
 
 <table cellpadding="0" cellspacing="0" style="width: 100%"><tr>
@@ -76,7 +75,7 @@
 
 <#else>
 
-<p><em>These styles are associated with non existing views. They can probably be cleaned up.</em><p>
+<p class="nxthemesEditor"><em>These styles are associated with non existing views. They can probably be cleaned up.</em><p>
 
 <#assign styles=themeManager.getStyles(current_theme_name)>
 <#list styles as style>

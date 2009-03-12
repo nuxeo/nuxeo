@@ -5,7 +5,7 @@
 <div id="nxthemesThemeManager" class="nxthemesScreen">
 
 <form style="float: right;" action="javascript:void(0)">
-  <div>
+  <div class="nxthemesEditor">
     <button onclick="javascript:NXThemesEditor.addTheme()">
     <img src="${skinPath}/img/add-theme-16.png" width="16" height="16" />
     Add theme</button>
@@ -41,7 +41,7 @@
 <#list themes as theme>
   <#if theme.name = current_theme_name>
       <h2 class="nxthemesEditor" style="text-transform: uppercase">${theme.name}</h2>
-      <p>        
+      <p class="nxthemesEditor">        
         SOURCE: <strong>${theme.src}</strong>
         <#if theme.lastLoaded && theme.loadingFailed>
           <span class="nxthemesEmphasize">LOADING FAILED</span>
@@ -50,7 +50,7 @@
       
       <#assign template_engines=theme.templateEngines>
       <#if template_engines>
-      <p>
+      <p class="nxthemesEditor">
         COMPATIBILITY:
         <#list template_engines as template_engine>
           <strong>${template_engine}</strong>
@@ -59,19 +59,19 @@
       </#if>
       
       <#if theme.customized>
-        <p><em>This theme is currently being hidden by another theme with the same name. </em></p>
+        <p class="nxthemesEditor"><em>This theme is currently being hidden by another theme with the same name. </em></p>
       
       <#else>
       
         <#if theme.custom>
-          <p><em>This theme can be saved by clicking on the SAVE button.</em></p>
+          <p class="nxthemesEditor"><em>This theme can be saved by clicking on the SAVE button.</em></p>
         </#if>
       
         <#if !theme.saveable>
-          <p><em>This theme cannot be saved directly, use the DOWNLOAD button instead.</em></p>
+          <p class="nxthemesEditor"><em>This theme cannot be saved directly, use the DOWNLOAD button instead.</em></p>
         </#if>
 
-      <p>
+      <p class="nxthemesEditor">
         <button <#if !theme.saveable>disabled="disabled"</#if> onclick="NXThemesEditor.saveTheme('${theme.src}', 2)">
           <img src="${skinPath}/img/theme-save.png" width="16" height="16" />
           Save
