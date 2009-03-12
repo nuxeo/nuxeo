@@ -93,6 +93,8 @@
       <schema name="file"/>
       <schema name="webcontainer"/>
       <schema name="publish_ergo"/>
+      <!-- the content of webcontainer -->
+      <schema name="files" />
       <facet name="SuperSpace"/>
       <subtypes>
         <type>Workspace</type>
