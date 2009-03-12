@@ -1,9 +1,9 @@
 #!/bin/sh -x
-PWD=$(pwd)
+HERE=$(cd $(dirname $0); pwd -P)
 
 # Load conf file if any
-if [ -r ./run.conf ]; then
-    . ./run.conf
+if [ -r $HERE/run.conf ]; then
+    . $HERE/run.conf
 fi
 
 # Default values
@@ -15,14 +15,15 @@ URL=${URL:-http://localhost:8080/nuxeo/}
 CMD="java -jar selenium-server.jar -port 14440 -timeout 7200 \
       -htmlSuite "*chrome" $URL "
 if [ ! -z $HIDE_FF ]; then
-    CMD="xvbf-run $CMD"
+    CMD="xvfb-run $CMD"
 fi
 CMD_END=" -userExtensions user-extensions.js"
 
 # Clean old results
-rm -rf ./result-*.html
+rm -rf $HERE/result-*.html
 
 # Launch suites
+cd $HERE
 for suite in $SUITES; do
     echo "### Running test suite $suite ..."
     $CMD "$PWD/tests/$suite.html" "$PWD/result-$suite.html" $CMD_END || exit 1
