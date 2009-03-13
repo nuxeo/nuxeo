@@ -44,8 +44,8 @@ public class Main extends ModuleRoot {
             @QueryParam("mode") String mode) {
         try {
             return Manager.getPanelData(providerName, regionName, mode);
-        } catch (WidgetException e) {
-            throw new WidgetEditorException("Cannot get widget data", e);
+        } catch (Exception e) {
+            throw new WidgetEditorException(e.getMessage(), e);
         }
     }
 
@@ -109,8 +109,8 @@ public class Main extends ModuleRoot {
             @QueryParam("name") String dataName) {
         try {
             return Manager.getWidgetDataInfo(providerName, widgetUid, dataName);
-        } catch (WidgetException e) {
-            throw new WidgetEditorException("Cannot get widget data info", e);
+        } catch (Exception e) {
+            throw new WidgetEditorException(e.getMessage(), e);
         }
     }
 
@@ -125,6 +125,7 @@ public class Main extends ModuleRoot {
         String src = String.format("nxwebwidgets://data/%s/%s/%s/%s",
                 providerName, widgetUid, dataName, timestamp);
         Editor.setWidgetPreference(providerName, widgetUid, dataName, src);
+
         return res;
     }
 
@@ -137,8 +138,8 @@ public class Main extends ModuleRoot {
         WidgetData data = null;
         try {
             data = Manager.getWidgetData(providerName, widgetUid, dataName);
-        } catch (WidgetException e) {
-            throw new WidgetEditorException("Cannot get widget data info", e);
+        } catch (Exception e) {
+            throw new WidgetEditorException(e.getMessage(), e);
         }
         ResponseBuilder builder = Response.ok(data.getContent());
         builder.type(data.getContentType());

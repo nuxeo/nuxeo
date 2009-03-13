@@ -28,7 +28,7 @@ public class Editor {
         try {
             Manager.addWidget(providerName, widgetTypeName, region, order);
         } catch (WidgetException e) {
-            throw new WidgetEditorException("Cannot add widget", e);
+            throw new WidgetEditorException(e.getMessage(), e);
         }
     }
 
@@ -39,7 +39,7 @@ public class Editor {
             return Manager.moveWidget(srcProviderName, destProviderName,
                     srcUid, srcRegionName, destRegionName, destOrder);
         } catch (WidgetException e) {
-            throw new WidgetEditorException("Cannot move widget", e);
+            throw new WidgetEditorException(e.getMessage(), e);
         }
     }
 
@@ -48,7 +48,7 @@ public class Editor {
         try {
             Manager.removeWidget(providerName, uid);
         } catch (WidgetException e) {
-            throw new WidgetEditorException("Cannot remove widget", e);
+            throw new WidgetEditorException(e.getMessage(), e);
         }
     }
 
@@ -58,7 +58,7 @@ public class Editor {
         try {
             Manager.setWidgetState(providerName, widgetUid, state);
         } catch (WidgetException e) {
-            throw new WidgetEditorException("Cannot set widget state", e);
+            throw new WidgetEditorException(e.getMessage(), e);
         }
     }
 
@@ -69,7 +69,7 @@ public class Editor {
         try {
             Manager.setWidgetPreference(providerName, widgetUid, dataName, src);
         } catch (WidgetException e) {
-            throw new WidgetEditorException("Set widget preferences", e);
+            throw new WidgetEditorException(e.getMessage(), e);
         }
     }
 
@@ -80,7 +80,7 @@ public class Editor {
             Manager.updateWidgetPreferences(providerName, widgetUid,
                     preferencesMap);
         } catch (WidgetException e) {
-            throw new WidgetEditorException("Update widget preferences", e);
+            throw new WidgetEditorException(e.getMessage(), e);
         }
     }
 
@@ -90,7 +90,7 @@ public class Editor {
         try {
             return Manager.uploadFile(req, providerName, widgetUid, dataName);
         } catch (WidgetException e) {
-            throw new WidgetEditorException("Cannot upload file", e);
+            throw new WidgetEditorException(e.getMessage(), e);
         }
     }
 
