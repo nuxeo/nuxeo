@@ -19,6 +19,8 @@
       <default-view>view_documents</default-view>
       <subtypes>
         <type>WebPage</type>
+        <type>WebComment</type>
+        <type>ContextualLink</type>
       </subtypes>
       <!-- new layout config -->
       <layouts mode="any">
@@ -27,9 +29,21 @@
       </layouts>
     </type>
 
+    <!-- ContextualLink doc type definition  -->    
+    <type id="ContextualLink" coretype="ContextualLink">
+      <label>Contextual Link</label>
+      <icon>/icons/file.gif</icon>
+      <default-view>view_documents</default-view>
+      <!-- new layout config -->
+      <layouts mode="any">
+        <layout>contextualLink</layout>
+      </layouts>
+    </type>    
+
     <type id="Workspace" coretype="Workspace">
       <subtypes>
         <type>WebPage</type>
+        <type>ContextualLink</type>
       </subtypes>
     </type>
 
@@ -39,6 +53,7 @@
     point="types">
     <types>
       <type name="WebPage">default</type>
+      <type name="ContextualLink">default</type>
     </types>
   </extension>
 </component>

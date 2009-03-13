@@ -32,7 +32,8 @@ public class SiteHelper {
     private SiteHelper() {
     }
 
-    public static String getString(DocumentModel d, String xpath, String defaultValue) {
+    public static String getString(DocumentModel d, String xpath,
+            String defaultValue) {
         try {
             return getString(d, xpath);
         } catch (ClientException e) {
@@ -40,7 +41,8 @@ public class SiteHelper {
         }
     }
 
-    public static String getString(DocumentModel d, String xpath) throws ClientException {
+    public static String getString(DocumentModel d, String xpath)
+            throws ClientException {
         Property p = d.getProperty(xpath);
         if (p != null) {
             Serializable v = p.getValue();
@@ -51,7 +53,8 @@ public class SiteHelper {
         return "";
     }
 
-    public static GregorianCalendar getGregorianCalendar(DocumentModel d, String xpath) throws ClientException {
+    public static GregorianCalendar getGregorianCalendar(DocumentModel d,
+            String xpath) throws ClientException {
         Property p = d.getProperty(xpath);
         if (p != null) {
             Serializable v = p.getValue();
@@ -62,7 +65,8 @@ public class SiteHelper {
         return null;
     }
 
-    public static Blob getBlob(DocumentModel d, String xpath) throws ClientException {
+    public static Blob getBlob(DocumentModel d, String xpath)
+            throws ClientException {
         Property p = d.getProperty(xpath);
         if (p != null) {
             Serializable v = p.getValue();
@@ -73,7 +77,8 @@ public class SiteHelper {
         return null;
     }
 
-    public static boolean getBoolean(DocumentModel d, String xpath, boolean defaultValue) {
+    public static boolean getBoolean(DocumentModel d, String xpath,
+            boolean defaultValue) {
         try {
             return getBoolean(d, xpath);
         } catch (ClientException e) {
@@ -81,7 +86,8 @@ public class SiteHelper {
         }
     }
 
-    public static boolean getBoolean(DocumentModel d, String xpath) throws ClientException {
+    public static boolean getBoolean(DocumentModel d, String xpath)
+            throws ClientException {
         Property p = d.getProperty(xpath);
         if (p != null) {
             Serializable v = p.getValue();
@@ -92,17 +98,15 @@ public class SiteHelper {
         throw new ClientException("value is null");
     }
 
+    public static String getFistNWordsFromString(String string, int n) {
+        String[] result = string.split(" ", n + 1);
+        StringBuffer firstNwords = new StringBuffer();
+        for (int i = 0; i < ((n <= result.length) ? n : result.length); i++) {
+            firstNwords.append(result[i]);
+            firstNwords.append(" ");
 
-//    public static String getValue(DocumentModel d, String xpath) throws  ClientException{
-//        Property p = d.getProperty(xpath);
-//        if ( p != null) {
-//            Serializable v = p.getValue();
-//            if ( v != null ) {
-//                return v.toString();
-//            }
-//        }
-//        return "";
-//    }
-
+        }
+        return new String(firstNwords);
+    }
 
 }

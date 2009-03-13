@@ -19,6 +19,7 @@
 
 package org.nuxeo.webengine.sites;
 
+import static org.nuxeo.webengine.utils.SiteUtilsConstants.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
@@ -49,6 +50,7 @@ import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
+import org.nuxeo.webengine.utils.SiteUtils;
 import org.nuxeo.webengine.utils.WebCommentUtils;
 
 @WebObject(type = "site", facets = { "Site" })
@@ -100,7 +102,7 @@ public class Site extends DefaultObject {
         ctx.getRequest().setAttribute("org.nuxeo.theme.theme",
                 theme + "/" + themePage);
         try {
-            return getTemplate("template_default.ftl").args(getSiteArgs(ws));
+            return getTemplate("template_default.ftl").args(getSiteArguments());
         } catch (Exception e) {
             WebException.wrap(e);
         }
@@ -146,7 +148,7 @@ public class Site extends DefaultObject {
         }
         //return a default image, maybe you want to change this in future
         if (resp == null) {
-            resp = redirect(getContext().getModule().getSkinPathPrefix() + 
+            resp = redirect(getContext().getModule().getSkinPathPrefix() +
                     "/images/logo.gif");
         }
         return resp;
@@ -166,74 +168,29 @@ public class Site extends DefaultObject {
         }
         //return a default image, maybe you want to change this in future
         if (resp == null) {
-            resp = redirect(getContext().getModule().getSkinPathPrefix() + 
+            resp = redirect(getContext().getModule().getSkinPathPrefix() +
                     "/images/logo.gif");
         }
         return resp;
     }
 
-    protected Map<String, Object> getSiteArgs(DocumentModel doc)
-            throws ClientException {
+    protected Map<String, Object> getSiteArguments() throws ClientException {
         Map<String, Object> root = new HashMap<String, Object>();
-        // MC: add constants
-        List<Object> pages = getLastModifiedWebPages(5, 50);
-        List<Object> comments = getLastCommentsFromPages(5, 50);
-        root.put("pages", pages);
-        root.put("comments", comments);
-        root.put("welcomeText", SiteHelper.getString(doc, "webc:welcomeText",
+
+        root.put(WELCOME_TEXT, SiteHelper.getString(ws, "webc:welcomeText",
                 null));
-        root.put("siteName", SiteHelper.getString(doc, "webc:name", null));
-        root.put("description", SiteHelper.getString(doc, "dc:description",
+        root.put(SITE_NAME, SiteHelper.getString(ws, "webc:name", null));
+        root.put(SITE_DESCRIPTION, SiteHelper.getString(ws, "dc:description",
                 null));
+        // add web pages
+        root.put(LAST_PUBLISHED_PAGES, SiteUtils.getInstance().getLastModifiedWebPages(
+                ws, 5, 50));
+        //add comments
+        root.put(COMMENTS, getLastCommentsFromPages(5, 50));
+        // add contextual links
+        root.put(CONTEXTUAL_LINKS, SiteUtils.getInstance().getContextualLinks(
+                ws));
         return root;
-    }
-
-    public List<Object> getLastModifiedWebPages(int noPages,
-            int noWordsFromContent) throws ClientException {
-        WebContext context = WebEngine.getActiveContext();
-        CoreSession session = context.getCoreSession();
-        DocumentModelList list = session.query(
-                String.format(
-                        "SELECT * FROM Document WHERE "
-                                + " ecm:primaryType like 'WebPage' AND "
-                                + " ecm:path STARTSWITH '%s'"
-                                + " AND webp:pushtomenu = 'true' "
-                                + " AND ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0"
-                                + " AND ecm:currentLifeCycleState != 'deleted' ORDER BY dc:modified DESC",
-                        ws.getPathAsString()), null, noPages, 0, true);
-
-        List<Object> pages = new ArrayList<Object>();
-        for (DocumentModel d : list) {
-            if (SiteHelper.getBoolean(d, "webp:pushtomenu", true)) {
-                try {
-                    Map<String, String> page = new HashMap<String, String>();
-                    page.put("name", SiteHelper.getString(d, "dc:title"));
-                    page.put("path",
-                            JsonAdapter.getRelativPath(ws, d).toString());
-                    page.put("description", SiteHelper.getString(d,
-                            "dc:description"));
-                    page.put("content", getFistNWordsFromString(
-                            SiteHelper.getString(d, "webp:content"),
-                            noWordsFromContent));
-                    page.put("author", SiteHelper.getString(d, "dc:creator"));
-
-                    GregorianCalendar modificationDate = SiteHelper.getGregorianCalendar(
-                            d, "dc:modified");
-                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
-                            "dd MMMM", getContext().getLocale());
-                    String formattedString = simpleDateFormat.format(modificationDate.getTime());
-                    String[] splittedFormatterdString = formattedString.split(" ");
-                    page.put("day", splittedFormatterdString[0]);
-                    page.put("month", splittedFormatterdString[1]);
-                    page.put("numberComments", getNumberCommentsForPage(d));
-
-                    pages.add(page);
-                } catch (Exception e) {
-                    System.out.println("ignore page :" + d);
-                }
-            }
-        }
-        return pages;
     }
 
     public List<Object> getLastCommentsFromPages(int noComments,
@@ -261,7 +218,7 @@ public class Site extends DefaultObject {
             String[] splittedFormatterdString = formattedString.split(" ");
             comment.put("day", splittedFormatterdString[0]);
             comment.put("month", splittedFormatterdString[1]);
-            
+
             try {
                 comment.put("author", getUserDetails(SiteHelper.getString(
                         documentModel, "webcmt:author")));
@@ -269,17 +226,17 @@ public class Site extends DefaultObject {
             } catch (Exception e) {
                 throw new ClientException(e);
             }
-            comment.put("content", getFistNWordsFromString(
+            comment.put("content", SiteHelper.getFistNWordsFromString(
                     SiteHelper.getString(documentModel, "webcmt:text"),
                     noWordsFromContent));
-            
+
             lastWebComments.add(comment);
 
         }
 
         return lastWebComments;
     }
-    
+
     protected DocumentModel getWorkspaceByUrl(String url) {
         WebContext context = WebEngine.getActiveContext();
         CoreSession session = context.getCoreSession();
@@ -301,17 +258,6 @@ public class Site extends DefaultObject {
         return ws;
     }
 
-    private String getFistNWordsFromString(String string, int n) {
-        String[] result = string.split(" ", n + 1);
-        StringBuffer firstNwords = new StringBuffer();
-        for (int i = 0; i < ((n <= result.length) ? n : result.length); i++) {
-            firstNwords.append(result[i]);
-            firstNwords.append(" ");
-
-        }
-        return new String(firstNwords);
-    }
-    
     private String getUserDetails(String username) throws Exception{
         UserManager userManager  = WebCommentUtils.getUserManager();
         NuxeoPrincipal principal = userManager.getPrincipal(username);
@@ -324,7 +270,7 @@ public class Site extends DefaultObject {
         return principal.getFirstName() + " " + principal.getLastName();
     }
 
-    
+
     private String getPageTitleForComment(DocumentModel comment)
             throws Exception {
         CommentManager commentManager = WebCommentUtils.getCommentManager();
@@ -334,12 +280,12 @@ public class Site extends DefaultObject {
         }
         return StringUtils.EMPTY;
     }
-    
+
     private String getNumberCommentsForPage(DocumentModel page)
             throws Exception {
         CommentManager commentManager = WebCommentUtils.getCommentManager();
         return Integer.toString(commentManager.getComments(page).size());
     }
 
-    
+
 }

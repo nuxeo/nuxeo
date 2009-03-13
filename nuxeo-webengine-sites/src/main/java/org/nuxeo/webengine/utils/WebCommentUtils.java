@@ -17,7 +17,7 @@
 
 
 package org.nuxeo.webengine.utils;
-
+import static org.nuxeo.webengine.utils.SiteUtilsConstants.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -42,7 +42,7 @@ public class WebCommentUtils {
             DocumentModel doc, String permission) throws Exception {
         List<DocumentModel> parents = session.getParentDocuments(doc.getRef());
         for (DocumentModel documentModel : parents) {
-            if (documentModel.getType().equals("Workspace")) {
+            if (documentModel.getType().equals(WORKSPACE)) {
                 // TODO: test for groups eg. administrators
                 String[] moderators = documentModel.getACP().listUsernamesForPermission(
                         permission);
@@ -58,7 +58,7 @@ public class WebCommentUtils {
      */
     public static boolean isCurrentModerated(CoreSession session,
             DocumentModel doc) throws Exception {
-        return getUsersWithPermission(session, doc, WebCommentConstants.PERMISSION_MODERATE).size() >= 1 ? true : false;
+        return getUsersWithPermission(session, doc, PERMISSION_MODERATE).size() >= 1 ? true : false;
     }
 
     /**
@@ -67,7 +67,7 @@ public class WebCommentUtils {
      */
     public static boolean isModeratedByCurrentUser(CoreSession session,
             DocumentModel doc) throws Exception {
-        ArrayList<String> moderators = getUsersWithPermission(session, doc, WebCommentConstants.PERMISSION_MODERATE);
+        ArrayList<String> moderators = getUsersWithPermission(session, doc, PERMISSION_MODERATE);
         if (moderators.contains(session.getPrincipal().getName())) {
             return true;
         }
@@ -81,7 +81,7 @@ public class WebCommentUtils {
      */
     public static boolean currentUserHasCommentPermision(CoreSession session,
             DocumentModel doc) throws Exception {
-        ArrayList<String> users = getUsersWithPermission(session, doc, WebCommentConstants.PERMISSION_COMMENT);
+        ArrayList<String> users = getUsersWithPermission(session, doc, PERMISSION_COMMENT);
         if (users.contains(session.getPrincipal().getName())) {
             return true;
         }
@@ -89,7 +89,7 @@ public class WebCommentUtils {
         return false;
 
     }
-    
+
     public static CommentManager getCommentManager() throws Exception {
         CommentManager commentManager = Framework.getLocalService(CommentManager.class);
         if (commentManager == null) {
@@ -97,7 +97,7 @@ public class WebCommentUtils {
         }
         return commentManager;
     }
-    
+
     public static UserManager getUserManager() throws Exception {
         UserManager userManager = Framework.getService(UserManager.class);
         if (userManager == null) {
@@ -105,5 +105,5 @@ public class WebCommentUtils {
         }
         return userManager;
     }
-    
+
 }

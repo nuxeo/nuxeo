@@ -1,10 +1,16 @@
 <#macro contextual>
 
 <table>
-  <tr><th>${Context.getMessage("label.contextual.links")}</th></tr>
-  <tr><td><a href="#">Sample Contextual Link 1</a></td></tr>
-  <tr><td><a href="#">Sample Contextual Link 2</a></td></tr>
-  <tr><td><a href="#">Sample Contextual Link 3</a></td></tr>
+  <tr><th colspan="2">${Context.getMessage("title.contextual.links.pages")}</th></tr>
+  <#list contextualLinks as cl>
+  <tr>
+    <td>
+      <table>
+        <tr><td><img src="${skinPath}/images/contextual_link.gif"/>${cl.description}</td></tr>
+        <tr><td><a href="${cl.link}" target="_blank"> ${cl.name} &nbsp; </a></td></tr>
+      </table>
+    </td>
+  </tr>
+  </#list>
 </table>
-
 </#macro>

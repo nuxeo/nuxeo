@@ -9,6 +9,7 @@
     point="schema">
     <schema name="webpage" prefix="webp" src="schemas/webpage.xsd" />
     <schema name="webcomment" prefix="webcmt" src="schemas/webcomment.xsd" />
+    <schema name="contextualLink" prefix="clink" src="schemas/contextual-link.xsd" />    
   </extension>
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService"
@@ -28,6 +29,14 @@
       <facet name="HiddenInNavigation"/>
       <facet name="Commentable"/>
     </doctype>
+    
+    <!-- ContextualLink doc type definition  -->
+    <doctype name="ContextualLink" extends="Document">
+      <facet name="HiddenInNavigation" />    
+      <schema name="common"/>
+      <schema name="dublincore" />
+      <schema name="contextualLink" />
+    </doctype>        
   
   </extension>
   

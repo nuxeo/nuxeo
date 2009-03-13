@@ -17,7 +17,11 @@
 
 package org.nuxeo.webengine.sites;
 
+import static org.nuxeo.webengine.utils.SiteUtilsConstants.*;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -25,12 +29,16 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.rest.DocumentObject;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.model.Template;
 import org.nuxeo.ecm.webengine.model.WebObject;
+import org.nuxeo.webengine.utils.SiteUtils;
 import org.nuxeo.webengine.utils.WebCommentUtils;
 
 /**
@@ -40,12 +48,18 @@ import org.nuxeo.webengine.utils.WebCommentUtils;
 @Produces("text/html; charset=UTF-8")
 public class Page extends DocumentObject {
 
+    private static final Log log = LogFactory.getLog(Page.class);
+
     @Override
     @GET
     public Object doGet() {
         ctx.getRequest().setAttribute("org.nuxeo.theme.theme", "sites/page");
-        // ctx.getRequest().setAttribute("theme", "sites/page");
-        return super.doGet();
+        try {
+            return ((Template) super.doGet()).args(getPageArguments());
+        } catch (ClientException e) {
+            log.debug("Problems while trying to set the arguments for the Page ...");
+        }
+        return null;
     }
 
     @POST
@@ -96,8 +110,25 @@ public class Page extends DocumentObject {
             throw WebException.wrap("Failed to delete comment", e);
         }
     }
-    
-    
+
+    protected Map<String, Object> getPageArguments() throws ClientException {
+
+        Map<String, Object> root = new HashMap<String, Object>();
+
+        root.put(WELCOME_TEXT, SiteHelper.getString(doc, "webp:content", null));
+        root.put(SITE_NAME, SiteHelper.getString(doc, "dc:title", null));
+        root.put(SITE_DESCRIPTION, SiteHelper.getString(doc, "dc:description",
+                null));
+        // add web pages
+        List<Object> pages = SiteUtils.getInstance().getLastModifiedWebPages(
+                doc, 5, 50);
+        root.put(LAST_PUBLISHED_PAGES, pages);
+        // add contextual links
+        root.put(CONTEXTUAL_LINKS, SiteUtils.getInstance().getContextualLinks(
+                doc));
+        return root;
+
+    }
 
 
 }
