@@ -236,6 +236,23 @@
               </tasks>
             </configuration>
           </execution>
+          <execution>
+            <id>patch-jboss-config</id>
+            <phase>process-resources</phase>
+            <configuration>
+              <tasks>
+                <echo message="Patching XML resources..." />
+                <copy todir="${jboss.server}" overwrite="true"
+                  failonerror="false">
+                  <fileset
+                    dir="${project.build.directory}/generated-resources/xml/xslt" />
+                </copy>
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
           <!-- can't remove it yet. See NXP-3208
           <execution>
             <id>jbossws-remove</id>
