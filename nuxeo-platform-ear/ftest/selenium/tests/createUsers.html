@@ -1,0 +1,585 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>createUsers</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">createUsers</td></tr>
+</thead><tbody>
+<!--@Test groups:CreateUsers,introduction|depends:CreateStructure-->
+<tr>
+	<td>open</td>
+	<td>/nuxeo/logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>Administrator</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>Administrator</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>//select[@class="langSelect"]</td>
+	<td>label=English (United Kingdom)</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@class='langSubmit']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>You are logged as Administrator</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Link=Members management</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Create a new user</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//form[@id="createUser_form"]//tr[1]//input</td>
+	<td>jdoe</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//form[@id="createUser_form"]//tr[2]//input</td>
+	<td>John</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//form[@id="createUser_form"]//tr[3]//input</td>
+	<td>Doe</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//form[@id="createUser_form"]//tr[4]//input</td>
+	<td>Nuxeo</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//form[@id="createUser_form"]//tr[6]//input</td>
+	<td>jdoe1</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//form[@id="createUser_form"]//tr[5]//input</td>
+	<td>sg+jdoe@nuxeo.com</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//form[@id="createUser_form"]//table[2]//tr[1]//input</td>
+	<td>jdoe1</td>
+</tr>
+<tr>
+	<td>addSelection</td>
+	<td>//form[@id="createUser_form"]//select</td>
+	<td>label=members</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value="Save"]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Doe</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Members management</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>searchForm:searchText</td>
+	<td>jdoe</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>searchForm:searchButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=jdoe</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Change password</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//div[@class="tabsContent"]//table//tr[1]//input</td>
+	<td>jdoe1</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//div[@class="tabsContent"]//table//tr[2]//input</td>
+	<td>jdoe1</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value="Save"]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>sg+jdoe@nuxeo.com</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Back to the list</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Create a new user</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//form[@id="createUser_form"]//tr[1]//input</td>
+	<td>jsmith</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//form[@id="createUser_form"]//tr[2]//input</td>
+	<td>John</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//form[@id="createUser_form"]//tr[3]//input</td>
+	<td>Smith</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//form[@id="createUser_form"]//tr[4]//input</td>
+	<td>Nuxeo</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//form[@id="createUser_form"]//tr[5]//input</td>
+	<td>sg+jsmith@nuxeo.com</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//form[@id="createUser_form"]//tr[6]//input</td>
+	<td>jsmith1</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//form[@id="createUser_form"]//table[2]//tr[1]//input</td>
+	<td>jsmith1</td>
+</tr>
+<tr>
+	<td>addSelection</td>
+	<td>//form[@id="createUser_form"]//select</td>
+	<td>label=members</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value="Save"]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Smith</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Members management</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>searchForm:searchText</td>
+	<td>jsmith</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>searchForm:searchButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=jsmith</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Change password</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//div[@class="tabsContent"]//table//tr[1]//input</td>
+	<td>jsmith1</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//div[@class="tabsContent"]//table//tr[2]//input</td>
+	<td>jsmith1</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value="Save"]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>sg+jsmith@nuxeo.com</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Back to the list</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Create a new user</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//form[@id="createUser_form"]//tr[1]//input</td>
+	<td>bree</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//form[@id="createUser_form"]//tr[2]//input</td>
+	<td>Bree</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//form[@id="createUser_form"]//tr[3]//input</td>
+	<td>Van de Kaamp</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//form[@id="createUser_form"]//tr[4]//input</td>
+	<td>Nuxeo</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//form[@id="createUser_form"]//tr[5]//input</td>
+	<td>sg+bree@nuxeo.com</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//form[@id="createUser_form"]//tr[6]//input</td>
+	<td>bree1</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//form[@id="createUser_form"]//table[2]//tr[1]//input</td>
+	<td>bree1</td>
+</tr>
+<tr>
+	<td>addSelection</td>
+	<td>//form[@id="createUser_form"]//select</td>
+	<td>label=members</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value="Save"]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Bree</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Members management</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>searchForm:searchText</td>
+	<td>bree</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>searchForm:searchButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=bree</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Change password</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//div[@class="tabsContent"]//table//tr[1]//input</td>
+	<td>bree1</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//div[@class="tabsContent"]//table//tr[2]//input</td>
+	<td>bree1</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value="Save"]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>sg+bree@nuxeo.com</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Back to the list</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Create a new user</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//form[@id="createUser_form"]//tr[1]//input</td>
+	<td>lbramard</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//form[@id="createUser_form"]//tr[2]//input</td>
+	<td>Lucien</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//form[@id="createUser_form"]//tr[3]//input</td>
+	<td>Bramard</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//form[@id="createUser_form"]//tr[4]//input</td>
+	<td>Nuxeo</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//form[@id="createUser_form"]//tr[6]//input</td>
+	<td>lbramard1</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//form[@id="createUser_form"]//tr[5]//input</td>
+	<td>sg+lbramard@nuxeo.com</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//form[@id="createUser_form"]//table[2]//tr[1]//input</td>
+	<td>lbramard1</td>
+</tr>
+<tr>
+	<td>addSelection</td>
+	<td>//form[@id="createUser_form"]//select</td>
+	<td>label=members</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value="Save"]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Bramard</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Members management</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>searchForm:searchText</td>
+	<td>lbramard</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>searchForm:searchButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=lbramard</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Change password</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//div[@class="tabsContent"]//table//tr[1]//input</td>
+	<td>lbramard1</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//div[@class="tabsContent"]//table//tr[2]//input</td>
+	<td>lbramard1</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value="Save"]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>sg+lbramard@nuxeo.com</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Members management</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>searchForm:searchText</td>
+	<td>lbramard</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>searchForm:searchButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=lbramard</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Lucien</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Back to the list</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Create a new user</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//form[@id="createUser_form"]//tr[1]//input</td>
+	<td>linnet</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//form[@id="createUser_form"]//tr[2]//input</td>
+	<td>Linnet</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//form[@id="createUser_form"]//tr[3]//input</td>
+	<td>Scavo</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//form[@id="createUser_form"]//tr[4]//input</td>
+	<td>Nuxeo</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//form[@id="createUser_form"]//tr[6]//input</td>
+	<td>linnet1</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//form[@id="createUser_form"]//tr[5]//input</td>
+	<td>sg+linnet@nuxeo.com</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//form[@id="createUser_form"]//table[2]//tr[1]//input</td>
+	<td>linnet1</td>
+</tr>
+<tr>
+	<td>addSelection</td>
+	<td>//form[@id="createUser_form"]//select</td>
+	<td>label=members</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value="Save"]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Scavo</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Members management</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>searchForm:searchText</td>
+	<td>linnet</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>searchForm:searchButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=linnet</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Scavo</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Log out</td>
+	<td></td>
+</tr>
+
+</tbody></table>
+</body>
+</html>

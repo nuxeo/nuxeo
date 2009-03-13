@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="" />
+<title>manageRightsInSectionsByManager</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">manageRightsInSectionsByManager</td></tr>
+</thead><tbody>
+<!--@Test groups:ManageRightsInSectionsByManager|depends:ManageRightsUsers-->
+<!--jdoe se connecte-->
+<tr>
+	<td>open</td>
+	<td>/nuxeo/logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>jdoe</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>jdoe1</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>//select[@class=&quot;langSelect&quot;]</td>
+	<td>label=English (United Kingdom)</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@class='langSubmit']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>You are logged as jdoe</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Sections</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=Create a new section</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Access rights</td>
+	<td></td>
+</tr>
+<!--jdoe donne à bree des droits de lecture-->
+<tr>
+	<td>type</td>
+	<td>//div[@class=&quot;userAndGroupSearch&quot;]//input[@class=&quot;directoryFilter&quot;]</td>
+	<td>bree</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//div[@class=&quot;userAndGroupSearch&quot;]//input[@value=&quot;Search&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForTextPresent</td>
+	<td>Bree Van de Kaamp</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Add to selection</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForCondition</td>
+	<td>var value = selenium.getText('//table[@class=&quot;rightsAddManager&quot;]/tbody/tr[1]/td[2]'); value.match(/Remove/);</td>
+	<td>15000</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>//table[@class=&quot;rightsAddManager&quot;]/tbody/tr/td[3]//table//tr[2]//select</td>
+	<td>label=Read</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Add permission']</td>
+	<td></td>
+</tr>
+<!--Verify that Save local Rights button is displayed-->
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//input[@value=&quot;Save local rights&quot;]</td>
+	<td></td>
+</tr>
+<!--Empty user selection to set new local rights-->
+<tr>
+	<td>click</td>
+	<td>link=Remove from selection</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForTextPresent</td>
+	<td>Your user selection is empty</td>
+	<td></td>
+</tr>
+<!--jdoe donne à jsmith des droits d'écriture-->
+<tr>
+	<td>type</td>
+	<td>//div[@class=&quot;userAndGroupSearch&quot;]//input[@class=&quot;directoryFilter&quot;]</td>
+	<td>jsmith</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//div[@class=&quot;userAndGroupSearch&quot;]//input[@value=&quot;Search&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForTextPresent</td>
+	<td>John Smith</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Add to selection</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForCondition</td>
+	<td>var value = selenium.getText('//table[@class=&quot;rightsAddManager&quot;]/tbody/tr[1]/td[2]'); value.match(/Remove/);</td>
+	<td>15000</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>//table[@class=&quot;rightsAddManager&quot;]/tbody/tr/td[3]//table//tr[2]//select</td>
+	<td>label=Write</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Add permission']</td>
+	<td></td>
+</tr>
+<!--Empty user selection to set new local rights-->
+<tr>
+	<td>click</td>
+	<td>link=Remove from selection</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForTextPresent</td>
+	<td>Your user selection is empty</td>
+	<td></td>
+</tr>
+<!--jdoe donne à lbramard droits de lecture-->
+<tr>
+	<td>type</td>
+	<td>//div[@class=&quot;userAndGroupSearch&quot;]//input[@class=&quot;directoryFilter&quot;]</td>
+	<td>lbramard</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//div[@class=&quot;userAndGroupSearch&quot;]//input[@value=&quot;Search&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForTextPresent</td>
+	<td>Lucien Bramard</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Add to selection</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForCondition</td>
+	<td>var value = selenium.getText('//table[@class=&quot;rightsAddManager&quot;]/tbody/tr[1]/td[2]'); value.match(/Remove/);</td>
+	<td>15000</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>//table[@class=&quot;rightsAddManager&quot;]/tbody/tr/td[3]//table//tr[2]//select</td>
+	<td>label=Read</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Add permission']</td>
+	<td></td>
+</tr>
+<!--Empty user selection to set new local rights-->
+<tr>
+	<td>click</td>
+	<td>link=Remove from selection</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForTextPresent</td>
+	<td>Your user selection is empty</td>
+	<td></td>
+</tr>
+<!--jdoe donne à linnet droits de lecture-->
+<tr>
+	<td>type</td>
+	<td>//div[@class=&quot;userAndGroupSearch&quot;]//input[@class=&quot;directoryFilter&quot;]</td>
+	<td>linnet</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//div[@class=&quot;userAndGroupSearch&quot;]//input[@value=&quot;Search&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForTextPresent</td>
+	<td>Linnet Scavo</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Add to selection</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForCondition</td>
+	<td>var value = selenium.getText('//table[@class=&quot;rightsAddManager&quot;]/tbody/tr[1]/td[2]'); value.match(/Remove/);</td>
+	<td>15000</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>//table[@class=&quot;rightsAddManager&quot;]/tbody/tr/td[3]//table//tr[2]//select</td>
+	<td>label=Read</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Add permission']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value=&quot;Save local rights&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementNotPresent</td>
+	<td>//input[@value=&quot;Save local rights&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Log out</td>
+	<td></td>
+</tr>
+
+</tbody></table>
+</body>
+</html>

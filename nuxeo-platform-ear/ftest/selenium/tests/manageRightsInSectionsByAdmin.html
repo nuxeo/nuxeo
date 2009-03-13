@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="" />
+<title>manageRightsInSectionsByAdmin</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">manageRightsInSectionsByAdmin</td></tr>
+</thead><tbody>
+<!--@Test groups:ManageRightsInSectionsByAdmin|depends:ManageRightsUsers-->
+<!--Identification-->
+<tr>
+	<td>open</td>
+	<td>/nuxeo/logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>Administrator</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>Administrator</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>//select[@class=&quot;langSelect&quot;]</td>
+	<td>label=English (United Kingdom)</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@class='langSubmit']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>You are logged as Administrator</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Sections</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Access rights</td>
+	<td></td>
+</tr>
+<!--Donner à jdoe des droits d'admin-->
+<tr>
+	<td>type</td>
+	<td>//div[@class=&quot;userAndGroupSearch&quot;]//input[@class=&quot;directoryFilter&quot;]</td>
+	<td>jdoe</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//div[@class=&quot;userAndGroupSearch&quot;]//input[@value=&quot;Search&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForTextPresent</td>
+	<td>John Doe</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Add to selection</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForCondition</td>
+	<td>var value = selenium.getText('//table[@class=&quot;rightsAddManager&quot;]/tbody/tr[1]/td[2]'); value.match(/Remove/);</td>
+	<td>15000</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>//table[@class=&quot;rightsAddManager&quot;]/tbody/tr/td[3]//table//tr[2]//select</td>
+	<td>label=Manage everything</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Add permission']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value=&quot;Save local rights&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementNotPresent</td>
+	<td>//input[@value=&quot;Save local rights&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Log out</td>
+	<td></td>
+</tr>
+
+</tbody></table>
+</body>
+</html>
