@@ -17,6 +17,8 @@
 package org.nuxeo.ecm.core.chemistry.tests;
 
 import java.io.IOException;
+import java.util.Calendar;
+import java.util.TimeZone;
 
 import javax.servlet.Servlet;
 
@@ -27,6 +29,11 @@ import org.apache.commons.logging.LogFactory;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
+import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
+import org.nuxeo.ecm.core.chemistry.impl.NuxeoRepository;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 
 /**
@@ -76,9 +83,80 @@ public class MainServlet extends SQLRepositoryTestCase {
         super.tearDown();
     }
 
-    public static Repository makeRepository() throws IOException {
-        // XXX return repo;
-        return null;
+    protected static Calendar getCalendar(int year, int month, int day,
+            int hours, int minutes, int seconds) {
+        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("Europe/Paris"));
+        cal.set(Calendar.YEAR, year);
+        cal.set(Calendar.MONTH, month - 1); // 0-based
+        cal.set(Calendar.DAY_OF_MONTH, day);
+        cal.set(Calendar.HOUR_OF_DAY, hours);
+        cal.set(Calendar.MINUTE, minutes);
+        cal.set(Calendar.SECOND, seconds);
+        return cal;
+    }
+
+    public Repository makeRepository() throws IOException, ClientException {
+        openSession();
+
+        DocumentModel folder1 = new DocumentModelImpl("/", "testfolder1",
+                "Folder");
+        folder1.setPropertyValue("dc:title", "testfolder1_Title");
+        folder1 = session.createDocument(folder1);
+
+        DocumentModel file1 = new DocumentModelImpl("/testfolder1",
+                "testfile1", "File");
+        file1.setPropertyValue("dc:title", "testfile1_Title");
+        file1.setPropertyValue("dc:description", "testfile1_description");
+        String content = "Some caf\u00e9 in a restaurant.\nDrink!.\n";
+        String filename = "testfile.txt";
+        ByteArrayBlob blob1 = new ByteArrayBlob(content.getBytes("UTF-8"),
+                "text/plain");
+        file1.setPropertyValue("content", blob1);
+        file1.setPropertyValue("filename", filename);
+        Calendar cal1 = getCalendar(2007, 3, 1, 12, 0, 0);
+        file1.setPropertyValue("dc:created", cal1);
+        file1.setPropertyValue("dc:coverage", "foo/bar");
+        file1.setPropertyValue("dc:subjects", new String[] { "foo", "gee/moo" });
+        file1 = session.createDocument(file1);
+
+        DocumentModel file2 = new DocumentModelImpl("/testfolder1",
+                "testfile2", "File");
+        file2.setPropertyValue("dc:title", "testfile2_Title");
+        file2.setPropertyValue("dc:description", "testfile2_DESCRIPTION2");
+        Calendar cal2 = getCalendar(2007, 4, 1, 12, 0, 0);
+        file2.setPropertyValue("dc:created", cal2);
+        file2.setPropertyValue("dc:contributors",
+                new String[] { "bob", "pete" });
+        file2.setPropertyValue("dc:coverage", "football");
+        file2 = session.createDocument(file2);
+
+        DocumentModel file3 = new DocumentModelImpl("/testfolder1",
+                "testfile3", "Note");
+        file3.setPropertyValue("dc:title", "testfile3_Title");
+        file3.setPropertyValue("dc:description",
+                "testfile3_desc1 testfile3_desc2,  testfile3_desc3");
+        file3.setPropertyValue("dc:contributors",
+                new String[] { "bob", "john" });
+        file3 = session.createDocument(file3);
+
+        DocumentModel folder2 = new DocumentModelImpl("/", "testfolder2",
+                "Folder");
+        folder2 = session.createDocument(folder2);
+
+        DocumentModel folder3 = new DocumentModelImpl("/testfolder2",
+                "testfolder3", "Folder");
+        folder3 = session.createDocument(folder3);
+
+        // create file 4
+        DocumentModel file4 = new DocumentModelImpl("/testfolder2/testfolder3",
+                "testfile4", "File");
+        file4.setPropertyValue("dc:title", "testfile4_Title");
+        file4.setPropertyValue("dc:description", "testfile4_DESCRIPTION4");
+        file4 = session.createDocument(file4);
+
+        session.save();
+        closeSession();
+        return new NuxeoRepository(REPOSITORY_NAME);
     }
 
     public void main() throws Exception {
