@@ -6,5 +6,5 @@ Bundle-Vendor: Nuxeo
 Bundle-Category: web,stateful
 Require-Bundle: org.nuxeo.ecm.platform.jbpm.core,
   org.nuxeo.ecm.platform.jbpm.api
-Nuxeo-Component: OSGI-INF/jbpm-facade-contrig.xml
+Nuxeo-Component: OSGI-INF/jbpm-facade-contrib.xml
 
