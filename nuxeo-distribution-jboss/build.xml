@@ -34,30 +34,38 @@
 
 	<!-- Patch JBoss -->
 	<target name="patch" depends="setproperties,patch-unix,patch-windows" />
-	<target name="patch-unix" if="osfamily-unix">
-		<echo message="Running maven script ${pom.file}" />
-		<exec executable="mvn" failonerror="true">
-			<arg value="-f" />
-			<arg value="${pom.file}" />
-			<arg value="-Djboss.dir=${jboss.home}" />
-			<arg value="clean" />
-			<arg value="install" />
-			<arg value="${mvn.opts}" />
-		</exec>
-	</target>
-	<target name="patch-windows" if="osfamily-windows">
-		<echo message="Running maven script ${pom.file}" />
-		<exec executable="cmd" failonerror="true">
-			<arg value="/c" />
-			<arg value="mvn.bat" />
-			<arg value="-f" />
-			<arg value="${pom.file}" />
-			<arg value="-Djboss.dir=${jboss.home}" />
-			<arg value="clean" />
-			<arg value="package" />
-			<arg value="${mvn.opts}" />
-		</exec>
-	</target>
+  <target name="patch-unix" if="osfamily-unix">
+    <echo message="Running maven script ${pom.file}" />
+    <exec executable="mvn" failonerror="true">
+      <arg value="-f" />
+      <arg value="${pom.file}" />
+      <arg value="-Djboss.dir=${jboss.home}" />
+      <arg value="-Dnuxeo.jboss.jmx.protocol=${nuxeo.jboss.jmx.protocol}" />
+      <arg value="-Dnuxeo.jboss.jmx.http.hostname=${nuxeo.jboss.jmx.http.hostname}" />
+      <arg value="-Dnuxeo.jboss.jmx.http.port=${nuxeo.jboss.jmx.http.port}" />
+      <arg value="clean" />
+      <arg value="package" />
+      <arg value="${mvn.profile}" />
+      <arg value="${mvn.opts}" />
+    </exec>
+  </target>
+  <target name="patch-windows" if="osfamily-windows">
+    <echo message="Running maven script ${pom.file}" />
+    <exec executable="cmd" failonerror="true">
+      <arg value="/c" />
+      <arg value="mvn.bat" />
+      <arg value="-f" />
+      <arg value="${pom.file}" />
+      <arg value="-Djboss.dir=${jboss.home}" />
+      <arg value="-Dnuxeo.jboss.jmx.protocol=${nuxeo.jboss.jmx.protocol}" />
+      <arg value="-Dnuxeo.jboss.jmx.http.hostname=${nuxeo.jboss.jmx.http.hostname}" />
+      <arg value="-Dnuxeo.jboss.jmx.http.port=${nuxeo.jboss.jmx.http.port}" />
+      <arg value="clean" />
+      <arg value="package" />
+      <arg value="${mvn.profile}" />
+      <arg value="${mvn.opts}" />
+    </exec>
+  </target>
   <target name="patch404" description="Patch a JBoss 4.0.4 for use by Nuxeo-EP (deprecated : no more 4.0.4 compatibility)">
     <antcall target="patch">
       <param name="pom.file" value="jboss-patch/pom-4.0.4.xml" />
