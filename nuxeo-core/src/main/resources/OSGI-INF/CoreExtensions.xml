@@ -30,7 +30,7 @@
     <schema name="note" src="schema/note.xsd"/>
     <schema name="domain" src="schema/domain.xsd"/>
 
-    <schema name="publish_ergo" src="schema/publish_ergo.xsd" />
+    <schema name="publishing" prefix="publish" src="schema/publishing.xsd" />
     <schema name="webcontainer" prefix="webc" src="schema/webcontainer.xsd"/>
 
   </extension>
@@ -92,7 +92,7 @@
       <!-- for logo -->
       <schema name="file"/>
       <schema name="webcontainer"/>
-      <schema name="publish_ergo"/>
+      <schema name="publishing"/>
       <!-- the content of webcontainer -->
       <schema name="files" />
       <facet name="SuperSpace"/>

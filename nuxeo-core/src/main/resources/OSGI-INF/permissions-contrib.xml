@@ -75,6 +75,7 @@
       project before pluggable permission definitions -->
     <permission name="RestrictedRead" />
 
+    <permission name="CanAskForPublishing" />
   </extension>
 
   <extension target="org.nuxeo.ecm.core.security.SecurityService"
@@ -85,6 +86,14 @@
       <item show="true" order="50" denyPermission="Write">ReadWrite</item>
       <item show="true" order="60" denyPermission="Remove">ReadRemove</item>
       <item show="true" order="100">Everything</item>
+    </visibility>
+
+    <visibility type="Section">
+      <item show="true" order="10">Read</item>
+      <item show="true" order="50" denyPermission="Write">ReadWrite</item>
+      <item show="true" order="60" denyPermission="Remove">ReadRemove</item>
+      <item show="true" order="100">Everything</item>
+      <item show="true" order="150">CanAskForPublishing</item>
     </visibility>
 
   </extension>
