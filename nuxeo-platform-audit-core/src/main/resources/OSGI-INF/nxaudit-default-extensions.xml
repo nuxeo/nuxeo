@@ -34,6 +34,9 @@
     <event name="documentPublicationRejected"/>
     <event name="documentPublicationApproved"/>
     <event name="lifecycle_transition_event"/>
+    <event name="loginSuccess" />
+    <event name="loginFailed" />
+    <event name="logout" />
   </extension>
   
 </component>
