@@ -281,11 +281,4 @@ public class Site extends DefaultObject {
         return StringUtils.EMPTY;
     }
 
-    private String getNumberCommentsForPage(DocumentModel page)
-            throws Exception {
-        CommentManager commentManager = WebCommentUtils.getCommentManager();
-        return Integer.toString(commentManager.getComments(page).size());
-    }
-
-
 }

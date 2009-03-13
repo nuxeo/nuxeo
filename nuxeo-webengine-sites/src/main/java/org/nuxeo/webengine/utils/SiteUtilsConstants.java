@@ -47,6 +47,8 @@ public final class SiteUtilsConstants {
     public static final String CONTEXTUAL_LINKS = "contextualLinks";
 
     public static final String COMMENTS = "comments";
+    
+    public static final String NUMBER_COMMENTS = "numberComments";
 
     /**
      * Constants used for Comments

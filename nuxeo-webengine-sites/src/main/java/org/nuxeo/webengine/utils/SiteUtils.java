@@ -31,6 +31,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.webengine.sites.JsonAdapter;
@@ -148,7 +149,7 @@ public class SiteUtils {
                     String[] splittedFormatterdString = formattedString.split(" ");
                     page.put("day", splittedFormatterdString[0]);
                     page.put("month", splittedFormatterdString[1]);
-
+                    page.put(NUMBER_COMMENTS, getNumberCommentsForPage(webPage));
                     pages.add(page);
                 } catch (Exception e) {
                     log.debug("Problems while trying to retrieve data from "
@@ -158,4 +159,11 @@ public class SiteUtils {
         }
         return pages;
     }
+    
+    private String getNumberCommentsForPage(DocumentModel page)
+            throws Exception {
+        CommentManager commentManager = WebCommentUtils.getCommentManager();
+        return Integer.toString(commentManager.getComments(page).size());
+    }
+
 }
