@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <datasources>
-  <!-- Configuration for Postgres -->
+  <!-- Configuration for MySQL -->
   <local-tx-datasource>
     <jndi-name>NuxeoDS</jndi-name>
     <connection-url>jdbc:mysql://localhost/nuxeo?relaxAutoCommit=true&amp;emulateLocators=true</connection-url>
