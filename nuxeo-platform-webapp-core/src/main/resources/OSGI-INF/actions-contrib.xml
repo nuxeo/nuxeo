@@ -229,6 +229,12 @@
       <filter-id>publish_document</filter-id>
       <filter-id>mutable_document</filter-id>
     </action>
+    
+    <action id="TAB_ADMIN_PUBLICATION_TREES" link="/incl/tabs/admin_publication_trees.xhtml" order="110"
+      enabled="true" label="action.admin.publication.tree" icon="/icons/file.gif">
+      <category>VIEW_ACTION_LIST</category>
+      <filter-id>admin_publication_trees_filter</filter-id>
+    </action>
 
     <action id="TAB_THEME" link="/incl/tabs/document_theme.xhtml" enabled="true"
       order="60" label="action.view.theme" icon="/icons/file.gif">
@@ -649,6 +655,13 @@
         <condition>
           document.getCurrentLifeCycleState().equals("approved")
         </condition>
+      </rule>
+    </filter>
+
+    <filter id="admin_publication_trees_filter">
+      <rule grant="true">
+        <permission>Write</permission>
+        <type>Workspace</type>
       </rule>
     </filter>
 

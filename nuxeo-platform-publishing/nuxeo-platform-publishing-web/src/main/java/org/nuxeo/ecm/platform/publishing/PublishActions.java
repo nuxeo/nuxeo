@@ -24,12 +24,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.jboss.seam.annotations.Destroy;
-import org.jboss.seam.annotations.remoting.WebRemote;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelTreeNode;
 import org.nuxeo.ecm.platform.actions.Action;
-import org.nuxeo.ecm.platform.ui.web.model.SelectDataModel;
 import org.nuxeo.ecm.platform.ui.web.model.SelectDataModelListener;
 
 /**
@@ -53,21 +50,6 @@ public interface PublishActions extends SelectDataModelListener {
      */
     List<Action> getActionsForPublishDocument();
 
-    /**
-     * Retrieves all the sections in the domain.
-     *
-     * @return
-     * @throws ClientException
-     */
-    SelectDataModel getSectionsModel() throws ClientException;
-
-    /**
-     * Publishes the current document to the selected sections.
-     *
-     * @throws ClientException
-     */
-    String publishDocument() throws ClientException;
-
     DocumentModel publishDocument(DocumentModel docToPublish,
             DocumentModel section) throws ClientException;
 
@@ -75,25 +57,9 @@ public interface PublishActions extends SelectDataModelListener {
 
     String publishWorkList() throws ClientException;
 
-    /**
-     * Nullifies the sectionSelectModel when the document is changed.
-     *
-     */
-    void cancelTheSections();
-
     String getComment();
 
     void setComment(String comment);
-
-    /**
-     * Unpublish a proxy of the current document, having as a request parameter
-     * with the name 'unPublishSectionRef,' the name of the section from which
-     * to unpublish the current document.
-     *
-     * @return the JSF outcome
-     * @throws ClientException
-     */
-    String unPublishDocument() throws ClientException;
 
     /**
      * This method is used to unpublish the current document list selection.
@@ -110,11 +76,6 @@ public interface PublishActions extends SelectDataModelListener {
             String comment, String category, DocumentModel dm)
             throws ClientException;
 
-    @WebRemote
-    // XXX shouldn't be here : Seam remoting bug
-    String processRemoteSelectRowEvent(String docRef, Boolean selection)
-            throws ClientException;
-
     /**
      * Returns the list of available web actions for the currently selected
      * Documents inside a section.
@@ -122,16 +83,6 @@ public interface PublishActions extends SelectDataModelListener {
      * @return the WebAction list
      */
     List<Action> getActionsForSectionSelection();
-
-    /**
-     * Returns selected sections.
-     */
-    List<DocumentModelTreeNode> getSelectedSections();
-
-    /**
-     * Returns true if there are selected sections.
-     */
-    boolean getHasSelectedSections();
 
     /**
      * Returns true if authenticated user has all permissions on document.
