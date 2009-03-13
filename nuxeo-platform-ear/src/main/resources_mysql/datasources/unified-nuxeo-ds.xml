@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <datasources>
+<<<<<<< local
   <!-- UNIFIED DATASOURCE CONFIGURATION -->
   <!--
     This is the unified datasource configuration for MySQL. All datasources from
@@ -8,6 +9,9 @@
     relevant xxx-ds.xml file and add a datasource configuration.
   -->
   <!-- nuxeo datasource -->
+=======
+  <!-- Configuration for MySQL -->
+>>>>>>> other
   <local-tx-datasource>
     <jndi-name>NuxeoDS</jndi-name>
     <connection-url>jdbc:mysql://localhost/nuxeo?relaxAutoCommit=true</connection-url>

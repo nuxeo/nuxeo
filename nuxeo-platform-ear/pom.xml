@@ -770,12 +770,23 @@
             </goals>
             <configuration>
               <runPreprocessor>false</runPreprocessor>
-              <format>directory</format>
+              <format>directory,zip</format>
               <outputDirectory>target</outputDirectory>
               <targetFile>${nuxeo.ear}</targetFile>
               <descriptor>
                 ${basedir}/src/main/assemble/${nuxeo.ear.assembly}.xml
               </descriptor>
+            </configuration>
+          </execution>
+          <execution>
+            <id>attach-app</id>
+            <phase>package</phase>
+            <goals>
+              <goal>attach</goal>
+            </goals>
+            <configuration>
+              <file>${build.directory}/${nuxeo.ear}.zip</file>
+              <type>zip</type>
             </configuration>
           </execution>
         </executions>
