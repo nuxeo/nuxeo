@@ -76,7 +76,6 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         super.setUp();
         deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
                 "OSGI-INF/test-repo-core-types-contrib.xml");
-        deployBundle("org.nuxeo.ecm.core.event");
         openSession();
     }
 

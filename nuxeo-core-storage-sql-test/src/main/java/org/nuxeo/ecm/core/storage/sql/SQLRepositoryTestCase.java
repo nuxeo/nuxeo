@@ -45,6 +45,7 @@ public abstract class SQLRepositoryTestCase extends NXRuntimeTestCase {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core");
+        deployBundle("org.nuxeo.ecm.core.event");
         DatabaseHelper.DATABASE.setUp();
         deployContrib("org.nuxeo.ecm.core.storage.sql.test",
                 DatabaseHelper.DATABASE.getDeploymentContrib());
