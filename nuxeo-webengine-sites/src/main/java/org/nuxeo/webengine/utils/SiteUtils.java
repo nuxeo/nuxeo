@@ -159,7 +159,7 @@ public class SiteUtils {
         }
         return pages;
     }
-    
+
     private String getNumberCommentsForPage(DocumentModel page)
             throws Exception {
         CommentManager commentManager = WebCommentUtils.getCommentManager();

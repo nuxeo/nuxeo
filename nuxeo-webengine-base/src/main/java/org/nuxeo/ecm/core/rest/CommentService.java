@@ -62,7 +62,7 @@ public class CommentService extends DefaultAdapter {
         }
 
         DocumentObject dobj = (DocumentObject) getTarget();
-        CommentManager commentManager = getCommentManager(); 
+        CommentManager commentManager = getCommentManager();
         CoreSession session = dobj.getCoreSession();
         try {
             // create a new webComment on this page
@@ -105,11 +105,11 @@ public class CommentService extends DefaultAdapter {
         return redirect(dobj.getPath());
 
     }
-    
+
     public static CommentManager getCommentManager(){
         return Framework.getLocalService(CommentManager.class);
    }
-    
+
     public static String getParentWorkspacePath(CoreSession session, DocumentModel doc)
             throws Exception {
         List<DocumentModel> parents = session.getParentDocuments(doc.getRef());
