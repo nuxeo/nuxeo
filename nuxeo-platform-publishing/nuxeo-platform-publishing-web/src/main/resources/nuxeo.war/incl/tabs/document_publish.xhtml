@@ -10,7 +10,7 @@
 
   <a4j:region renderRegionOnly="true">
   <a4j:outputPanel ajaxRendered="true">
-  <a4j:form ajaxSubmit="true">
+  <a4j:form ajaxSubmit="true" id="publishTreeForm">
   
   <h:panelGroup rendered="#{!empty publishActions.sectionRootsForPublishing}">
     <h:panelGrid class="dataInput" columnClasses="labelColumn, fieldColumn" columns="2">
@@ -38,20 +38,24 @@
           iconExpanded="/img/toggle_minus.png"
           iconCollapsed="/img/toggle_plus.png"
           rowKeyVar="rowKey"
-          stateVar="nodeState">
+          stateVar="nodeState"
+          id="publishTree">
           <rich:recursiveTreeNodesAdaptor
             roots="#{publishActions.currentSectionsTreeForPublishing}"
             nodes="#{node.children}"
-            var="node">
+            var="node"
+            id="publishRecursiveAdaptor">
             <rich:treeNode
               highlightedClass="treeNodeHighlightedClass"
-              selectedClass="treeNodeSelectedClass">
+              selectedClass="treeNodeSelectedClass"
+              id="publishTreeNode">
               <h:outputText value="#{nxd:titleOrId(node.document)}" />
               <nxu:methodResult name="canPublishToSection" value="#{publishActions.getCanPublishToSection(node.document)}">
                 <a4j:commandLink immediate="true"
                   action="#{publishActions.doPublish(node.document)}"
                   rendered="#{canPublishToSection}"
-                  reRender="publishingInfoList">
+                  reRender="publishingInfoList"
+                  id="publishCommandLink">
                   <h:graphicImage value="/icons/back.png" />
                   <h:outputText value="#{messages['label.publish.publish']}" />
                 </a4j:commandLink>
