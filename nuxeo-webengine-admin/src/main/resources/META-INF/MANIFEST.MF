@@ -5,7 +5,5 @@ Bundle-SymbolicName: org.nuxeo.ecm.webengine.admin;singleton:=true
 Bundle-Version: 1.0.0
 Bundle-Vendor: Nuxeo
 Provide-Package: org.nuxeo.ecm.webengine.wiki
-Require-Bundle: org.nuxeo.ecm.webengine.core,
- org.nuxeo.ecm.platform.audit.core
+Require-Bundle: org.nuxeo.ecm.webengine.core
 Nuxeo-Require: org.nuxeo.ecm.webengine.core
-Nuxeo-Component: OSGI-INF/audit-contrib.xml
