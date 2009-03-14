@@ -38,6 +38,7 @@
     <module>nuxeo-core-io</module>
     <module>nuxeo-core-storage-sql</module>
     <module>nuxeo-core-storage-sql-extensions</module>
+    <module>nuxeo-core-storage-sql-test</module>
     <module>nuxeo-core-storage-sql-ra</module>
     <module>nuxeo-core-storage-sql-mbean</module>
     <module>nuxeo-core-convert-api</module>
@@ -103,6 +104,11 @@
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core-storage-sql-extensions</artifactId>
+        <version>${nuxeo.core.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-core-storage-sql-test</artifactId>
         <version>${nuxeo.core.version}</version>
       </dependency>
       <dependency>

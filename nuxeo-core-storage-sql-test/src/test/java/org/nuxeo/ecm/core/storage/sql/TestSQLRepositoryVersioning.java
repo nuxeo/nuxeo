@@ -15,7 +15,7 @@
  *     Florent Guillaume
  */
 
-package org.nuxeo.ecm.core.storage.sql.coremodel;
+package org.nuxeo.ecm.core.storage.sql;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -52,9 +52,8 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        deployContrib("org.nuxeo.ecm.core.storage.sql.tests",
+        deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
                 "OSGI-INF/test-repo-core-types-contrib.xml");
-        deployBundle("org.nuxeo.ecm.core.event");
         openSession();
     }
 

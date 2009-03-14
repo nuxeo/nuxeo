@@ -88,7 +88,7 @@ public class LocalSession extends AbstractSession {
             throw new ClientException("Failed to load repository " + repoName, e);
         }
     }
-    
+
     protected Repository lookupRepository(String name) throws Exception {
         try {
             //needed by glassfish

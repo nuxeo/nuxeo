@@ -99,7 +99,7 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
 
     /**
      * Properties are specified in the format key=val1[;key2=val2;...]
-     * @see #parseProperties(String) 
+     * @see #parseProperties(String)
      * @param property
      */
     public void setProperty(String property) {
@@ -269,12 +269,12 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
      * Parse a string of the form: key1=val1;key2=val2;...
      * and collect the key, value pairs in the repository descriptor properties.
      * A ; character may end the expression.
-     * Examples of valid expressions: 
+     * Examples of valid expressions:
      * <code>key1=val1</code>, <code>key1=val1;</code>, <code>key1=val1;key2=val2</code>
-     * 
+     *
      * Syntax errors are reported using the logger and will stop the parsing but already collected properties will be available.
      * The ';' or '=' characters cannot be escaped so values or keys containing these characters will break the result.
-     *  
+     *
      * @param expr the expression to parse
      */
     protected void parseProperties(String expr) {
@@ -287,7 +287,7 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
                     log.error("Invalid property expression: "+expr);
                 }
                 if (!tokenizer.hasMoreTokens()) {
-                    repositoryDescriptor.properties.put(key, "");    
+                    repositoryDescriptor.properties.put(key, "");
                     break;
                 }
                 String val = tokenizer.nextToken();
@@ -298,7 +298,7 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
                 delim = tokenizer.nextToken();
                 if (!";".equals(delim)) {
                     log.error("Invalid property expression: "+expr);
-                }            
+                }
             }
         } catch (NoSuchElementException e) {
             log.error("Invalid property expression: "+expr);
