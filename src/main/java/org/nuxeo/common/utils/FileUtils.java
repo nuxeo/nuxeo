@@ -533,16 +533,16 @@ public final class FileUtils {
         }
     }
 
-    
+
     /**
      * Create a file handler (this doesn't create a real file) given a file URI.
-     * This method can be used to create files from invalid URL strings (e.g. containing spaces ..)  
+     * This method can be used to create files from invalid URL strings (e.g. containing spaces ..)
      * @return a file object
      */
     public static File urlToFile(String url) throws MalformedURLException {
         return urlToFile(new URL(url));
     }
-    
+
     public static File urlToFile(URL url) {
         try {
           return new File(url.toURI());
@@ -550,7 +550,7 @@ public final class FileUtils {
           return new File(url.getPath());
         }
     }
-    
+
     public static List<String> readLines(InputStream in) throws IOException {
         List<String> lines = new ArrayList<String>();
         BufferedReader reader = null;
