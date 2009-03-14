@@ -32,7 +32,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
  * @author arussel
- * 
+ *
  */
 public class ExceptionHandlingComponent extends DefaultComponent implements
         ExceptionHandlingService {

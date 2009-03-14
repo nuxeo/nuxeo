@@ -24,7 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author arussel
- * 
+ *
  */
 public class DefaultRequestDumper implements RequestDumper {
 

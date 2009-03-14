@@ -23,7 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author matic
- * 
+ *
  */
 public class RemoteHostGuessExtractor {
 

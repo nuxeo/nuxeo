@@ -38,7 +38,7 @@ import org.nuxeo.ecm.platform.web.common.exceptionhandling.service.RequestDumper
 
 /**
  * @author arussel
- * 
+ *
  */
 public class NuxeoExceptionHandler {
 
