@@ -143,5 +143,23 @@ public class CommentManagerBean implements CommentManager {
             throw ClientException.wrap(e);
         }
     }
-
+    
+    public List<DocumentModel> getDocumentsForComment(DocumentModel commentDoc)
+            throws ClientException{
+        try {
+            return commentManager.getDocumentsForComment(commentDoc);
+        } catch (Throwable e) {
+            throw ClientException.wrap(e);
+        }
+    }
+    
+    public DocumentModel createLocatedComment(DocumentModel docModel,
+            DocumentModel comment, String path) throws ClientException {
+        try {
+            return commentManager.createLocatedComment(docModel, comment, path);
+        } catch (Throwable e) {
+            throw ClientException.wrap(e);
+        }
+    }
+    
 }

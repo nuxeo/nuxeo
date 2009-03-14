@@ -71,7 +71,7 @@ import com.sun.el.ExpressionFactoryImpl;
 
 /**
  * Event service configuration.
- * 
+ *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 public class NXAuditEventsService extends DefaultComponent implements

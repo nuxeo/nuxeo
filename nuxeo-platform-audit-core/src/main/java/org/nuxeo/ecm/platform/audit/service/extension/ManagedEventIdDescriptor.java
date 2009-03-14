@@ -25,11 +25,11 @@ import org.nuxeo.common.xmap.annotation.XObject;
  */
 @XObject("managedEvent")
 public class ManagedEventIdDescriptor {
-    
+
     @XNode("@id")
-    
+
     private String id;
-    
+
     public String getId() {
         return id;
     }

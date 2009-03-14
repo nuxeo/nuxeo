@@ -10,20 +10,20 @@
 
   <a4j:region renderRegionOnly="true">
   <a4j:outputPanel ajaxRendered="true">
-  <a4j:form ajaxSubmit="true" id="publishTreeForm">
+  <a4j:form ajaxSubmit="true">
   
-  <h:panelGroup rendered="#{!empty publishActions.sectionRootsForPublishing}">
+  <h:panelGroup rendered="#{!empty publishActions.sectionRoots}">
     <h:panelGrid class="dataInput" columnClasses="labelColumn, fieldColumn" columns="2">
       <h:panelGroup>
         <h:outputText value="#{messages['label.publish.sections']}" />
       </h:panelGroup>
       <h:panelGroup>
         <h:selectOneListbox class="dataInputText" size="1"
-          value="#{publishActions.currentSectionRootIdForPublishing}">
-          <nxu:selectItems value="#{publishActions.sectionRootsForPublishing}"
+          value="#{publishActions.currentSectionRootId}">
+          <nxu:selectItems value="#{publishActions.sectionRoots}"
             var="root"
             itemValue="#{root.id}"
-            itemLabel="#{root.title}" />
+            itemLabel="#{root.dublincore.title}" />
             <a4j:support event="onchange" reRender="sectionTree" ignoreDupResponses="true" />
         </h:selectOneListbox>
       </h:panelGroup>
@@ -38,26 +38,22 @@
           iconExpanded="/img/toggle_minus.png"
           iconCollapsed="/img/toggle_plus.png"
           rowKeyVar="rowKey"
-          stateVar="nodeState"
-          id="publishTree">
+          stateVar="nodeState">
           <rich:recursiveTreeNodesAdaptor
-            roots="#{publishActions.currentSectionsTreeForPublishing}"
+            roots="#{publishActions.currentSectionsTree}"
             nodes="#{node.children}"
-            var="node"
-            id="publishRecursiveAdaptor">
+            var="node">
             <rich:treeNode
               highlightedClass="treeNodeHighlightedClass"
-              selectedClass="treeNodeSelectedClass"
-              id="publishTreeNode">
+              selectedClass="treeNodeSelectedClass">
               <h:outputText value="#{nxd:titleOrId(node.document)}" />
-              <nxu:methodResult name="canPublishToSection" value="#{publishActions.getCanPublishToSection(node.document)}">
+              <nxu:methodResult name="canAddSection" value="#{publishActions.getCanAddSection(node.document)}">
                 <a4j:commandLink immediate="true"
-                  action="#{publishActions.doPublish(node.document)}"
-                  rendered="#{canPublishToSection}"
-                  reRender="publishingInfoList"
-                  id="publishCommandLink">
+                  rendered="#{canAddSection}"
+                  action="#{publishActions.addSection(node.document.id)}"
+                  reRender="sectionList">
                   <h:graphicImage value="/icons/back.png" />
-                  <h:outputText value="#{messages['label.publish.publish']}" />
+                  <h:outputText value="#{messages['label.publish.add.section']}" />
                 </a4j:commandLink>
               </nxu:methodResult>
             </rich:treeNode>
@@ -68,53 +64,45 @@
     </dl>
   </h:panelGroup>
 
-  <h:panelGroup id="publishingInfoList">
-    <h:panelGroup rendered="#{!empty publishActions.publishingInfo}">
+  <h:panelGroup id="sectionList">
+    <h:panelGroup rendered="#{!empty publishActions.selectedSections}">
       
-      <nxu:dataTable value="#{publishActions.publishingInfo}" var="info"
+      <h:outputText value="#{messages['label.publish.selected.sections']}" />
+      
+      <nxu:dataTable value="#{publishActions.selectedSections}" var="section"
         preserveSort="true" preserveDataModel="false"
         rowClasses="dataRowEven,dataRowOdd" sortable="false"
         styleClass="dataList">
+  
+        <!-- Remove -->
+        <nxu:column styleClass="iconColumn">
+          <a4j:commandLink immediate="true"
+            action="#{publishActions.removeSection(section.id)}"
+            reRender="sectionList"
+            ignoreDupResponses="true">
+            <h:graphicImage value="/icons/action_delete.gif" />
+          </a4j:commandLink>
+        </nxu:column>
         
         <!-- Name -->
         <nxu:column>
           <f:facet name="header">
             <h:outputText value="#{messages['label.content.header.title']}" />
           </f:facet>
-          <nxu:methodResult name="formattedPath" value="#{publishActions.getFormattedPath(info.section)}">
-            <nxd:restDocumentLink document="#{info.section}">
+          <nxu:methodResult name="formattedPath" value="#{publishActions.getFormattedPath(section)}">
+            <nxd:restDocumentLink document="#{section}">
               <h:outputText value="#{formattedPath}" />
             </nxd:restDocumentLink>
           </nxu:methodResult>
         </nxu:column>
-        
-        <!--  Version of the published document -->
-        <h:column>
-          <f:facet name="header">
-            <h:outputText
-              value="#{messages['label.publish.header.version']}" />
-          </f:facet>
-          <h:outputText value="#{info.proxyVersion}" />
-        </h:column>
-      
-        <!--  Actions for the published document  -->
-        <h:column >
-          <f:facet name="header">
-            <h:outputText value="Action" />
-          </f:facet>
-          
-          <nxu:methodResult name="canPublishToSection" value="#{publishActions.getCanPublishToSection(info.section)}">
-            <a4j:commandLink immediate="true"
-              value="#{messages['command.document.unpublish']}"
-              action="#{publishActions.unPublishFromSection(info.section)}"
-              rendered="#{nxd:hasPermission(info.section, 'Write') and section.ref != currentDocument.parentRef}"
-              reRender="publishingInfoList"
-              ignoreDupResponses="true">
-            </a4j:commandLink>
-          </nxu:methodResult>
-        </h:column>
       </nxu:dataTable>
   
+      
+    </h:panelGroup>
+    
+    <h:panelGroup rendered="#{empty publishActions.selectedSections}">
+      
+      <h:outputText value="#{messages['label.publish.selected.sections.empty']}" />
       
     </h:panelGroup>
     

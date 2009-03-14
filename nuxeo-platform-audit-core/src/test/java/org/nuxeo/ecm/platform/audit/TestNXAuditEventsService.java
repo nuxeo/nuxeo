@@ -33,7 +33,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Test the event conf service.
- * 
+ *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 public class TestNXAuditEventsService extends RepositoryOSGITestCase {
@@ -57,7 +57,7 @@ public class TestNXAuditEventsService extends RepositoryOSGITestCase {
         openRepository();
 
     }
-    
+
     protected DocumentModel doCreateDocument() throws ClientException {
         DocumentModel rootDocument = coreSession.getRootDocument();
         DocumentModel model = coreSession.createDocumentModel(
@@ -68,7 +68,7 @@ public class TestNXAuditEventsService extends RepositoryOSGITestCase {
         waitForEventsDispatched();
         return source;
     }
-    
+
     public void testLogMessage() throws DocumentException, ClientException {
         DocumentModel source = doCreateDocument();
         List<LogEntry> entries = serviceUnderTest.getLogEntriesFor(source.getId());

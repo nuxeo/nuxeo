@@ -53,7 +53,7 @@ public class TestExtendedInfoEvaluation extends RepositoryOSGITestCase {
 
         evaluatorUnderTest = new ExpressionEvaluator(
                 new ExpressionFactoryImpl());
-        
+
         openRepository();
     }
 

@@ -28,7 +28,7 @@ import org.nuxeo.runtime.management.ResourcePublisherService;
 
 /**
  * @author matic
- * 
+ *
  */
 public class AuditEventMetricFactory implements ResourceFactory {
 

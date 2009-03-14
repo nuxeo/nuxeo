@@ -54,7 +54,7 @@ public class JbpmServiceBean implements JbpmService {
     @PostConstruct
     public void postConstruct() {
         try {
-            service = Framework.getService(JbpmService.class);
+            service = Framework.getLocalService(JbpmService.class);
         } catch (Exception e) {
             throw new NuxeoJbpmRuntimeException(e);
         }

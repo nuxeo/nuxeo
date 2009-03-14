@@ -168,7 +168,7 @@ public class PersistenceProvider {
     }
 
     public <T> T run(Boolean needActiveSession, RunCallback<T> callback) {
-        
+
         Thread myThread = Thread.currentThread();
         ClassLoader lastLoader = myThread.getContextClassLoader();
         myThread.setContextClassLoader(getClass().getClassLoader());

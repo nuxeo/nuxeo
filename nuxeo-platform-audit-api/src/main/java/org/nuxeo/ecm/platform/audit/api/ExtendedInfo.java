@@ -38,9 +38,9 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
  * Extended audit info entities, used to persist contributed extended informations
- * 
+ *
  * @author Stephane Lacoin (Nuxeo EP software engineer)
- * 
+ *
  */
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -77,21 +77,21 @@ public class ExtendedInfo {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "LOG_EXTINFO_ID")
- 
+
     public Long getId() {
         return id;
     }
-    
+
     public void setId(Long id) {
         this.id = id;
     }
-    
-    
+
+
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
     }
-    
+
     @Transient
     public Serializable getSerializableValue() {
         throw new UnsupportedOperationException();
@@ -100,7 +100,7 @@ public class ExtendedInfo {
     public <T> T getValue(Class<T> clazz) {
         return clazz.cast(this.getSerializableValue());
     }
-    
+
     @Entity
     @DiscriminatorValue(value = "LONG")
     public static class LongInfo extends ExtendedInfo {
@@ -108,7 +108,7 @@ public class ExtendedInfo {
         private LongInfo() {
             super();
         }
-        
+
         private LongInfo(long value) {
             super();
             this.longValue = value;
@@ -123,11 +123,11 @@ public class ExtendedInfo {
         }
 
         @Column(name = "LOG_EXTINFO_LONG")
-        
+
         public Long getLongValue() {
             return longValue;
         }
-        
+
         public void setLongValue(Long value) {
             this.longValue = value;
         }
@@ -140,7 +140,7 @@ public class ExtendedInfo {
         private DateInfo() {
             super();
         }
-        
+
         private DateInfo(Date value) {
             super();
             this.dateValue = value;
@@ -156,11 +156,11 @@ public class ExtendedInfo {
 
         @Column(name = "LOG_EXTINFO_DATE")
         @Temporal(value = TemporalType.TIMESTAMP)
-  
+
         public Date getDateValue() {
             return dateValue;
         }
-        
+
         public void setDateValue(Date value) {
             this.dateValue = value;
         }
@@ -173,7 +173,7 @@ public class ExtendedInfo {
         private StringInfo() {
             super();
         }
-        
+
         private StringInfo(String value) {
             super();
             this.stringValue = value;
@@ -186,13 +186,13 @@ public class ExtendedInfo {
         public Serializable getSerializableValue() {
             return stringValue;
         }
-  
+
         @Column(name = "LOG_EXTINFO_STRING")
-        
+
         public String getStringValue() {
             return stringValue;
         }
-        
+
         public void setStringValue(String value) {
             this.stringValue = value;
         }
@@ -201,11 +201,11 @@ public class ExtendedInfo {
     @Entity
     @DiscriminatorValue(value = "DOUBLE")
     public static class DoubleInfo extends ExtendedInfo {
-        
+
         private DoubleInfo() {
             super();
         }
-        
+
         private DoubleInfo(Double value) {
             super();
             this.doubleValue = value;
@@ -218,13 +218,13 @@ public class ExtendedInfo {
         public Serializable getSerializableValue() {
             return doubleValue;
         }
-   
+
         @Column(name = "LOG_EXTINFO_DOUBLE")
-        
+
         public Double getDoubleValue() {
             return doubleValue;
         }
-        
+
         public void setDoubleValue(Double value) {
             this.doubleValue = value;
         }
@@ -234,11 +234,11 @@ public class ExtendedInfo {
     @DiscriminatorValue(value = "BOOLEAN")
     public static class BooleanInfo extends ExtendedInfo {
 
-        
+
         private BooleanInfo() {
             super();
         }
-        
+
         private BooleanInfo(Boolean value) {
             super();
             this.booleanValue = value;
@@ -251,13 +251,13 @@ public class ExtendedInfo {
         public Serializable getSerializableValue() {
             return booleanValue;
         }
- 
+
         @Column(name = "LOG_EXTINFO_BOOLEAN")
-        
+
         public Boolean getBooleanValue() {
             return booleanValue;
         }
-        
+
         public void setBooleanValue(Boolean value) {
             this.booleanValue = value;
         }
@@ -270,7 +270,7 @@ public class ExtendedInfo {
         private BlobInfo() {
             super();
         }
-        
+
         private BlobInfo(Serializable value) {
             super();
             this.blobValue = value;
@@ -283,20 +283,20 @@ public class ExtendedInfo {
         public Serializable getSerializableValue() {
             return blobValue;
         }
-        
+
         @Column(name = "LOG_EXTINFO_BLOB")
         @Lob
 
         public Serializable getBlobValue() {
             return blobValue;
         }
-        
+
         public void setBlobValue(Serializable value) {
             this.blobValue = value;
         }
-        
+
     }
-    
-  
+
+
 
 }

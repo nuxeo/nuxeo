@@ -1,3 +1,22 @@
+/*
+ * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nuxeo - initial API and implementation
+ *
+ * $Id$
+ */
+
 package org.nuxeo.ecm.platform.web.common.requestcontroller.filter;
 
 import java.io.IOException;
@@ -27,7 +46,7 @@ import org.nuxeo.runtime.api.Framework;
  * Filter to handle Transactions and Requests synchronization. This filter is
  * useful when accessing web resources that are not protected by Seam Filter.
  * This is the case for specific Servlets, WebEngine, XML-RPC connector ...
- * 
+ *
  * @author tiry
  */
 public class NuxeoRequestControllerFilter implements Filter {
@@ -64,7 +83,7 @@ public class NuxeoRequestControllerFilter implements Filter {
         return "remote=" + remoteHost + ",principal=" + principalName
                 + ",uri=" + uri + ",session="+sessionId+",thread="+threadName+",info=" + info;
     }
-    
+
     public void doFilter(ServletRequest request, ServletResponse response,
             FilterChain chain) throws IOException, ServletException {
 
@@ -128,7 +147,7 @@ public class NuxeoRequestControllerFilter implements Filter {
 
     /**
      * Starts a new {@link UserTransaction}.
-     * 
+     *
      * @return true if the transaction was successfully translated, false
      *         otherwise
      */
@@ -233,7 +252,7 @@ public class NuxeoRequestControllerFilter implements Filter {
                 log.debug(doFormatLogMessage(request, "Sync timeout"));
             }
         }
-        
+
         return locked;
     }
 
