@@ -276,7 +276,7 @@ public class LogEntryProvider {
         query.setParameter("eventId", eventId);
         return (Long)query.getSingleResult();
     }
-    
+
     @SuppressWarnings("unchecked")
     public List<String> findEventIds() {
         Query query = em.createNamedQuery("LogEntry.findEventIds");

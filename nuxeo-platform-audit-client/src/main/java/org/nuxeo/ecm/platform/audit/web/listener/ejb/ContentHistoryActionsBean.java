@@ -53,7 +53,7 @@ import org.nuxeo.ecm.platform.util.RepositoryLocation;
 
 /**
  * Content history actions bean.
- * <p/>
+ * <p>
  * :XXX: http://jira.nuxeo.org/browse/NXP-514
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>

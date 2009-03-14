@@ -20,7 +20,7 @@ import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
 
 /**
  * @author matic
- * 
+ *
  */
 public class AuditEventMetricMBeanAdapter implements AuditEventMetricMBean {
 
@@ -34,7 +34,7 @@ public class AuditEventMetricMBeanAdapter implements AuditEventMetricMBean {
 
     protected final String eventName;
 
- 
+
     public Long getCount() {
         return service.getEventsCount(eventName);
     }
