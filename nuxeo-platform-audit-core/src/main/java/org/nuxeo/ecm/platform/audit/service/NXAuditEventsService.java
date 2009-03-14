@@ -59,7 +59,6 @@ import org.nuxeo.ecm.platform.audit.api.NXAuditEvents;
 import org.nuxeo.ecm.platform.audit.service.PersistenceProvider.RunCallback;
 import org.nuxeo.ecm.platform.audit.service.extension.EventDescriptor;
 import org.nuxeo.ecm.platform.audit.service.extension.ExtendedInfoDescriptor;
-import org.nuxeo.ecm.platform.audit.service.extension.HibernateOptionsDescriptor;
 import org.nuxeo.ecm.platform.el.ExpressionContext;
 import org.nuxeo.ecm.platform.el.ExpressionEvaluator;
 import org.nuxeo.runtime.api.Framework;
@@ -105,6 +104,10 @@ public class NXAuditEventsService extends DefaultComponent implements
     @Override
     public void activate(ComponentContext context) throws Exception {
         super.activate(context);
+        String datasourceProperty = Framework.getProperty("audit.datasource");
+        if (datasourceProperty != null) {
+            hibernateConfiguration.datasource = datasourceProperty;
+        }
     }
 
     @Override
@@ -121,8 +124,6 @@ public class NXAuditEventsService extends DefaultComponent implements
             doRegisterEvent((EventDescriptor) contribution);
         } else if (extensionPoint.equals(EXTENDED_INFO_EXT_POINT)) {
             doRegisterExtendedInfo((ExtendedInfoDescriptor) contribution);
-        } else if (extensionPoint.equals(HIBERNATE_OPTIONS_EXT_POINT)) {
-            doRegisterHibernateOptions((HibernateOptionsDescriptor) contribution);
         }
     }
 
@@ -149,13 +150,6 @@ public class NXAuditEventsService extends DefaultComponent implements
         extendedInfoDescriptors.add(desc);
     }
 
-    protected void doRegisterHibernateOptions(HibernateOptionsDescriptor desc) {
-        if (log.isDebugEnabled())
-            log.debug("Registered hibernate datasource : "
-                    + desc.getDatasource());
-        hibernateConfiguration.setDescriptor(desc);
-    }
-
     @Override
     public void unregisterContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor)
@@ -164,8 +158,6 @@ public class NXAuditEventsService extends DefaultComponent implements
             doUnregisterEvent((EventDescriptor) contribution);
         } else if (extensionPoint.equals(EXTENDED_INFO_EXT_POINT)) {
             doUnregisterExtendedInfo((ExtendedInfoDescriptor) contribution);
-        } else if (extensionPoint.equals(HIBERNATE_OPTIONS_EXT_POINT)) {
-            doUnregisterHibernateOptions((HibernateOptionsDescriptor) contribution);
         }
     }
 
@@ -180,10 +172,6 @@ public class NXAuditEventsService extends DefaultComponent implements
         extendedInfoDescriptors.remove(desc.getKey());
         if (log.isDebugEnabled())
             log.debug("Unregistered extended info: " + desc.getKey());
-    }
-
-    protected void doUnregisterHibernateOptions(HibernateOptionsDescriptor desc) {
-        ;
     }
 
     public Set<String> getAuditableEventNames() {

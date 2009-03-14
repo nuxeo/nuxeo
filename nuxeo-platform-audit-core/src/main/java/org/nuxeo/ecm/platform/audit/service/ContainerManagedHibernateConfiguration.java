@@ -18,31 +18,16 @@ package org.nuxeo.ecm.platform.audit.service;
 
 import java.util.Properties;
 
-import org.nuxeo.ecm.platform.audit.service.extension.HibernateOptionsDescriptor;
-
 public class ContainerManagedHibernateConfiguration implements
         HibernateConfiguration {
 
-    private HibernateOptionsDescriptor descriptor;
-
-    private String defaultDatasource = "jdbc/nxaudits";
+    String datasource = "jdbc/nxaudits";
 
     public ContainerManagedHibernateConfiguration() {
     }
 
     public ContainerManagedHibernateConfiguration(String defaultDatasource) {
-        this.defaultDatasource = defaultDatasource;
-    }
-
-    public void setDescriptor(HibernateOptionsDescriptor descriptor) {
-        this.descriptor = descriptor;
-    }
-
-    protected String getDatasource() {
-        if (descriptor != null) {
-            return descriptor.getDatasource();
-        }
-        return defaultDatasource;
+        this.datasource = defaultDatasource;
     }
 
     public Properties getProperties() {
@@ -50,7 +35,7 @@ public class ContainerManagedHibernateConfiguration implements
         properties.put("hibernate.connection.autocommit", true);
         properties.put("hibernate.show_sql", false);
         properties.put("hibernate.hbm2ddl.auto", "update");
-        properties.put("hibernate.connection.datasource", getDatasource());
+        properties.put("hibernate.connection.datasource", datasource);
         return properties;
     }
 
