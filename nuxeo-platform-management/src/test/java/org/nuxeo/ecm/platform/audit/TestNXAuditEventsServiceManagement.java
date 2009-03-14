@@ -53,8 +53,6 @@ public class TestNXAuditEventsServiceManagement extends RepositoryOSGITestCase {
 
         deployBundle("org.nuxeo.ecm.platform.scheduler.core");
 
-        deployBundle("org.nuxeo.ecm.core.event.compat");
-
         deployBundle("org.nuxeo.ecm.platform.audit");
 
         deployBundle("org.nuxeo.ecm.platform.management");
