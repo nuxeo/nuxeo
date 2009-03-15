@@ -57,10 +57,9 @@ import org.nuxeo.runtime.api.Framework;
 @Transactional
 public class ConversionActionBean implements ConversionAction {
 
-    private static final Log log = LogFactory
-            .getLog(ConversionActionBean.class);
+    private static final Log log = LogFactory.getLog(ConversionActionBean.class);
 
-    protected static ConverterCheckResult any2PDFAvailability = null;
+    protected static ConverterCheckResult any2PDFAvailability;
 
     protected static String PDF_PREVIEW_CONVERTER = "any2pdf";
 
@@ -79,8 +78,8 @@ public class ConversionActionBean implements ConversionAction {
     @RequestParameter
     private String filename;
 
-    protected static final ThreadSafeCacheHolder<Boolean> exportableToPDFCache = new ThreadSafeCacheHolder<Boolean>(
-            20);
+    protected static final ThreadSafeCacheHolder<Boolean> exportableToPDFCache
+            = new ThreadSafeCacheHolder<Boolean>(20);
 
     @Remove
     public void destroy() {
@@ -145,11 +144,11 @@ public class ConversionActionBean implements ConversionAction {
 
     @WebRemote
     public boolean isFileExportableToPDF(String fieldName) {
-        boolean isSupported = false;
         try {
             DocumentModel doc = getDocument();
             Boolean cacheResult = exportableToPDFCache.getFromCache(doc,
                     fieldName);
+            boolean isSupported;
             if (cacheResult == null) {
                 String mimetype = getMimetypeFromDocument(fieldName);
                 isSupported = isMimeTypeExportableToPDF(mimetype);
@@ -159,10 +158,8 @@ public class ConversionActionBean implements ConversionAction {
             }
             return isSupported;
         } catch (Exception e) {
-            log
-                    .error(
-                            "Error while trying to check PDF conversion against a filename",
-                            e);
+            log.error("Error while trying to check PDF conversion against a filename",
+                    e);
             return false;
         }
     }

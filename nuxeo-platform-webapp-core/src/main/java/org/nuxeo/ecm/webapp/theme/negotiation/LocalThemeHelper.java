@@ -22,7 +22,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.ec.placeful.Annotation;
-import org.nuxeo.ecm.platform.ec.placeful.ejb.interfaces.EJBPlacefulService;
 import org.nuxeo.ecm.platform.ec.placeful.interfaces.PlacefulService;
 import org.nuxeo.runtime.api.Framework;
 
@@ -57,7 +56,7 @@ public class LocalThemeHelper {
         }
         Map<String, Object> paramMap = new HashMap<String, Object>();
         paramMap.put("docId", docId);
-        List<Annotation> configs = null;
+        List<Annotation> configs;
         try {
             configs = placefulService.getAnnotationListByParamMap(paramMap,
                     LocalThemeConfig.LOCAL_THEME_NAME);
@@ -127,4 +126,5 @@ public class LocalThemeHelper {
             log.error(e);
         }
     }
+
 }

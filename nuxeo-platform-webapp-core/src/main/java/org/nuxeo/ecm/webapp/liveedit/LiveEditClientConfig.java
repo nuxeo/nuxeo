@@ -156,11 +156,7 @@ public class LiveEditClientConfig implements Serializable {
         if (advertizedLiveEditableMimeTypes == null) {
             detectLiveEditClientConfig();
         }
-        if (advertizedLiveEditableMimeTypes.contains(mimetype)) {
-            return true;
-        } else {
-            return false;
-        }
+        return advertizedLiveEditableMimeTypes.contains(mimetype);
     }
 
 }

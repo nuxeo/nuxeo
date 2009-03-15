@@ -36,15 +36,11 @@ public class BulkLifeCycleChangeListener implements PostCommitEventListener {
     private static final Log log = LogFactory.getLog(BulkLifeCycleChangeListener.class);
 
     protected static final String LIFECYCLE_TRANSITION_EVENT = "lifecycle_transition_event";
-
     protected static final String OPTION_NAME_FROM = "from";
-
     protected static final String OPTION_NAME_TO = "to";
-
     protected static final String OPTION_NAME_TRANSITION = "transition";
 
     public void handleEvent(EventBundle events) throws ClientException {
-
         if (!events.containsEventName(LIFECYCLE_TRANSITION_EVENT)) {
             return;
         }
@@ -53,7 +49,6 @@ public class BulkLifeCycleChangeListener implements PostCommitEventListener {
                 processTransition(event);
             }
         }
-
     }
 
     protected void processTransition(Event event) {
@@ -68,13 +63,11 @@ public class BulkLifeCycleChangeListener implements PostCommitEventListener {
                 if (session == null) {
                     log.error("Can not process lifeCycle change since session is null");
                     return;
-                }
-                else {
-                    DocumentModelList docModelList=null;
+                } else {
                     try {
-                        docModelList = session.getChildren(doc.getRef());
-                        String transition = (String)docCtx.getProperty(OPTION_NAME_TRANSITION);
-                        String targetState = (String)docCtx.getProperty(OPTION_NAME_TO);
+                        DocumentModelList docModelList = session.getChildren(doc.getRef());
+                        String transition = (String) docCtx.getProperty(OPTION_NAME_TRANSITION);
+                        String targetState = (String) docCtx.getProperty(OPTION_NAME_TO);
                         changeDocumentsState(session, docModelList, transition, targetState);
                         session.save();
                     } catch (ClientException e) {
@@ -89,26 +82,26 @@ public class BulkLifeCycleChangeListener implements PostCommitEventListener {
     protected void changeDocumentsState(CoreSession documentManager, DocumentModelList docModelList,
             String transition, String targetState) throws ClientException {
         for (DocumentModel docMod : docModelList) {
-            boolean removed=false;
-            if (docMod.getCurrentLifeCycleState()==null) {
+            boolean removed = false;
+            if (docMod.getCurrentLifeCycleState() == null) {
                 log.debug("Doc has no lifecycle, deleting ...");
                 documentManager.removeDocument(docMod.getRef());
-                removed=true;
+                removed = true;
             } else if (docMod.getAllowedStateTransitions().contains(transition)) {
                 docMod.followTransition(transition);
             } else {
                 if (targetState.equals(docMod.getCurrentLifeCycleState())) {
                     log.debug("Document" + docMod.getRef() + " is already in the target LifeCycle state");
-                }
-                else {
+                } else {
                     log.debug("Impossible to change state of " + docMod.getRef() + " :removing");
                     documentManager.removeDocument(docMod.getRef());
-                    removed=true;
+                    removed = true;
                 }
             }
-            if (docMod.isFolder() & !removed) {
-                changeDocumentsState(documentManager, documentManager.getChildren(docMod
-                        .getRef()), transition, targetState);
+            if (docMod.isFolder() && !removed) {
+                changeDocumentsState(documentManager,
+                        documentManager.getChildren(docMod.getRef()),
+                        transition, targetState);
             }
         }
     }

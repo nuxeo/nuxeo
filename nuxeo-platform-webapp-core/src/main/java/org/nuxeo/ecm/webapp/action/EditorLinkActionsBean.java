@@ -51,7 +51,7 @@ public class EditorLinkActionsBean extends InputController implements EditorLink
     private String searchKeywords;
 
     @In(create = true, required = false)
-    private transient CoreSession documentManager;
+    private CoreSession documentManager;
 
     public boolean getHasSearchResults() {
         return hasSearchResults;
