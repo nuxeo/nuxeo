@@ -68,7 +68,7 @@ public class DocumentTreeNodeImpl implements DocumentTreeNode {
         this(document.getSessionId(), document, filter, leafFilter, sorter,
                 queryModel);
     }
-    
+
     public DocumentTreeNodeImpl(String sessionId, DocumentModel document,
             Filter filter, Filter leafFilter, Sorter sorter,
             QueryModel queryModel) {

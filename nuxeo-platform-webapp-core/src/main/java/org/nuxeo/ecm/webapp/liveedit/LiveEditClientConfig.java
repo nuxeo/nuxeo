@@ -1,3 +1,22 @@
+/*
+ * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nuxeo - initial API and implementation
+ *
+ * $Id$
+ */
+
 package org.nuxeo.ecm.webapp.liveedit;
 
 import static org.jboss.seam.ScopeType.SESSION;
@@ -40,12 +59,12 @@ import org.nuxeo.runtime.api.Framework;
  *  Accept : application/x-nuxeo-liveedit:mimetype1;mimetype2
  *
  * @author Thierry Delprat
- * 
- * Starting the 5.2, the addon can send the standardized accept header, as 
+ *
+ * Starting the 5.2, the addon can send the standardized accept header, as
  * Accept : application/x-nuxeo-liveedit;ext0="mimetype1";ext1="mimetype2"..
  * Also, the addon can still send the old way, so the both forms are accepted.
  * See NXP-3257
- * 
+ *
  * @author rux
  */
 @Scope(SESSION)
@@ -104,10 +123,10 @@ public class LiveEditClientConfig implements Serializable {
                         //application/x-nuxeo-liveedit;ext0="mimetype1";ext1="mimetype2"
                         int equalQuoteIndex = subType.indexOf("=\"");
                         String valueSubType = subType;
-                        if (equalQuoteIndex >= 0 && 
+                        if (equalQuoteIndex >= 0 &&
                                 subType.length() > (equalQuoteIndex + 3)) {
-                            valueSubType = 
-                                subType.substring(equalQuoteIndex + 2, 
+                            valueSubType =
+                                subType.substring(equalQuoteIndex + 2,
                                         subType.length() - 1);
                         }
                         advertizedLiveEditableMimeTypes.add(

@@ -46,7 +46,7 @@ public class LocalThemeHelper {
     }
 
     public static LocalThemeConfig getLocalThemeConfig(DocumentModel doc) {
-    	PlacefulService placefulService = getPlacefulServiceBean();//LocalThemeHelper.getPlacefulServiceBean()
+        PlacefulService placefulService = getPlacefulServiceBean();//LocalThemeHelper.getPlacefulServiceBean()
         if (placefulService == null) {
             return null;
         }
@@ -73,7 +73,7 @@ public class LocalThemeHelper {
 
     public static void setLocalThemeConfig(String theme, String page,
             String perspective, String engine, String mode, DocumentModel doc) {
-    	PlacefulService placefulService = getPlacefulServiceBean();
+        PlacefulService placefulService = getPlacefulServiceBean();
         if (placefulService == null) {
             return;
         }
@@ -109,7 +109,7 @@ public class LocalThemeHelper {
     }
 
     public static void removeLocalThemeConfig(DocumentModel doc) {
-    	PlacefulService placefulService = getPlacefulServiceBean();
+        PlacefulService placefulService = getPlacefulServiceBean();
         if (placefulService == null) {
             return;
         }

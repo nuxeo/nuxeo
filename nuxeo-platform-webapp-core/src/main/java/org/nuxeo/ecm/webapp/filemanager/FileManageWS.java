@@ -89,7 +89,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Web service providing functions for loading a document into an external
  * editor (like word) using LiveEdit, locking and saving with different options
- * (versioning incrementation, etc). <p/> The LiveEdit client performs calls as
+ * (versioning incrementation, etc). <p> The LiveEdit client performs calls as
  * described in the next sequence:
  * <ul>
  * <li>edit : in fact this is called by a browser link to create a liveedit

@@ -85,7 +85,7 @@ import org.nuxeo.ecm.webapp.pagination.ResultsProvidersCache;
 /**
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
  * @author M.-A. Darche
- * 
+ *
  */
 @Name("documentActions")
 @Scope(CONVERSATION)
@@ -310,7 +310,7 @@ public class DocumentActionsBean extends InputController implements
      * values.
      * <p>
      * Method called from page action.
-     * 
+     *
      * @deprecated should update changeableDocument and use updateDocument
      */
     @Deprecated
@@ -520,7 +520,7 @@ public class DocumentActionsBean extends InputController implements
      * Handle row selection event after having ensured that the navigation
      * context stills points to currentDocumentRef to protect against browsers'
      * back button errors
-     * 
+     *
      * @throws ClientException if currentDocRef is not a valid document
      */
     @WebRemote
@@ -569,7 +569,7 @@ public class DocumentActionsBean extends InputController implements
      * Handle complete table selection event after having ensured that the
      * navigation context stills points to currentDocumentRef to protect against
      * browsers' back button errors
-     * 
+     *
      * @throws ClientException if currentDocRef is not a valid document
      */
     @WebRemote

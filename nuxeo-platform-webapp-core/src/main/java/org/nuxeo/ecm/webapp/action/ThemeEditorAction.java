@@ -61,9 +61,9 @@ public class ThemeEditorAction implements Serializable {
 
         // Switch to the editor
         response.addCookie(createCookie("nxthemes.engine", "editor"));
-        return null;        
+        return null;
     }
-    
+
     private Cookie createCookie(String name, String value) {
         Cookie cookie = new Cookie(name, value);
         cookie.setPath("/");

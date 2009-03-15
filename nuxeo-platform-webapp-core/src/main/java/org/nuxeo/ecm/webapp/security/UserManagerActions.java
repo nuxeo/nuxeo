@@ -44,78 +44,78 @@ import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
 @Remote
 public interface UserManagerActions extends Serializable {
 
-    public static final String TABBED = "tabbed";
+    static final String TABBED = "tabbed";
 
-    public static final String SEARCH_ONLY = "search_only";
+    static final String SEARCH_ONLY = "search_only";
 
-    public static final String VALID_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-0123456789";
+    static final String VALID_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-0123456789";
 
-    public String getUserListingMode() throws ClientException;
+    String getUserListingMode() throws ClientException;
 
     @Factory(value = "userList", scope = EVENT)
-    public DocumentModelList getUsers() throws ClientException;
+    DocumentModelList getUsers() throws ClientException;
 
-    public void resetUsers() throws ClientException;
+    void resetUsers() throws ClientException;
 
-    public DocumentModel getSelectedUser() throws ClientException;
+    DocumentModel getSelectedUser() throws ClientException;
 
-    public String viewUser() throws ClientException;
+    String viewUser() throws ClientException;
 
-    public String viewUser(String userName) throws ClientException;
+    String viewUser(String userName) throws ClientException;
 
-    public String searchUsers() throws ClientException;
+    String searchUsers() throws ClientException;
 
-    public void validateUserName(FacesContext context, UIComponent component,
+    void validateUserName(FacesContext context, UIComponent component,
             Object value);
 
-    public void validatePassword(FacesContext context, UIComponent component,
+    void validatePassword(FacesContext context, UIComponent component,
             Object value);
 
-    public String editUser() throws ClientException;
+    String editUser() throws ClientException;
 
-    public String deleteUser() throws ClientException;
+    String deleteUser() throws ClientException;
 
-    public String updateUser() throws ClientException;
+    String updateUser() throws ClientException;
 
-    public String changePassword() throws ClientException;
+    String changePassword() throws ClientException;
 
-    public String createUser() throws ClientException,
+    String createUser() throws ClientException,
             UserAlreadyExistsException;
 
-    public DocumentModel getNewUser() throws ClientException;
+    DocumentModel getNewUser() throws ClientException;
 
-    public String getSearchString();
+    String getSearchString();
 
-    public void setSearchString(String searchString);
+    void setSearchString(String searchString);
 
-    public Collection<String> getCatalogLetters();
+    Collection<String> getCatalogLetters();
 
-    public void setSelectedLetter(String selectedLetter);
+    void setSelectedLetter(String selectedLetter);
 
-    public String getSelectedLetter();
+    String getSelectedLetter();
 
-    public String viewUsers() throws ClientException;
+    String viewUsers() throws ClientException;
 
-    public boolean getAllowEditUser() throws ClientException;
+    boolean getAllowEditUser() throws ClientException;
 
-    public boolean getAllowChangePassword() throws ClientException;
+    boolean getAllowChangePassword() throws ClientException;
 
-    public boolean getAllowCreateUser() throws ClientException;
+    boolean getAllowCreateUser() throws ClientException;
 
-    public boolean getAllowDeleteUser() throws ClientException;
+    boolean getAllowDeleteUser() throws ClientException;
 
-    public String clearSearch() throws ClientException;
+    String clearSearch() throws ClientException;
 
-    public boolean isSearchOverflow();
-
-    // XXX: never used, not tested
-    public DocumentModel getSearchUserModel() throws ClientException;
+    boolean isSearchOverflow();
 
     // XXX: never used, not tested
-    public String searchUsersAdvanced() throws ClientException;
+    DocumentModel getSearchUserModel() throws ClientException;
 
     // XXX: never used, not tested
-    public String clearSearchAdvanced() throws ClientException;
+    String searchUsersAdvanced() throws ClientException;
+
+    // XXX: never used, not tested
+    String clearSearchAdvanced() throws ClientException;
 
 
 }

@@ -41,7 +41,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
 /**
  * Component for tree service, handing registries for trees managing
  * {@link DocumentModel} object.
- * 
+ *
  * @author Anahide Tchertchian
  */
 public class TreeManagerImpl extends DefaultComponent implements TreeManager {

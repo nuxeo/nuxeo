@@ -40,51 +40,51 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 @Local
 public interface GroupManagerActions extends Serializable {
 
-    public static final String ALL = "all";
+    static final String ALL = "all";
 
-    public static final String VALID_CHARS = "0123456789_-"
+    static final String VALID_CHARS = "0123456789_-"
             + "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
     @Factory(value = "groupList", scope = EVENT)
-    public DocumentModelList getGroups() throws ClientException;
+    DocumentModelList getGroups() throws ClientException;
 
-    public void resetGroups() throws ClientException;
+    void resetGroups() throws ClientException;
 
-    public String viewGroups() throws ClientException;
+    String viewGroups() throws ClientException;
 
-    public String viewGroup() throws ClientException;
+    String viewGroup() throws ClientException;
 
-    public String viewGroup(String groupName) throws ClientException;
+    String viewGroup(String groupName) throws ClientException;
 
-    public String editGroup() throws ClientException;
+    String editGroup() throws ClientException;
 
-    public DocumentModel getSelectedGroup() throws ClientException;
+    DocumentModel getSelectedGroup() throws ClientException;
 
-    public DocumentModel getNewGroup() throws ClientException;
+    DocumentModel getNewGroup() throws ClientException;
 
-    public String deleteGroup() throws ClientException;
+    String deleteGroup() throws ClientException;
 
-    public String updateGroup() throws ClientException;
+    String updateGroup() throws ClientException;
 
-    public void validateGroupName(FacesContext context, UIComponent component,
+    void validateGroupName(FacesContext context, UIComponent component,
             Object value);
 
-    public String createGroup() throws ClientException;
+    String createGroup() throws ClientException;
 
-    public boolean getAllowCreateGroup() throws ClientException;
+    boolean getAllowCreateGroup() throws ClientException;
 
-    public boolean getAllowDeleteGroup() throws ClientException;
+    boolean getAllowDeleteGroup() throws ClientException;
 
-    public boolean getAllowEditGroup() throws ClientException;
+    boolean getAllowEditGroup() throws ClientException;
 
-    public String getSearchString();
+    String getSearchString();
 
-    public void setSearchString(String searchString);
+    void setSearchString(String searchString);
 
-    public String searchGroups() throws ClientException;
+    String searchGroups() throws ClientException;
 
-    public String clearSearch() throws ClientException;
+    String clearSearch() throws ClientException;
 
-    public boolean isSearchOverflow();
+    boolean isSearchOverflow();
 
 }
