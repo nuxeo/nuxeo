@@ -219,10 +219,15 @@ def main(argv):
                       help="Verbose output", default=False)
     parser.add_option("-P", "--profile", type="string",
                       help="Test mvn profile.", default=None)
+    parser.add_option("-J", "--java-home", type="string",
+                      help="The Java 6 home used by gf3 profile.")
     options, args = parser.parse_args(argv)
     if options.verbose:
         global VERBOSE
         VERBOSE = True
+    if options.java_home and options.profile.lower == 'gf3':
+        # GF3 requires JAVA6
+        os.environ["JAVA_HOME"] = options.java_home
     if options.profile:
         method_name = 'test' + options.profile.capitalize()
         if globals().has_key(method_name):
@@ -230,6 +235,7 @@ def main(argv):
         else:
             print "Profile %s(%s) not found." % (options.profile,
                                                 method_name)
+
 
     flush()
 
