@@ -83,7 +83,7 @@ public class CommentManagerImpl implements CommentManager {
     final CommentConverter commentConverter;
 
     public static final  String COMMENTS_DIRECTORY = "Comments";
-    
+
     public CommentManagerImpl(CommentServiceConfig config) {
         this.config = config;
         commentConverter = config.getCommentConverter();
@@ -301,7 +301,7 @@ public class CommentManagerImpl implements CommentManager {
 
         // TODO GR upgrade this code. It can't work if current user
         // doesn't have admin rights
-       
+
         DocumentModel parent = mySession.getDocument(new PathRef(domainPath));
         for (String name : pathList) {
             boolean found = false;
@@ -335,7 +335,7 @@ public class CommentManagerImpl implements CommentManager {
                 parent = dm;
             }
         }
-        
+
         String pathStr = parent.getPathAsString();
         String commentName = getCommentName(docModel, comment);
         CommentConverter converter = config.getCommentConverter();
@@ -349,7 +349,7 @@ public class CommentManagerImpl implements CommentManager {
 
         return commentDocModel;
     }
-        
+
     private static void notifyEvent(CoreSession session, DocumentModel docModel, String eventType,
             DocumentModel parent, DocumentModel child, NuxeoPrincipal principal)
             throws ClientException {
@@ -413,7 +413,7 @@ public class CommentManagerImpl implements CommentManager {
     private String[] getCommentPathList(DocumentModel comment) {
         String[] pathList = new String[2];
         pathList[0] = COMMENTS_DIRECTORY;
-        
+
         pathList[1] = dateFormat.format(getCommentTimeStamp(comment));
         return pathList;
     }
@@ -554,7 +554,7 @@ public class CommentManagerImpl implements CommentManager {
         }
 
     }
-    
+
     public List<DocumentModel> getDocumentsForComment(DocumentModel comment)
             throws ClientException {
         RelationManager relationManager;

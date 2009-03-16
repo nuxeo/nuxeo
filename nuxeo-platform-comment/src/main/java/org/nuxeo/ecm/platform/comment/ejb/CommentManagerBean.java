@@ -143,7 +143,7 @@ public class CommentManagerBean implements CommentManager {
             throw ClientException.wrap(e);
         }
     }
-    
+
     public List<DocumentModel> getDocumentsForComment(DocumentModel commentDoc)
             throws ClientException{
         try {
@@ -152,7 +152,7 @@ public class CommentManagerBean implements CommentManager {
             throw ClientException.wrap(e);
         }
     }
-    
+
     public DocumentModel createLocatedComment(DocumentModel docModel,
             DocumentModel comment, String path) throws ClientException {
         try {
@@ -161,5 +161,5 @@ public class CommentManagerBean implements CommentManager {
             throw ClientException.wrap(e);
         }
     }
-    
+
 }
