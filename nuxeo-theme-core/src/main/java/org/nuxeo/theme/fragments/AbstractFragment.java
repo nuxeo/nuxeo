@@ -27,7 +27,7 @@ public abstract class AbstractFragment extends AbstractElement implements
         Fragment {
 
     public abstract Model getModel() throws ModelException;
-    
+
     private FragmentType fragmentType;
 
     public void setFragmentType(FragmentType fragmentType) {

@@ -36,7 +36,7 @@ public final class FormatFilterType extends FilterType {
 
     @XNode("template-engine")
     public String templateEngine = "*";
-    
+
     @XNode("mode")
     public String mode = "*";
 

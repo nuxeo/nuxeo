@@ -35,7 +35,7 @@ public class TestThemeParser extends NXRuntimeTestCase {
     private ThemeElement theme1;
 
     private PageElement page1;
-    
+
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -76,14 +76,14 @@ public class TestThemeParser extends NXRuntimeTestCase {
 
         assertEquals("Theme 1", theme1.getDescription());
         assertEquals("Page 1", page1.getDescription());
-        
+
         // Theme presets
         PresetType preset1 = PresetManager.getPresetByName("theme1/red");
         assertEquals("theme1", preset1.getGroup());
         assertEquals("red", preset1.getName());
         assertEquals("#f00", preset1.getValue());
         assertEquals("color", preset1.getCategory());
-        
+
         PresetType preset2 = PresetManager.getPresetByName("theme1/nice background");
         assertEquals("theme1", preset2.getGroup());
         assertEquals("nice background", preset2.getName());

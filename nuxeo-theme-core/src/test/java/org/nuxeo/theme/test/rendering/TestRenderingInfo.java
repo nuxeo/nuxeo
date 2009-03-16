@@ -46,9 +46,9 @@ public class TestRenderingInfo extends NXRuntimeTestCase {
         Element page = ElementFactory.create("page");
         URL themeUrl = new URL("nxtheme://theme/test-engine/mode/theme/page/perspective/test-template-engine");
         RenderingInfo info = new RenderingInfo(page, themeUrl);
-                
+
         assertEquals("test-engine", info.getEngine().getName());
-        
+
         info.setModel(new DummyHtml("some data"));
         info.setMarkup("some markup");
 
@@ -59,7 +59,7 @@ public class TestRenderingInfo extends NXRuntimeTestCase {
         assertNotSame(copy, info);
 
         // make sure that the settings are preserved
-        assertEquals(copy.getUid(), info.getUid());     
+        assertEquals(copy.getUid(), info.getUid());
         assertEquals(copy.getEngine().getName(), info.getEngine().getName());
         assertEquals(copy.getThemeUrl(), info.getThemeUrl());
 

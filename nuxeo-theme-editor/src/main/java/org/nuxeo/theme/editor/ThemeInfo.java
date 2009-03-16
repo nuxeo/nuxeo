@@ -31,5 +31,5 @@ public class ThemeInfo {
         this.name = name;
         this.path = path;
     }
-    
+
 }

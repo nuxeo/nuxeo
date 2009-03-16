@@ -34,12 +34,12 @@ import freemarker.template.TemplateModelException;
 
 /**
  * @author <a href="mailto:jmo@chalmers.se">Jean-Marc Orliaguet</a>
- * 
+ *
  */
 public abstract class NXThemesBaseMVC implements TemplateDirectiveModel {
 
     public abstract String getClassName();
-    
+
     @SuppressWarnings("unchecked")
     public void execute(Environment env, Map params, TemplateModel[] loopVars,
             TemplateDirectiveBody body) throws TemplateException, IOException {

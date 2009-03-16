@@ -37,13 +37,13 @@ public final class ViewId implements Scheme {
         if (application == null) {
             return null;
         }
-        
+
         Resource targetObject = webContext.getTargetObject();
         if (targetObject == null) {
             return null;
         }
         final String viewId = targetObject.getTrailingPath();
-        
+
         final ViewDef view = application.getViewById(viewId);
         if (view == null) {
             return null;

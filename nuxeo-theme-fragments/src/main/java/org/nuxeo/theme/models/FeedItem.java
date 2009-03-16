@@ -23,7 +23,7 @@ public class FeedItem extends AbstractModel {
     private String description;
 
     private Date date;
-    
+
     private String creator;
 
     private String url;
@@ -62,7 +62,7 @@ public class FeedItem extends AbstractModel {
     public void setDate(Date date) {
         this.date = date;
     }
-    
+
     public String getCreator() {
         return creator;
     }

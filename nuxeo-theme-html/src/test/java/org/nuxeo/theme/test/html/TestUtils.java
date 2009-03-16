@@ -181,7 +181,7 @@ public class TestUtils extends NXRuntimeTestCase {
         Manager.getTypeRegistry().register(preset);
         Manager.getTypeRegistry().register(customPreset1);
         Manager.getTypeRegistry().register(customPreset2);
-        
+
         properties.setProperty("font", "\"default font (test fonts)\"");
         properties.setProperty("color", "\"custom color\" #dc0 \"custom color\" #123");
         properties.setProperty("background", "\"custom color\" \"custom bg\" no-repeat");

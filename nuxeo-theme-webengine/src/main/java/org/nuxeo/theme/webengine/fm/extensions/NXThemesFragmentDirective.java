@@ -44,12 +44,12 @@ import freemarker.template.TemplateModelException;
 
 /**
  * @author <a href="mailto:jmo@chalmers.se">Jean-Marc Orliaguet</a>
- * 
+ *
  */
 public class NXThemesFragmentDirective implements TemplateDirectiveModel {
 
     private static final Log log = LogFactory.getLog(NXThemesFragmentDirective.class);
-    
+
     final String templateEngine = "freemarker";
 
     @SuppressWarnings("unchecked")

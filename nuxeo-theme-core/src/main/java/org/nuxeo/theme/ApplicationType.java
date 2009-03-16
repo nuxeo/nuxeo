@@ -32,7 +32,7 @@ public final class ApplicationType implements Type {
 
     @XNode("@template-engine")
     private String templateEngine;
-    
+
     @XNode("negotiation")
     private NegotiationDef negotiation;
 

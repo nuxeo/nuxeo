@@ -35,7 +35,7 @@ public abstract class UIBaseMVC extends UIOutput {
     @Override
     public void encodeBegin(final FacesContext context) throws IOException {
         final ResponseWriter writer = context.getResponseWriter();
-        
+
         final Map<String, Object> attributes = getAttributes();
         final Map<String, String> params = new HashMap<String, String>();
         params.put("className", getClassName());

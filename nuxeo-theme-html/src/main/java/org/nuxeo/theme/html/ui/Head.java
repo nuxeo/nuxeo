@@ -25,7 +25,7 @@ import org.nuxeo.theme.elements.ThemeElement;
 import org.nuxeo.theme.formats.widgets.Widget;
 
 public class Head {
-    
+
     private static final Log log = LogFactory.getLog(Head.class);
 
     public static String render(Map<String, String> params) {

@@ -20,7 +20,7 @@ public class Feed extends AbstractModel {
     private String title;
 
     private String description;
-    
+
     private String url;
 
     public Feed() {

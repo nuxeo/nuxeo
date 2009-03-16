@@ -34,7 +34,7 @@ public final class FormatFactory {
         if (formatType == null) {
             throw new ThemeException("Unknown format type: " + typeName);
         }
-        
+
         final UidManager uidManager = Manager.getUidManager();
         try {
             format = (Format) Class.forName(formatType.getFormatClass()).newInstance();

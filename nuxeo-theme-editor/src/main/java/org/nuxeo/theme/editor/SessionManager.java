@@ -37,9 +37,9 @@ public class SessionManager extends AbstractComponent {
     private static String STYLE_CATEGORY = "org.nuxeo.theme.editor.style_category";
 
     private static String STYLE_MANAGER_MODE = "org.nuxeo.theme.editor.style_manager_mode";
-    
+
     private static String PRESET_MANAGER_MODE = "org.nuxeo.theme.editor.preset_manager_mode";
-    
+
     private static String PRESET_GROUP = "org.nuxeo.theme.editor.preset_group";
 
     private static String CLIPBOARD_ELEMENT_ID = "org.nuxeo.theme.editor.clipboard_element";
@@ -73,7 +73,7 @@ public class SessionManager extends AbstractComponent {
     public static synchronized void setStyleLayerId(String id) {
         getUserSession().put(STYLE_LAYER_ID, id);
     }
-    
+
     public static synchronized String getNamedStyleId() {
         return (String) getUserSession().get(NAMED_STYLE_ID);
     }
@@ -105,7 +105,7 @@ public class SessionManager extends AbstractComponent {
     public static synchronized void setStyleCategory(String category) {
         getUserSession().put(STYLE_CATEGORY, category);
     }
-    
+
     public static synchronized String getStyleManagerMode() {
         return (String) getUserSession().get(STYLE_MANAGER_MODE);
     }
@@ -121,7 +121,7 @@ public class SessionManager extends AbstractComponent {
     public static synchronized void setPresetManagerMode(String mode) {
         getUserSession().put(PRESET_MANAGER_MODE, mode);
     }
-    
+
     public static synchronized String getPresetGroup() {
         return (String) getUserSession().get(PRESET_GROUP);
     }

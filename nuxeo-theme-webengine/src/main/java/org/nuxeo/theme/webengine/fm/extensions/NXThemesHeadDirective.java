@@ -41,7 +41,7 @@ import freemarker.template.TemplateModelException;
 
 /**
  * @author <a href="mailto:jmo@chalmers.se">Jean-Marc Orliaguet</a>
- * 
+ *
  */
 public class NXThemesHeadDirective implements TemplateDirectiveModel {
 
@@ -71,7 +71,7 @@ public class NXThemesHeadDirective implements TemplateDirectiveModel {
         if (!baseUrl.endsWith("/")) {
             baseUrl += "/";
         }
-        
+
         Map<String, String> attributes = new HashMap<String, String>();
         attributes.put("themeName", ThemeManager.getThemeNameByUrl(themeUrl));
         attributes.put("path", context.getModulePath());

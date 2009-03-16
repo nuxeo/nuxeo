@@ -127,7 +127,7 @@ public final class Utils {
         final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         final Document document;
         ByteArrayInputStream in = null;
-        
+
         try {
             dbf.setFeature("http://xml.org/sax/features/validation", false);
             dbf.setFeature(
@@ -136,7 +136,7 @@ public final class Utils {
         } catch (ParserConfigurationException e) {
             log.debug("Could not set DTD non-validation feature");
         }
-        
+
         try {
             in = new ByteArrayInputStream(html.getBytes());
             final DocumentBuilder db = dbf.newDocumentBuilder();

@@ -25,7 +25,7 @@ import org.nuxeo.theme.types.TypeFamily;
 public class MVCElement {
 
     private static final Log log = LogFactory.getLog(MVCElement.class);
-    
+
     public static String render(Map<String, String> params) {
         StringBuilder sb = new StringBuilder();
 

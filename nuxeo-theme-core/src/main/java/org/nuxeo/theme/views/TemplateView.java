@@ -31,7 +31,7 @@ public class TemplateView extends AbstractView {
     @Override
     public String render(final RenderingInfo info) {
         final ViewType viewType = getViewType();
-        final String template = viewType.getTemplate();        
+        final String template = viewType.getTemplate();
         return getTemplateContent(template);
     }
 

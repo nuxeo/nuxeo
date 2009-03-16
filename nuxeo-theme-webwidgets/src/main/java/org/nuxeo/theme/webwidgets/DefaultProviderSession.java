@@ -43,7 +43,7 @@ public class DefaultProviderSession {
         statesByWidget = new HashMap<Widget, WidgetState>();
         counter = 0;
     }
-    
+
     public int getCounter() {
         return counter;
     }
@@ -76,7 +76,7 @@ public class DefaultProviderSession {
         return statesByWidget;
     }
 
-    
+
     public Widget getWidgetByUid(String uid) {
         return widgetsByUid.get(uid);
     }

@@ -71,7 +71,7 @@ public class TestNXThemesProtocol extends NXRuntimeTestCase {
         URL elementUrl = new URL("nxtheme://element/engine/mode/templateEngine/123");
         assertSame(engine, ThemeManager.getEngineByUrl(elementUrl));
     }
-    
+
     public void testGetTemplateEngineByUrl() throws MalformedURLException {
         TemplateEngineType templateEngine = new TemplateEngineType();
         templateEngine.setName("templateEngine");
@@ -81,7 +81,7 @@ public class TestNXThemesProtocol extends NXRuntimeTestCase {
         URL elementUrl = new URL("nxtheme://element/engine/mode/templateEngine/123");
         assertSame(templateEngine, ThemeManager.getTemplateEngineByUrl(elementUrl));
     }
-    
+
     public void testGetThemePageByUrl() throws MalformedURLException,
             NodeException {
         ThemeElement theme = (ThemeElement) ElementFactory.create("theme");
@@ -102,7 +102,7 @@ public class TestNXThemesProtocol extends NXRuntimeTestCase {
         URL url = new URL("nxtheme://theme/engine/mode/templateEngine/theme1/page1");
         assertSame(theme, themeManager.getThemeByUrl(url));
     }
-    
+
     public void testGetPagePathByUrl() throws MalformedURLException {
         URL url = new URL("nxtheme://theme/engine/mode/templateEngine/theme1/page1");
         assertEquals("theme1/page1", themeManager.getPagePathByUrl(url));

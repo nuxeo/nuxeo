@@ -22,9 +22,9 @@ public final class WebNegotiator extends AbstractNegotiator {
     public String getTemplateEngineName() {
         return "freemarker";
     }
-    
+
     public WebNegotiator(final String strategy, final WebContext context) {
         super(strategy, context);
     }
-    
+
 }

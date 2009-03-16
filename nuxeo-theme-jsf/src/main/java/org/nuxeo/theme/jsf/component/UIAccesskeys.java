@@ -29,5 +29,5 @@ public class UIAccesskeys extends UIOutput {
         final ResponseWriter writer = context.getResponseWriter();
         writer.write(Accesskeys.render());
     }
-    
+
 }

@@ -19,5 +19,5 @@ public class Events {
     public static final String THEME_MODIFIED_EVENT = "theme modified";
 
     public static final String STYLES_MODIFIED_EVENT = "styles modified";
-    
+
 }

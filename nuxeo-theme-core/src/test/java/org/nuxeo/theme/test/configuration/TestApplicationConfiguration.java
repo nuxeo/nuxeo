@@ -120,7 +120,7 @@ public class TestApplicationConfiguration extends NXRuntimeTestCase {
                 "application-config-override.xml");
         ApplicationType app2b = (ApplicationType) typeRegistry.lookup(TypeFamily.APPLICATION,
                 "/my-app2");
-        
+
         // Existing properties are left unchanged
         assertEquals("freemarker", app2b.getTemplateEngine());
 

@@ -35,7 +35,7 @@ import com.sun.facelets.impl.DefaultResourceResolver;
 public class UIFragment extends UIOutput {
 
     final String templateEngine = "jsf-facelets";
-    
+
     private String uid;
 
     private String engine;

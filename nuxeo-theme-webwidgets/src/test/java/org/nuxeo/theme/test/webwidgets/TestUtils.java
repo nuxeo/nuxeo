@@ -82,7 +82,7 @@ public class TestUtils extends TestCase {
         WidgetFieldType field1 = fields.get(0);
         assertEquals("Title", field1.label);
         assertEquals("Widget title", field1.defaultValue);
-        assertEquals("text", field1.type); 
-        assertEquals("title", field1.name); 
+        assertEquals("text", field1.type);
+        assertEquals("title", field1.name);
     }
 }

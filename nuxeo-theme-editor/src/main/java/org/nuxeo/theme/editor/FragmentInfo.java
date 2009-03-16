@@ -25,7 +25,7 @@ public class FragmentInfo {
     private FragmentType fragmentType;
 
     public List<ViewType> viewTypes = new ArrayList<ViewType>();
-    
+
     FragmentInfo(FragmentType fragmentType) {
         this.fragmentType = fragmentType;
     }

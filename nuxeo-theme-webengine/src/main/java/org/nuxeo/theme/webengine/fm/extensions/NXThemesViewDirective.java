@@ -21,7 +21,7 @@ package org.nuxeo.theme.webengine.fm.extensions;
 
 /**
  * @author <a href="mailto:jmo@chalmers.se">Jean-Marc Orliaguet</a>
- * 
+ *
  */
 public class NXThemesViewDirective extends NXThemesBaseMVC {
 

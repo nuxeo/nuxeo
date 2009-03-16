@@ -21,7 +21,7 @@ public class Panel {
 
     public static String render(Map<String, String> params) {
         StringBuilder sb = new StringBuilder();
-        
+
         String identifier = params.get("identifier");
         String url = params.get("url");
         String loading = params.get("loading");
@@ -50,7 +50,7 @@ public class Panel {
         }
         // add context information
         form.put("org.nuxeo.theme.application.path", params.get("org.nuxeo.theme.application.path"));
-        
+
         data.put("form", form);
         data.put("url", url);
 

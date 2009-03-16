@@ -54,7 +54,7 @@ import freemarker.template.TemplateModelException;
 
 /**
  * @author <a href="mailto:jmo@chalmers.se">Jean-Marc Orliaguet</a>
- * 
+ *
  */
 public class ThemeDirective implements TemplateDirectiveModel {
 

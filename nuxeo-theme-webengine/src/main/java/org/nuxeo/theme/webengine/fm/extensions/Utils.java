@@ -26,7 +26,7 @@ import freemarker.template.TemplateModel;
 
 /**
  * @author <a href="mailto:jmo@chalmers.se">Jean-Marc Orliaguet</a>
- * 
+ *
  */
 public class Utils {
 

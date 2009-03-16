@@ -32,7 +32,7 @@ public class Utils {
         }
         return null;
     }
-    
+
     public static List<FieldProperty> getPropertiesOf(final Element element) {
         List<FieldProperty> fieldProperties = new ArrayList<FieldProperty>();
         if (element == null) {
@@ -57,5 +57,5 @@ public class Utils {
         }
         return fieldProperties;
     }
-    
+
 }

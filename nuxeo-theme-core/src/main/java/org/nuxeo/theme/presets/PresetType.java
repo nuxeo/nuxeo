@@ -51,14 +51,14 @@ public class PresetType implements Type {
     public String getName() {
         return name;
     }
-    
+
     public String getTypeName() {
         if (group != null && !"".equals(group)) {
             return String.format("%s (%s)", name, group);
         }
         return name;
     }
-    
+
     public String getEffectiveName() {
         return getTypeName();
     }
