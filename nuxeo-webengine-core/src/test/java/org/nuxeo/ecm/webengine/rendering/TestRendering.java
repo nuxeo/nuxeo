@@ -27,7 +27,7 @@ public class TestRendering extends NXRuntimeTestCase {
     DocumentModel site;
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
 
         deployBundle("org.nuxeo.ecm.core.schema");

@@ -27,7 +27,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 public abstract class GuardTest extends NXRuntimeTestCase {
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         deployBundle("nuxeo-core-schema");
         deployBundle("nuxeo-core-query");

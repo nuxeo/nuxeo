@@ -39,7 +39,7 @@ public abstract class TestForms extends NXRuntimeTestCase {
     protected FormManager formMgr;
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         deployBundle("nuxeo-core-schema");
         deployBundle("nuxeo-core-query");
