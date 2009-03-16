@@ -129,7 +129,7 @@ public abstract class VersioningBaseTestCase extends RepositoryTestCase {
     }
 
     @Override
-    protected void tearDown() throws Exception {
+    public void tearDown() throws Exception {
         log.info("Shutting down NX Core for local tests");
         root.remove();
         session.save();

@@ -42,7 +42,7 @@ public class TestForumWorkflow extends RepositoryOSGITestCase {
     private NuxeoPrincipal user1;
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         // clean up previous test.
         JbpmServiceImpl.contexts.set(null);
         super.setUp();

@@ -6,7 +6,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 public class TestMimetypeIconUpdater extends AbstractListenerTest {
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.platform.mimetype.api");
         deployBundle("org.nuxeo.ecm.platform.mimetype.core");

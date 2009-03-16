@@ -5,18 +5,14 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 
 public class TestDigestComputerListener extends AbstractListenerTest {
 
-
      @Override
-     protected void setUp() throws Exception {
+     public void setUp() throws Exception {
          super.setUp();
          deployBundle("org.nuxeo.ecm.platform.filemanager.api");
          deployBundle("org.nuxeo.ecm.platform.filemanager.core");
          deployBundle("org.nuxeo.ecm.platform.filemanager.core.listener");
          deployContrib("org.nuxeo.ecm.platform.filemanager.core.listener", "OSGI-INF/nxfilemanager-core-listener.xml");
      }
-
-
-
 
      public void testDigest() throws Exception {
          DocumentModel file = createFileDocument(true);
@@ -27,4 +23,5 @@ public class TestDigestComputerListener extends AbstractListenerTest {
          assertFalse("".equals(digest));
          System.out.println("digest = " + digest);
      }
+
 }

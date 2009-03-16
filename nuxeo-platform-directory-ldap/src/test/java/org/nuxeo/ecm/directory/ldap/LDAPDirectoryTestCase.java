@@ -62,7 +62,7 @@ public abstract class LDAPDirectoryTestCase extends NXRuntimeTestCase {
     public static final String INTERNAL_SERVER_SETUP_OVERRIDE = "TestDirectoriesWithInternalApacheDS-override.xml";
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         // setup the client environment
         deployContrib("org.nuxeo.ecm.core",
@@ -103,7 +103,7 @@ public abstract class LDAPDirectoryTestCase extends NXRuntimeTestCase {
     }
 
     @Override
-    protected void tearDown() throws Exception {
+    public void tearDown() throws Exception {
         LDAPSession session = (LDAPSession) getLDAPDirectory("userDirectory").getSession();
         try {
             if (USE_EXTERNAL_TEST_LDAP_SERVER) {

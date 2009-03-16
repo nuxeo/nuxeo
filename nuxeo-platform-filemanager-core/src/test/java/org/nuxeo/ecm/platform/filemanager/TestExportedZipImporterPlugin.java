@@ -37,11 +37,9 @@ import org.nuxeo.ecm.platform.filemanager.service.extension.ExportedZipImporter;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- *
  * Check IO archive import via Unit Tests
  *
  * @author tiry
- *
  */
 public class TestExportedZipImporterPlugin extends RepositoryOSGITestCase {
 
@@ -50,12 +48,11 @@ public class TestExportedZipImporterPlugin extends RepositoryOSGITestCase {
 
     protected String tmpDir = System.getProperty("java.io.tmpdir");
 
-    protected DocumentModel sourceWS=null;
-    protected DocumentModel destWS=null;
-    protected DocumentModel wsRoot=null;
+    protected DocumentModel sourceWS;
+    protected DocumentModel destWS;
+    protected DocumentModel wsRoot;
 
-    private File getArchiveFile()
-    {
+    private File getArchiveFile() {
         return new File(archiveFileName);
     }
 
@@ -98,17 +95,15 @@ public class TestExportedZipImporterPlugin extends RepositoryOSGITestCase {
         folder.setProperty("dublincore", "title", "MyFolder");
         folder = coreSession.createDocument(folder);
 
-
         DocumentModel subfile = coreSession.createDocumentModel(
                 folder.getPathAsString(), "mysubfile", "File");
         subfile.setProperty("dublincore", "title", "MySubFile");
         subfile = coreSession.createDocument(subfile);
 
-
         DocumentReader reader = new DocumentTreeReader(coreSession, ws, false);
 
-
-        archiveFileName = tmpDir + System.getProperty("file.separator") + "Testing" + System.currentTimeMillis();
+        archiveFileName = tmpDir + System.getProperty("file.separator")
+                + "Testing" + System.currentTimeMillis();
         File archiveFile = new File(archiveFileName);
 
         DocumentWriter writer = new NuxeoArchiveWriter(archiveFile);
@@ -122,40 +117,27 @@ public class TestExportedZipImporterPlugin extends RepositoryOSGITestCase {
         reader.close();
 
         sourceWS = ws;
-        destWS=ws2;
-
+        destWS = ws2;
     }
 
-
-    public void testArchiveDetection() throws ZipException, IOException
-    {
+    public void testArchiveDetection() throws ZipException, IOException {
         ZipFile archive = ExportedZipImporter.getArchiveFileIfValid(getArchiveFile());
         assertNotNull(archive);
         archive.close();
     }
 
-    public void testImportViaFileManager() throws Exception
-    {
-
+    public void testImportViaFileManager() throws Exception {
         File archive = getArchiveFile();
-
         FileManager fm = Framework.getService(FileManager.class);
-
         Blob blob = new FileBlob(archive);
-
         fm.createDocumentFromBlob(coreSession, blob, destWS.getPathAsString(), true, "toto");
-
-        DocumentModelList children =  coreSession.getChildren(destWS.getRef());
-
-        assertTrue(children.size()>0);
-
-        assertTrue(children.get(0).getTitle().equals(sourceWS.getTitle()));
+        DocumentModelList children = coreSession.getChildren(destWS.getRef());
+        assertTrue(children.size() > 0);
+        assertEquals(children.get(0).getTitle(), sourceWS.getTitle());
 
         DocumentModel importedWS = children.get(0);
-
-        DocumentModelList subChildren =  coreSession.getChildren(importedWS.getRef());
-
-        assertTrue(subChildren.size()==2);
+        DocumentModelList subChildren = coreSession.getChildren(importedWS.getRef());
+        assertSame(2, subChildren.size());
 
         DocumentModel subFolder = coreSession.getChild(importedWS.getRef(), "myfolder");
         assertNotNull(subFolder);
@@ -163,17 +145,11 @@ public class TestExportedZipImporterPlugin extends RepositoryOSGITestCase {
         DocumentModel subFile = coreSession.getChild(importedWS.getRef(), "myfile");
         assertNotNull(subFile);
 
-
-        DocumentModelList subSubChildren =  coreSession.getChildren(subFolder.getRef());
-        assertTrue(subSubChildren.size()==1);
-
-
-
+        DocumentModelList subSubChildren = coreSession.getChildren(subFolder.getRef());
+        assertSame(1, subSubChildren.size());
     }
 
-    public void testOverrideImportViaFileManager() throws Exception
-    {
-
+    public void testOverrideImportViaFileManager() throws Exception {
         // first update the source DM of the exported source
         sourceWS.setProperty("dublincore", "title", "I have been changed");
         sourceWS = coreSession.saveDocument(sourceWS);
@@ -181,26 +157,18 @@ public class TestExportedZipImporterPlugin extends RepositoryOSGITestCase {
         // remove one children
         DocumentModel subFile = coreSession.getChild(sourceWS.getRef(), "myfile");
         coreSession.removeDocument(subFile.getRef());
-
         coreSession.save();
 
-
         File archive = getArchiveFile();
-
         FileManager fm = Framework.getService(FileManager.class);
-
         Blob blob = new FileBlob(archive);
-
         fm.createDocumentFromBlob(coreSession, blob, wsRoot.getPathAsString(), true, "toto");
-
         sourceWS = coreSession.getChild(wsRoot.getRef(), "ws1");
         assertNotNull(sourceWS);
         assertEquals("test WS", sourceWS.getTitle());
 
         subFile = coreSession.getChild(sourceWS.getRef(), "myfile");
         assertNotNull(subFile);
-
     }
-
 
 }

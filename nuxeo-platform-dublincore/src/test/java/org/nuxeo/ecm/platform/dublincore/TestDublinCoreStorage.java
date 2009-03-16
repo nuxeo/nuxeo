@@ -59,7 +59,7 @@ public class TestDublinCoreStorage extends RepositoryTestCase {
     private CoreSession remote;
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
 
         deployContrib("org.nuxeo.ecm.core", "OSGI-INF/CoreService.xml");

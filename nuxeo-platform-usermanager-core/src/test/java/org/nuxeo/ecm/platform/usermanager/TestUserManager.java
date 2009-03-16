@@ -46,7 +46,7 @@ public class TestUserManager extends NXRuntimeTestCase {
     protected UserManager userManager;
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
 
         deployContrib("org.nuxeo.ecm.core.schema", "OSGI-INF/SchemaService.xml");

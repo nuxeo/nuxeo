@@ -19,7 +19,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Simple test Case for DocUIDGeneratorListener
- * 
+ *
  * @author Julien Thimonier <jt@nuxeo.com>
  */
 public class NotificationEventListenerTest extends RepositoryOSGITestCase {
@@ -29,7 +29,7 @@ public class NotificationEventListenerTest extends RepositoryOSGITestCase {
 	private static final Log log = LogFactory.getLog(NotificationService.class);
 
 	@Override
-	protected void setUp() throws Exception {
+	public void setUp() throws Exception {
 		super.setUp();
 		openRepository();
 		deployBundle("org.nuxeo.ecm.platform.placeful.api");

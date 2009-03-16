@@ -17,7 +17,7 @@ import org.nuxeo.runtime.api.Framework;
 public class SimpleListenerTest extends RepositoryOSGITestCase {
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.relations.api");
         deployBundle("org.nuxeo.ecm.relations");

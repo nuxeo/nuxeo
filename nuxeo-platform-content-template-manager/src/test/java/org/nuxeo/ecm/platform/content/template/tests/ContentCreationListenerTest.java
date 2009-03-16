@@ -11,7 +11,7 @@ import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
 public class ContentCreationListenerTest extends RepositoryOSGITestCase {
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.platform.content.template");
         deployBundle("org.nuxeo.ecm.relations");

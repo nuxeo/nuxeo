@@ -6,13 +6,13 @@ import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
 
 /**
  * Simple test Case for DocUIDGeneratorListener
- * 
+ *
  * @author Julien Thimonier <jt@nuxeo.com>
  */
 public class DocUIDGeneratorListenerTest extends RepositoryOSGITestCase {
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         openRepository();
         deployBundle("org.nuxeo.ecm.platform.uidgen.core.tests");

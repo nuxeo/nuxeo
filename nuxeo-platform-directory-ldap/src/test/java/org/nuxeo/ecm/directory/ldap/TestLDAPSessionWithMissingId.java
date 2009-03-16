@@ -47,7 +47,7 @@ public class TestLDAPSessionWithMissingId extends LDAPDirectoryTestCase {
     protected static final String GROUP_SCHEMANAME = "group";
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         // override default defs
         if (USE_EXTERNAL_TEST_LDAP_SERVER) {

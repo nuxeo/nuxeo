@@ -38,7 +38,7 @@ public class TestJMSProducerService extends NXRuntimeTestCase {
     private DocumentMessageProducer service;
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
 
         /** NXCore descriptors * */

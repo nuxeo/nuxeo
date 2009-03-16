@@ -1,3 +1,4 @@
+
 /*
  * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
@@ -48,7 +49,7 @@ public class TestExtendedInfoEvaluation extends RepositoryOSGITestCase {
     }
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
 
         evaluatorUnderTest = new ExpressionEvaluator(

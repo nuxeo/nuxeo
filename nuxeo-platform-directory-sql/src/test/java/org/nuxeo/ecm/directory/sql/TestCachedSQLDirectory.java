@@ -24,11 +24,12 @@ import org.nuxeo.ecm.directory.DirectoryCache;
 public class TestCachedSQLDirectory extends TestSQLDirectory {
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         SQLDirectory dir = getSQLDirectory();
         DirectoryCache cache = dir.getCache();
         cache.setMaxSize(2);
         cache.setTimeout(10);
     }
+
 }

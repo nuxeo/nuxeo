@@ -60,7 +60,7 @@ public class TestFileManagerService extends RepositoryOSGITestCase {
     }
 
     @Override
-    protected void tearDown() throws Exception {
+    public void tearDown() throws Exception {
         service = null;
         root = null;
 

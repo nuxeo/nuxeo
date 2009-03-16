@@ -27,7 +27,7 @@ public class TestScheduler extends NXRuntimeTestCase {
     private static final Log log = LogFactory.getLog(TestScheduler.class);
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         // platform
         deployContrib("org.nuxeo.ecm.platform.scheduler.core.tests",

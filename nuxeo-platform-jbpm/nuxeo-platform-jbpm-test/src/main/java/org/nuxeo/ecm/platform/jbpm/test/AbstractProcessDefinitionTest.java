@@ -14,8 +14,8 @@ import org.jbpm.graph.def.ProcessDefinition;
 import org.nuxeo.ecm.core.api.SimplePrincipal;
 
 public abstract class AbstractProcessDefinitionTest extends TestCase {
-    protected final List<String> bob_list = Collections.singletonList("bob");
 
+    protected final List<String> bob_list = Collections.singletonList("bob");
     protected final List<String> trudy_list = Collections.singletonList("trudy");
 
     protected JbpmConfiguration configuration;
@@ -25,7 +25,6 @@ public abstract class AbstractProcessDefinitionTest extends TestCase {
     protected JbpmContext jbpmContext;
 
     public AbstractProcessDefinitionTest() {
-        super();
     }
 
     public AbstractProcessDefinitionTest(String name) {

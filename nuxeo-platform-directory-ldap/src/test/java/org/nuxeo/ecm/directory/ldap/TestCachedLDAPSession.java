@@ -31,7 +31,7 @@ import org.nuxeo.ecm.directory.DirectoryCache;
 public class TestCachedLDAPSession extends TestLDAPSession {
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         List<String> directories = Arrays.asList("userDirectory",
                 "groupDirectory");
@@ -42,4 +42,5 @@ public class TestCachedLDAPSession extends TestLDAPSession {
             cache.setTimeout(10);
         }
     }
+
 }

@@ -78,7 +78,7 @@ public class TestIORemoteCopy extends NXRuntimeTestCase {
     protected IOManager ioService;
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
 
         System.setProperty("org.nuxeo.runtime.streaming.isServer", "false");
         System.setProperty("org.nuxeo.runtime.server.port", "62475");

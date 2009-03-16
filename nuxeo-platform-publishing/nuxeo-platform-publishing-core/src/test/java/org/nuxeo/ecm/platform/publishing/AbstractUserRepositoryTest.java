@@ -28,7 +28,7 @@ public class AbstractUserRepositoryTest extends RepositoryOSGITestCase {
     public static final String PUB_BUNDLE = "org.nuxeo.ecm.platform.publishing";
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
 
         deployBundle("org.nuxeo.ecm.directory");

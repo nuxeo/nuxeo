@@ -49,6 +49,7 @@ public class MD5HasherTest extends TestCase {
     private MD5Hasher hasher;
 
     @Override
+
     protected void setUp() throws Exception {
         hasher = new MD5Hasher();
     }

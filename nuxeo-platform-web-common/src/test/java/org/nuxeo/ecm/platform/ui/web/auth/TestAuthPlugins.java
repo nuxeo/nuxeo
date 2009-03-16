@@ -31,7 +31,7 @@ public class TestAuthPlugins extends NXRuntimeTestCase {
     private static final String WEB_BUNDLE = "org.nuxeo.ecm.platform.web.common";
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
 
         deployContrib(WEB_BUNDLE, "OSGI-INF/authentication-framework.xml");

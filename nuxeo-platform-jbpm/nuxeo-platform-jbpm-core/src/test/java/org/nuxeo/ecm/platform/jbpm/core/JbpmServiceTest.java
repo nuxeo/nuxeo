@@ -42,7 +42,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author arussel
- * 
+ *
  */
 public class JbpmServiceTest extends RepositoryOSGITestCase {
 
@@ -55,7 +55,7 @@ public class JbpmServiceTest extends RepositoryOSGITestCase {
     private NuxeoPrincipal user1;
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         // clean up previous test.
         JbpmServiceImpl.contexts.set(null);
         super.setUp();
@@ -219,7 +219,7 @@ public class JbpmServiceTest extends RepositoryOSGITestCase {
     }
 
     @Override
-    protected void tearDown() throws Exception {
+    public void tearDown() throws Exception {
         super.tearDown();
         JbpmServiceImpl.contexts.set(null);
     }

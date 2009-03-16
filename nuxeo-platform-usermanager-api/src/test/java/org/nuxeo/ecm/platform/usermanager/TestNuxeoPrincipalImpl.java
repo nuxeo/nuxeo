@@ -29,7 +29,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 public class TestNuxeoPrincipalImpl extends NXRuntimeTestCase {
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.directory.types.contrib");

@@ -33,7 +33,7 @@ public class TestTreeManagerService extends RepositoryOSGITestCase {
     protected TreeManager treeManager;
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
 
         // openRepository();
@@ -49,7 +49,7 @@ public class TestTreeManagerService extends RepositoryOSGITestCase {
     }
 
     @Override
-    protected void tearDown() throws Exception {
+    public void tearDown() throws Exception {
         // undeploy bundles
         undeployContrib("org.nuxeo.ecm.webapp.core",
                 "OSGI-INF/nxtreemanager-framework.xml");

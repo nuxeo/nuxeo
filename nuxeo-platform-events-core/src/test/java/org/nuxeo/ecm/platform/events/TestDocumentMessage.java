@@ -1,3 +1,4 @@
+
 /*
  * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
@@ -47,7 +48,7 @@ public class TestDocumentMessage extends RepositoryTestCase {
     private CoreEvent event;
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         Session session = getRepository().getSession(null);
         root = session.getRootDocument();

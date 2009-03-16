@@ -33,7 +33,7 @@ public class TestRegisterPlacefulService extends NXRuntimeTestCase {
     PlacefulService placefulService;
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.ecm.platform.placeful.core.tests",
                 "nxplacefulservice-framework.xml");

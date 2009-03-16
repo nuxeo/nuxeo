@@ -36,7 +36,7 @@ import org.nuxeo.runtime.api.Framework;
 public class BulkLifeCycleChangeListenerTest extends RepositoryOSGITestCase {
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         openRepository();
         deployBundle("org.nuxeo.ecm.webapp.core");

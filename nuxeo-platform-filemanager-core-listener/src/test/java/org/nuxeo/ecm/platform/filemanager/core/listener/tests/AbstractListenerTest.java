@@ -8,16 +8,13 @@ import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
 
 public class AbstractListenerTest extends RepositoryOSGITestCase {
 
-
      @Override
-     protected void setUp() throws Exception {
+     public void setUp() throws Exception {
          super.setUp();
          openRepository();
      }
 
-
      protected DocumentModel createFileDocument(boolean setMimeType) throws ClientException {
-
          DocumentModel fileDoc = getCoreSession().createDocumentModel("/", "testFile", "File");
          fileDoc.setProperty("dublincore", "title", "TestFile");
 
