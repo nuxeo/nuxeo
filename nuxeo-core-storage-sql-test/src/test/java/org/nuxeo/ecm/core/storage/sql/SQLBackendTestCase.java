@@ -42,7 +42,7 @@ public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
     }
 
     @Override
-    protected void tearDown() throws Exception {
+    public void tearDown() throws Exception {
         if (repository != null) {
             repository.close();
         }

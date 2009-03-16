@@ -50,7 +50,7 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
     private static final Log log = LogFactory.getLog(TestSQLRepositoryVersioning.class);
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
                 "OSGI-INF/test-repo-core-types-contrib.xml");
@@ -58,7 +58,7 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
     }
 
     @Override
-    protected void tearDown() throws Exception {
+    public void tearDown() throws Exception {
         session.cancel();
         closeSession();
         super.tearDown();
