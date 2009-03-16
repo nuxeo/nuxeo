@@ -29,7 +29,7 @@
       </#if>
       <li class="comment ${row}" id="${com.ref}">
         <div class="byline">${com['webcomment:creationDate']} by ${com['webcomment:author']}</div>
-        <p><quote>${com['webcomment:text']}</quote></p>
+        <quote>${com['webcomment:text']}</quote>
         <#if (This.moderator==true)>
           <a href="${This.path}/@comments/delete?property=${com.ref}">Delete</a>
          </#if> 

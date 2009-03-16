@@ -28,7 +28,7 @@
         </td></tr>
       </#list>
     </#if> 
-  <table> 
+  </table> 
   
   <#if base.canWrite>
     <form id="add_file" name="add_file" action="${This.path}/@file" accept-charset="utf-8" method="POST" enctype="multipart/form-data" >

@@ -20,9 +20,9 @@
   });
 </script>
 
-<div class="sideblock general" style="padding: 20px;width: 200px;overflow: auto;">
+<div class="sideblock general">
  <div class="treeroot"></div>
-  <ul id="treenav" class="treeview" style="font-size: small;">
+  <ul id="treenav" class="treeview">
   </ul>
 </div>
 <!-- End Navigation Tree -->
