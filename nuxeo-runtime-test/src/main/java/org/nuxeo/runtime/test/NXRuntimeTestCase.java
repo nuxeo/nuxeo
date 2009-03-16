@@ -54,20 +54,13 @@ import org.osgi.framework.Bundle;
  *
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public abstract class NXRuntimeTestCase extends MockObjectTestCase {
+public class NXRuntimeTestCase extends MockObjectTestCase {
 
     private static final Log log = LogFactory.getLog(NXRuntimeTestCase.class);
 
     protected RuntimeService runtime;
 
     protected URL[] urls; // classpath urls, used for bundles lookup
-
-    protected NXRuntimeTestCase() {
-    }
-
-    protected NXRuntimeTestCase(String name) {
-        super(name);
-    }
 
     protected File workingDir;
 
@@ -81,9 +74,15 @@ public abstract class NXRuntimeTestCase extends MockObjectTestCase {
 
     protected boolean restart = false;
 
+    public NXRuntimeTestCase() {
+    }
+
+    public NXRuntimeTestCase(String name) {
+        super(name);
+    }
+
     /**
-     * Restart the runtime and preserve home directory
-     * @throws Exception
+     * Restarts the runtime and preserve homes directory.
      */
     protected void restart() throws Exception {
         restart = true;
@@ -95,9 +94,8 @@ public abstract class NXRuntimeTestCase extends MockObjectTestCase {
         }
     }
 
-
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         wipeRuntime();
         initUrls();
@@ -109,7 +107,7 @@ public abstract class NXRuntimeTestCase extends MockObjectTestCase {
     }
 
     @Override
-    protected void tearDown() throws Exception {
+    public void tearDown() throws Exception {
         wipeRuntime();
         if (workingDir != null) {
             if (!restart) {

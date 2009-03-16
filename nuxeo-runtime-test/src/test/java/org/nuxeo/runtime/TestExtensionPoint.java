@@ -26,7 +26,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 public class TestExtensionPoint extends NXRuntimeTestCase {
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.runtime.test.tests", "BaseXPoint.xml");
         deployContrib("org.nuxeo.runtime.test.tests", "OverridingXPoint.xml");
@@ -37,8 +37,8 @@ public class TestExtensionPoint extends NXRuntimeTestCase {
                 ComponentWithXPoint.NAME);
         ContributionTest[] contribs = co.getContributions();
         assertEquals(2, contribs.length);
-        assertTrue(contribs[0].getClass() == ContributionTest.class);
-        assertTrue(contribs[1].getClass() == ContributionTestOverrided.class);
+        assertSame(contribs[0].getClass(), ContributionTest.class);
+        assertSame(contribs[1].getClass(), ContributionTestOverrided.class);
         assertEquals("XP contrib", contribs[0].message);
         assertEquals("OverXP contrib", contribs[1].message);
         assertEquals("My duty is to override", ((ContributionTestOverrided) contribs[1]).name);

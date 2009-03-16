@@ -31,7 +31,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 public class TestEventService extends NXRuntimeTestCase {
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.runtime.test.tests", "ListenerExtension.xml");
     }

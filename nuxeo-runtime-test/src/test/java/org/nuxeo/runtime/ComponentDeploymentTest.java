@@ -32,7 +32,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 public class ComponentDeploymentTest extends NXRuntimeTestCase {
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.runtime.test.tests", "MyComp1.xml");
         deployContrib("org.nuxeo.runtime.test.tests", "MyComp2.xml");
