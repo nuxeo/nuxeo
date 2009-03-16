@@ -64,9 +64,17 @@
 # Author: Bogdan Stefanescu <bs@nuxeo.com>
 #
 ################################################
+if [ -z "$JAVA_HOME" ]; then
+    echo 'Missing JAVA_HOME' >&2;
+    exit 2
+fi
+if [ ! -x $JAVA_HOME/bin/java ]; then
+    echo 'Can not execute $JAVA_HOME/bin/java' >&2;
+    exit 2
+fi
 
 JAVA_OPTS="-Djava.rmi.server.RMIClassLoaderSpi=org.nuxeo.runtime.launcher.NuxeoRMIClassLoader -Dsun.lang.ClassLoader.allowArraySyntax=true"
-JAVA_OPTS="$JAVA_OPTS -Dderby.system.home=data/derby" 
+JAVA_OPTS="$JAVA_OPTS -Dderby.system.home=data/derby"
 #JAVA_OPTS="$JAVA_OPTS -Dorg.nuxeo.runtime.1.3.3.streaming.port=3233"
 
 CMD_ARGS="$@"
@@ -76,7 +84,7 @@ if [ "x$1" = "x-dev" ] ; then
     shift 1
     JAVA_OPTS="$JAVA_OPTS -Dorg.nuxeo.dev=true -Xdebug -Xrunjdwp:transport=dt_socket,address=127.0.0.1:8788,server=y,suspend=n"
     DEV_OPTS="-clear -console"
-fi 
+fi
 
 NXC_VERSION=`ls nuxeo-runtime-launcher-*|cut -d"-" -f4- `
 
@@ -84,6 +92,6 @@ NXC_VERSION=`ls nuxeo-runtime-launcher-*|cut -d"-" -f4- `
 #the eclipse plugin is using this option to start webengine.
 #POST_BUNDLES="-post-bundles /path/to/your/external/bundle:/path/to/second/bundle:/etc"
 
-java $JAVA_OPTS -jar nuxeo-runtime-launcher-${NXC_VERSION} \
+$JAVA_HOME/bin/java $JAVA_OPTS -jar nuxeo-runtime-launcher-${NXC_VERSION} \
     bundles/nuxeo-runtime-osgi-${NXC_VERSION}/org.nuxeo.osgi.application.Main \
     bundles/.:lib/.:config $POST_BUNDLES -home . $DEV_OPTS "$@"
