@@ -1,14 +1,13 @@
 <?xml version="1.0"?>
-
 <project name="Nuxeo EP" default="deploy" basedir=".">
 
   <property file="build.properties" />
   <property name="mvn.opts" value="" />
   <property name="jboss.config" value="default" />
   <property name="jboss.dir" value="/opt/jboss" />
-  <property name="nuxeo.ear.root" value="nuxeo-distribution/nuxeo-platform-ear/" />
+  <property name="nuxeo.ear.root" value="${basedir}/nuxeo-distribution/nuxeo-platform-ear/" />
   <!--the default pom file to use for jboss-patch  -->
-  <property name="pom.file" value="jboss-patch/pom.xml" />
+  <property name="pom.file" value="${basedir}/nuxeo-distribution/nuxeo-distribution-jboss/jboss-patch/pom.xml" />
 
   <!-- set default root properties if not set -->
   <target name="set.jboss.home" unless="jboss.home">
@@ -26,7 +25,6 @@
     <property name="jboss.nuxeo.ear" value="${jboss.deploy}/nuxeo.ear" />
     <property name="nuxeo.ear.build" value="${nuxeo.ear.root}/target/${assembly.ear}" />
   </target>
-
   <property name="nuxeo.jboss.jmx.protocol" value="" />
   <property name="nuxeo.jboss.jmx.http.hostname" value="" />
   <property name="nuxeo.jboss.jmx.http.port" value="" />
@@ -156,43 +154,13 @@
   <target name="patch405" description="Patch a JBoss 4.0.5 for use by Nuxeo-EP (deprecated : no more 4.0.5 compatibility)">
     <echo>Jboss 4.0.5 is not supported anymore, user Jboss >= 4.2.2</echo>
   </target>
-
   <target name="patch404" description="Patch a JBoss 4.0.4 for use by Nuxeo-EP (deprecated : no more 4.0.4 compatibility)">
     <echo>Jboss 4.0.4 is not supported anymore, user Jboss >= 4.2.2</echo>
   </target>
-
-  <target name="patch" depends="setproperties,patch-unix,patch-windows" description="Patch a JBoss 4.2.x for use by Nuxeo-EP" />
-  <target name="patch-unix" if="osfamily-unix">
-    <echo message="Running maven script ${pom.file}" />
-    <exec executable="mvn" failonerror="true">
-      <arg value="-f" />
-      <arg value="${pom.file}" />
-      <arg value="-Djboss.dir=${jboss.home}" />
-      <arg value="-Dnuxeo.jboss.jmx.protocol=${nuxeo.jboss.jmx.protocol}" />
-      <arg value="-Dnuxeo.jboss.jmx.http.hostname=${nuxeo.jboss.jmx.http.hostname}" />
-      <arg value="-Dnuxeo.jboss.jmx.http.port=${nuxeo.jboss.jmx.http.port}" />
-      <arg value="clean" />
-      <arg value="package" />
-      <arg value="${mvn.profile}" />
-      <arg value="${mvn.opts}" />
-    </exec>
-  </target>
-  <target name="patch-windows" if="osfamily-windows">
-    <echo message="Running maven script ${pom.file}" />
-    <exec executable="cmd" failonerror="true">
-      <arg value="/c" />
-      <arg value="mvn.bat" />
-      <arg value="-f" />
-      <arg value="${pom.file}" />
-      <arg value="-Djboss.dir=${jboss.home}" />
-      <arg value="-Dnuxeo.jboss.jmx.protocol=${nuxeo.jboss.jmx.protocol}" />
-      <arg value="-Dnuxeo.jboss.jmx.http.hostname=${nuxeo.jboss.jmx.http.hostname}" />
-      <arg value="-Dnuxeo.jboss.jmx.http.port=${nuxeo.jboss.jmx.http.port}" />
-      <arg value="clean" />
-      <arg value="package" />
-      <arg value="${mvn.profile}" />
-      <arg value="${mvn.opts}" />
-    </exec>
+  <target name="patch" description="Patch a JBoss 4.2.x for use by Nuxeo-EP">
+    <ant antfile="nuxeo-distribution/nuxeo-distribution-jboss/build.xml" target="patch">
+      <property name="basedir" value="nuxeo-distribution/nuxeo-distribution-jboss" />
+    </ant>
   </target>
 
   <target name="copy-2parts" description="Copy Nuxeo-EP in two parts">
@@ -227,6 +195,56 @@
     <mkdir dir="${jboss.nuxeo.ear}" />
     <copy todir="${jboss.nuxeo.ear}">
       <fileset dir="${nuxeo.ear.build}" />
+    </copy>
+  </target>
+
+  <!-- Deprecated. TODO: JC. Removed when NXBT-57 is resolved -->
+  <target name="copy-postgresql" depends="setproperties" description="Deploy default postresql config">
+    <property name="postgresql.config" value="${nuxeo.ear.root}/postgresql-setup" />
+    <copy todir="${jboss.nuxeo.ear}/config" failonerror="false" overwrite="true">
+      <fileset file="${basedir}/${postgresql.config}/config/*.xml" />
+      <fileset file="${basedir}/${postgresql.config}/config/*.properties" />
+    </copy>
+    <copy todir="${jboss.nuxeo.ear}/datasources" failonerror="false" overwrite="true">
+      <fileset file="${basedir}/${postgresql.config}/datasources/*.xml" />
+    </copy>
+    <copy todir="${jboss.lib}" failonerror="false" overwrite="true">
+      <fileset file="${nuxeo.ear.root}/target/postgresql-jdbc-lib/*.jar" />
+    </copy>
+  </target>
+
+  <target name="copy-oracle" depends="setproperties">
+    <property name="oracle.config" value="${nuxeo.ear.root}/oracle-setup" />
+    <copy todir="${jboss.nuxeo.ear}/config" failonerror="false" overwrite="true">
+      <fileset file="${basedir}/${oracle.config}/config/*.xml" />
+      <fileset file="${basedir}/${oracle.config}/config/*.properties" />
+    </copy>
+    <copy todir="${jboss.nuxeo.ear}/datasources" failonerror="false" overwrite="true">
+      <fileset file="${basedir}/${oracle.config}/datasources/*.xml" />
+      <fileset file="${basedir}/${oracle.config}/datasources/*.properties" />
+    </copy>
+    <copy todir="${jboss.lib}" failonerror="false" overwrite="true">
+      <fileset file="${basedir}/${oracle.config}/lib/*.jar" />
+    </copy>
+  </target>
+
+  <!-- Deprecated. TODO: JC. Removed when NXBT-57 is resolved -->
+  <target name="copy-derby" depends="setproperties" description="Deprecated. Deploy default derby config">
+    <property name="derby.config" value="${nuxeo.ear.root}/derby-setup" />
+    <copy todir="${jboss.nuxeo.ear}/config" failonerror="false" overwrite="true">
+      <fileset file="${basedir}/${derby.config}/config/*.xml" />
+      <fileset file="${basedir}/${derby.config}/config/*.properties" />
+    </copy>
+    <copy todir="${jboss.nuxeo.ear}/datasources" failonerror="false" overwrite="true">
+      <fileset file="${basedir}/${derby.config}/datasources/*.xml" />
+    </copy>
+    <!-- XXX: find a way not to depend on the version number of nxsearch compass -->
+    <copy todir="${jboss.nuxeo.ear}/system/nuxeo-platform-search-compass-plugin-5.1.7-SNAPSHOT.jar" failonerror="false" overwrite="true">
+      <fileset file="${basedir}/${derby.config}/compass.cfg.xml" />
+    </copy>
+    <!-- TODO: maven config to get derby lib -->
+    <copy todir="${jboss.deploy}/lib" failonerror="false" overwrite="true">
+      <fileset file="${nuxeo.ear.root}/target/derby-jdbc-lib/*.jar" />
     </copy>
   </target>
   <target name="copy-lib" depends="clean-lib,copy-lib-unix,copy-lib-windows" description="Copy Nuxeo libs in jboss" />
@@ -266,35 +284,6 @@
       <arg value="-N" />
       <arg value="${mvn.opts}" />
     </exec>
-  </target>
-
-  <target name="copy-postgresql" depends="setproperties" description="Deploy default postresql config">
-    <property name="postgresql.config" value="${nuxeo.ear.root}/postgresql-setup" />
-    <copy todir="${jboss.nuxeo.ear}/config" failonerror="false" overwrite="true">
-      <fileset file="${basedir}/${postgresql.config}/config/*.xml" />
-      <fileset file="${basedir}/${postgresql.config}/config/*.properties" />
-    </copy>
-    <copy todir="${jboss.nuxeo.ear}/datasources" failonerror="false" overwrite="true">
-      <fileset file="${basedir}/${postgresql.config}/datasources/*.xml" />
-    </copy>
-    <copy todir="${jboss.lib}" failonerror="false" overwrite="true">
-      <fileset file="${nuxeo.ear.root}/target/postgresql-jdbc-lib/*.jar" />
-    </copy>
-  </target>
-
-  <target name="copy-oracle" depends="setproperties">
-    <property name="oracle.config" value="${nuxeo.ear.root}/oracle-setup" />
-    <copy todir="${jboss.nuxeo.ear}/config" failonerror="false" overwrite="true">
-      <fileset file="${basedir}/${oracle.config}/config/*.xml" />
-      <fileset file="${basedir}/${oracle.config}/config/*.properties" />
-    </copy>
-    <copy todir="${jboss.nuxeo.ear}/datasources" failonerror="false" overwrite="true">
-      <fileset file="${basedir}/${oracle.config}/datasources/*.xml" />
-      <fileset file="${basedir}/${oracle.config}/datasources/*.properties" />
-    </copy>
-    <copy todir="${jboss.lib}" failonerror="false" overwrite="true">
-      <fileset file="${basedir}/${oracle.config}/lib/*.jar" />
-    </copy>
   </target>
 
   <target name="test" depends="test-unix,test-windows" description="Run tests" />
