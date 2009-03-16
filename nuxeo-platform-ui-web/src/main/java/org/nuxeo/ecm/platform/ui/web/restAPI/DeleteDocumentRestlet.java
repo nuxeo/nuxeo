@@ -32,7 +32,7 @@ import org.restlet.data.Response;
 
 /**
  * This RESTLET allows to delete documents
- * 
+ *
  * @author jthimonier
  */
 public class DeleteDocumentRestlet extends BaseStatelessNuxeoRestlet implements
