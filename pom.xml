@@ -25,22 +25,19 @@
       </modules>
     </profile>
     <profile>
-<<<<<<< local
-      <id>shell</id>
-=======
       <id>nuxeo-ep-jboss</id>
->>>>>>> other
       <modules>
-<<<<<<< local
-        <module>nuxeo-distribution-base</module>
-        <module>nuxeo-distribution-shell</module>
-=======
         <module>nuxeo-platform-ear</module>
         <module>nuxeo-distribution-jboss</module>
->>>>>>> other
       </modules>
     </profile>
-<<<<<<< local
+    <profile>
+      <id>shell</id>
+      <modules>
+        <module>nuxeo-distribution-base</module>
+        <module>nuxeo-distribution-shell</module>
+      </modules>
+    </profile>
     <profile>
       <id>jetty</id>
       <modules>
@@ -85,8 +82,6 @@
         <module>nuxeo-distribution-tomcat</module>
       </modules>
     </profile>
-=======
->>>>>>> other
   </profiles>
 
 </project>
