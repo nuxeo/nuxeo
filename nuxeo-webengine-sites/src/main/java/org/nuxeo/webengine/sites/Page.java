@@ -35,9 +35,11 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.rest.DocumentObject;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
+import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.Template;
 import org.nuxeo.ecm.webengine.model.WebObject;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.webengine.utils.SiteUtils;
 import org.nuxeo.webengine.utils.WebCommentUtils;
 
@@ -126,9 +128,15 @@ public class Page extends DocumentObject {
         // add contextual links
         root.put(CONTEXTUAL_LINKS, SiteUtils.getInstance().getContextualLinks(
                 doc));
+        MimetypeRegistry mimetypeService = null;
+        try {
+            mimetypeService = Framework.getService(MimetypeRegistry.class);
+        } catch (Exception e) {
+            log.error("Unable to get mimetype service : " + e.getMessage());
+        }
+        root.put("mimetypeService", mimetypeService);
         return root;
 
     }
-
 
 }

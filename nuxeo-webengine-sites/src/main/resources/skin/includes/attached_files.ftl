@@ -5,9 +5,10 @@
  
    var attachedFile=document.getElementById('file_to_add');
    if("" == attachedFile.value) {
+     alert('You need to browse for a document !');
      return false;
    }
-   return true;     
+   document.add_file.submit();   
  }
  </script>
 
@@ -18,8 +19,8 @@
     <#if (files?size != 0)>
       <#list files as file>
         <tr><td>
-      <@compress single_line=true>
-        <a href="${This.path}/@file?property=files:files/item[${file_index}]/file">${file.filename}(${file.file.length}Ko)</a>
+      <@compress single_line=true>        
+        <img src="${skinPath}/images/${mimetypeService.getMimetypeEntryByMimeType(file.file.mimeType).iconPath}"/><a href="${This.path}/@file?property=files:files/item[${file_index}]/file">${file.filename}(${file.file.length}Ko)</a>
             <#if (base.canWrite)>
               - <a href="${This.path}/@file/delete?property=files:files/item[${file_index}]">Remove</a>
             </#if>
@@ -30,11 +31,12 @@
   <table> 
   
   <#if base.canWrite>
-    <form id="add_file" action="${This.path}/@file" accept-charset="utf-8" method="POST" enctype="multipart/form-data" onsubmit="return validateAttachedFile()">
+    <form id="add_file" name="add_file" action="${This.path}/@file" accept-charset="utf-8" method="POST" enctype="multipart/form-data" >
       <table><tr>
         <td>
-          <input type="file" name="files:files" value="" id="file_to_add" required="true">
-          <input type="submit" name="attach_file" value="Attach" id="attach_file" >
+          <a href="${This.path}" onclick="return validateAttachedFile()"><img src="${skinPath}/images/action_add.gif" alt="${Context.getMessage("title.webapp.attached.files.attach.action")}" title="${Context.getMessage("title.webapp.attached.files.attach.action")}"></a>
+
+          <input type="file" name="files:files" value="" id="file_to_add" required="true"/>
         </td>      
       </tr></table> 
     </form>
