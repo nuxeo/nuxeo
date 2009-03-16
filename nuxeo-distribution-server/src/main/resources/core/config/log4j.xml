@@ -12,7 +12,7 @@
   </appender>
 
   <appender name="FILE" class="org.apache.log4j.RollingFileAppender">
-    <param name="File" value="log/nxsherver.log" />
+    <param name="File" value="log/nxserver.log" />
     <param name="Append" value="true" />
     <!--    <param name="MaxFileSize" value="10MB" />-->
     <param name="MaxBackupIndex" value="3" />
