@@ -41,7 +41,7 @@ public class LocalClientTest extends RepositoryTestCase {
     private CoreSession client;
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         deployContrib(CoreJCRConnectorTestConstants.TESTS_BUNDLE,
                 "LifeCycleService.xml");
@@ -56,7 +56,7 @@ public class LocalClientTest extends RepositoryTestCase {
     }
 
     @Override
-    protected void tearDown() throws Exception {
+    public void tearDown() throws Exception {
         client.cancel();
 
         CoreInstance.getInstance().close(client);

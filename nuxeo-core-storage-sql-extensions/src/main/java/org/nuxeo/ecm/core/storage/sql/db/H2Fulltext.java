@@ -56,18 +56,18 @@ public class H2Fulltext {
     private static final Map<String, IndexWriter> indexWriters = new ConcurrentHashMap<String, IndexWriter>();
 
     private static final String FT_SCHEMA = "NXFT";
-
     private static final String FT_TABLE = "NXFT.INDEXES";
 
     private static final String PREFIX = "NXFT_";
 
     private static final String FIELD_SCHEMA = "SCHEMA";
-
     private static final String FIELD_TABLE = "TABLE";
-
     private static final String FIELD_KEY = "KEY";
-
     private static final String FIELD_TEXT = "TEXT";
+
+    // Utility class.
+    private H2Fulltext() {
+    }
 
     /**
      * Initializes fulltext search functionality for this database. This adds
@@ -313,12 +313,11 @@ public class H2Fulltext {
         rs.close();
 
         // find primary key type
-        int primaryKeyType = 0;
         rs = meta.getColumns(null, schema, table, primaryKeyName);
         if (!rs.next()) {
             throw new SQLException("Could not find primary key");
         }
-        primaryKeyType = rs.getInt("DATA_TYPE");
+        int primaryKeyType = rs.getInt("DATA_TYPE");
         rs.close();
 
         return primaryKeyType;
@@ -347,8 +346,7 @@ public class H2Fulltext {
 
     private static IndexWriter getIndexWriter(String indexPath, String analyzer)
             throws SQLException {
-        IndexWriter indexWriter;
-        indexWriter = indexWriters.get(indexPath);
+        IndexWriter indexWriter = indexWriters.get(indexPath);
         if (indexWriter == null) {
             synchronized (indexWriters) {
                 if (!indexWriters.containsKey(indexPath)) {

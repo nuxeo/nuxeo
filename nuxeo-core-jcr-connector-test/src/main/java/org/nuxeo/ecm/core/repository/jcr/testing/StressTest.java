@@ -44,7 +44,7 @@ public class StressTest extends RepositoryTestCase {
     }
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         deployContrib(CoreJCRConnectorTestConstants.BUNDLE,
                 "CoreTestExtensions.xml");
@@ -60,7 +60,7 @@ public class StressTest extends RepositoryTestCase {
     }
 
     @Override
-    protected void tearDown() throws Exception {
+    public void tearDown() throws Exception {
         parent.remove();
         session.close();
         doc = null;

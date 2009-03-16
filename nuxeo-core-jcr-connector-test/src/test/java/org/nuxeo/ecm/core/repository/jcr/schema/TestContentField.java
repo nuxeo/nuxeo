@@ -39,7 +39,7 @@ public class TestContentField extends RepositoryTestCase {
     }
 
     @Override
-    protected void tearDown() throws Exception {
+    public void tearDown() throws Exception {
         super.tearDown();
         session = null;
     }

@@ -31,14 +31,14 @@ public class TestTypeManager extends NXRuntimeTestCase {
     SchemaManagerImpl typeManager;
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.schema");
         typeManager = (SchemaManagerImpl) getTypeManager();
     }
 
     @Override
-    protected void tearDown() throws Exception {
+    public void tearDown() throws Exception {
         typeManager = null;
         super.tearDown();
     }

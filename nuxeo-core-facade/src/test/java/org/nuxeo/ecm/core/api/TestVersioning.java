@@ -45,7 +45,7 @@ public class TestVersioning extends NXRuntimeTestCase {
     CoreSession coreSession;
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         deployContrib(Constants.CORE_BUNDLE,
                 "OSGI-INF/CoreService.xml");
@@ -80,7 +80,7 @@ public class TestVersioning extends NXRuntimeTestCase {
     }
 
     @Override
-    protected void tearDown() throws Exception {
+    public void tearDown() throws Exception {
         CoreInstance.getInstance().close(coreSession);
         super.tearDown();
     }

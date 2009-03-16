@@ -39,7 +39,7 @@ public class TestACP extends RepositoryTestCase {
     Document root;
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         // creating the session
         session = getRepository().getSession(null);

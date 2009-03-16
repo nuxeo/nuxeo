@@ -49,7 +49,7 @@ public class TestPropertyModel extends RepositoryOSGITestCase {
     DocumentModel doc;
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
 
         deployContrib(CoreJCRConnectorTestConstants.TESTS_BUNDLE,

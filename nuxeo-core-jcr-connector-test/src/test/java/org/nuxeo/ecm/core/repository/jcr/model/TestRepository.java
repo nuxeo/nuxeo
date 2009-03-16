@@ -46,7 +46,7 @@ public class TestRepository extends RepositoryTestCase {
     Session session;
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         deployContrib(CoreJCRConnectorTestConstants.BUNDLE,
                 "CoreTestExtensions.xml");
@@ -64,7 +64,7 @@ public class TestRepository extends RepositoryTestCase {
     }
 
     @Override
-    protected void tearDown() throws Exception {
+    public void tearDown() throws Exception {
         doc.remove();
         session.close();
 

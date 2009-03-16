@@ -77,6 +77,7 @@ public class SimpleBlobHolder extends AbstractBlobHolder implements BlobHolder {
         return blobs;
     }
 
+    @Override
     protected String getBasePath() {
         return "";
     }

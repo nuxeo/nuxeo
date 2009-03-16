@@ -39,7 +39,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public abstract class RepositoryOSGITestCase extends NXRuntimeTestCase {
+public class RepositoryOSGITestCase extends NXRuntimeTestCase {
 
     public static final String REPOSITORY_NAME = "demo";
 
@@ -55,7 +55,7 @@ public abstract class RepositoryOSGITestCase extends NXRuntimeTestCase {
     }
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         // the core bundles
         deployBundle("org.nuxeo.ecm.core.schema");
@@ -68,7 +68,7 @@ public abstract class RepositoryOSGITestCase extends NXRuntimeTestCase {
     }
 
     @Override
-    protected void tearDown() throws Exception {
+    public void tearDown() throws Exception {
         releaseCoreSession();
         releaseRepository();
         super.tearDown();

@@ -51,7 +51,7 @@ public class TestBlob extends NXRuntimeTestCase {
     private byte[] blobContent;
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         url = Thread.currentThread().getContextClassLoader().getResource(
                 "test.blob");
@@ -63,7 +63,7 @@ public class TestBlob extends NXRuntimeTestCase {
     }
 
     @Override
-    protected void tearDown() throws Exception {
+    public void tearDown() throws Exception {
         blobContent = null;
         super.tearDown();
     }

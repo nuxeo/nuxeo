@@ -28,7 +28,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public abstract class RepositoryTestCase extends NXRuntimeTestCase {
+public class RepositoryTestCase extends NXRuntimeTestCase {
 
     private Repository repository;
 
@@ -40,7 +40,7 @@ public abstract class RepositoryTestCase extends NXRuntimeTestCase {
     }
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         // the core bundle
         deployContrib(CoreJCRConnectorTestConstants.CORE_BUNDLE,
@@ -57,7 +57,7 @@ public abstract class RepositoryTestCase extends NXRuntimeTestCase {
     }
 
     @Override
-    protected void tearDown() throws Exception {
+    public void tearDown() throws Exception {
         releaseRepository();
         super.tearDown();
     }

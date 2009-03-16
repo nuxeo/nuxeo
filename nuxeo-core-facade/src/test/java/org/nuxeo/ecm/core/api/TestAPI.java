@@ -62,7 +62,7 @@ public abstract class TestAPI extends TestConnection {
     protected final Random random = new Random(new Date().getTime());
 
     @Override
-    protected void tearDown() throws Exception {
+    public void tearDown() throws Exception {
         cleanUp(getRootDocument().getRef());
         closeSession();
         super.tearDown();

@@ -35,7 +35,7 @@ public class TestSession extends RepositoryTestCase {
     private Document root;
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         session = getRepository().getSession(null);
         root = session.getRootDocument();
@@ -43,7 +43,7 @@ public class TestSession extends RepositoryTestCase {
     }
 
     @Override
-    protected void tearDown() throws Exception {
+    public void tearDown() throws Exception {
         session.close();
         session = null;
         root = null;

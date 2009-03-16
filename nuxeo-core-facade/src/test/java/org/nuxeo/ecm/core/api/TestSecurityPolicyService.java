@@ -41,7 +41,7 @@ public class TestSecurityPolicyService extends NXRuntimeTestCase {
     private static final String REPO_NAME = "default";
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         deployBundle(Constants.SCHEMA_BUNDLE);
 
@@ -61,7 +61,7 @@ public class TestSecurityPolicyService extends NXRuntimeTestCase {
     }
 
     @Override
-    protected void tearDown() throws Exception {
+    public void tearDown() throws Exception {
         super.tearDown();
     }
 

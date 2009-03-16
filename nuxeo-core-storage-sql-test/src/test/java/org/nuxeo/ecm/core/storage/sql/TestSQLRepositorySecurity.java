@@ -47,7 +47,7 @@ public class TestSQLRepositorySecurity extends SQLRepositoryTestCase {
     }
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
                 "OSGI-INF/test-repo-core-types-contrib.xml");
@@ -55,7 +55,7 @@ public class TestSQLRepositorySecurity extends SQLRepositoryTestCase {
     }
 
     @Override
-    protected void tearDown() throws Exception {
+    public void tearDown() throws Exception {
         // session.cancel();
         closeSession();
         super.tearDown();

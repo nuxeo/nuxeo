@@ -49,7 +49,7 @@ public class TestLifeCycleService extends RepositoryTestCase {
     private LifeCycleService lifeCycleService;
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         deployContrib(CoreJCRConnectorTestConstants.TESTS_BUNDLE,
                 "LifeCycleService.xml");
@@ -61,7 +61,7 @@ public class TestLifeCycleService extends RepositoryTestCase {
     }
 
     @Override
-    protected void tearDown() throws Exception {
+    public void tearDown() throws Exception {
         lifeCycleService = null;
         session.cancel();
         super.tearDown();

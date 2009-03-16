@@ -61,7 +61,7 @@ public class TestProperty extends RepositoryTestCase {
     }
 
     @Override
-    protected void tearDown() throws Exception {
+    public void tearDown() throws Exception {
         doc.remove();
         session.close();
         session = null;

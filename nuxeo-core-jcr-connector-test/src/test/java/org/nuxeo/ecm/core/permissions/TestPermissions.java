@@ -36,7 +36,7 @@ public class TestPermissions extends RepositoryTestCase {
 //    IWorkspace workspaceBean;
 //
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         // creating the session
 //        Session session = RepositoryTestCase.getDemoRepository().getSession(new SessionContextImpl());

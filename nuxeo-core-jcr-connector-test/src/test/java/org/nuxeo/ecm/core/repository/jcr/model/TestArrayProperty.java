@@ -40,7 +40,7 @@ public class TestArrayProperty extends RepositoryTestCase {
     private Document dateDoc;
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         deployContrib(CoreJCRConnectorTestConstants.TESTS_BUNDLE,
                 "test-core-types.xml");

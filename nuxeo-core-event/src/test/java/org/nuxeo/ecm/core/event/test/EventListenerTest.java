@@ -43,7 +43,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 public class EventListenerTest extends NXRuntimeTestCase {
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.event");
     }

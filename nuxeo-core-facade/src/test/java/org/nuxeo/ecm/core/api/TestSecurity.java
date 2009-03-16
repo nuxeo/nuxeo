@@ -49,7 +49,7 @@ public class TestSecurity extends NXRuntimeTestCase {
     private CoreSession remote;
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         deployBundle(Constants.SCHEMA_BUNDLE);
         deployContrib(Constants.CORE_BUNDLE,
@@ -72,7 +72,7 @@ public class TestSecurity extends NXRuntimeTestCase {
     }
 
     @Override
-    protected void tearDown() throws Exception {
+    public void tearDown() throws Exception {
         CoreInstance.getInstance().close(remote);
         super.tearDown();
     }

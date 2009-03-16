@@ -35,7 +35,7 @@ import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryTestCase;
 public class TestSchema extends RepositoryTestCase {
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         deployContrib(CoreJCRConnectorTestConstants.BUNDLE,
                 "CoreTestExtensions.xml");
