@@ -16,8 +16,9 @@
  */
 
 
-package org.nuxeo.webengine.utils;
-import static org.nuxeo.webengine.utils.SiteUtilsConstants.*;
+package org.nuxeo.ecm.webengine.webcomments.utils;
+import static org.nuxeo.ecm.webengine.webcomments.utils.WebCommentsConstants.*;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -104,6 +105,23 @@ public class WebCommentUtils {
             throw new Exception("unable to get userManager");
         }
         return userManager;
+    }
+    /**
+     * Get all the moderators for the corresponding workspace
+     * */
+    public static ArrayList<String> getModerators(CoreSession session,
+            DocumentModel doc) throws Exception {
+        List<DocumentModel> parents = session.getParentDocuments(doc.getRef());
+        for (DocumentModel documentModel : parents) {
+            if (documentModel.getType().equals("Workspace")) {
+                // TO DO: test for groups eg. administrators
+                String[] moderators = documentModel.getACP().listUsernamesForPermission(
+                        "Moderate");
+                return new ArrayList<String>(Arrays.asList(moderators));
+            }
+
+        }
+        return new ArrayList<String>();
     }
 
 }

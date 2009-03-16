@@ -19,7 +19,13 @@
 
 package org.nuxeo.webengine.sites;
 
-import static org.nuxeo.webengine.utils.SiteUtilsConstants.*;
+import static org.nuxeo.webengine.utils.SiteUtilsConstants.COMMENTS;
+import static org.nuxeo.webengine.utils.SiteUtilsConstants.CONTEXTUAL_LINKS;
+import static org.nuxeo.webengine.utils.SiteUtilsConstants.LAST_PUBLISHED_PAGES;
+import static org.nuxeo.webengine.utils.SiteUtilsConstants.SITE_DESCRIPTION;
+import static org.nuxeo.webengine.utils.SiteUtilsConstants.SITE_NAME;
+import static org.nuxeo.webengine.utils.SiteUtilsConstants.WELCOME_TEXT;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
@@ -32,6 +38,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
+
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -50,8 +57,8 @@ import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
+import org.nuxeo.ecm.webengine.webcomments.utils.WebCommentUtils;
 import org.nuxeo.webengine.utils.SiteUtils;
-import org.nuxeo.webengine.utils.WebCommentUtils;
 
 @WebObject(type = "site", facets = { "Site" })
 @Produces("text/html; charset=UTF-8")

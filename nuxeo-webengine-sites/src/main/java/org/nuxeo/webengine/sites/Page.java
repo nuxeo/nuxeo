@@ -17,8 +17,13 @@
 
 package org.nuxeo.webengine.sites;
 
-import static org.nuxeo.webengine.utils.SiteUtilsConstants.*;
+import static org.nuxeo.webengine.utils.SiteUtilsConstants.CONTEXTUAL_LINKS;
+import static org.nuxeo.webengine.utils.SiteUtilsConstants.LAST_PUBLISHED_PAGES;
+import static org.nuxeo.webengine.utils.SiteUtilsConstants.SITE_DESCRIPTION;
+import static org.nuxeo.webengine.utils.SiteUtilsConstants.SITE_NAME;
+import static org.nuxeo.webengine.utils.SiteUtilsConstants.WELCOME_TEXT;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,13 +40,14 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.rest.DocumentObject;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
+import org.nuxeo.ecm.platform.comment.api.CommentableDocument;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.Template;
 import org.nuxeo.ecm.webengine.model.WebObject;
+import org.nuxeo.ecm.webengine.webcomments.utils.WebCommentUtils;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.webengine.utils.SiteUtils;
-import org.nuxeo.webengine.utils.WebCommentUtils;
 
 /**
  * @author stan
@@ -139,4 +145,43 @@ public class Page extends DocumentObject {
 
     }
 
+  @GET
+    @Path("publishedComments")
+    public List<DocumentModel> getPublishedComments() {
+
+        List<DocumentModel> publishedComments = new ArrayList<DocumentModel>();
+        try {
+            CommentManager commentManager = WebCommentUtils.getCommentManager();
+            for (DocumentModel doc : commentManager.getComments(this.getDocument())) {
+                if ("moderation_published".equals(doc.getCurrentLifeCycleState())) {
+                    publishedComments.add(doc);
+                }
+            }
+            return publishedComments;
+        } catch (Exception e) {
+            throw WebException.wrap("Failed to get all published comments", e);
+        }
+
+    }
+    
+    @GET
+    @Path("pendingComments")
+    public List<DocumentModel> getPendingComments() {
+
+        List<DocumentModel> pendingComments = new ArrayList<DocumentModel>();
+        try {
+            CommentManager commentManager = WebCommentUtils.getCommentManager();
+            for (DocumentModel doc : commentManager.getComments(this.getDocument())) {
+                if ("moderation_pending".equals(doc.getCurrentLifeCycleState())) {
+                    pendingComments.add(doc);
+                }
+            }
+            return pendingComments;
+        } catch (Exception e) {
+            throw WebException.wrap("Failed to get all pending comments", e);
+        }
+
+    }
+    
+    
 }

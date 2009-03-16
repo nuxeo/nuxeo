@@ -16,7 +16,10 @@
  */
 package org.nuxeo.webengine.utils;
 
-import static org.nuxeo.webengine.utils.SiteUtilsConstants.*;
+import static org.nuxeo.webengine.utils.SiteUtilsConstants.CONTEXTUAL_LINK;
+import static org.nuxeo.webengine.utils.SiteUtilsConstants.NUMBER_COMMENTS;
+import static org.nuxeo.webengine.utils.SiteUtilsConstants.WEBPAGE;
+import static org.nuxeo.webengine.utils.SiteUtilsConstants.WORKSPACE;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -24,6 +27,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -34,6 +38,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.WebContext;
+import org.nuxeo.ecm.webengine.webcomments.utils.WebCommentUtils;
 import org.nuxeo.webengine.sites.JsonAdapter;
 import org.nuxeo.webengine.sites.SiteHelper;
 
