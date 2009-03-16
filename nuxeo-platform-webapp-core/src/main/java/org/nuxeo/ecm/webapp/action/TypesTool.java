@@ -115,7 +115,9 @@ public class TypesTool implements Serializable {
 
 
     public Type getSelectedType() {
-        log.debug("Returning selected type with id: " + selectedType.getId());
+        if (selectedType != null) {
+            log.debug("Returning selected type with id: " + selectedType.getId());
+        }
         return selectedType;
     }
 
