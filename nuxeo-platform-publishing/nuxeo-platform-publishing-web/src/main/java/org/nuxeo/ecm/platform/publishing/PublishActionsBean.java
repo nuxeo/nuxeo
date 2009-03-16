@@ -58,6 +58,7 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.TypeService;
 import org.nuxeo.ecm.platform.actions.Action;
+import org.nuxeo.ecm.platform.publishing.api.DocumentWaitingValidationException;
 import org.nuxeo.ecm.platform.publishing.api.PublishingException;
 import org.nuxeo.ecm.platform.publishing.api.PublishingInformation;
 import org.nuxeo.ecm.platform.publishing.api.PublishingService;
@@ -683,7 +684,34 @@ public class PublishActionsBean implements PublishActions, Serializable {
     public String doPublish(DocumentModel section) throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
 
-        publishDocument(currentDocument, section);
+        boolean isPublished = false;
+        boolean isWaiting = false;
+        try {
+            publishingService.submitToPublication(currentDocument, section,
+                    currentUser);
+            isPublished = true;
+        } catch (DocumentWaitingValidationException e) {
+            isWaiting = true;
+        } catch (PublishingException e) {
+            throw new PublishingWebException(e);
+        }
+
+        if (isPublished) {
+            comment = null;
+            facesMessages.add(FacesMessage.SEVERITY_INFO,
+                    resourcesAccessor.getMessages().get("document_published"),
+                    resourcesAccessor.getMessages().get(
+                            currentDocument.getType()));
+        }
+
+        if (isWaiting) {
+            comment = null;
+            facesMessages.add(FacesMessage.SEVERITY_INFO,
+                    resourcesAccessor.getMessages().get(
+                            "document_submitted_for_publication"),
+                    resourcesAccessor.getMessages().get(
+                            currentDocument.getType()));
+        }
 
         return null;
     }
