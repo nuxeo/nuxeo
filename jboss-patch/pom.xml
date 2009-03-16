@@ -253,7 +253,6 @@
               <goal>run</goal>
             </goals>
           </execution>
-          <!-- can't remove it yet. See NXP-3208
           <execution>
             <id>jbossws-remove</id>
             <phase>generate-sources</phase>
@@ -262,11 +261,16 @@
             </goals>
             <configuration>
               <tasks>
-                <echo message="Deleting jbossws sar..." />
+                <echo message="Deleting Jboss WS stack..." />
                 <delete dir="${jboss.deploy}/jbossws.sar" />
+                <delete file="${jboss.lib}/jboss-jaxws-ext.jar" />
+                <delete file="${jboss.lib}/jboss-jaxws.jar" />
+                <delete file="${jboss.lib}/jboss-saaj.jar" />
+                <delete file="${jboss.lib}/jbossws-framework.jar" />
+                <delete file="${jboss.lib}/jbossws-jboss42.jar" />
               </tasks>
             </configuration>
-          </execution> -->
+          </execution>
           <execution>
             <id>patch-ear-deployer</id>
             <phase>process-resources</phase>
