@@ -9,7 +9,7 @@
   </parent>
   <groupId>org.nuxeo.ecm.platform</groupId>
   <artifactId>jboss-patch</artifactId>
-  <version>4.0.4.GA-SNAPSHOT</version>
+  <version>4.2.3.GA-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Nuxeo Platform: JBoss patch</name>
   <description>Nuxeo Platform: JBoss patch.</description>
