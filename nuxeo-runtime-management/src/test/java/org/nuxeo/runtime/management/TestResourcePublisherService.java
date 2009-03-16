@@ -75,7 +75,7 @@ public class TestResourcePublisherService extends ManagementTestCase {
         Set<String> shortcutsName = publisherService.getShortcutsName();
         assertNotNull(shortcutsName);
         assertEquals(5, shortcutsName.size());
-        assertEquals("dummy", shortcutsName.iterator().next());
+        assertTrue(shortcutsName.contains("dummy"));
     }
 
 }
