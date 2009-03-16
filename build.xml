@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="Nuxeo Distribution" default="deploy" basedir=".">
+<project name="Nuxeo Distribution" default="" basedir=".">
 
   <property file="build.properties" />
   <property name="mvn.opts" value="" />
@@ -33,47 +33,8 @@
     <os family="windows" />
   </condition>
 
-  <target name="deploy" depends="install,package,copy" description="Deploy Nuxeo-EP on jboss" />
-  <target name="deploy-2parts" depends="install,package-2parts,copy-2parts" description="Deploy Nuxeo-EP on two jboss" />
-  <target name="deploy-3parts" depends="install,package-3parts,copy-3parts" description="Deploy Nuxeo-EP on three jboss" />
-
-  <target name="clean" depends="clean-unix,clean-windows" description="Delete target directories" />
-  <target name="clean-unix" if="osfamily-unix">
-    <exec executable="mvn" failonerror="true">
-      <arg value="clean" />
-      <arg value="${mvn.opts}" />
-    </exec>
-  </target>
-  <target name="clean-windows" if="osfamily-windows">
-    <exec executable="cmd" failonerror="true">
-      <arg value="/c" />
-      <arg value="mvn.bat" />
-      <arg value="clean" />
-      <arg value="${mvn.opts}" />
-    </exec>
-  </target>
-
   <!-- backward compatibility -->
   <target name="undeploy" depends="jboss-clean" description="Undeploy Nuxeo-EP (deprecated : use jboss-clean instead)" />
-
-  <target name="install" depends="clean,install-unix,install-windows" description="Run mvn install" />
-  <target name="install-unix" if="osfamily-unix">
-    <exec executable="env" />
-    <exec executable="mvn" failonerror="true">
-      <arg value="install" />
-      <arg value="-Dmaven.test.skip=true" />
-      <arg value="${mvn.opts}" />
-    </exec>
-  </target>
-  <target name="install-windows" if="osfamily-windows">
-    <exec executable="cmd" failonerror="true">
-      <arg value="/c" />
-      <arg value="mvn.bat" />
-      <arg value="install" />
-      <arg value="-Dmaven.test.skip=true" />
-      <arg value="${mvn.opts}" />
-    </exec>
-  </target>
 
   <target name="package-2parts" description="Package Nuxeo-EP in two parts">
     <antcall target="package">
@@ -149,16 +110,16 @@
     <antcall target="patch405" />
   </target>
   <target name="patch405" description="Patch a JBoss 4.0.5 for use by Nuxeo-EP">
-    <ant antfile="nuxeo-distribution-jboss/build.xml" target="patch405" dir="nuxeo-distribution-jboss" />
+    <ant target="patch405" dir="nuxeo-distribution-jboss" />
   </target>
   <target name="patch405-2parts" description="Package Nuxeo-EP in two parts">
-    <ant antfile="nuxeo-distribution-jboss/build.xml" target="patch405-2parts" dir="nuxeo-distribution-jboss" />
+    <ant target="patch405-2parts" dir="nuxeo-distribution-jboss" />
   </target>
   <target name="patch405-3parts" description="Package Nuxeo-EP in three parts">
-    <ant antfile="nuxeo-distribution-jboss/build.xml" target="patch405-3parts" dir="nuxeo-distribution-jboss" />
+    <ant target="patch405-3parts" dir="nuxeo-distribution-jboss" />
   </target>
   <target name="patch404" description="Patch a JBoss 4.0.4 for use by Nuxeo-EP (deprecated : no more 4.0.4 compatibility)">
-    <ant antfile="nuxeo-distribution-jboss/build.xml" target="patch404" dir="nuxeo-distribution-jboss" />
+    <ant target="patch404" dir="nuxeo-distribution-jboss" />
   </target>
 
   <target name="copy-2parts" description="Copy Nuxeo-EP in two parts">
@@ -293,57 +254,6 @@
     <echo>Done: Don't forget to put derby library in ${jboss.lib}</echo>
     <echo>
     </echo>
-  </target>
-
-  <target name="test" depends="test-unix,test-windows" description="Run tests" />
-  <target name="test-unix" if="osfamily-unix">
-    <exec executable="mvn" failonerror="true">
-      <arg value="test" />
-      <arg value="${mvn.opts}" />
-    </exec>
-  </target>
-  <target name="test-windows" if="osfamily-windows">
-    <exec executable="cmd" failonerror="true">
-      <arg value="/c" />
-      <arg value="mvn.bat" />
-      <arg value="test" />
-      <arg value="${mvn.opts}" />
-    </exec>
-  </target>
-
-  <target name="idea" depends="idea-unix,idea-windows" description="Generate IntelliJ IDEA files" />
-  <target name="idea-unix" if="osfamily-unix">
-    <exec executable="mvn" failonerror="true">
-      <arg value="idea:idea" />
-      <arg value="${mvn.opts}" />
-    </exec>
-  </target>
-  <target name="idea-windows" if="osfamily-windows">
-    <exec executable="cmd" failonerror="true">
-      <arg value="/c" />
-      <arg value="mvn.bat" />
-      <arg value="idea:idea" />
-      <arg value="${mvn.opts}" />
-    </exec>
-  </target>
-
-  <target name="eclipse" depends="eclipse-unix,eclipse-windows" description="Generate Eclipse files" />
-  <target name="eclipse-unix" if="osfamily-unix">
-    <exec executable="mvn" failonerror="true">
-      <arg value="eclipse:clean" />
-      <arg value="eclipse:eclipse" />
-      <arg value="${mvn.opts}" />
-    </exec>
-    <exec executable="fixeclipse" failonerror="true" />
-  </target>
-  <target name="eclipse-windows" if="osfamily-windows">
-    <exec executable="cmd" failonerror="true">
-      <arg value="/c" />
-      <arg value="mvn.bat" />
-      <arg value="eclipse:clean" />
-      <arg value="eclipse:eclipse" />
-      <arg value="${mvn.opts}" />
-    </exec>
   </target>
 
 </project>
