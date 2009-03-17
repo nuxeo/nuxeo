@@ -110,6 +110,11 @@
       <artifactId>nuxeo-platform-content-template-manager</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>com.octo.captcha</groupId>
+      <artifactId>jcaptcha-all</artifactId>
+      <version>1.0-RC6</version>
+    </dependency> 
   </dependencies>
 
 </project>

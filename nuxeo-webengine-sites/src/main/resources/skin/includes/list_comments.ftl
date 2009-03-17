@@ -77,5 +77,10 @@
      </li>
    </ul>
 </div>
+
+		<#assign uuid = script('captcha/getCustomUUID.groovy') />
+		<input type="hidden" name="captcha_code" value="${uuid}">
+		<img src="${skinPath}/captcha/captcha.groovy?captcha=${uuid}&amp;lang=${Context.getProperty('lang')}" alt="Captcha">
+		
 </form>
 
