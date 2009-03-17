@@ -11,13 +11,18 @@
   <artifactId>nuxeo-platform-cache-server</artifactId>
   <name>Nuxeo Cache Service</name>
   <packaging>ejb</packaging>
-  <description>Nuxeo Enterprise Platform: Cache Server.</description>
+  <description>DEPRECATED - Nuxeo Enterprise Platform: Cache Server.</description>
 
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core</artifactId>
     </dependency>
+    <!-- DEPRECATED -->
+    <dependency>                                                                                                                                            
+      <groupId>org.nuxeo.ecm.core</groupId>                                                                                                                 
+      <artifactId>nuxeo-core-event-compat</artifactId>                                                                                                      
+    </dependency> 
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-api</artifactId>
