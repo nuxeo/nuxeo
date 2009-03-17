@@ -14,6 +14,7 @@
   <description>DEPRECATED - Nuxeo Enterprise Platform: Events Facade.</description>
 
   <dependencies>
+    <!-- NXP-3179 - DEPRECATED -->
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-events-api</artifactId>

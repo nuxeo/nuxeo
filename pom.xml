@@ -34,10 +34,6 @@
     <module>nuxeo-platform-audit-core</module>
     <module>nuxeo-platform-audit-facade</module>
     <module>nuxeo-platform-audit-search</module>
-    <module>nuxeo-platform-cache-api</module>
-    <module>nuxeo-platform-cache-client</module>
-    <module>nuxeo-platform-cache-jboss</module>
-    <module>nuxeo-platform-cache-web</module>
     <module>nuxeo-platform-commandline-executor</module>
     <module>nuxeo-platform-comment-api</module>
     <module>nuxeo-platform-comment</module>
@@ -52,9 +48,6 @@
     <module>nuxeo-platform-directory-multi</module>
     <module>nuxeo-platform-directory-types-contrib</module>
     <module>nuxeo-platform-dublincore</module>
-    <module>nuxeo-platform-events-api</module>
-    <module>nuxeo-platform-events-core</module>
-    <module>nuxeo-platform-events-facade</module>
     <module>nuxeo-platform-filemanager-core</module>
     <module>nuxeo-platform-filemanager-core-listener</module>
     <module>nuxeo-platform-filemanager-api</module>
@@ -64,7 +57,9 @@
     <module>nuxeo-platform-login</module>
     <module>nuxeo-platform-login-jboss</module>
     <module>nuxeo-platform-auth-web-jboss</module>
+    <!-- TODO JC NXP-3179 
     <module>nuxeo-platform-management</module>
+    -->
     <module>nuxeo-platform-mimetype-api</module>
     <module>nuxeo-platform-mimetype-core</module>
     <module>nuxeo-platform-mimetype-facade</module>
@@ -87,7 +82,9 @@
     <module>nuxeo-platform-scheduler-core</module>
     <module>nuxeo-platform-search-api</module>
     <module>nuxeo-platform-search-backend-core</module>
+    <!-- TODO JC NXP-3179 
     <module>nuxeo-platform-search-core</module>
+    -->
     <module>nuxeo-platform-search-facade</module>
     <module>nuxeo-platform-search-test</module>
     <module>nuxeo-platform-syndication</module>
@@ -135,6 +132,13 @@
     <module>nuxeo-platform-transform-compat</module>
     <module>nuxeo-platform-transform-core</module>
     <module>nuxeo-platform-transform-plugins</module>
+    <module>nuxeo-platform-cache-api</module>
+    <module>nuxeo-platform-cache-client</module>
+    <module>nuxeo-platform-cache-jboss</module>
+    <module>nuxeo-platform-cache-web</module>
+    <module>nuxeo-platform-events-api</module>
+    <module>nuxeo-platform-events-core</module>
+    <module>nuxeo-platform-events-facade</module>
   </modules>
 
   <dependencyManagement>

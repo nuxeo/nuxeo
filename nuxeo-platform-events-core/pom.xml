@@ -20,6 +20,12 @@
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-api</artifactId>
     </dependency>
+    <!-- NXP-3179 - DEPRECATED -->
+    <dependency>                                                                                                                                            
+      <groupId>org.nuxeo.ecm.core</groupId>                                                                                                                 
+      <artifactId>nuxeo-core-event-compat</artifactId>                                                                                                               
+    </dependency>
+    <!-- NXP-3179 - DEPRECATED -->
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-events-api</artifactId>
