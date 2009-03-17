@@ -1,6 +1,9 @@
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="" />
 <title>approbationReviewAbandon</title>
 </head>
 <body>
@@ -8,8 +11,12 @@
 <thead>
 <tr><td rowspan="1" colspan="3">approbationReviewAbandon</td></tr>
 </thead><tbody>
-<!--@Test groups:ApprobationReviewAbandon|dependsOnGroups:CreateNote-->
-<!--Identification-->
+<!--@Test groups:SerialReviewAbandon,off|depends:CreateNote-->
+<tr>
+	<td>setTimeout</td>
+	<td>120000</td>
+	<td></td>
+</tr>
 <tr>
 	<td>open</td>
 	<td>/nuxeo/logout</td>
@@ -23,6 +30,229 @@
 <tr>
 	<td>type</td>
 	<td>username</td>
+	<td>jdoe</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>jdoe1</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>//select[@class='langSelect']</td>
+	<td>label=English (United Kingdom)</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@class='langSubmit']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>You are logged as jdoe</td>
+	<td></td>
+</tr>
+<!--lancement de la revue-->
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Workflow</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//input[@id='startWorkflow:workflowDefinitionId:1']</td>
+	<td></td>
+</tr>
+<!-- life cycle unchanged -->
+<tr>
+	<td>click</td>
+	<td>//input[@id='startWorkflow:lifeCycleDestinationStateTransition:3']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Start']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Approval workflow</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementNotPresent</td>
+	<td>//input[@value='Start the workflow']</td>
+	<td></td>
+</tr>
+<!--verification de la mise a jour du tableau de bord-->
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Dashboard</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Approval workflow</td>
+	<td></td>
+</tr>
+<!--ajout intervenant bree-->
+<tr>
+	<td>clickAndWait</td>
+	<td>link=testNote1</td>
+	<td></td>
+</tr>
+<tr>
+	<td>typeKeys</td>
+	<td>//input[@name='addReviewers:nxl_add_workflow_task:nxw_actors_suggest']</td>
+	<td>bre</td>
+</tr>
+<tr>
+	<td>waitForCondition</td>
+	<td>selenium.browserbot.getCurrentWindow().document.getElementById('addReviewers:nxl_add_workflow_task:nxw_actors_suggestionBox').style.display != 'none'</td>
+	<td>10000</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='addReviewers:nxl_add_workflow_task:nxw_actors_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td>Bree Van de Kaamp</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//*[@id='addReviewers:nxl_add_workflow_task:nxw_actors_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td></td>
+</tr>
+<!-- wait for table to appear -->
+<tr>
+	<td>waitForCondition</td>
+	<td>selenium.browserbot.getCurrentWindow().document.getElementById('addReviewers:nxl_add_workflow_task:nxw_actors_list:0:nxw_actors_listItem') != null</td>
+	<td>10000</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@name='addReviewers:nxl_add_workflow_task:nxw_actors_suggest']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForCondition</td>
+	<td>selenium.browserbot.getCurrentWindow().document.getElementById('addReviewers:nxl_add_workflow_task:nxw_actors_suggestionBox').style.display == 'none'</td>
+	<td>10000</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>//select[@id='addReviewers:nxl_add_workflow_task:nxw_directive']</td>
+	<td>label=Diffusion</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//textarea[@id='addReviewers:nxl_add_workflow_task:nxw_comment']</td>
+	<td>Approval comment for bree</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Add']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Selected participant(s) successfully added to the workflow</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Approval comment for bree</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementNotPresent</td>
+	<td>link=Approve</td>
+	<td></td>
+</tr>
+<!--ajout intervenant jsmith-->
+<tr>
+	<td>typeKeys</td>
+	<td>//input[@name='addReviewers:nxl_add_workflow_task:nxw_actors_suggest']</td>
+	<td>jsmith</td>
+</tr>
+<tr>
+	<td>waitForCondition</td>
+	<td>selenium.browserbot.getCurrentWindow().document.getElementById('addReviewers:nxl_add_workflow_task:nxw_actors_suggestionBox').style.display != 'none'</td>
+	<td>10000</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='addReviewers:nxl_add_workflow_task:nxw_actors_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td>John Smith</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//*[@id='addReviewers:nxl_add_workflow_task:nxw_actors_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td></td>
+</tr>
+<!-- wait for table to appear -->
+<tr>
+	<td>waitForCondition</td>
+	<td>selenium.browserbot.getCurrentWindow().document.getElementById('addReviewers:nxl_add_workflow_task:nxw_actors_list:0:nxw_actors_listItem') != null</td>
+	<td>10000</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@name='addReviewers:nxl_add_workflow_task:nxw_actors_suggest']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForCondition</td>
+	<td>selenium.browserbot.getCurrentWindow().document.getElementById('addReviewers:nxl_add_workflow_task:nxw_actors_suggestionBox').style.display == 'none'</td>
+	<td>10000</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>//select[@id='addReviewers:nxl_add_workflow_task:nxw_directive']</td>
+	<td>label=Check</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//textarea[@id='addReviewers:nxl_add_workflow_task:nxw_comment']</td>
+	<td>Approval comment for jsmith</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Add']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Selected participant(s) successfully added to the workflow</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Approval comment for jsmith</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementNotPresent</td>
+	<td>link=Approve</td>
+	<td></td>
+</tr>
+<!--Verification de la lecture seule pour les niveaux inferieurs-->
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Log out</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/nuxeo/nxpath/default/default-domain/workspaces/testworskspace1/testfolder1/testnote1@view_documents</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>username</td>
 	<td>jsmith</td>
 </tr>
 <tr>
@@ -37,7 +267,7 @@
 </tr>
 <tr>
 	<td>select</td>
-	<td>//select[@class="langSelect"]</td>
+	<td>//select[@class='langSelect']</td>
 	<td>label=English (United Kingdom)</td>
 </tr>
 <tr>
@@ -50,45 +280,69 @@
 	<td>You are logged as jsmith</td>
 	<td></td>
 </tr>
-<!--lancement de la revue en parallele-->
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//div[@id='lock_unlock_button']//input</td>
+	<td></td>
+</tr>
 <tr>
 	<td>clickAndWait</td>
 	<td>link=Workflow</td>
 	<td></td>
 </tr>
 <tr>
-	<td>click</td>
-	<td>//table[@class="dataInput"]/tbody/tr/td[2]/span/table//tr[3]//input</td>
-	<td></td>
-</tr>
-<tr>
-	<td>waitForCondition</td>
-	<td>var value = selenium.getText('//table[@class="dataInput"]/tbody/tr[2]/td[1]'); value.match(/Destination/);</td>
-	<td>15000</td>
-</tr>
-<tr>
-	<td>click</td>
-	<td>//input[@value="approve"]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>click</td>
-	<td>//input[@value="workflowDocumentModificationNotAllowed"]</td>
+	<td>verifyElementNotPresent</td>
+	<td>//input[@value='Start the workflow']</td>
 	<td></td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>//input[@value="Start"]</td>
+	<td>link=Dashboard</td>
 	<td></td>
 </tr>
 <tr>
 	<td>verifyTextPresent</td>
-	<td>Approval workflow</td>
+	<td>Your dashboard is empty. There is no task that requires your intervention.</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Log out</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/nuxeo/nxpath/default/default-domain/workspaces/testworskspace1/testfolder1/testnote1@view_documents</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>bree</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>bree1</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>//select[@class='langSelect']</td>
+	<td>label=English (United Kingdom)</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@class='langSubmit']</td>
 	<td></td>
 </tr>
 <tr>
 	<td>verifyTextPresent</td>
-	<td>Modification not allowed</td>
+	<td>You are logged as bree</td>
 	<td></td>
 </tr>
 <tr>
@@ -96,15 +350,75 @@
 	<td>link=Modify</td>
 	<td></td>
 </tr>
-<!--vérification jsmith ajouté automatiquement à la feuille de route-->
 <tr>
-	<td>verifyElementPresent</td>
-	<td>//input[@value="Start the workflow"]</td>
+	<td>verifyElementNotPresent</td>
+	<td>//div[@id='lock_unlock_button']//input</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Workflow</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementNotPresent</td>
+	<td>//input[@value='Start the workflow']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Dashboard</td>
 	<td></td>
 </tr>
 <tr>
 	<td>verifyTextPresent</td>
-	<td>John Smith</td>
+	<td>Your dashboard is empty. There is no task that requires your intervention.</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Log out</td>
+	<td></td>
+</tr>
+<!--Passage au niveau suivant-->
+<tr>
+	<td>open</td>
+	<td>/nuxeo/nxpath/default/default-domain/workspaces/testworskspace1/testfolder1/testnote1@view_documents</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>jdoe</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>jdoe1</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>//select[@class='langSelect']</td>
+	<td>label=English (United Kingdom)</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@class='langSubmit']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>You are logged as jdoe</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Workflow</td>
 	<td></td>
 </tr>
 <tr>
@@ -113,16 +427,31 @@
 	<td></td>
 </tr>
 <tr>
-	<td>verifyElementNotPresent</td>
-	<td>link=Reject</td>
+	<td>clickAndWait</td>
+	<td>//input[@value='Start the workflow']</td>
 	<td></td>
 </tr>
 <tr>
-	<td>verifyElementNotPresent</td>
-	<td>link=Remove</td>
+	<td>type</td>
+	<td>//textarea[@id="reviewTasksTable:taskActionComment"]</td>
+	<td>ok for me</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Approve</td>
 	<td></td>
 </tr>
-<!--vérification de l'état du doc-->
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=Approve</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=Reject</td>
+	<td></td>
+</tr>
+<!--verification de l'etat du document-->
 <tr>
 	<td>clickAndWait</td>
 	<td>link=Summary</td>
@@ -134,219 +463,13 @@
 	<td></td>
 </tr>
 <tr>
-	<td>verifyTextNotPresent</td>
-	<td>workflow</td>
-	<td></td>
-</tr>
-<tr>
 	<td>verifyElementPresent</td>
-	<td>//div[@id="lock_unlock_button"]//input</td>
-	<td></td>
-</tr>
-<!--ajout intervenant bree-->
-<tr>
-	<td>clickAndWait</td>
-	<td>link=Workflow</td>
-	<td></td>
-</tr>
-<tr>
-	<td>type</td>
-	<td>//div[@class="tabsContent"]/div/div[2]//div[@class="boxBody"]//td[@class="labelField"]//input</td>
-	<td>bree</td>
-</tr>
-<tr>
-	<td>submitAndWait</td>
-	<td>//div[@class="tabsContent"]//form/</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyTextPresent</td>
-	<td>Bree Van de Kaamp</td>
-	<td></td>
-</tr>
-<tr>
-	<td>click</td>
-	<td>link=Add to selection</td>
-	<td></td>
-</tr>
-<tr>
-	<td>waitForCondition</td>
-	<td>var value = selenium.getText('//div[@class="tabsContent"]/div/div[2]//div[@class="boxBody"]//table[@class="rightsAddManager"]'); value.match(/Remove/);</td>
-	<td>15000</td>
-</tr>
-<tr>
-	<td>select</td>
-	<td>//table[@class="dataInput"]//tr[3]//select</td>
-	<td>label=Verification</td>
-</tr>
-<tr>
-	<td>type</td>
-	<td>//div[@class="tabsContent"]/div/div[2]//div[@class="boxBody"]//table//textarea</td>
-	<td>Approbation comment for bree</td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>//input[@value="Add"]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyTextPresent</td>
-	<td>Approbation comment for bree</td>
-	<td></td>
-</tr>
-<!--ajout intervenant jdoe-->
-<tr>
-	<td>type</td>
-	<td>//div[@class="tabsContent"]/div/div[2]//div[@class="boxBody"]//td[@class="labelField"]//input</td>
-	<td>jdoe</td>
-</tr>
-<tr>
-	<td>submitAndWait</td>
-	<td>//div[@class="tabsContent"]//form/</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyTextPresent</td>
-	<td>John Doe</td>
-	<td></td>
-</tr>
-<tr>
-	<td>click</td>
-	<td>link=Add to selection</td>
-	<td></td>
-</tr>
-<tr>
-	<td>waitForCondition</td>
-	<td>var value = selenium.getText('//div[@class="tabsContent"]/div/div[2]//div[@class="boxBody"]//table[@class="rightsAddManager"]'); value.match(/Remove/);</td>
-	<td>15000</td>
-</tr>
-<tr>
-	<td>select</td>
-	<td>//table[@class="dataInput"]//tr[3]//select</td>
-	<td>label=Validation</td>
-</tr>
-<tr>
-	<td>type</td>
-	<td>//div[@class="tabsContent"]/div/div[2]//div[@class="boxBody"]//table//textarea</td>
-	<td>Approbation comment for jdoe</td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>//input[@value="Add"]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyElementPresent</td>
-	<td>//input[@value="Start the workflow"]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyTextPresent</td>
-	<td>Approbation comment for jdoe</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyElementPresent</td>
-	<td>link=Remove</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyElementNotPresent</td>
-	<td>link=Approve</td>
-	<td></td>
-</tr>
-<!--Enregistrement de la liste des intervenants-->
-<tr>
-	<td>type</td>
-	<td>//div[@class="tabsContent"]//div[4]//form[2]//table[@class="dataInput"]//textarea</td>
-	<td>approbation review list</td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>//input[@value="Save the current workflow as a new participant list"]</td>
-	<td></td>
-</tr>
-<!--Vérifier que "parallel_reviewers_list" est bien dans la liste des listes d'intervenants-->
-<tr>
-	<td>verifySelectedLabel</td>
-	<td>//div[@class="tabsContent"]//div[4]//table[@class="dataInput"]//tr[1]//select</td>
-	<td>approbation review list</td>
-</tr>
-<!--vérification de l'interdiction des modifications pour jsmith-->
-<tr>
-	<td>verifyElementNotPresent</td>
-	<td>link=Modify</td>
-	<td></td>
-</tr>
-<!--Vérification de la lecture seule pour les niveaux inférieurs-->
-<tr>
-	<td>clickAndWait</td>
-	<td>link=Log out</td>
-	<td></td>
-</tr>
-<tr>
-	<td>open</td>
-	<td>/nuxeo/nxpath/default/default-domain/workspaces/testworskspace1/testfolder1/testnote1@view_documents</td>
-	<td></td>
-</tr>
-<tr>
-	<td>type</td>
-	<td>username</td>
-	<td>jdoe</td>
-</tr>
-<tr>
-	<td>type</td>
-	<td>password</td>
-	<td>jdoe1</td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>Submit</td>
-	<td></td>
-</tr>
-<tr>
-	<td>select</td>
-	<td>//select[@class="langSelect"]</td>
-	<td>label=English (United Kingdom)</td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>//input[@class='langSubmit']</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyTextPresent</td>
-	<td>You are logged as jdoe</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyElementNotPresent</td>
 	<td>link=Modify</td>
 	<td></td>
 </tr>
 <tr>
-	<td>verifyElementNotPresent</td>
-	<td>//div[@id="lock_unlock_button"]//input</td>
-	<td></td>
-</tr>
-<tr>
 	<td>clickAndWait</td>
-	<td>link=Workflow</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyElementNotPresent</td>
-	<td>//input[@value="Start the workflow"]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>link=Dashboard</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyTextPresent</td>
-	<td>Your dashboard is empty.</td>
+	<td>link=testFolder1</td>
 	<td></td>
 </tr>
 <tr>
@@ -354,77 +477,7 @@
 	<td>link=Log out</td>
 	<td></td>
 </tr>
-<tr>
-	<td>open</td>
-	<td>/nuxeo/nxpath/default/default-domain/workspaces/testworskspace1/testfolder1/testnote1@view_documents</td>
-	<td></td>
-</tr>
-<tr>
-	<td>type</td>
-	<td>username</td>
-	<td>bree</td>
-</tr>
-<tr>
-	<td>type</td>
-	<td>password</td>
-	<td>bree1</td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>Submit</td>
-	<td></td>
-</tr>
-<tr>
-	<td>select</td>
-	<td>//select[@class="langSelect"]</td>
-	<td>label=English (United Kingdom)</td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>//input[@class='langSubmit']</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyTextPresent</td>
-	<td>You are logged as bree</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyElementNotPresent</td>
-	<td>link=Modify</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyElementNotPresent</td>
-	<td>//div[@id="lock_unlock_button"]//input</td>
-	<td></td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>link=Workflow</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyElementNotPresent</td>
-	<td>//input[@value="Start the workflow"]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>link=Dashboard</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyTextPresent</td>
-	<td>Your dashboard is empty.</td>
-	<td></td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>link=Log out</td>
-	<td></td>
-</tr>
-<!--Passage au niveau suivant-->
+<!--verification des vues pour jsmith-->
 <tr>
 	<td>type</td>
 	<td>username</td>
@@ -442,7 +495,7 @@
 </tr>
 <tr>
 	<td>select</td>
-	<td>//select[@class="langSelect"]</td>
+	<td>//select[@class='langSelect']</td>
 	<td>label=English (United Kingdom)</td>
 </tr>
 <tr>
@@ -461,93 +514,17 @@
 	<td></td>
 </tr>
 <tr>
+	<td>verifyTextPresent</td>
+	<td>Approval comment for jsmith</td>
+	<td></td>
+</tr>
+<tr>
 	<td>clickAndWait</td>
 	<td>link=testNote1</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyElementNotPresent</td>
-	<td>link=Approve</td>
-	<td></td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>//input[@value="Start the workflow"]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>verifyElementPresent</td>
-	<td>link=Approve</td>
-	<td></td>
-</tr>
-<tr>
-	<td>type</td>
-	<td>//div[@class="tabsContent"]/div/div[3]//form//textarea</td>
-	<td>works fine for me</td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>link=Approve</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyElementNotPresent</td>
-	<td>link=Approve</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyElementNotPresent</td>
-	<td>link=Reject</td>
-	<td></td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>link=Log out</td>
-	<td></td>
-</tr>
-<!--vérification de l'interdiction des modifications pour jdoe-->
-<tr>
-	<td>type</td>
-	<td>username</td>
-	<td>jdoe</td>
-</tr>
-<tr>
-	<td>type</td>
-	<td>password</td>
-	<td>jdoe1</td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>Submit</td>
-	<td></td>
-</tr>
-<tr>
-	<td>select</td>
-	<td>//select[@class="langSelect"]</td>
-	<td>label=English (United Kingdom)</td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>//input[@class='langSubmit']</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyTextPresent</td>
-	<td>You are logged as jdoe</td>
-	<td></td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>link=Dashboard</td>
-	<td></td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>link=testNote1</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyElementNotPresent</td>
 	<td>link=Modify</td>
 	<td></td>
 </tr>
@@ -557,8 +534,8 @@
 	<td></td>
 </tr>
 <tr>
-	<td>verifyElementNotPresent</td>
-	<td>//div[@id="lock_unlock_button"]//input</td>
+	<td>verifyElementPresent</td>
+	<td>//div[@id='lock_unlock_button']//input</td>
 	<td></td>
 </tr>
 <tr>
@@ -567,36 +544,11 @@
 	<td></td>
 </tr>
 <tr>
-	<td>verifyElementPresent</td>
-	<td>link=Remove</td>
-	<td></td>
-</tr>
-<tr>
-	<td>type</td>
-	<td>//div[@class="tabsContent"]/div/div[3]//form//textarea</td>
-	<td>seems ok to me</td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>link=Approve</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyElementNotPresent</td>
-	<td>link=Reject</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyElementNotPresent</td>
-	<td>link=Approve</td>
-	<td></td>
-</tr>
-<tr>
 	<td>clickAndWait</td>
 	<td>link=Log out</td>
 	<td></td>
 </tr>
-<!--vérification de l'interdiction des modifications pour bree-->
+<!--verification des vues pour bree-->
 <tr>
 	<td>type</td>
 	<td>username</td>
@@ -614,7 +566,7 @@
 </tr>
 <tr>
 	<td>select</td>
-	<td>//select[@class="langSelect"]</td>
+	<td>//select[@class='langSelect']</td>
 	<td>label=English (United Kingdom)</td>
 </tr>
 <tr>
@@ -633,13 +585,13 @@
 	<td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>link=testNote1</td>
+	<td>verifyTextNotPresent</td>
+	<td>Approval comment for bree</td>
 	<td></td>
 </tr>
 <tr>
-	<td>verifyElementNotPresent</td>
-	<td>link=Modify</td>
+	<td>clickAndWait</td>
+	<td>link=testNote1</td>
 	<td></td>
 </tr>
 <tr>
@@ -649,7 +601,12 @@
 </tr>
 <tr>
 	<td>verifyElementNotPresent</td>
-	<td>//div[@id="lock_unlock_button"]//input</td>
+	<td>link=Modify</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementNotPresent</td>
+	<td>//div[@id='lock_unlock_button']//input</td>
 	<td></td>
 </tr>
 <tr>
@@ -659,19 +616,14 @@
 </tr>
 <!--abandon de la revue-->
 <tr>
-	<td>open</td>
-	<td>/nuxeo/nxpath/default/default-domain/workspaces/testworskspace1/testfolder1/testnote1@view_documents</td>
-	<td></td>
-</tr>
-<tr>
 	<td>type</td>
 	<td>username</td>
-	<td>jsmith</td>
+	<td>jdoe</td>
 </tr>
 <tr>
 	<td>type</td>
 	<td>password</td>
-	<td>jsmith1</td>
+	<td>jdoe1</td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
@@ -680,7 +632,7 @@
 </tr>
 <tr>
 	<td>select</td>
-	<td>//select[@class="langSelect"]</td>
+	<td>//select[@class='langSelect']</td>
 	<td>label=English (United Kingdom)</td>
 </tr>
 <tr>
@@ -690,7 +642,17 @@
 </tr>
 <tr>
 	<td>verifyTextPresent</td>
-	<td>You are logged as jsmith</td>
+	<td>You are logged as jdoe</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Dashboard</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=testNote1</td>
 	<td></td>
 </tr>
 <tr>
@@ -700,7 +662,7 @@
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>//input[@value="Abandon workflow"]</td>
+	<td>//input[@value='Abandon workflow']</td>
 	<td></td>
 </tr>
 <tr>
@@ -710,29 +672,18 @@
 </tr>
 <tr>
 	<td>type</td>
-	<td>//div[@class="tabsContent"]//div[5]/form//textarea</td>
-	<td>Abandoning approbation review for the first time</td>
+    <td>//textarea[@id='abandonProcess:userWorkflowComment']</td>
+	<td>Abandoning approval workflow</td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>//input[@value="Abandon workflow"]</td>
+	<td>//input[@value='Abandon workflow']</td>
 	<td></td>
 </tr>
-<!--vérification de la redirection vers l'onglet Résumé-->
-<tr>
-	<td>verifyTextPresent</td>
-	<td>Life cycle policy</td>
-	<td></td>
-</tr>
-<!--vérification de l'abandon-->
+<!--verification de l'abandon-->
 <tr>
 	<td>verifyElementPresent</td>
 	<td>link=Modify</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyElementPresent</td>
-	<td>//div[@id="lock_unlock_button"]//input</td>
 	<td></td>
 </tr>
 <tr>
@@ -758,6 +709,11 @@
 <tr>
 	<td>clickAndWait</td>
 	<td>link=testNote1</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Summary</td>
 	<td></td>
 </tr>
 <tr>

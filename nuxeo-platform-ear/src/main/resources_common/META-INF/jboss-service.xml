@@ -20,7 +20,7 @@
       </depends>
    </mbean>
 
-	<mbean code="org.nuxeo.runtime.jboss.osgi.JBossOSGiAdapter"
+   <mbean code="org.nuxeo.osgi.jboss.JBossOSGiAdapter"
 		name="nx:service=adapter">
 
 		<attribute name="SubscriptionList">

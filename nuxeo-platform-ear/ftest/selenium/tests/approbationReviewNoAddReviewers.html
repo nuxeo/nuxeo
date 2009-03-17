@@ -9,6 +9,11 @@
 <tr><td rowspan="1" colspan="3">approbationReviewNoAddReviewers</td></tr>
 </thead><tbody>
 <tr>
+	<td>setTimeout</td>
+	<td>120000</td>
+	<td></td>
+</tr>
+<tr>
 	<td>open</td>
 	<td>/nuxeo/logout</td>
 	<td></td>
@@ -35,7 +40,7 @@
 </tr>
 <tr>
 	<td>select</td>
-	<td>//select[@class="langSelect"]</td>
+	<td>//select[@class='langSelect']</td>
 	<td>label=English (United Kingdom)</td>
 </tr>
 <tr>
@@ -48,7 +53,7 @@
 	<td>You are logged as jsmith</td>
 	<td></td>
 </tr>
-<!--lancement de la revue en parallele-->
+<!--lancement de la revue-->
 <tr>
 	<td>clickAndWait</td>
 	<td>link=Workflow</td>
@@ -56,27 +61,18 @@
 </tr>
 <tr>
 	<td>click</td>
-	<td>//table[@class="dataInput"]/tbody/tr/td[2]/span/table//tr[3]//input</td>
+	<td>//input[@id='startWorkflow:workflowDefinitionId:1']</td>
 	<td></td>
 </tr>
-<tr>
-	<td>waitForCondition</td>
-	<td>var value = selenium.getText('//table[@class="dataInput"]/tbody/tr[2]/td[1]'); value.match(/Destination/);</td>
-	<td>15000</td>
-</tr>
+<!-- life cycle 'approved' -->
 <tr>
 	<td>click</td>
-	<td>//input[@value="approve"]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>click</td>
-	<td>//input[@value="workflowDocumentModificationNotAllowed"]</td>
+	<td>//input[@id='startWorkflow:lifeCycleDestinationStateTransition:0']</td>
 	<td></td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>//input[@value="Start"]</td>
+	<td>//input[@value='Start']</td>
 	<td></td>
 </tr>
 <tr>
@@ -85,16 +81,11 @@
 	<td></td>
 </tr>
 <tr>
-	<td>verifyTextPresent</td>
-	<td>Modification not allowed</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyElementNotPresent</td>
+	<td>verifyElementPresent</td>
 	<td>link=Modify</td>
 	<td></td>
 </tr>
-<!--Vérification jsmith sur liste d'intervenants-->
+<!--Verification liste d'intervenants-->
 <tr>
 	<td>verifyElementNotPresent</td>
 	<td>link=Approve</td>
@@ -105,7 +96,12 @@
 	<td>link=Reject</td>
 	<td></td>
 </tr>
-<!--verification de l'état du document-->
+<tr>
+	<td>verifyElementNotPresent</td>
+	<td>//input[@value='Start the workflow']</td>
+	<td></td>
+</tr>
+<!--verification de l'etat du document-->
 <tr>
 	<td>clickAndWait</td>
 	<td>link=Summary</td>
@@ -121,115 +117,205 @@
 	<td>Project</td>
 	<td></td>
 </tr>
-<!--jsmith ajoute intervenants bree, lbramard, jdoe-->
+<!--jsmith s'ajoute en intervenant -->
 <tr>
 	<td>clickAndWait</td>
 	<td>link=Workflow</td>
 	<td></td>
 </tr>
 <tr>
-	<td>type</td>
-	<td>//div[@class="tabsContent"]/div/div[2]//div[@class="boxBody"]//td[@class="labelField"]//input</td>
-	<td>bree</td>
+	<td>typeKeys</td>
+	<td>//input[@name='addReviewers:nxl_add_workflow_task:nxw_actors_suggest']</td>
+	<td>jsmith</td>
 </tr>
 <tr>
-	<td>submitAndWait</td>
-	<td>//div[@class="tabsContent"]//form/</td>
-	<td></td>
+	<td>waitForCondition</td>
+	<td>selenium.browserbot.getCurrentWindow().document.getElementById('addReviewers:nxl_add_workflow_task:nxw_actors_suggestionBox').style.display != 'none'</td>
+	<td>10000</td>
 </tr>
 <tr>
-	<td>verifyTextPresent</td>
-	<td>Bree Van de Kaamp</td>
-	<td></td>
+	<td>verifyText</td>
+	<td>//*[@id='addReviewers:nxl_add_workflow_task:nxw_actors_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td>John Smith</td>
 </tr>
 <tr>
 	<td>click</td>
-	<td>link=Add to selection</td>
+	<td>//*[@id='addReviewers:nxl_add_workflow_task:nxw_actors_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td></td>
+</tr>
+<!-- wait for table to appear -->
+<tr>
+	<td>waitForCondition</td>
+	<td>selenium.browserbot.getCurrentWindow().document.getElementById('addReviewers:nxl_add_workflow_task:nxw_actors_list:0:nxw_actors_listItem') != null</td>
+	<td>10000</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@name='addReviewers:nxl_add_workflow_task:nxw_actors_suggest']</td>
 	<td></td>
 </tr>
 <tr>
 	<td>waitForCondition</td>
-	<td>var value = selenium.getText('//div[@class="tabsContent"]/div/div[2]//div[@class="boxBody"]//table[@class="rightsAddManager"]'); value.match(/Remove/);</td>
-	<td>15000</td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>//input[@value="Add"]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyElementPresent</td>
-	<td>//input[@value="Start the workflow"]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyElementPresent</td>
-	<td>link=Remove</td>
-	<td></td>
-</tr>
-<tr>
-	<td>type</td>
-	<td>//div[@class="tabsContent"]/div/div[2]//div[@class="boxBody"]//td[@class="labelField"]//input</td>
-	<td>lbramard</td>
-</tr>
-<tr>
-	<td>submitAndWait</td>
-	<td>//div[@class="tabsContent"]//form/</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyTextPresent</td>
-	<td>Lucien Bramard</td>
-	<td></td>
-</tr>
-<tr>
-	<td>click</td>
-	<td>link=Add to selection</td>
-	<td></td>
-</tr>
-<tr>
-	<td>waitForCondition</td>
-	<td>var value = selenium.getText('//div[@class="tabsContent"]/div/div[2]//div[@class="boxBody"]//table[@class="rightsAddManager"]'); value.match(/Remove/);</td>
-	<td>15000</td>
-</tr>
-<tr>
-	<td>type</td>
-	<td>//div[@class="tabsContent"]/div/div[2]//div[@class="boxBody"]//td[@class="labelField"]//input</td>
-	<td>jdoe</td>
-</tr>
-<tr>
-	<td>submitAndWait</td>
-	<td>//div[@class="tabsContent"]//form/</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyTextPresent</td>
-	<td>John Doe</td>
-	<td></td>
-</tr>
-<tr>
-	<td>click</td>
-	<td>link=Add to selection</td>
-	<td></td>
-</tr>
-<tr>
-	<td>waitForCondition</td>
-	<td>var value = selenium.getText('//div[@class="tabsContent"]/div/div[2]//div[@class="boxBody"]//table[@class="rightsAddManager"]'); value.match(/Remove/);</td>
-	<td>15000</td>
+	<td>selenium.browserbot.getCurrentWindow().document.getElementById('addReviewers:nxl_add_workflow_task:nxw_actors_suggestionBox').style.display == 'none'</td>
+	<td>10000</td>
 </tr>
 <tr>
 	<td>select</td>
-	<td>//table[@class="dataInput"]//tr[3]//select</td>
+	<td>//select[@id='addReviewers:nxl_add_workflow_task:nxw_directive']</td>
 	<td>label=Verification</td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//div[@class="tabsContent"]/div/div[2]//div[@class="boxBody"]//table//textarea</td>
+	<td>//textarea[@id='addReviewers:nxl_add_workflow_task:nxw_comment']</td>
+	<td>Approval comment for jsmith</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Add']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Selected participant(s) successfully added to the workflow</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Approval comment for jsmith</td>
+	<td></td>
+</tr>
+<!--jsmith ajoute intervenants bree, lbramard, jdoe-->
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Add']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Value is required</td>
+	<td></td>
+</tr>
+<tr>
+	<td>typeKeys</td>
+	<td>//input[@name='addReviewers:nxl_add_workflow_task:nxw_actors_suggest']</td>
+	<td>bre</td>
+</tr>
+<tr>
+	<td>waitForCondition</td>
+	<td>selenium.browserbot.getCurrentWindow().document.getElementById('addReviewers:nxl_add_workflow_task:nxw_actors_suggestionBox').style.display != 'none'</td>
+	<td>10000</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='addReviewers:nxl_add_workflow_task:nxw_actors_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td>Bree Van de Kaamp</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//*[@id='addReviewers:nxl_add_workflow_task:nxw_actors_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td></td>
+</tr>
+<!-- wait for table to appear -->
+<tr>
+	<td>waitForCondition</td>
+	<td>selenium.browserbot.getCurrentWindow().document.getElementById('addReviewers:nxl_add_workflow_task:nxw_actors_list:0:nxw_actors_listItem') != null</td>
+	<td>10000</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@name='addReviewers:nxl_add_workflow_task:nxw_actors_suggest']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForCondition</td>
+	<td>selenium.browserbot.getCurrentWindow().document.getElementById('addReviewers:nxl_add_workflow_task:nxw_actors_suggestionBox').style.display == 'none'</td>
+	<td>10000</td>
+</tr>
+<tr>
+	<td>typeKeys</td>
+	<td>//input[@name='addReviewers:nxl_add_workflow_task:nxw_actors_suggest']</td>
+	<td>lbramard</td>
+</tr>
+<tr>
+	<td>waitForCondition</td>
+	<td>selenium.browserbot.getCurrentWindow().document.getElementById('addReviewers:nxl_add_workflow_task:nxw_actors_suggestionBox').style.display != 'none'</td>
+	<td>10000</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='addReviewers:nxl_add_workflow_task:nxw_actors_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td>Lucien Bramard</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//*[@id='addReviewers:nxl_add_workflow_task:nxw_actors_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td></td>
+</tr>
+<!-- wait for table to appear -->
+<tr>
+	<td>waitForCondition</td>
+	<td>selenium.browserbot.getCurrentWindow().document.getElementById('addReviewers:nxl_add_workflow_task:nxw_actors_list:0:nxw_actors_listItem') != null</td>
+	<td>10000</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@name='addReviewers:nxl_add_workflow_task:nxw_actors_suggest']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForCondition</td>
+	<td>selenium.browserbot.getCurrentWindow().document.getElementById('addReviewers:nxl_add_workflow_task:nxw_actors_suggestionBox').style.display == 'none'</td>
+	<td>10000</td>
+</tr>
+<tr>
+	<td>typeKeys</td>
+	<td>//input[@name='addReviewers:nxl_add_workflow_task:nxw_actors_suggest']</td>
+	<td>jdoe</td>
+</tr>
+<tr>
+	<td>waitForCondition</td>
+	<td>selenium.browserbot.getCurrentWindow().document.getElementById('addReviewers:nxl_add_workflow_task:nxw_actors_suggestionBox').style.display != 'none'</td>
+	<td>10000</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='addReviewers:nxl_add_workflow_task:nxw_actors_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td>John Doe</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//*[@id='addReviewers:nxl_add_workflow_task:nxw_actors_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td></td>
+</tr>
+<!-- wait for table to appear -->
+<tr>
+	<td>waitForCondition</td>
+	<td>selenium.browserbot.getCurrentWindow().document.getElementById('addReviewers:nxl_add_workflow_task:nxw_actors_list:0:nxw_actors_listItem') != null</td>
+	<td>10000</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@name='addReviewers:nxl_add_workflow_task:nxw_actors_suggest']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForCondition</td>
+	<td>selenium.browserbot.getCurrentWindow().document.getElementById('addReviewers:nxl_add_workflow_task:nxw_actors_suggestionBox').style.display == 'none'</td>
+	<td>10000</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//textarea[@id='addReviewers:nxl_add_workflow_task:nxw_comment']</td>
 	<td>Comment for the three new reviewers</td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>//input[@value="Add"]</td>
+	<td>//input[@value='Add']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Selected participant(s) successfully added to the workflow</td>
 	<td></td>
 </tr>
 <tr>
@@ -239,12 +325,12 @@
 </tr>
 <tr>
 	<td>verifyElementPresent</td>
-	<td>link=Remove</td>
+	<td>//a[@id='reviewTasksTable:removeParticipant_0']</td>
 	<td></td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>//input[@value="Start the workflow"]</td>
+	<td>//input[@value='Start the workflow']</td>
 	<td></td>
 </tr>
 <tr>
@@ -275,7 +361,7 @@
 </tr>
 <tr>
 	<td>select</td>
-	<td>//select[@class="langSelect"]</td>
+	<td>//select[@class='langSelect']</td>
 	<td>label=English (United Kingdom)</td>
 </tr>
 <tr>
@@ -346,7 +432,7 @@
 </tr>
 <tr>
 	<td>select</td>
-	<td>//select[@class="langSelect"]</td>
+	<td>//select[@class='langSelect']</td>
 	<td>label=English (United Kingdom)</td>
 </tr>
 <tr>
@@ -417,7 +503,7 @@
 </tr>
 <tr>
 	<td>select</td>
-	<td>//select[@class="langSelect"]</td>
+	<td>//select[@class='langSelect']</td>
 	<td>label=English (United Kingdom)</td>
 </tr>
 <tr>
@@ -488,7 +574,7 @@
 </tr>
 <tr>
 	<td>select</td>
-	<td>//select[@class="langSelect"]</td>
+	<td>//select[@class='langSelect']</td>
 	<td>label=English (United Kingdom)</td>
 </tr>
 <tr>
@@ -513,7 +599,13 @@
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>link=Remove</td>
+	<td>//a[@id='reviewTasksTable:removeParticipant_0']/img</td>
+	<td></td>
+</tr>
+<!-- missing translation -->
+<tr>
+	<td>assertConfirmation</td>
+	<td>Delete the task?</td>
 	<td></td>
 </tr>
 <tr>
@@ -524,23 +616,28 @@
 <!--abandon de la revue-->
 <tr>
 	<td>type</td>
-	<td>//div[@class="tabsContent"]//div[5]/form//textarea</td>
+    <td>//textarea[@id='abandonProcess:userWorkflowComment']</td>
 	<td>Abandoning approbation review for the third time</td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>//input[@value="Abandon workflow"]</td>
+	<td>//input[@value='Abandon workflow']</td>
 	<td></td>
 </tr>
-<!--vérification de l'abandon-->
+<!--verification de l'abandon-->
 <tr>
 	<td>verifyElementPresent</td>
 	<td>link=Modify</td>
 	<td></td>
 </tr>
 <tr>
+	<td>clickAndWait</td>
+	<td>link=Summary</td>
+	<td></td>
+</tr>
+<tr>
 	<td>verifyElementPresent</td>
-	<td>//div[@id="lock_unlock_button"]//input</td>
+	<td>//div[@id='lock_unlock_button']//input</td>
 	<td></td>
 </tr>
 <tr>

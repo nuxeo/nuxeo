@@ -1,10 +1,12 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-ecm</artifactId>
-    <version>5.1.7-SNAPSHOT</version>
+    <version>5.2-SNAPSHOT</version>
+    <relativePath>../../pom.xml</relativePath>
   </parent>
 
   <properties>
@@ -19,7 +21,6 @@
   <packaging>pom</packaging>
 
   <dependencies>
-
     <dependency>
       <groupId>org.codehaus.izpack</groupId>
       <artifactId>izpack-standalone-compiler</artifactId>
@@ -32,11 +33,9 @@
       <artifactId>plexus-utils</artifactId>
       <version>1.5.6</version>
     </dependency>
-
   </dependencies>
 
   <build>
-
     <finalName>nuxeo-ep-${project.version}-installer</finalName>
     <defaultGoal>package</defaultGoal>
 
@@ -59,10 +58,10 @@
                 <copy todir="${staging.dir}">
                   <fileset dir="${basedir}/src/izpack" />
                 </copy>
-                <unzip src="${nuxeo.zip}" dest="${staging.dir}/tmp"/>
+                <unzip src="${nuxeo.zip}" dest="${staging.dir}/tmp" />
                 <exec executable="./rename-nuxeo-ep.sh" failonerror="true">
-                  <arg value="${staging.dir}/tmp"/>
-                  <arg value="${staging.dir}/nuxeo-ep"/>
+                  <arg value="${staging.dir}/tmp" />
+                  <arg value="${staging.dir}/nuxeo-ep" />
                 </exec>
               </tasks>
             </configuration>
@@ -109,10 +108,60 @@
           </execution>
         </executions>
       </plugin>
-
     </plugins>
-
   </build>
 
+  <scm>
+    <connection>scm:hg:http://hg.nuxeo.org/nuxeo/nuxeo-distribution/nuxeo-distribution-izpack</connection>
+    <developerConnection>scm:hg:https://hg.nuxeo.org/nuxeo/nuxeo-distribution/nuxeo-distribution-izpack</developerConnection>
+    <url>http://hg.nuxeo.org/nuxeo/nuxeo-distribution/nuxeo-distribution-izpack/</url>
+  </scm>
 
+  <repositories>
+    <repository>
+      <id>public</id>
+      <url>http://maven.nuxeo.org/public</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>public-snapshot</id>
+      <url>http://maven.nuxeo.org/public-snapshot</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>public</id>
+      <url>http://maven.nuxeo.org/public</url>
+      <name>Nuxeo virtual release repository</name>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </pluginRepository>
+    <pluginRepository>
+      <id>public-snapshot</id>
+      <url>http://maven.nuxeo.org/public-snapshot</url>
+      <name>Nuxeo virtual snapshot repository</name>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </pluginRepository>
+  </pluginRepositories>
 </project>

@@ -32,7 +32,7 @@
 </tr>
 <tr>
 	<td>select</td>
-	<td>//select[@class="langSelect"]</td>
+	<td>//select[@class='langSelect']</td>
 	<td>label=English (United Kingdom)</td>
 </tr>
 <tr>
@@ -58,12 +58,12 @@
 <!--Recherdhe du groupe à modifier-->
 <tr>
 	<td>type</td>
-	<td>//input[@id="searchForm:searchText"]</td>
+	<td>//input[@id='searchForm:searchText']</td>
 	<td>Johns</td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>//input[@id="searchForm:searchButton"]</td>
+	<td>//input[@id='searchForm:searchButton']</td>
 	<td></td>
 </tr>
 <tr>
@@ -78,22 +78,33 @@
 </tr>
 <tr>
 	<td>verifyText</td>
-	<td>//tr[@class="rightsAddManager"]/td[2]//table//tr[1]/td[1]</td>
+	<td>//*[@id='editGroup:nxl_group:nxw_members_list:0:nxw_members_listItem']</td>
 	<td>Bree Van de Kaamp</td>
 </tr>
 <tr>
 	<td>click</td>
-	<td>xpath=//tr[@class="rightsAddManager"]/td[2]//table//tr[1]/td[2]/a</td>
-	<td>link=Remove from selection</td>
+	<td>editGroup:nxl_group:nxw_members_list:0:nxw_members_delete</td>
+	<td></td>
 </tr>
+<!-- wait for table item to disappear -->
 <tr>
 	<td>waitForCondition</td>
-	<td>selenium.page().bodyText().indexOf('Bree') == -1;</td>
-	<td>15000</td>
+	<td>selenium.browserbot.getCurrentWindow().document.getElementById('editGroup:nxl_group:nxw_members_list:2:nxw_members_listItem') == null</td>
+	<td>10000</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='editGroup:nxl_group:nxw_members_list:0:nxw_members_listItem']</td>
+	<td>John Doe</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='editGroup:nxl_group:nxw_members_list:1:nxw_members_listItem']</td>
+	<td>John Smith</td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>//input[@value="Save"]</td>
+	<td>//input[@value='Save']</td>
 	<td></td>
 </tr>
 <tr>
@@ -124,7 +135,7 @@
 </tr>
 <tr>
 	<td>select</td>
-	<td>//select[@class="langSelect"]</td>
+	<td>//select[@class='langSelect']</td>
 	<td>label=English (United Kingdom)</td>
 </tr>
 <tr>

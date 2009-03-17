@@ -1,6 +1,9 @@
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="" />
 <title>parallelReviewAddReviewers</title>
 </head>
 <body>
@@ -9,7 +12,12 @@
 <tr><td rowspan="1" colspan="3">parallelReviewAddReviewers</td></tr>
 </thead><tbody>
 <!--@Test groups:ParallelReviewAddReviewers,off|depends:ModifyNote-->
-<!--Identification-->
+<!-- to rewrite when NXP-3090 is done -->
+<tr>
+	<td>setTimeout</td>
+	<td>120000</td>
+	<td></td>
+</tr>
 <tr>
 	<td>open</td>
 	<td>/nuxeo/logout</td>
@@ -37,7 +45,7 @@
 </tr>
 <tr>
 	<td>select</td>
-	<td>//select[@class="langSelect"]</td>
+	<td>//select[@class='langSelect']</td>
 	<td>label=English (United Kingdom)</td>
 </tr>
 <tr>
@@ -58,17 +66,17 @@
 </tr>
 <tr>
 	<td>click</td>
-	<td>//table[@class="dataInput"]/tbody/tr/td[2]/span/table//tr[1]//input</td>
+	<td>//table[@class='dataInput']/tbody/tr/td[2]/span/table//tr[1]//input</td>
 	<td></td>
 </tr>
 <tr>
 	<td>click</td>
-	<td>//input[@value="workflowDocumentModificationNotAllowed"]</td>
+	<td>//input[@value='workflowDocumentModificationNotAllowed']</td>
 	<td></td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>//input[@value="Start"]</td>
+	<td>//input[@value='Start']</td>
 	<td></td>
 </tr>
 <tr>
@@ -88,7 +96,7 @@
 </tr>
 <tr>
 	<td>verifyElementNotPresent</td>
-	<td>//input[@value="Start the workflow"]</td>
+	<td>//input[@value='Start the workflow']</td>
 	<td></td>
 </tr>
 <!--vérification des droits de lectures des non-intervenants-->
@@ -119,7 +127,7 @@
 </tr>
 <tr>
 	<td>select</td>
-	<td>//select[@class="langSelect"]</td>
+	<td>//select[@class='langSelect']</td>
 	<td>label=English (United Kingdom)</td>
 </tr>
 <tr>
@@ -134,7 +142,7 @@
 </tr>
 <tr>
 	<td>verifyElementNotPresent</td>
-	<td>//div[@id="lock_unlock_button"]//input</td>
+	<td>//div[@id='lock_unlock_button']//input</td>
 	<td></td>
 </tr>
 <tr>
@@ -180,7 +188,7 @@
 </tr>
 <tr>
 	<td>select</td>
-	<td>//select[@class="langSelect"]</td>
+	<td>//select[@class='langSelect']</td>
 	<td>label=English (United Kingdom)</td>
 </tr>
 <tr>
@@ -200,17 +208,17 @@
 </tr>
 <tr>
 	<td>verifyVisible</td>
-	<td>//div[@class="tabsContent"]/div/div[2]//div[@class="boxBody"]//form</td>
+	<td>//div[@class='tabsContent']/div/div[2]//div[@class='boxBody']//form</td>
 	<td></td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//div[@class="tabsContent"]/div/div[2]//div[@class="boxBody"]//td[@class="labelField"]//input</td>
+	<td>//div[@class='tabsContent']/div/div[2]//div[@class='boxBody']//td[@class='labelField']//input</td>
 	<td>jsmith</td>
 </tr>
 <tr>
 	<td>submitAndWait</td>
-	<td>//div[@class="tabsContent"]//form/</td>
+	<td>//div[@class='tabsContent']//form/</td>
 	<td></td>
 </tr>
 <tr>
@@ -225,22 +233,22 @@
 </tr>
 <tr>
 	<td>waitForCondition</td>
-	<td>var value = selenium.getText('//div[@class="tabsContent"]/div/div[2]//div[@class="boxBody"]//table[@class="rightsAddManager"]'); value.match(/Remove/);</td>
+	<td>var value = selenium.getText('//div[@class='tabsContent']/div/div[2]//div[@class='boxBody']//table[@class='rightsAddManager']'); value.match(/Remove/);</td>
 	<td>15000</td>
 </tr>
 <tr>
 	<td>select</td>
-	<td>//table[@class="dataInput"]//tr[2]//select</td>
+	<td>//table[@class='dataInput']//tr[2]//select</td>
 	<td>label=Opinion</td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//div[@class="tabsContent"]/div/div[2]//div[@class="boxBody"]//table//textarea</td>
+	<td>//div[@class='tabsContent']/div/div[2]//div[@class='boxBody']//table//textarea</td>
 	<td>Comment 2 for jsmith</td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>//input[@value="Add"]</td>
+	<td>//input[@value='Add']</td>
 	<td></td>
 </tr>
 <tr>
@@ -251,18 +259,18 @@
 <!--Vérification que le bouton Démarre le workflow est disponible dès qu'il y a un intervenant-->
 <tr>
 	<td>verifyElementPresent</td>
-	<td>//input[@value="Start the workflow"]</td>
+	<td>//input[@value='Start the workflow']</td>
 	<td></td>
 </tr>
 <!--Ajout d'un deuxième intervenant-->
 <tr>
 	<td>type</td>
-	<td>//div[@class="tabsContent"]/div/div[2]//div[@class="boxBody"]//td[@class="labelField"]//input</td>
+	<td>//div[@class='tabsContent']/div/div[2]//div[@class='boxBody']//td[@class='labelField']//input</td>
 	<td>jdoe</td>
 </tr>
 <tr>
 	<td>submitAndWait</td>
-	<td>//div[@class="tabsContent"]//form/</td>
+	<td>//div[@class='tabsContent']//form/</td>
 	<td></td>
 </tr>
 <tr>
@@ -277,22 +285,22 @@
 </tr>
 <tr>
 	<td>waitForCondition</td>
-	<td>var value = selenium.getText('//div[@class="tabsContent"]/div/div[2]//div[@class="boxBody"]//table[@class="rightsAddManager"]'); value.match(/Remove/);</td>
+	<td>var value = selenium.getText('//div[@class='tabsContent']/div/div[2]//div[@class='boxBody']//table[@class='rightsAddManager']'); value.match(/Remove/);</td>
 	<td>15000</td>
 </tr>
 <tr>
 	<td>select</td>
-	<td>//table[@class="dataInput"]//tr[2]//select</td>
+	<td>//table[@class='dataInput']//tr[2]//select</td>
 	<td>label=Opinion</td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//div[@class="tabsContent"]/div/div[2]//div[@class="boxBody"]//table//textarea</td>
+	<td>//div[@class='tabsContent']/div/div[2]//div[@class='boxBody']//table//textarea</td>
 	<td>Comment 2 for jdoe</td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>//input[@value="Add"]</td>
+	<td>//input[@value='Add']</td>
 	<td></td>
 </tr>
 <tr>
@@ -303,7 +311,7 @@
 <!--Démarrage du workflow-->
 <tr>
 	<td>clickAndWait</td>
-	<td>//input[@value="Start the workflow"]</td>
+	<td>//input[@value='Start the workflow']</td>
 	<td></td>
 </tr>
 <!--vérification de l'état du doc-->
@@ -355,7 +363,7 @@
 </tr>
 <tr>
 	<td>select</td>
-	<td>//select[@class="langSelect"]</td>
+	<td>//select[@class='langSelect']</td>
 	<td>label=English (United Kingdom)</td>
 </tr>
 <tr>
@@ -385,7 +393,7 @@
 </tr>
 <tr>
 	<td>verifyElementNotPresent</td>
-	<td>//input[@value="Start the workflow"]</td>
+	<td>//input[@value='Start the workflow']</td>
 	<td></td>
 </tr>
 <tr>
@@ -400,7 +408,7 @@
 </tr>
 <tr>
 	<td>verifyNotVisible</td>
-	<td>//div[@class="tabsContent"]/div/div[2]//div[@class="boxBody"]//form</td>
+	<td>//div[@class='tabsContent']/div/div[2]//div[@class='boxBody']//form</td>
 	<td></td>
 </tr>
 <tr>
@@ -410,17 +418,17 @@
 </tr>
 <tr>
 	<td>waitForVisible</td>
-	<td>//div[@class="tabsContent"]/div/div[2]//div[@class="boxBody"]//form</td>
+	<td>//div[@class='tabsContent']/div/div[2]//div[@class='boxBody']//form</td>
 	<td></td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//div[@class="tabsContent"]/div/div[2]//div[@class="boxBody"]//td[@class="labelField"]//input</td>
+	<td>//div[@class='tabsContent']/div/div[2]//div[@class='boxBody']//td[@class='labelField']//input</td>
 	<td>bree</td>
 </tr>
 <tr>
 	<td>submitAndWait</td>
-	<td>//div[@class="tabsContent"]//form/</td>
+	<td>//div[@class='tabsContent']//form/</td>
 	<td></td>
 </tr>
 <tr>
@@ -435,22 +443,22 @@
 </tr>
 <tr>
 	<td>waitForCondition</td>
-	<td>var value = selenium.getText('//div[@class="tabsContent"]/div/div[2]//div[@class="boxBody"]//table[@class="rightsAddManager"]'); value.match(/Remove/);</td>
+	<td>var value = selenium.getText('//div[@class='tabsContent']/div/div[2]//div[@class='boxBody']//table[@class='rightsAddManager']'); value.match(/Remove/);</td>
 	<td>15000</td>
 </tr>
 <tr>
 	<td>select</td>
-	<td>//table[@class="dataInput"]//tr[2]//select</td>
+	<td>//table[@class='dataInput']//tr[2]//select</td>
 	<td>label=Diffusion</td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//div[@class="tabsContent"]/div/div[2]//div[@class="boxBody"]//table//textarea</td>
+	<td>//div[@class='tabsContent']/div/div[2]//div[@class='boxBody']//table//textarea</td>
 	<td>Comment 2 for bree</td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>//input[@value="Add"]</td>
+	<td>//input[@value='Add']</td>
 	<td></td>
 </tr>
 <tr>
@@ -486,7 +494,7 @@
 </tr>
 <tr>
 	<td>select</td>
-	<td>//select[@class="langSelect"]</td>
+	<td>//select[@class='langSelect']</td>
 	<td>label=English (United Kingdom)</td>
 </tr>
 <tr>
@@ -516,7 +524,7 @@
 </tr>
 <tr>
 	<td>verifyElementNotPresent</td>
-	<td>//input[@value="Start the workflow"]</td>
+	<td>//input[@value='Start the workflow']</td>
 	<td></td>
 </tr>
 <tr>
@@ -531,7 +539,7 @@
 </tr>
 <tr>
 	<td>verifyNotVisible</td>
-	<td>//div[@class="tabsContent"]/div/div[2]//div[@class="boxBody"]//form</td>
+	<td>//div[@class='tabsContent']/div/div[2]//div[@class='boxBody']//form</td>
 	<td></td>
 </tr>
 <tr>
@@ -541,17 +549,17 @@
 </tr>
 <tr>
 	<td>waitForVisible</td>
-	<td>//div[@class="tabsContent"]/div/div[2]//div[@class="boxBody"]//form</td>
+	<td>//div[@class='tabsContent']/div/div[2]//div[@class='boxBody']//form</td>
 	<td></td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//div[@class="tabsContent"]/div/div[2]//div[@class="boxBody"]//td[@class="labelField"]//input</td>
+	<td>//div[@class='tabsContent']/div/div[2]//div[@class='boxBody']//td[@class='labelField']//input</td>
 	<td>lbramard</td>
 </tr>
 <tr>
 	<td>submitAndWait</td>
-	<td>//div[@class="tabsContent"]//form/</td>
+	<td>//div[@class='tabsContent']//form/</td>
 	<td></td>
 </tr>
 <tr>
@@ -566,22 +574,22 @@
 </tr>
 <tr>
 	<td>waitForCondition</td>
-	<td>var value = selenium.getText('//div[@class="tabsContent"]/div/div[2]//div[@class="boxBody"]//table[@class="rightsAddManager"]'); value.match(/Remove/);</td>
+	<td>var value = selenium.getText('//div[@class='tabsContent']/div/div[2]//div[@class='boxBody']//table[@class='rightsAddManager']'); value.match(/Remove/);</td>
 	<td>15000</td>
 </tr>
 <tr>
 	<td>select</td>
-	<td>//table[@class="dataInput"]//tr[2]//select</td>
+	<td>//table[@class='dataInput']//tr[2]//select</td>
 	<td>label=Diffusion</td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//div[@class="tabsContent"]/div/div[2]//div[@class="boxBody"]//table//textarea</td>
+	<td>//div[@class='tabsContent']/div/div[2]//div[@class='boxBody']//table//textarea</td>
 	<td>Comment 2 for lbramard</td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>//input[@value="Add"]</td>
+	<td>//input[@value='Add']</td>
 	<td></td>
 </tr>
 <tr>
@@ -617,7 +625,7 @@
 </tr>
 <tr>
 	<td>select</td>
-	<td>//select[@class="langSelect"]</td>
+	<td>//select[@class='langSelect']</td>
 	<td>label=English (United Kingdom)</td>
 </tr>
 <tr>
@@ -647,7 +655,7 @@
 </tr>
 <tr>
 	<td>verifyElementNotPresent</td>
-	<td>//input[@value="Start the workflow"]</td>
+	<td>//input[@value='Start the workflow']</td>
 	<td></td>
 </tr>
 <tr>
@@ -662,7 +670,7 @@
 </tr>
 <tr>
 	<td>verifyNotVisible</td>
-	<td>//div[@class="tabsContent"]/div/div[2]//div[@class="boxBody"]//form</td>
+	<td>//div[@class='tabsContent']/div/div[2]//div[@class='boxBody']//form</td>
 	<td></td>
 </tr>
 <tr>
@@ -689,17 +697,17 @@
 </tr>
 <tr>
 	<td>waitForVisible</td>
-	<td>//div[@class="tabsContent"]/div/div[2]//div[@class="boxBody"]//form</td>
+	<td>//div[@class='tabsContent']/div/div[2]//div[@class='boxBody']//form</td>
 	<td></td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//div[@class="tabsContent"]/div/div[2]//div[@class="boxBody"]//td[@class="labelField"]//input</td>
+	<td>//div[@class='tabsContent']/div/div[2]//div[@class='boxBody']//td[@class='labelField']//input</td>
 	<td>jdoe</td>
 </tr>
 <tr>
 	<td>submitAndWait</td>
-	<td>//div[@class="tabsContent"]//form/</td>
+	<td>//div[@class='tabsContent']//form/</td>
 	<td></td>
 </tr>
 <tr>
@@ -714,22 +722,22 @@
 </tr>
 <tr>
 	<td>waitForCondition</td>
-	<td>var value = selenium.getText('//div[@class="tabsContent"]/div/div[2]//div[@class="boxBody"]//table[@class="rightsAddManager"]'); value.match(/Remove/);</td>
+	<td>var value = selenium.getText('//div[@class='tabsContent']/div/div[2]//div[@class='boxBody']//table[@class='rightsAddManager']'); value.match(/Remove/);</td>
 	<td>15000</td>
 </tr>
 <tr>
 	<td>select</td>
-	<td>//table[@class="dataInput"]//tr[2]//select</td>
+	<td>//table[@class='dataInput']//tr[2]//select</td>
 	<td>label=Diffusion</td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//div[@class="tabsContent"]/div/div[2]//div[@class="boxBody"]//table//textarea</td>
+	<td>//div[@class='tabsContent']/div/div[2]//div[@class='boxBody']//table//textarea</td>
 	<td>Comment for jdoe</td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>//input[@value="Add"]</td>
+	<td>//input[@value='Add']</td>
 	<td></td>
 </tr>
 <tr>
@@ -765,7 +773,7 @@
 </tr>
 <tr>
 	<td>select</td>
-	<td>//select[@class="langSelect"]</td>
+	<td>//select[@class='langSelect']</td>
 	<td>label=English (United Kingdom)</td>
 </tr>
 <tr>
@@ -806,12 +814,12 @@
 <!--abandon de la revue-->
 <tr>
 	<td>type</td>
-	<td>//div[@class="tabsContent"]//div[5]/form//textarea</td>
+	<td>//div[@class='tabsContent']//div[5]/form//textarea</td>
 	<td>Abandon parallel review 2</td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>//input[@value="Abandon workflow"]</td>
+	<td>//input[@value='Abandon workflow']</td>
 	<td></td>
 </tr>
 <!--vérification de l'abandon-->

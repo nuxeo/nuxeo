@@ -65,24 +65,40 @@
 	<td></td>
 </tr>
 <tr>
-	<td>type</td>
-	<td>//form/table/tbody//tr[4]//td[2]/div/input</td>
-	<td>bree</td>
+	<td>typeKeys</td>
+	<td>//input[@name='createThread:nxl_user_group_suggestion:nxw_selection_suggest']</td>
+	<td>bre</td>
+</tr>
+<tr>
+	<td>waitForCondition</td>
+	<td>selenium.browserbot.getCurrentWindow().document.getElementById('createThread:nxl_user_group_suggestion:nxw_selection_suggestionBox').style.display != 'none'</td>
+	<td>10000</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='createThread:nxl_user_group_suggestion:nxw_selection_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td>Bree Van de Kaamp</td>
 </tr>
 <tr>
 	<td>click</td>
-	<td>//div[@class="userAndGroupSearch"]//input[@value="Search"]</td>
+	<td>//*[@id='createThread:nxl_user_group_suggestion:nxw_selection_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td></td>
+</tr>
+<!-- wait for table to appear -->
+<tr>
+	<td>waitForCondition</td>
+	<td>selenium.browserbot.getCurrentWindow().document.getElementById('createThread:nxl_user_group_suggestion:nxw_selection_list:0:nxw_selection_listItem') != null</td>
+	<td>10000</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@name='createThread:nxl_user_group_suggestion:nxw_selection_suggest']</td>
 	<td></td>
 </tr>
 <tr>
 	<td>waitForCondition</td>
-	<td>var value = selenium.getText('//table[@class="rightsAddManager"]/tbody/tr'); value.match(/bree/);</td>
-	<td>15000</td>
-</tr>
-<tr>
-	<td>click</td>
-	<td>link=Add to selection</td>
-	<td></td>
+	<td>selenium.browserbot.getCurrentWindow().document.getElementById('createThread:nxl_user_group_suggestion:nxw_selection_suggestionBox').style.display == 'none'</td>
+	<td>10000</td>
 </tr>
 <tr>
 	<td>clickAndWait</td>

@@ -39,10 +39,12 @@
       <artifact group="org.osgi" name="osgi-core" version="4.1" />
       <artifact group="commons-collections" name="commons-collections"
         version="3.1" />
-      <artifact group="commons-io" name="commons-io" version="1.2" />
+      <artifact group="commons-io" name="commons-io" version="1.4" />
       <artifact group="commons-lang" name="commons-lang" version="2.2" />
       <artifact group="commons-fileupload" name="commons-fileupload"
         version="1.1.1" />
+      <artifact group="commons-beanutils" name="commons-beanutils"
+        version="1.6" />
       <artifact group="cssparser" name="cssparser" version="0.9.4-fix" />
       <artifact group="net.sf.ehcache" name="ehcache" version="1.2.3" />
       <artifact group="net.sf.ezmorph" name="ezmorph" version="0.9" />
@@ -53,7 +55,7 @@
         version="3.2.0.ga" />
       <artifact group="jboss" name="jboss-cache-jdk50" version="1.4.0.SP1" />
       <artifact group="org.jboss.seam" name="jboss-seam" version="1.1.5.NX3" />
-      <artifact group="jboss" name="jbpm" version="3.1.2" />
+      <artifact group="org.jbpm.jbpm3" name="jbpm-jpdl" version="3.3.0.GA" />
       <artifact group="jboss" name="jgroups" version="2.2.9" />
       <artifact group="net.sf.json-lib" name="json-lib" version="0.9" />
       <artifact group="org.apache.lucene" name="lucene-core" version="2.0.0" />

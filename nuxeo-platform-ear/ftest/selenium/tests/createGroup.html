@@ -31,7 +31,7 @@
 </tr>
 <tr>
 	<td>select</td>
-	<td>//select[@class="langSelect"]</td>
+	<td>//select[@class='langSelect']</td>
 	<td>label=English (United Kingdom)</td>
 </tr>
 <tr>
@@ -54,7 +54,7 @@
 	<td>link=Groups</td>
 	<td></td>
 </tr>
-<!--création d'un groupe Johns-->
+<!--creation d'un groupe Johns-->
 <tr>
 	<td>clickAndWait</td>
 	<td>link=Create a new group</td>
@@ -62,87 +62,132 @@
 </tr>
 <tr>
 	<td>type</td>
-	<td>//input[@id="createGroup_form:groupName"]</td>
+	<td>//input[@id='createGroup:nxl_group:nxw_groupname']</td>
 	<td>Johns</td>
 </tr>
 <tr>
-	<td>type</td>
-	<td>//div[@class="tabsContent"]/table//table//input</td>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>typeKeys</td>
+	<td>//input[@name='createGroup:nxl_group:nxw_members_suggest']</td>
 	<td>bre</td>
 </tr>
 <tr>
-	<td>click</td>
-	<td>//div[@class="userAndGroupSearch"]//input[@value="Search"]</td>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
 	<td></td>
 </tr>
 <tr>
-	<td>waitForCondition</td>
-	<td>var value = selenium.getText('//tr[@class="rightsAddManager"]/td[1]'); value.match(/Van/);</td>
-	<td>15000</td>
+	<td>verifyText</td>
+	<td>//*[@id='createGroup:nxl_group:nxw_members_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td>Bree Van de Kaamp</td>
 </tr>
 <tr>
-	<td>click</td>
-	<td>link=Add to group</td>
+	<td>watchA4jRequests</td>
+	<td></td>
 	<td></td>
 </tr>
 <tr>
-	<td>waitForCondition</td>
-	<td>var value = selenium.getText('//tr[@class="rightsAddManager"]/td[2]'); value.match(/Bree/);</td>
-	<td>15000</td>
+	<td>click</td>
+	<td>//*[@id='createGroup:nxl_group:nxw_members_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td></td>
 </tr>
 <tr>
-	<td>type</td>
-	<td>//div[@class="tabsContent"]/table//table//input</td>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>typeKeys</td>
+	<td>//input[@name='createGroup:nxl_group:nxw_members_suggest']</td>
 	<td>jdo</td>
 </tr>
 <tr>
-	<td>click</td>
-	<td>//div[@class="userAndGroupSearch"]//input[@value="Search"]</td>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
 	<td></td>
 </tr>
 <tr>
-	<td>waitForCondition</td>
-	<td>var value = selenium.getText('//tr[@class="rightsAddManager"]/td[1]'); value.match(/John/);</td>
-	<td>15000</td>
+	<td>verifyText</td>
+	<td>//*[@id='createGroup:nxl_group:nxw_members_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td>John Doe</td>
 </tr>
 <tr>
-	<td>click</td>
-	<td>link=Add to group</td>
+	<td>watchA4jRequests</td>
+	<td></td>
 	<td></td>
 </tr>
 <tr>
-	<td>waitForCondition</td>
-	<td>var value = selenium.getText('//tr[@class="rightsAddManager"]/td[2]'); value.match(/Doe/);</td>
-	<td>15000</td>
+	<td>click</td>
+	<td>//*[@id='createGroup:nxl_group:nxw_members_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td></td>
 </tr>
 <tr>
-	<td>type</td>
-	<td>//div[@class="tabsContent"]/table//table//input</td>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>typeKeys</td>
+	<td>//input[@name='createGroup:nxl_group:nxw_members_suggest']</td>
 	<td>jsmith</td>
 </tr>
 <tr>
-	<td>click</td>
-	<td>//div[@class="userAndGroupSearch"]//input[@value="Search"]</td>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
 	<td></td>
 </tr>
 <tr>
-	<td>waitForCondition</td>
-	<td>var value = selenium.getText('//tr[@class="rightsAddManager"]/td[1]'); value.match(/Smith/);</td>
-	<td>15000</td>
+	<td>verifyText</td>
+	<td>//*[@id='createGroup:nxl_group:nxw_members_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td>John Smith</td>
 </tr>
 <tr>
-	<td>click</td>
-	<td>link=Add to group</td>
+	<td>watchA4jRequests</td>
+	<td></td>
 	<td></td>
 </tr>
 <tr>
-	<td>waitForCondition</td>
-	<td>var value = selenium.getText('//tr[@class="rightsAddManager"]/td[2]'); value.match(/Smith/);</td>
-	<td>15000</td>
+	<td>click</td>
+	<td>//*[@id='createGroup:nxl_group:nxw_members_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='createGroup:nxl_group:nxw_members_list:0:nxw_members_listItem']</td>
+	<td>Bree Van de Kaamp</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='createGroup:nxl_group:nxw_members_list:1:nxw_members_listItem']</td>
+	<td>John Doe</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='createGroup:nxl_group:nxw_members_list:2:nxw_members_listItem']</td>
+	<td>John Smith</td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>//input[@value="Save"]</td>
+	<td>//input[@value='Save']</td>
 	<td></td>
 </tr>
 <tr>
@@ -150,7 +195,7 @@
 	<td>Johns</td>
 	<td></td>
 </tr>
-<!--Vérification de la redirection sur la fiche du groupe-->
+<!--Verification de la redirection sur la fiche du groupe-->
 <tr>
 	<td>verifyTextPresent</td>
 	<td>Group's members</td>
@@ -166,7 +211,7 @@
 	<td>link=Edit</td>
 	<td></td>
 </tr>
-<!--création d'un groupe pour suppression-->
+<!--creation d'un groupe pour test unique id-->
 <tr>
 	<td>clickAndWait</td>
 	<td>link=Back to the list</td>
@@ -179,87 +224,148 @@
 </tr>
 <tr>
 	<td>type</td>
-	<td>//input[@id="createGroup_form:groupName"]</td>
-	<td>Suppr</td>
-</tr>
-<tr>
-	<td>type</td>
-	<td>//div[@class="tabsContent"]/table//table//input</td>
-	<td>jdo</td>
-</tr>
-<tr>
-	<td>click</td>
-	<td>//div[@class="userAndGroupSearch"]//input[@value="Search"]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>waitForCondition</td>
-	<td>var value = selenium.getText('//tr[@class="rightsAddManager"]/td[1]'); value.match(/John/);</td>
-	<td>15000</td>
-</tr>
-<tr>
-	<td>click</td>
-	<td>link=Add to group</td>
-	<td></td>
-</tr>
-<tr>
-	<td>waitForCondition</td>
-	<td>var value = selenium.getText('//tr[@class="rightsAddManager"]/td[2]'); value.match(/Doe/);</td>
-	<td>15000</td>
-</tr>
-<tr>
-	<td>type</td>
-	<td>//div[@class="tabsContent"]/table//table//input</td>
-	<td>Smith</td>
-</tr>
-<tr>
-	<td>click</td>
-	<td>//div[@class="userAndGroupSearch"]//input[@value="Search"]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>waitForCondition</td>
-	<td>var value = selenium.getText('//tr[@class="rightsAddManager"]/td[1]'); value.match(/Smith/);</td>
-	<td>15000</td>
-</tr>
-<tr>
-	<td>click</td>
-	<td>link=Add to group</td>
-	<td></td>
-</tr>
-<tr>
-	<td>waitForCondition</td>
-	<td>var value = selenium.getText('//tr[@class="rightsAddManager"]/td[2]'); value.match(/Smith/);</td>
-	<td>15000</td>
-</tr>
-<tr>
-	<td>type</td>
-	<td>//div[@class="tabsContent"]/table//table//input</td>
-	<td>lbramard</td>
-</tr>
-<tr>
-	<td>click</td>
-	<td>//div[@class="userAndGroupSearch"]//input[@value="Search"]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>waitForCondition</td>
-	<td>var value = selenium.getText('//tr[@class="rightsAddManager"]/td[1]'); value.match(/Lucien/);</td>
-	<td>15000</td>
-</tr>
-<tr>
-	<td>click</td>
-	<td>link=Add to group</td>
-	<td></td>
-</tr>
-<tr>
-	<td>waitForCondition</td>
-	<td>var value = selenium.getText('//tr[@class="rightsAddManager"]/td[2]'); value.match(/Bramard/);</td>
-	<td>15000</td>
+	<td>//input[@id='createGroup:nxl_group:nxw_groupname']</td>
+	<td>Johns</td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>//input[@value="Save"]</td>
+	<td>//input[@value='Save']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Group already exists</td>
+	<td></td>
+</tr>
+<!--creation d'un groupe pour suppression-->
+<tr>
+	<td>type</td>
+	<td>//input[@id='createGroup:nxl_group:nxw_groupname']</td>
+	<td>Suppr</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>typeKeys</td>
+	<td>//input[@name='createGroup:nxl_group:nxw_members_suggest']</td>
+	<td>jdo</td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='createGroup:nxl_group:nxw_members_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td>John Doe</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//*[@id='createGroup:nxl_group:nxw_members_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>typeKeys</td>
+	<td>//input[@name='createGroup:nxl_group:nxw_members_suggest']</td>
+	<td>jsmith</td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='createGroup:nxl_group:nxw_members_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td>John Smith</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//*[@id='createGroup:nxl_group:nxw_members_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>typeKeys</td>
+	<td>//input[@name='createGroup:nxl_group:nxw_members_suggest']</td>
+	<td>lucien</td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='createGroup:nxl_group:nxw_members_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td>Lucien Bramard</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//*[@id='createGroup:nxl_group:nxw_members_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='createGroup:nxl_group:nxw_members_list:0:nxw_members_listItem']</td>
+	<td>John Doe</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='createGroup:nxl_group:nxw_members_list:1:nxw_members_listItem']</td>
+	<td>John Smith</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='createGroup:nxl_group:nxw_members_list:2:nxw_members_listItem']</td>
+	<td>Lucien Bramard</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Save']</td>
 	<td></td>
 </tr>
 <tr>
@@ -267,7 +373,7 @@
 	<td>Suppr</td>
 	<td></td>
 </tr>
-<!--Vérification de la redirection sur la fiche du groupe-->
+<!--Verification de la redirection sur la fiche du groupe-->
 <tr>
 	<td>verifyTextPresent</td>
 	<td>Group's members</td>
@@ -283,7 +389,7 @@
 	<td>link=Edit</td>
 	<td></td>
 </tr>
-<!--Déconnexion-->
+<!--Deconnexion-->
 <tr>
 	<td>clickAndWait</td>
 	<td>link=Log out</td>

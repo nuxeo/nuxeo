@@ -34,7 +34,7 @@
 </tr>
 <tr>
 	<td>select</td>
-	<td>//select[@class=&quot;langSelect&quot;]</td>
+	<td>//select[@class='langSelect']</td>
 	<td>label=English (United Kingdom)</td>
 </tr>
 <tr>
@@ -62,35 +62,41 @@
 	<td>link=Access rights</td>
 	<td></td>
 </tr>
-<!--Donner à jsmith droits d'admin-->
+<!-- Donner a jsmith droits d'admin-->
 <tr>
-	<td>type</td>
-	<td>//div[@class=&quot;userAndGroupSearch&quot;]//input[@class=&quot;directoryFilter&quot;]</td>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>typeKeys</td>
+	<td>//input[@name='add_rights_form:nxl_user_group_suggestion:nxw_selection_suggest']</td>
 	<td>jsmith</td>
 </tr>
 <tr>
-	<td>click</td>
-	<td>//div[@class=&quot;userAndGroupSearch&quot;]//input[@value=&quot;Search&quot;]</td>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
 	<td></td>
 </tr>
 <tr>
-	<td>waitForTextPresent</td>
+	<td>verifyText</td>
+	<td>//*[@id='add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
 	<td>John Smith</td>
-	<td></td>
 </tr>
 <tr>
 	<td>click</td>
-	<td>link=Add to selection</td>
+	<td>//*[@id='add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
 	<td></td>
 </tr>
+<!-- wait for table to appear -->
 <tr>
 	<td>waitForCondition</td>
-	<td>var value = selenium.getText('//table[@class=&quot;rightsAddManager&quot;]/tbody/tr[1]/td[2]'); value.match(/Remove/);</td>
-	<td>15000</td>
+	<td>selenium.browserbot.getCurrentWindow().document.getElementById('add_rights_form:nxl_user_group_suggestion:nxw_selection_list:0:nxw_selection_listItem') != null</td>
+	<td>10000</td>
 </tr>
 <tr>
 	<td>select</td>
-	<td>//table[@class=&quot;rightsAddManager&quot;]/tbody/tr/td[3]//table//tr[2]//select</td>
+	<td>//*[@id='add_rights_form']/table/tbody/tr/td[2]/div/table/tbody/tr[2]/td[2]/select</td>
 	<td>label=Manage everything</td>
 </tr>
 <tr>
@@ -100,12 +106,12 @@
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>//input[@value=&quot;Save local rights&quot;]</td>
+	<td>//input[@value='Save local rights']</td>
 	<td></td>
 </tr>
 <tr>
 	<td>verifyElementNotPresent</td>
-	<td>//input[@value=&quot;Save local rights&quot;]</td>
+	<td>//input[@value='Save local rights']</td>
 	<td></td>
 </tr>
 <tr>

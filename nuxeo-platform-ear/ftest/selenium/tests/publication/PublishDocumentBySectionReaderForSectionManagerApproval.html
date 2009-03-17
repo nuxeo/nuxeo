@@ -83,54 +83,61 @@
 	<td>//input[@class='langSubmit']</td>
 	<td></td>
 </tr>
-<!--Publication du document-->
-<!--vérification de l'affichage des publications en cours-->
-<tr>
-	<td>verifyChecked</td>
-	<td>//tr[@class=&quot;dataRowEven&quot;]//input[@type=&quot;checkbox&quot;]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>click</td>
-	<td>//tr[@class=&quot;dataRowEven&quot;]//input[@type=&quot;checkbox&quot;]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyNotChecked</td>
-	<td>//tr[@class=&quot;dataRowEven&quot;]//input[@type=&quot;checkbox&quot;]</td>
-	<td></td>
-</tr>
-<!--Sélection et publication dans une autre section-->
-<tr>
-	<td>click</td>
-	<td>//tr[@class=&quot;dataRowOdd&quot;]//input[@type=&quot;checkbox&quot;]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyChecked</td>
-	<td>//tr[@class=&quot;dataRowOdd&quot;]//input[@type=&quot;checkbox&quot;]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>waitForEditable</td>
-	<td>//input[@value=&quot;Publish&quot;]</td>
-	<td>15000</td>
-</tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>//input[@value=&quot;Publish&quot;]</td>
+	<td>link=Publish</td>
 	<td></td>
 </tr>
-<!-- wait 10 seconds: publishing tasks are asynchronous -->
-<!--verification des informations affichées après publication-->
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<!-- open Sections node -->
+<tr>
+	<td>click</td>
+	<td>publishTreeForm:publishTree:publishRecursiveAdaptor:0::publishTreeNode:handle:img:collapsed</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>publishTreeForm:publishTree:publishRecursiveAdaptor:0:publishRecursiveAdaptor:0::publishTreeNode:handle:img:collapsed</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertTextPresent</td>
+	<td>Publish here</td>
+	<td></td>
+</tr>
+<!-- publish in testSection2 -->
+<tr>
+	<td>click</td>
+	<td>publishTreeForm:publishTree:publishRecursiveAdaptor:0:publishRecursiveAdaptor:0:publishRecursiveAdaptor:0::publishCommandLink</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
 <tr>
 	<td>verifyElementNotPresent</td>
 	<td>link=Unpublish</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyChecked</td>
-	<td>//tr[@class=&quot;dataRowEven&quot;]//input[@type=&quot;checkbox&quot;]</td>
 	<td></td>
 </tr>
 <!--vérification de la soumission à publication dans la section-->

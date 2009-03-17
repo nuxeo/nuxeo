@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.distribution</groupId>
     <artifactId>nuxeo-distribution</artifactId>
-    <version>5.1.7-SNAPSHOT</version>
+    <version>5.2-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
@@ -26,6 +26,24 @@
         <artifactId>jboss-as</artifactId>
         <version>4.0.5.GA</version>
         <type>zip</type>
+      </dependency>
+      <dependency>
+        <groupId>metro.webservices</groupId>
+        <artifactId>webservices-api</artifactId>
+        <version>1.4</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>metro.webservices</groupId>
+        <artifactId>webservices-rt</artifactId>
+        <version>1.4</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>metro.webservices</groupId>
+        <artifactId>webservices-tools</artifactId>
+        <version>1.4</version>
+        <scope>runtime</scope>
       </dependency>
     </dependencies>
   </dependencyManagement>

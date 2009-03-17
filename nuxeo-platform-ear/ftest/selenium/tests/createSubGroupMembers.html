@@ -31,7 +31,7 @@
 </tr>
 <tr>
 	<td>select</td>
-	<td>//select[@class="langSelect"]</td>
+	<td>//select[@class='langSelect']</td>
 	<td>label=English (United Kingdom)</td>
 </tr>
 <tr>
@@ -49,7 +49,7 @@
 	<td>Link=Members management</td>
 	<td></td>
 </tr>
-<!--Création utilisateur jdoe-->
+<!--Creation utilisateur gabrielle-->
 <tr>
 	<td>clickAndWait</td>
 	<td>link=Create a new user</td>
@@ -57,47 +57,42 @@
 </tr>
 <tr>
 	<td>type</td>
-	<td>//form[@id="createUser_form"]//tr[1]//input</td>
+	<td>//input[@id='createUser:nxl_user:nxw_username']</td>
 	<td>gabrielle</td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//form[@id="createUser_form"]//tr[2]//input</td>
+	<td>//input[@id='createUser:nxl_user:nxw_firstname']</td>
 	<td>Gabrielle</td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//form[@id="createUser_form"]//tr[3]//input</td>
+	<td>//input[@id='createUser:nxl_user:nxw_lastname']</td>
 	<td>Solis</td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//form[@id="createUser_form"]//tr[4]//input</td>
-	<td>gabrielle1</td>
-</tr>
-<tr>
-	<td>type</td>
-	<td>//form[@id="createUser_form"]//tr[5]//input</td>
+	<td>//input[@id='createUser:nxl_user:nxw_company']</td>
 	<td>Nuxeo</td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//form[@id="createUser_form"]//tr[6]//input</td>
+	<td>//input[@id='createUser:nxl_user:nxw_email']</td>
 	<td>sg+gabrielle@nuxeo.com</td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//form[@id="createUser_form"]//tr[6]//input</td>
+	<td>//input[@id='createUser:nxl_user:nxw_firstPassword']</td>
 	<td>gabrielle1</td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//form[@id="createUser_form"]//table[2]//tr[1]//input</td>
+	<td>//input[@id='createUser:nxl_user:nxw_secondPassword']</td>
 	<td>gabrielle1</td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>//input[@value="Save"]</td>
+	<td>//input[@value='Save']</td>
 	<td></td>
 </tr>
 <tr>
@@ -120,7 +115,7 @@
 	<td>Solis</td>
 	<td></td>
 </tr>
-<!--création d'un groupe Sous-members-->
+<!--creation d'un groupe Sous-members-->
 <tr>
 	<td>clickAndWait</td>
 	<td>link=Groups</td>
@@ -133,40 +128,41 @@
 </tr>
 <tr>
 	<td>type</td>
-	<td>//input[@id="createGroup_form:groupName"]</td>
+	<td>//input[@id='createGroup:nxl_group:nxw_groupname']</td>
 	<td>sub-members</td>
 </tr>
 <tr>
-	<td>type</td>
-	<td>//div[@class="tabsContent"]/table//table//input</td>
+	<td>typeKeys</td>
+	<td>//input[@name='createGroup:nxl_group:nxw_members_suggest']</td>
 	<td>gab</td>
 </tr>
 <tr>
+	<td>waitForCondition</td>
+	<td>selenium.browserbot.getCurrentWindow().document.getElementById('createGroup:nxl_group:nxw_members_suggestionBox').style.display != 'none'</td>
+	<td>10000</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='createGroup:nxl_group:nxw_members_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td>Gabrielle Solis</td>
+</tr>
+<tr>
 	<td>click</td>
-	<td>//div[@class="userAndGroupSearch"]//input[@value="Search"]</td>
+	<td>//*[@id='createGroup:nxl_group:nxw_members_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
 	<td></td>
 </tr>
+<!-- wait for table to appear -->
 <tr>
 	<td>waitForCondition</td>
-	<td>var value = selenium.getText('//tr[@class="rightsAddManager"]/td[1]'); value.match(/Solis/);</td>
-	<td>15000</td>
-</tr>
-<tr>
-	<td>click</td>
-	<td>link=Add to group</td>
-	<td></td>
-</tr>
-<tr>
-	<td>waitForCondition</td>
-	<td>var value = selenium.getText('//tr[@class="rightsAddManager"]/td[2]'); value.match(/Gabrielle/);</td>
-	<td>15000</td>
+	<td>selenium.browserbot.getCurrentWindow().document.getElementById('createGroup:nxl_group:nxw_members_list:0:nxw_members_listItem') != null</td>
+	<td>10000</td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>//input[@value="Save"]</td>
+	<td>//input[@value='Save']</td>
 	<td></td>
 </tr>
-<!--Vérification de la redirection sur la fiche du groupe-->
+<!--Verification de la redirection sur la fiche du groupe-->
 <tr>
 	<td>verifyTextPresent</td>
 	<td>sub-members</td>
@@ -195,12 +191,12 @@
 </tr>
 <tr>
 	<td>type</td>
-	<td>//input[@id="searchForm:searchText"]</td>
+	<td>//input[@id='searchForm:searchText']</td>
 	<td>memb</td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>//input[@id="searchForm:searchButton"]</td>
+	<td>//input[@id='searchForm:searchButton']</td>
 	<td></td>
 </tr>
 <tr>
@@ -214,16 +210,37 @@
 	<td></td>
 </tr>
 <tr>
-	<td>select</td>
-	<td>//form/div[2]/div[@class="tabsContent"]/table//tr[2]//select</td>
-	<td>label=sub-members</td>
+	<td>typeKeys</td>
+	<td>//input[@name='editGroup:nxl_group:nxw_subgroups_suggest']</td>
+	<td>sub-m</td>
+</tr>
+<tr>
+	<td>waitForCondition</td>
+	<td>selenium.browserbot.getCurrentWindow().document.getElementById('editGroup:nxl_group:nxw_subgroups_suggestionBox').style.display != 'none'</td>
+	<td>10000</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='editGroup:nxl_group:nxw_subgroups_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td>sub-members</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//*[@id='editGroup:nxl_group:nxw_subgroups_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td></td>
+</tr>
+<!-- wait for table to appear -->
+<tr>
+	<td>waitForCondition</td>
+	<td>selenium.browserbot.getCurrentWindow().document.getElementById('editGroup:nxl_group:nxw_subgroups_list:0:nxw_subgroups_listItem') != null</td>
+	<td>10000</td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>//input[@value="Save"]</td>
+	<td>//input[@value='Save']</td>
 	<td></td>
 </tr>
-<!--Vérification de la redirection sur la fiche du groupe-->
+<!--Verification de la redirection sur la fiche du groupe-->
 <tr>
 	<td>verifyTextPresent</td>
 	<td>Group's members</td>
@@ -239,7 +256,7 @@
 	<td>link=Edit</td>
 	<td></td>
 </tr>
-<!--Vérification de l'affichage dans les annuaires-->
+<!--Verification de l'affichage dans les annuaires-->
 <tr>
 	<td>verifyTextPresent</td>
 	<td>sub-members</td>
@@ -257,12 +274,12 @@
 </tr>
 <tr>
 	<td>type</td>
-	<td>//input[@id="searchForm:searchText"]</td>
+	<td>//input[@id='searchForm:searchText']</td>
 	<td>gab</td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>//input[@id="searchForm:searchButton"]</td>
+	<td>//input[@id='searchForm:searchButton']</td>
 	<td></td>
 </tr>
 <tr>
@@ -285,7 +302,7 @@
 	<td>link=Log out</td>
 	<td></td>
 </tr>
-<!--Vérification de l'héritage des droits de members-->
+<!--Verification de l'heritage des droits de members-->
 <tr>
 	<td>type</td>
 	<td>username</td>
@@ -303,7 +320,7 @@
 </tr>
 <tr>
 	<td>select</td>
-	<td>//select[@class="langSelect"]</td>
+	<td>//select[@class='langSelect']</td>
 	<td>label=English (United Kingdom)</td>
 </tr>
 <tr>
@@ -373,7 +390,7 @@
 </tr>
 <tr>
 	<td>verifyElementNotPresent</td>
-	<td>//img[@title="Email"]</td>
+	<td>//img[@title='Email']</td>
 	<td></td>
 </tr>
 <tr>
@@ -388,7 +405,7 @@
 </tr>
 <tr>
 	<td>verifyElementPresent</td>
-	<td>//img[@title="Email"]</td>
+	<td>//img[@title='Email']</td>
 	<td></td>
 </tr>
 <tr>
@@ -398,7 +415,7 @@
 </tr>
 <tr>
 	<td>verifyElementNotPresent</td>
-	<td>//div[@id="lock_unlock_button"]//input</td>
+	<td>//div[@id='lock_unlock_button']//input</td>
 	<td></td>
 </tr>
 <tr>
@@ -428,7 +445,7 @@
 </tr>
 <tr>
 	<td>verifyElementNotPresent</td>
-	<td>//img[@src="/nuxeo/icons/action_add.gif"]</td>
+	<td>//img[@src='/nuxeo/icons/action_add.gif']</td>
 	<td></td>
 </tr>
 <tr>
@@ -468,12 +485,12 @@
 </tr>
 <tr>
 	<td>verifyElementPresent</td>
-	<td>//input[@value="View archived version"]</td>
+	<td>//input[@value='View archived version']</td>
 	<td></td>
 </tr>
 <tr>
 	<td>verifyNotEditable</td>
-	<td>//input[@value="Restore"]</td>
+	<td>//input[@value='Restore']</td>
 	<td></td>
 </tr>
 <tr>
@@ -513,7 +530,7 @@
 </tr>
 <tr>
 	<td>verifyElementNotPresent</td>
-	<td>//img[@title="Email"]</td>
+	<td>//img[@title='Email']</td>
 	<td></td>
 </tr>
 <tr>

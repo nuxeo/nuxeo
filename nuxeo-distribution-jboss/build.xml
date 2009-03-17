@@ -7,7 +7,7 @@
   <property name="jboss.dir" value="/opt/jboss" />
   <property name="nuxeo.ear.root" value="../nuxeo-platform-ear/" />
   <!--the default pom file to use for jboss-patch  -->
-  <property name="pom.file" value="jboss-patch/pom-4.0.5.xml" />
+  <property name="pom.file" value="jboss-patch/pom.xml" />
 
   <!-- set default root properties if not set -->
   <target name="set.jboss.home" unless="jboss.home">
@@ -24,6 +24,12 @@
     <property name="jboss.lib" value="${jboss.server}/lib" />
     <property name="jboss.nuxeo.ear" value="${jboss.deploy}/nuxeo.ear" />
   </target>
+  <property name="nuxeo.jboss.jmx.protocol" value="" />
+  <property name="nuxeo.jboss.jmx.http.hostname" value="" />
+  <property name="nuxeo.jboss.jmx.http.port" value="" />
+  <condition property="mvn.profile" value="-Phttp" else="">
+    <equals arg1="${nuxeo.jboss.jmx.protocol}" arg2="http" />
+  </condition>
 
   <condition property="osfamily-unix">
     <os family="unix" />
@@ -40,7 +46,12 @@
       <arg value="-f" />
       <arg value="${pom.file}" />
       <arg value="-Djboss.dir=${jboss.home}" />
+      <arg value="-Dnuxeo.jboss.jmx.protocol=${nuxeo.jboss.jmx.protocol}" />
+      <arg value="-Dnuxeo.jboss.jmx.http.hostname=${nuxeo.jboss.jmx.http.hostname}" />
+      <arg value="-Dnuxeo.jboss.jmx.http.port=${nuxeo.jboss.jmx.http.port}" />
       <arg value="clean" />
+      <arg value="package" />
+      <arg value="${mvn.profile}" />
       <arg value="install" />
       <arg value="${mvn.opts}" />
     </exec>
@@ -53,37 +64,31 @@
       <arg value="-f" />
       <arg value="${pom.file}" />
       <arg value="-Djboss.dir=${jboss.home}" />
+      <arg value="-Dnuxeo.jboss.jmx.protocol=${nuxeo.jboss.jmx.protocol}" />
+      <arg value="-Dnuxeo.jboss.jmx.http.hostname=${nuxeo.jboss.jmx.http.hostname}" />
+      <arg value="-Dnuxeo.jboss.jmx.http.port=${nuxeo.jboss.jmx.http.port}" />
       <arg value="clean" />
       <arg value="package" />
+      <arg value="${mvn.profile}" />
       <arg value="${mvn.opts}" />
     </exec>
   </target>
-  <target name="patch404" description="Patch a JBoss 4.0.4 for use by Nuxeo-EP (deprecated : no more 4.0.4 compatibility)">
+  <target name="patch-2parts" description="Package Nuxeo-EP in two parts">
     <antcall target="patch">
-      <param name="pom.file" value="jboss-patch/pom-4.0.4.xml" />
-    </antcall>
-  </target>
-  <target name="patch405" description="Patch a JBoss 4.0.5 for use by Nuxeo-EP">
-    <antcall target="patch">
-      <param name="pom.file" value="jboss-patch/pom-4.0.5.xml" />
-    </antcall>
-  </target>
-  <target name="patch405-2parts" description="Package Nuxeo-EP in two parts">
-    <antcall target="patch405">
       <param name="jboss.home" value="${jboss1.dir}" />
     </antcall>
-    <antcall target="patch405">
+    <antcall target="patch">
       <param name="jboss.home" value="${jboss2.dir}" />
     </antcall>
   </target>
-  <target name="patch405-3parts" description="Package Nuxeo-EP in three parts">
+  <target name="patch-3parts" description="Package Nuxeo-EP in three parts">
     <antcall target="package">
       <param name="jboss.home" value="${jboss1.dir}" />
     </antcall>
-    <antcall target="patch405">
+    <antcall target="patch">
       <param name="jboss.home" value="${jboss2.dir}" />
     </antcall>
-    <antcall target="patch405">
+    <antcall target="patch">
       <param name="jboss.home" value="${jboss3.dir}" />
     </antcall>
   </target>

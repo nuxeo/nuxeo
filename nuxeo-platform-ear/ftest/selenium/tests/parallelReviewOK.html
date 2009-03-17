@@ -9,7 +9,12 @@
 <tr><td rowspan="1" colspan="3">parallelReviewOK</td></tr>
 </thead><tbody>
 <!--@Test groups:ParallelReviewOK,off|depends:ParallelReviewAbandon-->
-<!--Identification-->
+<!-- same test than paraleReviewOk, but with reject -->
+<tr>
+	<td>setTimeout</td>
+	<td>120000</td>
+	<td></td>
+</tr>
 <tr>
 	<td>open</td>
 	<td>/nuxeo/logout</td>
@@ -37,7 +42,7 @@
 </tr>
 <tr>
 	<td>select</td>
-	<td>//select[@class="langSelect"]</td>
+	<td>//select[@class='langSelect']</td>
 	<td>label=English (United Kingdom)</td>
 </tr>
 <tr>
@@ -50,7 +55,7 @@
 	<td>You are logged as jdoe</td>
 	<td></td>
 </tr>
-<!--lancement de la revue en parallèle avec modifications autorisées-->
+<!--lancement de la revue en parallele-->
 <tr>
 	<td>clickAndWait</td>
 	<td>link=Workflow</td>
@@ -58,17 +63,18 @@
 </tr>
 <tr>
 	<td>click</td>
-	<td>//table[@class="dataInput"]/tbody/tr/td[2]/span/table//tr[1]//input</td>
+	<td>//input[@id='startWorkflow:workflowDefinitionId:0']</td>
 	<td></td>
 </tr>
+<!-- life cycle 'approved' -->
 <tr>
 	<td>click</td>
-	<td>//input[@value="workflowDocumentModificationAllowed"]</td>
+	<td>//input[@id='startWorkflow:lifeCycleDestinationStateTransition:0']</td>
 	<td></td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>//input[@value="Start"]</td>
+	<td>//input[@value='Start']</td>
 	<td></td>
 </tr>
 <tr>
@@ -77,80 +83,164 @@
 	<td></td>
 </tr>
 <tr>
-	<td>verifyTextPresent</td>
-	<td>Modification allowed</td>
-	<td></td>
-</tr>
-<tr>
 	<td>verifyElementPresent</td>
 	<td>link=Modify</td>
 	<td></td>
 </tr>
 <!--Chargement de la liste-->
-<tr>
-	<td>select</td>
-	<td>//div[@class="tabsContent"]//div[4]//table[@class="dataInput"]//tr[1]/td[2]/select</td>
-	<td>label=parallel_review_list</td>
-</tr>
+<!-- XXX no list for now -->
+<!--ajout intervenant jsmith-->
 <tr>
 	<td>clickAndWait</td>
-	<td>//input[@value="Load selected for the current workflow"]</td>
+	<td>link=Workflow</td>
 	<td></td>
 </tr>
 <tr>
-	<td>verifyTextPresent</td>
-	<td>Comment for jsmith</td>
-	<td></td>
+	<td>typeKeys</td>
+	<td>//input[@name='addReviewers:nxl_add_workflow_task:nxw_actors_suggest']</td>
+	<td>jsmith</td>
 </tr>
 <tr>
-	<td>verifyTextPresent</td>
-	<td>Comment for bree</td>
-	<td></td>
+	<td>waitForCondition</td>
+	<td>selenium.browserbot.getCurrentWindow().document.getElementById('addReviewers:nxl_add_workflow_task:nxw_actors_suggestionBox').style.display != 'none'</td>
+	<td>10000</td>
 </tr>
 <tr>
-	<td>verifyTextPresent</td>
-	<td>Comment for myself</td>
-	<td></td>
+	<td>verifyText</td>
+	<td>//*[@id='addReviewers:nxl_add_workflow_task:nxw_actors_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td>John Smith</td>
 </tr>
 <tr>
-	<td>verifyElementPresent</td>
-	<td>link=Remove</td>
+	<td>click</td>
+	<td>//*[@id='addReviewers:nxl_add_workflow_task:nxw_actors_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
 	<td></td>
 </tr>
+<!-- wait for table to appear -->
 <tr>
-	<td>verifyElementNotPresent</td>
-	<td>link=Approve</td>
-	<td></td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>//input[@value="Start the workflow"]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyElementPresent</td>
-	<td>link=Approve</td>
-	<td></td>
-</tr>
-<!--jdoe rejette le doc-->
-<tr>
-	<td>clickAndWait</td>
-	<td>link=Reject</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyTextPresent</td>
-	<td>Please add a comment</td>
-	<td></td>
+	<td>waitForCondition</td>
+	<td>selenium.browserbot.getCurrentWindow().document.getElementById('addReviewers:nxl_add_workflow_task:nxw_actors_list:0:nxw_actors_listItem') != null</td>
+	<td>10000</td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//div[@class="tabsContent"]/div/div[3]//form//textarea</td>
-	<td>pas ok</td>
+	<td>//input[@name='addReviewers:nxl_add_workflow_task:nxw_actors_suggest']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForCondition</td>
+	<td>selenium.browserbot.getCurrentWindow().document.getElementById('addReviewers:nxl_add_workflow_task:nxw_actors_suggestionBox').style.display == 'none'</td>
+	<td>10000</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>//select[@id='addReviewers:nxl_add_workflow_task:nxw_directive']</td>
+	<td>label=Check</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//textarea[@id='addReviewers:nxl_add_workflow_task:nxw_comment']</td>
+	<td>Parallel comment for jsmith</td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>link=Reject</td>
+	<td>//input[@value='Add']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Selected participant(s) successfully added to the workflow</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Parallel comment for jsmith</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementNotPresent</td>
+	<td>link=Approve</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//input[@value='Start the workflow']</td>
+	<td></td>
+</tr>
+<!--ajout intervenant bree-->
+<tr>
+	<td>typeKeys</td>
+	<td>//input[@name='addReviewers:nxl_add_workflow_task:nxw_actors_suggest']</td>
+	<td>bre</td>
+</tr>
+<tr>
+	<td>waitForCondition</td>
+	<td>selenium.browserbot.getCurrentWindow().document.getElementById('addReviewers:nxl_add_workflow_task:nxw_actors_suggestionBox').style.display != 'none'</td>
+	<td>10000</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//*[@id='addReviewers:nxl_add_workflow_task:nxw_actors_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td>Bree Van de Kaamp</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//*[@id='addReviewers:nxl_add_workflow_task:nxw_actors_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td></td>
+</tr>
+<!-- wait for table to appear -->
+<tr>
+	<td>waitForCondition</td>
+	<td>selenium.browserbot.getCurrentWindow().document.getElementById('addReviewers:nxl_add_workflow_task:nxw_actors_list:0:nxw_actors_listItem') != null</td>
+	<td>10000</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//input[@name='addReviewers:nxl_add_workflow_task:nxw_actors_suggest']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForCondition</td>
+	<td>selenium.browserbot.getCurrentWindow().document.getElementById('addReviewers:nxl_add_workflow_task:nxw_actors_suggestionBox').style.display == 'none'</td>
+	<td>10000</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>//select[@id='addReviewers:nxl_add_workflow_task:nxw_directive']</td>
+	<td>label=Diffusion</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>//textarea[@id='addReviewers:nxl_add_workflow_task:nxw_comment']</td>
+	<td>Parallel comment for bree</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Add']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Selected participant(s) successfully added to the workflow</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Parallel comment for bree</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//a[@id='reviewTasksTable:removeParticipant_0']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//a[@id='reviewTasksTable:removeParticipant_1']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementNotPresent</td>
+	<td>link=Approve</td>
 	<td></td>
 </tr>
 <tr>
@@ -159,8 +249,28 @@
 	<td></td>
 </tr>
 <tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Start the workflow']</td>
+	<td></td>
+</tr>
+<tr>
 	<td>verifyElementPresent</td>
 	<td>link=Approve</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=Reject</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementNotPresent</td>
+	<td>//a[@id='reviewTasksTable:removeParticipant_0']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementNotPresent</td>
+	<td>//a[@id='reviewTasksTable:removeParticipant_1']</td>
 	<td></td>
 </tr>
 <tr>
@@ -186,7 +296,7 @@
 </tr>
 <tr>
 	<td>select</td>
-	<td>//select[@class="langSelect"]</td>
+	<td>//select[@class='langSelect']</td>
 	<td>label=English (United Kingdom)</td>
 </tr>
 <tr>
@@ -210,74 +320,13 @@
 	<td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>link=Modify</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyTextPresent</td>
-	<td>Update versions</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyTextPresent</td>
-	<td>Increment minor version</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyChecked</td>
-	<td>//input[@value="ACTION_INCREMENT_MINOR"]</td>
-	<td></td>
-</tr>
-<tr>
 	<td>type</td>
-	<td>//td[@class="fieldColumn"]/textarea</td>
-	<td>desc testNote1 modified during a review</td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>//input[@value="Save"]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyTextPresent</td>
-	<td>1.1</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyTextPresent</td>
-	<td>desc testNote1 modified during a review</td>
-	<td></td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>link=Workflow</td>
-	<td></td>
-</tr>
-<tr>
-	<td>type</td>
-	<td>//div[@class="tabsContent"]/div/div[3]//form//textarea</td>
+	<td>//textarea[@id="reviewTasksTable:taskActionComment"]</td>
 	<td>ok pour moi</td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
 	<td>link=Approve</td>
-	<td></td>
-</tr>
-<!--vérification de perte de droits de la revue-->
-<tr>
-	<td>clickAndWait</td>
-	<td>link=Workflow</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyTextNotPresent</td>
-	<td>Select reviewers</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyElementNotPresent</td>
-	<td>link=Modify</td>
 	<td></td>
 </tr>
 <tr>
@@ -303,7 +352,7 @@
 </tr>
 <tr>
 	<td>select</td>
-	<td>//select[@class="langSelect"]</td>
+	<td>//select[@class='langSelect']</td>
 	<td>label=English (United Kingdom)</td>
 </tr>
 <tr>
@@ -327,53 +376,8 @@
 	<td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>link=Modify</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyTextPresent</td>
-	<td>Update versions</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyTextPresent</td>
-	<td>Increment minor version</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyChecked</td>
-	<td>//input[@value="ACTION_INCREMENT_MINOR"]</td>
-	<td></td>
-</tr>
-<tr>
 	<td>type</td>
-	<td>//td[@class="fieldColumn"]/textarea</td>
-	<td>desc testNote1 modified during a review 2</td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>//input[@value="Save"]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyTextPresent</td>
-	<td>1.2</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyTextPresent</td>
-	<td>desc testNote1 modified during a review 2</td>
-	<td></td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>link=Workflow</td>
-	<td></td>
-</tr>
-<tr>
-	<td>type</td>
-	<td>//div[@class="tabsContent"]/div/div[3]//form//textarea</td>
+	<td>//textarea[@id="reviewTasksTable:taskActionComment"]</td>
 	<td>ok pour moi aussi</td>
 </tr>
 <tr>
@@ -381,28 +385,12 @@
 	<td>link=Approve</td>
 	<td></td>
 </tr>
-<!--vérification de perte de droits de la revue-->
-<tr>
-	<td>clickAndWait</td>
-	<td>link=Workflow</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyTextNotPresent</td>
-	<td>Select reviewers</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyElementNotPresent</td>
-	<td>link=Modify</td>
-	<td></td>
-</tr>
 <tr>
 	<td>clickAndWait</td>
 	<td>link=Log out</td>
 	<td></td>
 </tr>
-<!--jdoe valide le doc-->
+<!--jdoe verifie que le doc est sorti de la revue-->
 <tr>
 	<td>type</td>
 	<td>username</td>
@@ -420,7 +408,7 @@
 </tr>
 <tr>
 	<td>select</td>
-	<td>//select[@class="langSelect"]</td>
+	<td>//select[@class='langSelect']</td>
 	<td>label=English (United Kingdom)</td>
 </tr>
 <tr>
@@ -444,110 +432,13 @@
 	<td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>link=Modify</td>
+	<td>verifyTextNotPresent</td>
+	<td>Project</td>
 	<td></td>
 </tr>
 <tr>
 	<td>verifyTextPresent</td>
-	<td>Update versions</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyTextPresent</td>
-	<td>Increment minor version</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyChecked</td>
-	<td>//input[@value="ACTION_INCREMENT_MINOR"]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>link=Metadata</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyTextNotPresent</td>
-	<td>Update versions</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyTextNotPresent</td>
-	<td>Increment major version</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyTextNotPresent</td>
-	<td>Increment minor version</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyTextNotPresent</td>
-	<td>Skip version increment</td>
-	<td></td>
-</tr>
-<tr>
-	<td>type</td>
-	<td>//div[@class="tabsContent"]//form/table//tr[8]//input</td>
-	<td>English (United Kingdom)</td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>//input[@value="Save"]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyTextPresent</td>
-	<td>1.2</td>
-	<td></td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>link=Metadata</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyTextPresent</td>
-	<td>English (United Kingdom)</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyElementPresent</td>
-	<td>link=John Smith</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyElementPresent</td>
-	<td>link=Bree Van de Kaamp</td>
-	<td></td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>link=Workflow</td>
-	<td></td>
-</tr>
-<tr>
-	<td>type</td>
-	<td>//div[@class="tabsContent"]/div/div[3]//form//textarea</td>
-	<td>Ok, ça joue pour moi</td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>link=Approve</td>
-	<td></td>
-</tr>
-<!--vérification de la redirection vers l'onglet Résumé-->
-<tr>
-	<td>verifyTextPresent</td>
-	<td>Life cycle information</td>
-	<td></td>
-</tr>
-<!--jdoe vérifie que le doc est sortie de la revue-->
-<tr>
-	<td>verifyTextNotPresent</td>
-	<td>Review</td>
+	<td>Approved</td>
 	<td></td>
 </tr>
 <tr>
@@ -558,16 +449,6 @@
 <tr>
 	<td>verifyTextPresent</td>
 	<td>Start a workflow</td>
-	<td></td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>link=testFolder1</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyTextNotPresent</td>
-	<td>workflow</td>
 	<td></td>
 </tr>
 <tr>
