@@ -35,7 +35,7 @@
 </tr>
 <tr>
 	<td>select</td>
-	<td>//select[@class='langSelect']</td>
+	<td>//select[@class=&quot;langSelect&quot;]</td>
 	<td>label=English (United Kingdom)</td>
 </tr>
 <tr>
@@ -63,41 +63,35 @@
 	<td>link=Access rights</td>
 	<td></td>
 </tr>
-<!--jdoe donne a bree des droits de lecture-->
+<!--jdoe donne à bree des droits de lecture-->
 <tr>
 	<td>type</td>
-	<td>//input[@name='add_rights_form:nxl_user_group_suggestion:nxw_selection_suggest']</td>
-	<td></td>
-</tr>
-<tr>
-	<td>typeKeys</td>
-	<td>//input[@name='add_rights_form:nxl_user_group_suggestion:nxw_selection_suggest']</td>
+	<td>//div[@class=&quot;userAndGroupSearch&quot;]//input[@class=&quot;directoryFilter&quot;]</td>
 	<td>bree</td>
 </tr>
 <tr>
-	<td>waitForCondition</td>
-	<td>selenium.browserbot.getCurrentWindow().document.getElementById('add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox').style.display != 'none'</td>
-	<td>10000</td>
+	<td>click</td>
+	<td>//div[@class=&quot;userAndGroupSearch&quot;]//input[@value=&quot;Search&quot;]</td>
+	<td></td>
 </tr>
 <tr>
-	<td>verifyText</td>
-	<td>//*[@id='add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td>waitForTextPresent</td>
 	<td>Bree Van de Kaamp</td>
+	<td></td>
 </tr>
 <tr>
 	<td>click</td>
-	<td>//*[@id='add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td>link=Add to selection</td>
 	<td></td>
 </tr>
-<!-- wait for table to appear -->
 <tr>
 	<td>waitForCondition</td>
-	<td>selenium.browserbot.getCurrentWindow().document.getElementById('add_rights_form:nxl_user_group_suggestion:nxw_selection_list:0:nxw_selection_listItem') != null</td>
-	<td>10000</td>
+	<td>var value = selenium.getText('//table[@class=&quot;rightsAddManager&quot;]/tbody/tr[1]/td[2]'); value.match(/Remove/);</td>
+	<td>15000</td>
 </tr>
 <tr>
 	<td>select</td>
-	<td>//*[@id='add_rights_form']/table/tbody/tr/td[2]/div/table/tbody/tr[2]/td[2]/select</td>
+	<td>//table[@class=&quot;rightsAddManager&quot;]/tbody/tr/td[3]//table//tr[2]//select</td>
 	<td>label=Read</td>
 </tr>
 <tr>
@@ -108,56 +102,49 @@
 <!--Verify that Save local Rights button is displayed-->
 <tr>
 	<td>verifyElementPresent</td>
-	<td>//input[@value='Save local rights']</td>
+	<td>//input[@value=&quot;Save local rights&quot;]</td>
 	<td></td>
 </tr>
 <!--Empty user selection to set new local rights-->
 <tr>
 	<td>click</td>
-	<td>add_rights_form:nxl_user_group_suggestion:nxw_selection_list:0:nxw_selection_delete</td>
+	<td>link=Remove from selection</td>
 	<td></td>
 </tr>
-<!-- wait for table to disappear -->
 <tr>
-	<td>waitForCondition</td>
-	<td>selenium.browserbot.getCurrentWindow().document.getElementById('add_rights_form:nxl_user_group_suggestion:nxw_selection_list:0:nxw_selection_listItem') == null</td>
-	<td>10000</td>
+	<td>waitForTextPresent</td>
+	<td>Your user selection is empty</td>
+	<td></td>
 </tr>
-<!--jdoe donne a jsmith des droits d'ecriture-->
+<!--jdoe donne à jsmith des droits d'écriture-->
 <tr>
 	<td>type</td>
-	<td>//input[@name='add_rights_form:nxl_user_group_suggestion:nxw_selection_suggest']</td>
-	<td></td>
-</tr>
-<tr>
-	<td>typeKeys</td>
-	<td>//input[@name='add_rights_form:nxl_user_group_suggestion:nxw_selection_suggest']</td>
+	<td>//div[@class=&quot;userAndGroupSearch&quot;]//input[@class=&quot;directoryFilter&quot;]</td>
 	<td>jsmith</td>
 </tr>
 <tr>
-	<td>waitForCondition</td>
-	<td>selenium.browserbot.getCurrentWindow().document.getElementById('add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox').style.display != 'none'</td>
-	<td>10000</td>
+	<td>click</td>
+	<td>//div[@class=&quot;userAndGroupSearch&quot;]//input[@value=&quot;Search&quot;]</td>
+	<td></td>
 </tr>
 <tr>
-	<td>verifyText</td>
-	<td>//*[@id='add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td>waitForTextPresent</td>
 	<td>John Smith</td>
+	<td></td>
 </tr>
 <tr>
 	<td>click</td>
-	<td>//*[@id='add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td>link=Add to selection</td>
 	<td></td>
 </tr>
-<!-- wait for table to appear -->
 <tr>
 	<td>waitForCondition</td>
-	<td>selenium.browserbot.getCurrentWindow().document.getElementById('add_rights_form:nxl_user_group_suggestion:nxw_selection_list:0:nxw_selection_listItem') != null</td>
-	<td>10000</td>
+	<td>var value = selenium.getText('//table[@class=&quot;rightsAddManager&quot;]/tbody/tr[1]/td[2]'); value.match(/Remove/);</td>
+	<td>15000</td>
 </tr>
 <tr>
 	<td>select</td>
-	<td>//*[@id='add_rights_form']/table/tbody/tr/td[2]/div/table/tbody/tr[2]/td[2]/select</td>
+	<td>//table[@class=&quot;rightsAddManager&quot;]/tbody/tr/td[3]//table//tr[2]//select</td>
 	<td>label=Write</td>
 </tr>
 <tr>
@@ -165,119 +152,93 @@
 	<td>//input[@value='Add permission']</td>
 	<td></td>
 </tr>
-<!--Verify that Save local Rights button is displayed-->
-<tr>
-	<td>verifyElementPresent</td>
-	<td>//input[@value='Save local rights']</td>
-	<td></td>
-</tr>
 <!--Empty user selection to set new local rights-->
 <tr>
 	<td>click</td>
-	<td>add_rights_form:nxl_user_group_suggestion:nxw_selection_list:0:nxw_selection_delete</td>
+	<td>link=Remove from selection</td>
 	<td></td>
 </tr>
-<!-- wait for table to disappear -->
 <tr>
-	<td>waitForCondition</td>
-	<td>selenium.browserbot.getCurrentWindow().document.getElementById('add_rights_form:nxl_user_group_suggestion:nxw_selection_list:0:nxw_selection_listItem') == null</td>
-	<td>10000</td>
+	<td>waitForTextPresent</td>
+	<td>Your user selection is empty</td>
+	<td></td>
 </tr>
-<!--jdoe donne a lbramard droits de lecture-->
+<!--jdoe donne à lbramard droits de lecture-->
 <tr>
 	<td>type</td>
-	<td>//input[@name='add_rights_form:nxl_user_group_suggestion:nxw_selection_suggest']</td>
-	<td></td>
-</tr>
-<tr>
-	<td>typeKeys</td>
-	<td>//input[@name='add_rights_form:nxl_user_group_suggestion:nxw_selection_suggest']</td>
+	<td>//div[@class=&quot;userAndGroupSearch&quot;]//input[@class=&quot;directoryFilter&quot;]</td>
 	<td>lbramard</td>
 </tr>
 <tr>
-	<td>waitForCondition</td>
-	<td>selenium.browserbot.getCurrentWindow().document.getElementById('add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox').style.display != 'none'</td>
-	<td>10000</td>
+	<td>click</td>
+	<td>//div[@class=&quot;userAndGroupSearch&quot;]//input[@value=&quot;Search&quot;]</td>
+	<td></td>
 </tr>
 <tr>
-	<td>verifyText</td>
-	<td>//*[@id='add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td>waitForTextPresent</td>
 	<td>Lucien Bramard</td>
+	<td></td>
 </tr>
 <tr>
 	<td>click</td>
-	<td>//*[@id='add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td>link=Add to selection</td>
 	<td></td>
 </tr>
-<!-- wait for table to appear -->
 <tr>
 	<td>waitForCondition</td>
-	<td>selenium.browserbot.getCurrentWindow().document.getElementById('add_rights_form:nxl_user_group_suggestion:nxw_selection_list:0:nxw_selection_listItem') != null</td>
-	<td>10000</td>
+	<td>var value = selenium.getText('//table[@class=&quot;rightsAddManager&quot;]/tbody/tr[1]/td[2]'); value.match(/Remove/);</td>
+	<td>15000</td>
 </tr>
 <tr>
 	<td>select</td>
-	<td>//*[@id='add_rights_form']/table/tbody/tr/td[2]/div/table/tbody/tr[2]/td[2]/select</td>
+	<td>//table[@class=&quot;rightsAddManager&quot;]/tbody/tr/td[3]//table//tr[2]//select</td>
 	<td>label=Read</td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
 	<td>//input[@value='Add permission']</td>
-	<td></td>
-</tr>
-<!--Verify that Save local Rights button is displayed-->
-<tr>
-	<td>verifyElementPresent</td>
-	<td>//input[@value='Save local rights']</td>
 	<td></td>
 </tr>
 <!--Empty user selection to set new local rights-->
 <tr>
 	<td>click</td>
-	<td>add_rights_form:nxl_user_group_suggestion:nxw_selection_list:0:nxw_selection_delete</td>
+	<td>link=Remove from selection</td>
 	<td></td>
 </tr>
-<!-- wait for table to disappear -->
 <tr>
-	<td>waitForCondition</td>
-	<td>selenium.browserbot.getCurrentWindow().document.getElementById('add_rights_form:nxl_user_group_suggestion:nxw_selection_list:0:nxw_selection_listItem') == null</td>
-	<td>10000</td>
+	<td>waitForTextPresent</td>
+	<td>Your user selection is empty</td>
+	<td></td>
 </tr>
-<!--jdoe donne a linnet droits de lecture-->
+<!--jdoe donne à linnet droits de lecture-->
 <tr>
 	<td>type</td>
-	<td>//input[@name='add_rights_form:nxl_user_group_suggestion:nxw_selection_suggest']</td>
-	<td></td>
-</tr>
-<tr>
-	<td>typeKeys</td>
-	<td>//input[@name='add_rights_form:nxl_user_group_suggestion:nxw_selection_suggest']</td>
+	<td>//div[@class=&quot;userAndGroupSearch&quot;]//input[@class=&quot;directoryFilter&quot;]</td>
 	<td>linnet</td>
 </tr>
 <tr>
-	<td>waitForCondition</td>
-	<td>selenium.browserbot.getCurrentWindow().document.getElementById('add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox').style.display != 'none'</td>
-	<td>10000</td>
+	<td>click</td>
+	<td>//div[@class=&quot;userAndGroupSearch&quot;]//input[@value=&quot;Search&quot;]</td>
+	<td></td>
 </tr>
 <tr>
-	<td>verifyText</td>
-	<td>//*[@id='add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td>waitForTextPresent</td>
 	<td>Linnet Scavo</td>
+	<td></td>
 </tr>
 <tr>
 	<td>click</td>
-	<td>//*[@id='add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td>link=Add to selection</td>
 	<td></td>
 </tr>
-<!-- wait for table to appear -->
 <tr>
 	<td>waitForCondition</td>
-	<td>selenium.browserbot.getCurrentWindow().document.getElementById('add_rights_form:nxl_user_group_suggestion:nxw_selection_list:0:nxw_selection_listItem') != null</td>
-	<td>10000</td>
+	<td>var value = selenium.getText('//table[@class=&quot;rightsAddManager&quot;]/tbody/tr[1]/td[2]'); value.match(/Remove/);</td>
+	<td>15000</td>
 </tr>
 <tr>
 	<td>select</td>
-	<td>//*[@id='add_rights_form']/table/tbody/tr/td[2]/div/table/tbody/tr[2]/td[2]/select</td>
+	<td>//table[@class=&quot;rightsAddManager&quot;]/tbody/tr/td[3]//table//tr[2]//select</td>
 	<td>label=Read</td>
 </tr>
 <tr>
@@ -285,20 +246,14 @@
 	<td>//input[@value='Add permission']</td>
 	<td></td>
 </tr>
-<!--Verify that Save local Rights button is displayed-->
-<tr>
-	<td>verifyElementPresent</td>
-	<td>//input[@value='Save local rights']</td>
-	<td></td>
-</tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>//input[@value='Save local rights']</td>
+	<td>//input[@value=&quot;Save local rights&quot;]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>verifyElementNotPresent</td>
-	<td>//input[@value='Save local rights']</td>
+	<td>//input[@value=&quot;Save local rights&quot;]</td>
 	<td></td>
 </tr>
 <tr>
