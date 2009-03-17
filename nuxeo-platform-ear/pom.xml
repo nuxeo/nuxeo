@@ -93,6 +93,7 @@
       <artifactId>nuxeo-platform-audit-facade</artifactId>
       <type>ejb</type>
     </dependency>
+    <!-- NXP-3179 - DEPRECATED 
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-cache-api</artifactId>
@@ -105,18 +106,17 @@
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-cache-jboss</artifactId>
     </dependency>
-    <!-- NXP-3179 - DEPRECATED 
       <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-cache-server</artifactId>
       <type>ejb</type>
       </dependency>
-    -->
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-cache-web</artifactId>
       <type>ejb</type>
     </dependency>
+    -->
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-commandline-executor</artifactId>
