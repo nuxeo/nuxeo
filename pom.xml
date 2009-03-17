@@ -160,11 +160,13 @@
         <artifactId>nuxeo-core-event</artifactId>
         <version>${nuxeo.core.version}</version>
       </dependency>
+      <!-- DEPRECATED
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core-event-compat</artifactId>
         <version>${nuxeo.core.version}</version>
       </dependency>
+       -->
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core-facade</artifactId>
