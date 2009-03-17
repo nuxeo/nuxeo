@@ -201,6 +201,7 @@
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-dublincore</artifactId>
     </dependency>
+    <!-- NXP-3179 - DEPRECATED 
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-events-api</artifactId>
@@ -214,6 +215,7 @@
       <artifactId>nuxeo-platform-events-facade</artifactId>
       <type>ejb</type>
     </dependency>
+    -->
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-filemanager-core</artifactId>
