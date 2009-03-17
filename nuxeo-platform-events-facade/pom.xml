@@ -11,7 +11,7 @@
   <artifactId>nuxeo-platform-events-facade</artifactId>
   <name>Nuxeo Event Service - Facade</name>
   <packaging>ejb</packaging>
-  <description>Nuxeo Enterprise Platform: Events Facade.</description>
+  <description>DEPRECATED - Nuxeo Enterprise Platform: Events Facade.</description>
 
   <dependencies>
     <dependency>

@@ -10,7 +10,7 @@
 
   <artifactId>nuxeo-platform-events-api</artifactId>
   <name>Nuxeo Platform Event Service - API</name>
-  <description>Nuxeo Enterprise Platform: Event Service API.</description>
+  <description>DEPRECATED - Nuxeo Enterprise Platform: Event Service API.</description>
 
   <dependencies>
     <dependency>

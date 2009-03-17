@@ -9,7 +9,7 @@
 
   <artifactId>nuxeo-platform-events-core</artifactId>
   <name>Nuxeo Event Service - Core</name>
-  <description>Nuxeo Enterprise Platform: Event Service Core.</description>
+  <description>DEPRECATED - Nuxeo Enterprise Platform: Event Service Core.</description>
 
   <dependencies>
     <dependency>
