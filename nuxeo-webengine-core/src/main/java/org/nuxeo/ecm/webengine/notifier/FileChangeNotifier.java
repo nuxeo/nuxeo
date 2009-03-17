@@ -117,9 +117,9 @@ public class FileChangeNotifier implements FileChangeListener {
                 Collection<FileEntry> entries = ((Map<String, FileEntry>) roots.clone()).values();
                 for (FileEntry entry : entries) {
                     //TODO how to handle cases when roots are removed or renamed?
-                    ArrayList<File> removed = new ArrayList<File>();
-                    ArrayList<File> created = new ArrayList<File>();
-                    ArrayList<File> modified = new ArrayList<File>();
+                    List<File> removed = new ArrayList<File>();
+                    List<File> created = new ArrayList<File>();
+                    List<File> modified = new ArrayList<File>();
                     entry.scanForChanges(created, removed, modified);
                     if (!removed.isEmpty()) {
                         FileChangeNotifier.this.filesRemoved(removed);

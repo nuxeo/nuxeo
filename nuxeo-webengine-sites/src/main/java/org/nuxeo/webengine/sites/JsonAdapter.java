@@ -48,7 +48,6 @@ public class JsonAdapter extends DefaultAdapter {
 
         DocumentModel rootDoc = null;
         DocumentModel currentDoc = null;
-        String result = "";
 
         if (o instanceof Site) {
             Site site = (Site) o;
@@ -66,6 +65,7 @@ public class JsonAdapter extends DefaultAdapter {
                 ctx.getUserSession().put(ROOT_DOCUMENT, rootDoc);
             }
             SiteDocumentTree tree = new SiteDocumentTree(ctx, rootDoc);
+            String result = "";
             if (root == null || "source".equals(root)) {
                 Path relPath = getRelativPath(rootDoc, currentDoc);
                 tree.enter(ctx, relPath.toString());

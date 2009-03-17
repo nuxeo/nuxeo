@@ -35,5 +35,12 @@ public final class WebCommentsConstants {
     public static final String PERMISSION_COMMENT = "Comment";
 
     public static final String PERMISSION_MODERATE = "Moderate";
+    
+    public static final String TRANSITION_TO_PUBLISHED_STATE = "moderation_publish";
+    
+    public static final String PUBLISHED_STATE = "moderation_published";
 
+    public static final String PENDING_STATE = "moderation_pending";
+    
+    public static final String MODERATION_PROCESS = "comments_moderation"; 
 }

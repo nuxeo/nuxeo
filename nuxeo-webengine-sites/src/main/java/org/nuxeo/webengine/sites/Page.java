@@ -40,12 +40,12 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.rest.DocumentObject;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
-import org.nuxeo.ecm.platform.comment.api.CommentableDocument;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.Template;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.webcomments.utils.WebCommentUtils;
+import org.nuxeo.ecm.webengine.webcomments.utils.WebCommentsConstants;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.webengine.utils.SiteUtils;
 
@@ -153,7 +153,7 @@ public class Page extends DocumentObject {
         try {
             CommentManager commentManager = WebCommentUtils.getCommentManager();
             for (DocumentModel doc : commentManager.getComments(this.getDocument())) {
-                if ("moderation_published".equals(doc.getCurrentLifeCycleState())) {
+                if (WebCommentsConstants.PUBLISHED_STATE.equals(doc.getCurrentLifeCycleState())) {
                     publishedComments.add(doc);
                 }
             }
@@ -172,7 +172,7 @@ public class Page extends DocumentObject {
         try {
             CommentManager commentManager = WebCommentUtils.getCommentManager();
             for (DocumentModel doc : commentManager.getComments(this.getDocument())) {
-                if ("moderation_pending".equals(doc.getCurrentLifeCycleState())) {
+                if (WebCommentsConstants.PENDING_STATE.equals(doc.getCurrentLifeCycleState())) {
                     pendingComments.add(doc);
                 }
             }

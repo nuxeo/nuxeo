@@ -7,6 +7,7 @@ import org.jbpm.graph.exe.ProcessInstance;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.jbpm.JbpmListFilter;
+import org.nuxeo.ecm.webengine.webcomments.utils.WebCommentsConstants;
 
 
 public class CommentWorkflowFilter implements JbpmListFilter {
@@ -27,7 +28,7 @@ public class CommentWorkflowFilter implements JbpmListFilter {
         for (T t : list) {
             ProcessInstance pi = (ProcessInstance) t;
             String name = pi.getProcessDefinition().getName();
-            if ("comments_moderation".equals(name)) {
+            if (WebCommentsConstants.MODERATION_PROCESS.equals(name)) {
                 String postId = (String) pi.getContextInstance().getVariable(
                         "postRef");
                 if (this.commentId.equals(postId)) {

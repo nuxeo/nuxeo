@@ -24,7 +24,7 @@ import org.nuxeo.ecm.webengine.model.impl.ModuleImpl;
  */
 public class DefaultModuleTracker extends ModuleTracker {
 
-    protected ModuleClassesEntry classes;
+    protected final ModuleClassesEntry classes;
 
     public DefaultModuleTracker(ModuleImpl module) {
         super(module);

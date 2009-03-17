@@ -52,21 +52,22 @@ import org.nuxeo.ecm.webengine.forms.FormData;
 import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.ecm.webengine.model.exceptions.IllegalParameterException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
+import org.nuxeo.ecm.webengine.webcomments.utils.WebCommentUtils;
+import org.nuxeo.ecm.webengine.webcomments.utils.WebCommentsConstants;
 import org.nuxeo.runtime.api.Framework;
-
 
 /**
  * Comment Service - manages document comments.
  * <p>
  * Accepts the following methods:
  * <ul>
- * <li> POST - create a new comment
+ * <li>POST - create a new comment
  * </ul>
- *
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * @author <a href="mailto:stan@nuxeo.com">Sun Seng David TAN</a>
  */
-@WebAdapter(name = "comments", type = "CommentService", targetType = "Document", targetFacets = {"Commentable"})
+@WebAdapter(name = "comments", type = "CommentService", targetType = "Document", targetFacets = { "Commentable" })
 public class CommentService extends DefaultAdapter {
 
     @POST
@@ -76,7 +77,6 @@ public class CommentService extends DefaultAdapter {
         }
 
         DocumentObject dobj = (DocumentObject) getTarget();
-        CommentManager commentManager = getCommentManager();
         CoreSession session = dobj.getCoreSession();
         DocumentModel pageDoc = dobj.getDocument();
         try {
@@ -86,10 +86,13 @@ public class CommentService extends DefaultAdapter {
                     session.getPrincipal().getName());
             webComment.setPropertyValue("webcmt:text", cText);
             webComment.setPropertyValue("webcmt:creationDate", new Date());
-            webComment = commentManager.createLocatedComment(dobj.getDocument(), webComment, getParentWorkspacePath(session, dobj.getDocument()));
+            CommentManager commentManager = WebCommentUtils.getCommentManager();
+            webComment = commentManager.createLocatedComment(
+                    dobj.getDocument(), webComment, getParentWorkspacePath(
+                            session, dobj.getDocument()));
             session.save();
-            
-             if (WebCommentUtils.isCurrentModerated(session, pageDoc)
+
+            if (WebCommentUtils.isCurrentModerated(session, pageDoc)
                     && (!WebCommentUtils.isModeratedByCurrentUser(session,
                             pageDoc))) {
                 // if current page is moderated
@@ -98,10 +101,9 @@ public class CommentService extends DefaultAdapter {
             } else {
                 // simply publish the comment
                 session.followTransition(webComment.getRef(),
-                        "moderation_publish");
+                        WebCommentsConstants.TRANSITION_TO_PUBLISHED_STATE);
             }
-            
-            
+
             return redirect(getTarget().getPath());
         } catch (Exception e) {
             throw WebException.wrap(e);
@@ -110,7 +112,7 @@ public class CommentService extends DefaultAdapter {
 
     @GET
     @Path("reject")
-    @TransactionAttribute(TransactionAttributeType.REQUIRED) 
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public Response reject() {
         try {
             return rejectComment();
@@ -123,7 +125,7 @@ public class CommentService extends DefaultAdapter {
 
     @GET
     @Path("approve")
-    @TransactionAttribute(TransactionAttributeType.REQUIRED) 
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public Response approve() {
         try {
             return approveComent();
@@ -133,7 +135,7 @@ public class CommentService extends DefaultAdapter {
             throw WebException.wrap("Failed to approve comment", e);
         }
     }
-    
+
     @GET
     @Path("delete")
     public Response remove() {
@@ -145,8 +147,6 @@ public class CommentService extends DefaultAdapter {
             throw WebException.wrap("Failed to delete comment", e);
         }
     }
-    
-
 
     @DELETE
     public Response deleteComment() throws Exception {
@@ -158,7 +158,7 @@ public class CommentService extends DefaultAdapter {
         DocumentModel comment = session.getDocument(new IdRef(docId));
         if (WebCommentUtils.isCurrentModerated(session, dobj.getDocument())
                 && comment.getCurrentLifeCycleState().equals(
-                        "moderation_pending")) {
+                        WebCommentsConstants.PENDING_STATE)) {
             JbpmService jbpmService = Framework.getService(JbpmService.class);
             TaskInstance moderationTask = getModerationTask(jbpmService,
                     session, dobj.getDocument(), docId);
@@ -167,32 +167,29 @@ public class CommentService extends DefaultAdapter {
                 throw new ClientException("No moderation task found");
             }
 
-            jbpmService.endTask(moderationTask.getId(), "moderation_pending",
+            jbpmService.endTask(moderationTask.getId(), WebCommentsConstants.PENDING_STATE,
                     null, null, null, (NuxeoPrincipal) session.getPrincipal());
         }
 
-        CommentManager commentManager = getCommentManager();
+        CommentManager commentManager = WebCommentUtils.getCommentManager();
         commentManager.deleteComment(dobj.getDocument(), comment);
         return redirect(dobj.getPath());
 
     }
-<<<<<<< local
-    
+
     /**
      * Starts the moderation on given Comment.
      * 
      * @throws Exception
      */
-   @SuppressWarnings("unchecked")
-   @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW) 
-    protected void startModeration(CoreSession session, DocumentModel page, String commentID)
-            throws Exception {
-=======
->>>>>>> other
+    @SuppressWarnings("unchecked")
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    protected void startModeration(CoreSession session, DocumentModel page,
+            String commentID) throws Exception {
 
-<<<<<<< local
         JbpmService jbpmService = Framework.getService(JbpmService.class);
-        ArrayList<String> moderators = WebCommentUtils.getModerators(session, page);
+        ArrayList<String> moderators = WebCommentUtils.getModerators(session,
+                page);
 
         if (moderators == null || moderators.isEmpty()) {
             throw new ClientException("No moderators defined");
@@ -202,74 +199,66 @@ public class CommentService extends DefaultAdapter {
         vars.put(VariableName.participants.name(), moderators);
         vars.put("postRef", commentID);
         jbpmService.createProcessInstance(
-                (NuxeoPrincipal) session.getPrincipal(), "comments_moderation",
+                (NuxeoPrincipal) session.getPrincipal(), WebCommentsConstants.MODERATION_PROCESS,
                 page, vars, null);
         // Events.instance().raiseEvent(JbpmEventNames.WORKFLOW_NEW_STARTED);
 
     }
-    
+
     public Response rejectComment() throws Exception {
         DocumentObject dobj = (DocumentObject) getTarget();
         CoreSession session = dobj.getCoreSession();
         DocumentModel pageDoc = dobj.getDocument();
-    
-        CommentManager commentManager = getCommentManager();
-    
-
+        CommentManager commentManager = WebCommentUtils.getCommentManager();
         FormData form = ctx.getForm();
-        String docId = form.getString(FormData.PROPERTY);
-    
-        
+        String commentId = form.getString(FormData.PROPERTY);
+
         JbpmService jbpmService = Framework.getService(JbpmService.class);
         TaskInstance moderationTask = getModerationTask(jbpmService, session,
-                pageDoc, docId);
+                pageDoc, commentId);
 
         if (moderationTask == null) {
             throw new ClientException("No moderation task found");
         }
 
-
         jbpmService.endTask(moderationTask.getId(), "moderation_reject", null,
                 null, null, (NuxeoPrincipal) session.getPrincipal());
 
-        //get current comment
-        DocumentModel comment = session.getDocument(new IdRef(docId));
-        //remove comment
+        // get current comment
+        DocumentModel comment = session.getDocument(new IdRef(commentId));
+        // remove comment
         commentManager.deleteComment(dobj.getDocument(), comment);
         // Events.instance().raiseEvent(JbpmEventNames.WORKFLOW_TASK_COMPLETED);
-
-
         return redirect(dobj.getPath());
     }
-    
+
     
     public Response approveComent() throws Exception {
         DocumentObject dobj = (DocumentObject) getTarget();
         CoreSession session = dobj.getCoreSession();
         DocumentModel pageDoc = dobj.getDocument();
         FormData form = ctx.getForm();
-        String docId = form.getString(FormData.PROPERTY);
+        String commentId = form.getString(FormData.PROPERTY);
 
         JbpmService jbpmService = Framework.getService(JbpmService.class);
         TaskInstance moderationTask = getModerationTask(jbpmService, session,
-                pageDoc, docId);
+                pageDoc, commentId);
 
         if (moderationTask == null) {
             throw new ClientException("No moderation task found");
         }
-        jbpmService.endTask(moderationTask.getId(), "moderation_publish", null,
+        jbpmService.endTask(moderationTask.getId(), WebCommentsConstants.TRANSITION_TO_PUBLISHED_STATE, null,
                 null, null, (NuxeoPrincipal) session.getPrincipal());
-
         // Events.instance().raiseEvent(JbpmEventNames.WORKFLOW_TASK_COMPLETED);
-
         return redirect(dobj.getPath());
     }
-    
+
     protected ProcessInstance getModerationProcess(JbpmService jbpmService,
             CoreSession session, DocumentModel doc, String commentId)
             throws ClientException {
         List<ProcessInstance> processes = jbpmService.getProcessInstances(doc,
-                (NuxeoPrincipal) session.getPrincipal(), new CommentWorkflowFilter(commentId));
+                (NuxeoPrincipal) session.getPrincipal(),
+                new CommentWorkflowFilter(commentId));
         if (processes != null && !processes.isEmpty()) {
             if (processes.size() > 1) {
                 // log.error("There are several moderation workflows running, "
@@ -301,15 +290,9 @@ public class CommentService extends DefaultAdapter {
         }
         return null;
     }
-    
-=======
->>>>>>> other
-    public static CommentManager getCommentManager(){
-        return Framework.getLocalService(CommentManager.class);
-   }
 
-    public static String getParentWorkspacePath(CoreSession session, DocumentModel doc)
-            throws Exception {
+    public static String getParentWorkspacePath(CoreSession session,
+            DocumentModel doc) throws Exception {
         List<DocumentModel> parents = session.getParentDocuments(doc.getRef());
         for (DocumentModel documentModel : parents) {
             if (documentModel.getType().equals("Workspace")) {

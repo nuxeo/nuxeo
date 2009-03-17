@@ -98,32 +98,31 @@ public class WebEngine implements ResourceLocator {
         CTX.set(ctx);
     }
 
-
     protected final File root;
     protected ModuleManager moduleMgr;
-    protected Scripting scripting;
-    protected RenderingEngine rendering;
-    protected Map<String, Object> env;
-    protected String devMode = null;
+    protected final Scripting scripting;
+    protected final RenderingEngine rendering;
+    protected final Map<String, Object> env;
+    protected String devMode;
 
-    protected GlobalTypes globalTypes;
+    protected final GlobalTypes globalTypes;
 
-    protected AnnotationManager annoMgr;
+    protected final AnnotationManager annoMgr;
 
     protected final ResourceRegistry registry;
 
     protected String skinPathPrefix;
 
-    protected List<File> registeredModules = new ArrayList<File>();
+    protected final List<File> registeredModules = new ArrayList<File>();
 
-    protected WebLoader webLoader;
+    protected final WebLoader webLoader;
     protected ReloadManager reloadMgr;
 
 
     public WebEngine(ResourceRegistry registry, File root) throws IOException {
         this.registry = registry;
         this.root = root;
-        this.devMode = Framework.getProperty("org.nuxeo.dev");
+        devMode = Framework.getProperty("org.nuxeo.dev");
         if (devMode != null) {
             reloadMgr = new ReloadManager(this);
         }
@@ -217,7 +216,7 @@ public class WebEngine implements ResourceLocator {
     }
 
     /**
-     * Register a module reference given its configuration file.
+     * Registers a module reference given its configuration file.
      * The module configuration is not yet loaded.
      * It will be loaded the first time an HTTP request will be made.
      */

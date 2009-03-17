@@ -31,12 +31,12 @@ public abstract class ModuleTracker implements Runnable {
 
     private static final Log log = LogFactory.getLog(ModuleTracker.class);
 
-    protected ModuleImpl module;
+    protected final ModuleImpl module;
 
-    protected FileEntry moduleXml;
-    protected FileEntry webTypes;
-    protected FileEntry i18n;
-    protected DirectoryEntry skin;
+    protected final FileEntry moduleXml;
+    protected final FileEntry webTypes;
+    protected final FileEntry i18n;
+    protected final DirectoryEntry skin;
 
     public ModuleTracker(ModuleImpl module) {
         this.module = module;
@@ -46,7 +46,6 @@ public abstract class ModuleTracker implements Runnable {
         skin = new DirectoryEntry(new File(root, "skin"));
         webTypes = new FileEntry(new File(root, "META-INF/web-types"));
     }
-
 
     public void run() {
         try {

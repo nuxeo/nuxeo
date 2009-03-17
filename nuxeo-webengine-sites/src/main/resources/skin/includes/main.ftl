@@ -1,5 +1,5 @@
 <#macro main>
 
-<center><h4>${welcomeText}</h4></center>
+<div>${welcomeText}</div>
 
 </#macro>
