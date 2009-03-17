@@ -37,8 +37,8 @@ public class ReloadManager {
 
     private static final Log log = LogFactory.getLog(ReloadManager.class);
 
-    protected WebEngine engine;
-    protected FileEntry deploy; // track deploy/undeploy modules
+    protected final WebEngine engine;
+    protected final FileEntry deploy; // track deploy/undeploy modules
     private final Timer timer = new Timer("ReloadManager");
 
     public ReloadManager(WebEngine engine) {

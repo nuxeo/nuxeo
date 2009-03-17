@@ -542,7 +542,7 @@ public abstract class AbstractWebContext implements WebContext {
     }
 
     public Map<String, Object> createBindings(Map<String, Object> vars) {
-        HashMap<String, Object> bindings = new HashMap<String, Object>();
+        Map<String, Object> bindings = new HashMap<String, Object>();
         if (vars != null) {
             bindings.putAll(vars);
         }

@@ -66,7 +66,7 @@ public class WebEngineComponent extends DefaultComponent { // implements
 
     private static final Log log = LogFactory.getLog(WebEngineComponent.class);
 
-    protected Set<String> deployedBundles = new HashSet<String>();
+    protected final Set<String> deployedBundles = new HashSet<String>();
     private WebEngine engine;
 
     @Override
@@ -113,10 +113,8 @@ public class WebEngineComponent extends DefaultComponent { // implements
                                 }
                             }
                         } catch (IOException e) {
-                            log
-                                    .error("Failed to deploy web modules in bundle: "
-                                            + event.getBundle()
-                                                    .getSymbolicName());
+                            log.error("Failed to deploy web modules in bundle: "
+                                    + event.getBundle().getSymbolicName());
                         }
                     }
                 });
@@ -146,9 +144,8 @@ public class WebEngineComponent extends DefaultComponent { // implements
         }
         File bf = ctx.getRuntime().getBundleFile(b);
         if (bf == null) {
-            log
-                    .warn("Bundle type not supported - cannot be resolved to a file. Bundle: "
-                            + b.getSymbolicName());
+            log.warn("Bundle type not supported - cannot be resolved to a file. Bundle: "
+                    + b.getSymbolicName());
             return;
         }
         deployedBundles.add(id);
@@ -159,7 +156,8 @@ public class WebEngineComponent extends DefaultComponent { // implements
             URL moduleConfig) throws IOException {
 
         if (checkHasNuxeoService(bundleId)) {
-            throw new WebException("This webengine module should not define a Nuxeo Service, please split up.");
+            throw new WebException(
+                    "This webengine module should not define a Nuxeo Service, please split up.");
         }
 
         if (bundleFile.isDirectory()) { // exploded jar - deploy it as is.
@@ -199,12 +197,7 @@ public class WebEngineComponent extends DefaultComponent { // implements
 
         String[] serviceNames = regInfo.getProvidedServiceNames();
 
-        if (serviceNames == null || serviceNames.length == 0) {
-            return false;
-        }
-
-        return true;
-
+        return !(serviceNames == null || serviceNames.length == 0);
     }
 
     @Override

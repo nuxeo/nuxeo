@@ -25,7 +25,7 @@ import org.nuxeo.ecm.webengine.model.impl.ModuleImpl;
  */
 public class IDEModuleTracker extends ModuleTracker {
 
-    protected FileEntry classes;
+    protected final FileEntry classes;
 
     public IDEModuleTracker(ModuleImpl module) {
         super(module);

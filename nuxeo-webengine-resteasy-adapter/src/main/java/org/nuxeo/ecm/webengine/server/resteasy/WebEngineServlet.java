@@ -159,8 +159,10 @@ public class WebEngineServlet extends HttpServlet {
         }
     }
 
-    protected HttpRequest createHttpRequest(String httpMethod, HttpServletRequest request, HttpHeaders headers, UriInfo uriInfo, HttpResponse theResponse) {
-        return new HttpServletInputMessage(request, theResponse, headers, uriInfo, httpMethod.toUpperCase(), (SynchronousDispatcher) dispatcher);
+    protected HttpRequest createHttpRequest(String httpMethod, HttpServletRequest request,
+            HttpHeaders headers, UriInfo uriInfo, HttpResponse theResponse) {
+        return new HttpServletInputMessage(request, theResponse, headers, uriInfo,
+                httpMethod.toUpperCase(), (SynchronousDispatcher) dispatcher);
     }
 
     protected HttpResponse createServletResponse(HttpServletResponse response) {
