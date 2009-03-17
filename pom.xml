@@ -878,6 +878,11 @@
           <artifactId>maven-eclipse-plugin</artifactId>
           <version>2.4</version>
         </plugin>
+        <plugin>
+          <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
+          <artifactId>maven-antrun-extended-plugin</artifactId>
+          <version>1.38</version>
+        </plugin>
       </plugins>
     </pluginManagement>
     <!--finalName>${pom.artifactId}-${pom.version}-r${buildNumber}</finalName-->
