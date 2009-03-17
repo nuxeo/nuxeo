@@ -137,20 +137,15 @@
     <ant target="jboss-clean-data" dir="nuxeo-distribution" />
   </target>
 
-  <target name="patch" description="Patch a JBoss 4.0.5 for use by Nuxeo-EP">
-    <antcall target="patch405" />
-  </target>
-  <target name="patch405" description="Patch a JBoss 4.0.5 for use by Nuxeo-EP">
-    <ant target="patch405" dir="nuxeo-distribution/nuxeo-distribution-jboss" />
-  </target>
-  <target name="patch405-2parts" description="Package Nuxeo-EP in two parts">
-    <ant target="patch405-2parts" dir="nuxeo-distribution/nuxeo-distribution-jboss" />
-  </target>
-  <target name="patch405-3parts" description="Package Nuxeo-EP in three parts">
-    <ant target="patch405-3parts" dir="nuxeo-distribution/nuxeo-distribution-jboss" />
+  <target name="patch405" description="Patch a JBoss 4.0.5 for use by Nuxeo-EP (deprecated : no more 4.0.5 compatibility)">
+    <echo>Jboss 4.0.5 is not supported anymore, user Jboss >= 4.2.2</echo>
   </target>
   <target name="patch404" description="Patch a JBoss 4.0.4 for use by Nuxeo-EP (deprecated : no more 4.0.4 compatibility)">
-    <ant target="patch404" dir="nuxeo-distribution/nuxeo-distribution-jboss" />
+    <echo>Jboss 4.0.4 is not supported anymore, user Jboss >= 4.2.2</echo>
+  </target>
+
+  <target name="patch" description="Patch a JBoss 4.2.x for use by Nuxeo-EP">
+    <ant target="patch" dir="nuxeo-distribution/nuxeo-distribution-jboss" />
   </target>
 
   <target name="copy-2parts" description="Copy Nuxeo-EP in two parts">
