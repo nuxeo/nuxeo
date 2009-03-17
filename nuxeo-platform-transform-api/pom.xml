@@ -9,7 +9,7 @@
 
   <artifactId>nuxeo-platform-transform-api</artifactId>
   <name>Nuxeo Content Transformation Service - Api</name>
-  <description>Nuxeo Enterprise Platform: Content Transformation Service (Core).
+  <description>DEPRECATED - Nuxeo Enterprise Platform: Content Transformation Service (Core).
     This service handles content transformation (ex: MSWord -&gt; PDF).
     Effective transformation is handled by transformer plugins registered
     through extension points to the transformation service.</description>
