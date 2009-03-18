@@ -25,9 +25,8 @@
     <module>nuxeo-webengine-ui</module>
     <module>nuxeo-webengine-base</module>
     <module>nuxeo-webengine-admin</module>
-    <!-- TODO JC NXP-3179 
+    <!-- TODO JC NXP-3179 -->
     <module>nuxeo-webengine-wiki</module>
-    -->
     <module>nuxeo-webengine-server</module>
     <module>nuxeo-webengine-wiki-jsf</module>
     <module>nuxeo-webengine-management</module>
