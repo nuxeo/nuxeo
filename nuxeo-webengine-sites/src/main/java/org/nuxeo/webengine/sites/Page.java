@@ -183,5 +183,14 @@ public class Page extends DocumentObject {
 
     }
     
+    public boolean isAposteriori() {
+        try {
+
+            return WebCommentUtils.getModerationType(
+                    this.getCoreSession(), this.getDocument()).equals(WebCommentsConstants.MODERATION_APOSTERIORI);
+        } catch (Exception e) {
+            throw WebException.wrap("Failed to delete comment", e);
+        }
+    }
     
 }

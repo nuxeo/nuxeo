@@ -51,9 +51,8 @@
         <#assign row = "odd"/>
       </#if>
       <li class="comment ${row}" id="${com.ref}">
-        <div class="byline">${com['webcomment:creationDate']} by ${com['webcomment:author']}</div>
-        <p><quote>${com['webcomment:text']}</quote></p>
-        
+        	<div class="byline">${com['webcomment:creationDate']} by ${com['webcomment:author']}</div>
+        	<p><quote>${com['webcomment:text']}</quote></p>
           <a href="${This.path}/@comments/delete?property=${com.ref}">Delete</a>
           <br/>
             <a href="${This.path}/@comments/reject?property=${com.ref}">Reject</a>
@@ -62,10 +61,9 @@
       </li>
       </li>
     </#list>
-     </#if> 
+     </#if>
   </ol>
 </div>  
-
  
 
 <div id="webComment" class="addWebComment" style="visibility:hidden">

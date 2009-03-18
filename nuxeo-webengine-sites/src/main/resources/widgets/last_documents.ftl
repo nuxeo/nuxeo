@@ -1,10 +1,10 @@
 <table width="100%">
   <tr>
-    <td width="50%">
+    <td class="LastPublishedPages" width="50%">
       <#include "includes/last_published_pages.ftl"/>
       <@lastPublished/>
     </td>
-    <td width="50%">
+    <td class="LastComments" width="50%">
       <#include "includes/last_comments.ftl"/>
       <@lastComments/>
     </td>

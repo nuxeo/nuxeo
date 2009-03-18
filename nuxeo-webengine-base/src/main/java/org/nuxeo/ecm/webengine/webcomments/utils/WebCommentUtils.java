@@ -59,7 +59,9 @@ public class WebCommentUtils {
      */
     public static boolean isCurrentModerated(CoreSession session,
             DocumentModel doc) throws Exception {
-        return getUsersWithPermission(session, doc, PERMISSION_MODERATE).size() >= 1 ? true : false;
+        return (getUsersWithPermission(session, doc, PERMISSION_MODERATE).size() >= 1 ? true
+                : false)
+                && (getModerationType(session, doc).equals(MODERATION_APRIORI));
     }
 
     /**
@@ -123,5 +125,19 @@ public class WebCommentUtils {
         }
         return new ArrayList<String>();
     }
-
+    
+    /*
+     * Get the moderation type for the corresponding workspace ; default is aposteriori
+     * */
+    public static String getModerationType(CoreSession session,
+            DocumentModel doc) throws Exception {
+        List<DocumentModel> parents = session.getParentDocuments(doc.getRef());
+        for (DocumentModel documentModel : parents) {
+            if (documentModel.getType().equals("Workspace")) {
+                return documentModel.getProperty("webcontainer",
+                        "moderationType").toString();
+            }
+        }
+        return MODERATION_APOSTERIORI;
+    }
 }

@@ -78,6 +78,7 @@
     <layout element="page[1]/section[1]/cell[1]">
       <width>100%</width>
       <text-align>left</text-align>
+      <padding>10px</padding>
     </layout>
     <layout element="page[2]">
       <margin>0</margin>
@@ -88,6 +89,7 @@
     </layout>
     <layout element="page[2]/section[1]/cell[1]">
       <width>100%</width>
+      <height>115px</height>
       <text-align>left</text-align>
     </layout>
     <layout element="page[3]">
@@ -100,31 +102,37 @@
     <layout element="page[3]/section[1]/cell[1]">
       <width>100%</width>
       <text-align>left</text-align>
+      <height>115px</height>
     </layout>
     <layout element="page[2]/section[2]">
       <width>100%</width>
     </layout>
     <layout element="page[2]/section[2]/cell[1]">
       <width>18%</width>
+      <padding>10px 5px 10px 10px</padding>
     </layout>
     <layout element="page[2]/section[2]/cell[2]">
       <width>64%</width>
-      <padding>0px 15px</padding>
+      <padding>10px 20px</padding>
     </layout>
     <layout element="page[2]/section[2]/cell[3]">
       <width>18%</width>
+      <padding>10px</padding>
     </layout>
     <layout element="page[3]/section[2]">
       <width>100%</width>
     </layout>
     <layout element="page[3]/section[2]/cell[1]">
       <width>18%</width>
+      <padding>10px 5px 10px 10px</padding>
     </layout>
     <layout element="page[3]/section[2]/cell[2]">
       <width>64%</width>
+      <padding>10px 20px</padding>
     </layout>
     <layout element="page[3]/section[2]/cell[3]">
       <width>18%</width>
+      <padding>10px</padding>
     </layout>
     <widget element="">
       <view>theme view</view>
@@ -266,6 +274,7 @@
       </selector>
       <selector path="h4, h5, h6">
         <font preset="title4+ (Sites fonts)" />
+        <margin>5px 0px 8px</margin>
       </selector>
       <selector path="div">
         <font preset="default (Sites fonts)" />
@@ -509,10 +518,75 @@
       <selector path=".treeNodeSelectedClass">
         <border>none</border>
       </selector>
+      <selector path=".sideblock general">
+        <padding>5px 0px</padding>
+      </selector>
+      <selector path=".treeview a">
+        <padding>1px 4px</padding>
+      </selector>
       <!-- end of rich faces tree -->   
       <selector path=".currentItemDescription">
         <color>#454545</color>
         <font-size>13px</font-size>
+      </selector>
+      <selector path=".logo">
+        <padding>30px 5px 30px 10px</padding>
+      </selector>
+      <selector path=".pageTitle">
+        <color>#fff</color>
+        <font-size>22px</font-size>
+        <padding>10px 0px 10px 10px</padding>
+      </selector>
+      <selector path=".pageDescription">
+        <color>#fff</color>
+        <font-size>12px</font-size>
+        <padding>0px 0px 0px 10px</padding>
+      </selector>
+       <selector path=".LastPublishedPages">
+        <vertical-align>top</vertical-align>
+      </selector>
+      <selector path=".pagePublishedResume">
+       <margin>0px 0px 5px</margin>
+      </selector>
+      <selector path=".dayMonth">
+        <float>left</float>
+        <margin>0px 7px 0px 0px</margin>
+        <text-align>center</text-align>
+        <padding>0px 4px</padding>
+        <background-color>#dedede</background-color>
+        <border>1px solid #7e7a94</border>
+      </selector>
+      <selector path=".documentInfo p">
+        <padding>3px 0px 0px</padding>
+      </selector>
+      <selector path=".documentInfo span">
+        <padding>3px 0px 0px</padding>
+      </selector>
+      <selector path=".LastComments">
+        <vertical-align>top</vertical-align>
+      </selector>
+      <selector path=".commentBlock">
+        <margin>0px 0px 10px</margin>
+      </selector>
+      <selector path=".commentInfos">
+        <background>transparent url(/nuxeo/icons/user.gif) no-repeat scroll 4px 4px</background>
+        <padding>5px 3px 3px 24px</padding>
+        <margin-bottom>5px</margin-bottom>
+        <border-bottom>1px solid #dedede</border-bottom>
+      </selector>
+      <selector path=".contextualLinkBlock">
+        <margin-bottom>10px</margin-bottom>
+      </selector>
+      <selector path=".contextualLink">
+        <background>transparent url(/nuxeo/icons/world_link.png) no-repeat scroll 4px 4px</background>
+        <padding>5px 3px 3px 24px</padding>
+        <margin-bottom>3px</margin-bottom>
+      </selector>
+      <selector path=".contextualLinkText">
+        <margin-left>5px</margin-left>
+      </selector>
+      <selector path=".addWebComment ul">
+        <list-style>none</list-style>
       </selector>
       <selector path=".buttonsGadget">
         <margin>5px 0px 5px 135px</margin>
@@ -544,18 +618,42 @@
     <style element="page[1]/section[1]" inherit="common site style"/>
     <style element="page[1]/section[1]/cell[1]" inherit="common site style"/>
     <style element="page[2]" inherit="common site style"/>
-    <style element="page[2]/section[1]" inherit="common site style"/>
+    <style element="page[2]/section[1]" inherit="common site style">
+    <selector path="" view="section frame">
+        <background-color>black</background-color>
+      </selector>
+    </style>
     <style element="page[2]/section[1]/cell[1]" inherit="common site style"/>
     <style element="page[3]" inherit="common site style"/>
-    <style element="page[3]/section[1]" inherit="common site style"/>
+    <style element="page[3]/section[1]" inherit="common site style">
+      <selector path="" view="section frame">
+        <background-color>black</background-color>
+      </selector>
+    </style>
     <style element="page[3]/section[1]/cell[1]" inherit="common site style"/>
     <style element="page[2]/section[2]" inherit="common site style"/>
-    <style element="page[2]/section[2]/cell[1]" inherit="common site style"/>
+    <style element="page[2]/section[2]/cell[1]" inherit="common site style">
+      <selector path="" view="cell frame">
+        <border-right>2px solid #7a7a7a</border-right>
+      </selector>
+    </style>
     <style element="page[2]/section[2]/cell[2]" inherit="common site style"/>
-    <style element="page[2]/section[2]/cell[3]" inherit="common site style"/>
+    <style element="page[2]/section[2]/cell[3]" inherit="common site style">
+       <selector path="" view="cell frame">
+        <border-left>1px dotted #7a7a7a</border-left>
+      </selector>
+    </style>
     <style element="page[3]/section[2]" inherit="common site style"/>
-    <style element="page[3]/section[2]/cell[1]" inherit="common site style"/>
+    <style element="page[3]/section[2]/cell[1]" inherit="common site style">
+      <selector path="" view="cell frame">
+        <border-right>2px solid #7a7a7a</border-right>
+      </selector>
+    </style>
     <style element="page[3]/section[2]/cell[2]" inherit="common site style"/>
-    <style element="page[3]/section[2]/cell[3]" inherit="common site style"/>
+    <style element="page[3]/section[2]/cell[3]" inherit="common site style">
+      <selector path="" view="cell frame">
+        <border-left>1px dotted #7a7a7a</border-left>
+      </selector>
+    </style>
   </formats>
 </theme>

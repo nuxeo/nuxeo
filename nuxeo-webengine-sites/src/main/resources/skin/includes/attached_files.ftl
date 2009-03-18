@@ -7,8 +7,8 @@
    if("" == attachedFile.value) {
      alert('You need to browse for a document !');
      return false;
-   }
-   document.add_file.submit();   
+   }   
+   document.add_file.submit();  
  }
  </script>
 
@@ -34,7 +34,7 @@
     <form id="add_file" name="add_file" action="${This.path}/@file" accept-charset="utf-8" method="POST" enctype="multipart/form-data" >
       <table><tr>
         <td>
-          <a href="${This.path}" onclick="return validateAttachedFile()"><img src="${skinPath}/images/action_add.gif" alt="${Context.getMessage("title.webapp.attached.files.attach.action")}" title="${Context.getMessage("title.webapp.attached.files.attach.action")}"></a>
+          <a onclick="return validateAttachedFile();"><img src="${skinPath}/images/action_add.gif" alt="${Context.getMessage("title.webapp.attached.files.attach.action")}" title="${Context.getMessage("title.webapp.attached.files.attach.action")}"></a>
 
           <input type="file" name="files:files" value="" id="file_to_add" required="true"/>
         </td>      

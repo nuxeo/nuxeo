@@ -43,4 +43,8 @@ public final class WebCommentsConstants {
     public static final String PENDING_STATE = "moderation_pending";
     
     public static final String MODERATION_PROCESS = "comments_moderation"; 
+    
+    public static final String MODERATION_APRIORI = "apriori";
+    
+    public static final String MODERATION_APOSTERIORI = "aposteriori";
 }
