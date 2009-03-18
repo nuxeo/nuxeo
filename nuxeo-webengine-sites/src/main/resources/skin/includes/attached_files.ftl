@@ -20,7 +20,10 @@
       <#list files as file>
         <tr><td>
       <@compress single_line=true>        
-        <img src="${skinPath}/images/${mimetypeService.getMimetypeEntryByMimeType(file.file.mimeType).iconPath}"/><a href="${This.path}/@file?property=files:files/item[${file_index}]/file">${file.filename}(${file.file.length}Ko)</a>
+        <img src="${skinPath}/images/${mimetypeService.getMimetypeEntryByMimeType(file.file.mimeType).iconPath}"/>
+          <a href="${This.path}/@file?property=files:files/item[${file_index}]/file">${file.filename}(${file.file.length}
+            <#if file.file.length &gt;999>Ko</#if>
+            <#if file.file.length &lt;=999>B</#if>)</a>
             <#if (base.canWrite)>
               - <a href="${This.path}/@file/delete?property=files:files/item[${file_index}]">Remove</a>
             </#if>
