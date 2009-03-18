@@ -27,6 +27,8 @@ cd $HERE
 for suite in $SUITES; do
     echo "### Running test suite $suite ..."
     $CMD "$PWD/tests/$suite.html" "$PWD/result-$suite.html" $CMD_END || exit 1
+    # pause to prevent "Xvfb failed to start"
+    sleep 5
 done
 
 echo "### Successful"
