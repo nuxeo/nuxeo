@@ -16,11 +16,6 @@
       class="org.nuxeo.ecm.platform.audit.service.extension.ExtendedInfoDescriptor" />
   </extension-point>
 
-  <extension-point name="hibernateOptions">
-    <object
-      class="org.nuxeo.ecm.platform.audit.service.extension.HibernateOptionsDescriptor" />
-  </extension-point>
-
   <extension target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService"
     point="event">
     <event name="documentCreated" />
@@ -34,11 +29,6 @@
     <extendedInfo key="title" expression="${source.dublincore.title}" />
     <extendedInfo key="message" expression="${message.cacheKey}" />
     <extendedInfo key="user" expression="${principal.name}" />
-  </extension>
-
-  <extension target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService"
-    point="hibernateOptions">
-    <hibernateOptions datasource="jdbc/nxaudits"/>
   </extension>
 
 </component>
