@@ -32,6 +32,7 @@ import javax.ws.rs.core.Response;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.rest.DocumentObject;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
@@ -96,9 +97,9 @@ public class Page extends DocumentObject {
 
     public boolean isModerator() {
         try {
-
-            return WebCommentUtils.isModeratedByCurrentUser(
-                    this.getCoreSession(), this.getDocument());
+            CoreSession session = this.getCoreSession();
+            return (WebCommentUtils.isModeratedByCurrentUser(session,
+                    this.getDocument()) || WebCommentUtils.currentUserIsAdministaror(session));
         } catch (Exception e) {
             throw WebException.wrap("Failed to delete comment", e);
         }
@@ -106,8 +107,9 @@ public class Page extends DocumentObject {
 
     public boolean isUserWithCommentPermission() {
         try {
-            return WebCommentUtils.currentUserHasCommentPermision(
-                    this.getCoreSession(), this.getDocument());
+            CoreSession session = this.getCoreSession();
+            return (WebCommentUtils.currentUserHasCommentPermision(session,
+                    this.getDocument()) || WebCommentUtils.currentUserIsAdministaror(session));
         } catch (Exception e) {
             throw WebException.wrap("Failed to delete comment", e);
         }
