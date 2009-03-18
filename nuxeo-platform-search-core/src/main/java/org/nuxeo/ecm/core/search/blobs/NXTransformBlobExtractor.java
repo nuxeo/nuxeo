@@ -23,8 +23,6 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringWriter;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -44,8 +42,6 @@ import org.nuxeo.runtime.api.Framework;
 public class NXTransformBlobExtractor implements BlobExtractor {
 
     private static final long serialVersionUID = -4204325669629533663L;
-
-    private static final Log log = LogFactory.getLog(NXTransformBlobExtractor.class);
 
     private static final int BYTE_ORDER_MARK_CHAR = 0xFEFF;
 

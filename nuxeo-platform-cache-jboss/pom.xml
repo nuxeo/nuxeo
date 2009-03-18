@@ -10,7 +10,7 @@
 
   <artifactId>nuxeo-platform-cache-jboss</artifactId>
   <name>Nuxeo Cache Service for JBoss Cache</name>
-  <description>Nuxeo Enterprise Platform: Cache Service for JBoss Cache.</description>
+  <description>DEPRECATED - Nuxeo Enterprise Platform: Cache Service for JBoss Cache.</description>
 
   <dependencies>
     <dependency>

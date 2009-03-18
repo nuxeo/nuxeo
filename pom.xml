@@ -57,9 +57,8 @@
     <module>nuxeo-platform-login</module>
     <module>nuxeo-platform-login-jboss</module>
     <module>nuxeo-platform-auth-web-jboss</module>
-    <!-- TODO JC NXP-3179 
+    <!-- TODO JC NXP-3179 -->
     <module>nuxeo-platform-management</module>
-    -->
     <module>nuxeo-platform-mimetype-api</module>
     <module>nuxeo-platform-mimetype-core</module>
     <module>nuxeo-platform-mimetype-facade</module>
@@ -82,9 +81,8 @@
     <module>nuxeo-platform-scheduler-core</module>
     <module>nuxeo-platform-search-api</module>
     <module>nuxeo-platform-search-backend-core</module>
-    <!-- TODO JC NXP-3179 
+    <!-- TODO JC NXP-3179 -->
     <module>nuxeo-platform-search-core</module>
-    -->
     <module>nuxeo-platform-search-facade</module>
     <module>nuxeo-platform-search-test</module>
     <module>nuxeo-platform-syndication</module>
