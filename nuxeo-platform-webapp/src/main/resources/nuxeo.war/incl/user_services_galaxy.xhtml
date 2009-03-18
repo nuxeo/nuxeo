@@ -32,8 +32,22 @@
       <h:commandLink action="#{searchActions.search}" rendered="#{searchEnabled}"
       value="#{messages['command.advancedSearch']}" /></span>
 
+    <nxu:methodResult name="actions"
+                      value="#{webActions.getActionsList('SEARCH_LINKS')}">
+      <nxu:dataList layout="simple"
+                    var="action"
+                    value="#{actions}"
+                    rowIndexVar="row"
+                    rowCountVar="rowCount">
+        <h:outputText value=" | " rendered="#{row!=rowCount}"/>
+        <h:outputLink value="#{baseURL}#{action.getLink()}">
+          <h:outputText value="#{messages[action.label]}" />
+        </h:outputLink>
+      </nxu:dataList>
     </nxu:methodResult>
-    
+
+    </nxu:methodResult>
+
     </div>
 
 
@@ -76,7 +90,7 @@
     </nxu:methodResult>
 
     </div>
-        
+
   </h:form>
 </ui:insert>
 
