@@ -1316,7 +1316,7 @@ option.locked {
 }
 
 .nxthemesAddSection div {
-  background: url(/skin/nxthemes-editor/img/add.png) no-repeat;
+  background: url(${basePath}/skin/nxthemes-editor/img/add.png) no-repeat;
   height: 14px;
   display: inline;
   margin-left: 10px;
@@ -1331,7 +1331,7 @@ option.locked {
 }
 
 .nxthemesAddSection:hover div {
-  background-image: url(/skin/nxthemes-editor/img/add-hover.png);
+  background-image: url(${basePath}/skin/nxthemes-editor/img/add-hover.png);
   color: #000
 }
 
