@@ -28,7 +28,6 @@ Nuxeo-Component: OSGI-INF/theme-contrib.xml,
   OSGI-INF/exceptionhandling-contrib.xml,
   OSGI-INF/lifecycle-listener-contrib.xml
 Require-Bundle: org.nuxeo.ecm.platform.types.api,
- org.nuxeo.ecm.platform.cache.web,
  org.nuxeo.ecm.platform.versioning.api,
  org.nuxeo.ecm.platform.ui,
  org.nuxeo.ecm.core.query,
