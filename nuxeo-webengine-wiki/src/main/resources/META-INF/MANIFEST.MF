@@ -9,6 +9,7 @@ Provide-Package: org.nuxeo.ecm.webengine.wiki,
 Require-Bundle: org.nuxeo.ecm.core.api, org.nuxeo.ecm.webengine.core, org.nuxeo.ecm.webengine.base
 Nuxeo-Require: org.nuxeo.runtime,
  org.nuxeo.ecm.core.api,
+ org.nuxeo.ecm.core.event,
  org.nuxeo.ecm.webengine.core
 Nuxeo-Component: OSGI-INF/core-types-contrib.xml, 
  OSGI-INF/document-types-contrib.xml,

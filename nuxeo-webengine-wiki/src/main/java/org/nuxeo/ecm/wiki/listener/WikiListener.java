@@ -21,33 +21,42 @@ package org.nuxeo.ecm.wiki.listener;
 
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_UPDATED;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.event.CoreEvent;
-import org.nuxeo.ecm.core.listener.AbstractEventListener;
-import org.nuxeo.ecm.core.listener.AsynchronousEventListener;
+import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.EventListener;
+import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.wiki.WikiTypes;
 
-public class WikiListener extends AbstractEventListener implements AsynchronousEventListener {
+public class WikiListener  implements EventListener {
 
-    private static final Log log = LogFactory.getLog(WikiListener.class);
+	protected DocumentModel doExtractWikiPage(Event event) {
+		
+         if(DOCUMENT_UPDATED.equals(event.getName()) == false) {
+        	 return null;
+         }
+         
+         final Object context = event.getContext();
+         
+         if (!(context instanceof DocumentEventContext)) {
+        	 return null;
+         }
 
-    @Override
-    public void handleEvent(CoreEvent coreEvent) throws Exception {
-        /* TODO: work in progress
-         * this is not working yet
-         */
+         final DocumentModel doc = ((DocumentEventContext)context).getSourceDocument();
+         
+         if (!WikiTypes.WIKIPAGE.equals(doc.getType())) {
+        	 return null;
+         }
+         
+         return doc;
+	}
 
-        Object source = coreEvent.getSource();
-        if (source instanceof DocumentModel) {
-            DocumentModel doc = (DocumentModel) source;
-            final String type = doc.getType();
-            String eventId = coreEvent.getEventId();
-            if (WikiTypes.WIKIPAGE.equals(type) && DOCUMENT_UPDATED.equals(eventId)) {
-                WikiHelper.updateRelations(doc);
-            }
-        }
-    }
+	public void handleEvent(Event event) {
+		DocumentModel wikiPage = 
+			doExtractWikiPage(event);
+		
+		 if (wikiPage == null) return;
+
+		 WikiHelper.updateRelations(wikiPage);
+	}
 
 }
