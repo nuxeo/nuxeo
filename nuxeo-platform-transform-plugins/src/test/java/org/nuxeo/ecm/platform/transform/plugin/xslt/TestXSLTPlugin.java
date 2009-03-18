@@ -47,7 +47,7 @@ public class TestXSLTPlugin extends AbstractXSLTPluginTest {
     private Plugin plugin;
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         plugin = service.getPluginByName(PLUGIN_NAME);
     }
