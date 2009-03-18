@@ -82,7 +82,7 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
     }
 
     public void setRoot(boolean isRoot) {
-        AbstractWebContext ctx = (AbstractWebContext)this.ctx;
+        AbstractWebContext ctx = (AbstractWebContext) this.ctx;
         if (isRoot) {
             ctx.root = this;
         } else {

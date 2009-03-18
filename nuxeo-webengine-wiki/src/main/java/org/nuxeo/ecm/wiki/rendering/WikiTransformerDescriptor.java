@@ -65,7 +65,7 @@ public class WikiTransformerDescriptor extends RenderingExtensionDescriptor {
         }
         WikiSerializer serializer = tr.getSerializer();
         for (WikiFilterDescriptor wfd : filters) {
-            if ( wfd.clazz != null ){
+            if (wfd.clazz != null) {
                 Class<?> clazz = Class.forName(wfd.clazz);
                 WikiFilter filter = (WikiFilter) clazz.newInstance();
                 serializer.addFilter(filter);

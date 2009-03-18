@@ -68,16 +68,17 @@ public class Main extends ModuleRoot {
                     "/default-domain/workspaces/wikis");
             WebContext ctx = WebEngine.getActiveContext();
             CoreSession session = ctx.getCoreSession();
-            if (!session.exists(wikisPath)) {
-                DocumentModel newDoc = session.createDocumentModel("/default-domain/workspaces/", "wikis", "Workspace");
-                if (newDoc.getTitle().length() == 0) {
-                    newDoc.getPart("dublincore").get("title").setValue(newDoc.getName());
-                }
-                newDoc = session.createDocument(newDoc);
-                session.save();
-                return newDoc;
+            if (session.exists(wikisPath)) {
+                return session.getDocument(wikisPath);
             }
-            return WebEngine.getActiveContext().getCoreSession().getDocument(wikisPath);
+            DocumentModel newDoc = session.createDocumentModel(
+                    "/default-domain/workspaces/", "wikis", "Workspace");
+            if (newDoc.getTitle().length() == 0) {
+                newDoc.getPart("dublincore").get("title").setValue(newDoc.getName());
+            }
+            newDoc = session.createDocument(newDoc);
+            session.save();
+            return newDoc;
         } catch (Exception e) {
             throw WebException.wrap(e);
         }
@@ -106,7 +107,8 @@ public class Main extends ModuleRoot {
     public Response createPage(@PathParam("segment") String segment) {
         try {
             CoreSession session = ctx.getCoreSession();
-            DocumentModel newDoc = session.createDocumentModel("/default-domain/workspaces/", segment, "Workspace");
+            DocumentModel newDoc = session.createDocumentModel(
+                    "/default-domain/workspaces/", segment, "Workspace");
             if (newDoc.getTitle().length() == 0) {
                 newDoc.getPart("dublincore").get("title").setValue(newDoc.getName());
             }

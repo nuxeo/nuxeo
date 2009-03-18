@@ -83,7 +83,7 @@ public class WikiHelper {
     // TODO optimize this!
     // keep old statements
     public static void updateRelations(DocumentModel doc) {
-        List<String> list = WikiHelper.getWordLinks(doc);
+        List<String> list = getWordLinks(doc);
         List<Statement> stmts = RelationHelper.getStatements(doc, HAS_LINK_TO);
         try {
             // remove old links
@@ -100,7 +100,7 @@ public class WikiHelper {
                 QNameResource docResource = RelationHelper.getDocumentResource(doc);
                 for (String word : list) {
                     if (!word.startsWith(".")) {
-                        word = WikiHelper.getAbsolutePageLink(doc, word);
+                        word = getAbsolutePageLink(doc, word);
                     }
                     Statement stmt = new StatementImpl(
                             docResource, HAS_LINK_TO, new LiteralImpl(word));
@@ -146,7 +146,8 @@ public class WikiHelper {
             return list;
         }
 
-        DocumentModelList l = RelationHelper.getSubjectDocuments(HAS_LINK_TO, getPageAbsoluteLink(doc), doc.getSessionId());
+        DocumentModelList l = RelationHelper.getSubjectDocuments(
+                HAS_LINK_TO, getPageAbsoluteLink(doc), doc.getSessionId());
 
         String prefix = ctx.getModulePath();
 
