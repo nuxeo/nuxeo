@@ -410,14 +410,9 @@ public class ContentRootsActionsBean extends InputController implements
             rows.add(createDataTableRow(doc));
         }
 
-        if (workspacesTableModel != null) {
-            cacheUpdateNotifier.removeCacheListener(workspacesTableModel);
-        }
-
         workspacesTableModel = new DocModelTableModel(headers, rows);
 
         workspacesTableModel.setSort("label.content.header.title");
-        cacheUpdateNotifier.addCacheListener(workspacesTableModel);
 
         return workspacesTableModel;
     }
@@ -450,14 +445,9 @@ public class ContentRootsActionsBean extends InputController implements
             rows.add(createDataTableRow(doc));
         }
 
-        if (workspacesTableModel != null) {
-            cacheUpdateNotifier.removeCacheListener(sectionsTableModel);
-        }
-
         sectionsTableModel = new DocModelTableModel(headers, rows);
 
         sectionsTableModel.setSort("label.content.header.title");
-        cacheUpdateNotifier.addCacheListener(sectionsTableModel);
 
         return sectionsTableModel;
     }

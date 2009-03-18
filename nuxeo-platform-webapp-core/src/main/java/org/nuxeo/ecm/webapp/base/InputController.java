@@ -39,7 +39,6 @@ import org.nuxeo.ecm.platform.ui.web.rest.FancyNavigationHandler;
 import org.nuxeo.ecm.webapp.action.TypesTool;
 import org.nuxeo.ecm.webapp.helpers.EventManager;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
-import org.nuxeo.platform.cache.web.CacheUpdateNotifier;
 
 /**
  * Contains generic functionality usable by all action listeners.
@@ -50,9 +49,6 @@ import org.nuxeo.platform.cache.web.CacheUpdateNotifier;
 public abstract class InputController {
 
     private static final Log log = LogFactory.getLog(InputController.class);
-
-    @In(value = CacheUpdateNotifier.SEAM_NAME_CACHE_NOTIFIER, create = true)
-    protected CacheUpdateNotifier cacheUpdateNotifier;
 
     @In(create = true)
     protected ActionManager actionManager;
@@ -174,7 +170,7 @@ public abstract class InputController {
     /**
      * Returns null.
      *
-     * Previous behaviour was: Utility method to return non 'null' JSF outcome
+     * Previous behavior was: Utility method to return non 'null' JSF outcome
      * that do not change the current view. The problem with null outcome is
      * that some seam components are not refetched and thus the JSF tree might
      * hold references that are no longer up-to-date, esp. in search results
