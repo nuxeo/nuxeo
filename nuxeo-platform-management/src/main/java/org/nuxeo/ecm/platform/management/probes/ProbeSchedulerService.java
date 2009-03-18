@@ -22,7 +22,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.nuxeo.ecm.platform.scheduler.core.service.SchedulerRegistryService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.management.ManagementRuntimeException;
 import org.nuxeo.runtime.management.ObjectNameFactory;
@@ -32,9 +31,6 @@ import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
-import org.nuxeo.runtime.services.event.Event;
-import org.nuxeo.runtime.services.event.EventListener;
-import org.nuxeo.runtime.services.event.EventService;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
@@ -46,92 +42,11 @@ public class ProbeSchedulerService extends DefaultComponent implements
     protected static ComponentName NAME = new ComponentName(
             ProbeScheduler.class.getCanonicalName());
 
-    protected static String SCHEDULE_ID = ProbeScheduler.class.getSimpleName();
+    protected static String SCHEDULE_ID = "ProbeSchedule";
 
     public ProbeSchedulerService() {
         super(); // enables breaking
     }
-
-    protected class Scheduler implements
-            org.nuxeo.ecm.platform.scheduler.core.interfaces.Schedule {
-        public String getCronExpression() {
-            return "0 0/5 * * * ?";
-        }
-
-        public String getEventCategory() {
-            return "default";
-        }
-
-        public String getEventId() {
-            return SCHEDULE_ID;
-        }
-
-        public String getId() {
-            return SCHEDULE_ID;
-        }
-
-        public String getPassword() {
-            return "";
-        }
-
-        public String getUsername() {
-            return SCHEDULE_ID;
-        }
-
-        protected SchedulerRegistryService registry;
-
-        protected void doSchedule() {
-            registry = (SchedulerRegistryService)Framework.getRuntime().getComponent(
-                    SchedulerRegistryService.class.getCanonicalName());
-            if (registry == null) {
-                throw new ManagementRuntimeException(
-                        "no scheduler registry service available");
-            }
-            registry.registerSchedule(this);
-        }
-
-        protected void doUnschedule() {
-            if (registry == null) {
-                return;
-            }
-            registry.unregisterSchedule(this);
-        }
-    }
-
-    protected final Scheduler scheduler = new Scheduler();
-
-    protected class ScheduleEventListener implements EventListener {
-
-        protected EventService service;
-
-        protected void doListen() {
-            service = Framework.getLocalService(EventService.class);
-            if (service == null) {
-                throw new ManagementRuntimeException(
-                        "no event listener service available");
-            }
-            service.addListener(SCHEDULE_ID, this);
-        }
-
-        protected void doUnlisten() {
-            if (service == null) {
-                return;
-            }
-            service.removeListener(SCHEDULE_ID, this);
-        }
-
-		public void handleEvent(Event event)  {
-			runnerRegistry.doRun();
-		}
-
-		public boolean aboutToHandleEvent(Event event) {
-			return true;
-		}
-
-	
-    }
-
-    protected final ScheduleEventListener scheduleEventListener = new ScheduleEventListener();
 
     protected Set<String> doExtractProbesName(
             Collection<ProbeContext> runners) {
@@ -301,17 +216,13 @@ public class ProbeSchedulerService extends DefaultComponent implements
 
     @Override
     public void activate(ComponentContext context) throws Exception {
-        scheduler.doSchedule();
         managementPublisher.service = (ResourcePublisherService) Framework.getLocalService(ResourcePublisher.class);
         managementPublisher.doPublish();
-        scheduleEventListener.doListen();
     }
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
         runnerRegistry.isEnabled = false;
-        scheduler.doSchedule();
-        scheduleEventListener.doUnlisten();
         managementPublisher.doUnpublish();
     }
 
