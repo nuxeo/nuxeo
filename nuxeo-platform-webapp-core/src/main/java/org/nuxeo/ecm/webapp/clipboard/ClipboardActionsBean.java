@@ -64,6 +64,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.SchemaManager;
@@ -95,9 +96,13 @@ public class ClipboardActionsBean extends InputController implements
     private static final int BUFFER = 2048;
 
     private static final String SUMMARY_FILENAME = "INDEX.txt";
+
     private static final String SUMMARY_HEADER = ".";
+
     private static final String PASTE_OUTCOME = "after_paste";
+
     private static final String MOVE_OUTCOME = "after_move";
+
     public static final String DELETED_LIFECYCLE_STATE = "deleted";
 
     @In(create = true, required = false)
@@ -582,6 +587,7 @@ public class ClipboardActionsBean extends InputController implements
                     continue;
                 }
 
+                BlobHolder bh = doc.getAdapter(BlobHolder.class);
                 if (doc.isFolder() && !isEmptyFolder(doc, documentManager)) {
 
                     SummaryEntry summaryLeaf = new SummaryEntry(doc);
@@ -595,12 +601,9 @@ public class ClipboardActionsBean extends InputController implements
 
                     addFolderToZip("", out, doc, data, documentManager,
                             summary.get(summaryLeaf.getPath()), summary);
-                } else if (doc.getType().equals("Note")) {
-                    addNoteToZip("", out, doc, data, summary.getSummaryRoot(),
-                            summary);
-                } else if (doc.hasSchema("file")) {
-                    addFileToZip("", out, doc, data, summary.getSummaryRoot(),
-                            summary);
+                } else if (bh != null) {
+                    addBlobHolderToZip("", out, doc, data,
+                            summary.getSummaryRoot(), summary, bh);
                 }
             }
             if (summary.size() > 1) {
@@ -783,6 +786,7 @@ public class ClipboardActionsBean extends InputController implements
                 continue;
             }
 
+            BlobHolder bh = docChild.getAdapter(BlobHolder.class);
             if (docChild.isFolder()
                     && !isEmptyFolder(docChild, documentManager)) {
 
@@ -797,14 +801,9 @@ public class ClipboardActionsBean extends InputController implements
                 addFolderToZip(path + title + "/", out, docChild, data,
                         documentManager, summary.get(summaryLeaf.getPath()),
                         summary);
-
-            } else if (docChild.getType().equals("Note")) {
-                addNoteToZip(path + title + "/", out, docChild, data,
-                        summary.get(parent.getPath()), summary);
-
-            } else if (docChild.hasSchema("file")) {
-                addFileToZip(path + title + "/", out, docChild, data,
-                        summary.get(parent.getPath()), summary);
+            } else if (bh != null) {
+                addBlobHolderToZip(path + title + "/", out, docChild, data,
+                        summary.get(parent.getPath()), summary, bh);
             }
         }
     }
@@ -814,18 +813,11 @@ public class ClipboardActionsBean extends InputController implements
 
         List<DocumentModel> docList = documentManager.getChildren(doc.getRef());
         for (DocumentModel docChild : docList) {
+            BlobHolder bh = docChild.getAdapter(BlobHolder.class);
             if (docChild.isFolder()) {
                 return isEmptyFolder(docChild, documentManager);
-            } else if (docChild.getType().equals("Note")) {
-                String content = (String) docChild.getProperty("note", "note");
-                if (content != null && !"".equals(content)) {
-                    return false;
-                }
-            } else if (docChild.hasSchema("file")) {
-                Blob content = (Blob) docChild.getProperty("file", "content");
-                if (content != null) {
-                    return false;
-                }
+            } else if (bh != null) {
+                return false;
             }
         }
         return true;
@@ -857,108 +849,61 @@ public class ClipboardActionsBean extends InputController implements
         buffi.close();
     }
 
-    private void addNoteToZip(String path, ZipOutputStream out,
+    private void addBlobHolderToZip(String path, ZipOutputStream out,
             DocumentModel doc, byte[] data, SummaryEntry parent,
-            SummaryImpl summary) throws IOException {
+            SummaryImpl summary, BlobHolder bh) throws IOException,
+            ClientException {
+        List<Blob> blobs = bh.getBlobs();
+        for (Blob content : blobs) {
 
-        String note;
-        try {
-            note = (String) doc.getProperty("note", "note");
-        } catch (ClientException e1) {
-            note = null;
-        }
-        String fileName;
-        try {
-            fileName = doc.getProperty("dublincore", "title") + ".html";
-        } catch (ClientException e1) {
-            fileName = null;
-        }
-        Blob content = new StringBlob(note);
+            String fileName = content.getFilename();
 
-        SummaryEntry summaryLeaf = new SummaryEntry(doc);
-        summaryLeaf.setParent(parent);
-        summary.put(summaryLeaf.getPath(), summaryLeaf);
+            if (content != null) {
 
-        BufferedInputStream buffi = new BufferedInputStream(
-                content.getStream(), BUFFER);
+                SummaryEntry summaryLeaf = new SummaryEntry(doc);
+                summaryLeaf.setParent(parent);
+                summary.put(summaryLeaf.getPath(), summaryLeaf);
 
-        // Workaround to deal with duplicate file names.
-        int tryCount = 0;
-        while (true) {
-            try {
-                ZipEntry entry;
-                if (tryCount == 0) {
-                    entry = new ZipEntry(path + fileName);
-                } else {
-                    entry = new ZipEntry(path + fileName + '(' + tryCount
-                            + ')');
+                BufferedInputStream buffi = new BufferedInputStream(
+                        content.getStream(), BUFFER);
+
+                // Workaround to deal with duplicate file names.
+                int tryCount = 0;
+                while (true) {
+                    try {
+                        ZipEntry entry;
+                        if (tryCount == 0) {
+                            entry = new ZipEntry(path + fileName);
+                        } else {
+                            entry = new ZipEntry(path
+                                    + formatFileName(fileName, "(" + tryCount
+                                            + ")"));
+                        }
+                        out.putNextEntry(entry);
+                        break;
+                    } catch (ZipException e) {
+                        tryCount++;
+                    }
                 }
-                out.putNextEntry(entry);
-                break;
-            } catch (ZipException e) {
-                tryCount++;
+
+                int count = buffi.read(data, 0, BUFFER);
+                while (count != -1) {
+                    out.write(data, 0, count);
+                    count = buffi.read(data, 0, BUFFER);
+                }
+                out.closeEntry();
+                buffi.close();
             }
         }
-        int count = buffi.read(data, 0, BUFFER);
-
-        while (count != -1) {
-            out.write(data, 0, count);
-            count = buffi.read(data, 0, BUFFER);
-        }
-        out.closeEntry();
-        buffi.close();
     }
 
-    private void addFileToZip(String path, ZipOutputStream out,
-            DocumentModel doc, byte[] data, SummaryEntry parent,
-            SummaryImpl summary) throws IOException, ClientException {
-
-        String fileName = (String) doc.getProperty("file", "filename");
-        Blob content = (Blob) doc.getProperty("file", "content");
-
-        // TODO : Quickfix to avoid a workspace to send his Logo as Blob. Need
-        // an EP to deal with that
-        // WS also have the schema file
-        // We have to ensure that there are not empty to be
-        // added to the summary.
-        if (doc.isFolder() && isEmptyFolder(doc, documentManager)) {
-            content = null;
-        }
-        if (content != null) {
-
-            SummaryEntry summaryLeaf = new SummaryEntry(doc);
-            summaryLeaf.setParent(parent);
-            summary.put(summaryLeaf.getPath(), summaryLeaf);
-
-            BufferedInputStream buffi = new BufferedInputStream(
-                    content.getStream(), BUFFER);
-
-            // Workaround to deal with duplicate file names.
-            int tryCount = 0;
-            while (true) {
-                try {
-                    ZipEntry entry;
-                    if (tryCount == 0) {
-                        entry = new ZipEntry(path + fileName);
-                    } else {
-                        entry = new ZipEntry(path + fileName + '(' + tryCount
-                                + ')');
-                    }
-                    out.putNextEntry(entry);
-                    break;
-                } catch (ZipException e) {
-                    tryCount++;
-                }
-            }
-
-            int count = buffi.read(data, 0, BUFFER);
-            while (count != -1) {
-                out.write(data, 0, count);
-                count = buffi.read(data, 0, BUFFER);
-            }
-            out.closeEntry();
-            buffi.close();
-        }
+    private String formatFileName(String filename, String count) {
+        StringBuilder sb = new StringBuilder();
+        CharSequence name = filename.subSequence(0, filename.lastIndexOf("."));
+        CharSequence extension = filename.subSequence(
+                filename.lastIndexOf("."), filename.length());
+        sb.append(name).append(count).append(extension);
+        return sb.toString();
     }
 
     public void setCurrentSelectedList(String listId) {
