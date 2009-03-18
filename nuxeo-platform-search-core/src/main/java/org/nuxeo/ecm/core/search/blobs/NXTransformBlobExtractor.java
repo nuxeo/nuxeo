@@ -26,8 +26,10 @@ import java.io.StringWriter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
+import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.search.api.client.indexing.blobs.BlobExtractor;
 import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.document.FulltextFieldDescriptor;
@@ -35,9 +37,9 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Blob extractor that leverages Nuxeo transform service.
- *
+ * 
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
+ * 
  */
 public class NXTransformBlobExtractor implements BlobExtractor {
 
@@ -50,12 +52,12 @@ public class NXTransformBlobExtractor implements BlobExtractor {
     private static ConversionService conversionService;
 
     private static ConversionService getConversionService() throws Exception {
-        if (conversionService==null) {
+        if (conversionService == null) {
             conversionService = Framework.getService(ConversionService.class);
         }
         return conversionService;
     }
-    
+
     public String extract(Blob blob, String mimetype,
             FulltextFieldDescriptor desc) throws Exception {
 
@@ -63,8 +65,22 @@ public class NXTransformBlobExtractor implements BlobExtractor {
             return "";
         }
 
-        BlobHolder result = getConversionService().convertToMimeType(mimetype, new SimpleBlobHolder(blob), null);
-        return readContent(result.getBlob().getReader());
+        String converterName = null;
+        BlobHolder result;
+        try {
+            converterName = getConversionService().getConverterName(mimetype,
+                    "text/plain");
+            result = getConversionService().convert(converterName,
+                    new SimpleBlobHolder(blob), null);
+            return readContent(result.getBlob().getReader());
+        } catch (ConversionException e) {
+            throw e;
+        } catch (IOException e) {
+            throw new ClientException("Couldn't read from blob convert with "
+                    + converterName, e);
+        } catch (ClientException e) {
+            throw e;
+        }
     }
 
     public static String readContent(Reader reader) throws IOException {
