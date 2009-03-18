@@ -22,9 +22,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.nuxeo.ecm.core.api.event.CoreEvent;
-import org.nuxeo.ecm.core.listener.AbstractEventListener;
-import org.nuxeo.ecm.core.listener.CoreEventListenerService;
 import org.nuxeo.ecm.platform.scheduler.core.service.SchedulerRegistryService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.management.ManagementRuntimeException;
@@ -35,6 +32,9 @@ import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.nuxeo.runtime.services.event.Event;
+import org.nuxeo.runtime.services.event.EventListener;
+import org.nuxeo.runtime.services.event.EventService;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
@@ -100,35 +100,35 @@ public class ProbeSchedulerService extends DefaultComponent implements
 
     protected final Scheduler scheduler = new Scheduler();
 
-    protected class ScheduleEventListener extends AbstractEventListener {
+    protected class ScheduleEventListener implements EventListener {
 
-        @Override
-        public boolean accepts(String eventId) {
-            return eventId.equals(SCHEDULE_ID);
-        }
-
-        @Override
-        public void handleEvent(CoreEvent coreEvent) throws Exception {
-            runnerRegistry.doRun();
-        }
-
-        protected CoreEventListenerService service;
+        protected EventService service;
 
         protected void doListen() {
-            service = Framework.getLocalService(CoreEventListenerService.class);
+            service = Framework.getLocalService(EventService.class);
             if (service == null) {
                 throw new ManagementRuntimeException(
                         "no event listener service available");
             }
-            service.addEventListener(this);
+            service.addListener(SCHEDULE_ID, this);
         }
 
         protected void doUnlisten() {
             if (service == null) {
                 return;
             }
-            service.removeEventListener(this);
+            service.removeListener(SCHEDULE_ID, this);
         }
+
+		public void handleEvent(Event event)  {
+			runnerRegistry.doRun();
+		}
+
+		public boolean aboutToHandleEvent(Event event) {
+			return true;
+		}
+
+	
     }
 
     protected final ScheduleEventListener scheduleEventListener = new ScheduleEventListener();
