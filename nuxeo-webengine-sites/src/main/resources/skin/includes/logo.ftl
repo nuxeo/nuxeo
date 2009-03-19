@@ -1,6 +1,6 @@
 <#macro logo>
 
-<div style="width: 100%;height: 30%;text-align: left;padding-top: 30px;padding-left: 30px;padding-bottom: 30px" >
+<div class="logo" >
   <div style="vertical-align: middle;">
     <table >
       <tr style="vertical-align: top;">

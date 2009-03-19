@@ -56,7 +56,8 @@ public abstract class AbstractResourceType implements ResourceType {
     protected volatile ConcurrentMap<String, ScriptFile> templateCache;
 
 
-    protected AbstractResourceType(WebEngine engine, ModuleImpl module, AbstractResourceType superType, String name, ClassProxy clazz, int visibility) {
+    protected AbstractResourceType(WebEngine engine, ModuleImpl module,
+            AbstractResourceType superType, String name, ClassProxy clazz, int visibility) {
         templateCache = new ConcurrentHashMap<String, ScriptFile>();
         owner = module;
         this.superType = superType;
@@ -147,7 +148,8 @@ public abstract class AbstractResourceType implements ResourceType {
                         guard = (Guard) gc.newInstance();
                     } catch (Exception e) {
                         throw WebException.wrap(
-                                "Failed to instantiate guard handler: "+gc.getName()+" on WebObject "+c.getName(), e);
+                                "Failed to instantiate guard handler: "+gc.getName()
+                                +" on WebObject "+c.getName(), e);
                     }
                 }
             }

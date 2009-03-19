@@ -16,7 +16,7 @@
   <script type="text/javascript" src="${skinPath}/script/jquery/cookie.js"></script>
   <script type="text/javascript" src="${skinPath}/script/json.js"></script>
   <script type="text/javascript" src="${skinPath}/script/webengine.js"></script>
-  <#if Document??> <#-- we are in a document context: search is enabled -->
+  <#if Document??> <!-- we are in a document context: search is enabled -->
         <script>
          $(document).ready(function(){
            $('#query').focus(function() {

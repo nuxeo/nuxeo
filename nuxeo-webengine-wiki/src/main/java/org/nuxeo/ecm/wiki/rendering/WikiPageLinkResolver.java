@@ -61,23 +61,23 @@ public class WikiPageLinkResolver implements WikiFilter{
     }
 
     protected String builsLinks(String pageName) {
-        DocumentModel doc = null;
-        String basePath = null;
+        DocumentModel doc;
+        String basePath;
 
         WebContext ctx = WebEngine.getActiveContext();
         Resource resource = ctx.getTargetObject();
         StringBuffer links = new StringBuffer();
         StringBuffer relativePath  = new StringBuffer();
 
-        if  ( pageName.startsWith(".")) { // Absolute path
+        if (pageName.startsWith(".")) { // Absolute path
             basePath = ctx.getModulePath();
             String[] segments = pageName.substring(1).split("\\.");
             doc = getWikisRoot();
-            for ( String s : segments) {
+            for (String s : segments) {
                 links.append(".");
                 relativePath.append("/").append(s);
-                if ( doc != null ) {
-                    doc =  getDocument(doc,s );
+                if (doc != null) {
+                    doc = getDocument(doc, s);
                 }
                 links.append(buildLink(basePath, relativePath, s, doc));
             }
@@ -85,22 +85,22 @@ public class WikiPageLinkResolver implements WikiFilter{
             basePath = resource.getPrevious().getPath();
             doc = getResourceDocument(resource.getPrevious());
             String[] segments = pageName.split("\\.");
-            for ( String s : segments) {
+            for (String s : segments) {
                 relativePath.append("/").append(s);
-                if ( doc != null ) {
-                    doc =  getDocument(doc,s );
+                if (doc != null) {
+                    doc = getDocument(doc, s);
                 }
                 links.append(buildLink(basePath, relativePath, s, doc));
                 links.append(".");
             }
             // remove last dot
-            links.deleteCharAt(links.length()-1);
+            links.deleteCharAt(links.length() - 1);
         }
         return links.toString();
     }
 
     protected String buildLink(String basePath, StringBuffer relativePath, String s, DocumentModel doc){
-        String linkClass = null;
+        String linkClass;
         if ( doc == null ){
             linkClass = LINK_CLASS_DONTEXISTS;
         } else {
@@ -121,8 +121,8 @@ public class WikiPageLinkResolver implements WikiFilter{
         return null;
     }
 
-    protected DocumentModel getResourceDocument(Resource resource){
-        if ( resource instanceof DocumentObject ){
+    protected DocumentModel getResourceDocument(Resource resource) {
+        if (resource instanceof DocumentObject) {
             DocumentObject docObj = (DocumentObject) resource;
             return docObj.getDocument();
         }
@@ -135,7 +135,7 @@ public class WikiPageLinkResolver implements WikiFilter{
         Path p = doc.getPath().append(segment);
         DocumentRef ref = new PathRef(p.toString());
         try {
-            if ( session.exists(ref)) {
+            if (session.exists(ref)) {
                 return session.getDocument(ref);
             }
         } catch (ClientException e) {

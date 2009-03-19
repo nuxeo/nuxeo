@@ -1,24 +1,17 @@
 <#macro lastPublished>
 
-<table>
-  <tr><th colspan="2">${Context.getMessage("title.last.published.pages")}</th></tr>
+<div class="lastPublishedPagesBlock">
+  <h4>${Context.getMessage("title.last.published.pages")}</h4>
   <#list pages as p>
-  <tr>
-    <td>
-      <table>
-        <tr><td>${p.day}</td></tr>
-        <tr><td>${p.month}</td></tr>
-      </table>
-    </td>
-    <td>
-      <table>
-        <tr><td><a href="${This.path}/${p.path}"> ${p.name} &nbsp; </a></td></tr>
-        <tr><td>${p.author}&nbsp;</td></tr>
-        <tr><td>${p.numberComments} ${Context.getMessage("last.published.pages.comments")}</td></tr>
-      </table>
-    </td>
-  </tr>
+  <div class="pagePublishedResume">
+  <div class="dayMonth"><span>${p.day}<br/></span>${p.month}</div>
+  <div class="documentInfo"> 
+    <a href="${This.path}/${p.path}"> ${p.name}</a>
+        <p><span>${p.author}</span>&nbsp;|&nbsp;<span>${p.numberComments} ${Context.getMessage("last.published.pages.comments")}</span></p>
+   </div>
+   <div style="clear:both;"></div>
+   </div>
   </#list>
-</table>
+</div>
 
 </#macro>
