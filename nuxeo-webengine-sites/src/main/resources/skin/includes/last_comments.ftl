@@ -1,19 +1,11 @@
 <#macro lastComments>
-<table>
-  <tr><th>${Context.getMessage("title.last.published.comments")}</th></tr>
+<div class="lastCommentsBlock">
+  <h4>${Context.getMessage("title.last.published.comments")}</h4>
   <#list comments as com>
-  <tr>
-    <td>
-      <table>
-        <tr>
-          <td><img src="${skinPath}/image/user.gif" alt="" /> ${com.day}  ${com.month} by ${com.author} sur ${com.pageTitle}</td>
-        </tr>
-        <tr>
-          <td>${com.content}</td>
-        </tr>  
-      </table>
-    </td>
-  </tr>
+  <div class="commentBlock">
+  <div class="commentInfos">${com.day}  ${com.month} by ${com.author} sur ${com.pageTitle}</div>
+  <div class="commentContent">${com.content}</div>
+  </div>
   </#list>
-</table>
+</div>
 </#macro>

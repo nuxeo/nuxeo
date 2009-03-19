@@ -33,7 +33,7 @@ import org.nuxeo.ecm.webengine.util.RelationConstants;
 import org.nuxeo.ecm.webengine.util.RelationHelper;
 import org.nuxeo.ecm.wiki.listener.WikiHelper;
 
-public class WikiRelationHelper implements WikiRelationConstants {
+public class WikiRelationHelper {
 
     private WikiRelationHelper() {
     }
@@ -43,7 +43,7 @@ public class WikiRelationHelper implements WikiRelationConstants {
     // keep old statements
     public static void updateRelations(DocumentModel doc) {
         List<String> list = WikiHelper.getWordLinks(doc);
-        List<Statement> stmts = RelationHelper.getStatements(doc, HAS_LINK_TO);
+        List<Statement> stmts = RelationHelper.getStatements(doc, WikiRelationConstants.HAS_LINK_TO);
         try {
             // remove old links
             RelationManager rm = RelationHelper.getRelationManager();
@@ -59,7 +59,7 @@ public class WikiRelationHelper implements WikiRelationConstants {
                 QNameResource docResource = RelationHelper.getDocumentResource(doc);
                 for (String word : list) {
                     Statement stmt = new StatementImpl(docResource,
-                            HAS_LINK_TO, new LiteralImpl(word));
+                            WikiRelationConstants.HAS_LINK_TO, new LiteralImpl(word));
                     stmts.add(stmt);
                 }
                 rm.add(RelationConstants.GRAPH_NAME, stmts);

@@ -20,9 +20,13 @@
       <format-type>widget</format-type>
       <template>widgets/main.ftl</template>
     </view>
-    <view name="Minisite Lasts" template-engine="freemarker">
+    <view name="Minisite Last Published" template-engine="freemarker">
       <format-type>widget</format-type>
-      <template>widgets/last_documents.ftl</template>
+      <template>widgets/last_published.ftl</template>
+    </view>
+    <view name="Minisite Last Comments" template-engine="freemarker">
+      <format-type>widget</format-type>
+      <template>widgets/last_comments.ftl</template>
     </view>
     <view name="Minisite Contextual" template-engine="freemarker">
       <format-type>widget</format-type>
@@ -44,13 +48,13 @@
       <format-type>widget</format-type>
       <template>widgets/page_main.ftl</template>
     </view>
-    <view name="Page Lasts" template-engine="freemarker">
+    <view name="Page Last Published" template-engine="freemarker">
       <format-type>widget</format-type>
-      <template>widgets/page_last_documents.ftl</template>
-    </view>    
-    <view name="Minisite Comments" template-engine="freemarker">
+      <template>widgets/page_last_published.ftl</template>
+    </view>
+    <view name="Page Last Comments" template-engine="freemarker">
       <format-type>widget</format-type>
-      <template>widgets/comments.ftl</template>
+      <template>widgets/page_last_comments.ftl</template>
     </view>
 
   </extension>
@@ -94,12 +98,9 @@
   </extension>
   <!-- Palettes -->
   <extension target="org.nuxeo.theme.services.ThemeService" point="presets">
-
-        <palette name="Sites borders" src="themes/palettes/sites-borders.properties" category="border" />
+    <palette name="Sites borders" src="themes/palettes/sites-borders.properties" category="border" />
     <palette name="Sites backgrounds" src="themes/palettes/sites-backgrounds.properties" category="background" />
     <palette name="Sites fonts" src="themes/palettes/sites-fonts.properties" category="font" />
-
-
   </extension>
 
 

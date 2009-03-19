@@ -1,5 +1,5 @@
 <#macro navigator>
-<strong>${Context.getMessage("label.tree")}</strong>
+<h4>${Context.getMessage("label.tree")}</h4>
 <!-- Navigation Tree -->
 <link rel="stylesheet" href="${skinPath}/script/jquery/treeview/demo/screen.css" type="text/css" media="screen"/>
 <link rel="stylesheet" href="${skinPath}/script/jquery/treeview/jquery.treeview.css" type="text/css" media="screen"/>
