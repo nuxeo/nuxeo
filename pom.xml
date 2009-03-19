@@ -46,6 +46,7 @@
     <module>nuxeo-core-convert-plugins</module>
     <module>nuxeo-core-event</module>
     <module>nuxeo-core-event-jms</module>
+    <!-- NXP-3179 - DEPRECATED to be deleted -->
     <module>nuxeo-core-event-compat</module>
   </modules>
 
@@ -161,6 +162,7 @@
         <artifactId>nuxeo-core-event-jms</artifactId>
         <version>${nuxeo.core.version}</version>
       </dependency>
+      <!-- NXP-3179 - DEPRECATED to be deleted -->
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core-event-compat</artifactId>

@@ -10,7 +10,7 @@
 
   <artifactId>nuxeo-core-event-compat</artifactId>
   <name>Nuxeo Core Event Compatibility</name>
-  <description>Compatibility Bundle with nuxeo core event model in versions previous to 5.2.M4.</description>
+  <description>DEPRECATED - Compatibility Bundle with nuxeo core event model in versions previous to 5.2.M4.</description>
 
   <dependencies>
     <dependency>
