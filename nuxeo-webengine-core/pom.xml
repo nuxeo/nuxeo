@@ -81,11 +81,6 @@
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-api</artifactId>
     </dependency>
-    <!-- needed for ClientLoginModule -->
-    <dependency>
-      <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core</artifactId>
-    </dependency>
 
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
