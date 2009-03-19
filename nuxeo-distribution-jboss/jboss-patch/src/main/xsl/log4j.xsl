@@ -49,6 +49,8 @@
   </xsl:template>
   <xsl:template match="category[@name='org.nuxeo.ecm.platform.ui.web.auth']">
   </xsl:template>
+  <xsl:template match="category[@name='org.nuxeo.runtime.osgi.OSGiRuntimeService']">
+  </xsl:template>
   <xsl:template match="category[@name='org.apache.myfaces.renderkit.html.util.DefaultAddResource']">
   </xsl:template>
   <xsl:template match="category[@name='javax.enterprise.resource.webcontainer.jsf.renderkit']">
@@ -176,6 +178,11 @@
    </xsl:text>
     <category name="org.nuxeo.ecm.platform.ui.web.auth">
       <priority value="INFO"/>
+    </category>
+    <xsl:text>
+   </xsl:text>
+    <category name="org.nuxeo.runtime.osgi.OSGiRuntimeService">
+      <priority value="INFO" />
     </category>
     <xsl:text>
    </xsl:text>
