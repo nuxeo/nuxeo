@@ -202,6 +202,9 @@ nxthemes css is not used in login.jsp */
                     <li><a href="http://www.nuxeo.org/sections/community/">
                       <fmt:message bundle="${messages}" key="label.login.joinTheCommunity" />
                     </a></li>
+                    <li><a href="http://doc.nuxeo.org/xwiki/bin/view/Main/QuickStart-5.2">
+                      <fmt:message bundle="${messages}" key="label.login.quickStart" />
+                    </a></li>
                 </ul>
                 <div style="clear:both;" />
           </div>
