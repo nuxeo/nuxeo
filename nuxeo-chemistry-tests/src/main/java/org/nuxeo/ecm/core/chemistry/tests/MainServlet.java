@@ -71,14 +71,14 @@ public class MainServlet extends SQLRepositoryTestCase {
     }
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         // deployBundle("org.nuxeo.ecm.core.event");
         openSession();
     }
 
     @Override
-    protected void tearDown() throws Exception {
+    public void tearDown() throws Exception {
         closeSession();
         super.tearDown();
     }
