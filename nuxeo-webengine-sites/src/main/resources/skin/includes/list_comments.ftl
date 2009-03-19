@@ -1,7 +1,7 @@
 <#assign comments = This.comments />
  
  <#if (This.userWithCommentPermission==true)> 
-   <input type="button" value="addComment" onclick="showCommentForm();"/>
+   <a onclick="showCommentForm();"><img src="${skinPath}/images/action_add.gif" alt="${Context.getMessage("label.page.comments.add")}">${Context.getMessage("label.page.comments.add")}</a>
  </#if> 
  
  <script type="text/javascript">
@@ -18,29 +18,17 @@
  </script>
 
 <form id="comment" action="${This.path}/@comments" method="POST" accept-charset="utf-8">  
-
-<div class="commentsList">
-  <ol id="comments">
-    <#list comments as com>
-      <#if com_index % 2 = 0>
-        <#assign row = "even"/>
-      <#else>
-        <#assign row = "odd"/>
-      </#if>
-      <li class="comment ${row}" id="${com.ref}">
-        <div class="byline">${com['webcomment:creationDate']} by ${com['webcomment:author']}</div>
-        <quote>${com['webcomment:text']}</quote>
-        <#if (This.moderator==true)>
-          <a href="${This.path}/@comments/delete?property=${com.ref}">Delete</a>
-         </#if> 
-          <br/>
-      </li>
-      </li>
-    </#list>
-  </ol>
+<div class="lastCommentsBlock">
+  <#list comments as com>
+  <div class="commentBlock">
+    <div class="commentInfos">${com['webcomment:creationDate']} by ${com['webcomment:author']}</div>
+    <div class="commentContent">${com['webcomment:text']}</div>
+    <#if (This.moderator==true)>
+      <a href="${This.path}/@comments/delete?property=${com.ref}">Delete</a>
+    </#if> 
+  </div>
+  </#list>
 </div>
-
- 
 
 <div id="webComment" class="addWebComment" style="visibility:hidden">
     <ul>
