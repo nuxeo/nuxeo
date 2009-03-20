@@ -99,11 +99,14 @@ public class Sample2 extends ModuleRoot {
   @Path("error/{errorCode}")
   public Response sendError(@PathParam("errorCode") String errorCode) {
     try {
-      int status = Integer.parseInt(errorCode);
-      return Response.status(status).build();
+      int statusCode = Integer.parseInt(errorCode);
+      Response.Status status = Status.fromStatusCode(statusCode);
+      if (status != null) {
+	      return Response.status(status).build();
+      }
     } catch (Exception e) {
-      return Response.status(500).entity("Invalid error code: "+errorCode).build();
     }
+    return Response.status(500).entity("Invalid error code: " + errorCode).build();
   }
 
 
