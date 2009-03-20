@@ -14,18 +14,15 @@
       <include>Write</include>
     </permission>
     
-    <permission name="EverythingOnWebcontainer">
-      <include>Everything</include>
-      <include>Comment</include>
-      <include>Moderate</include>
-    </permission>
-
-    <permission name="WriteOnWebcontainer">
-      <include>Write</include>
+    <permission name="Write">
+      <include>AddChildren</include>
+      <include>WriteProperties</include>
+      <include>Remove</include>
+      <include>ManageWorkflows</include>
+      <include>WriteLifeCycle</include>
       <include>Comment</include>
     </permission>
-      
-      
+    
   </extension>
   
   <extension target="org.nuxeo.ecm.core.security.SecurityService" 
@@ -33,10 +30,8 @@
     <visibility type="Workspace">
       <item show="true" order="10">Read</item>
       <item show="true" order="30">ReadWrite</item>
-      <item show="true" order="50">WriteOnWebcontainer</item>
       <item show="true" order="60">ReadRemove</item>
-      <item show="true" order="90">Everything</item>
-      <item show="true" order="100">EverythingOnWebcontainer</item>
+      <item show="true" order="100">Everything</item>
       <item show="true" order="200">Comment</item>
       <item show="true" order="200">Moderate</item>
     </visibility>

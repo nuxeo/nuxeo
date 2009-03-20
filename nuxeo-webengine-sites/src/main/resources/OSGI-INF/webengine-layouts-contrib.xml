@@ -35,15 +35,17 @@
         </properties>
       </widget> -->
 
-      <widget name="pushtomenu" type="checkbox">
+      <widget name="pushtomenu" type="template">
         <translated>true</translated>
         <fields>
           <field>webp:pushtomenu</field>
         </fields>
-        <properties widgetMode="edit">
-          <property name="required">true</property>
-          <property name="styleClass">dataInputText</property>
-        </properties>
+         <properties mode="any">
+         <property name="required">true</property>
+         <property name="template">
+           /widgets/boolean_radio_widget_template.xhtml
+         </property>
+         </properties>
       </widget>
 
 

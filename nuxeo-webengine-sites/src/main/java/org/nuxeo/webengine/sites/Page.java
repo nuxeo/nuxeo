@@ -98,8 +98,8 @@ public class Page extends DocumentObject {
     public boolean isModerator() {
         try {
             CoreSession session = this.getCoreSession();
-            return (WebCommentUtils.isModeratedByCurrentUser(session,
-                    this.getDocument()) || WebCommentUtils.currentUserIsAdministaror(session));
+            return WebCommentUtils.isModeratedByCurrentUser(session,
+                    this.getDocument());
         } catch (Exception e) {
             throw WebException.wrap("Failed to delete comment", e);
         }
@@ -108,8 +108,8 @@ public class Page extends DocumentObject {
     public boolean isUserWithCommentPermission() {
         try {
             CoreSession session = this.getCoreSession();
-            return (WebCommentUtils.currentUserHasCommentPermision(session,
-                    this.getDocument()) || WebCommentUtils.currentUserIsAdministaror(session));
+            return WebCommentUtils.currentUserHasCommentPermision(session,
+                    this.getDocument());
         } catch (Exception e) {
             throw WebException.wrap("Failed to delete comment", e);
         }

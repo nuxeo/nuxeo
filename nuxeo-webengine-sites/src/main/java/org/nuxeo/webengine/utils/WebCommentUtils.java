@@ -17,11 +17,9 @@
 
 
 package org.nuxeo.webengine.utils;
-import static org.nuxeo.webengine.utils.SiteUtilsConstants.PERMISSION_COMMENT;
 import static org.nuxeo.webengine.utils.SiteUtilsConstants.PERMISSION_MODERATE;
+import static org.nuxeo.webengine.utils.SiteUtilsConstants.PERMISSION_COMMENT;
 import static org.nuxeo.webengine.utils.SiteUtilsConstants.WORKSPACE;
-import static org.nuxeo.webengine.utils.SiteUtilsConstants.PERMISSION_MANAGE_EVERYTHING;
-import static org.nuxeo.webengine.utils.SiteUtilsConstants.PERMISSION_WRITE;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,9 +27,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
@@ -66,9 +66,10 @@ public class WebCommentUtils {
     public static boolean isCurrentModerated(CoreSession session,
             DocumentModel doc) throws Exception {
         Set<String> moderatePermissions = new HashSet<String>();
-        moderatePermissions.add(PERMISSION_MODERATE);
-        moderatePermissions.add(PERMISSION_MANAGE_EVERYTHING);
-        return getUsersWithPermission(session, doc, moderatePermissions).size() >= 1 ? true : false;
+        SecurityService securityService = getSecurityService();
+        moderatePermissions.addAll(Arrays.asList(securityService.getPermissionsToCheck(PERMISSION_MODERATE)));
+        return getUsersWithPermission(session, doc, moderatePermissions).size() >= 1 ? true
+                : false;
     }
 
     /**
@@ -77,15 +78,7 @@ public class WebCommentUtils {
      */
     public static boolean isModeratedByCurrentUser(CoreSession session,
             DocumentModel doc) throws Exception {
-        Set<String> moderatePermissions = new HashSet<String>();
-        moderatePermissions.add(PERMISSION_MODERATE);
-        moderatePermissions.add(PERMISSION_MANAGE_EVERYTHING);
-        ArrayList<String> moderators = getUsersWithPermission(session, doc, moderatePermissions);
-        if (moderators.contains(session.getPrincipal().getName())) {
-            return true;
-        }
-
-        return false;
+        return session.hasPermission(doc.getRef(), PERMISSION_MODERATE);
     }
 
     /**
@@ -94,15 +87,7 @@ public class WebCommentUtils {
      */
     public static boolean currentUserHasCommentPermision(CoreSession session,
             DocumentModel doc) throws Exception {
-        Set<String> commentPermissions = new HashSet<String>();
-        commentPermissions.add(PERMISSION_COMMENT);
-        commentPermissions.add(PERMISSION_MANAGE_EVERYTHING);
-        commentPermissions.add(PERMISSION_WRITE);
-        ArrayList<String> users = getUsersWithPermission(session, doc, commentPermissions);
-        if (users.contains(session.getPrincipal().getName())) {
-            return true;
-        }
-        return false;
+        return session.hasPermission(doc.getRef(), PERMISSION_COMMENT);
     }
 
    /**
@@ -127,5 +112,9 @@ public class WebCommentUtils {
         }
         return userManager;
     }
-
+    
+    public static SecurityService getSecurityService(){
+        return NXCore.getSecurityService();
+    }
+    
 }

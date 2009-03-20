@@ -57,8 +57,8 @@ public final class SiteUtilsConstants {
 
     public static final String PERMISSION_MODERATE = "Moderate";
     
-    public static final String PERMISSION_WRITE = "WriteOnWebcontainer";
+    public static final String PERMISSION_WRITE = "Write";
     
-    public static final String PERMISSION_MANAGE_EVERYTHING = "EverythingOnWebcontainer";
+    public static final String PERMISSION_MANAGE_EVERYTHING = "Everything";
 
 }
