@@ -123,12 +123,12 @@
         <version>0.1-SNAPSHOT</version>
         <type>jar</type>
       </dependency>
-      <!--dependency>
+      <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-chemistry-impl</artifactId>
         <version>1.5-SNAPSHOT</version>
         <type>jar</type>
-      </dependency-->
+      </dependency>
 
   </dependencies>
 
