@@ -22,7 +22,6 @@ import org.apache.chemistry.atompub.server.CMISServiceResponse;
 import org.apache.chemistry.repository.Repository;
 import org.nuxeo.ecm.core.chemistry.impl.NuxeoRepository;
 import org.nuxeo.ecm.webengine.WebEngine;
-import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 import org.nuxeo.runtime.api.Framework;
@@ -97,7 +96,7 @@ public class Main extends ModuleRoot {
 //              }
           }
       }
-      return builder.build();
+      return builder.entity(context).build();
   }
 
 }
