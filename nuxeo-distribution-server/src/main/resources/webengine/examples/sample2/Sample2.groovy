@@ -100,7 +100,7 @@ public class Sample2 extends ModuleRoot {
   public Response sendError(@PathParam("errorCode") String errorCode) {
     try {
       int statusCode = Integer.parseInt(errorCode);
-      Response.Status status = Status.fromStatusCode(statusCode);
+      Response.Status status = Response.Status.fromStatusCode(statusCode);
       if (status != null) {
 	      return Response.status(status).build();
       }
