@@ -124,11 +124,11 @@ public class Page extends DocumentObject {
         root.put(SITE_DESCRIPTION, SiteHelper.getString(doc, "dc:description",
                 null));
         // add web pages
-        List<Object> pages = SiteUtils.getInstance().getLastModifiedWebPages(
+        List<Object> pages = SiteUtils.getLastModifiedWebPages(
                 doc, 5, 50);
         root.put(LAST_PUBLISHED_PAGES, pages);
         // add contextual links
-        root.put(CONTEXTUAL_LINKS, SiteUtils.getInstance().getContextualLinks(
+        root.put(CONTEXTUAL_LINKS, SiteUtils.getContextualLinks(
                 doc));
         MimetypeRegistry mimetypeService = null;
         try {

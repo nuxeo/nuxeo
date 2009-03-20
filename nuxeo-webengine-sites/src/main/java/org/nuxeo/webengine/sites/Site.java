@@ -183,12 +183,12 @@ public class Site extends DefaultObject {
         root.put(SITE_DESCRIPTION, SiteHelper.getString(ws, "dc:description",
                 null));
         // add web pages
-        root.put(LAST_PUBLISHED_PAGES, SiteUtils.getInstance().getLastModifiedWebPages(
+        root.put(LAST_PUBLISHED_PAGES, SiteUtils.getLastModifiedWebPages(
                 ws, 5, 50));
         //add comments
         root.put(COMMENTS, getLastCommentsFromPages(5, 50));
         // add contextual links
-        root.put(CONTEXTUAL_LINKS, SiteUtils.getInstance().getContextualLinks(
+        root.put(CONTEXTUAL_LINKS, SiteUtils.getContextualLinks(
                 ws));
         return root;
     }

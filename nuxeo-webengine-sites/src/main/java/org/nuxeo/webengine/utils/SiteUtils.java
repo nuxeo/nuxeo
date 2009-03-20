@@ -16,7 +16,10 @@
  */
 package org.nuxeo.webengine.utils;
 
-import static org.nuxeo.webengine.utils.SiteUtilsConstants.*;
+import static org.nuxeo.webengine.utils.SiteUtilsConstants.CONTEXTUAL_LINK;
+import static org.nuxeo.webengine.utils.SiteUtilsConstants.NUMBER_COMMENTS;
+import static org.nuxeo.webengine.utils.SiteUtilsConstants.WEBPAGE;
+import static org.nuxeo.webengine.utils.SiteUtilsConstants.WORKSPACE;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -46,18 +49,6 @@ public class SiteUtils {
 
     private static final Log log = LogFactory.getLog(SiteUtils.class);
 
-    private static SiteUtils _instance;
-
-    private SiteUtils() {
-    }
-
-    public static final SiteUtils getInstance() {
-        if (null == _instance) {
-            _instance = new SiteUtils();
-        }
-        return _instance;
-    }
-
     /**
      * Method used to return the list with the details about the <b>Contextual
      * Link</b>-s that have been created under a <b>Workspace</b> or
@@ -68,7 +59,7 @@ public class SiteUtils {
      * @return the list with the details about the <b>Contextual Link</b>-s
      * @throws ClientException
      */
-    public List<Object> getContextualLinks(DocumentModel documentModel)
+    public static List<Object> getContextualLinks(DocumentModel documentModel)
             throws ClientException {
         List<Object> contextualLinks = new ArrayList<Object>();
         if (WORKSPACE.equals(documentModel.getType())
@@ -110,8 +101,9 @@ public class SiteUtils {
      *         <b>WebPage</b> that is received as parameter
      * @throws ClientException
      */
-    public List<Object> getLastModifiedWebPages(DocumentModel documentModel,
-            int noPages, int noWordsFromContent) throws ClientException {
+    public static List<Object> getLastModifiedWebPages(
+            DocumentModel documentModel, int noPages, int noWordsFromContent)
+            throws ClientException {
         WebContext context = WebEngine.getActiveContext();
         CoreSession session = context.getCoreSession();
         DocumentModelList webPages = session.query(
@@ -149,7 +141,8 @@ public class SiteUtils {
                     String[] splittedFormatterdString = formattedString.split(" ");
                     page.put("day", splittedFormatterdString[0]);
                     page.put("month", splittedFormatterdString[1]);
-                    page.put(NUMBER_COMMENTS, getNumberCommentsForPage(webPage));
+                    page.put(NUMBER_COMMENTS,
+                            getNumberOfCommentsForPage(webPage));
                     pages.add(page);
                 } catch (Exception e) {
                     log.debug("Problems while trying to retrieve data from "
@@ -160,10 +153,25 @@ public class SiteUtils {
         return pages;
     }
 
-    private String getNumberCommentsForPage(DocumentModel page)
+    public static String getNumberOfCommentsForPage(DocumentModel page)
             throws Exception {
         CommentManager commentManager = WebCommentUtils.getCommentManager();
         return Integer.toString(commentManager.getComments(page).size());
+    }
+
+    /**
+     * Get the first Workspace parent
+     * */
+    public static DocumentModel getFisrtWorkspaceParent(CoreSession session,
+            DocumentModel doc) throws Exception {
+        List<DocumentModel> parents = session.getParentDocuments(doc.getRef());
+        for (DocumentModel currentDocumentModel : parents) {
+            if (WORKSPACE.equals(currentDocumentModel.getType())) {
+                return currentDocumentModel;
+            }
+        }
+
+        return null;
     }
 
 }
