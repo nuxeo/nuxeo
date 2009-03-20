@@ -14,9 +14,9 @@ URL=${URL:-http://localhost:8080/nuxeo/}
 # Build command line
 CMD="java -jar selenium-server.jar -port 14440 -timeout 7200 \
       -htmlSuite "*chrome" $URL "
-if [ ! -z $HIDE_FF ]; then
-    CMD="xvfb-run $CMD"
-fi
+#if [ ! -z $HIDE_FF ]; then
+#    CMD="xvfb-run $CMD"
+#fi
 CMD_END=" -userExtensions user-extensions.js"
 
 # Clean old results

@@ -197,6 +197,9 @@ def testGf3():
     c.set_timeout(60)
 
     data = c.get("http://localhost:8080/")
+    print "localhost data"
+    print data
+    print ""
     assert "Welcome to Nuxeo WebEngine!" in data
 
     # FIXME: disabled for now.
