@@ -187,8 +187,8 @@ def testGf3():
     flush()
 
     cmd = "sh nxserver.sh -console > server.log 2>&1"
-    p = pexpect.spawn("sh", ["-c", cmd], timeout=120)
-    waitForServer(timeout=120)
+    p = pexpect.spawn("sh", ["-c", cmd], timeout=1200)
+    waitForServer(timeout=1200)
 
     print "Browsing a few pages"
     flush()
@@ -211,6 +211,7 @@ def testGf3():
     p.sendline("quit")
     p.close(force=True)
     os.chdir("../..")
+    print "done"
 
 
 def main(argv):
