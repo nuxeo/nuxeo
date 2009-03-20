@@ -29,7 +29,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 
-import org.nuxeo.ecm.core.api.ClientException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -43,6 +44,8 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 @Produces("text/html; charset=UTF-8")
 public class Sites extends DefaultObject {
 
+    private static final Log log = LogFactory.getLog(Sites.class);
+
     @GET
     public Object doGet() {
         return dispatch("/");
@@ -55,7 +58,8 @@ public class Sites extends DefaultObject {
                 List<Object> sites = getWebContainers();
                 WebContext context = WebEngine.getActiveContext();
                 CoreSession session = context.getCoreSession();
-                ctx.getRequest().setAttribute("org.nuxeo.theme.theme", "sites/default");
+                ctx.getRequest().setAttribute("org.nuxeo.theme.theme",
+                        "sites/default");
                 return getTemplate("list_sites.ftl").arg("sites", sites).arg(
                         "rootDoc", session.getRootDocument());
             } else {
@@ -68,25 +72,23 @@ public class Sites extends DefaultObject {
 
     }
 
-    public List<Object> getWebContainers() throws ClientException {
+    public List<Object> getWebContainers() throws Exception {
         WebContext context = WebEngine.getActiveContext();
         CoreSession session = context.getCoreSession();
 
-        // DocumentModelList list =
-        // session.query("SELECT * FROM Workspace WHERE webc:isWebContainer = null");
-        DocumentModelList list = session.query("SELECT * FROM Workspace");
-
+        DocumentModelList webSites = session.query("SELECT * FROM Workspace");
         // filter by hand ( avoiding some core search issues )
         List<Object> sites = new ArrayList<Object>();
-        for (DocumentModel d : list) {
-            if (SiteHelper.getBoolean(d, "webc:isWebContainer", false)) {
+        for (DocumentModel webSite : webSites) {
+            if (SiteHelper.getBoolean(webSite, "webc:isWebContainer", false)) {
                 try {
                     Map<String, String> site = new HashMap<String, String>();
-                    site.put("href", SiteHelper.getString(d, "webc:url"));
-                    site.put("name", SiteHelper.getString(d, "webc:name"));
+                    site.put("href", SiteHelper.getString(webSite, "webc:url"));
+                    site.put("name", SiteHelper.getString(webSite, "webc:name"));
                     sites.add(site);
                 } catch (Exception e) {
-                    System.out.println("ignore site :" + d);
+                    log.debug("Problem retrieving the existings websites ...",
+                            e);
                 }
             }
         }

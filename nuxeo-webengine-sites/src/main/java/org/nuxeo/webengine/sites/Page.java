@@ -130,6 +130,10 @@ public class Page extends DocumentObject {
         // add contextual links
         root.put(CONTEXTUAL_LINKS, SiteUtils.getContextualLinks(
                 doc));
+
+        // add all webpages that are directly connected to an webpage
+        root.put(ALL_WEBPAGES, SiteUtils.getAllWebPages(
+                doc));
         MimetypeRegistry mimetypeService = null;
         try {
             mimetypeService = Framework.getService(MimetypeRegistry.class);

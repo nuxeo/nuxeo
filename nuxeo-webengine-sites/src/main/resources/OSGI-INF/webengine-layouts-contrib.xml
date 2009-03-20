@@ -78,6 +78,7 @@
       <widget name="name" type="text">
         <translated>true</translated>
         <fields>
+          <field>dc:title</field>
           <field>clink:name</field>
         </fields>
         <properties widgetMode="edit">

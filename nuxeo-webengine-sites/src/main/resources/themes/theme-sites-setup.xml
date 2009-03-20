@@ -22,6 +22,7 @@
           <fragment type="region fragment"/>
           <fragment type="generic fragment"/>
           <fragment type="generic fragment"/>
+          <fragment type="generic fragment"/>          
         </cell>
         <cell>
           <cell>
@@ -45,6 +46,7 @@
           <fragment type="generic fragment" />
           <fragment type="generic fragment" />
           <fragment type="generic fragment" />
+          <fragment type="generic fragment"/>          
         </cell>
         <cell>
           <cell>
@@ -179,7 +181,7 @@
     <widget element="page[3]/section[2]/cell[1]/fragment[1]">
       <view>Minisite Tree</view>
     </widget>
-    <widget element="page[3]/section[2]/cell[2]/fragment[4]">
+    <widget element="page[3]/section[2]/cell[2]/fragment[5]">
       <view>Minisite Attached files</view>
     </widget>
     <widget element="page[2]/section[1]/cell[1]/fragment[1]">
@@ -195,9 +197,12 @@
       <view>cell frame</view>
     </widget>
     <widget element="page[2]/section[2]/cell[2]/fragment[2]">
+      <view>All WebPages</view>
+    </widget>    
+    <widget element="page[2]/section[2]/cell[2]/fragment[3]">
       <view>Minisite Last Published</view>
     </widget>
-    <widget element="page[2]/section[2]/cell[2]/fragment[3]">
+    <widget element="page[2]/section[2]/cell[2]/fragment[4]">
       <view>Minisite Last Comments</view>
     </widget>
     <widget element="page[2]/section[2]/cell[3]/cell[1]/fragment[1]">
@@ -227,10 +232,15 @@
     <widget element="page[3]/section[2]/cell[3]/fragment[1]">
       <view>Minisite Tree</view>
     </widget>
+    
     <widget element="page[3]/section[2]/cell[2]/fragment[2]">
+      <view>All WebPages</view>
+    </widget>
+        
+    <widget element="page[3]/section[2]/cell[2]/fragment[3]">
       <view>Page Last Published</view>
     </widget>
-    <widget element="page[3]/section[2]/cell[2]/fragment[3]">
+    <widget element="page[3]/section[2]/cell[2]/fragment[4]">
       <view>Page Last Comments</view>
     </widget>
     <widget element="page[3]/section[2]/cell[3]/cell[1]/fragment[1]">

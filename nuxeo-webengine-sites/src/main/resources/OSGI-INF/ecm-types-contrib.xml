@@ -14,8 +14,8 @@
     
     <type id="WebPage" coretype="WebPage">
       <label>Web Page</label>
-      <icon>/icons/folder.gif</icon>
-      <icon-expanded>/icons/folder_open.gif</icon-expanded>
+      <icon>/icons/page_white_world.png</icon>
+      <icon-expanded>/icons/web_folder.png</icon-expanded>
       <default-view>view_documents</default-view>
       <subtypes>
         <type>WebPage</type>

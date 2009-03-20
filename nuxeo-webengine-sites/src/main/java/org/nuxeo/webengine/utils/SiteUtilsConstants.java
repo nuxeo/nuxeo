@@ -50,15 +50,17 @@ public final class SiteUtilsConstants {
 
     public static final String NUMBER_COMMENTS = "numberComments";
 
+    public static final String ALL_WEBPAGES = "webPages";
+
     /**
      * Constants used for Comments
      */
     public static final String PERMISSION_COMMENT = "Comment";
 
     public static final String PERMISSION_MODERATE = "Moderate";
-    
+
     public static final String PERMISSION_WRITE = "Write";
-    
+
     public static final String PERMISSION_MANAGE_EVERYTHING = "Everything";
 
 }

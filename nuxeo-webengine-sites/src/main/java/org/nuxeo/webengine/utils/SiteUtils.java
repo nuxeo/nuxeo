@@ -106,63 +106,80 @@ public class SiteUtils {
             throws ClientException {
         WebContext context = WebEngine.getActiveContext();
         CoreSession session = context.getCoreSession();
-        DocumentModelList webPages = session.query(
-                String.format(
-                        "SELECT * FROM Document WHERE "
-                                + " ecm:primaryType like 'WebPage' AND "
-                                + " ecm:path STARTSWITH '%s'"
-                                + " AND webp:pushtomenu = 'true' "
-                                + " AND ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0"
-                                + " AND ecm:currentLifeCycleState != 'deleted' ORDER BY dc:modified DESC",
-                        documentModel.getPathAsString()), null, noPages, 0,
-                true);
-
         List<Object> pages = new ArrayList<Object>();
-        for (DocumentModel webPage : webPages) {
-            if (SiteHelper.getBoolean(webPage, "webp:pushtomenu", true)) {
-                try {
-                    Map<String, String> page = new HashMap<String, String>();
-                    page.put("name", SiteHelper.getString(webPage, "dc:title"));
-                    page.put("path", JsonAdapter.getRelativPath(documentModel,
-                            webPage).toString());
-                    page.put("description", SiteHelper.getString(webPage,
-                            "dc:description"));
-                    page.put("content", SiteHelper.getFistNWordsFromString(
-                            SiteHelper.getString(webPage, "webp:content"),
-                            noWordsFromContent));
-                    page.put("author", SiteHelper.getString(webPage,
-                            "dc:creator"));
+        try {
+            DocumentModelList webPages = session.query(
+                    String.format(
+                            "SELECT * FROM Document WHERE "
+                                    + " ecm:primaryType like 'WebPage' AND "
+                                    + " ecm:path STARTSWITH '%s'"
+                                    + " AND ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0"
+                                    + " AND ecm:currentLifeCycleState != 'deleted' ORDER BY dc:modified DESC",
+                            getFirstWorkspaceParent(session, documentModel).getPathAsString()),
+                    null, noPages, 0, true);
 
-                    GregorianCalendar modificationDate = SiteHelper.getGregorianCalendar(
-                            webPage, "dc:modified");
-                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
-                            "dd MMMM", WebEngine.getActiveContext().getLocale());
-                    String formattedString = simpleDateFormat.format(modificationDate.getTime());
-                    String[] splittedFormatterdString = formattedString.split(" ");
-                    page.put("day", splittedFormatterdString[0]);
-                    page.put("month", splittedFormatterdString[1]);
-                    page.put(NUMBER_COMMENTS,
-                            getNumberOfCommentsForPage(webPage));
-                    pages.add(page);
-                } catch (Exception e) {
-                    log.debug("Problems while trying to retrieve data from "
-                            + webPage.getTitle());
-                }
+            for (DocumentModel webPage : webPages) {
+                Map<String, String> page = new HashMap<String, String>();
+                page.put("name", SiteHelper.getString(webPage, "dc:title"));
+                page.put("path", JsonAdapter.getRelativPath(
+                        getFirstWorkspaceParent(session, documentModel),
+                        webPage).toString());
+                page.put("description", SiteHelper.getString(webPage,
+                        "dc:description"));
+                page.put("content", SiteHelper.getFistNWordsFromString(
+                        SiteHelper.getString(webPage, "webp:content"),
+                        noWordsFromContent));
+                page.put("author", SiteHelper.getString(webPage, "dc:creator"));
+
+                GregorianCalendar modificationDate = SiteHelper.getGregorianCalendar(
+                        webPage, "dc:modified");
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
+                        "dd MMMM", WebEngine.getActiveContext().getLocale());
+                String formattedString = simpleDateFormat.format(modificationDate.getTime());
+                String[] splittedFormatterdString = formattedString.split(" ");
+                page.put("day", splittedFormatterdString[0]);
+                page.put("month", splittedFormatterdString[1]);
+                page.put(NUMBER_COMMENTS, getNumberCommentsForPage(webPage));
+                pages.add(page);
             }
+        } catch (Exception e) {
+            log.debug("Problems while trying to retrieve data for method getLastModifiedWebPages() ...");
         }
         return pages;
     }
 
-    public static String getNumberOfCommentsForPage(DocumentModel page)
-            throws Exception {
-        CommentManager commentManager = WebCommentUtils.getCommentManager();
-        return Integer.toString(commentManager.getComments(page).size());
+    /**
+     * Returns all the <b>WebPage</b>-s that are direct children of the received
+     * document.
+     *
+     * @param document - the parent for the webpages
+     * @return
+     */
+    public static List<Object> getAllWebPages(DocumentModel document) {
+        List<Object> webPages = new ArrayList<Object>();
+        CoreSession session = WebEngine.getActiveContext().getCoreSession();
+        try {
+            for (DocumentModel webPage : session.getChildren(document.getRef(),
+                    WEBPAGE)) {
+
+                Map<String, String> details = new HashMap<String, String>();
+                details.put("name", SiteHelper.getString(webPage, "dc:title"));
+                details.put("path", JsonAdapter.getRelativPath(document,
+                        webPage).toString());
+
+                webPages.add(details);
+            }
+        } catch (Exception e) {
+            log.debug("Problems while trying all the web pages ");
+
+        }
+        return webPages;
     }
 
     /**
      * Get the first Workspace parent
      * */
-    public static DocumentModel getFisrtWorkspaceParent(CoreSession session,
+    public static DocumentModel getFirstWorkspaceParent(CoreSession session,
             DocumentModel doc) throws Exception {
         List<DocumentModel> parents = session.getParentDocuments(doc.getRef());
         for (DocumentModel currentDocumentModel : parents) {
@@ -170,8 +187,13 @@ public class SiteUtils {
                 return currentDocumentModel;
             }
         }
-
         return null;
+    }
+
+    private static String getNumberCommentsForPage(DocumentModel page)
+            throws Exception {
+        CommentManager commentManager = WebCommentUtils.getCommentManager();
+        return Integer.toString(commentManager.getComments(page).size());
     }
 
 }

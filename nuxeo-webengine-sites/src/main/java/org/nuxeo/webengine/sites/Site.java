@@ -190,6 +190,9 @@ public class Site extends DefaultObject {
         // add contextual links
         root.put(CONTEXTUAL_LINKS, SiteUtils.getContextualLinks(
                 ws));
+        // add all webpages that are directly connected to an site
+        root.put(ALL_WEBPAGES, SiteUtils.getAllWebPages(
+                ws));
         return root;
     }
 

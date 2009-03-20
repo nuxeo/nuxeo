@@ -46,7 +46,7 @@ public class WebCommentUtils {
      * */
     public static ArrayList<String> getUsersWithPermission(CoreSession session,
             DocumentModel doc, Set<String> permissions) throws Exception {
-        DocumentModel parentWorkspace = SiteUtils.getFisrtWorkspaceParent(session, doc);
+        DocumentModel parentWorkspace = SiteUtils.getFirstWorkspaceParent(session, doc);
         if (parentWorkspace != null) {
             String[] moderators = parentWorkspace.getACP().listUsernamesForAnyPermission(permissions);
             return new ArrayList<String>(Arrays.asList(moderators));
