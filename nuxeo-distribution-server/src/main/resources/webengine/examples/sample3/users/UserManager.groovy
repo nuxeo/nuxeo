@@ -29,9 +29,9 @@ public class UserManager extends DefaultObject {
    */
   @GET
   @Path("user")
-  public Response getUserByQueryString(@QueryParam("name") String name) {
+  public Object getUserByQueryString(@QueryParam("name") String name) {
     if (name == null) {
-      return Response.status(404).build();
+      return doGet();
     } else {
       return redirect(getPath()+"/user/"+name);
     }

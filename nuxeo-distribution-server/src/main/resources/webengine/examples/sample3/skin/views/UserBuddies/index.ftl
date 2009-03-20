@@ -1,7 +1,7 @@
 <!-- Base template that defines the site layout -->
 <html>
   <head>
-    <title>Sample4 - Adapter example</title>
+    <title>Sample3 - Adapter example</title>
   </head>
   <body>
     <#-- Look here how $This is used to access current user and not Buddies adapter -->

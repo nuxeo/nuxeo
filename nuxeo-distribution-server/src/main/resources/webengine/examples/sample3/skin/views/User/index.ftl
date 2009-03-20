@@ -1,7 +1,7 @@
 <!-- Base template that defines the site layout -->
 <html>
   <head>
-    <title>Sample4</title>
+    <title>Sample3</title>
   </head>
   <body>
     <h3>Hello from user ${This.name}!</h3>
