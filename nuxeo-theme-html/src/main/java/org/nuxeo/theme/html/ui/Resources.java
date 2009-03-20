@@ -51,9 +51,9 @@ public class Resources {
 
         combinedStyles.deleteCharAt(combinedStyles.length() - 1);
         combinedScripts.deleteCharAt(combinedScripts.length() - 1);
-        combinedStyles.append("?path=").append(path).append("&basepath=").append(
+        combinedStyles.append("?path=").append(path).append("&amp;basepath=").append(
                 basepath);
-        combinedScripts.append("?path=").append(path).append("&basepath=").append(
+        combinedScripts.append("?path=").append(path).append("&amp;basepath=").append(
                 basepath);
 
         // styles
