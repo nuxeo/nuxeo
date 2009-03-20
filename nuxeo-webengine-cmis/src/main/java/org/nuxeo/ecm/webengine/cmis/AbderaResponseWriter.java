@@ -13,52 +13,47 @@
  *
  * Contributors:
  *     bstefanescu
- *
- * $Id$
  */
-
-package org.nuxeo.ecm.webengine.model.io;
+package org.nuxeo.ecm.webengine.cmis;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
-import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.MessageBodyWriter;
 
-import org.nuxeo.ecm.webengine.WebException;
-import org.nuxeo.ecm.webengine.model.Template;
+import org.apache.abdera.protocol.server.ResponseContext;
+import org.nuxeo.ecm.core.api.Blob;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@Produces("*/*")
-public class TemplateWriter implements MessageBodyWriter<Template> {
+public class AbderaResponseWriter implements MessageBodyWriter<ResponseContext> {
 
-    public void writeTo(Template t, Class<?> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType,
-            MultivaluedMap<String, Object> httpHeaders,
-            OutputStream entityStream) throws IOException {
-        try {
-            t.render(entityStream);
-        } catch (Throwable e) {
-            throw WebException.wrap("Failed to render resource", e);
-        }
-    }
-
-    public long getSize(Template arg0, Class<?> arg1, Type arg2,
+    public long getSize(ResponseContext arg0, Class<?> arg1, Type arg2,
             Annotation[] arg3, MediaType arg4) {
-        // TODO Auto-generated method stub
-        return -1;
+        return arg0.getContentLength();
     }
 
-    public boolean isWriteable(Class<?> arg0, Type type, Annotation[] arg2,
+
+    public boolean isWriteable(Class<?> arg0, Type arg1, Annotation[] arg2,
             MediaType arg3) {
-        return Template.class.isAssignableFrom(arg0);
+        return ResponseContext.class.isAssignableFrom(arg0);
     }
 
+    public void writeTo(ResponseContext arg0, Class<?> arg1, Type arg2,
+            Annotation[] arg3, MediaType arg4,
+            MultivaluedMap<String, Object> arg5, OutputStream arg6)
+            throws IOException, WebApplicationException {
+        arg0.writeTo(arg6);
+    }
+    
 }
+
+
