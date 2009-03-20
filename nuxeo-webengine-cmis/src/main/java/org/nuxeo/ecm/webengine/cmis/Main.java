@@ -2,6 +2,8 @@ package org.nuxeo.ecm.webengine.cmis;
 
 import java.io.*;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.activation.MimeType;
 import javax.servlet.http.HttpServletRequest;
@@ -37,7 +39,13 @@ public class Main extends ModuleRoot {
         repository = new NuxeoRepository("default");
         abdera = new Abdera();
         provider = new CMISProvider(repository);
+<<<<<<< local
+        Map<String, String> properties = new HashMap<String, String>();
+        provider.init(abdera, properties);
+        cc = new CMISCollectionForChildren(CMIS.COL_ROOT_CHILDREN, repository.getInfo().getRootFolderId(), repository);        
+=======
         cc = new CMISCollectionForChildren(CMIS.COL_ROOT_CHILDREN, repository.getInfo().getRootFolderId(), repository);
+>>>>>>> other
     }
 
   /**
@@ -46,6 +54,7 @@ public class Main extends ModuleRoot {
   @GET
   public Response doGet() {
       RequestContext reqCtx = new ServletRequestContext(provider, ctx.getRequest());
+      
       ResponseContext respCtx = provider.process(reqCtx);
       return getResponse(respCtx);
   }
@@ -82,6 +91,10 @@ public class Main extends ModuleRoot {
       }
       return builder.build();
   }
+<<<<<<< local
+  
+    
+=======
 
   protected void output(
           HttpServletRequest request,
@@ -117,5 +130,6 @@ public class Main extends ModuleRoot {
           }
         }
 
+>>>>>>> other
 }
 
