@@ -28,8 +28,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.ws.rs.core.Response;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -146,6 +149,15 @@ public class SiteUtils {
             log.debug("Problems while trying to retrieve data for method getLastModifiedWebPages() ...");
         }
         return pages;
+    }
+
+    public static Response getLogoResponse(DocumentModel document) throws Exception {
+        Blob blob = SiteHelper.getBlob(document, "webc:logo");
+        if (blob != null) {
+            return Response.ok().entity(blob).type(blob.getMimeType()).build();
+        }
+
+        return null;
     }
 
     /**

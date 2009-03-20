@@ -31,6 +31,7 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -105,6 +106,24 @@ public class Page extends DocumentObject {
         }
     }
 
+    @GET
+    @Path("logo")
+    public Response getLogo() {
+        Response resp = null;
+        try {
+            DocumentModel parentWorkspace = SiteUtils.getFirstWorkspaceParent(getCoreSession(), doc);
+            resp = SiteUtils.getLogoResponse(parentWorkspace);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        //return a default image, maybe you want to change this in future
+        if (resp == null) {
+            resp = redirect(getContext().getModule().getSkinPathPrefix() +
+                    "/images/logo.gif");
+        }
+        return resp;
+    }
+
     public boolean isUserWithCommentPermission() {
         try {
             CoreSession session = this.getCoreSession();
@@ -120,8 +139,7 @@ public class Page extends DocumentObject {
         Map<String, Object> root = new HashMap<String, Object>();
 
         root.put(WELCOME_TEXT, SiteHelper.getString(doc, "webp:content", null));
-        root.put(SITE_NAME, SiteHelper.getString(doc, "dc:title", null));
-        root.put(SITE_DESCRIPTION, SiteHelper.getString(doc, "dc:description",
+        root.put(DESCRIPTION, SiteHelper.getString(doc, "dc:description",
                 null));
         // add web pages
         List<Object> pages = SiteUtils.getLastModifiedWebPages(

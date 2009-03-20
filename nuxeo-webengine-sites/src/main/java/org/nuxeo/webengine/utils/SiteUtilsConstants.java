@@ -38,9 +38,9 @@ public final class SiteUtilsConstants {
      */
     public static final String WELCOME_TEXT = "welcomeText";
 
-    public static final String SITE_NAME = "siteName";
+    public static final String NAME = "name";
 
-    public static final String SITE_DESCRIPTION = "description";
+    public static final String DESCRIPTION = "description";
 
     public static final String LAST_PUBLISHED_PAGES = "pages";
 
