@@ -36,6 +36,10 @@ public class Main extends ModuleRoot {
     static  CMISProvider provider;
     static CMISCollectionForChildren cc;
 
+    static {
+        initialize();
+    }
+
     public static void initialize() {
         repository = new NuxeoRepository("default");
         abdera = new Abdera();
