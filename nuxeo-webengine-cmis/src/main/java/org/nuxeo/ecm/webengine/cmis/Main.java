@@ -39,13 +39,9 @@ public class Main extends ModuleRoot {
         repository = new NuxeoRepository("default");
         abdera = new Abdera();
         provider = new CMISProvider(repository);
-<<<<<<< local
         Map<String, String> properties = new HashMap<String, String>();
         provider.init(abdera, properties);
-        cc = new CMISCollectionForChildren(CMIS.COL_ROOT_CHILDREN, repository.getInfo().getRootFolderId(), repository);        
-=======
         cc = new CMISCollectionForChildren(CMIS.COL_ROOT_CHILDREN, repository.getInfo().getRootFolderId(), repository);
->>>>>>> other
     }
 
   /**
@@ -54,7 +50,7 @@ public class Main extends ModuleRoot {
   @GET
   public Response doGet() {
       RequestContext reqCtx = new ServletRequestContext(provider, ctx.getRequest());
-      
+
       ResponseContext respCtx = provider.process(reqCtx);
       return getResponse(respCtx);
   }
@@ -91,45 +87,6 @@ public class Main extends ModuleRoot {
       }
       return builder.build();
   }
-<<<<<<< local
-  
-    
-=======
 
-  protected void output(
-          HttpServletRequest request,
-          HttpServletResponse response,
-          ResponseContext context)
-            throws IOException {
-          if (context != null) {
-            response.setStatus(context.getStatus());
-            long cl = context.getContentLength();
-            String cc = context.getCacheControl();
-            if (cl > -1) response.setHeader("Content-Length", Long.toString(cl));
-            if (cc != null && cc.length() > 0) response.setHeader("Cache-Control",cc);
-            try {
-              MimeType ct = context.getContentType();
-              if (ct != null) response.setContentType(ct.toString());
-            } catch (Exception e) {}
-            String[] names = context.getHeaderNames();
-            for (String name : names) {
-              Object[] headers = context.getHeaders(name);
-              for (Object value : headers) {
-                if (value instanceof Date)
-                  response.setDateHeader(name, ((Date)value).getTime());
-                else
-                  response.setHeader(name, value.toString());
-              }
-            }
-
-            if (!request.getMethod().equals("HEAD") && context.hasEntity()) {
-              context.writeTo(response.getOutputStream());
-            }
-          } else {
-              throw new WebException("Internal Server Error");
-          }
-        }
-
->>>>>>> other
 }
 
