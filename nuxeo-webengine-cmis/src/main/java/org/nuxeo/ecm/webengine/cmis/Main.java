@@ -1,29 +1,31 @@
 package org.nuxeo.ecm.webengine.cmis;
 
-import java.io.*;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.activation.MimeType;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.*;
-import javax.ws.rs.core.*;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.apache.abdera.Abdera;
 import org.apache.abdera.protocol.server.RequestContext;
 import org.apache.abdera.protocol.server.ResponseContext;
 import org.apache.abdera.protocol.server.servlet.ServletRequestContext;
+import org.apache.abdera.util.Constants;
 import org.apache.chemistry.atompub.CMIS;
 import org.apache.chemistry.atompub.server.CMISCollectionForChildren;
 import org.apache.chemistry.atompub.server.CMISProvider;
+import org.apache.chemistry.atompub.server.CMISServiceResponse;
 import org.apache.chemistry.repository.Repository;
 import org.nuxeo.ecm.core.chemistry.impl.NuxeoRepository;
-import org.nuxeo.ecm.webengine.model.*;
-import org.nuxeo.ecm.webengine.model.impl.*;
-import org.nuxeo.ecm.webengine.*;
+import org.nuxeo.ecm.webengine.WebEngine;
+import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.model.WebObject;
+import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
+import org.nuxeo.runtime.api.Framework;
 
 
 @WebObject(type="cmis")
@@ -42,6 +44,8 @@ public class Main extends ModuleRoot {
         Map<String, String> properties = new HashMap<String, String>();
         provider.init(abdera, properties);
         cc = new CMISCollectionForChildren(CMIS.COL_ROOT_CHILDREN, repository.getInfo().getRootFolderId(), repository);
+        
+        Framework.getLocalService(WebEngine.class).getRegistry().addMessageBodyWriter(new AbderaResponseWriter());
     }
 
   /**
@@ -50,9 +54,17 @@ public class Main extends ModuleRoot {
   @GET
   public Response doGet() {
       RequestContext reqCtx = new ServletRequestContext(provider, ctx.getRequest());
-
-      ResponseContext respCtx = provider.process(reqCtx);
-      return getResponse(respCtx);
+      CMISServiceResponse response = new CMISServiceResponse(provider, reqCtx);
+      response.setStatus(200);
+      response.setContentType(Constants.APP_MEDIA_TYPE);
+      return getResponse(response);
+  }
+  
+  @GET
+  @Path("children")
+  public Response doGetFeed() {
+      RequestContext reqCtx = new ServletRequestContext(provider, ctx.getRequest());
+      return getResponse(cc.getFeed(reqCtx));
   }
 
   public Response getResponse(ResponseContext context) {
