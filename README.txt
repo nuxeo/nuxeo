@@ -14,10 +14,10 @@ Using this project you can build the following applications:
 Previously built by nuxeo-platform/nuxeo-platform-ear/, Nuxeo EP EAR is now
 built here.
 
-- From this directory, use the following commands: "mvn package" or 
-  "mvn package -Pnuxeo-jboss"
+- From this directory, use the following commands: "mvn install" or 
+  "mvn install -Pnuxeo-jboss"
 
-- From nuxeo-platform-ear, run "mvn package" or see in package.sh for available
+- From nuxeo-platform-ear, run "mvn install" or see in package.sh for available
   packages.
 
   Built EAR is in nuxeo-platform-ear/target/ and its name depends on chosen
@@ -30,7 +30,7 @@ A command-line client application suitable to connect to remote nuxeo servers.
 This application can be used to connect to remote nuxeo servers for debugging,
 browsing or administration purposes.
 
-To build, run: "mvn package -Pshell"
+To build, run: "mvn install -Pshell"
     
 3. Nuxeo Core Server 
 
@@ -42,7 +42,7 @@ need a repository connection.
   
 Remoting will be also available in the future via Nuxeo Runtime.
   
-To build, run: "mvn package -Pcore"
+To build, run: "mvn install -Pcore"
     
 4. Nuxeo Jetty Server
   
@@ -52,7 +52,7 @@ This application can be used to browse repository content via WEB.
   
 This is also known as Nuxeo WebEngine (based on Jetty).
 
-To build, run: "mvn package -Pjetty"
+To build, run: "mvn install -Pjetty"
    
 5. Nuxeo GF3 Server
   
@@ -65,13 +65,13 @@ This is also known as Nuxeo WebEngine (based on GF3).
 In the future, this application will provide a full installation of Nuxeo
 (including EJBs, JMS, etc).
 
-To build, run: "mvn package -Pgf3"
+To build, run: "mvn install -Pgf3"
 
 By default the build will generate a server based on jcr repository backendand without RA enabled.
 You can customize your builds using profiles as following:
-    - "mvn package -Pgf3,vcs" - a server using VCS repository backend
-    - "mvn package -Pgf3,vcs,ra" - a server using VCS repository bacend + RA support (this e,ans repository will take part of tx)
-    - "mvn package -Pgf3,jcr,ra" - a server using JCR based repository backend + RA support
+    - "mvn install -Pgf3,vcs" - a server using VCS repository backend
+    - "mvn install -Pgf3,vcs,ra" - a server using VCS repository bacend + RA support (this e,ans repository will take part of tx)
+    - "mvn install -Pgf3,jcr,ra" - a server using JCR based repository backend + RA support
     
 6. Nuxeo Tomcat WebApp
   
@@ -83,7 +83,7 @@ Tomcat.
 
 Nuxeo WebEngine will be available at htpp://localhost:8080/nuxeo
 
-To build, run: "mvn package -Ptomcat"
+To build, run: "mvn install -Ptomcat"
 
 Extending
 ---------
