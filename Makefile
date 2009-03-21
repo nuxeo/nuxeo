@@ -1,5 +1,8 @@
 clean:
 	mvn clean
+	mvn clean -Pjetty
+	mvn clean -Pgf3
+	mvn clean -Ptomcat
 	rm -rf test
 
 jetty:
