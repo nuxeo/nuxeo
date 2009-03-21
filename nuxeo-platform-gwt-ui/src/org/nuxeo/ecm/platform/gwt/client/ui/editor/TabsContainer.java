@@ -55,12 +55,12 @@ public class TabsContainer implements Container {
         tabs.addTabSelectedHandler(new TabSelectedHandler() {
             public void onTabSelected(TabSelectedEvent event) {
                 if (eventHandler != null) {
-                    eventHandler.handleSiteEvent(event.getID(), SiteEventHandler.SITE_ACTIVATED); 
+                    eventHandler.handleSiteEvent(event.getID(), SiteEventHandler.SITE_ACTIVATED);
                 }
             }
         });
     }
-    
+
     protected TabSet createTabs() {
         TabSet tabs = new TabSet();
         tabs.setTabBarPosition(Side.BOTTOM);
@@ -75,11 +75,11 @@ public class TabsContainer implements Container {
     public String getHandle(Site site) {
         return (String)site.getHandle();
     }
-    
+
     public Tab getTab(Site site) {
         return tabs.getTab(getHandle(site));
     }
-    
+
     public void activateSite(Site site) {
         tabs.selectTab(getHandle(site));
     }
@@ -104,15 +104,15 @@ public class TabsContainer implements Container {
     public void enableSite(Site site) {
         Tab tab = getTab(site);
         if (tab != null) {
-            tabs.addTab(tab);    
+            tabs.addTab(tab);
         }
     }
-    
+
     public boolean isSiteActive(Site site) {
         // TODO Auto-generated method stub
         return false;
     }
-    
+
     public boolean isSiteEnabled(Site site) {
         // TODO Auto-generated method stub
         return false;
@@ -127,9 +127,9 @@ public class TabsContainer implements Container {
         String icon = site.getIcon();
         if (icon != null) {
             SmartClient.setTabIcon(tabs, id, icon);
-        }        
+        }
     }
-    
+
     public void updateSiteTitle(Site site) {
         String id = getHandle(site);
         String title = site.getTitle();
@@ -137,15 +137,15 @@ public class TabsContainer implements Container {
             tabs.setTabTitle(id, site.getTitle());
         }
     }
-    
+
     public Object createHandle(Site site) {
-        Tab tab = new Tab();        
+        Tab tab = new Tab();
         tabs.addTab(tab);
         return tab.getID();
     }
 
     public void installWidget(Site site) {
-        Tab tab = getTab(site);   
+        Tab tab = getTab(site);
         tabs.updateTab(tab, SmartClient.toCanvas(site.getView().getWidget()));
     }
 
@@ -153,24 +153,24 @@ public class TabsContainer implements Container {
         Tab[] ar = tabs.getTabs();
         for (Tab tab : ar) {
             tabs.removeTab(tab);
-        }        
+        }
     }
-    
+
     public void clear() {
         Tab[] ar = tabs.getTabs();
         for (Tab tab : ar) {
             tabs.updateTab(tab, null); // avoid destroying tab panel - to be able to reuse it
             tabs.removeTab(tab);
-        }        
+        }
     }
-    
+
     public void setSiteEventHandler(SiteEventHandler handler) {
         this.eventHandler = handler;
     }
-    
+
     public SiteEventHandler getSiteEventHandler() {
         return eventHandler;
     }
-    
-    
+
+
 }

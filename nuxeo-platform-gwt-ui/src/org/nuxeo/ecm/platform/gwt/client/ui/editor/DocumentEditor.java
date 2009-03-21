@@ -34,7 +34,7 @@ import org.nuxeo.ecm.platform.gwt.client.ui.View;
 public class DocumentEditor implements Editor, Extensible {
 
     protected List<EditorPage> pageViews = new ArrayList<EditorPage>();
-    
+
     public boolean acceptInput(Object input) {
         return input instanceof Document;
     }
@@ -46,7 +46,7 @@ public class DocumentEditor implements Editor, Extensible {
         }
         return mpview;
     }
-    
+
     public void registerExtension(String target, Object extension) {
         if (ExtensionPoints.EDITOR_PAGES_XP.equals(target)) {
             pageViews.add((EditorPage)extension);

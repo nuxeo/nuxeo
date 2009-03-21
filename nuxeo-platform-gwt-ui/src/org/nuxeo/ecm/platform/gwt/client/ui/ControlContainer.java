@@ -27,6 +27,6 @@ import com.smartgwt.client.widgets.Canvas;
  */
 public interface ControlContainer {
 
-    public Canvas[] getControls();
-    
+    Canvas[] getControls();
+
 }

@@ -42,11 +42,11 @@ public class Navbar extends HLayout implements HistoryListener {
     protected boolean firstTime = true;
     protected String username = null;
     protected HTMLFlow span;
-    
+
     /**
-     * 
+     *
      */
-    public Navbar() {        
+    public Navbar() {
         refresh();
         History.addHistoryListener(this);
         Framework.registerJSHandler("login", new JSHandler() {
@@ -54,29 +54,29 @@ public class Navbar extends HLayout implements HistoryListener {
               LoginDialog dlg = new LoginDialog();
               dlg.show();
               return null;
-        }  
+        }
         });
         Framework.registerJSHandler("logout", new JSHandler() {
             public Object onEvent(String data) {
                 new LogoutCommand().execute();
                 return null;
-          }  
+          }
           });
     }
 
-   
+
     public void refresh() {
         ToolStrip navbar = new ToolStrip();
         navbar.setStyleName("navbar");
         navbar.setAlign(Alignment.RIGHT);
-        
+
         span = new HTMLFlow(createContents());
-        navbar.addMember(span);                
+        navbar.addMember(span);
         span.setWidth100();
 
         addMember(navbar);
-        
-        
+
+
 //        ToolStripSeparator sep = new ToolStripSeparator();
 //
 //        String username = UI.getContext().getUsername();
@@ -84,33 +84,33 @@ public class Navbar extends HLayout implements HistoryListener {
 //        Label label = new Label(username);
 //        label.setAutoFit(false);
 //        label.setAlign(Alignment.RIGHT);
-//        navbar.addMember(label);        
+//        navbar.addMember(label);
 //
 //        navbar.addMember(sep);
-//        
+//
 //        Button b = new Button(" Logout ");
 //        b.setBaseStyle("docButton");
 //        //b.setAutoFit(true);
-//        navbar.addMember(b);        
-//        b.setOverflow(Overflow.VISIBLE);        
+//        navbar.addMember(b);
+//        b.setOverflow(Overflow.VISIBLE);
 //        b.setWidth(1);
 //        //b.setShowRollOver(false);
 //        //b.setAutoFit(true);
 //        navbar.addMember(sep);
-        
-        
+
+
 //        f = new HTMLFlow("<a href=\"#settings\">Settings</a>");
 //        //b.setBaseStyle("docButton");
-//        //b.setAutoFit(true);        
-//        navbar.addMember(f);                
+//        //b.setAutoFit(true);
+//        navbar.addMember(f);
 //        f.setWidth(1);
-//        
+//
 //        navbar.addMember(sep);
-//        
+//
 //        f = new HTMLFlow("<a href=\"#help\">Help</a>");
 //        //b.setBaseStyle("docButton");
 //        //b.setAutoFit(true);
-//        navbar.addMember(f);        
+//        navbar.addMember(f);
 //        f.setWidth(1);
 //        navbar.addMember(sep);
 //
@@ -123,10 +123,10 @@ public class Navbar extends HLayout implements HistoryListener {
         //navbar.setSnapTo("TR");
 
     }
-    
-    
-        
-    protected String createContents() {        
+
+
+
+    protected String createContents() {
         username = Framework.getUserName();
         String loginCode = null;
         if (username == null) {
@@ -137,24 +137,24 @@ public class Navbar extends HLayout implements HistoryListener {
         } else {
             loginCode = "<a href=\"#\" onCLick=\"nx.fire('logout'); return false;\">Logout</a>";
         }
-        return "<span class=\"navbarSpan\"><b>"+username+"</b> | " + loginCode + 
+        return "<span class=\"navbarSpan\"><b>"+username+"</b> | " + loginCode +
         " | <a href=\"#settings\">Settings</a>" +
         " | <a href=\"#help\">Help</a>" +
         " | <a href=\"#about\">About</a></span>";
     }
-   
-    
+
+
     public void onHistoryChanged(String historyToken) {
         if (historyToken.equals("help")) {
             Url url = new Url("/help");
             UI.openInEditor(url);
         } else if (historyToken.equals("about")) {
             Url url = new Url("/about");
-            UI.openInEditor(url);            
+            UI.openInEditor(url);
         } else if (historyToken.equals("settings")) {
             Url url = new Url("/settings");
-            UI.openInEditor(url);            
+            UI.openInEditor(url);
         }
     }
-    
+
 }

@@ -33,15 +33,15 @@ import com.smartgwt.client.widgets.tab.TabSet;
  *
  */
 public class MultiPageDocView extends SmartView {
- 
+
     protected MultiPageViewManager mgr;
     protected DocumentHeader header;
-    
+
     public MultiPageDocView() {
         super ("mpe");
         this.mgr = new MultiPageViewManager(new TabsContainer());
     }
-    
+
     public Document getDocument() {
         return (Document)input;
     }
@@ -51,7 +51,7 @@ public class MultiPageDocView extends SmartView {
         site.updateTitle();
         refresh();
     }
-    
+
     @Override
     public void refresh() {
         header.update(getDocument());
@@ -62,7 +62,7 @@ public class MultiPageDocView extends SmartView {
 //    public String getIcon() {
 //        return Framework.getSkinPath("images/document.png");
 //    }
-    
+
     @Override
     public String getTitle() {
         return getDocument().getTitle();
@@ -71,11 +71,11 @@ public class MultiPageDocView extends SmartView {
     public void addPage(String key, View view) {
         mgr.addView(key, view);
     }
-    
+
     @Override
     protected Canvas createWidget() {
         VLayout panel = new VLayout();
-        Canvas header = createHeader();        
+        Canvas header = createHeader();
         if (header != null) {
             panel.addMember(header);
         }
@@ -84,12 +84,12 @@ public class MultiPageDocView extends SmartView {
         panel.addMember(tabs);
         return panel;
     }
-    
+
     public Canvas createHeader() {
         if (header == null) {
             header = new DocumentHeader(this);
         }
-        return header; 
+        return header;
     }
-    
+
 }

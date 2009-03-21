@@ -94,7 +94,7 @@ public interface JbpmService {
     /**
      * Marker for acls managed by workflow
      */
-    public static String ACL_PREFIX = "WORKFLOW_ACL_";
+    static String ACL_PREFIX = "WORKFLOW_ACL_";
 
     /**
      * Return the configuration.
@@ -202,7 +202,7 @@ public interface JbpmService {
      *
      * @param principal the canceller.
      */
-    public void deleteProcessInstance(NuxeoPrincipal principal, Long processId)
+    void deleteProcessInstance(NuxeoPrincipal principal, Long processId)
             throws NuxeoJbpmException;
 
     /**

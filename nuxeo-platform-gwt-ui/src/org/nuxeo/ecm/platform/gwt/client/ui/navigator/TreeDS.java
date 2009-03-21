@@ -34,11 +34,11 @@ import com.smartgwt.client.types.PromptStyle;
 public class TreeDS extends NuxeoDataSource {
 
     protected static TreeDS instance = new TreeDS();
-    
+
     public static TreeDS getInstance() {
         return instance;
     }
-    
+
     protected TreeDS() {
         setID("treeDS");
         DataSourceTextField id = new DataSourceTextField("id", "Id");
@@ -50,15 +50,15 @@ public class TreeDS extends NuxeoDataSource {
         DataSourceBooleanField isFolder = new DataSourceBooleanField("isFolder", "Folder");
         DataSourceTextField parent = new DataSourceTextField("parentId", "ParentId");
         parent.setForeignKey("id");
-        
+
         setFields(id, parent, isFolder, type, path, name, title);
         setDataURL(Framework.getResourcePath("/tree"));
         setDataFormat(DSDataFormat.JSON);
         DSRequest req = new DSRequest();
         req.setPromptStyle(PromptStyle.CURSOR); // use custom cursor instead of showing a dialog
         //req.setWillHandleError(true);
-        
+
         setRequestProperties(req);
     }
-    
+
 }

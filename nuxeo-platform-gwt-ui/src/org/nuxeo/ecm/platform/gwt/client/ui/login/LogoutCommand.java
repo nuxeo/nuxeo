@@ -33,8 +33,8 @@ import com.google.gwt.user.client.Window;
 public class LogoutCommand extends HttpCommand {
 
     public LogoutCommand() {
-    }    
-    
+    }
+
     @Override
     protected void doExecute() throws Throwable {
         post("/login/").send();
@@ -45,7 +45,7 @@ public class LogoutCommand extends HttpCommand {
     public void onSuccess(HttpResponse response) {
         Window.Location.reload();
     }
-       
+
 
     @Override
     public void onFailure(Throwable cause) {

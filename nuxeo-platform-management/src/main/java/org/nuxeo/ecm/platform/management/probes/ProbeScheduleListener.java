@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.nuxeo.ecm.platform.management.probes;
 
@@ -9,13 +9,13 @@ import org.nuxeo.runtime.api.Framework;
 
 public class ProbeScheduleListener implements EventListener {
 
-	protected ProbeSchedulerService service;
+    protected ProbeSchedulerService service;
 
-	public void handleEvent(Event event)  {
-		if (service == null) {
-			service = (ProbeSchedulerService)Framework.getLocalService(ProbeScheduler.class);
-		}
-		service.runnerRegistry.doRun();
-	}
+    public void handleEvent(Event event)  {
+        if (service == null) {
+            service = (ProbeSchedulerService)Framework.getLocalService(ProbeScheduler.class);
+        }
+        service.runnerRegistry.doRun();
+    }
 
 }

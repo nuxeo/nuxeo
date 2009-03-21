@@ -31,7 +31,7 @@ import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 
 /**
  * @author alexandre
- * 
+ *
  */
 public class JbpmHelperTest extends TestCase {
     private JbpmHelper helper = new JbpmHelper();

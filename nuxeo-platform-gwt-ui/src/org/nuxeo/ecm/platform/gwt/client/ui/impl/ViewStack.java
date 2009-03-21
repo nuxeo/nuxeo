@@ -35,18 +35,18 @@ import com.smartgwt.client.widgets.layout.SectionStack;
 public class ViewStack extends SmartView implements Extensible {
 
     protected DefaultViewManager mgr;
-    
+
     public ViewStack() {
         super("views");
         mgr = new DefaultViewManager(new StackContainer());
     }
-    
+
     @Override
     protected void inputChanged() {
-        mgr.open(input); 
+        mgr.open(input);
     }
 
-    public SectionStack createWidget() { 
+    public SectionStack createWidget() {
         setInput(null); // force sections creation
         return ((StackContainer)mgr.getContainer()).getWidget();
     }

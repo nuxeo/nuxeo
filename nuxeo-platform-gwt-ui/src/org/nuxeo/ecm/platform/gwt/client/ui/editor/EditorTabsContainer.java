@@ -45,5 +45,5 @@ public class EditorTabsContainer extends TabsContainer {
         return tab.getID();
     }
 
-    
+
 }

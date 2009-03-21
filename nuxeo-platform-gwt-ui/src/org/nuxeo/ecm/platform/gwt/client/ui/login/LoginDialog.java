@@ -41,32 +41,32 @@ import com.smartgwt.client.widgets.form.validator.Validator;
  */
 public class LoginDialog extends Window {
 
- // used to avoid open twice the login dialog - this may happend when dbl clicking in the tree 
+ // used to avoid open twice the login dialog - this may happend when dbl clicking in the tree
  // nav without having rights (because of the list nav)
-    protected boolean isRunning = false; 
+    protected boolean isRunning = false;
     protected TextItem userName;
     protected PasswordItem password;
     protected String header;
     protected DynamicForm form;
     protected boolean isError = false;
-    
+
     public LoginDialog() {
         this ("Authentication Required!");
     }
-    
+
     public LoginDialog(String header) {
         super ();
         this.header = header;
         setAnimateMinimize(true);
-        setWidth(300);  
-        setHeight(250);  
-        setTitle("Login");  
-        setShowMinimizeButton(false);  
-        setIsModal(true);  
+        setWidth(300);
+        setHeight(250);
+        setTitle("Login");
+        setShowMinimizeButton(false);
+        setIsModal(true);
         setAutoCenter(true);
         addItem(createContent());
     }
-    
+
     @Override
     public void show() {
         if(isRunning) {
@@ -76,35 +76,35 @@ public class LoginDialog extends Window {
         super.show();
         System.out.println(getZIndex());
     }
-    
+
     /**
      * @return the isRunning.
      */
     public boolean isRunning() {
         return isRunning;
     }
-    
+
     protected Widget createContent() {
-        form = new DynamicForm();  
-        form.setAutoFocus(true);  
+        form = new DynamicForm();
+        form.setAutoFocus(true);
         form.setNumCols(2);
-        
+
         HeaderItem hItem =new HeaderItem("header");
         hItem.setValue("<h3>"+header+"</h3>");
         hItem.setAlign(Alignment.CENTER);
-                
-        userName = new TextItem("username");  
-        userName.setTitle("Username");  
-        userName.setSelectOnFocus(true);  
-        userName.setWrapTitle(false);  
 
-        password = new PasswordItem("password");  
-        password.setTitle("Password");    
-        password.setWrapTitle(false);  
-        
+        userName = new TextItem("username");
+        userName.setTitle("Username");
+        userName.setSelectOnFocus(true);
+        userName.setWrapTitle(false);
+
+        password = new PasswordItem("password");
+        password.setTitle("Password");
+        password.setWrapTitle(false);
+
         SubmitItem submit = new SubmitItem("submit");
         submit.setTitle("Login");
-        submit.setColSpan(2);  
+        submit.setColSpan(2);
         submit.setAlign(Alignment.CENTER);
 
         submit.addClickHandler(new ClickHandler() {
@@ -126,17 +126,17 @@ public class LoginDialog extends Window {
             @Override
          protected boolean condition(Object value) {
              return !isError;
-         } 
+         }
          };
          v.setErrorMessage("Authentication Failure. Try Again!");
          error.setValidators(v);
          error.setShowTitle(false);
          error.setColSpan(2);
-                 
+
         form.setFields(hItem, userName, password, submit, error);
         form.setPadding(4);
         form.setCellSpacing(4);
-        
+
 
         return form;
     }

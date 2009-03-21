@@ -30,7 +30,7 @@ public abstract class SmartView extends AbstractView {
     public SmartView(String name) {
         super(name);
     }
-    
+
     @Override
     public Canvas getWidget() {
         return (Canvas)super.getWidget();

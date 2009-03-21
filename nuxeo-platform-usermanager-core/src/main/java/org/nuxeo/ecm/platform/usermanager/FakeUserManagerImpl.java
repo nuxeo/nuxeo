@@ -210,9 +210,9 @@ public class FakeUserManagerImpl implements UserManager {
 
     public NuxeoPrincipal getPrincipal(String username) throws ClientException {
         //throw new UnsupportedOperationException();
-    	NuxeoPrincipalImpl principal = new NuxeoPrincipalImpl("Administrator");
-    	principal.setGroups(Arrays.asList(new String[]{"Administrators"}));
-    	return principal;
+        NuxeoPrincipalImpl principal = new NuxeoPrincipalImpl("Administrator");
+        principal.setGroups(Arrays.asList(new String[]{"Administrators"}));
+        return principal;
     }
 
     public List<String> getTopLevelGroups() throws ClientException {

@@ -52,16 +52,16 @@ public class StackContainer implements Container {
     public String getHandle(Site site) {
         return (String)site.getHandle();
     }
-    
+
     public SectionStackSection getSection(Site site) {
         //return stack.get getHandle(site);
         return null;
     }
-    
+
     public SectionStack getWidget() {
         return stack;
-    }    
-    
+    }
+
     public void activateSite(Site site) {
         stack.expandSection(getHandle(site));
     }
@@ -81,17 +81,17 @@ public class StackContainer implements Container {
     public boolean isSiteActive(Site site) {
         return false;
     }
-    
+
     public boolean isSiteEnabled(Site site) {
         // TODO Auto-generated method stub
         return false;
     }
-        
-    
+
+
     public Object getActiveSiteHandle() {
         return null; //TODO
     }
-    
+
     public Object createHandle(Site site) {
         SectionStackSection section = new SectionStackSection(); // TODO smartgwt bug: ID is never initialized
         section.setID(SC.generateID());
@@ -101,9 +101,9 @@ public class StackContainer implements Container {
         stack.addSection(section);
         return section.getID();
     }
-    
+
     public void closeSite(Site site) {
-        stack.removeSection(getHandle(site));       
+        stack.removeSection(getHandle(site));
     }
 
     public void updateSiteIcon(Site site) {
@@ -112,16 +112,16 @@ public class StackContainer implements Container {
             SmartClient.setSectionIcon(stack, getHandle(site), icon);
         }
     }
-    
+
     public void updateSiteTitle(Site site) {
         String title = site.getTitle();
         if (title != null) {
             SmartClient.setSectionTitle(stack, getHandle(site), title);
         }
     }
-        
-    
-    
+
+
+
     public void installWidget(Site site) {
         String id = getHandle(site);
         SmartClient.addSectionItem(stack, id, SmartClient.toCanvas(site.getView().getWidget()));
@@ -133,9 +133,9 @@ public class StackContainer implements Container {
 
     public void closeAll() {
         // TODO Auto-generated method stub
-        
+
     }
-    
+
     public void clear() {
         // do nothing
     }
@@ -143,12 +143,12 @@ public class StackContainer implements Container {
     public SiteEventHandler getSiteEventHandler() {
         return eventHandler;
     }
-    
+
     public void setSiteEventHandler(SiteEventHandler handler) {
         eventHandler = handler;
     }
-        
-    
+
+
 //    public class SectionSite implements Site {
 //        protected String id;
 //        protected String title;

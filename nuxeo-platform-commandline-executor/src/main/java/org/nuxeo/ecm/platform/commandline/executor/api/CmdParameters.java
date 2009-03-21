@@ -48,9 +48,9 @@ public class CmdParameters implements Serializable {
 
     public void addNamedParameter(String name, File file) {
         if (AbstractExecutor.isWindows()){
-            addNamedParameter(name, "\"" + file.getAbsolutePath() + "\"");            
+            addNamedParameter(name, "\"" + file.getAbsolutePath() + "\"");
         } else {
-            addNamedParameter(name, "'" + file.getAbsolutePath() + "'");            
+            addNamedParameter(name, "'" + file.getAbsolutePath() + "'");
         }
     }
 

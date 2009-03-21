@@ -31,19 +31,19 @@ import com.smartgwt.client.types.PromptStyle;
  *
  */
 public class ChildrenDS extends NuxeoDataSource {
-    
-    private static ChildrenDS instance = new ChildrenDS(); 
-    
+
+    private static ChildrenDS instance = new ChildrenDS();
+
     public static ChildrenDS getInstance() {
         return instance;
     }
-    
+
     public ChildrenDS() {
-        setID("listDS");        
+        setID("listDS");
         DataSourceTextField id = new DataSourceTextField("id", "Id");
         id.setPrimaryKey(true);
         DataSourceTextField type = new DataSourceTextField("type", "Type");
-        
+
         //DataSourceTextField path = new DataSourceTextField("path", "Path");
         //DataSourceTextField name = new DataSourceTextField("name", "Name");
         DataSourceTextField title = new DataSourceTextField("title", "Title");
@@ -54,8 +54,8 @@ public class ChildrenDS extends NuxeoDataSource {
         DSRequest req = new DSRequest();
         req.setPromptStyle(PromptStyle.CURSOR); // use custom cursor instead of showing a dialog
         req.setWillHandleError(false);
-        
+
         setRequestProperties(req);
     }
-            
+
 }

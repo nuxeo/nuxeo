@@ -90,7 +90,7 @@ public interface SmartBundle extends ApplicationBundle {
 
     @Extension(targets=ExtensionPoints.EDITORS_XP)
     SearchEditor searchEditor();
-    
+
     @Extension(targets=ExtensionPoints.EDITOR_PAGES_XP)
     FolderViewPage folderViewPage();
 

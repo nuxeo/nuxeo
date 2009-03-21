@@ -51,7 +51,7 @@ import freemarker.template.Template;
  * <p>
  * An email helper:
  * <p>
- * 
+ *
  * <pre>
  * Hashtable mail = new Hashtable();
  * mail.put(&quot;from&quot;, &quot;dion@almaer.com&quot;);
@@ -61,118 +61,118 @@ import freemarker.template.Template;
  * &lt;p&gt;
  * EmailHelper.sendmail(mail);
  * </pre>
- * 
+ *
  * Currently only supports one email in to address
- * 
+ *
  * @author <a href="mailto:npaslaru@nuxeo.com">Narcis Paslaru</a>
  * @author <a href="mailto:tmartins@nuxeo.com">Thierry Martins</a>
  */
 public class EmailHelper {
 
-	// used for loading templates from strings
-	private final Configuration stringCfg = new Configuration();
+    // used for loading templates from strings
+    private final Configuration stringCfg = new Configuration();
 
-	/* Only static methods here chaps */
-	public EmailHelper() {
-	}
+    /* Only static methods here chaps */
+    public EmailHelper() {
+    }
 
-	/**
-	 * Static Method: sendmail(Map mail).
-	 * 
-	 * @param mail
-	 *            A map of the settings
-	 */
-	public void sendmail(Map<String, Object> mail) throws Exception {
+    /**
+     * Static Method: sendmail(Map mail).
+     *
+     * @param mail
+     *            A map of the settings
+     */
+    public void sendmail(Map<String, Object> mail) throws Exception {
 
-		Session session = getSession();
-		// Construct a MimeMessage
-		MimeMessage msg = new MimeMessage(session);
-		msg.setFrom(new InternetAddress(session.getProperty("mail.from")));
-		msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(
-				(String) mail.get("mail.to"), false));
+        Session session = getSession();
+        // Construct a MimeMessage
+        MimeMessage msg = new MimeMessage(session);
+        msg.setFrom(new InternetAddress(session.getProperty("mail.from")));
+        msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(
+                (String) mail.get("mail.to"), false));
 
-		RenderingService rs = Framework.getService(RenderingService.class);
+        RenderingService rs = Framework.getService(RenderingService.class);
 
-		DocumentRenderingContext context = new DocumentRenderingContext();
-		context.remove("doc");
-		context.putAll(mail);
-		context.setDocument((DocumentModel) mail.get("document"));
+        DocumentRenderingContext context = new DocumentRenderingContext();
+        context.remove("doc");
+        context.putAll(mail);
+        context.setDocument((DocumentModel) mail.get("document"));
 
-		String customSubjectTemplate = (String) mail
-				.get(NotificationConstants.SUBJECT_TEMPLATE_KEY);
-		if (customSubjectTemplate == null) {
-			String subjTemplate = (String) mail
-					.get(NotificationConstants.SUBJECT_KEY);
-			Template templ = new Template("name",
-					new StringReader(subjTemplate), stringCfg);
+        String customSubjectTemplate = (String) mail
+                .get(NotificationConstants.SUBJECT_TEMPLATE_KEY);
+        if (customSubjectTemplate == null) {
+            String subjTemplate = (String) mail
+                    .get(NotificationConstants.SUBJECT_KEY);
+            Template templ = new Template("name",
+                    new StringReader(subjTemplate), stringCfg);
 
-			Writer out = new StringWriter();
-			templ.process(mail, out);
-			out.flush();
+            Writer out = new StringWriter();
+            templ.process(mail, out);
+            out.flush();
 
-			msg.setSubject(out.toString(), "UTF-8");
-		} else {
-			rs.registerEngine(new NotificationsRenderingEngine(
-					customSubjectTemplate));
+            msg.setSubject(out.toString(), "UTF-8");
+        } else {
+            rs.registerEngine(new NotificationsRenderingEngine(
+                    customSubjectTemplate));
 
-			LoginContext lc = Framework.login();
+            LoginContext lc = Framework.login();
 
-			Collection<RenderingResult> results = rs.process(context);
-			String subjectMail = "<HTML><P>No parsing Succeded !!!</P></HTML>";
+            Collection<RenderingResult> results = rs.process(context);
+            String subjectMail = "<HTML><P>No parsing Succeded !!!</P></HTML>";
 
-			for (RenderingResult result : results) {
-				subjectMail = (String) result.getOutcome();
-			}
-			subjectMail = NotificationServiceHelper.getNotificationService()
-					.getEMailSubjectPrefix()
-					+ subjectMail;
-			msg.setSubject(subjectMail, "UTF-8");
+            for (RenderingResult result : results) {
+                subjectMail = (String) result.getOutcome();
+            }
+            subjectMail = NotificationServiceHelper.getNotificationService()
+                    .getEMailSubjectPrefix()
+                    + subjectMail;
+            msg.setSubject(subjectMail, "UTF-8");
 
-			lc.logout();
-		}
+            lc.logout();
+        }
 
-		msg.setSentDate(new Date());
+        msg.setSentDate(new Date());
 
-		rs.registerEngine(new NotificationsRenderingEngine((String) mail
-				.get(NotificationConstants.TEMPLATE_KEY)));
+        rs.registerEngine(new NotificationsRenderingEngine((String) mail
+                .get(NotificationConstants.TEMPLATE_KEY)));
 
-		LoginContext lc = Framework.login();
+        LoginContext lc = Framework.login();
 
-		Collection<RenderingResult> results = rs.process(context);
-		String bodyMail = "<HTML><P>No parsing Succeded !!!</P></HTML>";
+        Collection<RenderingResult> results = rs.process(context);
+        String bodyMail = "<HTML><P>No parsing Succeded !!!</P></HTML>";
 
-		for (RenderingResult result : results) {
-			bodyMail = (String) result.getOutcome();
-		}
+        for (RenderingResult result : results) {
+            bodyMail = (String) result.getOutcome();
+        }
 
-		lc.logout();
+        lc.logout();
 
-		rs.unregisterEngine("ftl");
+        rs.unregisterEngine("ftl");
 
-		msg.setContent(bodyMail, "text/html; charset=utf-8");
+        msg.setContent(bodyMail, "text/html; charset=utf-8");
 
-		// Send the message.
-		Transport.send(msg);
-	}
+        // Send the message.
+        Transport.send(msg);
+    }
 
-	/**
-	 * Gets the session from the JNDI.
-	 */
-	private static Session getSession() {
-		Session session = null;
-		// First, try to get the session from JNDI, as would be done under J2EE.
-		try {
-			NotificationService service = (NotificationService) Framework
-					.getRuntime().getComponent(NotificationService.NAME);
+    /**
+     * Gets the session from the JNDI.
+     */
+    private static Session getSession() {
+        Session session = null;
+        // First, try to get the session from JNDI, as would be done under J2EE.
+        try {
+            NotificationService service = (NotificationService) Framework
+                    .getRuntime().getComponent(NotificationService.NAME);
 
-			InitialContext ic = new InitialContext();
-			session = (Session) ic.lookup(service.getMailSessionJndiName());
-		} catch (Exception ex) {
-			// ignore it
-			ex.printStackTrace();
-		}
+            InitialContext ic = new InitialContext();
+            session = (Session) ic.lookup(service.getMailSessionJndiName());
+        } catch (Exception ex) {
+            // ignore it
+            ex.printStackTrace();
+        }
 
-		return session;
-	}
+        return session;
+    }
 
 }

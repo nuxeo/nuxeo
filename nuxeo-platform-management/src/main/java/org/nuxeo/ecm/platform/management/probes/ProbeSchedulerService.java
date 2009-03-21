@@ -92,7 +92,7 @@ public class ProbeSchedulerService extends DefaultComponent implements
     public boolean isEnabled() {
         return runnerRegistry.isEnabled();
     }
-    
+
     protected class ManagementPublisher {
 
         protected ResourcePublisherService service;

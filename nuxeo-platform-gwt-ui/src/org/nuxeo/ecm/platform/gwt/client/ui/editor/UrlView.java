@@ -32,19 +32,19 @@ import com.smartgwt.client.widgets.HTMLPane;
  *
  */
 public class UrlView implements Editor {
-    
+
     public boolean acceptInput(Object input) {
         return input instanceof Url;
     }
-    
+
     public View getView() {
         EditorView view = new EditorView();
         return view;
     }
-    
+
     static class EditorView extends SmartView {
         private static int cnt = 0;
-        
+
             public EditorView() {
             super("iframe#"+(cnt++));
         }
@@ -55,7 +55,7 @@ public class UrlView implements Editor {
             html.setContentsType(ContentsType.PAGE);
 //            html.setRedrawOnResize(true);
             html.setWidth100();
-            html.setHeight100();            
+            html.setHeight100();
             return html;
         }
 
@@ -63,7 +63,7 @@ public class UrlView implements Editor {
         protected void inputChanged() {
             refresh();
         }
-       
+
         @Override
         public void refresh() { // using HTMLPane is not working -  on resize is not working
             if (input == null) {
@@ -76,13 +76,13 @@ public class UrlView implements Editor {
         public String getTitle() {
             return "URL View";
         }
-        
+
         @Override
         public Object getInput() {
             return ((HTMLPane)getWidget()).getContentsURL();
         }
 
     }
-    
+
 
 }

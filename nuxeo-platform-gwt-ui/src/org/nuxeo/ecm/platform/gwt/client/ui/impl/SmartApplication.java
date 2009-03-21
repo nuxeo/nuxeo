@@ -44,7 +44,7 @@ import com.smartgwt.client.widgets.layout.VLayout;
 public class SmartApplication implements UIApplication, Extensible, ExtensionPoints, ErrorHandler {
 
     protected VLayout layout;
-    
+
     protected Drawable header;
     protected Drawable footer;
     protected EditorManager content;
@@ -52,10 +52,10 @@ public class SmartApplication implements UIApplication, Extensible, ExtensionPoi
     protected ViewManager right;
 
 
-    
-    public SmartApplication() { 
+
+    public SmartApplication() {
     }
-    
+
     public void start() {
         // install fixes and workarounds
         SmartClient.install();
@@ -63,19 +63,19 @@ public class SmartApplication implements UIApplication, Extensible, ExtensionPoi
         // set error handler
         Framework.setErrorHandler(this);
 
-        // create application layout        
+        // create application layout
         layout = new VLayout();
 //layout.setBorder("1px solid blue");
         layout.setSize("100%", "100%");
         layout.setLayoutMargin(4);
         if (header != null) {
             Canvas canvas = SmartClient.toCanvas(header.getWidget());
-            canvas.setHeight("80");            
-            layout.addMember(canvas);            
+            canvas.setHeight("80");
+            layout.addMember(canvas);
         }
         HLayout main = new HLayout();
         if (left != null) {
-            left.install(null, null); // trick to refresh view stack TODO: must implement a site. 
+            left.install(null, null); // trick to refresh view stack TODO: must implement a site.
             Canvas canvas = SmartClient.toCanvas(left.getWidget());
             canvas.setSize("25%", "100%");
             main.addMember(canvas);
@@ -84,17 +84,17 @@ public class SmartApplication implements UIApplication, Extensible, ExtensionPoi
             String width = right == null ? "75%" : "50%";
             Canvas canvas = SmartClient.toCanvas(((Drawable)content).getWidget());
             canvas.setSize(width, "100%");
-            main.addMember(canvas);            
+            main.addMember(canvas);
         }
         if (right != null) {
             Canvas canvas = SmartClient.toCanvas(((Drawable)right).getWidget());
             canvas.setSize("25%", "100%");
             canvas.setShowResizeBar(true);
             main.addMember(canvas);
-        }  
+        }
         int size = 100;
         if (header != null) size -= 4;
-        if (footer != null) size -= 4;  
+        if (footer != null) size -= 4;
         main.setHeight("100%");
 //main.setBorder("1px solid red");
         layout.addMember(main);
@@ -102,10 +102,10 @@ public class SmartApplication implements UIApplication, Extensible, ExtensionPoi
             Canvas canvas = SmartClient.toCanvas(footer.getWidget());
             canvas.setHeight("4%");
             layout.addMember(canvas);
-        }             
+        }
 
         // install into root panel
-        RootPanel.get().add(layout);       
+        RootPanel.get().add(layout);
     }
 
     public Drawable getLeftArea() {
@@ -115,25 +115,25 @@ public class SmartApplication implements UIApplication, Extensible, ExtensionPoi
     public ViewManager getRightArea() {
         return right;
     }
-    
+
     public EditorManager getEditorManager() {
         return content;
     }
-    
+
     public Drawable getHeader() {
         return header;
     }
-    
+
     public Drawable getFooter() {
         return footer;
     }
-    
 
-    
+
+
     public View getView(String[] segments) {
         return getView(segments, segments.length);
     }
-    
+
     public View getView(String[] segments, int length) {
         return null;
     }
@@ -142,8 +142,8 @@ public class SmartApplication implements UIApplication, Extensible, ExtensionPoi
         String[] segments = path.split("/");
         if (segments.length == 0) {
             return null;
-        }         
-        return getView(segments);        
+        }
+        return getView(segments);
     }
 
 
@@ -162,7 +162,7 @@ public class SmartApplication implements UIApplication, Extensible, ExtensionPoi
 //            }
 //        }
     }
-    
+
     public void openInEditor(Object input) {
         content.openEditor(input);
     }
@@ -195,11 +195,11 @@ public class SmartApplication implements UIApplication, Extensible, ExtensionPoi
             footer = (View)extension;
         }
     }
-    
+
 
     public void handleError(Throwable t) {
         UI.showError(t);
     }
-    
- 
+
+
 }

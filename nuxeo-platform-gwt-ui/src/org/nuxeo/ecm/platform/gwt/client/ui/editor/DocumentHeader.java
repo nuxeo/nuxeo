@@ -44,7 +44,7 @@ public class DocumentHeader extends HStack implements ClickHandler {
     protected HTMLFlow title;
     protected Img up;
     protected Document input;
-    
+
     public DocumentHeader(MultiPageDocView parent) {
         setWidth("80%");
         setHeight(50);
@@ -68,16 +68,16 @@ public class DocumentHeader extends HStack implements ClickHandler {
 //        up.setBorder("1px solid black");
 //        title.setBorder("1px solid black");
     }
-    
-    
+
+
     public void update(Document doc) {
         input = doc;
-        parentId  = doc.getParentId();        
+        parentId  = doc.getParentId();
         title.setContents(doc.getTitle());
     }
 
 
-    public void onClick(ClickEvent event) {        
+    public void onClick(ClickEvent event) {
         if (parentId == null) {
             return;
         }
@@ -88,5 +88,5 @@ public class DocumentHeader extends HStack implements ClickHandler {
             }
         }.execute();
     }
-    
+
 }

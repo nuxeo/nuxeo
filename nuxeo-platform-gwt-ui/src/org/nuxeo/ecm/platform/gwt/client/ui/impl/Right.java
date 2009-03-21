@@ -34,12 +34,12 @@ public class Right extends SmartView {
     public Right() {
         super ("right");
     }
-    
-    
+
+
     protected Canvas createWidget() {
         Canvas canvas = new Label("Right");
         canvas.setBorder("2px solid green");
         return canvas;
     }
-    
+
 }

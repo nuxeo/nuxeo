@@ -32,7 +32,7 @@ import org.nuxeo.ecm.platform.events.api.impl.DocumentMessageImpl;
 
 /**
  * Document message factory.
- * 
+ *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 public final class DocumentMessageFactory {

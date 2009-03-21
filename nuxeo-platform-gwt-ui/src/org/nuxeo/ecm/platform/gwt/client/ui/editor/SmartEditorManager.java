@@ -33,10 +33,10 @@ public class SmartEditorManager extends DefaultEditorManager implements Drawable
         container = new EditorTabsContainer();
         container.setSiteEventHandler(this);
     }
-    
+
     public TabSet getWidget() {
         return ((EditorTabsContainer)container).getWidget();
     }
-    
+
 
 }

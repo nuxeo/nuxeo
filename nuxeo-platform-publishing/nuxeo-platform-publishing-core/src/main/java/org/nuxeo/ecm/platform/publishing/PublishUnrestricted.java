@@ -39,11 +39,6 @@ public class PublishUnrestricted extends UnrestrictedSessionRunner {
         this.docToPublish = docToPublish;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.nuxeo.ecm.core.api.UnrestrictedSessionRunner#run()
-     */
     @Override
     public void run() throws ClientException {
         newProxy = session.publishDocument(docToPublish, sectionToPublishTo);

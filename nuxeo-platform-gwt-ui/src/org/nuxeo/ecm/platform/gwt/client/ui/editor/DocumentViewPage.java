@@ -26,13 +26,13 @@ import org.nuxeo.ecm.platform.gwt.client.ui.View;
  *
  */
 public class DocumentViewPage implements EditorPage {
-    
+
     public String getName() {
         return "view";
     }
-    
+
     public View getView() {
         return new DocumentView();
     }
-    
+
 }

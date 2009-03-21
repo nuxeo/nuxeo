@@ -1,3 +1,22 @@
+/*
+ * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nuxeo - initial API and implementation
+ *
+ * $Id$
+ */
+
 package org.nuxeo.ecm.platform.gwt.client.ui.old;
 
 import org.nuxeo.ecm.platform.gwt.client.Framework;
@@ -33,7 +52,7 @@ public class NavigatorTree extends Tree{
         super();
         addTreeListener(new NavigatorTreeListener());
     }
-    
+
     @Override
     protected void onAttach() {
         super.onAttach();
@@ -163,7 +182,7 @@ public class NavigatorTree extends Tree{
                 //TODO handle error
                 Window.alert("Error received from server"+resp.get("status"));
                 return;
-            } 
+            }
             JSONArray jsonArray = resp.get("data").isArray();
             if (jsonArray != null) {
                 if ( item == null ){
@@ -195,4 +214,3 @@ public class NavigatorTree extends Tree{
 
 
 }
-

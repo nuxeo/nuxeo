@@ -30,7 +30,7 @@ public class FolderViewPage implements EditorPage {
     public String getName() {
         return "view";
     }
-    
+
     public View getView() {
         return new FolderView();
     }

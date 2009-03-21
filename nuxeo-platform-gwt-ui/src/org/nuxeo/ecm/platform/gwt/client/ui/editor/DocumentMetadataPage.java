@@ -31,9 +31,9 @@ public class DocumentMetadataPage implements EditorPage {
     public String getName() {
         return "metadata";
     }
-    
+
     public View getView() {
         return new DocumentMetadataView();
     }
-    
+
 }

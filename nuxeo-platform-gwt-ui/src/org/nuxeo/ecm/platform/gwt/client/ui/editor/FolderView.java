@@ -49,27 +49,27 @@ import com.smartgwt.client.widgets.toolbar.ToolStrip;
 public class FolderView extends SmartView implements CellDoubleClickHandler {
 
     protected ListGrid grid;
-    
+
     public FolderView() {
         super ("view");
     }
-    
+
     @Override
     public void uninstall() {
         super.uninstall();
         grid = null;
     }
 
-    
+
     public Document getDocument() {
         return (Document)input;
     }
-    
+
     @Override
     public boolean acceptInput(Object input) {
         return ((Document)input).isFolder();
     }
-    
+
     @Override
     protected Canvas createWidget() {
         VLayout panel = new VLayout();
@@ -79,7 +79,7 @@ public class FolderView extends SmartView implements CellDoubleClickHandler {
         panel.addMember(grid);
         return panel;
     }
-    
+
     protected ListGrid createGrid() {
         ListGrid grid = new ListGrid();
         ListGridField fIcon = new ListGridField("type", "&nbsp;");
@@ -88,14 +88,14 @@ public class FolderView extends SmartView implements CellDoubleClickHandler {
         fIcon.setImageURLPrefix(Framework.getSkinPath()+"/images/types/");
         fIcon.setImageURLSuffix(".gif");
         ListGridField fTitle = new ListGridField("title", "Title");
-        fTitle.setType(ListGridFieldType.TEXT);        
+        fTitle.setType(ListGridFieldType.TEXT);
         grid.setFields(fIcon, fTitle);
         grid.setDataSource(ChildrenDS.getInstance());
         grid.addCellDoubleClickHandler(this);
         grid.setHeight100();
         return grid;
     }
-    
+
     protected ToolStrip createToolbar() {
         ToolStrip tbar = new ToolStrip();
         tbar.setStyleName("docToolbar");
@@ -139,12 +139,12 @@ public class FolderView extends SmartView implements CellDoubleClickHandler {
         getWidget();
         return grid;
     }
-    
+
     @Override
     public String getTitle() {
         return "View";
     }
-    
+
 
     @Override
     protected void inputChanged() {
@@ -155,10 +155,10 @@ public class FolderView extends SmartView implements CellDoubleClickHandler {
         }
     });*/
     }
-    
+
     public void onCellDoubleClick(CellDoubleClickEvent event) {
-        ListGridRecord record = event.getRecord();      
-        String id = record.getAttribute("id");        
+        ListGridRecord record = event.getRecord();
+        String id = record.getAttribute("id");
         new GetDocument(id) {
             @Override
             protected void openDocument(Document doc) {
@@ -166,6 +166,6 @@ public class FolderView extends SmartView implements CellDoubleClickHandler {
             }
         }.execute();
     }
-    
+
 
 }

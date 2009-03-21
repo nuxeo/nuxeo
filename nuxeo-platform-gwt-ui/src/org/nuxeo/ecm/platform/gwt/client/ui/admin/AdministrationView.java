@@ -47,12 +47,12 @@ public class AdministrationView extends SmartView {
         super("admin");
     }
 
-    
+
     @Override
     public String getTitle() {
         return "Administration";
     }
-    
+
     static boolean _show = false;
     @Override
     protected VStack createWidget() {
@@ -67,7 +67,7 @@ public class AdministrationView extends SmartView {
                 new Timer() {
                     @Override
                     public void run() {
-                        Framework.showLoading(null);                        
+                        Framework.showLoading(null);
                     }
                 }.schedule(5000);
                 //UI.showView("views/login");
@@ -97,5 +97,5 @@ public class AdministrationView extends SmartView {
         stack.addMember(b);
         return stack;
     }
-        
+
 }

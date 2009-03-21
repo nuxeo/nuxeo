@@ -27,22 +27,22 @@ import com.smartgwt.client.widgets.Canvas;
 
 /**
  * Fix the WidgetCanvas implementation ... On resize GWT widgets disappears
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public class SmartWidget extends Canvas {
 
     protected Widget  widget;
-    
-    
+
+
     public SmartWidget(Widget widget) {
         this.widget = widget;
         init();
     }
 
     protected void init() {
-        setRedrawOnResize(false);        
+        setRedrawOnResize(false);
         setOverflow(Overflow.VISIBLE);
         setWidth(1);
         setHeight(1);
@@ -56,7 +56,7 @@ public class SmartWidget extends Canvas {
             return "<DIV STYLE='width:100%;height:100%' ID=" + this.getID() + "_widget>"+widget.toString()+"</DIV>";
         }
     }
-    
+
     protected void onDraw() {
         //a GWT widget must be attached to a GWT Panel for its events to fire.
         boolean attached = widget.isAttached();
@@ -86,6 +86,5 @@ public class SmartWidget extends Canvas {
             setHeight(height);
         }
     }
-    
-}
 
+}

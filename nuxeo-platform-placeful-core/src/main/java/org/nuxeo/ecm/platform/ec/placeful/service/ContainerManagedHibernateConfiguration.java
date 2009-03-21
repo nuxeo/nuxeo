@@ -21,7 +21,7 @@ import java.util.Properties;
 public class ContainerManagedHibernateConfiguration implements
         HibernateConfiguration {
 
-    private HibernateOptionsDescriptor descriptor; 
+    private HibernateOptionsDescriptor descriptor;
 
     private String defaultDatasource = "jdbc/nxaudits";
 

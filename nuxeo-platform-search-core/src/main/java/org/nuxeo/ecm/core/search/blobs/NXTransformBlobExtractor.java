@@ -35,9 +35,9 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Blob extractor that leverages Nuxeo transform service.
- * 
+ *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- * 
+ *
  */
 public class NXTransformBlobExtractor implements BlobExtractor {
 

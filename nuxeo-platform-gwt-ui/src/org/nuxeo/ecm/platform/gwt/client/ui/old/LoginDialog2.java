@@ -43,15 +43,15 @@ public class LoginDialog2 extends DialogBox implements ClickListener {
 
     protected TextBox userBox;
     protected PasswordTextBox passBox;
-    
+
     /**
-     * 
+     *
      */
     public LoginDialog2() {
         this ("Authentication Requried");
         setAnimationEnabled(true);
     }
-    
+
     public LoginDialog2(String message) {
         super();
         setAnimationEnabled(true);
@@ -80,25 +80,25 @@ public class LoginDialog2 extends DialogBox implements ClickListener {
         panel.add(passBox);
         panel.add(submit);
         panel.setSpacing(2);
-        
+
         FlexTable grid = new FlexTable();
         grid.setWidget(0, 0, new Label("Username"));
         grid.setWidget(0, 1, userBox);
         grid.setWidget(0, 0, new Label("Password"));
         grid.setWidget(1, 1, passBox);
-        FlowPanel flowPanel = new FlowPanel(); 
+        FlowPanel flowPanel = new FlowPanel();
         grid.setWidget(2, 0, flowPanel);
         flowPanel.add(submit);
         grid.getCellFormatter().setHorizontalAlignment(0, 0, HasHorizontalAlignment.ALIGN_RIGHT);
         grid.getFlexCellFormatter().setColSpan(2, 0, 2);
-        
+
         return grid;
     }
-    
+
 
     public void onClick(Widget sender) {
         new LoginCommand(userBox.getText().trim(), passBox.getText()).execute();
         hide();
     }
-    
+
 }

@@ -34,7 +34,7 @@ import org.nuxeo.runtime.management.ObjectNameFactory;
 
 /**
  * Test the event conf service.
- * 
+ *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 public class TestNXAuditEventsServiceManagement extends RepositoryOSGITestCase {

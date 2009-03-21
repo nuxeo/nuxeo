@@ -43,11 +43,11 @@ import com.smartgwt.client.widgets.toolbar.ToolStrip;
 public class SearchEditor implements Editor, Extensible {
 
     protected List<View> pageViews = new ArrayList<View>();
-    
+
     public boolean acceptInput(Object input) {
         return input instanceof DocumentQuery;
     }
-    
+
     public View getView() {
         SearchView view = new SearchView();
         return view;
@@ -90,7 +90,7 @@ public class SearchEditor implements Editor, Extensible {
             todo = new HTMLFlow();
             todo.setWidth100();
             todo.setContents("<font color=red>Not yet implemented.</font> Query: <i>"+getQuery()+"</i>");
-            tbar.addMember(todo);            
+            tbar.addMember(todo);
             tbar.setHeight(18);
             ListGrid grid = new ListGrid();
             panel.addMember(tbar);
@@ -98,5 +98,5 @@ public class SearchEditor implements Editor, Extensible {
             return panel;
         }
     }
-    
+
 }

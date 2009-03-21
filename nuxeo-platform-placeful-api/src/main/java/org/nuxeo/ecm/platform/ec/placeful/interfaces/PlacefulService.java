@@ -25,9 +25,9 @@ import org.nuxeo.ecm.platform.ec.placeful.Annotation;
 import org.nuxeo.runtime.model.ComponentName;
 
 /**
- * 
+ *
  * @author <a href="mailto:rspivak@nuxeo.com">Ruslan Spivak</a>
- * 
+ *
  */
 public interface PlacefulService {
 

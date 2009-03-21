@@ -34,8 +34,8 @@ public class DocumentView extends SmartView {
     public DocumentView() {
         super ("view");
     }
-    
-    
+
+
     @Override
     public String getTitle() {
         return "View";
@@ -45,7 +45,7 @@ public class DocumentView extends SmartView {
     public boolean acceptInput(Object input) {
         return !((Document)input).isFolder();
     }
-    
+
     @Override
     protected Canvas createWidget() {
         return new Label("Document View");

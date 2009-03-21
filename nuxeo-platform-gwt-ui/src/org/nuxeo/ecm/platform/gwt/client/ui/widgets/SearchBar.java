@@ -36,15 +36,15 @@ import com.smartgwt.client.widgets.layout.HLayout;
  *
  */
 public class SearchBar extends HLayout {
-    
+
     /**
-     * 
+     *
      */
-    public SearchBar() {        
+    public SearchBar() {
         refresh();
     }
-    
-    public void refresh() {        
+
+    public void refresh() {
         DynamicForm form = new DynamicForm();
 //        form.setAutoFocus(true);
         form.setNumCols(1);
@@ -57,15 +57,15 @@ public class SearchBar extends HLayout {
         searchBox.setAlign(Alignment.RIGHT);
         form.setFields(searchBox);
 
-        
+
         addMember(form);
-        
+
         searchBox.addFocusHandler(new FocusHandler() {
             public void onFocus(FocusEvent event) {
                 if ("Search ...".equals(searchBox.getValue())) {
                     searchBox.setValue("");
                 }
-            }            
+            }
         });
         searchBox.addKeyPressHandler(new KeyPressHandler() {
             public void onKeyPress(KeyPressEvent event) {

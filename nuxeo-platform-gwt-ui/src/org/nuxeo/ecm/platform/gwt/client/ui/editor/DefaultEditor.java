@@ -31,18 +31,18 @@ import com.smartgwt.client.widgets.HTMLFlow;
  *
  */
 public class DefaultEditor implements Editor {
-    
-    
+
+
     public boolean acceptInput(Object input) {
         return true;
     }
-    
+
     public View getView() {
         EditorView view = new EditorView();
         return view;
     }
-    
-    
+
+
     static class EditorView extends AbstractView {
         private static int cnt = 0;
 
@@ -54,25 +54,25 @@ public class DefaultEditor implements Editor {
         protected HTMLFlow createWidget() {
             return  new HTMLFlow();
         }
-        
+
         public Canvas getCanvas() {
             return (Canvas)getWidget();
         }
-        
+
         @Override
         protected void inputChanged() {
             refresh();
         }
-        
+
         @Override
         public void refresh() {
             getCanvas().setContents("<h3>Unknown input type - There is no editor installed for this input.</h3>"+input);
         }
-        
+
         public String getTitle() {
             return "Error";
         }
-        
+
         public String getIcon() {
             return Framework.getSkinPath("images/document.png");
         }

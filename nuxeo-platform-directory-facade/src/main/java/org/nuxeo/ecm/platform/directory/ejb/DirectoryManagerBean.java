@@ -45,7 +45,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Facade Bean provide Remoting API for DirectoryService
- * 
+ *
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
  * @author <a href="mailto:ogrisel@nuxeo.com">Olivier Grisel</a>
  */
@@ -53,9 +53,9 @@ import org.nuxeo.runtime.api.Framework;
 @Remote(DirectoryManager.class)
 @Local(DirectoryManager.class)
 public class DirectoryManagerBean implements DirectoryManager {
-	
+
     @SuppressWarnings("unused")
-	private static final Log log = LogFactory.getLog(DirectoryManagerBean.class);
+    private static final Log log = LogFactory.getLog(DirectoryManagerBean.class);
 
     private static final Map<Long, Session> sessionMap = new ConcurrentHashMap<Long, Session>();
 

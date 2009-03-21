@@ -35,11 +35,11 @@ import com.smartgwt.client.widgets.tree.TreeGrid;
 import com.smartgwt.client.widgets.tree.TreeNode;
 
 /**
- * This class is there to fix any problem found in smartgwt like 
+ * This class is there to fix any problem found in smartgwt like
  * unexposed JS API or real bugs. Ideally this class should not exist.
- * 
+ *
  * See also NuxeoDataSource
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
@@ -53,7 +53,7 @@ public class SmartClient implements EntryPoint {
         ApplicationBundle bundle = GWT.create(SmartBundle.class);
         bundle.start();
     }
-    
+
     public static Canvas toCanvas(Widget widget) {
         if (widget instanceof Canvas) {
             return (Canvas)widget;
@@ -61,29 +61,29 @@ public class SmartClient implements EntryPoint {
             return new SmartWidget(widget);
         }
     }
-    
-    
+
+
     public static void install() {
-        fixCursorTrackerPath();        
+        fixCursorTrackerPath();
     }
-    
-    
+
+
     /**
      * The cursor tracker path is not correctly initialized by ISC - because of the JS load order
      * which is first loading RPCManager class and then the loadSkin JS.
-     *   
+     *
      */
     public native static void fixCursorTrackerPath()/*-{
     $wnd.isc.RPC.cursorTrackerDefaults.src=$wnd.isc.Page.getSkinDir()+"/images/shared/progressCursorTracker.png";
     }-*/;
-    
+
     /**
-     * Tree is not yet exposing findNodeById method. 
-     */    
+     * Tree is not yet exposing findNodeById method.
+     */
     public static TreeNode findNodeById(TreeGrid tree, String id) {
         return findNodeById(tree.getData(), id);
     }
-    
+
     public native static TreeNode findNodeById(Tree tree, String id) /*-{
         var theTree= tree.@com.smartgwt.client.core.BaseClass::getOrCreateJsObj()();
         var node = theTree.findById(id);
@@ -93,18 +93,18 @@ public class SmartClient implements EntryPoint {
         return null;
     }-*/;
 
-    
+
 
 
     public static void unloadChildren(Tree tree, TreeNode node) {
         unloadChildren(tree, node.getJsObj());
     }
-    
+
     public native static void unloadChildren(Tree tree, JavaScriptObject node) /*-{
     var theTree= tree.@com.smartgwt.client.core.BaseClass::getOrCreateJsObj()();
     theTree.unloadChildren(node);
     }-*/;
-    
+
     /**
      * TODO workaround for a smartgwt bug
      * Hack to get the tab id - event.getTab() is not working - throws a ClassCastExcpetion
@@ -116,10 +116,10 @@ public class SmartClient implements EntryPoint {
         return jsObj.tab.ID;
     }-*/;
 
-    
+
     /**
      * TODO workaround for a smartgwt bug
-     * Hack to set the icon - this method is missing from the API 
+     * Hack to set the icon - this method is missing from the API
      * @param tabs
      * @param tab
      * @param icon
@@ -134,14 +134,14 @@ public class SmartClient implements EntryPoint {
     var self = tabs.@com.smartgwt.client.widgets.BaseWidget::getOrCreateJsObj()();
     self.setTabIcon(tab, icon);
 }-*/;
-    
+
     public static native void setTabTitle(TabSet tabs, Tab tab, String title) /*-{
         var self = tabs.@com.smartgwt.client.widgets.BaseWidget::getOrCreateJsObj()();
         var tabJS = tab.@com.smartgwt.client.widgets.tab.Tab::getJsObj()();
         self.setTabTitle(tabJS, title);
     }-*/;
 
-    
+
     public static native void setSectionTitle(SectionStack stack, String id, String title) /*-{
     var self = stack.@com.smartgwt.client.widgets.BaseWidget::getOrCreateJsObj()();
     self.setSectionTitle(id, title);
@@ -164,5 +164,5 @@ public class SmartClient implements EntryPoint {
     var jsWidget = widget.@com.smartgwt.client.widgets.BaseWidget::getOrCreateJsObj()();
     self.addItem(id, jsWidget);
 }-*/;
-    
+
 }

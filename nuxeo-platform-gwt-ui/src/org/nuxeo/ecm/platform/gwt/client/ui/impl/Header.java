@@ -38,22 +38,22 @@ public class Header extends SmartView {
     public Header() {
         super ("header");
     }
-    
+
 
     protected Canvas createWidget() {
 
         HLayout header = new HLayout();
         Canvas canvas = new Img(Framework.getSkinPath("/images/logo.gif"));
         header.addMember(canvas);
-        
+
         VLayout rightHeader = new VLayout();
         Navbar navbar = new Navbar();
         rightHeader.addMember(navbar);
-        
+
         rightHeader.addMember(new SearchBar());
-        
+
         header.addMember(rightHeader);
-        return header;        
+        return header;
     }
-    
+
 }

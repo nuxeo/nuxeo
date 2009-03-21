@@ -35,8 +35,8 @@ public class ClipboardView extends SmartView {
     public ClipboardView() {
         super("clipboard");
     }
-    
-    
+
+
     @Override
     public String getTitle() {
         return "Clipboard";
@@ -50,5 +50,5 @@ public class ClipboardView extends SmartView {
         c.setHeight100();
         return c;
     }
-        
+
 }

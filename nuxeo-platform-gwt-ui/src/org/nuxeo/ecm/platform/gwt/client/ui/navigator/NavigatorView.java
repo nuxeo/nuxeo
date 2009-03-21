@@ -48,7 +48,7 @@ public class NavigatorView extends SmartView implements ControlContainer {
     public NavigatorView() {
         super("navigator");
     }
-    
+
     @Override
     public String getTitle() {
         return "Navigator";
@@ -74,16 +74,16 @@ public class NavigatorView extends SmartView implements ControlContainer {
             root.setTitle(val);
             root.setName(val);
             roots[i++] = root;
-        } 
-        tree.setInitialData(roots);        
+        }
+        tree.setInitialData(roots);
         tree.addCellDoubleClickHandler(new DoubleClickHandler());
         return tree;
     }
-    
+
     public TreeGrid getTree() {
         return (TreeGrid)getWidget();
     }
-    
+
 
     @Override
     public void refresh() {
@@ -95,7 +95,7 @@ public class NavigatorView extends SmartView implements ControlContainer {
     }
 
     public Canvas[] getControls() {
-        
+
         ImgButton refreshButton = new ImgButton();
         refreshButton.setSrc(Framework.getSkinPath("/images/refresh.png"));
         refreshButton.setSize(16);
@@ -111,18 +111,18 @@ public class NavigatorView extends SmartView implements ControlContainer {
                 refresh();
             }
         });
-        
+
         return new Canvas[] {
                 refreshButton
         };
-        
+
     }
-    
+
     class DoubleClickHandler implements CellDoubleClickHandler {
         public void onCellDoubleClick(CellDoubleClickEvent event) {
             ListGridRecord record = event.getRecord();
             UI.openDocument(record.getAttribute("id"));
-        }        
+        }
     }
-    
+
 }

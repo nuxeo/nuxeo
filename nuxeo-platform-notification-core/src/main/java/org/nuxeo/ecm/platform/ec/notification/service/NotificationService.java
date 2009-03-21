@@ -73,7 +73,7 @@ public class NotificationService extends DefaultComponent implements
     private static final Log log = LogFactory.getLog(NotificationService.class);
 
     private EmailHelper emailHelper= new EmailHelper();
-    
+
     private static final String SUBSCRIPTION_NAME = "UserSubscription";
 
     // FIXME: performance issue when putting URLs in a Map.
@@ -501,5 +501,5 @@ public class NotificationService extends DefaultComponent implements
         this.emailHelper = emailHelper;
     }
 
-    
+
 }

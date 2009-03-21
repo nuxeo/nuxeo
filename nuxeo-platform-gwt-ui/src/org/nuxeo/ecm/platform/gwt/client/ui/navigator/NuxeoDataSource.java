@@ -38,7 +38,7 @@ public class NuxeoDataSource extends RestDataSource {
     static {
         initErrorHandler();
     }
-    
+
     public static native void initErrorHandler()/*-{
     $wnd.isc.DataSource.addMethods({
        handleError : function (resp, req) {
@@ -48,7 +48,7 @@ public class NuxeoDataSource extends RestDataSource {
        }
     });
     }-*/;
-    
+
     public static Boolean handleError(DSResponse response, DSRequest req) {
         int status = response.getStatus();
         if (status == -7 || response.getHttpResponseCode() == 401) {
@@ -68,5 +68,5 @@ public class NuxeoDataSource extends RestDataSource {
         }
         return Boolean.FALSE;
     }
-    
+
 }

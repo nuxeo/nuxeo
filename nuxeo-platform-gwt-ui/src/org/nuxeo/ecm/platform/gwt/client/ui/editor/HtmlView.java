@@ -28,21 +28,21 @@ import com.smartgwt.client.widgets.HTMLFlow;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class HtmlView implements Editor { 
+public class HtmlView implements Editor {
 
-    
+
     public boolean acceptInput(Object input) {
         return input instanceof String;
     }
-    
+
     public View getView() {
         View view = new EditorView();
         return view;
-    }   
+    }
 
     static class EditorView extends SmartView {
         private static int cnt = 0;
-        
+
         public EditorView() {
             super("html#"+(cnt++));
         }
@@ -51,7 +51,7 @@ public class HtmlView implements Editor {
         protected HTMLFlow createWidget() {
             return new HTMLFlow();
         }
-        
+
         @Override
         protected void inputChanged() {
             refresh();
