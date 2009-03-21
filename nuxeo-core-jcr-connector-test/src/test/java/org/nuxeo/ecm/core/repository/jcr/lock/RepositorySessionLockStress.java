@@ -39,7 +39,7 @@ import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
 
 /**
  * @author matic
- * 
+ *
  */
 @SuppressWarnings("unchecked")
 public class RepositorySessionLockStress extends RepositoryOSGITestCase {

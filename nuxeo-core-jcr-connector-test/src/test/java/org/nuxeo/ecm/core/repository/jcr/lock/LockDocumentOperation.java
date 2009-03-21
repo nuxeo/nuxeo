@@ -21,7 +21,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 public class LockDocumentOperation extends AbstractRepositoryOperation {
-    
+
     public LockDocumentOperation(CoreSession session, DocumentModel doc) {
         super(session, doc);
     }

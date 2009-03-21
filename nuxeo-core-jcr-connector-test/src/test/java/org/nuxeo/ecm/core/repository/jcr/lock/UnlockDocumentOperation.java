@@ -25,7 +25,7 @@ public class UnlockDocumentOperation extends AbstractRepositoryOperation {
     public UnlockDocumentOperation(CoreSession session, DocumentModel doc) {
         super(session, doc);
     }
-    
+
     protected void doOperate() throws ClientException {
         if (session.getLock(doc.getRef()) != null)
             return;

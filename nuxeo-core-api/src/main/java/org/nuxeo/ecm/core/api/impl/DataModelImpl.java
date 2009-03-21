@@ -84,7 +84,7 @@ public class DataModelImpl implements DataModel {
     }
 
     /**
-     * Get the underlying document part
+     * Gets the underlying document part.
      */
     public DocumentPart getDocumentPart() {
         return dp;

@@ -1,11 +1,9 @@
 <?xml version="1.0"?>
-
 <xs:schema
   targetNamespace="http://www.nuxeo.org/ecm/schemas/TestSchema"
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
   xmlns:nxs="http://www.nuxeo.org/ecm/schemas/TestSchema"
   >
-
 
     <xs:element name="title" type="xs:string"/>
     <xs:element name="creationDate" type="xs:date"/>
@@ -14,8 +12,6 @@
     <xs:element name="references" type="nxs:references"/>
     <xs:element name="file" type="nxs:file"/>
     <xs:element name="keywords" type="nxs:keywords"/>
-
-
 
     <xs:complexType name="content">
       <xs:sequence>
@@ -39,7 +35,6 @@
       </xs:sequence>
     </xs:complexType>
 
-
     <xs:complexType name="author">
       <xs:sequence>
         <xs:element name="name" type="nxs:name"/>
@@ -47,13 +42,11 @@
       </xs:sequence>
     </xs:complexType>
 
-
     <xs:complexType name="authors">
       <xs:sequence>
         <xs:element name="author" type="nxs:author" minOccurs="0" maxOccurs="unbounded"/>
       </xs:sequence>
     </xs:complexType>
-
 
     <xs:complexType name="file">
       <xs:sequence>
@@ -61,7 +54,6 @@
         <xs:element name="blob" type="nxs:content"/>
       </xs:sequence>
     </xs:complexType>
-
 
     <xs:complexType name="references">
       <xs:sequence>
@@ -73,7 +65,4 @@
       <xs:list itemType="xs:string" />
     </xs:simpleType>
 
-
 </xs:schema>
-
-
