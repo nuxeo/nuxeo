@@ -29,34 +29,34 @@ import org.nuxeo.ecm.wiki.WikiTypes;
 
 public class WikiListener  implements EventListener {
 
-	protected DocumentModel doExtractWikiPage(Event event) {
-		
+    protected DocumentModel doExtractWikiPage(Event event) {
+
          if(DOCUMENT_UPDATED.equals(event.getName()) == false) {
-        	 return null;
+             return null;
          }
-         
+
          final Object context = event.getContext();
-         
+
          if (!(context instanceof DocumentEventContext)) {
-        	 return null;
+             return null;
          }
 
          final DocumentModel doc = ((DocumentEventContext)context).getSourceDocument();
-         
+
          if (!WikiTypes.WIKIPAGE.equals(doc.getType())) {
-        	 return null;
+             return null;
          }
-         
+
          return doc;
-	}
+    }
 
-	public void handleEvent(Event event) {
-		DocumentModel wikiPage = 
-			doExtractWikiPage(event);
-		
-		 if (wikiPage == null) return;
+    public void handleEvent(Event event) {
+        DocumentModel wikiPage =
+            doExtractWikiPage(event);
 
-		 WikiHelper.updateRelations(wikiPage);
-	}
+         if (wikiPage == null) return;
+
+         WikiHelper.updateRelations(wikiPage);
+    }
 
 }

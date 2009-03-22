@@ -67,11 +67,11 @@ public class CommentService extends DefaultAdapter {
         try {
             // create a new webComment on this page
             DocumentModel webComment = session.createDocumentModel("WebComment");
-            webComment.setPropertyValue("webcmt:author",
-                    session.getPrincipal().getName());
+            webComment.setPropertyValue("webcmt:author", session.getPrincipal().getName());
             webComment.setPropertyValue("webcmt:text", cText);
             webComment.setPropertyValue("webcmt:creationDate", new Date());
-            webComment = commentManager.createLocatedComment(dobj.getDocument(), webComment, getParentWorkspacePath(session, dobj.getDocument()));
+            webComment = commentManager.createLocatedComment(
+                    dobj.getDocument(), webComment, getParentWorkspacePath(session, dobj.getDocument()));
             session.save();
             return redirect(getTarget().getPath());
         } catch (Exception e) {
@@ -91,10 +91,8 @@ public class CommentService extends DefaultAdapter {
         }
     }
 
-
     @DELETE
     public Response deleteComment() throws Exception {
-
         DocumentObject dobj = (DocumentObject) getTarget();
         CoreSession session = dobj.getCoreSession();
         FormData form = ctx.getForm();
@@ -103,12 +101,11 @@ public class CommentService extends DefaultAdapter {
         CommentManager commentManager = getCommentManager();
         commentManager.deleteComment(dobj.getDocument(), comment);
         return redirect(dobj.getPath());
-
     }
 
-    public static CommentManager getCommentManager(){
+    public static CommentManager getCommentManager() {
         return Framework.getLocalService(CommentManager.class);
-   }
+    }
 
     public static String getParentWorkspacePath(CoreSession session, DocumentModel doc)
             throws Exception {
@@ -120,4 +117,5 @@ public class CommentService extends DefaultAdapter {
         }
         return null;
     }
+
 }

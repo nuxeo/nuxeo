@@ -111,7 +111,7 @@ public class WebCommentUtils {
     public static boolean currentUserIsAdministaror(CoreSession session) {
         return ((NuxeoPrincipal) session.getPrincipal()).isAdministrator();
     }
-    
+
     public static CommentManager getCommentManager() throws Exception {
         CommentManager commentManager = Framework.getLocalService(CommentManager.class);
         if (commentManager == null) {

@@ -1,3 +1,22 @@
+/*
+ * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nuxeo - initial API and implementation
+ *
+ * $Id$
+ */
+
 package org.nuxeo.ecm.webengine.cmis;
 
 import java.util.HashMap;
@@ -47,7 +66,7 @@ public class Main extends ModuleRoot {
         Map<String, String> properties = new HashMap<String, String>();
         provider.init(abdera, properties);
         cc = new CMISCollectionForChildren(CMIS.COL_ROOT_CHILDREN, repository.getInfo().getRootFolderId(), repository);
-        
+
         Framework.getLocalService(WebEngine.class).getRegistry().addMessageBodyWriter(new AbderaResponseWriter());
     }
 
@@ -62,7 +81,7 @@ public class Main extends ModuleRoot {
       response.setContentType(Constants.APP_MEDIA_TYPE);
       return getResponse(response);
   }
-  
+
   @GET
   @Path("children")
   public Response doGetFeed() {
@@ -104,4 +123,3 @@ public class Main extends ModuleRoot {
   }
 
 }
-
