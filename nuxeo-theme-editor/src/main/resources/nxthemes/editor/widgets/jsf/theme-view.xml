@@ -28,7 +28,7 @@
         <nxthemes:button identifier="edit canvas"
           link="javascript:NXThemesEditor.editCanvas()"
           controlledBy="editor buttons"
-          switchTo="editor perspectives/edit canvas" label="Edit canvas" />
+          switchTo="editor perspectives/edit canvas" label="Edit theme" />
      
         <nxthemes:button identifier="manage presets"
           controlledBy="editor buttons"
