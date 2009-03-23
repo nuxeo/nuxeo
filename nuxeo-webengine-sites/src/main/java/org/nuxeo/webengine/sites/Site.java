@@ -19,12 +19,15 @@
 
 package org.nuxeo.webengine.sites;
 
-import static org.nuxeo.webengine.utils.SiteUtilsConstants.*;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.GregorianCalendar;
+import static org.nuxeo.webengine.utils.SiteUtilsConstants.ALL_WEBPAGES;
+import static org.nuxeo.webengine.utils.SiteUtilsConstants.COMMENTS;
+import static org.nuxeo.webengine.utils.SiteUtilsConstants.CONTEXTUAL_LINKS;
+import static org.nuxeo.webengine.utils.SiteUtilsConstants.DESCRIPTION;
+import static org.nuxeo.webengine.utils.SiteUtilsConstants.LAST_PUBLISHED_PAGES;
+import static org.nuxeo.webengine.utils.SiteUtilsConstants.NAME;
+import static org.nuxeo.webengine.utils.SiteUtilsConstants.WELCOME_TEXT;
+
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.GET;
@@ -33,7 +36,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
@@ -41,17 +43,13 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.rest.DocumentObject;
-import org.nuxeo.ecm.platform.comment.api.CommentManager;
-import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 import org.nuxeo.webengine.utils.SiteUtils;
-import org.nuxeo.webengine.utils.WebCommentUtils;
 
 @WebObject(type = "site", facets = { "Site" })
 @Produces("text/html; charset=UTF-8")
@@ -183,7 +181,7 @@ public class Site extends DefaultObject {
         root.put(LAST_PUBLISHED_PAGES, SiteUtils.getLastModifiedWebPages(
                 ws, 5, 50));
         //add comments
-        root.put(COMMENTS, getLastCommentsFromPages(5, 50));
+        root.put(COMMENTS, SiteUtils.getLastCommentsFromPages(ws, 5, 50));
         // add contextual links
         root.put(CONTEXTUAL_LINKS, SiteUtils.getContextualLinks(
                 ws));
@@ -193,49 +191,6 @@ public class Site extends DefaultObject {
         return root;
     }
 
-    public List<Object> getLastCommentsFromPages(int noComments,
-            int noWordsFromContent) throws ClientException {
-        WebContext context = WebEngine.getActiveContext();
-        CoreSession session = context.getCoreSession();
-        DocumentModelList comments = session.query(
-                String.format(
-                        "SELECT * FROM Document WHERE "
-                                + " ecm:primaryType like 'WebComment' "
-                                + " AND ecm:path STARTSWITH '%s'"
-                                + " AND ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0"
-                                + " AND ecm:currentLifeCycleState != 'deleted' ORDER BY dc:modified DESC",
-                        ws.getPathAsString() + "/"), null, noComments, 0, true);
-        List<Object> lastWebComments = new ArrayList<Object>();
-        for (DocumentModel documentModel : comments) {
-            Map<String, String> comment = new HashMap<String, String>();
-
-            GregorianCalendar creationDate = SiteHelper.getGregorianCalendar(
-                    documentModel, "webcmt:creationDate");
-
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd MMMM",
-                    getContext().getLocale());
-            String formattedString = simpleDateFormat.format(creationDate.getTime());
-            String[] splittedFormatterdString = formattedString.split(" ");
-            comment.put("day", splittedFormatterdString[0]);
-            comment.put("month", splittedFormatterdString[1]);
-
-            try {
-                comment.put("author", getUserDetails(SiteHelper.getString(
-                        documentModel, "webcmt:author")));
-                comment.put("pageTitle", getPageTitleForComment(documentModel));
-            } catch (Exception e) {
-                throw new ClientException(e);
-            }
-            comment.put("content", SiteHelper.getFistNWordsFromString(
-                    SiteHelper.getString(documentModel, "webcmt:text"),
-                    noWordsFromContent));
-
-            lastWebComments.add(comment);
-
-        }
-
-        return lastWebComments;
-    }
 
     protected DocumentModel getWorkspaceByUrl(String url) {
         WebContext context = WebEngine.getActiveContext();
@@ -256,29 +211,6 @@ public class Site extends DefaultObject {
 
     public DocumentModel getWorkspace() {
         return ws;
-    }
-
-    private String getUserDetails(String username) throws Exception{
-        UserManager userManager  = WebCommentUtils.getUserManager();
-        NuxeoPrincipal principal = userManager.getPrincipal(username);
-        if (principal == null)
-            return StringUtils.EMPTY;
-        if (StringUtils.isEmpty(principal.getFirstName())
-                && StringUtils.isEmpty(principal.getLastName())) {
-            return principal.toString();
-        }
-        return principal.getFirstName() + " " + principal.getLastName();
-    }
-
-
-    private String getPageTitleForComment(DocumentModel comment)
-            throws Exception {
-        CommentManager commentManager = WebCommentUtils.getCommentManager();
-        List<DocumentModel> list = commentManager.getDocumentsForComment(comment);
-        if (list.size() != 0) {
-            return list.get(0).getTitle();
-        }
-        return StringUtils.EMPTY;
     }
 
 }

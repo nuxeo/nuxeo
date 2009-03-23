@@ -30,6 +30,7 @@ import java.util.Map;
 
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
@@ -37,7 +38,9 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.webengine.sites.JsonAdapter;
@@ -206,6 +209,84 @@ public class SiteUtils {
             throws Exception {
         CommentManager commentManager = WebCommentUtils.getCommentManager();
         return Integer.toString(commentManager.getComments(page).size());
+    }
+    
+    /**
+     * This method is used to retrieve a certain number of comments that are
+     * last added under a <b>WebPage</b> under a <b>Workspace</b>
+     * 
+     * @param ws - the workspace
+     * @param noComments - the number of comments
+     * @param noWordsFromContent - the number of words from the content of the
+     *            comment
+     * @return the <b>WebComments</b>-s that are made under a <b>WebPage</b>
+     * @throws ClientException
+     */
+    public static List<Object> getLastCommentsFromPages(DocumentModel ws,
+            int noComments, int noWordsFromContent) throws ClientException {
+        WebContext context = WebEngine.getActiveContext();
+        CoreSession session = context.getCoreSession();
+        DocumentModelList comments = session.query(
+                String.format(
+                        "SELECT * FROM Document WHERE "
+                                + " ecm:primaryType like 'WebComment' "
+                                + " AND ecm:path STARTSWITH '%s'"
+                                + " AND ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0"
+                                + " AND ecm:currentLifeCycleState != 'deleted' ORDER BY dc:modified DESC",
+                        ws.getPathAsString() + "/"), null, noComments, 0, true);
+        List<Object> lastWebComments = new ArrayList<Object>();
+        for (DocumentModel documentModel : comments) {
+            Map<String, String> comment = new HashMap<String, String>();
+
+            GregorianCalendar creationDate = SiteHelper.getGregorianCalendar(
+                    documentModel, "webcmt:creationDate");
+
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd MMMM",
+                    WebEngine.getActiveContext().getLocale());
+            String formattedString = simpleDateFormat.format(creationDate.getTime());
+            String[] splittedFormatterdString = formattedString.split(" ");
+            comment.put("day", splittedFormatterdString[0]);
+            comment.put("month", splittedFormatterdString[1]);
+
+            try {
+                comment.put("author", getUserDetails(SiteHelper.getString(
+                        documentModel, "webcmt:author")));
+                DocumentModel parentPage = WebCommentUtils.getPageForComment(documentModel);
+                if (parentPage != null) {
+                    comment.put("pageTitle", parentPage.getTitle());
+                    comment.put("pagePath", JsonAdapter.getRelativPath(ws,
+                            parentPage).toString());
+                }
+            } catch (Exception e) {
+                throw new ClientException(e);
+            }
+            comment.put("content", SiteHelper.getFistNWordsFromString(
+                    SiteHelper.getString(documentModel, "webcmt:text"),
+                    noWordsFromContent));
+
+            lastWebComments.add(comment);
+
+        }
+
+        return lastWebComments;
+    }
+    
+    /**
+     * This method is used to retrieve user details for a certain username
+     * @param username 
+     * @return user first name + user last name
+     * @throws Exception
+     */
+    public static String getUserDetails(String username) throws Exception{
+        UserManager userManager  = WebCommentUtils.getUserManager();
+        NuxeoPrincipal principal = userManager.getPrincipal(username);
+        if (principal == null)
+            return StringUtils.EMPTY;
+        if (StringUtils.isEmpty(principal.getFirstName())
+                && StringUtils.isEmpty(principal.getLastName())) {
+            return principal.toString();
+        }
+        return principal.getFirstName() + " " + principal.getLastName();
     }
 
 }
