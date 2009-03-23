@@ -11,7 +11,7 @@
       <category>VIEW_ACTION_LIST</category>
       <filter id="isWebContainer">
         <rule grant="true">
-          <type>Workspace</type>
+          <facet>WebView</facet>
         </rule>
       </filter>
     </action>

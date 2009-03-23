@@ -17,7 +17,11 @@
 
 package org.nuxeo.webengine.sites;
 
-import static org.nuxeo.webengine.utils.SiteUtilsConstants.*;
+import static org.nuxeo.webengine.utils.SiteUtilsConstants.ALL_WEBPAGES;
+import static org.nuxeo.webengine.utils.SiteUtilsConstants.CONTEXTUAL_LINKS;
+import static org.nuxeo.webengine.utils.SiteUtilsConstants.DESCRIPTION;
+import static org.nuxeo.webengine.utils.SiteUtilsConstants.LAST_PUBLISHED_PAGES;
+import static org.nuxeo.webengine.utils.SiteUtilsConstants.WELCOME_TEXT;
 
 import java.util.HashMap;
 import java.util.List;
@@ -31,7 +35,6 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;

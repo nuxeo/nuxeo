@@ -65,7 +65,7 @@ public class Site extends DefaultObject {
     public void initialize(Object... args) {
         assert args != null && args.length == 1;
         url = (String) args[0];
-        ws = getWorkspaceByUrl(url);
+        ws = getSiteDocumentModelByUrl(url);
     }
 
     @GET
@@ -192,14 +192,13 @@ public class Site extends DefaultObject {
     }
 
 
-    protected DocumentModel getWorkspaceByUrl(String url) {
+    protected DocumentModel getSiteDocumentModelByUrl(String url) {
         WebContext context = WebEngine.getActiveContext();
         CoreSession session = context.getCoreSession();
         try {
             DocumentModelList list = session.query(String.format(
-                    "SELECT * FROM Workspace WHERE webc:url = \"%s\"", url));
-            // DocumentModelList list =
-            // session.query(String.format("SELECT * FROM Workspace ", url));
+                    "SELECT * FROM Document WHERE ecm:mixinType = 'WebView' AND webc:url = \"%s\"",
+                    url));
             if (list.size() != 0) {
                 return list.get(0);
             }

@@ -210,11 +210,11 @@ public class SiteUtils {
         CommentManager commentManager = WebCommentUtils.getCommentManager();
         return Integer.toString(commentManager.getComments(page).size());
     }
-    
+
     /**
      * This method is used to retrieve a certain number of comments that are
      * last added under a <b>WebPage</b> under a <b>Workspace</b>
-     * 
+     *
      * @param ws - the workspace
      * @param noComments - the number of comments
      * @param noWordsFromContent - the number of words from the content of the
@@ -270,10 +270,10 @@ public class SiteUtils {
 
         return lastWebComments;
     }
-    
+
     /**
      * This method is used to retrieve user details for a certain username
-     * @param username 
+     * @param username
      * @return user first name + user last name
      * @throws Exception
      */

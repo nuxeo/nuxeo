@@ -34,6 +34,7 @@ import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
 
+import static org.nuxeo.webengine.utils.SiteUtilsConstants.*;
 
 @WebAdapter(name = "json", type = "JsonTreeAdapter", facets = {"Site"})
 public class JsonAdapter extends DefaultAdapter {
@@ -89,15 +90,15 @@ public class JsonAdapter extends DefaultAdapter {
         return null;
     }
 
-    // return the workspace with webc:isWebContainer
     protected static DocumentModel getTreeRoot(DocumentModel doc) {
         if (doc != null) {
-            CoreSession session = CoreInstance.getInstance().getSession(doc.getSessionId());
+            CoreSession session = CoreInstance.getInstance().getSession(
+                    doc.getSessionId());
             DocumentModel parent = doc;
             while (parent != null) {
-                String docType = parent.getType();
-                boolean isWebContainer = true;
-                if ("Workspace".equals(docType) && isWebContainer) {
+                // Check for 'WebView' facet. This is enough since only
+                // Workspace documents have this facet.
+                if (parent.hasFacet(WEB_VIEW_FACET)) {
                     return parent;
                 }
                 try {

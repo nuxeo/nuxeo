@@ -76,22 +76,20 @@ public class Sites extends DefaultObject {
         WebContext context = WebEngine.getActiveContext();
         CoreSession session = context.getCoreSession();
 
-        DocumentModelList webSites = session.query("SELECT * FROM Workspace");
+        DocumentModelList webSites = session.query("SELECT * FROM Document WHERE ecm:mixinType = 'WebView' AND webc:isWebContainer = 1 ");
         // filter by hand ( avoiding some core search issues )
         List<Object> sites = new ArrayList<Object>();
         for (DocumentModel webSite : webSites) {
-            if (SiteHelper.getBoolean(webSite, "webc:isWebContainer", false)) {
-                try {
-                    Map<String, String> site = new HashMap<String, String>();
-                    site.put("href", SiteHelper.getString(webSite, "webc:url"));
-                    site.put("name", SiteHelper.getString(webSite, "webc:name"));
-                    sites.add(site);
-                } catch (Exception e) {
-                    log.debug("Problem retrieving the existings websites ...",
-                            e);
-                }
+            try {
+                Map<String, String> site = new HashMap<String, String>();
+                site.put("href", SiteHelper.getString(webSite, "webc:url"));
+                site.put("name", SiteHelper.getString(webSite, "webc:name"));
+                sites.add(site);
+            } catch (Exception e) {
+                log.debug("Problem retrieving the existings websites ...", e);
             }
         }
+
         return sites;
     }
 
