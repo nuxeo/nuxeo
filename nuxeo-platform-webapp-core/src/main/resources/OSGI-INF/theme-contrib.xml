@@ -26,10 +26,6 @@
     </theme>
 
     <theme>
-      <src>themes/theme-default5-2.xml</src>
-    </theme>
-
-    <theme>
       <src>themes/theme-galaxy.xml</src>
     </theme>
     
@@ -59,11 +55,6 @@
     <view name="nuxeo5 alternate logo" template-engine="jsf-facelets">
       <format-type>widget</format-type>
       <template>incl/logo_alternate.xhtml</template>
-    </view>
-
-    <view name="nuxeo5-2 logo" template-engine="jsf-facelets">
-      <format-type>widget</format-type>
-      <template>incl/logo_5-2.xhtml</template>
     </view>
 
     <view name="Nuxeo EP logo (Galaxy Theme)" template-engine="jsf-facelets">
@@ -381,6 +372,7 @@
       src="themes/palettes/nxbackgrounds.properties" category="background" />
     <palette name="Nuxeo default borders"
       src="themes/palettes/nxborders.properties" category="border" />
+    
     <palette name="Courrier default fonts"
       src="themes/palettes/courrier_fonts.properties" category="font" />
     <palette name="Courrier default backgrounds"
@@ -388,12 +380,6 @@
       category="background" />
     <palette name="Courrier default borders"
       src="themes/palettes/courrier_borders.properties" category="border" />
-    <palette name="Nuxeo5-2 default fonts"
-      src="themes/palettes/nx5-2_fonts.properties" category="font" />
-    <palette name="Nuxeo5-2 default backgrounds"
-      src="themes/palettes/nx5-2_backgrounds.properties" category="background" />
-    <palette name="Nuxeo5-2 default borders"
-      src="themes/palettes/nx5-2_borders.properties" category="border" />
 
     <palette name="Galaxy borders"
       src="themes/palettes/galaxy-borders.properties" category="border" />
@@ -401,8 +387,6 @@
       src="themes/palettes/galaxy-backgrounds.properties" category="background" />
     <palette name="Galaxy fonts" src="themes/palettes/galaxy-fonts.properties"
       category="font" />
-
-
 
   </extension>
 

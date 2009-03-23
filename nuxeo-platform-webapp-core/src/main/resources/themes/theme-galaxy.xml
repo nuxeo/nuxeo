@@ -403,7 +403,7 @@
       </selector>
       <selector path=".tabsBar a, .tabsBar a:hover, .tabsBar a:visited">
         <border preset="tabisnotselected (Galaxy borders)"/>
-        <color>#999999</color>
+        <color>#0066CC</color>
         <background preset="white (Galaxy backgrounds)" />
         <text-decoration>none</text-decoration>
         <font-weight>normal</font-weight>
