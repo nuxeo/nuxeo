@@ -12,7 +12,7 @@
  * $Id$
  */
 
-package org.nuxeo.theme.webwidgets;
+package org.nuxeo.theme.webwidgets.providers;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,6 +23,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.session.UserSession;
+import org.nuxeo.theme.webwidgets.DefaultWidget;
+import org.nuxeo.theme.webwidgets.Provider;
+import org.nuxeo.theme.webwidgets.Widget;
+import org.nuxeo.theme.webwidgets.WidgetData;
+import org.nuxeo.theme.webwidgets.WidgetState;
 
 public class DefaultProvider implements Provider {
 

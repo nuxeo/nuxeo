@@ -12,11 +12,15 @@
  * $Id$
  */
 
-package org.nuxeo.theme.webwidgets;
+package org.nuxeo.theme.webwidgets.providers;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.nuxeo.theme.webwidgets.Widget;
+import org.nuxeo.theme.webwidgets.WidgetData;
+import org.nuxeo.theme.webwidgets.WidgetState;
 
 public class DefaultProviderSession {
 

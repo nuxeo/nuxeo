@@ -14,8 +14,8 @@
 
 package org.nuxeo.theme.test.webwidgets;
 
-import org.nuxeo.theme.webwidgets.DefaultProvider;
-import org.nuxeo.theme.webwidgets.DefaultProviderSession;
+import org.nuxeo.theme.webwidgets.providers.DefaultProvider;
+import org.nuxeo.theme.webwidgets.providers.DefaultProviderSession;
 
 public class FakeDefaultProvider extends DefaultProvider {
 
