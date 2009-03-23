@@ -183,6 +183,7 @@ def testGf3():
     p = pexpect.spawn("sh nxserver.sh -console", timeout=120)
     consoleTest(p)
 
+    time.sleep(10)
     print "Starting server"
     flush()
 
