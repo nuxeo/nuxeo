@@ -21,9 +21,10 @@
   }
 
 .topBar {
-  background:#323436 url(/nuxeo/img/theme_galaxy/small_gray_bar.png) repeat-x scroll left top;
+  background:#212325 url(/nuxeo/img/theme_galaxy/small_gray_bar.png) repeat-x scroll left top;
   width:100%;
   height:36px;
+  border:0;
   }
 
 .topBar img {
@@ -65,11 +66,13 @@ H2 {
   }
 
 .login {
-  background:transparent url(/nuxeo/img/theme_galaxy/news_bg.png) 0 repeat-x;
+  background:#fff;
+  opacity:0.8;
+  filter : alpha(opacity=80); 
   border: 1px solid #4E9AE1;
-  padding:20px 75px 20px 70px;
+  padding:20px 75px 5px 70px;
+  width:250px;
   }
-
 
 .login_label {
   font:bold 10px "Lucida Grande", sans-serif;
@@ -164,7 +167,9 @@ nxthemes css is not used in login.jsp */
   height:500px;
   width:350px;
   overflow:auto;
-  background:transparent url(/nuxeo/img/theme_galaxy/news_bg.png) repeat-x scroll 0 50%;
+  background-color:#ffffff;
+  opacity:0.8;
+  filter : alpha(opacity=80); 
   }
 
 .errorMessage {
@@ -221,7 +226,8 @@ nxthemes css is not used in login.jsp */
       <!--
       <h2 class="formTitle"><fmt:message bundle="${messages}" key="label.login.welcomeToNuxeoEnterprise" /></h2>
       -->
-          <table class="login">
+        <div class="login">
+          <table>
            <tr>
              <td class="login_label">
               <label for="username">
@@ -282,7 +288,7 @@ nxthemes css is not used in login.jsp */
             <fmt:message bundle="${messages}" key="label.login.copyright" />
         </div>
         </td>
-        <td align="right" class="version">
+        <td align="right" class="version" valign="bottom">
         <div class="loginLegal">
          <%
          String productName = Framework.getProperty("org.nuxeo.ecm.product.name");
