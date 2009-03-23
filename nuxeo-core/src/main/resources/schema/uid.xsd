@@ -7,6 +7,8 @@
   <xs:element name="uid" type="xs:string" />
   <xs:element name="major_version" type="xs:int" />
   <xs:element name="minor_version" type="xs:int" />
+  <xs:element name="is_version_published" type="xs:boolean"/>
+
 
 </xs:schema>
 

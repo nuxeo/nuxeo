@@ -1649,13 +1649,41 @@ public abstract class AbstractSession implements CoreSession,
      */
     private DocumentModel createDocumentSnapshot(DocumentModel doc)
             throws ClientException {
-        if (!isDirty(doc.getRef())) {
+        return createDocumentSnapshot(doc, false);
+    }
+
+    /**
+     * Creates a snapshot (version) for the given DocumentModel.
+     *
+     * @param docModel
+     * @return the last version (that was just created)
+     * @throws ClientException
+     */
+    private DocumentModel createDocumentSnapshot(DocumentModel docModel, boolean isForPublication)
+            throws ClientException {
+        DocumentRef docRef = docModel.getRef();
+        Document doc = null;
+
+        // Set document to be checked-in as published
+        if (isForPublication) {
+            try {
+                doc = resolveReference(docModel.getRef());
+                DocumentModel oldDoc = readModel(doc, null);
+
+                oldDoc.setPropertyValue("uid:is_version_published", Boolean.TRUE);
+                writeModel(doc, oldDoc);
+            } catch (DocumentException e) {
+                throw new ClientException("Failed to check in document " + docRef,
+                        e);
+            }
+        }
+        
+        if (!isDirty(docModel.getRef())) {
             log.debug("Document not dirty -> avoid creating a new version");
             return null;
         }
 
         // Do a checkin / checkout of the edited version
-        DocumentRef docRef = doc.getRef();
         VersionModel newVersion = new VersionModelImpl();
         String vlabel = generateVersionLabelFor(docRef);
         newVersion.setLabel(vlabel);
@@ -1666,20 +1694,37 @@ public abstract class AbstractSession implements CoreSession,
         // save();
 
         checkIn(docRef, newVersion);
-        log.debug("doc checked in " + doc.getTitle());
+        log.debug("doc checked in " + docModel.getTitle());
         checkOut(docRef);
-        log.debug("doc checked out " + doc.getTitle());
+        log.debug("doc checked out " + docModel.getTitle());
 
         // send notifications about new version
         // TODO we need to make it clearer the fact that this event is
         // about new version snapshot and not about versioning fields change
         // (i.e. major, minor version increment)
+        
+        // Set current document as un-published
+        if (isForPublication) {
+            try {
+                doc = resolveReference(docModel.getRef());
+                DocumentModel oldDoc = readModel(doc, null);
+
+                oldDoc.setPropertyValue("uid:is_version_published", Boolean.FALSE);
+                writeModel(doc, oldDoc);
+            } catch (DocumentException e) {
+                throw new ClientException("Failed to check in document " + docRef,
+                        e);
+            }
+        }
+
+
         DocumentModel oldDoc = getDocumentWithVersion(docRef, newVersion);
+
         // VersioningChangeNotifier.notifyVersionChange(oldDoc, doc);
 
         return oldDoc;
     }
-
+    
     public void saveDocuments(DocumentModel[] docModels) throws ClientException {
         // TODO: optimize this - avoid calling at each iteration saveDoc...
         for (DocumentModel docModel : docModels) {
@@ -2525,7 +2570,7 @@ public abstract class AbstractSession implements CoreSession,
             docToPublish.putContextData(
                     VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, true);
             // snapshot the document
-            createDocumentSnapshot(docToPublish);
+            createDocumentSnapshot(docToPublish, true);
             VersionModel version = getLastVersion(docRef);
             DocumentModel newProxy = createProxy(sectionRef, docRef, version,
                     overwriteExistingProxy);

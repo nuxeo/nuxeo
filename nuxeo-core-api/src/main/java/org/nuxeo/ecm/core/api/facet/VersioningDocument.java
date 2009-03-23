@@ -43,7 +43,7 @@ public interface VersioningDocument {
     String CURRENT_DOCUMENT_MINOR_VERSION_KEY = "CURRENT_DOCUMENT_MINOR_VERSION";
 
     String CURRENT_DOCUMENT_MAJOR_VERSION_KEY = "CURRENT_DOCUMENT_MAJOR_VERSION";
-
+    
     Long getMinorVersion() throws DocumentException;
 
     void setMinorVersion(Long value);
@@ -51,6 +51,10 @@ public interface VersioningDocument {
     Long getMajorVersion() throws DocumentException;
 
     void setMajorVersion(Long value);
+
+    Boolean isVersionHasBeenPublished() throws DocumentException;
+
+    void setVersionHasBeenPublished(Boolean value);
 
     /**
      * This will force the adapter to re-load document from repository.

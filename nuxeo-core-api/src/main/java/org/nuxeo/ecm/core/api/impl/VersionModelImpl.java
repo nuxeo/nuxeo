@@ -37,6 +37,8 @@ public class VersionModelImpl implements VersionModel {
     protected String label;
 
     protected String description;
+    
+    protected Boolean isVersionPublished;
 
     public Calendar getCreated() {
         return created;
@@ -61,5 +63,15 @@ public class VersionModelImpl implements VersionModel {
     public void setLabel(String label) {
         this.label = label;
     }
+    
+    public Boolean getVersionPublished() {
+        return isVersionPublished;
+    }
+
+    public void setVersionPublished(Boolean value) {
+        this.isVersionPublished = value;
+    }
+
+
 
 }

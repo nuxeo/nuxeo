@@ -43,4 +43,9 @@ public interface VersionModel extends Serializable {
 
     void setLabel(String label);
 
+    Boolean getVersionPublished();
+
+    void setVersionPublished(Boolean value);
+
+
 }
