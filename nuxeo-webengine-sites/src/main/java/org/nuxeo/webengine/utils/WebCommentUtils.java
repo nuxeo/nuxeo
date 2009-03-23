@@ -23,8 +23,10 @@ import static org.nuxeo.webengine.utils.SiteUtilsConstants.PERMISSION_MODERATE;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -111,6 +113,24 @@ public class WebCommentUtils {
 
     public static SecurityService getSecurityService(){
         return NXCore.getSecurityService();
+    }
+    
+    /**
+     * This method is used to retrieve the <b>WebPage</b> where this
+     * <b>WebComment</b> was published
+     * 
+     * @param comment
+     * @return the <b>WebPage</b>
+     * @throws Exception
+     */
+    public static DocumentModel getPageForComment(DocumentModel comment)
+            throws Exception {
+        CommentManager commentManager = WebCommentUtils.getCommentManager();
+        List<DocumentModel> list = commentManager.getDocumentsForComment(comment);
+        if (list.size() != 0) {
+            return list.get(0);
+        }
+        return null;
     }
 
 }
