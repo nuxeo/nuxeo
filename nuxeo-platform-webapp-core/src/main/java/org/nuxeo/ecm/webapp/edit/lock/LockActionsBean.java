@@ -198,47 +198,10 @@ public class LockActionsBean implements LockActions {
                             SecurityConstants.EVERYTHING)
                     || userName.getName().equals(lockDetails.get(LOCKER))) {
 
-                if (!documentManager.hasPermission(document.getRef(),
-                        SecurityConstants.WRITE_PROPERTIES)) {
-
-                    try {
-                        // Here administrator should always be able to unlock so
-                        // we need to grant him this possibility even if it
-                        // doesn't have the write permission.
-                        SystemSession session = new SystemSession();
-                        session.login();
-
-                        // Open a new repository session which will be
-                        // unrestricted. We need to do this here since the
-                        // document manager in Seam context has been initialized
-                        // with caller principal rights.
-                        CoreSession unrestrictedSession = ECM.getPlatform().openRepository(
-                                navigationContext.getCurrentServerLocation().getName());
-
-                        // Publish the document using the new session.
-                        unrestrictedSession.unlock(document.getRef());
-                        unrestrictedSession.save();
-
-                        // Close the unrestricted session.
-                        CoreInstance.getInstance().close(unrestrictedSession);
-
-                        // Logout the system session.
-                        // Note, this is not necessary to take further actions
-                        // here
-                        // regarding the user session.
-                        session.logout();
-
-                        message = "document.unlock";
-                    } catch (LoginException e) {
-                        throw new ClientException(e.getMessage());
-                    } catch (Exception e) {
-                        throw new ClientException(e.getMessage());
-                    }
-                } else {
+                
                     documentManager.unlock(document.getRef());
                     documentManager.save();
                     message = "document.unlock";
-                }
             } else {
                 message = "document.unlock.not.permitted";
             }
