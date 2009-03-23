@@ -8,12 +8,12 @@
 
       <select id="webWidgetCategory" style="width: 100%; border: 1px solid #666"
         onchange="NXThemesWebWidgets.setWidgetCategory(this)">
-        <option value="">All categories<option/>
+        <option value="">All categories</option>
         <#list widget_categories as category>
-          <#if category == selected_category>
-            <option value="${category}">${category}</option>
+          <#if category = selected_category>
+            <option value="${category}" selected="selected">&raquo; ${category}</option>
           <#else>
-            <option value="${category}" selected="selected">${category}</option>
+            <option value="${category}">&raquo; ${category}</option>
           </#if>
         </#list>
       </select>
