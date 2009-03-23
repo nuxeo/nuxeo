@@ -31,6 +31,7 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -98,18 +99,36 @@ public class Page extends DocumentObject {
     public boolean isModerator() {
         try {
             CoreSession session = this.getCoreSession();
-            return (WebCommentUtils.isModeratedByCurrentUser(session,
-                    this.getDocument()) || WebCommentUtils.currentUserIsAdministaror(session));
+            return WebCommentUtils.isModeratedByCurrentUser(session,
+                    this.getDocument());
         } catch (Exception e) {
             throw WebException.wrap("Failed to delete comment", e);
         }
     }
 
+    @GET
+    @Path("logo")
+    public Response getLogo() {
+        Response resp = null;
+        try {
+            DocumentModel parentWorkspace = SiteUtils.getFirstWorkspaceParent(getCoreSession(), doc);
+            resp = SiteUtils.getLogoResponse(parentWorkspace);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        //return a default image, maybe you want to change this in future
+        if (resp == null) {
+            resp = redirect(getContext().getModule().getSkinPathPrefix() +
+                    "/images/logo.gif");
+        }
+        return resp;
+    }
+
     public boolean isUserWithCommentPermission() {
         try {
             CoreSession session = this.getCoreSession();
-            return (WebCommentUtils.currentUserHasCommentPermision(session,
-                    this.getDocument()) || WebCommentUtils.currentUserIsAdministaror(session));
+            return WebCommentUtils.currentUserHasCommentPermision(session,
+                    this.getDocument());
         } catch (Exception e) {
             throw WebException.wrap("Failed to delete comment", e);
         }
@@ -120,15 +139,18 @@ public class Page extends DocumentObject {
         Map<String, Object> root = new HashMap<String, Object>();
 
         root.put(WELCOME_TEXT, SiteHelper.getString(doc, "webp:content", null));
-        root.put(SITE_NAME, SiteHelper.getString(doc, "dc:title", null));
-        root.put(SITE_DESCRIPTION, SiteHelper.getString(doc, "dc:description",
+        root.put(DESCRIPTION, SiteHelper.getString(doc, "dc:description",
                 null));
         // add web pages
-        List<Object> pages = SiteUtils.getInstance().getLastModifiedWebPages(
+        List<Object> pages = SiteUtils.getLastModifiedWebPages(
                 doc, 5, 50);
         root.put(LAST_PUBLISHED_PAGES, pages);
         // add contextual links
-        root.put(CONTEXTUAL_LINKS, SiteUtils.getInstance().getContextualLinks(
+        root.put(CONTEXTUAL_LINKS, SiteUtils.getContextualLinks(
+                doc));
+
+        // add all webpages that are directly connected to an webpage
+        root.put(ALL_WEBPAGES, SiteUtils.getAllWebPages(
                 doc));
         MimetypeRegistry mimetypeService = null;
         try {

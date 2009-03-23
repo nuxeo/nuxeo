@@ -9,7 +9,7 @@
         </td>
         <td style="padding-left: 10px;text-align: left;">
           <div class="pageTitle">
-            ${siteName}
+            ${name}
           </div>
           <div class="pageDescription">
             ${description} 

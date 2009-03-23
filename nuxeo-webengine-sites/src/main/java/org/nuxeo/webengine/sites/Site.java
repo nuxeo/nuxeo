@@ -139,10 +139,7 @@ public class Site extends DefaultObject {
     public Response getLogo() {
         Response resp = null;
         try {
-            Blob blob = SiteHelper.getBlob(ws, "webc:logo");
-            if (blob != null) {
-                resp = Response.ok().entity(blob).type(blob.getMimeType()).build();
-            }
+            resp = SiteUtils.getLogoResponse(ws);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -179,16 +176,19 @@ public class Site extends DefaultObject {
 
         root.put(WELCOME_TEXT, SiteHelper.getString(ws, "webc:welcomeText",
                 null));
-        root.put(SITE_NAME, SiteHelper.getString(ws, "webc:name", null));
-        root.put(SITE_DESCRIPTION, SiteHelper.getString(ws, "dc:description",
+        root.put(NAME, SiteHelper.getString(ws, "webc:name", null));
+        root.put(DESCRIPTION, SiteHelper.getString(ws, "dc:description",
                 null));
         // add web pages
-        root.put(LAST_PUBLISHED_PAGES, SiteUtils.getInstance().getLastModifiedWebPages(
+        root.put(LAST_PUBLISHED_PAGES, SiteUtils.getLastModifiedWebPages(
                 ws, 5, 50));
         //add comments
         root.put(COMMENTS, getLastCommentsFromPages(5, 50));
         // add contextual links
-        root.put(CONTEXTUAL_LINKS, SiteUtils.getInstance().getContextualLinks(
+        root.put(CONTEXTUAL_LINKS, SiteUtils.getContextualLinks(
+                ws));
+        // add all webpages that are directly connected to an site
+        root.put(ALL_WEBPAGES, SiteUtils.getAllWebPages(
                 ws));
         return root;
     }

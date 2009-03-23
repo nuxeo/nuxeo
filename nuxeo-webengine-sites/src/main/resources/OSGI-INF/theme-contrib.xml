@@ -40,10 +40,6 @@
       <format-type>widget</format-type>
       <template>widgets/files.ftl</template>
     </view>
-    <view name="Page Logo" template-engine="freemarker">
-      <format-type>widget</format-type>
-      <template>widgets/page_logo.ftl</template>
-    </view>
     <view name="Page Main" template-engine="freemarker">
       <format-type>widget</format-type>
       <template>widgets/page_main.ftl</template>
@@ -56,6 +52,10 @@
       <format-type>widget</format-type>
       <template>widgets/page_last_comments.ftl</template>
     </view>
+    <view name="All WebPages" template-engine="freemarker">
+      <format-type>widget</format-type>
+      <template>widgets/all_webpages.ftl</template>
+    </view>    
 
   </extension>
 

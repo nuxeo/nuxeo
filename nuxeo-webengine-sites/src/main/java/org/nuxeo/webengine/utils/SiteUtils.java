@@ -16,7 +16,10 @@
  */
 package org.nuxeo.webengine.utils;
 
-import static org.nuxeo.webengine.utils.SiteUtilsConstants.*;
+import static org.nuxeo.webengine.utils.SiteUtilsConstants.CONTEXTUAL_LINK;
+import static org.nuxeo.webengine.utils.SiteUtilsConstants.NUMBER_COMMENTS;
+import static org.nuxeo.webengine.utils.SiteUtilsConstants.WEBPAGE;
+import static org.nuxeo.webengine.utils.SiteUtilsConstants.WORKSPACE;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -25,8 +28,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.ws.rs.core.Response;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -46,18 +52,6 @@ public class SiteUtils {
 
     private static final Log log = LogFactory.getLog(SiteUtils.class);
 
-    private static SiteUtils _instance;
-
-    private SiteUtils() {
-    }
-
-    public static final SiteUtils getInstance() {
-        if (null == _instance) {
-            _instance = new SiteUtils();
-        }
-        return _instance;
-    }
-
     /**
      * Method used to return the list with the details about the <b>Contextual
      * Link</b>-s that have been created under a <b>Workspace</b> or
@@ -68,7 +62,7 @@ public class SiteUtils {
      * @return the list with the details about the <b>Contextual Link</b>-s
      * @throws ClientException
      */
-    public List<Object> getContextualLinks(DocumentModel documentModel)
+    public static List<Object> getContextualLinks(DocumentModel documentModel)
             throws ClientException {
         List<Object> contextualLinks = new ArrayList<Object>();
         if (WORKSPACE.equals(documentModel.getType())
@@ -110,57 +104,105 @@ public class SiteUtils {
      *         <b>WebPage</b> that is received as parameter
      * @throws ClientException
      */
-    public List<Object> getLastModifiedWebPages(DocumentModel documentModel,
-            int noPages, int noWordsFromContent) throws ClientException {
+    public static List<Object> getLastModifiedWebPages(
+            DocumentModel documentModel, int noPages, int noWordsFromContent)
+            throws ClientException {
         WebContext context = WebEngine.getActiveContext();
         CoreSession session = context.getCoreSession();
-        DocumentModelList webPages = session.query(
-                String.format(
-                        "SELECT * FROM Document WHERE "
-                                + " ecm:primaryType like 'WebPage' AND "
-                                + " ecm:path STARTSWITH '%s'"
-                                + " AND webp:pushtomenu = 'true' "
-                                + " AND ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0"
-                                + " AND ecm:currentLifeCycleState != 'deleted' ORDER BY dc:modified DESC",
-                        documentModel.getPathAsString()), null, noPages, 0,
-                true);
-
         List<Object> pages = new ArrayList<Object>();
-        for (DocumentModel webPage : webPages) {
-            if (SiteHelper.getBoolean(webPage, "webp:pushtomenu", true)) {
-                try {
-                    Map<String, String> page = new HashMap<String, String>();
-                    page.put("name", SiteHelper.getString(webPage, "dc:title"));
-                    page.put("path", JsonAdapter.getRelativPath(documentModel,
-                            webPage).toString());
-                    page.put("description", SiteHelper.getString(webPage,
-                            "dc:description"));
-                    page.put("content", SiteHelper.getFistNWordsFromString(
-                            SiteHelper.getString(webPage, "webp:content"),
-                            noWordsFromContent));
-                    page.put("author", SiteHelper.getString(webPage,
-                            "dc:creator"));
+        try {
+            DocumentModelList webPages = session.query(
+                    String.format(
+                            "SELECT * FROM Document WHERE "
+                                    + " ecm:primaryType like 'WebPage' AND "
+                                    + " ecm:path STARTSWITH '%s'"
+                                    + " AND ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0"
+                                    + " AND ecm:currentLifeCycleState != 'deleted' ORDER BY dc:modified DESC",
+                            getFirstWorkspaceParent(session, documentModel).getPathAsString()),
+                    null, noPages, 0, true);
 
-                    GregorianCalendar modificationDate = SiteHelper.getGregorianCalendar(
-                            webPage, "dc:modified");
-                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
-                            "dd MMMM", WebEngine.getActiveContext().getLocale());
-                    String formattedString = simpleDateFormat.format(modificationDate.getTime());
-                    String[] splittedFormatterdString = formattedString.split(" ");
-                    page.put("day", splittedFormatterdString[0]);
-                    page.put("month", splittedFormatterdString[1]);
-                    page.put(NUMBER_COMMENTS, getNumberCommentsForPage(webPage));
-                    pages.add(page);
-                } catch (Exception e) {
-                    log.debug("Problems while trying to retrieve data from "
-                            + webPage.getTitle());
-                }
+            for (DocumentModel webPage : webPages) {
+                Map<String, String> page = new HashMap<String, String>();
+                page.put("name", SiteHelper.getString(webPage, "dc:title"));
+                page.put("path", JsonAdapter.getRelativPath(
+                        getFirstWorkspaceParent(session, documentModel),
+                        webPage).toString());
+                page.put("description", SiteHelper.getString(webPage,
+                        "dc:description"));
+                page.put("content", SiteHelper.getFistNWordsFromString(
+                        SiteHelper.getString(webPage, "webp:content"),
+                        noWordsFromContent));
+                page.put("author", SiteHelper.getString(webPage, "dc:creator"));
+
+                GregorianCalendar modificationDate = SiteHelper.getGregorianCalendar(
+                        webPage, "dc:modified");
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
+                        "dd MMMM", WebEngine.getActiveContext().getLocale());
+                String formattedString = simpleDateFormat.format(modificationDate.getTime());
+                String[] splittedFormatterdString = formattedString.split(" ");
+                page.put("day", splittedFormatterdString[0]);
+                page.put("month", splittedFormatterdString[1]);
+                page.put(NUMBER_COMMENTS, getNumberCommentsForPage(webPage));
+                pages.add(page);
             }
+        } catch (Exception e) {
+            log.debug("Problems while trying to retrieve data for method getLastModifiedWebPages() ...");
         }
         return pages;
     }
 
-    private String getNumberCommentsForPage(DocumentModel page)
+    public static Response getLogoResponse(DocumentModel document) throws Exception {
+        Blob blob = SiteHelper.getBlob(document, "webc:logo");
+        if (blob != null) {
+            return Response.ok().entity(blob).type(blob.getMimeType()).build();
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns all the <b>WebPage</b>-s that are direct children of the received
+     * document.
+     *
+     * @param document - the parent for the webpages
+     * @return
+     */
+    public static List<Object> getAllWebPages(DocumentModel document) {
+        List<Object> webPages = new ArrayList<Object>();
+        CoreSession session = WebEngine.getActiveContext().getCoreSession();
+        try {
+            for (DocumentModel webPage : session.getChildren(document.getRef(),
+                    WEBPAGE)) {
+
+                Map<String, String> details = new HashMap<String, String>();
+                details.put("name", SiteHelper.getString(webPage, "dc:title"));
+                details.put("path", JsonAdapter.getRelativPath(document,
+                        webPage).toString());
+
+                webPages.add(details);
+            }
+        } catch (Exception e) {
+            log.debug("Problems while trying all the web pages ");
+
+        }
+        return webPages;
+    }
+
+    /**
+     * Get the first Workspace parent
+     * */
+    public static DocumentModel getFirstWorkspaceParent(CoreSession session,
+            DocumentModel doc) throws Exception {
+        List<DocumentModel> parents = session.getParentDocuments(doc.getRef());
+        for (DocumentModel currentDocumentModel : parents) {
+            if (WORKSPACE.equals(currentDocumentModel.getType())) {
+                return currentDocumentModel;
+            }
+        }
+        return null;
+    }
+
+    private static String getNumberCommentsForPage(DocumentModel page)
             throws Exception {
         CommentManager commentManager = WebCommentUtils.getCommentManager();
         return Integer.toString(commentManager.getComments(page).size());

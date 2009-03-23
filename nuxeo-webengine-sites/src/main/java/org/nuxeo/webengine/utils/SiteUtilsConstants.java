@@ -38,9 +38,9 @@ public final class SiteUtilsConstants {
      */
     public static final String WELCOME_TEXT = "welcomeText";
 
-    public static final String SITE_NAME = "siteName";
+    public static final String NAME = "name";
 
-    public static final String SITE_DESCRIPTION = "description";
+    public static final String DESCRIPTION = "description";
 
     public static final String LAST_PUBLISHED_PAGES = "pages";
 
@@ -50,6 +50,8 @@ public final class SiteUtilsConstants {
 
     public static final String NUMBER_COMMENTS = "numberComments";
 
+    public static final String ALL_WEBPAGES = "webPages";
+
     /**
      * Constants used for Comments
      */
@@ -57,8 +59,8 @@ public final class SiteUtilsConstants {
 
     public static final String PERMISSION_MODERATE = "Moderate";
 
-    public static final String PERMISSION_WRITE = "WriteOnWebcontainer";
+    public static final String PERMISSION_WRITE = "Write";
 
-    public static final String PERMISSION_MANAGE_EVERYTHING = "EverythingOnWebcontainer";
+    public static final String PERMISSION_MANAGE_EVERYTHING = "Everything";
 
 }
