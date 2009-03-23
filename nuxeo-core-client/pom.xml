@@ -29,6 +29,15 @@
       <artifactId>nuxeo-core-schema</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-osgi</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>osgi-core</artifactId>
+    </dependency>
+
     <!-- Fixes compilation failure on 10 sept 2008.
          Is this the right fix? -->
     <dependency>
