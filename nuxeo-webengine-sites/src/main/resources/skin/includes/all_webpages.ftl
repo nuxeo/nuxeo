@@ -1,7 +1,7 @@
 <#macro allWebpages>
 
 <div class="allWebPagesBlock"> 
-  
+  <h4>${Context.getMessage("title.all.webpages")}</h4>
   <div class="allWebPagesResume">    
     <#list webPages as webPage>  
       <div class="documentInfo"> 
