@@ -4,8 +4,6 @@
 	xmlns:tns="http://project.nuxeo.org/schemas/webengine/site/wiki/contextual-link"
 	elementFormDefault="qualified">
 
-	<element name="name" type="string"></element>
-	<element name="description" type="string"></element>
 	<element name="link" type="string"></element>
 
 </schema>

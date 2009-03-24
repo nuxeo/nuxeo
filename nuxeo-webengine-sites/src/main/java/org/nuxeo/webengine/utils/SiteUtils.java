@@ -78,10 +78,10 @@ public class SiteUtils {
                     documentModel.getRef(), CONTEXTUAL_LINK)) {
                 try {
                     Map<String, String> contextualLink = new HashMap<String, String>();
-                    contextualLink.put("name", SiteHelper.getString(document,
-                            "clink:name"));
+                    contextualLink.put("title", SiteHelper.getString(document,
+                            "dc:title"));
                     contextualLink.put("description", SiteHelper.getString(
-                            document, "clink:description"));
+                            document, "dc:description"));
                     contextualLink.put("link", SiteHelper.getString(document,
                             "clink:link"));
                     contextualLinks.add(contextualLink);

@@ -35,6 +35,7 @@
       <default-view>view_documents</default-view>
       <!-- new layout config -->
       <layouts mode="any">
+        <layout>heading</layout>
         <layout>contextualLink</layout>
       </layouts>
     </type>    
