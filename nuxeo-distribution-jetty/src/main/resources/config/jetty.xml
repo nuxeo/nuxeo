@@ -259,6 +259,16 @@
       </Arg>
     </New>
 
+     <!-- ======== Nuxeo Web Widgets Data Source ========= -->
+    <New id="nxwebwidgets" class="org.mortbay.jetty.plus.naming.Resource">
+      <Arg>jdbc/nxwebwidgets</Arg>
+      <Arg>
+        <New class="org.apache.derby.jdbc.EmbeddedDataSource">
+          <Set name="databaseName">nxwebwidgets</Set>
+          <Set name="createDatabase">create</Set>
+        </New>
+      </Arg>
+    </New>
     
     
     <!-- =============================================================== -->

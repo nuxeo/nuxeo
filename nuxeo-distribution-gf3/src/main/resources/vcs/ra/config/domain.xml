@@ -41,6 +41,12 @@
       <property name="databaseName" value="nxaudits"/>
     </jdbc-connection-pool>
 
+    <jdbc-connection-pool name="NXWebWidgets" datasource-classname="org.apache.derby.jdbc.EmbeddedDataSource" 
+        res-type="javax.sql.DataSource"  non-transactional-connections="true">
+      <property name="connectionAttributes" value=";create=true"/>
+      <property name="databaseName" value="nxwebwidgets"/>
+    </jdbc-connection-pool>
+
     <jdbc-resource enabled="true" pool-name="NXSQLDirectoryPool"
       jndi-name="jdbc/nxsqldirectory" object-type="user" />
 
@@ -52,6 +58,9 @@
 
     <jdbc-resource enabled="true" pool-name="NXAudit"
           jndi-name="jdbc/nxaudits" object-type="user" />
+          
+    <jdbc-resource enabled="true" pool-name="NXWebWidgets"
+          jndi-name="jdbc/nxwebwidgets" object-type="user" />
           
     <!-- repository RA -->
     <connector-connection-pool associate-with-thread="false" connection-creation-retry-attempts="0"
