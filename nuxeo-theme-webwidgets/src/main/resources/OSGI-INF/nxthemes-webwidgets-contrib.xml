@@ -33,7 +33,7 @@
     point="providers">
 
     <provider name="default">
-      <description>Non-persistent provider that stores web widgets in the user session (meant for testing).</description>
+      <description>Non-persistent provider that stores web widgets in the user session, meant for testing.</description>
       <class>org.nuxeo.theme.webwidgets.providers.DefaultProvider</class>
     </provider>
     
