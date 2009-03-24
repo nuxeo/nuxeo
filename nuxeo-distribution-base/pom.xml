@@ -26,11 +26,9 @@
         <version>${nuxeo.platform.version}</version>
       </dependency>
 
-      <!-- nuxeo-ecm defines 0.9.94; is this definition voluntary ? -->
       <dependency>
         <groupId>jline</groupId>
         <artifactId>jline</artifactId>
-        <version>0.9.91</version>
       </dependency>
 
       <dependency>
