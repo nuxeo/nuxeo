@@ -8,6 +8,10 @@
       <java>${bundle.fileName}</java>
     </module>
 
+    <module>
+      <java>datasources/nxwebwidgets-ds.xml</java>
+    </module>
+
   </extension>
 
 </fragment>
