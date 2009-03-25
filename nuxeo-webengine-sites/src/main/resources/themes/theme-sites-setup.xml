@@ -238,7 +238,7 @@
     </widget>
         
     <widget element="page[3]/section[2]/cell[2]/fragment[3]">
-      <view>Page Last Published</view>
+      <view>Minisite Last Published</view>
     </widget>
     <widget element="page[3]/section[2]/cell[2]/fragment[4]">
       <view>Page Last Comments</view>
