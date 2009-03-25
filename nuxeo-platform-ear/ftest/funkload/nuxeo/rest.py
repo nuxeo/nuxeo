@@ -44,6 +44,16 @@ class RestAPI:
 
 
     def login(self, user, password):
+        fl = self.fl
+        fl.post(fl.server_url + "/nxstartup.faces", params=[
+            ['user_name', user],
+            ['user_password', password],
+            ['form_submitted_marker', ''],
+            ['Submit', 'Connexion']],
+            description="Login " + user)
+        fl.assert_('LoginFailed=true' not in fl.getLastUrl(),
+                   'Login failed for %s:%s' % (user, password))
+
         self.fl.setBasicAuth(user, password)
 
 
