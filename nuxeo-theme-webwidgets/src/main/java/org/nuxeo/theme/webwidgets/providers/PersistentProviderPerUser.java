@@ -20,6 +20,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.theme.webwidgets.ProviderException;
 import org.nuxeo.theme.webwidgets.Widget;
 
 public class PersistentProviderPerUser extends PersistentProvider {
@@ -31,7 +32,8 @@ public class PersistentProviderPerUser extends PersistentProvider {
     }
 
     @Override
-    public synchronized Widget createWidget(String widgetTypeName) {
+    public synchronized Widget createWidget(String widgetTypeName)
+            throws ProviderException {
         if (currentNuxeoPrincipal == null) {
             log.warn("Could not get the current user from the context.");
             return null;
@@ -46,7 +48,8 @@ public class PersistentProviderPerUser extends PersistentProvider {
 
     @Override
     @SuppressWarnings("unchecked")
-    public  synchronized List<Widget> getWidgets(String regionName) {
+    public synchronized List<Widget> getWidgets(String regionName)
+            throws ProviderException {
         List<Widget> widgets = new ArrayList<Widget>();
         if (currentNuxeoPrincipal != null) {
             widgets.addAll(em.createNamedQuery("Widget.findByScope").setParameter(

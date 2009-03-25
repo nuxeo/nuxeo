@@ -18,7 +18,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.nuxeo.theme.webwidgets.Manager;
-import org.nuxeo.theme.webwidgets.WidgetException;
 
 public class Editor {
 
@@ -27,7 +26,7 @@ public class Editor {
             String region, int order) throws WidgetEditorException {
         try {
             Manager.addWidget(providerName, widgetTypeName, region, order);
-        } catch (WidgetException e) {
+        } catch (Exception e) {
             throw new WidgetEditorException(e.getMessage(), e);
         }
     }
@@ -38,7 +37,7 @@ public class Editor {
         try {
             return Manager.moveWidget(srcProviderName, destProviderName,
                     srcUid, srcRegionName, destRegionName, destOrder);
-        } catch (WidgetException e) {
+        } catch (Exception e) {
             throw new WidgetEditorException(e.getMessage(), e);
         }
     }
@@ -47,7 +46,7 @@ public class Editor {
             throws WidgetEditorException {
         try {
             Manager.removeWidget(providerName, uid);
-        } catch (WidgetException e) {
+        } catch (Exception e) {
             throw new WidgetEditorException(e.getMessage(), e);
         }
     }
@@ -57,7 +56,7 @@ public class Editor {
             String state) throws WidgetEditorException {
         try {
             Manager.setWidgetState(providerName, widgetUid, state);
-        } catch (WidgetException e) {
+        } catch (Exception e) {
             throw new WidgetEditorException(e.getMessage(), e);
         }
     }
@@ -68,7 +67,7 @@ public class Editor {
             throws WidgetEditorException {
         try {
             Manager.setWidgetPreference(providerName, widgetUid, dataName, src);
-        } catch (WidgetException e) {
+        } catch (Exception e) {
             throw new WidgetEditorException(e.getMessage(), e);
         }
     }
@@ -79,7 +78,7 @@ public class Editor {
         try {
             Manager.updateWidgetPreferences(providerName, widgetUid,
                     preferencesMap);
-        } catch (WidgetException e) {
+        } catch (Exception e) {
             throw new WidgetEditorException(e.getMessage(), e);
         }
     }
@@ -89,7 +88,7 @@ public class Editor {
             throws WidgetEditorException {
         try {
             return Manager.uploadFile(req, providerName, widgetUid, dataName);
-        } catch (WidgetException e) {
+        } catch (Exception e) {
             throw new WidgetEditorException(e.getMessage(), e);
         }
     }

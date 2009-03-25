@@ -25,6 +25,7 @@ import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.session.UserSession;
 import org.nuxeo.theme.webwidgets.DefaultWidget;
 import org.nuxeo.theme.webwidgets.Provider;
+import org.nuxeo.theme.webwidgets.ProviderException;
 import org.nuxeo.theme.webwidgets.Widget;
 import org.nuxeo.theme.webwidgets.WidgetData;
 import org.nuxeo.theme.webwidgets.WidgetState;
@@ -48,7 +49,7 @@ public class DefaultProvider implements Provider {
         return session;
     }
 
-    public Widget createWidget(String widgetTypeName) {
+    public Widget createWidget(String widgetTypeName) throws ProviderException {
         DefaultProviderSession session = getDefaultProviderSession();
         int counter = session.getCounter();
         final String uid = Integer.toString(counter);
@@ -61,17 +62,18 @@ public class DefaultProvider implements Provider {
         return widget;
     }
 
-    public Widget getWidgetByUid(String uid) {
+    public Widget getWidgetByUid(String uid) throws ProviderException {
         DefaultProviderSession session = getDefaultProviderSession();
         return session.getWidgetsByUid().get(uid);
     }
 
-    public List<Widget> getWidgets(String regionName) {
+    public List<Widget> getWidgets(String regionName) throws ProviderException {
         DefaultProviderSession session = getDefaultProviderSession();
         return session.getWidgetsByRegion().get(regionName);
     }
 
-    public void addWidget(Widget widget, String regionName, int order) {
+    public void addWidget(Widget widget, String regionName, int order)
+            throws ProviderException {
         DefaultProviderSession session = getDefaultProviderSession();
         Map<String, List<Widget>> widgetsByRegion = session.getWidgetsByRegion();
         if (!widgetsByRegion.containsKey(regionName)) {
@@ -84,7 +86,8 @@ public class DefaultProvider implements Provider {
                 + "' at position " + order);
     }
 
-    public void moveWidget(Widget widget, String destRegionName, int order) {
+    public void moveWidget(Widget widget, String destRegionName, int order)
+            throws ProviderException {
         DefaultProviderSession session = getDefaultProviderSession();
         final String srcRegionName = getRegionOfWidget(widget);
         Map<String, List<Widget>> widgetsByRegion = session.getWidgetsByRegion();
@@ -99,7 +102,8 @@ public class DefaultProvider implements Provider {
                 + "' to '" + destRegionName + "' at position " + order);
     }
 
-    public void reorderWidget(Widget widget, int order) {
+    public void reorderWidget(Widget widget, int order)
+            throws ProviderException {
         DefaultProviderSession session = getDefaultProviderSession();
         final String regionName = getRegionOfWidget(widget);
         Map<String, List<Widget>> widgetsByRegion = session.getWidgetsByRegion();
@@ -112,7 +116,7 @@ public class DefaultProvider implements Provider {
                 + "' to position " + order);
     }
 
-    public void removeWidget(Widget widget) {
+    public void removeWidget(Widget widget) throws ProviderException {
         DefaultProviderSession session = getDefaultProviderSession();
         final String uid = widget.getUid();
         final String regionName = getRegionOfWidget(widget);
@@ -123,33 +127,36 @@ public class DefaultProvider implements Provider {
                 + ") from region '" + regionName + "'");
     }
 
-    public String getRegionOfWidget(Widget widget) {
+    public String getRegionOfWidget(Widget widget) throws ProviderException {
         DefaultProviderSession session = getDefaultProviderSession();
         return session.getRegionsByUid().get(widget.getUid());
     }
 
-    public Map<String, String> getWidgetPreferences(Widget widget) {
+    public Map<String, String> getWidgetPreferences(Widget widget)
+            throws ProviderException {
         DefaultProviderSession session = getDefaultProviderSession();
         return session.getPreferencesByWidget().get(widget);
     }
 
     public void setWidgetPreferences(Widget widget,
-            Map<String, String> preferences) {
+            Map<String, String> preferences) throws ProviderException {
         DefaultProviderSession session = getDefaultProviderSession();
         session.getPreferencesByWidget().put(widget, preferences);
     }
 
-    public void setWidgetState(Widget widget, WidgetState state) {
+    public void setWidgetState(Widget widget, WidgetState state)
+            throws ProviderException {
         DefaultProviderSession session = getDefaultProviderSession();
         session.getStatesByWidget().put(widget, state);
     }
 
-    public WidgetState getWidgetState(Widget widget) {
+    public WidgetState getWidgetState(Widget widget) throws ProviderException {
         DefaultProviderSession session = getDefaultProviderSession();
         return session.getStatesByWidget().get(widget);
     }
 
-    public WidgetData getWidgetData(Widget widget, String dataName) {
+    public WidgetData getWidgetData(Widget widget, String dataName)
+            throws ProviderException {
         DefaultProviderSession session = getDefaultProviderSession();
         Map<Widget, Map<String, WidgetData>> dataByWidget = session.getDataByWidget();
         if (dataByWidget.containsKey(widget)) {
@@ -158,7 +165,8 @@ public class DefaultProvider implements Provider {
         return null;
     }
 
-    public void setWidgetData(Widget widget, String dataName, WidgetData data) {
+    public void setWidgetData(Widget widget, String dataName, WidgetData data)
+            throws ProviderException {
         DefaultProviderSession session = getDefaultProviderSession();
         Map<Widget, Map<String, WidgetData>> dataByWidget = session.getDataByWidget();
         if (!dataByWidget.containsKey(widget)) {
@@ -167,7 +175,7 @@ public class DefaultProvider implements Provider {
         dataByWidget.get(widget).put(dataName, data);
     }
 
-    public void deleteWidgetData(Widget widget) {
+    public void deleteWidgetData(Widget widget) throws ProviderException {
         DefaultProviderSession session = getDefaultProviderSession();
         Map<Widget, Map<String, WidgetData>> dataByWidget = session.getDataByWidget();
         if (dataByWidget.containsKey(widget)) {
@@ -187,8 +195,6 @@ public class DefaultProvider implements Provider {
     }
 
     public void destroy() {
-        // TODO Auto-generated method stub
-
     }
 
 }

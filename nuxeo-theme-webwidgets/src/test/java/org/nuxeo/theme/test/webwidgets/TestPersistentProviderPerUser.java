@@ -30,10 +30,10 @@ import org.nuxeo.theme.webwidgets.Widget;
 import org.nuxeo.theme.webwidgets.WidgetData;
 import org.nuxeo.theme.webwidgets.WidgetState;
 import org.nuxeo.theme.webwidgets.providers.DataEntity;
-import org.nuxeo.theme.webwidgets.providers.PersistentProvider;
+import org.nuxeo.theme.webwidgets.providers.PersistentProviderPerUser;
 import org.nuxeo.theme.webwidgets.providers.WidgetEntity;
 
-public class TestPersistentProvider extends TestCase {
+public class TestPersistentProviderPerUser extends TestCase {
 
     protected EntityManagerFactory emf;
 
@@ -41,9 +41,17 @@ public class TestPersistentProvider extends TestCase {
 
     protected Provider provider;
 
-    class MockPersistentProvider extends PersistentProvider {
-        public MockPersistentProvider(EntityManager em) {
+    protected Provider provider2;
+
+
+    class MockPersistentProvider extends PersistentProviderPerUser {
+        public MockPersistentProvider(EntityManager em, String name,
+                boolean anonymous) {
             this.em = em;
+            FakeNuxeoPrincipal currentNuxeoPrincipal = new FakeNuxeoPrincipal();
+            currentNuxeoPrincipal.setName(name);
+            currentNuxeoPrincipal.setAnonymous(anonymous);
+            this.currentNuxeoPrincipal = currentNuxeoPrincipal;
         }
     }
 
@@ -63,11 +71,11 @@ public class TestPersistentProvider extends TestCase {
             et.begin();
         }
 
-        // Create mock widget provider and set the entity manager
-        provider = new MockPersistentProvider(em);
+        // Create mock widget providers and set the entity manager
+        provider = new MockPersistentProvider(em, "user1", false);
     }
 
-    public void testCreateWidget() throws ProviderException {
+    public void testCreateWidgetUser1() throws ProviderException {
         Widget widget1 = provider.createWidget("test widget");
         Widget widget2 = provider.createWidget("test widget 2");
 
@@ -76,7 +84,7 @@ public class TestPersistentProvider extends TestCase {
         assertEquals("1", widget1.getUid());
         assertEquals("2", widget2.getUid());
     }
-
+    
     public void testGetWidgetByUid() throws ProviderException {
         Widget widget1 = provider.createWidget("test widget");
         Widget widget2 = provider.createWidget("test widget 2");
@@ -84,7 +92,7 @@ public class TestPersistentProvider extends TestCase {
         assertEquals(widget2, provider.getWidgetByUid("2"));
     }
 
-    public void testAddAndGetWidgets() throws ProviderException {
+    public void testAddAndGetWidgetsUser1() throws ProviderException {
         Widget widget1 = provider.createWidget("test widget");
         Widget widget2 = provider.createWidget("test widget 2");
         provider.addWidget(widget1, "region A", 0);
@@ -103,7 +111,7 @@ public class TestPersistentProvider extends TestCase {
         provider.addWidget(widget3, "region A", 1);
         assertEquals(1, provider.getWidgets("region A").indexOf(widget3));
     }
-
+    
     public void testReorderWidgets() throws ProviderException {
         Widget widget1 = provider.createWidget("test widget");
         Widget widget2 = provider.createWidget("test widget");

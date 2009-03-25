@@ -112,7 +112,7 @@ public class Manager {
     }
 
     public static void addWidget(String providerName, String widgetTypeName,
-            String region, int order) throws WidgetException {
+            String region, int order) throws WidgetException, ProviderException {
         Provider provider = getProvider(providerName);
         if (!provider.canWrite()) {
             throw new WidgetException("No permission to add widget into: "
@@ -124,7 +124,8 @@ public class Manager {
 
     public static String moveWidget(String srcProviderName,
             String destProviderName, String srcUid, String srcRegionName,
-            String destRegionName, int destOrder) throws WidgetException {
+            String destRegionName, int destOrder) throws WidgetException,
+            ProviderException {
         Provider srcProvider = getProvider(srcProviderName);
         Provider destProvider = getProvider(destProviderName);
         if (!srcProvider.canWrite() || !destProvider.canWrite()) {
@@ -158,7 +159,7 @@ public class Manager {
     }
 
     public static void removeWidget(String providerName, String uid)
-            throws WidgetException {
+            throws WidgetException, ProviderException {
         Provider provider = getProvider(providerName);
         if (!provider.canWrite()) {
             return;
@@ -172,7 +173,7 @@ public class Manager {
      * Widget preferences
      */
     public static Map<String, String> getWidgetPreferences(Provider provider,
-            Widget widget) {
+            Widget widget) throws ProviderException {
         Map<String, String> widgetPreferences = new HashMap<String, String>();
         if (provider.canRead()) {
             Map<String, String> preferences = provider.getWidgetPreferences(widget);
@@ -194,7 +195,8 @@ public class Manager {
     }
 
     public static void setWidgetPreferences(Provider provider, Widget widget,
-            Map<String, String> preferences) throws WidgetException {
+            Map<String, String> preferences) throws WidgetException,
+            ProviderException {
         if (!provider.canWrite()) {
             return;
         }
@@ -205,7 +207,8 @@ public class Manager {
     }
 
     public static void updateWidgetPreferences(String providerName, String uid,
-            Map<String, String> preferences) throws WidgetException {
+            Map<String, String> preferences) throws WidgetException,
+            ProviderException {
         Provider provider = getProvider(providerName);
         if (!provider.canWrite()) {
             return;
@@ -221,7 +224,8 @@ public class Manager {
     }
 
     public static void setWidgetPreference(String providerName, String uid,
-            String name, String value) throws WidgetException {
+            String name, String value) throws WidgetException,
+            ProviderException {
         Provider provider = getProvider(providerName);
         if (!provider.canWrite()) {
             return;
@@ -240,7 +244,7 @@ public class Manager {
      * Widget state
      */
     public static void setWidgetState(Provider provider, Widget widget,
-            WidgetState state) throws WidgetException {
+            WidgetState state) throws WidgetException, ProviderException {
         if (!provider.canWrite()) {
             return;
         }
@@ -251,7 +255,7 @@ public class Manager {
     }
 
     public static void setWidgetState(String providerName, String uid,
-            String stateName) throws WidgetException {
+            String stateName) throws WidgetException, ProviderException {
         Provider provider = getProvider(providerName);
         if (!provider.canWrite()) {
             return;
@@ -266,7 +270,8 @@ public class Manager {
         provider.setWidgetState(widget, WidgetState.DEFAULT);
     }
 
-    public static WidgetState getWidgetState(Provider provider, Widget widget) {
+    public static WidgetState getWidgetState(Provider provider, Widget widget)
+            throws ProviderException {
         if (provider.canRead()) {
             WidgetState state = provider.getWidgetState(widget);
             if (state != null) {
@@ -281,21 +286,23 @@ public class Manager {
      */
 
     public static void setWidgetData(String providerName, String uid,
-            String dataName, WidgetData data) throws WidgetException {
+            String dataName, WidgetData data) throws WidgetException,
+            ProviderException {
         final Provider provider = getProvider(providerName);
         final Widget widget = provider.getWidgetByUid(uid);
         provider.setWidgetData(widget, dataName, data);
     }
 
     public static void setWidgetData(Provider provider, Widget widget,
-            String dataName, WidgetData data) throws WidgetException {
+            String dataName, WidgetData data) throws WidgetException,
+            ProviderException {
         if (provider.canWrite()) {
             provider.setWidgetData(widget, dataName, data);
         }
     }
 
     public static WidgetData getWidgetData(String providerName, String uid,
-            String dataName) throws WidgetException {
+            String dataName) throws WidgetException, ProviderException {
         final Provider provider = getProvider(providerName);
         if (!provider.canRead()) {
             throw new WidgetException(
@@ -306,7 +313,7 @@ public class Manager {
     }
 
     public static WidgetData getWidgetData(Provider provider, Widget widget,
-            String dataName) {
+            String dataName) throws ProviderException {
         if (provider.canRead()) {
             final WidgetData data = provider.getWidgetData(widget, dataName);
             if (data != null) {
@@ -318,7 +325,7 @@ public class Manager {
 
     public static String uploadFile(HttpServletRequest request,
             String providerName, String uid, String dataName)
-            throws WidgetException {
+            throws WidgetException, ProviderException {
         DiskFileItemFactory factory = new DiskFileItemFactory();
         ServletFileUpload upload = new ServletFileUpload(factory);
         List<?> fileItems = null;
@@ -350,7 +357,7 @@ public class Manager {
     }
 
     public static String getWidgetDataContent(String providerName, String uid,
-            String dataName) throws WidgetException {
+            String dataName) throws WidgetException, ProviderException {
         WidgetData data = getWidgetData(providerName, uid, dataName);
         if (data == null) {
             return "";
@@ -365,7 +372,7 @@ public class Manager {
     }
 
     public static String getWidgetDataInfo(String providerName, String uid,
-            String dataName) throws WidgetException {
+            String dataName) throws WidgetException, ProviderException {
         final WidgetData data = getWidgetData(providerName, uid, dataName);
         if (data != null) {
             final Map<String, String> fileInfo = new HashMap<String, String>();
@@ -380,7 +387,7 @@ public class Manager {
      * UI
      */
     public static String getPanelData(String providerName, String regionName,
-            String mode) throws WidgetException {
+            String mode) throws WidgetException, ProviderException {
         final Provider provider = getProvider(providerName);
         final Map<String, Object> data = new HashMap<String, Object>();
         final List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();

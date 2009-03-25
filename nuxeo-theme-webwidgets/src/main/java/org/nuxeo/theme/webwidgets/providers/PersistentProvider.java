@@ -28,6 +28,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.theme.webwidgets.Provider;
+import org.nuxeo.theme.webwidgets.ProviderException;
 import org.nuxeo.theme.webwidgets.Widget;
 import org.nuxeo.theme.webwidgets.WidgetData;
 import org.nuxeo.theme.webwidgets.WidgetState;
@@ -50,14 +51,14 @@ public class PersistentProvider implements Provider {
         }
     }
 
-    public void addWidget(Widget widget, String regionName, int order) {
+    public void addWidget(Widget widget, String regionName, int order) throws ProviderException {
         List<Widget> widgets = new ArrayList<Widget>(getWidgets(regionName));
         ((WidgetEntity) widget).setRegion(regionName);
         widgets.add(order, widget);
         reorderWidgets(widgets);
     }
 
-    synchronized public Widget createWidget(String widgetTypeName) {
+    synchronized public Widget createWidget(String widgetTypeName) throws ProviderException {
         final WidgetEntity widget = new WidgetEntity(widgetTypeName);
         begin();
         em.persist(widget);
@@ -65,27 +66,27 @@ public class PersistentProvider implements Provider {
         return widget;
     }
 
-    public String getRegionOfWidget(Widget widget) {
+    public String getRegionOfWidget(Widget widget) throws ProviderException {
         return ((WidgetEntity) widget).getRegion();
     }
 
-    public WidgetState getWidgetState(Widget widget) {
+    public WidgetState getWidgetState(Widget widget) throws ProviderException {
         return ((WidgetEntity) widget).getState();
     }
 
-    synchronized public Widget getWidgetByUid(String uid) {
+    synchronized public Widget getWidgetByUid(String uid) throws ProviderException {
         return (Widget) em.find(WidgetEntity.class, Integer.valueOf(uid));
     }
 
     @SuppressWarnings("unchecked")
-    synchronized public List<Widget> getWidgets(String regionName) {
+    synchronized public List<Widget> getWidgets(String regionName) throws ProviderException {
         List<Widget> widgets = new ArrayList<Widget>();
         widgets.addAll(em.createNamedQuery("Widget.findAll").setParameter(
                 "region", regionName).getResultList());
         return widgets;
     }
 
-    public void moveWidget(Widget widget, String destRegionName, int order) {
+    public void moveWidget(Widget widget, String destRegionName, int order) throws ProviderException {
         WidgetEntity widgetEntity = (WidgetEntity) widget;
         final String srcRegionName = widgetEntity.getRegion();
         List<Widget> srcWidgets = new ArrayList<Widget>(
@@ -103,7 +104,7 @@ public class PersistentProvider implements Provider {
         reorderWidgets(destWidgets);
     }
 
-    synchronized public void removeWidget(Widget widget) {
+    synchronized public void removeWidget(Widget widget) throws ProviderException {
         WidgetEntity widgetEntity = (WidgetEntity) widget;
         List<Widget> widgets = new ArrayList<Widget>(
                 getWidgets(widgetEntity.getRegion()));
@@ -114,7 +115,7 @@ public class PersistentProvider implements Provider {
         commit();
     }
 
-    public void reorderWidget(Widget widget, int order) {
+    public void reorderWidget(Widget widget, int order) throws ProviderException {
         WidgetEntity widgetEntity = (WidgetEntity) widget;
         List<Widget> widgets = new ArrayList<Widget>(
                 getWidgets(widgetEntity.getRegion()));
@@ -123,24 +124,24 @@ public class PersistentProvider implements Provider {
         reorderWidgets(widgets);
     }
 
-    public Map<String, String> getWidgetPreferences(Widget widget) {
+    public Map<String, String> getWidgetPreferences(Widget widget) throws ProviderException {
         return ((WidgetEntity) widget).getPreferences();
     }
 
     public void setWidgetPreferences(Widget widget,
-            Map<String, String> preferences) {
+            Map<String, String> preferences) throws ProviderException {
         begin();
         ((WidgetEntity) widget).setPreferences(preferences);
         commit();
     }
 
-    public void setWidgetState(Widget widget, WidgetState state) {
+    public void setWidgetState(Widget widget, WidgetState state) throws ProviderException {
         begin();
         ((WidgetEntity) widget).setState(state);
         commit();
     }
 
-    synchronized private void reorderWidgets(List<Widget> widgets) {
+    synchronized private void reorderWidgets(List<Widget> widgets) throws ProviderException {
         int i = 0;
         begin();
         for (Widget w : widgets) {
@@ -151,7 +152,7 @@ public class PersistentProvider implements Provider {
         commit();
     }
 
-    synchronized public WidgetData getWidgetData(Widget widget, String dataName) {
+    synchronized public WidgetData getWidgetData(Widget widget, String dataName) throws ProviderException {
         List<?> results = em.createNamedQuery("Data.findByWidgetAndName").setParameter(
                 "widgetUid", widget.getUid()).setParameter("dataName", dataName).getResultList();
         DataEntity dataEntity = null;
@@ -163,7 +164,7 @@ public class PersistentProvider implements Provider {
     }
 
     synchronized public void setWidgetData(Widget widget, String dataName,
-            WidgetData data) {
+            WidgetData data) throws ProviderException {
         List<?> results = em.createNamedQuery("Data.findByWidgetAndName").setParameter(
                 "widgetUid", widget.getUid()).setParameter("dataName", dataName).getResultList();
         DataEntity dataEntity = null;
@@ -178,7 +179,8 @@ public class PersistentProvider implements Provider {
         commit();
     }
 
-    synchronized public void deleteWidgetData(Widget widget) {
+    synchronized public void deleteWidgetData(Widget widget)
+            throws ProviderException {
         begin();
         for (Object dataEntity : em.createNamedQuery("Data.findByWidget").setParameter(
                 "widgetUid", widget.getUid()).getResultList()) {
@@ -202,6 +204,9 @@ public class PersistentProvider implements Provider {
         return ((NuxeoPrincipal) currentNuxeoPrincipal).isAdministrator();
     }
 
+    /*
+     * Transactions
+     */
     protected void begin() {
         if (et != null) {
             log.warn("transaction begin called twice");
