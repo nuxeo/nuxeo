@@ -13,7 +13,6 @@
   <artifactId>nuxeo-webengine-cmis</artifactId>
   <name>nuxeo-webengine-cmis project</name>
   <description>nuxeo-webengine-cmis project description</description>
-  <version>5.2-SNAPSHOT</version>
 
   <repositories>
     <repository>
