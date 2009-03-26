@@ -131,13 +131,14 @@
     </layout>
     <layout element="page[2]/section[1]/cell[1]">
       <height>115px</height>
-      <width>82%</width>
+      <width>70%</width>
       <text-align>left</text-align>
     </layout>
     <layout element="page[2]/section[1]/cell[2]">
       <height>115px</height>
-      <width>18%</width>
+      <width>30%</width>
       <text-align>right</text-align>
+      <vertical-align>middle</vertical-align>
     </layout>
     <layout element="page[3]">
       <margin>0</margin>
@@ -148,13 +149,14 @@
     </layout>
     <layout element="page[3]/section[1]/cell[1]">
       <height>115px</height>
-      <width>82%</width>
+      <width>70%</width>
       <text-align>left</text-align>
     </layout>
     <layout element="page[3]/section[1]/cell[2]">
       <height>115px</height>
-      <width>18%</width>
+      <width>30%</width>
       <text-align>right</text-align>
+      <vertical-align>middle</vertical-align>
     </layout>
     <layout element="page[4]">
       <margin>0</margin>
@@ -164,14 +166,15 @@
       <width>100%</width>
     </layout>
     <layout element="page[4]/section[1]/cell[1]">
-      <width>82%</width>
+      <width>70%</width>
       <height>115px</height>
       <text-align>left</text-align>
     </layout>
     <layout element="page[4]/section[1]/cell[2]">
-      <width>18%</width>
+      <width>30%</width>
       <height>115px</height>
       <text-align>right</text-align>
+      <vertical-align>middle</vertical-align>
     </layout>
     <layout element="page[2]/section[2]">
       <width>100%</width>
@@ -428,7 +431,7 @@
         <color>#ccc</color>
       </selector>
     </style>
-     <style name="common site style">
+     <style inherit="site buttons" name="common site style">
       <selector path="h1, h2, h3, h4, h5, h6, form, p">
         <margin>0</margin>
         <padding>0</padding>
@@ -452,6 +455,8 @@
       <selector path="h4">
         <color>#4a4a4a</color>
         <margin-top>5px</margin-top>
+        <padding>3px 4px</padding>
+        <background-color>#ebeced</background-color>
       </selector>
       <selector path="h4, h5, h6">
         <font preset="title4+ (Sites fonts)" />
@@ -471,7 +476,7 @@
       </selector>
       <selector path="textarea">
         <padding>5px</padding>
-        <margin>10px 0px 0px</margin>
+        <margin>10px 0px</margin>
       </selector>
        <selector path="a, a:link">
         <color preset="link (Nuxeo psd colors)" />
@@ -781,9 +786,6 @@
         <margin>0</margin>
         <padding>0</padding>
       </selector>
-      <selector path="input.commentAdd">
-        <margin>10px 0px</margin>
-      </selector>
       <selector path=".buttonsGadget">
         <margin>5px 0px 5px 135px</margin>
       </selector>
@@ -809,6 +811,16 @@
       </selector>
       <selector path=".dataRowOdd">
         <background preset="tableevenlines (Sites backgrounds)" />
+      </selector>
+      <selector path=".searchService">
+        <margin-right>15px</margin-right>
+      </selector>
+      <selector path=".directoryFilter, .searchField">
+        <border>1px normal #666</border>
+        <background>url(/nuxeo/icons/search.gif) 2px 2px no-repeat #FFF</background>
+        <margin>0 5px 10px 0</margin>
+        <padding>3px 3px 3px 20px</padding>
+        <font-size>11px</font-size>
       </selector>
     </style>
         <style element="page[1]/section[1]" inherit="common site style"/>

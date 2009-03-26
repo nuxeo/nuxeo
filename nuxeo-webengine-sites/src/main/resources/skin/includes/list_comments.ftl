@@ -19,7 +19,7 @@
   <div id="webComment" class="addWebComment" style="display: none">
     <textarea name="text" rows="4" cols="40" class="commentText">Your comment</textarea>
     <br/>
-    <input type="submit" name="post_com" value="Add" id="post_com" class="commentAdd">
+    <input type="submit" name="post_com" value="Add" id="post_com" class="button">
   </div>
 
   <div class="lastCommentsBlock">
