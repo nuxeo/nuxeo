@@ -47,11 +47,24 @@ public class DefaultEventService extends DefaultComponent implements
 
 
     public void addEventListener(EventListener listener) {
+        String name = listener.getName();
+        if (name == null) {
+            return;
+        }
+        
+        Object[] eventListenerList = eventListeners.getListeners();
+        for (int i = 0; i < eventListenerList.length; i ++) {
+            if (name.equals( ((EventListener)eventListenerList[i]).getName())) {
+                eventListeners.remove(eventListenerList[i]);
+            }
+        }
         eventListeners.add(listener);
     }
 
     public void removeEventListener(EventListener listener) {
-        eventListeners.remove(listener);
+        if (listener != null) {
+            eventListeners.remove(listener);
+        }
     }
 
     public EventListener getEventListenerByName(String name) {

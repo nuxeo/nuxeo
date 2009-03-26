@@ -57,6 +57,18 @@ public class CoreEventListenerServiceImpl extends DefaultComponent implements
     private final ListenerList eventListeners = new ListenerList();
 
     public void addEventListener(EventListener listener) {
+        String name = listener.getName();
+        if (name == null) {
+            return;
+        }
+        
+        Object[] eventListenerList = eventListeners.getListeners();
+        for (int i = 0; i < eventListenerList.length; i ++) {
+            if (name.equals( ((EventListener)eventListenerList[i]).getName())) {
+                eventListeners.remove(eventListenerList[i]);
+            }
+        }
+        
         eventListeners.add(listener);
     }
 
@@ -132,9 +144,14 @@ public class CoreEventListenerServiceImpl extends DefaultComponent implements
             if (extension.getExtensionPoint().equals("listener")) {
                 for (Object contribution : contributions) {
                     CoreEventListenerDescriptor desc = (CoreEventListenerDescriptor) contribution;
-                    removeEventListener(getEventListenerByName(desc.getName()));
-                    log.info("Repository listener with name=" + desc.getName()
-                            + " has been unregistered");
+                    EventListener listener = getEventListenerByName(desc.getName());
+                    if (listener != null) {
+                        removeEventListener(listener);
+                        log.info("Unregistered core event listener: " +
+                                desc.getName());
+                    } else {
+                        log.warn("Listener \"" + desc.getName() + "\" already removed");
+                    }
 
                 }
             }

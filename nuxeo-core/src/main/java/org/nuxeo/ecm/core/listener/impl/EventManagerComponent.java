@@ -92,9 +92,14 @@ public class EventManagerComponent extends DefaultComponent {
             if (extension.getExtensionPoint().equals("listener")) {
                 for (Object contribution : contributions) {
                     CoreEventListenerDescriptor desc = (CoreEventListenerDescriptor) contribution;
-                    service.removeEventListener(service.getEventListenerByName(desc.getName()));
-                    log.info("Unregistered core event listener: " +
-                            desc.getName());
+                    EventListener listener = service.getEventListenerByName(desc.getName());
+                    if (listener != null) {
+                        service.removeEventListener(listener);
+                        log.info("Unregistered core event listener: " +
+                                desc.getName());
+                    } else {
+                        log.warn("Listener \"" + desc.getName() + "\" already removed");
+                    }
                 }
             }
         }
