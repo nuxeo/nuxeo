@@ -6,7 +6,7 @@
   <div class="pagePublishedResume">
   <div class="dayMonth"><span>${p.day}<br/></span>${p.month}</div>
   <div class="documentInfo"> 
-    <a href="${This.path}/${p.path}"> ${p.name}</a>
+    <a href="${p.path}"> ${p.name}</a>
         <p><span>${p.author}</span>&nbsp;|&nbsp;<span>${p.numberComments} ${Context.getMessage("last.published.pages.comments")}</span></p>
    </div>
    <div style="clear:both;"></div>

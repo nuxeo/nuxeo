@@ -16,13 +16,11 @@
  */
 package org.nuxeo.webengine.utils;
 
-import static org.nuxeo.webengine.utils.SiteUtilsConstants.CONTEXTUAL_LINK;
-import static org.nuxeo.webengine.utils.SiteUtilsConstants.NUMBER_COMMENTS;
-import static org.nuxeo.webengine.utils.SiteUtilsConstants.WEBPAGE;
-import static org.nuxeo.webengine.utils.SiteUtilsConstants.WORKSPACE;
+import static org.nuxeo.webengine.utils.SiteUtilsConstants.*;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
@@ -127,9 +125,11 @@ public class SiteUtils {
             for (DocumentModel webPage : webPages) {
                 Map<String, String> page = new HashMap<String, String>();
                 page.put("name", SiteHelper.getString(webPage, "dc:title"));
-                page.put("path", JsonAdapter.getRelativPath(
-                        getFirstWorkspaceParent(session, documentModel),
-                        webPage).toString());
+                DocumentModel webContainer = getFirstWorkspaceParent(session, documentModel);
+                StringBuilder path = new StringBuilder(getWebContainersPath()).append("/");
+                path.append(JsonAdapter.getRelativPath(session.getParentDocument(webContainer.getRef()), webContainer)).append("/");
+                path.append(JsonAdapter.getRelativPath(webContainer, webPage));
+                page.put("path", path.toString());
                 page.put("description", SiteHelper.getString(webPage,
                         "dc:description"));
                 page.put("content", SiteHelper.getFistNWordsFromString(
@@ -197,8 +197,10 @@ public class SiteUtils {
     public static DocumentModel getFirstWorkspaceParent(CoreSession session,
             DocumentModel doc) throws Exception {
         List<DocumentModel> parents = session.getParentDocuments(doc.getRef());
+        Collections.reverse(parents);
         for (DocumentModel currentDocumentModel : parents) {
-            if (WORKSPACE.equals(currentDocumentModel.getType())) {
+            if (WORKSPACE.equals(currentDocumentModel.getType())
+                    && currentDocumentModel.hasFacet(WEB_CONTAINER_FACET)) {
                 return currentDocumentModel;
             }
         }
@@ -287,6 +289,20 @@ public class SiteUtils {
             return principal.toString();
         }
         return principal.getFirstName() + " " + principal.getLastName();
+    }
+
+    /**
+     * This method is used to return the path to all the existing web
+     * containers.
+     *
+     * @param context - the web context
+     * @return the path to all the existing web containers
+     */
+    public static StringBuilder getWebContainersPath() {
+        WebContext context = WebEngine.getActiveContext();
+        StringBuilder initialPath = new StringBuilder(context.getBasePath()).append(context.getUriInfo().getMatchedURIs().get(
+                context.getUriInfo().getMatchedURIs().size() - 1));
+        return initialPath;
     }
 
 }
