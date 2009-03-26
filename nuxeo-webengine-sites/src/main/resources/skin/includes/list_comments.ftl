@@ -1,7 +1,7 @@
 <#assign comments = This.comments />
  
 <#if (This.userWithCommentPermission==true)> 
-  <a onclick="showCommentForm();"><img src="${skinPath}/images/action_add.gif" alt="${Context.getMessage("label.page.comments.add")}">${Context.getMessage("label.page.comments.add")}</a>
+  <a class="addComment" onclick="showCommentForm();">${Context.getMessage("label.page.comments.add")}</a>
 </#if> 
  
 <script type="text/javascript">

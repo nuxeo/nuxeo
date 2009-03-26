@@ -471,6 +471,7 @@
       </selector>
       <selector path="textarea">
         <padding>5px</padding>
+        <margin>10px 0px 0px</margin>
       </selector>
        <selector path="a, a:link">
         <color preset="link (Nuxeo psd colors)" />
@@ -757,6 +758,12 @@
         <padding>5px 3px 3px 24px</padding>
         <margin-bottom>5px</margin-bottom>
         <border-bottom>1px solid #dedede</border-bottom>
+      </selector>
+      <selector path=".addComment">
+        <background>transparent url(/nuxeo/icons/action_add.gif) no-repeat scroll 4px 4px</background>
+        <padding>5px 3px 3px 24px</padding>
+        <font-weight>bold</font-weight>
+        <margin-bottom>5px</margin-bottom>
       </selector>
       <selector path=".contextualLinkBlock">
         <margin-bottom>10px</margin-bottom>
