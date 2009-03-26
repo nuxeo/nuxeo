@@ -222,7 +222,7 @@
       <view>cell frame</view>
     </widget>
     <widget element="page[2]/section[3]/cell[2]/fragment[1]">
-      <view>Page Last Published</view>
+      <view>Minisite Last Published</view>
     </widget>
     <widget element="page[2]/section[3]/cell[3]">
       <view>cell frame</view>
@@ -255,7 +255,7 @@
       <view>Minisite Tree</view>
     </widget>
     <widget element="page[3]/section[2]/cell[1]/fragment[2]">
-      <view>Page Last Published</view>
+      <view>Minisite Last Published</view>
     </widget>
     <widget element="page[3]/section[2]/cell[2]">
       <view>cell frame</view>

@@ -44,10 +44,6 @@
       <format-type>widget</format-type>
       <template>widgets/page_main.ftl</template>
     </view>
-    <view name="Page Last Published" template-engine="freemarker">
-      <format-type>widget</format-type>
-      <template>widgets/page_last_published.ftl</template>
-    </view>
     <view name="Page Last Comments" template-engine="freemarker">
       <format-type>widget</format-type>
       <template>widgets/page_last_comments.ftl</template>
