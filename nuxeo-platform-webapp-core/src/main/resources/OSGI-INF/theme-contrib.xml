@@ -175,6 +175,14 @@
       <resource>foldable-box.js</resource>
     </view>
 
+    <view name="nuxeo5 user sites" template-engine="jsf-facelets">
+      <!-- Fragment to be displayed as part of the dashboard to display the
+        list of sites the current user can see -->
+      <format-type>widget</format-type>
+      <template>incl/dashboard_user_sites.xhtml</template>
+      <resource>foldable-box.js</resource>
+    </view>
+
     <view name="nuxeo5 user documents" template-engine="jsf-facelets">
       <!-- Fragment to be displayed as part of the dashboard to display the
         list of documents the current user has been working on recently -->

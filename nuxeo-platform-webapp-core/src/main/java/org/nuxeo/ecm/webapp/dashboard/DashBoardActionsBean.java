@@ -79,6 +79,8 @@ public class DashBoardActionsBean implements DashboardActions {
 
     protected static final String BOARD_WORKSPACES = "USER_WORKSPACES";
 
+    protected static final String BOARD_SITES = "USER_SITES";
+
     protected static final String BOARD_SECTIONS = "USER_SECTIONS";
 
     @In
@@ -241,6 +243,8 @@ public class DashBoardActionsBean implements DashboardActions {
             params = new Object[] { location };
         } else if (BOARD_WORKSPACES.equals(name)) {
             params = new Object[] { templates };
+        } else if (BOARD_SITES.equals(name)) {
+            params = new Object[] { templates };
         } else if (BOARD_SECTIONS.equals(name)) {
             params = null;
         } else {
@@ -302,6 +306,12 @@ public class DashBoardActionsBean implements DashboardActions {
 
     public String refreshDocumentProcessItems() throws ClientException {
         currentUserProcesses = null;
+        return null;
+    }
+
+    public String refreshProvider(String providerName) throws ClientException {
+        resultsProvidersCache.invalidate(providerName);
+
         return null;
     }
 

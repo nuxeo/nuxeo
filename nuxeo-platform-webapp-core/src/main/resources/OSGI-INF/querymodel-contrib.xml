@@ -90,6 +90,18 @@
         defaultSortAscending="true" />
       <max>5</max>
     </queryModel>
+    
+    <queryModel name="USER_SITES">
+      <pattern>
+        SELECT * FROM Document WHERE ecm:mixinType =
+        'WebView' AND ecm:currentLifeCycleState != 'deleted'
+        AND webc:isWebContainer = 1
+        AND NOT ecm:path STARTSWITH ?
+      </pattern>
+      <sortable value="true" defaultSortColumn="webc:name"
+        defaultSortAscending="true" />
+      <max>5</max>
+    </queryModel>
 
     <queryModel name="CURRENT_DOC_CHILDREN">
       <pattern>

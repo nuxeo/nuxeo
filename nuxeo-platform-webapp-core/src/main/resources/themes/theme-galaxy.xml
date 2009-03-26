@@ -5,37 +5,37 @@
       <section>
         <cell>
           <!-- logo -->
-          <fragment type="generic fragment" />
+          <fragment type="generic fragment"/>
         </cell>
         <cell>
           <!-- user services -->
-          <fragment type="generic fragment" />
+          <fragment type="generic fragment"/>
         </cell>
         <cell>
           <!-- Include -->
-          <fragment type="generic fragment" />
+          <fragment type="generic fragment"/>
         </cell>
       </section>
       <section>
         <cell>
           <!-- tree view -->
-          <fragment perspectives="default" type="generic fragment" />
+          <fragment perspectives="default" type="generic fragment"/>
           <!-- clip board -->
-          <fragment perspectives="default" type="generic fragment" />
+          <fragment perspectives="default" type="generic fragment"/>
           <!-- calendar -->
-          <fragment perspectives="view_calendar" type="generic fragment" />
+          <fragment perspectives="view_calendar" type="generic fragment"/>
         </cell>
         <cell>
           <!-- breadcrumbs -->
-          <fragment type="generic fragment" />
+          <fragment type="generic fragment"/>
           <!-- main area -->
-          <fragment type="region fragment" />
+          <fragment type="region fragment"/>
         </cell>
       </section>
       <section>
         <cell>
           <!-- copyrights -->
-          <fragment type="generic fragment" />
+          <fragment type="generic fragment"/>
         </cell>
       </section>
     </page>
@@ -43,7 +43,7 @@
       <section>
         <cell>
           <!-- main area -->
-          <fragment type="region fragment" />
+          <fragment type="region fragment"/>
         </cell>
       </section>
     </page>
@@ -51,46 +51,48 @@
       <section>
         <cell>
           <!-- logo -->
-          <fragment type="generic fragment" />
+          <fragment type="generic fragment"/>
         </cell>
         <cell>
           <!-- user services -->
-          <fragment type="generic fragment" />
+          <fragment type="generic fragment"/>
         </cell>
         <cell>
           <!-- includes -->
-          <fragment type="generic fragment" />
+          <fragment type="generic fragment"/>
         </cell>
       </section>
       <section>
         <cell>
           <!-- breadcrumbs -->
-          <fragment type="generic fragment" />
+          <fragment type="generic fragment"/>
         </cell>
       </section>
       <section>
         <cell>
           <!-- user tasks -->
-          <fragment type="generic fragment" />
+          <fragment type="generic fragment"/>
           <!-- user processes -->
-          <fragment type="generic fragment" />
+          <fragment type="generic fragment"/>
           <!-- user workspaces -->
-          <fragment type="generic fragment" />
+          <fragment type="generic fragment"/>
+          <!-- user sites -->
+          <fragment type="generic fragment"/>
         </cell>
         <cell>
           <!-- user documents -->
-          <fragment type="generic fragment" />
+          <fragment type="generic fragment"/>
           <!-- last documents -->
-          <fragment type="generic fragment" />
+          <fragment type="generic fragment"/>
           <!-- last published document -->
-          <fragment type="generic fragment" />
-          <fragment type="generic fragment" />
+          <fragment type="generic fragment"/>
+          <fragment type="generic fragment"/>
         </cell>
       </section>
       <section>
         <cell>
           <!-- copyrights -->
-          <fragment type="generic fragment" />
+          <fragment type="generic fragment"/>
         </cell>
       </section>
     </page>
@@ -98,29 +100,29 @@
       <section>
         <cell>
           <!-- includes -->
-          <fragment type="generic fragment" />
+          <fragment type="generic fragment"/>
           <!-- breadcrumbs -->
-          <fragment type="generic fragment" />
+          <fragment type="generic fragment"/>
           <!-- main area -->
-          <fragment type="region fragment" />
+          <fragment type="region fragment"/>
         </cell>
       </section>
     </page>
   </layout>
   <properties element="page[1]/section[2]/cell[2]/fragment[2]">
     <name>body</name>
-    <defaultBody />
-    <defaultSrc />
+    <defaultBody/>
+    <defaultSrc/>
   </properties>
   <properties element="page[2]/section[1]/cell[1]/fragment[1]">
     <name>body</name>
-    <defaultBody />
-    <defaultSrc />
+    <defaultBody/>
+    <defaultSrc/>
   </properties>
   <properties element="page[4]/section[1]/cell[1]/fragment[3]">
     <name>body</name>
-    <defaultBody />
-    <defaultSrc />
+    <defaultBody/>
+    <defaultSrc/>
   </properties>
   <formats>
     <layout element="page[1]">
@@ -128,8 +130,8 @@
       <padding>0</padding>
     </layout>
     <layout element="page[1]/section[1]">
-      <width>100%</width>
       <height>36px</height>
+      <width>100%</width>
       <overflow>auto</overflow>
     </layout>
     <layout element="page[1]/section[1]/cell[1]">
@@ -169,7 +171,7 @@
     <layout element="page[2]/section[1]">
       <width>100%</width>
     </layout>
-    <layout element="page[2]/section[1]/cell[1]" />
+    <layout element="page[2]/section[1]/cell[1]"/>
     <layout element="page[3]">
       <margin>0</margin>
       <padding>0</padding>
@@ -191,7 +193,7 @@
     <layout element="page[3]/section[2]">
       <width>100%</width>
     </layout>
-    <layout element="page[3]/section[2]/cell[1]" />
+    <layout element="page[3]/section[2]/cell[1]"/>
     <layout element="page[3]/section[3]">
       <width>100%</width>
     </layout>
@@ -216,7 +218,7 @@
     <layout element="page[4]/section[1]">
       <width>100%</width>
     </layout>
-    <layout element="page[4]/section[1]/cell[1]" />
+    <layout element="page[4]/section[1]/cell[1]"/>
     <widget element="">
       <view>theme view</view>
       <icon>/nuxeo/icons/favicon.png</icon>
@@ -225,24 +227,19 @@
     <widget element="page[1]|page[2]|page[3]|page[4]">
       <view>page frame</view>
     </widget>
-    <widget
-      element="page[1]/section[1]|page[1]/section[2]|page[1]/section[3]|page[2]/section[1]|page[3]/section[1]|page[3]/section[2]|page[3]/section[3]|page[3]/section[4]|page[4]/section[1]">
+    <widget element="page[1]/section[1]|page[1]/section[2]|page[1]/section[3]|page[2]/section[1]|page[3]/section[1]|page[3]/section[2]|page[3]/section[3]|page[3]/section[4]|page[4]/section[1]">
       <view>section frame</view>
     </widget>
-    <widget
-      element="page[1]/section[1]/cell[1]|page[1]/section[1]/cell[2]|page[1]/section[1]/cell[3]|page[1]/section[3]/cell[1]|page[2]/section[1]/cell[1]|page[3]/section[1]/cell[1]|page[3]/section[1]/cell[2]|page[3]/section[1]/cell[3]|page[3]/section[2]/cell[1]|page[3]/section[3]/cell[1]|page[3]/section[3]/cell[2]|page[3]/section[4]/cell[1]|page[4]/section[1]/cell[1]">
+    <widget element="page[1]/section[1]/cell[1]|page[1]/section[1]/cell[2]|page[1]/section[1]/cell[3]|page[1]/section[3]/cell[1]|page[2]/section[1]/cell[1]|page[3]/section[1]/cell[1]|page[3]/section[1]/cell[2]|page[3]/section[1]/cell[3]|page[3]/section[2]/cell[1]|page[3]/section[3]/cell[1]|page[3]/section[3]/cell[2]|page[3]/section[4]/cell[1]|page[4]/section[1]/cell[1]">
       <view>cell frame</view>
     </widget>
-    <widget
-      element="page[1]/section[1]/cell[1]/fragment[1]|page[3]/section[1]/cell[1]/fragment[1]">
+    <widget element="page[1]/section[1]/cell[1]/fragment[1]|page[3]/section[1]/cell[1]/fragment[1]">
       <view>Nuxeo EP logo (Galaxy Theme)</view>
     </widget>
-    <widget
-      element="page[1]/section[1]/cell[2]/fragment[1]|page[3]/section[1]/cell[2]/fragment[1]">
+    <widget element="page[1]/section[1]/cell[2]/fragment[1]|page[3]/section[1]/cell[2]/fragment[1]">
       <view>User services (Galaxy theme)</view>
     </widget>
-    <widget
-      element="page[1]/section[1]/cell[3]/fragment[1]|page[3]/section[1]/cell[3]/fragment[1]">
+    <widget element="page[1]/section[1]/cell[3]/fragment[1]|page[3]/section[1]/cell[3]/fragment[1]">
       <view>nuxeo5 includes</view>
     </widget>
     <widget element="page[1]/section[2]/cell[1]">
@@ -263,12 +260,10 @@
     <widget element="page[1]/section[2]/cell[2]/fragment[1]">
       <view>nuxeo5 breadcrumbs</view>
     </widget>
-    <widget
-      element="page[1]/section[2]/cell[2]/fragment[2]|page[2]/section[1]/cell[1]/fragment[1]">
+    <widget element="page[1]/section[2]/cell[2]/fragment[2]|page[2]/section[1]/cell[1]/fragment[1]">
       <view>facelet region</view>
     </widget>
-    <widget
-      element="page[1]/section[3]/cell[1]/fragment[1]|page[3]/section[4]/cell[1]/fragment[1]">
+    <widget element="page[1]/section[3]/cell[1]/fragment[1]|page[3]/section[4]/cell[1]/fragment[1]">
       <view>Nuxeo EP footer (Galaxy Theme)</view>
     </widget>
     <!-- Page 3 / Section 2 breadcrumb -->
@@ -306,14 +301,17 @@
     <widget element="page[3]/section[3]/cell[2]/fragment[4]">
       <view>nuxeo5 user sections</view>
     </widget>
+    <widget element="page[3]/section[3]/cell[1]/fragment[4]">
+      <view>nuxeo5 user sites</view>
+    </widget>
     <!-- buttons -->
     <style name="default buttons">
       <selector path="input.button">
-        <background preset="buttons (Galaxy backgrounds)" />
-        <font preset="default (Galaxy fonts)" />
-        <margin>5px 10px 10px 0px</margin>
+        <font preset="default (Galaxy fonts)"/>
         <color>#333333</color>
-        <border preset="buttons (Galaxy borders)" />
+        <border preset="buttons (Galaxy borders)"/>
+        <background preset="buttons (Galaxy backgrounds)"/>
+        <margin>5px 10px 10px 0px</margin>
         <padding>2px 5px 2px 5px</padding>
         <cursor>pointer</cursor>
       </selector>
@@ -325,15 +323,14 @@
         <color>#ccc</color>
       </selector>
     </style>
-
     <style name="breadcrumbs style">
       <selector path="">
+        <border-bottom preset="breadcrumb (Galaxy borders)"/>
         <background preset="breadcrumb (Galaxy backgrounds)"/>
         <padding>3px 7px</padding>
-        <border-bottom preset="breadcrumb (Galaxy borders)"/>
       </selector>
       <selector path="div">
-        <font preset="small (Galaxy fonts)" />
+        <font preset="small (Galaxy fonts)"/>
         <margin>0</margin>
         <line-height>1.25em</line-height>
         <padding>0</padding>
@@ -352,8 +349,7 @@
         <color>#666666</color>
         <text-decoration>underline</text-decoration>
       </selector>
-      <selector
-        path=".breadcrumbs a, .breadcrumbs a:link, .breadcrumbs a:visited">
+      <selector path=".breadcrumbs a, .breadcrumbs a:link, .breadcrumbs a:visited">
         <font-weight>normal</font-weight>
         <text-decoration>none</text-decoration>
       </selector>
@@ -370,18 +366,17 @@
       </selector>
       <selector path=".printButton .liveEditCreateButtons">
         <margin-right>5px</margin-right>
-        <padding-right>8px</padding-right>
         <border-right>1px solid #ccc</border-right>
+        <padding-right>8px</padding-right>
       </selector>
       <selector path=".breadcrumbs">
-        <float>left</float>
         <font-size>9px</font-size>
         <padding>5px 4px 0px 0px</padding>
+        <float>left</float>
       </selector>
     </style>
-    
-    <style name="default tabs" inherit="default buttons">
-    <selector path=".tabsBar">
+    <style inherit="default buttons" name="default tabs">
+      <selector path=".tabsBar">
         <border-bottom preset="tabsbar (Galaxy borders)"/>
         <width>100%</width>
         <margin-top>5px</margin-top>
@@ -394,17 +389,15 @@
         <list-style>none</list-style>
       </selector>
       <selector path=".tabsBar li">
-        <margin>0</margin>
         <margin-right>5px</margin-right>
+        <margin>0</margin>
         <padding>0</padding>
         <float>left</float>
       </selector>
-      <selector path=".tabsBar li.selected">
-      </selector>
       <selector path=".tabsBar a, .tabsBar a:hover, .tabsBar a:visited">
-        <border preset="tabisnotselected (Galaxy borders)"/>
         <color>#0066CC</color>
-        <background preset="white (Galaxy backgrounds)" />
+        <border preset="tabisnotselected (Galaxy borders)"/>
+        <background preset="white (Galaxy backgrounds)"/>
         <text-decoration>none</text-decoration>
         <font-weight>normal</font-weight>
         <display>block</display>
@@ -417,12 +410,11 @@
         <background preset="tabiselected (Galaxy backgrounds)"/>
       </selector>
       <selector path=".tabsBar li a:hover">
-        <background preset="tabiselected (Galaxy backgrounds)"/>
         <color>#ffffff</color>
+        <background preset="tabiselected (Galaxy backgrounds)"/>
       </selector>
     </style>
-
-    <style name="common style 1" inherit="default tabs">
+    <style inherit="default tabs" name="common style 1">
       <selector path="h1, h2, h3, h4, h5, h6, form, p">
         <margin>0</margin>
         <padding>0</padding>
@@ -431,24 +423,20 @@
         <margin>0</margin>
       </selector>
       <selector path=".pageNavigationControls span">
-        <margin>10px 5px</margin>
         <color>#757575</color>
         <vertical-align>top</vertical-align>
         <font-weight>bold</font-weight>
+        <margin>10px 5px</margin>
         <font-size>13px</font-size>
       </selector>
       <selector path=".directoryBack">
-        <background>
-          url(/nuxeo/icons/arrow_left.gif) 3px 1px no-repeat
-        </background>
+        <background>url(/nuxeo/icons/arrow_left.gif) 3px 1px no-repeat</background>
         <padding>2px 2px 2px 20px</padding>
       </selector>
       <selector path=".errorMessage">
         <color>#000</color>
         <border>1px solid #666</border>
-        <background>
-          url(/nuxeo/img/warning.gif) 2px 3px no-repeat #FFCC33
-        </background>
+        <background>url(/nuxeo/img/warning.gif) 2px 3px no-repeat #FFCC33</background>
         <width>480px</width>
         <margin>2px 0 2px 0</margin>
         <padding>3px 3px 3px 23px</padding>
@@ -461,9 +449,7 @@
       <selector path=".infoMessage">
         <color>#003399</color>
         <border>1px solid #0066cc</border>
-        <background>
-          url(/nuxeo/icons/tip.gif) 2px 3px no-repeat #f2f7fc
-        </background>
+        <background>url(/nuxeo/icons/tip.gif) 2px 3px no-repeat #f2f7fc</background>
         <margin-bottom>5px</margin-bottom>
         <padding>5px 5px 5px 23px</padding>
         <display>block</display>
@@ -520,20 +506,17 @@
       <selector path=".boldColumn">
         <font-weight>bold !important</font-weight>
       </selector>
-      <selector
-        path=".facesStatusMessage ul, .infoFeedback ul, .warningFeedback ul, .errorFeedback ul">
+      <selector path=".facesStatusMessage ul, .infoFeedback ul, .warningFeedback ul, .errorFeedback ul">
         <list-style-type>none</list-style-type>
-        <padding>10px</padding>
         <width>200px</width>
+        <padding>10px</padding>
       </selector>
       <selector path=".vocabularyEntryContent .notEditable">
         <color>#000</color>
         <background-color>#fff</background-color>
       </selector>
       <selector path=".warningMessage">
-        <background>
-          url(/nuxeo/img/warning.gif) 2px 3px no-repeat #FFCC33
-        </background>
+        <background>url(/nuxeo/img/warning.gif) 2px 3px no-repeat #FFCC33</background>
         <width>500px</width>
         <margin>2px 0 2px 0</margin>
         <border>1px solid #666</border>
@@ -553,14 +536,14 @@
       </selector>
       <selector path=".radioColumn">
         <width>8px</width>
-        <padding>0 0 0 5px</padding>
         <vertical-align>top</vertical-align>
+        <padding>0 0 0 5px</padding>
       </selector>
       <selector path=".focusColumn">
         <background-color>#ddeeff</background-color>
       </selector>
       <selector path="a:visited">
-        <color preset="link.visited (Nuxeo psd colors)" />
+        <color preset="link.visited (Nuxeo psd colors)"/>
       </selector>
       <selector path=".dataInput textarea, .dataInput .dataInputText">
         <width>500px</width>
@@ -594,9 +577,9 @@
         <margin-top>5px</margin-top>
       </selector>
       <selector path="div">
-        <font preset="default (Galaxy fonts)" />
-        <line-height>1.25em</line-height>
+        <font preset="default (Galaxy fonts)"/>
         <margin>0</margin>
+        <line-height>1.25em</line-height>
         <padding>0</padding>
       </selector>
       <!-- rich faces tree -->
@@ -616,8 +599,8 @@
         <margin-top>0px</margin-top>
       </selector>
       <selector path=".dataList thead th">
-        <color>#606161</color>
         <border-bottom preset="tablelines (Galaxy borders)"/>
+        <color>#606161</color>
         <background preset="tablethead (Galaxy backgrounds)"/>
         <padding>5px 3px</padding>
         <text-align>left</text-align>
@@ -668,8 +651,7 @@
         <border-collapse>collapse</border-collapse>
         <margin>0</margin>
       </selector>
-      <selector
-        path=".dataInput .fieldColumn table.mceEditor .mceToolbarBottom">
+      <selector path=".dataInput .fieldColumn table.mceEditor .mceToolbarBottom">
         <background-color>#ddeeff</background-color>
       </selector>
       <selector path=".wizardFrame .wizardButtonBar">
@@ -683,39 +665,36 @@
         <width>40px</width>
       </selector>
       <selector path="a, a:link">
-        <color preset="link (Nuxeo psd colors)" />
+        <color preset="link (Nuxeo psd colors)"/>
         <text-decoration>none</text-decoration>
       </selector>
-      <selector path="a:visited">
-        <color preset="link.visited (Nuxeo psd colors)" />
-      </selector>
       <selector path="a:active">
-        <color preset="link.active (Nuxeo psd colors)" />
+        <color preset="link.active (Nuxeo psd colors)"/>
       </selector>
       <selector path="a:hover">
-        <color preset="link (Nuxeo psd colors)" />
+        <color preset="link (Nuxeo psd colors)"/>
         <text-decoration>underline</text-decoration>
       </selector>
       <selector path="table">
         <margin>0</margin>
       </selector>
       <selector path=".pictureBookItem">
-        <float>left</float>
-        <width>140px</width>
         <height>160px</height>
-        <text-align>center</text-align>
-        <background-color>#ddeeff</background-color>
         <border>1px solid #2A90F6</border>
+        <width>140px</width>
+        <background-color>#ddeeff</background-color>
         <margin>10px 20px 10px 0px</margin>
+        <float>left</float>
+        <text-align>center</text-align>
       </selector>
       <selector path=".itemSelected">
-        <background-color>#ffcc66</background-color>
         <border>1px solid #ff9933</border>
+        <background-color>#ffcc66</background-color>
       </selector>
       <selector path=".pictureBookItem .cell">
         <height>110px</height>
-        <text-align>center</text-align>
         <padding-top>15px</padding-top>
+        <text-align>center</text-align>
       </selector>
       <selector path=".pictureBookItem .cell a">
         <height>100px</height>
@@ -724,22 +703,19 @@
         <padding>20px</padding>
       </selector>
       <selector path=".pictureBookItemTitle">
-        <font preset="small (Galaxy fonts)" />
+        <font preset="small (Galaxy fonts)"/>
         <background-color>#2A90F6</background-color>
         <padding>5px 0</padding>
       </selector>
-      <selector
-        path=".pictureBookItemTitle a, .pictureBookItemTitle a:hover, .pictureBookItemTitle a:visited">
+      <selector path=".pictureBookItemTitle a, .pictureBookItemTitle a:hover, .pictureBookItemTitle a:visited">
         <color>#001986</color>
       </selector>
       <selector path=".slideShowControl input">
-        <padding>0px</padding>
         <margin>0px 3px</margin>
+        <padding>0px</padding>
       </selector>
       <selector path=".slideShowControl input.button[disabled=disabled]">
-        <background>
-          url(/nuxeo/img/button_disabled.gif) 0 0 repeat-x #ebeff4
-        </background>
+        <background>url(/nuxeo/img/button_disabled.gif) 0 0 repeat-x #ebeff4</background>
         <border-color>#ccc #999 #999 #ccc</border-color>
         <cursor>default</cursor>
       </selector>
@@ -752,9 +728,6 @@
       <selector path=".slideshowContent h3">
         <padding>8px 0px 5px 70px</padding>
       </selector>
-      <selector path="a:active">
-        <color preset="link.active (Nuxeo psd colors)" />
-      </selector>
       <selector path=".rightsAdd">
         <margin>10px 0 10px 0</margin>
       </selector>
@@ -765,22 +738,21 @@
       </selector>
       <selector path=".foldableBox h3">
         <border-bottom preset="tabiselected (Galaxy borders)"/>
-        <color preset="white (Nuxeo psd colors)" />
+        <color preset="white (Nuxeo psd colors)"/>
         <padding>3px 3px 3px 18px</padding>
         <font-size>11px</font-size>
       </selector>
       <selector path=".foldableBox h3.folded">
-        <background>url(/nuxeo/img/theme_galaxy/arrow_folded.gif) top left no-repeat
-        </background>
+        <background>url(/nuxeo/img/theme_galaxy/arrow_folded.gif) top left no-repeat</background>
       </selector>
       <selector path=".foldableBox h3 a:link, .foldableBox h3 a:visited, .foldableBox h3 a:hover, .foldableBox h3 a:visited:hover">
-        <color preset="white (Nuxeo psd colors)" />
+        <color preset="white (Nuxeo psd colors)"/>
       </selector>
       <selector path=".foldableBox h3.unfolded">
         <background>url(/nuxeo/img/theme_galaxy/arrow_unfolded.gif) top left no-repeat</background>
       </selector>
       <selector path=".foldableBox h3 a">
-        <color preset="white (Nuxeo psd colors)" />
+        <color preset="white (Nuxeo psd colors)"/>
         <display>block</display>
       </selector>
       <selector path=".foldableBox .boxBody">
@@ -800,9 +772,7 @@
         <font>bold 11px Verdana, sans-serif</font>
         <color>#000</color>
         <border>2px solid #666</border>
-        <background>
-          url(/nuxeo/img/warning.gif) 4px 5px no-repeat #FFCC33
-        </background>
+        <background>url(/nuxeo/img/warning.gif) 4px 5px no-repeat #FFCC33</background>
         <padding>7px 7px 7px 24px</padding>
       </selector>
       <selector path=".vocabularyEntryContent .currentDocumentInformation">
@@ -822,32 +792,25 @@
         <font>bold 11px Verdana, sans-serif</font>
         <color>#000</color>
         <border>2px solid #666</border>
-        <background>
-          url(/nuxeo/img/warning.gif) 4px 5px no-repeat #FFCC33
-        </background>
+        <background>url(/nuxeo/img/warning.gif) 4px 5px no-repeat #FFCC33</background>
         <padding>7px 7px 7px 24px</padding>
       </selector>
       <selector path=".wizardFrame .templatePreview img">
         <border>1px solid #333</border>
         <float>left</float>
       </selector>
-      <selector path="a:hover">
-        <color preset="link (Nuxeo psd colors)" />
-        <text-decoration>underline</text-decoration>
-      </selector>
       <selector path=".dataInput td">
         <border>0px solid #FFF</border>
         <padding>7px 4px</padding>
       </selector>
-      <selector
-        path=".dataInput textarea, .dataInput .dataInputText, .dataInput .dataInputTextNoSize">
+      <selector path=".dataInput textarea, .dataInput .dataInputText, .dataInput .dataInputTextNoSize">
         <font>normal 11px Verdana, sans-serif</font>
         <border>1px normal #666</border>
         <vertical-align>top</vertical-align>
         <padding>4px</padding>
       </selector>
       <selector path="h4, h5, h6">
-        <font preset="title4+ (Galaxy fonts)" />
+        <font preset="title4+ (Galaxy fonts)"/>
       </selector>
       <selector path=".relationCommentList">
         <background>transparent</background>
@@ -856,9 +819,7 @@
         <font>bold 11px Verdana, sans-serif</font>
         <color>#003399</color>
         <border>2px solid #0066cc</border>
-        <background>
-          url(/nuxeo/icons/info.gif) 4px 5px no-repeat #f2f7fc
-        </background>
+        <background>url(/nuxeo/icons/info.gif) 4px 5px no-repeat #f2f7fc</background>
         <padding>7px 7px 7px 24px</padding>
       </selector>
       <selector path=".pageNavigationControls input">
@@ -887,8 +848,8 @@
         <border-width>1px</border-width>
       </selector>
       <selector path="table.dataOutput thead th">
-        <color>#606161</color>
         <border-bottom preset="tablelines (Galaxy borders)"/>
+        <color>#606161</color>
         <background preset="tablethead (Galaxy backgrounds)"/>
         <padding>5px 3px</padding>
         <text-align>left</text-align>
@@ -923,20 +884,17 @@
         <text-align>left</text-align>
       </selector>
       <selector path=".fieldColumn img">
-        <margin-right>4px</margin-right>
         <margin-left>4px</margin-left>
+        <margin-right>4px</margin-right>
         <vertical-align>top</vertical-align>
       </selector>
-      <selector
-        path=".relationCreateFieldColumn table, .fieldColumn table, .workflowFieldColumn table">
+      <selector path=".relationCreateFieldColumn table, .fieldColumn table, .workflowFieldColumn table">
         <border>0px none #fff</border>
         <vertical-align>top</vertical-align>
         <margin>0 0 0 0</margin>
       </selector>
       <selector path=".required">
-        <background>
-          url(/nuxeo/img/required.gif) top right no-repeat
-        </background>
+        <background>url(/nuxeo/img/required.gif) top right no-repeat</background>
         <padding-right>8px</padding-right>
       </selector>
       <selector path=".archiveTabContent .dataInput">
@@ -951,7 +909,6 @@
         <border-style>solid</border-style>
         <border-width>1px</border-width>
       </selector>
-      <selector path="mainNoTabs" />
       <selector path=".dataOutput td">
         <border-bottom preset="tablelines (Galaxy borders)"/>
         <border-top preset="tablelines (Galaxy borders)"/>
@@ -974,8 +931,7 @@
       <selector path=".smallButtonsGadget">
         <margin>0 0 5px 100px</margin>
       </selector>
-      <selector
-        path=".relationCreateLabelColumn, .labelColumn, .workflowLabelColumn">
+      <selector path=".relationCreateLabelColumn, .labelColumn, .workflowLabelColumn">
         <text-align>right</text-align>
       </selector>
       <selector path=".workflowLabelColumn">
@@ -983,7 +939,7 @@
       </selector>
       <selector path="h2">
         <color>#4a4a4a</color>
-        <font preset="title 2 (Galaxy fonts)" />
+        <font preset="title 2 (Galaxy fonts)"/>
         <padding>0.5em 1em 0.5em 0</padding>
       </selector>
       <selector path=".dataInput select">
@@ -991,8 +947,7 @@
         <vertical-align>top</vertical-align>
         <padding>2px 1px 2px 1px</padding>
       </selector>
-      <selector
-        path=".dataInput .fieldColumn table.mceEditor .mceEditorIframe">
+      <selector path=".dataInput .fieldColumn table.mceEditor .mceEditorIframe">
         <background-color>#fff</background-color>
         <border-color>#333 #999 #999 #333</border-color>
         <padding>5px</padding>
@@ -1009,7 +964,7 @@
         <padding>0px 10px 0 0</padding>
         <list-style>none</list-style>
       </selector>
-       <selector path=".action_bar li">
+      <selector path=".action_bar li">
         <margin>0</margin>
         <padding>0</padding>
         <float>left</float>
@@ -1018,42 +973,36 @@
         <display>none</display>
       </selector>
       <selector path=".action_bar a">
-        <color>#333</color>
-        <background preset="buttons (Galaxy backgrounds)" />
-        <font preset="default (Galaxy fonts)" />
-        <color>#333333</color>
-        <border preset="buttons (Galaxy borders)" />
-        <padding>4px 7px</padding>
-        <cursor>pointer</cursor>
-        <text-decoration>none</text-decoration>
-        <margin-right>10px</margin-right>
+        <background preset="buttons (Galaxy backgrounds)"/>
+        <font preset="default (Galaxy fonts)"/>
         <float>left</float>
+        <text-decoration>none</text-decoration>
+        <border preset="buttons (Galaxy borders)"/>
+        <color>#333333</color>
+        <padding>4px 7px</padding>
+        <margin-right>10px</margin-right>
+        <cursor>pointer</cursor>
       </selector>
       <selector path=".action_bar a:hover">
         <color>#000000</color>
         <border-color>#92999e</border-color>
-      </selector>      
+      </selector>
       <selector path=".tabsContent">
         <margin>0px</margin>
         <padding>5px 10px 10px 10px</padding>
       </selector>
       <selector path=".tabsContent table.trashTable thead th">
-        <background-image>
-          url(/nuxeo/img/theme5_2/table_header_trash.gif)
-        </background-image>
+        <background-image>url(/nuxeo/img/theme5_2/table_header_trash.gif)</background-image>
         <background-color>#477664</background-color>
       </selector>
       <selector path="table.trashTable tbody tr.dataRowOdd">
         <background-color>#f1ffef</background-color>
       </selector>
-      <selector path=".trashButtons input.button:hover"></selector>
       <selector path="textarea">
         <padding>5px</padding>
       </selector>
       <selector path=".rightsAddManager">
-        <background>
-          url(/nuxeo/img/rightsadd_bar.gif) no-repeat center
-        </background>
+        <background>url(/nuxeo/img/rightsadd_bar.gif) no-repeat center</background>
         <width>100%</width>
         <margin>3px 0 0 0</margin>
       </selector>
@@ -1077,7 +1026,7 @@
       </selector>
       <selector path="h1">
         <color>#4a4a4a</color>
-        <font preset="title1 (Galaxy fonts)" />
+        <font preset="title1 (Galaxy fonts)"/>
         <overflow>auto</overflow>
       </selector>
       <selector path=".dataRowEven">
@@ -1110,15 +1059,13 @@
       </selector>
       <selector path="h3">
         <color>#4a4a4a</color>
-        <font preset="title3 (Galaxy fonts)" />
+        <font preset="title3 (Galaxy fonts)"/>
         <margin>0</margin>
         <padding>13px 0px 10px 0px</padding>
       </selector>
       <selector path=".directoryFilter, .searchField">
         <border>1px normal #666</border>
-        <background>
-          url(/nuxeo/icons/search.gif) 2px 2px no-repeat #FFF
-        </background>
+        <background>url(/nuxeo/icons/search.gif) 2px 2px no-repeat #FFF</background>
         <margin>0 5px 10px 0</margin>
         <padding>3px 3px 3px 20px</padding>
         <font-size>11px</font-size>
@@ -1129,7 +1076,7 @@
         <padding>2px 1px 2px 1px</padding>
       </selector>
       <selector path=".dataRowOdd">
-        <background preset="tableevenlines (Galaxy backgrounds)" />
+        <background preset="tableevenlines (Galaxy backgrounds)"/>
       </selector>
       <selector path="table.dataOutput th a img">
         <vertical-align>bottom</vertical-align>
@@ -1148,8 +1095,7 @@
       <selector path="input">
         <display>none</display>
       </selector>
-      <selector
-        path=".dataOutput .iconColumn img, .dataInput .iconColumn img, .dataList .iconColumn img">
+      <selector path=".dataOutput .iconColumn img, .dataInput .iconColumn img, .dataList .iconColumn img">
         <display>block</display>
       </selector>
       <selector path=".fieldColumn">
@@ -1162,9 +1108,9 @@
         <text-align>left</text-align>
       </selector>
       <selector path="div">
+        <font-family>Verdana, Arial, sans-serif</font-family>
         <background-color>#fff</background-color>
         <font-size>11pt</font-size>
-        <font-family>Verdana, Arial, sans-serif</font-family>
         <float>none</float>
       </selector>
       <selector path="a:link, a:visited">
@@ -1176,7 +1122,6 @@
         <border>1px solid #DBDBDB</border>
         <border-collapse>collapse</border-collapse>
       </selector>
-      <selector path=".dataOutput input, .dataInput input, .dataList input" />
       <selector path="ul">
         <display>none</display>
       </selector>
@@ -1189,9 +1134,9 @@
         <display>none</display>
       </selector>
       <selector path=".breadcrumbs">
-        <float>left</float>
         <margin-bottom>10px</margin-bottom>
         <font-size>80%</font-size>
+        <float>left</float>
       </selector>
       <selector path=".syndicationLinks">
         <display>none</display>
@@ -1199,8 +1144,7 @@
     </style>
     <!-- commmon to both fragments -->
     <style
-      element="page[4]/section[1]/cell[1]/fragment[2]|page[4]/section[1]/cell[1]/fragment[3]"
-      inherit="common style 2" />
+      element="page[4]/section[1]/cell[1]/fragment[2]|page[4]/section[1]/cell[1]/fragment[3]" inherit="common style 2"/>
     <!-- General -->
     <style element="page[1]|page[2]|page[3]">
       <selector path="img" view="page frame">
@@ -1210,8 +1154,8 @@
     <!-- Banner -->
     <style element="page[1]/section[1]|page[3]/section[1]">
       <selector path="" view="section frame">
-        <border-bottom preset="topbar (Galaxy borders)" />
-        <background preset="topbar (Galaxy backgrounds)" />
+        <border-bottom preset="topbar (Galaxy borders)"/>
+        <background preset="topbar (Galaxy backgrounds)"/>
       </selector>
     </style>
     <!-- Logo -->
@@ -1223,10 +1167,9 @@
     </style>
     <!-- user services -->
     <style
-      element="page[1]/section[1]/cell[2]/fragment[1]|page[3]/section[1]/cell[2]/fragment[1]"
-      inherit="default buttons">
+      element="page[1]/section[1]/cell[2]/fragment[1]|page[3]/section[1]/cell[2]/fragment[1]" inherit="default buttons">
       <selector path="div" view="User services (Galaxy theme)">
-        <font preset="small (Galaxy fonts)" />
+        <font preset="small (Galaxy fonts)"/>
         <color>#cecece</color>
         <margin>0</margin>
         <padding>2px 2px 0px 0px</padding>
@@ -1238,12 +1181,9 @@
       <selector path=".userActions" view="User services (Galaxy theme)">
         <padding-top>11px</padding-top>
       </selector>
-      <selector path=".directoryFilter, .searchField"
-        view="User services (Galaxy theme)">
+      <selector path=".directoryFilter, .searchField" view="User services (Galaxy theme)">
         <border>1px normal #666</border>
-        <background>
-          url(/nuxeo/icons/search.gif) 2px 2px no-repeat #FFF
-        </background>
+        <background>url(/nuxeo/icons/search.gif) 2px 2px no-repeat #FFF</background>
         <margin>0 5px 10px 0</margin>
         <padding>3px 3px 3px 20px</padding>
         <font-size>11px</font-size>
@@ -1278,32 +1218,31 @@
     <!-- Left side -->
     <style element="page[1]/section[2]">
       <selector path="" view="section frame">
-        <border-top preset="whitethin (Galaxy borders)" />
+        <border-top preset="whitethin (Galaxy borders)"/>
       </selector>
     </style>
     <style element="page[1]/section[2]/cell[1]">
       <selector path="" view="cell frame">
         <border-right preset="leftcolumn (Galaxy borders)"/>
       </selector>
-    </style>    
+    </style>
     <style element="page[1]/section[2]/cell[1]/fragment[1]" inherit="common style 1">
-      <selector path="div,dd,dt,dl,img,p,h1,h2,h3,h4,h5,form,hr,fieldset"
-        view="nuxeo5 tree explorer">
+      <selector
+        path="div,dd,dt,dl,img,p,h1,h2,h3,h4,h5,form,hr,fieldset" view="nuxeo5 tree explorer">
         <margin>0</margin>
         <padding>0</padding>
       </selector>
-      <selector path=".treeLink a, .treeLink a:link, .treeLink a:visited"
-        view="nuxeo5 tree explorer">
+      <selector
+        path=".treeLink a, .treeLink a:link, .treeLink a:visited" view="nuxeo5 tree explorer">
         <font-weight>normal</font-weight>
         <text-decoration>none</text-decoration>
       </selector>
-      <selector path=".treeLink a:hover, .treeLink a:active"
-        view="nuxeo5 tree explorer">
+      <selector path=".treeLink a:hover, .treeLink a:active" view="nuxeo5 tree explorer">
         <font-weight>normal</font-weight>
         <text-decoration>underline</text-decoration>
       </selector>
       <selector path="" view="nuxeo5 tree explorer">
-        <font preset="default (Galaxy fonts)" />
+        <font preset="default (Galaxy fonts)"/>
         <margin>0</margin>
         <line-height>1.25em</line-height>
         <padding>0</padding>
@@ -1313,13 +1252,13 @@
         <text-decoration>none</text-decoration>
       </selector>
       <selector path="a:visited" view="nuxeo5 tree explorer">
-        <color preset="link.visited (Nuxeo psd colors)" />
+        <color preset="link.visited (Nuxeo psd colors)"/>
       </selector>
       <selector path="a:active" view="nuxeo5 tree explorer">
         <color>#112b8c</color>
       </selector>
       <selector path="a:hover" view="nuxeo5 tree explorer">
-        <color preset="link (Nuxeo psd colors)" />
+        <color preset="link (Nuxeo psd colors)"/>
         <text-decoration>underline</text-decoration>
       </selector>
       <selector path=".dropInto" view="nuxeo5 tree explorer">
@@ -1344,8 +1283,7 @@
         <margin-bottom>2px</margin-bottom>
         <padding>2px</padding>
       </selector>
-      <selector path=".cell img, .clipboardFunction img"
-        view="nuxeo5 tree explorer">
+      <selector path=".cell img, .clipboardFunction img" view="nuxeo5 tree explorer">
         <vertical-align>middle</vertical-align>
       </selector>
       <selector path=".cell .iconImage" view="nuxeo5 tree explorer">
@@ -1360,18 +1298,14 @@
       </selector>
       <selector path=".userClipboardTabs li a" view="nuxeo5 tree explorer">
         <color>#454545</color>
-        <background>
-          url(/nuxeo/img/theme5_2/tabs/userclipboard/tab_right.gif) no-repeat right top
-        </background>
+        <background>url(/nuxeo/img/theme5_2/tabs/userclipboard/tab_right.gif) no-repeat right top</background>
         <text-decoration>none</text-decoration>
         <padding>10px 10px 4px 2px</padding>
         <display>block</display>
         <float>left</float>
       </selector>
       <selector path=".userClipboardTabs li" view="nuxeo5 tree explorer">
-        <background>
-          url(/nuxeo/img/theme5_2/tabs/userclipboard/tab_left.gif) no-repeat top left
-        </background>
+        <background>url(/nuxeo/img/theme5_2/tabs/userclipboard/tab_left.gif) no-repeat top left</background>
         <border-color>#94D8FF</border-color>
         <margin>0 0 0 5px</margin>
         <padding>0 0 0 6px</padding>
@@ -1385,24 +1319,16 @@
         <padding>0px 0 0 0</padding>
         <float>right</float>
       </selector>
-      <selector path=".userClipboardTabs li.selected a"
-        view="nuxeo5 tree explorer">
+      <selector path=".userClipboardTabs li.selected a" view="nuxeo5 tree explorer">
         <color>#112b8c</color>
-        <background>
-          url(/nuxeo/img/theme5_2/tabs/userclipboard/tab_selected_right.gif) no-repeat
-          right top
-        </background>
+        <background>url(/nuxeo/img/theme5_2/tabs/userclipboard/tab_selected_right.gif) no-repeat right top</background>
         <text-decoration>none</text-decoration>
         <padding>7px 10px 7px 2px</padding>
         <display>block</display>
         <float>left</float>
       </selector>
-      <selector path=".userClipboardTabs li.selected"
-        view="nuxeo5 tree explorer">
-        <background>
-          url(/nuxeo/img/theme5_2/tabs/userclipboard/tab_selected_left.gif) no-repeat
-          left top
-        </background>
+      <selector path=".userClipboardTabs li.selected" view="nuxeo5 tree explorer">
+        <background>url(/nuxeo/img/theme5_2/tabs/userclipboard/tab_selected_left.gif) no-repeat left top</background>
         <border-color>#FFF</border-color>
         <margin>0 0 0 5px</margin>
         <padding>0 0 0 6px</padding>
@@ -1412,9 +1338,7 @@
       </selector>
       <selector path=".userClipboardTabs" view="nuxeo5 tree explorer">
         <font>normal 11px Verdana, sans-serif</font>
-        <background>
-          url(/nuxeo/img/theme5_2/tabs/userclipboard/blue_pixel.gif) bottom left repeat-x
-        </background>
+        <background>url(/nuxeo/img/theme5_2/tabs/userclipboard/blue_pixel.gif) bottom left repeat-x</background>
         <width>100%</width>
         <margin>0</margin>
         <line-height>normal</line-height>
@@ -1437,34 +1361,32 @@
         <padding>10px 0px</padding>
       </selector>
       <selector path="div" view="nuxeo5 tree explorer">
-        <font preset="default (Galaxy fonts)" />
+        <font preset="default (Galaxy fonts)"/>
       </selector>
     </style>
     <style element="page[1]/section[2]/cell[1]/fragment[2]" inherit="default tabs">
       <selector path="div" view="nuxeo5 clip board">
-        <font preset="small (Galaxy fonts)" />
+        <font preset="small (Galaxy fonts)"/>
       </selector>
       <selector path="a" view="nuxeo5 clip board">
-        <color preset="link (Nuxeo psd colors)" />
+        <color preset="link (Nuxeo psd colors)"/>
         <text-decoration>none</text-decoration>
       </selector>
       <selector path="a:visited" view="nuxeo5 clip board">
-        <color preset="link.visited (Nuxeo psd colors)" />
+        <color preset="link.visited (Nuxeo psd colors)"/>
       </selector>
       <selector path="a:active" view="nuxeo5 clip board">
-        <color preset="link.active (Nuxeo psd colors)" />
+        <color preset="link.active (Nuxeo psd colors)"/>
       </selector>
       <selector path="a:hover" view="nuxeo5 clip board">
-        <color preset="link (Nuxeo psd colors)" />
+        <color preset="link (Nuxeo psd colors)"/>
         <text-decoration>underline</text-decoration>
       </selector>
       <selector path=".dropInto" view="nuxeo5 clip board">
         <background-color>#adf</background-color>
       </selector>
       <selector path=".dropIntoClipboardCopy" view="nuxeo5 clip board">
-        <background>
-          url(/nuxeo/icons/action_clipboard_copy.gif) no-repeat 98% 3% #adf
-        </background>
+        <background>url(/nuxeo/icons/action_clipboard_copy.gif) no-repeat 98% 3% #adf</background>
       </selector>
       <selector path="#clipboardCopy" view="nuxeo5 clip board">
         <padding>3px</padding>
@@ -1476,16 +1398,15 @@
         <margin-bottom>2px</margin-bottom>
         <padding>2px</padding>
       </selector>
-      <selector path=".cell img, .clipboardFunction img"
-        view="nuxeo5 clip board">
+      <selector path=".cell img, .clipboardFunction img" view="nuxeo5 clip board">
         <vertical-align>middle</vertical-align>
       </selector>
       <selector path=".cell .iconImage" view="nuxeo5 clip board">
         <margin-right>4px</margin-right>
       </selector>
       <selector path=".clipboardFunctions" view="nuxeo5 clip board">
-        <border-top>2px solid #e7e7e7</border-top>
         <padding-top>10px</padding-top>
+        <border-top>2px solid #e7e7e7</border-top>
       </selector>
       <selector path=".clipboardFunction" view="nuxeo5 clip board">
         <padding>2px 2px 2px 2px</padding>
@@ -1499,18 +1420,14 @@
       </selector>
       <selector path=".userClipboardTabs a" view="nuxeo5 clip board">
         <color>#454545</color>
-        <background>
-          url(/nuxeo/img/theme5_2/tabs/userclipboard/tab_right.gif) no-repeat right top
-        </background>
+        <background>url(/nuxeo/img/theme5_2/tabs/userclipboard/tab_right.gif) no-repeat right top</background>
         <text-decoration>none</text-decoration>
         <padding>10px 10px 4px 2px</padding>
         <display>block</display>
         <float>left</float>
       </selector>
       <selector path=".userClipboardTabs li" view="nuxeo5 clip board">
-        <background>
-          url(/nuxeo/img/theme5_2/tabs/userclipboard/tab_left.gif) no-repeat top left
-        </background>
+        <background>url(/nuxeo/img/theme5_2/tabs/userclipboard/tab_left.gif) no-repeat top left</background>
         <border-color>#94D8FF</border-color>
         <margin>0 0 0 5px</margin>
         <padding>0 0 0 6px</padding>
@@ -1524,24 +1441,16 @@
         <padding>0px 0 0 0</padding>
         <float>right</float>
       </selector>
-      <selector path=".userClipboardTabs li.selected a"
-        view="nuxeo5 clip board">
+      <selector path=".userClipboardTabs li.selected a" view="nuxeo5 clip board">
         <color>#0066cc</color>
-        <background>
-          url(/nuxeo/img/theme5_2/tabs/userclipboard/tab_selected_right.gif) no-repeat
-          right top
-        </background>
+        <background>url(/nuxeo/img/theme5_2/tabs/userclipboard/tab_selected_right.gif) no-repeat right top</background>
         <text-decoration>none</text-decoration>
         <padding>7px 10px 7px 2px</padding>
         <display>block</display>
         <float>left</float>
       </selector>
-      <selector path=".userClipboardTabs li.selected"
-        view="nuxeo5 clip board">
-        <background>
-          url(/nuxeo/img/theme5_2/tabs/userclipboard/tab_selected_left.gif) no-repeat
-          left top
-        </background>
+      <selector path=".userClipboardTabs li.selected" view="nuxeo5 clip board">
+        <background>url(/nuxeo/img/theme5_2/tabs/userclipboard/tab_selected_left.gif) no-repeat left top</background>
         <border-color>#FFF</border-color>
         <margin>0 0 0 5px</margin>
         <padding>0 0 0 6px</padding>
@@ -1551,9 +1460,7 @@
       </selector>
       <selector path=".userClipboardTabs" view="nuxeo5 clip board">
         <font>normal 11px Verdana, sans-serif</font>
-        <background>
-          url(/nuxeo/img/theme5_2/tabs/userclipboard/blue_pixel.gif) bottom left repeat-x
-        </background>
+        <background>url(/nuxeo/img/theme5_2/tabs/userclipboard/blue_pixel.gif) bottom left repeat-x</background>
         <width>100%</width>
         <margin>0</margin>
         <line-height>normal</line-height>
@@ -1572,69 +1479,64 @@
     <!-- Main cell -->
     <style element="page[1]/section[2]/cell[2]|page[2]/section[1]/cell[1]">
       <selector path="" view="cell frame">
-        <background preset="maincell (Galaxy backgrounds)" />
-        <border-left preset="whitethin (Galaxy borders)" />
+        <background preset="maincell (Galaxy backgrounds)"/>
+        <border-left preset="whitethin (Galaxy borders)"/>
       </selector>
     </style>
-    <style element="page[3]/section[2]/cell[1]">
-      <selector path="" view="cell frame">
-      </selector>
-    </style>
-    <style element="page[3]/section[2]/cell[1]/fragment[1]"
-      inherit="breadcrumbs style">
-      <selector path="">
+    <style element="page[3]/section[2]/cell[1]"/>
+    <style element="page[3]/section[2]/cell[1]/fragment[1]" inherit="breadcrumbs style">
+      <selector path="" view="nuxeo5 breadcrumbs">
         <padding>5px 22px</padding>
       </selector>
     </style>
-    <style element="page[1]/section[2]/cell[2]/fragment[1]" inherit="breadcrumbs style">
-    </style>
+    <style element="page[1]/section[2]/cell[2]/fragment[1]" inherit="breadcrumbs style"/>
     <!-- Footer -->
     <style element="page[1]/section[3]|page[3]/section[4]">
       <selector path="" view="section frame">
-        <border-top preset="topbar (Galaxy borders)" />
+        <border-top preset="topbar (Galaxy borders)"/>
       </selector>
     </style>
-    <style element="page[1]/section[3]/cell[1]/fragment[1]|page[3]/section[4]/cell[1]/fragment[1]" inherit="default buttons">
+    <style
+      element="page[1]/section[3]/cell[1]/fragment[1]|page[3]/section[4]/cell[1]/fragment[1]" inherit="default buttons">
       <selector path="form, p" view="Nuxeo EP footer (Galaxy Theme)">
         <margin>0</margin>
         <padding>0</padding>
       </selector>
       <selector path="" view="Nuxeo EP footer (Galaxy Theme)">
-        <font preset="small (Galaxy fonts)" />
-        <color preset="medium (Nuxeo psd colors)" />
+        <font preset="small (Galaxy fonts)"/>
+        <color preset="medium (Nuxeo psd colors)"/>
         <padding>5px 15px 5px 5px</padding>
       </selector>
       <selector path="div" view="Nuxeo EP footer (Galaxy Theme)">
         <margin>0</margin>
         <line-height>1.25em</line-height>
         <padding>0</padding>
-        <font-size preset="small (Galaxy fonts)" />
+        <font-size preset="small (Galaxy fonts)"/>
       </selector>
       <selector path="a" view="Nuxeo EP footer (Galaxy Theme)">
-        <color preset="link (Nuxeo psd colors)" />
+        <color preset="link (Nuxeo psd colors)"/>
         <text-decoration>none</text-decoration>
       </selector>
       <selector path="a:visited" view="Nuxeo EP footer (Galaxy Theme)">
-        <color preset="link.visited (Nuxeo psd colors)" />
+        <color preset="link.visited (Nuxeo psd colors)"/>
       </selector>
       <selector path="a:active" view="Nuxeo EP footer (Galaxy Theme)">
-        <color preset="link.active (Nuxeo psd colors)" />
+        <color preset="link.active (Nuxeo psd colors)"/>
       </selector>
       <selector path="a:hover" view="Nuxeo EP footer (Galaxy Theme)">
-        <color preset="link (Nuxeo psd colors)" />
+        <color preset="link (Nuxeo psd colors)"/>
         <text-decoration>underline</text-decoration>
       </selector>
       <selector path="input.langSelect" view="Nuxeo EP footer (Galaxy Theme)">
         <margin>9px 5px 0px 5px</margin>
       </selector>
     </style>
-    
     <!-- main fragment for default page & popup -->
     <style
       element="page[1]/section[2]/cell[2]/fragment[2]|page[2]/section[1]/cell[1]/fragment[1]" inherit="common style 1">
       <selector path="" view="facelet region">
         <padding>7px</padding>
-      </selector>  
+      </selector>
       <selector path="div.syndicationButton" view="facelet region">
         <background preset="rss (Galaxy backgrounds)"/>
         <margin-bottom>5px</margin-bottom>
@@ -1642,24 +1544,25 @@
         <font-size>9px</font-size>
         <float>right</float>
       </selector>
-      <selector path=".syndicationContainer">
+      <selector path=".syndicationContainer" view="facelet region">
         <height>30px</height>
       </selector>
-      <selector path="div.syndicationButton div.syndicationLinks"
-        view="facelet region">
+      <selector path="div.syndicationButton div.syndicationLinks" view="facelet region">
         <color>rgb(241, 242, 243)</color>
-        <font preset="small (Galaxy fonts)" />
+        <font preset="small (Galaxy fonts)"/>
         <padding>2px 4px</padding>
       </selector>
-      <selector path="div.syndicationButton div.syndicationLinks a"
-        view="facelet region">
+      <selector path="div.syndicationButton div.syndicationLinks a" view="facelet region">
         <color>rgb(255, 255, 255)</color>
         <text-decoration>none</text-decoration>
       </selector>
     </style>
     <!-- main fragment for user dashboard -->
-    <style element="page[3]/section[3]/cell[1]|page[3]/section[3]/cell[2]"
-      inherit="common style 1">
+    <style
+      element="page[3]/section[3]/cell[1]|page[3]/section[3]/cell[2]" inherit="common style 1">
+      <selector path=".syndicationContainer" view="cell frame">
+        <height>30px</height>
+      </selector>
       <selector path="div.syndicationButton" view="facelet region">
         <background preset="rss (Galaxy backgrounds)"/>
         <margin-bottom>5px</margin-bottom>
@@ -1667,17 +1570,12 @@
         <font-size>9px</font-size>
         <float>right</float>
       </selector>
-      <selector path=".syndicationContainer">
-        <height>30px</height>
-      </selector>
-      <selector path="div.syndicationButton div.syndicationLinks"
-        view="facelet region">
+      <selector path="div.syndicationButton div.syndicationLinks" view="facelet region">
         <color>rgb(241, 242, 243)</color>
-        <font preset="small (Galaxy fonts)" />
+        <font preset="small (Galaxy fonts)"/>
         <padding>2px 4px</padding>
       </selector>
-      <selector path="div.syndicationButton div.syndicationLinks a"
-        view="facelet region">
+      <selector path="div.syndicationButton div.syndicationLinks a" view="facelet region">
         <color>rgb(255, 255, 255)</color>
         <text-decoration>none</text-decoration>
       </selector>

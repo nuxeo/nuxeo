@@ -12,12 +12,6 @@
 
       <div class="boxBody">
 
-      <h:form>
-        <ui:decorate template="/pagination/pageNavigationControls.xhtml">
-          <ui:param name="provider" value="#{provider}" />
-        </ui:decorate>
-      </h:form>
-
       <ui:include src="/incl/documents_table_simple.xhtml" >
         <ui:param name="provider" value="#{provider}" />
         <ui:param name="providerName" value="#{provider.name}" />
