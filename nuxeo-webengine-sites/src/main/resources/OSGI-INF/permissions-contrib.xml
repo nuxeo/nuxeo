@@ -8,12 +8,12 @@
 
     <permission name="Comment">
       <include>Read</include>
-      <include>Write</include>
+      <!--include>Write</include-->
     </permission>
     
     <permission name="Moderate">
       <include>Read</include>
-      <include>Write</include>
+      <!-- include>Write</include-->
     </permission>
     
     <permission name="Write">
@@ -22,7 +22,7 @@
       <include>Remove</include>
       <include>ManageWorkflows</include>
       <include>WriteLifeCycle</include>
-      <include>Comment</include>
+      <!-- include>Comment</include-->
     </permission>
     
   </extension>
