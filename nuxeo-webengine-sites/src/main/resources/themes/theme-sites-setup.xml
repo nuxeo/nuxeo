@@ -688,11 +688,7 @@
         <border-color>#7a7a7a</border-color>
       </selector>
     </style>
-    <style element="page[2]/section[2]/cell[3]" inherit="common site style">
-       <selector path="" view="cell frame">
-        <border-left>1px dotted #7a7a7a</border-left>
-      </selector>
-    </style>
+    <style element="page[2]/section[2]/cell[3]" inherit="common site style"/>
     <style element="page[2]/section[3]" inherit="common site style"/>
     <style element="page[2]/section[3]/cell[1]" inherit="common site style"/>
     <style element="page[2]/section[3]/cell[2]" inherit="common site style">
