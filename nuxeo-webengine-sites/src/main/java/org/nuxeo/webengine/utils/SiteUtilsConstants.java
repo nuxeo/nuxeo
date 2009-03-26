@@ -53,6 +53,8 @@ public final class SiteUtilsConstants {
     public static final String ALL_WEBPAGES = "webPages";
 
     public static final String WEB_VIEW_FACET = "WebView";
+    
+    public static final String RESULTS = "results";
 
     /**
      * Constants used for Comments

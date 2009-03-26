@@ -22,11 +22,13 @@ import static org.nuxeo.webengine.utils.SiteUtilsConstants.CONTEXTUAL_LINKS;
 import static org.nuxeo.webengine.utils.SiteUtilsConstants.DESCRIPTION;
 import static org.nuxeo.webengine.utils.SiteUtilsConstants.LAST_PUBLISHED_PAGES;
 import static org.nuxeo.webengine.utils.SiteUtilsConstants.WELCOME_TEXT;
+import static org.nuxeo.webengine.utils.SiteUtilsConstants.RESULTS;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -126,6 +128,29 @@ public class Page extends DocumentObject {
         }
         return resp;
     }
+    
+    @POST
+    @Path("search")
+    public Object getSearchParametres(
+            @FormParam("searchParam") String searchParam) {
+        ctx.getRequest().setAttribute("org.nuxeo.theme.theme",
+                "sites" + "/" + "search");
+        Map<String, Object> root = new HashMap<String, Object>();
+        try {
+            DocumentModel ws = SiteUtils.getFirstWorkspaceParent(
+                    getCoreSession(), doc);
+            List<Object> pages = SiteUtils.searchPagesInSite(ws, searchParam,
+                    50);
+            root.put(RESULTS, pages);
+            root.put(CONTEXTUAL_LINKS, SiteUtils.getContextualLinks(ws));
+            root.put(WELCOME_TEXT, SiteHelper.getString(ws, "webc:welcomeText",
+                    null));
+            return getTemplate("template_default.ftl").args(root);
+
+        } catch (Exception e) {
+            throw WebException.wrap(e);
+        }
+    }
 
     public boolean isUserWithCommentPermission() {
         try {
@@ -163,7 +188,6 @@ public class Page extends DocumentObject {
         }
         root.put("mimetypeService", mimetypeService);
         return root;
-
     }
-
+    
 }

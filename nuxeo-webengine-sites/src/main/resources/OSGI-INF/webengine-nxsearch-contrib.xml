@@ -22,6 +22,36 @@
         indexed="true" type="Text" binary="false" sortable="true"
         sortOption="case-insensitive"/>
     </resource>
+    
+    <resource name="webpage" prefix="webp" indexAllFields="true"
+      type="schema">
+      <field name="content" analyzer="default" stored="true"
+        indexed="true" type="Text" binary="false" sortable="true"
+        sortOption="case-insensitive"/>
+    </resource>
 
-  </extension>  
+  </extension> 
+  
+  <extension
+    target="org.nuxeo.ecm.core.search.service.SearchServiceImpl"
+    point="fullTextField">
+    <fullText name="ecm:fulltext" analyzer="default"
+      blobExtractorName="nuxeoTransform">
+      <field>dublincore:title</field>
+      <field>dublincore:description</field>
+      <field>files:file</field>
+      <field>webp:content</field>
+      <mimetype name="application/pdf">pdf2text</mimetype>
+      <mimetype name="application/msword">word2text_poi</mimetype>
+      <mimetype name="application/vnd.ms-powerpoint">ppt2text_poi</mimetype>
+      <mimetype name="application/vnd.ms-excel">xl2text_jr</mimetype>
+      <mimetype name="text/xml">xml2text_jr</mimetype>
+      <mimetype name="text/html">html2text_jr</mimetype>
+      <mimetype name="application/vnd.sun.xml.writer">oo2text_jr</mimetype>
+      <mimetype name="application/vnd.sun.xml.writer.template">oo2text_jr</mimetype>
+      <mimetype name="application/vnd.oasis.opendocument.text">oo2text_jr</mimetype>
+      <mimetype name="application/vnd.oasis.opendocument.text-template">oo2text_jr</mimetype>
+      <mimetype name=".*/.*">any2text</mimetype>
+    </fullText>
+  </extension>
 </component>

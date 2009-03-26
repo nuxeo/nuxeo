@@ -51,8 +51,15 @@
     <view name="All WebPages" template-engine="freemarker">
       <format-type>widget</format-type>
       <template>widgets/all_webpages.ftl</template>
-    </view>    
-
+    </view>
+    <view name="Search Results" template-engine="freemarker">
+      <format-type>widget</format-type>
+      <template>widgets/search_results.ftl</template>
+    </view>
+    <view name="Minisite Search " template-engine="freemarker">
+      <format-type>widget</format-type>
+      <template>widgets/search.ftl</template>
+    </view>
   </extension>
 
   <!-- application settings -->

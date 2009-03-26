@@ -13,6 +13,9 @@
         <cell>
           <fragment type="generic fragment"/>
         </cell>
+        <cell>
+          <fragment type="generic fragment"/>
+        </cell>
       </section>
       <section>
         <cell>
@@ -42,6 +45,9 @@
         <cell>
           <fragment type="generic fragment"/>
         </cell>
+        <cell>
+          <fragment type="generic fragment"/>
+        </cell>
       </section>
       <section>
         <cell>
@@ -58,6 +64,30 @@
         </cell>
       </section>
     </page>
+    <page name="search">
+      <section>
+        <cell>
+          <fragment type="generic fragment"/>
+        </cell>
+        <cell>
+          <fragment type="generic fragment"/>
+        </cell>
+      </section>
+      <section>
+        <cell>
+          <fragment type="generic fragment"/>
+        </cell>
+        <cell>
+          <fragment type="region fragment"/>
+          <fragment type="generic fragment"/>     
+        </cell>
+        <cell>
+          <cell>
+            <fragment type="generic fragment"/>
+          </cell>
+        </cell>
+      </section>
+    </page>
   </layout>
   <properties element="page[1]/section[1]/cell[1]/fragment[1]">
     <name>content</name>
@@ -70,6 +100,11 @@
     <defaultSrc/>
   </properties>
   <properties element="page[3]/section[2]/cell[2]/fragment[1]">
+    <name>content</name>
+    <defaultBody/>
+    <defaultSrc/>
+  </properties>
+  <properties element="page[4]/section[2]/cell[2]/fragment[1]">
     <name>content</name>
     <defaultBody/>
     <defaultSrc/>
@@ -96,8 +131,13 @@
     </layout>
     <layout element="page[2]/section[1]/cell[1]">
       <height>115px</height>
-      <width>100%</width>
+      <width>82%</width>
       <text-align>left</text-align>
+    </layout>
+    <layout element="page[2]/section[1]/cell[2]">
+      <height>115px</height>
+      <width>18%</width>
+      <text-align>right</text-align>
     </layout>
     <layout element="page[3]">
       <margin>0</margin>
@@ -108,8 +148,30 @@
     </layout>
     <layout element="page[3]/section[1]/cell[1]">
       <height>115px</height>
-      <width>100%</width>
+      <width>82%</width>
       <text-align>left</text-align>
+    </layout>
+    <layout element="page[3]/section[1]/cell[2]">
+      <height>115px</height>
+      <width>18%</width>
+      <text-align>right</text-align>
+    </layout>
+    <layout element="page[4]">
+      <margin>0</margin>
+      <padding>0</padding>
+    </layout>
+    <layout element="page[4]/section[1]">
+      <width>100%</width>
+    </layout>
+    <layout element="page[4]/section[1]/cell[1]">
+      <width>82%</width>
+      <height>115px</height>
+      <text-align>left</text-align>
+    </layout>
+    <layout element="page[4]/section[1]/cell[2]">
+      <width>18%</width>
+      <height>115px</height>
+      <text-align>right</text-align>
     </layout>
     <layout element="page[2]/section[2]">
       <width>100%</width>
@@ -160,6 +222,21 @@
       <width>18%</width>
       <padding>10px</padding>
     </layout>
+    <layout element="page[4]/section[2]">
+      <width>100%</width>
+    </layout>
+    <layout element="page[4]/section[2]/cell[1]">
+      <width>18%</width>
+      <padding>10px 5px 10px 10px</padding>
+    </layout>
+    <layout element="page[4]/section[2]/cell[2]">
+      <width>64%</width>
+      <padding>10px 20px</padding>
+    </layout>
+    <layout element="page[4]/section[2]/cell[3]">
+      <width>18%</width>
+      <padding>10px</padding>
+    </layout>
     <widget element="">
       <view>theme view</view>
       <charset>utf-8</charset>
@@ -185,8 +262,14 @@
     <widget element="page[2]/section[1]/cell[1]">
       <view>cell frame</view>
     </widget>
+    <widget element="page[2]/section[1]/cell[2]">
+      <view>cell frame</view>
+    </widget>
     <widget element="page[2]/section[1]/cell[1]/fragment[1]">
       <view>Minisite Logo</view>
+    </widget>
+    <widget element="page[2]/section[1]/cell[2]/fragment[1]">
+      <view>Minisite Search</view>
     </widget>
     <widget element="page[2]/section[2]">
       <view>section frame</view>
@@ -242,8 +325,14 @@
     <widget element="page[3]/section[1]/cell[1]">
       <view>cell frame</view>
     </widget>
+    <widget element="page[3]/section[1]/cell[2]">
+      <view>cell frame</view>
+    </widget>
     <widget element="page[3]/section[1]/cell[1]/fragment[1]">
       <view>Minisite Logo</view>
+    </widget>
+    <widget element="page[3]/section[1]/cell[2]/fragment[1]">
+      <view>Minisite Search</view>
     </widget>
     <widget element="page[3]/section[2]">
       <view>section frame</view>
@@ -275,6 +364,51 @@
     <widget element="page[3]/section[2]/cell[3]/fragment[1]">
       <view>Minisite Contextual</view>
     </widget>
+        <widget element="page[4]">
+      <view>page frame</view>
+    </widget>
+    <widget element="page[4]/section[1]">
+      <view>section frame</view>
+    </widget>
+    <widget element="page[4]/section[1]/cell[1]">
+      <view>cell frame</view>
+    </widget>
+    <widget element="page[4]/section[1]/cell[2]">
+      <view>cell frame</view>
+    </widget>
+    <widget element="page[4]/section[2]/cell[2]/fragment[1]">
+      <view>Minisite Main</view>
+    </widget>
+    <widget element="page[4]/section[2]/cell[1]/fragment[1]">
+      <view>Minisite Tree</view>
+    </widget>
+    <widget element="page[4]/section[1]/cell[1]/fragment[1]">
+      <view>Minisite Logo</view>
+    </widget>
+    <widget element="page[4]/section[1]/cell[2]/fragment[1]">
+      <view>Minisite Search</view>
+    </widget>
+    <widget element="page[4]/section[2]">
+      <view>section frame</view>
+    </widget>
+    <widget element="page[4]/section[2]/cell[1]">
+      <view>cell frame</view>
+    </widget>
+    <widget element="page[4]/section[2]/cell[2]">
+      <view>cell frame</view>
+    </widget>
+    <widget element="page[4]/section[2]/cell[3]">
+      <view>cell frame</view>
+    </widget>
+    <widget element="page[4]/section[2]/cell[2]/fragment[2]">
+      <view>All WebPages</view>
+    </widget>    
+    <widget element="page[4]/section[2]/cell[3]/cell[1]/fragment[1]">
+      <view>Minisite Contextual</view>
+    </widget>
+     <widget element="page[4]/section[2]/cell[2]/fragment[2]">
+      <view>Search Results</view>
+     </widget>
      <!-- buttons -->
     <style name="site buttons">
       <selector path="input.button">
@@ -670,7 +804,7 @@
         <background preset="tableevenlines (Sites backgrounds)" />
       </selector>
     </style>
-    <style element="page[1]/section[1]" inherit="common site style"/>
+        <style element="page[1]/section[1]" inherit="common site style"/>
     <style element="page[1]/section[1]/cell[1]" inherit="common site style"/>
     <style element="page[2]" inherit="common site style"/>
     <style element="page[2]/section[1]" inherit="common site style">
@@ -679,6 +813,7 @@
       </selector>
     </style>
     <style element="page[2]/section[1]/cell[1]" inherit="common site style"/>
+     <style element="page[2]/section[1]/cell[2]" inherit="common site style"/>
     <style element="page[2]/section[2]" inherit="common site style"/>
     <style element="page[2]/section[2]/cell[1]" inherit="common site style"/>
     <style element="page[2]/section[2]/cell[2]" inherit="common site style">
@@ -712,7 +847,7 @@
       </selector>
     </style>
     <style element="page[3]/section[1]/cell[1]" inherit="common site style"/>
-   
+    <style element="page[3]/section[1]/cell[2]" inherit="common site style"/>
     <style element="page[3]/section[2]" inherit="common site style"/>
     <style element="page[3]/section[2]/cell[1]" inherit="common site style">
       <selector path=".lastPublishedPagesBlock" view="cell frame">
@@ -727,5 +862,25 @@
       </selector>
      </style>
     <style element="page[3]/section[2]/cell[3]" inherit="common site style"/>
+      <style element="page[4]" inherit="common site style"/>
+    <style element="page[4]/section[1]" inherit="common site style">
+    <selector path="" view="section frame">
+        <background-color>black</background-color>
+      </selector>
+    </style>
+    <style element="page[4]/section[1]/cell[1]" inherit="common site style"/>
+    <style element="page[4]/section[1]/cell[2]" inherit="common site style"/>
+    <style element="page[4]/section[2]" inherit="common site style"/>
+    <style element="page[4]/section[2]/cell[1]" inherit="common site style">
+      <selector path="" view="cell frame">
+        <border-right>2px solid #7a7a7a</border-right>
+      </selector>
+    </style>
+    <style element="page[4]/section[2]/cell[2]" inherit="common site style"/>
+    <style element="page[4]/section[2]/cell[3]" inherit="common site style">
+       <selector path="" view="cell frame">
+        <border-left>1px dotted #7a7a7a</border-left>
+      </selector>
+      </style>
   </formats>
 </theme>

@@ -16,7 +16,11 @@
  */
 package org.nuxeo.webengine.utils;
 
-import static org.nuxeo.webengine.utils.SiteUtilsConstants.*;
+import static org.nuxeo.webengine.utils.SiteUtilsConstants.CONTEXTUAL_LINK;
+import static org.nuxeo.webengine.utils.SiteUtilsConstants.NUMBER_COMMENTS;
+import static org.nuxeo.webengine.utils.SiteUtilsConstants.WEBPAGE;
+import static org.nuxeo.webengine.utils.SiteUtilsConstants.WEB_CONTAINER_FACET;
+import static org.nuxeo.webengine.utils.SiteUtilsConstants.WORKSPACE;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -290,6 +294,75 @@ public class SiteUtils {
         }
         return principal.getFirstName() + " " + principal.getLastName();
     }
+    
+    /**
+     * This method is used to search a certain webPage between all the pages
+     * under a <b>Workspace</b> that contains in title, description , main
+     * content or attached files the given searchParam
+     * @param ws - the workspace
+     * @param searchParam - the search parameter
+     * @param nrWordsFromDescription - the number of words from the page description
+     * @return the <b>WebPage</b>-s found under a <b>Workspace</b> that match the 
+     * corresponding criteria
+     * @throws ClientException
+     */
+    public static List<Object> searchPagesInSite(DocumentModel ws,
+            String searchParam, int nrWordsFromDescription)
+            throws ClientException {
+        WebContext context = WebEngine.getActiveContext();
+        CoreSession session = context.getCoreSession();
+        List<Object> webPages = new ArrayList<Object>();
+        if (StringUtils.isEmpty(searchParam) == false) {
+            DocumentModelList results = session.query(
+                    String.format(
+                            "SELECT * FROM WebPage WHERE "
+                                    + " ecm:path STARTSWITH  '%s' "
+                                    + " AND  ecm:fulltext LIKE '%s' "
+                                    + " AND ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0"
+                                    + " AND ecm:currentLifeCycleState != 'deleted' ORDER BY dc:modified DESC",
+                            ws.getPathAsString() + "/", searchParam), null, 0,
+                    0, true);
+            for (DocumentModel documentModel : results) {
+                Map<String, String> page = new HashMap<String, String>();
+                GregorianCalendar creationDate = SiteHelper.getGregorianCalendar(
+                        documentModel, "dc:created");
+
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
+                        "dd MMMM yyyy",
+                        WebEngine.getActiveContext().getLocale());
+                String formattedString = simpleDateFormat.format(creationDate.getTime());
+                page.put("created", formattedString);
+                GregorianCalendar modificationDate = SiteHelper.getGregorianCalendar(
+                        documentModel, "dc:modified");
+                formattedString = simpleDateFormat.format(modificationDate.getTime());
+                page.put("modified", formattedString);
+
+                try {
+                    page.put("author", getUserDetails(SiteHelper.getString(
+                            documentModel, "dc:creator")));
+                    StringBuilder path = new StringBuilder(
+                            getWebContainersPath()).append("/");
+                    path.append(
+                            JsonAdapter.getRelativPath(
+                                    session.getParentDocument(ws.getRef()), ws)).append(
+                            "/");
+                    path.append(JsonAdapter.getRelativPath(ws, documentModel));
+                    page.put("path", path.toString());
+                } catch (Exception e) {
+                    throw new ClientException(e);
+                }
+                page.put("name",
+                        SiteHelper.getString(documentModel, "dc:title"));
+                page.put("description", SiteHelper.getFistNWordsFromString(
+                        SiteHelper.getString(documentModel, "dc:description"),
+                        nrWordsFromDescription));
+                webPages.add(page);
+
+            }
+        }
+        return webPages;
+    }
+    
 
     /**
      * This method is used to return the path to all the existing web
