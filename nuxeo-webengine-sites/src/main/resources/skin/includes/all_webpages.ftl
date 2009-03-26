@@ -5,10 +5,9 @@
   <div class="allWebPagesResume">    
     <#list webPages as webPage>  
       <div class="documentInfo"> 
-        <a href="${This.path}/${webPage.path}"> ${webPage.name}</a>
-       </div>
-       <div style="clear:both;"></div>
+        <a href="${This.path}/${webPage.path}"> ${webPage.name} </a>
       </div>
+      <div style="clear:both;"></div>
     </#list>
   </div>
 </div>
