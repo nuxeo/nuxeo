@@ -40,7 +40,6 @@ import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 import org.nuxeo.theme.webwidgets.Manager;
 import org.nuxeo.theme.webwidgets.WidgetData;
-import org.nuxeo.theme.webwidgets.WidgetException;
 import org.nuxeo.theme.webwidgets.WidgetType;
 
 @WebObject(type = "nxthemes-webwidgets")
@@ -141,9 +140,9 @@ public class Main extends ModuleRoot {
         HttpServletRequest req = ctx.getRequest();
         String res = Editor.uploadFile(req, providerName, widgetUid, dataName);
         long timestamp = new Date().getTime();
-        String src = String.format("nxwebwidgets://data/%s/%s/%s/%s",
+        String dataUrl = String.format("nxwebwidgets://data/%s/%s/%s/%s",
                 providerName, widgetUid, dataName, timestamp);
-        Editor.setWidgetPreference(providerName, widgetUid, dataName, src);
+        Editor.setWidgetPreference(providerName, widgetUid, dataName, dataUrl);
 
         return res;
     }

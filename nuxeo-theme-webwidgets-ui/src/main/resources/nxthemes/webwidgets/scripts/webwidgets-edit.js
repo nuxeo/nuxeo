@@ -327,6 +327,7 @@ NXThemesWebWidgets.ImageUploader.prototype = Object.extend(new NXThemesWebWidget
     var name = this.name;
     var providerName = this.providerName;
     var widgetUid = this.widgetUid;
+    var widget = NXThemesWebWidgets.getWidget(providerName, widgetUid);
     var url = nxthemesBasePath + "/nxthemes-webwidgets/get_widget_data_info";
     new Ajax.Request(url, {
          method: 'get',
@@ -339,10 +340,12 @@ NXThemesWebWidgets.ImageUploader.prototype = Object.extend(new NXThemesWebWidget
            var text = r.responseText;
            if (text) {
              var info = text.evalJSON(true);
-             var now = new Date().getTime();
-             var src = nxthemesBasePath + '/nxthemes-webwidgets/render_widget_data?widget_uid=' + encodeURIComponent(widgetUid) +
-               '&data=' + encodeURIComponent(name) + '&provider=' + encodeURIComponent(providerName) +
-               '&timestamp=' + now;
+             
+             var timestamp = new Date().getTime();
+             var data_url = 'nxwebwidgets://data/' + providerName + '/' + widgetUid + '/' + name + '/' + timestamp;
+             var src = NXThemesWebWidgets.getWidgetDataUrl(data_url);
+             widget.setValue(name, data_url);
+
              controlEl.innerHTML = '<div><img src="' + src + '" /></div>' +
                info['filename'] + ' (' + info['content-type'] + ')';
            } else {
@@ -387,6 +390,7 @@ NXThemesWebWidgets.FileUploader.prototype = Object.extend(new NXThemesWebWidgets
     var name = this.name;
     var providerName = this.providerName;
     var widgetUid = this.widgetUid;
+    var widget = NXThemesWebWidgets.getWidget(providerName, widgetUid);
     var url = nxthemesBasePath + "/nxthemes-webwidgets/get_widget_data_info";
     new Ajax.Request(url, {
          method: 'get',
@@ -399,6 +403,12 @@ NXThemesWebWidgets.FileUploader.prototype = Object.extend(new NXThemesWebWidgets
            var text = r.responseText;
            if (text) {
              var info = text.evalJSON(true);
+             
+             var timestamp = new Date().getTime();
+             var data_url = 'nxwebwidgets://data/' + providerName + '/' + widgetUid + '/' + name + '/' + timestamp;
+             var src = NXThemesWebWidgets.getWidgetDataUrl(data_url);
+             widget.setValue(name, data_url);
+             
              controlEl.innerHTML = info['filename'] + ' (' + info['content-type'] + ')';
           } else {
              controlEl.innerHTML = '<img src="' + nxthemesBasePath + '/skin/nxthemes-webwidgets/img/exclamation.png" />';
