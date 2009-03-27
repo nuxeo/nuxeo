@@ -55,6 +55,8 @@ public final class SiteUtilsConstants {
     public static final String WEB_VIEW_FACET = "WebView";
     
     public static final String RESULTS = "results";
+    
+    public static final String DELETED = "deleted";
 
     /**
      * Constants used for Comments

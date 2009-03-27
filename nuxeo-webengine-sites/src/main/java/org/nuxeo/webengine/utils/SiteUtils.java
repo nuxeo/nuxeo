@@ -21,6 +21,7 @@ import static org.nuxeo.webengine.utils.SiteUtilsConstants.NUMBER_COMMENTS;
 import static org.nuxeo.webengine.utils.SiteUtilsConstants.WEBPAGE;
 import static org.nuxeo.webengine.utils.SiteUtilsConstants.WEB_CONTAINER_FACET;
 import static org.nuxeo.webengine.utils.SiteUtilsConstants.WORKSPACE;
+import static org.nuxeo.webengine.utils.SiteUtilsConstants.DELETED;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -180,13 +181,14 @@ public class SiteUtils {
         try {
             for (DocumentModel webPage : session.getChildren(document.getRef(),
                     WEBPAGE)) {
-
-                Map<String, String> details = new HashMap<String, String>();
-                details.put("name", SiteHelper.getString(webPage, "dc:title"));
-                details.put("path", JsonAdapter.getRelativPath(document,
-                        webPage).toString());
-
-                webPages.add(details);
+                if (webPage.getCurrentLifeCycleState().equals(DELETED) == false) {
+                    Map<String, String> details = new HashMap<String, String>();
+                    details.put("name", SiteHelper.getString(webPage,
+                            "dc:title"));
+                    details.put("path", JsonAdapter.getRelativPath(document,
+                            webPage).toString());
+                    webPages.add(details);
+                }
             }
         } catch (Exception e) {
             log.debug("Problems while trying all the web pages ");

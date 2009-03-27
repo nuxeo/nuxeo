@@ -22,6 +22,7 @@ package org.nuxeo.webengine.sites;
 import java.util.Vector;
 import java.util.List;
 
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.webengine.ui.tree.document.DocumentContentProvider;
@@ -41,8 +42,14 @@ public class SiteContentProvider extends DocumentContentProvider {
         for (Object o : objects) {
             DocumentModel d = (DocumentModel) o;
             // filter pages
-            if (SiteHelper.getBoolean(d, "webp:pushtomenu", false)) {
-                v.add(d);
+            // WEB-214 
+            try {
+                if (SiteHelper.getBoolean(d, "webp:pushtomenu", false)
+                        && d.getCurrentLifeCycleState().equals("deleted") == false) {
+                    v.add(d);
+                }
+            } catch (ClientException e) {
+                e.printStackTrace();
             }
         }
         return v.toArray();
