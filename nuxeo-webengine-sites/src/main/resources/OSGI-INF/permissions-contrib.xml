@@ -6,15 +6,9 @@
   <extension target="org.nuxeo.ecm.core.security.SecurityService"
     point="permissions">
 
-    <permission name="Comment">
-      <include>Read</include>
-      <!--include>Write</include-->
-    </permission>
+    <permission name="Comment" />
     
-    <permission name="Moderate">
-      <include>Read</include>
-      <!-- include>Write</include-->
-    </permission>
+    <permission name="Moderate" />
     
     <permission name="Write">
       <include>AddChildren</include>
@@ -22,7 +16,7 @@
       <include>Remove</include>
       <include>ManageWorkflows</include>
       <include>WriteLifeCycle</include>
-      <!-- include>Comment</include-->
+      <include>Comment</include>
     </permission>
     
   </extension>
