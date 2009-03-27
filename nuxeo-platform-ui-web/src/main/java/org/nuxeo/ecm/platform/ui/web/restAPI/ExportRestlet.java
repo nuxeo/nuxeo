@@ -70,11 +70,12 @@ public class ExportRestlet extends BaseNuxeoRestlet implements Serializable {
         if (action.equals("exportTree")) {
             exportAsTree = true;
             exportAsZip = true;
-        } else { // "export", "exportSingle"
+        } else {
+            // "export", "exportSingle"
             exportAsTree = false;
             String format = req.getResourceRef().getQueryAsForm().getFirstValue(
-                    "format").toLowerCase();
-            exportAsZip = "zip".equals(format);
+                    "format");
+            exportAsZip = format != null && "zip".equals(format.toLowerCase());
         }
 
         String repo = (String) req.getAttributes().get("repo");
