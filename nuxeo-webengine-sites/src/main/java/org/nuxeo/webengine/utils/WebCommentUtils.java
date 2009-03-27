@@ -17,6 +17,7 @@
 
 
 package org.nuxeo.webengine.utils;
+import static org.nuxeo.webengine.utils.SiteUtilsConstants.DELETED;
 import static org.nuxeo.webengine.utils.SiteUtilsConstants.PERMISSION_COMMENT;
 import static org.nuxeo.webengine.utils.SiteUtilsConstants.PERMISSION_MODERATE;
 
@@ -127,7 +128,11 @@ public class WebCommentUtils {
         CommentManager commentManager = WebCommentUtils.getCommentManager();
         List<DocumentModel> list = commentManager.getDocumentsForComment(comment);
         if (list.size() != 0) {
-            return list.get(0);
+            DocumentModel page = list.get(0);
+            if (page.getCurrentLifeCycleState().equals(DELETED) == false){
+                return page;
+            }
+                
         }
         return null;
     }

@@ -79,18 +79,20 @@ public class SiteUtils {
 
             for (DocumentModel document : session.getChildren(
                     documentModel.getRef(), CONTEXTUAL_LINK)) {
-                try {
-                    Map<String, String> contextualLink = new HashMap<String, String>();
-                    contextualLink.put("title", SiteHelper.getString(document,
-                            "dc:title"));
-                    contextualLink.put("description", SiteHelper.getString(
-                            document, "dc:description"));
-                    contextualLink.put("link", SiteHelper.getString(document,
-                            "clink:link"));
-                    contextualLinks.add(contextualLink);
-                } catch (Exception e) {
-                    log.debug("Problems retrieving the contextual links for "
-                            + documentModel.getTitle());
+                if (document.getCurrentLifeCycleState().equals(DELETED) == false) {
+                    try {
+                        Map<String, String> contextualLink = new HashMap<String, String>();
+                        contextualLink.put("title", SiteHelper.getString(
+                                document, "dc:title"));
+                        contextualLink.put("description", SiteHelper.getString(
+                                document, "dc:description"));
+                        contextualLink.put("link", SiteHelper.getString(
+                                document, "clink:link"));
+                        contextualLinks.add(contextualLink);
+                    } catch (Exception e) {
+                        log.debug("Problems retrieving the contextual links for "
+                                + documentModel.getTitle());
+                    }
                 }
             }
         }
@@ -245,34 +247,34 @@ public class SiteUtils {
         List<Object> lastWebComments = new ArrayList<Object>();
         for (DocumentModel documentModel : comments) {
             Map<String, String> comment = new HashMap<String, String>();
-
-            GregorianCalendar creationDate = SiteHelper.getGregorianCalendar(
-                    documentModel, "webcmt:creationDate");
-
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd MMMM",
-                    WebEngine.getActiveContext().getLocale());
-            String formattedString = simpleDateFormat.format(creationDate.getTime());
-            String[] splittedFormatterdString = formattedString.split(" ");
-            comment.put("day", splittedFormatterdString[0]);
-            comment.put("month", splittedFormatterdString[1]);
-
             try {
-                comment.put("author", getUserDetails(SiteHelper.getString(
-                        documentModel, "webcmt:author")));
                 DocumentModel parentPage = WebCommentUtils.getPageForComment(documentModel);
                 if (parentPage != null) {
-                    comment.put("pageTitle", parentPage.getTitle());
-                    comment.put("pagePath", JsonAdapter.getRelativPath(ws,
-                            parentPage).toString());
+                    GregorianCalendar creationDate = SiteHelper.getGregorianCalendar(
+                            documentModel, "webcmt:creationDate");
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
+                            "dd MMMM", WebEngine.getActiveContext().getLocale());
+                    String formattedString = simpleDateFormat.format(creationDate.getTime());
+                    String[] splittedFormatterdString = formattedString.split(" ");
+                    comment.put("day", splittedFormatterdString[0]);
+                    comment.put("month", splittedFormatterdString[1]);
+
+                    comment.put("author", getUserDetails(SiteHelper.getString(
+                            documentModel, "webcmt:author")));
+
+                    if (parentPage != null) {
+                        comment.put("pageTitle", parentPage.getTitle());
+                        comment.put("pagePath", JsonAdapter.getRelativPath(ws,
+                                parentPage).toString());
+                    }
+                    comment.put("content", SiteHelper.getFistNWordsFromString(
+                            SiteHelper.getString(documentModel, "webcmt:text"),
+                            noWordsFromContent));
+                    lastWebComments.add(comment);
                 }
             } catch (Exception e) {
                 throw new ClientException(e);
             }
-            comment.put("content", SiteHelper.getFistNWordsFromString(
-                    SiteHelper.getString(documentModel, "webcmt:text"),
-                    noWordsFromContent));
-
-            lastWebComments.add(comment);
 
         }
 
@@ -315,15 +317,13 @@ public class SiteUtils {
         CoreSession session = context.getCoreSession();
         List<Object> webPages = new ArrayList<Object>();
         if (StringUtils.isEmpty(searchParam) == false) {
-            DocumentModelList results = session.query(
-                    String.format(
-                            "SELECT * FROM WebPage WHERE "
-                                    + " ecm:path STARTSWITH  '%s' "
-                                    + " AND  ecm:fulltext LIKE '%s' "
-                                    + " AND ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0"
-                                    + " AND ecm:currentLifeCycleState != 'deleted' ORDER BY dc:modified DESC",
-                            ws.getPathAsString() + "/", searchParam), null, 0,
-                    0, true);
+            DocumentModelList results = session.query(String.format(
+                    "SELECT * FROM WebPage WHERE ecm:fulltext LIKE '%s' AND "
+                            + " ecm:path STARTSWITH  '%s' AND "
+                            + " ecm:mixinType != 'HiddenInNavigation' AND "
+                            + " ecm:isCheckedInVersion = 0 AND "
+                            + "ecm:currentLifeCycleState != 'deleted'",
+                    searchParam, ws.getPathAsString() + "/"));
             for (DocumentModel documentModel : results) {
                 Map<String, String> page = new HashMap<String, String>();
                 GregorianCalendar creationDate = SiteHelper.getGregorianCalendar(

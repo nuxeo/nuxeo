@@ -39,8 +39,9 @@
       blobExtractorName="nuxeoTransform">
       <field>dublincore:title</field>
       <field>dublincore:description</field>
+      <field>file:content</field>
+      <field>webpage:content</field>
       <field>files:file</field>
-      <field>webp:content</field>
       <mimetype name="application/pdf">pdf2text</mimetype>
       <mimetype name="application/msword">word2text_poi</mimetype>
       <mimetype name="application/vnd.ms-powerpoint">ppt2text_poi</mimetype>
