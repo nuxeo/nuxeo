@@ -1,7 +1,10 @@
 <#assign comments = This.comments />
- 
+<div class="commentspageBlock">
+<h4>${Context.getMessage("label.page.comments.title")}</h4>
 <#if (This.userWithCommentPermission==true)> 
+<div class="addCommentLink">
   <a class="addComment" onclick="showCommentForm();">${Context.getMessage("label.page.comments.add")}</a>
+</div>
 </#if> 
  
 <script type="text/javascript">
@@ -35,4 +38,4 @@
   </div>
 
 </form>
-
+</div>

@@ -58,6 +58,7 @@
           <fragment type="region fragment"/>
           <fragment type="generic fragment"/>
           <fragment type="generic fragment"/>
+          <fragment type="generic fragment"/>
         </cell>
         <cell>
           <fragment type="generic fragment"/>
@@ -358,6 +359,9 @@
       <view>All WebPages</view>
     </widget>
     <widget element="page[3]/section[2]/cell[2]/fragment[3]">
+      <view>Minisite Attached files</view>
+    </widget>
+    <widget element="page[3]/section[2]/cell[2]/fragment[4]">
       <view>Page Last Comments</view>
     </widget>
     <widget element="page[3]/section[2]/cell[3]">
@@ -470,6 +474,9 @@
       <selector path="textarea">
         <padding>5px</padding>
         <margin>10px 0px</margin>
+        <background-color>#F5F5F5</background-color>
+        <border>1px solid #CCCCCC</border>
+        <font preset="default (Sites fonts)" />
       </selector>
        <selector path="a, a:link">
         <color preset="link (Nuxeo psd colors)" />
@@ -745,6 +752,18 @@
       <selector path=".documentInfo span">
         <padding>3px 0px 0px</padding>
       </selector>
+      <selector path=".attachedFileBlock">
+        <margin>10px 0px 30px</margin>
+      </selector>
+      <selector path=".attachedFileInfo">
+        <margin>10px 0px</margin>
+      </selector>
+      <selector path=".commentspageBlock">
+        <margin>10px 0 30px</margin>
+      </selector>
+      <selector path=".addCommentLink">
+        <margin>15px 0px</margin>
+      </selector>
       <selector path=".lastCommentsBlock">
         <margin>20px 0px</margin>
       </selector>
@@ -815,6 +834,16 @@
         <padding>3px 3px 3px 20px</padding>
         <font-size>11px</font-size>
       </selector>
+      <selector path=".searchResultBlock">
+        <margin>15px 0px 0px</margin>
+      </selector>
+      <selector path=".searchName">
+        <font-size>115%</font-size>
+        <margin-bottom>5px</margin-bottom>
+      </selector>
+      <selector path=".modificationDate">
+        <padding>0px 0px 0px 30px</padding>
+      </selector>
     </style>
         <style element="page[1]/section[1]" inherit="common site style"/>
     <style element="page[1]/section[1]/cell[1]" inherit="common site style"/>
@@ -883,16 +912,14 @@
     <style element="page[4]/section[1]/cell[1]" inherit="common site style"/>
     <style element="page[4]/section[1]/cell[2]" inherit="common site style"/>
     <style element="page[4]/section[2]" inherit="common site style"/>
-    <style element="page[4]/section[2]/cell[1]" inherit="common site style">
+    <style element="page[4]/section[2]/cell[1]" inherit="common site style"/>
+    <style element="page[4]/section[2]/cell[2]" inherit="common site style">
       <selector path="" view="cell frame">
-        <border-right>2px solid #7a7a7a</border-right>
+        <border-style>none dotted none solid</border-style>
+        <border-width>0px 1px 0px 2px</border-width>
+        <border-color>#7a7a7a</border-color>
       </selector>
     </style>
-    <style element="page[4]/section[2]/cell[2]" inherit="common site style"/>
-    <style element="page[4]/section[2]/cell[3]" inherit="common site style">
-       <selector path="" view="cell frame">
-        <border-left>1px dotted #7a7a7a</border-left>
-      </selector>
-      </style>
+    <style element="page[4]/section[2]/cell[3]" inherit="common site style"/>
   </formats>
 </theme>
