@@ -79,7 +79,6 @@
         </cell>
         <cell>
           <fragment type="region fragment"/>
-          <fragment type="generic fragment"/>     
         </cell>
         <cell>
           <cell>
@@ -379,9 +378,6 @@
     <widget element="page[4]/section[1]/cell[2]">
       <view>cell frame</view>
     </widget>
-    <widget element="page[4]/section[2]/cell[2]/fragment[1]">
-      <view>Minisite Main</view>
-    </widget>
     <widget element="page[4]/section[2]/cell[1]/fragment[1]">
       <view>Minisite Tree</view>
     </widget>
@@ -402,14 +398,11 @@
     </widget>
     <widget element="page[4]/section[2]/cell[3]">
       <view>cell frame</view>
-    </widget>
-    <widget element="page[4]/section[2]/cell[2]/fragment[2]">
-      <view>All WebPages</view>
-    </widget>    
+    </widget>  
     <widget element="page[4]/section[2]/cell[3]/cell[1]/fragment[1]">
       <view>Minisite Contextual</view>
     </widget>
-     <widget element="page[4]/section[2]/cell[2]/fragment[2]">
+     <widget element="page[4]/section[2]/cell[2]/fragment[1]">
       <view>Search Results</view>
      </widget>
      <!-- buttons -->
