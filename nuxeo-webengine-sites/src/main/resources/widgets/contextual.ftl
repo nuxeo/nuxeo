@@ -1,3 +1,4 @@
-
-<#include "includes/contextual.ftl"/>
-<@contextual/>
+<div>
+  <#include "includes/contextual.ftl"/>
+  <@contextual/>
+</div>

@@ -1,2 +1,4 @@
-<#include "includes/search.ftl"/>
-<@search/>
+<div>
+  <#include "includes/search.ftl"/>
+  <@search/>
+</div>

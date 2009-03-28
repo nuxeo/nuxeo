@@ -1,3 +1,4 @@
-
-<#include "includes/tree.ftl"/>
-<@navigator/>
+<div>
+  <#include "includes/tree.ftl"/>
+  <@navigator/>
+</div>

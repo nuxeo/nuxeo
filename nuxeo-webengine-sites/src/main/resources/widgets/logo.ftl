@@ -1,3 +1,4 @@
-
-<#include "includes/logo.ftl"/>
-<@logo/>
+<div>
+  <#include "includes/logo.ftl"/>
+  <@logo/>
+</div>
