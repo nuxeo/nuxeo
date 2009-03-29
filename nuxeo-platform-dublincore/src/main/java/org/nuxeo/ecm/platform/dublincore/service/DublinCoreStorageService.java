@@ -25,8 +25,6 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -38,15 +36,23 @@ import org.nuxeo.runtime.model.DefaultComponent;
 /**
  * Service that writes Metadata.
  *
- * @author : <a href="td@nuxeo.com">Thierry Delprat</a>
+ * @author <a href="td@nuxeo.com">Thierry Delprat</a>
  */
 public class DublinCoreStorageService extends DefaultComponent {
 
     public static final String ID = "DublinCoreStorageService";
 
-    private static final Log log = LogFactory.getLog(DublinCoreStorageService.class);
+    public void setCreationDate(DocumentModel doc, Calendar creationDate,
+            Event event) {
+        try {
+            doc.setProperty("dublincore", "created", creationDate);
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
+        addContributor(doc, event);
+    }
 
-    public Boolean setModificationDate(DocumentModel doc,
+    public void setModificationDate(DocumentModel doc,
             Calendar modificationDate, Event event) {
         try {
             doc.setProperty("dublincore", "modified", modificationDate);
@@ -61,14 +67,12 @@ public class DublinCoreStorageService extends DefaultComponent {
             throw new ClientRuntimeException(e);
         }
         addContributor(doc, event);
-
-        return true;
     }
 
-    public Boolean addContributor(DocumentModel doc, Event event) {
+    public void addContributor(DocumentModel doc, Event event) {
         Principal principal = event.getContext().getPrincipal();
         if (principal == null) {
-            return false;
+            return;
         }
 
         String principalName = principal.getName();
@@ -109,19 +113,6 @@ public class DublinCoreStorageService extends DefaultComponent {
                 throw new ClientRuntimeException(e);
             }
         }
-
-        return true;
-    }
-
-    public Boolean setCreationDate(DocumentModel doc, Calendar creationDate,
-            Event event) {
-        try {
-            doc.setProperty("dublincore", "created", creationDate);
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
-        }
-        addContributor(doc, event);
-        return true;
     }
 
 }

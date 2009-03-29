@@ -26,8 +26,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -41,7 +39,6 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.EventServiceImpl;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryTestCase;
-import org.nuxeo.ecm.platform.dublincore.listener.DublinCoreListener;
 import org.nuxeo.ecm.platform.dublincore.service.DublinCoreStorageService;
 import org.nuxeo.runtime.api.Framework;
 
@@ -51,8 +48,6 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  */
 public class TestDublinCoreStorage extends RepositoryTestCase {
-
-    private static final Log log = LogFactory.getLog(DublinCoreListener.class);
 
     private DocumentModel root;
 
@@ -73,7 +68,8 @@ public class TestDublinCoreStorage extends RepositoryTestCase {
         deployContrib("org.nuxeo.ecm.platform.dublincore.tests",
                 "LifeCycleService.xml");
 
-        deployContrib("org.nuxeo.ecm.platform.dublincore","OSGI-INF/nxdublincore-service.xml");
+        deployContrib("org.nuxeo.ecm.platform.dublincore",
+                "OSGI-INF/nxdublincore-service.xml");
 
         deployBundle("org.nuxeo.ecm.core.event");
 
@@ -103,8 +99,8 @@ public class TestDublinCoreStorage extends RepositoryTestCase {
     }
 
     public void testCreationDate() throws ClientException {
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
-                "file-007", "File");
+        DocumentModel childFile = new DocumentModelImpl(
+                root.getPathAsString(), "file-007", "File");
         DocumentModel childFile2 = remote.createDocument(childFile);
 
         DataModel dm = childFile2.getDataModel("dublincore");
@@ -113,12 +109,12 @@ public class TestDublinCoreStorage extends RepositoryTestCase {
         DataModel dm2 = remote.getDataModel(childFile2.getRef(), "dublincore");
         assertNotNull(dm2.getData("created"));
 
-        // assertEquals("toto", (String)dm.getData("creator"));
+        assertEquals("Administrator", (String) dm.getData("creator"));
     }
 
     public void testModificationDate() throws ClientException {
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
-                "file-008", "File");
+        DocumentModel childFile = new DocumentModelImpl(
+                root.getPathAsString(), "file-008", "File");
         DocumentModel childFile2 = remote.createDocument(childFile);
 
         try {
@@ -144,18 +140,17 @@ public class TestDublinCoreStorage extends RepositoryTestCase {
 
     // Wait until we can have a real list management
     public void testContributors() throws ClientException {
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
-                "file-008", "File");
+        DocumentModel childFile = new DocumentModelImpl(
+                root.getPathAsString(), "file-008", "File");
         DocumentModel childFile2 = remote.createDocument(childFile);
         DataModel dm = childFile2.getDataModel("dublincore");
 
-        String[] contributorsArray = (String[]) dm.getData("contributors");
-
-        List<String> contributorsList = Arrays.asList(contributorsArray);
-        assertTrue(contributorsList.contains("Administrator"));
-
         String author = (String) dm.getData("creator");
         assertEquals("Administrator", author);
+
+        String[] contributorsArray = (String[]) dm.getData("contributors");
+        List<String> contributorsList = Arrays.asList(contributorsArray);
+        assertTrue(contributorsList.contains("Administrator"));
 
         // modify security to test with a new user
 
@@ -189,8 +184,8 @@ public class TestDublinCoreStorage extends RepositoryTestCase {
                 "contributors");
         contributorsList = Arrays.asList(contributorsArray);
         assertTrue(contributorsList.contains("Jacky"));
-        assertEquals("Administrator", childFile3.getProperty("dublincore",
-                "creator"));
+        assertEquals("Administrator",
+                childFile3.getProperty("dublincore", "creator"));
     }
 
 }

@@ -70,8 +70,7 @@ public class DublinCoreListener implements EventListener {
             return;
         }
 
-        DublinCoreStorageService service = NXDublinCore
-                .getDublinCoreStorageService();
+        DublinCoreStorageService service = NXDublinCore.getDublinCoreStorageService();
         log.debug("Processing event " + eventId);
         if (service == null) {
             log.error("DublinCoreStorage service not found ... !");
@@ -82,27 +81,13 @@ public class DublinCoreListener implements EventListener {
         Date eventDate = new Date(event.getTime());
         Calendar cEventDate = Calendar.getInstance();
         cEventDate.setTime(eventDate);
-        Boolean updateResult;
 
         if (eventId.equals(BEFORE_DOC_UPDATE)) {
-            updateResult = service.setModificationDate(doc, cEventDate, event);
-            if (updateResult) {
-                log.debug("Modification Date updated");
-            }
-            return;
+            service.setModificationDate(doc, cEventDate, event);
+        } else if (eventId.equals(DOCUMENT_CREATED)) {
+            service.setCreationDate(doc, cEventDate, event);
+            service.setModificationDate(doc, cEventDate, event);
         }
-
-        if (eventId.equals(DOCUMENT_CREATED)) {
-            updateResult = service.setCreationDate(doc, cEventDate, event);
-            if (updateResult) {
-                log.debug("Creation Date updated");
-            }
-            updateResult = service.setModificationDate(doc, cEventDate, event);
-            if (updateResult) {
-                log.debug("Modification Date updated");
-            }
-        }
-
     }
 
 }

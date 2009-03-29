@@ -25,11 +25,10 @@
       @author Thierry Delprat (td@nuxeo.com)
     </documentation>
 
-    <listener name="dclistener" async="false" postCommit="false" class="org.nuxeo.ecm.platform.dublincore.listener.DublinCoreListener" priority="120">
+    <listener name="dclistener" async="false" postCommit="false"
+        class="org.nuxeo.ecm.platform.dublincore.listener.DublinCoreListener" priority="120">
     </listener>
 
   </extension>
 
 </component>
-
-

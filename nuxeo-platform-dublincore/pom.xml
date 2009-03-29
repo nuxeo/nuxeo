@@ -11,7 +11,7 @@
   <artifactId>nuxeo-platform-dublincore</artifactId>
   <name>Nuxeo Dublin Core Support</name>
   <description>Nuxeo Enterprise Platform: simple implementation of the
-    DublinCore's restricted metdate set for Nuxeo EP. It automatically updates
+    DublinCore's restricted metadata set for Nuxeo EP. It automatically updates
     content metadata when an action performed requires it (ex: update the
     modification date when the document is modified).</description>
 
