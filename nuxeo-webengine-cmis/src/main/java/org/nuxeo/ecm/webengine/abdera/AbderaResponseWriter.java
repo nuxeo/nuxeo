@@ -14,7 +14,7 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.webengine.cmis;
+package org.nuxeo.ecm.webengine.abdera;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -24,11 +24,9 @@ import java.lang.reflect.Type;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.MessageBodyWriter;
 
 import org.apache.abdera.protocol.server.ResponseContext;
-import org.nuxeo.ecm.core.api.Blob;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -53,5 +51,7 @@ public class AbderaResponseWriter implements MessageBodyWriter<ResponseContext> 
             throws IOException, WebApplicationException {
         arg0.writeTo(arg6);
     }
-
+    
 }
+
+

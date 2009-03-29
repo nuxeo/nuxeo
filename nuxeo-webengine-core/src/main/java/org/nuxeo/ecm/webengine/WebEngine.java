@@ -45,7 +45,6 @@ import org.nuxeo.ecm.webengine.model.impl.GlobalTypes;
 import org.nuxeo.ecm.webengine.model.impl.ModuleConfiguration;
 import org.nuxeo.ecm.webengine.model.impl.ModuleManager;
 import org.nuxeo.ecm.webengine.model.io.BlobWriter;
-import org.nuxeo.ecm.webengine.model.io.ResourceWriter;
 import org.nuxeo.ecm.webengine.model.io.ScriptFileWriter;
 import org.nuxeo.ecm.webengine.model.io.TemplateWriter;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
@@ -149,7 +148,8 @@ public class WebEngine implements ResourceLocator {
         rendering.setSharedVariable("env", getEnvironment());
 
         // register writers - TODO make an extension point
-        registry.addMessageBodyWriter(new ResourceWriter());
+        // resource writers may generate coding problems so we disable it for now 
+        //registry.addMessageBodyWriter(new ResourceWriter());
         registry.addMessageBodyWriter(new TemplateWriter());
         registry.addMessageBodyWriter(new ScriptFileWriter());
         registry.addMessageBodyWriter(new BlobWriter());
