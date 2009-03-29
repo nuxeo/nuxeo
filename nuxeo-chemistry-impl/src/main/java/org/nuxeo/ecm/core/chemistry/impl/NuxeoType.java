@@ -41,6 +41,11 @@ import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Schema;
+import org.nuxeo.ecm.core.schema.types.SimpleType;
+import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
+import org.nuxeo.ecm.core.schema.types.primitives.DateType;
+import org.nuxeo.ecm.core.schema.types.primitives.LongType;
+import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 
 public class NuxeoType implements Type {
 
@@ -249,6 +254,8 @@ public class NuxeoType implements Type {
                 Serializable defaultValue = null;
                 boolean queryable = true;
                 boolean orderable = true;
+                
+                PropertyType cmisType = PropertyType.STRING;
 
                 org.nuxeo.ecm.core.schema.types.Type fieldType = field.getType();
                 if (fieldType.isComplexType()) {
@@ -267,10 +274,12 @@ public class NuxeoType implements Type {
                         } else {
                             // Array: use a collection table
                             multiValued = true;
+                            cmisType = getPropertType((SimpleType)listFieldType);
                         }
                     } else {
                         // primitive type
                         multiValued = false;
+                        cmisType = getPropertType((SimpleType)fieldType);
                     }
                 }
                 // ad-hoc mappings
@@ -280,11 +289,11 @@ public class NuxeoType implements Type {
                     // mapped to standard CMIS properties
                     continue;
                 }
-                name = fieldName;
-
+                name = prefixedName;
+                
                 PropertyDefinition def = new NuxeoPropertyDefinition(name,
                         "def:nx:" + name, name, "", inherited,
-                        PropertyType.STRING, multiValued, choices, openChoice,
+                        cmisType, multiValued, choices, openChoice,
                         required, defaultValue, Updatability.READ_WRITE,
                         queryable, orderable, 0, null, null, -1, null, null);
                 if (map.containsKey(name)) {
@@ -299,6 +308,20 @@ public class NuxeoType implements Type {
                 && hasFileSchema ? ContentStreamPresence.ALLOWED
                 : ContentStreamPresence.NOT_ALLOWED;
 
+    }
+    
+    protected PropertyType getPropertType(org.nuxeo.ecm.core.schema.types.SimpleType type) {
+        org.nuxeo.ecm.core.schema.types.SimpleType primitive = type.getPrimitiveType();
+        if (primitive == StringType.INSTANCE) {
+            return PropertyType.STRING;
+        } else if (primitive == BooleanType.INSTANCE) {
+            return PropertyType.BOOLEAN;
+        } else if (primitive == DateType.INSTANCE) {
+            return PropertyType.DATETIME;
+        } else if (primitive == LongType.INSTANCE) {
+            return PropertyType.INTEGER;
+        }
+        return PropertyType.STRING;
     }
 
     private List<NuxeoPropertyDefinition> getBasePropertyDefinitions(
