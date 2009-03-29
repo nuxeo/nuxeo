@@ -36,11 +36,8 @@ import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.event.EventService;
-import org.nuxeo.ecm.core.event.impl.EventServiceImpl;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryTestCase;
 import org.nuxeo.ecm.platform.dublincore.service.DublinCoreStorageService;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * DublinCoreStorage Test Case.
@@ -81,18 +78,6 @@ public class TestDublinCoreStorage extends RepositoryTestCase {
         root = remote.getRootDocument();
     }
 
-    private static EventServiceImpl getEventServiceImpl() {
-        return (EventServiceImpl) Framework.getLocalService(EventService.class);
-    }
-
-    /*
-    public void testServiceRegistration() {
-        CoreEventListenerService listenerService = getListenerService();
-        EventListener dcListener = listenerService.getEventListenerByName("dclistener");
-        assertNotNull(dcListener);
-        log.info("DCListener registered");
-    }*/
-
     public void testStorageService() {
         DublinCoreStorageService service = NXDublinCore.getDublinCoreStorageService();
         assertNotNull(service);
@@ -110,6 +95,24 @@ public class TestDublinCoreStorage extends RepositoryTestCase {
         assertNotNull(dm2.getData("created"));
 
         assertEquals("Administrator", (String) dm.getData("creator"));
+    }
+
+    public void testCreator() throws ClientException {
+        DocumentModel childFile = new DocumentModelImpl(
+                root.getPathAsString(), "file-007", "File");
+        DocumentModel childFile2 = remote.createDocument(childFile);
+
+        DataModel dm = childFile2.getDataModel("dublincore");
+        assertEquals("Administrator", (String) dm.getData("creator"));
+
+        DataModel dm2 = remote.getDataModel(childFile2.getRef(), "dublincore");
+        assertEquals("Administrator", (String) dm2.getData("creator"));
+
+        childFile2.setProperty("dublincore", "creator", "toto");
+        assertEquals("toto", (String) dm.getData("creator"));
+
+        dm2 = remote.getDataModel(childFile2.getRef(), "dublincore");
+        assertEquals("toto", (String) dm.getData("creator"));
     }
 
     public void testModificationDate() throws ClientException {

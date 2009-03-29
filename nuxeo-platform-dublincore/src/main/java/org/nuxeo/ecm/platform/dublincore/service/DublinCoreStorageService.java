@@ -66,7 +66,6 @@ public class DublinCoreStorageService extends DefaultComponent {
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
-        addContributor(doc, event);
     }
 
     public void addContributor(DocumentModel doc, Event event) {

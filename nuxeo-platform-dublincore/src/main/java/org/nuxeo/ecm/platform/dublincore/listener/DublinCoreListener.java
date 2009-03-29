@@ -71,7 +71,6 @@ public class DublinCoreListener implements EventListener {
         }
 
         DublinCoreStorageService service = NXDublinCore.getDublinCoreStorageService();
-        log.debug("Processing event " + eventId);
         if (service == null) {
             log.error("DublinCoreStorage service not found ... !");
             return;
@@ -84,9 +83,11 @@ public class DublinCoreListener implements EventListener {
 
         if (eventId.equals(BEFORE_DOC_UPDATE)) {
             service.setModificationDate(doc, cEventDate, event);
+            service.addContributor(doc, event);
         } else if (eventId.equals(DOCUMENT_CREATED)) {
             service.setCreationDate(doc, cEventDate, event);
             service.setModificationDate(doc, cEventDate, event);
+            service.addContributor(doc, event);
         }
     }
 
