@@ -123,26 +123,41 @@ public class TestPersistentProviderPerUser extends TestCase {
         assertEquals(0, provider.getWidgets("region A").indexOf(widget1));
         assertEquals(1, provider.getWidgets("region A").indexOf(widget2));
         assertEquals(2, provider.getWidgets("region A").indexOf(widget3));
-
+        assertEquals(0, ((WidgetEntity) widget1).getOrder());
+        assertEquals(1, ((WidgetEntity) widget2).getOrder());
+        assertEquals(2, ((WidgetEntity) widget3).getOrder());
+        
         provider.reorderWidget(widget2, 0);
         assertEquals(0, provider.getWidgets("region A").indexOf(widget2));
         assertEquals(1, provider.getWidgets("region A").indexOf(widget1));
         assertEquals(2, provider.getWidgets("region A").indexOf(widget3));
+        assertEquals(0, ((WidgetEntity) widget2).getOrder());
+        assertEquals(1, ((WidgetEntity) widget1).getOrder());
+        assertEquals(2, ((WidgetEntity) widget3).getOrder());
 
         provider.reorderWidget(widget3, 1);
         assertEquals(0, provider.getWidgets("region A").indexOf(widget2));
         assertEquals(1, provider.getWidgets("region A").indexOf(widget3));
         assertEquals(2, provider.getWidgets("region A").indexOf(widget1));
+        assertEquals(0, ((WidgetEntity) widget2).getOrder());
+        assertEquals(1, ((WidgetEntity) widget3).getOrder());
+        assertEquals(2, ((WidgetEntity) widget1).getOrder());
 
         provider.reorderWidget(widget2, 2);
         assertEquals(0, provider.getWidgets("region A").indexOf(widget3));
         assertEquals(1, provider.getWidgets("region A").indexOf(widget1));
         assertEquals(2, provider.getWidgets("region A").indexOf(widget2));
+        assertEquals(0, ((WidgetEntity) widget3).getOrder());
+        assertEquals(1, ((WidgetEntity) widget1).getOrder());
+        assertEquals(2, ((WidgetEntity) widget2).getOrder());
 
         provider.reorderWidget(widget3, 2);
         assertEquals(0, provider.getWidgets("region A").indexOf(widget1));
         assertEquals(1, provider.getWidgets("region A").indexOf(widget2));
         assertEquals(2, provider.getWidgets("region A").indexOf(widget3));
+        assertEquals(0, ((WidgetEntity) widget1).getOrder());
+        assertEquals(1, ((WidgetEntity) widget2).getOrder());
+        assertEquals(2, ((WidgetEntity) widget3).getOrder());
     }
 
     public void testRemoveWidgets() throws ProviderException {

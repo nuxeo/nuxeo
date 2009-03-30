@@ -52,6 +52,12 @@ public class PersistentProvider implements Provider {
     }
 
     public void addWidget(Widget widget, String regionName, int order) throws ProviderException {
+        if (widget == null) {
+            throw new ProviderException("Widget is undefined");
+        }
+        if (regionName == null) {
+            throw new ProviderException("Region name is undefined");
+        }
         List<Widget> widgets = new ArrayList<Widget>(getWidgets(regionName));
         ((WidgetEntity) widget).setRegion(regionName);
         widgets.add(order, widget);
@@ -59,6 +65,9 @@ public class PersistentProvider implements Provider {
     }
 
     synchronized public Widget createWidget(String widgetTypeName) throws ProviderException {
+        if (widgetTypeName == null) {
+            throw new ProviderException("Widget type name is undefined");
+        }
         final WidgetEntity widget = new WidgetEntity(widgetTypeName);
         begin();
         em.persist(widget);
@@ -67,19 +76,32 @@ public class PersistentProvider implements Provider {
     }
 
     public String getRegionOfWidget(Widget widget) throws ProviderException {
+        if (widget == null) {
+            throw new ProviderException("Widget is undefined");
+        }
         return ((WidgetEntity) widget).getRegion();
     }
 
     public WidgetState getWidgetState(Widget widget) throws ProviderException {
+        if (widget == null) {
+            throw new ProviderException("Widget is undefined");
+        }
         return ((WidgetEntity) widget).getState();
     }
 
     synchronized public Widget getWidgetByUid(String uid) throws ProviderException {
-        return (Widget) em.find(WidgetEntity.class, Integer.valueOf(uid));
+        Widget widget = (Widget) em.find(WidgetEntity.class, Integer.valueOf(uid));
+        if (widget == null) {
+            throw new ProviderException("Widget not found: " + uid);
+        }
+        return widget;
     }
 
     @SuppressWarnings("unchecked")
     synchronized public List<Widget> getWidgets(String regionName) throws ProviderException {
+        if (regionName == null) {
+            throw new ProviderException("Region name is undefined.");
+        }
         List<Widget> widgets = new ArrayList<Widget>();
         widgets.addAll(em.createNamedQuery("Widget.findAll").setParameter(
                 "region", regionName).getResultList());
@@ -87,6 +109,12 @@ public class PersistentProvider implements Provider {
     }
 
     public void moveWidget(Widget widget, String destRegionName, int order) throws ProviderException {
+        if (widget == null) {
+            throw new ProviderException("Widget is undefined");
+        }
+        if (destRegionName == null) {
+            throw new ProviderException("Destination region name is undefined.");
+        }
         WidgetEntity widgetEntity = (WidgetEntity) widget;
         final String srcRegionName = widgetEntity.getRegion();
         List<Widget> srcWidgets = new ArrayList<Widget>(
@@ -105,6 +133,9 @@ public class PersistentProvider implements Provider {
     }
 
     synchronized public void removeWidget(Widget widget) throws ProviderException {
+        if (widget == null) {
+            throw new ProviderException("Widget is undefined");
+        }
         WidgetEntity widgetEntity = (WidgetEntity) widget;
         List<Widget> widgets = new ArrayList<Widget>(
                 getWidgets(widgetEntity.getRegion()));
@@ -116,6 +147,9 @@ public class PersistentProvider implements Provider {
     }
 
     public void reorderWidget(Widget widget, int order) throws ProviderException {
+        if (widget == null) {
+            throw new ProviderException("Widget is undefined");
+        }
         WidgetEntity widgetEntity = (WidgetEntity) widget;
         List<Widget> widgets = new ArrayList<Widget>(
                 getWidgets(widgetEntity.getRegion()));
@@ -125,19 +159,35 @@ public class PersistentProvider implements Provider {
     }
 
     public Map<String, String> getWidgetPreferences(Widget widget) throws ProviderException {
+        if (widget == null) {
+            throw new ProviderException("Widget is undefined");
+        }
         return ((WidgetEntity) widget).getPreferences();
     }
 
     public void setWidgetPreferences(Widget widget,
             Map<String, String> preferences) throws ProviderException {
+        if (widget == null) {
+            throw new ProviderException("Widget is undefined");
+        }
+        if (preferences == null) {
+            throw new ProviderException("Widget preferences are undefined");
+        }
         begin();
         ((WidgetEntity) widget).setPreferences(preferences);
         commit();
     }
 
     public void setWidgetState(Widget widget, WidgetState state) throws ProviderException {
+        if (widget == null) {
+            throw new ProviderException("Widget is undefined");
+        }
+        if (state == null) {
+            throw new ProviderException("Widget state is undefined");
+        }
         begin();
         ((WidgetEntity) widget).setState(state);
+        em.persist(widget);
         commit();
     }
 
@@ -153,6 +203,12 @@ public class PersistentProvider implements Provider {
     }
 
     synchronized public WidgetData getWidgetData(Widget widget, String dataName) throws ProviderException {
+        if (widget == null) {
+            throw new ProviderException("Widget is undefined");
+        }
+        if (dataName == null || "".equals(dataName)) {
+            throw new ProviderException("Data name is undefined");
+        }
         List<?> results = em.createNamedQuery("Data.findByWidgetAndName").setParameter(
                 "widgetUid", widget.getUid()).setParameter("dataName", dataName).getResultList();
         DataEntity dataEntity = null;
@@ -165,6 +221,12 @@ public class PersistentProvider implements Provider {
 
     synchronized public void setWidgetData(Widget widget, String dataName,
             WidgetData data) throws ProviderException {
+        if (widget == null) {
+            throw new ProviderException("Widget is undefined");
+        }
+        if (dataName == null || "".equals(dataName)) {
+            throw new ProviderException("Data name is undefined");
+        }
         List<?> results = em.createNamedQuery("Data.findByWidgetAndName").setParameter(
                 "widgetUid", widget.getUid()).setParameter("dataName", dataName).getResultList();
         DataEntity dataEntity = null;
@@ -181,6 +243,9 @@ public class PersistentProvider implements Provider {
 
     synchronized public void deleteWidgetData(Widget widget)
             throws ProviderException {
+        if (widget == null) {
+            throw new ProviderException("Widget is undefined");
+        }
         begin();
         for (Object dataEntity : em.createNamedQuery("Data.findByWidget").setParameter(
                 "widgetUid", widget.getUid()).getResultList()) {

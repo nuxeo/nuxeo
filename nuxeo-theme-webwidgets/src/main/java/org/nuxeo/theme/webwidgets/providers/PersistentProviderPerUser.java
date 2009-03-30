@@ -34,6 +34,9 @@ public class PersistentProviderPerUser extends PersistentProvider {
     @Override
     public synchronized Widget createWidget(String widgetTypeName)
             throws ProviderException {
+        if (widgetTypeName == null) {
+            throw new ProviderException("Widget type name is undefined");
+        }
         if (currentNuxeoPrincipal == null) {
             log.warn("Could not get the current user from the context.");
             return null;
@@ -50,6 +53,9 @@ public class PersistentProviderPerUser extends PersistentProvider {
     @SuppressWarnings("unchecked")
     public synchronized List<Widget> getWidgets(String regionName)
             throws ProviderException {
+        if (regionName == null) {
+            throw new ProviderException("Region name is undefined");
+        }
         List<Widget> widgets = new ArrayList<Widget>();
         if (currentNuxeoPrincipal != null) {
             widgets.addAll(em.createNamedQuery("Widget.findByScope").setParameter(

@@ -129,31 +129,34 @@ public class Manager {
         Provider srcProvider = getProvider(srcProviderName);
         Provider destProvider = getProvider(destProviderName);
         if (!srcProvider.canWrite() || !destProvider.canWrite()) {
-            return null;
+            throw new WidgetException("No permission to move widget.");
         }
-        Widget srcWidget = srcProvider.getWidgetByUid(srcUid);
+        if (srcRegionName == null || destRegionName == null) {
+            throw new WidgetException("Source or destination region is undefined.");
+        }
 
+        Widget srcWidget = srcProvider.getWidgetByUid(srcUid);
         String newId = srcWidget.getUid();
 
-        // The widget is moved inside the same region
-        if (destRegionName.equals(srcRegionName)) {
-            srcProvider.reorderWidget(srcWidget, destOrder);
-        } else {
-            // The destination provider is the same as the source provider
-            if (destProviderName.equals(srcProviderName)) {
-                srcProvider.moveWidget(srcWidget, destRegionName, destOrder);
-                // The destination provider is different from the source
-                // provider, the widget must be duplicated.
+        // The destination provider is the same as the source provider
+        if (destProviderName.equals(srcProviderName)) {
+            // The widget is moved inside the same region
+            if (destRegionName.equals(srcRegionName)) {
+                srcProvider.reorderWidget(srcWidget, destOrder);
             } else {
-                Widget destWidget = destProvider.createWidget(srcWidget.getName());
-                setWidgetPreferences(destProvider, destWidget,
-                        getWidgetPreferences(srcProvider, srcWidget));
-                setWidgetState(destProvider, destWidget, getWidgetState(
-                        srcProvider, srcWidget));
-                srcProvider.removeWidget(srcWidget);
-                destProvider.addWidget(destWidget, destRegionName, destOrder);
-                newId = destWidget.getUid();
+                srcProvider.moveWidget(srcWidget, destRegionName, destOrder);
             }
+            // The destination provider is different from the source
+            // provider, the widget must be duplicated.
+        } else {
+            Widget destWidget = destProvider.createWidget(srcWidget.getName());
+            setWidgetPreferences(destProvider, destWidget,
+                    getWidgetPreferences(srcProvider, srcWidget));
+            setWidgetState(destProvider, destWidget, getWidgetState(
+                    srcProvider, srcWidget));
+            srcProvider.removeWidget(srcWidget);
+            destProvider.addWidget(destWidget, destRegionName, destOrder);
+            newId = destWidget.getUid();
         }
         return newId;
     }

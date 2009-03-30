@@ -50,6 +50,9 @@ public class DefaultProvider implements Provider {
     }
 
     public Widget createWidget(String widgetTypeName) throws ProviderException {
+        if (widgetTypeName == null) {
+            throw new ProviderException("Widget type name is undefined");
+        }
         DefaultProviderSession session = getDefaultProviderSession();
         int counter = session.getCounter();
         final String uid = Integer.toString(counter);
@@ -64,16 +67,29 @@ public class DefaultProvider implements Provider {
 
     public Widget getWidgetByUid(String uid) throws ProviderException {
         DefaultProviderSession session = getDefaultProviderSession();
-        return session.getWidgetsByUid().get(uid);
+        Widget widget = session.getWidgetsByUid().get(uid);
+        if (widget == null) {
+            throw new ProviderException("Widget not found: " + uid);
+        }
+        return widget;
     }
 
     public List<Widget> getWidgets(String regionName) throws ProviderException {
+        if (regionName == null) {
+            throw new ProviderException("Region name is undefined");
+        }
         DefaultProviderSession session = getDefaultProviderSession();
         return session.getWidgetsByRegion().get(regionName);
     }
 
     public void addWidget(Widget widget, String regionName, int order)
             throws ProviderException {
+        if (widget == null) {
+            throw new ProviderException("Widget is undefined");
+        }
+        if (regionName == null) {
+            throw new ProviderException("Region name is undefined");
+        }
         DefaultProviderSession session = getDefaultProviderSession();
         Map<String, List<Widget>> widgetsByRegion = session.getWidgetsByRegion();
         if (!widgetsByRegion.containsKey(regionName)) {
@@ -88,6 +104,12 @@ public class DefaultProvider implements Provider {
 
     public void moveWidget(Widget widget, String destRegionName, int order)
             throws ProviderException {
+        if (widget == null) {
+            throw new ProviderException("Widget is undefined");
+        }
+        if (destRegionName == null) {
+            throw new ProviderException("Destination region name is undefined.");
+        }
         DefaultProviderSession session = getDefaultProviderSession();
         final String srcRegionName = getRegionOfWidget(widget);
         Map<String, List<Widget>> widgetsByRegion = session.getWidgetsByRegion();
@@ -104,6 +126,9 @@ public class DefaultProvider implements Provider {
 
     public void reorderWidget(Widget widget, int order)
             throws ProviderException {
+        if (widget == null) {
+            throw new ProviderException("Widget is undefined");
+        }
         DefaultProviderSession session = getDefaultProviderSession();
         final String regionName = getRegionOfWidget(widget);
         Map<String, List<Widget>> widgetsByRegion = session.getWidgetsByRegion();
@@ -117,6 +142,9 @@ public class DefaultProvider implements Provider {
     }
 
     public void removeWidget(Widget widget) throws ProviderException {
+        if (widget == null) {
+            throw new ProviderException("Widget is undefined");
+        }
         DefaultProviderSession session = getDefaultProviderSession();
         final String uid = widget.getUid();
         final String regionName = getRegionOfWidget(widget);
@@ -128,35 +156,62 @@ public class DefaultProvider implements Provider {
     }
 
     public String getRegionOfWidget(Widget widget) throws ProviderException {
+        if (widget == null) {
+            throw new ProviderException("Widget is undefined");
+        }
         DefaultProviderSession session = getDefaultProviderSession();
         return session.getRegionsByUid().get(widget.getUid());
     }
 
     public Map<String, String> getWidgetPreferences(Widget widget)
             throws ProviderException {
+        if (widget == null) {
+            throw new ProviderException("Widget is undefined");
+        }
         DefaultProviderSession session = getDefaultProviderSession();
         return session.getPreferencesByWidget().get(widget);
     }
 
     public void setWidgetPreferences(Widget widget,
             Map<String, String> preferences) throws ProviderException {
+        if (widget == null) {
+            throw new ProviderException("Widget is undefined");
+        }
+        if (preferences == null) {
+            throw new ProviderException("Widget preferences are undefined");
+        }
         DefaultProviderSession session = getDefaultProviderSession();
         session.getPreferencesByWidget().put(widget, preferences);
     }
 
     public void setWidgetState(Widget widget, WidgetState state)
             throws ProviderException {
+        if (widget == null) {
+            throw new ProviderException("Widget is undefined");
+        }
+        if (state == null) {
+            throw new ProviderException("Widget state is undefined");
+        }
         DefaultProviderSession session = getDefaultProviderSession();
         session.getStatesByWidget().put(widget, state);
     }
 
     public WidgetState getWidgetState(Widget widget) throws ProviderException {
+        if (widget == null) {
+            throw new ProviderException("Widget is undefined");
+        }
         DefaultProviderSession session = getDefaultProviderSession();
         return session.getStatesByWidget().get(widget);
     }
 
     public WidgetData getWidgetData(Widget widget, String dataName)
             throws ProviderException {
+        if (widget == null) {
+            throw new ProviderException("Widget is undefined");
+        }
+        if (dataName == null || "".equals(dataName)) {
+            throw new ProviderException("Data name is undefined");
+        }
         DefaultProviderSession session = getDefaultProviderSession();
         Map<Widget, Map<String, WidgetData>> dataByWidget = session.getDataByWidget();
         if (dataByWidget.containsKey(widget)) {
@@ -167,6 +222,12 @@ public class DefaultProvider implements Provider {
 
     public void setWidgetData(Widget widget, String dataName, WidgetData data)
             throws ProviderException {
+        if (widget == null) {
+            throw new ProviderException("Widget is undefined");
+        }
+        if (dataName == null || "".equals(dataName)) {
+            throw new ProviderException("Data name is undefined");
+        }
         DefaultProviderSession session = getDefaultProviderSession();
         Map<Widget, Map<String, WidgetData>> dataByWidget = session.getDataByWidget();
         if (!dataByWidget.containsKey(widget)) {
@@ -176,6 +237,9 @@ public class DefaultProvider implements Provider {
     }
 
     public void deleteWidgetData(Widget widget) throws ProviderException {
+        if (widget == null) {
+            throw new ProviderException("Widget is undefined");
+        }
         DefaultProviderSession session = getDefaultProviderSession();
         Map<Widget, Map<String, WidgetData>> dataByWidget = session.getDataByWidget();
         if (dataByWidget.containsKey(widget)) {
