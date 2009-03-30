@@ -40,13 +40,13 @@ public class SynchronousUnicityCheckListener extends AbstractUnicityChecker impl
     private static final Log log = LogFactory.getLog(SynchronousUnicityCheckListener.class);
 
     public void handleEvent(Event event) throws ClientException {
-
          if (!isUnicityCheckEnabled()) {
              return;
          }
 
          List<String> uuids = new ArrayList<String>();
-         if (DocumentEventTypes.DOCUMENT_CREATED.equals(event.getName()) || DocumentEventTypes.DOCUMENT_UPDATED.equals(event.getName())) {
+         if (DocumentEventTypes.DOCUMENT_CREATED.equals(event.getName())
+                 || DocumentEventTypes.DOCUMENT_UPDATED.equals(event.getName())) {
              EventContext ctx = event.getContext();
              if (ctx instanceof DocumentEventContext) {
                  DocumentEventContext docCtx = (DocumentEventContext) ctx;

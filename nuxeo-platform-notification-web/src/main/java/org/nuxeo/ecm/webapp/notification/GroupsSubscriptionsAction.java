@@ -30,8 +30,6 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
@@ -52,7 +50,6 @@ import org.nuxeo.ecm.webapp.base.InputController;
  * Handles the subscriptions page.
  *
  * @author <a href="mailto:npaslaru@nuxeo.com">Narcis Paslaru</a>
- *
  */
 @Name("groupsSubscriptionsAction")
 @Scope(ScopeType.PAGE)
@@ -60,8 +57,6 @@ public class GroupsSubscriptionsAction extends InputController implements
         Serializable {
 
     private static final long serialVersionUID = -2440187703248677446L;
-
-    private static final Log log = LogFactory.getLog(GroupsSubscriptionsAction.class);
 
     private static final Labeler labeler = new Labeler("label.subscriptions");
 

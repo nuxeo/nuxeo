@@ -43,33 +43,26 @@ public class TestNXAuditEventsServiceManagement extends RepositoryOSGITestCase {
 
     protected EventServiceImpl eventService;
 
+    protected final MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
+
     @Override
     public void setUp() throws Exception {
         super.setUp();
 
         deployBundle("org.nuxeo.ecm.platform.usermanager");
-
         deployBundle("org.nuxeo.runtime.management");
-
         deployBundle("org.nuxeo.ecm.platform.scheduler.core");
-
         deployBundle("org.nuxeo.ecm.platform.audit");
-
         deployBundle("org.nuxeo.ecm.platform.management");
 
         NXAuditEventsService.persistenceProvider.setHibernateConfiguration(new TestHibernateConfiguration());
 
         serviceUnderTest = Framework.getService(NXAuditEvents.class);
-
         assertNotNull(serviceUnderTest);
 
         openRepository();
-
     }
 
-    protected final MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
-
-    @SuppressWarnings("unchecked")
     protected Set<ObjectName> doQuery(String name) {
         String qualifiedName = ObjectNameFactory.getQualifiedName(name);
         ObjectName objectName = ObjectNameFactory.getObjectName(qualifiedName);

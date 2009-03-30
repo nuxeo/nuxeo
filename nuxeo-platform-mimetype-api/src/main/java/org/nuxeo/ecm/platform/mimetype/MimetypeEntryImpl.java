@@ -21,8 +21,6 @@ package org.nuxeo.ecm.platform.mimetype;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
 
 /**
@@ -33,13 +31,10 @@ import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
  * @see MimetypeEntry
  *
  * @author <a href="ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 public class MimetypeEntryImpl implements MimetypeEntry {
 
     private static final long serialVersionUID = 5416098564564151631L;
-
-    private static final Log log = LogFactory.getLog(MimetypeEntryImpl.class);
 
     protected final List<String> extensions;
 

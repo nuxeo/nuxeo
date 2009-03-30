@@ -18,10 +18,6 @@
  */
 package org.nuxeo.ecm.platform.ec.placeful.ejb.interfaces;
 
-import java.util.List;
-import java.util.Map;
-
-import org.nuxeo.ecm.platform.ec.placeful.Annotation;
 import org.nuxeo.ecm.platform.ec.placeful.interfaces.PlacefulService;
 
 /**
@@ -29,6 +25,6 @@ import org.nuxeo.ecm.platform.ec.placeful.interfaces.PlacefulService;
  * @author <a href="mailto:rspivak@nuxeo.com">Ruslan Spivak</a>
  *
  */
-public interface EJBPlacefulService extends PlacefulService{
+public interface EJBPlacefulService extends PlacefulService {
 
 }

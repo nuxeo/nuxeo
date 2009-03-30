@@ -362,7 +362,7 @@ public interface SearchService extends Serializable {
     void setIndexingDocBatchSize(int docBatchSize);
 
     /**
-     * Performs a full reindexing of the nuxeo core repository given a Nuxeo core
+     * Performs a full reindexing of the Nuxeo core repository given a Nuxeo core
      * repository name and a path.
      * <p>
      * If path is null then the reindexing will be done from the root of the

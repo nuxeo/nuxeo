@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.platform.ec.notification.service;
 
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.platform.ec.placeful.ejb.interfaces.EJBPlacefulService;
 import org.nuxeo.ecm.platform.ec.placeful.interfaces.PlacefulService;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
@@ -55,8 +54,7 @@ public final class NotificationServiceHelper {
             throws ClientException {
         PlacefulService placefulService;
         try {
-            placefulService = Framework.getService(
-                    PlacefulService.class);
+            placefulService = Framework.getService(PlacefulService.class);
         } catch (Exception e) {
             final String errMsg = "Error connecting to PlacefulService. "
                     + e.getMessage();

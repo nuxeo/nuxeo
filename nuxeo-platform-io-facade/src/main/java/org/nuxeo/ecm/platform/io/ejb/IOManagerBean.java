@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.platform.io.ejb;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collection;
@@ -35,8 +34,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.io.exceptions.ExportDocumentException;
-import org.nuxeo.ecm.core.io.exceptions.ImportDocumentException;
 import org.nuxeo.ecm.platform.io.api.IOManager;
 import org.nuxeo.ecm.platform.io.api.IOResourceAdapter;
 import org.nuxeo.ecm.platform.io.api.ejb.IOManagerLocal;

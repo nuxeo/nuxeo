@@ -17,12 +17,9 @@
 package org.nuxeo.ecm.platform.jbpm.web;
 
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 
 import junit.framework.TestCase;
 
-import org.jbpm.taskmgmt.exe.PooledActor;
 import org.jbpm.taskmgmt.exe.TaskInstance;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
@@ -31,7 +28,6 @@ import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 
 /**
  * @author alexandre
- *
  */
 public class JbpmHelperTest extends TestCase {
     private JbpmHelper helper = new JbpmHelper();
@@ -49,4 +45,5 @@ public class JbpmHelperTest extends TestCase {
         ti.setPooledActors(new String[]{NuxeoPrincipal.PREFIX + "bob", NuxeoGroup.PREFIX + "g1"});
         assertTrue(helper.isTaskAssignedToUser(ti, principal));
     }
+
 }

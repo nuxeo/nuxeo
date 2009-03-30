@@ -1,5 +1,4 @@
 <?xml version="1.0"?>
-
 <component name="DublinCoreStorageService" version="1.0.0">
 
   <implementation
@@ -9,7 +8,7 @@
     The DublinCoreStorageService listen to Core event DOCUMENT_UPDATED and
     DOCUMENT_CREATED. If the target document has the dublincore schema, this
     service will then update some meta-data. The fields calculated by this event
-    listener are : - the creation date - the modification date - the
+    listener are: - the creation date - the modification date - the
     contributors list
 
     The DublinCoreStorageService exposes an simple api for updating meta-data.
