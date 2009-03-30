@@ -324,6 +324,20 @@ public class SiteUtils {
                             + " ecm:isCheckedInVersion = 0 AND "
                             + "ecm:currentLifeCycleState != 'deleted'",
                     searchParam, ws.getPathAsString() + "/"));
+            // add current workspace to search results
+            DocumentModelList workspaces = session.query(String.format(
+                    "SELECT * FROM Workspace WHERE  ecm:fulltext LIKE '%s' AND  ecm:path STARTSWITH  '%s'  AND "
+                            + " ecm:mixinType != 'HiddenInNavigation' AND "
+                            + " ecm:isCheckedInVersion = 0 AND "
+                            + " ecm:currentLifeCycleState != 'deleted' ",
+                    searchParam,
+                    session.getDocument(ws.getParentRef()).getPathAsString()));
+            for (DocumentModel documentModel : workspaces) {
+                if (documentModel.getRef().equals(ws.getRef())) {
+                    results.add(documentModel);
+                    break;
+                }
+            }
             for (DocumentModel documentModel : results) {
                 Map<String, String> page = new HashMap<String, String>();
                 GregorianCalendar creationDate = SiteHelper.getGregorianCalendar(
