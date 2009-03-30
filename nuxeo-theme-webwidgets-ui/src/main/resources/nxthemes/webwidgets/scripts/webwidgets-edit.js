@@ -41,7 +41,7 @@ NXThemesWebWidgets.moveWidget = function(info) {
              'src_provider': srcProvider,
              'dest_provider': destProvider,
              'src_uid': srcUid,
-             'src_region_': srcRegionName,
+             'src_region': srcRegionName,
              'dest_region': destRegionName,
              'dest_order': destOrder
          },
