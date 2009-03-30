@@ -57,7 +57,7 @@ public class ChainSelectListboxComponent extends UIInput {
 
     private Boolean displayIdAndLabel = false;
 
-    private Boolean displayObsoleteEntries = true;
+    private Boolean displayObsoleteEntries = false;
 
     private String onchange;
 
