@@ -382,6 +382,10 @@
       <name>onchange</name>
       <description>Javascript onchange event handler</description>
     </attribute>
+    <attribute>
+      <name>displayObsoleteEntries</name>
+      <description>Display obsolete entries, default false</description>
+    </attribute>
   </tag>
 
   <tag>
@@ -424,6 +428,10 @@
     <attribute>
       <name>onchange</name>
       <description>Javascript onchange event handler</description>
+    </attribute>
+    <attribute>
+      <name>displayObsoleteEntries</name>
+      <description>Display obsolete entries, default false</description>
     </attribute>
   </tag>
 
