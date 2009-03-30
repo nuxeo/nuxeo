@@ -32,16 +32,16 @@ public class ContentFactoryDescriptor {
     private String name;
 
     @XNode("@enabled")
-    private Boolean enabled = true;
+    private boolean enabled = true;
 
     @XNode("@class")
-    private Class className;
+    private Class<ContentFactory> className;
 
-    public Class getClassName() {
+    public Class<ContentFactory> getClassName() {
         return className;
     }
 
-    public Boolean getEnabled() {
+    public boolean getEnabled() {
         return enabled;
     }
 

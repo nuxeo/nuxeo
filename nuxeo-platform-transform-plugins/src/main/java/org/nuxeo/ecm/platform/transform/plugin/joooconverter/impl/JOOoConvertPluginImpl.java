@@ -35,7 +35,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
-import org.nuxeo.ecm.platform.mimetype.NXMimeTypeHelper;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.transform.document.TransformDocumentImpl;
 import org.nuxeo.ecm.platform.transform.interfaces.TransformDocument;
@@ -43,6 +42,7 @@ import org.nuxeo.ecm.platform.transform.plugin.AbstractPlugin;
 import org.nuxeo.ecm.platform.transform.plugin.joooconverter.api.JOOoConverterPlugin;
 import org.nuxeo.ecm.platform.transform.timer.SimpleTimer;
 import org.nuxeo.runtime.services.streaming.FileSource;
+import org.nuxeo.runtime.api.Framework;
 
 import com.artofsolving.jodconverter.DocumentFamily;
 import com.artofsolving.jodconverter.DocumentFormat;
@@ -110,7 +110,7 @@ public class JOOoConvertPluginImpl extends AbstractPlugin implements
      */
     private static DocumentFormat getSourceFormat(File file) throws Exception {
         DocumentFormat format;
-        MimetypeRegistry mimetypeRegistry = NXMimeTypeHelper.getMimetypeRegistryService();
+        MimetypeRegistry mimetypeRegistry = Framework.getService(MimetypeRegistry.class);
         String mimetypeStr = mimetypeRegistry.getMimetypeFromFile(file);
         // TODO: JODconverter2.1.1 bug on excel file
         // have to check by extension
@@ -156,23 +156,8 @@ public class JOOoConvertPluginImpl extends AbstractPlugin implements
         }
     }
 
-    private void acquireLock() {
-        boolean acquired = false;
-        try {
-            acquired = conLock.tryLock(60, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            log.error("Cannot acquire an OOo connection");
-        } finally {
-            if (!acquired) {
-                log.error("Cannot acquire an OOo connection :: timeout");
-            }
-        }
-    }
-
     public OpenOfficeConnection getOOoConnection() {
-
         log.debug("OOo connection lock ACQUIRED");
-
         if (connection == null || !connection.isConnected()) {
             connection = new SocketOpenOfficeConnection(getOOoHostURL(),
                     getOOoHostPort());
@@ -187,11 +172,6 @@ public class JOOoConvertPluginImpl extends AbstractPlugin implements
         if (connection != null && connection.isConnected()) {
             connection.disconnect();
         }
-    }
-
-    public void releaseLock() {
-        conLock.unlock();
-        log.debug("Release connection lock");
     }
 
     @Override
@@ -226,8 +206,7 @@ public class JOOoConvertPluginImpl extends AbstractPlugin implements
                 }
             } catch (ConnectException e) {
                 log.error("Could not connect to the remote OpenOffice server @"
-                        + getOOoHostURL() + ':'
-                        + String.valueOf(getOOoHostPort()));
+                        + getOOoHostURL() + ':' + getOOoHostPort());
             }
 
             if (connection != null && connection.isConnected()) {
@@ -329,6 +308,24 @@ public class JOOoConvertPluginImpl extends AbstractPlugin implements
     protected void finalize() throws Throwable {
         releaseOOoConnection();
         super.finalize();
+    }
+
+    private void acquireLock() {
+        boolean acquired = false;
+        try {
+            acquired = conLock.tryLock(60, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            log.error("Cannot acquire an OOo connection");
+        } finally {
+            if (!acquired) {
+                log.error("Cannot acquire an OOo connection :: timeout");
+            }
+        }
+    }
+
+    private void releaseLock() {
+        conLock.unlock();
+        log.debug("Release connection lock");
     }
 
     private Boolean adaptFilterNameForHTML2PDF(DocumentFormat sourceFormat,

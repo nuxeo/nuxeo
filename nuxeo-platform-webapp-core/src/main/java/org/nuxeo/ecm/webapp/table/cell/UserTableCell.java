@@ -30,7 +30,7 @@ import org.apache.commons.logging.LogFactory;
 public class UserTableCell extends AbstractTableCell {
     private static final long serialVersionUID = 661302415901705401L;
 
-    private static Log log = LogFactory.getLog(UserTableCell.class);
+    private static final Log log = LogFactory.getLog(UserTableCell.class);
 
     protected String user;
 

@@ -18,20 +18,19 @@
  */
 package org.nuxeo.ecm.platform.scheduler.core;
 
-import java.io.Serializable;
-import java.util.Collections;
-import java.util.Map;
-
 import javax.security.auth.login.LoginException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.NXCore;
-import org.nuxeo.ecm.core.api.event.CoreEvent;
-import org.nuxeo.ecm.core.api.event.impl.CoreEventImpl;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
-import org.nuxeo.ecm.core.listener.CoreEventListenerService;
+import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.EventContext;
+import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.event.impl.EventContextImpl;
+import org.nuxeo.ecm.core.event.impl.EventImpl;
 import org.nuxeo.ecm.platform.api.login.UserSession;
+import org.nuxeo.runtime.api.Framework;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
@@ -58,14 +57,19 @@ public class EventJob implements Job {
             return;
         }
         UserPrincipal principal = new UserPrincipal(username);
+        EventContext ctx = new EventContextImpl(null, principal);
+        ctx.setProperty("category", eventCategory);
+        Event event = new EventImpl(eventId, ctx);
+        EventService evtService = null;
 
-        Object source = null;
-        Map<String, Serializable> info = Collections.emptyMap();
-        String comment = null;
-        CoreEvent event = new CoreEventImpl(eventId, source, info, principal,
-                eventCategory, comment);
-        CoreEventListenerService service = NXCore.getCoreEventListenerService();
-        if (service != null) {
+        try {
+            evtService = Framework.getService(EventService.class);
+        }
+        catch (Exception e) {
+            log.error("Cannot find EventService", e);
+        }
+
+        if (evtService != null) {
             log.info("Sending scheduled event id=" + eventId + ", category="
                     + eventCategory);
 
@@ -75,12 +79,16 @@ public class EventJob implements Job {
             ClassLoader nuxeoCL = EventJob.class.getClassLoader();
             try {
                 Thread.currentThread().setContextClassLoader(nuxeoCL);
-                service.notifyEventListeners(event);
-            } finally {
+                evtService.fireEvent(event);
+            } catch (ClientException e) {
+                log.error("Error while sending event to EventService", e);
+            }
+
+            finally {
                 Thread.currentThread().setContextClassLoader(jbossCL);
             }
         } else {
-            log.error("Cannot find EventListenerService");
+            log.error("Cannot find EventService");
         }
     }
 

@@ -33,15 +33,14 @@ import java.util.Map.Entry;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.impl.DataModelImpl;
-import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
+import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
@@ -58,7 +57,7 @@ import org.nuxeo.runtime.api.Framework;
  * @author Anahide Tchertchian
  *
  */
-public class MultiDirectorySession implements Session {
+public class MultiDirectorySession extends BaseSession implements Session {
 
     private static final Log log = LogFactory.getLog(MultiDirectorySession.class);
 
@@ -410,12 +409,18 @@ public class MultiDirectorySession implements Session {
     }
 
     public DocumentModel getEntry(String id) throws DirectoryException {
+        return getEntry(id, true);
+    }
+
+    public DocumentModel getEntry(String id, boolean fetchReferences)
+            throws DirectoryException {
         init();
         source_loop: for (SourceInfo sourceInfo : sourceInfos) {
             final Map<String, Object> map = new HashMap<String, Object>();
 
             for (SubDirectoryInfo dirInfo : sourceInfo.subDirectoryInfos) {
-                final DocumentModel entry = dirInfo.getSession().getEntry(id);
+                final DocumentModel entry = dirInfo.getSession().getEntry(id,
+                        fetchReferences);
                 boolean isOptional = dirInfo.isOptional;
                 if (entry == null && !isOptional) {
                     // not in this source
@@ -423,8 +428,12 @@ public class MultiDirectorySession implements Session {
                 }
                 for (Entry<String, String> e : dirInfo.toSource.entrySet()) {
                     if (entry != null) {
-                        map.put(e.getValue(), entry.getProperty(
-                                dirInfo.dirSchemaName, e.getKey()));
+                        try {
+                            map.put(e.getValue(), entry.getProperty(
+                                    dirInfo.dirSchemaName, e.getKey()));
+                        } catch (ClientException e1) {
+                            throw new DirectoryException(e1);
+                        }
                     } else {
                         // fill with default values for this directory
                         if (!map.containsKey(e.getValue())) {
@@ -435,11 +444,13 @@ public class MultiDirectorySession implements Session {
                 }
             }
             // ok we have the data
-            final DocumentModelImpl entry = new DocumentModelImpl(null,
-                    schemaName, id, null, null, null,
-                    new String[] { schemaName }, null);
-            entry.addDataModel(new DataModelImpl(schemaName, map));
-            return entry;
+            try {
+                final DocumentModel entry = BaseSession.createEntryModel(null,
+                        schemaName, id, map);
+                return entry;
+            } catch (PropertyException e) {
+                throw new DirectoryException(e);
+            }
         }
         return null;
     }
@@ -480,7 +491,7 @@ public class MultiDirectorySession implements Session {
             }
             for (SubDirectoryInfo dirInfo : sourceInfo.optionalSubDirectoryInfos) {
                 final DocumentModelList entries = dirInfo.getSession().getEntries();
-                HashSet<String> existingIds = new HashSet<String>();
+                Set<String> existingIds = new HashSet<String>();
                 for (DocumentModel entry : entries) {
                     final String id = entry.getId();
                     final Map<String, Object> map = maps.get(id);
@@ -535,10 +546,8 @@ public class MultiDirectorySession implements Session {
                     continue;
                 }
                 seen.put(id, sourceInfo.source.name);
-                final DocumentModelImpl entry = new DocumentModelImpl(null,
-                        schemaName, id, null, null, null,
-                        new String[] { schemaName }, null);
-                entry.addDataModel(new DataModelImpl(schemaName, map));
+                final DocumentModel entry = BaseSession.createEntryModel(null,
+                        schemaName, id, map);
                 results.add(entry);
             }
         }
@@ -591,13 +600,10 @@ public class MultiDirectorySession implements Session {
         log.warn("Calling deleteEntry extended on multi directory");
         try {
             deleteEntry(id);
+        } catch (DirectoryException e) {
+            throw e;
         } catch (ClientException e) {
-            // XXX doh
-            if (e instanceof DirectoryException) {
-                throw (DirectoryException) e;
-            } else {
-                throw new DirectoryException(e);
-            }
+            throw new DirectoryException(e);
         }
     }
 
@@ -615,12 +621,8 @@ public class MultiDirectorySession implements Session {
                 // if entry does not exist, create it
                 dirInfo.getSession().createEntry(map);
             } else {
-                final DocumentModelImpl entry = new DocumentModelImpl(null,
-                        dirInfo.dirSchemaName, id, null, null, null,
-                        new String[] { dirInfo.dirSchemaName }, null);
-                DataModel dataModel = new DataModelImpl(dirInfo.dirSchemaName);
-                dataModel.setMap(map); // makes fields dirty
-                entry.addDataModel(dataModel);
+                final DocumentModel entry = BaseSession.createEntryModel(null,
+                        dirInfo.dirSchemaName, id, map);
                 dirInfo.getSession().updateEntry(entry);
             }
         }
@@ -661,9 +663,14 @@ public class MultiDirectorySession implements Session {
     public DocumentModelList query(Map<String, Object> filter,
             Set<String> fulltext, Map<String, String> orderBy)
             throws ClientException {
+        return query(filter, fulltext, orderBy, false);
+    }
 
+    @SuppressWarnings("boxing")
+    public DocumentModelList query(Map<String, Object> filter,
+            Set<String> fulltext, Map<String, String> orderBy,
+            boolean fetchReferences) throws ClientException {
         init();
-
         // list of entries
         final DocumentModelList results = new DocumentModelListImpl();
         // entry ids already seen (mapped to the source name)
@@ -714,7 +721,7 @@ public class MultiDirectorySession implements Session {
                 }
                 // make query to subdirectory
                 DocumentModelList l = dirInfo.getSession().query(dirFilter,
-                        dirFulltext);
+                        dirFulltext, null, fetchReferences);
                 for (DocumentModel entry : l) {
                     final String id = entry.getId();
                     Map<String, Object> map = maps.get(id);
@@ -775,10 +782,8 @@ public class MultiDirectorySession implements Session {
                 }
                 final Map<String, Object> map = e.getValue();
                 seen.put(id, sourceInfo.source.name);
-                final DocumentModelImpl entry = new DocumentModelImpl(null,
-                        schemaName, id, null, null, null,
-                        new String[] { schemaName }, null);
-                entry.addDataModel(new DataModelImpl(schemaName, map));
+                final DocumentModel entry = BaseSession.createEntryModel(null,
+                        schemaName, id, map);
                 results.add(entry);
             }
         }
@@ -814,4 +819,24 @@ public class MultiDirectorySession implements Session {
         }
         return results;
     }
+
+    public DocumentModel createEntry(DocumentModel entry)
+            throws ClientException {
+        Map<String, Object> fieldMap = entry.getProperties(schemaName);
+        return createEntry(fieldMap);
+    }
+
+    public boolean hasEntry(String id) throws ClientException {
+        init();
+        for (SourceInfo sourceInfo : sourceInfos) {
+            for (SubDirectoryInfo dirInfo : sourceInfo.subDirectoryInfos) {
+                Session session = dirInfo.getSession();
+                if (session.hasEntry(id)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
 }

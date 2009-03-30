@@ -37,9 +37,8 @@ public interface CommentManager {
             throws ClientException;
 
     /**
-     * @deprecated CommentManager cannot find the author if invoked remote so
-     *             one should use CommentManager.createComment(docModel,
-     *             comment, author)
+     * @deprecated CommentManager cannot find the author if invoked remotely so
+     *             one should use {@link #createComment(DocumentModel, String, String)}
      */
     @Deprecated
     DocumentModel createComment(DocumentModel docModel, String comment)
@@ -66,5 +65,26 @@ public interface CommentManager {
 
     void deleteComment(DocumentModel docModel, DocumentModel comment)
             throws ClientException;
+
+    /**
+     * Gets documents in relation with a particular comment
+     * @param docModel the comment
+     * @return the list of documents
+     * @throws ClientException
+     */
+    List<DocumentModel> getDocumentsForComment(DocumentModel comment)
+            throws ClientException;
+
+    /**
+     * Creates a comment document model. It gives opportunity to save the comments in a
+     * specified location
+     * @param docModel the document to comment
+     * @param comment the comment content
+     * @param path the location path
+     * @return the comment document model.
+     * @throws ClientException
+     */
+    DocumentModel createLocatedComment(DocumentModel docModel,
+            DocumentModel comment, String path) throws ClientException;
 
 }

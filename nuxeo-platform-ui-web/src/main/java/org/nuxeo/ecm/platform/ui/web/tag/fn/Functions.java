@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.ui.web.tag.fn;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -36,12 +37,14 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Util functions.
- * 
+ *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- * 
+ *
  */
 public final class Functions {
-    public static enum BytePrefix {
+
+    public enum BytePrefix {
+
         SI(1000, new String[] { "", "k", "M", "G", "T", "P", "E", "Z", "Y" },
                 new String[] { "", "kilo", "mega", "giga", "tera", "exa",
                         "zetta", "yotta" }), IEC(1024, new String[] { "", "Ki",
@@ -49,14 +52,14 @@ public final class Functions {
                 "kibi", "mebi", "tebi", "pebi", "exbi", "zebi", "yobi" }), JEDEC(
                 1024, new String[] { "", "K", "M", "G" }, new String[] { "",
                         "kilo", "mega", "giga" });
-        private int base;
 
-        private String[] shortSuffixes;
+        private final int base;
 
-        private String[] longSuffixes;
+        private final String[] shortSuffixes;
 
-        private BytePrefix(int base, String[] shortSuffixes,
-                String[] longSuffixes) {
+        private final String[] longSuffixes;
+
+        BytePrefix(int base, String[] shortSuffixes, String[] longSuffixes) {
             this.base = base;
             this.shortSuffixes = shortSuffixes;
             this.longSuffixes = longSuffixes;
@@ -86,13 +89,15 @@ public final class Functions {
     private static final String FULLNAMES_MAP_KEY = Functions.class.getName()
             + ".FULLNAMES_MAP";
 
-    static Map<String, String> mapOfDateLength = new HashMap<String, String>() {
+    static final Map<String, String> mapOfDateLength = new HashMap<String, String>() {
         {
             put("short", String.valueOf(DateFormat.SHORT));
             put("medium", String.valueOf(DateFormat.MEDIUM));
             put("long", String.valueOf(DateFormat.LONG));
             put("full", String.valueOf(DateFormat.FULL));
         }
+
+        private static final long serialVersionUID = 8465772256977862352L;
     };
 
     // Utility class.
@@ -105,6 +110,13 @@ public final class Functions {
 
     public static String join(String[] list, String separator) {
         return StringUtils.join(list, separator);
+    }
+
+    public static String joinCollection(Collection<Object> collection, String separator) {
+        if (collection == null) {
+            return null;
+        }
+        return StringUtils.join(collection.iterator(), separator);
     }
 
     public static String concat(String s1, String s2) {
@@ -140,12 +152,14 @@ public final class Functions {
 
     /**
      * Returns the full name of a user.
-     * 
+     *
      * @param username the user id, or null or empty for the current user.
      * @return the full user name.
      */
+    @SuppressWarnings("unchecked")
     public static String userFullName(String username) {
         ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
+
         // empty user name is current user
         if (username == null || username.length() == 0) {
             username = externalContext.getUserPrincipal().getName();
@@ -178,12 +192,16 @@ public final class Functions {
     }
 
     // this should be a method of the principal itself
-    protected static String principalFullName(NuxeoPrincipal principal) {
+    public static String principalFullName(NuxeoPrincipal principal) {
         String first = principal.getFirstName();
         String last = principal.getLastName();
+        return userDisplayName(principal.getName(), first, last);
+    }
+
+    public static String userDisplayName(String id, String first, String last) {
         if (first == null || first.length() == 0) {
             if (last == null || last.length() == 0) {
-                return principal.getName();
+                return id;
             } else {
                 return last;
             }
@@ -196,8 +214,7 @@ public final class Functions {
         }
     }
 
-    public static String dateFormater(String formatLength)
-            throws ClientException {
+    public static String dateFormater(String formatLength) {
 
         // A map to store temporary available date format
 
@@ -216,13 +233,12 @@ public final class Functions {
     }
 
     // method to format date in the standard short format
-    public static String basicDateFormater() throws ClientException {
+    public static String basicDateFormater() {
         return dateFormater("short");
     }
 
     // method to format date and time considering user's local
-    public static String dateAndTimeFormater(String formatLength)
-            throws ClientException {
+    public static String dateAndTimeFormater(String formatLength) {
 
         // A map to store temporary available date format
 
@@ -239,23 +255,21 @@ public final class Functions {
 
         // return the date pattern
         return format.toPattern();
-
     }
 
     // method to format date and time in the standard short format
-    public static String basicDateAndTimeFormater() throws ClientException {
+    public static String basicDateAndTimeFormater() {
         return dateAndTimeFormater("short");
-
     }
 
     public static String printFileSize(String size) {
         return printFormatedFileSize(size, "SI", true);
     }
 
-
     public static String printFormatedFileSize(String sizeS, String format,
             Boolean isShort) {
-        Integer size = (sizeS == null || "".equals(sizeS)) ? 0 : Integer.parseInt(sizeS);
+        Integer size = (sizeS == null || "".equals(sizeS)) ? 0
+                : Integer.parseInt(sizeS);
         BytePrefix prefix = Enum.valueOf(BytePrefix.class, format);
         int base = prefix.getBase();
         String[] suffix = isShort ? prefix.getShortSuffixes()
@@ -267,4 +281,5 @@ public final class Functions {
         }
         return "" + size + " " + suffix[ex] + "B";
     }
+
 }

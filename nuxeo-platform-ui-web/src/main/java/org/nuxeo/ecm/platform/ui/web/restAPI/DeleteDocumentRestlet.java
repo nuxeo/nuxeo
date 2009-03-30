@@ -32,7 +32,7 @@ import org.restlet.data.Response;
 
 /**
  * This RESTLET allows to delete documents
- * 
+ *
  * @author jthimonier
  */
 public class DeleteDocumentRestlet extends BaseStatelessNuxeoRestlet implements
@@ -41,7 +41,7 @@ public class DeleteDocumentRestlet extends BaseStatelessNuxeoRestlet implements
     private Log log = LogFactory.getLog(DeleteDocumentRestlet.class);
 
     @Override
-    public void handle(Request req, Response res) {
+    protected void doHandleStatelessRequest(Request req, Response res) {
 
         String repoId = (String) req.getAttributes().get("repo");
         String docId = (String) req.getAttributes().get("docid");

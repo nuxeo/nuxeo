@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Comment project
+Bundle-SymbolicName: org.nuxeo.ecm.platform.comment.tests;singleton=true
+Bundle-Vendor: Nuxeo

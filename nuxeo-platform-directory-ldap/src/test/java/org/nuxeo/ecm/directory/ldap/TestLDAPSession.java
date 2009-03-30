@@ -32,6 +32,8 @@ import java.util.Set;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.directory.BaseSession;
+import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 
 /**
@@ -57,13 +59,9 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
                 assertEquals(Long.valueOf(1), entry.getProperty(
                         USER_SCHEMANAME, "intField"));
             }
-            assertNull(entry.getProperty(USER_SCHEMANAME, "sn"));
             assertEquals("Administrator", entry.getProperty(USER_SCHEMANAME,
                     "firstName"));
-            assertNull(entry.getProperty(USER_SCHEMANAME, "givenName"));
-            assertNull(entry.getProperty(USER_SCHEMANAME, "cn"));
             assertNull(entry.getProperty(USER_SCHEMANAME, "password"));
-            assertNull(entry.getProperty(USER_SCHEMANAME, "userPassword"));
             List val = (List) entry.getProperty(USER_SCHEMANAME, "employeeType");
             assertTrue(val.isEmpty());
 
@@ -83,7 +81,12 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
             assertEquals("User", entry2.getProperty(USER_SCHEMANAME,
                     "firstName"));
             assertNull(entry2.getProperty(USER_SCHEMANAME, "password"));
-            assertNull(entry2.getProperty(USER_SCHEMANAME, "userPassword"));
+            try {
+                entry2.getProperty(USER_SCHEMANAME, "userPassword");
+                fail();
+            } catch (ClientException ce) {
+                // expected
+            }
             assertEquals(Arrays.asList("Boss"), entry2.getProperty(
                     USER_SCHEMANAME, "employeeType"));
 
@@ -101,7 +104,6 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
                     assertEquals(Arrays.asList("members"), entry2.getProperty(
                             USER_SCHEMANAME, "groups"));
                 }
-
             }
 
             DocumentModel entry3 = session.getEntry("UnexistingEntry");
@@ -120,7 +122,6 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
                 DocumentModel entry6 = session.getEntry("(objectClass=*)");
                 assertNull(entry6);
             }
-
         } finally {
             session.close();
         }
@@ -200,7 +201,6 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
                             GROUP_SCHEMANAME, "parentGroups"));
                 }
             }
-
         } finally {
             session.close();
         }
@@ -273,7 +273,6 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
             parentGroups = (List<String>) entry.getProperty(GROUP_SCHEMANAME,
                     "parentGroups");
             assertEquals(Arrays.asList("dyngroup1", "members"), parentGroups);
-
         } finally {
             session.close();
         }
@@ -358,7 +357,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
                 String[] schemaNames = dm.getDeclaredSchemas();
                 assertEquals(1, schemaNames.length);
 
-                assertEquals(schemaNames[0], USER_SCHEMANAME);
+                assertEquals(USER_SCHEMANAME, schemaNames[0]);
 
                 assertEquals("user0", dm.getProperty(USER_SCHEMANAME,
                         "username"));
@@ -445,7 +444,6 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
 
                 assertEquals(Arrays.asList(), dm.getProperty(GROUP_SCHEMANAME,
                         "parentGroups"));
-
             } finally {
                 session.close();
             }
@@ -603,7 +601,6 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
                 entry.setProperty(GROUP_SCHEMANAME, "subGroups", Arrays.asList(
                         "submembers", "administrators"));
                 session.updateEntry(entry);
-
             } finally {
                 session.close();
             }
@@ -646,7 +643,6 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
 
             entries = session.getEntries();
             assertEquals(0, entries.size());
-
         } finally {
             session.close();
         }
@@ -672,7 +668,6 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
             } else {
                 assertEquals(2, entries.size());
             }
-
         } finally {
             session.close();
         }
@@ -798,7 +793,6 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
             fulltext.add("lastName");
             entries = session.query(filter, fulltext);
             assertEquals(4, entries.size());
-
         } finally {
             session.close();
         }
@@ -934,10 +928,51 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
                 session.updateEntry(entry);
                 assertTrue(((Calendar) entry.getProperty(USER_SCHEMANAME,
                         "dateField")).after(cal1));
-
             } finally {
                 session.close();
             }
         }
     }
+
+    public void testCreateFromModel() throws Exception {
+        if (USE_EXTERNAL_TEST_LDAP_SERVER) {
+            Session dir = getLDAPDirectory("userDirectory").getSession();
+            try {
+                String schema = "user";
+                DocumentModel entry = BaseSession.createEntryModel(null,
+                        schema, null, null);
+                entry.setProperty(schema, "username", "omar");
+                // XXX: some values are mandatory on real LDAP
+                entry.setProperty(schema, "password", "sesame");
+                entry.setProperty(schema, "employeeType",
+                        new String[] { "Slave" });
+
+                assertNull(dir.getEntry("omar"));
+                dir.createEntry(entry);
+                assertNotNull(dir.getEntry("omar"));
+
+                // create one with existing same id, must fail
+                entry.setProperty(schema, "username", "Administrator");
+                try {
+                    entry = dir.createEntry(entry);
+                    fail("Should raise an error, entry already exists");
+                } catch (DirectoryException e) {
+                }
+
+            } finally {
+                dir.close();
+            }
+        }
+    }
+
+    public void testHasEntry() throws Exception {
+        Session dir = getLDAPDirectory("userDirectory").getSession();
+        try {
+            assertTrue(dir.hasEntry("Administrator"));
+            assertFalse(dir.hasEntry("foo"));
+        } finally {
+            dir.close();
+        }
+    }
+
 }

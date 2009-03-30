@@ -1,0 +1,62 @@
+<f:subview xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout" id="#{widget.id}">
+
+  <c:if test="#{widget.mode != 'edit'}">
+
+    <h:outputText value="#{field_0}" />
+    
+    <h:outputText value="#{field_1}" />
+
+  </c:if>
+
+  <c:if test="#{widget.mode == 'edit'}">
+    <h:selectOneListbox value="#{field_0}"
+      id="#{widget.id}_select" styleClass="dataInputText"
+      required="#{widget.properties['required']}">
+      <f:selectItems value="#{WebcontainerThemeActions.availableThemes}"  />
+      <a4j:support event="onchange" ajaxSingle="true" reRender="#{widget.id}_Page_select" />
+    </h:selectOneListbox>
+    <h:message styleClass="errorMessage" for="#{widget.id}_select"
+      id="#{widget.id}_message" />
+
+    <h:selectOneListbox value="#{field_1}"
+      id="#{widget.id}_Page_select" styleClass="dataInputText"
+      required="#{widget.properties['required']}">
+      <c:if test="#{field_0 != null}">
+        <f:selectItems value="#{WebcontainerThemeActions.getAvailablePages(field_0)}"  />
+      </c:if>
+    </h:selectOneListbox>
+    <h:message styleClass="errorMessage" for="#{widget.id}_Page_select"
+      id="#{widget.id}_Page_message" />
+
+  </c:if>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</f:subview>

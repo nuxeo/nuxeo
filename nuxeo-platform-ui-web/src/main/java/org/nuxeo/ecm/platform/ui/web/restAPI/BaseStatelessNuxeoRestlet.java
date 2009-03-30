@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.ui.web.restAPI;
 import org.dom4j.dom.DOMDocument;
 import org.dom4j.dom.DOMDocumentFactory;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -29,17 +30,17 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.runtime.api.Framework;
+import org.restlet.data.Request;
 import org.restlet.data.Response;
 
-
 /**
- * Base class for stateless restlet : ie Restlets that don't use Seam.
+ * Base class for stateless restlet, i.e. Restlets that don't use Seam.
  *
  * @author tiry
  */
 public class BaseStatelessNuxeoRestlet extends BaseNuxeoRestlet {
 
-    protected CoreSession session;
+    protected CoreSession session=null;
     protected DocumentRef targetDocRef;
     protected DocumentModel targetDocument;
 
@@ -138,4 +139,28 @@ public class BaseStatelessNuxeoRestlet extends BaseNuxeoRestlet {
         return true;
     }
 
+
+    protected void cleanUp() {
+        if (session!=null) {
+            CoreInstance.getInstance().close(session);
+            session=null;
+            targetDocRef=null;;
+            targetDocument=null;;
+        }
+    }
+
+    @Override
+    public void handle(Request req, Response res) {
+        try {
+            doHandleStatelessRequest(req,res);
+        }
+        finally {
+            cleanUp();
+        }
+    }
+
+
+    protected void doHandleStatelessRequest(Request req, Response res) {
+
+    }
 }

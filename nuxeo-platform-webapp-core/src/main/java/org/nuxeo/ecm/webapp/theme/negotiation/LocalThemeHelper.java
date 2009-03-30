@@ -22,19 +22,19 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.ec.placeful.Annotation;
-import org.nuxeo.ecm.platform.ec.placeful.ejb.interfaces.EJBPlacefulService;
+import org.nuxeo.ecm.platform.ec.placeful.interfaces.PlacefulService;
 import org.nuxeo.runtime.api.Framework;
 
 public class LocalThemeHelper {
 
     private static final Log log = LogFactory.getLog(LocalThemeHelper.class);
 
-    public static EJBPlacefulService getPlacefulServiceBean() {
-        EJBPlacefulService placefulService = null;
+    public static PlacefulService getPlacefulServiceBean() {
+        PlacefulService placefulService = null;
         try {
 //            placefulService = ECM.getPlatform().getService(
 //                    EJBPlacefulService.class);
-            placefulService= Framework.getService(EJBPlacefulService.class);
+            placefulService= Framework.getService(PlacefulService.class);
         } catch (Exception e) {
             log.error("Error connecting to PlacefulService", e);
         }
@@ -45,7 +45,7 @@ public class LocalThemeHelper {
     }
 
     public static LocalThemeConfig getLocalThemeConfig(DocumentModel doc) {
-        EJBPlacefulService placefulService = getPlacefulServiceBean();
+        PlacefulService placefulService = getPlacefulServiceBean();//LocalThemeHelper.getPlacefulServiceBean()
         if (placefulService == null) {
             return null;
         }
@@ -56,7 +56,7 @@ public class LocalThemeHelper {
         }
         Map<String, Object> paramMap = new HashMap<String, Object>();
         paramMap.put("docId", docId);
-        List<Annotation> configs = null;
+        List<Annotation> configs;
         try {
             configs = placefulService.getAnnotationListByParamMap(paramMap,
                     LocalThemeConfig.LOCAL_THEME_NAME);
@@ -72,7 +72,7 @@ public class LocalThemeHelper {
 
     public static void setLocalThemeConfig(String theme, String page,
             String perspective, String engine, String mode, DocumentModel doc) {
-        EJBPlacefulService placefulService = getPlacefulServiceBean();
+        PlacefulService placefulService = getPlacefulServiceBean();
         if (placefulService == null) {
             return;
         }
@@ -108,7 +108,7 @@ public class LocalThemeHelper {
     }
 
     public static void removeLocalThemeConfig(DocumentModel doc) {
-        EJBPlacefulService placefulService = getPlacefulServiceBean();
+        PlacefulService placefulService = getPlacefulServiceBean();
         if (placefulService == null) {
             return;
         }
@@ -126,4 +126,5 @@ public class LocalThemeHelper {
             log.error(e);
         }
     }
+
 }

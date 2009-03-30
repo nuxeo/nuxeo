@@ -29,4 +29,8 @@ public class GhostDocumentsList extends ArrayList<DocumentModel> implements
 
     private static final long serialVersionUID = -1907319974461744723L;
 
+    public long totalSize() {
+        return size();
+    }
+
 }

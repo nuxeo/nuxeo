@@ -19,19 +19,21 @@
 
 package org.nuxeo.ecm.webapp.security;
 
-import java.util.Collection;
-import java.util.List;
+import static org.jboss.seam.ScopeType.EVENT;
 
-import javax.annotation.security.PermitAll;
+import java.io.Serializable;
+import java.util.Collection;
+
 import javax.ejb.Local;
 import javax.ejb.Remote;
-import javax.ejb.Remove;
-import javax.faces.model.SelectItem;
+import javax.faces.component.UIComponent;
+import javax.faces.context.FacesContext;
 
-import org.jboss.seam.annotations.Destroy;
+import org.jboss.seam.annotations.Factory;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.platform.types.Type;
-import org.nuxeo.ecm.webapp.base.StatefulBaseLifeCycle;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
 
 /**
  * Provides user manager related operations.
@@ -40,104 +42,80 @@ import org.nuxeo.ecm.webapp.base.StatefulBaseLifeCycle;
  */
 @Local
 @Remote
-public interface UserManagerActions extends StatefulBaseLifeCycle {
+public interface UserManagerActions extends Serializable {
 
-    void initialize() throws ClientException;
+    static final String TABBED = "tabbed";
 
-    String createUser() throws ClientException;
+    static final String SEARCH_ONLY = "search_only";
 
-    String deleteUser() throws ClientException;
+    static final String VALID_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-0123456789";
 
-    String searchUsers() throws ClientException;
+    String getUserListingMode() throws ClientException;
 
-    String searchUsersAdvanced() throws ClientException;
+    @Factory(value = "userList", scope = EVENT)
+    DocumentModelList getUsers() throws ClientException;
 
-    String clearSearchAdvanced() throws ClientException;
+    void resetUsers() throws ClientException;
 
-    void getUsers() throws ClientException;
-
-    String editUser() throws ClientException;
+    DocumentModel getSelectedUser() throws ClientException;
 
     String viewUser() throws ClientException;
 
     String viewUser(String userName) throws ClientException;
 
+    String searchUsers() throws ClientException;
+
+    void validateUserName(FacesContext context, UIComponent component,
+            Object value);
+
+    void validatePassword(FacesContext context, UIComponent component,
+            Object value);
+
+    String editUser() throws ClientException;
+
+    String deleteUser() throws ClientException;
+
     String updateUser() throws ClientException;
 
-    String saveUser() throws ClientException;
+    String changePassword() throws ClientException;
 
-    List<SelectItem> getAvailableGroups() throws ClientException;
+    String createUser() throws ClientException,
+            UserAlreadyExistsException;
+
+    DocumentModel getNewUser() throws ClientException;
 
     String getSearchString();
 
     void setSearchString(String searchString);
 
-    String getSearchUsername();
-
-    void setSearchUsername(String username);
-
-    String getSearchFirstname();
-
-    void setSearchFirstname(String firstName);
-
-    String getSearchLastname();
-
-    void setSearchLastname(String lastName);
-
-    String getSearchEmail();
-
-    void setSearchEmail(String email);
-
-    String getSearchCompany();
-
-    void setSearchCompany(String email);
-
-    boolean getAllowDeleteUser() throws ClientException;
-
-    boolean getAllowEditUser();
-
-    boolean getAllowCreateUser() throws ClientException;
-
-    boolean getAllowChangePassword() throws ClientException;
-
-    String getRetypedPassword();
-
-    void setRetypedPassword(String retypedPassword);
-
-    String viewUsers() throws ClientException;
-
-    String getSelectedLetter();
+    Collection<String> getCatalogLetters();
 
     void setSelectedLetter(String selectedLetter);
 
-    Collection<String> getCatalogLetters();
+    String getSelectedLetter();
 
-    boolean getDoSearch();
+    String viewUsers() throws ClientException;
 
-    void setDoSearch(boolean doSearch);
+    boolean getAllowEditUser() throws ClientException;
 
-    @Remove
-    @Destroy
-    @PermitAll
-    void destroy();
+    boolean getAllowChangePassword() throws ClientException;
+
+    boolean getAllowCreateUser() throws ClientException;
+
+    boolean getAllowDeleteUser() throws ClientException;
 
     String clearSearch() throws ClientException;
 
-    Type getChangeableUserType();
-    Type getChangeableUserCreateType();
-
-    void setChanged_password(String changed_password);
-
-    void setChanged_password_verify(String changed_password_verify);
-
-    String changePassword() throws ClientException;
-
-    String getChanged_password();
-
-    String getChanged_password_verify();
-
     boolean isSearchOverflow();
 
-    void setSearchOverflow(boolean searchOverflow);
+    // XXX: never used, not tested
+    DocumentModel getSearchUserModel() throws ClientException;
+
+    // XXX: never used, not tested
+    String searchUsersAdvanced() throws ClientException;
+
+    // XXX: never used, not tested
+    String clearSearchAdvanced() throws ClientException;
+
 
 }

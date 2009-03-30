@@ -35,9 +35,13 @@
       </li>
       <li> join(String[], String): performs a join on given array using given separator.
       </li>
+      <li> joinCollection(Collection, String): performs a join on given collection using given separator.
+      </li>
       <li> userIsMemberOf(String): tests if the user belongs to the named group.
       </li>
       <li> userFullName(String): returns the full name of a user given its id.
+      </li>
+      <li> userDisplayName(String, String, String): returns the full name of a user given its id, first name and last name.
       </li>
       <li> printFileSize(String size): same as printFormatedFileSize( size, "SI", true)
       </li>
@@ -841,17 +845,26 @@
   <tag>
     <name>inputDate</name>
     <tag-class>None</tag-class>
-    <description>Standard tomahawk tag</description>
+    <description>
+      DISABLED TAG for nuxeo > 5.2m2, otherwise deprecated standard tomahawk
+      tag.
+    </description>
   </tag>
   <tag>
     <name>inputCalendar</name>
     <tag-class>None</tag-class>
-    <description>Standard tomahawk tag</description>
+    <description>
+      DISABLED TAG for nuxeo > 5.2m2, otherwise deprecated standard tomahawk
+      tag.
+    </description>
   </tag>
   <tag>
     <name>schedule</name>
     <tag-class>None</tag-class>
-    <description>Standard tomahawk tag</description>
+    <description>
+      DISABLED TAG for nuxeo > 5.2m2, otherwise deprecated standard tomahawk
+      tag.
+    </description>
   </tag>
   <tag>
     <name>graphicImage</name>
@@ -861,7 +874,11 @@
   <tag>
     <name>inputFileUpload</name>
     <tag-class>None</tag-class>
-    <description>Standard trinidad inputFile tag</description>
+    <description>
+      DISABLED TAG for nuxeo > 5.2m2, otherwise deprecated standard trinidad
+      inputFile tag. Use s:fileUpload instead (available only for versions >
+      5.2m2).
+    </description>
   </tag>
   <tag>
     <name>selectOneRadio</name>

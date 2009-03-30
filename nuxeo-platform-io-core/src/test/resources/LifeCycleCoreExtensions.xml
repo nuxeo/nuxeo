@@ -9,9 +9,7 @@
       @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
   </documentation>
 
-  <require>org.nuxeo.ecm.core.repository.jcr.lifecycle.JCRLifeCycleManager</require>
-
-   <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
+  <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
       point="lifecycle">
 
     <documentation>

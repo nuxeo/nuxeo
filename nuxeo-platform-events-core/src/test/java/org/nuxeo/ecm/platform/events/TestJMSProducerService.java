@@ -19,11 +19,11 @@
 
 package org.nuxeo.ecm.platform.events;
 
-import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.listener.CoreEventListenerService;
 import org.nuxeo.ecm.core.listener.EventListener;
 import org.nuxeo.ecm.platform.events.api.DocumentMessageProducer;
 import org.nuxeo.ecm.platform.events.api.delegate.DocumentMessageProducerBusinessDelegate;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
@@ -38,7 +38,7 @@ public class TestJMSProducerService extends NXRuntimeTestCase {
     private DocumentMessageProducer service;
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
 
         /** NXCore descriptors * */
@@ -47,7 +47,7 @@ public class TestJMSProducerService extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.ecm.platform.events.tests",
                 "RepositoryService.xml");
         deployContrib("org.nuxeo.ecm.platform.events.tests",
-                "test-CoreExtensions.xml");
+                "CoreExtensions.xml");
         deployContrib("org.nuxeo.ecm.platform.events.tests",
                 "CoreTestExtensions.xml");
         deployContrib("org.nuxeo.ecm.platform.events.tests",
@@ -62,7 +62,7 @@ public class TestJMSProducerService extends NXRuntimeTestCase {
     }
 
     private static CoreEventListenerService getRepositoryListenerService() {
-        return NXCore.getCoreEventListenerService();
+        return Framework.getLocalService(CoreEventListenerService.class);
     }
 
     public void testServiceRegistration() {

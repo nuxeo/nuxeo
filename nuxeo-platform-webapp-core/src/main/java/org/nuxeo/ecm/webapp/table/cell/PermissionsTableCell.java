@@ -41,13 +41,12 @@ public class PermissionsTableCell extends AbstractTableCell {
 
     protected String user;
 
-    protected List<String> permissions;
+    protected final List<String> permissions;
+
 
     public PermissionsTableCell(String user, List<String> permissions) {
         this.user = user;
-
         this.permissions = permissions;
-
         log.debug("UserPermissionsTableCell created: " + user + ", " + permissions);
     }
 

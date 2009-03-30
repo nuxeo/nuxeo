@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<theme name="default">
+<theme name="default" template-engines="jsf-facelets">
   <layout>
     <page name="default">
       <section>
@@ -76,6 +76,8 @@
           <fragment type="generic fragment"/>
           <!-- user workspaces -->
           <fragment type="generic fragment"/>
+          <!-- user sites -->
+          <fragment type="generic fragment"/>
         </cell>
         <cell>
           <!-- user documents -->
@@ -136,8 +138,8 @@
     </layout>
     <layout element="page[1]/section[1]/cell[2]">
       <width>82%</width>
-      <text-align>right</text-align>
       <padding>0px 10px 0px 0px</padding>
+      <text-align>right</text-align>
     </layout>
     <layout element="page[1]/section[1]/cell[3]">
       <width>0%</width>
@@ -182,8 +184,8 @@
     </layout>
     <layout element="page[3]/section[1]/cell[2]">
       <width>82%</width>
-      <text-align>right</text-align>
       <padding>0px 10px 0px 0px</padding>
+      <text-align>right</text-align>
     </layout>
     <layout element="page[3]/section[1]/cell[3]">
       <width>0%</width>
@@ -299,6 +301,9 @@
     <widget element="page[3]/section[3]/cell[2]/fragment[4]">
       <view>nuxeo5 user sections</view>
     </widget>
+    <widget element="page[3]/section[3]/cell[1]/fragment[4]">
+      <view>nuxeo5 user sites</view>
+    </widget>
     <!-- buttons -->
     <style name="default buttons">
       <selector path="input.button">
@@ -330,9 +335,8 @@
         <border-width>1px</border-width>
       </selector>
     </style>
-
     <style name="breadcrumbs style">
-    <selector path="">
+      <selector path="">
         <padding>5px 0px</padding>
       </selector>
       <selector path="div">
@@ -355,8 +359,7 @@
         <color preset="link (Nuxeo psd colors)"/>
         <text-decoration>underline</text-decoration>
       </selector>
-      <selector
-        path=".breadcrumbs a, .breadcrumbs a:link, .breadcrumbs a:visited">
+      <selector path=".breadcrumbs a, .breadcrumbs a:link, .breadcrumbs a:visited">
         <font-weight>normal</font-weight>
         <text-decoration>none</text-decoration>
       </selector>
@@ -373,16 +376,15 @@
       </selector>
       <selector path=".printButton .liveEditCreateButtons">
         <margin-right>5px</margin-right>
-        <padding-right>8px</padding-right>
         <border-right>1px solid #ccc</border-right>
+        <padding-right>8px</padding-right>
       </selector>
       <selector path=".breadcrumbs">
-        <float>left</float>
         <font-size>9px</font-size>
         <padding>5px 4px 0px 0px</padding>
+        <float>left</float>
       </selector>
     </style>
-
     <style name="common style 1">
       <selector path="h1, h2, h3, h4, h5, h6, form, p">
         <margin>0</margin>
@@ -392,10 +394,10 @@
         <margin>0</margin>
       </selector>
       <selector path=".pageNavigationControls span">
-        <margin>10px 5px</margin>
         <color>#757575</color>
         <vertical-align>top</vertical-align>
         <font-weight>bold</font-weight>
+        <margin>10px 5px</margin>
         <font-size>13px</font-size>
       </selector>
       <selector path=".directoryBack">
@@ -511,8 +513,8 @@
       </selector>
       <selector path=".facesStatusMessage ul, .infoFeedback ul, .warningFeedback ul, .errorFeedback ul">
         <list-style-type>none</list-style-type>
-        <padding>10px</padding>
         <width>200px</width>
+        <padding>10px</padding>
       </selector>
       <selector path=".vocabularyEntryContent .notEditable">
         <color>#000</color>
@@ -545,8 +547,8 @@
       </selector>
       <selector path=".radioColumn">
         <width>8px</width>
-        <padding>0 0 0 5px</padding>
         <vertical-align>top</vertical-align>
+        <padding>0 0 0 5px</padding>
       </selector>
       <selector path=".focusColumn">
         <background-color>#ddeeff</background-color>
@@ -607,6 +609,18 @@
         <line-height>1.25em</line-height>
         <padding>0</padding>
       </selector>
+      <!-- rich faces tree -->
+      <selector path=".dr-tree-h-ic-div">
+        <margin-left>8px</margin-left>
+        <padding-left>10px</padding-left>
+      </selector>
+      <selector path=".treeNodeHighlightedClass">
+        <text-decoration>none</text-decoration>
+      </selector>
+      <selector path=".treeNodeSelectedClass">
+        <border>none</border>
+      </selector>
+      <!-- end of rich faces tree -->
       <selector path=".rightsAddSelect">
         <border>1px inset #666</border>
         <margin-top>0px</margin-top>
@@ -685,9 +699,6 @@
         <color preset="link (Nuxeo psd colors)"/>
         <text-decoration>none</text-decoration>
       </selector>
-      <selector path="a:visited">
-        <color preset="link.visited (Nuxeo psd colors)"/>
-      </selector>
       <selector path="a:active">
         <color preset="link.active (Nuxeo psd colors)"/>
       </selector>
@@ -710,22 +721,22 @@
         <float>left</float>
       </selector>
       <selector path=".pictureBookItem">
-        <float>left</float>
-        <width>140px</width>
         <height>160px</height>
-        <text-align>center</text-align>
-        <background-color>#ddeeff</background-color>
         <border>1px solid #2A90F6</border>
+        <width>140px</width>
+        <background-color>#ddeeff</background-color>
         <margin>10px 20px 10px 0px</margin>
+        <float>left</float>
+        <text-align>center</text-align>
       </selector>
       <selector path=".itemSelected">
-        <background-color>#ffcc66</background-color>
         <border>1px solid #ff9933</border>
+        <background-color>#ffcc66</background-color>
       </selector>
       <selector path=".pictureBookItem .cell">
         <height>110px</height>
-        <text-align>center</text-align>
         <padding-top>15px</padding-top>
+        <text-align>center</text-align>
       </selector>
       <selector path=".pictureBookItem .cell a">
         <height>100px</height>
@@ -742,8 +753,8 @@
         <color>#001986</color>
       </selector>
       <selector path=".slideShowControl input">
-        <padding>0px</padding>
         <margin>0px 3px</margin>
+        <padding>0px</padding>
       </selector>
       <selector path=".slideShowControl input.button[disabled=disabled]">
         <background>url(/nuxeo/img/button_disabled.gif) 0 0 repeat-x #ebeff4</background>
@@ -758,9 +769,6 @@
       </selector>
       <selector path=".slideshowContent h3">
         <padding>8px 0px 5px 70px</padding>
-      </selector>
-      <selector path="a:active">
-        <color preset="link.active (Nuxeo psd colors)"/>
       </selector>
       <selector path=".foldableBox .boxBody">
         <background>#FFF</background>
@@ -830,10 +838,6 @@
         <float>left</float>
         <border-width>1px</border-width>
         <border-style>none none solid none</border-style>
-      </selector>
-      <selector path="a:hover">
-        <color preset="link (Nuxeo psd colors)"/>
-        <text-decoration>underline</text-decoration>
       </selector>
       <selector path=".dataInput td">
         <border>0px solid #FFF</border>
@@ -933,8 +937,8 @@
         <text-align>left</text-align>
       </selector>
       <selector path=".fieldColumn img">
-        <margin-right>4px</margin-right>
         <margin-left>4px</margin-left>
+        <margin-right>4px</margin-right>
         <vertical-align>top</vertical-align>
       </selector>
       <selector path=".relationCreateFieldColumn table, .fieldColumn table, .workflowFieldColumn table">
@@ -958,11 +962,10 @@
         <border-style>solid</border-style>
         <border-width>1px</border-width>
       </selector>
-      <selector path="mainNoTabs"/>
       <selector path=".dataOutput td">
+        <color>#424343</color>
         <border>1px solid #C7C7C7</border>
         <padding>3px</padding>
-        <color>#424343</color>
       </selector>
       <selector path=".selectDocumentType td a img">
         <margin-right>4px</margin-right>
@@ -1039,7 +1042,6 @@
       <selector path="table.trashTable tbody tr.dataRowOdd">
         <background-color>#f1ffef</background-color>
       </selector>
-      <selector path=".trashButtons input.button:hover"></selector>
       <selector path="textarea">
         <padding>5px</padding>
       </selector>
@@ -1161,16 +1163,16 @@
       <selector path=".fieldColumn">
         <padding-left>5px</padding-left>
       </selector>
-        <selector path=".dataOutput th, .dataList th">
+      <selector path=".dataOutput th, .dataList th">
         <color>#fff</color>
         <background-color>#E0E0E0</background-color>
         <padding>4px 5px</padding>
         <text-align>left</text-align>
       </selector>
       <selector path="div">
+        <font-family>Verdana, Arial, sans-serif</font-family>
         <background-color>#fff</background-color>
         <font-size>11pt</font-size>
-        <font-family>Verdana, Arial, sans-serif</font-family>
         <float>none</float>
       </selector>
       <selector path="a:link, a:visited">
@@ -1182,21 +1184,20 @@
         <border>1px solid #DBDBDB</border>
         <border-collapse>collapse</border-collapse>
       </selector>
-      <selector path=".dataOutput input, .dataInput input, .dataList input"/>
       <selector path="ul">
         <display>none</display>
       </selector>
       <selector path=".dataOutput td, .dataList td">
-         <border>1px solid #DBDBDB</border>
+        <border>1px solid #DBDBDB</border>
         <padding>4px 5px</padding>
       </selector>
       <selector path="img">
         <display>none</display>
       </selector>
       <selector path=".breadcrumbs">
-        <float>left</float>
         <margin-bottom>10px</margin-bottom>
         <font-size>80%</font-size>
+        <float>left</float>
       </selector>
       <selector path=".syndicationLinks">
         <display>none</display>
@@ -1276,7 +1277,7 @@
         <background preset="shade (Nuxeo default backgrounds)"/>
       </selector>
     </style>
-    <style element="page[1]/section[2]/cell[1]/fragment[1]">
+    <style element="page[1]/section[2]/cell[1]/fragment[1]" inherit="common style 1">
       <selector
         path="div,dd,dt,dl,img,p,h1,h2,h3,h4,h5,form,hr,fieldset" view="nuxeo5 tree explorer">
         <margin>0</margin>
@@ -1467,8 +1468,8 @@
         <margin-right>4px</margin-right>
       </selector>
       <selector path=".clipboardFunctions" view="nuxeo5 clip board">
-        <border-top>1px dotted #999</border-top>
         <padding-top>10px</padding-top>
+        <border-top>1px dotted #999</border-top>
       </selector>
       <selector path=".clipboardFunction" view="nuxeo5 clip board">
         <padding>2px 2px 2px 2px</padding>
@@ -1555,12 +1556,11 @@
       </selector>
     </style>
     <style element="page[3]/section[2]/cell[1]/fragment[1]" inherit="breadcrumbs style">
-      <selector path="">
+      <selector path="" view="nuxeo5 breadcrumbs">
         <padding>5px 22px</padding>
       </selector>
     </style>
-    <style element="page[1]/section[2]/cell[2]/fragment[1]" inherit="breadcrumbs style">
-    </style>
+    <style element="page[1]/section[2]/cell[2]/fragment[1]" inherit="breadcrumbs style"/>
     <!-- Footer -->
     <style element="page[1]/section[3]|page[3]/section[4]">
       <selector path="" view="section frame">
@@ -1636,7 +1636,7 @@
         <font-size>9px</font-size>
         <float>right</float>
       </selector>
-      <selector path=".syndicationContainer">
+      <selector path=".syndicationContainer" view="facelet region">
         <height>30px</height>
       </selector>
       <selector path="div.syndicationButton div.syndicationLinks" view="facelet region">
@@ -1656,15 +1656,15 @@
     <!-- main fragment for user dashboard -->
     <style
       element="page[3]/section[3]/cell[1]|page[3]/section[3]/cell[2]" inherit="common style 1">
+      <selector path=".syndicationContainer" view="cell frame">
+        <height>30px</height>
+      </selector>
       <selector path="div.syndicationButton" view="facelet region">
         <background>url(/nuxeo/img/syndication_bar.gif) no-repeat top right</background>
         <margin-bottom>5px</margin-bottom>
         <margin-top>10px</margin-top>
         <font-size>9px</font-size>
         <float>right</float>
-      </selector>
-      <selector path=".syndicationContainer">
-        <height>30px</height>
       </selector>
       <selector path="div.syndicationButton div.syndicationLinks" view="facelet region">
         <font preset="small (Nuxeo default fonts)"/>

@@ -20,15 +20,11 @@
 
 package org.nuxeo.ecm.platform.ui.web.restAPI;
 
-import static org.jboss.seam.ScopeType.STATELESS;
-
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.util.Map;
 
-import org.jboss.seam.annotations.In;
-import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -42,8 +38,6 @@ import org.nuxeo.ecm.core.io.impl.plugins.NuxeoArchiveWriter;
 import org.nuxeo.ecm.core.io.impl.plugins.SingleDocumentReader;
 import org.nuxeo.ecm.core.io.impl.plugins.XMLDocumentTreeWriter;
 import org.nuxeo.ecm.core.io.impl.plugins.XMLDocumentWriter;
-import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
-import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
@@ -52,25 +46,30 @@ import org.restlet.resource.Representation;
 
 import com.noelios.restlet.http.HttpConstants;
 
-@Name("exportRestlet")
-@Scope(STATELESS)
-public class ExportRestlet extends BaseNuxeoRestlet {
+public class ExportRestlet extends BaseStatelessNuxeoRestlet implements Serializable {
 
-    @In(create = true)
-    protected NavigationContext navigationContext;
+    private static final long serialVersionUID = 7831287875548588711L;
+
 
     @Override
-    public void handle(Request req, Response res) {
+    protected void doHandleStatelessRequest(Request req, Response res) {
         boolean exportAsTree;
         boolean exportAsZip;
         String action = req.getResourceRef().getSegments().get(4);
         if (action.equals("exportTree")) {
             exportAsTree = true;
             exportAsZip = true;
-        } else { // "export", "exportSingle"
+        } else {
+            // "export", "exportSingle"
             exportAsTree = false;
             String format = req.getResourceRef().getQueryAsForm().getFirstValue(
-                    "format").toLowerCase();
+                    "format");
+            if (format!=null) {
+                format=format.toLowerCase();
+            }
+            else {
+                format="xml";
+            }
             exportAsZip = "zip".equals(format);
         }
 
@@ -83,13 +82,16 @@ public class ExportRestlet extends BaseNuxeoRestlet {
         DocumentModel root;
         String docid = (String) req.getAttributes().get("docid");
         try {
-            navigationContext.setCurrentServerLocation(new RepositoryLocation(
-                    repo));
-            CoreSession documentManager = navigationContext.getOrCreateDocumentManager();
+
+            Boolean init = initRepository(res, repo);
+            if (!init) {
+                handleError(res, "Unable to init repository");
+                return;
+            }
             if (docid == null || docid.equals("*")) {
-                root = documentManager.getRootDocument();
+                root = session.getRootDocument();
             } else {
-                root = documentManager.getDocument(new IdRef(docid));
+                root = session.getDocument(new IdRef(docid));
             }
         } catch (ClientException e) {
             handleError(res, e);

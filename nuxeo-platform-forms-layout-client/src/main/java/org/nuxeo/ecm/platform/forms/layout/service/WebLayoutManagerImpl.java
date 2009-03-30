@@ -437,7 +437,9 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
             TagConfig config, Widget widget) {
         String widgetTypeName = widget.getType();
         WidgetTypeHandler handler = getWidgetTypeHandler(widgetTypeName);
-        if (handler != null) {
+        if (handler == null) {
+            log.error("No widget handler found for type " + widgetTypeName);
+        } else {
             FaceletHandler[] subHandlers = null;
             Widget[] subWidgets = widget.getSubWidgets();
             if (subWidgets != null) {

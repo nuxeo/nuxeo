@@ -26,7 +26,6 @@ import org.nuxeo.ecm.core.CoreException;
  * Exception thrown by JMSDocumentMessageProducer.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 public class DocumentMessageProducerException extends CoreException {
 

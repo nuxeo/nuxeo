@@ -29,22 +29,23 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
+import org.nuxeo.ecm.core.api.CoreInstance;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.event.CoreEvent;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
-import org.nuxeo.ecm.core.api.event.impl.CoreEventImpl;
+import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.EventProducer;
+import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.ec.notification.UserSubscription;
 import org.nuxeo.ecm.platform.ec.notification.email.EmailHelper;
 import org.nuxeo.ecm.platform.ec.placeful.Annotation;
 import org.nuxeo.ecm.platform.ec.placeful.ejb.interfaces.EJBPlacefulService;
 import org.nuxeo.ecm.platform.ec.placeful.interfaces.PlacefulService;
-import org.nuxeo.ecm.platform.events.api.DocumentMessage;
-import org.nuxeo.ecm.platform.events.api.DocumentMessageProducer;
-import org.nuxeo.ecm.platform.events.api.impl.DocumentMessageImpl;
 import org.nuxeo.ecm.platform.notification.api.Notification;
 import org.nuxeo.ecm.platform.notification.api.NotificationManager;
 import org.nuxeo.ecm.platform.notification.api.NotificationRegistry;
@@ -63,15 +64,19 @@ import org.nuxeo.runtime.model.Extension;
  * @author <a href="mailto:npaslaru@nuxeo.com">Narcis Paslaru</a>
  *
  */
-public class NotificationService extends DefaultComponent implements NotificationManager {
+public class NotificationService extends DefaultComponent implements
+        NotificationManager {
 
     public static final ComponentName NAME = new ComponentName(
             "org.nuxeo.ecm.platform.ec.notification.service.NotificationService");
 
     private static final Log log = LogFactory.getLog(NotificationService.class);
 
+    private EmailHelper emailHelper= new EmailHelper();
+
     private static final String SUBSCRIPTION_NAME = "UserSubscription";
 
+    // FIXME: performance issue when putting URLs in a Map.
     private static final Map<String, URL> TEMPLATES_MAP = new HashMap<String, URL>();
 
     private GeneralSettingsDescriptor generalSettings;
@@ -138,7 +143,8 @@ public class NotificationService extends DefaultComponent implements Notificatio
         }
     }
 
-    private static List<String> getNames(List<NotificationEventDescriptor> events) {
+    private static List<String> getNames(
+            List<NotificationEventDescriptor> events) {
         List<String> eventNames = new ArrayList<String>();
         for (NotificationEventDescriptor descriptor : events) {
             eventNames.add(descriptor.name);
@@ -155,7 +161,7 @@ public class NotificationService extends DefaultComponent implements Notificatio
                 try {
                     NotificationDescriptor notifDesc = (NotificationDescriptor) contrib;
                     notificationRegistry.unregisterNotification(notifDesc,
-                            getNames(notifDesc.getEvents()) );
+                            getNames(notifDesc.getEvents()));
                 } catch (Exception e) {
                     log.error(e);
                 }
@@ -174,9 +180,6 @@ public class NotificationService extends DefaultComponent implements Notificatio
         }
     }
 
-    /**
-     * @return the notificationRegistry.
-     */
     public NotificationRegistry getNotificationRegistry() {
         return notificationRegistry;
     }
@@ -199,8 +202,7 @@ public class NotificationService extends DefaultComponent implements Notificatio
         paramMap.put("notification", notification);
         paramMap.put("docId", docId);
 
-        EJBPlacefulService serviceBean = NotificationServiceHelper
-                .getPlacefulServiceBean();
+        PlacefulService serviceBean = NotificationServiceHelper.getPlacefulServiceBean();
         List<Annotation> subscriptions = new ArrayList<Annotation>();
         try {
             subscriptions = serviceBean.getAnnotationListByParamMap(paramMap,
@@ -237,11 +239,10 @@ public class NotificationService extends DefaultComponent implements Notificatio
         if (docId != null) {
             paramMap.put("docId", docId);
         }
-        EJBPlacefulService serviceBean = NotificationServiceHelper
-                .getPlacefulServiceBean();
+        PlacefulService serviceBean = NotificationServiceHelper.getPlacefulServiceBean();
 
-        List<Annotation> subscriptions = serviceBean.getAnnotationListByParamMap(paramMap,
-                shortClassName);
+        List<Annotation> subscriptions = serviceBean.getAnnotationListByParamMap(
+                paramMap, shortClassName);
         List<String> subscribers = new ArrayList<String>();
         for (Object obj : subscriptions) {
             UserSubscription subscription = (UserSubscription) obj;
@@ -252,28 +253,36 @@ public class NotificationService extends DefaultComponent implements Notificatio
 
     public void addSubscription(String username, String notification,
             DocumentModel doc, Boolean sendConfirmationEmail,
-            NuxeoPrincipal principal, String notificationName) throws ClientException {
+            NuxeoPrincipal principal, String notificationName)
+            throws ClientException {
 
-        EJBPlacefulService serviceBean = NotificationServiceHelper
-                .getPlacefulServiceBean();
+        PlacefulService serviceBean = NotificationServiceHelper.getPlacefulServiceBean();
         UserSubscription subscription = new UserSubscription(notification,
                 username, doc.getId());
         serviceBean.setAnnotation(subscription);
 
-        //send event for email if necessary
-        if (sendConfirmationEmail){
+        // send event for email if necessary
+        if (sendConfirmationEmail) {
             raiseConfirmationEvent(principal, doc, username, notificationName);
         }
     }
 
-    protected static DocumentMessageProducer getMessageProducer() throws Exception {
-        return Framework.getService(DocumentMessageProducer.class);
+    protected EventProducer producer;
+
+    protected void doFireEvent(Event event) throws ClientException {
+        if (producer == null) {
+            try {
+                producer = Framework.getService(EventProducer.class);
+            } catch (Exception e) {
+                throw new ClientRuntimeException(
+                        "Unable to get MessageProducer : ", e);
+            }
+        }
+        producer.fireEvent(event);
     }
 
-    private static void raiseConfirmationEvent(NuxeoPrincipal principal,
+    private void raiseConfirmationEvent(NuxeoPrincipal principal,
             DocumentModel doc, String username, String notification) {
-        // Default category
-        String category = DocumentEventCategories.EVENT_CLIENT_NOTIF_CATEGORY;
 
         Map<String, Serializable> options = new HashMap<String, Serializable>();
 
@@ -283,73 +292,60 @@ public class NotificationService extends DefaultComponent implements Notificatio
         // Add the session ID
         options.put(CoreEventConstants.SESSION_ID, doc.getSessionId());
 
-        //options for confirmation email
+        // options for confirmation email
         options.put("recipients", username);
         options.put("notifName", notification);
 
-        CoreEvent event = new CoreEventImpl(
-                DocumentEventTypes.SUBSCRIPTION_ASSIGNED, doc, options,
-                principal, category, null);
-
-        //CoreEventListenerService service = NXCore.getCoreEventListenerService();
-
-        DocumentMessage msg = new DocumentMessageImpl(doc, event);
-
-        DocumentMessageProducer producer=null;
+        CoreSession session = CoreInstance.getInstance().getSession(
+                doc.getSessionId());
+        DocumentEventContext ctx = new DocumentEventContext(session, principal,
+                doc);
+        ctx.setCategory(DocumentEventCategories.EVENT_CLIENT_NOTIF_CATEGORY);
+        ctx.setProperties(options);
+        Event event = ctx.newEvent(DocumentEventTypes.SUBSCRIPTION_ASSIGNED);
 
         try {
-            producer = getMessageProducer();
-        } catch (Exception e) {
-            log.error("Unable to get MessageProducer : ",e);
+            doFireEvent(event);
+        } catch (ClientException e) {
+            throw new ClientRuntimeException("Cannot fire event " + event, e);
         }
-
-        if (producer != null) {
-            log.debug("Send JMS message for for event="
-                    + DocumentEventTypes.SUBSCRIPTION_ASSIGNED);
-            producer.produce(msg);
-        } else {
-            log.error("Impossible to notify core events !");
-        }
-
     }
 
     public void removeSubscription(String username, String notification,
             String docId) throws ClientException {
-        EJBPlacefulService serviceBean = NotificationServiceHelper
-                .getPlacefulServiceBean();
+        PlacefulService serviceBean = NotificationServiceHelper.getPlacefulServiceBean();
         Map<String, Object> paramMap = new HashMap<String, Object>();
         paramMap.put("userId", username);
         paramMap.put("docId", docId);
         paramMap.put("notification", notification);
 
         try {
-            serviceBean.removeAnnotationListByParamMap(paramMap, SUBSCRIPTION_NAME);
+            serviceBean.removeAnnotationListByParamMap(paramMap,
+                    SUBSCRIPTION_NAME);
             /*
-            List<Annotation> subscriptions = serviceBean
-                    .getAnnotationListByParamMap(paramMap, SUBSCRIPTION_NAME);
-            if (subscriptions != null && subscriptions.size() > 0) {
-                for (Annotation subscription : subscriptions) {
-                    if (subscription != null) {
-                        serviceBean.removeAnnotation(subscription);
-                    }
-                }
-            }*/
+             * List<Annotation> subscriptions = serviceBean
+             * .getAnnotationListByParamMap(paramMap, SUBSCRIPTION_NAME); if
+             * (subscriptions != null && subscriptions.size() > 0) { for
+             * (Annotation subscription : subscriptions) { if (subscription !=
+             * null) { serviceBean.removeAnnotation(subscription); } } }
+             */
         } catch (ClassNotFoundException e) {
-            log.debug("Exception occured getting the annotation for removal : ",e);
+            log.debug(
+                    "Exception occured getting the annotation for removal : ",
+                    e);
         }
     }
 
     public List<String> getUsersSubscribedToNotificationOnDocument(
             String notification, String docId) throws ClientException {
-        EJBPlacefulService serviceBean = NotificationServiceHelper
-                .getPlacefulServiceBean();
+        PlacefulService serviceBean = NotificationServiceHelper.getPlacefulServiceBean();
         Map<String, Object> paramMap = new HashMap<String, Object>();
         paramMap.put("docId", docId);
         paramMap.put("notification", notification);
         List<String> subscribers = new ArrayList<String>();
         try {
-            List<Annotation> subscriptions = serviceBean
-                    .getAnnotationListByParamMap(paramMap, SUBSCRIPTION_NAME);
+            List<Annotation> subscriptions = serviceBean.getAnnotationListByParamMap(
+                    paramMap, SUBSCRIPTION_NAME);
             for (Annotation annoSubscription : subscriptions) {
                 UserSubscription subscription = (UserSubscription) annoSubscription;
                 subscribers.add(subscription.getUserId());
@@ -392,18 +388,21 @@ public class NotificationService extends DefaultComponent implements Notificatio
     public Notification getNotificationByName(String selectedNotification) {
         List<Notification> listNotif = notificationRegistry.getNotifications();
         for (Notification notification : listNotif) {
-            if (notification.getName().equals(selectedNotification)){
+            if (notification.getName().equals(selectedNotification)) {
                 return notification;
             }
         }
         return null;
     }
 
-    public void sendNotification(String notificationName, Map<String, Object> infoMap, String userPrincipal) throws ClientException {
+    public void sendNotification(String notificationName,
+            Map<String, Object> infoMap, String userPrincipal)
+            throws ClientException {
 
         Notification notif = getNotificationByName(notificationName);
 
-        NuxeoPrincipal recepient = NotificationServiceHelper.getUsersService().getPrincipal(userPrincipal);
+        NuxeoPrincipal recepient = NotificationServiceHelper.getUsersService().getPrincipal(
+                userPrincipal);
         // XXX hack, principals have only one model
         DataModel model = recepient.getModel().getDataModels().values().iterator().next();
         String email = (String) model.getData("email");
@@ -414,11 +413,12 @@ public class NotificationService extends DefaultComponent implements Notificatio
         String authorUsername = (String) infoMap.get("author");
 
         if (authorUsername != null) {
-            NuxeoPrincipal author = NotificationServiceHelper.getUsersService().getPrincipal(authorUsername);
+            NuxeoPrincipal author = NotificationServiceHelper.getUsersService().getPrincipal(
+                    authorUsername);
             infoMap.put("principalAuthor", author);
         }
 
-//        mail.put("doc", docMessage); - should be already there
+        // mail.put("doc", docMessage); - should be already there
 
         String subject = notif.getSubject() == null ? "Notification"
                 : notif.getSubject();
@@ -433,7 +433,7 @@ public class NotificationService extends DefaultComponent implements Notificatio
         infoMap.put("template", mailTemplate);
 
         try {
-            EmailHelper.sendmail(infoMap);
+            emailHelper.sendmail(infoMap);
         } catch (Exception e) {
             throw new ClientException("Failed to send notification email ", e);
         }
@@ -458,8 +458,7 @@ public class NotificationService extends DefaultComponent implements Notificatio
                         true,
                         NotificationServiceHelper.getNotificationService().getServerUrlPrefix()));
 
-
-        if (freemarkerTemplateName == null){
+        if (freemarkerTemplateName == null) {
             freemarkerTemplateName = "defaultNotifTemplate";
         }
         infoMap.put("template", freemarkerTemplateName);
@@ -467,9 +466,9 @@ public class NotificationService extends DefaultComponent implements Notificatio
         for (String to : sendTo) {
             infoMap.put("mail.to", to);
             try {
-                EmailHelper.sendmail(infoMap);
+                emailHelper.sendmail(infoMap);
             } catch (Exception e) {
-                log.debug("Failed to send notification email "+e);
+                log.debug("Failed to send notification email " + e);
             }
         }
     }
@@ -493,5 +492,14 @@ public class NotificationService extends DefaultComponent implements Notificatio
     public List<Notification> getNotificationsForEvents(String eventId) {
         return notificationRegistry.getNotificationsForEvent(eventId);
     }
+
+    public EmailHelper getEmailHelper() {
+        return emailHelper;
+    }
+
+    public void setEmailHelper(EmailHelper emailHelper) {
+        this.emailHelper = emailHelper;
+    }
+
 
 }

@@ -62,26 +62,20 @@ public class SelectOneListboxTag extends UIComponentTag {
 
 
     @Override
-    @SuppressWarnings("unchecked")
     protected void setProperties(UIComponent component) {
         super.setProperties(component);
 
         FacesContext context = FacesContext.getCurrentInstance();
         Application application = context.getApplication();
-        ValueBinding binding;
         SelectOneListboxComponent selectComponent = (SelectOneListboxComponent) component;
 
-        binding = application.createValueBinding(directory);
+        ValueBinding binding = application.createValueBinding(directory);
         selectComponent.setValueBinding("directoryName", binding);
 
         selectComponent.setDisplayIdAndLabel(displayIdAndLabel);
-
         selectComponent.setDisplayObsoleteEntries(displayObsoleteEntries);
-
         selectComponent.setLocalize(localize);
-
         selectComponent.setOnchange(onchange);
-
         selectComponent.setSize(size);
 
         if (cssStyleClass != null) {
@@ -96,7 +90,6 @@ public class SelectOneListboxTag extends UIComponentTag {
 
         binding = application.createValueBinding(value);
         component.setValueBinding("value", binding);
-
     }
 
     @Override

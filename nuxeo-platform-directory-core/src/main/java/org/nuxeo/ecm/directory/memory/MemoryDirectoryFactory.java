@@ -44,9 +44,9 @@ public class MemoryDirectoryFactory implements DirectoryFactory {
         directories = new HashMap<String, MemoryDirectory>();
         // GR now NXRuntime provides the local one by default
         try {
-        directoryService=(DirectoryService) Framework.getService(DirectoryService.class);
+            directoryService = Framework.getService(DirectoryService.class);
         } catch (Exception e) {
-            throw new DirectoryException("Error in Directory Service lookup");
+            throw new DirectoryException("Error in Directory Service lookup", e);
         }
 //        directoryService=MultiDirectoryFactory.getDirectoryService();
     }

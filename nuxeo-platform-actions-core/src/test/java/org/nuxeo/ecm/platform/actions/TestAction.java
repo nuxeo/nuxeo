@@ -35,7 +35,7 @@ public class TestAction extends NXRuntimeTestCase {
     ActionService as;
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.ecm.actions.tests", "test-actions-service.xml");
         deployContrib("org.nuxeo.ecm.actions.tests", "test-actions-contrib.xml");
@@ -52,6 +52,7 @@ public class TestAction extends NXRuntimeTestCase {
         assertEquals("action.new.document", newDocument.getLabel());
         assertTrue(newDocument.isEnabled());
         assertEquals("/icons/action_add.gif", newDocument.getIcon());
+
         String[] categories = newDocument.getCategories();
         assertEquals(1, categories.length);
         assertEquals("folder", categories[0]);
@@ -65,6 +66,7 @@ public class TestAction extends NXRuntimeTestCase {
         assertEquals("Logout", logout.getLabel());
         assertTrue(logout.isEnabled());
         assertEquals("/icons/logout.gif", logout.getIcon());
+
         categories = logout.getCategories();
         assertEquals(1, categories.length);
         assertEquals("global", categories[0]);

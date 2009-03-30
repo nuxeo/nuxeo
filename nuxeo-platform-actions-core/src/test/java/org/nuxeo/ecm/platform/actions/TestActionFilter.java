@@ -33,7 +33,7 @@ public class TestActionFilter extends NXRuntimeTestCase {
     ActionService as;
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.ecm.actions.tests", "test-actions-service.xml");
         deployContrib("org.nuxeo.ecm.actions.tests", "test-filters-contrib.xml");

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.jbpm.web.layouts">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <layout name="add_workflow_task">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>actors</widget>
+        </row>
+        <row>
+          <widget>directive</widget>
+        </row>
+        <row>
+          <widget>dueDate</widget>
+        </row>
+        <row>
+          <widget>comment</widget>
+        </row>
+      </rows>
+      <widget name="actors" type="template">
+        <fields>
+          <field>actors</field>
+        </fields>
+        <labels>
+          <label mode="any">label.review.select.reviewers</label>
+        </labels>
+        <translated>true</translated>
+        <properties mode="any">
+          <property name="template">
+            /widgets/user_prefixed_suggestion_widget_template.xhtml
+          </property>
+        </properties>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+        </properties>
+      </widget>
+      <widget name="directive" type="template">
+        <fields>
+          <field>directive</field>
+        </fields>
+        <labels>
+          <label mode="any">label.review.directive</label>
+        </labels>
+        <translated>true</translated>
+        <properties mode="any">
+          <property name="template">
+            /widgets/directive_widget_template.xhtml
+          </property>
+        </properties>
+      </widget>
+      <widget name="dueDate" type="template">
+        <fields>
+          <field>dueDate</field>
+        </fields>
+        <labels>
+          <label mode="any">label.review.duedate</label>
+        </labels>
+        <translated>true</translated>
+        <properties mode="any">
+          <property name="template">
+            /widgets/duedate_widget_template.xhtml
+          </property>
+        </properties>
+      </widget>
+      <widget name="comment" type="textarea">
+        <fields>
+          <field>comment</field>
+        </fields>
+        <labels>
+          <label mode="any">label.review.user.comment</label>
+        </labels>
+        <translated>true</translated>
+      </widget>
+    </layout>
+
+  </extension>
+
+</component>

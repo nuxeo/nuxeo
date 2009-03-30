@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.platform.ui.web.model.impl;
 
+import java.util.EventObject;
+
 import org.nuxeo.ecm.platform.ui.web.model.SelectDataModelRow;
 
 /**
@@ -28,7 +30,7 @@ import org.nuxeo.ecm.platform.ui.web.model.SelectDataModelRow;
  */
 // XXX AT: event is triggered at the row level, so maybe the row should carry
 // its index within the SelectModel data...
-public class SelectDataModelRowEvent extends java.util.EventObject {
+public class SelectDataModelRowEvent extends EventObject {
 
     private static final long serialVersionUID = -2537709468370440334L;
 

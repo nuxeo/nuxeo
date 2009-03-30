@@ -42,7 +42,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Out;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.core.Events;
-import org.jboss.seam.core.FacesMessages;
+import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -56,10 +56,6 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.search.api.client.query.QueryException;
 import org.nuxeo.ecm.core.search.api.client.querymodel.QueryModel;
 import org.nuxeo.ecm.platform.actions.Action;
-import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
-import org.nuxeo.ecm.platform.events.api.DocumentMessageProducer;
-import org.nuxeo.ecm.platform.events.api.delegate.DocumentMessageProducerBusinessDelegate;
-import org.nuxeo.ecm.platform.events.api.impl.MassLifeCycleTransitionMessage;
 import org.nuxeo.ecm.platform.ui.web.api.ResultsProviderFarm;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.ui.web.model.SelectDataModel;
@@ -86,13 +82,9 @@ public class DeleteActionsBean extends InputController implements
         DeleteActions, Serializable, SelectDataModelListener,
         ResultsProviderFarm {
 
-    class PathComparator implements Comparator<DocumentModel> {
+    public static final String DELETED_CHILDREN_BY_COREAPI = "CURRENT_DOC_DELETED_CHILDREN";
 
-        public int compare(DocumentModel o1, DocumentModel o2) {
-            return o1.getPathAsString().compareTo(o2.getPathAsString());
-        }
-
-    }
+    protected static final String BOARD_USER_DELETED = "USER_DELETED_DOCUMENTS";
 
     private static final long serialVersionUID = 9860854328986L;
 
@@ -107,12 +99,6 @@ public class DeleteActionsBean extends InputController implements
     private static final String DELETE_TRANSITION = "delete";
 
     private static final String UNDELETE_TRANSITION = "undelete";
-
-    protected static final String BOARD_USER_DELETED = "USER_DELETED_DOCUMENTS";
-
-    public static final String DELETED_CHILDREN_BY_COREAPI = "CURRENT_DOC_DELETED_CHILDREN";
-
-    private transient DocumentMessageProducer docMsgProducer;
 
     @In(create = true, required = false)
     private transient CoreSession documentManager;
@@ -155,6 +141,17 @@ public class DeleteActionsBean extends InputController implements
 
     private Boolean searchDeletedDocuments;
 
+
+    private static class PathComparator implements Comparator<DocumentModel>, Serializable {
+
+        private static final long serialVersionUID = -6449747704324789701L;
+
+        public int compare(DocumentModel o1, DocumentModel o2) {
+            return o1.getPathAsString().compareTo(o2.getPathAsString());
+        }
+
+    }
+
     public String purgeSelection() throws ClientException {
         if (!documentsListsManager.isWorkingListEmpty(DocumentsListsManager.CURRENT_DOCUMENT_TRASH_SELECTION)) {
             return purgeSelection(documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_TRASH_SELECTION));
@@ -167,7 +164,6 @@ public class DeleteActionsBean extends InputController implements
     public String purgeSelection(List<DocumentModel> docsToPurge)
             throws ClientException {
         if (null != docsToPurge) {
-
             List<DocumentModel> docsThatCanBeDeleted = filterDeleteListAccordingToPerms(docsToPurge);
 
             // Keep only topmost documents (see NXP-1411)
@@ -268,7 +264,8 @@ public class DeleteActionsBean extends InputController implements
     }
 
     public boolean getCanDeleteSections() throws ClientException {
-        List<DocumentModel> docsToDelete = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION);
+        List<DocumentModel> docsToDelete = documentsListsManager.getWorkingList(
+                DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION);
 
         if (docsToDelete == null || docsToDelete.isEmpty()) {
             return false;
@@ -276,19 +273,22 @@ public class DeleteActionsBean extends InputController implements
 
         List<DocumentModel> realDocsToDelete = new ArrayList<DocumentModel>();
         for (DocumentModel doc : docsToDelete) {
-            if (!doc.isProxy())
+            if (!doc.isProxy()) {
                 realDocsToDelete.add(doc);
+            }
         }
 
-        if (realDocsToDelete.isEmpty())
+        if (realDocsToDelete.isEmpty()) {
             return false;
+        }
 
         // do simple filtering
         return checkDeletePermOnParents(realDocsToDelete);
     }
 
     public boolean getCanPurge() throws ClientException {
-        List<DocumentModel> docsToDelete = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_TRASH_SELECTION);
+        List<DocumentModel> docsToDelete = documentsListsManager.getWorkingList(
+                DocumentsListsManager.CURRENT_DOCUMENT_TRASH_SELECTION);
 
         if (docsToDelete == null || docsToDelete.isEmpty()) {
             return false;
@@ -315,8 +315,7 @@ public class DeleteActionsBean extends InputController implements
                     return true;
                 }
             } catch (ClientException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                log.error(e);
             }
         }
         return false;
@@ -399,10 +398,12 @@ public class DeleteActionsBean extends InputController implements
     }
 
     public String deleteSelectionSections() throws ClientException {
-        List<DocumentModel> docsToDelete = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION);
+        List<DocumentModel> docsToDelete = documentsListsManager.getWorkingList(
+                DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION);
 
-        if (docsToDelete == null || docsToDelete.isEmpty())
+        if (docsToDelete == null || docsToDelete.isEmpty()) {
             return null;
+        }
         boolean selectionContainsProxy = false;
         List<DocumentModel> nonProxyDocsToDelete = new ArrayList<DocumentModel>();
         for (DocumentModel doc : docsToDelete) {
@@ -513,45 +514,20 @@ public class DeleteActionsBean extends InputController implements
             DocumentModel document = documentManager.getDocument(docModel.getRef());
 
             // delete children
-
             if (document.getAllowedStateTransitions().contains(
                     DELETE_TRANSITION)) {
                 document.followTransition(DELETE_TRANSITION);
             } else {
-                // FIXME: should be checked sooner so that no exception is
-                // thrown
-                throw new ClientException("Impossible to move document="
-                        + docModel.getPathAsString()
-                        + " Life Cycle is not available");
-            }
-            // JMS message preparation and sending
-            if (document.isFolder()) {
-
-                DocumentRef parentRef = document.getRef();
-                String transition = DELETE_TRANSITION;
-                String aUser = currentUser.toString();
-                String repository = currentServerLocation.getName();
-
-                MassLifeCycleTransitionMessage msg = new MassLifeCycleTransitionMessage(
-                        aUser, transition, repository, parentRef);
-
-                try {
-                    getDocumentMessageProducer().produce(msg);
-
-                } catch (Exception e) {
-                    throw new ClientException(e);
-                }
+                log.warn("Document " + document.getId() + " of type "
+                        + document.getType() + " in state "
+                        + document.getCurrentLifeCycleState()
+                        + " does not support transition " + DELETE_TRANSITION
+                        + ", it will be deleted immediately");
+                documentManager.removeDocument(document.getRef());
             }
         }
     }
 
-    private DocumentMessageProducer getDocumentMessageProducer()
-            throws Exception {
-        if (docMsgProducer == null) {
-            docMsgProducer = DocumentMessageProducerBusinessDelegate.getRemoteDocumentMessageProducer();
-        }
-        return docMsgProducer;
-    }
 
     public String undeleteSelection() throws ClientException {
         if (!documentsListsManager.isWorkingListEmpty(DocumentsListsManager.CURRENT_DOCUMENT_TRASH_SELECTION)) {
@@ -659,6 +635,7 @@ public class DeleteActionsBean extends InputController implements
             }
 
             // restore children
+            /*
             if (document.isFolder()) {
 
                 DocumentRef parentRef = document.getRef();
@@ -675,7 +652,7 @@ public class DeleteActionsBean extends InputController implements
                 } catch (Exception e) {
                     throw new ClientException(e);
                 }
-            }
+            }*/
         }
     }
 
@@ -697,7 +674,8 @@ public class DeleteActionsBean extends InputController implements
             throws ClientException {
 
         DocumentModelList documents = getCurrentDocumentDeletedChildrenPage();
-        List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_TRASH_SELECTION);
+        List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(
+                DocumentsListsManager.CURRENT_DOCUMENT_TRASH_SELECTION);
         SelectDataModel model = new SelectDataModelImpl(
                 DocumentActions.CHILDREN_DOCUMENT_LIST, documents,
                 selectedDocuments);
@@ -724,14 +702,14 @@ public class DeleteActionsBean extends InputController implements
             currentDocumentChildren = resultsProvider.getCurrentPage();
 
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
         return currentDocumentChildren;
     }
 
     /**
      * Listener method - not used for now because the binding is not used but
-     * might be used after the refactorization
+     * might be used after the refactoring.
      */
     public void processSelectRowEvent(SelectDataModelRowEvent event)
             throws ClientException {
@@ -773,7 +751,7 @@ public class DeleteActionsBean extends InputController implements
         PagedDocumentsProvider provider = null;
 
         if (BOARD_USER_DELETED.equals(name)) {
-            Object[] params = new Object[] { currentUser.getName() };
+            Object[] params = { currentUser.getName() };
             try {
                 provider = getQmDocuments(name, params, sortInfo);
             } catch (Exception e) {
@@ -806,8 +784,8 @@ public class DeleteActionsBean extends InputController implements
     protected PagedDocumentsProvider getQmDocuments(String qmName,
             Object[] params, SortInfo sortInfo) throws ClientException {
         try {
-            return queryModelActions.get(qmName).getResultsProvider(params,
-                    sortInfo);
+            return queryModelActions.get(qmName).getResultsProvider(
+                    documentManager, params, sortInfo);
         } catch (QueryException e) {
             throw new ClientException(String.format("Invalid search query. "
                     + "Check the \"%s\" QueryModel configuration", qmName), e);
@@ -816,21 +794,13 @@ public class DeleteActionsBean extends InputController implements
 
     /**
      * Usable with a queryModel that defines a pattern NXQL.
-     *
-     * @param queryModelName
-     * @param parent
-     * @param sortInfo
-     * @return
-     * @throws ClientException
      */
     private PagedDocumentsProvider getChildrenResultsProviderQMPattern(
             String queryModelName, DocumentModel parent, SortInfo sortInfo)
             throws ClientException {
 
         final String parentId = parent.getId();
-
-        Object[] params = new Object[] { parentId };
-
+        Object[] params = { parentId };
         return getResultsProvider(queryModelName, params, sortInfo);
     }
 
@@ -838,7 +808,7 @@ public class DeleteActionsBean extends InputController implements
             Object[] params, SortInfo sortInfo) throws ClientException {
         try {
             QueryModel qm = queryModelActions.get(qmName);
-            return qm.getResultsProvider(params, sortInfo);
+            return qm.getResultsProvider(documentManager, params, sortInfo);
         } catch (QueryException e) {
             throw new ClientException(String.format("Invalid search query. "
                     + "Check the '%s' QueryModel configuration", qmName), e);
@@ -870,7 +840,6 @@ public class DeleteActionsBean extends InputController implements
         }
         searchActions.getDocumentModel().setProperty("advanced_search",
                 "currentLifeCycleStates", states);
-
     }
 
     public void restoreCurrentDocument() throws ClientException {

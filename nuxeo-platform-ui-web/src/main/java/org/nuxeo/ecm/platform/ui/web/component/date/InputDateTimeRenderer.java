@@ -31,8 +31,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 
 import org.apache.commons.lang.StringUtils;
-import org.jetbrains.annotations.NotNull;
-
 import com.sun.faces.renderkit.html_basic.HtmlBasicInputRenderer;
 
 /**
@@ -44,7 +42,7 @@ import com.sun.faces.renderkit.html_basic.HtmlBasicInputRenderer;
 public class InputDateTimeRenderer extends HtmlBasicInputRenderer {
 
     @Override
-    public void encodeBegin(@NotNull FacesContext context, @NotNull UIComponent component)
+    public void encodeBegin(FacesContext context, UIComponent component)
             throws IOException {
         if (!component.isRendered()) {
             return;

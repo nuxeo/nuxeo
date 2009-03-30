@@ -25,7 +25,6 @@ import java.io.Serializable;
  * Interface for base node.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public interface Node extends Comparable<Node>, Serializable, Cloneable {
 

@@ -30,7 +30,6 @@ public class MimetypeRegistryNotFoundException extends Exception {
     private static final long serialVersionUID = -961763618434457798L;
 
     public MimetypeRegistryNotFoundException() {
-
     }
 
     public MimetypeRegistryNotFoundException(String message) {

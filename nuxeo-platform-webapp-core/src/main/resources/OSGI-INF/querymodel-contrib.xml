@@ -90,6 +90,18 @@
         defaultSortAscending="true" />
       <max>5</max>
     </queryModel>
+    
+    <queryModel name="USER_SITES">
+      <pattern>
+        SELECT * FROM Document WHERE ecm:mixinType =
+        'WebView' AND ecm:currentLifeCycleState != 'deleted'
+        AND webc:isWebContainer = 1
+        AND NOT ecm:path STARTSWITH ?
+      </pattern>
+      <sortable value="true" defaultSortColumn="webc:name"
+        defaultSortAscending="true" />
+      <max>5</max>
+    </queryModel>
 
     <queryModel name="CURRENT_DOC_CHILDREN">
       <pattern>
@@ -131,10 +143,16 @@
       -->
     </queryModel>
 
-    <!-- This query model may be used to list children in the tree navigation -->
+    <!-- This query model may be used to list children in the tree navigation
+    
+    Note the "ecm:isProxy = 0" predicate optimization that is required to
+    simplify greatly the request performed by the tree manager when
+    browsing on folders with a lot of files when using the Visible SQL Storage.
+    -->
     <queryModel name="TREE_CHILDREN">
       <pattern>
         SELECT * FROM Document WHERE ecm:parentId = ?
+        AND ecm:isProxy = 0
         AND ecm:mixinType = 'Folderish'
         AND ecm:mixinType != 'HiddenInNavigation'
         AND ecm:isCheckedInVersion = 0

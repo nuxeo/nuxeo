@@ -3,10 +3,10 @@
 
   <!-- This plugin converts the sources to pdf using an external OOo server -->
   <extension target="org.nuxeo.ecm.platform.transform.service.TransformService"
-    point="plugins">
+      point="plugins">
     <plugin name="any2pdf"
-      class="org.nuxeo.ecm.platform.transform.plugin.joooconverter.impl.JOOoConvertPluginImpl"
-      destinationMimeType="application/pdf">
+        class="org.nuxeo.ecm.platform.transform.plugin.joooconverter.impl.JOOoConvertPluginImpl"
+        destinationMimeType="application/pdf">
 
       <sourceMimeType>text/plain</sourceMimeType>
       <sourceMimeType>text/rtf</sourceMimeType>
@@ -57,8 +57,8 @@
 
     <!-- This plugin converts the sources to pdf using an external OOo server -->
     <plugin name="any2odt"
-      class="org.nuxeo.ecm.platform.transform.plugin.joooconverter.impl.JOOoConvertPluginImpl"
-      destinationMimeType="application/vnd.oasis.opendocument.text">
+        class="org.nuxeo.ecm.platform.transform.plugin.joooconverter.impl.JOOoConvertPluginImpl"
+        destinationMimeType="application/vnd.oasis.opendocument.text">
       <sourceMimeType>text/xml</sourceMimeType>
       <sourceMimeType>text/plain</sourceMimeType>
       <sourceMimeType>text/rtf</sourceMimeType>
@@ -78,8 +78,8 @@
 
     <!-- This plugin converts the sources to ods using an external OOo server -->
     <plugin name="any2ods"
-      class="org.nuxeo.ecm.platform.transform.plugin.joooconverter.impl.JOOoConvertPluginImpl"
-      destinationMimeType="application/vnd.oasis.opendocument.spreadsheet">
+        class="org.nuxeo.ecm.platform.transform.plugin.joooconverter.impl.JOOoConvertPluginImpl"
+        destinationMimeType="application/vnd.oasis.opendocument.spreadsheet">
 
       <!-- Microsoft office documents -->
       <sourceMimeType>application/vnd.ms-excel</sourceMimeType>
@@ -101,8 +101,8 @@
 
     <!-- This plugin converts the sources to odp using an external OOo server -->
     <plugin name="any2odp"
-      class="org.nuxeo.ecm.platform.transform.plugin.joooconverter.impl.JOOoConvertPluginImpl"
-      destinationMimeType="application/vnd.oasis.opendocument.presentation">
+        class="org.nuxeo.ecm.platform.transform.plugin.joooconverter.impl.JOOoConvertPluginImpl"
+        destinationMimeType="application/vnd.oasis.opendocument.presentation">
 
       <!-- Microsoft office documents -->
       <sourceMimeType>application/vnd.ms-powerpoint</sourceMimeType>
@@ -123,32 +123,32 @@
     </plugin>
 
     <plugin name="word2text_poi"
-      class="org.nuxeo.ecm.platform.transform.plugin.poi.WordToTextPlugin"
-      destinationMimeType="text/plain">
+        class="org.nuxeo.ecm.platform.transform.plugin.poi.WordToTextPlugin"
+        destinationMimeType="text/plain">
       <sourceMimeType>application/msword</sourceMimeType>
     </plugin>
 
     <plugin name="ppt2text_poi"
-      class="org.nuxeo.ecm.platform.transform.plugin.poi.PowerpointToTextPlugin"
-      destinationMimeType="text/plain">
+        class="org.nuxeo.ecm.platform.transform.plugin.poi.PowerpointToTextPlugin"
+        destinationMimeType="text/plain">
       <sourceMimeType>application/vnd.ms-powerpoint</sourceMimeType>
     </plugin>
 
     <plugin name="xl2text_jr"
-      class="org.nuxeo.ecm.platform.transform.plugin.jr.ExcelToTextPlugin"
-      destinationMimeType="text/plain">
+        class="org.nuxeo.ecm.platform.transform.plugin.jr.ExcelToTextPlugin"
+        destinationMimeType="text/plain">
       <sourceMimeType>application/vnd.ms-excel</sourceMimeType>
     </plugin>
 
     <plugin name="html2text_jr"
-      class="org.nuxeo.ecm.platform.transform.plugin.jr.HtmlToTextPlugin"
-      destinationMimeType="text/plain">
+        class="org.nuxeo.ecm.platform.transform.plugin.jr.HtmlToTextPlugin"
+        destinationMimeType="text/plain">
       <sourceMimeType>text/html</sourceMimeType>
     </plugin>
 
     <plugin name="oo2text_jr"
-      class="org.nuxeo.ecm.platform.transform.plugin.jr.OOoSimpleTextExtractor"
-      destinationMimeType="text/plain">
+        class="org.nuxeo.ecm.platform.transform.plugin.jr.OOoSimpleTextExtractor"
+        destinationMimeType="text/plain">
       <sourceMimeType>application/vnd.sun.xml.impress</sourceMimeType>
       <sourceMimeType>application/vnd.sun.xml.impress.template</sourceMimeType>
       <sourceMimeType>
@@ -173,38 +173,37 @@
       </sourceMimeType>
     </plugin>
 
-
     <!-- This plugin transforms XML documents using a XSL stylesheet -->
     <plugin name="xslt"
-      class="org.nuxeo.ecm.platform.transform.plugin.xslt.impl.XSLTPluginImpl"
-      destinationMimeType="text/xml">
+        class="org.nuxeo.ecm.platform.transform.plugin.xslt.impl.XSLTPluginImpl"
+        destinationMimeType="text/xml">
       <sourceMimeType>text/xml</sourceMimeType>
     </plugin>
 
     <!-- This plugin extracts text form Html documents -->
     <plugin name="html2text"
-      class="org.nuxeo.ecm.platform.transform.plugin.html.Html2TextPlugin"
-      destinationMimeType="text/plain">
+        class="org.nuxeo.ecm.platform.transform.plugin.html.Html2TextPlugin"
+        destinationMimeType="text/plain">
       <sourceMimeType>text/html</sourceMimeType>
     </plugin>
 
     <plugin name="xml2text"
-      class="org.nuxeo.ecm.platform.transform.plugin.xml.Xml2TextPluginImpl"
-      destinationMimeType="text/plain">
+        class="org.nuxeo.ecm.platform.transform.plugin.xml.Xml2TextPluginImpl"
+        destinationMimeType="text/plain">
       <sourceMimeType>text/xml</sourceMimeType>
     </plugin>
 
     <!-- This plugin converts pdf to text using PDFBox-->
     <plugin name="pdf2text"
-      class="org.nuxeo.ecm.platform.transform.plugin.pdfbox.impl.PDFBoxPluginImpl"
-      destinationMimeType="plain/text">
+        class="org.nuxeo.ecm.platform.transform.plugin.pdfbox.impl.PDFBoxPluginImpl"
+        destinationMimeType="plain/text">
       <sourceMimeType>application/pdf</sourceMimeType>
     </plugin>
 
     <!-- This transformer uses a PDFBox Library to transform pdf to image page by page-->
     <plugin name="pdf2jpeg"
-      class="org.nuxeo.ecm.platform.transform.plugin.pdfbox.impl.PDF2ImagePluginImpl"
-      destinationMimeType="image/jpeg">
+        class="org.nuxeo.ecm.platform.transform.plugin.pdfbox.impl.PDF2ImagePluginImpl"
+        destinationMimeType="image/jpeg">
       <sourceMimeType>application/pdf</sourceMimeType>
       <option name="imageWidth">700</option>
       <option name="imageHeight">700</option>
@@ -214,8 +213,8 @@
 
     <!-- This transformer uses a PDFBox Library to transform pdf to image page by page-->
     <plugin name="pdf2png"
-      class="org.nuxeo.ecm.platform.transform.plugin.pdfbox.impl.PDF2ImagePluginImpl"
-      destinationMimeType="image/png">
+        class="org.nuxeo.ecm.platform.transform.plugin.pdfbox.impl.PDF2ImagePluginImpl"
+        destinationMimeType="image/png">
       <sourceMimeType>application/pdf</sourceMimeType>
       <option name="imageWidth">700</option>
       <option name="imageHeight">700</option>
@@ -224,129 +223,128 @@
     </plugin>
 
     <plugin name="wordMLinjectPlugin"
-      class="org.nuxeo.ecm.platform.transform.plugin.wordml.WordMLDataInjectPluginImpl"
-      destinationMimeType="text/xml">
+        class="org.nuxeo.ecm.platform.transform.plugin.wordml.WordMLDataInjectPluginImpl"
+        destinationMimeType="text/xml">
       <sourceMimeType>text/xml</sourceMimeType>
     </plugin>
 
     <!-- this plugin is used only in test units -->
     <plugin name="multipleResultsEchoPlugin"
-      class="org.nuxeo.ecm.platform.transform.multiresult.MultipleResultsEchoPlugin"
-      destinationMimeType="text/xml">
+        class="org.nuxeo.ecm.platform.transform.multiresult.MultipleResultsEchoPlugin"
+        destinationMimeType="text/xml">
       <sourceMimeType>text/xml</sourceMimeType>
     </plugin>
 
     <!-- This plugin extracts text from RFC822 (.eml) documents -->
     <plugin name="rfc822totext"
-      class="org.nuxeo.ecm.platform.transform.plugin.email.RFC822ToTextPlugin"
-      destinationMimeType="text/plain">
+        class="org.nuxeo.ecm.platform.transform.plugin.email.RFC822ToTextPlugin"
+        destinationMimeType="text/plain">
       <sourceMimeType>message/rfc822</sourceMimeType>
     </plugin>
 
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.transform.service.TransformService"
-    point="transformers">
+      point="transformers">
 
     <transformer name="any2pdf"
-      class="org.nuxeo.ecm.platform.transform.transformer.TransformerImpl">
+        class="org.nuxeo.ecm.platform.transform.transformer.TransformerImpl">
       <plugins>
-        <plugin name="any2pdf" />
+        <plugin name="any2pdf"/>
       </plugins>
     </transformer>
 
     <transformer name="pdf2text"
-      class="org.nuxeo.ecm.platform.transform.transformer.TransformerImpl">
+        class="org.nuxeo.ecm.platform.transform.transformer.TransformerImpl">
       <plugins>
-        <plugin name="pdf2text" />
+        <plugin name="pdf2text"/>
       </plugins>
     </transformer>
 
     <transformer name="pdf2png"
-      class="org.nuxeo.ecm.platform.transform.transformer.TransformerImpl">
+        class="org.nuxeo.ecm.platform.transform.transformer.TransformerImpl">
       <plugins>
-        <plugin name="pdf2png" />
+        <plugin name="pdf2png"/>
       </plugins>
     </transformer>
 
     <transformer name="pdf2jpeg"
-      class="org.nuxeo.ecm.platform.transform.transformer.TransformerImpl">
+        class="org.nuxeo.ecm.platform.transform.transformer.TransformerImpl">
       <plugins>
-        <plugin name="pdf2jpeg" />
+        <plugin name="pdf2jpeg"/>
       </plugins>
     </transformer>
 
     <transformer name="any2text"
-      class="org.nuxeo.ecm.platform.transform.transformer.TransformerImpl">
+        class="org.nuxeo.ecm.platform.transform.transformer.TransformerImpl">
       <plugins>
-        <plugin name="any2pdf" />
-        <plugin name="pdf2text" />
+        <plugin name="any2pdf"/>
+        <plugin name="pdf2text"/>
       </plugins>
     </transformer>
 
     <transformer name="wordMLinject"
-      class="org.nuxeo.ecm.platform.transform.transformer.TransformerImpl">
+        class="org.nuxeo.ecm.platform.transform.transformer.TransformerImpl">
       <plugins>
-        <plugin name="wordMLinjectPlugin" />
+        <plugin name="wordMLinjectPlugin"/>
       </plugins>
     </transformer>
 
     <transformer name="multipleOutcomeTest"
-      class="org.nuxeo.ecm.platform.transform.transformer.TransformerImpl">
+        class="org.nuxeo.ecm.platform.transform.transformer.TransformerImpl">
       <plugins>
-        <plugin name="multipleResultsEchoPlugin" />
+        <plugin name="multipleResultsEchoPlugin"/>
       </plugins>
     </transformer>
 
     <!-- This transformer uses a the OOo plugin to transform documents to ODT-->
     <transformer name="any2odt"
-      class="org.nuxeo.ecm.platform.transform.transformer.TransformerImpl">
+        class="org.nuxeo.ecm.platform.transform.transformer.TransformerImpl">
       <plugins>
-        <plugin name="any2odt" />
+        <plugin name="any2odt"/>
       </plugins>
     </transformer>
 
     <!-- This transformer uses a the OOo plugin to transform documents to OpenDocument Spreadsheet-->
     <transformer name="any2ods"
-      class="org.nuxeo.ecm.platform.transform.transformer.TransformerImpl">
+        class="org.nuxeo.ecm.platform.transform.transformer.TransformerImpl">
       <plugins>
-        <plugin name="any2ods" />
+        <plugin name="any2ods"/>
       </plugins>
     </transformer>
 
     <!-- This transformer uses a the OOo plugin to transform documents to OpenDocument Presentation-->
     <transformer name="any2odp"
-      class="org.nuxeo.ecm.platform.transform.transformer.TransformerImpl">
+        class="org.nuxeo.ecm.platform.transform.transformer.TransformerImpl">
       <plugins>
-        <plugin name="any2odp" />
+        <plugin name="any2odp"/>
       </plugins>
     </transformer>
     <transformer name="word2text_poi"
-      class="org.nuxeo.ecm.platform.transform.transformer.TransformerImpl">
+        class="org.nuxeo.ecm.platform.transform.transformer.TransformerImpl">
       <plugins>
-        <plugin name="word2text_poi" />
+        <plugin name="word2text_poi"/>
       </plugins>
     </transformer>
 
     <!-- This transformer use the XSLT plugin to transform XML documents using a XSL stylesheet -->
     <transformer name="xslt"
-      class="org.nuxeo.ecm.platform.transform.transformer.TransformerImpl">
-      <plugin name="xslt" />
+        class="org.nuxeo.ecm.platform.transform.transformer.TransformerImpl">
+      <plugin name="xslt"/>
     </transformer>
 
     <!-- This transformer use the html2text plugin to extract text form Html documents -->
     <transformer name="html2text"
-      class="org.nuxeo.ecm.platform.transform.transformer.TransformerImpl">
-      <plugin name="html2text" />
+        class="org.nuxeo.ecm.platform.transform.transformer.TransformerImpl">
+      <plugin name="html2text"/>
     </transformer>
 
     <!-- This transformer uses the rfc822 plugin to extract text from eml documents -->
     <transformer name="rfc822totext"
-      class="org.nuxeo.ecm.platform.transform.transformer.TransformerImpl">
-      <plugin name="rfc822totext" />
+        class="org.nuxeo.ecm.platform.transform.transformer.TransformerImpl">
+      <plugin name="rfc822totext"/>
     </transformer>
 
   </extension>
-
 
 </component>

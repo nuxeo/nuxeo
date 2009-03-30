@@ -42,7 +42,7 @@ public abstract class SQLDirectoryTestCase extends NXRuntimeTestCase {
     private DataSource dataSource;
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.ecm.directory.sql.tests",
                 "test-CoreService.xml");
@@ -57,11 +57,6 @@ public abstract class SQLDirectoryTestCase extends NXRuntimeTestCase {
                 "sql-test-setup/SQLDirectoryFactory.xml");
         deployContrib("org.nuxeo.ecm.directory.sql.tests",
                 "test-sql-directories-bundle.xml");
-    }
-
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
     }
 
     protected static Session getSession(String dirName)

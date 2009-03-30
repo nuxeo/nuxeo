@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.ui.web.restAPI;
 
+import java.io.Serializable;
 import java.security.Principal;
 
 import javax.servlet.http.HttpServletRequest;
@@ -38,15 +39,16 @@ import com.noelios.restlet.http.HttpRequest;
 import com.noelios.restlet.http.HttpResponse;
 
 /**
- *
- * Base class for Nuxeo Restlet
- * Provides utility methods :
- *  - error handling
- *  - authentication
- *  - http request/response retrieval
+ * Base class for Nuxeo Restlet.
+ * <p>
+ * Provides utility methods:
+ * <ul>
+ * <li>error handling
+ * <li>authentication
+ * <li>http request/response retrieval
+ * </ul>
  *
  * @author tiry
- *
  */
 public class BaseNuxeoRestlet extends Restlet {
 
@@ -113,6 +115,14 @@ public class BaseNuxeoRestlet extends Restlet {
             return null;
         }
         return httpServletRequest.getUserPrincipal();
+    }
+
+    protected static Serializable getSerializablePrincipal(Request req) {
+        Principal principal = getUserPrincipal(req);
+        if (principal instanceof Serializable) {
+            return (Serializable) principal;
+        }
+        return null;
     }
 
     protected static String getRestletFullUrl(Request request) {

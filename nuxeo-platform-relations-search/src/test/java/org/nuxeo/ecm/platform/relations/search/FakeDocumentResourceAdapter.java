@@ -32,7 +32,7 @@ import org.nuxeo.ecm.platform.relations.api.impl.AbstractResourceAdapter;
  */
 public class FakeDocumentResourceAdapter extends AbstractResourceAdapter {
 
-    class FakeDocumentModel extends DocumentModelImpl {
+    private static class FakeDocumentModel extends DocumentModelImpl {
 
         private static final long serialVersionUID = 1L;
 

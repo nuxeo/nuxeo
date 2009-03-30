@@ -1,6 +1,6 @@
 <div xmlns:h="http://java.sun.com/jsf/html">
 
-<script type="text/javascript" src="#{baseURL}seam/remoting/interface.js?suggestBox&amp;FileManageActions&amp;domainActions&amp;workspaceActions&amp;documentActions&amp;publishActions&amp;searchActions&amp;popupHelper&amp;clipboardActions"></script>
+<script type="text/javascript" src="#{baseURL}seam/resource/remoting/interface.js?suggestBox&amp;FileManageActions&amp;domainActions&amp;workspaceActions&amp;documentActions&amp;publishActions&amp;searchActions&amp;popupHelper&amp;clipboardActions"></script>
 
 <script type="text/javascript">
   <h:outputText
@@ -167,7 +167,7 @@ function transfertCanceled()
     if ( typeof(ECMPluginCancelCallBack)=="function" )
       ECMPluginCancelCallBack(result);
     else if ( typeof(ECMPluginCancelCallBack)=="string" )
-      eval( ECMPluginCancelCallBack + "('" + result + "')");
+      eval( ECMPluginCancelCallBack + "(\"" + result + "\")");
 
     }
 }
@@ -238,13 +238,14 @@ function FileAddedCallback(result)
 {
   //alert("Return from Seam : " + result);
   LogInBrowser( 'In FileAddedCallback');
+
   if(typeof(result)!="undefined"){
     if (ECMPluginCallBack)
     {
       if ( typeof(ECMPluginCallBack)=="function" )
         ECMPluginCallBack(result);
       else if ( typeof(ECMPluginCallBack)=="string" )
-        eval( ECMPluginCallBack + "('" + result + "')");
+        eval( ECMPluginCallBack + "(\"" + result + "\")");
 
     }
   } else{
@@ -265,7 +266,7 @@ function FolderAddedCallback(result)
       if ( typeof(ECMPluginCallBack)=="function" )
         ECMPluginCallBack(result);
       else if ( typeof(ECMPluginCallBack)=="string" )
-        eval( ECMPluginCallBack + "('" + result + "')");
+        eval( ECMPluginCallBack + "(\"" + result + "\")");
     }
   } else{
     alert("undefined result in FolderAddedCallback")
@@ -277,13 +278,13 @@ var result;
 function CanWriteCallback(result)
 {
   //alert("Return from Seam : " + result);
-  LogInBrowser( 'In FolderAddedCallback');
+  LogInBrowser( 'In CanWriteCallback');
   if(typeof(result)!="undefined"){
     if (ECMPluginCallBack){
       if ( typeof(ECMPluginCallBack)=="function" )
         ECMPluginCallBack(result);
       else if ( typeof(ECMPluginCallBack)=="string" )
-        eval( ECMPluginCallBack + "('" + result + "')");
+        eval( ECMPluginCallBack + "(\"" + result + "\")");
     }
   } else{
     alert("undefined result in CanWriteCallback")
@@ -299,10 +300,12 @@ function LogInBrowser(text)
 {
   try
   {
-    eval( 'external.LogText(' + text + ')' );
+    eval( 'window.external.LogText(\"' + text + '\")' );
   }
   catch(e)
-  {}
+  { 
+     alert("Error : " + e.name + "\n"+ e.message);
+  }
 }
 
 if (window.addEventListener)
@@ -318,6 +321,7 @@ if (window.addEventListener)
 -->
 </script>
 
+<script type="text/javascript" src="#{baseURL}scripts/customSeamRemotingWaiter.js"></script>
 <script type="text/javascript" src="#{baseURL}scripts/custom-javascript.js"></script>
 
 <!-- waiter html -->
