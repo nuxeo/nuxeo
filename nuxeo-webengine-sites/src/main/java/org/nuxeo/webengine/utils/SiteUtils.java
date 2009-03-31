@@ -36,6 +36,7 @@ import javax.ws.rs.core.Response;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -133,10 +134,7 @@ public class SiteUtils {
                 Map<String, String> page = new HashMap<String, String>();
                 page.put("name", SiteHelper.getString(webPage, "dc:title"));
                 DocumentModel webContainer = getFirstWorkspaceParent(session, documentModel);
-                StringBuilder path = new StringBuilder(getWebContainersPath()).append("/");
-                path.append(JsonAdapter.getRelativPath(session.getParentDocument(webContainer.getRef()), webContainer)).append("/");
-                path.append(JsonAdapter.getRelativPath(webContainer, webPage));
-                page.put("path", path.toString());
+                page.put("path", getPagePath(webContainer, webPage));
                 page.put("description", SiteHelper.getString(webPage,
                         "dc:description"));
                 page.put("content", SiteHelper.getFistNWordsFromString(
@@ -324,20 +322,6 @@ public class SiteUtils {
                             + " ecm:isCheckedInVersion = 0 AND "
                             + "ecm:currentLifeCycleState != 'deleted'",
                     searchParam, ws.getPathAsString() + "/"));
-            // add current workspace to search results
-            DocumentModelList workspaces = session.query(String.format(
-                    "SELECT * FROM Workspace WHERE  ecm:fulltext LIKE '%s' AND  ecm:path STARTSWITH  '%s'  AND "
-                            + " ecm:mixinType != 'HiddenInNavigation' AND "
-                            + " ecm:isCheckedInVersion = 0 AND "
-                            + " ecm:currentLifeCycleState != 'deleted' ",
-                    searchParam,
-                    session.getDocument(ws.getParentRef()).getPathAsString()));
-            for (DocumentModel documentModel : workspaces) {
-                if (documentModel.getRef().equals(ws.getRef())) {
-                    results.add(documentModel);
-                    break;
-                }
-            }
             for (DocumentModel documentModel : results) {
                 Map<String, String> page = new HashMap<String, String>();
                 GregorianCalendar creationDate = SiteHelper.getGregorianCalendar(
@@ -356,14 +340,7 @@ public class SiteUtils {
                 try {
                     page.put("author", getUserDetails(SiteHelper.getString(
                             documentModel, "dc:creator")));
-                    StringBuilder path = new StringBuilder(
-                            getWebContainersPath()).append("/");
-                    path.append(
-                            JsonAdapter.getRelativPath(
-                                    session.getParentDocument(ws.getRef()), ws)).append(
-                            "/");
-                    path.append(JsonAdapter.getRelativPath(ws, documentModel));
-                    page.put("path", path.toString());
+                    page.put("path", getPagePath(ws, documentModel));
                 } catch (Exception e) {
                     throw new ClientException(e);
                 }
@@ -393,5 +370,22 @@ public class SiteUtils {
                 context.getUriInfo().getMatchedURIs().size() - 1));
         return initialPath;
     }
-
+    
+    /**
+     * This method is used to return the path for a webPage from a webSite
+     * 
+     * @param ws - the web site
+     * @param documentModel -the webPage
+     * @return the path 
+     */
+    public static String getPagePath(DocumentModel ws,
+            DocumentModel documentModel) {
+        StringBuilder path = new StringBuilder(getWebContainersPath()).append("/");
+        path.append(ws.getPath().segment(ws.getPath().segmentCount() - 1)).append(
+                "/");
+        path.append(JsonAdapter.getRelativPath(ws, documentModel));
+        return path.toString();
+    }
+    
+        
 }
