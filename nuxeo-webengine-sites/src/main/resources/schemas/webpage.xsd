@@ -3,7 +3,7 @@
   targetNamespace="http://project.nuxeo.org/schemas/webengine/site/sites/webpage"
   xmlns:tns="http://project.nuxeo.org/schemas/webengine/site/wiki/webpage"
   elementFormDefault="qualified">
-  <element name="pushtomenu" type="boolean" default="false"></element>
+  <element name="pushtomenu" type="boolean" default="true"></element>
   <element name="template" type="string"></element>
   <element name="tags" type="string"></element>
   <element name="content" type="string"></element>  

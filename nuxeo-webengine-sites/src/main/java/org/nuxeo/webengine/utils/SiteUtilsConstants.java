@@ -36,6 +36,8 @@ public final class SiteUtilsConstants {
     /**
      * Constants used in pages like site or webpage
      */
+    public static final String PAGE_TITLE = "pageTitle";
+    
     public static final String WELCOME_TEXT = "welcomeText";
 
     public static final String NAME = "name";

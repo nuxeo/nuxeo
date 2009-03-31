@@ -21,8 +21,10 @@ import static org.nuxeo.webengine.utils.SiteUtilsConstants.ALL_WEBPAGES;
 import static org.nuxeo.webengine.utils.SiteUtilsConstants.CONTEXTUAL_LINKS;
 import static org.nuxeo.webengine.utils.SiteUtilsConstants.DESCRIPTION;
 import static org.nuxeo.webengine.utils.SiteUtilsConstants.LAST_PUBLISHED_PAGES;
-import static org.nuxeo.webengine.utils.SiteUtilsConstants.WELCOME_TEXT;
+import static org.nuxeo.webengine.utils.SiteUtilsConstants.NAME;
 import static org.nuxeo.webengine.utils.SiteUtilsConstants.RESULTS;
+import static org.nuxeo.webengine.utils.SiteUtilsConstants.WELCOME_TEXT;
+import static org.nuxeo.webengine.utils.SiteUtilsConstants.PAGE_TITLE;
 
 import java.util.HashMap;
 import java.util.List;
@@ -145,6 +147,7 @@ public class Page extends DocumentObject {
             root.put(CONTEXTUAL_LINKS, SiteUtils.getContextualLinks(ws));
             root.put(WELCOME_TEXT, SiteHelper.getString(ws, "webc:welcomeText",
                     null));
+            root.put(NAME, ws.getTitle());
             return getTemplate("template_default.ftl").args(root);
 
         } catch (Exception e) {
@@ -165,28 +168,31 @@ public class Page extends DocumentObject {
     protected Map<String, Object> getPageArguments() throws ClientException {
 
         Map<String, Object> root = new HashMap<String, Object>();
-
-        root.put(WELCOME_TEXT, SiteHelper.getString(doc, "webp:content", null));
-        root.put(DESCRIPTION, SiteHelper.getString(doc, "dc:description",
-                null));
-        // add web pages
-        List<Object> pages = SiteUtils.getLastModifiedWebPages(
-                doc, 5, 50);
-        root.put(LAST_PUBLISHED_PAGES, pages);
-        // add contextual links
-        root.put(CONTEXTUAL_LINKS, SiteUtils.getContextualLinks(
-                doc));
-
-        // add all webpages that are directly connected to an webpage
-        root.put(ALL_WEBPAGES, SiteUtils.getAllWebPages(
-                doc));
-        MimetypeRegistry mimetypeService = null;
         try {
+            DocumentModel ws = SiteUtils.getFirstWorkspaceParent(
+                    getCoreSession(), doc);
+            root.put(PAGE_TITLE, doc.getTitle());
+            root.put(WELCOME_TEXT, SiteHelper.getString(doc, "webp:content",
+                    null));
+            root.put(NAME, ws.getTitle());
+            root.put(DESCRIPTION, SiteHelper.getString(doc, "dc:description",
+                    null));
+            // add web pages
+            List<Object> pages = SiteUtils.getLastModifiedWebPages(doc, 5, 50);
+            root.put(LAST_PUBLISHED_PAGES, pages);
+            // add contextual links
+            root.put(CONTEXTUAL_LINKS, SiteUtils.getContextualLinks(doc));
+
+            // add all webpages that are directly connected to an webpage
+            root.put(ALL_WEBPAGES, SiteUtils.getAllWebPages(doc));
+            MimetypeRegistry mimetypeService = null;
             mimetypeService = Framework.getService(MimetypeRegistry.class);
+            root.put("mimetypeService", mimetypeService);
         } catch (Exception e) {
             log.error("Unable to get mimetype service : " + e.getMessage());
+            throw WebException.wrap(e);
         }
-        root.put("mimetypeService", mimetypeService);
+
         return root;
     }
     
