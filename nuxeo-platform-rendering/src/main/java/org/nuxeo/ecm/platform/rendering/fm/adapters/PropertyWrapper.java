@@ -52,10 +52,6 @@ public class PropertyWrapper {
             if (property.isScalar()) {
                 Object value = property.getValue();
                 if (value == null) {
-                    if (property.getType() == DateType.INSTANCE) {
-                        return new SimpleDate(new Date(), SimpleDate.DATETIME); //TODO avoid empty dates that crashes ftls
-                    }
-                    //return TemplateScalarModel.EMPTY_STRING;
                     return TemplateModel.NOTHING;
                 }
                 if (property.getType() == DateType.INSTANCE) {
