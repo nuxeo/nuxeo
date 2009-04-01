@@ -7,7 +7,19 @@
     point="permissions">
 
     <permission name="CanAskForPublishing" />
-
+    
+    <permission name="Read">
+      <include>Browse</include>
+      <include>ReadVersion</include>
+      <include>ReadProperties</include>
+      <include>ReadChildren</include>
+      <include>ReadLifeCycle</include>
+      <include>ReadSecurity</include>
+      <include>ReviewParticipant</include>
+      <include>Version</include><!-- use ReadVersion instead once alias works -->
+      <include>CanAskForPublishing</include>
+    </permission>
+  
   </extension>
 
   <extension target="org.nuxeo.ecm.core.security.SecurityService"
