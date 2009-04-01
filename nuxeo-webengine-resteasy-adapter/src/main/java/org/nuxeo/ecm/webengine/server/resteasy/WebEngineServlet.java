@@ -108,8 +108,14 @@ public class WebEngineServlet extends HttpServlet {
     protected void service(HttpServletRequest httpServletRequest,
             HttpServletResponse httpServletResponse) throws ServletException,
             IOException {
+        // need to set the encoding of characters manually
+        if (null == httpServletRequest.getCharacterEncoding()) {
+            httpServletRequest.setCharacterEncoding("UTF-8");
+        }
+        httpServletResponse.setContentType("text/html; charset=UTF-8");
         httpServletResponse.setHeader("Pragma", "no-cache");
-        service(httpServletRequest.getMethod(), httpServletRequest, httpServletResponse);
+        service(httpServletRequest.getMethod(), httpServletRequest,
+                httpServletResponse);
     }
 
     public void service(String httpMethod, HttpServletRequest request, HttpServletResponse response) throws IOException {
