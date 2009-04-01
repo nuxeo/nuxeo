@@ -17,10 +17,13 @@
       <ui:param name="providerName" value="#{providerName}" />
       <ui:param name="label" value="#{messages[field.label]}" />
     </ui:decorate>
-    
-    <nxd:restDocumentLink document="#{doc}">
-     <nxh:outputText value="#{nxd:titleOrId(doc)}"/>
-    </nxd:restDocumentLink>
+    <div id="docRefTarget:#{row.data.ref}">
+      <div id="docRef:#{row.data.ref}" class="cell popupTarget" docRef="#{row.data.ref}">
+        <nxd:restDocumentLink document="#{doc}">
+          <nxh:outputText value="#{nxd:titleOrId(doc)}"/>
+        </nxd:restDocumentLink>
+      </div>
+    </div>
   </nxu:column>
 
   <!-- lifecycle state -->

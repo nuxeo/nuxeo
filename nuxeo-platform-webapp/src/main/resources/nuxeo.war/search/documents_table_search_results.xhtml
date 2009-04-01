@@ -47,9 +47,12 @@
 
       <!-- Icon + Type -->
       <nxu:column styleClass="iconColumn">
-        <div id="docRef:#{row.data.ref}" class="cell">
-          <nxu:graphicImage value="#{nxd:iconPath(row.data)}" alt="#{row.data.type}" />
-        </div>
+         <div id="docRefTarget:#{row.data.ref}">
+          <div id="docRef:#{row.data.ref}" class="cell popupTarget" docRef="#{row.data.ref}">
+            <nxu:graphicImage
+              value="#{nxd:iconPath(row.data)}" alt="#{row.data.type}"  />
+          </div>
+          </div>
         <script type="text/javascript">
           <h:outputText
             value="new Draggable('docRef:#{row.data.ref}', {revert:true});"/>
@@ -72,5 +75,10 @@
 
   </h:form>
 </a4j:region>
+  <ui:include src="/incl/popupMenu.xhtml"/>
+  <script>
+  // init menu
+    setupContextMenu("table td div div.popupTarget");
+  </script>
 
 </div>
