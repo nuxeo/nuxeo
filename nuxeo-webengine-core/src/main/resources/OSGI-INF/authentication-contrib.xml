@@ -37,6 +37,7 @@
         <parameter name="UsernameKey">username</parameter>
         <parameter name="PasswordKey">password</parameter>
       </parameters>
+      <stateful>false</stateful>
     </authenticationPlugin>
   </extension>
   
