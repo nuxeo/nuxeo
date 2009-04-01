@@ -78,19 +78,9 @@ public class NoteImporter extends AbstractFileImporter {
                 documentManager, path, title);
 
         if (overwrite && docModel != null) {
-            // Do a checkin / checkout of the current version first
-            DocumentRef docRef = docModel.getRef();
-            VersionModel newVersion = new VersionModelImpl();
-            newVersion.setLabel(documentManager.generateVersionLabelFor(docRef));
-            documentManager.checkIn(docRef, newVersion);
-            documentManager.checkOut(docRef);
 
-            // Update the content of the note with the content of the imported
-            // blob
             docModel.setProperty(NOTE_SCHEMA, NOTE_FIELD, content.getString());
-
-            // Save changes back to the repository
-            docModel = documentManager.saveDocument(docModel);
+            docModel = overwriteAndIncrementversion(documentManager, docModel);
         } else {
             // Create a new empty DocumentModel of type Note in memory
             String docId = IdUtils.generateId(title);

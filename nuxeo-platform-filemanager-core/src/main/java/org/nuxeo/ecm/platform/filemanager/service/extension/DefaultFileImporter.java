@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -33,12 +34,14 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersionModel;
+import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.core.api.impl.VersionModelImpl;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.filemanager.api.FileManagerPermissionException;
 import org.nuxeo.ecm.platform.filemanager.utils.FileManagerUtils;
 import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.types.TypeManager;
+import org.nuxeo.ecm.platform.versioning.api.VersioningActions;
 
 /**
  * @author Anahide Tchertchian
@@ -100,15 +103,8 @@ public class DefaultFileImporter extends AbstractFileImporter {
             documentManager.saveDocument(docModel);
             documentManager.save();
 
-            // Do a checkin / checkout of the current version first
-            DocumentRef docRef = docModel.getRef();
-            VersionModel newVersion = new VersionModelImpl();
-            newVersion.setLabel(documentManager.generateVersionLabelFor(docRef));
-            documentManager.checkIn(docRef, newVersion);
-            documentManager.checkOut(docRef);
-
             docModel.setProperty("file", "content", input);
-            documentManager.saveDocument(docModel);
+            docModel = overwriteAndIncrementversion(documentManager, docModel);
 
         } else {
             // new

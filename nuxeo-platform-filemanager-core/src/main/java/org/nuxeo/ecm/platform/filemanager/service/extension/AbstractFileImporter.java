@@ -20,12 +20,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.platform.filemanager.service.FileManagerService;
 import org.nuxeo.ecm.platform.types.TypeManager;
+import org.nuxeo.ecm.platform.versioning.api.VersioningActions;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -148,6 +151,12 @@ public abstract class AbstractFileImporter implements FileImporter {
             path = path.substring(0, path.lastIndexOf('/'));
         }
         return path;
+    }
+
+    protected DocumentModel overwriteAndIncrementversion(CoreSession documentManager, DocumentModel doc) throws ClientException {
+        doc.putContextData(ScopeType.REQUEST, VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, true);
+        doc.putContextData(ScopeType.REQUEST, VersioningActions.KEY_FOR_INC_OPTION, VersioningActions.ACTION_INCREMENT_MINOR);
+        return documentManager.saveDocument(doc);
     }
 
 }
