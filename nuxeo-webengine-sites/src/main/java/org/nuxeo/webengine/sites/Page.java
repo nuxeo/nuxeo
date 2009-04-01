@@ -174,7 +174,7 @@ public class Page extends DocumentObject {
             root.put(PAGE_TITLE, doc.getTitle());
             root.put(WELCOME_TEXT, SiteHelper.getString(doc, "webp:content",
                     null));
-            root.put(NAME, ws.getTitle());
+            root.put(NAME, SiteHelper.getString(ws, "webc:name", null));
             root.put(DESCRIPTION, SiteHelper.getString(doc, "dc:description",
                     null));
             // add web pages
