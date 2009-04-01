@@ -109,7 +109,9 @@ public class WebEngineServlet extends HttpServlet {
             HttpServletResponse httpServletResponse) throws ServletException,
             IOException {
         // need to set the encoding of characters manually
-        httpServletRequest.setCharacterEncoding("UTF-8");
+        if (null == httpServletRequest.getCharacterEncoding()) {
+            httpServletRequest.setCharacterEncoding("UTF-8");
+        }
         httpServletResponse.setContentType("text/html; charset=UTF-8");
         httpServletResponse.setHeader("Pragma", "no-cache");
         service(httpServletRequest.getMethod(), httpServletRequest,
