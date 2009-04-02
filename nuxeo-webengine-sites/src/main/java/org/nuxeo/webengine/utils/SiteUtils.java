@@ -31,11 +31,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -296,7 +298,7 @@ public class SiteUtils {
         }
         return principal.getFirstName() + " " + principal.getLastName();
     }
-    
+
     /**
      * This method is used to search a certain webPage between all the pages
      * under a <b>Workspace</b> that contains in title, description , main
@@ -304,7 +306,7 @@ public class SiteUtils {
      * @param ws - the workspace
      * @param searchParam - the search parameter
      * @param nrWordsFromDescription - the number of words from the page description
-     * @return the <b>WebPage</b>-s found under a <b>Workspace</b> that match the 
+     * @return the <b>WebPage</b>-s found under a <b>Workspace</b> that match the
      * corresponding criteria
      * @throws ClientException
      */
@@ -355,7 +357,7 @@ public class SiteUtils {
         }
         return webPages;
     }
-    
+
 
     /**
      * This method is used to return the path to all the existing web
@@ -370,13 +372,13 @@ public class SiteUtils {
                 context.getUriInfo().getMatchedURIs().size() - 1));
         return initialPath;
     }
-    
+
     /**
      * This method is used to return the path for a webPage from a webSite
-     * 
+     *
      * @param ws - the web site
      * @param documentModel -the webPage
-     * @return the path 
+     * @return the path
      */
     public static String getPagePath(DocumentModel ws,
             DocumentModel documentModel) {
@@ -386,6 +388,34 @@ public class SiteUtils {
         path.append(JsonAdapter.getRelativPath(ws, documentModel));
         return path.toString();
     }
-    
-        
+
+    public static DocumentModel createWebPageDocument(HttpServletRequest request, CoreSession session, String parentPath) throws ClientException {
+        String title = request.getParameter("title");
+        String description = request.getParameter("description");
+        String format = request.getParameter("format");
+        String wikitextEditor = request.getParameter("wikitextEditor");
+        String richtextEditor = request.getParameter("richtextEditor");
+        String pushToMenu = request.getParameter("pushToMenu");
+
+        DocumentModel documentModel = session.createDocumentModel(parentPath,
+                IdUtils.generateId(title + System.currentTimeMillis()),
+                WEBPAGE);
+        documentModel.setPropertyValue("dc:title", title);
+        documentModel.setPropertyValue("dc:description", description);
+        if ("wikitext".equals(format)) {
+            // Is wiki text editor
+            documentModel.setPropertyValue("webp:content", wikitextEditor);
+        } else {
+            // Is rich text editor
+            documentModel.setPropertyValue("webp:content", richtextEditor);
+        }
+        documentModel.setPropertyValue("webp:pushtomenu", Boolean.valueOf(pushToMenu));
+
+        documentModel = session.createDocument(documentModel);
+        documentModel = session.saveDocument(documentModel);
+        session.save();
+
+        return documentModel;
+    }
+
 }

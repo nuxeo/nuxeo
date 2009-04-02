@@ -353,7 +353,7 @@
       <view>cell frame</view>
     </widget>
     <widget element="page[3]/section[2]/cell[2]/fragment[1]">
-      <view>Page Main</view>
+      <view>Minisite Main</view>
     </widget>
     <widget element="page[3]/section[2]/cell[2]/fragment[2]">
       <view>All WebPages</view>

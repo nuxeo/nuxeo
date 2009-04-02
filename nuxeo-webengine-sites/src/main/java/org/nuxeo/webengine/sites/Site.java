@@ -193,7 +193,23 @@ public class Site extends DefaultObject {
         }
     }
 
-    
+    @POST
+    @Path("createWebPage")
+    public Object createWebPage() {
+        try {
+            CoreSession session = ctx.getCoreSession();
+
+            DocumentModel createdDocument = SiteUtils.createWebPageDocument(ctx.getRequest(), session, ws.getPathAsString());
+
+            String path = SiteUtils.getPagePath(ws, createdDocument);
+
+            return redirect(path);
+
+        } catch (Exception e) {
+            throw WebException.wrap(e);
+        }
+    }
+
     protected Map<String, Object> getSiteArguments() throws ClientException {
         Map<String, Object> root = new HashMap<String, Object>();
 

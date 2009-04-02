@@ -1,4 +1,4 @@
 <div>
-  <#include "includes/page_main.ftl"/>
-  <@pageMain/>
+  <#include "includes/main.ftl"/>
+  <@main/>
 </div>

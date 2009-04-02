@@ -22,14 +22,16 @@ import static org.nuxeo.webengine.utils.SiteUtilsConstants.CONTEXTUAL_LINKS;
 import static org.nuxeo.webengine.utils.SiteUtilsConstants.DESCRIPTION;
 import static org.nuxeo.webengine.utils.SiteUtilsConstants.LAST_PUBLISHED_PAGES;
 import static org.nuxeo.webengine.utils.SiteUtilsConstants.NAME;
-import static org.nuxeo.webengine.utils.SiteUtilsConstants.RESULTS;
-import static org.nuxeo.webengine.utils.SiteUtilsConstants.WELCOME_TEXT;
 import static org.nuxeo.webengine.utils.SiteUtilsConstants.PAGE_TITLE;
+import static org.nuxeo.webengine.utils.SiteUtilsConstants.RESULTS;
+import static org.nuxeo.webengine.utils.SiteUtilsConstants.WEBPAGE;
+import static org.nuxeo.webengine.utils.SiteUtilsConstants.WELCOME_TEXT;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -39,6 +41,7 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -130,7 +133,7 @@ public class Page extends DocumentObject {
         }
         return resp;
     }
-    
+
     @POST
     @Path("search")
     public Object getSearchParametres(
@@ -149,6 +152,24 @@ public class Page extends DocumentObject {
                     null));
             root.put(NAME, ws.getTitle());
             return getTemplate("template_default.ftl").args(root);
+
+        } catch (Exception e) {
+            throw WebException.wrap(e);
+        }
+    }
+
+    @POST
+    @Path("createWebPage")
+    public Object createWebPage() {
+        try {
+            CoreSession session = this.getCoreSession();
+
+            DocumentModel createdDocument = SiteUtils.createWebPageDocument(ctx.getRequest(), session, doc.getPathAsString());
+
+            DocumentModel webContainer = SiteUtils.getFirstWorkspaceParent(session, doc);
+            String path = SiteUtils.getPagePath(webContainer, createdDocument);
+
+            return redirect(path);
 
         } catch (Exception e) {
             throw WebException.wrap(e);
@@ -195,5 +216,5 @@ public class Page extends DocumentObject {
 
         return root;
     }
-    
+
 }
