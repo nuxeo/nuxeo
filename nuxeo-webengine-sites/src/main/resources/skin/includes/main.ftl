@@ -4,9 +4,27 @@
   <link rel="shortcut icon" href="${skinPath}/image/favicon.gif" />
   <script type="text/javascript" src="${skinPath}/script/jquery/ui/ui.base.js"></script>
   <script type="text/javascript" src="${skinPath}/script/jquery/ui/ui.tabs.js"></script>
+  <!-- tinyMCE -->
+<script type="text/javascript" src="${skinPath}/script/fckeditor/fckeditor.js"></script>
+<!-- end tinyMCE -->
+  
   <script>
-    $(document).ready(function(){
-      $("#webpage-actions > ul").tabs();
+  
+  	var oFCKeditor = null;
+  
+  	$(document).ready(function(){
+      $("#webpage-actions > ul").tabs({
+		show: function(event, ui){
+			
+			///nuxeo/site/skin/sites/script/fckeditor/fckeditor.js
+			oFCKeditor = new FCKeditor( 'richtextEditor' ) ;
+			oFCKeditor.BasePath = "${skinPath}/script/fckeditor/" ;
+			oFCKeditor.Width = "100%";
+			oFCKeditor.Height = "400";
+			oFCKeditor.ReplaceTextarea();			
+			
+		}
+	});
     });
   </script>
   
