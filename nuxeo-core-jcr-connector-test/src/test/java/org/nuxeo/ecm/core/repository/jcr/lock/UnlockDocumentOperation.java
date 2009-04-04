@@ -26,9 +26,11 @@ public class UnlockDocumentOperation extends AbstractRepositoryOperation {
         super(session, doc);
     }
 
+    @Override
     protected void doOperate() throws ClientException {
-        if (session.getLock(doc.getRef()) != null)
+        if (session.getLock(doc.getRef()) != null) {
             return;
+        }
         session.unlock(doc.getRef());
     }
 }

@@ -37,7 +37,7 @@ public class TestEmbeddedFunctions extends TestCase {
                 EmbeddedFunctions.split(string, sep));
     }
 
-    public void testSplit() throws Exception {
+    public void testSplit() {
         checkSplit("", new String[0]);
         checkSplit("A", "A");
         checkSplit("A|B|C", "A", "B", "C");
@@ -48,7 +48,7 @@ public class TestEmbeddedFunctions extends TestCase {
         checkSplit('-', "A-B-C", "A", "B", "C");
     }
 
-    public void testParse() throws Exception {
+    public void testParse() {
         assertNull(EmbeddedFunctions.parseWord("gr"));
         assertNull(EmbeddedFunctions.parseWord("are"));
         assertNull(EmbeddedFunctions.parseWord("THE"));
@@ -56,8 +56,7 @@ public class TestEmbeddedFunctions extends TestCase {
         assertEquals("foo", EmbeddedFunctions.parseWord("fOoS"));
     }
 
-    protected static void checkParseFullText(String expected, String text)
-            throws Exception {
+    protected static void checkParseFullText(String expected, String text) {
         assertEquals(new HashSet<String>(Arrays.asList(expected.split(" "))),
                 EmbeddedFunctions.parseFullText(text));
     }

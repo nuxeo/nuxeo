@@ -35,11 +35,11 @@ import org.nuxeo.osgi.OSGiAdapter;
 import org.osgi.framework.BundleException;
 
 /**
- * Nuxeo Runtime launcher.  
- * 
+ * Nuxeo Runtime launcher.
+ *
  * This launcher assume all bundles are already on the classpath.
- *  
- * 
+ *
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
@@ -48,31 +48,31 @@ public class NuxeoApp {
     protected OSGiAdapter osgi;
     protected ClassLoader loader;
     protected Environment env;
-    
-    
+
+
     public static ClassLoader getDefaultClassLoader() {
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
         return cl == null ? NuxeoApp.class.getClassLoader() : cl;
     }
 
     public NuxeoApp() {
-        this (new File("."), getDefaultClassLoader());  
+        this (new File("."), getDefaultClassLoader());
     }
 
     public NuxeoApp(File home) {
-      this (home, getDefaultClassLoader());  
+      this (home, getDefaultClassLoader());
     }
-    
+
     public NuxeoApp(File home, ClassLoader loader) {
         this.loader = loader;
         env = new Environment(home);
     }
-    
+
     public Environment getEnvironment() {
         return this.env;
     }
 
-       
+
     public synchronized void deployBundles(Collection<File> files) throws BundleException, IOException {
         if (!isStarted()) {
             throw new IllegalStateException("Framework not started");
@@ -81,7 +81,7 @@ public class NuxeoApp {
             deployBundle(file);
         }
     }
-    
+
     public synchronized void deployBundle(File file) throws BundleException, IOException  {
         if (!isStarted()) {
             throw new IllegalStateException("Framework not started");
@@ -89,23 +89,23 @@ public class NuxeoApp {
         BundleFile bf = file.isDirectory() ? new DirectoryBundleFile(file) : new JarBundleFile(file);
         osgi.install(new BundleImpl(osgi, bf, loader));
     }
-    
-    public synchronized void start() throws IOException, BundleException {
+
+    public synchronized void start() {
         if (osgi != null) {
             throw new IllegalStateException("Nuxeo Runtime already started");
         }
         osgi = new OSGiAdapter(env.getHome(), env.getData(), env.getProperties());
     }
-    
+
     public synchronized boolean isStarted() {
         return osgi != null;
     }
-    
+
     public synchronized OSGiAdapter getOsgi() {
         return osgi;
     }
-    
-    
+
+
     public synchronized void shutdown() throws IOException {
         if (osgi == null) {
             throw new IllegalStateException("Nuxeo Runtime not started");
@@ -114,7 +114,7 @@ public class NuxeoApp {
         osgi = null;
     }
 
-    
+
     public static Collection<File> getBundleFiles(File baseDir, String bundles, String delim) throws IOException {
         LinkedHashSet<File> result = new LinkedHashSet<File>();
         StringTokenizer tokenizer = new StringTokenizer(bundles, delim == null ? " \t\n\r\f" : delim);
@@ -123,14 +123,14 @@ public class NuxeoApp {
             List<File> files = expandFiles(baseDir, tok);
             for (File file : files) {
                 result.add(file.getCanonicalFile());
-            }            
+            }
         }
         return result;
     }
 
-    public static List<File> expandFiles(File baseDir, String line) {        
+    public static List<File> expandFiles(File baseDir, String line) {
         int p = line.lastIndexOf("/");
-        String fileName = null; 
+        String fileName = null;
         if (p > -1) {
             fileName = line.substring(p+1);
             baseDir = new File(baseDir, line.substring(0, p));
@@ -159,10 +159,10 @@ public class NuxeoApp {
                     result.add(new File(baseDir, name));
                 }
             }
-            return result;            
-        } else {            
+            return result;
+        } else {
             String prefix= fileName.substring(0, p);
-            String suffix= fileName.substring(p+1);            
+            String suffix= fileName.substring(p+1);
             ArrayList<File> result = new ArrayList<File>();
             for (String name : baseDir.list()) {
                 if (name.startsWith(prefix) && name.endsWith(suffix)) {

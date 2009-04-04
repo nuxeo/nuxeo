@@ -23,7 +23,6 @@ import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.ecm.core.event.impl.EventServiceImpl;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.model.RuntimeContext;
 
 /**
  * PostCommitEventListenerTest test ScriptingPostCommitEventListener
@@ -66,7 +65,6 @@ public class PostCommitEventListenerTest extends RepositoryOSGITestCase {
         getCoreSession().save();
         waitForAsyncExec();
         assertTrue(3 <= SCRIPT_CNT);
-
     }
 
     protected void waitForAsyncExec() {

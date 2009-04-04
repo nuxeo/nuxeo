@@ -73,6 +73,7 @@ public class ArrayProperty extends ScalarProperty {
         throw new PropertyConversionException(value.getClass(), Object[].class, getPath());
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T convertTo(Serializable value, Class<T> toType)
             throws PropertyConversionException {

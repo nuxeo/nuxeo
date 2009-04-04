@@ -140,10 +140,11 @@ public class DocumentChildrenList implements DocumentModelList {
         return ar;
     }
 
+    @SuppressWarnings("unchecked")
     public <T> T[] toArray(T[] a) {
         T[] ar = list.toArray(a);
         for (int i=ar.length-1; i>=0; i--) {
-            ar[i] = (T)cache.cacheDocument((DocumentModel)ar[i]);
+            ar[i] = (T) cache.cacheDocument((DocumentModel) ar[i]);
         }
         return ar;
     }

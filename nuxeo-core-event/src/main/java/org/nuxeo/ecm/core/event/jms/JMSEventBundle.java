@@ -111,7 +111,8 @@ public class JMSEventBundle implements Serializable {
             for (Object arg : args) {
                 if (arg instanceof DocumentModel) {
                     DocumentModel doc = (DocumentModel) arg;
-                    String strRepresentation = doc.getRepositoryName() + ":" + doc.getId() + ":" + doc.getType() + ":" + doc.getPathAsString();
+                    String strRepresentation = doc.getRepositoryName() + ":" + doc.getId()
+                            + ":" + doc.getType() + ":" + doc.getPathAsString();
                     listArgs.add("DOCREF:" + strRepresentation);
                 } else if (arg instanceof Serializable) {
                     log.debug("Adding serializable argument of class " + arg.getClass().getCanonicalName());
@@ -155,12 +156,14 @@ public class JMSEventBundle implements Serializable {
     }
 
     public class EventBundleRelayedViaJMS extends EventBundleImpl {
+        private static final long serialVersionUID = 1L;
         public EventBundleRelayedViaJMS() {
             // init VMID
             super(sourceVMID);
         }
     }
 
+    @SuppressWarnings("unchecked")
     public EventBundle reconstructEventBundle(CoreSession session) throws CannotReconstructEventBundle {
 
         if (!session.getRepositoryName().equals(coreInstanceName)) {
@@ -201,7 +204,9 @@ public class JMSEventBundle implements Serializable {
                             } else {
                                 String parentPath = new Path(part[4]).removeLastSegments(1).toString();
                                 doc = new DocumentModelImpl(
-                                        session.getSessionId(), part[3], part[2], new Path(part[4]), idRef, new PathRef(parentPath), null, null);
+                                        session.getSessionId(), part[3],
+                                        part[2], new Path(part[4]), idRef,
+                                        new PathRef(parentPath), null, null);
                             }
                         }
                         catch (ClientException e) {

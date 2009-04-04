@@ -328,7 +328,6 @@ public abstract class AbstractSession implements CoreSession,
         getEventService().fireEvent(event);
     }
 
-    @SuppressWarnings("unchecked")
     protected void notifyEvent(String eventId, DocumentModel source,
             Map<String, Serializable> options, String category, String comment,
             boolean withLifeCycle) throws ClientException {
@@ -374,8 +373,8 @@ public abstract class AbstractSession implements CoreSession,
     }
 
     /**
-     * Copied from obsolete VersionChangeNotifier
-     *
+     * Copied from obsolete VersionChangeNotifier.
+     * <p>
      * Sends change notifications to core event listeners. The event contains
      * info with older document (before version change) and newer doc (current
      * document).

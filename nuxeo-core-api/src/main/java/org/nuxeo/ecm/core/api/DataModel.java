@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.core.api;
 
 import java.io.Serializable;
-import java.text.ParseException;
 import java.util.Collection;
 import java.util.Map;
 
@@ -142,7 +141,6 @@ public interface DataModel extends Serializable {
      *
      * @param path the property path
      * @return
-     * @throws ParseException
      * @throws PropertyException
      */
     Object getValue(String path) throws PropertyException;
@@ -153,7 +151,6 @@ public interface DataModel extends Serializable {
      * @param path
      * @param value
      * @return
-     * @throws PropertyNotFoundException
      * @throws PropertyException
      */
     Object setValue(String path, Object value) throws PropertyException;

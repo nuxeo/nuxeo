@@ -30,7 +30,8 @@ public abstract class AbstractRepositoryOperation implements RepositoryOperation
         Class<? extends AbstractRepositoryOperation> types[] =
             new Class[] { LockDocumentOperation.class, UnlockDocumentOperation.class };
         try {
-            return types[random.nextInt()%types.length].getConstructor(CoreSession.class,DocumentRef.class).newInstance(session,ref);
+            return types[random.nextInt()%types.length]
+                         .getConstructor(CoreSession.class,DocumentRef.class).newInstance(session,ref);
         } catch (Exception e) {
             throw new RuntimeException("Check code", e);
         }

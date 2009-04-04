@@ -77,15 +77,19 @@ public class EventServiceImpl implements EventService {
         try {
             EventListener el = listener.asEventListener();
             if (el != null) {
-                listeners.add(
-                        new Entry<EventListener>(el, listener.getPriority(), listener.isAsync, listener.getEvents(), listener.getName()));
+                listeners.add(new Entry<EventListener>(el,
+                        listener.getPriority(), listener.isAsync,
+                        listener.getEvents(), listener.getName()));
             } else {
                 PostCommitEventListener pcel = listener.asPostCommitListener();
                 if (pcel != null) {
-                    postCommitListeners.add(
-                            new Entry<PostCommitEventListener>(pcel, listener.getPriority(), listener.isAsync, listener.getEvents(), listener.getName()));
+                    postCommitListeners.add(new Entry<PostCommitEventListener>(
+                            pcel, listener.getPriority(), listener.isAsync,
+                            listener.getEvents(), listener.getName()));
                 } else {
-                    log.error("Invalid event listener: class: " + listener.clazz + "; script: " + listener.script + "; context: " + listener.rc);
+                    log.error("Invalid event listener: class: "
+                            + listener.clazz + "; script: " + listener.script
+                            + "; context: " + listener.rc);
                 }
             }
         } catch (Exception e) {
@@ -97,12 +101,14 @@ public class EventServiceImpl implements EventService {
         try {
             EventListener el = listener.asEventListener();
             if (el != null) {
-                listeners.remove(
-                        new Entry<EventListener>(el, listener.getPriority(), listener.isAsync, listener.getEvents(), listener.getName()));
+                listeners.remove(new Entry<EventListener>(el,
+                        listener.getPriority(), listener.isAsync,
+                        listener.getEvents(), listener.getName()));
             } else {
                 PostCommitEventListener pcel = listener.asPostCommitListener();
-                postCommitListeners.remove(
-                        new Entry<PostCommitEventListener>(pcel, listener.getPriority(), listener.isAsync, listener.getEvents(), listener.getName()));
+                postCommitListeners.remove(new Entry<PostCommitEventListener>(
+                        pcel, listener.getPriority(), listener.isAsync,
+                        listener.getEvents(), listener.getName()));
             }
         } catch (Exception e) {
             log.error("Failed to register event listener", e);
@@ -256,7 +262,6 @@ public class EventServiceImpl implements EventService {
     public boolean isTransactionStarted() {
         return bundle.get().isTransacted();
     }
-
 
     protected boolean isSaveEvent(Event event) {
         return event.getName().equals(DocumentEventTypes.SESSION_SAVED);

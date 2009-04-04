@@ -71,6 +71,7 @@ public class RepositorySessionLockStress extends RepositoryOSGITestCase {
 
     protected static Log log = LogFactory.getLog(RepositorySessionLockStress.class);
 
+    @Override
     public void setUp() throws Exception {
         super.setUp();
         openRepository();
@@ -208,9 +209,10 @@ public class RepositorySessionLockStress extends RepositoryOSGITestCase {
                 try {
                     acquireSession();
                     sleepForAWhile();
-                    while (loopsCount < numberOfLoops && shouldStop == false) {
-                        if (shouldDelay)
+                    while (loopsCount < numberOfLoops && !shouldStop) {
+                        if (shouldDelay) {
                             sleepForAWhile();
+                        }
                         try {
                             operate();
                         } finally {

@@ -60,11 +60,6 @@ public class TestSecurityPolicyService extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.core.event");
     }
 
-    @Override
-    public void tearDown() throws Exception {
-        super.tearDown();
-    }
-
     private static CoreSession openSession(String user) throws ClientException {
         Map<String, Serializable> ctx = new HashMap<String, Serializable>();
         ctx.put("username", user);

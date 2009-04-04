@@ -49,7 +49,7 @@ public class DocumentModelsChunk implements Serializable {
     private final long max;
 
     /**
-     * @param the max maximum number of items in the result. This number could be at most
+     * @param max the max maximum number of items in the result. This number could be at most
      *   the total number of Documents before filtering.
      */
     DocumentModelsChunk(DocumentModelList list, int lastIndex, boolean hasMore, long max) {

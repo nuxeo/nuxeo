@@ -18,9 +18,8 @@
 
 package org.nuxeo.ecm.core.repository;
 
-import java.util.List;
-import java.util.Map;
 import java.util.Collection;
+import java.util.Map;
 
 import org.nuxeo.ecm.core.api.event.CoreEvent;
 import org.nuxeo.ecm.core.listener.AbstractEventListener;

@@ -19,9 +19,6 @@
 
 package org.nuxeo.ecm.core.api;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
  * Helper class to send versions change event notifications in the core.
  *
@@ -45,11 +42,8 @@ public final class VersioningChangeNotifier {
      */
     public static final String EVT_INFO_NEW_DOC_KEY = "newDoc";
 
-    private static final Log log = LogFactory.getLog(VersioningChangeNotifier.class);
-
     // Utility class.
     private VersioningChangeNotifier() {
     }
-
 
 }

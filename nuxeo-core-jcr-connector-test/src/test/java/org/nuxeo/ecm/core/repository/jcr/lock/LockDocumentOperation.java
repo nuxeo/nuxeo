@@ -26,9 +26,12 @@ public class LockDocumentOperation extends AbstractRepositoryOperation {
         super(session, doc);
     }
 
+    @Override
     protected void doOperate()
             throws ClientException {
-        if (session.getLock(doc.getRef()) != null) return;
+        if (session.getLock(doc.getRef()) != null) {
+            return;
+        }
         session.setLock(doc.getRef(), RepositorySessionLockStress.LOCK_KEY);
     }
 }

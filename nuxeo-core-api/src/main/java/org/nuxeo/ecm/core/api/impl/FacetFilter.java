@@ -18,11 +18,11 @@
 
 package org.nuxeo.ecm.core.api.impl;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.Collection;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.Filter;

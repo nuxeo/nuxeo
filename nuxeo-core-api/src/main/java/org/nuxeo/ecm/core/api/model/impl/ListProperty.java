@@ -307,6 +307,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
         throw new PropertyConversionException(value.getClass(), List.class);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T convertTo(Serializable value, Class<T> toType)
             throws PropertyConversionException {

@@ -21,6 +21,8 @@ package org.nuxeo.ecm.core.io.impl.plugins;
 
 import java.io.IOException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
@@ -30,12 +32,10 @@ import org.nuxeo.ecm.core.io.DocumentTranslationMap;
 import org.nuxeo.ecm.core.io.ExportedDocument;
 import org.nuxeo.ecm.core.io.impl.AbstractDocumentModelWriter;
 import org.nuxeo.ecm.core.io.impl.DocumentTranslationMapImpl;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
- * A writer that only updates existing docs. The doc ID is used to identity docs
- * The imported tree structure is ignored
+ * A writer that only updates existing documents. The doc ID is used to identity documents.
+ * The imported tree structure is ignored.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -46,7 +46,6 @@ public class DocumentModelUpdater extends AbstractDocumentModelWriter {
     private static final Log log = LogFactory.getLog(DocumentModelUpdater.class);
 
     /**
-     *
      * @param session the session to the repository where to write
      * @param parentPath where to write the tree. this document will be used as
      *            the parent of all top level documents passed as input. Note

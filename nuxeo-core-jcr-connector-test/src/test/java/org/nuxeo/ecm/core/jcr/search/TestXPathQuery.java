@@ -162,7 +162,8 @@ public class TestXPathQuery extends RepositoryTestCase {
         final String logPrefix = "<testJCRXPathContain> ";
         log.info(logPrefix + "...");
 
-        final String xpathQ = "//testfolder1/element(*, ecmnt:document)[jcr:like(@dc:description, 'testfile%')] order by @filename descending";
+        final String xpathQ = "//testfolder1/element(*, ecmnt:document)[jcr:like(@dc:description, 'testfile%')] "
+            + "order by @filename descending";
 
         Query qry = session.createQuery(xpathQ, Query.Type.XPATH);
         QueryResult qr = qry.execute();
@@ -176,7 +177,8 @@ public class TestXPathQuery extends RepositoryTestCase {
         final String logPrefix = "<testJCRXPathContain> ";
         log.info(logPrefix + "...");
 
-        final String xpathQ = "//testfolder2/testfolder3/element(*, ecmnt:document)[jcr:like(@dc:description, 'testfile%')] order by @filename descending";
+        final String xpathQ = "//testfolder2/testfolder3/element(*, ecmnt:document)[jcr:like(@dc:description, 'testfile%')] "
+            + "order by @filename descending";
 
         Query qry = session.createQuery(xpathQ, Query.Type.XPATH);
         QueryResult qr = qry.execute();
@@ -190,7 +192,8 @@ public class TestXPathQuery extends RepositoryTestCase {
         final String logPrefix = "<testJCRXPathContain> ";
         log.info(logPrefix + "...");
 
-        final String xpathQ = "//testfolder1/notexistent/element(*, ecmnt:document)[jcr:like(@dc:description, 'testfile%')] order by @filename descending";
+        final String xpathQ = "//testfolder1/notexistent/element(*, ecmnt:document)[jcr:like(@dc:description, 'testfile%')] "
+            + "order by @filename descending";
 
         Query qry = session.createQuery(xpathQ, Query.Type.XPATH);
         QueryResult qr = qry.execute();

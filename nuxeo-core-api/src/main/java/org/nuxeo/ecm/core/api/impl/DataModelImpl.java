@@ -25,8 +25,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
@@ -45,8 +43,6 @@ import org.nuxeo.ecm.core.api.model.impl.DefaultPropertyFactory;
 public class DataModelImpl implements DataModel {
 
     private static final long serialVersionUID = -186670993439802490L;
-
-    private static final Log log = LogFactory.getLog(DataModelImpl.class);
 
     private final DocumentPart dp;
 

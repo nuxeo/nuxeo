@@ -25,6 +25,8 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
 import org.nuxeo.ecm.core.api.DocumentLocation;
@@ -32,8 +34,6 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.io.DocumentTranslationMap;
 import org.nuxeo.ecm.core.io.ExportedDocument;
 import org.nuxeo.ecm.core.io.impl.DocumentTranslationMapImpl;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 public class XMLDocumentTreeWriter extends XMLDocumentWriter {
 

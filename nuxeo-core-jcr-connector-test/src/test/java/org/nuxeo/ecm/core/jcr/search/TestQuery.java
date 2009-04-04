@@ -196,7 +196,8 @@ public class TestQuery extends RepositoryTestCase {
         final String logPrefix = "<testJCRXPathContain> ";
         log.info(logPrefix + "...");
 
-        final String sql = "SELECT * FROM document WHERE dc:title IN ('testfile1_Title', 'testfile2_Title', 'testfile3_Title', 'testfile4_Title')";
+        final String sql = "SELECT * FROM document WHERE dc:title "
+            + "IN ('testfile1_Title', 'testfile2_Title', 'testfile3_Title', 'testfile4_Title')";
 
         Query qry = session.createQuery(sql, Query.Type.NXQL);
         QueryResult qr = qry.execute();
