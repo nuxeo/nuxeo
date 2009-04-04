@@ -39,7 +39,6 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.rest.DocumentObject;
@@ -65,14 +64,10 @@ public class Page extends DocumentObject {
     @GET
     public Object doGet() {
         ctx.getRequest().setAttribute("org.nuxeo.theme.theme", "sites/page");
-        try {
-            return ((Template) super.doGet()).args(getPageArguments());
-        } catch (ClientException e) {
-            log.debug("Problems while trying to set the arguments for the Page ...");
-        }
-        return null;
+        return ((Template) super.doGet()).args(getPageArguments());
     }
 
+    @Override
     @POST
     public Response doPost() {
         String name = ctx.getForm().getString("comment");
@@ -130,7 +125,7 @@ public class Page extends DocumentObject {
         }
         return resp;
     }
-    
+
     @POST
     @Path("search")
     public Object getSearchParametres(
@@ -165,7 +160,7 @@ public class Page extends DocumentObject {
         }
     }
 
-    protected Map<String, Object> getPageArguments() throws ClientException {
+    protected Map<String, Object> getPageArguments() {
 
         Map<String, Object> root = new HashMap<String, Object>();
         try {
@@ -195,5 +190,5 @@ public class Page extends DocumentObject {
 
         return root;
     }
-    
+
 }

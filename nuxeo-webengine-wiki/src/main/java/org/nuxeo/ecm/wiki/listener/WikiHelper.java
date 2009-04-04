@@ -56,6 +56,10 @@ public class WikiHelper {
     // TODO fix this hardcoded path
     public static final String WIKI_ROOT_PATH = "/default-domain/workspaces/wikis";
 
+    // Utility class.
+    private WikiHelper() {
+    }
+
     // FIXME: properly handle exceptions
     public static List<String> getWordLinks(DocumentModel doc) {
         try {

@@ -106,9 +106,8 @@ public class Site extends DefaultObject {
         try {
             return getTemplate("template_default.ftl").args(getSiteArguments());
         } catch (Exception e) {
-            WebException.wrap(e);
+            throw WebException.wrap(e);
         }
-        return null;
     }
 
     @Path("{page}")
@@ -130,7 +129,7 @@ public class Site extends DefaultObject {
             ctx.getRequest().setAttribute("org.nuxeo.theme.theme",
                     theme + "/" + themePage);
 
-            return (DocumentObject) ctx.newObject(pageDoc.getType(), pageDoc);
+            return ctx.newObject(pageDoc.getType(), pageDoc);
         } catch (Exception e) {
             throw WebException.wrap(e);
         }
@@ -193,7 +192,7 @@ public class Site extends DefaultObject {
         }
     }
 
-    
+
     protected Map<String, Object> getSiteArguments() throws ClientException {
         Map<String, Object> root = new HashMap<String, Object>();
 

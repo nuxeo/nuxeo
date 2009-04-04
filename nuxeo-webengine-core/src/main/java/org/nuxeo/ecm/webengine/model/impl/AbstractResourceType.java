@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.webengine.model.impl;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.text.ParseException;
 import java.util.Set;
@@ -174,19 +173,15 @@ public abstract class AbstractResourceType implements ResourceType {
         if (file != null) {
             return file;
         }
-        try {
-            file = findSkinTemplate(module, name);
-            if (file == null) {
-                file = findTypeTemplate(module, name);
+        file = findSkinTemplate(module, name);
+        if (file == null) {
+            file = findTypeTemplate(module, name);
+        }
+        if (file == null) {
+            AbstractResourceType t = (AbstractResourceType) getSuperType();
+            if (t != null) {
+                file = t.findView(module, name);
             }
-            if (file == null) {
-                AbstractResourceType t =(AbstractResourceType)getSuperType();
-                if (t != null) {
-                    file = t.findView(module, name);
-                }
-            }
-        } catch (IOException e) {
-            throw WebException.wrap("Failed to find template: "+name, e);
         }
         if (file != null) {
             templateCache.put(name, file);
@@ -200,7 +195,7 @@ public abstract class AbstractResourceType implements ResourceType {
                 .append(File.separatorChar).append(name).toString());
     }
 
-    protected ScriptFile findTypeTemplate(Module module, String name) throws IOException {
+    protected ScriptFile findTypeTemplate(Module module, String name) {
         String path = resolveResourcePath(clazz.getClassName(), name);
         URL url = clazz.get().getResource(path);
         if (url != null) {

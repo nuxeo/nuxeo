@@ -45,7 +45,7 @@ public class ReloadingClassLoader extends ClassLoader {
         delegate = new ResourceStoreClassLoader(parent, new ResourceStore[0]);
     }
 
-    public synchronized void addResourceStore(final ResourceStore store) throws Exception {
+    public synchronized void addResourceStore(final ResourceStore store) {
         stores.add(store);
         reload(); //need to reload to update usderlying store list
     }

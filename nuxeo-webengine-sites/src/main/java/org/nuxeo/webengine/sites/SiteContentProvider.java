@@ -42,10 +42,10 @@ public class SiteContentProvider extends DocumentContentProvider {
         for (Object o : objects) {
             DocumentModel d = (DocumentModel) o;
             // filter pages
-            // WEB-214 
+            // WEB-214
             try {
                 if (SiteHelper.getBoolean(d, "webp:pushtomenu", false)
-                        && d.getCurrentLifeCycleState().equals("deleted") == false) {
+                        && !d.getCurrentLifeCycleState().equals("deleted")) {
                     v.add(d);
                 }
             } catch (ClientException e) {

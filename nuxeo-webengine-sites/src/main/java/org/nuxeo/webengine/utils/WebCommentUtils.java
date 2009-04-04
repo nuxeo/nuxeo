@@ -37,15 +37,19 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Utilities for Comments implementation into WebEngine
- * @author mariana
+ * Utilities for Comments implementation into WebEngine.
  *
+ * @author mariana
  */
 public class WebCommentUtils {
 
+    // utility class.
+    private WebCommentUtils() {
+    }
+
     /**
-     * Get all the users with a given permission for the corresponding workspace
-     * */
+     * Gets all the users with a given permission for the corresponding workspace.
+     */
     public static ArrayList<String> getUsersWithPermission(CoreSession session,
             DocumentModel doc, Set<String> permissions) throws Exception {
         DocumentModel parentWorkspace = SiteUtils.getFirstWorkspaceParent(session, doc);
@@ -116,8 +120,7 @@ public class WebCommentUtils {
     }
 
     /**
-     * This method is used to retrieve the <b>WebPage</b> where this
-     * <b>WebComment</b> was published
+     * Retrieves the <b>WebPage</b> where this <b>WebComment</b> was published.
      *
      * @param comment
      * @return the <b>WebPage</b>
@@ -129,10 +132,10 @@ public class WebCommentUtils {
         List<DocumentModel> list = commentManager.getDocumentsForComment(comment);
         if (list.size() != 0) {
             DocumentModel page = list.get(0);
-            if (page.getCurrentLifeCycleState().equals(DELETED) == false){
+            if (!page.getCurrentLifeCycleState().equals(DELETED)){
                 return page;
             }
-                
+
         }
         return null;
     }

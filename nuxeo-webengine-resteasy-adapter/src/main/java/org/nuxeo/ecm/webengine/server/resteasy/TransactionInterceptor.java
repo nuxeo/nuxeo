@@ -41,22 +41,32 @@ import org.jboss.resteasy.spi.Failure;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.Resource;
 
-
 /**
- *
- * The TransactionAttribute marks a method as needing bytecode enhancement to support transactions. The two most common transaction are REQUIRED and SUPPORTS. A REQUIRED method expects to modify the data and wants to ensure the update is consistent. A SUPPORTS method will only read data, so it can avoid the overhead of a transaction.
- * A transaction is the database equivalent of a synchronized lock. Transactions are somewhat more complicated locks because they need to work with multiple machines and possibly multiple databases, but they're still just sophisticated locks. The typical transaction patterns are similar to familiar lock patterns.
+ * The TransactionAttribute marks a method as needing bytecode enhancement to
+ * support transactions. The two most common transaction are REQUIRED and
+ * SUPPORTS. A REQUIRED method expects to modify the data and wants to ensure
+ * the update is consistent. A SUPPORTS method will only read data, so it can
+ * avoid the overhead of a transaction.
+ * <p>
+ * A transaction is the database equivalent of a synchronized lock. Transactions
+ * are somewhat more complicated locks because they need to work with multiple
+ * machines and possibly multiple databases, but they're still just
+ * sophisticated locks. The typical transaction patterns are similar to familiar
+ * lock patterns.
  * <ul>
- * <li> A REQUIRED attribute tells Resin that the method must be protected by a transaction. In this case, the swap needs protection from simultaneous threads trying to swap at the same time.
- * <li> A SUPPORTS attribute would tell Resin that the method doesn't need a transaction, but the method should join any transaction that already exists.
+ * <li>A REQUIRED attribute tells Resin that the method must be protected by a
+ * transaction. In this case, the swap needs protection from simultaneous
+ * threads trying to swap at the same time.
+ * <li>A SUPPORTS attribute would tell Resin that the method doesn't need a
+ * transaction, but the method should join any transaction that already exists.
  * </ul>
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class TransactionInterceptor implements ResourceMethodInterceptor {
 
-    public static final String UTX_NAME = System.getProperty("org.nuxeo.UserTransactionName", "UserTransaction");
+    public static final String UTX_NAME = System.getProperty(
+            "org.nuxeo.UserTransactionName", "UserTransaction");
 
     private static final Log log = LogFactory.getLog(TransactionInterceptor.class);
 
@@ -73,7 +83,7 @@ public class TransactionInterceptor implements ResourceMethodInterceptor {
      * When a tx requires a new transaction, a new tx is started.
      */
     public Response invoke(ResourceMethodContext ctx) throws Failure,
-    ApplicationException, WebApplicationException {
+            ApplicationException, WebApplicationException {
         Object target = ctx.getTarget();
         if (!txDisabled && target instanceof Resource) {
             Method m = ctx.getMethod().getMethod();
