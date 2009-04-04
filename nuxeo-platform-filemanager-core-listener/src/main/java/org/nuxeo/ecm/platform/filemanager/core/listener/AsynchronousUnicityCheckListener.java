@@ -42,16 +42,16 @@ public class AsynchronousUnicityCheckListener extends AbstractUnicityChecker imp
 
 
     public void handleEvent(EventBundle events) throws ClientException {
-
         if (!isUnicityCheckEnabled()) {
             return;
         }
 
-        if (events.containsEventName(DocumentEventTypes.DOCUMENT_CREATED) || events.containsEventName(DocumentEventTypes.DOCUMENT_UPDATED)) {
-
+        if (events.containsEventName(DocumentEventTypes.DOCUMENT_CREATED)
+                || events.containsEventName(DocumentEventTypes.DOCUMENT_UPDATED)) {
             List<String> uuids = new ArrayList<String>();
             for (Event event : events) {
-                if (DocumentEventTypes.DOCUMENT_CREATED.equals(event.getName()) || DocumentEventTypes.DOCUMENT_UPDATED.equals(event.getName())) {
+                if (DocumentEventTypes.DOCUMENT_CREATED.equals(event.getName())
+                        || DocumentEventTypes.DOCUMENT_UPDATED.equals(event.getName())) {
                     EventContext ctx = event.getContext();
                     if (ctx instanceof DocumentEventContext) {
                         DocumentEventContext docCtx = (DocumentEventContext) ctx;
@@ -67,11 +67,8 @@ public class AsynchronousUnicityCheckListener extends AbstractUnicityChecker imp
                     }
                 }
             }
-
         }
-
     }
-
 
     @Override
     protected void onDuplicatedDoc(CoreSession session, Principal principal,

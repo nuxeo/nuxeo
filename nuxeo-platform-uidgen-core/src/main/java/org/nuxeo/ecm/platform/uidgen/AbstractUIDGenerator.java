@@ -78,10 +78,6 @@ public abstract class AbstractUIDGenerator implements UIDGenerator {
 
     /**
      * Checks if the property with the given name is defined and is not null.
-     *
-     * @param propName
-     * @return
-     * @throws DocumentException
      */
     protected final boolean isPropValueDefined(String propName,
             DocumentModel document) {

@@ -43,41 +43,38 @@ import org.nuxeo.runtime.api.Framework;
 
 public abstract class AbstractUnicityChecker {
 
+    private static final Log log = LogFactory.getLog(AbstractUnicityChecker.class);
+
     protected FileManager fileManager;
 
     protected static Boolean unicityCheckEnabled = null;
 
     protected static final String DUPLICATED_FILE = "duplicatedFile";
 
-
-    private static final Log log = LogFactory.getLog(AbstractUnicityChecker.class);
-
-    protected void doUnicityCheck(DocumentModel doc2Check, CoreSession session, Event event) {
+    protected void doUnicityCheck(DocumentModel doc2Check, CoreSession session,
+            Event event) {
 
         List<String> xpathFields = null;
 
         try {
             xpathFields = getFileManagerService().getFields();
-        }
-        catch (ClientException e) {
+        } catch (ClientException e) {
             log.error("Error while getting xpaths config from FileManager", e);
             return;
         }
 
-        if (xpathFields==null || xpathFields.size()==0) {
-            unicityCheckEnabled=false;
+        if (xpathFields == null || xpathFields.size() == 0) {
+            unicityCheckEnabled = false;
             log.info("Unicity check has been automatically disabled");
             return;
         }
 
-        Blob blob =null;
+        Blob blob = null;
 
         for (String field : xpathFields) {
-
             try {
                 blob = (Blob) doc2Check.getPropertyValue(field);
-            }
-            catch (PropertyNotFoundException pnfe) {
+            } catch (PropertyNotFoundException pnfe) {
                 continue;
             } catch (ClientException e) {
                 log.error("Error while getting property", e);
@@ -85,21 +82,18 @@ public abstract class AbstractUnicityChecker {
             }
 
             String digest = blob.getDigest();
-            if (digest==null) {
+            if (digest == null) {
                 log.debug("Blob has no disgest, can not check for unicity");
                 continue;
             }
 
-
-            List<DocumentLocation> existingDocuments=null;
-
+            List<DocumentLocation> existingDocuments = null;
             try {
-            existingDocuments = fileManager.findExistingDocumentWithFile(
-                    session, doc2Check.getPathAsString(), digest,
-                    session.getPrincipal());
-            }
-            catch (Exception e) {
-                log.error("Error in FileManager unicity check execution",e);
+                existingDocuments = fileManager.findExistingDocumentWithFile(
+                        session, doc2Check.getPathAsString(), digest,
+                        session.getPrincipal());
+            } catch (Exception e) {
+                log.error("Error in FileManager unicity check execution", e);
                 continue;
             }
 
@@ -113,16 +107,15 @@ public abstract class AbstractUnicityChecker {
                 log.debug("Existing Documents[" + existingDocuments.size()
                         + "]");
 
-                onDuplicatedDoc(session, session.getPrincipal(), doc2Check, existingDocuments, event);
-        }
-
-
+                onDuplicatedDoc(session, session.getPrincipal(), doc2Check,
+                        existingDocuments, event);
+            }
         }
     }
 
-
-    protected abstract void onDuplicatedDoc(CoreSession session, Principal principal, DocumentModel newDoc, List<DocumentLocation> existingDocs, Event event);
-
+    protected abstract void onDuplicatedDoc(CoreSession session,
+            Principal principal, DocumentModel newDoc,
+            List<DocumentLocation> existingDocs, Event event);
 
     protected void raiseDuplicatedFileEvent(CoreSession session, Principal principal,
             DocumentModel newDoc, List<DocumentLocation> existingDocs) {
@@ -135,7 +128,6 @@ public abstract class AbstractUnicityChecker {
         props.put("duplicatedDocLocation", (Serializable) existingDocs);
 
         Event event = ctx.newEvent(DUPLICATED_FILE);
-
         try {
             EventProducer producer = Framework.getService(EventProducer.class);
             producer.fireEvent(event);
@@ -145,7 +137,7 @@ public abstract class AbstractUnicityChecker {
     }
 
     protected boolean isUnicityCheckEnabled(){
-        if (unicityCheckEnabled==null) {
+        if (unicityCheckEnabled == null) {
             try {
                 unicityCheckEnabled = getFileManagerService().isUnicityEnabled();
             } catch (ClientException e) {
@@ -167,4 +159,5 @@ public abstract class AbstractUnicityChecker {
         }
         return fileManager;
     }
+
 }

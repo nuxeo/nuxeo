@@ -64,12 +64,9 @@ public class DocVersioningEventListener implements EventListener {
             DocumentEventContext docCtx = (DocumentEventContext) ctx;
             doProcess(event.getName(),docCtx);
         }
-
     }
 
-
     protected void doProcess(String eventId, DocumentEventContext docCtx) {
-
         DocumentModel doc = docCtx.getSourceDocument();
         Map<String, Serializable> options = docCtx.getProperties();
 
@@ -99,12 +96,9 @@ public class DocVersioningEventListener implements EventListener {
             VersionChangeRequest req;
 
             if (LifeCycleEventTypes.LIFECYCLE_TRANSITION_EVENT.equals(eventId)) {
-
                 // XXX Used to check the workflow rules, do we need
                 // version changes on lifecycle change?
-
                 return;
-
             } else if (eventId.equals(DOCUMENT_CREATED) && !doc.isProxy()) {
                 // set major version at 1
                 try {
@@ -128,8 +122,6 @@ public class DocVersioningEventListener implements EventListener {
                     log.debug("Skip document versions auto-incrementation. "
                             + "Should be incremented by user selection.");
                 } catch (VersioningException e) {
-                    log.error(e);
-                } catch (ClientException e) {
                     log.error(e);
                 }
 
@@ -183,11 +175,8 @@ public class DocVersioningEventListener implements EventListener {
             } catch (ClientException e) {
                 log.error("Error incrementing versions for: " + doc, e);
             }
-
         }
-
     }
-
 
     /**
      * Doesn't return null. If the service is not available, an exception is
@@ -243,14 +232,9 @@ public class DocVersioningEventListener implements EventListener {
      * Determine for the given doc if there are multiple increment option. The
      * user will select one in this case and the automatic increment shouldn't
      * be performed.
-     *
-     * @param doc
-     * @return
-     * @throws VersioningException
-     * @throws ClientException
      */
     private static boolean isIncOptionUserSelected(DocumentModel doc)
-            throws VersioningException, ClientException {
+            throws VersioningException {
 
         final String logPrefix = "<isIncOptionUserSelected> ";
 
@@ -263,9 +247,7 @@ public class DocVersioningEventListener implements EventListener {
         }
         final String documentType = doc.getType();
 
-        log
-                .debug(logPrefix + "currentLifeCycleState: "
-                        + currentLifeCycleState);
+        log.debug(logPrefix + "currentLifeCycleState: " + currentLifeCycleState);
 
         if (currentLifeCycleState != null) {
             log.debug(logPrefix

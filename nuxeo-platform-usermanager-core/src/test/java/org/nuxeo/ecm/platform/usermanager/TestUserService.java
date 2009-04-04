@@ -46,7 +46,7 @@ public class TestUserService extends NXRuntimeTestCase {
         userManager = Framework.getService(UserManager.class);
     }
 
-    public void testGetUserManagerFromFramework() throws Exception {
+    public void testGetUserManagerFromFramework() {
         assertNotNull(userManager);
     }
 
@@ -73,6 +73,7 @@ public class TestUserService extends NXRuntimeTestCase {
         assertEquals("members", fum.groupMembersField);
         assertEquals("subg", fum.groupSubGroupsField);
         assertEquals("parentg", fum.groupParentGroupsField);
+
         // anonymous user
         Map<String, String> props = new HashMap<String, String>();
         props.put("first", "Anonymous");
@@ -153,4 +154,5 @@ public class TestUserService extends NXRuntimeTestCase {
         assertFalse(fum.validatePassword("aZE1RTY2"));
         assertTrue(fum.validatePassword("aZ1eR2tY3"));
     }
+
 }

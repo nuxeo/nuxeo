@@ -129,7 +129,7 @@ public class DigestComputer implements EventListener {
         EventContext ctx = event.getContext();
         if (ctx instanceof DocumentEventContext) {
             DocumentEventContext docCtx = (DocumentEventContext) ctx;
-                DocumentModel doc = (DocumentModel) docCtx.getSourceDocument();
+                DocumentModel doc = docCtx.getSourceDocument();
                 if (doc.isProxy()) {
                     return;
                 }

@@ -219,7 +219,6 @@ public class UIDGeneratorService extends DefaultComponent {
      *
      * @param doc
      * @throws DocumentException
-     * @throws NamingException
      */
     public void setUID(DocumentModel doc) throws DocumentException {
         final UIDGenerator generator = getUIDGeneratorFor(doc);

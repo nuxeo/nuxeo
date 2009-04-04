@@ -60,6 +60,7 @@ public class EventMessageImpl implements EventMessage {
     public EventMessageImpl() {
     }
 
+    @SuppressWarnings("unchecked")
     public EventMessageImpl(CoreEvent coreEvent) {
         eventId = coreEvent.getEventId();
         eventDate = coreEvent.getDate();

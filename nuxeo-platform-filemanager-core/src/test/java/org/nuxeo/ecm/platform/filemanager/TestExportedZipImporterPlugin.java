@@ -17,7 +17,6 @@ package org.nuxeo.ecm.platform.filemanager;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
 import org.nuxeo.ecm.core.api.Blob;
@@ -120,7 +119,7 @@ public class TestExportedZipImporterPlugin extends RepositoryOSGITestCase {
         destWS = ws2;
     }
 
-    public void testArchiveDetection() throws ZipException, IOException {
+    public void testArchiveDetection() throws IOException {
         ZipFile archive = ExportedZipImporter.getArchiveFileIfValid(getArchiveFile());
         assertNotNull(archive);
         archive.close();

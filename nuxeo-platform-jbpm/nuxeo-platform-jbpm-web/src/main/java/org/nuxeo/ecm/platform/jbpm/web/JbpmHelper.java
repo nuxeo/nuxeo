@@ -30,7 +30,6 @@ import org.jboss.seam.annotations.Scope;
 import org.jbpm.graph.exe.ProcessInstance;
 import org.jbpm.taskmgmt.exe.PooledActor;
 import org.jbpm.taskmgmt.exe.TaskInstance;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -47,7 +46,7 @@ import org.nuxeo.runtime.api.Framework;
 @Scope(ScopeType.STATELESS)
 public class JbpmHelper {
 
-    private transient JbpmService jbpmService;
+    private JbpmService jbpmService;
 
     public JbpmService getJbpmService() throws Exception {
         if (jbpmService == null) {
@@ -89,8 +88,7 @@ public class JbpmHelper {
     }
 
     @SuppressWarnings("unchecked")
-    public boolean isTaskAssignedToUser(TaskInstance task, NuxeoPrincipal user)
-            throws ClientException {
+    public boolean isTaskAssignedToUser(TaskInstance task, NuxeoPrincipal user) {
         if (task != null && user != null) {
             // user actors
             List<String> actors = new ArrayList<String>();

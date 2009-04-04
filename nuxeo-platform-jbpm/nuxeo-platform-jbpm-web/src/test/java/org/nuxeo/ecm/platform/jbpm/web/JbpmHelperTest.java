@@ -21,7 +21,6 @@ import java.util.Arrays;
 import junit.framework.TestCase;
 
 import org.jbpm.taskmgmt.exe.TaskInstance;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
@@ -32,7 +31,7 @@ import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 public class JbpmHelperTest extends TestCase {
     private JbpmHelper helper = new JbpmHelper();
 
-    public void testIsAssignedToUser() throws ClientException {
+    public void testIsAssignedToUser() {
         TaskInstance ti = new TaskInstance();
         UserPrincipal principal = new UserPrincipal("linnet", Arrays.asList(new String[]{"g1", "g2"}));
         ti.setActorId(NuxeoPrincipal.PREFIX + "linnet");

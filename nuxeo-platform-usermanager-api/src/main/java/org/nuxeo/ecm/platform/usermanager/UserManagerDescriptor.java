@@ -25,8 +25,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
@@ -35,8 +33,6 @@ import org.nuxeo.ecm.platform.usermanager.UserManager.MatchType;
 
 @XObject(value = "userManager")
 public class UserManagerDescriptor implements Serializable {
-
-    private static final Log log = LogFactory.getLog(UserManagerDescriptor.class);
 
     private static final long serialVersionUID = 1L;
 
@@ -73,8 +69,7 @@ public class UserManagerDescriptor implements Serializable {
     protected boolean userSearchFieldsPresent = false;
 
     @XNode("users/searchFields")
-    protected void setUserSearchFieldsPresent(@SuppressWarnings("unused")
-    String text) {
+    protected void setUserSearchFieldsPresent(@SuppressWarnings("unused") String text) {
         userSearchFieldsPresent = true;
     }
 
@@ -89,7 +84,6 @@ public class UserManagerDescriptor implements Serializable {
             userSearchFields.put(field, MatchType.EXACT);
         }
     }
-
 
     @XNodeList(value = "users/searchFields/substringMatchSearchField", componentType = String.class, type = String[].class)
     protected void setSubstringMatchUserSearchFields(String[] fields) {

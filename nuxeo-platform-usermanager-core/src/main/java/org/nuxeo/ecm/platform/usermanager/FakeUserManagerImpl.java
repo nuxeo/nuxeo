@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.platform.usermanager;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -42,7 +41,6 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 public class FakeUserManagerImpl implements UserManager {
 
     String userListingMode;
-
     String groupListingMode;
 
     String rootLogin;
@@ -50,7 +48,6 @@ public class FakeUserManagerImpl implements UserManager {
     String defaultGroup;
 
     String userSortField;
-
     String groupSortField;
 
     String userDirectoryName;
@@ -74,7 +71,6 @@ public class FakeUserManagerImpl implements UserManager {
     Map<String, VirtualUserDescriptor> virtualUsers;
 
     public FakeUserManagerImpl() {
-        super();
         virtualUsers = new HashMap<String, VirtualUserDescriptor>();
     }
 

@@ -499,7 +499,7 @@ public class UserManagerImpl implements UserManager {
     }
 
     protected boolean isAnonymousMatching(Map<String, Object> filter,
-            Set<String> fulltext) throws DirectoryException {
+            Set<String> fulltext) {
         String anonymousUserId = getAnonymousUserId();
         if (anonymousUserId == null) {
             return false;
@@ -573,7 +573,7 @@ public class UserManagerImpl implements UserManager {
         return userSortField;
     }
 
-    protected Map<String, String> getUserSortMap() throws DirectoryException {
+    protected Map<String, String> getUserSortMap() {
         String sortField = userSortField != null ? userSortField : userIdField;
         Map<String, String> orderBy = new HashMap<String, String>();
         orderBy.put(sortField, DocumentModelComparator.ORDER_ASC);

@@ -25,11 +25,11 @@ package org.nuxeo.ecm.platform.filemanager;
 public class TestConstants {
 
     public static final String FILEMANAGER_BUNDLE = "org.nuxeo.ecm.platform.filemanager.core";
-
     public static final String FILEMANAGER_TEST_BUNDLE = "org.nuxeo.ecm.platform.filemanager.core.tests";
-
     public static final String MIMETYPE_BUNDLE = "org.nuxeo.ecm.platform.mimetype.core";
-
     public static final String TYPESERVICE_BUNDLE = "org.nuxeo.ecm.platform.types.core";
+
+    private TestConstants() {
+    }
 
 }

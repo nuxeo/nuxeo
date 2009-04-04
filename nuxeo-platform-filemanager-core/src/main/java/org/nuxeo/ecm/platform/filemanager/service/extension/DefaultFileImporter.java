@@ -25,35 +25,28 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.VersionModel;
-import org.nuxeo.ecm.core.api.facet.VersioningDocument;
-import org.nuxeo.ecm.core.api.impl.VersionModelImpl;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.filemanager.api.FileManagerPermissionException;
 import org.nuxeo.ecm.platform.filemanager.utils.FileManagerUtils;
 import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.types.TypeManager;
-import org.nuxeo.ecm.platform.versioning.api.VersioningActions;
 
 /**
  * @author Anahide Tchertchian
- *
  */
 public class DefaultFileImporter extends AbstractFileImporter {
+
+    public static final String TYPE_NAME = "File";
 
     private static final long serialVersionUID = 1L;
 
     private static final Log log = LogFactory.getLog(DefaultFileImporter.class);
-
-    public static final String TYPE_NAME = "File";
 
     public String getTypeName() {
         return TYPE_NAME;

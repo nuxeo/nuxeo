@@ -29,7 +29,6 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.ArrayUtils;
 import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentName;
@@ -38,7 +37,6 @@ import org.nuxeo.runtime.model.Extension;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class ActionService extends DefaultComponent implements ActionManager {
 

@@ -29,8 +29,6 @@ import javax.ejb.Local;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -48,8 +46,6 @@ import org.nuxeo.runtime.api.Framework;
 @Remote(UserManager.class)
 @Local(UserManagerLocal.class)
 public class UserManagerBean implements UserManager {
-
-    private static final Log log = LogFactory.getLog(UserManagerBean.class);
 
     private UserManager userManager;
 

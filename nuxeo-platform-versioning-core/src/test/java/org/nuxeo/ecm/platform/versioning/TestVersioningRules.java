@@ -19,8 +19,6 @@
 
 package org.nuxeo.ecm.platform.versioning;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -42,8 +40,6 @@ import org.nuxeo.ecm.platform.versioning.service.VersioningService;
  * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
  */
 public class TestVersioningRules extends VersioningBaseTestCase {
-
-    private static final Log log = LogFactory.getLog(TestVersioningRules.class);
 
     private long getMajorVersion(DocumentModel doc) throws Exception {
         VersioningService service = getVersioningService();
@@ -133,31 +129,22 @@ public class TestVersioningRules extends VersioningBaseTestCase {
                 VersionChangeRequest.RequestSource.AUTO, doc);
 
         final VersioningService service = getVersioningService();
-
         checkVersion(doc, null, null);
 
         service.incrementVersions(req);
-
         checkVersion(doc, 0L, 1L);
 
         doc.followTransition("review");
-
         service.incrementVersions(req);
-
         checkVersion(doc, 0L, 2L);
 
         doc.followTransition("back_to_project");
-
         service.incrementVersions(req);
-
         checkVersion(doc, 0L, 3L);
 
         doc.followTransition("review");
-
         doc.followTransition("approve");
-
         service.incrementVersions(req);
-
         checkVersion(doc, 1L, 0L);
     }
 
@@ -179,15 +166,12 @@ public class TestVersioningRules extends VersioningBaseTestCase {
 
         DocumentRef docRef = new IdRef(verfile.getUUID());
         DocumentModel doc = coreSession.getDocument(docRef);
-
         assertEquals("project", doc.getCurrentLifeCycleState());
 
         doc.followTransition("review");
-
         assertEquals("review", doc.getCurrentLifeCycleState());
 
         doc.followTransition("approve");
-
         assertEquals("approved", doc.getCurrentLifeCycleState());
 
         VersionChangeRequest req = new BasicImplVersionChangeRequest(
@@ -195,9 +179,8 @@ public class TestVersioningRules extends VersioningBaseTestCase {
                 VersioningActions.ACTION_INCREMENT_MAJOR);
 
         final VersioningService service = getVersioningService();
-
         service.incrementVersions(req);
-
         assertEquals("project", doc.getCurrentLifeCycleState());
     }
+
 }

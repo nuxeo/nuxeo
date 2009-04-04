@@ -51,8 +51,7 @@ public class DublinCoreListener implements EventListener {
      * <p>
      * Gets core events and updates DublinCore if needed.
      *
-     * @param coreEvent
-     *            event fired at core layer
+     * @param event event fired at core layer
      */
     public void handleEvent(Event event) throws ClientException {
 
