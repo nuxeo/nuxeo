@@ -1,5 +1,5 @@
-/*  WysiHat - WYSIWYG JavaScript framework, version 0.1
- *  (c) 2008 Joshua Peek
+/*  WysiHat - WYSIWYG JavaScript framework, version 0.2
+ *  (c) 2008-2009 Joshua Peek
  *
  *  WysiHat is freely distributable under the terms of an MIT-style license.
  *--------------------------------------------------------------------------*/
@@ -25,47 +25,9 @@ WysiHat.Editor = {
       Event.observe(window, 'focus', function(event) { editArea.focus(); });
       Event.observe(window, 'blur', function(event) { editArea.blur(); });
 
-
-      Event.observe(document, 'mouseup', function(event) {
-        editArea.fire("wysihat:mouseup");
-      });
-
-      Event.observe(document, 'mousemove', function(event) {
-        editArea.fire("wysihat:mousemove");
-      });
-
-      Event.observe(document, 'keypress', function(event) {
-        editArea.fire("wysihat:change");
-        editArea.fire("wysihat:keypress");
-      });
-
-      Event.observe(document, 'keyup', function(event) {
-        editArea.fire("wysihat:change");
-        editArea.fire("wysihat:keyup");
-      });
-
-      Event.observe(document, 'keydown', function(event) {
-        if (event.keyCode == 86)
-          editArea.fire("wysihat:paste");
-      });
-
-      Event.observe(window, 'paste', function(event) {
-        editArea.fire("wysihat:paste");
-      });
-
-      fun = function (event) {
-        var rg = editArea.selection.getRange();
-        if (editArea.lastRange != rg) {
-          editArea.fire("wysihat:cursormove");
-          editArea.lastRange = rg;
-        }
-      }
-      editArea.observe("wysihat:change", fun);
-      editArea.observe("wysihat:mouseup", fun);
-      editArea.observe("wysihat:mousemove", fun);
+      editArea._observeEvents();
 
       if (Prototype.Browser.Gecko) {
-        editArea.execCommand('inserthtml', false, '-');
         editArea.execCommand('undo', false, null);
       }
 
@@ -74,63 +36,88 @@ WysiHat.Editor = {
 
       editArea.focus();
     });
+  },
+
+  include: function(module) {
+    this.includedModules = this.includedModules || $A([]);
+    this.includedModules.push(module);
+  },
+
+  extend: function(object) {
+    var modules = this.includedModules || $A([]);
+    modules.each(function(module) {
+      Object.extend(object, module);
+    });
   }
 };
 
-WysiHat.Commands = {
-  boldSelection: function() {
+WysiHat.Commands = (function() {
+  function boldSelection() {
     this.execCommand('bold', false, null);
-  },
+  }
 
-  boldSelected: function() {
+  function boldSelected() {
     return this.queryCommandState('bold');
-  },
+  }
 
-  underlineSelection: function() {
+  function underlineSelection() {
     this.execCommand('underline', false, null);
-  },
+  }
 
-  underlineSelected: function() {
+  function underlineSelected() {
     return this.queryCommandState('underline');
-  },
+  }
 
-  italicSelection: function() {
+  function italicSelection() {
     this.execCommand('italic', false, null);
-  },
+  }
 
-  italicSelected: function() {
+  function italicSelected() {
     return this.queryCommandState('italic');
-  },
+  }
 
-  strikethroughSelection: function() {
+  function strikethroughSelection() {
     this.execCommand('strikethrough', false, null);
-  },
+  }
 
-  blockquoteSelection: function() {
+  function blockquoteSelection() {
     this.execCommand('blockquote', false, null);
-  },
+  }
 
-  colorSelection: function(color) {
+  function colorSelection(color) {
     this.execCommand('forecolor', false, color);
-  },
+  }
 
-  linkSelection: function(url) {
+  function linkSelection(url) {
     this.execCommand('createLink', false, url);
-  },
+  }
 
-  insertOrderedList: function() {
+  function unlinkSelection() {
+    var node = this.selection.getNode();
+    if (this.linkSelected())
+      this.selection.selectNode(node);
+
+    this.execCommand('unlink', false, null);
+  }
+
+  function linkSelected() {
+    var node = this.selection.getNode();
+    return node ? node.tagName.toUpperCase() == 'A' : false;
+  }
+
+  function insertOrderedList() {
     this.execCommand('insertorderedlist', false, null);
-  },
+  }
 
-  insertUnorderedList: function() {
+  function insertUnorderedList() {
     this.execCommand('insertunorderedlist', false, null);
-  },
+  }
 
-  insertImage: function(url) {
+  function insertImage(url) {
     this.execCommand('insertImage', false, url);
-  },
+  }
 
-  insertHTML: function(html) {
+  function insertHTML(html) {
     if (Prototype.Browser.IE) {
       var range = this._selection.getRange();
       range.pasteHTML(html);
@@ -139,18 +126,156 @@ WysiHat.Commands = {
     } else {
       this.execCommand('insertHTML', false, html);
     }
-  },
-
-  execCommand: function(command, ui, value) {
-    var document = this.getDocument();
-    document.execCommand(command, ui, value);
-  },
-
-  queryCommandState: function(state) {
-    var document = this.getDocument();
-    return document.queryCommandState(state);
   }
-};
+
+  function execCommand(command, ui, value) {
+    var document = this.getDocument();
+
+    var handler = this.commands.get(command)
+    if (handler)
+      handler.bind(this)(value);
+    else
+      document.execCommand(command, ui, value);
+  }
+
+  function queryCommandState(state) {
+    var document = this.getDocument();
+
+    var handler = this.queryCommands.get(state)
+    if (handler)
+      return handler.bind(this)();
+    else
+      return document.queryCommandState(state);
+  }
+
+  return {
+    boldSelection:          boldSelection,
+    boldSelected:           boldSelected,
+    underlineSelection:     underlineSelection,
+    underlineSelected:      underlineSelected,
+    italicSelection:        italicSelection,
+    italicSelected:         italicSelected,
+    strikethroughSelection: strikethroughSelection,
+    blockquoteSelection:    blockquoteSelection,
+    colorSelection:         colorSelection,
+    linkSelection:          linkSelection,
+    unlinkSelection:        unlinkSelection,
+    linkSelected:           linkSelected,
+    insertOrderedList:      insertOrderedList,
+    insertUnorderedList:    insertUnorderedList,
+    insertImage:            insertImage,
+    insertHTML:             insertHTML,
+    execCommand:            execCommand,
+    queryCommandState:      queryCommandState,
+
+    commands: $H({}),
+
+    queryCommands: $H({
+      link: linkSelected
+    })
+  };
+})();
+
+WysiHat.Editor.include(WysiHat.Commands);
+WysiHat.Events = (function() {
+  var eventsToFoward = [
+    'click',
+    'dblclick',
+    'mousedown',
+    'mouseup',
+    'mouseover',
+    'mousemove',
+    'mouseout',
+    'keypress',
+    'keydown',
+    'keyup'
+  ];
+
+  function forwardEvents(document, editor) {
+    eventsToFoward.each(function(event) {
+      Event.observe(document, event, function(e) {
+        editor.fire('wysihat:' + event);
+      });
+    });
+  }
+
+  function observePasteEvent(window, document, editor) {
+    Event.observe(document, 'keydown', function(event) {
+      if (event.keyCode == 86)
+        editor.fire("wysihat:paste");
+    });
+
+    Event.observe(window, 'paste', function(event) {
+      editor.fire("wysihat:paste");
+    });
+  }
+
+  function observeFocus(window, editor) {
+    Event.observe(window, 'focus', function(event) {
+      editor.fire("wysihat:focus");
+    });
+
+    Event.observe(window, 'blur', function(event) {
+      editor.fire("wysihat:blur");
+    });
+  }
+
+  function observeSelections(document, editor) {
+    Event.observe(document, 'mouseup', function(event) {
+      var range = editor.selection.getRange();
+      if (!range.collapsed)
+        editor.fire("wysihat:select");
+    });
+  }
+
+  function observeChanges(document, editor) {
+    var previousContents = editor.rawContent();
+    Event.observe(document, 'keyup', function(event) {
+      var contents = editor.rawContent();
+      if (previousContents != contents) {
+        editor.fire("wysihat:change");
+        previousContents = contents;
+      }
+    });
+  }
+
+  function observeCursorMovements(document, editor) {
+    var previousRange = editor.selection.getRange();
+    var handler = function(event) {
+      var range = editor.selection.getRange();
+      if (previousRange != range) {
+        editor.fire("wysihat:cursormove");
+        editor.previousRange = range;
+      }
+    };
+
+    Event.observe(document, 'keyup', handler);
+    Event.observe(document, 'mouseup', handler);
+  }
+
+  function observeEvents() {
+    if (this._observers_setup)
+      return;
+
+    var document = this.getDocument();
+    var window = this.getWindow();
+
+    forwardEvents(document, this);
+    observePasteEvent(window, document, this);
+    observeFocus(window, this);
+    observeSelections(document, this);
+    observeChanges(document, this);
+    observeCursorMovements(document, this);
+
+    this._observers_setup = true;
+  }
+
+  return {
+    _observeEvents: observeEvents
+  };
+})();
+
+WysiHat.Editor.include(WysiHat.Events);
 WysiHat.Persistence = (function() {
   function outputFilter(text) {
     return text.formatHTMLOutput();
@@ -172,8 +297,8 @@ WysiHat.Persistence = (function() {
     this.textarea.value = this.content();
   }
 
-   function load() {
-     this.setContent(this.textarea.value);
+  function load() {
+    this.setContent(this.textarea.value);
   }
 
   function reload() {
@@ -193,6 +318,8 @@ WysiHat.Persistence = (function() {
     reload:       reload
   };
 })();
+
+WysiHat.Editor.include(WysiHat.Persistence);
 WysiHat.Window = (function() {
   function getDocument() {
     return this.contentDocument || this.contentWindow.document;
@@ -228,18 +355,15 @@ WysiHat.Window = (function() {
   };
 })();
 
+WysiHat.Editor.include(WysiHat.Window);
 WysiHat.iFrame = {
   create: function(textarea, callback) {
     var editArea = new Element('iframe', { 'id': textarea.id + '_editor', 'class': 'editor' });
 
-    Object.extend(editArea, WysiHat.Commands);
-    Object.extend(editArea, WysiHat.Persistence);
-    Object.extend(editArea, WysiHat.Window);
     Object.extend(editArea, WysiHat.iFrame.Methods);
-    Object.extend(editArea, WysiHat.Actions.Methods);
+    WysiHat.Editor.extend(editArea);
 
     editArea.attach(textarea, callback);
-
     textarea.insert({before: editArea});
 
     return editArea;
@@ -264,7 +388,18 @@ WysiHat.iFrame.Methods = {
       document.designMode = 'on';
       callback(this);
       this.ready = true;
+      this.fire('wysihat:ready');
     });
+  },
+
+  whenReady: function(callback) {
+    if (this.ready) {
+      callback(this);
+    } else {
+      var editor = this;
+      editor.observe('wysihat:ready', function() { callback(editor); });
+    }
+    return this;
   },
 
   setStyle: function(styles) {
@@ -296,7 +431,11 @@ WysiHat.iFrame.Methods = {
 
   rawContent: function() {
     var document = this.getDocument();
-    return document.body.innerHTML;
+
+    if (document.body)
+      return document.body.innerHTML;
+    else
+      return "";
   },
 
   setRawContent: function(text) {
@@ -314,9 +453,7 @@ WysiHat.Editable = {
     });
     editArea.textarea = textarea;
 
-    Object.extend(editArea, WysiHat.Commands);
-    Object.extend(editArea, WysiHat.Persistence);
-    Object.extend(editArea, WysiHat.Window);
+    WysiHat.Editor.extend(editArea);
     Object.extend(editArea, WysiHat.Editable.Methods);
 
     callback(editArea);
@@ -572,8 +709,9 @@ Element.addMethods({
   }
 });
 
-if (Prototype.Browser.IE) {
-  function Range(ownerDocument) {
+
+if (typeof Range == 'undefined') {
+  Range = function(ownerDocument) {
     this.ownerDocument = ownerDocument;
 
     this.startContainer = this.ownerDocument.documentElement;
@@ -582,7 +720,9 @@ if (Prototype.Browser.IE) {
     this.endOffset      = 0;
 
     this.collapsed = true;
-    this.commonAncestorContainer = null;
+    this.commonAncestorContainer = this._commonAncestorContainer(this.startContainer, this.endContainer);
+
+    this.detached = false;
 
     this.START_TO_START = 0;
     this.START_TO_END   = 1;
@@ -590,49 +730,903 @@ if (Prototype.Browser.IE) {
     this.END_TO_START   = 3;
   }
 
-  document.createRange = function() {
-    return new Range(this);
+  Range.CLONE_CONTENTS   = 0;
+  Range.DELETE_CONTENTS  = 1;
+  Range.EXTRACT_CONTENTS = 2;
+
+  if (!document.createRange) {
+    document.createRange = function() {
+      return new Range(this);
+    };
+  }
+
+  Object.extend(Range.prototype, (function() {
+    function cloneContents() {
+      return _processContents(this, Range.CLONE_CONTENTS);
+    }
+
+    function cloneRange() {
+      try {
+        var clone = new Range(this.ownerDocument);
+        clone.startContainer          = this.startContainer;
+        clone.startOffset             = this.startOffset;
+        clone.endContainer            = this.endContainer;
+        clone.endOffset               = this.endOffset;
+        clone.collapsed               = this.collapsed;
+        clone.commonAncestorContainer = this.commonAncestorContainer;
+        clone.detached                = this.detached;
+
+        return clone;
+
+      } catch (e) {
+        return null;
+      };
+    }
+
+    function collapse(toStart) {
+      if (toStart) {
+        this.endContainer = this.startContainer;
+        this.endOffset    = this.startOffset;
+        this.collapsed    = true;
+      } else {
+        this.startContainer = this.endContainer;
+        this.startOffset    = this.endOffset;
+        this.collapsed      = true;
+      }
+    }
+
+    function compareBoundaryPoints(compareHow, sourceRange) {
+      try {
+        var cmnSelf, cmnSource, rootSelf, rootSource;
+
+        cmnSelf   = this.commonAncestorContainer;
+        cmnSource = sourceRange.commonAncestorContainer;
+
+        rootSelf = cmnSelf;
+        while (rootSelf.parentNode) {
+          rootSelf = rootSelf.parentNode;
+        }
+
+        rootSource = cmnSource;
+        while (rootSource.parentNode) {
+          rootSource = rootSource.parentNode;
+        }
+
+        switch (compareHow) {
+          case this.START_TO_START:
+            return _compareBoundaryPoints(this, this.startContainer, this.startOffset, sourceRange.startContainer, sourceRange.startOffset);
+            break;
+          case this.START_TO_END:
+            return _compareBoundaryPoints(this, this.startContainer, this.startOffset, sourceRange.endContainer, sourceRange.endOffset);
+            break;
+          case this.END_TO_END:
+            return _compareBoundaryPoints(this, this.endContainer, this.endOffset, sourceRange.endContainer, sourceRange.endOffset);
+            break;
+          case this.END_TO_START:
+            return _compareBoundaryPoints(this, this.endContainer, this.endOffset, sourceRange.startContainer, sourceRange.startOffset);
+            break;
+        }
+      } catch (e) {};
+
+      return null;
+    }
+
+    function deleteContents() {
+      try {
+        _processContents(this, Range.DELETE_CONTENTS);
+      } catch (e) {}
+    }
+
+    function detach() {
+      this.detached = true;
+    }
+
+    function extractContents() {
+      try {
+        return _processContents(this, Range.EXTRACT_CONTENTS);
+      } catch (e) {
+        return null;
+      };
+    }
+
+    function insertNode(newNode) {
+      try {
+        var n, newText, offset;
+
+        switch (this.startContainer.nodeType) {
+          case Node.CDATA_SECTION_NODE:
+          case Node.TEXT_NODE:
+            newText = this.startContainer.splitText(this.startOffset);
+            this.startContainer.parentNode.insertBefore(newNode, newText);
+            break;
+          default:
+            if (this.startContainer.childNodes.length == 0) {
+              offset = null;
+            } else {
+              offset = this.startContainer.childNodes(this.startOffset);
+            }
+            this.startContainer.insertBefore(newNode, offset);
+        }
+      } catch (e) {}
+    }
+
+    function selectNode(refNode) {
+      this.setStartBefore(refNode);
+      this.setEndAfter(refNode);
+    }
+
+    function selectNodeContents(refNode) {
+      this.setStart(refNode, 0);
+      this.setEnd(refNode, refNode.childNodes.length);
+    }
+
+    function setStart(refNode, offset) {
+      try {
+        var endRootContainer, startRootContainer;
+
+        this.startContainer = refNode;
+        this.startOffset    = offset;
+
+        endRootContainer = this.endContainer;
+        while (endRootContainer.parentNode) {
+          endRootContainer = endRootContainer.parentNode;
+        }
+        startRootContainer = this.startContainer;
+        while (startRootContainer.parentNode) {
+          startRootContainer = startRootContainer.parentNode;
+        }
+        if (startRootContainer != endRootContainer) {
+          this.collapse(true);
+        } else {
+          if (_compareBoundaryPoints(this, this.startContainer, this.startOffset, this.endContainer, this.endOffset) > 0) {
+            this.collapse(true);
+          }
+        }
+
+        this.collapsed = _isCollapsed(this);
+
+        this.commonAncestorContainer = _commonAncestorContainer(this.startContainer, this.endContainer);
+      } catch (e) {}
+    }
+
+    function setStartAfter(refNode) {
+      this.setStart(refNode.parentNode, _nodeIndex(refNode) + 1);
+    }
+
+    function setStartBefore(refNode) {
+      this.setStart(refNode.parentNode, _nodeIndex(refNode));
+    }
+
+    function setEnd(refNode, offset) {
+      try {
+        this.endContainer = refNode;
+        this.endOffset    = offset;
+
+        endRootContainer = this.endContainer;
+        while (endRootContainer.parentNode) {
+          endRootContainer = endRootContainer.parentNode;
+        }
+        startRootContainer = this.startContainer;
+        while (startRootContainer.parentNode) {
+          startRootContainer = startRootContainer.parentNode;
+        }
+        if (startRootContainer != endRootContainer) {
+          this.collapse(false);
+        } else {
+          if (_compareBoundaryPoints(this, this.startContainer, this.startOffset, this.endContainer, this.endOffset) > 0) {
+            this.collapse(false);
+          }
+        }
+
+        this.collapsed = _isCollapsed(this);
+
+        this.commonAncestorContainer = _commonAncestorContainer(this.startContainer, this.endContainer);
+
+      } catch (e) {}
+    }
+
+    function setEndAfter(refNode) {
+      this.setEnd(refNode.parentNode, _nodeIndex(refNode) + 1);
+    }
+
+    function setEndBefore(refNode) {
+      this.setEnd(refNode.parentNode, _nodeIndex(refNode));
+    }
+
+    function surroundContents(newParent) {
+      try {
+        var n, fragment;
+
+        while (newParent.firstChild) {
+          newParent.removeChild(newParent.firstChild);
+        }
+
+        fragment = this.extractContents();
+        this.insertNode(newParent);
+        newParent.appendChild(fragment);
+        this.selectNode(newParent);
+      } catch (e) {}
+    }
+
+    function _compareBoundaryPoints(range, containerA, offsetA, containerB, offsetB) {
+      var c, offsetC, n, cmnRoot, childA;
+      if (containerA == containerB) {
+        if (offsetA == offsetB) {
+          return 0; // equal
+        } else if (offsetA < offsetB) {
+          return -1; // before
+        } else {
+          return 1; // after
+        }
+      }
+
+      c = containerB;
+      while (c && c.parentNode != containerA) {
+        c = c.parentNode;
+      }
+      if (c) {
+        offsetC = 0;
+        n = containerA.firstChild;
+        while (n != c && offsetC < offsetA) {
+          offsetC++;
+          n = n.nextSibling;
+        }
+        if (offsetA <= offsetC) {
+          return -1; // before
+        } else {
+          return 1; // after
+        }
+      }
+
+      c = containerA;
+      while (c && c.parentNode != containerB) {
+        c = c.parentNode;
+      }
+      if (c) {
+        offsetC = 0;
+        n = containerB.firstChild;
+        while (n != c && offsetC < offsetB) {
+          offsetC++;
+          n = n.nextSibling;
+        }
+        if (offsetC < offsetB) {
+          return -1; // before
+        } else {
+          return 1; // after
+        }
+      }
+
+      cmnRoot = range._commonAncestorContainer(containerA, containerB);
+      childA = containerA;
+      while (childA && childA.parentNode != cmnRoot) {
+        childA = childA.parentNode;
+      }
+      if (!childA) {
+        childA = cmnRoot;
+      }
+      childB = containerB;
+      while (childB && childB.parentNode != cmnRoot) {
+        childB = childB.parentNode;
+      }
+      if (!childB) {
+        childB = cmnRoot;
+      }
+
+      if (childA == childB) {
+        return 0; // equal
+      }
+
+      n = cmnRoot.firstChild;
+      while (n) {
+        if (n == childA) {
+          return -1; // before
+        }
+        if (n == childB) {
+          return 1; // after
+        }
+        n = n.nextSibling;
+      }
+
+      return null;
+    }
+
+    function _commonAncestorContainer(containerA, containerB) {
+      var parentStart = containerA, parentEnd;
+      while (parentStart) {
+        parentEnd = containerB;
+        while (parentEnd && parentStart != parentEnd) {
+          parentEnd = parentEnd.parentNode;
+        }
+        if (parentStart == parentEnd) {
+          break;
+        }
+        parentStart = parentStart.parentNode;
+      }
+
+      if (!parentStart && containerA.ownerDocument) {
+        return containerA.ownerDocument.documentElement;
+      }
+
+      return parentStart;
+    }
+
+    function _isCollapsed(range) {
+      return (range.startContainer == range.endContainer && range.startOffset == range.endOffset);
+    }
+
+    function _offsetInCharacters(node) {
+      switch (node.nodeType) {
+        case Node.CDATA_SECTION_NODE:
+        case Node.COMMENT_NODE:
+        case Node.ELEMENT_NODE:
+        case Node.PROCESSING_INSTRUCTION_NODE:
+          return true;
+        default:
+          return false;
+      }
+    }
+
+    function _processContents(range, action) {
+      try {
+
+        var cmnRoot, partialStart = null, partialEnd = null, fragment, n, c, i;
+        var leftContents, leftParent, leftContentsParent;
+        var rightContents, rightParent, rightContentsParent;
+        var next, prev;
+        var processStart, processEnd;
+        if (range.collapsed) {
+          return null;
+        }
+
+        cmnRoot = range.commonAncestorContainer;
+
+        if (range.startContainer != cmnRoot) {
+          partialStart = range.startContainer;
+          while (partialStart.parentNode != cmnRoot) {
+            partialStart = partialStart.parentNode;
+          }
+        }
+
+        if (range.endContainer != cmnRoot) {
+          partialEnd = range.endContainer;
+          while (partialEnd.parentNode != cmnRoot) {
+            partialEnd = partialEnd.parentNode;
+          }
+        }
+
+        if (action == Range.EXTRACT_CONTENTS || action == Range.CLONE_CONTENTS) {
+          fragment = range.ownerDocument.createDocumentFragment();
+        }
+
+        if (range.startContainer == range.endContainer) {
+          switch (range.startContainer.nodeType) {
+            case Node.CDATA_SECTION_NODE:
+            case Node.COMMENT_NODE:
+            case Node.TEXT_NODE:
+              if (action == Range.EXTRACT_CONTENTS || action == Range.CLONE_CONTENTS) {
+                c = range.startContainer.cloneNode();
+                c.deleteData(range.endOffset, range.startContainer.data.length - range.endOffset);
+                c.deleteData(0, range.startOffset);
+                fragment.appendChild(c);
+              }
+              if (action == Range.EXTRACT_CONTENTS || action == Range.DELETE_CONTENTS) {
+                range.startContainer.deleteData(range.startOffset, range.endOffset - range.startOffset);
+              }
+              break;
+            case Node.PROCESSING_INSTRUCTION_NODE:
+              break;
+            default:
+              n = range.startContainer.firstChild;
+              for (i = 0; i < range.startOffset; i++) {
+                n = n.nextSibling;
+              }
+              while (n && i < range.endOffset) {
+                next = n.nextSibling;
+                if (action == Range.EXTRACT_CONTENTS) {
+                  fragment.appendChild(n);
+                } else if (action == Range.CLONE_CONTENTS) {
+                  fragment.appendChild(n.cloneNode());
+                } else {
+                  range.startContainer.removeChild(n);
+                }
+                n = next;
+                i++;
+              }
+          }
+          range.collapse(true);
+          return fragment;
+        }
+
+
+        if (range.startContainer != cmnRoot) {
+          switch (range.startContainer.nodeType) {
+            case Node.CDATA_SECTION_NODE:
+            case Node.COMMENT_NODE:
+            case Node.TEXT_NODE:
+              if (action == Range.EXTRACT_CONTENTS || action == Range.CLONE_CONTENTS) {
+                c = range.startContainer.cloneNode(true);
+                c.deleteData(0, range.startOffset);
+                leftContents = c;
+              }
+              if (action == Range.EXTRACT_CONTENTS || action == Range.DELETE_CONTENTS) {
+                range.startContainer.deleteData(range.startOffset, range.startContainer.data.length - range.startOffset);
+              }
+              break;
+            case Node.PROCESSING_INSTRUCTION_NODE:
+              break;
+            default:
+              if (action == Range.EXTRACT_CONTENTS || action == Range.CLONE_CONTENTS) {
+                leftContents = range.startContainer.cloneNode(false);
+              }
+              n = range.startContainer.firstChild;
+              for (i = 0; i < range.startOffset; i++) {
+                n = n.nextSibling;
+              }
+              while (n && i < range.endOffset) {
+                next = n.nextSibling;
+                if (action == Range.EXTRACT_CONTENTS) {
+                  fragment.appendChild(n);
+                } else if (action == Range.CLONE_CONTENTS) {
+                  fragment.appendChild(n.cloneNode());
+                } else {
+                  range.startContainer.removeChild(n);
+                }
+                n = next;
+                i++;
+              }
+          }
+
+          leftParent = range.startContainer.parentNode;
+          n = range.startContainer.nextSibling;
+          for(; leftParent != cmnRoot; leftParent = leftParent.parentNode) {
+            if (action == Range.EXTRACT_CONTENTS || action == Range.CLONE_CONTENTS) {
+              leftContentsParent = leftParent.cloneNode(false);
+              leftContentsParent.appendChild(leftContents);
+              leftContents = leftContentsParent;
+            }
+
+            for (; n; n = next) {
+              next = n.nextSibling;
+              if (action == Range.EXTRACT_CONTENTS) {
+                leftContents.appendChild(n);
+              } else if (action == Range.CLONE_CONTENTS) {
+                leftContents.appendChild(n.cloneNode(true));
+              } else {
+                leftParent.removeChild(n);
+              }
+            }
+            n = leftParent.nextSibling;
+          }
+        }
+
+        if (range.endContainer != cmnRoot) {
+          switch (range.endContainer.nodeType) {
+            case Node.CDATA_SECTION_NODE:
+            case Node.COMMENT_NODE:
+            case Node.TEXT_NODE:
+              if (action == Range.EXTRACT_CONTENTS || action == Range.CLONE_CONTENTS) {
+                c = range.endContainer.cloneNode(true);
+                c.deleteData(range.endOffset, range.endContainer.data.length - range.endOffset);
+                rightContents = c;
+              }
+              if (action == Range.EXTRACT_CONTENTS || action == Range.DELETE_CONTENTS) {
+                range.endContainer.deleteData(0, range.endOffset);
+              }
+              break;
+            case Node.PROCESSING_INSTRUCTION_NODE:
+              break;
+            default:
+              if (action == Range.EXTRACT_CONTENTS || action == Range.CLONE_CONTENTS) {
+                rightContents = range.endContainer.cloneNode(false);
+              }
+              n = range.endContainer.firstChild;
+              if (n && range.endOffset) {
+                for (i = 0; i+1 < range.endOffset; i++) {
+                  next = n.nextSibling;
+                  if (!next) {
+                    break;
+                  }
+                  n = next;
+                }
+                for (; n; n = prev) {
+                  prev = n.previousSibling;
+                  if (action == Range.EXTRACT_CONTENTS) {
+                    rightContents.insertBefore(n, rightContents.firstChild);
+                  } else if (action == Range.CLONE_CONTENTS) {
+                    rightContents.insertBefore(n.cloneNode(True), rightContents.firstChild);
+                  } else {
+                    range.endContainer.removeChild(n);
+                  }
+                }
+              }
+          }
+
+          rightParent = range.endContainer.parentNode;
+          n = range.endContainer.previousSibling;
+          for(; rightParent != cmnRoot; rightParent = rightParent.parentNode) {
+            if (action == Range.EXTRACT_CONTENTS || action == Range.CLONE_CONTENTS) {
+              rightContentsParent = rightContents.cloneNode(false);
+              rightContentsParent.appendChild(rightContents);
+              rightContents = rightContentsParent;
+            }
+
+            for (; n; n = prev) {
+              prev = n.previousSibling;
+              if (action == Range.EXTRACT_CONTENTS) {
+                rightContents.insertBefore(n, rightContents.firstChild);
+              } else if (action == Range.CLONE_CONTENTS) {
+                rightContents.appendChild(n.cloneNode(true), rightContents.firstChild);
+              } else {
+                rightParent.removeChild(n);
+              }
+            }
+            n = rightParent.previousSibling;
+          }
+        }
+
+        if (range.startContainer == cmnRoot) {
+          processStart = range.startContainer.firstChild;
+          for (i = 0; i < range.startOffset; i++) {
+            processStart = processStart.nextSibling;
+          }
+        } else {
+          processStart = range.startContainer;
+          while (processStart.parentNode != cmnRoot) {
+            processStart = processStart.parentNode;
+          }
+          processStart = processStart.nextSibling;
+        }
+        if (range.endContainer == cmnRoot) {
+          processEnd = range.endContainer.firstChild;
+          for (i = 0; i < range.endOffset; i++) {
+            processEnd = processEnd.nextSibling;
+          }
+        } else {
+          processEnd = range.endContainer;
+          while (processEnd.parentNode != cmnRoot) {
+            processEnd = processEnd.parentNode;
+          }
+        }
+
+        if ((action == Range.EXTRACT_CONTENTS || action == Range.CLONE_CONTENTS) && leftContents) {
+          fragment.appendChild(leftContents);
+        }
+
+        if (processStart) {
+          for (n = processStart; n && n != processEnd; n = next) {
+            next = n.nextSibling;
+            if (action == Range.EXTRACT_CONTENTS) {
+              fragment.appendChild(n);
+            } else if (action == Range.CLONE_CONTENTS) {
+              fragment.appendChild(n.cloneNode(true));
+            } else {
+              cmnRoot.removeChild(n);
+            }
+          }
+        }
+
+        if ((action == Range.EXTRACT_CONTENTS || action == Range.CLONE_CONTENTS) && rightContents) {
+          fragment.appendChild(rightContents);
+        }
+
+        if (action == Range.EXTRACT_CONTENTS || action == Range.DELETE_CONTENTS) {
+          if (!partialStart && !partialEnd) {
+            range.collapse(true);
+          } else if (partialStart) {
+            range.startContainer = partialStart.parentNode;
+            range.endContainer = partialStart.parentNode;
+            range.startOffset = range.endOffset = range._nodeIndex(partialStart) + 1;
+          } else if (partialEnd) {
+            range.startContainer = partialEnd.parentNode;
+            range.endContainer = partialEnd.parentNode;
+            range.startOffset = range.endOffset = range._nodeIndex(partialEnd);
+          }
+        }
+
+        return fragment;
+
+      } catch (e) {
+        return null;
+      };
+    }
+
+    function _nodeIndex(refNode) {
+      var nodeIndex = 0;
+      while (refNode.previousSibling) {
+        nodeIndex++;
+        refNode = refNode.previousSibling;
+      }
+      return nodeIndex;
+    }
+
+    return {
+      setStart:       setStart,
+      setEnd:         setEnd,
+      setStartBefore: setStartBefore,
+      setStartAfter:  setStartAfter,
+      setEndBefore:   setEndBefore,
+      setEndAfter:    setEndAfter,
+
+      collapse: collapse,
+
+      selectNode:         selectNode,
+      selectNodeContents: selectNodeContents,
+
+      compareBoundaryPoints: compareBoundaryPoints,
+
+      deleteContents:  deleteContents,
+      extractContents: extractContents,
+      cloneContents:   cloneContents,
+
+      insertNode:       insertNode,
+      surroundContents: surroundContents,
+
+      cloneRange: cloneRange,
+      toString:   toString,
+      detach:     detach,
+
+      _commonAncestorContainer: _commonAncestorContainer
+    };
+  })());
+}
+
+if (!window.getSelection) {
+  window.getSelection = function() {
+    return Selection.getInstance();
   };
 
-  Object.extend(Range.prototype, {
-    setStart: function(parent, offset) {},
-    setEnd: function(parent, offset) {},
-    setStartBefore: function(node) {},
-    setStartAfter: function(node) {},
-    setEndBefore: function(node) {},
-    setEndAfter: function(node) {},
+  SelectionImpl = function() {
+    this.anchorNode = null;
+    this.anchorOffset = 0;
+    this.focusNode = null;
+    this.focusOffset = 0;
+    this.isCollapsed = true;
+    this.rangeCount = 0;
+    this.ranges = [];
+  }
 
-    collapse: function(toStart) {},
+  Object.extend(SelectionImpl.prototype, (function() {
+    function addRange(r) {
+      return true;
+    }
 
-    selectNode: function(n) {},
-    selectNodeContents: function(n) {},
+    function collapse() {
+      return true;
+    }
 
-    compareBoundaryPoints: function(how, sourceRange) {},
+    function collapseToStart() {
+      return true;
+    }
 
-    deleteContents: function() {},
-    extractContents: function() {},
-    cloneContents: function() {},
+    function collapseToEnd() {
+      return true;
+    }
 
-    insertNode: function(n) {
-      var range = this.ownerDocument.selection.createRange();
-      var parent = this.ownerDocument.createElement('div');
-      parent.appendChild(n);
-      range.collapse();
-      range.pasteHTML(parent.innerHTML);
-    },
-    surroundContents: function(newParent) {
-      var range = this.ownerDocument.selection.createRange();
-      var parent = this.document.createElement('div');
-      parent.appendChild(newParent);
-      node.innerHTML += range.htmlText;
-      range.pasteHTML(parent.innerHTML);
-    },
+    function getRangeAt() {
+      return true;
+    }
 
-    cloneRange: function() {},
-    toString: function() {},
-    detach: function() {}
-  });
+    function removeAllRanges() {
+      this.anchorNode = null;
+      this.anchorOffset = 0;
+      this.focusNode = null;
+      this.focusOffset = 0;
+      this.isCollapsed = true;
+      this.rangeCount = 0;
+      this.ranges = [];
+    }
+
+    function _addRange(r) {
+      if (r.startContainer.nodeType != Node.TEXT_NODE) {
+        var start = this._getRightStart(r.startContainer);
+        var startOffset = 0;
+      } else {
+        var start = r.startContainer;
+        var startOffset = r.startOffset;
+      }
+      if (r.endContainer.nodeType != Node.TEXT_NODE) {
+        var end = this._getRightEnd(r.endContainer);
+        var endOffset = end.data.length;
+      } else {
+        var end = r.endContainer;
+        var endOffset = r.endOffset;
+      }
+
+      var rStart = this._selectStart(start, startOffset);
+      var rEnd   = this._selectEnd(end,endOffset);
+      rStart.setEndPoint('EndToStart', rEnd);
+      rStart.select();
+      document.selection._selectedRange = r;
+    }
+
+    function _getRightStart(start, offset) {
+      if (start.nodeType != Node.TEXT_NODE) {
+        if (start.nodeType == Node.ELEMENT_NODE) {
+          start = start.childNodes(offset);
+        }
+        return getNextTextNode(start);
+      } else {
+        return null;
+      }
+    }
+
+    function _getRightEnd(end, offset) {
+      if (end.nodeType != Node.TEXT_NODE) {
+        if (end.nodeType == Node.ELEMENT_NODE) {
+          end = end.childNodes(offset);
+        }
+        return getPreviousTextNode(end);
+      } else {
+        return null;
+      }
+    }
+
+    function _selectStart(start, offset) {
+      var r = document.body.createTextRange();
+      if (start.nodeType == Node.TEXT_NODE) {
+        var moveCharacters = offset, node = start;
+        var moveToNode = null, collapse = true;
+        while (node.previousSibling) {
+          switch (node.previousSibling.nodeType) {
+            case Node.ELEMENT_NODE:
+              moveToNode = node.previousSibling;
+              collapse = false;
+              break;
+            case Node.TEXT_NODE:
+              moveCharacters += node.previousSibling.data.length;
+          }
+          if (moveToNode != null) {
+            break;
+          }
+          node = node.previousSibling;
+        }
+        if (moveToNode == null) {
+          moveToNode = start.parentNode;
+        }
+
+        r.moveToElementText(moveToNode);
+        r.collapse(collapse);
+        r.move('Character', moveCharacters);
+        return r;
+      } else {
+        return null;
+      }
+    }
+
+    function _selectEnd(end, offset) {
+      var r = document.body.createTextRange(), node = end;
+      if (end.nodeType == 3) {
+        var moveCharacters = end.data.length - offset;
+        var moveToNode = null, collapse = false;
+        while (node.nextSibling) {
+          switch (node.nextSibling.nodeType) {
+            case Node.ELEMENT_NODE:
+              moveToNode = node.nextSibling;
+              collapse   = true;
+              break;
+            case Node.TEXT_NODE:
+              moveCharacters += node.nextSibling.data.length;
+              break;
+          }
+          if (moveToNode != null) {
+            break;
+          }
+          node = node.nextSibling;
+        }
+        if (moveToNode == null) {
+          moveToNode = end.parentNode;
+          collapse   = false;
+        }
+
+        switch (moveToNode.nodeName.toLowerCase()) {
+          case 'p':
+          case 'div':
+          case 'h1':
+          case 'h2':
+          case 'h3':
+          case 'h4':
+          case 'h5':
+          case 'h6':
+            moveCharacters++;
+        }
+
+        r.moveToElementText(moveToNode);
+        r.collapse(collapse);
+
+        r.move('Character', -moveCharacters);
+        return r;
+      }
+
+      return null;
+    }
+
+    function getPreviousTextNode(node) {
+      var stack = [];
+      var current = null;
+      while (node) {
+        stack = [];
+        current = node;
+        while (current) {
+          while (current) {
+          if (current.nodeType == 3 && current.data.replace(/^\s+|\s+$/, '').length) {
+            return current;
+          }
+          if (current.previousSibling) {
+            stack.push (current.previousSibling);
+          }
+          current = current.lastChild;
+        }
+        current = stack.pop();
+        }
+        node = node.previousSibling;
+      }
+      return null;
+    }
+
+    function getNextTextNode(node) {
+      var stack = [];
+      var current = null;
+      while (node) {
+        stack = [];
+        current = node;
+        while (current) {
+          while (current) {
+            if (current.nodeType == 3 && current.data.replace(/^\s+|\s+$/, '').length) {
+                return current;
+            }
+            if (current.nextSibling) {
+                stack.push (current.nextSibling);
+            }
+            current = current.firstChild;
+          }
+          current = stack.pop();
+        }
+        node = node.nextSibling;
+      }
+      return null;
+    }
+
+    return {
+      removeAllRanges: removeAllRanges,
+
+      _addRange: _addRange,
+      _getRightStart: _getRightStart,
+      _getRightEnd: _getRightEnd,
+      _selectStart: _selectStart,
+      _selectEnd: _selectEnd
+    };
+  })());
+
+  Selection = new function() {
+    var instance = null;
+    this.getInstance = function() {
+      if (instance == null) {
+        return (instance = new SelectionImpl());
+      } else {
+        return instance;
+      }
+    };
+  };
 }
+
+Object.extend(Range.prototype, (function() {
+  function getNode() {
+    var node = this.commonAncestorContainer;
+
+    if (this.startContainer == this.endContainer)
+      if (this.startOffset - this.endOffset < 2)
+        node = this.startContainer.childNodes[this.startOffset];
+
+    while (node.nodeType == Node.TEXT_NODE)
+      node = node.parentNode;
+
+    return node;
+  }
+
+  return {
+    getNode: getNode
+  };
+})());
 WysiHat.Selection = Class.create((function() {
   function initialize(editor) {
     this.window = editor.getWindow();
@@ -768,12 +1762,17 @@ WysiHat.Selection = Class.create((function() {
     bookmark.id = 'bookmark';
     bookmark.innerHTML = '&nbsp;';
 
-    var range;
-    if (Prototype.Browser.IE)
-      range = new Range(this.document);
-    else
-      range = this.getRange();
-    range.insertNode(bookmark);
+    if (Prototype.Browser.IE) {
+      var range = this.document.selection.createRange();
+      var parent = this.document.createElement('div');
+      parent.appendChild(bookmark);
+      range.collapse();
+      range.pasteHTML(parent.innerHTML);
+    }
+    else {
+      var range = this.getRange();
+      range.insertNode(bookmark);
+    }
   }
 
   function moveToBookmark() {
@@ -807,163 +1806,118 @@ WysiHat.Selection = Class.create((function() {
     moveToBookmark: moveToBookmark
   };
 })());
-
-WysiHat.Actions = {}
-
-WysiHat.Actions.Methods = {
-  registerAction: function (action) {
-    /* Validate the action -- it should have a name and a handler function. */
-    if (!Object.isString(action.name)) {
-      throw new Error("Action name not a string");
-    }
-    if (!Object.isFunction(action.handler)) {
-      throw new Error("Action handler not a function");
-    }
-
-    /* A hash, keyed on action names, of actions registered to this editor. */
-    this.actions = this.actions || $H();
-
-    /* A hash, keyed on action name, of the current state of each action,
-     * based on the cursor location within the editor. */
-    this.states = this.states || $H();
-
-    this.actions[action.name] = action;
-    this.states[action.name] = null;
-
-    /* Subscribe this action's query function to the cursormove event. */
-    var editor = this;
-    if (Object.isFunction(action.query)) {
-      editor.observe(
-        'wysihat:cursormove',
-        function (event) {
-          var result = action.query(editor);
-          if (result == editor.states[action.name]) { return; }
-          editor.states[action.name] = result;
-          this.fire(
-            "wysihat:state:"+action.name,
-            {action: action, state: result}
-          );
-        }
-      );
-    }
-
-    return this;
-  },
-
-  invokeAction: function (name) {
-    var result = null;
-    if (action = this.actions[name]) {
-      data = $A(arguments).clone();
-      data.shift();
-      data.unshift(this);
-      result = action.handler.apply(action, data);
-      this.fire("wysihat:change");
-      this.focus();
-    }
-    return result;
-  }
-}
-
-WysiHat.Actions.Bold = {
-  name: 'bold',
-  handler: function (editor) { return editor.boldSelection(); },
-  query: function (editor) { return editor.boldSelected(); }
-};
-
-WysiHat.Actions.Underline = {
-  name: 'underline',
-  handler: function (editor) { return editor.underlineSelection(); },
-  query: function (editor) { return editor.underlineSelected(); }
-};
-
-WysiHat.Actions.Italic = {
-  name: 'italic',
-  handler: function (editor) { return editor.italicSelection(); },
-  query: function (editor) { return editor.italicSelected(); }
-};
 WysiHat.Toolbar = Class.create((function() {
-  function initialize(editArea, options) {
-    options = $H(options);
-
-    this.editArea = editArea;
-
-    this.element = new Element('div', { 'class': 'editor_toolbar' });
-
-    insertToolbar(this, options);
-
-    var buttonSet = options.get('buttonSet');
-    if (buttonSet)
-      this.addButtonSet(buttonSet);
+  function initialize(editor) {
+    this.editor = editor;
+    this.element = this.createToolbarElement();
   }
 
-  function insertToolbar(toolbar, options) {
-    var position = options.get('position') || 'before';
-    var container = options.get('container') || toolbar.editArea;
-
-    var insertOptions = $H({});
-    insertOptions.set(position, toolbar.element);
-    $(container).insert(insertOptions.toObject());
+  function createToolbarElement() {
+    var toolbar = new Element('div', { 'class': 'editor_toolbar' });
+    this.editor.insert({before: toolbar});
+    return toolbar;
   }
 
   function addButtonSet(set) {
     var toolbar = this;
-    $A(set).each(function(buttonSpec){
-      toolbar.addButton(buttonSpec);
+    $A(set).each(function(button){
+      toolbar.addButton(button);
     });
-
-    return this;
   }
 
-  function addButton(buttonSpec) {
-    this.editArea.registerAction(buttonSpec.action);
-    var button = this.buildButtonElement(buttonSpec);
-    this.element.appendChild(button);
-    return this;
+  function addButton(options, handler) {
+    options = $H(options);
+
+    if (!options.get('name'))
+      options.set('name', options.get('label').toLowerCase());
+    var name = options.get('name');
+
+    var button = this.createButtonElement(this.element, options);
+
+    var handler = this.buttonHandler(name, options);
+    this.observeButtonClick(button, handler);
+
+    var handler = this.buttonStateHandler(name, options);
+    this.observeStateChanges(button, name, handler)
   }
 
-  function buildButtonElement(buttonSpec) {
+  function createButtonElement(toolbar, options) {
+    var button = Element('a', {
+      'class': 'button', 'href': '#'
+    });
+    button.update('<span>' + options.get('label') + '</span>');
+    button.addClassName(options.get('name'));
+
+    toolbar.appendChild(button);
+
+    return button;
+  }
+
+  function buttonHandler(name, options) {
+    if (options.handler)
+      return options.handler;
+    else if (options.get('handler'))
+      return options.get('handler');
+    else
+      return function(editor) { editor.execCommand(name); };
+  }
+
+  function observeButtonClick(element, handler) {
     var toolbar = this;
+    element.observe('click', function(event) {
+      handler(toolbar.editor);
+      toolbar.editor.fire("wysihat:change");
+      toolbar.editor.fire("wysihat:cursormove");
+      Event.stop(event);
+    });
+  }
 
-    var btn = Element(
-      'a', 
-      {"class": "button button" + buttonSpec.label, "href": "#"}
-    );
-    btn.update('<span>' + buttonSpec.label + '</span>');
+  function buttonStateHandler(name, options) {
+    if (options.query)
+      return options.query;
+    else if (options.get('query'))
+      return options.get('query');
+    else
+      return function(editor) { return editor.queryCommandState(name); };
+  }
 
-    btn.observe(
-      'click', 
-      function (event) { 
-        toolbar.editArea.invokeAction(buttonSpec.action.name);
-        Event.stop(event);
+  function observeStateChanges(element, name, handler) {
+    var toolbar = this;
+    var previousState = false;
+    toolbar.editor.observe("wysihat:cursormove", function(event) {
+      var state = handler(toolbar.editor);
+      if (state != previousState) {
+        previousState = state;
+        toolbar.updateButtonState(element, name, state);
       }
-    );
+    });
+  }
 
-    toolbar.editArea.observe(
-      'wysihat:state:'+buttonSpec.action.name,
-      function (event) {
-        if (event.memo.state) {
-          btn.addClassName('selected');
-        } else {
-          btn.removeClassName('selected');
-        }
-      }
-    );
-
-    return btn;
+  function updateButtonState(element, name, state) {
+    if (state)
+      element.addClassName('selected');
+    else
+      element.removeClassName('selected');
   }
 
   return {
-    initialize:          initialize,
-    addButtonSet:        addButtonSet,
-    addButton:           addButton,
-    buildButtonElement:  buildButtonElement
+    initialize:           initialize,
+    createToolbarElement: createToolbarElement,
+    addButtonSet:         addButtonSet,
+    addButton:            addButton,
+    createButtonElement:  createButtonElement,
+    buttonHandler:        buttonHandler,
+    observeButtonClick:   observeButtonClick,
+    buttonStateHandler:   buttonStateHandler,
+    observeStateChanges:  observeStateChanges,
+    updateButtonState:    updateButtonState
   };
 })());
 
 WysiHat.Toolbar.ButtonSets = {};
 
 WysiHat.Toolbar.ButtonSets.Basic = $A([
-  { label: 'Bold', action: WysiHat.Actions.Bold },
-  { label: 'Underline', action: WysiHat.Actions.Underline },
-  { label: 'Italic', action: WysiHat.Actions.Italic }
+  { label: "Bold" },
+  { label: "Underline" },
+  { label: "Italic" }
 ]);
