@@ -33,10 +33,10 @@ import org.pdfbox.util.PDFTextStripper;
 
 public abstract class BaseConverterTest extends NXRuntimeTestCase {
 
-    public BaseConverterTest() {
+    BaseConverterTest() {
     }
 
-    public BaseConverterTest(String name) {
+    BaseConverterTest(String name) {
         super(name);
     }
 

@@ -30,8 +30,6 @@ import javax.ejb.Local;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.directory.Directory;
@@ -54,16 +52,13 @@ import org.nuxeo.runtime.api.Framework;
 @Local(DirectoryManager.class)
 public class DirectoryManagerBean implements DirectoryManager {
 
-    @SuppressWarnings("unused")
-    private static final Log log = LogFactory.getLog(DirectoryManagerBean.class);
-
     private static final Map<Long, Session> sessionMap = new ConcurrentHashMap<Long, Session>();
 
     private static final Map<Long, String> sessionDirectoryNames = new ConcurrentHashMap<Long, String>();
 
     private static final AtomicLong sessionIdCounter = new AtomicLong(0);
 
-    private transient DirectoryService directoryService;
+    private DirectoryService directoryService;
 
     @PostConstruct
     public void initialize() {

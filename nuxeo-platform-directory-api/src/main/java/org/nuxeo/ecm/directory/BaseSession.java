@@ -22,7 +22,6 @@ package org.nuxeo.ecm.directory;
 import java.util.Collections;
 import java.util.Map;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DataModelImpl;
@@ -31,11 +30,10 @@ import org.nuxeo.ecm.core.api.model.PropertyException;
 
 /**
  * Base session class with helper methods common to all kinds of directory
- * sessions
+ * sessions.
  *
  * @since 5.2M4
  * @author Anahide Tchertchian
- *
  */
 public abstract class BaseSession implements Session {
 
@@ -45,7 +43,6 @@ public abstract class BaseSession implements Session {
      * Can be used for creation screen
      *
      * @since 5.2M4
-     * @throws ClientException
      */
     public static DocumentModel createEntryModel(String sessionId,
             String schema, String id, Map<String, Object> values)

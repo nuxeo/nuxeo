@@ -29,7 +29,8 @@ public class TestConstants {
     public static final String MIMETYPE_BUNDLE = "org.nuxeo.ecm.platform.mimetype.core";
     public static final String TYPESERVICE_BUNDLE = "org.nuxeo.ecm.platform.types.core";
 
-    private TestConstants() {
-    }
+    // Disabled because it troubles surefire.
+    //private TestConstants() {
+    //}
 
 }

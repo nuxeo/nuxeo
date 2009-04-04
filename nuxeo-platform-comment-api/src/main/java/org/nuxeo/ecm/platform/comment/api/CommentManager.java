@@ -67,8 +67,9 @@ public interface CommentManager {
             throws ClientException;
 
     /**
-     * Gets documents in relation with a particular comment
-     * @param docModel the comment
+     * Gets documents in relation with a particular comment.
+     *
+     * @param comment the comment
      * @return the list of documents
      * @throws ClientException
      */
@@ -77,7 +78,8 @@ public interface CommentManager {
 
     /**
      * Creates a comment document model. It gives opportunity to save the comments in a
-     * specified location
+     * specified location.
+     *
      * @param docModel the document to comment
      * @param comment the comment content
      * @param path the location path

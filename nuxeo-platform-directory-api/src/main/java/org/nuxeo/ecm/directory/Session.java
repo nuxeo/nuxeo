@@ -325,7 +325,7 @@ public interface Session {
      * @return The new entry created in the directory
      * @throws UnsupportedOperationException if the directory does not allow the
      *             creation of new entries
-     * @throws DirectoryException if a communication exception occurs or if an
+     * @throws ClientException if a communication exception occurs or if an
      *             entry with the same id already exists.
      */
     DocumentModel createEntry(DocumentModel entry) throws ClientException;

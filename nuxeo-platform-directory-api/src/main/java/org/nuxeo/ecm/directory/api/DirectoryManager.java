@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.directory.DirectoryException;
@@ -274,6 +273,7 @@ public interface DirectoryManager extends DirectoryService {
      * @param username
      * @param password
      * @return true is the credentials match those stored in the directory
+     * @throws DirectoryException
      */
     boolean authenticate(long sessionId, String username, String password)
             throws DirectoryException;
@@ -284,12 +284,14 @@ public interface DirectoryManager extends DirectoryService {
      * login field if the directory is authenticating.
      *
      * @return the name of the id field
+     * @throws DirectoryException
      */
     String getIdField(long sessionId) throws DirectoryException;
 
     /**
      * @return the name of the field to store the password if the directory is
      *         authenticating (can be null)
+     * @throws DirectoryException
      */
     String getPasswordField(long sessionId) throws DirectoryException;
 
@@ -299,7 +301,7 @@ public interface DirectoryManager extends DirectoryService {
      * Returns true if session has an entry with given id.
      *
      * @since 5.2M4
-     * @throws ClientException
+     * @throws DirectoryException
      */
     boolean hasEntry(long sessionId, String id) throws DirectoryException;
 
