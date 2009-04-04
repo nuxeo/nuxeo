@@ -27,10 +27,6 @@ public class PersistentProviderPerUser extends PersistentProvider {
 
     private static final Log log = LogFactory.getLog(PersistentProviderPerUser.class);
 
-    public PersistentProviderPerUser() {
-        super();
-    }
-
     @Override
     public synchronized Widget createWidget(String widgetTypeName)
             throws ProviderException {
@@ -68,6 +64,7 @@ public class PersistentProviderPerUser extends PersistentProvider {
     /*
      * Security
      */
+    @Override
     public boolean canRead() {
         if (currentNuxeoPrincipal == null) {
             log.warn("Could not get the current user from the context.");
@@ -76,6 +73,7 @@ public class PersistentProviderPerUser extends PersistentProvider {
         return !((NuxeoPrincipal) currentNuxeoPrincipal).isAnonymous();
     }
 
+    @Override
     public boolean canWrite() {
         if (currentNuxeoPrincipal == null) {
             log.warn("Could not get the current user from the context.");

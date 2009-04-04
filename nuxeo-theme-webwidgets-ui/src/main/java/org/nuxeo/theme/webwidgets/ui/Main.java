@@ -166,12 +166,13 @@ public class Main extends ModuleRoot {
 
     @POST
     @Path("update_widget_preferences")
+    @SuppressWarnings("unchecked")
     public void updateWidgetPreferences() {
         FormData form = ctx.getForm();
         String providerName = form.getString("provider");
         String widgetUid = form.getString("widget_uid");
         String preferences_map = form.getString("preferences");
-        Map<String, String> preferencesMap = (Map<String, String>) JSONObject.fromObject(preferences_map);
+        Map<String, String> preferencesMap = JSONObject.fromObject(preferences_map);
         Editor.updateWidgetPreferences(providerName, widgetUid, preferencesMap);
     }
 

@@ -30,6 +30,10 @@ import freemarker.template.TemplateModel;
  */
 public class Utils {
 
+    // Utility class.
+    private Utils() {
+    }
+
     public static Map<String, String> getTemplateDirectiveParameters(
             Map<String, TemplateModel> params) {
         Map<String, String> attributes = new HashMap<String, String>();

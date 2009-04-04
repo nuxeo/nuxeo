@@ -32,8 +32,10 @@ import org.nuxeo.theme.webwidgets.WidgetData;
 @Entity
 @Table(name = "NXP_WEBWIDGETS_DATA")
 @NamedQueries( {
-        @NamedQuery(name = "Data.findByWidget", query = "FROM DataEntity data WHERE data.widgetUid=:widgetUid"),
-        @NamedQuery(name = "Data.findByWidgetAndName", query = "FROM DataEntity data WHERE data.widgetUid=:widgetUid AND data.dataName=:dataName") })
+        @NamedQuery(name = "Data.findByWidget",
+                query = "FROM DataEntity data WHERE data.widgetUid=:widgetUid"),
+        @NamedQuery(name = "Data.findByWidgetAndName",
+                query = "FROM DataEntity data WHERE data.widgetUid=:widgetUid AND data.dataName=:dataName") })
 public class DataEntity {
 
     protected int id;

@@ -9,7 +9,6 @@ import javax.sql.DataSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.ejb.Ejb3Configuration;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.osgi.framework.FrameworkEvent;
@@ -47,9 +46,6 @@ public class PersistenceConfigurator extends DefaultComponent implements
                 Thread.currentThread().setContextClassLoader(nuxeoCL);
                 log.info("Service initialization");
                 initPersistenceUnit();
-
-            } catch (ClientException e) {
-                log.error("Error during persistence Unit initialization");
             } finally {
                 Thread.currentThread().setContextClassLoader(jbossCL);
                 log.debug("Server ClassLoader restored");
@@ -66,7 +62,7 @@ public class PersistenceConfigurator extends DefaultComponent implements
         return properties;
     }
 
-    protected synchronized void initPersistenceUnit() throws ClientException {
+    protected synchronized void initPersistenceUnit() {
         Ejb3Configuration cfg = new Ejb3Configuration();
         cfg.configure("fake-hibernate.cfg.xml");
         cfg.addProperties(getProperties());

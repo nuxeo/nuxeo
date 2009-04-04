@@ -36,9 +36,6 @@ public class DefaultProvider implements Provider {
 
     private static final String PROVIDER_SESSION_ID = "org.nuxeo.theme.webwidgets.default_provider_session";
 
-    public DefaultProvider() {
-    }
-
     public DefaultProviderSession getDefaultProviderSession() {
         UserSession userSession = WebEngine.getActiveContext().getUserSession();
         DefaultProviderSession session = (DefaultProviderSession) userSession.get(PROVIDER_SESSION_ID);

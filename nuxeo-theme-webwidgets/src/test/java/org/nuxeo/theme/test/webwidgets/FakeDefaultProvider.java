@@ -21,9 +21,7 @@ public class FakeDefaultProvider extends DefaultProvider {
 
     private DefaultProviderSession session = new DefaultProviderSession();
 
-    public FakeDefaultProvider() {
-    }
-
+    @Override
     public DefaultProviderSession getDefaultProviderSession() {
         return session;
     }

@@ -14,8 +14,6 @@
 
 package org.nuxeo.theme.webengine.negotiation.perspective;
 
-import org.nuxeo.ecm.webengine.model.AdapterResource;
-import org.nuxeo.ecm.webengine.model.LinkDescriptor;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.theme.ApplicationType;

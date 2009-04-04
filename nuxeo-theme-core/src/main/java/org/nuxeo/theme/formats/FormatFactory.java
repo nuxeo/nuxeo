@@ -14,8 +14,6 @@
 
 package org.nuxeo.theme.formats;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.themes.ThemeException;
 import org.nuxeo.theme.types.TypeFamily;

@@ -64,7 +64,7 @@ public class PersistentProvider implements Provider {
         reorderWidgets(widgets);
     }
 
-    synchronized public Widget createWidget(String widgetTypeName) throws ProviderException {
+    public synchronized Widget createWidget(String widgetTypeName) throws ProviderException {
         if (widgetTypeName == null) {
             throw new ProviderException("Widget type name is undefined");
         }
@@ -89,8 +89,8 @@ public class PersistentProvider implements Provider {
         return ((WidgetEntity) widget).getState();
     }
 
-    synchronized public Widget getWidgetByUid(String uid) throws ProviderException {
-        Widget widget = (Widget) em.find(WidgetEntity.class, Integer.valueOf(uid));
+    public synchronized Widget getWidgetByUid(String uid) throws ProviderException {
+        Widget widget = em.find(WidgetEntity.class, Integer.valueOf(uid));
         if (widget == null) {
             throw new ProviderException("Widget not found: " + uid);
         }
@@ -98,7 +98,7 @@ public class PersistentProvider implements Provider {
     }
 
     @SuppressWarnings("unchecked")
-    synchronized public List<Widget> getWidgets(String regionName) throws ProviderException {
+    public synchronized List<Widget> getWidgets(String regionName) throws ProviderException {
         if (regionName == null) {
             throw new ProviderException("Region name is undefined.");
         }
@@ -132,7 +132,7 @@ public class PersistentProvider implements Provider {
         reorderWidgets(destWidgets);
     }
 
-    synchronized public void removeWidget(Widget widget) throws ProviderException {
+    public synchronized void removeWidget(Widget widget) throws ProviderException {
         if (widget == null) {
             throw new ProviderException("Widget is undefined");
         }
@@ -191,7 +191,7 @@ public class PersistentProvider implements Provider {
         commit();
     }
 
-    synchronized private void reorderWidgets(List<Widget> widgets) throws ProviderException {
+    private synchronized void reorderWidgets(List<Widget> widgets) {
         int i = 0;
         begin();
         for (Widget w : widgets) {
@@ -202,7 +202,7 @@ public class PersistentProvider implements Provider {
         commit();
     }
 
-    synchronized public WidgetData getWidgetData(Widget widget, String dataName) throws ProviderException {
+    public synchronized WidgetData getWidgetData(Widget widget, String dataName) throws ProviderException {
         if (widget == null) {
             throw new ProviderException("Widget is undefined");
         }
@@ -219,7 +219,7 @@ public class PersistentProvider implements Provider {
         return null;
     }
 
-    synchronized public void setWidgetData(Widget widget, String dataName,
+    public synchronized void setWidgetData(Widget widget, String dataName,
             WidgetData data) throws ProviderException {
         if (widget == null) {
             throw new ProviderException("Widget is undefined");
@@ -241,7 +241,7 @@ public class PersistentProvider implements Provider {
         commit();
     }
 
-    synchronized public void deleteWidgetData(Widget widget)
+    public synchronized void deleteWidgetData(Widget widget)
             throws ProviderException {
         if (widget == null) {
             throw new ProviderException("Widget is undefined");

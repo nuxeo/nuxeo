@@ -25,7 +25,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 @XObject("widget")
 public final class WidgetType {
 
-    public final static String DEFAULT_WIDGET_ICON_PATH = "nxthemes/webwidgets/icons/default-widget.png";
+    public static final String DEFAULT_WIDGET_ICON_PATH = "nxthemes/webwidgets/icons/default-widget.png";
 
     @XNode("@name")
     private String name;
