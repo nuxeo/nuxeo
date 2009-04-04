@@ -21,7 +21,6 @@ package org.nuxeo.ecm.platform.transform.compat;
 
 import java.util.List;
 
-import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
 import org.nuxeo.ecm.core.convert.service.ConversionServiceImpl;
 import org.nuxeo.ecm.platform.transform.interfaces.Transformer;

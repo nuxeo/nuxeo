@@ -115,6 +115,7 @@ public class TransformService extends DefaultComponent implements
         }
     }
 
+    @SuppressWarnings("unchecked")
     protected void registerPluginAsConverter(PluginExtension descriptor, Extension extension) {
         String pluginName = descriptor.getName();
 

@@ -37,8 +37,6 @@ import org.nuxeo.ecm.platform.transform.DocumentTestUtils;
 import org.nuxeo.ecm.platform.transform.document.TransformDocumentImpl;
 import org.nuxeo.ecm.platform.transform.interfaces.TransformDocument;
 import org.nuxeo.ecm.platform.transform.interfaces.Transformer;
-import org.nuxeo.ecm.platform.transform.plugin.wordml.SimpleXmlComparator;
-import org.nuxeo.ecm.platform.transform.plugin.wordml.XmlTransformerConstants;
 import org.xml.sax.SAXException;
 
 /**

@@ -27,14 +27,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
-import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
 import org.nuxeo.ecm.platform.transform.interfaces.Plugin;
 import org.nuxeo.ecm.platform.transform.interfaces.TransformDocument;
-import org.nuxeo.runtime.api.Framework;
 
 public class PluginWrappingConverter extends BaseConverterWrapper implements Plugin {
 

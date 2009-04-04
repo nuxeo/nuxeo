@@ -24,9 +24,6 @@ import org.apache.jackrabbit.extractor.TextExtractor;
 
 public class HtmlToTextPlugin extends AbstractJRBasedTextExtractorPlugin {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
 
     @Override
