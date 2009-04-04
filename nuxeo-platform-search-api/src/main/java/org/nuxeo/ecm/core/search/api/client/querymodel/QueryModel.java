@@ -147,8 +147,7 @@ public class QueryModel implements Serializable {
     }
 
     public PagedDocumentsProvider getResultsProvider(CoreSession session,
-            Object[] params, SortInfo sortInfo) throws ClientException,
-            QueryException {
+            Object[] params, SortInfo sortInfo) throws ClientException {
         checkDescriptor();
 
         if (sortInfo == null) {

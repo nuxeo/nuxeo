@@ -207,7 +207,6 @@ public class QueryModelDescriptor {
         queryBuilder.append(')');
     }
 
-    @SuppressWarnings("unchecked")
     public String getQuery(Object[] params, SortInfo sortInfo)
             throws ClientException {
         if (!isStateless()) {

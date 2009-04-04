@@ -19,8 +19,6 @@
 
 package org.nuxeo.ecm.core.search.api.client.common;
 
-import java.io.Serializable;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.search.api.client.SearchService;
@@ -33,9 +31,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
-public final class SearchServiceDelegate implements Serializable {
-
-    private static final long serialVersionUID = -8140952341564417509L;
+public final class SearchServiceDelegate {
 
     private static final Log log = LogFactory.getLog(SearchServiceDelegate.class);
 

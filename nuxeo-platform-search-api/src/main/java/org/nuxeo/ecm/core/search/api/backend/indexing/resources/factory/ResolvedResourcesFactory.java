@@ -62,9 +62,7 @@ import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.document.R
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
-public class ResolvedResourcesFactory implements Serializable {
-
-    private static final long serialVersionUID = 3412269513502785572L;
+public class ResolvedResourcesFactory {
 
     private static final Log log = LogFactory.getLog(ResolvedResourcesFactory.class);
 

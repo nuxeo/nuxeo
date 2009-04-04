@@ -92,19 +92,24 @@ public class QueryModelTestCase extends RepositoryOSGITestCase {
         service = (QueryModelService) Framework.getRuntime().getComponent(
                 QueryModelService.NAME);
 
-        statefulModel = initializeStatefulQueryModel(service.getQueryModelDescriptor("statefulModel"));
+        statefulModel = initializeStatefulQueryModel(
+                service.getQueryModelDescriptor("statefulModel"));
         documentModel = statefulModel.getDocumentModel();
 
-        statefulModel2 = initializeStatefulQueryModel(service.getQueryModelDescriptor("statefulModel2"));
+        statefulModel2 = initializeStatefulQueryModel(
+                service.getQueryModelDescriptor("statefulModel2"));
         documentModel2 = statefulModel2.getDocumentModel();
 
-        statefulModelWithFixedPart = initializeStatefulQueryModel(service.getQueryModelDescriptor("statefulModelWithFixedPart"));
+        statefulModelWithFixedPart = initializeStatefulQueryModel(
+                service.getQueryModelDescriptor("statefulModelWithFixedPart"));
         documentModelWithFixedPart = statefulModelWithFixedPart.getDocumentModel();
 
-        statefulModelWithSingleStartswith = initializeStatefulQueryModel(service.getQueryModelDescriptor("statefulModelWithSingleStartswith"));
+        statefulModelWithSingleStartswith = initializeStatefulQueryModel(
+                service.getQueryModelDescriptor("statefulModelWithSingleStartswith"));
         documentModelWithSingleStartswith = statefulModelWithSingleStartswith.getDocumentModel();
 
-        statefulModelWithMultiStartswith = initializeStatefulQueryModel(service.getQueryModelDescriptor("statefulModelWithMultiStartswith"));
+        statefulModelWithMultiStartswith = initializeStatefulQueryModel(
+                service.getQueryModelDescriptor("statefulModelWithMultiStartswith"));
         documentModelWithMultiStartswith = statefulModelWithMultiStartswith.getDocumentModel();
 
         statelessModel = new QueryModel(

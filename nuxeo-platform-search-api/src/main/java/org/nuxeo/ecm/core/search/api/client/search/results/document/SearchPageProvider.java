@@ -368,6 +368,7 @@ public class SearchPageProvider implements PagedDocumentsProvider {
         return new DocumentModelListImpl(res);
     }
 
+    @SuppressWarnings("unchecked")
     private DocumentModel constructDocumentModel(ResultItem rItem)
             throws SearchException {
 

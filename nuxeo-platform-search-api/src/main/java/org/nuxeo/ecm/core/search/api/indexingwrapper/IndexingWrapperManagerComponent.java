@@ -34,20 +34,17 @@ public class IndexingWrapperManagerComponent extends DefaultComponent implements
 
     private static final Log log = LogFactory.getLog(IndexingWrapperManagerComponent.class);
 
-    protected final Map<String, DocumentIndexingWrapperFactory> wrapperFactories = new HashMap<String, DocumentIndexingWrapperFactory>();
+    protected final Map<String, DocumentIndexingWrapperFactory> wrapperFactories
+            = new HashMap<String, DocumentIndexingWrapperFactory>();
 
     // EP management
     @Override
     public void registerContribution(Object contribution, String extensionPoint,
             ComponentInstance contributor) throws Exception {
-
         if (INDEXINGWRAPPER_FACTORY_EP.equals(extensionPoint)) {
             DocumentModelIndexingWrapperDescriptor desc = (DocumentModelIndexingWrapperDescriptor) contribution;
-
             DocumentIndexingWrapperFactory factory = desc.getNewInstance();
-
             wrapperFactories.put(desc.getTypeName(), factory);
-
             log.info("registred new IndexingWrapper for type " + desc.getTypeName());
         } else {
             log.error("Unknown extension point " + extensionPoint);
@@ -61,11 +58,8 @@ public class IndexingWrapperManagerComponent extends DefaultComponent implements
 
     // service interface
     public DocumentModel getIndexingWrapper(DocumentModel doc) {
-
         String docType = doc.getType();
-
         DocumentIndexingWrapperFactory factory = wrapperFactories.get(docType);
-
         if (factory == null) {
             return doc;
         } else {

@@ -104,8 +104,9 @@ public class FieldDescriptor {
             SchemaManager typeManager = Framework.getService(SchemaManager.class);
             Field field = null;
             if (xpath != null) {
-                if (model != null)
+                if (model != null) {
                     field = model.getProperty(xpath).getField();
+                }
             } else {
                 Schema schemaObj = typeManager.getSchema(schema);
                 if (schemaObj == null) {
