@@ -40,7 +40,6 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  * Extended audit info entities, used to persist contributed extended informations
  *
  * @author Stephane Lacoin (Nuxeo EP software engineer)
- *
  */
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -77,7 +76,6 @@ public class ExtendedInfo {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "LOG_EXTINFO_ID")
-
     public Long getId() {
         return id;
     }
@@ -85,7 +83,6 @@ public class ExtendedInfo {
     public void setId(Long id) {
         this.id = id;
     }
-
 
     @Override
     public String toString() {

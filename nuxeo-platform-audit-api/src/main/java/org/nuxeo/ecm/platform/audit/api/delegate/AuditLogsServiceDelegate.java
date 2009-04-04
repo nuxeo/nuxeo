@@ -19,10 +19,6 @@
 
 package org.nuxeo.ecm.platform.audit.api.delegate;
 
-import java.io.Serializable;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.audit.api.AuditRuntimeException;
 import org.nuxeo.ecm.platform.audit.api.Logs;
 import org.nuxeo.runtime.api.Framework;
@@ -33,12 +29,7 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  *
  */
-public final class AuditLogsServiceDelegate implements Serializable {
-
-    private static final long serialVersionUID = -8140952341564417509L;
-
-    @SuppressWarnings("unused")
-    private static final Log log = LogFactory.getLog(AuditLogsServiceDelegate.class);
+public final class AuditLogsServiceDelegate {
 
     // Utility class.
     private AuditLogsServiceDelegate() {

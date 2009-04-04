@@ -60,13 +60,11 @@ import org.nuxeo.runtime.api.Framework;
 @Remote(LogsRemote.class)
 public class LogsBean implements Logs {
 
-    private static final long serialVersionUID = -9120913062582569871L;
-
     @SuppressWarnings("unused")
     private static final Log log = LogFactory.getLog(LogsBean.class);
 
     @PersistenceContext(unitName = "NXAudit")
-    private transient EntityManager em;
+    private EntityManager em;
 
 
     protected NXAuditEventsService service() {

@@ -19,8 +19,6 @@
 
 package org.nuxeo.ecm.platform.audit.ws.delegate;
 
-import java.io.Serializable;
-
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
@@ -33,21 +31,22 @@ import org.nuxeo.ecm.platform.audit.ws.api.WSAudit;
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
-public class EJBFactory implements Serializable {
-
-    private static final long serialVersionUID = 7299017697473418477L;
+public class EJBFactory {
 
     private static final Log log = LogFactory.getLog(EJBFactory.class);
 
-    private InitialContext getInitialContext() throws NamingException {
+    private static InitialContext getInitialContext() throws NamingException {
         return new InitialContext();
     }
 
-    public WSAudit getWSAuditRemote() throws NamingException {
+    public static WSAudit getWSAuditRemote() throws NamingException {
         String beanRemoteLocation = JNDILocations.nxauditWsAuditRemoteLocation;
-        if (log.isDebugEnabled()) log.debug("Trying to get the remote EJB with JNDI location :"
-                + beanRemoteLocation);
+        if (log.isDebugEnabled()) {
+            log.debug("Trying to get the remote EJB with JNDI location :"
+                    + beanRemoteLocation);
+        }
         InitialContext ctx = getInitialContext();
         return (WSAudit) ctx.lookup(beanRemoteLocation);
     }
+
 }

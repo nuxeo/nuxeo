@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
@@ -57,7 +56,7 @@ public class TestExtendedInfoEvaluation extends RepositoryOSGITestCase {
         openRepository();
     }
 
-    public void testBean() throws DocumentException, ClientException {
+    public void testBean() throws ClientException {
         ExpressionContext context = new ExpressionContext();
         DocumentModel source = doCreateDocument();
         EventContext eventContext = new DocumentEventContext(coreSession,

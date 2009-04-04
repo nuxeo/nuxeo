@@ -82,12 +82,7 @@ public class LogEntry {
 
     private Map<String, ExtendedInfo> extendedInfos = new HashMap<String, ExtendedInfo>();
 
-    public LogEntry() {
-    }
-
     /**
-     * Returns the log identifier.
-     *
      * @return the log identifier
      */
     @Id

@@ -22,7 +22,6 @@ package org.nuxeo.ecm.platform.audit;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
 import org.nuxeo.ecm.platform.audit.api.AuditException;
@@ -69,7 +68,7 @@ public class TestNXAuditEventsService extends RepositoryOSGITestCase {
         return source;
     }
 
-    public void testLogMessage() throws DocumentException, ClientException {
+    public void testLogMessage() throws ClientException {
         DocumentModel source = doCreateDocument();
         List<LogEntry> entries = serviceUnderTest.getLogEntriesFor(source.getId());
         assertTrue(entries.size() == 1);

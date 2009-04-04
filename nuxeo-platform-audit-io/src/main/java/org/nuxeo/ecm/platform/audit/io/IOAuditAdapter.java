@@ -244,8 +244,10 @@ public class IOAuditAdapter extends AbstractIOResourceAdapter {
             DocumentRef oldRef = entry.getKey();
             DocumentRef newRef = map.getDocRefMap().get(oldRef);
             if (newRef == null) {
-                if (log.isErrorEnabled()) log.error("newRef does not exist in translation map for "
-                        + oldRef);
+                if (log.isErrorEnabled()) {
+                    log.error("newRef does not exist in translation map for "
+                            + oldRef);
+                }
                 continue;
             }
             List<LogEntry> docLogs = auditResources.getDocumentLogs(oldRef);

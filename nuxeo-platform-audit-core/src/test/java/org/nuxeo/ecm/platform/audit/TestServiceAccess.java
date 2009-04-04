@@ -36,8 +36,7 @@ public class TestServiceAccess extends NXRuntimeTestCase {
                 "OSGI-INF/nxaudit-service-definitions.xml");
     }
 
-    public void testFullAccess() throws Exception {
-
+    public void testFullAccess() {
         NXAuditEvents fullService = Framework.getLocalService(NXAuditEvents.class);
         assertNotNull(fullService);
 
@@ -46,9 +45,8 @@ public class TestServiceAccess extends NXRuntimeTestCase {
         }
     }
 
-    public void testReadAccess() throws Exception {
-
-        AuditReader reader= Framework.getLocalService(AuditReader.class);
+    public void testReadAccess() {
+        AuditReader reader = Framework.getLocalService(AuditReader.class);
         assertNotNull(reader);
 
         if (!(reader instanceof NXAuditEventsService)) {
@@ -56,9 +54,8 @@ public class TestServiceAccess extends NXRuntimeTestCase {
         }
     }
 
-    public void testWriteAccess() throws Exception {
-
-        AuditLogger writer= Framework.getLocalService(AuditLogger.class);
+    public void testWriteAccess() {
+        AuditLogger writer = Framework.getLocalService(AuditLogger.class);
         assertNotNull(writer);
 
         if (!(writer instanceof NXAuditEventsService)) {

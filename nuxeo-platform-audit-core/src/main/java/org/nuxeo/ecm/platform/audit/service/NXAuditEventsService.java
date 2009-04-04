@@ -87,8 +87,6 @@ public class NXAuditEventsService extends DefaultComponent implements
 
     protected static final Set<ExtendedInfoDescriptor> extendedInfoDescriptors = new HashSet<ExtendedInfoDescriptor>();
 
-    private static final long serialVersionUID = -7945111177284985820L;
-
     private static final Log log = LogFactory.getLog(NXAuditEventsService.class);
 
     protected static final ContainerManagedHibernateConfiguration hibernateConfiguration = new ContainerManagedHibernateConfiguration();
@@ -133,8 +131,9 @@ public class NXAuditEventsService extends DefaultComponent implements
         }
         if (eventEnabled) {
             eventNames.add(eventName);
-            if (log.isDebugEnabled())
+            if (log.isDebugEnabled()) {
                 log.debug("Registered event: " + eventName);
+            }
         } else if (eventNames.contains(eventName) && !eventEnabled) {
             doUnregisterEvent(desc);
         }
@@ -168,8 +167,9 @@ public class NXAuditEventsService extends DefaultComponent implements
 
     protected void doUnregisterExtendedInfo(ExtendedInfoDescriptor desc) {
         extendedInfoDescriptors.remove(desc.getKey());
-        if (log.isDebugEnabled())
+        if (log.isDebugEnabled()) {
             log.debug("Unregistered extended info: " + desc.getKey());
+        }
     }
 
     public Set<String> getAuditableEventNames() {
@@ -272,7 +272,7 @@ public class NXAuditEventsService extends DefaultComponent implements
     }
 
     protected LogEntry doCreateAndFillEntryFromDocument(DocumentModel doc,
-            Principal principal) throws AuditException {
+            Principal principal) {
         LogEntry entry = new LogEntry();
         entry.setDocPath(doc.getPathAsString());
         entry.setDocType(doc.getType());
@@ -443,8 +443,9 @@ public class NXAuditEventsService extends DefaultComponent implements
         DocumentModel root = guardedDocument(session, rootRef);
         long nbAddedEntries = doSyncNode(provider, session, root, recurs);
 
-        if (log.isDebugEnabled())
+        if (log.isDebugEnabled()) {
             log.debug("synched " + nbAddedEntries + " entries on " + path);
+        }
 
         return nbAddedEntries;
     }
@@ -528,12 +529,7 @@ public class NXAuditEventsService extends DefaultComponent implements
         AuditException ae = null;
         ae = persistenceProvider.run(true, new RunCallback<AuditException>() {
             public AuditException runWith(EntityManager em) {
-                try {
-                    logEvent(em, event);
-                } catch (AuditException e) {
-                    log.error("Error while adding event to log", e);
-                    return e;
-                }
+                logEvent(em, event);
                 return null;
             }
         });
@@ -546,12 +542,7 @@ public class NXAuditEventsService extends DefaultComponent implements
         AuditException ae = null;
         ae = persistenceProvider.run(true, new RunCallback<AuditException>() {
             public AuditException runWith(EntityManager em) {
-                try {
-                    logEvents(em, eventBundle);
-                } catch (AuditException e) {
-                    log.error("Error while adding eventBundle to log", e);
-                    return e;
-                }
+                logEvents(em, eventBundle);
                 return null;
             }
         });
@@ -560,14 +551,13 @@ public class NXAuditEventsService extends DefaultComponent implements
         }
     }
 
-    public void logEvents(EntityManager em, EventBundle eventBundle)
-            throws AuditException {
+    public void logEvents(EntityManager em, EventBundle eventBundle) {
         for (Event event : eventBundle) {
             logEvent(em, event);
         }
     }
 
-    public void logEvent(EntityManager em, Event event) throws AuditException {
+    public void logEvent(EntityManager em, Event event) {
         if (!getAuditableEventNames().contains(event.getName())) {
             return;
         }
@@ -579,7 +569,6 @@ public class NXAuditEventsService extends DefaultComponent implements
         } else {
             logMiscEvent(em, event.getName(), ctx, new Date(event.getTime()));
         }
-
     }
 
     protected void logDocumentEvent(EntityManager em, String eventName,
@@ -605,8 +594,9 @@ public class NXAuditEventsService extends DefaultComponent implements
         }
         entry.setComment((String) properties.get("comment"));
         try {
-            if (document.isLifeCycleLoaded())
+            if (document.isLifeCycleLoaded()) {
                 entry.setDocLifeCycle(document.getCurrentLifeCycleState());
+            }
         } catch (ClientException e1) {
             throw new AuditRuntimeException(
                     "Cannot fetch life cycle state from " + document, e1);

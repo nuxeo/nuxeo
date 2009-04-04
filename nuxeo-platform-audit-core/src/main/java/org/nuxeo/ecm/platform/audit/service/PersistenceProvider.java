@@ -71,12 +71,7 @@ public class PersistenceProvider {
         cfg.addAnnotatedClass(ExtendedInfo.StringInfo.class);
         cfg.addAnnotatedClass(ExtendedInfo.LongInfo.class);
 
-        try {
-            cfg.configure("fake-hibernate.cfg.xml");
-        } catch (RuntimeException e) {
-            throw e;
-        }
-
+        cfg.configure("fake-hibernate.cfg.xml");
         emf = cfg.buildEntityManagerFactory();
     }
 

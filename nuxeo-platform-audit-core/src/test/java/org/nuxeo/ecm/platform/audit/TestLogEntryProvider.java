@@ -31,7 +31,6 @@ import junit.framework.TestCase;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.platform.audit.api.AuditException;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.FilterMapEntry;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
@@ -47,6 +46,8 @@ import org.nuxeo.ecm.platform.audit.service.PersistenceProvider;
  */
 public class TestLogEntryProvider extends TestCase {
 
+    protected static final Log log = LogFactory.getLog(TestLogEntryProvider.class);
+
     protected PersistenceProvider persistenceProvider;
 
     protected EntityManager entityManager;
@@ -58,14 +59,12 @@ public class TestLogEntryProvider extends TestCase {
         super.setUp();
 
         persistenceProvider = new PersistenceProvider(new TestHibernateConfiguration());
-
         persistenceProvider.openPersistenceUnit();
-
         entityManager = persistenceProvider.acquireEntityManagerWithActiveTransaction();
-
         providerUnderTest = LogEntryProvider.createProvider(entityManager);
     }
 
+    @Override
     public void tearDown() {
         persistenceProvider.releaseEntityManagerWithRollback(entityManager);
     }
@@ -107,14 +106,14 @@ public class TestLogEntryProvider extends TestCase {
         return entries;
     }
 
-    public void testAddLogEntry() throws AuditException {
+    public void testAddLogEntry() {
         LogEntry entry = doCreateEntry("id");
         providerUnderTest.addLogEntry(entry);
         boolean hasId = entry.getId() != 0;
         assertTrue(hasId);
     }
 
-    public void testHavingKey() throws AuditException {
+    public void testHavingKey() {
         LogEntry entry = doCreateEntryAndPersist("id");
         providerUnderTest.addLogEntry(entry);
         List<LogEntry> entries = providerUnderTest.nativeQueryLogs("log.id = "
@@ -206,7 +205,6 @@ public class TestLogEntryProvider extends TestCase {
 
     public void testRemove() {
         LogEntry one = doCreateEntryAndPersist("one");
-        Date limit = new Date();
         LogEntry two = doCreateEntryAndPersist("two");
         LogEntry three = doCreateEntryAndPersist("three");
         int count = providerUnderTest.removeEntries(eventId(), "/");
@@ -221,15 +219,13 @@ public class TestLogEntryProvider extends TestCase {
         assertEquals(new Long(1), count);
     }
 
-    protected static final Log log = LogFactory.getLog(TestLogEntryProvider.class);
-
     public void XXXtestEventIds() {
         String eventId = eventId();
         LogEntry one = doCreateEntryAndPersist("one");
         LogEntry two = doCreateEntryAndPersist("two");
-        List<String> eventIds =
-            providerUnderTest.findEventIds();
+        List<String> eventIds = providerUnderTest.findEventIds();
         assertEquals(1, eventIds.size());
         assertEquals(eventId, eventIds.get(0));
     }
+
 }

@@ -104,7 +104,9 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
 
     @Destroy
     public void destroy() {
-        if (log.isDebugEnabled()) log.debug("Removing Audit Seam component...");
+        if (log.isDebugEnabled()) {
+            log.debug("Removing Audit Seam component...");
+        }
     }
 
     @Factory(value = "latestLogEntries", scope = EVENT)
@@ -178,7 +180,9 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
                             filterMap, doDefaultSort);
                 }
 
-                if (log.isDebugEnabled()) log.debug("logEntries computed .................!");
+                if (log.isDebugEnabled()) {
+                    log.debug("logEntries computed .................!");
+                }
             } catch (Exception e) {
                 String message = "An error occurred while grabbing log entries for " + document.getId();
                 throw new AuditException(message, e);
