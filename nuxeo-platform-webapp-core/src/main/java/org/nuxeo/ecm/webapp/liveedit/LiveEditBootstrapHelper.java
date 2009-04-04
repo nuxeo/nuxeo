@@ -203,7 +203,7 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
 
     /**
      * Creates the bootstrap file. It is called from the browser's addon. The
-     * URL composition tells the case and what to create. The strucuture is
+     * URL composition tells the case and what to create. The structure is
      * depicted in the NXP-1881. Rux NXP-1959: add new tag on root level
      * describing the action: actionEdit, actionNew or actionFromTemplate.
      *
@@ -211,7 +211,6 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
      * @throws Exception
      */
     public void getBootstrap() throws Exception {
-
         String currentRepoID = documentManager.getRepositoryName();
 
         CoreSession session = documentManager;

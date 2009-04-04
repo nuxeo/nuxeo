@@ -27,8 +27,6 @@ import java.util.List;
 
 import javax.faces.model.SelectItem;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
@@ -45,8 +43,6 @@ import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 public class PermissionActionListManager implements Serializable {
 
     private static final long serialVersionUID = -327848199566592785L;
-
-    private static final Log log = LogFactory.getLog(PermissionActionListManager.class);
 
     private static final Labeler labeler = new Labeler("label.security");
 

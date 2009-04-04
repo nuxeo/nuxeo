@@ -53,7 +53,8 @@ public class UserSessionBean implements Serializable, UserSession {
             if (fContext == null) {
                 currentUser = null;
                 log.error(
-                        "Can not fetch user principal from FacesContext : there is no FacesContext attached to the current request");
+                        "Can not fetch user principal from FacesContext: "
+                        + "there is no FacesContext attached to the current request");
             } else {
                 currentUser = fContext.getExternalContext().getUserPrincipal();
             }

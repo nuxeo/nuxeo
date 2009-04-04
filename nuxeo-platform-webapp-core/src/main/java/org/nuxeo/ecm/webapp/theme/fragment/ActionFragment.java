@@ -16,8 +16,6 @@ package org.nuxeo.ecm.webapp.theme.fragment;
 
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.Component;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -36,8 +34,6 @@ import org.nuxeo.theme.models.ModelException;
 import org.nuxeo.theme.properties.FieldInfo;
 
 public final class ActionFragment extends AbstractFragment {
-
-    private static final Log log = LogFactory.getLog(ActionFragment.class);
 
     @FieldInfo(type = "string", label = "category", description = "The action category.")
     public String category = "";

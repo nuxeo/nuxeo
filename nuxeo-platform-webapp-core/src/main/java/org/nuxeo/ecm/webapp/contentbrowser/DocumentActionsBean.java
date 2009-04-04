@@ -485,7 +485,8 @@ public class DocumentActionsBean extends InputController implements
         // XXX : this proves that this method is called too many times
         // log.debug("Getter children select model");
         DocumentModelList documents = navigationContext.getCurrentDocumentChildrenPage();
-        List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION);
+        List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(
+                DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION);
         SelectDataModel model = new SelectDataModelImpl(CHILDREN_DOCUMENT_LIST,
                 documents, selectedDocuments);
         model.addSelectModelListener(this);
@@ -620,7 +621,7 @@ public class DocumentActionsBean extends InputController implements
     }
 
     public boolean getWriteRight() throws ClientException {
-        // TODO: WRITE is a highlevel compound permission (i.e. more like a user
+        // TODO: WRITE is a high level compound permission (i.e. more like a user
         // profile), public methods of the Nuxeo framework should only check
         // atomic / specific permissions such as WRITE_PROPERTIES, REMOVE,
         // ADD_CHILDREN depending on the action to execute instead
@@ -645,11 +646,11 @@ public class DocumentActionsBean extends InputController implements
     }
 
     public boolean getCanUnpublish() throws ClientException {
-        List<DocumentModel> docList = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION);
+        List<DocumentModel> docList = documentsListsManager.getWorkingList(
+                DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION);
 
         if (!(docList == null || docList.isEmpty())
                 && deleteActions.checkDeletePermOnParents(docList)) {
-
             for (DocumentModel document : docList) {
                 if (document.getType().equals("SectionRoot")
                         || document.getType().equals("Section")) {

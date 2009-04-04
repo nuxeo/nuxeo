@@ -38,9 +38,6 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
  * Generic registry implementation.
  *
@@ -50,8 +47,6 @@ import org.apache.commons.logging.LogFactory;
 public class Registry implements Serializable {
 
     private static final long serialVersionUID = -1063443973976908727L;
-
-    private static final Log log = LogFactory.getLog(Registry.class);
 
     public final String name;
 

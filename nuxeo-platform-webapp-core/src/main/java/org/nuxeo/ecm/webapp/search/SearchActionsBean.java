@@ -520,9 +520,6 @@ public class SearchActionsBean extends InputController implements
             }
         } catch (SearchException e) {
             throw new ClientException("Error while performing search", e);
-        } catch (QueryException e) {
-            throw new ResultsProviderFarmUserException(
-                    "label.search.service.wrong.query", e);
         } catch (QueryParseException e) {
             throw new ResultsProviderFarmUserException(
                     "label.search.service.wrong.query", e);

@@ -270,13 +270,8 @@ public class DashBoardActionsBean implements DashboardActions {
 
     protected PagedDocumentsProvider getQmDocuments(String qmName,
             Object[] params, SortInfo sortInfo) throws ClientException {
-        try {
-            return queryModelActions.get(qmName).getResultsProvider(
-                    documentManager, params, sortInfo);
-        } catch (QueryException e) {
-            throw new ClientException(String.format("Invalid search query. "
-                    + "Check the \"%s\" QueryModel configuration", qmName), e);
-        }
+        return queryModelActions.get(qmName).getResultsProvider(
+                documentManager, params, sortInfo);
     }
 
     public String navigateToDocumentTab(DocumentModel dm)

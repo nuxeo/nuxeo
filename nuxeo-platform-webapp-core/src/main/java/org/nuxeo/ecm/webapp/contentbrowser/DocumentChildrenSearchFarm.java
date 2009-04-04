@@ -98,13 +98,8 @@ public class DocumentChildrenSearchFarm extends InputController implements
 
     private PagedDocumentsProvider getResultsProvider(String qmName,
             Object[] params, SortInfo sortInfo) throws ClientException {
-        try {
-            QueryModel qm = queryModelActions.get(qmName);
-            return qm.getResultsProvider(documentManager, params, sortInfo);
-        } catch (QueryException e) {
-            throw new ClientException(String.format("Invalid search query. "
-                    + "Check the '%s' QueryModel configuration", qmName), e);
-        }
+        QueryModel qm = queryModelActions.get(qmName);
+        return qm.getResultsProvider(documentManager, params, sortInfo);
     }
 
     /**

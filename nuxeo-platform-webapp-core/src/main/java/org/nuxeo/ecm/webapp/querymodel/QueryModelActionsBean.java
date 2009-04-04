@@ -132,15 +132,10 @@ public class QueryModelActionsBean extends InputController implements
             throw new SortNotSupportedException();
         }
 
-        try {
-            PagedDocumentsProvider provider = model.getResultsProvider(
-                    documentManager, null, sortInfo);
-            provider.setName(queryModelName);
-            return provider;
-        } catch (QueryException e) {
-            throw new ResultsProviderFarmUserException(
-                    "label.search.service.wrong.query", e);
-        }
+        PagedDocumentsProvider provider = model.getResultsProvider(
+                documentManager, null, sortInfo);
+        provider.setName(queryModelName);
+        return provider;
     }
 
     @Observer(EventNames.QUERY_MODEL_CHANGED)

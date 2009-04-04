@@ -182,7 +182,6 @@ public class SecurityActionsBean extends InputController implements
      *         this method is automatically called by rebuildSecurityData method
      *
      * @throws ClientException
-     * @throws ECInvalidParameterException
      */
     protected UserPermissionsTableModel reconstructTableModel()
             throws ClientException {
