@@ -30,9 +30,7 @@ import java.util.Map.Entry;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.exception.SQLExceptionConverter;
 import org.nuxeo.common.utils.StringUtils;
-import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.db.Column;
 import org.nuxeo.ecm.core.storage.sql.db.Database;
 import org.nuxeo.ecm.core.storage.sql.db.Delete;
@@ -151,7 +149,6 @@ public class SQLInfo {
      *
      * @param model the model
      * @param dialect the SQL dialect
-     * @throws StorageException
      */
     public SQLInfo(Model model, Dialect dialect) {
         this.model = model;

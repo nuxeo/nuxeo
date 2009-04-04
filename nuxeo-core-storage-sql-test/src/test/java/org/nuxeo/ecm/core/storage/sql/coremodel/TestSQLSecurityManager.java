@@ -23,7 +23,6 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.storage.sql.ACLRow;
-import org.nuxeo.ecm.core.storage.sql.coremodel.SQLSecurityManager;
 
 import junit.framework.TestCase;
 
