@@ -27,8 +27,6 @@ import javax.el.MethodInfo;
 import javax.el.ValueExpression;
 import javax.faces.context.FacesContext;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 
@@ -39,8 +37,6 @@ import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
  */
 public class DownloadMethodExpression extends MethodExpression implements
         Serializable {
-
-    private static final Log log = LogFactory.getLog(DownloadMethodExpression.class);
 
     private static final long serialVersionUID = 9010857019674405375L;
 

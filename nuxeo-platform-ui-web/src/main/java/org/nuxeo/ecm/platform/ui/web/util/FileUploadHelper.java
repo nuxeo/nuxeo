@@ -40,15 +40,13 @@ import com.noelios.restlet.http.HttpCall;
 import com.noelios.restlet.http.HttpRequest;
 
 /**
- *
- * Helper to encapsulate Multipart requests parsing to extract blobs
- *
+ * Helper to encapsulate Multipart requests parsing to extract blobs.
+ * <p>
  * This helper is needed to provide the indirection between - the Apache file
- * uplaod based solution (5.1) and - the Seam MultiPartFilter bases solution
- * (5.1 / Seam 2.x)
+ * upload based solution (5.1) and - the Seam MultiPartFilter bases solution
+ * (5.1 / Seam 2.x).
  *
  * @author tiry
- *
  */
 public class FileUploadHelper {
 
@@ -78,6 +76,7 @@ public class FileUploadHelper {
      * @return
      * @throws Exception
      */
+    @SuppressWarnings("unchecked")
     public static List<Blob> parseRequest(HttpServletRequest request)
             throws Exception {
         List<Blob> blobs = new ArrayList<Blob>();

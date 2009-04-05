@@ -28,8 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
@@ -41,16 +39,14 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 
-@Name("suggestBox")
-@Scope(ScopeType.EVENT)
-@Transactional
 /**
  * @deprecated: use rich:suggestionbox instead
  */
+@Name("suggestBox")
+@Scope(ScopeType.EVENT)
+@Transactional
 @Deprecated
 public class SuggestBoxBean implements Serializable {
-
-    private static final Log log = LogFactory.getLog(SuggestBoxBean.class);
 
     private static transient DirectoryService dirService;
 

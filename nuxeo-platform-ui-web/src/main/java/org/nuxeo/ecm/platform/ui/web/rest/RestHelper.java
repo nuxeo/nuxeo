@@ -25,8 +25,6 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.Begin;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
@@ -55,7 +53,6 @@ import org.nuxeo.ecm.platform.util.RepositoryLocation;
 @Scope(EVENT)
 public class RestHelper implements Serializable {
 
-    private static final Log log = LogFactory.getLog(RestHelper.class);
     private static final long serialVersionUID = 1L;
 
     @In(create = true)

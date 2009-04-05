@@ -24,8 +24,6 @@ import java.io.Serializable;
 import javax.faces.context.FacesContext;
 import javax.faces.el.MethodBinding;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 
@@ -39,8 +37,6 @@ import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 @Deprecated
 public class DownloadMethodBinding extends MethodBinding implements
         Serializable {
-
-    private static final Log log = LogFactory.getLog(DownloadMethodBinding.class);
 
     private static final long serialVersionUID = 1L;
 

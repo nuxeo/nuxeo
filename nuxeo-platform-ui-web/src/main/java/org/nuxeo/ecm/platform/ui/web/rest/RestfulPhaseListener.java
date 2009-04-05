@@ -33,8 +33,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.contexts.FacesLifecycle;
 import org.jboss.seam.transaction.Transaction;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
@@ -49,14 +47,10 @@ import org.nuxeo.runtime.api.Framework;
  * @author tiry
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  * @author Florent Guillaume
- *
  */
-
 public class RestfulPhaseListener implements PhaseListener {
 
     private static final long serialVersionUID = -1064952127559721398L;
-
-    private static final Log log = LogFactory.getLog(RestfulPhaseListener.class);
 
     protected URLPolicyService service;
 

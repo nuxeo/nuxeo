@@ -93,7 +93,8 @@ public class TestFancyURL extends TestCase {
     }
 
     public void testRedirectRewriting() {
-        String url = "http://127.0.0.1:8080/nuxeo/view_documents.faces?currentTab=TAB_CONTENT&documentId=d3c36ab5-56c8-45e4-a587-368dd7c91473&repositoryName=demo&conversationId=0NXMAIN&conversationIsLongRunning=true";
+        String url = "http://127.0.0.1:8080/nuxeo/view_documents.faces?currentTab=TAB_CONTENT" +
+        "&documentId=d3c36ab5-56c8-45e4-a587-368dd7c91473&repositoryName=demo&conversationId=0NXMAIN&conversationIsLongRunning=true";
 
         String url2 = FancyURLMapper.convertToFancyURL(url);
 
