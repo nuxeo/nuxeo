@@ -33,7 +33,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  */
 public class TestEventContext extends NXRuntimeTestCase {
 
-    public void testEventContext() throws Exception {
+    public void testEventContext() {
         EventContextImpl ctx = new EventContextImpl("arg1", "arg2");
         CoreSession cs = new LocalSession();
         ctx.setCoreSession(cs);

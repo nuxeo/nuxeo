@@ -152,7 +152,6 @@ public class TestSecurityService extends NXRuntimeTestCase {
                 "permissions-override1-contrib.xml");
 
         PermissionProvider pp = service.getPermissionProvider();
-
         String[] orderedVisiblePermissions = pp.getUserVisiblePermissions();
         assertNotNull(orderedVisiblePermissions);
 
@@ -196,12 +195,10 @@ public class TestSecurityService extends NXRuntimeTestCase {
     }
 
     public void testOverridedVisiblePermission2() throws Exception {
-
         deployContrib(CoreTestConstants.CORE_TESTS_BUNDLE,
                 "permissions-override2-contrib.xml");
 
         PermissionProvider pp = service.getPermissionProvider();
-
         String[] orderedVisiblePermissions = pp.getUserVisiblePermissions();
         assertNotNull(orderedVisiblePermissions);
 
@@ -226,32 +223,25 @@ public class TestSecurityService extends NXRuntimeTestCase {
     }
 
     public void testPermissionsVsDeny() throws Exception {
-
         PermissionProvider pp = service.getPermissionProvider();
-
         List<UserVisiblePermission> vp = pp.getUserVisiblePermissionDescriptors();
         assertNotNull(vp);
 
-        UserVisiblePermission deleteVP=null;
-
-        for (UserVisiblePermission uvp : vp)
-        {
-            if (uvp.getId().equals("ReadRemove"))
-            {
+        UserVisiblePermission deleteVP = null;
+        for (UserVisiblePermission uvp : vp) {
+            if (uvp.getId().equals("ReadRemove")) {
                 deleteVP = uvp;
                 break;
             }
         }
-
         assertNotNull(deleteVP);
-        assertEquals("Remove",deleteVP.getDenyPermission());
-        assertEquals("ReadRemove",deleteVP.getPermission());
-
+        assertEquals("Remove", deleteVP.getDenyPermission());
+        assertEquals("ReadRemove", deleteVP.getPermission());
     }
 
-    public void testGetPrincipalsToCheck() throws Exception {
-        NuxeoPrincipal principal = new UserPrincipal("bob", Arrays.asList(
-                "vps", "males"));
+    public void testGetPrincipalsToCheck() {
+        NuxeoPrincipal principal = new UserPrincipal("bob",
+                Arrays.asList("vps", "males"));
         String[] principals = SecurityService.getPrincipalsToCheck(principal);
         assertEquals(4, principals.length);
         assertTrue(Arrays.asList(principals).contains("bob"));

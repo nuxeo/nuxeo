@@ -71,11 +71,13 @@ public class DocumentProviderManager extends DefaultComponent implements Documen
         return ((DocumentModelCache) session).cacheDocument(docModel);
     }
 
+    // FIXME: not used. Remove?
     private DocumentModel cacheDocument(DocumentRef docRef, DocumentModel docModel) {
         System.err.println("#################### SHOULD NOT PASS HERE #################");
         return ((DocumentModelCache) session).cacheDocument(docModel);
     }
 
+    // FIXME: not used. Remove?
     private DocumentModelList cacheDocumentList(DocumentModelList docList) {
         int length = docList.size();
         for (int i = 0; i < length; ++i) {
