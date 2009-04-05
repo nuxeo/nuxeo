@@ -94,11 +94,13 @@ public class LifeCycleServiceImpl extends DefaultComponent implements
     }
 
     @Deprecated
+    // Not used. Remove?
     public void setTypesMapping(Map<String, String> typesMapping) {
         this.typesMapping = typesMapping;
     }
 
     @Deprecated
+    // Not used. Remove?
     public void setLifeCycles(Map<String, LifeCycle> lifeCycles) {
         this.lifeCycles = lifeCycles;
     }
@@ -189,23 +191,27 @@ public class LifeCycleServiceImpl extends DefaultComponent implements
     }
 
     @Deprecated
+    // Not used. Remove?
     public String getCurrentLifeCycleState(Document doc)
             throws LifeCycleException {
         return doc.getCurrentLifeCycleState();
     }
 
     @Deprecated
+    // Not used. Remove?
     public void setCurrentLifeCycleState(Document doc, String stateName)
             throws LifeCycleException {
         doc.setCurrentLifeCycleState(stateName);
     }
 
     @Deprecated
+    // Not used. Remove?
     public String getLifeCyclePolicy(Document doc) throws LifeCycleException {
         return doc.getLifeCyclePolicy();
     }
 
     @Deprecated
+    // Not used. Remove?
     public void setLifeCycelPolicy(Document doc, String policy)
             throws LifeCycleException {
         doc.setLifeCyclePolicy(policy);

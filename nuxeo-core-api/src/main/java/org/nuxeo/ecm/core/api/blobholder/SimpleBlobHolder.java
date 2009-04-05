@@ -53,15 +53,12 @@ public class SimpleBlobHolder extends AbstractBlobHolder {
 
     protected void init(List<Blob> blobs) {
         this.blobs = blobs;
-        this.creationDate = Calendar.getInstance();
+        creationDate = Calendar.getInstance();
     }
 
     @Override
     public Blob getBlob() throws ClientException {
-        if (blobs == null) {
-            return null;
-        }
-        if (blobs.size() == 0) {
+        if (blobs == null || blobs.size() == 0) {
             return null;
         } else {
             return blobs.get(0);

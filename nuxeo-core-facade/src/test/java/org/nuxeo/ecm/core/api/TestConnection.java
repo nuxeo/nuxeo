@@ -35,11 +35,11 @@ public abstract class TestConnection extends NXRuntimeTestCase {
         Map<String, Serializable> ctx = new HashMap<String, Serializable>();
         ctx.put("username", SecurityConstants.ADMINISTRATOR);
         remote = CoreInstance.getInstance().open("default", ctx);
-
         assertNotNull(remote);
     }
 
     public void closeSession() {
         CoreInstance.getInstance().close(remote);
     }
+
 }

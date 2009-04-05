@@ -46,8 +46,7 @@ public interface PermissionProvider {
     String[] getPermissionGroups(String perm);
 
     /**
-     *
-     * Use getUserVisiblePermissionDescriptors instead
+     * @deprecated Use getUserVisiblePermissionDescriptors instead
      *
      * @return get the sorted list of permission names to be used in the
      *         permission management screen of the UI (be it web based, a rich

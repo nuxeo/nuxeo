@@ -56,6 +56,7 @@ public class LifeCycleImpl implements LifeCycle {
         this.transitions = transitions;
     }
 
+    // Not used. Remove?
     @Deprecated
     public String getInitialStateName() {
         return getDefaultInitialStateName();

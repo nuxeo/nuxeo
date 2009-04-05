@@ -217,6 +217,7 @@ public class SecurityService extends DefaultComponent {
     }
 
     @Deprecated
+    // Not used. Remove?
     public boolean checkPermissionOld(Document doc, Principal principal,
             String permission) throws SecurityException {
         String username = principal.getName();

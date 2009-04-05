@@ -218,7 +218,7 @@ public final class NuxeoClient {
         serviceManager.registerService(sd);
         TypeProvider typeProvider = Framework.getService(TypeProvider.class);
         SchemaManager schemaMgr = Framework.getLocalService(SchemaManager.class);
-        ((SchemaManagerImpl)schemaMgr).importTypes(typeProvider);
+        ((SchemaManagerImpl) schemaMgr).importTypes(typeProvider);
     }
 
     public synchronized void disconnect() throws Exception {

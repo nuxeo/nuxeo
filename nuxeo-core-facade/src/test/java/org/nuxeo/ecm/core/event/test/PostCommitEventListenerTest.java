@@ -68,7 +68,6 @@ public class PostCommitEventListenerTest extends RepositoryOSGITestCase {
     }
 
     protected void waitForAsyncExec() {
-
         EventServiceImpl evtService = (EventServiceImpl) Framework.getLocalService(EventService.class);
         try {
             Thread.sleep(100);
@@ -83,4 +82,5 @@ public class PostCommitEventListenerTest extends RepositoryOSGITestCase {
             }
         }
     }
+
 }

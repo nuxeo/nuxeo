@@ -160,7 +160,6 @@ public class TestVersioning extends NXRuntimeTestCase {
 
     /**
      * Creates 3 versions and removes the first.
-     * @throws ClientException
      */
     public void testRemoveFirstDocVersion() throws ClientException {
 
@@ -191,7 +190,6 @@ public class TestVersioning extends NXRuntimeTestCase {
 
     /**
      * Creates 3 versions and removes the second.
-     * @throws ClientException
      */
     public void testRemoveMiddleDocVersion() throws ClientException {
 
@@ -221,7 +219,6 @@ public class TestVersioning extends NXRuntimeTestCase {
 
     /**
      * Creates 3 versions and removes the last.
-     * @throws ClientException
      */
     public void testRemoveLastDocVersion() throws ClientException {
 
@@ -288,4 +285,5 @@ public class TestVersioning extends NXRuntimeTestCase {
         List<DocumentRef> versionsRefs = coreSession.getVersionsRefs(doc.getRef());
         assertEquals(labels.length, versionsRefs.size());
     }
+
 }

@@ -43,6 +43,7 @@ public interface LifeCycle {
      * Returns the default initial state name.
      *
      * @deprecated use {@link #getDefaultInitialStateName()}
+     * Not used. Remove?
      */
     @Deprecated
     String getInitialStateName();
