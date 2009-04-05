@@ -40,18 +40,18 @@ import org.nuxeo.ecm.webengine.model.WebContext;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class AbderaService extends AbstractProvider implements TargetBuilder, Resolver<Target> {    
-    
-    private static final AbderaService instance = new AbderaService(); 
-    
+public class AbderaService extends AbstractProvider implements TargetBuilder, Resolver<Target> {
+
+    private static final AbderaService instance = new AbderaService();
+
     public final static AbderaService getInstance() {
         return instance;
     }
-    
+
     protected AbderaService() {
         init(new Abdera(), new HashMap<String, String>());
     }
-        
+
     @Override
     protected TargetBuilder getTargetBuilder(RequestContext request) {
         return this;
@@ -73,12 +73,12 @@ public class AbderaService extends AbstractProvider implements TargetBuilder, Re
     }
 
     public Target resolve(Request request) {
-        //this is called in AbderaRequest ctor so we need to init target here 
+        //this is called in AbderaRequest ctor so we need to init target here
         return ((AbderaRequest)request).getTarget();
     }
 
-    
-    
+
+
     public AbderaRequest createFeedRequest(WebContext ctx) {
         return new AbderaRequest(TargetType.TYPE_COLLECTION, this, ctx);
     }
@@ -124,25 +124,25 @@ public class AbderaService extends AbstractProvider implements TargetBuilder, Re
         return builder.entity(context).build();
     }
 
-    
+
     public final static Response getFeed(WebContext ctx, CollectionAdapter adapter) {
         AbderaRequest request = getInstance().createFeedRequest(ctx);
         ResponseContext rc = adapter.getFeed(request);
         return getInstance().getResponse(rc);
     }
-    
+
     public final static Response postEntry(WebContext ctx, CollectionAdapter adapter) {
         AbderaRequest request = getInstance().createFeedRequest(ctx);
         ResponseContext rc = adapter.postEntry(request);
         return getInstance().getResponse(rc);
     }
-    
+
     public final static Response getEntry(WebContext ctx, CollectionAdapter adapter) {
         AbderaRequest request = getInstance().createEntryRequest(ctx);
         ResponseContext rc = adapter.getEntry(request);
         return getInstance().getResponse(rc);
     }
-    
+
     public final static Response putEntry(WebContext ctx, CollectionAdapter adapter) {
         AbderaRequest request = getInstance().createEntryRequest(ctx);
         ResponseContext rc = adapter.putEntry(request);

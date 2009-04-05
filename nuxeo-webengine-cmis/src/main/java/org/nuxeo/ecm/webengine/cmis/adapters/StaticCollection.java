@@ -30,8 +30,8 @@ import org.apache.abdera.protocol.server.context.ResponseContextException;
 import org.apache.chemistry.repository.Repository;
 
 /**
- * Collection to be used as the base of static collections that doesn't depends on a contextual root object. 
- * 
+ * Collection to be used as the base of static collections that doesn't depends on a contextual root object.
+ *
  * @author Bogdan Stefanescu
  */
 public class StaticCollection extends CMISCollection<Object> {

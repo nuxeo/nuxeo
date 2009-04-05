@@ -42,13 +42,13 @@ public class TypeObject extends CollectionResource {
         this.ws = (CMISWorkspaceInfo)args[1];
         AbderaRequest.setParameter(ctx, "objectid", id);
     }
-       
+
     public Repository getRepository() {
         return ws.getRepository();
     }
-    
+
     public AbstractCollectionAdapter getCollectionAdapter() {
-        return ws.getCollection("types").getCollectionAdapter();   
+        return ws.getCollection("types").getCollectionAdapter();
     }
 
     @GET

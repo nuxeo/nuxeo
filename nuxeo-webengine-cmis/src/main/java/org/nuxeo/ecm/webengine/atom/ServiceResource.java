@@ -29,44 +29,44 @@ import org.nuxeo.ecm.webengine.abdera.AbderaRequest;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 
 /**
- * A ServiceResource object is the entry point to an APP server. 
- * The resource is using a ServiceInfo configuration object to define 
- * the service structure. This information is stateful - it is constructed once 
+ * A ServiceResource object is the entry point to an APP server.
+ * The resource is using a ServiceInfo configuration object to define
+ * the service structure. This information is stateful - it is constructed once
  * when the implementation class of the ServiceResource is loaded.
- * 
+ *
  * We cannot use another mechanism to do this (like a nuxeo service) because of the class loading restrictions
  * that exists in WebEngine modules.
- * WebEngine module classes may be hot reloaded at runtime - this means you cannot use external singleton services to 
+ * WebEngine module classes may be hot reloaded at runtime - this means you cannot use external singleton services to
  * avoid class cast exceptions after a class reload.
  * By using static members initialized when class is loaded you can solve this limitation.
- * 
+ *
  * A subclass is usually implementing only the method {@link #createServiceInfo()}
- * that should create the definition of the Atom Service and optionally specify an URL Resolver by attaching it to the service. 
+ * that should create the definition of the Atom Service and optionally specify an URL Resolver by attaching it to the service.
  * See {@link ServiceInfo#setUrlResolver(UrlResolver)}
- * 
+ *
  * <ol>
- * <li> the createServiceInfo method that will be called each time the class is loaded 
+ * <li> the createServiceInfo method that will be called each time the class is loaded
  * by the web class loader. (so the initialization of the stateful data is done each time a class is reloaded)
  * <li> the createUrlResolver that is used to create an abdera target builder that will be used for that service
  * </ol>
- * TODO: use constants and remove literal strings 
- * 
+ * TODO: use constants and remove literal strings
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public abstract class ServiceResource extends DefaultObject {   
-    
-    private static ServiceInfo info = null; 
+public abstract class ServiceResource extends DefaultObject {
+
+    private static ServiceInfo info = null;
 
     /**
      * Create an Atom service definition, including a custom optional {@link UrlResolver} if you don't want the default one.
-     * The returned instance will be used for any request so it is a sort of singleton object 
-     * for this reason you should avoid putting inside references to web objects (per request JAX-RS resources).   
+     * The returned instance will be used for any request so it is a sort of singleton object
+     * for this reason you should avoid putting inside references to web objects (per request JAX-RS resources).
      * @return
      */
     public abstract ServiceInfo createServiceInfo();
-    
-    
+
+
     @Override
     protected void initialize(Object... args) {
         // register the URL Resolver for this request
@@ -76,10 +76,10 @@ public abstract class ServiceResource extends DefaultObject {
         }
         ctx.setProperty(AbderaRequest.URL_RESOLVER_KEY, resolver);
     }
-    
+
     public ServiceInfo getServiceInfo() {
         if (info == null) {
-            // we are synchronizing on the implementation class to ensure 
+            // we are synchronizing on the implementation class to ensure
             // atomic access for all ServiceResources of the same type
             synchronized (getClass()) {
                 if (info == null) {
@@ -89,8 +89,8 @@ public abstract class ServiceResource extends DefaultObject {
         }
         return info;
     }
-    
-    
+
+
     @Path("{segment}")
     public Object dispatch(@PathParam("segment") String segment) {
         WorkspaceInfo ws = getServiceInfo().getWorkspace(segment);
@@ -99,19 +99,19 @@ public abstract class ServiceResource extends DefaultObject {
         }
         return ws.getResource(ctx);
     }
-        
+
     @GET
     public Response doGet() {
-    	try {
-        	StringWriter sw = new StringWriter();
-        	XMLWriter xw = new XMLWriter(sw, 4);
-        	xw.start();
-        	getServiceInfo().writeTo(ctx.getURL(), xw);
-        	xw.end();
-        	return Response.ok(sw.toString()).type("application/atomsvc+xml").build();
-    	} catch (IOException e) {
-    		throw WebException.wrap("Failed to write down the service document", e);
-    	}
+        try {
+            StringWriter sw = new StringWriter();
+            XMLWriter xw = new XMLWriter(sw, 4);
+            xw.start();
+            getServiceInfo().writeTo(ctx.getURL(), xw);
+            xw.end();
+            return Response.ok(sw.toString()).type("application/atomsvc+xml").build();
+        } catch (IOException e) {
+            throw WebException.wrap("Failed to write down the service document", e);
+        }
     }
-    
+
 }

@@ -40,15 +40,15 @@ import org.apache.chemistry.repository.Repository;
 public abstract class CMISCollection<T> extends
         AbstractEntityCollectionAdapter<T> {
 
-    public final static String RESOURCE_ID   = "id"; 
+    public final static String RESOURCE_ID   = "id";
     public final static String RESOURCE_TYPE = "entrytype";
-    
 
-    /** Collection name - used to construct URLs **/ 
+
+    /** Collection name - used to construct URLs **/
     protected final String name;
 
     protected final Repository repository;
-    
+
     protected final String title;
 
     public CMISCollection(String name, String title, Repository repository) {
@@ -61,10 +61,10 @@ public abstract class CMISCollection<T> extends
     /*
      * ----- AbstractCollectionAdapter -----
      */
-    
+
     @Override
     public String getId(RequestContext request) {
-        return "urn:x-"+name; 
+        return "urn:x-"+name;
     }
 
     @Override
@@ -73,11 +73,11 @@ public abstract class CMISCollection<T> extends
         params.put("collection", name);
         return request.absoluteUrlFor(TargetType.TYPE_COLLECTION, params);
     }
-    
+
     public String getTitle(RequestContext request) {
         return title;
     }
-    
+
     @Override
     public String getAuthor(RequestContext request) {
         return "system";
@@ -102,16 +102,16 @@ public abstract class CMISCollection<T> extends
         createFeedLinks(feed, request);
         return feed;
     }
-    
+
     protected void createFeedLinks(Feed feed, RequestContext request) throws ResponseContextException {
         // feed.addLink("");
-        // feed.addLink("", "self");        
+        // feed.addLink("", "self");
     }
-    
+
     /*
      * ----- Utilities -----
      */
-    
+
     protected static String bool(boolean bool) {
         return bool ? "true" : "false";
     }

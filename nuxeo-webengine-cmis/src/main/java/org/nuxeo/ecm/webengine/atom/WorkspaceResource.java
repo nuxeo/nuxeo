@@ -29,13 +29,13 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
  */
 @WebObject(type="atomws")
 public class WorkspaceResource extends DefaultObject {
-    
-    protected WorkspaceInfo ws;    
-    
+
+    protected WorkspaceInfo ws;
+
     protected void initialize(Object ... args) {
         this.ws = (WorkspaceInfo)args[0];
     }
-    
+
     @Path("{segment}")
     public Object dispatch(@PathParam("segment") String segment) {
         CollectionInfo col = ws.getCollection(segment);
@@ -44,7 +44,7 @@ public class WorkspaceResource extends DefaultObject {
         }
         return col.getResource(ctx);
     }
-    
+
     public WorkspaceInfo getWorkspaceInfo() {
         return ws;
     }

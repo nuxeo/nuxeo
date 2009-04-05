@@ -35,101 +35,101 @@ import org.apache.chemistry.atompub.CMIS;
  */
 public class XMLWriter {
 
-	protected static String CRLF = System.getProperty("line.separator");
-	
+    protected static String CRLF = System.getProperty("line.separator");
+
     protected int indent;
-    protected Writer writer;    
+    protected Writer writer;
     protected String crlf;
     protected boolean emitHeader = true;
-    
+
     protected Element element; //current element
     protected int depth = -1;
-    
+
     public XMLWriter(Writer writer) {
         this (writer, 0);
     }
-    
+
     public XMLWriter(Writer writer, int indent) {
-    	this (writer, indent, CRLF);
+        this (writer, indent, CRLF);
     }
-    
+
     public XMLWriter(Writer writer, int indent, String crlf) {
         this.writer = writer;
         this.indent = indent;
         this.crlf = crlf;
     }
-    
+
     public void setIndent(int indent) {
-		this.indent = indent;
-	}
-    
+        this.indent = indent;
+    }
+
     public int getIndent() {
-		return indent;
-	}
-    
+        return indent;
+    }
+
     public void setCRLF(String crlf) {
-		this.crlf = crlf;
-	}
-    
+        this.crlf = crlf;
+    }
+
     public String getCRLF() {
-		return crlf;
-	}
-    
+        return crlf;
+    }
+
     public void setWriter(Writer writer) {
-		this.writer = writer;
-	}
-    
+        this.writer = writer;
+    }
+
     public Writer getWriter() {
-		return writer;
-	}
-    
+        return writer;
+    }
+
     public void setEmitHeader(boolean emitHeader) {
-		this.emitHeader = emitHeader;
-	}
-    
+        this.emitHeader = emitHeader;
+    }
+
     public boolean isEmitHeader() {
-		return emitHeader;
-	}
-    
+        return emitHeader;
+    }
+
     public void flush() throws IOException {
         writer.flush();
     }
-    
+
     public void close() throws IOException {
         writer.close();
     }
-    
+
     protected void done() throws IOException {
         writer.flush();
         //TODO check for errors
     }
-    
+
     public XMLWriter write(String text) throws IOException {
         writer.write(text);
         return this;
     }
-    
+
     public void indent(String text) throws IOException {
         if (indent > 0) {
             writer.write(crlf);
             char[] buf = new char[depth*indent];
             Arrays.fill(buf, ' ');
             writer.write(buf);
-        }        
+        }
         writer.write(text);
     }
-    
-    
+
+
     public XMLWriter element(String name) throws IOException {
         if (element != null && !element.isContainer) { // a non closed sibling - close it
             pop();
-            writer.write("/>");            
-        }        
+            writer.write("/>");
+        }
         push(name); // push myself to the stack
         indent("<");
         writer.write(name);
         return this;
-    }    
+    }
 
     public XMLWriter start() throws IOException {
         depth++;
@@ -137,14 +137,14 @@ public class XMLWriter {
             if (emitHeader) {
                 writer.write("<?xml version=\"1.0\"?>");
                 writer.write(crlf);
-            }            
+            }
         } else {
             element.isContainer = true;
             writer.write(">");
         }
         return this;
     }
-    
+
     public XMLWriter end() throws IOException {
         depth--;
         if (element == null) {
@@ -157,12 +157,12 @@ public class XMLWriter {
             Element myself = pop(); // close myself
             indent("</");
             writer.write(myself.name);
-            writer.write(">");            
+            writer.write(">");
         }
         return this;
     }
 
-    public XMLWriter content(String text) throws IOException {        
+    public XMLWriter content(String text) throws IOException {
         start();
         depth--;
         writer.write(text);
@@ -174,7 +174,7 @@ public class XMLWriter {
     }
 
     public XMLWriter econtent(String text) throws IOException {
-    	return content(escapeBodyValue(text));
+        return content(escapeBodyValue(text));
     }
 
     public XMLWriter content(boolean value) throws IOException {
@@ -187,9 +187,9 @@ public class XMLWriter {
     }
 
     public XMLWriter etext(String text) throws IOException {
-    	return text(escapeBodyValue(text));
+        return text(escapeBodyValue(text));
     }
-    
+
     public XMLWriter attr(String name, Object value) throws IOException {
         writer.write(" ");
         writer.write(name);
@@ -200,7 +200,7 @@ public class XMLWriter {
     }
 
     public XMLWriter eattr(String name, Object value) throws IOException {
-    	return attr(name, escapeAttributeValue(value));
+        return attr(name, escapeAttributeValue(value));
     }
 
     public XMLWriter xmlns(String value) throws IOException {
@@ -223,7 +223,7 @@ public class XMLWriter {
     }
 
     public XMLWriter string(String value) throws IOException {
-        writer.write(value); 
+        writer.write(value);
         writer.write("\"");
         return this;
     }
@@ -232,14 +232,14 @@ public class XMLWriter {
         writer.write(value.toString());
         writer.write("\"");
         return this;
-    }  
-    
+    }
+
     public XMLWriter date(Date value) throws IOException {
         writer.write(format(value));
         writer.write("\"");
         return this;
     }
-    
+
     public XMLWriter integer(long value) throws IOException {
         writer.write(Long.toString(value));
         writer.write("\"");
@@ -252,12 +252,12 @@ public class XMLWriter {
         return this;
     }
 
-    
+
     public XMLWriter bool(String name, boolean value) throws IOException {
         attr(name, value ? "true" : "false");
         return this;
     }
-    
+
     public XMLWriter integer(String name, long value) throws IOException {
         return attr(name, Long.toString(value));
     }
@@ -265,13 +265,13 @@ public class XMLWriter {
     public XMLWriter number(String name, double value) throws IOException {
         return attr(name, Double.toString(value));
     }
-    
+
     public XMLWriter date(String name, Date value) throws IOException {
         return attr(name, value.toString());
     }
-    
-    
-    
+
+
+
     public String resolve(QName name) {
         if (element != null) {
             String prefix = element.getXmlNs(name.getNamespaceURI());
@@ -285,7 +285,7 @@ public class XMLWriter {
         }
         return name.toString();
     }
-    
+
     public XMLWriter element(QName name) throws IOException {
         return element(resolve(name));
     }
@@ -301,11 +301,11 @@ public class XMLWriter {
     public XMLWriter attr(QName name) throws IOException {
         return attr(resolve(name));
     }
-    
+
     public XMLWriter bool(QName name, boolean value) throws IOException {
         return bool(resolve(name), value);
     }
-    
+
     public XMLWriter integer(QName name, long value) throws IOException {
         return integer(resolve(name), value);
     }
@@ -313,7 +313,7 @@ public class XMLWriter {
     public XMLWriter number(QName name, double value) throws IOException {
         return number(resolve(name), value);
     }
-    
+
     public XMLWriter date(QName name, Date value) throws IOException {
         return date(resolve(name), value);
     }
@@ -352,7 +352,7 @@ public class XMLWriter {
         return sb.toString();
       }
 
-    
+
     /** Escaped <code>&lt;</code> entity */
     public static final String LESS_THAN_ENTITY = "&lt;";
     /** Escaped <code>&gt;</code> entity */
@@ -364,12 +364,12 @@ public class XMLWriter {
     /** Escaped <code>"</code> entity */
     public static final String QUOTE_ENTITY = "&quot;";
 
-    /** 
+    /**
      * <p>Escape the <code>toString</code> of the given object.
      * For use as body text.</p>
      *
      * @param value escape <code>value.toString()</code>
-     * @return text with escaped delimiters 
+     * @return text with escaped delimiters
      */
     public static final String escapeBodyValue(Object value) {
         StringBuffer buffer = new StringBuffer(value.toString());
@@ -389,13 +389,13 @@ public class XMLWriter {
                     buffer.replace(i, i+1, AMPERSAND_ENTITY);
                     size += 4;
                     i += 4;
-                    break;        
+                    break;
             }
         }
         return buffer.toString();
     }
 
-    /** 
+    /**
      * <p>Escape the <code>toString</code> of the given object.
      * For use in an attribute value.</p>
      *
@@ -430,18 +430,18 @@ public class XMLWriter {
                     buffer.replace(i, i+1, QUOTE_ENTITY);
                     size += 5;
                     i += 5;
-                    break;           
+                    break;
             }
         }
         return buffer.toString();
-    }    
+    }
 
-    
+
     Element push(String name) {
         element = new Element(name);
         return element;
     }
-    
+
     Element pop() {
         Element el = element;
         if (el != null) {
@@ -455,7 +455,7 @@ public class XMLWriter {
         Element parent;
         ArrayList<String> nsMap;
         boolean isContainer;
-        
+
         Element(String name) {
             this.name = name;
             this.parent = element;
@@ -468,7 +468,7 @@ public class XMLWriter {
             nsMap.add(uri);
             nsMap.add(prefix);
         }
-        
+
         String getXmlNs(String uri) {
             if (nsMap != null) {
                 for (int i=0,len=nsMap.size(); i<len; i+=2) {
@@ -483,13 +483,13 @@ public class XMLWriter {
             return null;
         }
     }
-    
-    
+
+
     public static void main(String[] args) throws Exception {
-        
+
         StringWriter w = new StringWriter();
         XMLWriter x = new XMLWriter(w, 4);
-        
+
         x.start()
             .element("service").xmlns("cmis", CMIS.CMIS_NS).attr("version", "1.0")
                 .start()
@@ -501,10 +501,10 @@ public class XMLWriter {
                 .element("ws3").attr("key", "val")
                 .end()
         .end();
-                
+
         System.out.println(w.toString());
-        
+
     }
 
-    
+
 }

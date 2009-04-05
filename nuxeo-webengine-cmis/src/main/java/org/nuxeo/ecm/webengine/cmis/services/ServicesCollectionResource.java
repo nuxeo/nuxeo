@@ -35,9 +35,9 @@ import org.nuxeo.ecm.webengine.model.WebObject;
  */
 @WebObject(type="CmisServices")
 public class ServicesCollectionResource extends CollectionResource {
-    
+
     protected static StaticCollection adapter;
-    
+
     protected CMISWorkspaceInfo ws;
     protected String id;
 
@@ -45,18 +45,18 @@ public class ServicesCollectionResource extends CollectionResource {
     protected void initialize(Object... args) {
         this.ws = (CMISWorkspaceInfo)args[0];
     }
-       
+
     public Repository getRepository() {
         return ws.getRepository();
     }
-    
-    
+
+
     @GET
     public Response doGet() {
         return AbderaService.getFeed(ctx, adapter);
     }
 
-    @Path("{id}")    
+    @Path("{id}")
     public Resource dispatch(@PathParam("id") String id) {
         String webType = null;//registry.getService(id);
         return newObject(webType, ws);

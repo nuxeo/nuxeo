@@ -50,21 +50,21 @@ import org.apache.chemistry.type.BaseType;
 /**
  * A parameterized collection that is applied to a target folder object.
  * The target folder ID is retrieved from context by using the <code>objectid</code> parameter.
- * 
- * This is an abstract implementation which is handling all the details of adapting objects to feed entries. 
- * It can be used as a base by any collection that has a root folder and output a feed of objects 
- * (like children or descendant collection) 
- * 
+ *
+ * This is an abstract implementation which is handling all the details of adapting objects to feed entries.
+ * It can be used as a base by any collection that has a root folder and output a feed of objects
+ * (like children or descendant collection)
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public abstract class ObjectRootedCollection extends CMISCollection<ObjectEntry> {
 
-    
+
     public ObjectRootedCollection(String name, String title, Repository repository) {
         super (name, title, repository);
     }
-    
+
     public String getObjectId(RequestContext request) {
         return request.getParameter("objectid");
     }
@@ -79,7 +79,7 @@ public abstract class ObjectRootedCollection extends CMISCollection<ObjectEntry>
 
     @Override
     public String getId(RequestContext request) {
-        return "urn:x-"+name+":" + getObjectId(request); 
+        return "urn:x-"+name+":" + getObjectId(request);
     }
 
     /**
@@ -95,7 +95,7 @@ public abstract class ObjectRootedCollection extends CMISCollection<ObjectEntry>
             RequestContext request) {
         return getObjectLink(object.getId(), request);
     }
-    
+
     /**
      * The method is no more used since {@link #getLink(String, ObjectEntry, IRI, RequestContext) was redefined
      */
@@ -103,7 +103,7 @@ public abstract class ObjectRootedCollection extends CMISCollection<ObjectEntry>
     public String getName(ObjectEntry object) {
         throw new UnsupportedOperationException(); // unused
     }
-    
+
     /**
      * Use object ID to generate UUID
      */
@@ -112,13 +112,13 @@ public abstract class ObjectRootedCollection extends CMISCollection<ObjectEntry>
         return "urn:uuid:" + object.getId();
     }
 
-    
+
     @Override
     protected Feed createFeedBase(RequestContext request) throws ResponseContextException {
         Feed feed = super.createFeedBase(request);
-        
+
         // RFC 5005 paging
-    
+
         return feed;
     }
 
@@ -126,8 +126,8 @@ public abstract class ObjectRootedCollection extends CMISCollection<ObjectEntry>
     protected void createFeedLinks(Feed feed, RequestContext request) throws ResponseContextException {
         String objectId = getObjectId(request);
         feed.addLink(getObjectLink(objectId, request), CMIS.LINK_SOURCE);
-    }    
-    
+    }
+
 
     @Override
     protected ResponseContext buildGetEntryResponse(RequestContext request,
@@ -138,14 +138,14 @@ public abstract class ObjectRootedCollection extends CMISCollection<ObjectEntry>
         rc.setEntityTag(ProviderHelper.calculateEntityTag(entry));
         return rc;
     }
-    
+
     @Override
     protected String addEntryDetails(RequestContext request, Entry entry,
             IRI feedIri, ObjectEntry object) throws ResponseContextException {
         Factory factory = request.getAbdera().getFactory();
-    
+
         entry.declareNS(CMIS.CMIS_NS, CMIS.CMIS_PREFIX);
-    
+
         entry.setId(getId(object));
         entry.setTitle(getTitle(object));
         entry.setUpdated(getUpdated(object));
@@ -159,7 +159,7 @@ public abstract class ObjectRootedCollection extends CMISCollection<ObjectEntry>
         if (t != null) {
             entry.setSummaryElement(t);
         }
-    
+
         String link = getLink(object, feedIri, request);
         entry.addLink(link, "self");
         entry.addLink(link, "edit");
@@ -182,12 +182,12 @@ public abstract class ObjectRootedCollection extends CMISCollection<ObjectEntry>
         }
         // entry.addLink("XXX", CMIS.LINK_ALLOWABLE_ACTIONS);
         // entry.addLink("XXX", CMIS.LINK_RELATIONSHIPS);
-    
+
         // ContentStreamUri needs to know the media link
         String mediaLink = isMediaEntry(object) ? getMediaLink(object.getId(),
                 request) : null;
         entry.addExtension(new ObjectElement(factory, object, mediaLink));
-    
+
         return link;
     }
 
@@ -206,7 +206,7 @@ public abstract class ObjectRootedCollection extends CMISCollection<ObjectEntry>
         person.setName(author);
         return Collections.singletonList(person);
     }
-    
+
     @Override
     public InputStream getMediaStream(ObjectEntry object)
             throws ResponseContextException {
@@ -219,7 +219,7 @@ public abstract class ObjectRootedCollection extends CMISCollection<ObjectEntry>
         }
     }
 
-    
+
     @Override
     public String getTitle(ObjectEntry object) {
         String title = null;
@@ -272,7 +272,7 @@ public abstract class ObjectRootedCollection extends CMISCollection<ObjectEntry>
             throws ResponseContextException {
         return object.hasContentStream();
     }
-    
+
     // called when this is not a media entry
     @Override
     public Object getContent(ObjectEntry object, RequestContext request)

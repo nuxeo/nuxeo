@@ -34,19 +34,19 @@ import org.apache.chemistry.SPI;
 import org.apache.chemistry.repository.Repository;
 
 /**
- * CMIS Collection for the children of a Folder. 
- * 
- * 
- * TODO: 
+ * CMIS Collection for the children of a Folder.
+ *
+ *
+ * TODO:
  *  bs - check if some methods here can be reused for descendants and if true move them to base class
- * 
+ *
  * @author Florent Guillaume
- * @author Bogdan Stefanescu 
- * 
+ * @author Bogdan Stefanescu
+ *
  */
 public class ObjectChildrenCollection extends ObjectRootedCollection {
 
-    public ObjectChildrenCollection(String name, 
+    public ObjectChildrenCollection(String name,
             Repository repository) {
         super("children", "Children", repository);
     }
@@ -60,12 +60,12 @@ public class ObjectChildrenCollection extends ObjectRootedCollection {
     protected void createFeedLinks(Feed feed, RequestContext request) throws ResponseContextException {
         super.createFeedLinks(feed, request);
         String objectId = getObjectId(request);
-        feed.addLink(getChildrenLink(objectId, request), "self");        
+        feed.addLink(getChildrenLink(objectId, request), "self");
     }
 
 
-    /** Feed operations **/ 
-    
+    /** Feed operations **/
+
     @Override
     public Iterable<ObjectEntry> getEntries(RequestContext request)
             throws ResponseContextException {
@@ -75,7 +75,7 @@ public class ObjectChildrenCollection extends ObjectRootedCollection {
                 false, 0, 0, null, hasMoreItems);
         return children;
     }
-    
+
     @Override
     public ObjectEntry getEntry(String id, RequestContext request)
             throws ResponseContextException {

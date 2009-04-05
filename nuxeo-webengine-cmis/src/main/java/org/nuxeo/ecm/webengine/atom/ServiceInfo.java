@@ -25,20 +25,20 @@ import org.nuxeo.ecm.webengine.model.WebContext;
 /**
  * An APP service descriptor that will expose the APP resources according to the
  * layout: <code>&lt;service_url&gt;/workspace_id/collection_id</code>
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class ServiceInfo implements UrlResolver {
 
     protected Map<String, WorkspaceInfo> workspaces = new HashMap<String, WorkspaceInfo>();
     protected UrlResolver urlResolver = this; // user url resolver - by default use me as the resolver
 
-    
+
     public ServiceInfo() {
-        
+
     }
-    
+
     public ServiceInfo(UrlResolver urlResover) {
         this.urlResolver = urlResover;
     }
@@ -56,7 +56,7 @@ public class ServiceInfo implements UrlResolver {
     public WorkspaceInfo[] getWorkspaces() {
         return workspaces.values().toArray(new WorkspaceInfo[workspaces.size()]);
     }
-    
+
     public void writeTo(String baseUrl, XMLWriter xw) throws IOException {
         xw.element("service").xmlns("http://www.w3.org/2007/app");
         writeServiceAttributes(baseUrl, xw);
@@ -66,7 +66,7 @@ public class ServiceInfo implements UrlResolver {
         }
         xw.end();
     }
-    
+
     protected void writeServiceAttributes(String baseUrl, XMLWriter xw) throws IOException {
         // do nothing
     }
@@ -74,11 +74,11 @@ public class ServiceInfo implements UrlResolver {
     public void setUrlResolver(UrlResolver urlResolver) {
         this.urlResolver = urlResolver;
     }
-    
+
     public UrlResolver getUrlResolver() {
         return urlResolver;
     }
-    
+
     /**
      * Resolve an object defined by the given key and parameters to an URL.
      * Must be overrided by subclasses if needed
@@ -86,5 +86,5 @@ public class ServiceInfo implements UrlResolver {
     public String urlFor(WebContext ctx, Object key, Object param) {
         return ctx.getURL()+"/"+key.toString();
     }
-    
+
 }
