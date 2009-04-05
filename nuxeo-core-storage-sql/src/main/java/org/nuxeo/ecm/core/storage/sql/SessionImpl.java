@@ -631,7 +631,7 @@ public class SessionImpl implements Session {
     // public Node newNodeInstance() needed ?
 
     public void checkPermission(String absPath, String actions)
-            throws AccessControlException, StorageException {
+            throws StorageException {
         checkLive();
         // TODO Auto-generated method stub
         throw new RuntimeException("Not implemented");

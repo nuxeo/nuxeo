@@ -42,7 +42,7 @@ public class ResourceAdapterTestCase extends BaseTestCase {
 
     private static final Log log = LogFactory.getLog(ResourceAdapterTestCase.class);
 
-    private PublicNXRuntimeTestCase runtimeTestCase;
+    private final PublicNXRuntimeTestCase runtimeTestCase;
 
     public static Test suite() {
         return preProcessedTest(ResourceAdapterTestCase.class);

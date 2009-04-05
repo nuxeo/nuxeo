@@ -24,21 +24,16 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 
 /**
- *
- * {@link BlobHolder} implemention based on a {@link DocumentModel} and a Xpath pointing to a String fields
- * (Typical use case is the Note DocType)
+ * {@link BlobHolder} implemention based on a {@link DocumentModel} and a Xpath pointing to a String fields.
+ * (Typical use case is the Note DocType).
  *
  * @author tiry
- *
  */
-
-public class DocumentStringBlobHolder extends DocumentBlobHolder implements
-        BlobHolder {
+public class DocumentStringBlobHolder extends DocumentBlobHolder {
 
     public DocumentStringBlobHolder(DocumentModel doc, String path) {
         super(doc, path);
     }
-
 
     @Override
     public Blob getBlob() throws ClientException {
@@ -46,4 +41,5 @@ public class DocumentStringBlobHolder extends DocumentBlobHolder implements
         blob.setFilename(doc.getTitle());
         return blob;
     }
+
 }

@@ -45,7 +45,7 @@ public class TestTypeAnnotationRegistry extends TestCase {
         mgr.remove(Property.class);
 
         assertEquals("cprop", mgr.get(MapProperty.class));
-        assertEquals(null, mgr.get(StringProperty.class));
+        assertNull(mgr.get(StringProperty.class));
     }
 
 }

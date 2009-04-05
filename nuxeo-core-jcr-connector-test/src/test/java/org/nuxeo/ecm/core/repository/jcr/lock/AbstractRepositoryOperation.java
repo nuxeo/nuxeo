@@ -25,18 +25,6 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 
 public abstract class AbstractRepositoryOperation implements RepositoryOperation {
 
-    @SuppressWarnings("unchecked")
-    public static RepositoryOperation getRandomOperation(Random random, CoreSession session, DocumentRef ref) {
-        Class<? extends AbstractRepositoryOperation> types[] =
-            new Class[] { LockDocumentOperation.class, UnlockDocumentOperation.class };
-        try {
-            return types[random.nextInt()%types.length]
-                         .getConstructor(CoreSession.class,DocumentRef.class).newInstance(session,ref);
-        } catch (Exception e) {
-            throw new RuntimeException("Check code", e);
-        }
-    }
-
     protected CoreSession session;
     protected DocumentModel doc;
 
@@ -45,9 +33,22 @@ public abstract class AbstractRepositoryOperation implements RepositoryOperation
         this.doc = doc;
     }
 
+    @SuppressWarnings("unchecked")
+    public static RepositoryOperation getRandomOperation(Random random, CoreSession session, DocumentRef ref) {
+        try {
+            Class<? extends AbstractRepositoryOperation>[] types
+                    = new Class[]{LockDocumentOperation.class, UnlockDocumentOperation.class};
+            return types[random.nextInt() % types.length]
+                    .getConstructor(CoreSession.class, DocumentRef.class).newInstance(session, ref);
+        } catch (Exception e) {
+            throw new RuntimeException("Check code", e);
+        }
+    }
+
     public void operateWith() throws ClientException {
         doOperate();
     }
 
     protected abstract void doOperate() throws ClientException;
+
 }

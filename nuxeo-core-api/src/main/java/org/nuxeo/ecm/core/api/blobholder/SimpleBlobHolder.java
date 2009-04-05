@@ -28,13 +28,11 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 
 /**
- *
- * {@link BlobHolder} implementation that simply wraps a detached {@link Blob}
+ * {@link BlobHolder} implementation that simply wraps a detached {@link Blob}.
  *
  * @author tiry
- *
  */
-public class SimpleBlobHolder extends AbstractBlobHolder implements BlobHolder {
+public class SimpleBlobHolder extends AbstractBlobHolder {
 
     protected List<Blob> blobs;
     protected Calendar creationDate;
@@ -53,21 +51,19 @@ public class SimpleBlobHolder extends AbstractBlobHolder implements BlobHolder {
         init(blobs);
     }
 
-    protected void init(List<Blob> blobs)
-    {
-           this.blobs=blobs;
-           this.creationDate = Calendar.getInstance();
+    protected void init(List<Blob> blobs) {
+        this.blobs = blobs;
+        this.creationDate = Calendar.getInstance();
     }
 
     @Override
     public Blob getBlob() throws ClientException {
-        if (blobs==null) {
+        if (blobs == null) {
             return null;
         }
-        if (blobs.size()==0) {
+        if (blobs.size() == 0) {
             return null;
-        }
-        else {
+        } else {
             return blobs.get(0);
         }
     }

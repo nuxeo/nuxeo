@@ -51,21 +51,20 @@ import org.nuxeo.ecm.core.storage.sql.db.dialect.Dialect;
  */
 public class SQLInfo {
 
+    private static final String ORDER_DESC = "DESC";
+    private static final String ORDER_ASC = "ASC";
+
     private static final Log log = LogFactory.getLog(SQLInfo.class);
 
-    private final Model model;
+    public final Database database;
 
     protected final Dialect dialect;
 
-    public final Database database;
+    private final Model model;
 
     private String selectRootIdSql;
 
     private Column selectRootIdWhatColumn;
-
-    private static final String ORDER_DESC = "DESC";
-
-    private static final String ORDER_ASC = "ASC";
 
     private final Map<String, String> identityFetchSqlMap; // statement
 
@@ -128,19 +127,12 @@ public class SQLInfo {
     protected final Map<String, SQLInfoSelect> selectFragmentById;
 
     protected SQLInfoSelect selectVersionsByLabel;
-
     protected SQLInfoSelect selectVersionsByVersionable;
-
     protected SQLInfoSelect selectVersionsByVersionableLastFirst;
-
     protected SQLInfoSelect selectProxiesByVersionable;
-
     protected SQLInfoSelect selectProxiesByTarget;
-
     protected SQLInfoSelect selectChildrenByIsProperty;
-
     protected SQLInfoSelect selectProxiesByVersionableAndParent;
-
     protected SQLInfoSelect selectProxiesByTargetAndParent;
 
     /**

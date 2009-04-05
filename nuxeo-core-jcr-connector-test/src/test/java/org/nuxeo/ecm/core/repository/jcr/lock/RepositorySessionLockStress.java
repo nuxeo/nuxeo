@@ -46,13 +46,15 @@ public class RepositorySessionLockStress extends RepositoryOSGITestCase {
 
     public static final String PREFIX = RepositorySessionLockStress.class.getSimpleName();
 
-    private int numberOfDocuments;
+    protected static Log log = LogFactory.getLog(RepositorySessionLockStress.class);
 
-    private boolean isThreadSafe;
+    private final int numberOfDocuments;
 
-    private int numberOfThreads;
+    private final boolean isThreadSafe;
 
-    private int numberOfLoops;
+    private final int numberOfThreads;
+
+    private final int numberOfLoops;
 
     protected RepositorySessionLockStress(int numberOfDocuments,
             boolean isThreadSafe, boolean isOperationsDelayed,
@@ -66,10 +68,7 @@ public class RepositorySessionLockStress extends RepositoryOSGITestCase {
     }
 
     public void noop() {
-        ;
     }
-
-    protected static Log log = LogFactory.getLog(RepositorySessionLockStress.class);
 
     @Override
     public void setUp() throws Exception {
@@ -126,7 +125,7 @@ public class RepositorySessionLockStress extends RepositoryOSGITestCase {
 
     public class OperationRunner implements Runnable {
 
-        OperationRunner(String name) throws ClientException {
+        OperationRunner(String name) {
             this.name = name;
         }
 
@@ -259,17 +258,11 @@ public class RepositorySessionLockStress extends RepositoryOSGITestCase {
         canStart = new CountDownLatch(1);
         ThreadGroup group = new ThreadGroup(
                 RepositorySessionLockStress.class.getSimpleName());
-        OperationRunner runners[] = new OperationRunner[numberOfThreads];
+        OperationRunner[] runners = new OperationRunner[numberOfThreads];
         for (int i = 0; i < numberOfThreads; i++) {
-            OperationRunner runner = null;
-            try {
-                runners[i] = runner = new OperationRunner(formatName(PREFIX, i,
-                        numberOfThreads));
-            } catch (ClientException e) {
-                log.error("cannot start runner", e);
-                shouldStop = true;
-                break;
-            }
+            OperationRunner runner;
+            runners[i] = runner = new OperationRunner(
+                    formatName(PREFIX, i, numberOfThreads));
             new Thread(group, runner, runner.name).start();
         }
         canStart.countDown();
