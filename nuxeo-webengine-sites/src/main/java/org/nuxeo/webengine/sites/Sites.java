@@ -86,6 +86,7 @@ public class Sites extends DefaultObject {
                 site.put("name", SiteHelper.getString(webSite, "webc:name"));
                 sites.add(site);
             } catch (Exception e) {
+                // FIXME: this is not a debug level message
                 log.debug("Problem retrieving the existings websites ...", e);
             }
         }

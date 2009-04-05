@@ -50,13 +50,14 @@ import org.nuxeo.webengine.sites.JsonAdapter;
 import org.nuxeo.webengine.sites.SiteHelper;
 
 /**
- * Utility class for sites implementation
- *
- *
+ * Utility class for sites implementation.
  */
 public class SiteUtils {
 
     private static final Log log = LogFactory.getLog(SiteUtils.class);
+
+    private SiteUtils() {
+    }
 
     /**
      * Method used to return the list with the details about the <b>Contextual

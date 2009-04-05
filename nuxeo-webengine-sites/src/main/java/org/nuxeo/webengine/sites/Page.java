@@ -79,11 +79,10 @@ public class Page extends DocumentObject {
     public List<DocumentModel> getComments() {
         try {
             CommentManager commentManager = WebCommentUtils.getCommentManager();
-            return commentManager.getComments(this.getDocument());
+            return commentManager.getComments(getDocument());
         } catch (Exception e) {
             throw WebException.wrap("Failed to get all published comments", e);
         }
-
     }
 
     @GET
@@ -91,7 +90,7 @@ public class Page extends DocumentObject {
     public int getNumberCommentsOnPage() {
         try {
             CommentManager commentManager = WebCommentUtils.getCommentManager();
-            return commentManager.getComments(this.getDocument()).size();
+            return commentManager.getComments(getDocument()).size();
         } catch (Exception e) {
             throw WebException.wrap("Failed to get all published comments", e);
         }
@@ -100,9 +99,9 @@ public class Page extends DocumentObject {
 
     public boolean isModerator() {
         try {
-            CoreSession session = this.getCoreSession();
+            CoreSession session = getCoreSession();
             return WebCommentUtils.isModeratedByCurrentUser(session,
-                    this.getDocument());
+                    getDocument());
         } catch (Exception e) {
             throw WebException.wrap("Failed to delete comment", e);
         }
@@ -116,6 +115,7 @@ public class Page extends DocumentObject {
             DocumentModel parentWorkspace = SiteUtils.getFirstWorkspaceParent(getCoreSession(), doc);
             resp = SiteUtils.getLogoResponse(parentWorkspace);
         } catch (Exception e) {
+            // FIXME: use proper logging
             e.printStackTrace();
         }
         //return a default image, maybe you want to change this in future
@@ -152,9 +152,9 @@ public class Page extends DocumentObject {
 
     public boolean isUserWithCommentPermission() {
         try {
-            CoreSession session = this.getCoreSession();
+            CoreSession session = getCoreSession();
             return WebCommentUtils.currentUserHasCommentPermision(session,
-                    this.getDocument());
+                    getDocument());
         } catch (Exception e) {
             throw WebException.wrap("Failed to delete comment", e);
         }
@@ -180,8 +180,7 @@ public class Page extends DocumentObject {
 
             // add all webpages that are directly connected to an webpage
             root.put(ALL_WEBPAGES, SiteUtils.getAllWebPages(doc));
-            MimetypeRegistry mimetypeService = null;
-            mimetypeService = Framework.getService(MimetypeRegistry.class);
+            MimetypeRegistry mimetypeService = Framework.getService(MimetypeRegistry.class);
             root.put("mimetypeService", mimetypeService);
         } catch (Exception e) {
             log.error("Unable to get mimetype service : " + e.getMessage());

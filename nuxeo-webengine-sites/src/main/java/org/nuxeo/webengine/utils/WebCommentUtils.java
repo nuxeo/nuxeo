@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Collection;
 
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -50,7 +51,7 @@ public class WebCommentUtils {
     /**
      * Gets all the users with a given permission for the corresponding workspace.
      */
-    public static ArrayList<String> getUsersWithPermission(CoreSession session,
+    public static Collection<String> getUsersWithPermission(CoreSession session,
             DocumentModel doc, Set<String> permissions) throws Exception {
         DocumentModel parentWorkspace = SiteUtils.getFirstWorkspaceParent(session, doc);
         if (parentWorkspace != null) {
@@ -70,10 +71,10 @@ public class WebCommentUtils {
         Set<String> moderatePermissions = new HashSet<String>();
         SecurityService securityService = getSecurityService();
         moderatePermissions.addAll(Arrays.asList(securityService.getPermissionsToCheck(PERMISSION_MODERATE)));
-        return getUsersWithPermission(session, doc, moderatePermissions).size() >= 1 ? true
-                : false;
+        return getUsersWithPermission(session, doc, moderatePermissions).size() >= 1;
     }
 
+    // FIXME: what does it mean?
     /**
      * @return true if the current user is between moderators
      * @throws Exception
@@ -87,6 +88,7 @@ public class WebCommentUtils {
      * @return true if the current user has comment permission on this document
      * @throws Exception
      */
+    // FIXME: name should start with "has"
     public static boolean currentUserHasCommentPermision(CoreSession session,
             DocumentModel doc) throws Exception {
         return session.hasPermission(doc.getRef(), PERMISSION_COMMENT);
@@ -94,7 +96,8 @@ public class WebCommentUtils {
 
    /**
     * @return true if the current user is an Administrator
-    * */
+    */
+   // FIXME: should be called "isCurrentUserAdministrator" !
     public static boolean currentUserIsAdministaror(CoreSession session) {
         return ((NuxeoPrincipal) session.getPrincipal()).isAdministrator();
     }
@@ -128,7 +131,7 @@ public class WebCommentUtils {
      */
     public static DocumentModel getPageForComment(DocumentModel comment)
             throws Exception {
-        CommentManager commentManager = WebCommentUtils.getCommentManager();
+        CommentManager commentManager = getCommentManager();
         List<DocumentModel> list = commentManager.getDocumentsForComment(comment);
         if (list.size() != 0) {
             DocumentModel page = list.get(0);

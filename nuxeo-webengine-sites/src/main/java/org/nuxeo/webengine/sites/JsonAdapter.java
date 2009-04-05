@@ -79,7 +79,6 @@ public class JsonAdapter extends DefaultAdapter {
         return null;
     }
 
-
     public static Path getRelativPath(DocumentModel rootDoc, DocumentModel doc) {
         Path rootPath = rootDoc.getPath();
         Path docPath = doc.getPath();
@@ -110,6 +109,5 @@ public class JsonAdapter extends DefaultAdapter {
         }
         return null;
     }
-
 
 }

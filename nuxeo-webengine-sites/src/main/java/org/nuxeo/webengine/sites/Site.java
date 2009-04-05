@@ -47,7 +47,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.rest.DocumentObject;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebContext;
@@ -162,6 +161,7 @@ public class Site extends DefaultObject {
                 resp = Response.ok().entity(blob).type(blob.getMimeType()).build();
             }
         } catch (Exception e) {
+            // FIXME: explicit logging...
             e.printStackTrace();
         }
         //return a default image, maybe you want to change this in future
@@ -192,7 +192,6 @@ public class Site extends DefaultObject {
         }
     }
 
-
     protected Map<String, Object> getSiteArguments() throws ClientException {
         Map<String, Object> root = new HashMap<String, Object>();
 
@@ -215,7 +214,6 @@ public class Site extends DefaultObject {
         return root;
     }
 
-
     protected DocumentModel getSiteDocumentModelByUrl(String url) {
         WebContext context = WebEngine.getActiveContext();
         CoreSession session = context.getCoreSession();
@@ -227,6 +225,7 @@ public class Site extends DefaultObject {
                 return list.get(0);
             }
         } catch (ClientException e) {
+            // FIXME: proper logging
             e.printStackTrace();
         }
         return null;

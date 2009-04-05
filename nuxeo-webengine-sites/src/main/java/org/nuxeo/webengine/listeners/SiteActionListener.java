@@ -37,7 +37,7 @@ public class SiteActionListener implements EventListener {
             return;
         }
 
-        DocumentEventContext docCtx = null;
+        DocumentEventContext docCtx;
         if (event.getContext() instanceof DocumentEventContext) {
             docCtx = (DocumentEventContext) event.getContext();
         } else {

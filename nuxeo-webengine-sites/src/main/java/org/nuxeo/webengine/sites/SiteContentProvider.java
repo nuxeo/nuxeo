@@ -49,6 +49,7 @@ public class SiteContentProvider extends DocumentContentProvider {
                     v.add(d);
                 }
             } catch (ClientException e) {
+                // FIXME: proper logging
                 e.printStackTrace();
             }
         }
