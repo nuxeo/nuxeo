@@ -22,29 +22,18 @@ public class SessionManager extends AbstractComponent {
 
     private static final long serialVersionUID = 1L;
 
-    private static String SELECTED_ELEMENT_ID = "org.nuxeo.theme.editor.selected_element";
-
-    private static String STYLE_EDIT_MODE = "org.nuxeo.theme.editor.style_edit_mode";
-
-    private static String STYLE_LAYER_ID = "org.nuxeo.theme.editor.style_layer";
-
-    private static String NAMED_STYLE_ID = "org.nuxeo.theme.editor.named_style";
-
-    private static String STYLE_SELECTOR = "org.nuxeo.theme.editor.style_selector";
-
-    private static String STYLE_PROPERTY_CATEGORY = "org.nuxeo.theme.editor.style_property_category";
-
-    private static String STYLE_CATEGORY = "org.nuxeo.theme.editor.style_category";
-
-    private static String STYLE_MANAGER_MODE = "org.nuxeo.theme.editor.style_manager_mode";
-
-    private static String PRESET_MANAGER_MODE = "org.nuxeo.theme.editor.preset_manager_mode";
-
-    private static String PRESET_GROUP = "org.nuxeo.theme.editor.preset_group";
-
-    private static String CLIPBOARD_ELEMENT_ID = "org.nuxeo.theme.editor.clipboard_element";
-
-    private static String CLIPBOARD_PRESET_ID = "org.nuxeo.theme.editor.clipboard_preset";
+    private static final String SELECTED_ELEMENT_ID = "org.nuxeo.theme.editor.selected_element";
+    private static final String STYLE_EDIT_MODE = "org.nuxeo.theme.editor.style_edit_mode";
+    private static final String STYLE_LAYER_ID = "org.nuxeo.theme.editor.style_layer";
+    private static final String NAMED_STYLE_ID = "org.nuxeo.theme.editor.named_style";
+    private static final String STYLE_SELECTOR = "org.nuxeo.theme.editor.style_selector";
+    private static final String STYLE_PROPERTY_CATEGORY = "org.nuxeo.theme.editor.style_property_category";
+    private static final String STYLE_CATEGORY = "org.nuxeo.theme.editor.style_category";
+    private static final String STYLE_MANAGER_MODE = "org.nuxeo.theme.editor.style_manager_mode";
+    private static final String PRESET_MANAGER_MODE = "org.nuxeo.theme.editor.preset_manager_mode";
+    private static final String PRESET_GROUP = "org.nuxeo.theme.editor.preset_group";
+    private static final String CLIPBOARD_ELEMENT_ID = "org.nuxeo.theme.editor.clipboard_element";
+    private static final String CLIPBOARD_PRESET_ID = "org.nuxeo.theme.editor.clipboard_preset";
 
     private static UserSession getUserSession() {
         return WebEngine.getActiveContext().getUserSession();

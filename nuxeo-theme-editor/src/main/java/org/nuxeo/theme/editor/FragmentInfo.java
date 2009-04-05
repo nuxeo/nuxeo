@@ -22,7 +22,7 @@ import org.nuxeo.theme.views.ViewType;
 
 public class FragmentInfo {
 
-    private FragmentType fragmentType;
+    private final FragmentType fragmentType;
 
     public List<ViewType> viewTypes = new ArrayList<ViewType>();
 

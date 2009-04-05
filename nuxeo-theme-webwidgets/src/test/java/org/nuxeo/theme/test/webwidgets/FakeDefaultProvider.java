@@ -19,7 +19,7 @@ import org.nuxeo.theme.webwidgets.providers.DefaultProviderSession;
 
 public class FakeDefaultProvider extends DefaultProvider {
 
-    private DefaultProviderSession session = new DefaultProviderSession();
+    private final DefaultProviderSession session = new DefaultProviderSession();
 
     @Override
     public DefaultProviderSession getDefaultProviderSession() {

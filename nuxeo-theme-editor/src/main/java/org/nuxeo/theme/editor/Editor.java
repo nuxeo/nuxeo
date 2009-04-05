@@ -196,8 +196,7 @@ public class Editor {
     }
 
     public static void updateElementProperties(Element element,
-            Map<String, String> propertyMap) throws ThemeException,
-            ThemeIOException {
+            Map<String, String> propertyMap) throws ThemeIOException {
         Properties properties = new Properties();
         for (Object key : propertyMap.keySet()) {
             properties.put(key, propertyMap.get(key));

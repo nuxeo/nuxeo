@@ -21,9 +21,9 @@ public class PersistenceConfigurator extends DefaultComponent implements
 
     protected static EntityManagerFactory emf;
 
-    protected static DataSource ds = null;
+    protected static DataSource ds;
 
-    private static String DEFAULT_DATASOURCE = "jdbc/nxwebwidgets";
+    private static final String DEFAULT_DATASOURCE = "jdbc/nxwebwidgets";
 
     @Override
     public void activate(ComponentContext context) throws Exception {

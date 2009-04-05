@@ -76,7 +76,7 @@ public class TestPresetManager extends NXRuntimeTestCase {
     }
 
     public void testGetAllPresets() {
-        assert (PresetManager.getAllPresets().isEmpty());
+        assert PresetManager.getAllPresets().isEmpty();
         PresetType preset1 = new PresetType("orange", "#fc0", "colors", "color");
         PresetType preset2 = new PresetType("green", "#0f0", "colors", "color");
         typeRegistry.register(preset1);
@@ -84,7 +84,7 @@ public class TestPresetManager extends NXRuntimeTestCase {
         List<Type> allPresets = PresetManager.getAllPresets();
         assertTrue(allPresets.contains(preset1));
         assertTrue(allPresets.contains(preset2));
-        assertTrue(allPresets.size() == 2);
+        assertEquals(2, allPresets.size());
     }
 
     public void testResolvePresets() {
@@ -113,13 +113,13 @@ public class TestPresetManager extends NXRuntimeTestCase {
         typeRegistry.register(preset1);
         typeRegistry.register(preset2);
         assertEquals("#000 #fc0 #0f0 #fff", PresetManager.resolvePresets("theme1",
-        "#000 \"orange\" \"green\" #fff"));
-assertEquals("1px solid \"red\"", PresetManager.resolvePresets("theme1",
-        "1px solid \"red\""));
-assertEquals("1px solid #fc0", PresetManager.resolvePresets("theme1",
-        "1px solid \"orange\""));
-assertEquals("#fc0", PresetManager.resolvePresets("theme1",
-        "\"orange\""));
+                "#000 \"orange\" \"green\" #fff"));
+        assertEquals("1px solid \"red\"", PresetManager.resolvePresets("theme1",
+                "1px solid \"red\""));
+        assertEquals("1px solid #fc0", PresetManager.resolvePresets("theme1",
+                "1px solid \"orange\""));
+        assertEquals("#fc0", PresetManager.resolvePresets("theme1",
+                "\"orange\""));
     }
 
 }

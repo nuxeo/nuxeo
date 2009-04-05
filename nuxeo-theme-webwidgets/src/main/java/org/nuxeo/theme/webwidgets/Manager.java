@@ -198,8 +198,7 @@ public class Manager {
     }
 
     public static void setWidgetPreferences(Provider provider, Widget widget,
-            Map<String, String> preferences) throws WidgetException,
-            ProviderException {
+            Map<String, String> preferences) throws ProviderException {
         if (!provider.canWrite()) {
             return;
         }
@@ -247,7 +246,7 @@ public class Manager {
      * Widget state
      */
     public static void setWidgetState(Provider provider, Widget widget,
-            WidgetState state) throws WidgetException, ProviderException {
+            WidgetState state) throws ProviderException {
         if (!provider.canWrite()) {
             return;
         }
@@ -297,8 +296,7 @@ public class Manager {
     }
 
     public static void setWidgetData(Provider provider, Widget widget,
-            String dataName, WidgetData data) throws WidgetException,
-            ProviderException {
+            String dataName, WidgetData data) throws ProviderException {
         if (provider.canWrite()) {
             provider.setWidgetData(widget, dataName, data);
         }

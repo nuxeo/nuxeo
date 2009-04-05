@@ -21,7 +21,7 @@ import org.nuxeo.theme.Manager;
 
 public abstract class AbstractModel implements Model {
 
-    private List<Model> items = new ArrayList<Model>();
+    private final List<Model> items = new ArrayList<Model>();
 
     public String getModelTypeName() {
         ModelType modelType = getModelType();

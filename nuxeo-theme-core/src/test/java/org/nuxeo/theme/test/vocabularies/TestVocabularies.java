@@ -53,7 +53,7 @@ public class TestVocabularies extends NXRuntimeTestCase {
 
     public void testClassVocabulary() {
         List<VocabularyItem> items = vocabularyManager.getItems("test vocabulary as class");
-        assertTrue(items.size() == 2);
+        assertEquals(2, items.size());
         assertEquals("value1", items.get(0).getValue());
         assertEquals("label1", items.get(0).getLabel());
         assertEquals("value2", items.get(1).getValue());
@@ -62,7 +62,7 @@ public class TestVocabularies extends NXRuntimeTestCase {
 
     public void testResourceVocabulary() {
         List<VocabularyItem> items = vocabularyManager.getItems("test vocabulary as csv resource");
-        assertTrue(items.size() == 3);
+        assertEquals(3, items.size());
         assertEquals("value1", items.get(0).getValue());
         assertEquals("label1", items.get(0).getLabel());
         assertEquals("value2", items.get(1).getValue());

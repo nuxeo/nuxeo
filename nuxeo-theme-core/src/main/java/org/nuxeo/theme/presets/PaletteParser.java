@@ -63,18 +63,17 @@ public class PaletteParser {
 
     public static String rgbToHex(int r, int g, int b) {
         final StringBuffer hexcolor = new StringBuffer("#");
-        final int rgb[] = { r, g, b };
-        for (int i = 0; i < rgb.length; i++) {
-            final int val = rgb[i];
+        final int[] rgb = { r, g, b };
+        for (final int val : rgb) {
             if (val < 16) {
                 hexcolor.append("0");
             }
             hexcolor.append(Integer.toHexString(val));
         }
         // optimize #aabbcc to #abc
-        if ((hexcolor.charAt(1) == hexcolor.charAt(2))
-                && (hexcolor.charAt(3) == hexcolor.charAt(4))
-                && (hexcolor.charAt(5) == hexcolor.charAt(6))) {
+        if (hexcolor.charAt(1) == hexcolor.charAt(2)
+                && hexcolor.charAt(3) == hexcolor.charAt(4)
+                && hexcolor.charAt(5) == hexcolor.charAt(6)) {
             return String.format("#%s%s%s", hexcolor.charAt(1),
                     hexcolor.charAt(4), hexcolor.charAt(6));
         }

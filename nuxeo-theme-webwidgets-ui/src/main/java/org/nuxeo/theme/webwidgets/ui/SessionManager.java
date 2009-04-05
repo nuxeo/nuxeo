@@ -22,7 +22,7 @@ public class SessionManager extends AbstractComponent {
 
     private static final long serialVersionUID = 1L;
 
-    private static String WIDGET_CATEGORY = "org.nuxeo.theme.widget_category";
+    private static final String WIDGET_CATEGORY = "org.nuxeo.theme.widget_category";
 
     public static synchronized void setWidgetCategory(String id) {
         WebContext ctx = WebEngine.getActiveContext();

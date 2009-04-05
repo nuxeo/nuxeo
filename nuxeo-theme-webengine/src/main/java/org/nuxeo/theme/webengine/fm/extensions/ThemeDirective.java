@@ -62,7 +62,7 @@ public class ThemeDirective implements TemplateDirectiveModel {
 
     private final Map<URL, String> cachedThemes = new HashMap<URL, String>();
 
-    private Map<URL, Long> lastRefreshedMap = new HashMap<URL, Long>();
+    private final Map<URL, Long> lastRefreshedMap = new HashMap<URL, Long>();
 
     @SuppressWarnings("unchecked")
     public void execute(Environment env, Map params, TemplateModel[] loopVars,

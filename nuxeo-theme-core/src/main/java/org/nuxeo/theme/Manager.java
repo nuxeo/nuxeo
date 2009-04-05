@@ -102,7 +102,7 @@ public final class Manager {
             properties.put("java.protocol.handler.pkgs", PROTOCOL_HANDLER_PKG);
         } else if (!handlers.matches(PROTOCOL_HANDLER_PKG)) {
             properties.put("java.protocol.handler.pkgs", PROTOCOL_HANDLER_PKG
-                    + "|".concat(handlers));
+                    + "|" + handlers);
         }
         System.setProperties(properties);
 
