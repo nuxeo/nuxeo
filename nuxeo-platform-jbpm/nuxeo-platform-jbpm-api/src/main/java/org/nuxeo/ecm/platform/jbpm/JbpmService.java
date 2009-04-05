@@ -45,9 +45,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
  * executeJbpmOperation making sure those object are properly loaded inside the
  * operation.
  *
- *
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
- *
  */
 public interface JbpmService {
 
@@ -55,9 +53,8 @@ public interface JbpmService {
      * The variable used as process instance variables.
      *
      * @author arussel
-     *
      */
-    public enum VariableName {
+    enum VariableName {
         documentId, documentRepositoryName, endLifecycleTransition, initiator, participants, participant,
         /**
          * A document, used as a transient variable name
@@ -75,26 +72,26 @@ public interface JbpmService {
      * @author arussel
      *
      */
-    public enum TaskVariableName {
+    enum TaskVariableName {
         directive, validated
     }
 
     /**
-     * Name hibernate queries.
-     *
+     * Named hibernate queries.
+     * <p>
      * They are located in the <code>nuxeo.hibernate.queries.hbm.xml</code>
      *
      * @author arussel
-     *
      */
-    public enum HibernateQueries {
-        NuxeoHibernateQueries_getProcessInstancesForDoc, NuxeoHibernateQueries_getTaskInstancesForDoc
+    enum HibernateQueries {
+        NuxeoHibernateQueries_getProcessInstancesForDoc,
+        NuxeoHibernateQueries_getTaskInstancesForDoc
     }
 
     /**
-     * Marker for acls managed by workflow
+     * Marker for acls managed by workflow.
      */
-    static String ACL_PREFIX = "WORKFLOW_ACL_";
+    String ACL_PREFIX = "WORKFLOW_ACL_";
 
     /**
      * Return the configuration.
@@ -102,8 +99,8 @@ public interface JbpmService {
     JbpmConfiguration getConfiguration();
 
     /**
-     * Execute a JbpmOperation.
-     *
+     * Executes a JbpmOperation.
+     * <p>
      * The JbpmOperation will be executed inside a context block.
      *
      * @param operation
@@ -115,7 +112,7 @@ public interface JbpmService {
 
     // TASK
     /**
-     * Return a list of task instances assigned to this user or one of its
+     * Returns a list of task instances assigned to this user or one of its
      * group.
      *
      * @param currentUser the user.
@@ -127,7 +124,7 @@ public interface JbpmService {
             throws NuxeoJbpmException;
 
     /**
-     * Return a list of task instances assigned to one of the actors in the list
+     * Returns a list of task instances assigned to one of the actors in the list
      * or to its pool.
      *
      * @param actors a list used as actorId to retrieve the tasks.
@@ -139,7 +136,7 @@ public interface JbpmService {
             JbpmActorsListFilter filter) throws NuxeoJbpmException;
 
     /**
-     * Return a list of task instance for this process instance. It returns all
+     * Returns a list of task instance for this process instance. It returns all
      * task instances, not only the tasks for this principal. The principal is
      * used as an argument to the filter.
      *
@@ -152,7 +149,7 @@ public interface JbpmService {
             throws NuxeoJbpmException;
 
     /**
-     * End the task following the transition. If transition is null, follow the
+     * Ends the task following the transition. If transition is null, follow the
      * default transition.
      *
      * @param taskInstanceId
@@ -172,7 +169,7 @@ public interface JbpmService {
             NuxeoPrincipal principal) throws NuxeoJbpmException;
 
     /**
-     * Return a list of of possible transition for this user. (If a document is
+     * Returns a list of of possible transition for this user. (If a document is
      * attached to the process, then return only the allowed transition)
      *
      * @param taskInstanceId the id of the taskInstance.
@@ -195,8 +192,8 @@ public interface JbpmService {
     // PROCESS
 
     /**
-     * Delete the process instance and related tasks.
-     *
+     * Deletes the process instance and related tasks.
+     * <p>
      * If you don't want to delete the process, add a abandon state and suitable
      * transitions.
      *
@@ -206,7 +203,7 @@ public interface JbpmService {
             throws NuxeoJbpmException;
 
     /**
-     * Return a list of all current process instances this user has started.
+     * Returns a list of all current process instances this user has started.
      *
      * @param principal
      * @return A list of ProcessInstance
@@ -216,13 +213,12 @@ public interface JbpmService {
             JbpmListFilter filter) throws NuxeoJbpmException;
 
     /**
-     * Return a list of all current process instances that has been started by
+     * Returns a list of all current process instances that has been started by
      * one of the actors in the list.
      *
      * @param actors A list of string that would be used as actorId to retrieve
      *            the process instances.
      * @param filter
-     * @param principal the principal passed a
      * @return
      * @throws NuxeoJbpmException
      */
@@ -239,7 +235,7 @@ public interface JbpmService {
             throws NuxeoJbpmException;
 
     /**
-     * Return the created and started process instance.
+     * Returns the created and started process instance.
      *
      * @param processInstanceName the name of the process
      * @param user the initiator of the process.
@@ -258,7 +254,7 @@ public interface JbpmService {
             throws NuxeoJbpmException;
 
     /**
-     * Return a list of available Process Definition Name available for this
+     * Returns a list of available Process Definition Name available for this
      * document and user. All process definition if dm is <code>null</code>.
      * The returned process definition is always the latest.
      *
@@ -270,8 +266,8 @@ public interface JbpmService {
             DocumentModel dm, JbpmListFilter filter) throws NuxeoJbpmException;
 
     /**
-     * Return the latest process definitions attached to a type.
-     *
+     * Returns the latest process definitions attached to a type.
+     * <p>
      * Matching between type and process definition is done in the typeFilter
      * extension point of the service.
      *
@@ -282,7 +278,7 @@ public interface JbpmService {
             throws NuxeoJbpmException;
 
     /**
-     * Return the latest process definition with this name.
+     * Returns the latest process definition with this name.
      *
      * @param name the Name.
      * @return the process definition.
@@ -291,7 +287,7 @@ public interface JbpmService {
             throws NuxeoJbpmException;
 
     /**
-     * Terminate this process and all the tokens in it.
+     * Terminates this process and all the tokens in it.
      *
      * @param processId the id of the process instance.
      * @throws NuxeoJbpmException
@@ -299,7 +295,7 @@ public interface JbpmService {
     void endProcessInstance(Long processId) throws NuxeoJbpmException;
 
     /**
-     * Persist a process instance.
+     * Persists a process instance.
      *
      * @return the updated instance.
      */
@@ -309,7 +305,7 @@ public interface JbpmService {
     // DOCUMENT
 
     /**
-     * Return the document used in this task.
+     * Returns the document used in this task.
      *
      * @param ti the task.
      * @param user the user.
@@ -319,7 +315,7 @@ public interface JbpmService {
             throws NuxeoJbpmException;
 
     /**
-     * Return the document used in this process.
+     * Returns the document used in this process.
      *
      * @param pi the process instance.
      * @param user the user.
@@ -330,9 +326,9 @@ public interface JbpmService {
             throws NuxeoJbpmException;
 
     /**
-     * Return the list of task instances associated with this document for which
+     * Returns the list of task instances associated with this document for which
      * the user is the actor or belongs to the pooled actor list.
-     *
+     * <p>
      * If the user is null, then it returns all task instances for the document.
      *
      * @param dm the document.
@@ -344,12 +340,12 @@ public interface JbpmService {
             JbpmListFilter jbpmListFilter) throws NuxeoJbpmException;
 
     /**
-     * Return the list of task instances associated with this document assigned
+     * Returns the list of task instances associated with this document assigned
      * to one of the actor in the list or its pool.
      *
      * @param dm
      * @param actors
-     * @param jbpmListFilter
+     * @param jbpmActorsListFilter
      * @return
      * @throws NuxeoJbpmException
      */
@@ -358,7 +354,7 @@ public interface JbpmService {
             throws NuxeoJbpmException;
 
     /**
-     * Return the list of process instances associated with this document.
+     * Returns the list of process instances associated with this document.
      *
      * @param dm
      * @param user
@@ -370,7 +366,7 @@ public interface JbpmService {
             throws NuxeoJbpmException;
 
     /**
-     * Return a map, key is the type of document, value is a list of process
+     * Returns a map, whose key is the type of document, and value is a list of process
      * definitions.
      *
      * @return
@@ -378,7 +374,7 @@ public interface JbpmService {
     Map<String, List<String>> getTypeFilterConfiguration();
 
     /**
-     * Return if this user has this permission for this process instance and
+     * Returns true if this user has this permission for this process instance and
      * document.
      *
      * @param pi

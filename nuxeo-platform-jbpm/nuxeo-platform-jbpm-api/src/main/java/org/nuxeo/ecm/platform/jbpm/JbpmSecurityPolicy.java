@@ -22,7 +22,6 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
 /**
  * @author arussel
- *
  */
 public interface JbpmSecurityPolicy {
 
@@ -32,7 +31,6 @@ public interface JbpmSecurityPolicy {
 
     /**
      * Checks the permission on a process instance.
-     *
      * <dl>
      * <dt>read</dt>
      * <dd>Read a process instance from this definition.</dd>
@@ -42,7 +40,7 @@ public interface JbpmSecurityPolicy {
      * <dd>Create a process instance from this definition.</dd>
      * </dl>
      *
-     * @param processDefinition
+     * @param processInstance
      * @param action
      * @param dm the attached document, <code>null</code> if no document is
      *            attache to the process.
@@ -50,4 +48,5 @@ public interface JbpmSecurityPolicy {
      */
     Boolean checkPermission(ProcessInstance processInstance, Action action,
             DocumentModel dm, NuxeoPrincipal user);
+
 }

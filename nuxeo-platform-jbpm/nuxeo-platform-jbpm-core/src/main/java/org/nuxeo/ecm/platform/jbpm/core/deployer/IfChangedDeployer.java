@@ -28,7 +28,6 @@ import java.util.Map;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactoryConfigurationError;
 
 import org.nuxeo.ecm.platform.jbpm.AbstractProcessDefinitionDeployer;
 import org.nuxeo.ecm.platform.jbpm.ProcessDefinitionDeployer;
@@ -48,7 +47,7 @@ public class IfChangedDeployer extends AbstractProcessDefinitionDeployer
     private final Map<URL, String> hashes = new HashMap<URL, String>();
 
     public IfChangedDeployer() throws TransformerConfigurationException,
-            ParserConfigurationException, TransformerFactoryConfigurationError {
+            ParserConfigurationException {
         hasher = new MD5Hasher();
         persistence = new HashPersistence();
     }

@@ -43,12 +43,15 @@ public class VirtualTaskInstanceController extends AbstractJbpmHandlerHelper {
     @Override
     public void initializeTaskVariables(TaskInstance taskInstance,
             ContextInstance contextInstance, Token token) {
-        VirtualTaskInstance vti = (VirtualTaskInstance) contextInstance.getTransientVariable(VariableName.participant.name());
+        VirtualTaskInstance vti = (VirtualTaskInstance) contextInstance.getTransientVariable(
+                VariableName.participant.name());
         if (vti == null) {
-            vti = (VirtualTaskInstance) contextInstance.getVariable(VariableName.participant.name());
+            vti = (VirtualTaskInstance) contextInstance.getVariable(
+                    VariableName.participant.name());
         }
         if (vti == null) {
-            List<VirtualTaskInstance> vtis = (List<VirtualTaskInstance>) contextInstance.getVariable(VariableName.participants.name());
+            List<VirtualTaskInstance> vtis = (List<VirtualTaskInstance>) contextInstance.getVariable(
+                    VariableName.participants.name());
             vti = vtis.get(0);
         }
         taskInstance.setDueDate(vti.getDueDate());
@@ -61,11 +64,11 @@ public class VirtualTaskInstanceController extends AbstractJbpmHandlerHelper {
         } catch (Exception e) {
             log.error("Error in Virtual Task Instance Controller", e);
         }
-
     }
 
     @Override
     public void submitTaskVariables(TaskInstance taskInstance,
             ContextInstance contextInstance, Token token) {
     }
+
 }

@@ -31,18 +31,21 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author arussel
- *
  */
 public class TaskNotificationHandler extends AbstractJbpmHandlerHelper {
+
     private static final long serialVersionUID = 1L;
 
     @Override
     public void execute(ExecutionContext executionContext) throws Exception {
         this.executionContext = executionContext;
         if (nuxeoHasStarted()) {
-            DocumentModel documentModel = (DocumentModel) getTransientVariable(JbpmService.VariableName.document.name());
-            NuxeoPrincipal principal = (NuxeoPrincipal) getTransientVariable(JbpmService.VariableName.principal.name());
-            VirtualTaskInstance participant = (VirtualTaskInstance) getTransientVariable(JbpmService.VariableName.participant.name());
+            DocumentModel documentModel = (DocumentModel) getTransientVariable(
+                    JbpmService.VariableName.document.name());
+            NuxeoPrincipal principal = (NuxeoPrincipal) getTransientVariable(
+                    JbpmService.VariableName.principal.name());
+            VirtualTaskInstance participant = (VirtualTaskInstance) getTransientVariable(
+                    JbpmService.VariableName.participant.name());
             if (participant == null) {
                 participant = (VirtualTaskInstance) executionContext.getContextInstance().getVariable(
                         JbpmService.VariableName.participant.name());
@@ -65,4 +68,5 @@ public class TaskNotificationHandler extends AbstractJbpmHandlerHelper {
             closeCoreSession(coreSession);
         }
     }
+
 }

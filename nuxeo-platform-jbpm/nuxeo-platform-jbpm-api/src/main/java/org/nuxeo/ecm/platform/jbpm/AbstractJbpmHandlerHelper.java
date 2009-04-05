@@ -86,28 +86,28 @@ public abstract class AbstractJbpmHandlerHelper implements ActionHandler,
 
     // get standard variables values
 
-    protected String getDocumentRepositoryName() throws Exception {
+    protected String getDocumentRepositoryName() {
         return getStringVariable(VariableName.documentRepositoryName.name());
     }
 
-    protected String getDocumentId() throws Exception {
+    protected String getDocumentId() {
         return getStringVariable(VariableName.documentId.name());
     }
 
-    protected DocumentRef getDocumentRef() throws Exception {
+    protected DocumentRef getDocumentRef() {
         return new IdRef(getDocumentId());
     }
 
-    protected String getInitiator() throws Exception {
+    protected String getInitiator() {
         return getSwimlaneUser(VariableName.initiator.name());
     }
 
-    protected String getEndLifecycleTransition() throws Exception {
+    protected String getEndLifecycleTransition() {
         return getStringVariable(VariableName.endLifecycleTransition.name());
     }
 
     @SuppressWarnings("unchecked")
-    protected List<String> getParticipants() throws Exception {
+    protected List<String> getParticipants() {
         return (List<String>) executionContext.getContextInstance().getVariable(
                 VariableName.participants.name());
     }
@@ -145,7 +145,7 @@ public abstract class AbstractJbpmHandlerHelper implements ActionHandler,
         return (String) executionContext.getContextInstance().getVariable(name);
     }
 
-    protected boolean nuxeoHasStarted() throws Exception {
+    protected boolean nuxeoHasStarted() {
         return Framework.getRuntime() != null;
     }
 
@@ -161,4 +161,5 @@ public abstract class AbstractJbpmHandlerHelper implements ActionHandler,
     public Object getTransientVariable(String name) {
         return executionContext.getContextInstance().getTransientVariable(name);
     }
+
 }

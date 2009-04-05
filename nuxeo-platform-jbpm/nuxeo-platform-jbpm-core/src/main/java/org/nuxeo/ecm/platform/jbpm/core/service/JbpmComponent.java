@@ -71,7 +71,8 @@ public class JbpmComponent extends DefaultComponent implements
 
     private final HashMap<String, ProcessDefinitionDeployer> deployerDesc = new HashMap<String, ProcessDefinitionDeployer>();
 
-    private final HashMap<ProcessDefinitionDescriptor, ComponentInstance> pdDesc = new HashMap<ProcessDefinitionDescriptor, ComponentInstance>();
+    private final HashMap<ProcessDefinitionDescriptor, ComponentInstance> pdDesc
+            = new HashMap<ProcessDefinitionDescriptor, ComponentInstance>();
 
     @Override
     public void registerContribution(Object contribution,

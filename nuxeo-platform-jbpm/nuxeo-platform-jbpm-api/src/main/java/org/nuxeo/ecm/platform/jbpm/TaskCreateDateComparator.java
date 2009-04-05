@@ -31,8 +31,6 @@ import org.jbpm.taskmgmt.exe.TaskInstance;
  */
 public class TaskCreateDateComparator implements Comparator<TaskInstance> {
 
-    private static final long serialVersionUID = 1L;
-
     public int compare(TaskInstance t1, TaskInstance t2) {
         Date v1 = t1.getCreate();
         Date v2 = t2.getCreate();
@@ -62,4 +60,5 @@ public class TaskCreateDateComparator implements Comparator<TaskInstance> {
         }
         return cmp;
     }
+
 }

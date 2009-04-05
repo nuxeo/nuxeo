@@ -33,7 +33,6 @@ public class NuxeoJbpmSecurityException extends NuxeoJbpmRuntimeException {
     }
 
     public NuxeoJbpmSecurityException() {
-        super();
     }
 
 }

@@ -22,7 +22,6 @@ package org.nuxeo.ecm.platform.jbpm.core.deployer;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -37,7 +36,6 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
@@ -58,8 +56,7 @@ public class MD5Hasher {
     private final Transformer transformer;
 
     public MD5Hasher() throws ParserConfigurationException,
-            TransformerConfigurationException,
-            TransformerFactoryConfigurationError {
+            TransformerConfigurationException {
         builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
         transformer = TransformerFactory.newInstance().newTransformer();
         transformer.setOutputProperty(OutputKeys.METHOD, "xml");
@@ -73,8 +70,7 @@ public class MD5Hasher {
         return MD5(bytes);
     }
 
-    public String MD5(byte[] bytes) throws NoSuchAlgorithmException,
-            UnsupportedEncodingException {
+    public String MD5(byte[] bytes) throws NoSuchAlgorithmException {
         MessageDigest md = MessageDigest.getInstance("MD5");
         md.update(bytes);
         byte[] md5hash = md.digest();

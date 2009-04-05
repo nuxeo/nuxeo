@@ -56,7 +56,8 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class JbpmServiceImpl implements JbpmService {
 
-    private static final String FROM_ORG_JBPM_TASKMGMT_EXE_TASK_INSTANCE_TI_WHERE_TI_END_IS_NULL = "from org.jbpm.taskmgmt.exe.TaskInstance ti where ti.end is null";
+    private static final String FROM_ORG_JBPM_TASKMGMT_EXE_TASK_INSTANCE_TI_WHERE_TI_END_IS_NULL
+            = "from org.jbpm.taskmgmt.exe.TaskInstance ti where ti.end is null";
 
     private Map<String, List<String>> typeFilters;
 
@@ -116,7 +117,6 @@ public class JbpmServiceImpl implements JbpmService {
                 }
                 return tis;
             }
-
         });
     }
 
@@ -233,7 +233,7 @@ public class JbpmServiceImpl implements JbpmService {
         return initiatorPD;
     }
 
-    private List<String> getActorsAndGroup(NuxeoPrincipal principal) {
+    private static List<String> getActorsAndGroup(NuxeoPrincipal principal) {
         List<String> actors = new ArrayList<String>();
         String name = principal.getName();
         if (!name.startsWith(NuxeoPrincipal.PREFIX)) {

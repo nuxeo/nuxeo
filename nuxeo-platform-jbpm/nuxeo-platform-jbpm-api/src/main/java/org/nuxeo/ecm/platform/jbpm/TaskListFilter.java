@@ -39,7 +39,6 @@ public class TaskListFilter implements JbpmListFilter {
     List<String> taskNames;
 
     public TaskListFilter(String... taskNames) {
-        super();
         this.taskNames = new ArrayList<String>();
         for (String taskName : taskNames) {
             this.taskNames.add(taskName);
@@ -47,7 +46,6 @@ public class TaskListFilter implements JbpmListFilter {
     }
 
     public TaskListFilter(List<String> taskNames) {
-        super();
         this.taskNames = taskNames;
     }
 

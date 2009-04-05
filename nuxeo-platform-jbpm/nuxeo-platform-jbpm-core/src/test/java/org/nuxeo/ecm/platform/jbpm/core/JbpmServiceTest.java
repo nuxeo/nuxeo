@@ -77,7 +77,7 @@ public class JbpmServiceTest extends RepositoryOSGITestCase {
         assertNotNull(user1);
     }
 
-    public void testTypeFilter() throws Exception {
+    public void testTypeFilter() {
         Map<String, List<String>> typeFilters = service.getTypeFilterConfiguration();
         assertEquals(2, typeFilters.size());
         assertEquals(2, typeFilters.get("Note").size());

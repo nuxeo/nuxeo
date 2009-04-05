@@ -64,8 +64,8 @@ public class AddRightsActionHandler extends AbstractJbpmHandlerHelper {
     public void execute(ExecutionContext executionContext) throws Exception {
         this.executionContext = executionContext;
         if (nuxeoHasStarted() && list != null) {
-            List<VirtualTaskInstance> participants = (List<VirtualTaskInstance>) executionContext.getContextInstance().getTransientVariable(
-                    list);
+            List<VirtualTaskInstance> participants
+                    = (List<VirtualTaskInstance>) executionContext.getContextInstance().getTransientVariable(list);
             if (participants == null) {
                 participants = (List<VirtualTaskInstance>) executionContext.getVariable(list);
             }
@@ -110,4 +110,5 @@ public class AddRightsActionHandler extends AbstractJbpmHandlerHelper {
         }
         executionContext.getToken().signal();
     }
+
 }
