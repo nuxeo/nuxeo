@@ -73,18 +73,22 @@ public class CommentService extends DefaultAdapter {
         CoreSession session = dobj.getCoreSession();
         DocumentModel pageDoc = dobj.getDocument();
         try {
-     
+
             DocumentModel webComment = session.createDocumentModel("Comment");
-            webComment.setPropertyValue("comment:author", session.getPrincipal().getName());
+            webComment.setPropertyValue("comment:author",
+                    session.getPrincipal().getName());
             webComment.setPropertyValue("comment:text", cText);
             webComment.setPropertyValue("comment:creationDate", new Date());
             webComment = commentManager.createLocatedComment(
-                    dobj.getDocument(), webComment, getParentWorkspacePath(session, dobj.getDocument()));
+                    dobj.getDocument(), webComment, getParentWorkspacePath(
+                            session, dobj.getDocument()));
             session.save();
             CommentsModerationService commentsModerationService = getCommentsModerationService();
             if (WebCommentUtils.isCurrentModerated(session, pageDoc)
                     && (!WebCommentUtils.isModeratedByCurrentUser(session,
-                            pageDoc)) && (WebCommentUtils.getModerationType(session, pageDoc).equals(WebCommentsConstants.MODERATION_APRIORI)==true) ) {
+                            pageDoc))
+                    && (WebCommentUtils.getModerationType(session, pageDoc).equals(
+                            WebCommentsConstants.MODERATION_APRIORI) == true)) {
                 // if current page is moderated
                 // get all moderators
                 ArrayList<String> moderators = WebCommentUtils.getModerators(
@@ -187,8 +191,13 @@ public class CommentService extends DefaultAdapter {
     }
 
 
-    public static CommentsModerationService getCommentsModerationService() throws Exception {
-        return Framework.getService(CommentsModerationService.class);
+    public static CommentsModerationService getCommentsModerationService()
+            throws Exception {
+        CommentsModerationService commentsModerationService = Framework.getService(CommentsModerationService.class);
+        if (commentsModerationService == null) {
+            throw new Exception("Unable to get CommentsModerationService ");
+        }
+        return commentsModerationService;
     }
     
     public static String getParentWorkspacePath(CoreSession session,
