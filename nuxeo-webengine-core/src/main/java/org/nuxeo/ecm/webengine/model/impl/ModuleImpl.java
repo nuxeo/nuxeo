@@ -314,9 +314,11 @@ public class ModuleImpl implements Module {
             if (skin.isDirectory()) {
                 dirStack.addDirectory(skin);
             }
-            DirectoryStack ds = (superModule).dirStack;
-            if (ds != null) {
-                dirStack.getDirectories().addAll(ds.getDirectories());
+            if (superModule != null) {
+                DirectoryStack ds = superModule.dirStack;
+                if (ds != null) {
+                    dirStack.getDirectories().addAll(ds.getDirectories());
+                }
             }
         } catch (IOException e) {
             throw WebException.wrap("Failed to load directories stack", e);
