@@ -25,10 +25,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.api.ECM;
 import org.nuxeo.ecm.platform.api.login.UserSession;
 import org.nuxeo.ecm.platform.api.test.NXClientTestCase;
 import org.nuxeo.ecm.platform.notification.api.NotificationManager;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:npaslaru@nuxeo.com">Narcis Paslaru</a>
@@ -56,7 +56,7 @@ public class TestNotificationServiceEJB3 extends NXClientTestCase {
         us.login();
         // ------------ user session started -----------
 
-        service = ECM.getPlatform().getService(NotificationManager.class);
+        service = Framework.getService(NotificationManager.class);
 //        coreSession = ECM.getPlatform().openRepository("demo");
 //
         assertNotNull("EJB3 not found", service);
