@@ -1,0 +1,19 @@
+<div class="tabsBar" xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document">
+  <h:form id="document_manage">
+    <nxu:dataList layout="unorderedList" var="subTab"
+      value="#{subTabsActionsList}"
+      itemStyleClass="#{nxu:test(webActions.currentSubTabAction == subTab, 'selected', '')}">
+      <nxd:restDocumentLink document="#{currentDocument}"
+        tab="#{webActions.currentTabAction.id}" subTab="#{subTab.id}">
+        <h:outputText value="#{messages[subTab.label]}" />
+      </nxd:restDocumentLink>
+    </nxu:dataList>
+    <div style="clear: both"></div>
+    <div>
+      <ui:include src="#{webActions.currentSubTabAction.link}"
+        rendered="#{!empty webActions.currentSubTabAction}" />
+    </div>
+  </h:form>
+</div>

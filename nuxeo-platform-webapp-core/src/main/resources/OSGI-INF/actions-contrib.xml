@@ -130,8 +130,13 @@
     </action>
 
     <!-- tabs are handled by a specific template so links should be paths to
-      template to include in the tab content -->
-
+      template to include in the tab content
+-->
+    <action id="TAB_MANAGE" link="/incl/tabs/document_manage.xhtml" enabled="true" order="24" label="action.view.manage" icon="/icons/file.gif">
+      <category>VIEW_ACTION_LIST</category>
+      <filter-id>manage</filter-id>
+    </action>
+    
     <action id="TAB_VIEW" link="/incl/tabs/document_view.xhtml" enabled="true"
       order="0" label="action.view.summary" icon="/icons/file.gif">
       <category>VIEW_ACTION_LIST</category>
@@ -144,6 +149,13 @@
       <filter-id>view_content</filter-id>
       <filter-id>outSection</filter-id>
     </action>
+    
+    <action id="TAB_DESCRIPTION" link="/incl/tabs/document_description.xhtml" order="10"
+      enabled="true" label="action.view.content" icon="/icons/file.gif">
+      <category>VIEW_ACTION_LIST</category>
+      <filter-id>view_content</filter-id>
+      <filter-id>view</filter-id>
+    </action>
 
     <action id="TAB_SECTION_CONTENT" link="/incl/tabs/section_content.xhtml"
       order="10" enabled="true" label="action.view.content"
@@ -154,9 +166,9 @@
     </action>
 
     <action id="TAB_TRASH_CONTENT"
-      link="/incl/tabs/document_trash_content.xhtml" order="100" enabled="true"
+      link="/incl/tabs/document_trash_content.xhtml" order="200" enabled="true"
       label="action.view.trash.content" icon="/icons/file.gif">
-      <category>VIEW_ACTION_LIST</category>
+      <category>TAB_MANAGE_sub_tab</category>
       <filter id="viewTrash">
         <rule grant="true">
           <permission>Manage everything</permission>
@@ -219,7 +231,7 @@
 
     <action id="TAB_RIGHTS" link="/incl/tabs/document_rights.xhtml" order="50"
       enabled="true" label="action.view.rights" icon="/icons/file.gif">
-      <category>VIEW_ACTION_LIST</category>
+      <category>TAB_MANAGE_sub_tab</category>
       <filter-id>rights</filter-id>
     </action>
 
@@ -232,15 +244,17 @@
     
     <action id="TAB_ADMIN_PUBLICATION_TREES" link="/incl/tabs/admin_publication_trees.xhtml" order="110"
       enabled="true" label="action.admin.publication.tree" icon="/icons/file.gif">
-      <category>VIEW_ACTION_LIST</category>
+      <category>TAB_MANAGE_sub_tab</category>
       <filter-id>admin_publication_trees_filter</filter-id>
     </action>
 
     <action id="TAB_THEME" link="/incl/tabs/document_theme.xhtml" enabled="true"
       order="60" label="action.view.theme" icon="/icons/file.gif">
-      <category>VIEW_ACTION_LIST</category>
+      <category>TAB_MANAGE_sub_tab</category>
       <filter-id>canChangeTheme</filter-id>
     </action>
+    
+    <!-- Manage the sub tabs -->
 
     <!--  Actions on WorkLists  -->
 
@@ -662,6 +676,19 @@
       <rule grant="true">
         <permission>Write</permission>
         <type>Workspace</type>
+      </rule>
+    </filter>
+    
+    <filter id="manage">
+      <rule grant="true">
+        <permission>Write</permission>
+      </rule>
+      <rule grant="false">
+        <type>Root</type>
+        <type>Domain</type>
+        <type>WorkspaceRoot</type>
+        <type>SectionRoot</type>
+        <type>Section</type>
       </rule>
     </filter>
 
