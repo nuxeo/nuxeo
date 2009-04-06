@@ -30,13 +30,12 @@ public class ReverseXMapTest extends TestCase{
         XMap xmap = new XMap();
         xmap.register(Author.class);
 
-        URL url = Thread.currentThread().getContextClassLoader()
-        .getResource("test-xmap.xml");
+        URL url = Thread.currentThread().getContextClassLoader().getResource("test-xmap.xml");
 
         Author author = (Author) xmap.load(url);
         try {
             xmap.toXML(new Exception());
-            assertTrue("should throw exception ('Exeption' type is not registred)", false);
+            fail("should throw exception ('Exeption' type is not registred)");
         } catch (RuntimeException e){
             // just check if exception is thrown
         }
@@ -52,7 +51,6 @@ public class ReverseXMapTest extends TestCase{
         xmap = new XMap();
         xmap.register(Author.class);
         author = (Author) xmap.load(file.toURL());
-
 
         assertEquals("First test 22", author.title);
         assertEquals("bla bla", author.description);
@@ -83,7 +81,6 @@ public class ReverseXMapTest extends TestCase{
         assertEquals("friend1_fn", author.persons.get("friend1_fn").firstName);
         assertEquals("friend2_ln", author.persons.get("friend2_fn").lastName);
         assertEquals("friend2_fn", author.persons.get("friend2_fn").firstName);
-
     }
 
 }

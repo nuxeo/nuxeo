@@ -119,6 +119,7 @@ public abstract class XValueFactory {
             return Double.valueOf(value);
         }
 
+        @Override
         public String serialize(Context context, Object value) {
             return value.toString();
         }
@@ -130,6 +131,7 @@ public abstract class XValueFactory {
             return Float.valueOf(value);
         }
 
+        @Override
         public String serialize(Context context, Object value) {
             return value.toString();
         }
@@ -141,6 +143,7 @@ public abstract class XValueFactory {
             return Boolean.valueOf(value);
         }
 
+        @Override
         public String serialize(Context context, Object value) {
             return value.toString();
         }
@@ -158,6 +161,7 @@ public abstract class XValueFactory {
             }
         }
 
+        @Override
         public String serialize(Context context, Object value) {
             Date date = (Date) value;
             return df.format(date);
@@ -170,6 +174,7 @@ public abstract class XValueFactory {
             return new File(value);
         }
 
+        @Override
         public String serialize(Context context, Object value) {
             File file = (File) value;
             return file.getName();
@@ -186,6 +191,7 @@ public abstract class XValueFactory {
             }
         }
 
+        @Override
         public String serialize(Context context, Object value) {
             return value.toString();
         }
@@ -202,6 +208,7 @@ public abstract class XValueFactory {
             }
         }
 
+        @Override
         public String serialize(Context context, Object value) {
             Class<?> clazz = (Class<?>) value;
             return clazz.getName();

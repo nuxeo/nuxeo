@@ -35,9 +35,13 @@ import org.apache.commons.logging.LogFactory;
  */
 public class JavaUtilLoggingHelper {
 
-    private static Log log = LogFactory.getLog(JavaUtilLoggingHelper.class);
+    private static final Log log = LogFactory.getLog(JavaUtilLoggingHelper.class);
 
     private static LogHandler activeHandler;
+
+    //Utility class.
+    private JavaUtilLoggingHelper() {
+    }
 
     /**
      * Redirects {@code java.util.logging} to Apache Commons Logging

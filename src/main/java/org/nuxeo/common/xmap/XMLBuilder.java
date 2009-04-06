@@ -28,7 +28,6 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 
 
-
 public class XMLBuilder {
 
     //    use DOMSerializer
@@ -80,9 +79,7 @@ public class XMLBuilder {
                 m.toXML(o, currentNode);
             }
         }
-
     }
-
 
     // TODO use xpath for that ?
     public static Element getOrCreateElement(Element root, Path path){
@@ -126,7 +123,6 @@ public class XMLBuilder {
         } else {
             element.setTextContent(value);
         }
-
     }
 
 }

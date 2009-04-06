@@ -37,16 +37,10 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
  * @author bstefanescu
- *
  */
 public final class ZipUtils {
-
-    private static final Log log = LogFactory.getLog(ZipUtils.class);
 
     // This is an utility class
     private ZipUtils() {
