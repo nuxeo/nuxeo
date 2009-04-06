@@ -10,8 +10,6 @@
 	
 	function onSelectRadio(obj)
 	{
-	
-		alert(oFCKeditor.Value);
 		
 		if(obj.id == "wikitext")
 		{
