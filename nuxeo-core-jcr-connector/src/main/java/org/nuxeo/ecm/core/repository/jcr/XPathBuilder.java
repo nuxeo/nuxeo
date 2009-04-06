@@ -209,6 +209,15 @@ public class XPathBuilder {
                         operator(expr.operator)).append(" '").append(
                         ((StringLiteral) expr.rvalue).value).append("'");
                 return true;
+            } else if (name.equals(NXQL.ECM_MIXINTYPE)) {
+                if (expr.operator.equals(Operator.NOTEQ)) {
+                LiteralList rvalue = new LiteralList();
+                rvalue.add((Literal) expr.rvalue);
+                xq.predicate.append(" not(");
+                inclusion(xq.predicate, expr.lvalue, rvalue);
+                xq.predicate.append(") ");
+                return true;
+                }
             } else if (expr.rvalue.getClass() == DateLiteral.class) { // dates
                 // *[@dc:created > "2008-06-03T00:00:00.000+01:00" and
                 // @dc:created < xs:dateTime("2008-06-04T00:00:00.000+01:00")]

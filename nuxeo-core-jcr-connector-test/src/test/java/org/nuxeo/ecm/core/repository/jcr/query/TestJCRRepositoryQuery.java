@@ -17,6 +17,7 @@
 
 package org.nuxeo.ecm.core.repository.jcr.query;
 
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.query.test.QueryTestCase;
 import org.nuxeo.ecm.core.repository.jcr.testing.CoreJCRConnectorTestConstants;
 
@@ -39,13 +40,24 @@ public class TestJCRRepositoryQuery extends QueryTestCase {
     }
 
     @Override
-    public void testQueryNegativeMultiple() {
+    public void testQueryNegativeMultiple() throws Exception {
         // JCR cannot do negative queries on multi-valued properties
+        // Not testing dc:contributors
+        DocumentModelList dml;
+        createDocs();
+        dml = session.query("SELECT * FROM Document WHERE ecm:mixinType <> 'Versionable'");
+        assertEquals(3, dml.size()); // 3 folders
+        dml = session.query("SELECT * FROM Document WHERE ecm:mixinType = 'Versionable' AND ecm:mixinType <> 'Downloadable'");
+        assertEquals(1, dml.size()); // 1 note
     }
 
-    @Override
-    public void testQueryWithProxiesNegativeMultiple() {
-        // JCR cannot do negative queries on multi-valued properties
+    public void testQuerySpecialFieldsWithNegative() throws Exception {
+        DocumentModelList dml;
+        createDocs();
+        dml = session.query("SELECT * FROM Document WHERE ecm:mixinType NOT IN ('Folderish')");
+        assertEquals(4, dml.size()); // 3 file / 1 note
+        dml = session.query("SELECT * FROM Document WHERE ecm:mixinType NOT IN ('Commentable', 'Downloadable')");
+        assertEquals(3, dml.size()); // 3 folders
     }
 
     @Override
