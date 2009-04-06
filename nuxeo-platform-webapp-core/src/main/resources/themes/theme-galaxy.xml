@@ -45,6 +45,10 @@
           <!-- main area -->
           <fragment type="region fragment"/>
         </cell>
+        <cell>
+          <!-- Include -->
+          <fragment type="generic fragment"/>
+        </cell>
       </section>
     </page>
     <page name="user_dashboard">
@@ -172,6 +176,9 @@
       <width>100%</width>
     </layout>
     <layout element="page[2]/section[1]/cell[1]"/>
+    <layout element="page[2]/section[1]/cell[2]">
+      <width>0%</width>
+    </layout>
     <layout element="page[3]">
       <margin>0</margin>
       <padding>0</padding>
@@ -265,6 +272,9 @@
     </widget>
     <widget element="page[1]/section[3]/cell[1]/fragment[1]|page[3]/section[4]/cell[1]/fragment[1]">
       <view>Nuxeo EP footer (Galaxy Theme)</view>
+    </widget>
+    <widget element="page[2]/section[1]/cell[2]/fragment[1]">
+      <view>nuxeo5 includes</view>
     </widget>
     <!-- Page 3 / Section 2 breadcrumb -->
     <widget element="page[3]/section[2]/cell[1]/fragment[1]">
