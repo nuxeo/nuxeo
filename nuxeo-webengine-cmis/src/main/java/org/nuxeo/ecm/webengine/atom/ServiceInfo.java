@@ -32,17 +32,12 @@ import org.nuxeo.ecm.webengine.model.WebContext;
 public class ServiceInfo implements UrlResolver {
 
     protected Map<String, WorkspaceInfo> workspaces = new HashMap<String, WorkspaceInfo>();
-    protected UrlResolver urlResolver = this; // user url resolver - by default use me as the resolver
 
     
     public ServiceInfo() {
         
     }
     
-    public ServiceInfo(UrlResolver urlResover) {
-        this.urlResolver = urlResover;
-    }
-
     public WorkspaceInfo addWorkspace(WorkspaceInfo ws) {
         workspaces.put(ws.getId(), ws);
         ws.serviceInfo = this;
@@ -71,14 +66,6 @@ public class ServiceInfo implements UrlResolver {
         // do nothing
     }
 
-    public void setUrlResolver(UrlResolver urlResolver) {
-        this.urlResolver = urlResolver;
-    }
-    
-    public UrlResolver getUrlResolver() {
-        return urlResolver;
-    }
-    
     /**
      * Resolve an object defined by the given key and parameters to an URL.
      * Must be overrided by subclasses if needed

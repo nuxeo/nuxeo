@@ -41,7 +41,6 @@ import org.apache.commons.lang.StringUtils;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -57,13 +56,14 @@ import org.nuxeo.webengine.sites.JsonAdapter;
 import org.nuxeo.webengine.sites.SiteHelper;
 
 /**
- * Utility class for sites implementation
- *
- *
+ * Utility class for sites implementation.
  */
 public class SiteUtils {
 
     private static final Log log = LogFactory.getLog(SiteUtils.class);
+
+    private SiteUtils() {
+    }
 
     /**
      * Method used to return the list with the details about the <b>Contextual
@@ -86,7 +86,7 @@ public class SiteUtils {
 
             for (DocumentModel document : session.getChildren(
                     documentModel.getRef(), CONTEXTUAL_LINK)) {
-                if (document.getCurrentLifeCycleState().equals(DELETED) == false) {
+                if (!document.getCurrentLifeCycleState().equals(DELETED)) {
                     try {
                         Map<String, String> contextualLink = new HashMap<String, String>();
                         contextualLink.put("title", SiteHelper.getString(
@@ -107,21 +107,19 @@ public class SiteUtils {
     }
 
     /**
-     * This method is used to retrieve a certain number of pages with
-     * information about the last modified <b>WebPage</b>-s that are made under
-     * an <b>Workspace</b> or <b>WebPage</b> that is received as parameter.
+     * Retrieves a certain number of pages with information about the last
+     * modified <b>WebPage</b>-s that are made under an <b>Workspace</b> or
+     * <b>WebPage</b> that is received as parameter.
      *
-     * @param documentModel - the parent for webpages
-     * @param noPages - the number of pages
-     * @param noWordsFromContent - the number of words from the content of the
+     * @param documentModel the parent for webpages
+     * @param noPages the number of pages
+     * @param noWordsFromContent the number of words from the content of the
      *            webpages
      * @return the <b>WebPage</b>-s that are made under an <b>Workspace</b> or
      *         <b>WebPage</b> that is received as parameter
-     * @throws ClientException
      */
     public static List<Object> getLastModifiedWebPages(
-            DocumentModel documentModel, int noPages, int noWordsFromContent)
-            throws ClientException {
+            DocumentModel documentModel, int noPages, int noWordsFromContent) {
         WebContext context = WebEngine.getActiveContext();
         CoreSession session = context.getCoreSession();
         List<Object> pages = new ArrayList<Object>();
@@ -178,8 +176,7 @@ public class SiteUtils {
      * Returns all the <b>WebPage</b>-s that are direct children of the received
      * document.
      *
-     * @param document - the parent for the webpages
-     * @return
+     * @param document the parent for the webpages
      */
     public static List<Object> getAllWebPages(DocumentModel document) {
         List<Object> webPages = new ArrayList<Object>();
@@ -187,7 +184,7 @@ public class SiteUtils {
         try {
             for (DocumentModel webPage : session.getChildren(document.getRef(),
                     WEBPAGE)) {
-                if (webPage.getCurrentLifeCycleState().equals(DELETED) == false) {
+                if (!webPage.getCurrentLifeCycleState().equals(DELETED)) {
                     Map<String, String> details = new HashMap<String, String>();
                     details.put("name", SiteHelper.getString(webPage,
                             "dc:title"));
@@ -266,11 +263,9 @@ public class SiteUtils {
                     comment.put("author", getUserDetails(SiteHelper.getString(
                             documentModel, "comment:author")));
 
-                    if (parentPage != null) {
-                        comment.put("pageTitle", parentPage.getTitle());
-                        comment.put("pagePath", JsonAdapter.getRelativPath(ws,
-                                parentPage).toString());
-                    }
+                    comment.put("pageTitle", parentPage.getTitle());
+                    comment.put("pagePath", JsonAdapter.getRelativPath(ws,
+                            parentPage).toString());
                     comment.put("content", SiteHelper.getFistNWordsFromString(
                             SiteHelper.getString(documentModel, "comment:text"),
                             noWordsFromContent));
@@ -279,14 +274,14 @@ public class SiteUtils {
             } catch (Exception e) {
                 throw new ClientException(e);
             }
-
         }
 
         return lastWebComments;
     }
 
     /**
-     * This method is used to retrieve user details for a certain username
+     * Retrieves user details for a certain username.
+     *
      * @param username
      * @return user first name + user last name
      * @throws Exception
@@ -294,24 +289,27 @@ public class SiteUtils {
     public static String getUserDetails(String username) throws Exception{
         UserManager userManager  = WebCommentUtils.getUserManager();
         NuxeoPrincipal principal = userManager.getPrincipal(username);
-        if (principal == null)
+        if (principal == null) {
             return StringUtils.EMPTY;
+        }
         if (StringUtils.isEmpty(principal.getFirstName())
                 && StringUtils.isEmpty(principal.getLastName())) {
             return principal.toString();
         }
         return principal.getFirstName() + " " + principal.getLastName();
     }
-    
+
     /**
-     * This method is used to search a certain webPage between all the pages
-     * under a <b>Workspace</b> that contains in title, description , main
-     * content or attached files the given searchParam
-     * @param ws - the workspace
-     * @param searchParam - the search parameter
-     * @param nrWordsFromDescription - the number of words from the page description
-     * @return the <b>WebPage</b>-s found under a <b>Workspace</b> that match the 
-     * corresponding criteria
+     * Searches a certain webPage between all the pages under a <b>Workspace</b>
+     * that contains in title, description , main content or attached files the
+     * given searchParam.
+     *
+     * @param ws the workspace
+     * @param searchParam the search parameter
+     * @param nrWordsFromDescription the number of words from the page
+     *            description
+     * @return the <b>WebPage</b>-s found under a <b>Workspace</b> that match
+     *         the corresponding criteria
      * @throws ClientException
      */
     public static List<Object> searchPagesInSite(DocumentModel ws,
@@ -320,7 +318,7 @@ public class SiteUtils {
         WebContext context = WebEngine.getActiveContext();
         CoreSession session = context.getCoreSession();
         List<Object> webPages = new ArrayList<Object>();
-        if (StringUtils.isEmpty(searchParam) == false) {
+        if (!StringUtils.isEmpty(searchParam)) {
             DocumentModelList results = session.query(String.format(
                     "SELECT * FROM WebPage WHERE ecm:fulltext LIKE '%s' AND "
                             + " ecm:path STARTSWITH  '%s' AND "
@@ -361,37 +359,34 @@ public class SiteUtils {
         }
         return webPages;
     }
-    
 
     /**
-     * This method is used to return the path to all the existing web
-     * containers.
+     * Returns the path to all the existing web containers.
      *
-     * @param context - the web context
      * @return the path to all the existing web containers
      */
     public static StringBuilder getWebContainersPath() {
         WebContext context = WebEngine.getActiveContext();
-        StringBuilder initialPath = new StringBuilder(context.getBasePath()).append(context.getUriInfo().getMatchedURIs().get(
-                context.getUriInfo().getMatchedURIs().size() - 1));
+        StringBuilder initialPath = new StringBuilder(context.getBasePath())
+                .append(context.getUriInfo().getMatchedURIs().get(
+                            context.getUriInfo().getMatchedURIs().size() - 1));
         return initialPath;
     }
-    
+
     /**
-     * This method is used to return the path for a webPage from a webSite
-     * 
-     * @param ws - the web site
-     * @param documentModel -the webPage
-     * @return the path 
+     * Returns the path for a webPage from a webSite.
+     *
+     * @param ws the web site
+     * @param documentModel the webPage
+     * @return the path
      */
     public static String getPagePath(DocumentModel ws,
             DocumentModel documentModel) {
         StringBuilder path = new StringBuilder(getWebContainersPath()).append("/");
-        path.append(ws.getPath().segment(ws.getPath().segmentCount() - 1)).append(
-                "/");
+        path.append(ws.getPath().segment(ws.getPath().segmentCount() - 1))
+                .append("/");
         path.append(JsonAdapter.getRelativPath(ws, documentModel));
         return path.toString();
     }
-    
-        
+
 }

@@ -29,14 +29,14 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
  *
  */
 @WebObject(type="atomcollection")
-public class CollectionResource extends DefaultObject {   
-    
-    protected CollectionInfo info; 
-        
+public class CollectionResource extends DefaultObject {
+
+    protected CollectionInfo info;
+
     protected void initialize(Object ... args) {
         this.info = (CollectionInfo)args[0];
     }
-             
+
     @GET
     public Response getFeed() {
         return AbderaService.getFeed(ctx, info.getCollectionAdapter());
@@ -46,7 +46,7 @@ public class CollectionResource extends DefaultObject {
     public Response postEntry() {
         return AbderaService.postEntry(ctx, info.getCollectionAdapter());
     }
- 
+
     public CollectionInfo getCollectionInfo() {
         return info;
     }

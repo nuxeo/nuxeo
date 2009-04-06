@@ -34,19 +34,19 @@ import org.nuxeo.ecm.webengine.model.WebObject;
 @WebObject(type="ChildrenCollection")
 public class CMISCollectionResource extends CollectionResource {
 
-    
+
     public Repository getRepository() {
         return ((CMISWorkspaceInfo)info.getWorkspaceInfo()).getRepository();
     }
-    
+
     @GET
-    @Override 
+    @Override
     public Response getFeed() {
         return getFeed(getRepository().getInfo().getRootFolderId());
     }
 
     @POST
-    @Override 
+    @Override
     public Response postEntry() {
         return postEntry(getRepository().getInfo().getRootFolderId());
     }
@@ -64,5 +64,5 @@ public class CMISCollectionResource extends CollectionResource {
         AbderaRequest.setParameter(ctx, "objectid", uid);
         return super.postEntry();
     }
-    
+
 }

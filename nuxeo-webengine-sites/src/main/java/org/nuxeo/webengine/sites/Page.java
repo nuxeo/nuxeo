@@ -40,7 +40,6 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.rest.DocumentObject;
@@ -68,14 +67,10 @@ public class Page extends DocumentObject {
     @GET
     public Object doGet() {
         ctx.getRequest().setAttribute("org.nuxeo.theme.theme", "sites/page");
-        try {
-            return ((Template) super.doGet()).args(getPageArguments());
-        } catch (ClientException e) {
-            log.debug("Problems while trying to set the arguments for the Page ...");
-        }
-        return null;
+        return ((Template) super.doGet()).args(getPageArguments());
     }
 
+    @Override
     @POST
     public Response doPost() {
         String name = ctx.getForm().getString("comment");
@@ -88,7 +83,7 @@ public class Page extends DocumentObject {
     public int getNumberCommentsOnPage() {
         try {
             CommentManager commentManager = WebCommentUtils.getCommentManager();
-            return commentManager.getComments(this.getDocument()).size();
+            return commentManager.getComments(getDocument()).size();
         } catch (Exception e) {
             throw WebException.wrap("Failed to get all published comments", e);
         }
@@ -97,9 +92,9 @@ public class Page extends DocumentObject {
 
     public boolean isModerator() {
         try {
-            CoreSession session = this.getCoreSession();
+            CoreSession session = getCoreSession();
             return WebCommentUtils.isModeratedByCurrentUser(session,
-                    this.getDocument());
+                    getDocument());
         } catch (Exception e) {
             throw WebException.wrap("Failed to delete comment", e);
         }
@@ -124,6 +119,7 @@ public class Page extends DocumentObject {
             DocumentModel parentWorkspace = SiteUtils.getFirstWorkspaceParent(getCoreSession(), doc);
             resp = SiteUtils.getLogoResponse(parentWorkspace);
         } catch (Exception e) {
+            // FIXME: use proper logging
             e.printStackTrace();
         }
         //return a default image, maybe you want to change this in future
@@ -133,7 +129,7 @@ public class Page extends DocumentObject {
         }
         return resp;
     }
-    
+
     @POST
     @Path("search")
     public Object getSearchParametres(
@@ -160,15 +156,15 @@ public class Page extends DocumentObject {
 
     public boolean isUserWithCommentPermission() {
         try {
-            CoreSession session = this.getCoreSession();
+            CoreSession session = getCoreSession();
             return WebCommentUtils.currentUserHasCommentPermision(session,
-                    this.getDocument());
+                    getDocument());
         } catch (Exception e) {
             throw WebException.wrap("Failed to delete comment", e);
         }
     }
 
-    protected Map<String, Object> getPageArguments() throws ClientException {
+    protected Map<String, Object> getPageArguments() {
 
         Map<String, Object> root = new HashMap<String, Object>();
         try {
@@ -188,10 +184,7 @@ public class Page extends DocumentObject {
 
             // add all webpages that are directly connected to an webpage
             root.put(ALL_WEBPAGES, SiteUtils.getAllWebPages(doc));
-            //get pending comments??
-            //root.put("commentMessage", "Message wainting for approval...");
-            MimetypeRegistry mimetypeService = null;
-            mimetypeService = Framework.getService(MimetypeRegistry.class);
+            MimetypeRegistry mimetypeService = Framework.getService(MimetypeRegistry.class);
             root.put("mimetypeService", mimetypeService);
         } catch (Exception e) {
             log.error("Unable to get mimetype service : " + e.getMessage());
@@ -246,5 +239,6 @@ public class Page extends DocumentObject {
             throw WebException.wrap("Failed to delete comment", e);
         }
     }
+
 
 }

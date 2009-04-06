@@ -83,7 +83,7 @@ public class ResourceServlet extends HttpServlet {
     }
 
     protected void service(HttpServletRequest req, HttpServletResponse resp, Module module, String path)
-            throws ServletException, IOException {
+            throws IOException {
 
         ScriptFile file = module.getSkinResource(path);
         if (file != null) {

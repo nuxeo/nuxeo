@@ -47,7 +47,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.rest.DocumentObject;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebContext;
@@ -106,9 +105,8 @@ public class Site extends DefaultObject {
         try {
             return getTemplate("template_default.ftl").args(getSiteArguments());
         } catch (Exception e) {
-            WebException.wrap(e);
+            throw WebException.wrap(e);
         }
-        return null;
     }
 
     @Path("{page}")
@@ -130,7 +128,7 @@ public class Site extends DefaultObject {
             ctx.getRequest().setAttribute("org.nuxeo.theme.theme",
                     theme + "/" + themePage);
 
-            return (DocumentObject) ctx.newObject(pageDoc.getType(), pageDoc);
+            return ctx.newObject(pageDoc.getType(), pageDoc);
         } catch (Exception e) {
             throw WebException.wrap(e);
         }
@@ -163,6 +161,7 @@ public class Site extends DefaultObject {
                 resp = Response.ok().entity(blob).type(blob.getMimeType()).build();
             }
         } catch (Exception e) {
+            // FIXME: explicit logging...
             e.printStackTrace();
         }
         //return a default image, maybe you want to change this in future
@@ -194,7 +193,6 @@ public class Site extends DefaultObject {
         }
     }
 
-    
     protected Map<String, Object> getSiteArguments() throws ClientException {
         Map<String, Object> root = new HashMap<String, Object>();
 
@@ -217,7 +215,6 @@ public class Site extends DefaultObject {
         return root;
     }
 
-
     protected DocumentModel getSiteDocumentModelByUrl(String url) {
         WebContext context = WebEngine.getActiveContext();
         CoreSession session = context.getCoreSession();
@@ -229,6 +226,7 @@ public class Site extends DefaultObject {
                 return list.get(0);
             }
         } catch (ClientException e) {
+            // FIXME: proper logging
             e.printStackTrace();
         }
         return null;

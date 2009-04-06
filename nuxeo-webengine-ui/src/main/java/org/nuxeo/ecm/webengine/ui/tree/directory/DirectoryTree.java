@@ -35,8 +35,6 @@ import org.nuxeo.runtime.api.Framework;
  */
 public abstract class DirectoryTree extends JSonTree {
 
-    private static final long serialVersionUID = 1L;
-
     protected Directory dir;
 
 

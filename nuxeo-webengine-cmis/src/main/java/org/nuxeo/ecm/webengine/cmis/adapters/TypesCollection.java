@@ -123,7 +123,7 @@ public class TypesCollection extends CMISCollection<Type> {
         return link;
     }
 
-    
+
 
     @Override
     public Iterable<Type> getEntries(RequestContext request)

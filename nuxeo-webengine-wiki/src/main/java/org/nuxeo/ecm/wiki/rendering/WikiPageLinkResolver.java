@@ -129,7 +129,7 @@ public class WikiPageLinkResolver implements WikiFilter{
         return null;
     }
 
-    private DocumentModel getDocument(DocumentModel doc, String segment) {
+    private static DocumentModel getDocument(DocumentModel doc, String segment) {
         WebContext ctx = WebEngine.getActiveContext();
         CoreSession session = ctx.getCoreSession();
         Path p = doc.getPath().append(segment);

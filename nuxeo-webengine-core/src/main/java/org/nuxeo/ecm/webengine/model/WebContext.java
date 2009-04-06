@@ -242,11 +242,11 @@ public interface WebContext extends Adaptable {
      * @param document the nuxeo document
      * @return the path if any or null if no suitable path can be found
      * XXX can this method return null?
-     * @throws ClassCastException if the module root is not implementing {@link ModuleResource}
+     * @throws ClassCastException if the module root does not implementing {@link ModuleResource}
      */
      // TODO: should we remove this method from the context and create a
      // specialized service to resolve document models to paths?
-    String getUrlPath(DocumentModel document) throws ClassCastException;
+    String getUrlPath(DocumentModel document);
 
     /**
      * Sets a context variable.

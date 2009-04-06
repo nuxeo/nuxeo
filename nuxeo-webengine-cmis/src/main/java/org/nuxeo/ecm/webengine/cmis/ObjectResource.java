@@ -52,9 +52,9 @@ public class ObjectResource extends DefaultObject {
     public Repository getRepository() {
         return ws.getRepository();
     }
-    
+
     public AbstractCollectionAdapter getCollectionAdapter() {
-        return ws.getCollection("children").getCollectionAdapter();   
+        return ws.getCollection("children").getCollectionAdapter();
     }
 
     @GET
@@ -63,29 +63,29 @@ public class ObjectResource extends DefaultObject {
     }
 
     @PUT
-    public Response doPut() {        
-        return AbderaService.putEntry(ctx, getCollectionAdapter());   
+    public Response doPut() {
+        return AbderaService.putEntry(ctx, getCollectionAdapter());
     }
 
     @PUT
-    public Response doDelete() {        
-        return AbderaService.deleteEntry(ctx, getCollectionAdapter());   
+    public Response doDelete() {
+        return AbderaService.deleteEntry(ctx, getCollectionAdapter());
     }
-    
+
     @HEAD
-    public Response doHead() {        
-        return AbderaService.headEntry(ctx, getCollectionAdapter());   
+    public Response doHead() {
+        return AbderaService.headEntry(ctx, getCollectionAdapter());
     }
 
     //TODO implement OPTIONS annotation
 //    @OPTIONS
-//    public Response doOptions() {        
-//        return AbderaService.optionsEntry(ctx, getCollectionAdapter());   
+//    public Response doOptions() {
+//        return AbderaService.optionsEntry(ctx, getCollectionAdapter());
 //    }
-    
+
 
     //TODO: delegate media requests to a media web object instead of handling media here?
-    
+
     @GET
     @Path("files/{fileid}")
     public Response doGetFile(@PathParam("fileid") String fileid) {
@@ -113,7 +113,7 @@ public class ObjectResource extends DefaultObject {
         AbderaRequest.setParameter(ctx, "fileid", fileid);
         return AbderaService.deleteMedia(ctx, getCollectionAdapter());
     }
-    
+
     @HEAD
     @Path("files/{fileid}")
     public Response doHeadFile(@PathParam("fileid") String fileid) {

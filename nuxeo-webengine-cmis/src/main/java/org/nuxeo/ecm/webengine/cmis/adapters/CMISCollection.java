@@ -25,9 +25,12 @@ import java.util.Map;
 import org.apache.abdera.factory.Factory;
 import org.apache.abdera.model.Feed;
 import org.apache.abdera.protocol.server.RequestContext;
+import org.apache.abdera.protocol.server.ResponseContext;
 import org.apache.abdera.protocol.server.TargetType;
+import org.apache.abdera.protocol.server.RequestContext.Scope;
 import org.apache.abdera.protocol.server.context.ResponseContextException;
 import org.apache.abdera.protocol.server.impl.AbstractEntityCollectionAdapter;
+import org.apache.chemistry.Connection;
 import org.apache.chemistry.atompub.CMIS;
 import org.apache.chemistry.repository.Repository;
 
@@ -40,44 +43,97 @@ import org.apache.chemistry.repository.Repository;
 public abstract class CMISCollection<T> extends
         AbstractEntityCollectionAdapter<T> {
 
-    public final static String RESOURCE_ID   = "id"; 
+    public final static String RESOURCE_ID   = "id";
     public final static String RESOURCE_TYPE = "entrytype";
-    
 
-    /** Collection name - used to construct URLs **/ 
+
+    /** Collection name - used to construct URLs **/
     protected final String name;
 
     protected final Repository repository;
-    
+
     protected final String title;
+    
+    /** Can be set by clients to change the way creation are created. **/
+    protected ConnectionFactory connectionFactory;
 
     public CMISCollection(String name, String title, Repository repository) {
         this.name = name;
         this.repository = repository;
         this.title = title;
     }
+    
+    public void setConnectionFactory(ConnectionFactory connectionFactory) {
+        this.connectionFactory = connectionFactory;
+    }
+    
+    public ConnectionFactory getConnectionFactory() {
+        return connectionFactory;
+    }
 
+    protected Connection createConnection(RequestContext request) {
+        if (connectionFactory != null) {
+            return connectionFactory.getConnection(repository, request);
+        }
+        return repository.getConnection(null);
+    }
+
+    protected void closeConnection(RequestContext request) {
+        Connection conn = getRegisteredConnection(request);
+        if (conn != null) {
+            conn.close();
+        }        
+    }
+    
+    public final Connection getRegisteredConnection(RequestContext request) {
+        return (Connection)request.getAttribute(Scope.REQUEST, "CMIS_CONNECTION");
+    }
+    
+    public Connection getConnection(RequestContext request) {
+        Connection conn = getRegisteredConnection(request);
+        if (conn == null) {
+            conn = repository.getConnection(null);
+            request.setAttribute(Scope.REQUEST, "CMIS_CONNECTION", conn);
+        }
+        return conn;
+    }
+    
+    /** transactions **/
+    
+    @Override
+    public void start(RequestContext request) throws ResponseContextException {
+        // do nothing - we create connections in a lazy way
+    }
+    
+    @Override
+    public void end(RequestContext request, ResponseContext response) {
+        closeConnection(request);
+    }
+    
+    @Override
+    public void compensate(RequestContext request, Throwable t) {
+        closeConnection(request);
+    }
+    
 
     /*
      * ----- AbstractCollectionAdapter -----
      */
-    
+
     @Override
     public String getId(RequestContext request) {
-        return "urn:x-"+name; 
+        return "urn:x-"+name;
     }
 
     @Override
-    public String getHref(RequestContext request) {
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("collection", name);
-        return request.absoluteUrlFor(TargetType.TYPE_COLLECTION, params);
+    public String getHref(RequestContext request) { //TODO
+        return getCollectionLink(name, request);
     }
-    
+
     public String getTitle(RequestContext request) {
         return title;
     }
-    
+
     @Override
     public String getAuthor(RequestContext request) {
         return "system";
@@ -102,16 +158,16 @@ public abstract class CMISCollection<T> extends
         createFeedLinks(feed, request);
         return feed;
     }
-    
+
     protected void createFeedLinks(Feed feed, RequestContext request) throws ResponseContextException {
         // feed.addLink("");
-        // feed.addLink("", "self");        
+        // feed.addLink("", "self");
     }
-    
+
     /*
      * ----- Utilities -----
      */
-    
+
     protected static String bool(boolean bool) {
         return bool ? "true" : "false";
     }
@@ -120,6 +176,11 @@ public abstract class CMISCollection<T> extends
         return request.absoluteUrlFor(TargetType.TYPE_SERVICE, null);
     }
 
+    public String getCollectionLink(String id, RequestContext request) {
+        Map<String, String> params = new HashMap<String, String>();
+        params.put(RESOURCE_TYPE, id);
+        return request.absoluteUrlFor(TargetType.TYPE_COLLECTION, params);
+    }
 
     public String getChildrenLink(String id, RequestContext request) {
         Map<String, String> params = new HashMap<String, String>();

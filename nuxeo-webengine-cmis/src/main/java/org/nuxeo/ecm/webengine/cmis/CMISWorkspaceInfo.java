@@ -33,16 +33,16 @@ import org.nuxeo.ecm.webengine.atom.XMLWriter;
 public class CMISWorkspaceInfo extends WorkspaceInfo {
 
     protected Repository repository;
-    
+
     public CMISWorkspaceInfo(Repository repository, String id, String title) {
         super (id, "CmisWorkspace", title);
         this.repository = repository;
     }
- 
+
     public Repository getRepository() {
         return repository;
     }
-    
+
     @Override
     protected void writeWorkspaceElements(String wsUrl, XMLWriter xw)
             throws IOException {
@@ -102,7 +102,7 @@ public class CMISWorkspaceInfo extends WorkspaceInfo {
                 .end()
             .end();
     }
-    
-    
+
+
 
 }

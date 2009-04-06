@@ -51,7 +51,5 @@ public class AbderaResponseWriter implements MessageBodyWriter<ResponseContext> 
             throws IOException, WebApplicationException {
         arg0.writeTo(arg6);
     }
-    
+
 }
-
-

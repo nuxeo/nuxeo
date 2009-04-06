@@ -120,7 +120,7 @@ public class ModuleManager {
         }
     }
 
-    public void loadModules(File root) throws IOException {
+    public void loadModules(File root) {
         for (String name : root.list()) {
             String path = name + "/module.xml";
             File file = new File(root, path);
@@ -130,21 +130,21 @@ public class ModuleManager {
         }
     }
 
-    public void loadModule(File file) throws IOException {
+    public void loadModule(File file) {
         ModuleConfiguration md = loadConfiguration(file);
         engine.getWebLoader().addClassPathElement(md.directory);
         md.setEngine(engine);
         registerModule(md);
     }
 
-    public void loadModuleFromDir(File moduleRoot) throws IOException {
+    public void loadModuleFromDir(File moduleRoot) {
         File file = new File(moduleRoot, "module.xml");
         if (file.isFile()) {
             loadModule(file);
         }
     }
 
-    public void reloadModule(String name) throws IOException {
+    public void reloadModule(String name) {
         log.info("Reloading module: " + name);
         File cfg = unregisterModule(name);
         if (cfg != null) {

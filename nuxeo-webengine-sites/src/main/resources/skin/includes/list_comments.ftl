@@ -2,7 +2,9 @@
 <#assign pendingComments = This.pendingComments /> 
 
 <div class="commentspageBlock">
-<h4>${Context.getMessage("label.page.comments.title")}</h4>
+<#if (comments?size != 0 || base.canWrite)>
+  <h4>${Context.getMessage("label.page.comments.title")}</h4>
+</#if>
 <#if (This.userWithCommentPermission==true)> 
 <div class="addCommentLink">
   <a class="addComment" onclick="showCommentForm();">${Context.getMessage("label.page.comments.add")}</a>
@@ -63,4 +65,4 @@
 </form>
 </div>
 
- 
+

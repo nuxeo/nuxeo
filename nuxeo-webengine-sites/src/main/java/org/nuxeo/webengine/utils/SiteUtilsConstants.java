@@ -64,3 +64,4 @@ public final class SiteUtilsConstants {
     public static final String WEB_CONTAINER_FACET = "WebView";
 
 }
+

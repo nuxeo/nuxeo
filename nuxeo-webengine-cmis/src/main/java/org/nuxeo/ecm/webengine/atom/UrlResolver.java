@@ -20,12 +20,12 @@ import org.nuxeo.ecm.webengine.model.WebContext;
 
 /**
  * Resolve URLs for an entity described by a key and an optional parameters object.
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public interface UrlResolver {
 
     String urlFor(WebContext ctx, Object key, Object params);
-    
+
 }

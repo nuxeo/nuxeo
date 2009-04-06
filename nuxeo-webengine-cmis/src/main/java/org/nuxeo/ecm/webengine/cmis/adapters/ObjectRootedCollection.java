@@ -40,6 +40,7 @@ import org.apache.abdera.protocol.server.context.AbstractResponseContext;
 import org.apache.abdera.protocol.server.context.BaseResponseContext;
 import org.apache.abdera.protocol.server.context.ResponseContextException;
 import org.apache.chemistry.ObjectEntry;
+import org.apache.chemistry.ReturnVersion;
 import org.apache.chemistry.SPI;
 import org.apache.chemistry.atompub.CMIS;
 import org.apache.chemistry.atompub.ObjectElement;
@@ -110,6 +111,13 @@ public abstract class ObjectRootedCollection extends CMISCollection<ObjectEntry>
     @Override
     public String getId(ObjectEntry object) {
         return "urn:uuid:" + object.getId();
+    }
+
+    @Override
+    public ObjectEntry getEntry(String id, RequestContext request)
+            throws ResponseContextException {
+        SPI spi = getConnection(request).getSPI();
+        return spi.getProperties(id, ReturnVersion.THIS, null, false, false);
     }
 
     
@@ -183,12 +191,16 @@ public abstract class ObjectRootedCollection extends CMISCollection<ObjectEntry>
         // entry.addLink("XXX", CMIS.LINK_ALLOWABLE_ACTIONS);
         // entry.addLink("XXX", CMIS.LINK_RELATIONSHIPS);
     
+        addEextensions(request, factory, entry, object);
+    
+        return link;
+    }
+    
+    protected void addEextensions(RequestContext request, Factory factory, Entry entry, ObjectEntry object) throws ResponseContextException {
         // ContentStreamUri needs to know the media link
         String mediaLink = isMediaEntry(object) ? getMediaLink(object.getId(),
                 request) : null;
-        entry.addExtension(new ObjectElement(factory, object, mediaLink));
-    
-        return link;
+        entry.addExtension(new ObjectElement(factory, object, mediaLink));   
     }
 
     @Override
@@ -265,6 +277,17 @@ public abstract class ObjectRootedCollection extends CMISCollection<ObjectEntry>
         Text text = request.getAbdera().getFactory().newSummary();
         text.setValue(summary);
         return text;
+    }
+
+    @Override
+    protected String addMediaContent(IRI feedIri, Entry entry,
+            ObjectEntry object, RequestContext request)
+            throws ResponseContextException {
+        String mediaLink = getMediaLink(object.getId(), request);
+        entry.setContent(new IRI(mediaLink), getContentType(object));
+        entry.addLink(mediaLink, "edit-media");
+        entry.addLink(mediaLink, "cmis-stream");
+        return mediaLink;
     }
 
     @Override

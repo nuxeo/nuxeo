@@ -31,8 +31,6 @@ import org.nuxeo.ecm.webengine.model.WebContext;
  */
 public abstract class JSonTree {
 
-    private static final long serialVersionUID = 1L;
-
     protected TreeModelImpl tree;
 
     public TreeModel getTree() {
