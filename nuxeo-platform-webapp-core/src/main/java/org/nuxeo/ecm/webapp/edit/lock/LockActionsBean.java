@@ -202,9 +202,8 @@ public class LockActionsBean implements LockActions {
                         SecurityConstants.WRITE_PROPERTIES)) {
 
                     try {
-                        // Here administrator should always be able to unlock so
-                        // we need to grant him this possibility even if it
-                        // doesn't have the write permission.
+                        // Core session allow two kind of user to unlock a document : An administrator or the user which has locked the file.
+                        // So in order to allow users with MANAGE_EVERYTHING profile to unlock documents : we have to do it in a unrestrictedSession
                         SystemSession session = new SystemSession();
                         session.login();
 
