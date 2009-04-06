@@ -19,8 +19,11 @@ package org.nuxeo.webengine.utils;
 import static org.nuxeo.webengine.utils.SiteUtilsConstants.CONTEXTUAL_LINK;
 import static org.nuxeo.webengine.utils.SiteUtilsConstants.NUMBER_COMMENTS;
 import static org.nuxeo.webengine.utils.SiteUtilsConstants.WEBPAGE;
+
 import static org.nuxeo.webengine.utils.SiteUtilsConstants.WEB_CONTAINER_FACET;
+
 import static org.nuxeo.webengine.utils.SiteUtilsConstants.WORKSPACE;
+
 import static org.nuxeo.webengine.utils.SiteUtilsConstants.DELETED;
 
 import java.text.SimpleDateFormat;
@@ -31,9 +34,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang.StringUtils;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
@@ -47,6 +52,7 @@ import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.WebContext;
+import org.nuxeo.ecm.webengine.webcomments.utils.WebCommentUtils;
 import org.nuxeo.webengine.sites.JsonAdapter;
 import org.nuxeo.webengine.sites.SiteHelper;
 
@@ -227,7 +233,7 @@ public class SiteUtils {
      * @param noComments - the number of comments
      * @param noWordsFromContent - the number of words from the content of the
      *            comment
-     * @return the <b>WebComments</b>-s that are made under a <b>WebPage</b>
+     * @return the <b>Comments</b>-s that are made under a <b>WebPage</b>
      * @throws ClientException
      */
     public static List<Object> getLastCommentsFromPages(DocumentModel ws,
@@ -237,7 +243,7 @@ public class SiteUtils {
         DocumentModelList comments = session.query(
                 String.format(
                         "SELECT * FROM Document WHERE "
-                                + " ecm:primaryType like 'WebComment' "
+                                + " ecm:primaryType like 'Comment' "
                                 + " AND ecm:path STARTSWITH '%s'"
                                 + " AND ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0"
                                 + " AND ecm:currentLifeCycleState != 'deleted' ORDER BY dc:modified DESC",
@@ -249,7 +255,7 @@ public class SiteUtils {
                 DocumentModel parentPage = WebCommentUtils.getPageForComment(documentModel);
                 if (parentPage != null) {
                     GregorianCalendar creationDate = SiteHelper.getGregorianCalendar(
-                            documentModel, "webcmt:creationDate");
+                            documentModel, "comment:creationDate");
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
                             "dd MMMM", WebEngine.getActiveContext().getLocale());
                     String formattedString = simpleDateFormat.format(creationDate.getTime());
@@ -258,7 +264,7 @@ public class SiteUtils {
                     comment.put("month", splittedFormatterdString[1]);
 
                     comment.put("author", getUserDetails(SiteHelper.getString(
-                            documentModel, "webcmt:author")));
+                            documentModel, "comment:author")));
 
                     if (parentPage != null) {
                         comment.put("pageTitle", parentPage.getTitle());
@@ -266,7 +272,7 @@ public class SiteUtils {
                                 parentPage).toString());
                     }
                     comment.put("content", SiteHelper.getFistNWordsFromString(
-                            SiteHelper.getString(documentModel, "webcmt:text"),
+                            SiteHelper.getString(documentModel, "comment:text"),
                             noWordsFromContent));
                     lastWebComments.add(comment);
                 }

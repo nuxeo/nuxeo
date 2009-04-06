@@ -187,6 +187,7 @@ public class Site extends DefaultObject {
             root.put(CONTEXTUAL_LINKS, SiteUtils.getContextualLinks(ws));
             root.put(WELCOME_TEXT, SiteHelper.getString(ws, "webc:welcomeText",
                     null));
+            root.put(NAME, SiteHelper.getString(ws, "webc:name", null));
             return getTemplate("template_default.ftl").args(root);
         } catch (Exception e) {
             throw WebException.wrap(e);

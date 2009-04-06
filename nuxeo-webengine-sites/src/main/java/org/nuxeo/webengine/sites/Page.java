@@ -22,10 +22,11 @@ import static org.nuxeo.webengine.utils.SiteUtilsConstants.CONTEXTUAL_LINKS;
 import static org.nuxeo.webengine.utils.SiteUtilsConstants.DESCRIPTION;
 import static org.nuxeo.webengine.utils.SiteUtilsConstants.LAST_PUBLISHED_PAGES;
 import static org.nuxeo.webengine.utils.SiteUtilsConstants.NAME;
+import static org.nuxeo.webengine.utils.SiteUtilsConstants.PAGE_TITLE;
 import static org.nuxeo.webengine.utils.SiteUtilsConstants.RESULTS;
 import static org.nuxeo.webengine.utils.SiteUtilsConstants.WELCOME_TEXT;
-import static org.nuxeo.webengine.utils.SiteUtilsConstants.PAGE_TITLE;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,13 +45,15 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.rest.DocumentObject;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
+import org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.Template;
 import org.nuxeo.ecm.webengine.model.WebObject;
+import org.nuxeo.ecm.webengine.webcomments.utils.WebCommentUtils;
+import org.nuxeo.ecm.webengine.webcomments.utils.WebCommentsConstants;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.webengine.utils.SiteUtils;
-import org.nuxeo.webengine.utils.WebCommentUtils;
 
 /**
  * @author stan
@@ -79,17 +82,6 @@ public class Page extends DocumentObject {
         return null;
     }
 
-    @GET
-    @Path("comments")
-    public List<DocumentModel> getComments() {
-        try {
-            CommentManager commentManager = WebCommentUtils.getCommentManager();
-            return commentManager.getComments(this.getDocument());
-        } catch (Exception e) {
-            throw WebException.wrap("Failed to get all published comments", e);
-        }
-
-    }
 
     @GET
     @Path("numberComments")
@@ -113,6 +105,17 @@ public class Page extends DocumentObject {
         }
     }
 
+    public boolean isModerated() {
+        try {
+            CoreSession session = this.getCoreSession();
+            return WebCommentUtils.isCurrentModerated(session,
+                    this.getDocument());
+        } catch (Exception e) {
+            throw WebException.wrap("Failed to delete comment", e);
+        }
+    }
+
+    
     @GET
     @Path("logo")
     public Response getLogo() {
@@ -185,6 +188,8 @@ public class Page extends DocumentObject {
 
             // add all webpages that are directly connected to an webpage
             root.put(ALL_WEBPAGES, SiteUtils.getAllWebPages(doc));
+            //get pending comments??
+            //root.put("commentMessage", "Message wainting for approval...");
             MimetypeRegistry mimetypeService = null;
             mimetypeService = Framework.getService(MimetypeRegistry.class);
             root.put("mimetypeService", mimetypeService);
@@ -195,5 +200,51 @@ public class Page extends DocumentObject {
 
         return root;
     }
+
+
+  @GET
+    @Path("publishedComments")
+    public List<DocumentModel> getPublishedComments() {
+        List<DocumentModel> publishedComments = new ArrayList<DocumentModel>();
+        try {
+            CommentManager commentManager = WebCommentUtils.getCommentManager();
+            for (DocumentModel doc : commentManager.getComments(this.getDocument())) {
+                if (CommentsConstants.PUBLISHED_STATE.equals(doc.getCurrentLifeCycleState())) {
+                    publishedComments.add(doc);
+                }
+            }
+            return publishedComments;
+        } catch (Exception e) {
+            throw WebException.wrap("Failed to get all published comments", e);
+        }
+
+    }
+
+    @GET
+    @Path("pendingComments")
+    public List<DocumentModel> getPendingComments() {
+        List<DocumentModel> pendingComments = new ArrayList<DocumentModel>();
+        try {
+            CommentManager commentManager = WebCommentUtils.getCommentManager();
+            for (DocumentModel doc : commentManager.getComments(this.getDocument())) {
+                if (CommentsConstants.PENDING_STATE.equals(doc.getCurrentLifeCycleState())) {
+                    pendingComments.add(doc);
+                }
+            }
+            return pendingComments;
+        } catch (Exception e) {
+            throw WebException.wrap("Failed to get all pending comments", e);
+        }
+
+    }
     
+    public boolean isAposteriori() {
+        try {
+            return WebCommentUtils.getModerationType(
+                    this.getCoreSession(), this.getDocument()).equals(WebCommentsConstants.MODERATION_APOSTERIORI);
+        } catch (Exception e) {
+            throw WebException.wrap("Failed to delete comment", e);
+        }
+    }
+
 }

@@ -60,16 +60,6 @@ public final class SiteUtilsConstants {
     
     public static final String DELETED = "deleted";
 
-    /**
-     * Constants used for Comments
-     */
-    public static final String PERMISSION_COMMENT = "Comment";
-
-    public static final String PERMISSION_MODERATE = "Moderate";
-
-    public static final String PERMISSION_WRITE = "Write";
-
-    public static final String PERMISSION_MANAGE_EVERYTHING = "Everything";
 
     public static final String WEB_CONTAINER_FACET = "WebView";
 

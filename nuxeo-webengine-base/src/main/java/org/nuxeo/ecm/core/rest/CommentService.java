@@ -20,9 +20,14 @@
 
 package org.nuxeo.ecm.core.rest;
 
+
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -34,11 +39,14 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
+import org.nuxeo.ecm.platform.comment.workflow.services.CommentsModerationService;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.forms.FormData;
 import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.ecm.webengine.model.exceptions.IllegalParameterException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
+import org.nuxeo.ecm.webengine.webcomments.utils.WebCommentUtils;
+import org.nuxeo.ecm.webengine.webcomments.utils.WebCommentsConstants;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -46,13 +54,13 @@ import org.nuxeo.runtime.api.Framework;
  * <p>
  * Accepts the following methods:
  * <ul>
- * <li> POST - create a new comment
+ * <li>POST - create a new comment
  * </ul>
- *
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * @author <a href="mailto:stan@nuxeo.com">Sun Seng David TAN</a>
  */
-@WebAdapter(name = "comments", type = "CommentService", targetType = "Document", targetFacets = {"Commentable"})
+@WebAdapter(name = "comments", type = "CommentService", targetType = "Document", targetFacets = { "Commentable" })
 public class CommentService extends DefaultAdapter {
 
     @POST
@@ -60,22 +68,64 @@ public class CommentService extends DefaultAdapter {
         if (cText == null) {
             throw new IllegalParameterException("Expecting a 'text' parameter");
         }
-
         DocumentObject dobj = (DocumentObject) getTarget();
         CommentManager commentManager = getCommentManager();
         CoreSession session = dobj.getCoreSession();
+        DocumentModel pageDoc = dobj.getDocument();
         try {
-            // create a new webComment on this page
-            DocumentModel webComment = session.createDocumentModel("WebComment");
-            webComment.setPropertyValue("webcmt:author", session.getPrincipal().getName());
-            webComment.setPropertyValue("webcmt:text", cText);
-            webComment.setPropertyValue("webcmt:creationDate", new Date());
+     
+            DocumentModel webComment = session.createDocumentModel("Comment");
+            webComment.setPropertyValue("comment:author", session.getPrincipal().getName());
+            webComment.setPropertyValue("comment:text", cText);
+            webComment.setPropertyValue("comment:creationDate", new Date());
             webComment = commentManager.createLocatedComment(
                     dobj.getDocument(), webComment, getParentWorkspacePath(session, dobj.getDocument()));
             session.save();
+            CommentsModerationService commentsModerationService = getCommentsModerationService();
+            if (WebCommentUtils.isCurrentModerated(session, pageDoc)
+                    && (!WebCommentUtils.isModeratedByCurrentUser(session,
+                            pageDoc)) && (WebCommentUtils.getModerationType(session, pageDoc).equals(WebCommentsConstants.MODERATION_APRIORI)==true) ) {
+                // if current page is moderated
+                // get all moderators
+                ArrayList<String> moderators = WebCommentUtils.getModerators(
+                        session, pageDoc);
+                // start the moderation process
+                commentsModerationService.startModeration(session, pageDoc,
+                        webComment.getId(), moderators);
+            } else {
+                // simply publish the comment
+                commentsModerationService.publishComment(session, webComment);
+            }
+
             return redirect(getTarget().getPath());
         } catch (Exception e) {
             throw WebException.wrap(e);
+        }
+    }
+
+    @GET
+    @Path("reject")
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
+    public Response reject() {
+        try {
+            return rejectComment();
+        } catch (WebException e) {
+            throw e;
+        } catch (Exception e) {
+            throw WebException.wrap("Failed to reject comment", e);
+        }
+    }
+
+    @GET
+    @Path("approve")
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
+    public Response approve() {
+        try {
+            return approveComent();
+        } catch (WebException e) {
+            throw e;
+        } catch (Exception e) {
+            throw WebException.wrap("Failed to approve comment", e);
         }
     }
 
@@ -98,24 +148,64 @@ public class CommentService extends DefaultAdapter {
         FormData form = ctx.getForm();
         String docId = form.getString(FormData.PROPERTY);
         DocumentModel comment = session.getDocument(new IdRef(docId));
-        CommentManager commentManager = getCommentManager();
+        CommentManager commentManager = WebCommentUtils.getCommentManager();
         commentManager.deleteComment(dobj.getDocument(), comment);
         return redirect(dobj.getPath());
     }
 
-    public static CommentManager getCommentManager() {
-        return Framework.getLocalService(CommentManager.class);
+
+    public Response rejectComment() throws Exception {
+        DocumentObject dobj = (DocumentObject) getTarget();
+        CoreSession session = dobj.getCoreSession();
+        DocumentModel pageDoc = dobj.getDocument();
+        CommentManager commentManager = WebCommentUtils.getCommentManager();
+        FormData form = ctx.getForm();
+        String commentId = form.getString(FormData.PROPERTY);
+        
+        CommentsModerationService commentsModerationService = getCommentsModerationService();
+        commentsModerationService.rejectComment(session, pageDoc, commentId);
+   
+        // get current comment
+        DocumentModel comment = session.getDocument(new IdRef(commentId));
+        // remove comment
+        commentManager.deleteComment(dobj.getDocument(), comment);
+        return redirect(dobj.getPath());
     }
 
-    public static String getParentWorkspacePath(CoreSession session, DocumentModel doc)
-            throws Exception {
+    
+    public Response approveComent() throws Exception {
+        DocumentObject dobj = (DocumentObject) getTarget();
+        CoreSession session = dobj.getCoreSession();
+        DocumentModel pageDoc = dobj.getDocument();
+        FormData form = ctx.getForm();
+        String commentId = form.getString(FormData.PROPERTY);
+        
+        CommentsModerationService commentsModerationService = getCommentsModerationService();
+        commentsModerationService.approveComent(session, pageDoc, commentId);
+        
+        return redirect(dobj.getPath());
+    }
+
+
+    public static CommentsModerationService getCommentsModerationService() throws Exception {
+        return Framework.getService(CommentsModerationService.class);
+    }
+    
+    public static String getParentWorkspacePath(CoreSession session,
+            DocumentModel doc) throws Exception {
         List<DocumentModel> parents = session.getParentDocuments(doc.getRef());
-        for (DocumentModel documentModel : parents) {
-            if (documentModel.getType().equals("Workspace")) {
-                return documentModel.getPathAsString();
+        Collections.reverse(parents);
+        for (DocumentModel currentDocumentModel : parents) {
+            if ("Workspace".equals(currentDocumentModel.getType())
+                    && currentDocumentModel.hasFacet("WebView")) {
+                return currentDocumentModel.getPathAsString();
             }
         }
         return null;
+    }
+    
+    protected static CommentManager getCommentManager() {
+        return Framework.getLocalService(CommentManager.class);
     }
 
 }

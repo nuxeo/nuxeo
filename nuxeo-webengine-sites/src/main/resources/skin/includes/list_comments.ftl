@@ -1,4 +1,6 @@
-<#assign comments = This.comments />
+<#assign publishedComments = This.publishedComments />
+<#assign pendingComments = This.pendingComments /> 
+
 <div class="commentspageBlock">
 <h4>${Context.getMessage("label.page.comments.title")}</h4>
 <#if (This.userWithCommentPermission==true)> 
@@ -26,16 +28,39 @@
   </div>
 
   <div class="lastCommentsBlock">
-    <#list comments as com>
+    <#list publishedComments as com>
     <div class="commentBlock">
-      <div class="commentInfos">${com['webcomment:creationDate']} by ${com['webcomment:author']}</div>
-      <div class="commentContent">${com['webcomment:text']}</div>
+      <div class="commentInfos">${com['comment:creationDate']} by ${com['comment:author']}</div>
+      <div class="commentContent">${com['comment:text']}</div>
       <#if (This.moderator==true)>
         <a href="${This.path}/@comments/delete?property=${com.ref}">Delete</a>
-      </#if> 
+      </#if>
+      <#if (This.moderated==false)>
+      	<#if (This.aposteriori==true)>
+        <a href="${This.path}/@comments/delete?property=${com.ref}">Delete</a>
+        </#if>
+      </#if>  
     </div>
     </#list>
   </div>
 
+  <div class="lastCommentsBlock">
+    <#if (This.moderator==true)>
+    <#list pendingComments as com>
+    <div class="commentBlock">
+      <div class="commentInfos">${com['comment:creationDate']} by ${com['comment:author']}</div>
+      <div class="commentContent">${com['comment:text']}</div>
+        <a href="${This.path}/@comments/reject?property=${com.ref}">Reject</a>
+          <br/>
+          <a href="${This.path}/@comments/approve?property=${com.ref}">Approve</a>
+    </div>
+    </#list>
+    </#if> 
+  </div>
+  
+  <div>${This.commentMessage}</div>
+
 </form>
 </div>
+
+ 
