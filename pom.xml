@@ -125,15 +125,10 @@
     <module>nuxeo-platform-convert</module>
     
     <!-- NXP-3179 - DEPRECATED to be deleted -->
-    <module>nuxeo-platform-cache-server</module>
     <module>nuxeo-platform-transform-api</module>
     <module>nuxeo-platform-transform-compat</module>
     <module>nuxeo-platform-transform-core</module>
     <module>nuxeo-platform-transform-plugins</module>
-    <module>nuxeo-platform-cache-api</module>
-    <module>nuxeo-platform-cache-client</module>
-    <module>nuxeo-platform-cache-jboss</module>
-    <module>nuxeo-platform-cache-web</module>
     <module>nuxeo-platform-events-api</module>
     <module>nuxeo-platform-events-core</module>
     <module>nuxeo-platform-events-facade</module>
