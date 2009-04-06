@@ -1,0 +1,29 @@
+<process-definition name="comments_moderation">
+
+  <start-state name="start state">
+    <transition name="start process" to="moderate comment" />
+  </start-state>
+
+  <task-node name="moderate comment">
+    <task name="moderate">
+      <assignment pooled-actors="#{participants}" />
+    </task>
+    <transition name="moderation_publish" to="published" />
+    <transition name="moderation_reject" to="rejected" />
+  </task-node>
+
+  <node name="published">
+    <action
+      class="org.nuxeo.ecm.platform.comment.workflow.AcceptCommentHandler" />
+    <transition to="end" />
+  </node>
+
+  <node name="rejected">
+    <action
+      class="org.nuxeo.ecm.platform.comment.workflow.RejectCommentHandler" />
+    <transition to="end" />
+  </node>
+
+  <end-state name="end" />
+
+</process-definition>

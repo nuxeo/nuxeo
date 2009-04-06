@@ -39,6 +39,7 @@
     <module>nuxeo-platform-comment</module>
     <module>nuxeo-platform-comment-web</module>
     <module>nuxeo-platform-comment-core</module>
+    <module>nuxeo-platform-comment-workflow</module>
     <module>nuxeo-platform-default-config</module>
     <module>nuxeo-platform-directory-api</module>
     <module>nuxeo-platform-directory-core</module>
@@ -320,6 +321,11 @@
         <artifactId>nuxeo-platform-comment-web</artifactId>
         <version>${nuxeo.platform.version}</version>
         <type>ejb</type>
+      </dependency>     
+       <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-comment-workflow</artifactId>
+        <version>${nuxeo.platform.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
