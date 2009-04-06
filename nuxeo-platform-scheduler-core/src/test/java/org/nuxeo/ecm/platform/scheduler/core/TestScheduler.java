@@ -69,7 +69,7 @@ public class TestScheduler extends NXRuntimeTestCase {
         try {
             Thread.sleep(2000); // 1s so that job is called at least once
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            log.error(e);
             fail("Timer failed");
         }
 
