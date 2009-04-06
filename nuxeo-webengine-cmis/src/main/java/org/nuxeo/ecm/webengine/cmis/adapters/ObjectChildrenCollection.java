@@ -23,13 +23,11 @@ import java.util.List;
 
 import org.apache.abdera.i18n.iri.IRI;
 import org.apache.abdera.model.Content;
-import org.apache.abdera.model.Entry;
 import org.apache.abdera.model.Feed;
 import org.apache.abdera.model.Person;
 import org.apache.abdera.protocol.server.RequestContext;
 import org.apache.abdera.protocol.server.context.ResponseContextException;
 import org.apache.chemistry.ObjectEntry;
-import org.apache.chemistry.ReturnVersion;
 import org.apache.chemistry.SPI;
 import org.apache.chemistry.repository.Repository;
 
@@ -48,12 +46,7 @@ public class ObjectChildrenCollection extends ObjectRootedCollection {
 
     public ObjectChildrenCollection(String name,
             Repository repository) {
-        super("children", "Children", repository);
-    }
-
-    @Override
-    public String getTitle(RequestContext request) {
-        return "Children";
+        super(name, "Children", repository);
     }
 
     @Override
@@ -69,18 +62,11 @@ public class ObjectChildrenCollection extends ObjectRootedCollection {
     @Override
     public Iterable<ObjectEntry> getEntries(RequestContext request)
             throws ResponseContextException {
-        SPI spi = repository.getConnection(null).getSPI();
+        SPI spi = getConnection(request).getSPI();
         boolean[] hasMoreItems = new boolean[1];
         List<ObjectEntry> children = spi.getChildren(getObjectId(request), null, null, false,
                 false, 0, 0, null, hasMoreItems);
         return children;
-    }
-
-    @Override
-    public ObjectEntry getEntry(String id, RequestContext request)
-            throws ResponseContextException {
-        SPI spi = repository.getConnection(null).getSPI();
-        return spi.getProperties(id, ReturnVersion.THIS, null, false, false);
     }
 
     @Override
@@ -103,15 +89,5 @@ public class ObjectChildrenCollection extends ObjectRootedCollection {
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    protected String addMediaContent(IRI feedIri, Entry entry,
-            ObjectEntry object, RequestContext request)
-            throws ResponseContextException {
-        String mediaLink = getMediaLink(object.getId(), request);
-        entry.setContent(new IRI(mediaLink), getContentType(object));
-        entry.addLink(mediaLink, "edit-media");
-        entry.addLink(mediaLink, "cmis-stream");
-        return mediaLink;
-    }
 
 }

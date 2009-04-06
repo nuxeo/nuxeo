@@ -40,45 +40,49 @@ public class AbderaRequest extends ServletRequestContext {
 
     public final static String PARAMS_KEY = "ABDERA_PARAMETERS";
     public final static String URL_RESOLVER_KEY = "ABDERA_URL_RESOLVER";
-
+    
     protected Target target;
     protected WebContext ctx;
-    protected UrlResolver urlResolver;
+    protected UrlResolver urlResolver; 
 
     public static void setParameter(WebContext ctx, String key, String value) {
         Map<String,String> map = (Map<String,String>)ctx.getProperty(PARAMS_KEY);
         if (map == null) {
             map = new HashMap<String, String>();
             ctx.setProperty(PARAMS_KEY, map);
-        }
-        map.put(key, value);
-    }
-
+        }        
+        map.put(key, value);                
+    }    
+    
     public AbderaRequest(TargetType targetType, Provider provider, WebContext ctx) {
         super (provider, ctx.getRequest());
-        this.target = new SimpleTarget(targetType, this);
+        this.target = new SimpleTarget(targetType, this);  
         this.ctx = ctx;
         this.urlResolver = (UrlResolver)this.ctx.getProperty(URL_RESOLVER_KEY);
     }
 
+    public WebContext getContext() {
+        return ctx;
+    }
+    
     // Avoid calling the provider for the target. it will be initialized after super ctor is called
     @Override
     protected Target initTarget() {
         return null;
     }
-
+    
     public Target getTarget() {
         return target;
     }
-
+    
     public void setTarget(Target target) {
         this.target = target;
     }
 
-    public void setParameter(String key, String value) {
+    public void setParameter(String key, String value) {        
         setParameter(ctx, key, value);
     }
-
+    
     @Override
     public String getParameter(String name) {
         Map<String,String> map = (Map<String,String>)ctx.getProperty(PARAMS_KEY);
@@ -91,7 +95,7 @@ public class AbderaRequest extends ServletRequestContext {
         }
         return val;
     }
-
+    
     @Override
     public String[] getParameterNames() {
         Map<String,String> map = (Map<String,String>)ctx.getProperty(PARAMS_KEY);
@@ -103,7 +107,7 @@ public class AbderaRequest extends ServletRequestContext {
         result.addAll(Arrays.asList(super.getParameterNames()));
         return result.toArray(new String[result.size()]);
     }
-
+    
     @Override
     public List<String> getParameters(String name) {
         Map<String,String> map = (Map<String,String>)ctx.getProperty(PARAMS_KEY);
@@ -124,5 +128,7 @@ public class AbderaRequest extends ServletRequestContext {
     public String urlFor(Object key, Object param) {
         return urlResolver.urlFor(ctx, key, param);
     }
-
+    
 }
+
+

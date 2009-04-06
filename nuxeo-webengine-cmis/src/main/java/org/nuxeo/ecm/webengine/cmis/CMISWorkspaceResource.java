@@ -34,22 +34,15 @@ public class CMISWorkspaceResource extends WorkspaceResource {
     public Resource getServices() {
         return ctx.newObject("CmisServices", ws);
     }
-
+    
     @Path("objects/{id}")
-    public Resource getObject(@PathParam("id") String id) {
+    public Resource getObject(@PathParam("id") String id) {        
         return newObject("CmisObject", id, ws);
     }
 
     @Path("types/{id}")
     public Resource getType(@PathParam("id") String id) {
         return newObject("CmisType", id, ws);
-    }
-
-//    //TODO BUG in resteasy - dispatch method from superclass hides @Path annotations from this class
-//    // need to redefine the method here
-//    @Path("{segment}")
-//    public Object dispatch(@PathParam("segment") String segment) {
-//        return super.dispatch(segment);
-//    }
+    }    
 
 }
