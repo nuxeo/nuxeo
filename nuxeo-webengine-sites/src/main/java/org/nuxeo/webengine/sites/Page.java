@@ -119,8 +119,7 @@ public class Page extends DocumentObject {
             DocumentModel parentWorkspace = SiteUtils.getFirstWorkspaceParent(getCoreSession(), doc);
             resp = SiteUtils.getLogoResponse(parentWorkspace);
         } catch (Exception e) {
-            // FIXME: use proper logging
-            e.printStackTrace();
+            log.error("Unable to retrive the workspace parent. " , e);
         }
         //return a default image, maybe you want to change this in future
         if (resp == null) {

@@ -161,8 +161,7 @@ public class Site extends DefaultObject {
                 resp = Response.ok().entity(blob).type(blob.getMimeType()).build();
             }
         } catch (Exception e) {
-            // FIXME: explicit logging...
-            e.printStackTrace();
+            log.error("Error while trying to display the website. " , e);
         }
         //return a default image, maybe you want to change this in future
         if (resp == null) {
@@ -226,8 +225,7 @@ public class Site extends DefaultObject {
                 return list.get(0);
             }
         } catch (ClientException e) {
-            // FIXME: proper logging
-            e.printStackTrace();
+            log.error("Unable to retrive the webcontainer ", e);
         }
         return null;
     }
