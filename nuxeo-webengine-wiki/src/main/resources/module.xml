@@ -32,9 +32,12 @@
       <category>TOOLBOX</category>
     </link-->
 
+    <!-- Removed due to WEB-224 
     <link id="link_create_wikis" path="/@views/create">
       <facet>mainWiki</facet>
       <category>TOOLBOX</category>
     </link>
+    -->
+    
   </links>
 </module>
