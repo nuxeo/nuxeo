@@ -76,7 +76,7 @@ public class PlatformService extends DefaultComponent {
         this.context = context.getRuntimeContext();
         String name = (String) context.getPropertyValue("platform-name");
         platform = new Platform(name);
-        ECM.setPlatform(platform);
+        //ECM.setPlatform(platform);
     }
 
     @Override
