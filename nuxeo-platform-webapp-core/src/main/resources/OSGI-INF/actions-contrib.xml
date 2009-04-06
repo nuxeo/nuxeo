@@ -15,18 +15,32 @@
       </filter>
     </action>
 
-    <action id="logout" link="#{loginLogoutAction.logout}" enabled="true"
+    <!--
+      <action id="logout" link="logout" enabled="true"
       label="command.logout" order="200">
-      <category>USER_SERVICES</category>
+      <category>USER_SERVICES_BOTTOM</category>
+      </action>
+    -->
+
+    <action id="non_anonymous_logout" link="#{loginLogoutAction.logout}"
+      enabled="true" label="command.logout">
+      <category>USER_SERVICES_BOTTOM</category>
+      <filter-id>not_anonymous</filter-id>
+    </action>
+
+    <action id="login" link="#{anonymousLoginManager.login}" enabled="true"
+      label="command.login">
+      <category>USER_SERVICES_BOTTOM</category>
+      <filter-id>anonymous</filter-id>
     </action>
 
     <action id="user_manager" link="#{userManagerActions.viewUsers}"
       enabled="true" label="command.manageMembers" order="20">
       <category>USER_SERVICES</category>
       <filter id="user_manager">
-          <rule grant="true">
-              <condition>#{userServicesContext.userManagerEnabled}</condition>
-          </rule>
+        <rule grant="true">
+          <condition>#{userServicesContext.userManagerEnabled}</condition>
+        </rule>
       </filter>
     </action>
 
@@ -37,9 +51,8 @@
       <filter-id>only_for_manager</filter-id>
     </action>
 
-    <action id="themes_manager"
-      link="#{nxthemesUiManager.startEditor}" enabled="true"
-      label="command.manageThemes" order="40">
+    <action id="themes_manager" link="#{themeEditorAction.startEditor}"
+      enabled="true" label="command.manageThemes" order="40">
       <category>USER_SERVICES</category>
       <filter-id>only_for_manager</filter-id>
     </action>
@@ -116,8 +129,8 @@
       <filter-id>delete_content</filter-id>
     </action>
 
-    <!-- tabs are handled by a specific template so links should be paths to template
-      to include in the tab content -->
+    <!-- tabs are handled by a specific template so links should be paths to
+      template to include in the tab content -->
 
     <action id="TAB_VIEW" link="/incl/tabs/document_view.xhtml" enabled="true"
       order="0" label="action.view.summary" icon="/icons/file.gif">
@@ -132,15 +145,17 @@
       <filter-id>outSection</filter-id>
     </action>
 
-    <action id="TAB_SECTION_CONTENT" link="/incl/tabs/section_content.xhtml" order="10"
-      enabled="true" label="action.view.content" icon="/icons/file.gif">
+    <action id="TAB_SECTION_CONTENT" link="/incl/tabs/section_content.xhtml"
+      order="10" enabled="true" label="action.view.content"
+      icon="/icons/file.gif">
       <category>VIEW_ACTION_LIST</category>
       <filter-id>view_content</filter-id>
       <filter-id>inSection</filter-id>
     </action>
 
-    <action id="TAB_TRASH_CONTENT" link="/incl/tabs/document_trash_content.xhtml" order="100"
-      enabled="true" label="action.view.trash.content" icon="/icons/file.gif">
+    <action id="TAB_TRASH_CONTENT"
+      link="/incl/tabs/document_trash_content.xhtml" order="100" enabled="true"
+      label="action.view.trash.content" icon="/icons/file.gif">
       <category>VIEW_ACTION_LIST</category>
       <filter id="viewTrash">
         <rule grant="true">
@@ -151,8 +166,8 @@
       </filter>
     </action>
 
-    <action id="sendEmail" link="send_email" enabled="true"
-      order="17" label="action.email.document" icon="/icons/mail.gif">
+    <action id="sendEmail" link="send_email" enabled="true" order="17"
+      label="action.email.document" icon="/icons/mail.gif">
       <category>DOCUMENT_UPPER_ACTION</category>
       <filter-id>not_folder</filter-id>
     </action>
@@ -164,8 +179,9 @@
       <filter-id>mutable_document</filter-id>
     </action>
 
-    <action id="TAB_WORKSPACE_EDIT" link="/incl/tabs/document_edit.xhtml" enabled="true"
-      order="22" label="action.view.edit" icon="/icons/file.gif">
+    <action id="TAB_WORKSPACE_EDIT" link="/incl/tabs/document_edit.xhtml"
+      enabled="true" order="22" label="action.view.edit"
+      icon="/icons/file.gif">
       <category>VIEW_ACTION_LIST</category>
       <filter-id>workspace_edit</filter-id>
       <filter-id>mutable_document</filter-id>
@@ -213,6 +229,12 @@
       <filter-id>publish_document</filter-id>
       <filter-id>mutable_document</filter-id>
     </action>
+    
+    <action id="TAB_ADMIN_PUBLICATION_TREES" link="/incl/tabs/admin_publication_trees.xhtml" order="110"
+      enabled="true" label="action.admin.publication.tree" icon="/icons/file.gif">
+      <category>VIEW_ACTION_LIST</category>
+      <filter-id>admin_publication_trees_filter</filter-id>
+    </action>
 
     <action id="TAB_THEME" link="/incl/tabs/document_theme.xhtml" enabled="true"
       order="60" label="action.view.theme" icon="/icons/file.gif">
@@ -237,7 +259,6 @@
       <category>CLIPBOARD_LIST</category>
       <filter-id>canMoveWorkingList</filter-id>
     </action>
-
 
     <action id="WORKLIST_EXPORT"
       link="#{clipboardActions.exportWorklistAsZip()}" enabled="true"
@@ -283,6 +304,11 @@
       <category>PUBLISH_DOCUMENT</category>
       <filter-id>not_review_documents</filter-id>
       <filter-id>edit</filter-id>
+      <filter id="publishingSectionSelected">
+        <rule grant="true">
+          <condition>#{publishActions.hasSelectedSections}</condition>
+        </rule>
+      </filter>
     </action>
 
     <!--  Actions for the document selection  -->
@@ -297,9 +323,9 @@
       </filter>
     </action>
 
-    <action id="CURRENT_SELECTION_DELETE"
-      link="#{deleteActions.purgeSelection}" enabled="true"
-      label="command.deleteDocs" icon="" help="comand.deleteDocs.help"
+    <action id="CURRENT_SELECTION_DELETE" link="#{deleteActions.purgeSelection}"
+      enabled="true" label="command.deleteDocs" icon=""
+      help="comand.deleteDocs.help"
       confirm="if( !confirmDeleteDocumentsForever() ) return false;">
       <category>CURRENT_SELECTION_TRASH_LIST</category>
       <filter id="canPurge">
@@ -321,9 +347,9 @@
       </filter>
     </action>
 
-    <action id="CURRENT_SELECTION_TRASH"
-      link="#{deleteActions.deleteSelection}" enabled="true"
-      label="command.trashDocs" icon="" help="comand.trashDocs.help"
+    <action id="CURRENT_SELECTION_TRASH" link="#{deleteActions.deleteSelection}"
+      enabled="true" label="command.trashDocs" icon=""
+      help="comand.trashDocs.help"
       confirm="if( !confirmDeleteDocuments() ) return false;">
       <category>CURRENT_SELECTION_LIST</category>
       <filter id="canDelete">
@@ -352,6 +378,7 @@
       </filter>
     </action>
 
+    <!-- disabled: see NXP-3029 (even if it was disabled before) -->
     <action id="CURRENT_SELECTION_MASS_EDIT"
       link="#{massEditActions.putSelectionInWorkList}" enabled="false"
       label="command.mass_edition.addworklist" icon="">
@@ -370,8 +397,8 @@
     </action>
 
     <action id="CURRENT_SELECTION_UNPUBLISH"
-      link="#{publishActions.unPublishDocumentsFromCurrentSelection}" enabled="true"
-      label="command.document.unpublish" icon="">
+      link="#{publishActions.unPublishDocumentsFromCurrentSelection}"
+      enabled="true" label="command.document.unpublish" icon="">
       <category>CURRENT_SELECTION_SECTIONS_LIST</category>
       <filter id="can_unpublish">
         <rule grant="true">
@@ -395,9 +422,9 @@
       </filter>
     </action>
 
-
+    <!-- disabled: see NXP-3029 -->
     <action id="CLIPBOARD_BULK_EDIT" link="#{massEditActions.massEditWorkList}"
-      enabled="true" label="command.mass_edition.addworklist"
+      enabled="false" label="command.mass_edition.addworklist"
       icon="/icons/action_mass_edit.gif">
       <category>DEFAULT_LIST</category>
       <filter id="currentWorkListIsNotEmpty_massedit">
@@ -417,34 +444,36 @@
       </filter>
     </action>
 
-    <action id="POPUP_VIEW" link="javascript:doView"
-      enabled="true" label="command.view" icon="/icons/doc.png">
+    <action id="POPUP_VIEW" link="javascript:doView" enabled="true"
+      label="command.view" icon="/icons/view_doc.png">
       <category>POPUP</category>
     </action>
 
-    <action id="POPUP_EDIT" link="javascript:doEdit"
-      enabled="true" label="action.view.edit" icon="/icons/application_form_edit.png">
+    <action id="POPUP_EDIT" link="javascript:doEdit" enabled="true"
+      label="action.view.edit" icon="/icons/application_form_edit.png">
       <category>POPUP</category>
       <filter-id>edit</filter-id>
     </action>
 
-    <action id="POPUP_COPY" link="javascript:doCopy"
-      enabled="true" label="command.clipboard.copy" icon="/icons/action_clipboard_copy.gif">
+    <action id="POPUP_COPY" link="javascript:doCopy" enabled="true"
+      label="command.clipboard.copy" icon="/icons/action_clipboard_copy.gif">
       <category>POPUP</category>
     </action>
 
-    <action id="POPUP_PASTE" link="javascript:doPaste"
-      enabled="true" label="command.clipboard.paste" icon="/icons/action_paste_all.gif">
+    <action id="POPUP_PASTE" link="javascript:doPaste" enabled="true"
+      label="command.clipboard.paste" icon="/icons/action_paste_all.gif">
       <category>POPUP</category>
       <filter id="canPastePopup">
         <rule grant="true">
-          <condition>#{clipboardActions.getCanPasteFromClipboardInside(document)}</condition>
+          <condition>
+            #{clipboardActions.getCanPasteFromClipboardInside(document)}
+          </condition>
         </rule>
       </filter>
     </action>
 
-    <action id="POPUP_RENAME" link="javascript:doRename"
-      enabled="true" label="command.rename" icon="/icons/txt.png">
+    <action id="POPUP_RENAME" link="javascript:doRename" enabled="true"
+      label="command.rename" icon="/icons/rename.png">
       <category>POPUP</category>
       <filter-id>edit</filter-id>
       <filter id="canRenamePopup">
@@ -454,8 +483,8 @@
       </filter>
     </action>
 
-    <action id="POPUP_DEL" link="javascript:doDelete"
-      enabled="true" label="command.trashDocs" icon="/icons/action_delete.gif">
+    <action id="POPUP_DEL" link="javascript:doDelete" enabled="true"
+      label="command.trashDocs" icon="/icons/action_delete_mini.gif">
       <category>POPUP</category>
       <filter id="canDeletePopup">
         <rule grant="true">
@@ -480,29 +509,34 @@
       <filter-id>can_unlock</filter-id>
     </action>
 
-
     <!-- live edit new document creation links -->
 
     <!-- WARNING: the following declaration are not yet used by incl/liveedit_create_actions.xhtml
-         since nxh:outputLink is not able to perform nested JSF-EL for the link/value attribute
-         as this case for the action attribute of nxh:commandLink
-     -->
+      since nxh:outputLink is not able to perform nested JSF-EL for the link/value attribute
+      as this case for the action attribute of nxh:commandLink
+    -->
 
-    <action id="le_create_msword" link="#{nxd:liveCreateUrl('application/msword',
-     'File', 'file', 'content', 'filename')}" enabled="true"
-      order="40" label="action.liveedit.create.msword" icon="/icons/doc.png">
+    <action id="le_create_msword"
+      link="#{nxd:liveCreateUrl('application/msword',
+     'File', 'file', 'content', 'filename')}"
+      enabled="true" order="40" label="action.liveedit.create.msword"
+      icon="/icons/doc.png">
       <category>LIVEEDIT_CREATE_ACTIONS</category>
     </action>
 
-    <action id="le_create_msexcel" link="#{nxd:liveCreateUrl('application/vnd.ms-excel',
-     'File', 'file', 'content', 'filename')}" enabled="true"
-      order="50" label="action.liveedit.create.msexcel" icon="/icons/xls.png">
+    <action id="le_create_msexcel"
+      link="#{nxd:liveCreateUrl('application/vnd.ms-excel',
+     'File', 'file', 'content', 'filename')}"
+      enabled="true" order="50" label="action.liveedit.create.msexcel"
+      icon="/icons/xls.png">
       <category>LIVEEDIT_CREATE_ACTIONS</category>
     </action>
 
-    <action id="le_create_mspowerpoint" link="#{nxd:liveCreateUrl('application/vnd.ms-powerpoint',
-     'File', 'file', 'content', 'filename')}" enabled="true"
-      order="60" label="action.liveedit.create.mspowerpoint" icon="/icons/ppt.png">
+    <action id="le_create_mspowerpoint"
+      link="#{nxd:liveCreateUrl('application/vnd.ms-powerpoint',
+     'File', 'file', 'content', 'filename')}"
+      enabled="true" order="60" label="action.liveedit.create.mspowerpoint"
+      icon="/icons/ppt.png">
       <category>LIVEEDIT_CREATE_ACTIONS</category>
     </action>
 
@@ -582,15 +616,11 @@
         <type>Root</type>
       </rule>
       <rule grant="false">
-        <condition>
-          !document.isProxy()
-        </condition>
+        <condition>!document.isProxy()</condition>
         <permission>Write</permission>
       </rule>
       <rule grant="false">
-        <condition>
-          !document.isProxy()
-        </condition>
+        <condition>!document.isProxy()</condition>
         <permission>Manage everything</permission>
       </rule>
     </filter>
@@ -625,6 +655,13 @@
         <condition>
           document.getCurrentLifeCycleState().equals("approved")
         </condition>
+      </rule>
+    </filter>
+
+    <filter id="admin_publication_trees_filter">
+      <rule grant="true">
+        <permission>Write</permission>
+        <type>Workspace</type>
       </rule>
     </filter>
 

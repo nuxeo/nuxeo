@@ -40,14 +40,15 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.RequestParameter;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Transactional;
-import org.jboss.seam.annotations.WebRemote;
+import org.jboss.seam.annotations.remoting.WebRemote;
+import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.core.Events;
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.common.utils.StringUtils;
@@ -62,7 +63,6 @@ import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.actions.Action;
-import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
 import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.UserAction;
@@ -85,7 +85,7 @@ import org.nuxeo.ecm.webapp.pagination.ResultsProvidersCache;
 /**
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
  * @author M.-A. Darche
- * 
+ *
  */
 @Name("documentActions")
 @Scope(CONVERSATION)
@@ -128,7 +128,7 @@ public class DocumentActionsBean extends InputController implements
 
     protected String comment;
 
-    // @Create
+    //@Create
     public void initialize() {
         log.debug("Initializing...");
     }
@@ -150,6 +150,7 @@ public class DocumentActionsBean extends InputController implements
         log.debug("PostActivate");
     }
 
+    @Factory(autoCreate=true, value="currentDocumentType", scope = ScopeType.EVENT)
     public Type getCurrentType() {
         DocumentModel doc = navigationContext.getCurrentDocument();
         if (doc == null) {
@@ -203,7 +204,7 @@ public class DocumentActionsBean extends InputController implements
             return name;
 
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -219,7 +220,7 @@ public class DocumentActionsBean extends InputController implements
             FacesContext context = FacesContext.getCurrentInstance();
             return ComponentUtils.download(context, blob, filename);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -248,9 +249,10 @@ public class DocumentActionsBean extends InputController implements
                     bigDownloadURL += "nxbigfile" + "/";
                     bigDownloadURL += doc.getRepositoryName() + "/";
                     bigDownloadURL += doc.getRef().toString() + "/";
-                    bigDownloadURL += docView.getParameter(DocumentFileCodec.FILE_PROPERTY_PATH_KEY)
-                            + "/";
-                    bigDownloadURL += docView.getParameter(DocumentFileCodec.FILENAME_KEY);
+                    bigDownloadURL += docView.getParameter(
+                            DocumentFileCodec.FILE_PROPERTY_PATH_KEY) + "/";
+                    bigDownloadURL += docView.getParameter(
+                            DocumentFileCodec.FILENAME_KEY);
                     try {
                         response.sendRedirect(bigDownloadURL);
                     } catch (IOException e) {
@@ -299,7 +301,7 @@ public class DocumentActionsBean extends InputController implements
             context.responseComplete();
             return null;
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -308,7 +310,7 @@ public class DocumentActionsBean extends InputController implements
      * values.
      * <p>
      * Method called from page action.
-     * 
+     *
      * @deprecated should update changeableDocument and use updateDocument
      */
     @Deprecated
@@ -327,7 +329,7 @@ public class DocumentActionsBean extends InputController implements
             return navigationContext.navigateToDocument(currentDocument,
                     "after-edit");
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -348,9 +350,8 @@ public class DocumentActionsBean extends InputController implements
             return navigationContext.navigateToDocument(changeableDocument,
                     "after-edit");
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
-
     }
 
     /**
@@ -370,7 +371,7 @@ public class DocumentActionsBean extends InputController implements
             return navigationContext.navigateToDocument(changeableDocument,
                     "after-edit");
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -400,7 +401,7 @@ public class DocumentActionsBean extends InputController implements
             return navigationContext.getActionResult(changeableDocument,
                     UserAction.CREATE);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -449,7 +450,7 @@ public class DocumentActionsBean extends InputController implements
             return navigationContext.navigateToDocument(newDocument,
                     "after-create");
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -464,7 +465,8 @@ public class DocumentActionsBean extends InputController implements
         // XXX : this proves that this method is called too many times
         // log.debug("Getter children select model");
         DocumentModelList documents = navigationContext.getCurrentDocumentChildrenPage();
-        List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
+        List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(
+                DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
         SelectDataModel model = new SelectDataModelImpl(CHILDREN_DOCUMENT_LIST,
                 documents, selectedDocuments);
         model.addSelectModelListener(this);
@@ -483,7 +485,8 @@ public class DocumentActionsBean extends InputController implements
         // XXX : this proves that this method is called too many times
         // log.debug("Getter children select model");
         DocumentModelList documents = navigationContext.getCurrentDocumentChildrenPage();
-        List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION);
+        List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(
+                DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION);
         SelectDataModel model = new SelectDataModelImpl(CHILDREN_DOCUMENT_LIST,
                 documents, selectedDocuments);
         model.addSelectModelListener(this);
@@ -518,7 +521,7 @@ public class DocumentActionsBean extends InputController implements
      * Handle row selection event after having ensured that the navigation
      * context stills points to currentDocumentRef to protect against browsers'
      * back button errors
-     * 
+     *
      * @throws ClientException if currentDocRef is not a valid document
      */
     @WebRemote
@@ -535,13 +538,13 @@ public class DocumentActionsBean extends InputController implements
     @WebRemote
     public String processSelectRow(String docRef, String providerName,
             String listName, Boolean selection) {
-        DocumentModel doc = null;
         PagedDocumentsProvider provider;
         try {
             provider = resultsProvidersCache.get(providerName);
         } catch (ClientException e) {
             return handleError(e.getMessage());
         }
+        DocumentModel doc = null;
         for (DocumentModel pagedDoc : provider.getCurrentPage()) {
             if (pagedDoc.getRef().toString().equals(docRef)) {
                 doc = pagedDoc;
@@ -567,7 +570,7 @@ public class DocumentActionsBean extends InputController implements
      * Handle complete table selection event after having ensured that the
      * navigation context stills points to currentDocumentRef to protect against
      * browsers' back button errors
-     * 
+     *
      * @throws ClientException if currentDocRef is not a valid document
      */
     @WebRemote
@@ -618,7 +621,7 @@ public class DocumentActionsBean extends InputController implements
     }
 
     public boolean getWriteRight() throws ClientException {
-        // TODO: WRITE is a highlevel compound permission (i.e. more like a user
+        // TODO: WRITE is a high level compound permission (i.e. more like a user
         // profile), public methods of the Nuxeo framework should only check
         // atomic / specific permissions such as WRITE_PROPERTIES, REMOVE,
         // ADD_CHILDREN depending on the action to execute instead
@@ -643,11 +646,11 @@ public class DocumentActionsBean extends InputController implements
     }
 
     public boolean getCanUnpublish() throws ClientException {
-        List<DocumentModel> docList = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION);
+        List<DocumentModel> docList = documentsListsManager.getWorkingList(
+                DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION);
 
         if (!(docList == null || docList.isEmpty())
                 && deleteActions.checkDeletePermOnParents(docList)) {
-
             for (DocumentModel document : docList) {
                 if (document.getType().equals("SectionRoot")
                         || document.getType().equals("Section")) {

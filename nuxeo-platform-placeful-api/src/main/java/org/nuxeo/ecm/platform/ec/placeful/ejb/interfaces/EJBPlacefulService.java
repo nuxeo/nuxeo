@@ -18,29 +18,13 @@
  */
 package org.nuxeo.ecm.platform.ec.placeful.ejb.interfaces;
 
-import java.util.List;
-import java.util.Map;
-
-import org.nuxeo.ecm.platform.ec.placeful.Annotation;
+import org.nuxeo.ecm.platform.ec.placeful.interfaces.PlacefulService;
 
 /**
  *
  * @author <a href="mailto:rspivak@nuxeo.com">Ruslan Spivak</a>
  *
  */
-public interface EJBPlacefulService {
-
-    Annotation getAnnotation(String uuid, String name)
-            throws ClassNotFoundException;
-
-    List<Annotation> getAnnotationListByParamMap(Map<String, Object> paramMap,
-            String name) throws ClassNotFoundException;
-
-    void setAnnotation(Annotation annotation);
-
-    void removeAnnotation(Annotation annotation);
-
-    void removeAnnotationListByParamMap(Map<String, Object> paramMap,
-            String name) throws ClassNotFoundException;
+public interface EJBPlacefulService extends PlacefulService {
 
 }

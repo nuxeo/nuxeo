@@ -30,7 +30,6 @@ public class TimerException extends Exception {
     private static final long serialVersionUID = 1L;
 
     public TimerException() {
-        super();
     }
 
     public TimerException(String message, Throwable cause) {

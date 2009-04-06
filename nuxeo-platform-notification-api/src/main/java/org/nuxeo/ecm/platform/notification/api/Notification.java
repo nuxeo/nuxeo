@@ -43,7 +43,7 @@ public interface Notification extends Serializable {
     /**
      * @return the autoSubscribed.
      */
-    Boolean getAutoSubscribed();
+    boolean getAutoSubscribed();
 
     /**
      * @return the subject.
@@ -62,8 +62,9 @@ public interface Notification extends Serializable {
 
     String getLabel();
 
-    Boolean getEnabled();
+    boolean getEnabled();
 
-    void setEnabled(Boolean enabled);
+    // Not used.
+    void setEnabled(boolean enabled);
 
 }

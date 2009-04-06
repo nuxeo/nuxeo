@@ -7,8 +7,7 @@
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
-  xmlns:c="http://java.sun.com/jstl/core"
-  xmlns:t="http://myfaces.apache.org/tomahawk">
+  xmlns:c="http://java.sun.com/jstl/core">
 
   <ui:define name="page title">
     <h:outputText value="#{messages['title.create.document']}"/>
@@ -20,7 +19,7 @@
       <h:outputText value="#{messages['title.create.document']} #{messages[typesTool.selectedType.label]}" />
     </h3>
     <ui:include src="/incl/message_banner.xhtml" />
-    <h:form enctype="multipart/form-data">
+    <h:form enctype="multipart/form-data" id="document_create">
       <c:if test="#{!empty documentActions.changeableDocumentType.layout}">
         <ui:include src="/incl/document_editor.xhtml" />
       </c:if>

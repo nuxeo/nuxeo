@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.event.EventServiceComponent.debug" version="1.0">
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
+
+    <listener name="tracer" async="true" isPostCommit="true" class="org.nuxeo.ecm.platform.events.tests.listeners.SimpleTracerListener">
+    </listener>
+
+  </extension>
+
+</component>

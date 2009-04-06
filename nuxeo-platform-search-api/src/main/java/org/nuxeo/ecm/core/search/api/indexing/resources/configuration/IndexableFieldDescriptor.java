@@ -74,7 +74,9 @@ public class IndexableFieldDescriptor implements IndexableResourceDataConf {
     }
 
     /**
-     * @deprecated Use {@link #IndexableFieldDescriptor(String,String,String,boolean,boolean,boolean,boolean,boolean,String,Map,Map)} instead
+     * @deprecated Use
+     * {@link #IndexableFieldDescriptor(String,String,String,boolean,boolean,boolean,boolean,boolean,String,Map,Map)}
+     * instead
      */
     @Deprecated
     public IndexableFieldDescriptor(String name, String indexableAnalyzerName,

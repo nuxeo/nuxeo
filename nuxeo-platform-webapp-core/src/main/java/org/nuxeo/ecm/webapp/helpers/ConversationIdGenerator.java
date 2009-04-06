@@ -31,12 +31,10 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Startup;
 import org.jboss.seam.core.Manager;
-import org.nuxeo.ecm.platform.ui.web.shield.NuxeoJavaBeanErrorHandler;
 
 @Startup
 @Name("conversationIdGenerator")
 @Scope(SESSION)
-@NuxeoJavaBeanErrorHandler
 public class ConversationIdGenerator implements Serializable {
 
     private static final long serialVersionUID = 15643987456876L;

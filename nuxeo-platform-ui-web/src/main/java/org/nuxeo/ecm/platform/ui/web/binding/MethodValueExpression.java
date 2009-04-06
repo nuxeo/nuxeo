@@ -31,20 +31,14 @@ import javax.el.MethodExpression;
 import javax.el.ValueExpression;
 import javax.el.VariableMapper;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
  * Method value expression encapsulates a method expression so that it invokes
  * it when evaluated as a standard value expression.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public class MethodValueExpression extends ValueExpression implements
         Externalizable {
-
-    private static final Log log = LogFactory.getLog(MethodValueExpression.class);
 
     private static final long serialVersionUID = 1228707110702282837L;
 

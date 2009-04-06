@@ -58,13 +58,14 @@ public class SystemPrincipal implements NuxeoPrincipal {
         computeHash();
     }
 
-    private void computeHash()
-    {
-        if (origUserName!=null)
-            hash=(LoginComponent.SYSTEM_USERNAME + "-" + getOriginatingUser()).hashCode();
-        else
-            hash=LoginComponent.SYSTEM_USERNAME.hashCode();
+    private void computeHash() {
+        if (origUserName != null) {
+            hash = (LoginComponent.SYSTEM_USERNAME + "-" + origUserName).hashCode();
+        } else {
+            hash = LoginComponent.SYSTEM_USERNAME.hashCode();
+        }
     }
+
     @Override
     public boolean equals(Object other) {
         if (other instanceof SystemPrincipal) {
@@ -72,9 +73,9 @@ public class SystemPrincipal implements NuxeoPrincipal {
                 return false;
             }
             if (origUserName == null) {
-                return ((SystemPrincipal) other).getOriginatingUser() == null;
+                return ((SystemPrincipal) other).origUserName == null;
             } else {
-                return origUserName.equals(((SystemPrincipal) other).getOriginatingUser());
+                return origUserName.equals(((SystemPrincipal) other).origUserName);
             }
         } else {
             return false;
@@ -130,13 +131,10 @@ public class SystemPrincipal implements NuxeoPrincipal {
     }
 
     public void setOriginatingUser(String originatingUser) {
-        this.origUserName = originatingUser;
+        origUserName = originatingUser;
         computeHash();
     }
 
-    /**
-     * @return the model.
-     */
     public DocumentModel getModel() {
         return null;
     }

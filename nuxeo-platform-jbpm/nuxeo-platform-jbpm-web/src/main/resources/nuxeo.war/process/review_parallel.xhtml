@@ -1,0 +1,19 @@
+<div xmlns:ui="http://java.sun.com/jsf/facelets">
+  
+  <ui:include src="/process/show_process_title.xhtml">
+    <ui:param name="process" value="#{process}" />
+  </ui:include>
+  
+  <ui:include src="/process/add_workflow_task.xhtml">
+    <ui:param name="process" value="#{process}" />
+  </ui:include>
+
+  <ui:include src="/process/show_review_tasks_table.xhtml">
+    <ui:param name="process" value="#{process}" />
+  </ui:include>
+
+  <ui:include src="/process/abandon_process.xhtml">
+    <ui:param name="process" value="#{process}" />
+  </ui:include>
+
+</div>

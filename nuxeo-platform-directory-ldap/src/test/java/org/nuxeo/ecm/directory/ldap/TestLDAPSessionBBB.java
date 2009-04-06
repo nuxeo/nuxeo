@@ -26,7 +26,7 @@ package org.nuxeo.ecm.directory.ldap;
 public class TestLDAPSessionBBB extends TestLDAPSession {
 
     @Override()
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         EXTERNAL_SERVER_SETUP = "TestDirectoriesWithExternalOpenLDAPWithBBB.xml";
         super.setUp();
     }

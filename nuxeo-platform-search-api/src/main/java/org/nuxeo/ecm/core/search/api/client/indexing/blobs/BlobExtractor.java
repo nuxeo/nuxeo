@@ -35,8 +35,8 @@ public interface BlobExtractor extends Serializable {
     /**
      * Extracts fulltext from a streaming blob.
      *
-     * @param blob : a nxcore blob instrance
-     * @param mimetype TODO
+     * @param blob : a nxcore blob instance
+     * @param mimetype blob mimetype
      * @return a string holding the the extracted fulltext for a given blob.
      * @throws Exception
      */

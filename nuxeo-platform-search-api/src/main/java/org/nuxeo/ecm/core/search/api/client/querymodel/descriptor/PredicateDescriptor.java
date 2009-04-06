@@ -31,8 +31,17 @@ import org.nuxeo.ecm.core.search.api.client.querymodel.Escaper;
 @XObject(value = "predicate")
 public class PredicateDescriptor {
 
+    private static final String ATOMIC_PREDICATE = "atomic";
+
+    private static final String SUB_CLAUSE_PREDICATE = "subClause";
+
+    private static final String STATIC_PREDICATE = "static";
+
     @XNode("@parameter")
     protected String parameter;
+
+    @XNode("@type")
+    protected String type = ATOMIC_PREDICATE;
 
     protected String operator;
 
@@ -58,7 +67,40 @@ public class PredicateDescriptor {
         return getQueryElement(model, null);
     }
 
-    public String getQueryElement(DocumentModel model, Escaper escaper) throws ClientException {
+    public String getQueryElement(DocumentModel model, Escaper escaper)
+            throws ClientException {
+        if (ATOMIC_PREDICATE.equals(type)) {
+            return atomicQueryElement(model, escaper);
+        }
+        if (SUB_CLAUSE_PREDICATE.equals(type)) {
+            return subClauseQueryElement(model);
+        }
+        throw new ClientException("Unknown predicate type: " + type);
+    }
+
+    protected String subClauseQueryElement(DocumentModel model)
+            throws ClientException {
+        if (values == null || values.length != 1) {
+            throw new ClientException(
+                    "subClause predicate needs exactly one field");
+        }
+        FieldDescriptor fieldDescriptor = values[0];
+        if (!fieldDescriptor.getFieldType(model).equals("string")) {
+            if (fieldDescriptor.getXpath() != null) {
+                throw new ClientException(String.format(
+                        "type of field %s is not string",
+                        fieldDescriptor.getXpath()));
+            } else {
+                throw new ClientException(String.format(
+                        "type of field %s.%s is not string",
+                        fieldDescriptor.getSchema(), fieldDescriptor.getName()));
+            }
+        }
+        return "(" + fieldDescriptor.getRawValue(model) + ")";
+    }
+
+    protected String atomicQueryElement(DocumentModel model, Escaper escaper)
+            throws ClientException {
         String operator = null;
         if (operatorField != null && operatorSchema != null) {
             FieldDescriptor operatorFieldDescriptor = new FieldDescriptor(
@@ -75,8 +117,7 @@ public class PredicateDescriptor {
         if (operator.equals("=") || operator.equals("!=")
                 || operator.equals("<") || operator.equals(">")
                 || operator.equals("<=") || operator.equals(">=")
-                || operator.equals("<>") || operator.equals("STARTSWITH")
-                || operator.equals("LIKE")) {
+                || operator.equals("<>") || operator.equals("LIKE")) {
             // Unary predicate
             String value = values[0].getStringValue(model);
             if (value == null) {
@@ -129,6 +170,34 @@ public class PredicateDescriptor {
                         options.get(options.size() - 1)));
                 builder.append(')');
                 return builder.toString();
+            }
+        } else if (operator.equals("STARTSWITH")) {
+            String fieldType = values[0].getFieldType(model);
+            if (fieldType.equals("string")) {
+                String value = values[0].getStringValue(model);
+                if (value == null) {
+                    return "";
+                } else {
+                    return serializeUnary(operator, value);
+                }
+            } else {
+                List<String> options = values[0].getListValue(model);
+                if (options == null || options.isEmpty()) {
+                    return "";
+                } else if (options.size() == 1) {
+                    return serializeUnary(operator, options.get(0));
+                } else {
+                    StringBuilder builder = new StringBuilder();
+                    builder.append('(');
+                    for (int i = 0; i < options.size() - 1; i++) {
+                        builder.append(serializeUnary(operator, options.get(i)));
+                        builder.append(" OR ");
+                    }
+                    builder.append(serializeUnary(operator,
+                            options.get(options.size() - 1)));
+                    builder.append(')');
+                    return builder.toString();
+                }
             }
         } else if (operator.equals("EMPTY") || operator.equals("ISEMPTY")) {
             return parameter + " = ''";

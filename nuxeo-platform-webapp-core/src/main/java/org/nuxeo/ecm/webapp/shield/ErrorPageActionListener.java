@@ -28,7 +28,7 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Startup;
-import org.jboss.seam.core.Redirect;
+import  org.jboss.seam.faces.Redirect;
 
 /**
  * Seam component to handle rendering of error pages.

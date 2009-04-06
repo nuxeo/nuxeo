@@ -24,8 +24,6 @@ import javax.faces.component.ActionSource;
 import javax.faces.component.ActionSource2;
 import javax.faces.el.MethodBinding;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.ui.web.binding.MetaMethodBinding;
 import org.nuxeo.ecm.platform.ui.web.binding.MetaMethodExpression;
 
@@ -41,15 +39,12 @@ import com.sun.facelets.tag.TagAttribute;
  * invoking the method.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public class MetaActionSourceRule extends MetaRule {
 
     public static final Class[] ACTION_SIG = new Class[0];
 
     public static final MetaActionSourceRule Instance = new MetaActionSourceRule();
-
-    private static final Log log = LogFactory.getLog(MetaActionSourceRule.class);
 
     static final class ActionExpressionMapper extends Metadata {
 

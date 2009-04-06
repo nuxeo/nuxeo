@@ -32,7 +32,6 @@ import org.nuxeo.ecm.platform.relations.api.QueryResult;
 public class TestQueryResult extends TestCase {
 
     public void testInit() {
-
         List<String> variableNames = new ArrayList<String>();
         variableNames.add("subject");
         variableNames.add("object");

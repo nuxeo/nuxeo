@@ -26,12 +26,9 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
-import org.nuxeo.ecm.core.listener.CoreEventListenerService;
-import org.nuxeo.ecm.core.listener.EventListener;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.SchemaNames;
 import org.nuxeo.ecm.core.schema.TypeRef;
@@ -49,10 +46,11 @@ public class TestUIDGeneratorService extends NXRuntimeTestCase {
     final Log log = LogFactory.getLog(TestUIDGeneratorService.class);
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
 
         deployBundle("org.nuxeo.ecm.core.schema");
+        deployBundle("org.nuxeo.ecm.core.event");
         deployBundle("org.nuxeo.ecm.core"); // for dublincore
         // define geide schema
         SchemaImpl sch = new SchemaImpl("geide");
@@ -67,8 +65,9 @@ public class TestUIDGeneratorService extends NXRuntimeTestCase {
 
     }
 
-    private CoreEventListenerService getListenerService() {
-        return NXCore.getCoreEventListenerService();
+    /*
+    private static CoreEventListenerService getListenerService() {
+        return Framework.getLocalService(CoreEventListenerService.class);
     }
 
     public void testServiceRegistration() {
@@ -77,14 +76,14 @@ public class TestUIDGeneratorService extends NXRuntimeTestCase {
         EventListener dcListener = listenerService.getEventListenerByName("uidlistener");
         assertNotNull(dcListener);
         log.info("UIDGenerator listener registered");
-    }
+    }*/
 
     public void testStorageService() {
         UIDGeneratorService service = ServiceHelper.getUIDGeneratorService();
         assertNotNull(service);
     }
 
-    private DocumentModel createDocumentModel(String type) throws Exception {
+    private static DocumentModel createDocumentModel(String type) throws Exception {
         DocumentModelImpl docModel = new DocumentModelImpl(type);
         Map<String, Object> dcMap = new HashMap<String, Object>();
         dcMap.put("title", null);

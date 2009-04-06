@@ -50,20 +50,17 @@ import org.w3c.dom.Document;
  * @author DM
  *
  */
-public class XmlDataInjector {
+class XmlDataInjector {
 
     private static final Log log = LogFactory.getLog(XmlDataInjector.class);
 
     // :FIXME:
     private static final String xslChunkFile = "org/nuxeo/ecm/platform/transform/plugin/wordml/xsl/element-chunk.xsl";
-
     private static final String xslFieldNameToReplace = "${field_name}";
-
     private static final String xslFieldValueToReplace = "${field_value}";
 
     // :FIXME:
     private static final String xslMasterFile = "org/nuxeo/ecm/platform/transform/plugin/wordml/xsl/identity-trans.xsl";
-
     private static final String xslTxtToReplace = "${fields_value_inject_templates}";
 
     private final Map<String, Serializable> fieldValues;
@@ -73,22 +70,13 @@ public class XmlDataInjector {
      */
     private String chunkTemplate;
 
-    /**
-     *
-     * @param fieldValues
-     */
-    public XmlDataInjector(Map<String, Serializable> fieldValues) {
+    XmlDataInjector(Map<String, Serializable> fieldValues) {
         this.fieldValues = fieldValues;
     }
 
     /**
      * Transforms the doc according with the field/values Map given in the
      * constructor.
-     *
-     * @param inDoc
-     * @param ostream
-     * @throws TransformerException
-     * @throws IOException
      */
     public void transform(Document inDoc, OutputStream ostream)
             throws TransformerException, IOException {
@@ -106,8 +94,8 @@ public class XmlDataInjector {
         final Source xslSource;
         // FIXME empty map in createXslSource is not equivalent to identify
         // transformation and thus do not return the expecting result.
-        if (fieldValues == null || fieldValues.keySet().size() == 0) {
-            log.info("<createTransformer> null options, use identity Xsl transformation");
+        if (fieldValues == null || fieldValues.keySet().isEmpty()) {
+            log.debug("<createTransformer> null options, use identity Xsl transformation");
             xslSource = getXslSource();
         } else {
             xslSource = createXslSource();
@@ -116,7 +104,7 @@ public class XmlDataInjector {
         return tFactory.newTransformer(xslSource);
     }
 
-    private Source getXslSource() {
+    private static Source getXslSource() {
         final String xslFilePath = "test-data/wordml/identity-trans.xsl";
 
         final URL xslURL = Thread.currentThread().getContextClassLoader().getResource(
@@ -126,16 +114,14 @@ public class XmlDataInjector {
             log.error("resource not found: " + xslFilePath);
             return null;
         }
-        log.info("xsl url: " + xslURL);
+        log.debug("xsl url: " + xslURL);
         File xslFile = new File(xslURL.getFile());
         return new StreamSource(xslFile);
     }
 
     private Source createXslSource() throws IOException {
         final String logPrefix = "<createXslSource> ";
-
         final String masterXslTemplate = readFile(xslMasterFile);
-
         final String xslChunks = getAllChunks(fieldValues);
 
         log.debug(logPrefix + "xslChunks: \n" + xslChunks);
@@ -154,7 +140,7 @@ public class XmlDataInjector {
 
         final StringBuilder buf = new StringBuilder();
 
-        final Set<Map.Entry<String, Serializable>> entries = fieldValues.entrySet();
+        final Set<Entry<String, Serializable>> entries = fieldValues.entrySet();
         for (Entry<String, Serializable> entry : entries) {
             final String key = entry.getKey();
             final Serializable value = entry.getValue();
@@ -207,7 +193,7 @@ public class XmlDataInjector {
         return new String(data);
     }
 
-    public static String replace(String oldStr, String newStr, String inString) {
+    private static String replace(String oldStr, String newStr, String inString) {
         int start = inString.indexOf(oldStr);
         if (start == -1) {
             return inString;

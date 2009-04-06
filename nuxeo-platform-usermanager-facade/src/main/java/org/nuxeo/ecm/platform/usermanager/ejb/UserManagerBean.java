@@ -29,13 +29,13 @@ import javax.ejb.Local;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.ecm.platform.usermanager.UserManagerDescriptor;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -47,11 +47,7 @@ import org.nuxeo.runtime.api.Framework;
 @Local(UserManagerLocal.class)
 public class UserManagerBean implements UserManager {
 
-    private static final Log log = LogFactory.getLog(UserManagerBean.class);
-
-    private static final EJBExceptionHandler exceptionHandler = new EJBExceptionHandler();
-
-    private transient UserManager userManager;
+    private UserManager userManager;
 
     @PostConstruct
     public void initialize() {
@@ -65,14 +61,15 @@ public class UserManagerBean implements UserManager {
         return userManager;
     }
 
-    public void cleanup() {}
+    public void cleanup() {
+    }
 
     public boolean checkUsernamePassword(String username, String password)
             throws ClientException {
         try {
             return getUserManager().checkUsernamePassword(username, password);
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw ClientException.wrap(e);
         }
     }
 
@@ -80,17 +77,7 @@ public class UserManagerBean implements UserManager {
         try {
             return getUserManager().validatePassword(password);
         } catch (Throwable e) {
-            log.error("getAvailablePrincipals failed", e);
-            throw exceptionHandler.wrapException(e);
-        }
-    }
-
-    public List<NuxeoPrincipal> getAvailablePrincipals() throws ClientException {
-        try {
-            return getUserManager().getAvailablePrincipals();
-        } catch (Throwable e) {
-            log.error("getAvailablePrincipals failed", e);
-            throw exceptionHandler.wrapException(e);
+            throw ClientException.wrap(e);
         }
     }
 
@@ -98,68 +85,7 @@ public class UserManagerBean implements UserManager {
         try {
             return getUserManager().getPrincipal(username);
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
-        }
-    }
-
-    public void remove() {}
-
-    public void createGroup(NuxeoGroup group) throws ClientException {
-        try {
-            getUserManager().createGroup(group);
-        } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
-        }
-    }
-
-    public void createPrincipal(NuxeoPrincipal principal)
-            throws ClientException {
-        try {
-            getUserManager().createPrincipal(principal);
-        } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
-        }
-    }
-
-    public void updatePrincipal(NuxeoPrincipal principal)
-            throws ClientException {
-        try {
-            getUserManager().updatePrincipal(principal);
-        } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
-        }
-    }
-
-    public void deleteGroup(NuxeoGroup group) throws ClientException {
-        try {
-            getUserManager().deleteGroup(group);
-        } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
-        }
-    }
-
-    public void deletePrincipal(NuxeoPrincipal principal)
-            throws ClientException {
-        try {
-            getUserManager().deletePrincipal(principal);
-        } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
-        }
-    }
-
-    public List<NuxeoGroup> getAvailableGroups() throws ClientException {
-        try {
-            return getUserManager().getAvailableGroups();
-        } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
-        }
-    }
-
-    public void updateGroup(NuxeoGroup group) throws ClientException {
-        try {
-            getUserManager().updateGroup(group);
-        } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw ClientException.wrap(e);
         }
     }
 
@@ -168,16 +94,7 @@ public class UserManagerBean implements UserManager {
         try {
             return getUserManager().searchPrincipals(name);
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
-        }
-    }
-
-    public List<NuxeoPrincipal> searchByMap(Map<String, Object> filter,
-            Set<String> pattern) throws ClientException {
-        try {
-            return getUserManager().searchByMap(filter, pattern);
-        } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw ClientException.wrap(e);
         }
     }
 
@@ -185,7 +102,7 @@ public class UserManagerBean implements UserManager {
         try {
             return getUserManager().searchGroups(pattern);
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw ClientException.wrap(e);
         }
     }
 
@@ -193,15 +110,7 @@ public class UserManagerBean implements UserManager {
         try {
             return getUserManager().getGroup(groupName);
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
-        }
-    }
-
-    public DocumentModel getModelForUser(String name) throws ClientException {
-        try {
-            return getUserManager().getModelForUser(name);
-        } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw ClientException.wrap(e);
         }
     }
 
@@ -209,40 +118,11 @@ public class UserManagerBean implements UserManager {
         return getUserManager().getDefaultGroup();
     }
 
-    public void setDefaultGroup(String defaultGroup) {
-
-        getUserManager().setDefaultGroup(defaultGroup);
-    }
-
-    public void setRootLogin(String defaultRootLogin) throws ClientException {
-        try {
-            getUserManager().setRootLogin(defaultRootLogin);
-        } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
-        }
-    }
-
-    public void setUserSortField(String sortField) throws ClientException {
-        try {
-            getUserManager().setUserSortField(sortField);
-        } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
-        }
-    }
-
     public String getUserSortField() throws ClientException {
         try {
             return getUserManager().getUserSortField();
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
-        }
-    }
-
-    public void setGroupSortField(String sortField) throws ClientException {
-        try {
-            getUserManager().setGroupSortField(sortField);
-        } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw ClientException.wrap(e);
         }
     }
 
@@ -250,16 +130,7 @@ public class UserManagerBean implements UserManager {
         try {
             return getUserManager().getUserListingMode();
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
-        }
-    }
-
-    public void setUserListingMode(String userListingMode)
-            throws ClientException {
-        try {
-            getUserManager().setUserListingMode(userListingMode);
-        } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw ClientException.wrap(e);
         }
     }
 
@@ -267,25 +138,7 @@ public class UserManagerBean implements UserManager {
         try {
             return getUserManager().getGroupListingMode();
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
-        }
-    }
-
-    public void setGroupListingMode(String groupListingMode)
-            throws ClientException {
-        try {
-            getUserManager().setGroupListingMode(groupListingMode);
-        } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
-        }
-    }
-
-    public void setUserDirectoryName(String userDirectoryName)
-            throws ClientException {
-        try {
-            getUserManager().setUserDirectoryName(userDirectoryName);
-        } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw ClientException.wrap(e);
         }
     }
 
@@ -293,15 +146,7 @@ public class UserManagerBean implements UserManager {
         try {
             return getUserManager().getUserDirectoryName();
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
-        }
-    }
-
-    public void setUserEmailField(String userEmailField) throws ClientException {
-        try {
-            getUserManager().setUserEmailField(userEmailField);
-        } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw ClientException.wrap(e);
         }
     }
 
@@ -309,25 +154,7 @@ public class UserManagerBean implements UserManager {
         try {
             return getUserManager().getUserEmailField();
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
-        }
-    }
-
-    public void setUserSearchFields(Set<String> userSearchFields)
-            throws ClientException {
-        try {
-            getUserManager().setUserSearchFields(userSearchFields);
-        } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
-        }
-    }
-
-    public void setUserSearchFields(Map<String, MatchType> userSearchFields)
-            throws ClientException {
-        try {
-            getUserManager().setUserSearchFields(userSearchFields);
-        } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw ClientException.wrap(e);
         }
     }
 
@@ -335,16 +162,7 @@ public class UserManagerBean implements UserManager {
         try {
             return getUserManager().getUserSearchFields();
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
-        }
-    }
-
-    public void setGroupDirectoryName(String groupDirectoryName)
-            throws ClientException {
-        try {
-            getUserManager().setGroupDirectoryName(groupDirectoryName);
-        } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw ClientException.wrap(e);
         }
     }
 
@@ -352,16 +170,7 @@ public class UserManagerBean implements UserManager {
         try {
             return getUserManager().getGroupDirectoryName();
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
-        }
-    }
-
-    public void setGroupMembersField(String groupMembersField)
-            throws ClientException {
-        try {
-            getUserManager().setGroupMembersField(groupMembersField);
-        } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw ClientException.wrap(e);
         }
     }
 
@@ -369,16 +178,7 @@ public class UserManagerBean implements UserManager {
         try {
             return getUserManager().getGroupMembersField();
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
-        }
-    }
-
-    public void setGroupSubGroupsField(String groupSubGroupsField)
-            throws ClientException {
-        try {
-            getUserManager().setGroupSubGroupsField(groupSubGroupsField);
-        } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw ClientException.wrap(e);
         }
     }
 
@@ -386,16 +186,7 @@ public class UserManagerBean implements UserManager {
         try {
             return getUserManager().getGroupSubGroupsField();
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
-        }
-    }
-
-    public void setGroupParentGroupsField(String groupParentGroupsField)
-            throws ClientException {
-        try {
-            getUserManager().setGroupParentGroupsField(groupParentGroupsField);
-        } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw ClientException.wrap(e);
         }
     }
 
@@ -403,7 +194,7 @@ public class UserManagerBean implements UserManager {
         try {
             return getUserManager().getGroupParentGroupsField();
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw ClientException.wrap(e);
         }
     }
 
@@ -412,7 +203,7 @@ public class UserManagerBean implements UserManager {
         try {
             return getUserManager().getGroupsInGroup(parentId);
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw ClientException.wrap(e);
         }
     }
 
@@ -420,7 +211,7 @@ public class UserManagerBean implements UserManager {
         try {
             return getUserManager().getTopLevelGroups();
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw ClientException.wrap(e);
         }
     }
 
@@ -428,7 +219,7 @@ public class UserManagerBean implements UserManager {
         try {
             return getUserManager().getUsersInGroup(groupId);
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw ClientException.wrap(e);
         }
     }
 
@@ -436,7 +227,7 @@ public class UserManagerBean implements UserManager {
         try {
             return getUserManager().areGroupsReadOnly();
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw ClientException.wrap(e);
         }
     }
 
@@ -444,7 +235,7 @@ public class UserManagerBean implements UserManager {
         try {
             return getUserManager().areUsersReadOnly();
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw ClientException.wrap(e);
         }
     }
 
@@ -452,23 +243,7 @@ public class UserManagerBean implements UserManager {
         try {
             return getUserManager().getUserPasswordPattern();
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
-        }
-    }
-
-    public void setUserPasswordPattern(Pattern userPasswordPattern) throws ClientException {
-        try {
-            getUserManager().setUserPasswordPattern(userPasswordPattern);
-        } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
-        }
-    }
-
-    public void setAnonymousUser(Map<String, String> anonymousUser) throws ClientException {
-        try {
-            getUserManager().setAnonymousUser(anonymousUser);
-        } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw ClientException.wrap(e);
         }
     }
 
@@ -476,7 +251,272 @@ public class UserManagerBean implements UserManager {
         try {
             return getUserManager().getAnonymousUserId();
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw ClientException.wrap(e);
+        }
+    }
+
+    public void setConfiguration(UserManagerDescriptor descriptor)
+            throws ClientException {
+        try {
+            getUserManager().setConfiguration(descriptor);
+        } catch (Throwable e) {
+            throw ClientException.wrap(e);
+        }
+    }
+
+    public DocumentModel getBareUserModel() throws ClientException {
+        try {
+            return getUserManager().getBareUserModel();
+        } catch (Throwable e) {
+            throw ClientException.wrap(e);
+        }
+    }
+
+    public DocumentModel createGroup(DocumentModel groupModel)
+            throws ClientException {
+        try {
+            return getUserManager().createGroup(groupModel);
+        } catch (Throwable e) {
+            throw ClientException.wrap(e);
+        }
+    }
+
+    public DocumentModel createUser(DocumentModel userModel)
+            throws ClientException {
+        try {
+            return getUserManager().createUser(userModel);
+        } catch (Throwable e) {
+            throw ClientException.wrap(e);
+        }
+    }
+
+    public void deleteGroup(DocumentModel groupModel) throws ClientException {
+        try {
+            getUserManager().deleteGroup(groupModel);
+        } catch (Throwable e) {
+            throw ClientException.wrap(e);
+        }
+    }
+
+    public void deleteUser(DocumentModel userModel) throws ClientException {
+        try {
+            getUserManager().deleteUser(userModel);
+        } catch (Throwable e) {
+            throw ClientException.wrap(e);
+        }
+    }
+
+    public DocumentModel getBareGroupModel() throws ClientException {
+        try {
+            return getUserManager().getBareGroupModel();
+        } catch (Throwable e) {
+            throw ClientException.wrap(e);
+        }
+    }
+
+    public List<String> getGroupIds() throws ClientException {
+        try {
+            return getUserManager().getGroupIds();
+        } catch (Throwable e) {
+            throw ClientException.wrap(e);
+        }
+    }
+
+    public List<String> getUserIds() throws ClientException {
+        try {
+            return getUserManager().getUserIds();
+        } catch (Throwable e) {
+            throw ClientException.wrap(e);
+        }
+    }
+
+    public DocumentModelList searchGroups(Map<String, Object> filter,
+            Set<String> fulltext) throws ClientException {
+        try {
+            return getUserManager().searchGroups(filter, fulltext);
+        } catch (Throwable e) {
+            throw ClientException.wrap(e);
+        }
+    }
+
+    public DocumentModelList searchUsers(Map<String, Object> filter,
+            Set<String> fulltext) throws ClientException {
+        try {
+            return getUserManager().searchUsers(filter, fulltext);
+        } catch (Throwable e) {
+            throw ClientException.wrap(e);
+        }
+    }
+
+    public DocumentModelList searchUsers(String pattern) throws ClientException {
+        try {
+            return getUserManager().searchUsers(pattern);
+        } catch (Throwable e) {
+            throw ClientException.wrap(e);
+        }
+    }
+
+    public void updateGroup(DocumentModel groupModel) throws ClientException {
+        try {
+            getUserManager().updateGroup(groupModel);
+        } catch (Throwable e) {
+            throw ClientException.wrap(e);
+        }
+    }
+
+    public void updateUser(DocumentModel userModel) throws ClientException {
+        try {
+            getUserManager().updateUser(userModel);
+        } catch (Throwable e) {
+            throw ClientException.wrap(e);
+        }
+    }
+
+    public void deleteGroup(String groupId) throws ClientException {
+        try {
+            getUserManager().deleteGroup(groupId);
+        } catch (Throwable e) {
+            throw ClientException.wrap(e);
+        }
+    }
+
+    public void deleteUser(String userId) throws ClientException {
+        try {
+            getUserManager().deleteUser(userId);
+        } catch (Throwable e) {
+            throw ClientException.wrap(e);
+        }
+    }
+
+    public DocumentModel getGroupModel(String groupName) throws ClientException {
+        try {
+            return getUserManager().getGroupModel(groupName);
+        } catch (Throwable e) {
+            throw ClientException.wrap(e);
+        }
+    }
+
+    public DocumentModel getUserModel(String userName) throws ClientException {
+        try {
+            return getUserManager().getUserModel(userName);
+        } catch (Throwable e) {
+            throw ClientException.wrap(e);
+        }
+    }
+
+    public String getGroupIdField() throws ClientException {
+        try {
+            return getUserManager().getGroupIdField();
+        } catch (Throwable e) {
+            throw ClientException.wrap(e);
+        }
+    }
+
+    public String getGroupSchemaName() throws ClientException {
+        try {
+            return getUserManager().getGroupSchemaName();
+        } catch (Throwable e) {
+            throw ClientException.wrap(e);
+        }
+    }
+
+    public String getUserIdField() throws ClientException {
+        try {
+            return getUserManager().getUserIdField();
+        } catch (Throwable e) {
+            throw ClientException.wrap(e);
+        }
+    }
+
+    public String getUserSchemaName() throws ClientException {
+        try {
+            return getUserManager().getUserSchemaName();
+        } catch (Throwable e) {
+            throw ClientException.wrap(e);
+        }
+    }
+
+    public void createGroup(NuxeoGroup group) throws ClientException {
+        try {
+            getUserManager().createGroup(group);
+        } catch (Throwable e) {
+            throw ClientException.wrap(e);
+        }
+    }
+
+    public void createPrincipal(NuxeoPrincipal principal)
+            throws ClientException {
+        try {
+            getUserManager().createPrincipal(principal);
+        } catch (Throwable e) {
+            throw ClientException.wrap(e);
+        }
+    }
+
+    public void deleteGroup(NuxeoGroup group) throws ClientException {
+        try {
+            getUserManager().deleteGroup(group);
+        } catch (Throwable e) {
+            throw ClientException.wrap(e);
+        }
+    }
+
+    public void deletePrincipal(NuxeoPrincipal principal)
+            throws ClientException {
+        try {
+            getUserManager().deletePrincipal(principal);
+        } catch (Throwable e) {
+            throw ClientException.wrap(e);
+        }
+    }
+
+    public List<NuxeoGroup> getAvailableGroups() throws ClientException {
+        try {
+            return getUserManager().getAvailableGroups();
+        } catch (Throwable e) {
+            throw ClientException.wrap(e);
+        }
+    }
+
+    public List<NuxeoPrincipal> getAvailablePrincipals() throws ClientException {
+        try {
+            return getUserManager().getAvailablePrincipals();
+        } catch (Throwable e) {
+            throw ClientException.wrap(e);
+        }
+    }
+
+    public DocumentModel getModelForUser(String name) throws ClientException {
+        try {
+            return getUserManager().getModelForUser(name);
+        } catch (Throwable e) {
+            throw ClientException.wrap(e);
+        }
+    }
+
+    public List<NuxeoPrincipal> searchByMap(Map<String, Object> filter,
+            Set<String> pattern) throws ClientException {
+        try {
+            return getUserManager().searchByMap(filter, pattern);
+        } catch (Throwable e) {
+            throw ClientException.wrap(e);
+        }
+    }
+
+    public void updateGroup(NuxeoGroup group) throws ClientException {
+        try {
+            getUserManager().updateGroup(group);
+        } catch (Throwable e) {
+            throw ClientException.wrap(e);
+        }
+    }
+
+    public void updatePrincipal(NuxeoPrincipal principal)
+            throws ClientException {
+        try {
+            getUserManager().updatePrincipal(principal);
+        } catch (Throwable e) {
+            throw ClientException.wrap(e);
         }
     }
 

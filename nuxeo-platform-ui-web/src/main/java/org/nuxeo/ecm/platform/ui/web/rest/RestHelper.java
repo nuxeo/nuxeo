@@ -21,11 +21,10 @@ package org.nuxeo.ecm.platform.ui.web.rest;
 
 import static org.jboss.seam.ScopeType.EVENT;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.Begin;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
@@ -37,7 +36,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.types.adapter.TypeInfo;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
-import org.nuxeo.ecm.platform.ui.web.shield.NuxeoJavaBeanErrorHandler;
 import org.nuxeo.ecm.platform.url.DocumentLocationImpl;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 import org.nuxeo.ecm.platform.url.api.DocumentLocation;
@@ -49,20 +47,19 @@ import org.nuxeo.ecm.platform.util.RepositoryLocation;
  *
  * @author tiry
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
+ * @author Florent Guillaume
  */
 @Name("restHelper")
 @Scope(EVENT)
-@NuxeoJavaBeanErrorHandler
-public class RestHelper {
+public class RestHelper implements Serializable {
 
-    private static final Log log = LogFactory.getLog(RestHelper.class);
-
-    @In(create = true)
-    NavigationContext navigationContext;
+    private static final long serialVersionUID = 1L;
 
     @In(create = true)
-    WebActions webActions;
+    transient NavigationContext navigationContext;
+
+    @In(create = true)
+    transient WebActions webActions;
 
     private DocumentView docView;
 
@@ -78,24 +75,6 @@ public class RestHelper {
         }
 
         return outcome;
-    }
-
-    /**
-     * @deprecated should use an api on WebActionsBean
-     */
-    @Deprecated
-    public String getCurrentTab() {
-        String cTab = webActions.getCurrentTabAction().getId();
-        log.debug("Retrieve currentTab :" + cTab);
-        return cTab;
-    }
-
-    /**
-     * @deprecated should use an api on WebActionBean
-     */
-    @Deprecated
-    public void setCurrentTab(String currentTab) {
-        log.debug("setting curentTab from URL:" + currentTab);
     }
 
     public void setDocumentView(DocumentView docView) {
@@ -138,11 +117,12 @@ public class RestHelper {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put(conversationManager.getConversationIdParameter(),
                 conversationId);
+        /*      Not needed anymore ????
         if (conversationManager.isLongRunningConversation()) {
             params.put(
                     conversationManager.getConversationIsLongRunningParameter(),
                     "true");
-        }
+        }*/
         return conversationManager.encodeParameters(url, params);
     }
 
@@ -157,7 +137,8 @@ public class RestHelper {
         if (conversationManager == null) {
             return url;
         }
-        return conversationManager.appendConversationIdFromRedirectFilter(url);
+        // XXX : deprecated
+        return conversationManager.encodeConversationId(url);
     }
 
     /**

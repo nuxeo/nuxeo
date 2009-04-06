@@ -38,9 +38,6 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
  * Generic registry implementation.
  *
@@ -51,15 +48,13 @@ public class Registry implements Serializable {
 
     private static final long serialVersionUID = -1063443973976908727L;
 
-    private static final Log log = LogFactory.getLog(Registry.class);
-
-    public String name;
+    public final String name;
 
     private final Map<String, Object> registry;
 
     public Registry(String name) {
         this.name = name;
-        this.registry = new HashMap<String, Object>();
+        registry = new HashMap<String, Object>();
     }
 
     public String getName() {
@@ -67,12 +62,12 @@ public class Registry implements Serializable {
     }
 
     public void register(String name, Object object) {
-        this.registry.put(name, object);
+        registry.put(name, object);
     }
 
     public void unregister(String name) {
         if (isRegistred(name)) {
-            this.registry.remove(name);
+            registry.remove(name);
         }
     }
 
@@ -93,7 +88,7 @@ public class Registry implements Serializable {
     }
 
     public void clear() {
-        this.registry.clear();
+        registry.clear();
     }
 
 }

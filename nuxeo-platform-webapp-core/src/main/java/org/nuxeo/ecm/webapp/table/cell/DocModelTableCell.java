@@ -21,6 +21,8 @@ package org.nuxeo.ecm.webapp.table.cell;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
@@ -57,12 +59,20 @@ public class DocModelTableCell extends AbstractTableCell {
 
     @Override
     public Object getDisplayedValue() {
-        return doc.getProperty(schemaName, propertyName);
+        try {
+            return doc.getProperty(schemaName, propertyName);
+        } catch (ClientException e) {
+            return null;
+        }
     }
 
     @Override
     public void setDisplayedValue(Object o) {
-        doc.setProperty(schemaName, propertyName, o);
+        try {
+            doc.setProperty(schemaName, propertyName, o);
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
     }
 
     @Override

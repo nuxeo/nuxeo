@@ -44,29 +44,23 @@ public class NotificationImpl implements Notification {
     private final String name;
 
     private final String template;
-    
+
     private final String subjectTemplate;
 
     private final String subject;
 
     private final String channel;
 
-    private final Boolean autoSubscribed;
+    private final boolean autoSubscribed;
 
     private final String availableIn;
 
     private final String label;
 
-    private Boolean enabled;
+    private boolean enabled;
 
-    /**
-     * @param name
-     * @param template
-     * @param channel
-     * @param subjectTemplate
-     */
     public NotificationImpl(String name, String template, String channel, String subjectTemplate,
-            Boolean autoSubscribed, String subject, String availableIn, String label) {
+            boolean autoSubscribed, String subject, String availableIn, String label) {
         this.name = name;
         this.template = template;
         this.channel = channel;
@@ -77,51 +71,30 @@ public class NotificationImpl implements Notification {
         this.label = label;
     }
 
-    /**
-     * @return the name.
-     */
     public String getName() {
         return name;
     }
 
-    /**
-     * @return the channel.
-     */
     public String getChannel() {
         return channel;
     }
 
-    /**
-     * @return the template.
-     */
     public String getTemplate() {
         return template;
     }
 
-    /**
-     * @return the autoSubscribed.
-     */
-    public Boolean getAutoSubscribed() {
+    public boolean getAutoSubscribed() {
         return autoSubscribed;
     }
 
-    /**
-     * @return the subject.
-     */
     public String getSubject() {
         return subject;
     }
 
-    /**
-     * @return the subject template.
-     */
     public String getSubjectTemplate() {
         return subjectTemplate;
     }
 
-    /**
-     * @return the availableIn.
-     */
     public String getAvailableIn() {
         return availableIn;
     }
@@ -147,11 +120,11 @@ public class NotificationImpl implements Notification {
         return name.hashCode();
     }
 
-    public Boolean getEnabled() {
+    public boolean getEnabled() {
         return enabled;
     }
 
-    public void setEnabled(Boolean enabled) {
+    public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
 

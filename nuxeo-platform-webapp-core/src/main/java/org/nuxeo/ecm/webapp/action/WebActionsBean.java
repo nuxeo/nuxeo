@@ -47,6 +47,7 @@ import org.nuxeo.ecm.platform.actions.ActionContext;
 import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
+import org.jboss.seam.annotations.intercept.BypassInterceptors;
 
 /**
  * Web actions bean that manages actions.
@@ -66,13 +67,17 @@ public class WebActionsBean implements WebActionsLocal, Serializable {
 
     private static final Log log = LogFactory.getLog(WebActionsBean.class);
 
-    @In(required = false, create = true)
+    // XXX AT: Cannot inject it because current document can change in the same
+    // event. this is visible when being redirected to a given get url after
+    // login => for now, cache it and invalidate it when current document
+    // changes.
+    // @In(required = false, create = true)
     private ActionContext currentActionContext;
 
-    @In(required = true, create = true)
+    @In(create = true)
     private transient ActionManager actionManager;
 
-    @In(required = true, create = true)
+    @In(create = true)
     private transient ActionContextProvider actionContextProvider;
 
     @In(create = true)
@@ -136,7 +141,13 @@ public class WebActionsBean implements WebActionsLocal, Serializable {
     }
 
     protected ActionContext createActionContext() {
-        return currentActionContext;
+        // XXX: recreate it because context map holds cache for filters => they
+        // are not evaluated again.
+        // if (currentActionContext == null) {
+        // currentActionContext = actionContextProvider.createActionContext();
+        // }
+        // return currentActionContext;
+        return actionContextProvider.createActionContext();
     }
 
     @Deprecated
@@ -146,7 +157,9 @@ public class WebActionsBean implements WebActionsLocal, Serializable {
 
     @Observer(value = { EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED,
             EventNames.LOCATION_SELECTION_CHANGED }, create = false, inject = false)
+    @BypassInterceptors
     public void resetTabList() {
+        currentActionContext = null;
         tabsActionsList = null;
         currentTabAction = null;
         subTabsActionsList = null;
@@ -280,7 +293,7 @@ public class WebActionsBean implements WebActionsLocal, Serializable {
         if (subTabsList != null) {
             for (Action a : subTabsList) {
                 if (a.getId().equals(tabId)) {
-                    setCurrentSubTabAction(a);
+                    currentSubTabAction = a;
                     set = true;
                     break;
                 }

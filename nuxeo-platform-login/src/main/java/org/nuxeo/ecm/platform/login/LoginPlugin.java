@@ -43,6 +43,7 @@ public interface LoginPlugin {
      *
      * @param pluginName the plugin name.
      */
+    // Not used. Remove?
     void setName(String pluginName);
 
     Map<String, String> getParameters();

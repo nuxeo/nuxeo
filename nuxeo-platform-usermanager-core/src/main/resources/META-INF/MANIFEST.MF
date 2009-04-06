@@ -12,4 +12,3 @@ Export-Package: org.nuxeo.ecm.platform.usermanager
 Nuxeo-Component: OSGI-INF/UserService.xml,
  OSGI-INF/UserManagerImpl.xml
 Eclipse-LazyStart: false
-Bundle-Activator: org.nuxeo.ecm.platform.usermanager.UserActivator

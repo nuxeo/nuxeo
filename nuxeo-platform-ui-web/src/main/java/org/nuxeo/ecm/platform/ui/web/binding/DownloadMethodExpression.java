@@ -27,8 +27,6 @@ import javax.el.MethodInfo;
 import javax.el.ValueExpression;
 import javax.faces.context.FacesContext;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 
@@ -39,8 +37,6 @@ import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
  */
 public class DownloadMethodExpression extends MethodExpression implements
         Serializable {
-
-    private static final Log log = LogFactory.getLog(DownloadMethodExpression.class);
 
     private static final long serialVersionUID = 9010857019674405375L;
 
@@ -65,14 +61,14 @@ public class DownloadMethodExpression extends MethodExpression implements
             return false;
         }
 
-        DownloadMethodExpression that = (DownloadMethodExpression) o;
+        DownloadMethodExpression other = (DownloadMethodExpression) o;
 
-        if (blobExpression != null ? !blobExpression.equals(that.blobExpression)
-                : that.blobExpression != null) {
+        if (blobExpression != null ? !blobExpression.equals(other.blobExpression)
+                : other.blobExpression != null) {
             return false;
         }
-        if (fileNameExpression != null ? !fileNameExpression.equals(that.fileNameExpression)
-                : that.fileNameExpression != null) {
+        if (fileNameExpression != null ? !fileNameExpression.equals(other.fileNameExpression)
+                : other.fileNameExpression != null) {
             return false;
         }
 

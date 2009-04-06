@@ -45,11 +45,12 @@ public abstract class CoreSearchBackendTestCase extends NXRuntimeTestCase {
     public CoreSession session;
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core.api");
         deployBundle("org.nuxeo.ecm.core");
+        deployBundle("org.nuxeo.ecm.core.event");
         deployRepository();
         deployBundle("org.nuxeo.ecm.platform.search");
         deployBundle("org.nuxeo.ecm.platform.search.backend.core");
@@ -58,7 +59,7 @@ public abstract class CoreSearchBackendTestCase extends NXRuntimeTestCase {
     }
 
     @Override
-    protected void tearDown() throws Exception {
+    public void tearDown() throws Exception {
         undeployRepository();
         super.tearDown();
     }

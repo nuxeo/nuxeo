@@ -213,7 +213,6 @@ public class ChainSelectMultiListboxComponent extends UIInput {
         return (ChainSelect) component;
     }
 
-    @SuppressWarnings("unchecked")
     public Object getProperty(String name) {
         ValueBinding vb = getValueBinding(name);
         if (vb != null) {
@@ -300,11 +299,11 @@ public class ChainSelectMultiListboxComponent extends UIInput {
     // /
     public ChainSelectListboxComponent[] createSingleComponents() {
 
-        final int ncomp = getDirectoriesNamesArray().size();
+        final int ncomp = directoriesNames.size();
         ChainSelectListboxComponent[] sComps = new ChainSelectListboxComponent[ncomp];
 
         int i = 0;
-        for (String dirName : getDirectoriesNamesArray()) {
+        for (String dirName : directoriesNames) {
             ChainSelectListboxComponent comp = new ChainSelectListboxComponent();
 
             comp.setId(getId() + i);

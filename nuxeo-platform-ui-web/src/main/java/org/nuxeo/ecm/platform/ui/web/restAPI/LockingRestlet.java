@@ -45,9 +45,8 @@ public class LockingRestlet extends BaseStatelessNuxeoRestlet {
     public static final String SC_UNLOCKED_OK = "OK";
     public static final String SC_ALREADY_UNLOCKED_OK = "NOT LOCKED";
 
-
     @Override
-    public void handle(Request req, Response res) {
+    protected void doHandleStatelessRequest(Request req, Response res) {
 
         String repoId = (String) req.getAttributes().get("repo");
         String docid = (String) req.getAttributes().get("docid");
@@ -65,14 +64,16 @@ public class LockingRestlet extends BaseStatelessNuxeoRestlet {
         String cUserName = getUserPrincipal(req).getName();
 
         // get Action
-        String action = req.getResourceRef().getSegments().get(5).toLowerCase();
+        String action=STATUS;
+        if (req.getResourceRef().getSegments().size()>5) {
+            action = req.getResourceRef().getSegments().get(5).toLowerCase();
+        }
         if (req.getMethod().equals(Method.LOCK)) {
             action = LOCK;
         }
         if (req.getMethod().equals(Method.UNLOCK)) {
             action = UNLOCK;
         }
-
 
         String response = "";
         String code = "";

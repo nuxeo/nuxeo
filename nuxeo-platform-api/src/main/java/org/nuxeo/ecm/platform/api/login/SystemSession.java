@@ -28,6 +28,7 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  *@deprecated use instead {@link Framework#login()}
+ * Not used. Remove in 5.2.
  */
 @Deprecated
 public class SystemSession {

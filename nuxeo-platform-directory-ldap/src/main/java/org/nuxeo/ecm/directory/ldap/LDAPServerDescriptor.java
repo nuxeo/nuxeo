@@ -47,7 +47,7 @@ public class LDAPServerDescriptor {
 
     @XNode("bindDn")
     public void setBindDn(String bindDn) {
-        if ((null != bindDn) && bindDn.trim().equals("")) {
+        if (null != bindDn && bindDn.trim().equals("")) {
             // empty bindDn means anonymous authentication
             this.bindDn = null;
         } else {

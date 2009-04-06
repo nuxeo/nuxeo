@@ -45,4 +45,5 @@ public class SourceDescriptor {
     public String toString() {
         return String.format("{source name=%s subDirectories=%s", name, Arrays.toString(subDirectories));
     }
+
 }

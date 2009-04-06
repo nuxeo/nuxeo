@@ -42,7 +42,7 @@ public class GraphLoadingTest extends NXRuntimeTestCase {
     private Graph graph;
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.ecm.relations.jena.tests",
                 "jena-test-bundle.xml");

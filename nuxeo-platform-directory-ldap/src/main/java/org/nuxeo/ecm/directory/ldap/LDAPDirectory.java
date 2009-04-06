@@ -51,7 +51,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author ogrisel
- * 
+ *
  */
 public class LDAPDirectory extends AbstractDirectory {
 
@@ -160,7 +160,7 @@ public class LDAPDirectory extends AbstractDirectory {
 
     /**
      * Search controls that only fetch attributes defined by the schema
-     * 
+     *
      * @return common search controls to use for all LDAP search queries
      * @throws DirectoryException
      */

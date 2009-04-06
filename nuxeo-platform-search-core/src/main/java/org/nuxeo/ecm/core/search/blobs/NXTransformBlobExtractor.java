@@ -22,18 +22,16 @@ package org.nuxeo.ecm.core.search.blobs;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringWriter;
-import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
+import org.nuxeo.ecm.core.convert.api.ConversionException;
+import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.search.api.client.indexing.blobs.BlobExtractor;
 import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.document.FulltextFieldDescriptor;
-import org.nuxeo.ecm.platform.transform.api.TransformException;
-import org.nuxeo.ecm.platform.transform.api.TransformServiceDelegate;
-import org.nuxeo.ecm.platform.transform.interfaces.TransformDocument;
-import org.nuxeo.ecm.platform.transform.interfaces.TransformServiceCommon;
-import org.nuxeo.ecm.platform.transform.interfaces.Transformer;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Blob extractor that leverages Nuxeo transform service.
@@ -45,66 +43,40 @@ public class NXTransformBlobExtractor implements BlobExtractor {
 
     private static final long serialVersionUID = -4204325669629533663L;
 
-    private static final Log log = LogFactory.getLog(NXTransformBlobExtractor.class);
-
     private static final int BYTE_ORDER_MARK_CHAR = 0xFEFF;
 
-    private static TransformServiceCommon transformService;
+    private static ConversionService conversionService;
 
-    private static TransformServiceCommon getTransformService()
-            throws TransformException {
-        if (transformService == null) {
-            try {
-                transformService = TransformServiceDelegate.getLocalTransformService();
-            } catch (TransformException te) {
-                // Fallback with remote call
-                log.debug("Cannot find local transform service. Trying to perform a remote lookup");
-                transformService = TransformServiceDelegate.getRemoteTransformService();
-            }
+    private static ConversionService getConversionService() throws Exception {
+        if (conversionService == null) {
+            conversionService = Framework.getService(ConversionService.class);
         }
-        return transformService;
+        return conversionService;
     }
 
     public String extract(Blob blob, String mimetype,
             FulltextFieldDescriptor desc) throws Exception {
 
-        String res = "";
-
-        if (blob==null || blob.getLength()==0)
+        if (blob == null || blob.getLength() == 0) {
             return "";
-
-        String transformerName = desc.lookupTransformer(mimetype);
-        if (transformerName != null) {
-            Transformer transformer = getTransformService().getTransformerByName(
-                    transformerName);
-
-            if (transformer == null) {
-                log.warn("Transformer with name :" + transformerName
-                        + " not found...");
-                return res;
-            }
-
-            try {
-                List<TransformDocument> docs = transformService.transform(
-                        transformerName, null, blob);
-                for (TransformDocument doc : docs) {
-                    // XXX check this out if not too costly.
-                    Blob docBlob = doc.getBlob();
-                    res += readContent(docBlob.getReader());
-                }
-                docs = null;
-            } catch (Throwable t) {
-                // We don't want to throw back exceptions that are not caught be
-                // underlying plugin internals
-                log.error("Couldn't extract blob content...", t);
-            }
-        } else {
-            log.error("Transformer with name=" + transformerName
-                    + " cannot be found... Couldn't extract blob content"
-                    + " Check out your configuration.");
         }
 
-        return res;
+        String converterName = null;
+        BlobHolder result;
+        try {
+            converterName = getConversionService().getConverterName(mimetype,
+                    "text/plain");
+            result = getConversionService().convert(converterName,
+                    new SimpleBlobHolder(blob), null);
+            return readContent(result.getBlob().getReader());
+        } catch (ConversionException e) {
+            throw e;
+        } catch (IOException e) {
+            throw new ClientException("Couldn't read from blob convert with "
+                    + converterName, e);
+        } catch (ClientException e) {
+            throw e;
+        }
     }
 
     public static String readContent(Reader reader) throws IOException {

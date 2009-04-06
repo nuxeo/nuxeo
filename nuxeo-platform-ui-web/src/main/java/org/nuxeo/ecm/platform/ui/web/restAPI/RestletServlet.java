@@ -77,11 +77,7 @@ public class RestletServlet extends HttpServlet {
             if (plugin.getUseSeam()) {
 
                 Filter seamFilter;
-                if (plugin.getUseConversation()) {
-                    seamFilter = new SeamRestletFilter(true);
-                } else {
-                    seamFilter = new SeamRestletFilter(false);
-                }
+                seamFilter = new SeamRestletFilter(plugin.getUseConversation());
 
                 Restlet seamRestlet = service.getContributedRestletByName(
                         restletName);
@@ -90,7 +86,18 @@ public class RestletServlet extends HttpServlet {
 
                 restletToAdd = seamFilter;
             } else {
-                restletToAdd = service.getContributedRestletByName(restletName);
+                if (plugin.isSingleton()) {
+                    restletToAdd = service.getContributedRestletByName(restletName);
+                } else {
+
+                    Filter threadSafeRestletFilter;
+                    threadSafeRestletFilter = new ThreadSafeRestletFilter();
+
+                    Restlet restlet = service.getContributedRestletByName(restletName);
+
+                    threadSafeRestletFilter.setNext(restlet);
+                    restletToAdd = threadSafeRestletFilter;
+                }
             }
 
             for (String urlPattern : plugin.getUrlPatterns()) {

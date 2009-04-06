@@ -21,51 +21,38 @@ package org.nuxeo.ecm.platform.uidgen.corelistener;
 
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
 
-import javax.naming.NamingException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.event.CoreEvent;
-import org.nuxeo.ecm.core.listener.AbstractEventListener;
-import org.nuxeo.ecm.core.listener.AsynchronousEventListener;
-import org.nuxeo.ecm.core.listener.DocumentModelEventListener;
+import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.EventContext;
+import org.nuxeo.ecm.core.event.EventListener;
+import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.uidgen.service.ServiceHelper;
 import org.nuxeo.ecm.platform.uidgen.service.UIDGeneratorService;
 
-public class DocUIDGeneratorListener extends AbstractEventListener implements
-        AsynchronousEventListener, DocumentModelEventListener {
+public class DocUIDGeneratorListener implements EventListener {
 
-    private static final Log log = LogFactory.getLog(DocUIDGeneratorListener.class);
+    private static final Log log = LogFactory
+            .getLog(DocUIDGeneratorListener.class);
 
-    /**
-     * Core event notification: gets core events and updates DublinCore if
-     * needed.
-     *
-     * @param coreEvent instance thrown at core layer
-     */
-    public void notifyEvent(CoreEvent coreEvent) {
-        Object source = coreEvent.getSource();
-        if (source instanceof DocumentModel) {
+    public void handleEvent(Event event) throws ClientException {
 
-            DocumentModel doc = (DocumentModel) source;
-
-            String eventId = coreEvent.getEventId();
+        EventContext ctx = event.getContext();
+        if (ctx instanceof DocumentEventContext) {
+            DocumentEventContext docCtx = (DocumentEventContext) ctx;
+            DocumentModel doc = docCtx.getSourceDocument();
+            String eventId = event.getName();
 
             if (!eventId.equals(DOCUMENT_CREATED)) {
                 return;
             }
-
             log.debug("eventId : " + eventId);
-
             try {
                 addUIDtoDoc(doc);
             } catch (DocumentException e) {
-                log.error(
-                        "Error occurred while generating UID for doc: " + doc,
-                        e);
-            } catch (NamingException e) {
                 log.error(
                         "Error occurred while generating UID for doc: " + doc,
                         e);
@@ -73,11 +60,11 @@ public class DocUIDGeneratorListener extends AbstractEventListener implements
         }
     }
 
-    private void addUIDtoDoc(DocumentModel doc) throws DocumentException,
-            NamingException {
+    private void addUIDtoDoc(DocumentModel doc) throws DocumentException {
         UIDGeneratorService service = ServiceHelper.getUIDGeneratorService();
         if (service == null) {
-            log.error("<addUIDtoDoc> UIDGeneratorService service not found ... !");
+            log
+                    .error("<addUIDtoDoc> UIDGeneratorService service not found ... !");
             return;
         }
 

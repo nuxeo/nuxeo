@@ -25,8 +25,6 @@ import javax.faces.component.UIComponent;
 import javax.faces.component.ValueHolder;
 import javax.faces.convert.Converter;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.ui.web.binding.MethodValueExpression;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 
@@ -46,11 +44,8 @@ import com.sun.facelets.util.FacesAPI;
  * if no parameters are needed.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public class GenericValueHolderRule extends MetaRule {
-
-    private static final Log log = LogFactory.getLog(GenericValueHolderRule.class);
 
     static final class LiteralConverterMetadata extends Metadata {
 

@@ -24,12 +24,10 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DataModel;
-import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.platform.versioning.api.VersioningActions;
-import org.nuxeo.ecm.platform.versioning.service.ServiceHelper;
 import org.nuxeo.ecm.platform.versioning.service.VersioningService;
 
 /**
@@ -41,8 +39,7 @@ public class TestVersioningDocEdit extends VersioningBaseTestCase {
 
     private static final Log log = LogFactory.getLog(TestVersioningDocEdit.class);
 
-    public void testVersionDocEditLockedState() throws DocumentException,
-            ClientException {
+    public void testVersionDocEditLockedState() throws ClientException {
         DocumentModel rootDM = coreSession.getRootDocument();
 
         DocumentModel childFile = coreSession.createDocumentModel(
@@ -83,34 +80,26 @@ public class TestVersioningDocEdit extends VersioningBaseTestCase {
         // req.setWfStateInitial("assigned");
         // req.setWfStateFinal("inprogress");
 
-        final VersioningService service = ServiceHelper.getVersioningService();
-
+        final VersioningService service = getVersioningService();
         checkVersion(doc, 1L, 0L);
 
         service.incrementMinor(doc);
-
         checkVersion(doc, 1L, 1L);
 
         coreSession.saveDocument(doc);
         coreSession.save();
-
         checkVersion(doc, 1L, 1L);
 
         service.incrementMajor(doc);
         coreSession.save();
-
         checkVersion(doc, 2L, 0L);
     }
 
     /**
      * Will test if the version is incremented in case the DocumentModel env
      * context is added with inc option.
-     *
-     * @throws DocumentException
-     * @throws ClientException
      */
-    public void testDocumentSaveWithIncOption() throws DocumentException,
-            ClientException {
+    public void testDocumentSaveWithIncOption() throws ClientException {
         DocumentModel rootDM = coreSession.getRootDocument();
 
         DocumentModel docModel = coreSession.createDocumentModel(
@@ -121,33 +110,25 @@ public class TestVersioningDocEdit extends VersioningBaseTestCase {
         VersioningActions selectedOption = VersioningActions.ACTION_INCREMENT_MINOR;
         docModel.putContextData(VersioningActions.KEY_FOR_INC_OPTION,
                 selectedOption);
-
         checkVersion(docModel, 1L, 0L);
 
         docModel = coreSession.saveDocument(docModel);
-
         checkVersion(docModel, 1L, 1L);
 
         selectedOption = VersioningActions.ACTION_INCREMENT_MAJOR;
         docModel.putContextData(VersioningActions.KEY_FOR_INC_OPTION,
                 selectedOption);
-
         checkVersion(docModel, 1L, 1L);
 
         docModel = coreSession.saveDocument(docModel);
-
         checkVersion(docModel, 2L, 0L);
     }
 
     /**
      * Will test if the version is incremented in case the DocumentModel env
      * context is added with inc option.
-     *
-     * @throws DocumentException
-     * @throws ClientException
      */
-    public void testVersioningChangeListener() throws DocumentException,
-            ClientException {
+    public void testVersioningChangeListener() throws ClientException {
         DocumentModel rootDM = coreSession.getRootDocument();
 
         DocumentModel docModel = coreSession.createDocumentModel(
@@ -158,14 +139,11 @@ public class TestVersioningDocEdit extends VersioningBaseTestCase {
         VersioningActions selectedOption = VersioningActions.ACTION_INCREMENT_MINOR;
         docModel.putContextData(VersioningActions.KEY_FOR_INC_OPTION,
                 selectedOption);
-
         checkVersion(docModel, 1L, 0L);
 
         docModel = coreSession.saveDocument(docModel);
-        
         DocumentModel readDocModel = coreSession.getDocument(docModel.getRef());
         checkVersion(readDocModel, 1L, 1L);
-
         checkVersion(docModel, 1L, 1L);
 
         selectedOption = VersioningActions.ACTION_INCREMENT_MAJOR;
@@ -173,19 +151,14 @@ public class TestVersioningDocEdit extends VersioningBaseTestCase {
                 selectedOption);
         docModel.putContextData(ScopeType.REQUEST,
                 VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, true);
-
         checkVersion(docModel, 1L, 1L);
 
         coreSession.save();
-
         VersioningChangeListenerForTesting.setVersionsToCheck(1L, 1L, 2L, 0L);
-
         docModel = coreSession.saveDocument(docModel);
-        
         DocumentModel docVersion = coreSession.getVersions(docModel.getRef()).get(
                 0);
         checkVersion(docVersion, 1L, 1L);
-
         checkVersion(docModel, 2L, 0L);
 
         VersioningChangeListenerForTesting vcListener = VersioningChangeListenerForTesting.instance;
@@ -196,7 +169,7 @@ public class TestVersioningDocEdit extends VersioningBaseTestCase {
     }
 
     // FIXME
-    public void XXXtestDefinedRules() throws DocumentException, ClientException {
+    public void XXXtestDefinedRules() throws ClientException {
         DocumentModel rootDM = coreSession.getRootDocument();
 
         DocumentModel childFile = coreSession.createDocumentModel(
@@ -204,23 +177,19 @@ public class TestVersioningDocEdit extends VersioningBaseTestCase {
 
         // should fill datamodel
         childFile = coreSession.createDocument(childFile);
-
         DocumentModel doc = childFile;
-
         checkVersion(doc, 1L, 0L);
 
         DocumentRef docRef = doc.getRef();
-
         assertEquals("project", coreSession.getCurrentLifeCycleState(docRef));
 
         coreSession.followTransition(docRef, "review");
-
         assertEquals("review", coreSession.getCurrentLifeCycleState(docRef));
 
         // doc = coreSession.saveDocument(doc);
         // reload document...
         doc = coreSession.getDocument(docRef);
-
         checkVersion(doc, 1L, 1L);
     }
+
 }

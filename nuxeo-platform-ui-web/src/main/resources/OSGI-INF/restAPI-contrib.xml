@@ -20,7 +20,9 @@
 
     <documentation>
       Restlet for uploading a file via the Plugin (linked to FileManager)
+      (ie create a document from a file)
       POST /nuxeo/restAPI/{repoId}/{docId}/pluginUpload/{path}
+      POST /nuxeo/restAPI/{repoId}/{docId}/createFromFile/{path}
     </documentation>
     <restletPlugin
         name="pluginUpload"
@@ -30,19 +32,24 @@
         useConversation="true">
       <urlPatterns>
         <urlPattern>/{repo}/{docid}/pluginUpload</urlPattern>
+        <urlPattern>/{repo}/{docid}/createFromFile</urlPattern>
       </urlPatterns>
     </restletPlugin>
 
     <documentation>
       Simple restlet to browse content
+      GET /nuxeo/restAPI/browse
+      GET /nuxeo/restAPI/{repoId}/browse
       GET /nuxeo/restAPI/{repoId}/{docId}/browse
     </documentation>
     <restletPlugin
         name="browse"
         class="org.nuxeo.ecm.platform.ui.web.restAPI.BrowseRestlet"
         enabled="true"
-        useSeam="true">
+        useSeam="false">
       <urlPatterns>
+        <urlPattern>/browse</urlPattern>
+        <urlPattern>/{repo}/browse</urlPattern>
         <urlPattern>/{repo}/{docid}/browse</urlPattern>
       </urlPatterns>
     </restletPlugin>
@@ -64,7 +71,7 @@
         name="export"
         class="org.nuxeo.ecm.platform.ui.web.restAPI.ExportRestlet"
         enabled="true"
-        useSeam="true">
+        useSeam="false">
       <urlPatterns>
         <urlPattern>/{repo}/{docid}/export</urlPattern>
         <urlPattern>/{repo}/{docid}/exportSingle</urlPattern>
@@ -107,7 +114,8 @@
     </restletPlugin>
 
     <documentation>
-      GET /nuxeo/restAPI/{repo}/{docid}/{filename}/uploadFile
+      Upload a file in an existing document
+      POST /nuxeo/restAPI/{repo}/{docid}/{filename}/uploadFile
     </documentation>
     <restletPlugin
         name="uploadFileRestlet"
@@ -131,15 +139,16 @@
         name="createDocumentRestlet"
         class="org.nuxeo.ecm.platform.ui.web.restAPI.CreateDocumentRestlet"
         enabled="true"
-        useSeam="true">
+        useSeam="false">
       <urlPatterns>
         <urlPattern>/{repo}/{parentdocid}/createDocument</urlPattern>
       </urlPatterns>
     </restletPlugin>
-    
+
     <documentation>
       Allows deleting documents via Restlet API:
       GET /nuxeo/restAPI/{repoId}/{docId}/deleteDocumentRestlet
+      GET /nuxeo/restAPI/{repoId}/{docId}/delete
     </documentation>
     <restletPlugin
         name="deleteDocumentRestlet"
@@ -148,12 +157,14 @@
         useSeam="false">
       <urlPatterns>
         <urlPattern>/{repo}/{docid}/deleteDocumentRestlet</urlPattern>
+        <urlPattern>/{repo}/{docid}/delete</urlPattern>
       </urlPatterns>
     </restletPlugin>
-    
+
     <documentation>
       Allows to update document properties via Restlet API:
       GET /nuxeo/restAPI/{repoId}/{docId}/updateDocumentRestlet?prop1=value1
+      GET /nuxeo/restAPI/{repoId}/{docId}/update?prop1=value1
       example : http://127.0.0.1:8080/nuxeo/restAPI/default/1fee4b3e-8b8e-494e-b0a5-eef5113fb5a7/updateDocumentRestlet?dublincore:description=No%20comment
     </documentation>
     <restletPlugin
@@ -163,6 +174,7 @@
         useSeam="false">
       <urlPatterns>
         <urlPattern>/{repo}/{docid}/updateDocumentRestlet</urlPattern>
+        <urlPattern>/{repo}/{docid}/update</urlPattern>
       </urlPatterns>
     </restletPlugin>
 

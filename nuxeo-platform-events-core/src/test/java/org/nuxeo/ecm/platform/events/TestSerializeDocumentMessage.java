@@ -37,7 +37,7 @@ public class TestSerializeDocumentMessage extends RepositoryTestCase {
     private Document root;
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         Session session = getRepository().getSession(null);
         root = session.getRootDocument();

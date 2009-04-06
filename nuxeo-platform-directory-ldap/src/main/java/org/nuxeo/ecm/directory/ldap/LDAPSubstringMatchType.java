@@ -33,4 +33,7 @@ public class LDAPSubstringMatchType {
 
     public static final String SUBANY = "subany";
 
+    private LDAPSubstringMatchType() {
+    }
+
 }

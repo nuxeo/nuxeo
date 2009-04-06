@@ -23,12 +23,11 @@ import java.util.Map;
 
 /**
  * Interface for a graph description.
- *
- * <p/> A graph description gives all the information needed for the graph
- * instanciation.
+ * <p>
+ * A graph description gives all the information needed for the graph
+ * instantiation.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public interface GraphDescription {
 
