@@ -80,7 +80,7 @@ public class RejecterPublisher extends AbstractPublisher implements Publisher {
     }
 
     protected boolean isValidator(DocumentModel document,
-            NuxeoPrincipal principal) throws PublishingException {
+            NuxeoPrincipal principal) {
         return false;
     }
 

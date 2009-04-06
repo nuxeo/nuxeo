@@ -23,14 +23,12 @@ import org.nuxeo.ecm.core.api.ClientException;
 
 /**
  * Publishing related exception.
- *
  */
 public class PublishingException extends ClientException {
 
     private static final long serialVersionUID = 1L;
 
     public PublishingException() {
-        super();
     }
 
     public PublishingException(String message, Throwable cause) {

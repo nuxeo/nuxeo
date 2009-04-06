@@ -30,7 +30,6 @@ public class PublishingWebException extends ClientException {
     private static final long serialVersionUID = 1L;
 
     public PublishingWebException() {
-        super();
     }
 
     public PublishingWebException(String message, Throwable cause) {

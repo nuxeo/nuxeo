@@ -191,7 +191,7 @@ public class PublishActionsBean implements PublishActions, Serializable {
         return webActions.getUnfiltredActionsList(PUBLISH_DOCUMENT);
     }
 
-    private Set<String> getTypeNamesForFacet(String facetName) {
+    private static Set<String> getTypeNamesForFacet(String facetName) {
         TypeService schemaService;
         try {
             // XXX should use getService(SchemaManager.class)
@@ -210,7 +210,7 @@ public class PublishActionsBean implements PublishActions, Serializable {
         return publishRoots;
     }
 
-    // TODO move to protected
+    // TODO change to protected
     public DocumentModelList getProxies(DocumentModel docModel)
             throws ClientException {
         if (docModel == null) {
@@ -593,7 +593,7 @@ public class PublishActionsBean implements PublishActions, Serializable {
         return formatPathFragments(pathFragments);
     }
 
-    private String formatPathFragments(List<String> pathFragments) {
+    private static String formatPathFragments(List<String> pathFragments) {
         String fullPath = "";
         for (String aFragment : pathFragments) {
             if (!"".equals(fullPath)) {

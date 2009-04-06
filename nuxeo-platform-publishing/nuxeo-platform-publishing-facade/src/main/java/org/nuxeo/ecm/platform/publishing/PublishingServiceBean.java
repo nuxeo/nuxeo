@@ -38,14 +38,11 @@ import org.nuxeo.runtime.api.Framework;
  * Publishing service session bean.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 @Stateless
 @Local(PublishingService.class)
 @Remote(PublishingService.class)
 public class PublishingServiceBean implements PublishingService {
-
-    private static final long serialVersionUID = 1L;
 
     private PublishingService service;
 

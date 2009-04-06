@@ -44,8 +44,6 @@ public class PublishingServiceImpl extends DefaultComponent implements
         PublishingService {
     private Publisher publisher;
 
-    private static final long serialVersionUID = 1L;
-
     private static final Log log = LogFactory.getLog(PublishingServiceImpl.class);
 
     public static final ComponentName NAME = new ComponentName(
@@ -96,14 +94,12 @@ public class PublishingServiceImpl extends DefaultComponent implements
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
         if (extensionPoint.equals(PT_VALIDATORS_RULE)) {
-
             validatorsRuleDesc = (ValidatorsRuleDesc) contribution;
             log.info("Registered publishing validator : "
                     + validatorsRuleDesc.getClass().getCanonicalName()
                     + " Previous registration is overriden.");
 
         } else if (extensionPoint.equals(PT_VALID_DATE_FIELD)) {
-
             prefixed = (PublishingValidDateFieldDesc) contribution;
             log.info("Registered publishing valid date field : "
                     + prefixed.getPrefixedFieldName()

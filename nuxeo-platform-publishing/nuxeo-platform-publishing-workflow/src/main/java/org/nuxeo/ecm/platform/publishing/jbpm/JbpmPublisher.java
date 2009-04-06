@@ -52,13 +52,14 @@ import org.nuxeo.runtime.api.Framework;
  *
  */
 public class JbpmPublisher extends AbstractPublisher implements Publisher {
-    public static String TASK_NAME = "org.nuxeo.ecm.platform.publishing.jbpm.JbpmPublisher";
 
-    public static String ACL_NAME = "org.nuxeo.ecm.platform.publishing.jbpm.JbpmPublisher";
+    public static final String TASK_NAME = "org.nuxeo.ecm.platform.publishing.jbpm.JbpmPublisher";
+    public static final String ACL_NAME = "org.nuxeo.ecm.platform.publishing.jbpm.JbpmPublisher";
 
-    public static enum PublishingEvent {
-        documentPublished, documentSubmittedForPublication, documentPublicationRejected, documentPublicationApproved, documentWaitingPublication, documentUnpublished
-    };
+    public enum PublishingEvent {
+        documentPublished, documentSubmittedForPublication, documentPublicationRejected,
+        documentPublicationApproved, documentWaitingPublication, documentUnpublished
+    }
 
     private JbpmService jbpmService;
 
@@ -292,7 +293,7 @@ public class JbpmPublisher extends AbstractPublisher implements Publisher {
         }
     }
 
-    private void removeACL(DocumentModel document, CoreSession coreSession)
+    private static void removeACL(DocumentModel document, CoreSession coreSession)
             throws PublishingException {
         try {
             RemoveACLUnrestricted remover = new RemoveACLUnrestricted(
@@ -301,7 +302,6 @@ public class JbpmPublisher extends AbstractPublisher implements Publisher {
         } catch (ClientException e) {
             throw new PublishingException(e);
         }
-
     }
 
     public void validatorRejectPublication(DocumentModel doc,
@@ -319,10 +319,9 @@ public class JbpmPublisher extends AbstractPublisher implements Publisher {
         } finally {
             CoreInstance.getInstance().close(coreSession);
         }
-
     }
 
-    private void removeProxy(DocumentModel doc, CoreSession coreSession)
+    private static void removeProxy(DocumentModel doc, CoreSession coreSession)
             throws PublishingException {
         try {
             DeleteDocumentUnrestricted deleter = new DeleteDocumentUnrestricted(

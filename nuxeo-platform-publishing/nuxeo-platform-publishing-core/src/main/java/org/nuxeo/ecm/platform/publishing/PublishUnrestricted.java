@@ -23,14 +23,13 @@ import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 
 /**
  * @author arussel
- *
  */
 public class PublishUnrestricted extends UnrestrictedSessionRunner {
     private DocumentModel newProxy;
 
-    final private DocumentModel docToPublish;
+    private final DocumentModel docToPublish;
 
-    final private DocumentModel sectionToPublishTo;
+    private final DocumentModel sectionToPublishTo;
 
     public PublishUnrestricted(CoreSession session, DocumentModel docToPublish,
             DocumentModel sectionToPublishTo) {

@@ -25,7 +25,6 @@ public class DocumentWaitingValidationException extends PublishingException {
     private static final long serialVersionUID = 1L;
 
     public DocumentWaitingValidationException() {
-        super();
     }
 
     public DocumentWaitingValidationException(String message, Throwable cause) {

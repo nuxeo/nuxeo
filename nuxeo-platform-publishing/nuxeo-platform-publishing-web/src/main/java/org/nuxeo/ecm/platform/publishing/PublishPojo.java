@@ -34,7 +34,6 @@ public class PublishPojo {
     String proxyVersion;
 
     public PublishPojo(DocumentModel section, String proxyVersion) {
-        super();
         this.section = section;
         this.proxyVersion = proxyVersion;
     }
