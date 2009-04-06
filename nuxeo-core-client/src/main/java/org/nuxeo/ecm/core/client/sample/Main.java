@@ -27,7 +27,7 @@ import org.nuxeo.ecm.core.client.NuxeoApp;
  *
  */
 public class Main {
-    
+
     public static void main(String[] args) throws Exception {
         if (args.length < 1) {
             System.out.println("Usage app classToRun");
@@ -37,7 +37,7 @@ public class Main {
         String bundles = System.getProperty("nuxeo.bundles");
         if (bundles != null) {
             files = NuxeoApp.getBundleFiles(new File("."), bundles, ":");
-        }        
+        }
         NuxeoApp app = new NuxeoApp();
         app.start();
         System.out.println("Deploying bundles: "+files);
@@ -52,8 +52,8 @@ public class Main {
                 System.arraycopy(args, 1, tmp, 0, tmp.length);
             }
             main.invoke(null, new Object[]{tmp});
-        }            
+        }
         app.shutdown();
     }
-    
+
 }

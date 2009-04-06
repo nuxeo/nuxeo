@@ -494,7 +494,7 @@ public class TestPropertyModel extends TestCase {
 
         prop.setValue(ld);
 
-        List<?> list = (List<?>) prop.getValue(List.class);
+        List<?> list = prop.getValue(List.class);
 
         assertEquals(arrayList("b", "a", "d", "g", "e", "f"), list);
     }

@@ -29,7 +29,7 @@ public class HelloServer {
         NuxeoClient client = NuxeoClient.getInstance();
         RepositoryInstance repo = null;
         try {
-            client.tryConnect("localhost", 62474);          
+            client.tryConnect("localhost", 62474);
             repo =client.openRepository();
             System.out.println("Hello Server! Here is the repository root: "+repo.getRootDocument());
         } finally {
@@ -37,5 +37,5 @@ public class HelloServer {
             client.tryDisconnect();
         }
     }
-    
+
 }
