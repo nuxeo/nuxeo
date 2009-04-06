@@ -72,7 +72,6 @@ import org.nuxeo.ecm.core.model.Session;
  * attached/checked.
  *
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
- *
  */
 @Stateful
 @Local(DocumentManagerLocal.class)
