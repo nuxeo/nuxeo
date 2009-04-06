@@ -44,7 +44,6 @@ public class ForumWorkflowFilter implements JbpmListFilter {
     protected final String postId;
 
     public ForumWorkflowFilter(String postId) {
-        super();
         this.postId = postId;
     }
 

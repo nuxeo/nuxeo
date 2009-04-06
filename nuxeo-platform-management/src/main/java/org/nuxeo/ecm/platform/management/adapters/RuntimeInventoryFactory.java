@@ -28,8 +28,7 @@ import org.nuxeo.runtime.model.RegistrationInfo;
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
  */
-public class RuntimeInventoryFactory extends
-        AbstractResourceFactory implements ResourceFactory {
+public class RuntimeInventoryFactory extends AbstractResourceFactory {
 
     public void registerResources() {
         service.registerResource("runtime-inventory", ObjectNameFactory.formatQualifiedName("factory",
@@ -80,7 +79,7 @@ public class RuntimeInventoryFactory extends
 
     protected void doVisitInventoryExtensionPoint(Callback callback,
             String name, String qualifiedName, ExtensionPoint extensionPoint) {
-        name = name + "-" + extensionPoint.getName();
+        name += "-" + extensionPoint.getName();
         qualifiedName += ",extensionPoint=" + extensionPoint.getName();
         callback.invokeFor(name, qualifiedName, ExtensionPointInventoryMBean.class,
                 new ExtensionPointInventoryAdapter(extensionPoint));

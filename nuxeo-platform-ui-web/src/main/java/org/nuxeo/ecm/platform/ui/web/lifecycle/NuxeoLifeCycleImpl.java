@@ -45,7 +45,6 @@ public class NuxeoLifeCycleImpl extends Lifecycle {
     protected final Lifecycle original;
 
     public NuxeoLifeCycleImpl(Lifecycle original) {
-        super();
         this.original = original;
     }
 

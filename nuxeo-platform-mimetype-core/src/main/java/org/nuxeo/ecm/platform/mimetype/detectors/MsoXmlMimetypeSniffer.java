@@ -56,22 +56,19 @@ public class MsoXmlMimetypeSniffer implements MagicDetector {
 
     public String[] process(byte[] data, int offset, int length, long bitmask,
             char comparator, String mimeType, Map params) {
-
       String[] mimetypes = {};
       File file = null;
-
       try {
             file = File.createTempFile("magicdetector", ".xml");
             FileUtils.writeFile(file, data);
             mimetypes = guessMsoXml(file);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e);
         } finally {
             if (file != null) {
                 file.delete();
             }
         }
-
         return mimetypes;
     }
 
@@ -94,9 +91,8 @@ public class MsoXmlMimetypeSniffer implements MagicDetector {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e);
         }
-
         return mimetype;
     }
 

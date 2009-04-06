@@ -27,7 +27,7 @@ public interface JbpmSecurityPolicy {
 
     enum Action {
         read, write, execute
-    };
+    }
 
     /**
      * Checks the permission on a process instance.

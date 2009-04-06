@@ -142,7 +142,7 @@ public class QueryModel implements Serializable {
     }
 
     public PagedDocumentsProvider getResultsProvider(CoreSession session,
-            Object[] params) throws ClientException, QueryException {
+            Object[] params) throws ClientException {
         return getResultsProvider(session, params, null);
     }
 

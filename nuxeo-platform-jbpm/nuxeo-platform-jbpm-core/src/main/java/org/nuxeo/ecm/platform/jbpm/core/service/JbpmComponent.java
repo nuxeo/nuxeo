@@ -51,9 +51,9 @@ public class JbpmComponent extends DefaultComponent implements
     public static final ComponentName NAME = new ComponentName(
             "org.nuxeo.ecm.platform.jbpm.core.JbpmService");
 
-    public static enum ExtensionPoint {
+    public enum ExtensionPoint {
         deployer, processDefinition, activeConfiguration, configurationPath, securityPolicy, typeFilter
-    };
+    }
 
     private JbpmConfiguration jbpmConfiguration;
 
@@ -69,7 +69,8 @@ public class JbpmComponent extends DefaultComponent implements
 
     private static final Log log = LogFactory.getLog(JbpmComponent.class);
 
-    private final HashMap<String, ProcessDefinitionDeployer> deployerDesc = new HashMap<String, ProcessDefinitionDeployer>();
+    private final HashMap<String, ProcessDefinitionDeployer> deployerDesc
+            = new HashMap<String, ProcessDefinitionDeployer>();
 
     private final HashMap<ProcessDefinitionDescriptor, ComponentInstance> pdDesc
             = new HashMap<ProcessDefinitionDescriptor, ComponentInstance>();

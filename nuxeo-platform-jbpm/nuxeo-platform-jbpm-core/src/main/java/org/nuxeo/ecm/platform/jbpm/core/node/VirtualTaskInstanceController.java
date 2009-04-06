@@ -35,7 +35,7 @@ import org.nuxeo.ecm.platform.jbpm.JbpmService.VariableName;
  */
 public class VirtualTaskInstanceController extends AbstractJbpmHandlerHelper {
 
-    private static Log log = LogFactory.getLog(VirtualTaskInstanceController.class);
+    private static final Log log = LogFactory.getLog(VirtualTaskInstanceController.class);
 
     private static final long serialVersionUID = 1L;
 

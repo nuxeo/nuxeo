@@ -254,7 +254,7 @@ public class TestIORemoteCopy extends NXRuntimeTestCase {
         assertEquals(2, DummyIOResourceAdapter.backend.size());
     }
 
-    private void printInfo(String title, Object obj) {
+    private static void printInfo(String title, Object obj) {
         log.info("-------------------");
         log.info(title);
         log.info(obj);

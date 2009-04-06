@@ -70,44 +70,36 @@ public class MsoXML2007MimetypeSniffer implements MagicDetector {
 
     public String[] process(byte[] data, int offset, int length, long bitmask,
             char comparator, String mimeType, Map params) {
-
         String[] mimetypes = {};
         File file = null;
-
         try {
             file = File.createTempFile("magicdetector", ".xml");
             FileUtils.writeFile(file, data);
             mimetypes = guessMsoXML2007(file);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e);
         } finally {
             if (file != null) {
                 file.delete();
             }
         }
-
         return mimetypes;
     }
 
     public String[] process(File file, int offset, int length, long bitmask,
             char comparator, String mimeType, Map params) {
-
         return guessMsoXML2007(file);
     }
 
     public String[] guessMsoXML2007(File file) {
-
         String[] mimetype = {};
-
         try {
             // unzip
             ZipFile zip = new ZipFile(file);
             // look at mimetype
-
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return mimetype;
     }
 

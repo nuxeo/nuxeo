@@ -42,13 +42,13 @@ import org.nuxeo.ecm.platform.url.service.AbstractDocumentViewCodec;
  *
  * @author Anahide Tchertchian
  */
-public class DocumentPathCodec extends AbstractDocumentViewCodec implements
-        DocumentViewCodec {
+public class DocumentPathCodec extends AbstractDocumentViewCodec {
 
     public static final String PREFIX = "nxpath";
 
     // nxpath/server/path/to/doc@view_id/?requestParams
-    public static final String URLPattern = "/([\\w\\.]+)(/([\\w/\\-\\.]*))?(@([\\w\\-\\.]+))(/)?(\\?(.*)?)?";
+    public static final String URLPattern
+            = "/([\\w\\.]+)(/([\\w/\\-\\.]*))?(@([\\w\\-\\.]+))(/)?(\\?(.*)?)?";
 
     public DocumentPathCodec() {
     }
@@ -94,7 +94,7 @@ public class DocumentPathCodec extends AbstractDocumentViewCodec implements
     }
 
     /**
-     * Extracts document location from a Zope-like URL ie :
+     * Extracts document location from a Zope-like URL, eg:
      * server/path_or_docId/view_id/tab_id .
      */
     public DocumentView getDocumentViewFromUrl(String url) {

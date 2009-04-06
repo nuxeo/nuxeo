@@ -29,11 +29,12 @@ import org.nuxeo.ecm.core.api.impl.UserPrincipal;
  * @author alexandre
  */
 public class JbpmHelperTest extends TestCase {
-    private JbpmHelper helper = new JbpmHelper();
+
+    private final JbpmHelper helper = new JbpmHelper();
 
     public void testIsAssignedToUser() {
         TaskInstance ti = new TaskInstance();
-        UserPrincipal principal = new UserPrincipal("linnet", Arrays.asList(new String[]{"g1", "g2"}));
+        UserPrincipal principal = new UserPrincipal("linnet", Arrays.asList("g1", "g2"));
         ti.setActorId(NuxeoPrincipal.PREFIX + "linnet");
         assertTrue(helper.isTaskAssignedToUser(ti, principal));
         ti.setActorId(NuxeoPrincipal.PREFIX + "joe");

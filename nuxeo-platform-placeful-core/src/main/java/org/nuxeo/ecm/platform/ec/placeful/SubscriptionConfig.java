@@ -21,8 +21,6 @@ package org.nuxeo.ecm.platform.ec.placeful;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
-import org.nuxeo.ecm.platform.ec.placeful.Annotation;
-
 @Entity
 public class SubscriptionConfig extends Annotation {
 

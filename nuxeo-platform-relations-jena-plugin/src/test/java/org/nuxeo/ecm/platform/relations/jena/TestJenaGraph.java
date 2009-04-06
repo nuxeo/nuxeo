@@ -26,7 +26,6 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -98,7 +97,7 @@ public class TestJenaGraph extends NXRuntimeTestCase {
         Collections.sort(statements);
     }
 
-    private static String getTestFile() throws UnsupportedEncodingException {
+    private static String getTestFile() {
         String filePath = "test.rdf";
         return FileUtils.getResourcePathFromContext(filePath);
     }
@@ -433,7 +432,7 @@ public class TestJenaGraph extends NXRuntimeTestCase {
         assertEquals(statements, this.statements);
     }
 
-    public void testReadPath() throws Exception {
+    public void testReadPath() {
         assertSame(0L, graph.size());
         graph.read(getTestFile(), null, null);
         assertNotSame(0L, graph.size());

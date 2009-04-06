@@ -35,6 +35,10 @@ public class EJBFactory {
 
     private static final Log log = LogFactory.getLog(EJBFactory.class);
 
+    // Utility class.
+    private EJBFactory() {
+    }
+
     private static InitialContext getInitialContext() throws NamingException {
         return new InitialContext();
     }

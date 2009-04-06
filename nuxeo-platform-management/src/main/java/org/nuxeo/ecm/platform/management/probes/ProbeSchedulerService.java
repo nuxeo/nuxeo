@@ -144,7 +144,8 @@ public class ProbeSchedulerService extends DefaultComponent implements
 
     protected class RunnerRegistry {
 
-        protected final Map<Class<? extends Probe>, ProbeContext> scheduledProbesContext = new HashMap<Class<? extends Probe>, ProbeContext>();
+        protected final Map<Class<? extends Probe>, ProbeContext> scheduledProbesContext
+                = new HashMap<Class<? extends Probe>, ProbeContext>();
 
         protected Set<ProbeContext> failedProbesContext = new HashSet<ProbeContext>();
 
@@ -180,11 +181,9 @@ public class ProbeSchedulerService extends DefaultComponent implements
         }
 
         protected void doRun() {
-
             if (!isEnabled) {
                 return;
             }
-
             for (ProbeContext context : scheduledProbesContext.values()) {
                 try {
                     context.runner.runWithSafeClassLoader();

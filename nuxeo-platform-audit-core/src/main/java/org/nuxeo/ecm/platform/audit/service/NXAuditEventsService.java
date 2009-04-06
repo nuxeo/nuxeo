@@ -89,7 +89,8 @@ public class NXAuditEventsService extends DefaultComponent implements
 
     private static final Log log = LogFactory.getLog(NXAuditEventsService.class);
 
-    protected static final ContainerManagedHibernateConfiguration hibernateConfiguration = new ContainerManagedHibernateConfiguration();
+    protected static final ContainerManagedHibernateConfiguration hibernateConfiguration
+            = new ContainerManagedHibernateConfiguration();
 
     public static final PersistenceProvider persistenceProvider = new PersistenceProvider(
             hibernateConfiguration);

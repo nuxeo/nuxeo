@@ -44,9 +44,8 @@ import org.nuxeo.ecm.directory.Session;
  * Trivial in-memory implementation of a Directory to use in unit tests.
  *
  * @author Florent Guillaume
- *
  */
-public class MemoryDirectorySession extends BaseSession implements Session {
+public class MemoryDirectorySession extends BaseSession {
 
     protected final MemoryDirectory directory;
 

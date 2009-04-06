@@ -24,7 +24,6 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -42,7 +41,6 @@ import org.nuxeo.runtime.api.Framework;
  * Resource adapter using the document model id.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public class DocumentModelResourceAdapter extends AbstractResourceAdapter
         implements Serializable {
@@ -98,7 +96,6 @@ public class DocumentModelResourceAdapter extends AbstractResourceAdapter
                     }
                 }
                 object = session.getDocument(ref);
-            } catch (ClientException e) {
             } catch (Exception e) {
             } finally {
                 if (session != null && sessionOpened) {

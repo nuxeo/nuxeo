@@ -41,7 +41,7 @@ public class TestService extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.platform.commandline.executor");
     }
 
-    public void testServiceExist() throws Exception {
+    public void testServiceExist() {
         CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
         assertNotNull(cles);
     }
@@ -103,7 +103,7 @@ public class TestService extends NXRuntimeTestCase {
          **/
     }
 
-    public void testCmdExecption() throws Exception {
+    public void testCmdExecption() {
         CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
         assertNotNull(cles);
 

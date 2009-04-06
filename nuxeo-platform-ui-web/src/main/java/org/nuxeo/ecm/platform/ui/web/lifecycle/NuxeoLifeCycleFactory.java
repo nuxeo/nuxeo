@@ -45,7 +45,6 @@ public class NuxeoLifeCycleFactory extends LifecycleFactoryImpl {
     protected HashMap<String, Lifecycle> lifecycleMap = null;
 
     public NuxeoLifeCycleFactory() {
-        super();
         lifecycleMap = new HashMap<String, Lifecycle>();
     }
 
@@ -63,4 +62,5 @@ public class NuxeoLifeCycleFactory extends LifecycleFactoryImpl {
         }
         return lifecycleMap.get(lifecycleId);
     }
+
 }

@@ -43,9 +43,9 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class NotificationEventListenerTest extends RepositoryOSGITestCase {
 
-    private EmailHelperMock emailHelperMock = new EmailHelperMock();
-
     private static final Log log = LogFactory.getLog(NotificationService.class);
+
+    private final EmailHelperMock emailHelperMock = new EmailHelperMock();
 
     @Override
     public void setUp() throws Exception {
@@ -81,15 +81,15 @@ public class NotificationEventListenerTest extends RepositoryOSGITestCase {
 
         for (PostCommitEventListener postCommitEventListener : listeners) {
             if (postCommitEventListener.getClass().equals(
-                    NotificationEventListener.class))
+                    NotificationEventListener.class)) {
                 ((NotificationEventListener) postCommitEventListener)
                         .setEmailHelper(emailHelperMock);
+            }
         }
         log.info("setup Finnished");
     }
 
     protected DocumentModel createNoteDocument() throws ClientException {
-
         DocumentModel folder = getCoreSession().createDocumentModel("/",
                 "test", "Folder");
 
@@ -151,7 +151,6 @@ public class NotificationEventListenerTest extends RepositoryOSGITestCase {
         waitForAsyncExec();
         // Check that at least one email has been sending
         assertTrue(emailHelperMock.getCompteur() > 0);
-
     }
 
 }

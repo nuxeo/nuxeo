@@ -32,7 +32,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class TypeInfoAdapter implements TypeInfo {
 
-    private Type type;
+    private final Type type;
 
     public TypeInfoAdapter(DocumentModel doc) {
         try {

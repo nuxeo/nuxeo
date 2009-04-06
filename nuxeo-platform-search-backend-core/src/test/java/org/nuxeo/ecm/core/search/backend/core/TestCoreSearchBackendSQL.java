@@ -65,7 +65,7 @@ public class TestCoreSearchBackendSQL extends CoreSearchBackendTestCase {
         System.setProperty("derby.system.durability", "test");
     }
 
-    protected static void tearDownRepositoryDerby() throws Exception {
+    protected static void tearDownRepositoryDerby() {
         try {
             DriverManager.getConnection("jdbc:derby:;shutdown=true");
         } catch (SQLException e) {

@@ -80,10 +80,8 @@ public final class DocumentMessageFactory {
     }
 
     public static DocumentMessage createDocumentMessage(DocumentModel dm,
-            CoreEvent coreEvent) throws DocumentException {
-
+            CoreEvent coreEvent) {
         return new DocumentMessageImpl(dm, coreEvent);
-
     }
 
 }

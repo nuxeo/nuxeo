@@ -174,8 +174,6 @@ public class PersistenceProvider {
             }
             try { // insure entity manager releasing
                 return callback.runWith(em);
-            } catch (RuntimeException e) {
-                throw e;
             } finally {
                 releaseEntityManager(em);
             }

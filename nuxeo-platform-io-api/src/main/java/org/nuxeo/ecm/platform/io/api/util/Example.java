@@ -48,7 +48,8 @@ public class Example {
         // This example show how to configure for JBoss with default transport
         // If HTTP transport is used then you should change this (look in nuxeo.properties file)
         Properties env = new Properties();
-        env.put("java.naming.provider.url", "jnp://remote_host:1099"); // where remote_host is the host IP where remote IOManager is deployed
+        // where remote_host is the host IP where remote IOManager is deployed
+        env.put("java.naming.provider.url", "jnp://remote_host:1099");
         env.put("java.naming.factory.initial", "org.jnp.interfaces.NamingContextFactory");
         env.put("java.naming.factory.url.pkgs", "org.jboss.naming:org.jnp.interfaces");
         // The JBOSS JNDI binding for IOManagerBean is nuxeo/IOManagerBean/remote

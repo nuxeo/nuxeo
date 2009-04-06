@@ -73,7 +73,7 @@ import org.nuxeo.ecm.directory.Session;
  *
  * @author Olivier Grisel <ogrisel@nuxeo.com>
  */
-public class LDAPSession extends BaseSession implements Session, EntrySource {
+public class LDAPSession extends BaseSession implements EntrySource {
 
     protected static final String MISSING_ID_LOWER_CASE = "lower";
 

@@ -125,7 +125,7 @@ public class SimpleListenerTest extends RepositoryOSGITestCase {
 
         // Did all the relations have been deleted?
         nbLinks = getCommentGrahNodesNumber();
-        assertTrue(nbLinks == 0);
+        assertEquals(0, nbLinks);
     }
 
     public void testCommentRemovedEventListener() throws Exception {
@@ -133,7 +133,7 @@ public class SimpleListenerTest extends RepositoryOSGITestCase {
         assertNotNull(doc);
 
         int nbLinks = getCommentGrahNodesNumber();
-        assertTrue(nbLinks == 2);
+        assertEquals(2, nbLinks);
 
         // Get the comments
         CommentService commentService = CommentServiceHelper.getCommentService();
@@ -144,13 +144,13 @@ public class SimpleListenerTest extends RepositoryOSGITestCase {
         getCoreSession().removeDocument(comments.get(0).getRef());
         // Check that the first relation has been deleted
         nbLinks = getCommentGrahNodesNumber();
-        assertTrue(nbLinks == 1);
+        assertEquals(1, nbLinks);
 
         // Delete the second comment
         getCoreSession().removeDocument(comments.get(1).getRef());
         // Check that the second relation has been deleted
         nbLinks = getCommentGrahNodesNumber();
-        assertTrue(nbLinks == 0);
-
+        assertEquals(0, nbLinks);
     }
+
 }

@@ -37,8 +37,7 @@ import org.xml.sax.SAXException;
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
  *
  */
-public class IfChangedDeployer extends AbstractProcessDefinitionDeployer
-        implements ProcessDefinitionDeployer {
+public class IfChangedDeployer extends AbstractProcessDefinitionDeployer {
 
     private final MD5Hasher hasher;
 
@@ -65,4 +64,5 @@ public class IfChangedDeployer extends AbstractProcessDefinitionDeployer
         super.deploy(url);
         persistence.persist(hashes.get(url));
     }
+
 }

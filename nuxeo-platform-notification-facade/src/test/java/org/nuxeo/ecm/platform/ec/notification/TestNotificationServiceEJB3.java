@@ -62,18 +62,9 @@ public class TestNotificationServiceEJB3 extends NXClientTestCase {
         assertNotNull("EJB3 not found", service);
     }
 
-    /**
-     * @see junit.framework.TestCase#tearDown()
-     */
     @Override
     protected void tearDown() throws Exception {
-        log.info("");
-        log.info("--------------------------------------------------------");
-
-//        CoreInstance.getInstance().close(coreSession);
-        // ---------------------------------------------------
         us.logout();
-
         super.tearDown();
     }
 

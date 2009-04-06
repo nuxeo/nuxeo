@@ -131,7 +131,7 @@ public class TestLogEntryProvider extends TestCase {
         List<LogEntry> fetchedEntries = providerUnderTest.getLogEntriesFor("id");
         assertNotNull(fetchedEntries);
         int entriesCount = fetchedEntries.size();
-        assertEquals(entriesCount, 1);
+        assertEquals(1, entriesCount);
         LogEntry fetchedEntry = fetchedEntries.get(0);
         assertNotNull(fetchedEntry);
         assertEquals("id", fetchedEntry.getDocUUID());

@@ -39,7 +39,6 @@ public interface PostAction extends Serializable {
      *
      * @return the view id
      * @throws ClientException
-     * @throws WMWorkflowException
      */
     String addPost() throws ClientException;
 
@@ -48,7 +47,6 @@ public interface PostAction extends Serializable {
      *
      * @return the view id after delete operation
      * @throws ClientException
-     * @throws WMWorkflowException
      */
     String deletePost() throws ClientException;
 

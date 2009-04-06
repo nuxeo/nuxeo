@@ -65,7 +65,6 @@ public class UIDGeneratorDescriptor {
 
     /**
      * Default constructor - used normally when created as an XObject.
-     *
      */
     public UIDGeneratorDescriptor() {
         log.debug("<UIDGeneratorDescriptor:init>");
@@ -73,9 +72,6 @@ public class UIDGeneratorDescriptor {
 
     /**
      * Explicit constructor.
-     *
-     * @param generationExp
-     * @param generationCrit
      */
     public UIDGeneratorDescriptor(String generationExp, Set generationCrit) {
         this(generationExp, generationCrit, DEFAULT_COUNTER_START);
@@ -83,9 +79,6 @@ public class UIDGeneratorDescriptor {
 
     /**
      * Explicit constructor.
-     *
-     * @param generationExp
-     * @param generationCrit
      */
     public UIDGeneratorDescriptor(String generationExp, Set generationCrit,
             int counterStart) {
@@ -163,4 +156,5 @@ public class UIDGeneratorDescriptor {
     public void setPropertyNames(String[] propNames) {
         this.propertyNames = propNames;
     }
+
 }

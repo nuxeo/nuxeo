@@ -47,28 +47,27 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 @DiscriminatorColumn(name = "DISCRIMINATOR")
 public class ExtendedInfo {
 
+    private ExtendedInfo() {
+    }
+
     public static ExtendedInfo createExtendedInfo(Serializable value) {
         Class<?> clazz = value.getClass();
         if (Long.class.isAssignableFrom(clazz)) {
-            return new ExtendedInfo.LongInfo((Long) value);
+            return new LongInfo((Long) value);
         }
         if (Double.class.isAssignableFrom(clazz)) {
-            return new ExtendedInfo.DoubleInfo((Double) value);
+            return new DoubleInfo((Double) value);
         }
         if (Date.class.isAssignableFrom(clazz)) {
-            return new ExtendedInfo.DateInfo((Date) value);
+            return new DateInfo((Date) value);
         }
         if (String.class.isAssignableFrom(clazz)) {
-            return new ExtendedInfo.StringInfo((String) value);
+            return new StringInfo((String) value);
         }
         if (Boolean.class.isAssignableFrom(clazz)) {
-            return new ExtendedInfo.BooleanInfo((Boolean) value);
+            return new BooleanInfo((Boolean) value);
         }
-        return new ExtendedInfo.BlobInfo(value);
-    }
-
-    private ExtendedInfo() {
-        super();
+        return new BlobInfo(value);
     }
 
     private Long id;
@@ -103,11 +102,9 @@ public class ExtendedInfo {
     public static class LongInfo extends ExtendedInfo {
 
         private LongInfo() {
-            super();
         }
 
         private LongInfo(long value) {
-            super();
             this.longValue = value;
         }
 
@@ -135,12 +132,10 @@ public class ExtendedInfo {
     public static class DateInfo extends ExtendedInfo {
 
         private DateInfo() {
-            super();
         }
 
         private DateInfo(Date value) {
-            super();
-            this.dateValue = value;
+            dateValue = value;
         }
 
         private Date dateValue;
@@ -159,7 +154,7 @@ public class ExtendedInfo {
         }
 
         public void setDateValue(Date value) {
-            this.dateValue = value;
+            dateValue = value;
         }
     }
 
@@ -168,12 +163,10 @@ public class ExtendedInfo {
     public static class StringInfo extends ExtendedInfo {
 
         private StringInfo() {
-            super();
         }
 
         private StringInfo(String value) {
-            super();
-            this.stringValue = value;
+            stringValue = value;
         }
 
         private String stringValue;
@@ -191,7 +184,7 @@ public class ExtendedInfo {
         }
 
         public void setStringValue(String value) {
-            this.stringValue = value;
+            stringValue = value;
         }
     }
 
@@ -200,12 +193,10 @@ public class ExtendedInfo {
     public static class DoubleInfo extends ExtendedInfo {
 
         private DoubleInfo() {
-            super();
         }
 
         private DoubleInfo(Double value) {
-            super();
-            this.doubleValue = value;
+            doubleValue = value;
         }
 
         private Double doubleValue;
@@ -223,7 +214,7 @@ public class ExtendedInfo {
         }
 
         public void setDoubleValue(Double value) {
-            this.doubleValue = value;
+            doubleValue = value;
         }
     }
 
@@ -231,14 +222,11 @@ public class ExtendedInfo {
     @DiscriminatorValue(value = "BOOLEAN")
     public static class BooleanInfo extends ExtendedInfo {
 
-
         private BooleanInfo() {
-            super();
         }
 
         private BooleanInfo(Boolean value) {
-            super();
-            this.booleanValue = value;
+            booleanValue = value;
         }
 
         private Boolean booleanValue;
@@ -256,7 +244,7 @@ public class ExtendedInfo {
         }
 
         public void setBooleanValue(Boolean value) {
-            this.booleanValue = value;
+            booleanValue = value;
         }
     }
 
@@ -265,12 +253,10 @@ public class ExtendedInfo {
     public static class BlobInfo extends ExtendedInfo {
 
         private BlobInfo() {
-            super();
         }
 
         private BlobInfo(Serializable value) {
-            super();
-            this.blobValue = value;
+            blobValue = value;
         }
 
         private Serializable blobValue;
@@ -289,11 +275,9 @@ public class ExtendedInfo {
         }
 
         public void setBlobValue(Serializable value) {
-            this.blobValue = value;
+            blobValue = value;
         }
 
     }
-
-
 
 }

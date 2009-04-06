@@ -71,7 +71,7 @@ public class TestNXAuditEventsService extends RepositoryOSGITestCase {
     public void testLogMessage() throws ClientException {
         DocumentModel source = doCreateDocument();
         List<LogEntry> entries = serviceUnderTest.getLogEntriesFor(source.getId());
-        assertTrue(entries.size() == 1);
+        assertEquals(1, entries.size());
         LogEntry entry = entries.get(0);
         assertEquals("eventDocumentCategory", entry.getCategory());
         assertEquals("project", entry.getDocLifeCycle());
@@ -86,12 +86,12 @@ public class TestNXAuditEventsService extends RepositoryOSGITestCase {
         DocumentModel rootDocument = coreSession.getRootDocument();
         long count = serviceUnderTest.syncLogCreationEntries(
                 getRepository().getName(), rootDocument.getPathAsString(), true);
-        assertEquals(count, 2);
+        assertEquals(2, count);
         List<LogEntry> entries = serviceUnderTest.getLogEntriesFor(rootDocument.getId());
-        assertEquals(entries.size(), 1);
+        assertEquals(1, entries.size());
         LogEntry entry = entries.get(0);
         assertEquals("eventDocumentCategory", entry.getCategory());
-        assertEquals(null, entry.getComment());
+        assertNull(entry.getComment());
         assertEquals("project", entry.getDocLifeCycle());
         assertEquals("/", entry.getDocPath());
         assertEquals("Root", entry.getDocType());

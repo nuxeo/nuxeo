@@ -16,7 +16,6 @@ package org.nuxeo.ecm.platform.filemanager.ejb;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.net.MalformedURLException;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 import java.util.HashMap;
@@ -106,7 +105,7 @@ public class FileManagerBean implements FileManager {
 
     public DocumentModel createDocumentFromBlob(CoreSession documentManager,
             Blob input, String path, boolean overwrite, String fullName)
-            throws IOException, ClientException {
+            throws ClientException {
         try {
             return getFileManagerService().createDocumentFromBlob(
                     validateSession(documentManager), input, path, overwrite,
@@ -127,8 +126,7 @@ public class FileManagerBean implements FileManager {
     }
 
     public DocumentModel createFolder(CoreSession documentManager,
-            String fullname, String path) throws MalformedURLException,
-            ClientException {
+            String fullname, String path) throws ClientException {
         try {
             return getFileManagerService().createFolder(
                     validateSession(documentManager), fullname, path);

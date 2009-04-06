@@ -89,6 +89,7 @@ public class TestPlacefulServiceImpl extends RepositoryOSGITestCase {
         assertTrue(annotations.size()>0);
 
         Annotation annotation = placefulServiceImpl.getAnnotation("000123-023405-045697", "SubscriptionConfig");
-        assertTrue(annotation != null);
+        assertNotNull(annotation);
     }
+
 }

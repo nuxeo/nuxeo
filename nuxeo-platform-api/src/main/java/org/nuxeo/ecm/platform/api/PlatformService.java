@@ -57,16 +57,10 @@ public class PlatformService extends DefaultComponent {
         return instance;
     }
 
-    /**
-     * @return the context.
-     */
     public RuntimeContext getContext() {
         return context;
     }
 
-    /**
-     * @return the platform.
-     */
     public Platform getPlatform() {
         return platform;
     }

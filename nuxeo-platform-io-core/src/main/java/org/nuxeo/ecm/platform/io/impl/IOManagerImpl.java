@@ -99,7 +99,7 @@ public class IOManagerImpl implements IOManager {
         return systemSession;
     }
 
-    private void closeStream(Closeable stream) throws IOException {
+    private static void closeStream(Closeable stream) throws IOException {
         if (stream != null) {
             stream.close();
         }
@@ -598,7 +598,7 @@ public class IOManagerImpl implements IOManager {
         }
     }
 
-    private File getLocalFile(String uri) throws ClientException {
+    private static File getLocalFile(String uri) throws ClientException {
         StreamManager streamManager = Framework.getLocalService(StreamManager.class);
 
         double start = System.currentTimeMillis();
@@ -620,7 +620,7 @@ public class IOManagerImpl implements IOManager {
         return tempFile;
     }
 
-    private DocumentWriter createDocWriter(String docWriterFactoryName,
+    private static DocumentWriter createDocWriter(String docWriterFactoryName,
             Map<String, Object> factoryParams) throws ClientException {
         // create a custom writer using factory instance
 
@@ -648,7 +648,7 @@ public class IOManagerImpl implements IOManager {
         return customDocWriter;
     }
 
-    private DocumentReader createDocReader(String docReaderFactoryName,
+    private static DocumentReader createDocReader(String docReaderFactoryName,
             Map<String, Object> factoryParams) throws ClientException {
         // create a custom reader using factory instance
 

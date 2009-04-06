@@ -34,13 +34,11 @@ public class WSAuditBeanBusinessDelegate implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    protected final EJBFactory ejbFactory = new EJBFactory();
-
     protected WSAudit ws;
 
     public WSAudit getWSAuditRemote() throws NamingException {
         if (ws == null) {
-            ws = ejbFactory.getWSAuditRemote();
+            ws = EJBFactory.getWSAuditRemote();
         }
         return ws;
     }

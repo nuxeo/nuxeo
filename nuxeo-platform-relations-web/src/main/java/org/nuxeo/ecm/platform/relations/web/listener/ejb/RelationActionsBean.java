@@ -171,7 +171,7 @@ public class RelationActionsBean extends DocumentContextBoundActionBean
 
     // XXX AT: for BBB when repo name was not included in the resource uri
     @Deprecated
-    private QNameResource getOldDocumentResource(DocumentModel document) {
+    private static QNameResource getOldDocumentResource(DocumentModel document) {
         QNameResource documentResource = null;
         if (document != null) {
             documentResource = new QNameResourceImpl(

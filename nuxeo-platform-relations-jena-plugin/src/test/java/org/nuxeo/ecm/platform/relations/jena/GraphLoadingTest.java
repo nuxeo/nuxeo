@@ -53,7 +53,7 @@ public class GraphLoadingTest extends NXRuntimeTestCase {
         assertNotNull(graph);
     }
 
-    public void testGetStatement() throws Exception {
+    public void testGetStatement() {
         InputStream is = getClass().getResourceAsStream("/post-rdf.xml");
         assertNotNull(is);
         graph.clear();
@@ -83,7 +83,7 @@ public class GraphLoadingTest extends NXRuntimeTestCase {
         assertEquals(12, lists.size());
     }
 
-    public void testGetAllStatementWithURL() throws Exception {
+    public void testGetAllStatementWithURL() {
         InputStream is = getClass().getResourceAsStream(
                 "/post-rdf-with-about-with-url.xml");
         assertNotNull(is);
@@ -94,4 +94,5 @@ public class GraphLoadingTest extends NXRuntimeTestCase {
         List<Statement> lists = graph.getStatements();
         assertEquals(12, lists.size());
     }
+
 }

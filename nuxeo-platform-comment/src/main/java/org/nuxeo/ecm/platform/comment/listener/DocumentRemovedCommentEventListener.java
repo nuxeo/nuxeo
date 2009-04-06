@@ -48,7 +48,7 @@ public class DocumentRemovedCommentEventListener extends
     }
 
 
-    private void onDocumentRemoved(CoreSession coreSession,
+    private static void onDocumentRemoved(CoreSession coreSession,
             RelationManager relationManager, CommentServiceConfig config,
             DocumentModel docMessage) throws ClientException {
 

@@ -51,13 +51,11 @@ import org.nuxeo.runtime.api.Framework;
  * <p>
  * Each source can build an entry aggregating fields from one or several
  * directories.
- * </p>
  *
  * @author Florent Guillaume
  * @author Anahide Tchertchian
- *
  */
-public class MultiDirectorySession extends BaseSession implements Session {
+public class MultiDirectorySession extends BaseSession {
 
     private static final Log log = LogFactory.getLog(MultiDirectorySession.class);
 
@@ -178,7 +176,7 @@ public class MultiDirectorySession extends BaseSession implements Session {
     }
 
     /**
-     * Recompute all the info needed for efficient access.
+     * Recomputes all the info needed for efficient access.
      */
     private void recomputeSourceInfos() throws DirectoryException {
 

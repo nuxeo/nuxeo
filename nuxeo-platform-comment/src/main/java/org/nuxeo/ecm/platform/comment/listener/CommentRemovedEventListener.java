@@ -48,7 +48,7 @@ public class CommentRemovedEventListener extends AbstractCommentListener
         }
     }
 
-    private void onCommentRemoved(RelationManager relationManager,
+    private static void onCommentRemoved(RelationManager relationManager,
             CommentServiceConfig config, DocumentModel docModel)
             throws ClientException {
         Resource commentRes = relationManager.getResource(

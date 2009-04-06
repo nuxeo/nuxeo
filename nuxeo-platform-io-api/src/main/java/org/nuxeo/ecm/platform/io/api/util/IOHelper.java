@@ -34,9 +34,14 @@ import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
  */
 public class IOHelper {
 
+    // Utility class.
+    private IOHelper() {
+    }
+
     /**
      * Copy from one location to another. The source and/or target repositories may be the same or may be
      * located on different hosts.
+     *
      * TODO: because of some methods not exposed in IOManager this method is not optimized
      * to avoid handling exports / imports from/to local repositories through remote streams.
      */

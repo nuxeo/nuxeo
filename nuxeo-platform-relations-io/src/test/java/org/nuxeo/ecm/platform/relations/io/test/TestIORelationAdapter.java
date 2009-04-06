@@ -151,13 +151,13 @@ public class TestIORelationAdapter extends NXRuntimeTestCase {
         return graph;
     }
 
-    private static void feedGraph(String filePath, Graph graph) throws Exception {
+    private static void feedGraph(String filePath, Graph graph) {
         assertSame(0L, graph.size());
         graph.read(getTestFile(filePath), null, null);
         assertNotSame(0L, graph.size());
     }
 
-    private static void compareGraph(String filePath, Graph graph) throws Exception {
+    private static void compareGraph(String filePath, Graph graph) {
         Graph newGraph = getMemoryGraph();
         feedGraph(filePath, newGraph);
         List<Statement> expected = newGraph.getStatements();

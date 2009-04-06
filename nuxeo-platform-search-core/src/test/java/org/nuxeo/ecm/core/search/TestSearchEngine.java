@@ -23,8 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryTestCase;
 import org.nuxeo.ecm.core.search.api.backend.SearchEngineBackend;
@@ -52,12 +50,8 @@ import org.nuxeo.ecm.core.search.blobs.NXTransformBlobExtractor;
 public class TestSearchEngine extends RepositoryTestCase {
 
     private static final String BACKEND_NAME = "fake";
-
     private static final String CONF_NAME = "fake.xml";
-
     private static final String DOC_SCHEMA_CONF_NAME = "dublincore";
-
-    private static final Log log = LogFactory.getLog(TestSearchEngine.class);
 
     private SearchService service;
 
@@ -306,13 +300,13 @@ public class TestSearchEngine extends RepositoryTestCase {
         IndexingEventConf desc = getSearchServiceInternals().getIndexingEventConfByName(
                 "modify");
         assertNotNull(desc);
-        assertEquals(desc.getAction(), IndexingEventConf.RE_INDEX);
+        assertEquals(IndexingEventConf.RE_INDEX, desc.getAction());
         assertNull(desc.getRelevantResources());
         assertFalse(desc.isRecursive());
 
         desc = getSearchServiceInternals().getIndexingEventConfByName("secu");
         assertNotNull(desc);
-        assertEquals(desc.getAction(), IndexingEventConf.UN_INDEX);
+        assertEquals(IndexingEventConf.UN_INDEX, desc.getAction());
         Set<String> resources = desc.getRelevantResources();
         assertEquals(1, resources.size());
         assertTrue(resources.contains("security"));

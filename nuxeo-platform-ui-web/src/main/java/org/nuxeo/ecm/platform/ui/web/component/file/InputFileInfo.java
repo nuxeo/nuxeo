@@ -50,7 +50,6 @@ public class InputFileInfo {
 
     public InputFileInfo(Object choice, Object blob, Object filename,
             Object mimeType) {
-        super();
         this.choice = choice;
         this.blob = blob;
         this.filename = filename;

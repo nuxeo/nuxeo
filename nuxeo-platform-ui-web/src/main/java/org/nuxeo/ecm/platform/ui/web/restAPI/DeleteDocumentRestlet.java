@@ -38,7 +38,7 @@ import org.restlet.data.Response;
 public class DeleteDocumentRestlet extends BaseStatelessNuxeoRestlet implements
         LiveEditConstants {
 
-    private Log log = LogFactory.getLog(DeleteDocumentRestlet.class);
+    private static final Log log = LogFactory.getLog(DeleteDocumentRestlet.class);
 
     @Override
     protected void doHandleStatelessRequest(Request req, Response res) {
@@ -57,7 +57,6 @@ public class DeleteDocumentRestlet extends BaseStatelessNuxeoRestlet implements
         }
 
         try {
-
             if (!session.canRemoveDocument(targetDocRef)) {
                 handleError(res, "This document can't be removed");
                 return;
@@ -76,4 +75,5 @@ public class DeleteDocumentRestlet extends BaseStatelessNuxeoRestlet implements
             handleError(res, e);
         }
     }
+
 }

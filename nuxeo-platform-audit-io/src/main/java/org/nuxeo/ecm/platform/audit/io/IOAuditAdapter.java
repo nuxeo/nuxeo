@@ -73,7 +73,6 @@ public class IOAuditAdapter extends AbstractIOResourceAdapter {
 
     @Override
     public void setProperties(Map<String, Serializable> properties) {
-       ;
     }
 
     protected static CoreSession getCoreSession(String repo) throws ClientException {

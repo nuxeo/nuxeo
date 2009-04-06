@@ -43,9 +43,9 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class RelationsTestHelper {
 
-    private static final Log log = LogFactory.getLog(RelationsTestHelper.class);
-
     public static final String DOCUMENT_NAMESPACE = "http://www.nuxeo.org/document/uid/";
+
+    private static final Log log = LogFactory.getLog(RelationsTestHelper.class);
 
     private static RelationManager relationManager;
 

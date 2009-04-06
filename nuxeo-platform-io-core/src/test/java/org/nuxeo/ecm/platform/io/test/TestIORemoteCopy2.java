@@ -343,14 +343,14 @@ public class TestIORemoteCopy2 extends NXRuntimeTestCase {
         log.info("--------------------------------------------- end");
     }
 
-    private void printInfo(String title, Object obj) {
+    private static void printInfo(String title, Object obj) {
         log.info("-------------------");
         log.info(title);
         log.info(obj);
         log.info("-------------------");
     }
 
-    private CoreSession openToRep(String repName) throws Exception {
+    private static CoreSession openToRep(String repName) throws Exception {
         RepositoryManager repositoryMgr = Framework.getService(RepositoryManager.class);
         Repository repository = repositoryMgr.getRepository(repName);
 
@@ -358,4 +358,5 @@ public class TestIORemoteCopy2 extends NXRuntimeTestCase {
 
         return repository.open();
     }
+
 }

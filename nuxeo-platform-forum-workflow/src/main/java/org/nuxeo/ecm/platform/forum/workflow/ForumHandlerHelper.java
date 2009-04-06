@@ -34,9 +34,10 @@ import org.nuxeo.runtime.api.Framework;
  * Handler with helper methods for forum jbpm action handlers.
  *
  * @author Anahide Tchertchian
- *
  */
 public abstract class ForumHandlerHelper extends AbstractJbpmHandlerHelper {
+
+    private static final long serialVersionUID = 1L;
 
     protected CoreSession getSystemSession() throws Exception {
         String repositoryName = getDocumentRepositoryName();

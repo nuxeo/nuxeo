@@ -35,6 +35,9 @@ import org.apache.commons.logging.LogFactory;
 
 import sun.security.acl.GroupImpl;
 
+/**
+ * Abstract implementation of the {@link LoginModule} SPI from {@code javax.security.auth.spi}.
+ */
 public abstract class NuxeoAbstractServerLoginModule implements LoginModule {
 
     private static final Log log = LogFactory.getLog(NuxeoAbstractServerLoginModule.class);

@@ -42,13 +42,13 @@ import org.nuxeo.ecm.platform.url.service.AbstractDocumentViewCodec;
  *
  * @author Anahide Tchertchian
  */
-public class DocumentIdCodec extends AbstractDocumentViewCodec implements
-        DocumentViewCodec {
+public class DocumentIdCodec extends AbstractDocumentViewCodec {
 
     public static final String PREFIX = "nxdoc";
 
     // nxdoc/server/docId/view_id/?requestParams
-    public static final String URLPattern = "/(\\w+)/([a-zA-Z_0-9\\-]+)(/([a-zA-Z_0-9\\-\\.]*))?(/)?(\\?(.*)?)?";
+    public static final String URLPattern
+            = "/(\\w+)/([a-zA-Z_0-9\\-]+)(/([a-zA-Z_0-9\\-\\.]*))?(/)?(\\?(.*)?)?";
 
     public DocumentIdCodec() {
     }

@@ -525,8 +525,7 @@ public class CommentManagerImpl implements CommentManager {
         }
     }
 
-    private static NuxeoPrincipal getAuthor(DocumentModel docModel)
-            throws ClientException {
+    private static NuxeoPrincipal getAuthor(DocumentModel docModel) {
         try {
             String[] contributors = (String[]) docModel.getProperty(
                     "dublincore", "contributors");

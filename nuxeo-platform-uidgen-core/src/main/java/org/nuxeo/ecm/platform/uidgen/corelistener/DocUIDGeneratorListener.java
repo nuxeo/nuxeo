@@ -60,14 +60,12 @@ public class DocUIDGeneratorListener implements EventListener {
         }
     }
 
-    private void addUIDtoDoc(DocumentModel doc) throws DocumentException {
+    private static void addUIDtoDoc(DocumentModel doc) throws DocumentException {
         UIDGeneratorService service = ServiceHelper.getUIDGeneratorService();
         if (service == null) {
-            log
-                    .error("<addUIDtoDoc> UIDGeneratorService service not found ... !");
+            log.error("<addUIDtoDoc> UIDGeneratorService service not found ... !");
             return;
         }
-
         // generate UID for our doc
         service.setUID(doc);
     }

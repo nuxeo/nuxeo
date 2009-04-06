@@ -66,7 +66,7 @@ public class TestForumWorkflow extends RepositoryOSGITestCase {
         openRepository();
     }
 
-    public void test() throws Exception {
+    public void test() {
         // TODO
     }
 

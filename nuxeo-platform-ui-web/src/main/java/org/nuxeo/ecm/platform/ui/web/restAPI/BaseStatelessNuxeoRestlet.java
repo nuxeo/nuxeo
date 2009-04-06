@@ -40,7 +40,7 @@ import org.restlet.data.Response;
  */
 public class BaseStatelessNuxeoRestlet extends BaseNuxeoRestlet {
 
-    protected CoreSession session=null;
+    protected CoreSession session;
     protected DocumentRef targetDocRef;
     protected DocumentModel targetDocument;
 
@@ -71,7 +71,6 @@ public class BaseStatelessNuxeoRestlet extends BaseNuxeoRestlet {
         try {
             session = repo.open();
         } catch (Exception e1) {
-            // TODO Auto-generated catch block
             handleError(result, res, e1);
             return false;
         }
@@ -139,28 +138,26 @@ public class BaseStatelessNuxeoRestlet extends BaseNuxeoRestlet {
         return true;
     }
 
-
     protected void cleanUp() {
-        if (session!=null) {
+        if (session != null) {
             CoreInstance.getInstance().close(session);
-            session=null;
-            targetDocRef=null;;
-            targetDocument=null;;
+            session = null;
+            targetDocRef = null;
+            targetDocument = null;
         }
     }
 
     @Override
     public void handle(Request req, Response res) {
         try {
-            doHandleStatelessRequest(req,res);
+            doHandleStatelessRequest(req, res);
         }
         finally {
             cleanUp();
         }
     }
 
-
     protected void doHandleStatelessRequest(Request req, Response res) {
-
     }
+
 }

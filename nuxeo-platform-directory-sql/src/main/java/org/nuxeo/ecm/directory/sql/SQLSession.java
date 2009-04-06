@@ -68,9 +68,8 @@ import org.nuxeo.ecm.directory.sql.repository.Update;
  * This class represents a session against an SQLDirectory.
  *
  * @author glefter@nuxeo.com
- *
  */
-public class SQLSession extends BaseSession implements Session, EntrySource {
+public class SQLSession extends BaseSession implements EntrySource {
 
     private static final Log log = LogFactory.getLog(SQLSession.class);
 
@@ -151,7 +150,7 @@ public class SQLSession extends BaseSession implements Session, EntrySource {
             throws ClientException {
         acquireConnection();
         if (idGenerator != null) {
-            Integer idValue = Integer.valueOf(idGenerator.nextId());
+            Integer idValue = idGenerator.nextId();
             fieldMap.put(idField, idValue);
         } else {
             // check id that was given

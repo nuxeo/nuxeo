@@ -30,7 +30,7 @@ import org.nuxeo.ecm.platform.transform.interfaces.Plugin;
 import org.nuxeo.ecm.platform.transform.interfaces.TransformDocument;
 import org.nuxeo.ecm.platform.transform.plugin.AbstractPlugin;
 
-public class DummyOldPlugin extends AbstractPlugin implements Plugin {
+public class DummyOldPlugin extends AbstractPlugin {
 
     private static final long serialVersionUID = 1L;
 

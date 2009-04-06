@@ -26,7 +26,6 @@ import org.nuxeo.ecm.platform.jbpm.ProcessDefinitionDeployer;
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
  *
  */
-public class NeverDeployer extends AbstractProcessDefinitionDeployer implements
-        ProcessDefinitionDeployer {
+public class NeverDeployer extends AbstractProcessDefinitionDeployer {
 
 }
