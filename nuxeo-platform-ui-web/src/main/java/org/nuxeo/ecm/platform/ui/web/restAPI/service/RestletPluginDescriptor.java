@@ -53,6 +53,9 @@ public class RestletPluginDescriptor {
     @XNode("@class")
     private Class<Restlet> className;
 
+    @XNode("@isSingleton")
+    private boolean isSingleton = Boolean.FALSE;
+
     public Class<Restlet> getClassName() {
         return className;
     }
@@ -99,6 +102,14 @@ public class RestletPluginDescriptor {
 
     public void setUseConversation(boolean useConversation) {
         this.useConversation = useConversation;
+    }
+
+    public boolean isSingleton() {
+        return isSingleton;
+    }
+
+    public void setIsSingleton(boolean isSingleton) {
+        this.isSingleton = isSingleton;
     }
 
 }

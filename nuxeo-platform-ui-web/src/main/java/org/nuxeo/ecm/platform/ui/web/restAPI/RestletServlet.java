@@ -86,7 +86,18 @@ public class RestletServlet extends HttpServlet {
 
                 restletToAdd = seamFilter;
             } else {
-                restletToAdd = service.getContributedRestletByName(restletName);
+                if (plugin.isSingleton()) {
+                    restletToAdd = service.getContributedRestletByName(restletName);
+                } else {
+
+                    Filter threadSafeRestletFilter;
+                    threadSafeRestletFilter = new ThreadSafeRestletFilter();
+
+                    Restlet restlet = service.getContributedRestletByName(restletName);
+
+                    threadSafeRestletFilter.setNext(restlet);
+                    restletToAdd = threadSafeRestletFilter;
+                }
             }
 
             for (String urlPattern : plugin.getUrlPatterns()) {
