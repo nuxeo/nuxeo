@@ -55,7 +55,6 @@ public class TestIORemoteCopy2 extends NXRuntimeTestCase {
     private static final Log log = LogFactory.getLog(TestIORemoteCopy2.class);
 
     protected static final String repositoryName1 = "default";
-
     protected static final String repositoryName2 = "default";
 
     // used with 5.1.x
