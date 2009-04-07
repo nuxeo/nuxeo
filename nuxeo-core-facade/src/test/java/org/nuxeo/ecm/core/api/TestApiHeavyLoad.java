@@ -67,7 +67,7 @@ public class TestApiHeavyLoad extends TestConnection {
     }
 
     protected CoreSession getCoreSession() {
-        return remote;
+        return session;
     }
 
     protected void createChildDocuments(DocumentModel folder, int childrenCount)

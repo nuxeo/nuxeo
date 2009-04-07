@@ -29,17 +29,17 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public abstract class TestConnection extends NXRuntimeTestCase {
 
-    protected CoreSession remote;
+    protected CoreSession session;
 
     public void openSession() throws ClientException {
         Map<String, Serializable> ctx = new HashMap<String, Serializable>();
         ctx.put("username", SecurityConstants.ADMINISTRATOR);
-        remote = CoreInstance.getInstance().open("default", ctx);
-        assertNotNull(remote);
+        session = CoreInstance.getInstance().open("default", ctx);
+        assertNotNull(session);
     }
 
     public void closeSession() {
-        CoreInstance.getInstance().close(remote);
+        CoreInstance.getInstance().close(session);
     }
 
 }
