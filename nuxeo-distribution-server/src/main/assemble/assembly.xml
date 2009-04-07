@@ -66,8 +66,6 @@
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-directory-sql"/>
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-directory-types-contrib"/>
 
-      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-events-api"/>
-
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-relations-default-config"/>
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-relations-api"/>
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-relations-core"/>
