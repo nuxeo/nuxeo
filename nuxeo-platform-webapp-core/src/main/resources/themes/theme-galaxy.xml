@@ -1002,8 +1002,7 @@
         <padding>5px 10px 10px 10px</padding>
       </selector>
       <selector path=".tabsContent table.trashTable thead th">
-        <background-image>url(/nuxeo/img/theme5_2/table_header_trash.gif)</background-image>
-        <background-color>#477664</background-color>
+        <background-color>#ff9999</background-color>
       </selector>
       <selector path="table.trashTable tbody tr.dataRowOdd">
         <background-color>#f1ffef</background-color>
@@ -1306,54 +1305,6 @@
       <selector path=".clipboardFunction" view="nuxeo5 tree explorer">
         <padding>2px 2px 2px 2px</padding>
       </selector>
-      <selector path=".userClipboardTabs li a" view="nuxeo5 tree explorer">
-        <color>#454545</color>
-        <background>url(/nuxeo/img/theme5_2/tabs/userclipboard/tab_right.gif) no-repeat right top</background>
-        <text-decoration>none</text-decoration>
-        <padding>10px 10px 4px 2px</padding>
-        <display>block</display>
-        <float>left</float>
-      </selector>
-      <selector path=".userClipboardTabs li" view="nuxeo5 tree explorer">
-        <background>url(/nuxeo/img/theme5_2/tabs/userclipboard/tab_left.gif) no-repeat top left</background>
-        <border-color>#94D8FF</border-color>
-        <margin>0 0 0 5px</margin>
-        <padding>0 0 0 6px</padding>
-        <border-style>none none solid none</border-style>
-        <border-width>1px</border-width>
-        <float>left</float>
-      </selector>
-      <selector path=".userClipboardTabs ul" view="nuxeo5 tree explorer">
-        <margin>0 10px 0 0</margin>
-        <list-style>none</list-style>
-        <padding>0px 0 0 0</padding>
-        <float>right</float>
-      </selector>
-      <selector path=".userClipboardTabs li.selected a" view="nuxeo5 tree explorer">
-        <color>#112b8c</color>
-        <background>url(/nuxeo/img/theme5_2/tabs/userclipboard/tab_selected_right.gif) no-repeat right top</background>
-        <text-decoration>none</text-decoration>
-        <padding>7px 10px 7px 2px</padding>
-        <display>block</display>
-        <float>left</float>
-      </selector>
-      <selector path=".userClipboardTabs li.selected" view="nuxeo5 tree explorer">
-        <background>url(/nuxeo/img/theme5_2/tabs/userclipboard/tab_selected_left.gif) no-repeat left top</background>
-        <border-color>#FFF</border-color>
-        <margin>0 0 0 5px</margin>
-        <padding>0 0 0 6px</padding>
-        <border-style>none none solid none</border-style>
-        <border-width>1px</border-width>
-        <float>left</float>
-      </selector>
-      <selector path=".userClipboardTabs" view="nuxeo5 tree explorer">
-        <font>normal 11px Verdana, sans-serif</font>
-        <background>url(/nuxeo/img/theme5_2/tabs/userclipboard/blue_pixel.gif) bottom left repeat-x</background>
-        <width>100%</width>
-        <margin>0</margin>
-        <line-height>normal</line-height>
-        <float>left</float>
-      </selector>
       <selector path=".userClipboardContent" view="nuxeo5 tree explorer">
         <margin>0px</margin>
         <padding>10px 10px 10px 10px</padding>
@@ -1427,58 +1378,6 @@
         <font-size>9px</font-size>
         <padding>0 2px 2px 2px</padding>
         <text-align>center</text-align>
-      </selector>
-      <selector path=".userClipboardTabs a" view="nuxeo5 clip board">
-        <color>#454545</color>
-        <background>url(/nuxeo/img/theme5_2/tabs/userclipboard/tab_right.gif) no-repeat right top</background>
-        <text-decoration>none</text-decoration>
-        <padding>10px 10px 4px 2px</padding>
-        <display>block</display>
-        <float>left</float>
-      </selector>
-      <selector path=".userClipboardTabs li" view="nuxeo5 clip board">
-        <background>url(/nuxeo/img/theme5_2/tabs/userclipboard/tab_left.gif) no-repeat top left</background>
-        <border-color>#94D8FF</border-color>
-        <margin>0 0 0 5px</margin>
-        <padding>0 0 0 6px</padding>
-        <border-style>none none solid none</border-style>
-        <border-width>1px</border-width>
-        <float>left</float>
-      </selector>
-      <selector path=".userClipboardTabs ul" view="nuxeo5 clip board">
-        <margin>0 10px 0 0</margin>
-        <list-style>none</list-style>
-        <padding>0px 0 0 0</padding>
-        <float>right</float>
-      </selector>
-      <selector path=".userClipboardTabs li.selected a" view="nuxeo5 clip board">
-        <color>#0066cc</color>
-        <background>url(/nuxeo/img/theme5_2/tabs/userclipboard/tab_selected_right.gif) no-repeat right top</background>
-        <text-decoration>none</text-decoration>
-        <padding>7px 10px 7px 2px</padding>
-        <display>block</display>
-        <float>left</float>
-      </selector>
-      <selector path=".userClipboardTabs li.selected" view="nuxeo5 clip board">
-        <background>url(/nuxeo/img/theme5_2/tabs/userclipboard/tab_selected_left.gif) no-repeat left top</background>
-        <border-color>#FFF</border-color>
-        <margin>0 0 0 5px</margin>
-        <padding>0 0 0 6px</padding>
-        <border-style>none none solid none</border-style>
-        <border-width>1px</border-width>
-        <float>left</float>
-      </selector>
-      <selector path=".userClipboardTabs" view="nuxeo5 clip board">
-        <font>normal 11px Verdana, sans-serif</font>
-        <background>url(/nuxeo/img/theme5_2/tabs/userclipboard/blue_pixel.gif) bottom left repeat-x</background>
-        <width>100%</width>
-        <margin>0</margin>
-        <line-height>normal</line-height>
-        <float>left</float>
-      </selector>
-      <selector path=".userClipboardContent" view="nuxeo5 clip board">
-        <margin>0px</margin>
-        <padding>10px 10px 10px 10px</padding>
       </selector>
       <selector path=".userClipboard" view="nuxeo5 clip board">
         <height>1%</height>
