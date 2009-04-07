@@ -661,7 +661,7 @@
     <filter id="admin_publication_trees_filter">
       <rule grant="true">
         <permission>Write</permission>
-        <type>Workspace</type>
+        <schema>publishing</schema>
       </rule>
     </filter>
 

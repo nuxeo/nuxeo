@@ -96,7 +96,7 @@ public class PublishActionsBean implements PublishActions, Serializable {
 
     private static final String PUBLISH_DOCUMENT = "PUBLISH_DOCUMENT";
 
-    protected static final String SCHEMA_PUBLISH_ERGO = "publishing";
+    protected static final String SCHEMA_PUBLISHING = "publishing";
 
     protected static final String SECTIONS_PROPERTY_NAME = "publish:sections";
 
@@ -507,10 +507,14 @@ public class PublishActionsBean implements PublishActions, Serializable {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
 
         /*
-         * Get the first parent workspace.
+         * Get the first parent having "publishing" schema.
+         * In order to void infinite loop, if the parent is 'Root' type just break (NXP-3359).
          */
         DocumentModel parentDocumentModel = documentManager.getDocument(currentDocument.getParentRef());
-        while (!"Workspace".equals(parentDocumentModel.getType())) {
+        while (!parentDocumentModel.hasSchema(SCHEMA_PUBLISHING)) {
+            if ("Root".equals(parentDocumentModel.getType())) {
+                break;
+            }
             parentDocumentModel = documentManager.getDocument(parentDocumentModel.getParentRef());
         }
 
@@ -627,7 +631,7 @@ public class PublishActionsBean implements PublishActions, Serializable {
     public String addSection(String sectionId) throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
 
-        if (sectionId != null && currentDocument.hasSchema(SCHEMA_PUBLISH_ERGO)) {
+        if (sectionId != null && currentDocument.hasSchema(SCHEMA_PUBLISHING)) {
             String[] sectionIdsArray = (String[]) currentDocument.getPropertyValue(SECTIONS_PROPERTY_NAME);
 
             List<String> sectionIdsList = new ArrayList<String>();
@@ -654,7 +658,7 @@ public class PublishActionsBean implements PublishActions, Serializable {
     public String removeSection(String sectionId) throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
 
-        if (sectionId != null && currentDocument.hasSchema(SCHEMA_PUBLISH_ERGO)) {
+        if (sectionId != null && currentDocument.hasSchema(SCHEMA_PUBLISHING)) {
             String[] sectionIdsArray = (String[]) currentDocument.getPropertyValue(SECTIONS_PROPERTY_NAME);
 
             List<String> sectionIdsList = new ArrayList<String>();
@@ -720,7 +724,7 @@ public class PublishActionsBean implements PublishActions, Serializable {
             DocumentModel documentModel) throws ClientException {
         DocumentModelList selectedSections = new DocumentModelListImpl();
 
-        if (documentModel.hasSchema(SCHEMA_PUBLISH_ERGO)) {
+        if (documentModel.hasSchema(SCHEMA_PUBLISHING)) {
             String[] sectionIdsArray = (String[]) documentModel.getPropertyValue(SECTIONS_PROPERTY_NAME);
 
             List<String> sectionIdsList = new ArrayList<String>();
@@ -772,7 +776,7 @@ public class PublishActionsBean implements PublishActions, Serializable {
             throws ClientException {
         String sectionId = section.getId();
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
-        if (currentDocument.hasSchema(SCHEMA_PUBLISH_ERGO)) {
+        if (currentDocument.hasSchema(SCHEMA_PUBLISHING)) {
             String[] sectionIdsArray = (String[]) currentDocument.getPropertyValue(SECTIONS_PROPERTY_NAME);
 
             List<String> sectionIdsList = new ArrayList<String>();
@@ -804,7 +808,7 @@ public class PublishActionsBean implements PublishActions, Serializable {
 
         String sectionId = section.getId();
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
-        if (currentDocument.hasSchema(SCHEMA_PUBLISH_ERGO)) {
+        if (currentDocument.hasSchema(SCHEMA_PUBLISHING)) {
             String[] sectionIdsArray = (String[]) currentDocument.getPropertyValue(SECTIONS_PROPERTY_NAME);
 
             List<String> sectionIdsList = new ArrayList<String>();
