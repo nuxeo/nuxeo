@@ -30,6 +30,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestTransformComponent extends NXRuntimeTestCase {
+
     private TransformServiceCommon service;
 
     @Override

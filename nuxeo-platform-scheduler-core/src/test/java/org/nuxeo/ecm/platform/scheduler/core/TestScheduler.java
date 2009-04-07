@@ -29,21 +29,7 @@ public class TestScheduler extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        // platform
-        deployContrib("org.nuxeo.ecm.platform.scheduler.core.tests",
-                "test-PlatformService.xml");
-        deployContrib("org.nuxeo.ecm.platform.scheduler.core.tests",
-                "test-DefaultPlatform.xml");
-        // core services and registrations
-        deployContrib("org.nuxeo.ecm.core", "OSGI-INF/CoreService.xml");
-        deployContrib("org.nuxeo.ecm.core.jcr-connector", "TypeService.xml");
-        deployContrib("org.nuxeo.ecm.core", "OSGI-INF/SecurityService.xml");
-        deployContrib("org.nuxeo.ecm.core", "OSGI-INF/RepositoryService.xml");
 
-        deployContrib("org.nuxeo.ecm.platform.scheduler.core.tests",
-                "test-CoreExtensions.xml");
-        deployContrib("org.nuxeo.ecm.platform.scheduler.core.tests",
-                "test-DemoRepository.xml");
         // scheduler service
         deployContrib("org.nuxeo.ecm.platform.scheduler.core.tests",
                 "test-nxscheduler-service.xml");
