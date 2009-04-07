@@ -33,8 +33,6 @@ public class TestSearchServiceBean extends NXRuntimeTestCase {
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.ecm.platform.search.ejb.tests",
-                "PlatformService.xml");
-        deployContrib("org.nuxeo.ecm.platform.search.ejb.tests",
                 "nxsearch-framework.xml");
         deployContrib("org.nuxeo.ecm.platform.search.ejb.tests",
                 "nxsearch-contrib.xml");
