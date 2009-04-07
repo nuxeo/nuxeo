@@ -74,8 +74,8 @@ import com.sun.el.ExpressionFactoryImpl;
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
-public class NXAuditEventsService extends DefaultComponent implements
-        NXAuditEvents, AuditReader, AuditLogger, AuditAdmin {
+public class NXAuditEventsService extends DefaultComponent implements NXAuditEvents {
+
     public static final ComponentName NAME = new ComponentName(
             "org.nuxeo.ecm.platform.audit.service.NXAuditEventsService");
 

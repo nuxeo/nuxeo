@@ -39,7 +39,7 @@ public class AuditEventMetricFactory implements ResourceFactory {
     public void configure(ResourcePublisherService service,
             ResourceFactoryDescriptor descriptor) {
         publisherService = service;
-        auditService = (NXAuditEventsService)Framework.getLocalService(NXAuditEvents.class);
+        auditService = (NXAuditEventsService) Framework.getLocalService(NXAuditEvents.class);
     }
 
     public static String formatQualifiedName(String name) {

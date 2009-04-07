@@ -27,7 +27,9 @@ import java.util.Set;
  * Allows to query for auditable events.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
+ *
  */
+// FIXME: (this interface only carries one method, and its deprecated, something must be done).
 public interface NXAuditEvents extends Logs {
 
     /**
