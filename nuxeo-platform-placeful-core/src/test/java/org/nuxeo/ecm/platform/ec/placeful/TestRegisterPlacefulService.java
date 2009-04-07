@@ -24,9 +24,7 @@ import org.nuxeo.ecm.platform.ec.placeful.interfaces.PlacefulService;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
- *
  * @author <a href="mailto:rspivak@nuxeo.com">Ruslan Spivak</a>
- *
  */
 public class TestRegisterPlacefulService extends NXRuntimeTestCase {
 
@@ -44,18 +42,15 @@ public class TestRegisterPlacefulService extends NXRuntimeTestCase {
 
     public void testRegistration() {
         Map<String, String> registry = placefulService.getAnnotationRegistry();
-
         assertEquals(1, registry.size());
-
         assertTrue(registry.containsKey("SubscriptionConfig"));
-
         assertEquals("org.nuxeo.ecm.platform.ec.placeful.SubscriptionConfig",
                 registry.get("SubscriptionConfig"));
-
 
 //        assertTrue(registry.containsKey("ACPAnnotation"));
 //
 //        assertEquals("org.nuxeo.ecm.platform.ec.placeful.ACPAnnotation",
 //                registry.get("ACPAnnotation"));
     }
+
 }

@@ -54,11 +54,9 @@ public class TestPlacefulServiceImpl extends RepositoryOSGITestCase {
         PlacefulServiceImpl.persistenceProvider.setHibernateConfiguration(new TestHibernateConfiguration());
 
         placefulServiceImpl = (PlacefulServiceImpl) runtime.getComponent(PlacefulService.ID);
-
         assertNotNull(placefulServiceImpl);
 
         openRepository();
-
     }
 
     protected DocumentModel doCreateDocument() throws ClientException {
@@ -84,9 +82,9 @@ public class TestPlacefulServiceImpl extends RepositoryOSGITestCase {
         paramMap.put("event", "deleted");
         paramMap.put("id", "000123-023405-045697");
 
-        List annotations = placefulServiceImpl.getAnnotationListByParamMap(paramMap, "SubscriptionConfig");
+        List<Annotation> annotations = placefulServiceImpl.getAnnotationListByParamMap(paramMap, "SubscriptionConfig");
         log.info("Nombre d'annotations en bases : "+ annotations.size());
-        assertTrue(annotations.size()>0);
+        assertTrue(annotations.size() > 0);
 
         Annotation annotation = placefulServiceImpl.getAnnotation("000123-023405-045697", "SubscriptionConfig");
         assertNotNull(annotation);
