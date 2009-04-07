@@ -112,7 +112,6 @@ public class TestResolvedResourcesFactory extends RepositoryTestCase {
 
         RepositoryManager mgr = Framework.getService(RepositoryManager.class);
         remote = mgr.getDefaultRepository().open();
-
         assertNotNull(remote);
     }
 
