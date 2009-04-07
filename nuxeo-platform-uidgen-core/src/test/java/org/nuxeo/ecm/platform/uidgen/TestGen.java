@@ -58,31 +58,11 @@ public class TestGen extends NXRuntimeTestCase {
 
         // define geide schema
         SchemaImpl sch = new SchemaImpl("geide");
-        sch.addField(QName.valueOf("application_emetteur"), new TypeRef<Type>(SchemaNames.BUILTIN, StringType.ID));
-        sch.addField(QName.valueOf("atelier_emetteur"), new TypeRef<Type>(SchemaNames.BUILTIN, StringType.ID));
+        sch.addField(QName.valueOf("application_emetteur"),
+                new TypeRef<Type>(SchemaNames.BUILTIN, StringType.ID));
+        sch.addField(QName.valueOf("atelier_emetteur"),
+                new TypeRef<Type>(SchemaNames.BUILTIN, StringType.ID));
         Framework.getLocalService(SchemaManager.class).registerSchema(sch);
-    }
-
-    private static DocumentModel createDocumentModel(String type) {
-        DocumentModelImpl docModel = new DocumentModelImpl(type);
-        Map<String, Object> dcMap = new HashMap<String, Object>();
-        dcMap.put("title", null);
-        dcMap.put("description", null);
-        docModel.addDataModel(new DataModelImpl("dublincore", dcMap));
-        Map<String, Object> geideMap = new HashMap<String, Object>();
-        geideMap.put("application_emetteur", null);
-        geideMap.put("atelier_emetteur", null);
-        docModel.addDataModel(new DataModelImpl("geide", geideMap));
-
-        Map<String, Object> uidMap = new HashMap<String, Object>();
-        uidMap.put("uid", null);
-        docModel.addDataModel(new DataModelImpl("uid", uidMap));
-
-        Map<String, Object> uid2Map = new HashMap<String, Object>();
-        uid2Map.put("uid2", null);
-        docModel.addDataModel(new DataModelImpl("other_uid_schema", uid2Map));
-
-        return docModel;
     }
 
     public void testUIDGenerator() throws Exception {
@@ -180,4 +160,27 @@ public class TestGen extends NXRuntimeTestCase {
             assertEquals(expected, uid2);
         }
     }
+
+    private static DocumentModel createDocumentModel(String type) {
+        DocumentModelImpl docModel = new DocumentModelImpl(type);
+        Map<String, Object> dcMap = new HashMap<String, Object>();
+        dcMap.put("title", null);
+        dcMap.put("description", null);
+        docModel.addDataModel(new DataModelImpl("dublincore", dcMap));
+        Map<String, Object> geideMap = new HashMap<String, Object>();
+        geideMap.put("application_emetteur", null);
+        geideMap.put("atelier_emetteur", null);
+        docModel.addDataModel(new DataModelImpl("geide", geideMap));
+
+        Map<String, Object> uidMap = new HashMap<String, Object>();
+        uidMap.put("uid", null);
+        docModel.addDataModel(new DataModelImpl("uid", uidMap));
+
+        Map<String, Object> uid2Map = new HashMap<String, Object>();
+        uid2Map.put("uid2", null);
+        docModel.addDataModel(new DataModelImpl("other_uid_schema", uid2Map));
+
+        return docModel;
+    }
+
 }
