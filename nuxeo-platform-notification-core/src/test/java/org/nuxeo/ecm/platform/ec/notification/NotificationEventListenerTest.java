@@ -111,9 +111,7 @@ public class NotificationEventListenerTest extends RepositoryOSGITestCase {
     }
 
     protected void waitForAsyncExec() {
-
-        EventServiceImpl evtService = (EventServiceImpl) Framework
-                .getLocalService(EventService.class);
+        EventServiceImpl evtService = (EventServiceImpl) Framework.getLocalService(EventService.class);
         try {
             Thread.sleep(100);
         } catch (InterruptedException e) {
@@ -129,16 +127,14 @@ public class NotificationEventListenerTest extends RepositoryOSGITestCase {
     }
 
     public void testListener() throws ClientException {
-        EventService eventService = Framework
-                .getLocalService(EventService.class);
-        PlacefulServiceImpl placefulServiceImpl = (PlacefulServiceImpl) runtime
-                .getComponent(PlacefulService.ID);
+        EventService eventService = Framework.getLocalService(EventService.class);
+        PlacefulServiceImpl placefulServiceImpl = (PlacefulServiceImpl) runtime.getComponent(PlacefulService.ID);
         DocumentModel noteDoc = createNoteDocument();
         // Enregistrement de la notification
         UserSubscription userSubscription = new UserSubscription(
                 "Workflow Change", "user:"
-                        + getCoreSession().getPrincipal().getName(), noteDoc
-                        .getId());
+                        + getCoreSession().getPrincipal().getName(),
+                noteDoc.getId());
         placefulServiceImpl.setAnnotation(userSubscription);
 
         // DŽclenchement de la notification

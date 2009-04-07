@@ -24,10 +24,12 @@ import org.nuxeo.runtime.management.ResourcePublisherService;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
- *
  */
 public class TestRuntimeMbeanAdapterFactory extends RepositoryOSGITestCase {
 
+    protected ResourcePublisherService managementService;
+
+    @Override
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.runtime.management");
@@ -35,8 +37,6 @@ public class TestRuntimeMbeanAdapterFactory extends RepositoryOSGITestCase {
         managementService = (ResourcePublisherService) Framework.getRuntime().getComponent(
                 ResourcePublisherService.NAME);
     }
-
-    protected ResourcePublisherService managementService;
 
     @Override
     public void tearDown() throws Exception {

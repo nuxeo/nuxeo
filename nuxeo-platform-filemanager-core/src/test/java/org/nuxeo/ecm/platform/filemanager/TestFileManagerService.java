@@ -120,6 +120,7 @@ public class TestFileManagerService extends RepositoryOSGITestCase {
         doc = service.createDocumentFromBlob(coreSession, input,
                 root.getPathAsString(), true, "test-data/hello.doc");
         assertNotNull(doc);
+
         DocumentRef newDocRef = doc.getRef();
         assertEquals(docRef, newDocRef);
         assertEquals("hello", doc.getProperty("dublincore", "title"));
@@ -150,6 +151,7 @@ public class TestFileManagerService extends RepositoryOSGITestCase {
         doc = service.updateDocumentFromBlob(coreSession, input,
                 root.getPathAsString(), "test-data/update/hello.doc");
         assertNotNull(doc);
+
         DocumentRef newDocRef = doc.getRef();
         assertEquals(docRef, newDocRef);
         assertEquals("hello", doc.getProperty("dublincore", "title"));

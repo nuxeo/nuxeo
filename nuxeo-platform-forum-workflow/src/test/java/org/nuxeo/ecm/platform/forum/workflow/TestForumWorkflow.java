@@ -46,6 +46,7 @@ public class TestForumWorkflow extends RepositoryOSGITestCase {
         // clean up previous test.
         JbpmServiceImpl.contexts.set(null);
         super.setUp();
+
         deployBundle("org.nuxeo.ecm.directory");
         deployBundle("org.nuxeo.ecm.platform.usermanager");
         deployBundle("org.nuxeo.ecm.directory.types.contrib");
@@ -59,8 +60,10 @@ public class TestForumWorkflow extends RepositoryOSGITestCase {
         service = Framework.getService(JbpmService.class);
         userManager = Framework.getService(UserManager.class);
         assertNotNull(userManager);
+
         administrator = userManager.getPrincipal("Administrator");
         assertNotNull(administrator);
+
         user1 = userManager.getPrincipal("myuser1");
         assertNotNull(user1);
         openRepository();

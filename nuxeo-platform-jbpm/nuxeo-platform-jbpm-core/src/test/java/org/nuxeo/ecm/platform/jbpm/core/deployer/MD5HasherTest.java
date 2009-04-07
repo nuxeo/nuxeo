@@ -38,16 +38,13 @@ import org.xml.sax.SAXException;
 public class MD5HasherTest extends TestCase {
 
     private static final String xmlFolder = "xml/";
-
     private static final String smallXmlFile = xmlFolder + "smallXmlFile.xml";
-
     private static final String smallCommentedFile = xmlFolder
             + "smallCommentedFile.xml";
 
     private MD5Hasher hasher;
 
     @Override
-
     protected void setUp() throws Exception {
         hasher = new MD5Hasher();
     }
@@ -60,15 +57,14 @@ public class MD5HasherTest extends TestCase {
     }
 
     private static URL getURL(String path) {
-        URL url = Thread.currentThread().getContextClassLoader().getResource(
-                path);
-        return url;
+        return Thread.currentThread().getContextClassLoader().getResource(path);
     }
 
     public void testTrimDocument() throws Exception {
         Document document = hasher.getDomDocument(getURL(smallCommentedFile));
         NodeList list = document.getChildNodes();
         assertEquals("foo", list.item(0).getNodeName());
+
         list = list.item(0).getChildNodes();
         assertNode(list, "#text", 0);
         assertNode(list, "#comment", 1);
@@ -77,8 +73,10 @@ public class MD5HasherTest extends TestCase {
         assertNode(list, "#text", 4);
         assertNode(list, "#comment", 5);
         assertNode(list, "#text", 6);
+
         document = hasher.trimDocument(document);
         list = document.getChildNodes();
+
         assertNode(list, "foo", 0);
         list = list.item(0).getChildNodes();
         assertEquals(1, list.getLength());

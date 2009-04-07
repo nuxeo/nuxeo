@@ -40,18 +40,13 @@ import org.nuxeo.ecm.platform.jbpm.JbpmService;
 public class HibernateQueriesTest extends TestCase {
 
     private static final String DEMO = "demo";
-
     private static final String _1 = "1";
-
     private static final String GET_TI = JbpmService.HibernateQueries.NuxeoHibernateQueries_getTaskInstancesForDoc.name();
+    private static final String DOC_ID = JbpmService.VariableName.documentId.name();
+    private static final String REP_ID = JbpmService.VariableName.documentRepositoryName.name();
+    private static final String GET_PI = JbpmService.HibernateQueries.NuxeoHibernateQueries_getProcessInstancesForDoc.name();
 
     private static SessionFactory factory;
-
-    private static final String DOC_ID = JbpmService.VariableName.documentId.name();
-
-    private static final String REP_ID = JbpmService.VariableName.documentRepositoryName.name();
-
-    private static final String GET_PI = JbpmService.HibernateQueries.NuxeoHibernateQueries_getProcessInstancesForDoc.name();
 
     private Session session;
 
@@ -64,6 +59,11 @@ public class HibernateQueriesTest extends TestCase {
         assertNotNull(session);
     }
 
+    @Override
+    protected void tearDown() throws Exception {
+        session.close();
+    }
+
     @SuppressWarnings("unchecked")
     public void testGetProcessInstancesForDoc() {
         ProcessDefinition pd = new ProcessDefinition();
@@ -71,6 +71,7 @@ public class HibernateQueriesTest extends TestCase {
                 "docId", _1).setParameter("repoId", DEMO).list();
         assertNotNull(list);
         assertTrue(list.isEmpty());
+
         ProcessInstance pi = new ProcessInstance();
         pi.setProcessDefinition(pd);
         Token token = new Token();
@@ -99,7 +100,6 @@ public class HibernateQueriesTest extends TestCase {
                 "repoId", DEMO).list();
         assertNotNull(pi.getEnd());
         assertEquals(0, list.size());
-
     }
 
     @SuppressWarnings("unchecked")
@@ -126,11 +126,6 @@ public class HibernateQueriesTest extends TestCase {
         List<TaskInstance> list = session.getNamedQuery(GET_TI).setParameter(
                 "docId", _1).setParameter("repoId", DEMO).list();
         assertEquals(2, list.size());
-    }
-
-    @Override
-    protected void tearDown() throws Exception {
-        session.close();
     }
 
 }

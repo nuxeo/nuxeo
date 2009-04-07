@@ -21,7 +21,6 @@ import org.nuxeo.ecm.platform.management.probes.RepositoryProbe;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
- *
  */
 public class TestRepositoryProbe extends RepositoryOSGITestCase {
 

@@ -43,9 +43,11 @@ public class ForeachForkTest extends AbstractProcessDefinitionTest {
     public void testForeachNode() {
         Node node = pd.getNode("fork each participant");
         assertNotNull(node);
+
         jbpmContext.getGraphSession().deployProcessDefinition(pd);
         ProcessInstance pi = jbpmContext.newProcessInstance("foreach-test");
         assertNotNull(pi);
+
         Principal bob = new SimplePrincipal("bob");
         Principal trudy = new SimplePrincipal("trudy");
         Principal jack = new SimplePrincipal("jack");
@@ -54,15 +56,17 @@ public class ForeachForkTest extends AbstractProcessDefinitionTest {
         daList.add(trudy);
         daList.add(jack);
         assertEquals(3, daList.size());
+
         pi.getContextInstance().setVariable(
                 JbpmService.VariableName.participants.name(), daList);
         pi.signal();
         Set<TaskInstance> tis = (Set<TaskInstance>) pi.getTaskMgmtInstance().getTaskInstances();
-
         assertEquals(3, tis.size());
+
         for (TaskInstance ti : tis) {
             ti.end();
         }
         assertTrue(pi.hasEnded());
     }
+
 }

@@ -41,6 +41,7 @@ public class PDParallelValidationTest extends AbstractProcessDefinitionTest {
             context = configuration.createJbpmContext();
             context.setActorId("bob");
             assertNotNull(context);
+
             context.deployProcessDefinition(pd);
             ProcessInstance pi = context.newProcessInstanceForUpdate("review_parallel");
             TaskInstance ti = pi.getTaskMgmtInstance().createStartTaskInstance();
@@ -48,13 +49,16 @@ public class PDParallelValidationTest extends AbstractProcessDefinitionTest {
             assertNotNull(pi);
             assertEquals("bob", pi.getTaskMgmtInstance().getSwimlaneInstance(
                     JbpmService.VariableName.initiator.name()).getActorId());
+
             Set<TaskInstance> tis = (Set<TaskInstance>) pi.getTaskMgmtInstance().getTaskInstances();
             assertNotNull(tis);
             assertEquals(2, tis.size());
+
             List bobstask = context.getTaskList("bob");
             assertEquals(1, bobstask.size());
             assertEquals("bob",
                     tis.toArray(new TaskInstance[] {})[0].getActorId());
+
             // bob finish choosing the participants
             List<VirtualTaskInstance> participants = new ArrayList<VirtualTaskInstance>();
             participants.add(new VirtualTaskInstance("bob", "dobob", "yobob", null));
@@ -67,9 +71,11 @@ public class PDParallelValidationTest extends AbstractProcessDefinitionTest {
             assertNull(pi.getContextInstance().getVariable("participants"));
             assertEquals(1, context.getGroupTaskList(bob_list).size());
             assertEquals(1, context.getGroupTaskList(trudy_list).size());
+
             ti = (TaskInstance) context.getGroupTaskList(bob_list).get(0);
             assertEquals("yobob", ((Comment)(ti.getComments().get(0))).getMessage());
             assertEquals("dobob", ti.getVariable("directive"));
+
             ti.end();
             ti = (TaskInstance) context.getGroupTaskList(trudy_list).get(0);
             ti.end("reject");
@@ -84,4 +90,5 @@ public class PDParallelValidationTest extends AbstractProcessDefinitionTest {
     public String getProcessDefinitionResource() {
         return "/process/parallel-review.xml";
     }
+
 }

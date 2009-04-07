@@ -59,6 +59,7 @@ public class JbpmServiceTest extends RepositoryOSGITestCase {
         // clean up previous test.
         JbpmServiceImpl.contexts.set(null);
         super.setUp();
+
         deployBundle("org.nuxeo.ecm.directory");
         deployBundle("org.nuxeo.ecm.platform.usermanager");
         deployBundle("org.nuxeo.ecm.directory.types.contrib");
@@ -71,8 +72,10 @@ public class JbpmServiceTest extends RepositoryOSGITestCase {
         service = Framework.getService(JbpmService.class);
         userManager = Framework.getService(UserManager.class);
         assertNotNull(userManager);
+
         administrator = userManager.getPrincipal(SecurityConstants.ADMINISTRATOR);
         assertNotNull(administrator);
+
         user1 = userManager.getPrincipal("myuser1");
         assertNotNull(user1);
     }
@@ -93,11 +96,13 @@ public class JbpmServiceTest extends RepositoryOSGITestCase {
         }
         DocumentModel dm = getDocument();
         assertNotNull(dm);
+
         // list process definition
         List<ProcessDefinition> pds = service.getProcessDefinitions(
                 administrator, dm, null);
         assertNotNull(pds);
         assertEquals(2, pds.size());
+
         List<VirtualTaskInstance> participants = new ArrayList<VirtualTaskInstance>();
         participants.add(new VirtualTaskInstance("bob", "dobob", "yobob", null));
         participants.add(new VirtualTaskInstance("trudy", "dotrudy", "yotrudy",
@@ -116,6 +121,7 @@ public class JbpmServiceTest extends RepositoryOSGITestCase {
         assertEquals(pd.getContextInstance().getVariable(
                 JbpmService.VariableName.documentRepositoryName.name()),
                 dm.getRepositoryName());
+
         // get process instance
         List<ProcessInstance> pis1 = service.getCurrentProcessInstances(
                 administrator, null);
@@ -123,6 +129,7 @@ public class JbpmServiceTest extends RepositoryOSGITestCase {
         List<ProcessInstance> pis2 = service.getCurrentProcessInstances(
                 administratorList, null);
         assertEquals(1, pis2.size());
+
         // get tasks
         List<TaskInstance> tasks = service.getTaskInstances(dm, administrator,
                 null);
@@ -131,16 +138,20 @@ public class JbpmServiceTest extends RepositoryOSGITestCase {
         assertEquals(tasks2.size(), tasks.size());
         assertNotNull(tasks);
         assertEquals(1, tasks.size());
+
         tasks = service.getCurrentTaskInstances(administrator, null);
         tasks2 = service.getCurrentTaskInstances(administratorList, null);
         assertEquals(tasks.size(), tasks.size());
         assertEquals(1, tasks.size());
+
         tasks.get(0).cancel();
         tasks = service.getCurrentTaskInstances(administrator, null);
         assertEquals(0, tasks.size());
+
         service.deleteProcessInstance(administrator, pd.getId());
         pd = service.getProcessInstance(pdId);
         assertNull(pd);
+
         List<TaskInstance> tis = service.getCurrentTaskInstances(administrator,
                 null);
         assertTrue(tis.isEmpty());
@@ -149,17 +160,20 @@ public class JbpmServiceTest extends RepositoryOSGITestCase {
     public void testMultipleTaskPerDocument() throws Exception {
         DocumentModel dm = getDocument();
         assertNotNull(dm);
+
         // list process definition
         List<ProcessDefinition> pds = service.getProcessDefinitions(
                 administrator, dm, null);
         assertNotNull(pds);
         assertEquals(2, pds.size());
+
         List<VirtualTaskInstance> participants = new ArrayList<VirtualTaskInstance>();
         String prefixedUser1 = NuxeoPrincipal.PREFIX + user1.getName();
         participants.add(new VirtualTaskInstance(prefixedUser1, "dobob1",
                 "yobob1", null));
         participants.add(new VirtualTaskInstance(prefixedUser1, "dobob2",
                 "yobob1", null));
+
         // create process instance
         service.createProcessInstance(administrator, "review_parallel", dm,
                 Collections.singletonMap("participants",
@@ -170,6 +184,7 @@ public class JbpmServiceTest extends RepositoryOSGITestCase {
         tasks = service.getTaskInstances(dm, administrator, null);
         assertNotNull(tasks);
         assertEquals(0, tasks.size());
+
         tasks = service.getTaskInstances(dm, user1, null);
         assertEquals(2, tasks.size());
     }
@@ -213,6 +228,7 @@ public class JbpmServiceTest extends RepositoryOSGITestCase {
                 session.getRootDocument().getPathAsString(), "1", "File");
         DocumentModel doc = session.createDocument(model);
         assertNotNull(doc);
+
         session.saveDocument(doc);
         session.save();
         return doc;
@@ -223,4 +239,5 @@ public class JbpmServiceTest extends RepositoryOSGITestCase {
         super.tearDown();
         JbpmServiceImpl.contexts.set(null);
     }
+
 }

@@ -44,11 +44,13 @@ public class ValidationReviewTest extends AbstractProcessDefinitionTest {
             context = configuration.createJbpmContext();
             context.setActorId("bob");
             assertNotNull(context);
+
             context.deployProcessDefinition(pd);
             ProcessInstance pi = context.newProcessInstanceForUpdate("review_approbation");
             TaskInstance ti = pi.getTaskMgmtInstance().createStartTaskInstance();
             ti.end();
             assertNotNull(pi);
+
             // choosing participant task
             List<TaskInstance> bobstask = context.getTaskList("bob");
             assertEquals(1, bobstask.size());
@@ -63,18 +65,24 @@ public class ValidationReviewTest extends AbstractProcessDefinitionTest {
             assertEquals(1, bobstask.size());
             List<TaskInstance> trudystask = context.getGroupTaskList(trudy_list);
             assertEquals(0, trudystask.size());
+
             bobstask.get(0).end();
             // second evaluation
             trudystask = context.getGroupTaskList(trudy_list);
             assertEquals(1, trudystask.size());
+
             bobstask = context.getGroupTaskList(bob_list);
             assertEquals(0, bobstask.size());
+
             trudystask.get(0).end("reject");
+
             // second evalutaion by bob
             bobstask = context.getGroupTaskList(bob_list);
             assertEquals(1, bobstask.size());
+
             trudystask = context.getGroupTaskList(trudy_list);
             assertEquals(0, trudystask.size());
+
             bobstask.get(0).end();
             // finished
             assertTrue(pi.hasEnded());
