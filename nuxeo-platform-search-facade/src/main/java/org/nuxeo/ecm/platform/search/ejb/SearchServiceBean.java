@@ -34,7 +34,6 @@ import javax.ejb.Stateless;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.search.NXSearch;
 import org.nuxeo.ecm.core.search.api.backend.indexing.resources.ResolvedResources;
 import org.nuxeo.ecm.core.search.api.client.IndexingException;
 import org.nuxeo.ecm.core.search.api.client.SearchException;
@@ -56,6 +55,7 @@ import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.document.F
 import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.document.IndexableDocType;
 import org.nuxeo.ecm.core.search.service.SearchServiceImpl;
 import org.nuxeo.ecm.platform.search.ejb.local.SearchServiceLocal;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Search service session bean.
@@ -88,7 +88,7 @@ public class SearchServiceBean implements SearchService {
             // deployed along with the Nuxeo Runtime core component within the
             // same JVM. Do not use platform service API to avoid for further
             // lookup here.
-            service = NXSearch.getSearchService();
+            service = Framework.getLocalService(SearchService.class);
         }
         return service;
     }

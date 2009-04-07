@@ -41,6 +41,7 @@ import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.document.I
 import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.document.ResourceType;
 import org.nuxeo.ecm.core.search.api.internals.SearchServiceInternals;
 import org.nuxeo.ecm.core.search.blobs.NXTransformBlobExtractor;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Test search engine plugins registration.
@@ -63,13 +64,11 @@ public class TestSearchEngine extends RepositoryTestCase {
         deployContrib("org.nuxeo.ecm.platform.search.tests", "DemoRepository.xml");
         deployContrib("org.nuxeo.ecm.platform.search.tests", "LifeCycleService.xml");
         deployContrib("org.nuxeo.ecm.platform.search.tests", "LifeCycleServiceExtensions.xml");
-        deployContrib("org.nuxeo.ecm.platform.search.tests", "PlatformService.xml");
-        deployContrib("org.nuxeo.ecm.platform.search.tests", "DefaultPlatform.xml");
 
         deployContrib("org.nuxeo.ecm.platform.search.tests", "nxsearch-test-framework.xml");
         deployContrib("org.nuxeo.ecm.platform.search.tests", "nxsearch-test-contrib.xml");
 
-        service = NXSearch.getSearchService();
+        service = Framework.getLocalService(SearchService.class);
         assertNotNull(service);
     }
 

@@ -19,9 +19,9 @@
 
 package org.nuxeo.ecm.core.search.ejb;
 
-import org.nuxeo.ecm.core.search.NXSearch;
 import org.nuxeo.ecm.core.search.api.client.SearchService;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
@@ -41,7 +41,7 @@ public class TestSearchServiceBean extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.ecm.platform.search.ejb.tests",
                 "nxsearch-platform-contrib.xml");
 
-        SearchService service = NXSearch.getSearchService();
+        SearchService service = Framework.getLocalService(SearchService.class);
         assertNotNull(service);
     }
 

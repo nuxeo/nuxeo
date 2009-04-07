@@ -107,7 +107,7 @@ public class TestResolvedResourcesFactory extends RepositoryTestCase {
         deployContrib("org.nuxeo.ecm.platform.search.tests",
                 "nxsearch-test-contrib.xml");
 
-        service = NXSearch.getSearchService();
+        service = Framework.getLocalService(SearchService.class);
         assertNotNull(service);
 
         RepositoryManager mgr = Framework.getService(RepositoryManager.class);
