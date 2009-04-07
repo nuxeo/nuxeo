@@ -1379,6 +1379,10 @@
         <padding>0 2px 2px 2px</padding>
         <text-align>center</text-align>
       </selector>
+      <selector path=".userClipboardContent" view="nuxeo5 clip board">
+        <margin>0px</margin>
+        <padding>10px</padding>
+      </selector>
       <selector path=".userClipboard" view="nuxeo5 clip board">
         <height>1%</height>
         <background-color>#FFF</background-color>
