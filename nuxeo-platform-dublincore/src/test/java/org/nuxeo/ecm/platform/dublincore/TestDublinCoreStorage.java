@@ -48,7 +48,7 @@ public class TestDublinCoreStorage extends RepositoryTestCase {
 
     private DocumentModel root;
 
-    private CoreSession remote;
+    private CoreSession session;
 
     @Override
     public void setUp() throws Exception {
@@ -72,10 +72,10 @@ public class TestDublinCoreStorage extends RepositoryTestCase {
 
         Map<String, Serializable> context = new HashMap<String, Serializable>();
         context.put("username", "Administrator");
-        remote = CoreInstance.getInstance().open("demo", context);
-        assertNotNull(remote);
+        session = CoreInstance.getInstance().open("demo", context);
+        assertNotNull(session);
 
-        root = remote.getRootDocument();
+        root = session.getRootDocument();
     }
 
     public void testStorageService() {
@@ -86,12 +86,12 @@ public class TestDublinCoreStorage extends RepositoryTestCase {
     public void testCreationDate() throws ClientException {
         DocumentModel childFile = new DocumentModelImpl(
                 root.getPathAsString(), "file-007", "File");
-        DocumentModel childFile2 = remote.createDocument(childFile);
+        DocumentModel childFile2 = session.createDocument(childFile);
 
         DataModel dm = childFile2.getDataModel("dublincore");
         assertNotNull(dm.getData("created"));
 
-        DataModel dm2 = remote.getDataModel(childFile2.getRef(), "dublincore");
+        DataModel dm2 = session.getDataModel(childFile2.getRef(), "dublincore");
         assertNotNull(dm2.getData("created"));
 
         assertEquals("Administrator", (String) dm.getData("creator"));
@@ -100,25 +100,25 @@ public class TestDublinCoreStorage extends RepositoryTestCase {
     public void testCreator() throws ClientException {
         DocumentModel childFile = new DocumentModelImpl(
                 root.getPathAsString(), "file-007", "File");
-        DocumentModel childFile2 = remote.createDocument(childFile);
+        DocumentModel childFile2 = session.createDocument(childFile);
 
         DataModel dm = childFile2.getDataModel("dublincore");
         assertEquals("Administrator", (String) dm.getData("creator"));
 
-        DataModel dm2 = remote.getDataModel(childFile2.getRef(), "dublincore");
+        DataModel dm2 = session.getDataModel(childFile2.getRef(), "dublincore");
         assertEquals("Administrator", (String) dm2.getData("creator"));
 
         childFile2.setProperty("dublincore", "creator", "toto");
         assertEquals("toto", (String) dm.getData("creator"));
 
-        dm2 = remote.getDataModel(childFile2.getRef(), "dublincore");
-        assertEquals("toto", (String) dm.getData("creator"));
+        dm2 = session.getDataModel(childFile2.getRef(), "dublincore");
+        assertEquals("Administrator", (String) dm2.getData("creator"));
     }
 
     public void testModificationDate() throws ClientException {
         DocumentModel childFile = new DocumentModelImpl(
                 root.getPathAsString(), "file-008", "File");
-        DocumentModel childFile2 = remote.createDocument(childFile);
+        DocumentModel childFile2 = session.createDocument(childFile);
 
         try {
             Thread.sleep(100);
@@ -127,13 +127,13 @@ public class TestDublinCoreStorage extends RepositoryTestCase {
 
         childFile2.setProperty("dublincore", "title", "toto");
 
-        remote.saveDocument(childFile2);
+        session.saveDocument(childFile2);
 
         DataModel dm = childFile2.getDataModel("dublincore");
         Calendar created = (Calendar) dm.getData("created");
         assertNotNull(created);
 
-        DataModel dm2 = remote.getDataModel(childFile2.getRef(), "dublincore");
+        DataModel dm2 = session.getDataModel(childFile2.getRef(), "dublincore");
         Calendar modified = (Calendar) dm2.getData("modified");
         assertNotNull(modified);
 
@@ -145,7 +145,7 @@ public class TestDublinCoreStorage extends RepositoryTestCase {
     public void testContributors() throws ClientException {
         DocumentModel childFile = new DocumentModelImpl(
                 root.getPathAsString(), "file-008", "File");
-        DocumentModel childFile2 = remote.createDocument(childFile);
+        DocumentModel childFile2 = session.createDocument(childFile);
         DataModel dm = childFile2.getDataModel("dublincore");
 
         String author = (String) dm.getData("creator");
@@ -165,23 +165,23 @@ public class TestDublinCoreStorage extends RepositoryTestCase {
         root.setACP(acp, true);
 
         // create a new session
-        remote.save();
-        remote.disconnect();
-        remote = null;
+        session.save();
+        session.disconnect();
+        session = null;
 
         Map<String, Serializable> context = new HashMap<String, Serializable>();
         // UserPrincipal newUser = new UserPrincipal("Jacky");
         // newUser.groups.add(SecurityService.ADMINISTRATORS);
         // context.put("username", newUser);
         // switch user in session
-        // LocalSession local = (LocalSession) remote;
+        // LocalSession local = (LocalSession) session;
         // local.setPrincipal(newUser);
         context.put("username", "Jacky");
-        remote = CoreInstance.getInstance().open("demo", context);
+        session = CoreInstance.getInstance().open("demo", context);
 
-        DocumentModel childFile3 = remote.getDocument(childFile2.getRef());
+        DocumentModel childFile3 = session.getDocument(childFile2.getRef());
         childFile3.setProperty("dublincore", "source", "testing");
-        childFile3 = remote.saveDocument(childFile3);
+        childFile3 = session.saveDocument(childFile3);
 
         contributorsArray = (String[]) childFile3.getDataModel("dublincore").getData(
                 "contributors");
