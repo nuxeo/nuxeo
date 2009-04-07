@@ -43,7 +43,6 @@ import org.nuxeo.common.utils.i18n.I18NUtils;
  */
 public class SelectOneListboxRenderer extends Renderer {
 
-    @SuppressWarnings("unused")
     private static final Log log = LogFactory.getLog(SelectOneListboxRenderer.class);
 
     @Override

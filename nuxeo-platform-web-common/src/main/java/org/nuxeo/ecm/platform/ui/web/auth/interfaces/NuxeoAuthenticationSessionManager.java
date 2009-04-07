@@ -58,7 +58,6 @@ public interface NuxeoAuthenticationSessionManager {
      */
     void onBeforeSessionReinit(ServletRequest request);
 
-
     /**
      * CallBack after SessionReinit.
      */

@@ -279,9 +279,6 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
         this.principalId = principalId;
     }
 
-    /**
-     * @return the email.
-     */
     public String getEmail() {
         try {
             return (String) dataModel.getData(EMAIL_COLUMN);
@@ -290,9 +287,6 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
         }
     }
 
-    /**
-     * @param email the email to set.
-     */
     public void setEmail(String email) {
         try {
             dataModel.setData(EMAIL_COLUMN, email);
@@ -301,9 +295,6 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
         }
     }
 
-    /**
-     * @return the model.
-     */
     public DocumentModel getModel() {
         return model;
     }

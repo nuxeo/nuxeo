@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.platform.jbpm.core.deployer;
 
 import org.nuxeo.ecm.platform.jbpm.AbstractProcessDefinitionDeployer;
-import org.nuxeo.ecm.platform.jbpm.ProcessDefinitionDeployer;
 
 /**
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>

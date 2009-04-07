@@ -31,7 +31,7 @@ import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
- * Descriptor for virtual users
+ * Descriptor for virtual users.
  *
  * @author Anahide Tchertchian
  */

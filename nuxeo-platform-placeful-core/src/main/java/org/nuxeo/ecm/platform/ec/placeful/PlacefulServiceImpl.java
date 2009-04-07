@@ -25,8 +25,6 @@ import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.ec.placeful.interfaces.PlacefulService;
 import org.nuxeo.ecm.platform.ec.placeful.service.ContainerManagedHibernateConfiguration;
 import org.nuxeo.ecm.platform.ec.placeful.service.PersistenceProvider;
@@ -42,8 +40,6 @@ import org.nuxeo.runtime.model.Extension;
  */
 public class PlacefulServiceImpl extends DefaultComponent implements
         PlacefulService {
-
-    private static final Log log = LogFactory.getLog(PlacefulServiceImpl.class);
 
     private Map<String, String> registry;
 
@@ -108,7 +104,7 @@ public class PlacefulServiceImpl extends DefaultComponent implements
         String shortClassName = className
                 .substring(className.lastIndexOf('.') + 1);
         Query query = em.createQuery("FROM " + shortClassName);
-        return (List<Annotation>) query.getResultList();
+        return query.getResultList();
     }
 
     public List<Annotation> getAllAnnotations(final String name)

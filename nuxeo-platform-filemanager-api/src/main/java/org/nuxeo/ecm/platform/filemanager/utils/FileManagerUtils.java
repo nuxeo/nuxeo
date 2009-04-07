@@ -80,7 +80,7 @@ public final class FileManagerUtils {
      */
     public static String fetchFileName(File file) throws MalformedURLException {
         // Fetching filename
-        URL pathUrl = file.toURL();
+        URL pathUrl = file.toURI().toURL();
         String[] pathArray = pathUrl.getFile().split("/");
         return pathArray[pathArray.length - 1];
     }

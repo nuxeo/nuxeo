@@ -50,19 +50,6 @@ public class UserDataManager {
     public static final String USER_DATA_ROOT = "UserDatas";
 
     /**
-     * @deprecated Use add(domainPath, session, username, category, docModel)
-     * instead. See NXP-1617
-     * Not used. Remove in 5.2.
-     */
-    @Deprecated
-    public void add(DocumentModel domain, String username,
-            String category, DocumentModel docModel) throws ClientException {
-        String domainPath = domain.getPathAsString();
-        CoreSession session = CoreInstance.getInstance().getSession(domain.getSessionId());
-        add(domainPath, session, username, category, docModel);
-    }
-
-    /**
      * Creates a new document in the userdata area from a document model.
      * <p>
      * The passed document model is actually copied,
@@ -202,35 +189,9 @@ public class UserDataManager {
         return systemSession;
     }
 
-    /**
-     * @deprecated Use <code>remove(domainPath, session, username,
-     * category, docModel) instead. See NXP-1617
-     *
-     */
-    @Deprecated
-    public static void remove(DocumentModel domain, String username, String category,
-            DocumentModel docModel) throws ClientException {
-        String domainPath = domain.getPathAsString();
-        CoreSession session = CoreInstance.getInstance().getSession(domain.getSessionId());
-        remove(domainPath, session, username, category, docModel);
-    }
-
     public static void remove(String domainPath, CoreSession session, String username, String category,
             DocumentModel docModel) throws ClientException {
         session.removeDocument(docModel.getRef());
-    }
-
-    /**
-     * @deprecated Use <code>get(domainPath, session, username,
-     *             category) instead. See NXP-1617
-     *Not used. Remove in 5.2.
-     */
-    @Deprecated
-    public static DocumentModelList get(DocumentModel domain, String username,
-            String category) throws ClientException {
-        String domainPath = domain.getPathAsString();
-        CoreSession session = CoreInstance.getInstance().getSession(domain.getSessionId());
-        return get(domainPath, session, username, category);
     }
 
     public static DocumentModelList get(String domainPath, CoreSession session,
@@ -238,11 +199,9 @@ public class UserDataManager {
         if (domainPath == null) {
             throw new IllegalArgumentException("domainPath cannot be null");
         }
-
         if (username == null) {
             throw new IllegalArgumentException("username cannot be null");
         }
-
         if (category == null) {
             throw new IllegalArgumentException("category cannot be null");
         }

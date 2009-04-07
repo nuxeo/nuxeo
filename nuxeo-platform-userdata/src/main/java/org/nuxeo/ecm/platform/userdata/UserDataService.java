@@ -19,9 +19,6 @@
 
 package org.nuxeo.ecm.platform.userdata;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
@@ -32,22 +29,7 @@ public class UserDataService extends DefaultComponent {
 
     public static final String NAME = UserDataService.class.getCanonicalName();
 
-    private static final Log log = LogFactory.getLog(UserDataService.class);
-
     private UserDataManager manager;
-
-
-    @Override
-    public void activate(ComponentContext context) throws Exception {
-        log.debug("<activate>");
-        super.activate(context);
-    }
-
-    @Override
-    public void deactivate(ComponentContext context) throws Exception {
-        log.debug("<deactivate>");
-        super.deactivate(context);
-    }
 
     public UserDataManager getManager() {
         if (manager == null) {

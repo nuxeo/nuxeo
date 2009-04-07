@@ -101,7 +101,6 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
     protected static final String MODIFIED_FIELD = "modified";
     protected static final String DUBLINCORE_SCHEMA = "dublincore";
 
-    @SuppressWarnings("unused")
     private static final Log log = LogFactory.getLog(LiveEditBootstrapHelper.class);
 
     private static final long serialVersionUID = 876879071L;

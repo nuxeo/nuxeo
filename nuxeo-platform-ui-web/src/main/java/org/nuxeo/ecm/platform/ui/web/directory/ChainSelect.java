@@ -57,7 +57,6 @@ public class ChainSelect extends UIInput {
 
     public static final String DEFAULT_KEY_SEPARATOR = "/";
 
-    @SuppressWarnings("unused")
     private static final Log log = LogFactory.getLog(ChainSelect.class);
 
     // Direct access from ChainSelectStatus

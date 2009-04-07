@@ -30,7 +30,6 @@ import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 
 import org.nuxeo.ecm.platform.jbpm.AbstractProcessDefinitionDeployer;
-import org.nuxeo.ecm.platform.jbpm.ProcessDefinitionDeployer;
 import org.xml.sax.SAXException;
 
 /**

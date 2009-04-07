@@ -674,7 +674,6 @@ public class SearchServiceImpl extends DefaultComponent implements
         return docType2IndexableResourceTypes.get(docType);
     }
 
-    @SuppressWarnings("unchecked")
     public List<String> getSupportedAnalyzersFor(String backendName) {
         SearchEngineBackend backend = getSearchEngineBackendByName(backendName);
         if (backend != null) {
@@ -683,7 +682,6 @@ public class SearchServiceImpl extends DefaultComponent implements
         return Collections.emptyList();
     }
 
-    @SuppressWarnings("unchecked")
     public List<String> getSupportedFieldTypes(String backendName) {
         SearchEngineBackend backend = getSearchEngineBackendByName(backendName);
         if (backend != null) {

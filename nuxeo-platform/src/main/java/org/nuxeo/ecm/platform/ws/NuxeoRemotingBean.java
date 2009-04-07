@@ -80,7 +80,6 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
 
     private static final long serialVersionUID = 359922583442116202L;
 
-    @SuppressWarnings("unused")
     private static final Log log = LogFactory.getLog(NuxeoRemotingBean.class);
 
     @WebMethod
@@ -522,7 +521,6 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
         return groups.toArray(new String[groups.size()]);
     }
 
-    @SuppressWarnings("unchecked")
     @WebMethod
     public String getRelativePathAsString(String sessionId, String uuid)
             throws ClientException {

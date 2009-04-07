@@ -27,7 +27,6 @@ import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationSessionM
 
 public class DefaultSessionManager implements NuxeoAuthenticationSessionManager {
 
-
     public boolean canBypassRequest(ServletRequest request) {
         return false;
     }

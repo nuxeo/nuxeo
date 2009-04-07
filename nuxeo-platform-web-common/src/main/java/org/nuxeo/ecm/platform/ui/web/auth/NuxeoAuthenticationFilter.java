@@ -732,7 +732,7 @@ public class NuxeoAuthenticationFilter implements Filter {
                     String loginModulePlugin = service.getDescriptor(pluginName).getLoginModulePlugin();
                     userIdent.setLoginPluginName(loginModulePlugin);
 
-                    // get the additionnal parameters
+                    // get the additional parameters
                     Map<String, String> parameters = service.getDescriptor(
                             pluginName).getParameters();
                     userIdent.setLoginParameters(parameters);

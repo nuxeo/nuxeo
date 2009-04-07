@@ -41,7 +41,7 @@ public interface NuxeoAuthenticationPlugin {
             HttpServletResponse httpResponse, String baseURL);
 
     /**
-     * Retrieves user indentification information from the request.
+     * Retrieves user identification information from the request.
      *
      * @param httpRequest
      * @param httpResponse

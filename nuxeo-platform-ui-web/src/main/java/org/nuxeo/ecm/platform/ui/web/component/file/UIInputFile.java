@@ -59,21 +59,15 @@ import com.sun.faces.util.MessageFactory;
 public class UIInputFile extends UIInput implements NamingContainer {
 
     public static final String COMPONENT_TYPE = UIInputFile.class.getName();
-
     public static final String COMPONENT_FAMILY = "javax.faces.Input";
 
-    @SuppressWarnings("unused")
-    private static final Log log = LogFactory.getLog(UIInputFile.class);
-
     private static final String CHOICE_FACET_NAME = "choice";
-
     private static final String UPLOAD_FACET_NAME = "upload";
-
     private static final String DEFAULT_DOWNLOAD_FACET_NAME = "default_download";
-
     private static final String DOWNLOAD_FACET_NAME = "download";
-
     private static final String EDIT_FILENAME_FACET_NAME = "edit_filename";
+
+    private static final Log log = LogFactory.getLog(UIInputFile.class);
 
     // value for filename, will disappear when it's part of the blob
     private String filename;

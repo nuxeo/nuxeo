@@ -27,7 +27,7 @@ public interface NuxeoAuthenticationPluginLogoutExtension {
     /**
      * Handles logout operation.
      * <p>
-     * Generic logout (killing session and Seam objetcs) is done by LogoutActionBean
+     * Generic logout (killing session and Seam objects) is done by LogoutActionBean
      * This interface must be implemented by auth plugin when the target auth system
      * needs a specific logout procedure.
      *

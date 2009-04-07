@@ -462,8 +462,10 @@ public class TestJenaGraph extends NXRuntimeTestCase {
         graph.write(path, null, null);
         InputStream written = new FileInputStream(new File(path));
         InputStream expected = new FileInputStream(getTestFile());
-        assertEquals(FileUtils.read(expected).replaceAll("\r?\n", ""),
-                FileUtils.read(written).replaceAll("\r?\n", ""));
+
+        String expectedString = FileUtils.read(expected).replaceAll("\r?\n", "");
+        String writtenString = FileUtils.read(written).replaceAll("\r?\n", "");
+        assertEquals(expectedString, writtenString);
     }
 
     // XXX AT: test serialization of the graph because the RelationServiceBean

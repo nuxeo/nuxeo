@@ -97,7 +97,7 @@ public interface UserManager {
             UserAlreadyExistsException;
 
     /**
-     * Updates user represented by given model
+     * Updates user represented by given model.
      *
      * @param userModel
      * @since 5.2M4

@@ -46,7 +46,6 @@ public class ChainSelectListboxComponent extends UIInput {
 
     public static final String COMPONENT_FAMILY = "nxdirectory.chainSelectListbox";
 
-    @SuppressWarnings("unused")
     private static final Log log = LogFactory.getLog(ChainSelectListboxComponent.class);
 
     public boolean ajaxUpdated = false;

@@ -107,19 +107,12 @@ public class JenaGraph implements Graph {
      * http://jena.sourceforge.net/DB/options.html.
      */
     private String datasource;
-
     private String databaseType;
-
     private String databaseUrl;
-
     private String databaseUser;
-
     private String databasePassword;
-
     private String databaseDriverClass;
-
     private boolean databaseDoCompressUri;
-
     private boolean databaseTransactionEnabled;
 
     private Map<String, String> namespaces = new HashMap<String, String>();
