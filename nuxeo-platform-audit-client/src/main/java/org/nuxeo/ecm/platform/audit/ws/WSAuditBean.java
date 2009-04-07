@@ -42,9 +42,10 @@ import org.nuxeo.ecm.core.schema.utils.DateParser;
 import org.nuxeo.ecm.platform.audit.api.AuditException;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.api.Logs;
-import org.nuxeo.ecm.platform.audit.api.delegate.AuditLogsServiceDelegate;
+import org.nuxeo.ecm.platform.audit.api.AuditRuntimeException;
 import org.nuxeo.ecm.platform.audit.ws.api.WSAudit;
 import org.nuxeo.ecm.platform.ws.AbstractNuxeoWebService;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Audit Web Service bean.
@@ -66,7 +67,11 @@ public class WSAuditBean extends AbstractNuxeoWebService implements WSAudit {
     private transient Logs logsBean;
 
     protected final Logs getLogsBean() throws AuditException {
-        logsBean = AuditLogsServiceDelegate.getRemoteAuditLogsService();
+        try {
+            logsBean = Framework.getService(Logs.class);
+        } catch (Exception e) {
+            throw new AuditException("Cannot locate remote logs audit", e);
+        }
         if (logsBean == null) {
             throw new AuditException("Cannot find log remote bean...");
         }

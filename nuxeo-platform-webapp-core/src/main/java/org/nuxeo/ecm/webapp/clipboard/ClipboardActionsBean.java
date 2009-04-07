@@ -198,9 +198,9 @@ public class ClipboardActionsBean extends InputController implements
             Object[] params = { docsList.size() };
 
             FacesMessage message = FacesMessages.createFacesMessage(
-                    FacesMessage.SEVERITY_INFO, "#0 "
-                            + resourcesAccessor.getMessages().get(
-                                    "n_copied_docs"), params);
+                    FacesMessage.SEVERITY_INFO,
+                    "#0 " + resourcesAccessor.getMessages().get("n_copied_docs"),
+                    params);
 
             facesMessages.add(message);
 
@@ -225,9 +225,9 @@ public class ClipboardActionsBean extends InputController implements
         canEditSelectedDocs = null;
         if (null != docsList) {
             Object[] params = { docsList.size() };
-            facesMessages.add(FacesMessage.SEVERITY_INFO, "#0 "
-                    + resourcesAccessor.getMessages().get(
-                            "n_added_to_worklist_docs"), params);
+            facesMessages.add(FacesMessage.SEVERITY_INFO,
+                    "#0 " + resourcesAccessor.getMessages().get("n_added_to_worklist_docs"),
+                    params);
 
             // Add to the default working list
             documentsListsManager.addToWorkingList(
@@ -248,8 +248,8 @@ public class ClipboardActionsBean extends InputController implements
     public void copySelection(List<DocumentModel> copiedDocs) {
         if (null != copiedDocs) {
             Object[] params = { copiedDocs.size() };
-            facesMessages.add(FacesMessage.SEVERITY_INFO, "#0 "
-                    + resourcesAccessor.getMessages().get("n_copied_docs"),
+            facesMessages.add(FacesMessage.SEVERITY_INFO,
+                    "#0 " + resourcesAccessor.getMessages().get("n_copied_docs"),
                     params);
 
             // clipboard.copy(copiedDocs);
@@ -300,8 +300,8 @@ public class ClipboardActionsBean extends InputController implements
                     getParent(currentDocument), docPaste);
 
             Object[] params = { newDocs.size() };
-            facesMessages.add(FacesMessage.SEVERITY_INFO, "#0 "
-                    + resourcesAccessor.getMessages().get("n_pasted_docs"),
+            facesMessages.add(FacesMessage.SEVERITY_INFO,
+                    "#0 " + resourcesAccessor.getMessages().get("n_pasted_docs"),
                     params);
 
             eventManager.raiseEventsOnDocumentSelected(currentDocument);
@@ -324,8 +324,8 @@ public class ClipboardActionsBean extends InputController implements
                     targetDoc, docPaste);
 
             Object[] params = { newDocs.size() };
-            facesMessages.add(FacesMessage.SEVERITY_INFO, "#0 "
-                    + resourcesAccessor.getMessages().get("n_pasted_docs"),
+            facesMessages.add(FacesMessage.SEVERITY_INFO,
+                    "#0 " + resourcesAccessor.getMessages().get("n_pasted_docs"),
                     params);
 
             eventManager.raiseEventsOnDocumentSelected(targetDoc);
@@ -379,31 +379,27 @@ public class ClipboardActionsBean extends InputController implements
         }
 
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
-        if (null != docs) {
-            List<DocumentModel> newDocs = moveDocumentsToNewParent(
-                    currentDocument, docs);
+        List<DocumentModel> newDocs = moveDocumentsToNewParent(
+                currentDocument, docs);
 
-            documentsListsManager.getWorkingList(listName).clear();
+        documentsListsManager.getWorkingList(listName).clear();
 
-            Object[] params = { newDocs.size() };
-            facesMessages.add(FacesMessage.SEVERITY_INFO, "#0 "
-                    + resourcesAccessor.getMessages().get("n_moved_docs"),
-                    params);
+        Object[] params = { newDocs.size() };
+        facesMessages.add(FacesMessage.SEVERITY_INFO, "#0 "
+                + resourcesAccessor.getMessages().get("n_moved_docs"),
+                params);
 
-            eventManager.raiseEventsOnDocumentSelected(currentDocument);
-            Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
+        eventManager.raiseEventsOnDocumentSelected(currentDocument);
+        Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
                     currentDocument);
 
-            // Send event to all initial parents
-            for (DocumentRef docRef : parentRefs) {
-                Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
-                        documentManager.getDocument(docRef));
-            }
-
-            log.debug("Elements moved and created into the backend...");
-        } else {
-            log.debug("No documents to process move on...");
+        // Send event to all initial parents
+        for (DocumentRef docRef : parentRefs) {
+            Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
+                    documentManager.getDocument(docRef));
         }
+
+        log.debug("Elements moved and created into the backend...");
 
         return computeOutcome(PASTE_OUTCOME);
     }
@@ -530,7 +526,7 @@ public class ClipboardActionsBean extends InputController implements
             return currentDocument;
         }
 
-        DocumentModel parent = null;
+        DocumentModel parent;
         DocumentModelList parents = navigationContext.getCurrentPath();
         for (int i = parents.size() - 1; i >= 0; i--) {
             parent = parents.get(i);

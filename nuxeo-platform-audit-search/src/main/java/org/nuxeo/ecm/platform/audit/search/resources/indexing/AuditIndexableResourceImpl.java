@@ -31,8 +31,9 @@ import org.nuxeo.ecm.platform.audit.api.AuditException;
 import org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.api.Logs;
-import org.nuxeo.ecm.platform.audit.api.delegate.AuditLogsServiceDelegate;
+import org.nuxeo.ecm.platform.audit.api.AuditRuntimeException;
 import org.nuxeo.ecm.platform.audit.search.resources.indexing.api.AuditIndexableResource;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Audit indexable resource implementation.
@@ -92,7 +93,11 @@ public class AuditIndexableResourceImpl extends AbstractIndexableResource
 
     protected Logs getAuditLogsService() {
         if (auditLogsService == null) {
-                auditLogsService = AuditLogsServiceDelegate.getRemoteAuditLogsService();
+            try {
+                auditLogsService = Framework.getService(Logs.class);
+            } catch (Exception e) {
+                throw new AuditRuntimeException("Cannot locate remote logs audit", e);
+            }
         }
         return auditLogsService;
     }

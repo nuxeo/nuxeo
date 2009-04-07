@@ -25,7 +25,6 @@ import org.jbpm.graph.exe.ExecutionContext;
  * Makes post document follow lifecycle transition to be in rejected state
  *
  * @author Anahide Tchertchian
- *
  */
 public class RejectForumPostHandler extends ForumHandlerHelper {
 
@@ -41,4 +40,5 @@ public class RejectForumPostHandler extends ForumHandlerHelper {
         }
         executionContext.getToken().signal();
     }
+
 }

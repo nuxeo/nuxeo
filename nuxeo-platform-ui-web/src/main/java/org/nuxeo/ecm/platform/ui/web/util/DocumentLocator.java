@@ -43,9 +43,7 @@ import org.nuxeo.ecm.platform.util.RepositoryLocation;
 public final class DocumentLocator {
 
     public static final String URL_PREFIX = "getDocument.faces?";
-
     public static final String PARAM_NAME = "docRef";
-
     public static final String CHAR_ENCODING = "UTF-8";
 
     @SuppressWarnings("unused")
@@ -54,12 +52,6 @@ public final class DocumentLocator {
     private DocumentLocator() {
     }
 
-    /**
-     *
-     * @param serverLocation
-     * @param docRef
-     * @return
-     */
     public static String getDocumentUrl(RepositoryLocation serverLocation,
             DocumentRef docRef) {
         if (serverLocation == null) {
@@ -72,9 +64,6 @@ public final class DocumentLocator {
     /**
      * Returns something like
      * getDocument.faces?docRef=ServerLocationName/DocRef.
-     *
-     * @param serverLocationName
-     * @param docRef
      */
     public static String getDocumentUrl(String serverLocationName,
             DocumentRef docRef) {
@@ -103,9 +92,6 @@ public final class DocumentLocator {
 
     /**
      * Encodes the given string to be safely used in an URL.
-     *
-     * @param txt
-     * @return
      */
     private static String encode(String txt) {
         String safetxt;
@@ -134,9 +120,6 @@ public final class DocumentLocator {
     /**
      * Returns something like
      * http://server:port/nuxeo/getDocument.xhtml?docRef=ServerLocationName/DocRef.
-     *
-     * @param serverLocation
-     * @param docRef
      */
     public static String getFullDocumentUrl(RepositoryLocation serverLocation,
             DocumentRef docRef) {
@@ -151,9 +134,6 @@ public final class DocumentLocator {
     /**
      * Returns something like
      * http://server:port/nuxeo/getDocument.xhtml?docRef=ServerLocationName/DocRef.
-     *
-     * @param serverLocation
-     * @param docRef
      */
     public static String getFullDocumentUrl(String serverLocation,
             DocumentRef docRef) {
@@ -170,8 +150,6 @@ public final class DocumentLocator {
      * @param docUriRef in format
      *            &lt;ServerLocationName&gt;/&lt;DocRefType&gt;:&lt;doc
      *            reference&gt;
-     * @return
-     * @throws BadDocumentUriException
      */
     public static DocumentLocation parseDocRef(String docUriRef)
             throws BadDocumentUriException {
@@ -211,4 +189,5 @@ public final class DocumentLocator {
 
         return new DocumentLocationImpl(serverLocationName, docRef);
     }
+
 }

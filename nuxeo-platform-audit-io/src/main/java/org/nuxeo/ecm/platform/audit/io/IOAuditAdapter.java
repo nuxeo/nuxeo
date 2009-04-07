@@ -204,20 +204,16 @@ public class IOAuditAdapter extends AbstractIOResourceAdapter {
         }
 
         IOAuditResources auditResources = (IOAuditResources) newResources;
-
         Map<DocumentRef, List<LogEntry>> docLogs = auditResources.getLogsMap();
-
         try {
             for (Map.Entry<DocumentRef, List<LogEntry>> mapEntry : docLogs.entrySet()) {
 
                 DocumentRef docRef = mapEntry.getKey();
-
                 List<LogEntry> logs = mapEntry.getValue();
 
                 // need to set the given docRef - so transfer with the help of
                 // IOLogEntryBase (subclass eventually)
                 List<LogEntry> newLogs = IOLogEntryBase.translate(logs, docRef);
-
                 getLogService().addLogEntries(newLogs);
             }
         } catch (Exception e) {
@@ -236,7 +232,6 @@ public class IOAuditAdapter extends AbstractIOResourceAdapter {
         }
 
         IOAuditResources auditResources = (IOAuditResources) resources;
-
         Map<DocumentRef, List<LogEntry>> newResourcesMap = new HashMap<DocumentRef, List<LogEntry>>();
 
         for (Map.Entry<DocumentRef, List<LogEntry>> entry : auditResources.getLogsMap().entrySet()) {
@@ -254,7 +249,6 @@ public class IOAuditAdapter extends AbstractIOResourceAdapter {
             // need to set the given docRef - so transfer with the help of
             // IOLogEntryBase (subclass eventually)
             List<LogEntry> newLogs = IOLogEntryBase.translate(docLogs, newRef);
-
             newResourcesMap.put(newRef, newLogs);
         }
 

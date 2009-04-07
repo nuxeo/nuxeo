@@ -22,7 +22,7 @@ package org.nuxeo.ecm.webapp.versioning;
 import java.io.Serializable;
 
 /**
- * Simple class that will be outjected into seam context to avoid multiple calls
+ * Simple class that will be outjected into the Seam context to avoid multiple calls.
  *
  * @author tiry
  */

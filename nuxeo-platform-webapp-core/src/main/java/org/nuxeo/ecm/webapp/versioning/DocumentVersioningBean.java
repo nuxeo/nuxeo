@@ -81,10 +81,8 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
     private static final Log log = LogFactory.getLog(DocumentVersioningBean.class);
 
     private static final String VER_INFO_AUTO_INC_KEY = "message.versioning.editoptionsinfo.auto_increment";
-
-    private static final Object VER_INFO_NO_INC_KEY = "message.versioning.editoptionsinfo.no_increment";
-
-    private static final Object VER_INFO_UNDEF_KEY = "message.versioning.editoptionsinfo.undefined";
+    private static final String VER_INFO_NO_INC_KEY = "message.versioning.editoptionsinfo.no_increment";
+    private static final String VER_INFO_UNDEF_KEY = "message.versioning.editoptionsinfo.undefined";
 
     @In(create = true)
     protected transient ResourcesAccessor resourcesAccessor;

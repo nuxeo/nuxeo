@@ -23,8 +23,8 @@ import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
  *
  */
 public class AbstractUserRepositoryTest extends RepositoryOSGITestCase {
-    public static final String TEST_BUNDLE = "org.nuxeo.ecm.platform.publishing.tests";
 
+    public static final String TEST_BUNDLE = "org.nuxeo.ecm.platform.publishing.tests";
     public static final String PUB_BUNDLE = "org.nuxeo.ecm.platform.publishing";
 
     @Override

@@ -26,19 +26,19 @@ import org.nuxeo.ecm.core.api.Sorter;
 import org.nuxeo.ecm.core.search.api.client.querymodel.descriptor.QueryModelDescriptor;
 
 /**
- * Interface for the tree manager service
+ * Interface for the tree manager service.
  *
  * @author Anahide Tchertchian
  */
 public interface TreeManager extends Serializable {
 
     /**
-     * Return filter to use for given plugin names.
+     * Returns filter to use for given plugin names.
      */
     Filter getFilter(String pluginName);
 
     /**
-     * Return leaf filter to use for given plugin names.
+     * Returns leaf filter to use for given plugin names.
      */
     Filter getLeafFilter(String pluginName);
 

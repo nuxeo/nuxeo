@@ -25,7 +25,6 @@ import org.jbpm.graph.exe.ExecutionContext;
  * Makes post document follow lifecycle transition to be in published state
  *
  * @author Anahide Tchertchian
- *
  */
 public class AcceptForumPostHandler extends ForumHandlerHelper {
 
@@ -39,4 +38,5 @@ public class AcceptForumPostHandler extends ForumHandlerHelper {
         }
         executionContext.getToken().signal();
     }
+
 }

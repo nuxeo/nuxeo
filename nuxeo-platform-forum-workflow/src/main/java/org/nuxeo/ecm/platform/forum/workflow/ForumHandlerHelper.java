@@ -69,4 +69,5 @@ public abstract class ForumHandlerHelper extends AbstractJbpmHandlerHelper {
             }
         }
     }
+
 }

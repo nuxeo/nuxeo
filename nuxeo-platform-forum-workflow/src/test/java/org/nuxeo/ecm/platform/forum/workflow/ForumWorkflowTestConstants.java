@@ -28,7 +28,6 @@ package org.nuxeo.ecm.platform.forum.workflow;
 public class ForumWorkflowTestConstants {
 
     public static final String FORUM_CORE_BUNDLE = "org.nuxeo.ecm.platform.forum.workflow";
-
     public static final String FORUM_WORKFLOW_BUNDLE = "org.nuxeo.ecm.platform.forum.workflow";
 
 }

@@ -46,10 +46,11 @@ import org.nuxeo.ecm.platform.audit.api.AuditException;
 import org.nuxeo.ecm.platform.audit.api.FilterMapEntry;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.api.Logs;
-import org.nuxeo.ecm.platform.audit.api.delegate.AuditLogsServiceDelegate;
+import org.nuxeo.ecm.platform.audit.api.AuditRuntimeException;
 import org.nuxeo.ecm.platform.audit.web.listener.ContentHistoryActions;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Content history actions bean.
@@ -160,7 +161,9 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
             return null;
         } else {
             try {
-                Logs logsBean = AuditLogsServiceDelegate.getRemoteAuditLogsService();
+                Logs service;
+                service = Framework.getService(Logs.class);
+                Logs logsBean = service;
                 /*
                  * In case the document is a proxy,meaning is the result of a
                  * publishing,to have the history of the document from which
