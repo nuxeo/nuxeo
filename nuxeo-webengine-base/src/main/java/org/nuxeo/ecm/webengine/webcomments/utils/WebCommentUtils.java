@@ -58,7 +58,8 @@ public class WebCommentUtils {
     }
 
     /**
-     * @return true if the corresponding workspace is moderated
+     * @return true if the corresponding workspace is moderated : there is at least one
+     * user with comment permission on this workspace and the moderationType is a priori
      * @throws Exception
      */
     public static boolean isCurrentModerated(CoreSession session,
@@ -66,7 +67,8 @@ public class WebCommentUtils {
         Set<String> moderatePermissions = new HashSet<String>();
         SecurityService securityService = getSecurityService();
         moderatePermissions.addAll(Arrays.asList(securityService.getPermissionsToCheck(WebCommentsConstants.PERMISSION_MODERATE)));
-        return getUsersWithPermission(session, doc, moderatePermissions).size() >= 1 ? true
+        return getUsersWithPermission(session, doc, moderatePermissions).size() >= 1 ? (true && WebCommentUtils.getModerationType(
+                session, doc).equals(WebCommentsConstants.MODERATION_APRIORI) == true)
                 : false;
     }
 

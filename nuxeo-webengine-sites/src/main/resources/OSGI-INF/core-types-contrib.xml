@@ -25,7 +25,6 @@
     
     <!-- ContextualLink doc type definition  -->
     <doctype name="ContextualLink" extends="Document">
-      <facet name="HiddenInNavigation" />    
       <schema name="common"/>
       <schema name="dublincore" />
       <schema name="contextualLink" />

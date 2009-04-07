@@ -2,7 +2,7 @@
 <#assign pendingComments = This.pendingComments /> 
 
 <div class="commentspageBlock">
-<#if (comments?size != 0 || base.canWrite)>
+<#if (publishedComments?size != 0 || base.canWrite)>
   <h4>${Context.getMessage("label.page.comments.title")}</h4>
 </#if>
 <#if (This.userWithCommentPermission==true)> 
