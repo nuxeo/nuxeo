@@ -61,7 +61,7 @@
   <!-- application settings -->
   <extension target="org.nuxeo.theme.services.ThemeService"
     point="applications">
-    <application root="/sites" template-engine="freemarker">
+    <application root="/nuxeo/sites" template-engine="freemarker">
       <negotiation>
         <strategy>web</strategy>
         <default-engine>default</default-engine>
@@ -83,6 +83,7 @@
         </default-perspective>
       </negotiation>
     </application>
+    
 
 
   </extension>
