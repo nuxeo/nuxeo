@@ -57,11 +57,7 @@ public class TestDublinCoreStorage extends RepositoryTestCase {
         deployContrib("org.nuxeo.ecm.core", "OSGI-INF/CoreService.xml");
 
         deployContrib("org.nuxeo.ecm.platform.dublincore.tests",
-                "test-CoreExtensions.xml");
-        deployContrib("org.nuxeo.ecm.platform.dublincore.tests",
                 "DemoRepository.xml");
-        deployContrib("org.nuxeo.ecm.platform.dublincore.tests",
-                "CoreEventListenerService.xml");
         deployContrib("org.nuxeo.ecm.platform.dublincore.tests",
                 "LifeCycleService.xml");
 
