@@ -55,7 +55,7 @@ import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 
 /**
- * The default implementation for a web configuration
+ * The default implementation for a web configuration.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -81,7 +81,7 @@ public class ModuleImpl implements Module {
     protected ConcurrentMap<String, ScriptFile> fileCache;
 
 
-    public ModuleImpl(WebEngine engine, ModuleImpl superModule, ModuleConfiguration config) throws Exception {
+    public ModuleImpl(WebEngine engine, ModuleImpl superModule, ModuleConfiguration config) {
         this.engine = engine;
         this.superModule = superModule;
         configuration = config;
@@ -314,14 +314,14 @@ public class ModuleImpl implements Module {
             if (skin.isDirectory()) {
                 dirStack.addDirectory(skin);
             }
-            if (superModule instanceof ModuleImpl) {
-                DirectoryStack ds = (superModule).dirStack;
+            if (superModule != null) {
+                DirectoryStack ds = superModule.dirStack;
                 if (ds != null) {
                     dirStack.getDirectories().addAll(ds.getDirectories());
                 }
             }
         } catch (IOException e) {
-            WebException.wrap("Failed to load directories stack", e);
+            throw WebException.wrap("Failed to load directories stack", e);
         }
     }
 

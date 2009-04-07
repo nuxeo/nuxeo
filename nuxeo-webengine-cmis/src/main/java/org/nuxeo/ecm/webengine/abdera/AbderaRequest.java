@@ -60,6 +60,10 @@ public class AbderaRequest extends ServletRequestContext {
         this.ctx = ctx;
         this.urlResolver = (UrlResolver)this.ctx.getProperty(URL_RESOLVER_KEY);
     }
+
+    public WebContext getContext() {
+        return ctx;
+    }
     
     // Avoid calling the provider for the target. it will be initialized after super ctor is called
     @Override

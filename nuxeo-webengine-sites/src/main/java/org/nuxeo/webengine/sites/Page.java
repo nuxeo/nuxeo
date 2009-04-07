@@ -24,14 +24,12 @@ import static org.nuxeo.webengine.utils.SiteUtilsConstants.LAST_PUBLISHED_PAGES;
 import static org.nuxeo.webengine.utils.SiteUtilsConstants.NAME;
 import static org.nuxeo.webengine.utils.SiteUtilsConstants.PAGE_TITLE;
 import static org.nuxeo.webengine.utils.SiteUtilsConstants.RESULTS;
-import static org.nuxeo.webengine.utils.SiteUtilsConstants.WEBPAGE;
 import static org.nuxeo.webengine.utils.SiteUtilsConstants.WELCOME_TEXT;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -41,7 +39,6 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -51,9 +48,10 @@ import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.Template;
 import org.nuxeo.ecm.webengine.model.WebObject;
+import org.nuxeo.ecm.webengine.webcomments.utils.WebCommentUtils;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.webengine.utils.SiteUtils;
-import org.nuxeo.webengine.utils.WebCommentUtils;
+
 
 /**
  * @author stan

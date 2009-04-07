@@ -34,15 +34,15 @@ public class CMISCollectionInfo extends CollectionInfo {
         super (id, title, adapter);
         this.type = type;
     }
-    
+
     public String getType() {
         return type;
     }
-    
+
     @Override
     protected void writeCollectionAttributes(String baseUrl, XMLWriter xw)
             throws IOException {
         xw.attr("cmis:collectionType", type);
-    } 
-    
+    }
+
 }

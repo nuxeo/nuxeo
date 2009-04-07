@@ -31,18 +31,16 @@ public class WikiListener  implements EventListener {
 
     protected DocumentModel doExtractWikiPage(Event event) {
 
-         if(DOCUMENT_UPDATED.equals(event.getName()) == false) {
+         if (!DOCUMENT_UPDATED.equals(event.getName())) {
              return null;
          }
 
          final Object context = event.getContext();
-
          if (!(context instanceof DocumentEventContext)) {
              return null;
          }
 
          final DocumentModel doc = ((DocumentEventContext)context).getSourceDocument();
-
          if (!WikiTypes.WIKIPAGE.equals(doc.getType())) {
              return null;
          }
@@ -51,12 +49,11 @@ public class WikiListener  implements EventListener {
     }
 
     public void handleEvent(Event event) {
-        DocumentModel wikiPage =
-            doExtractWikiPage(event);
-
-         if (wikiPage == null) return;
-
-         WikiHelper.updateRelations(wikiPage);
+        DocumentModel wikiPage = doExtractWikiPage(event);
+        if (wikiPage == null) {
+            return;
+        }
+        WikiHelper.updateRelations(wikiPage);
     }
 
 }

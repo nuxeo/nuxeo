@@ -30,93 +30,73 @@ import org.apache.abdera.protocol.server.context.ResponseContextException;
 import org.apache.chemistry.repository.Repository;
 
 /**
- * Collection to be used as the base of static collections that doesn't depends on a contextual root object. 
+ * An empty collection. 
  * 
  * @author Bogdan Stefanescu
  */
-public class StaticCollection extends CMISCollection<Object> {
+public class EmptyCollection<T> extends CMISCollection<T> {
 
-    public StaticCollection(String name, String title,
+    public EmptyCollection(String name, String title,
             Repository repository) {
         super(name, title, repository);
     }
 
-    /*
-     * ----- CollectionInfo -----
-     */
-
-    public String getTitle(RequestContext request) {
-        return title;
-    }
-
-    /*
-     * ----- AbstractEntityCollectionAdapter -----
-     */
 
     @Override
-    public Object postEntry(String title, IRI id, String summary, Date updated,
+    public T postEntry(String title, IRI id, String summary, Date updated,
             List<Person> authors, Content content, RequestContext request)
             throws ResponseContextException {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void putEntry(Object entry, String title, Date updated,
+    public void putEntry(T entry, String title, Date updated,
             List<Person> authors, String summary, Content content,
             RequestContext request) throws ResponseContextException {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
     @Override
     public void deleteEntry(String resourceName, RequestContext request)
             throws ResponseContextException {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Iterable<Object> getEntries(RequestContext request)
+    public Iterable<T> getEntries(RequestContext request)
             throws ResponseContextException {
         return Collections.emptyList();
     }
 
     @Override
-    public Object getContent(Object entry, RequestContext request)
+    public Object getContent(T entry, RequestContext request)
             throws ResponseContextException {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Object getEntry(String resourceName, RequestContext request)
+    public T getEntry(String resourceName, RequestContext request)
             throws ResponseContextException {
-        // TODO Auto-generated method stub
+        throw null;
+    }
+
+    @Override
+    public String getId(T entry) throws ResponseContextException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public String getId(Object entry) throws ResponseContextException {
-        // TODO Auto-generated method stub
+    public String getName(T entry) throws ResponseContextException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public String getName(Object entry) throws ResponseContextException {
-        // TODO Auto-generated method stub
+    public String getTitle(T entry) throws ResponseContextException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public String getTitle(Object entry) throws ResponseContextException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Date getUpdated(Object entry) throws ResponseContextException {
-        // TODO Auto-generated method stub
+    public Date getUpdated(T entry) throws ResponseContextException {
         throw new UnsupportedOperationException();
     }
 

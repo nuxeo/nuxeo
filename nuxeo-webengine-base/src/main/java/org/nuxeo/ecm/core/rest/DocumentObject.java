@@ -95,7 +95,8 @@ public class DocumentObject extends DefaultObject {
             } else {
                 path = doc.getPath().removeLastSegments(1).toString();
             }
-            query = "SELECT * FROM Document WHERE (ecm:fulltext = \"" + fullText + "\") AND (ecm:isCheckedInVersion = 0) AND (ecm:path STARTSWITH \"" + path + "\")" + orderClause;
+            query = "SELECT * FROM Document WHERE (ecm:fulltext = \"" + fullText
+                    + "\") AND (ecm:isCheckedInVersion = 0) AND (ecm:path STARTSWITH \"" + path + "\")" + orderClause;
         }
         try {
             DocumentModelList docs = ctx.getCoreSession().query(query);

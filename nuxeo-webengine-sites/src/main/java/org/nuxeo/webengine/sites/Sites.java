@@ -66,18 +66,17 @@ public class Sites extends DefaultObject {
                 return newObject("site", path);
             }
         } catch (Exception e) {
-            WebException.wrap(e);
+            throw WebException.wrap(e);
         }
-        return null;
-
     }
 
     public List<Object> getWebContainers() throws Exception {
         WebContext context = WebEngine.getActiveContext();
         CoreSession session = context.getCoreSession();
 
-        DocumentModelList webSites = session.query("SELECT * FROM Document WHERE ecm:mixinType = 'WebView' AND webc:isWebContainer = 1 AND " +
-        		" ecm:currentLifeCycleState != 'deleted' ");
+        DocumentModelList webSites = session.query(
+                "SELECT * FROM Document WHERE ecm:mixinType = 'WebView' AND webc:isWebContainer = 1 AND " +
+                " ecm:currentLifeCycleState != 'deleted' ");
         // filter by hand ( avoiding some core search issues )
         List<Object> sites = new ArrayList<Object>();
         for (DocumentModel webSite : webSites) {
@@ -87,7 +86,7 @@ public class Sites extends DefaultObject {
                 site.put("name", SiteHelper.getString(webSite, "webc:name"));
                 sites.add(site);
             } catch (Exception e) {
-                log.debug("Problem retrieving the existings websites ...", e);
+                log.error("Problem retrieving the existings websites ...", e);
             }
         }
 

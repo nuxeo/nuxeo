@@ -17,16 +17,12 @@
 package org.nuxeo.ecm.webengine.cmis.services;
 
 import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 
 import org.apache.chemistry.repository.Repository;
 import org.nuxeo.ecm.webengine.abdera.AbderaService;
 import org.nuxeo.ecm.webengine.atom.CollectionResource;
 import org.nuxeo.ecm.webengine.cmis.CMISWorkspaceInfo;
-import org.nuxeo.ecm.webengine.cmis.adapters.StaticCollection;
-import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.WebObject;
 
 /**
@@ -36,7 +32,7 @@ import org.nuxeo.ecm.webengine.model.WebObject;
 @WebObject(type="CmisServices")
 public class ServicesCollectionResource extends CollectionResource {
     
-    protected static StaticCollection adapter;
+    protected static ServicesCollection adapter;
     
     protected CMISWorkspaceInfo ws;
     protected String id;
@@ -53,13 +49,7 @@ public class ServicesCollectionResource extends CollectionResource {
     
     @GET
     public Response doGet() {
-        return AbderaService.getFeed(ctx, adapter);
-    }
-
-    @Path("{id}")    
-    public Resource dispatch(@PathParam("id") String id) {
-        String webType = null;//registry.getService(id);
-        return newObject(webType, ws);
+        return AbderaService.getFeed(ctx, ws.getCollection("services").getCollectionAdapter());
     }
 
 }

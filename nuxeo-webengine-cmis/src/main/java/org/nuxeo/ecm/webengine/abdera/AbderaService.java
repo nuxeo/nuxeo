@@ -32,26 +32,28 @@ import org.apache.abdera.protocol.server.ResponseContext;
 import org.apache.abdera.protocol.server.Target;
 import org.apache.abdera.protocol.server.TargetBuilder;
 import org.apache.abdera.protocol.server.TargetType;
+import org.apache.abdera.protocol.server.Transactional;
 import org.apache.abdera.protocol.server.WorkspaceManager;
 import org.apache.abdera.protocol.server.impl.AbstractProvider;
+import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebContext;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class AbderaService extends AbstractProvider implements TargetBuilder, Resolver<Target> {    
-    
-    private static final AbderaService instance = new AbderaService(); 
-    
+public class AbderaService extends AbstractProvider implements TargetBuilder, Resolver<Target> {
+
+    private static final AbderaService instance = new AbderaService();
+
     public final static AbderaService getInstance() {
         return instance;
     }
-    
+
     protected AbderaService() {
         init(new Abdera(), new HashMap<String, String>());
     }
-        
+
     @Override
     protected TargetBuilder getTargetBuilder(RequestContext request) {
         return this;
@@ -73,12 +75,12 @@ public class AbderaService extends AbstractProvider implements TargetBuilder, Re
     }
 
     public Target resolve(Request request) {
-        //this is called in AbderaRequest ctor so we need to init target here 
+        //this is called in AbderaRequest ctor so we need to init target here
         return ((AbderaRequest)request).getTarget();
     }
 
-    
-    
+
+
     public AbderaRequest createFeedRequest(WebContext ctx) {
         return new AbderaRequest(TargetType.TYPE_COLLECTION, this, ctx);
     }
@@ -124,83 +126,317 @@ public class AbderaService extends AbstractProvider implements TargetBuilder, Re
         return builder.entity(context).build();
     }
 
-    
+
     public final static Response getFeed(WebContext ctx, CollectionAdapter adapter) {
         AbderaRequest request = getInstance().createFeedRequest(ctx);
-        ResponseContext rc = adapter.getFeed(request);
-        return getInstance().getResponse(rc);
+        ResponseContext rc = null;
+        Transactional tx = null;
+        try {
+            if (adapter instanceof Transactional) {
+                tx =(Transactional)adapter;
+                tx.start(request);
+            }
+            rc = adapter.getFeed(request);
+            return getInstance().getResponse(rc);
+        } catch (Throwable t) {
+            if (tx != null) {
+                tx.compensate(request, t);
+                tx = null;
+            }
+            throw WebException.wrap(t);
+        } finally {
+            if (tx != null) {
+                tx.end(request, rc);
+            }
+        }
     }
-    
+
     public final static Response postEntry(WebContext ctx, CollectionAdapter adapter) {
         AbderaRequest request = getInstance().createFeedRequest(ctx);
-        ResponseContext rc = adapter.postEntry(request);
-        return getInstance().getResponse(rc);
+        ResponseContext rc = null;
+        Transactional tx = null;
+        try {
+            if (adapter instanceof Transactional) {
+                tx =(Transactional)adapter;
+                tx.start(request);
+            }
+            rc = adapter.postEntry(request);
+            return getInstance().getResponse(rc);
+        } catch (Throwable t) {
+            if (tx != null) {
+                tx.compensate(request, t);
+                tx = null;
+            }
+            throw WebException.wrap(t);
+        } finally {
+            if (tx != null) {
+                tx.end(request, rc);
+            }
+        }
     }
-    
+
     public final static Response getEntry(WebContext ctx, CollectionAdapter adapter) {
-        AbderaRequest request = getInstance().createEntryRequest(ctx);
-        ResponseContext rc = adapter.getEntry(request);
-        return getInstance().getResponse(rc);
+        AbderaRequest request = getInstance().createFeedRequest(ctx);
+        ResponseContext rc = null;
+        Transactional tx = null;
+        try {
+            if (adapter instanceof Transactional) {
+                tx =(Transactional)adapter;
+                tx.start(request);
+            }
+            rc = adapter.getEntry(request);
+            return getInstance().getResponse(rc);
+        } catch (Throwable t) {
+            if (tx != null) {
+                tx.compensate(request, t);
+                tx = null;
+            }
+            throw WebException.wrap(t);
+        } finally {
+            if (tx != null) {
+                tx.end(request, rc);
+            }
+        }
     }
-    
+
     public final static Response putEntry(WebContext ctx, CollectionAdapter adapter) {
-        AbderaRequest request = getInstance().createEntryRequest(ctx);
-        ResponseContext rc = adapter.putEntry(request);
-        return getInstance().getResponse(rc);
+        AbderaRequest request = getInstance().createFeedRequest(ctx);
+        ResponseContext rc = null;
+        Transactional tx = null;
+        try {
+            if (adapter instanceof Transactional) {
+                tx =(Transactional)adapter;
+                tx.start(request);
+            }
+            rc = adapter.putEntry(request);
+            return getInstance().getResponse(rc);
+        } catch (Throwable t) {
+            if (tx != null) {
+                tx.compensate(request, t);
+                tx = null;
+            }
+            throw WebException.wrap(t);
+        } finally {
+            if (tx != null) {
+                tx.end(request, rc);
+            }
+        }
     }
 
     public final static Response deleteEntry(WebContext ctx, CollectionAdapter adapter) {
-        AbderaRequest request = getInstance().createEntryRequest(ctx);
-        ResponseContext rc = adapter.deleteEntry(request);
-        return getInstance().getResponse(rc);
+        AbderaRequest request = getInstance().createFeedRequest(ctx);
+        ResponseContext rc = null;
+        Transactional tx = null;
+        try {
+            if (adapter instanceof Transactional) {
+                tx =(Transactional)adapter;
+                tx.start(request);
+            }
+            rc = adapter.deleteEntry(request);
+            return getInstance().getResponse(rc);
+        } catch (Throwable t) {
+            if (tx != null) {
+                tx.compensate(request, t);
+                tx = null;
+            }
+            throw WebException.wrap(t);
+        } finally {
+            if (tx != null) {
+                tx.end(request, rc);
+            }
+        }
     }
 
     public final static Response headEntry(WebContext ctx, CollectionAdapter adapter) {
-        AbderaRequest request = getInstance().createEntryRequest(ctx);
-        ResponseContext rc = adapter.headEntry(request);
-        return getInstance().getResponse(rc);
+        AbderaRequest request = getInstance().createFeedRequest(ctx);
+        ResponseContext rc = null;
+        Transactional tx = null;
+        try {
+            if (adapter instanceof Transactional) {
+                tx =(Transactional)adapter;
+                tx.start(request);
+            }
+            rc = adapter.headEntry(request);
+            return getInstance().getResponse(rc);
+        } catch (Throwable t) {
+            if (tx != null) {
+                tx.compensate(request, t);
+                tx = null;
+            }
+            throw WebException.wrap(t);
+        } finally {
+            if (tx != null) {
+                tx.end(request, rc);
+            }
+        }
     }
 
     public final static Response optionsEntry(WebContext ctx, CollectionAdapter adapter) {
-        AbderaRequest request = getInstance().createEntryRequest(ctx);
-        ResponseContext rc = adapter.optionsEntry(request);
-        return getInstance().getResponse(rc);
+        AbderaRequest request = getInstance().createFeedRequest(ctx);
+        ResponseContext rc = null;
+        Transactional tx = null;
+        try {
+            if (adapter instanceof Transactional) {
+                tx =(Transactional)adapter;
+                tx.start(request);
+            }
+            rc = adapter.optionsEntry(request);
+            return getInstance().getResponse(rc);
+        } catch (Throwable t) {
+            if (tx != null) {
+                tx.compensate(request, t);
+                tx = null;
+            }
+            throw WebException.wrap(t);
+        } finally {
+            if (tx != null) {
+                tx.end(request, rc);
+            }
+        }
     }
 
     public final static Response getMedia(WebContext ctx, MediaCollectionAdapter adapter) {
-        AbderaRequest request = getInstance().createMediaRequest(ctx);
-        ResponseContext rc = adapter.getMedia(request);
-        return getInstance().getResponse(rc);
+        AbderaRequest request = getInstance().createFeedRequest(ctx);
+        ResponseContext rc = null;
+        Transactional tx = null;
+        try {
+            if (adapter instanceof Transactional) {
+                tx =(Transactional)adapter;
+                tx.start(request);
+            }
+            rc = adapter.getMedia(request);
+            return getInstance().getResponse(rc);
+        } catch (Throwable t) {
+            if (tx != null) {
+                tx.compensate(request, t);
+                tx = null;
+            }
+            throw WebException.wrap(t);
+        } finally {
+            if (tx != null) {
+                tx.end(request, rc);
+            }
+        }
     }
 
     public final static Response putMedia(WebContext ctx, MediaCollectionAdapter adapter) {
-        AbderaRequest request = getInstance().createMediaRequest(ctx);
-        ResponseContext rc = adapter.putMedia(request);
-        return getInstance().getResponse(rc);
+        AbderaRequest request = getInstance().createFeedRequest(ctx);
+        ResponseContext rc = null;
+        Transactional tx = null;
+        try {
+            if (adapter instanceof Transactional) {
+                tx =(Transactional)adapter;
+                tx.start(request);
+            }
+            rc = adapter.putMedia(request);
+            return getInstance().getResponse(rc);
+        } catch (Throwable t) {
+            if (tx != null) {
+                tx.compensate(request, t);
+                tx = null;
+            }
+            throw WebException.wrap(t);
+        } finally {
+            if (tx != null) {
+                tx.end(request, rc);
+            }
+        }
     }
 
     public final static Response postMedia(WebContext ctx, MediaCollectionAdapter adapter) {
-        AbderaRequest request = getInstance().createMediaRequest(ctx);
-        ResponseContext rc = adapter.postMedia(request);
-        return getInstance().getResponse(rc);
+        AbderaRequest request = getInstance().createFeedRequest(ctx);
+        ResponseContext rc = null;
+        Transactional tx = null;
+        try {
+            if (adapter instanceof Transactional) {
+                tx =(Transactional)adapter;
+                tx.start(request);
+            }
+            rc = adapter.postMedia(request);
+            return getInstance().getResponse(rc);
+        } catch (Throwable t) {
+            if (tx != null) {
+                tx.compensate(request, t);
+                tx = null;
+            }
+            throw WebException.wrap(t);
+        } finally {
+            if (tx != null) {
+                tx.end(request, rc);
+            }
+        }
     }
 
     public final static Response deleteMedia(WebContext ctx, MediaCollectionAdapter adapter) {
-        AbderaRequest request = getInstance().createMediaRequest(ctx);
-        ResponseContext rc = adapter.deleteMedia(request);
-        return getInstance().getResponse(rc);
+        AbderaRequest request = getInstance().createFeedRequest(ctx);
+        ResponseContext rc = null;
+        Transactional tx = null;
+        try {
+            if (adapter instanceof Transactional) {
+                tx =(Transactional)adapter;
+                tx.start(request);
+            }
+            rc = adapter.deleteMedia(request);
+            return getInstance().getResponse(rc);
+        } catch (Throwable t) {
+            if (tx != null) {
+                tx.compensate(request, t);
+                tx = null;
+            }
+            throw WebException.wrap(t);
+        } finally {
+            if (tx != null) {
+                tx.end(request, rc);
+            }
+        }
     }
 
     public final static Response headMedia(WebContext ctx, MediaCollectionAdapter adapter) {
-        AbderaRequest request = getInstance().createMediaRequest(ctx);
-        ResponseContext rc = adapter.headMedia(request);
-        return getInstance().getResponse(rc);
+        AbderaRequest request = getInstance().createFeedRequest(ctx);
+        ResponseContext rc = null;
+        Transactional tx = null;
+        try {
+            if (adapter instanceof Transactional) {
+                tx =(Transactional)adapter;
+                tx.start(request);
+            }
+            rc = adapter.headMedia(request);
+            return getInstance().getResponse(rc);
+        } catch (Throwable t) {
+            if (tx != null) {
+                tx.compensate(request, t);
+                tx = null;
+            }
+            throw WebException.wrap(t);
+        } finally {
+            if (tx != null) {
+                tx.end(request, rc);
+            }
+        }
     }
 
     public final static Response optionsMedia(WebContext ctx, MediaCollectionAdapter adapter) {
-        AbderaRequest request = getInstance().createMediaRequest(ctx);
-        ResponseContext rc = adapter.optionsMedia(request);
-        return getInstance().getResponse(rc);
+        AbderaRequest request = getInstance().createFeedRequest(ctx);
+        ResponseContext rc = null;
+        Transactional tx = null;
+        try {
+            if (adapter instanceof Transactional) {
+                tx =(Transactional)adapter;
+                tx.start(request);
+            }
+            rc = adapter.optionsMedia(request);
+            return getInstance().getResponse(rc);
+        } catch (Throwable t) {
+            if (tx != null) {
+                tx.compensate(request, t);
+                tx = null;
+            }
+            throw WebException.wrap(t);
+        } finally {
+            if (tx != null) {
+                tx.end(request, rc);
+            }
+        }
     }
 
 }

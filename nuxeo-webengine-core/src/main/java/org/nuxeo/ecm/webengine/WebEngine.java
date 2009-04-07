@@ -118,7 +118,7 @@ public class WebEngine implements ResourceLocator {
     protected ReloadManager reloadMgr;
 
 
-    public WebEngine(ResourceRegistry registry, File root) throws IOException {
+    public WebEngine(ResourceRegistry registry, File root) {
         this.registry = registry;
         this.root = root;
         devMode = Framework.getProperty("org.nuxeo.dev");
@@ -148,7 +148,7 @@ public class WebEngine implements ResourceLocator {
         rendering.setSharedVariable("env", getEnvironment());
 
         // register writers - TODO make an extension point
-        // resource writers may generate coding problems so we disable it for now 
+        // resource writers may generate coding problems so we disable it for now
         //registry.addMessageBodyWriter(new ResourceWriter());
         registry.addMessageBodyWriter(new TemplateWriter());
         registry.addMessageBodyWriter(new ScriptFileWriter());
@@ -220,7 +220,7 @@ public class WebEngine implements ResourceLocator {
      * The module configuration is not yet loaded.
      * It will be loaded the first time an HTTP request will be made.
      */
-    public void registerModule(File config) throws IOException {
+    public void registerModule(File config) {
         registeredModules.add(config);
         if (moduleMgr != null) { // avoid synchronizing if not needed
             synchronized (this) {
@@ -246,19 +246,11 @@ public class WebEngine implements ResourceLocator {
                     moduleMgr = new ModuleManager(this);
                     File deployRoot = getDeploymentDirectory();
                     if (deployRoot.isDirectory()) {
-                        try {
-                            moduleMgr.loadModules(deployRoot);
-                        } catch (IOException e) {
-                            throw WebException.wrap("Failed to load auto-deploy modules", e);
-                        }
+                        moduleMgr.loadModules(deployRoot);
                     }
-                    try {
-                        // make a copy to avoid concurrent modifications with registerModule
-                        for (File mod : registeredModules.toArray(new File[registeredModules.size()])) {
-                            moduleMgr.loadModule(mod);
-                        }
-                    } catch (IOException e) {
-                        throw WebException.wrap("Failed to load modules", e);
+                    // make a copy to avoid concurrent modifications with registerModule
+                    for (File mod : registeredModules.toArray(new File[registeredModules.size()])) {
+                        moduleMgr.loadModule(mod);
                     }
                 }
             }

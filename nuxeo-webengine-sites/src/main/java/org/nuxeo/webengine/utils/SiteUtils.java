@@ -19,8 +19,11 @@ package org.nuxeo.webengine.utils;
 import static org.nuxeo.webengine.utils.SiteUtilsConstants.CONTEXTUAL_LINK;
 import static org.nuxeo.webengine.utils.SiteUtilsConstants.NUMBER_COMMENTS;
 import static org.nuxeo.webengine.utils.SiteUtilsConstants.WEBPAGE;
+
 import static org.nuxeo.webengine.utils.SiteUtilsConstants.WEB_CONTAINER_FACET;
+
 import static org.nuxeo.webengine.utils.SiteUtilsConstants.WORKSPACE;
+
 import static org.nuxeo.webengine.utils.SiteUtilsConstants.DELETED;
 
 import java.text.SimpleDateFormat;
@@ -31,14 +34,22 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+<<<<<<< /home/price/workspace/nuxeo/nuxeo-webengine/nuxeo-webengine-sites/src/main/java/org/nuxeo/webengine/utils/SiteUtils.java
 import javax.servlet.http.HttpServletRequest;
+=======
+
+>>>>>>> /tmp/SiteUtils.java~other.mrp311
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang.StringUtils;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+<<<<<<< /home/price/workspace/nuxeo/nuxeo-webengine/nuxeo-webengine-sites/src/main/java/org/nuxeo/webengine/utils/SiteUtils.java
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.common.utils.Path;
+=======
+>>>>>>> /tmp/SiteUtils.java~other.mrp311
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -49,17 +60,19 @@ import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.WebContext;
+import org.nuxeo.ecm.webengine.webcomments.utils.WebCommentUtils;
 import org.nuxeo.webengine.sites.JsonAdapter;
 import org.nuxeo.webengine.sites.SiteHelper;
 
 /**
- * Utility class for sites implementation
- *
- *
+ * Utility class for sites implementation.
  */
 public class SiteUtils {
 
     private static final Log log = LogFactory.getLog(SiteUtils.class);
+
+    private SiteUtils() {
+    }
 
     /**
      * Method used to return the list with the details about the <b>Contextual
@@ -82,7 +95,7 @@ public class SiteUtils {
 
             for (DocumentModel document : session.getChildren(
                     documentModel.getRef(), CONTEXTUAL_LINK)) {
-                if (document.getCurrentLifeCycleState().equals(DELETED) == false) {
+                if (!document.getCurrentLifeCycleState().equals(DELETED)) {
                     try {
                         Map<String, String> contextualLink = new HashMap<String, String>();
                         contextualLink.put("title", SiteHelper.getString(
@@ -103,21 +116,19 @@ public class SiteUtils {
     }
 
     /**
-     * This method is used to retrieve a certain number of pages with
-     * information about the last modified <b>WebPage</b>-s that are made under
-     * an <b>Workspace</b> or <b>WebPage</b> that is received as parameter.
+     * Retrieves a certain number of pages with information about the last
+     * modified <b>WebPage</b>-s that are made under an <b>Workspace</b> or
+     * <b>WebPage</b> that is received as parameter.
      *
-     * @param documentModel - the parent for webpages
-     * @param noPages - the number of pages
-     * @param noWordsFromContent - the number of words from the content of the
+     * @param documentModel the parent for webpages
+     * @param noPages the number of pages
+     * @param noWordsFromContent the number of words from the content of the
      *            webpages
      * @return the <b>WebPage</b>-s that are made under an <b>Workspace</b> or
      *         <b>WebPage</b> that is received as parameter
-     * @throws ClientException
      */
     public static List<Object> getLastModifiedWebPages(
-            DocumentModel documentModel, int noPages, int noWordsFromContent)
-            throws ClientException {
+            DocumentModel documentModel, int noPages, int noWordsFromContent) {
         WebContext context = WebEngine.getActiveContext();
         CoreSession session = context.getCoreSession();
         List<Object> pages = new ArrayList<Object>();
@@ -174,8 +185,7 @@ public class SiteUtils {
      * Returns all the <b>WebPage</b>-s that are direct children of the received
      * document.
      *
-     * @param document - the parent for the webpages
-     * @return
+     * @param document the parent for the webpages
      */
     public static List<Object> getAllWebPages(DocumentModel document) {
         List<Object> webPages = new ArrayList<Object>();
@@ -183,7 +193,7 @@ public class SiteUtils {
         try {
             for (DocumentModel webPage : session.getChildren(document.getRef(),
                     WEBPAGE)) {
-                if (webPage.getCurrentLifeCycleState().equals(DELETED) == false) {
+                if (!webPage.getCurrentLifeCycleState().equals(DELETED)) {
                     Map<String, String> details = new HashMap<String, String>();
                     details.put("name", SiteHelper.getString(webPage,
                             "dc:title"));
@@ -229,7 +239,7 @@ public class SiteUtils {
      * @param noComments - the number of comments
      * @param noWordsFromContent - the number of words from the content of the
      *            comment
-     * @return the <b>WebComments</b>-s that are made under a <b>WebPage</b>
+     * @return the <b>Comments</b>-s that are made under a <b>WebPage</b>
      * @throws ClientException
      */
     public static List<Object> getLastCommentsFromPages(DocumentModel ws,
@@ -239,7 +249,7 @@ public class SiteUtils {
         DocumentModelList comments = session.query(
                 String.format(
                         "SELECT * FROM Document WHERE "
-                                + " ecm:primaryType like 'WebComment' "
+                                + " ecm:primaryType like 'Comment' "
                                 + " AND ecm:path STARTSWITH '%s'"
                                 + " AND ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0"
                                 + " AND ecm:currentLifeCycleState != 'deleted' ORDER BY dc:modified DESC",
@@ -251,7 +261,7 @@ public class SiteUtils {
                 DocumentModel parentPage = WebCommentUtils.getPageForComment(documentModel);
                 if (parentPage != null) {
                     GregorianCalendar creationDate = SiteHelper.getGregorianCalendar(
-                            documentModel, "webcmt:creationDate");
+                            documentModel, "comment:creationDate");
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
                             "dd MMMM", WebEngine.getActiveContext().getLocale());
                     String formattedString = simpleDateFormat.format(creationDate.getTime());
@@ -260,29 +270,27 @@ public class SiteUtils {
                     comment.put("month", splittedFormatterdString[1]);
 
                     comment.put("author", getUserDetails(SiteHelper.getString(
-                            documentModel, "webcmt:author")));
+                            documentModel, "comment:author")));
 
-                    if (parentPage != null) {
-                        comment.put("pageTitle", parentPage.getTitle());
-                        comment.put("pagePath", JsonAdapter.getRelativPath(ws,
-                                parentPage).toString());
-                    }
+                    comment.put("pageTitle", parentPage.getTitle());
+                    comment.put("pagePath", JsonAdapter.getRelativPath(ws,
+                            parentPage).toString());
                     comment.put("content", SiteHelper.getFistNWordsFromString(
-                            SiteHelper.getString(documentModel, "webcmt:text"),
+                            SiteHelper.getString(documentModel, "comment:text"),
                             noWordsFromContent));
                     lastWebComments.add(comment);
                 }
             } catch (Exception e) {
                 throw new ClientException(e);
             }
-
         }
 
         return lastWebComments;
     }
 
     /**
-     * This method is used to retrieve user details for a certain username
+     * Retrieves user details for a certain username.
+     *
      * @param username
      * @return user first name + user last name
      * @throws Exception
@@ -290,8 +298,9 @@ public class SiteUtils {
     public static String getUserDetails(String username) throws Exception{
         UserManager userManager  = WebCommentUtils.getUserManager();
         NuxeoPrincipal principal = userManager.getPrincipal(username);
-        if (principal == null)
+        if (principal == null) {
             return StringUtils.EMPTY;
+        }
         if (StringUtils.isEmpty(principal.getFirstName())
                 && StringUtils.isEmpty(principal.getLastName())) {
             return principal.toString();
@@ -300,6 +309,7 @@ public class SiteUtils {
     }
 
     /**
+<<<<<<< /home/price/workspace/nuxeo/nuxeo-webengine/nuxeo-webengine-sites/src/main/java/org/nuxeo/webengine/utils/SiteUtils.java
      * This method is used to search a certain webPage between all the pages
      * under a <b>Workspace</b> that contains in title, description , main
      * content or attached files the given searchParam
@@ -308,6 +318,18 @@ public class SiteUtils {
      * @param nrWordsFromDescription - the number of words from the page description
      * @return the <b>WebPage</b>-s found under a <b>Workspace</b> that match the
      * corresponding criteria
+=======
+     * Searches a certain webPage between all the pages under a <b>Workspace</b>
+     * that contains in title, description , main content or attached files the
+     * given searchParam.
+     *
+     * @param ws the workspace
+     * @param searchParam the search parameter
+     * @param nrWordsFromDescription the number of words from the page
+     *            description
+     * @return the <b>WebPage</b>-s found under a <b>Workspace</b> that match
+     *         the corresponding criteria
+>>>>>>> /tmp/SiteUtils.java~other.mrp311
      * @throws ClientException
      */
     public static List<Object> searchPagesInSite(DocumentModel ws,
@@ -316,7 +338,7 @@ public class SiteUtils {
         WebContext context = WebEngine.getActiveContext();
         CoreSession session = context.getCoreSession();
         List<Object> webPages = new ArrayList<Object>();
-        if (StringUtils.isEmpty(searchParam) == false) {
+        if (!StringUtils.isEmpty(searchParam)) {
             DocumentModelList results = session.query(String.format(
                     "SELECT * FROM WebPage WHERE ecm:fulltext LIKE '%s' AND "
                             + " ecm:path STARTSWITH  '%s' AND "
@@ -357,37 +379,48 @@ public class SiteUtils {
         }
         return webPages;
     }
+<<<<<<< /home/price/workspace/nuxeo/nuxeo-webengine/nuxeo-webengine-sites/src/main/java/org/nuxeo/webengine/utils/SiteUtils.java
 
+=======
+>>>>>>> /tmp/SiteUtils.java~other.mrp311
 
     /**
-     * This method is used to return the path to all the existing web
-     * containers.
+     * Returns the path to all the existing web containers.
      *
-     * @param context - the web context
      * @return the path to all the existing web containers
      */
     public static StringBuilder getWebContainersPath() {
         WebContext context = WebEngine.getActiveContext();
-        StringBuilder initialPath = new StringBuilder(context.getBasePath()).append(context.getUriInfo().getMatchedURIs().get(
-                context.getUriInfo().getMatchedURIs().size() - 1));
+        StringBuilder initialPath = new StringBuilder(context.getBasePath())
+                .append(context.getUriInfo().getMatchedURIs().get(
+                            context.getUriInfo().getMatchedURIs().size() - 1));
         return initialPath;
     }
 
     /**
+<<<<<<< /home/price/workspace/nuxeo/nuxeo-webengine/nuxeo-webengine-sites/src/main/java/org/nuxeo/webengine/utils/SiteUtils.java
      * This method is used to return the path for a webPage from a webSite
      *
      * @param ws - the web site
      * @param documentModel -the webPage
      * @return the path
+=======
+     * Returns the path for a webPage from a webSite.
+     *
+     * @param ws the web site
+     * @param documentModel the webPage
+     * @return the path
+>>>>>>> /tmp/SiteUtils.java~other.mrp311
      */
     public static String getPagePath(DocumentModel ws,
             DocumentModel documentModel) {
         StringBuilder path = new StringBuilder(getWebContainersPath()).append("/");
-        path.append(ws.getPath().segment(ws.getPath().segmentCount() - 1)).append(
-                "/");
+        path.append(ws.getPath().segment(ws.getPath().segmentCount() - 1))
+                .append("/");
         path.append(JsonAdapter.getRelativPath(ws, documentModel));
         return path.toString();
     }
+<<<<<<< /home/price/workspace/nuxeo/nuxeo-webengine/nuxeo-webengine-sites/src/main/java/org/nuxeo/webengine/utils/SiteUtils.java
 
     public static DocumentModel createWebPageDocument(HttpServletRequest request, CoreSession session, String parentPath) throws ClientException {
         String title = request.getParameter("title");
@@ -418,4 +451,7 @@ public class SiteUtils {
         return documentModel;
     }
 
+=======
+
+>>>>>>> /tmp/SiteUtils.java~other.mrp311
 }

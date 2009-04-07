@@ -24,9 +24,9 @@ import org.nuxeo.ecm.webengine.model.WebContext;
 
 /**
  * An object describing a CMIS repository (e.g. APP workspace)
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class CollectionInfo {
 
@@ -39,7 +39,7 @@ public class CollectionInfo {
     protected AbstractCollectionAdapter adapter;
 
     protected WorkspaceInfo workspaceInfo;
-    
+
     public CollectionInfo(String id, String title, AbstractCollectionAdapter adapter) {
         this (id, title, null, adapter);
     }
@@ -54,11 +54,11 @@ public class CollectionInfo {
     public void setResourceType(String resourceType) {
         this.resourceType = resourceType;
     }
-    
+
     public WorkspaceInfo getWorkspaceInfo() {
         return workspaceInfo;
     }
-    
+
     public String getId() {
         return id;
     }
@@ -74,7 +74,7 @@ public class CollectionInfo {
     public String getResourceType() {
         return resourceType;
     }
-    
+
     public Resource getResource(WebContext ctx) {
         return ctx.newObject(resourceType, this);
     }
@@ -82,7 +82,7 @@ public class CollectionInfo {
     protected String createUrl(String baseUrl) {
         return baseUrl + "/" + id;
     }
-    
+
     public void writeTo(String baseUrl, XMLWriter xw) throws IOException {
         xw.element("collection").attr("href", createUrl(baseUrl));
         writeCollectionAttributes(baseUrl, xw);

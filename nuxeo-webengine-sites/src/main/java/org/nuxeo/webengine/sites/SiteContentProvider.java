@@ -22,6 +22,8 @@ package org.nuxeo.webengine.sites;
 import java.util.Vector;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -30,7 +32,9 @@ import org.nuxeo.ecm.webengine.ui.tree.document.DocumentContentProvider;
 public class SiteContentProvider extends DocumentContentProvider {
 
     private static final long serialVersionUID = 1L;
-
+    
+    private static final Log log = LogFactory.getLog(SiteContentProvider.class);
+    
     public SiteContentProvider(CoreSession session) {
         super(session);
     }
@@ -42,14 +46,14 @@ public class SiteContentProvider extends DocumentContentProvider {
         for (Object o : objects) {
             DocumentModel d = (DocumentModel) o;
             // filter pages
-            // WEB-214 
+            // WEB-214
             try {
                 if (SiteHelper.getBoolean(d, "webp:pushtomenu", false)
-                        && d.getCurrentLifeCycleState().equals("deleted") == false) {
+                        && !d.getCurrentLifeCycleState().equals("deleted")) {
                     v.add(d);
                 }
             } catch (ClientException e) {
-                e.printStackTrace();
+                log.error(e);
             }
         }
         return v.toArray();

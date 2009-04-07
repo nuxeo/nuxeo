@@ -51,7 +51,5 @@ public class AbderaElementWriter implements MessageBodyWriter<Element> {
             throws IOException, WebApplicationException {
         arg0.writeTo(arg6);
     }
-    
+
 }
-
-

@@ -32,25 +32,25 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
  *
  */
 @WebObject(type="atomentry")
-public class EntryResource extends DefaultObject {   
-    
+public class EntryResource extends DefaultObject {
+
     protected AbderaService service;
-    protected CollectionAdapter adapter; 
-        
+    protected CollectionAdapter adapter;
+
     protected void initialize(Object ... args) {
         this.adapter = (CollectionAdapter)args[0];
     }
-            
+
     @GET
     public Response getEntry() {
         return AbderaService.getEntry(ctx, adapter);
     }
-    
+
     @PUT
     public Response putEntry() {
         return AbderaService.putEntry(ctx, adapter);
     }
-    
+
     @DELETE
     public Response deleteEntry() {
         return AbderaService.deleteEntry(ctx, adapter);
@@ -60,11 +60,11 @@ public class EntryResource extends DefaultObject {
     public Response headEntry() {
         return AbderaService.headEntry(ctx, adapter);
     }
-    
-//TODO define @OPTIONS annotation    
+
+//TODO define @OPTIONS annotation
 //    @OPTIONS
 //    public Response optionsEntry() {
 //        return AbderaService.optionsEntry(ctx, adapter);
 //    }
-    
+
 }

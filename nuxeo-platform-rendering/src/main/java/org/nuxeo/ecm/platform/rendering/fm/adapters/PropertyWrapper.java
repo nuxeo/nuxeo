@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.platform.rendering.fm.adapters;
 
 import java.util.Calendar;
-import java.util.Date;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.model.Property;
@@ -37,7 +36,6 @@ import freemarker.template.TemplateModelException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class PropertyWrapper {
 

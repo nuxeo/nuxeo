@@ -21,14 +21,7 @@
        <facet name="Commentable"/>
     </doctype>
   
-  
-    <doctype name="WebComment" extends="Document">
-      <schema name="common"/>
-      <schema name="webcomment"/>
-      <schema name="dublincore"/>
-      <facet name="HiddenInNavigation"/>
-      <facet name="Commentable"/>
-    </doctype>
+ 
     
     <!-- ContextualLink doc type definition  -->
     <doctype name="ContextualLink" extends="Document">

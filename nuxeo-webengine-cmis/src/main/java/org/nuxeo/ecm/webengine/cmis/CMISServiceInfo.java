@@ -32,5 +32,5 @@ public class CMISServiceInfo extends ServiceInfo {
     protected void writeServiceAttributes(String baseUrl, XMLWriter xw) throws IOException {
         xw.xmlns(CMIS.CMIS_PREFIX, CMIS.CMIS_NS);
     }
-    
+
 }
