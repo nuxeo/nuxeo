@@ -1,13 +1,12 @@
 <@extends src="base.ftl">
-<@block name="header"><h1><a href="${appPath}">Error</a></h1></@block>
+<@block name="header"><h1><a href="${appPath}">FrontPage</a></h1></@block>
 <@block name="content">
 
-<h1>404 - Resource Not Found</h1>
+<h1>${Context.getMessage("label.create.wiki.page")}</h1>
 
 <p>
-The page you requested doesn't exists.
-Click <a href="${This.path}/create/${This.nextSegment}">here</a>
-to create a new Wiki Page named <em>${This.nextSegment}</em>.
+${Context.getMessage("label.click")} <a href="${This.path}/create/${This.nextSegment}">${Context.getMessage("label.here")}</a>
+${Context.getMessage("label.click.here.to")} <em>${This.nextSegment}</em>.
 </p>
 
 </@block>
