@@ -24,15 +24,17 @@ import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.ui.tree.JSonTreeSerializer;
 import org.nuxeo.ecm.webengine.ui.tree.TreeItem;
+import org.nuxeo.webengine.utils.SiteUtils;
 
-public class SiteTreeSerializer extends JSonTreeSerializer{
+public class SiteTreeSerializer extends JSonTreeSerializer {
 
     @Override
     public String getUrl(TreeItem item) {
         WebContext ctx = WebEngine.getActiveContext();
-        StringBuffer sb = new StringBuffer(ctx.getModulePath());
-        DocumentModel d = (DocumentModel)ctx.getUserSession().get(JsonAdapter.ROOT_DOCUMENT);
-        if (d != null ) {
+        StringBuffer sb = new StringBuffer(SiteUtils.getWebContainersPath());
+        DocumentModel d = (DocumentModel) ctx.getUserSession().get(
+                JsonAdapter.ROOT_DOCUMENT);
+        if (d != null) {
             sb.append("/").append(SiteHelper.getString(d, "webc:url", ""));
         }
         sb.append(item.getPath().toString());
