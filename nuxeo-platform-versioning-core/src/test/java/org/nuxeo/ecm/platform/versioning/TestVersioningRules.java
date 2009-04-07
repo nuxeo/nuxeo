@@ -151,10 +151,6 @@ public class TestVersioningRules extends VersioningBaseTestCase {
     /**
      * Tests edit option (inc major/minor) with lifecycle transition specified
      * by major inc option.
-     *
-     * @throws DocumentException
-     * @throws ClientException
-     * @throws LifeCycleException
      */
     public void testEditOptionWithTransition() throws DocumentException,
             ClientException, LifeCycleException {

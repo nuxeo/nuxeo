@@ -148,10 +148,6 @@ public abstract class VersioningBaseTestCase extends RepositoryTestCase {
 
     /**
      * Utility method to check versions on a DocumentModel.
-     *
-     * @param doc
-     * @param expectedMajor
-     * @param expectedMinor
      */
     protected static void checkVersion(DocumentModel doc, Long expectedMajor,
             Long expectedMinor) {
@@ -182,11 +178,6 @@ public abstract class VersioningBaseTestCase extends RepositoryTestCase {
 
     /**
      * Utility method to check versions on a Document.
-     *
-     * @param doc
-     * @param expectedMajor
-     * @param expectedMinor
-     * @throws DocumentException
      */
     protected static void checkVersion(Document doc, Long expectedMajor,
             Long expectedMinor) throws DocumentException {

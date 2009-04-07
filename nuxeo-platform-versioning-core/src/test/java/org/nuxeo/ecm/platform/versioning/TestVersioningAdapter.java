@@ -92,18 +92,14 @@ public class TestVersioningAdapter extends VersioningBaseTestCase {
 
         // should fill datamodel
         childFile = coreSession.createDocument(childFile);
-
         DocumentModel doc = childFile;
 
         final VersioningDocument vdoc = doc.getAdapter(VersioningDocument.class);
-
         assertNotNull("Fail to get VersioningDocument adapter for document: "
                 + doc.getTitle(), vdoc);
-
         checkVersion(doc, 1L, 0L);
 
         DocumentRef docRef = doc.getRef();
-
         assertEquals("project", coreSession.getCurrentLifeCycleState(docRef));
 
         vdoc.incrementVersions();
