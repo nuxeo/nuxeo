@@ -631,9 +631,6 @@
           <widget>name</widget>
         </row>
         <row>
-          <widget>nameValidator</widget>
-        </row>
-        <row>
           <widget>url</widget>
         </row>
        <!--  Not needed yet        
@@ -676,21 +673,6 @@
         </properties>
       </widget>
 
-      <widget name="nameValidator" type="template">
-        <labels>
-          <label mode="any"></label>
-        </labels>
-        <widgetModes>
-          <mode value="create">edit</mode>
-          <mode value="edit">edit</mode>
-          <mode value="any">hidden</mode>
-        </widgetModes>
-        <properties widgetMode="edit">
-          <property name="template">
-            /widgets/name_site_validator_widget_template.xhtml
-          </property>
-        </properties>
-      </widget>
       <widget name="url" type="template">
         <widgetModes>
           <mode value="any">view</mode>
