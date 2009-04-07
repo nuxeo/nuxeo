@@ -34,7 +34,9 @@ import org.nuxeo.ecm.platform.events.api.impl.RepositoryChangeEventImpl;
 /**
  * @author Max Stepanov
  *
+ * @deprecated unused, remove in 5.2
  */
+@Deprecated
 public class EventFactory {
 
     private EventFactory() {

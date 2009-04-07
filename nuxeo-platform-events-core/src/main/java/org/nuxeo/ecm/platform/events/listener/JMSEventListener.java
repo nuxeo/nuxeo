@@ -40,9 +40,9 @@ import org.nuxeo.ecm.platform.events.DocumentMessageFactory;
 import org.nuxeo.ecm.platform.events.api.DocumentMessage;
 import org.nuxeo.ecm.platform.events.api.DocumentMessageProducer;
 import org.nuxeo.ecm.platform.events.api.EventMessage;
-import org.nuxeo.ecm.platform.events.api.delegate.DocumentMessageProducerBusinessDelegate;
 import org.nuxeo.ecm.platform.events.api.impl.DocumentMessageImpl;
 import org.nuxeo.ecm.platform.events.api.impl.EventMessageImpl;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * JMS Core Event Listener.
@@ -72,7 +72,7 @@ public class JMSEventListener extends AbstractEventListener implements
      */
     protected DocumentMessageProducer getProducerService() {
         if (service == null) {
-            service = DocumentMessageProducerBusinessDelegate.getLocalDocumentMessageProducer();
+            service = Framework.getLocalService(DocumentMessageProducer.class);
         }
         return service;
     }

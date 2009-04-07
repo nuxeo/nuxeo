@@ -31,7 +31,7 @@ import org.nuxeo.ecm.platform.events.api.DocumentMessage;
 import org.nuxeo.ecm.platform.events.api.DocumentMessageProducer;
 import org.nuxeo.ecm.platform.events.api.EventMessage;
 import org.nuxeo.ecm.platform.events.api.NXCoreEvent;
-import org.nuxeo.ecm.platform.events.api.delegate.DocumentMessageProducerBusinessDelegate;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Session facade for Document Message Producer service.
@@ -49,7 +49,7 @@ public class JMSDocumentMessageProducerBean implements DocumentMessageProducer {
 
     protected DocumentMessageProducer getService() {
         if (service == null) {
-            service = DocumentMessageProducerBusinessDelegate.getLocalDocumentMessageProducer();
+            service = Framework.getLocalService(DocumentMessageProducer.class);
         }
         return service;
     }

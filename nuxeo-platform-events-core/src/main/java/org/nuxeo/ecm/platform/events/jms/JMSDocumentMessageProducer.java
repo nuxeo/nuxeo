@@ -73,40 +73,6 @@ public final class JMSDocumentMessageProducer {
     private JMSDocumentMessageProducer() {
     }
 
-    private static TopicConnectionFactory getJmsConnectionFactory(
-            String jmsConnectionFactoryJndiName, Context ctx)
-            throws DocumentMessageProducerException {
-
-        TopicConnectionFactory jmsConnectionFactory;
-        try {
-            jmsConnectionFactory = (TopicConnectionFactory) ctx.lookup(jmsConnectionFactoryJndiName);
-
-        } catch (ClassCastException cce) {
-            throw new DocumentMessageProducerException(cce);
-        } catch (NamingException ne) {
-            throw new DocumentMessageProducerException(ne);
-        }
-
-        return jmsConnectionFactory;
-    }
-
-    private static Destination getJmsDestination(String jmsDestinationJndiName,
-            Context ctx) throws DocumentMessageProducerException {
-
-        Destination jmsDestination;
-
-        try {
-            jmsDestination = (Destination) ctx.lookup(jmsDestinationJndiName);
-
-        } catch (ClassCastException cce) {
-            throw new DocumentMessageProducerException(cce);
-        } catch (NamingException ne) {
-            throw new DocumentMessageProducerException(ne);
-        }
-
-        return jmsDestination;
-    }
-
     public static void sendNXCoreEventMessages(List<NXCoreEvent> messages,
             String connection, String destination)
             throws DocumentMessageProducerException {
@@ -122,6 +88,7 @@ public final class JMSDocumentMessageProducer {
             throw exception;
         }
     }
+
     public static void sendEventMessages(List<EventMessage> messages, String connection, String destination)
             throws DocumentMessageProducerException {
         DocumentMessageProducerException exception = null;
@@ -198,6 +165,41 @@ public final class JMSDocumentMessageProducer {
             throw exception;
         }
     }
+
+    private static TopicConnectionFactory getJmsConnectionFactory(
+            String jmsConnectionFactoryJndiName, Context ctx)
+            throws DocumentMessageProducerException {
+
+        TopicConnectionFactory jmsConnectionFactory;
+        try {
+            jmsConnectionFactory = (TopicConnectionFactory) ctx.lookup(jmsConnectionFactoryJndiName);
+
+        } catch (ClassCastException cce) {
+            throw new DocumentMessageProducerException(cce);
+        } catch (NamingException ne) {
+            throw new DocumentMessageProducerException(ne);
+        }
+
+        return jmsConnectionFactory;
+    }
+
+    private static Destination getJmsDestination(String jmsDestinationJndiName,
+            Context ctx) throws DocumentMessageProducerException {
+
+        Destination jmsDestination;
+
+        try {
+            jmsDestination = (Destination) ctx.lookup(jmsDestinationJndiName);
+
+        } catch (ClassCastException cce) {
+            throw new DocumentMessageProducerException(cce);
+        } catch (NamingException ne) {
+            throw new DocumentMessageProducerException(ne);
+        }
+
+        return jmsDestination;
+    }
+
     private static void sendNXCoreEventMessages(List<NXCoreEvent> messages,
             String connectionFactoryJndiName, String destinationJndiName,
             Context ctx) throws DocumentMessageProducerException {
