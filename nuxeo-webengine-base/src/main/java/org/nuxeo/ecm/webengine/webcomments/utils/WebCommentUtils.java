@@ -59,7 +59,7 @@ public class WebCommentUtils {
 
     /**
      * @return true if the corresponding workspace is moderated : there is at least one
-     * user with comment permission on this workspace and the moderationType is a priori
+     * user with moderate permission on this workspace and the moderationType is a priori
      * @throws Exception
      */
     public static boolean isCurrentModerated(CoreSession session,
