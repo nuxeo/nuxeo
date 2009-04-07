@@ -34,22 +34,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-<<<<<<< /home/price/workspace/nuxeo/nuxeo-webengine/nuxeo-webengine-sites/src/main/java/org/nuxeo/webengine/utils/SiteUtils.java
 import javax.servlet.http.HttpServletRequest;
-=======
 
->>>>>>> /tmp/SiteUtils.java~other.mrp311
+
+
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang.StringUtils;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-<<<<<<< /home/price/workspace/nuxeo/nuxeo-webengine/nuxeo-webengine-sites/src/main/java/org/nuxeo/webengine/utils/SiteUtils.java
+
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.common.utils.Path;
-=======
->>>>>>> /tmp/SiteUtils.java~other.mrp311
+
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -71,7 +69,7 @@ public class SiteUtils {
 
     private static final Log log = LogFactory.getLog(SiteUtils.class);
 
-    private SiteUtils() {
+    private SiteUtils() { 
     }
 
     /**
@@ -309,16 +307,6 @@ public class SiteUtils {
     }
 
     /**
-<<<<<<< /home/price/workspace/nuxeo/nuxeo-webengine/nuxeo-webengine-sites/src/main/java/org/nuxeo/webengine/utils/SiteUtils.java
-     * This method is used to search a certain webPage between all the pages
-     * under a <b>Workspace</b> that contains in title, description , main
-     * content or attached files the given searchParam
-     * @param ws - the workspace
-     * @param searchParam - the search parameter
-     * @param nrWordsFromDescription - the number of words from the page description
-     * @return the <b>WebPage</b>-s found under a <b>Workspace</b> that match the
-     * corresponding criteria
-=======
      * Searches a certain webPage between all the pages under a <b>Workspace</b>
      * that contains in title, description , main content or attached files the
      * given searchParam.
@@ -329,7 +317,6 @@ public class SiteUtils {
      *            description
      * @return the <b>WebPage</b>-s found under a <b>Workspace</b> that match
      *         the corresponding criteria
->>>>>>> /tmp/SiteUtils.java~other.mrp311
      * @throws ClientException
      */
     public static List<Object> searchPagesInSite(DocumentModel ws,
@@ -379,10 +366,7 @@ public class SiteUtils {
         }
         return webPages;
     }
-<<<<<<< /home/price/workspace/nuxeo/nuxeo-webengine/nuxeo-webengine-sites/src/main/java/org/nuxeo/webengine/utils/SiteUtils.java
 
-=======
->>>>>>> /tmp/SiteUtils.java~other.mrp311
 
     /**
      * Returns the path to all the existing web containers.
@@ -398,19 +382,11 @@ public class SiteUtils {
     }
 
     /**
-<<<<<<< /home/price/workspace/nuxeo/nuxeo-webengine/nuxeo-webengine-sites/src/main/java/org/nuxeo/webengine/utils/SiteUtils.java
-     * This method is used to return the path for a webPage from a webSite
-     *
-     * @param ws - the web site
-     * @param documentModel -the webPage
-     * @return the path
-=======
      * Returns the path for a webPage from a webSite.
      *
      * @param ws the web site
      * @param documentModel the webPage
      * @return the path
->>>>>>> /tmp/SiteUtils.java~other.mrp311
      */
     public static String getPagePath(DocumentModel ws,
             DocumentModel documentModel) {
@@ -420,7 +396,6 @@ public class SiteUtils {
         path.append(JsonAdapter.getRelativPath(ws, documentModel));
         return path.toString();
     }
-<<<<<<< /home/price/workspace/nuxeo/nuxeo-webengine/nuxeo-webengine-sites/src/main/java/org/nuxeo/webengine/utils/SiteUtils.java
 
     public static DocumentModel createWebPageDocument(HttpServletRequest request, CoreSession session, String parentPath) throws ClientException {
         String title = request.getParameter("title");
@@ -451,7 +426,4 @@ public class SiteUtils {
         return documentModel;
     }
 
-=======
-
->>>>>>> /tmp/SiteUtils.java~other.mrp311
 }

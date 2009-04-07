@@ -83,9 +83,7 @@
         </default-perspective>
       </negotiation>
     </application>
-<<<<<<< /home/price/workspace/nuxeo/nuxeo-webengine/nuxeo-webengine-sites/src/main/resources/OSGI-INF/theme-contrib.xml
-    
-=======
+
     <application root="/nuxeo/site"
       template-engine="freemarker">
       <negotiation>
@@ -97,7 +95,7 @@
         </default-perspective>
       </negotiation>
     </application>    
->>>>>>> /tmp/theme-contrib.xml~other.VRAzrB
+
 
 
   </extension>
