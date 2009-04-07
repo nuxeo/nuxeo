@@ -56,9 +56,8 @@ public class PlacefulServiceTest extends TestCase {
         service = new PlacefulServiceImpl() {
             public Map<String, String> getAnnotationRegistry() {
                 Map<String, String> registry = new HashMap<String, String>();
-                registry
-                        .put(ANNOTATION_NAME,
-                                "org.nuxeo.ecm.platform.ec.placeful.SubscriptionConfig");
+                registry.put(ANNOTATION_NAME,
+                        "org.nuxeo.ecm.platform.ec.placeful.SubscriptionConfig");
                 return registry;
             }
         };
