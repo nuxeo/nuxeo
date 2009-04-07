@@ -24,7 +24,7 @@ import junit.framework.TestCase;
 import org.nuxeo.runtime.management.inspector.ModelMBeanInfoFactory;
 
 /**
- * @authorStephane Lacoin (Nuxeo EP Software Engineer)
+ * @author Stephane Lacoin (Nuxeo EP Software Engineer)
  */
 public class TestMBeanInfoFactory extends TestCase {
 
@@ -36,6 +36,7 @@ public class TestMBeanInfoFactory extends TestCase {
                 factoryUnderTest.getModelMBeanInfo(DummyMBean.class);
         MBeanAttributeInfo ifaceAttribute = ifaceInfo.getAttributes()[0];
         assertEquals("managedMessage", ifaceAttribute.getName());
+
         ModelMBeanInfo classInfo =
                 factoryUnderTest.getModelMBeanInfo(DummyService.class);
         MBeanAttributeInfo classAttribute = classInfo.getAttributes()[0];

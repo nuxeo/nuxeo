@@ -30,11 +30,11 @@ import org.nuxeo.runtime.api.Framework;
 
 public class TestResourcePublisherService extends ManagementTestCase {
 
+    protected final MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
+
     public void testRegisteredService() throws Exception {
         assertNotNull(Framework.getService(ResourcePublisher.class));
     }
-
-    protected final MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
 
     public void testRegisterResource() throws Exception {
         publisherService.registerResource("dummy", "nx:name=dummy",
@@ -66,6 +66,7 @@ public class TestResourcePublisherService extends ManagementTestCase {
     public void testXMLConfiguration() throws Exception {
         deployContrib(OSGI_BUNDLE_NAME_TESTS, "management-tests-service.xml");
         deployContrib(OSGI_BUNDLE_NAME_TESTS, "management-tests-contrib.xml");
+
         String qualifiedName = ObjectNameFactory.formatTypeQuery("service");
 
         Set<ObjectName> registeredNames = doQuery(qualifiedName);

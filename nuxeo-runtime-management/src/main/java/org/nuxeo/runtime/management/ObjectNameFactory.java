@@ -31,10 +31,10 @@ import org.nuxeo.runtime.model.ComponentName;
  */
 public class ObjectNameFactory {
 
+    public static final String NUXEO_DOMAIN_NAME = "nx";
+
     private ObjectNameFactory() {
     }
-
-    public static final String NUXEO_DOMAIN_NAME = "nx";
 
     public static String formatQualifiedName(String domainName,
             String typeName, String instanceName) {
@@ -92,7 +92,7 @@ public class ObjectNameFactory {
         if (!typeName.equals("service")) {
             shortName += "-" + typeName;
         }
-        Hashtable<String, String> keys = name.getKeyPropertyList();
+        Map<String, String> keys = name.getKeyPropertyList();
         for (Map.Entry<String, String> keyEntry : keys.entrySet()) {
             String key = keyEntry.getKey();
             String value = keyEntry.getValue();

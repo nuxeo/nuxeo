@@ -48,25 +48,28 @@ import org.nuxeo.runtime.management.ManagementRuntimeException;
  */
 public class ModelMBeanIntrospector {
 
-    public ModelMBeanIntrospector(Class<?> clazz) {
-        this.clazz = clazz;
-    }
-
     protected final Class<?> clazz;
 
     protected ModelMBeanInfo managementInfo;
 
-    protected final Map<String, ModelMBeanAttributeInfo> attributesInfo = new HashMap<String, ModelMBeanAttributeInfo>();
+    protected final Map<String, ModelMBeanAttributeInfo> attributesInfo
+            = new HashMap<String, ModelMBeanAttributeInfo>();
 
-    protected final Map<String, ModelMBeanConstructorInfo> constructorsInfo = new HashMap<String, ModelMBeanConstructorInfo>();
+    protected final Map<String, ModelMBeanConstructorInfo> constructorsInfo
+            = new HashMap<String, ModelMBeanConstructorInfo>();
 
-    protected final Map<String, ModelMBeanOperationInfo> operationsInfo = new HashMap<String, ModelMBeanOperationInfo>();
+    protected final Map<String, ModelMBeanOperationInfo> operationsInfo
+            = new HashMap<String, ModelMBeanOperationInfo>();
 
-    protected final Map<String, ModelMBeanNotificationInfo> notificationsInfo = new HashMap<String, ModelMBeanNotificationInfo>();
+    protected final Map<String, ModelMBeanNotificationInfo> notificationsInfo
+            = new HashMap<String, ModelMBeanNotificationInfo>();
+
+    public ModelMBeanIntrospector(Class<?> clazz) {
+        this.clazz = clazz;
+    }
 
     @SuppressWarnings("unchecked")
     ModelMBeanInfo introspect() {
-
         if (managementInfo != null) {
             return managementInfo;
         }
@@ -171,13 +174,12 @@ public class ModelMBeanIntrospector {
             boolean hasParameters = parameters != null && parameters.length > 0;
             Class<?> returnType = method.getReturnType();
             boolean returnValue = returnType != null && void.class.equals(returnType) == false;
-            if ((name.startsWith("get")
-                    && hasParameters && returnValue)
+            if ((name.startsWith("get") && hasParameters && returnValue)
                     || (name.startsWith("is")
                             && hasParameters == false && boolean.class.equals(returnType))) {
                 descriptor.setField("role", "getter");
             }  else if (methodInfo.getName().startsWith("set")
-                    && (void.class.equals(returnType))
+                    && void.class.equals(returnType)
                     && hasParameters && parameters.length == 1) {
 //                doFixAttribute(clazz, methodInfo.getName());
                 descriptor.setField("role", "setter");

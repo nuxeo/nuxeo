@@ -18,13 +18,10 @@ package org.nuxeo.runtime.management;
 
 import javax.management.ObjectName;
 
-import org.nuxeo.runtime.management.ObjectNameFactory;
-
 import junit.framework.TestCase;
 
 /**
  * @author matic
- *
  */
 public class TestObjectNameFactory extends TestCase {
 
@@ -37,7 +34,6 @@ public class TestObjectNameFactory extends TestCase {
         ObjectName name = ObjectNameFactory.getObjectName("name=value");
         assertEquals("nx:name=value", name.getCanonicalName());
     }
-
 
     public void testFullForm() {
         ObjectName name = ObjectNameFactory.getObjectName("foo:name=value");

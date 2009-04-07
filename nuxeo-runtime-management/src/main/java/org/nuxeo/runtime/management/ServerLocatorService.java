@@ -42,9 +42,13 @@ public class ServerLocatorService extends DefaultComponent implements
 
     public static final String LOCATORS_EXT_KEY = "locators";
 
+    private static final Log log = LogFactory.getLog(ServerLocatorService.class);
+
     protected Map<String, MBeanServer> otherServers = new HashMap<String, MBeanServer>();
 
     protected MBeanServer defaultServer = ManagementFactory.getPlatformMBeanServer();
+
+    protected String hostname;
 
     @Override
     public void registerContribution(Object contribution,
@@ -65,15 +69,13 @@ public class ServerLocatorService extends DefaultComponent implements
     }
 
     protected void doRegisterLocator(ServerLocatorDescriptor descriptor) {
-        MBeanServer server = descriptor.isExistingServer() == false ? doCreateServer(descriptor)
-                : doFindServer(descriptor);
+        MBeanServer server = descriptor.isExistingServer() ? doFindServer(descriptor)
+                : doCreateServer(descriptor);
         otherServers.put(descriptor.domainName, server);
         if (descriptor.isDefaultServer) {
             defaultServer = server;
         }
     }
-
-    protected String hostname;
 
     protected String doGetHostname() {
         if (hostname != null) {
@@ -101,8 +103,6 @@ public class ServerLocatorService extends DefaultComponent implements
     protected String doFormatThreadName(ServerLocatorDescriptor descriptor) {
         return "mbeanServer-" + descriptor.domainName;
     }
-    
-    protected static final Log log = LogFactory.getLog(ServerLocatorService.class);
 
     protected MBeanServer doCreateServer(final ServerLocatorDescriptor descriptor) {
         MBeanServer server = MBeanServerFactory.createMBeanServer();
@@ -128,7 +128,7 @@ public class ServerLocatorService extends DefaultComponent implements
                 throw new ManagementRuntimeException("Cannot start RMI connector for " + descriptor.domainName, e2);
             }
         }
-        assert connector.isActive() == true;
+        assert connector.isActive();
         return server;
     }
 
@@ -136,8 +136,9 @@ public class ServerLocatorService extends DefaultComponent implements
     protected MBeanServer doFindServer(ServerLocatorDescriptor descriptor) {
         String domainName = descriptor.domainName;
         for (MBeanServer server : (List<MBeanServer>) MBeanServerFactory.findMBeanServer(null)) {
-            if (!server.getDefaultDomain().equals(domainName))
+            if (!server.getDefaultDomain().equals(domainName)) {
                 continue;
+            }
             return server;
         }
         throw new ManagementRuntimeException(

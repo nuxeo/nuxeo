@@ -25,7 +25,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestManageRuntimeService extends NXRuntimeTestCase {
 
-    private RuntimeServiceMBeanAdapter adapterUnderTest = new RuntimeServiceMBeanAdapter();
+    private final RuntimeServiceMBeanAdapter adapterUnderTest = new RuntimeServiceMBeanAdapter();
 
     public void testPrint() {
         Set<String> resolvedComponents = adapterUnderTest.getResolvedComponents();

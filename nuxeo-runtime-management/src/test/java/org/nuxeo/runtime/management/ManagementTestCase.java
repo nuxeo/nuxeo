@@ -25,14 +25,12 @@ import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import javax.management.ReflectionException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
  * @author matic
- * 
+ *
  */
 public abstract class ManagementTestCase extends NXRuntimeTestCase {
 
@@ -41,12 +39,18 @@ public abstract class ManagementTestCase extends NXRuntimeTestCase {
     protected static final String OSGI_BUNDLE_NAME_TESTS = OSGI_BUNDLE_NAME
             + ".tests";
 
-    @SuppressWarnings("unused")
-    private Log log = LogFactory.getLog(TestResourcePublisherService.class);
-
     protected ResourcePublisherService publisherService;
 
     protected ServerLocatorService locatorService;
+
+    public ManagementTestCase() {
+    }
+
+    public ManagementTestCase(String name) {
+        super(name);
+    }
+
+    protected MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
 
     @Override
     public void setUp() throws Exception {
@@ -66,22 +70,6 @@ public abstract class ManagementTestCase extends NXRuntimeTestCase {
         Framework.getRuntime().stop();
         super.tearDown();
     }
-
-    /**
-     * 
-     */
-    public ManagementTestCase() {
-        super();
-    }
-
-    /**
-     * @param name
-     */
-    public ManagementTestCase(String name) {
-        super(name);
-    }
-
-    protected MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
 
     protected void doBindResources() throws InstanceNotFoundException,
             ReflectionException, MBeanException {

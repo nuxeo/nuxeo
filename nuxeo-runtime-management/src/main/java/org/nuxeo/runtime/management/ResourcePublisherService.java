@@ -47,20 +47,18 @@ import org.osgi.framework.FrameworkListener;
 public class ResourcePublisherService extends DefaultComponent implements
         ResourcePublisher, ResourcePublisherMBean {
 
+    public static final String SERVICES_EXT_KEY = "services";
+    public static final String FACTORIES_EXT_KEY = "factories";
+    public static final String SHORTCUTS_EXT_KEY = "shortcuts";
+
     public static final ComponentName NAME = new ComponentName(
             "org.nuxeo.runtime.management.ResourcePublisher");
+
+    private static final Log log = LogFactory.getLog(ResourcePublisherService.class);
 
     public ResourcePublisherService() {
         super(); // enables breaking
     }
-
-    static final Log log = LogFactory.getLog(ResourcePublisherService.class);
-
-    public static final String SERVICES_EXT_KEY = "services";
-
-    public static final String FACTORIES_EXT_KEY = "factories";
-
-    public static final String SHORTCUTS_EXT_KEY = "shortcuts";
 
     @Override
     public void registerContribution(Object contribution,
@@ -90,13 +88,12 @@ public class ResourcePublisherService extends DefaultComponent implements
 
     protected class FactoriesRegistry {
 
-        protected final Map<Class<? extends ResourceFactory>, ResourceFactory> registry = new HashMap<Class<? extends ResourceFactory>, ResourceFactory>();
+        protected final Map<Class<? extends ResourceFactory>, ResourceFactory> registry
+                = new HashMap<Class<? extends ResourceFactory>, ResourceFactory>();
 
         protected void doRegisterFactory(ResourceFactoryDescriptor descriptor) {
-            ResourceFactory factory = null;
-
+            ResourceFactory factory;
             Class<? extends ResourceFactory> factoryClass = descriptor.getFactoryClass();
-
             try {
                 factory = factoryClass.newInstance();
             } catch (Exception e) {
