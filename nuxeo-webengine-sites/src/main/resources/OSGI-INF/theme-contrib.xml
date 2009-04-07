@@ -87,6 +87,17 @@
         </default-perspective>
       </negotiation>
     </application>
+    <application root="/nuxeo/site"
+      template-engine="freemarker">
+      <negotiation>
+        <strategy>web</strategy>
+        <default-engine>default</default-engine>
+        <default-theme>sites/default
+        </default-theme>
+        <default-perspective>default
+        </default-perspective>
+      </negotiation>
+    </application>    
 
 
   </extension>
