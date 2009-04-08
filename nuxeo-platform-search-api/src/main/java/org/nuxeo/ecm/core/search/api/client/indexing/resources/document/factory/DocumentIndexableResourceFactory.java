@@ -46,7 +46,7 @@ public class DocumentIndexableResourceFactory extends
 
     public IndexableResource createIndexableResourceFrom(
             Serializable targetResource, IndexableResourceConf conf,
-            String sid) throws IndexingException {
+            String sid) {
         // TODO refactor the IndexableResourcesFactory.
         return null;
     }
@@ -57,8 +57,7 @@ public class DocumentIndexableResourceFactory extends
         return null;
     }
 
-    public ResolvedResources resolveResourcesFor(IndexableResource resource)
-            throws IndexingException {
+    public ResolvedResources resolveResourcesFor(IndexableResource resource) {
         // TODO Auto-generated method stub
         return null;
     }

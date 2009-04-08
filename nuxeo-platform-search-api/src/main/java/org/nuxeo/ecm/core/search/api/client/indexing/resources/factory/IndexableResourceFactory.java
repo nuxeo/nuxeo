@@ -63,10 +63,9 @@ public interface IndexableResourceFactory extends Serializable {
      * @param targetResource the target object on which the indexable resource
      *            applies.
      * @return an indexable resource instance.
-     * @throws IndexingException
      */
     IndexableResource createIndexableResourceFrom(Serializable targetResource,
-            IndexableResourceConf conf, String sid) throws IndexingException;
+            IndexableResourceConf conf, String sid);
 
     /**
      * Resolves an indexable resource instance.
@@ -119,10 +118,8 @@ public interface IndexableResourceFactory extends Serializable {
      *
      * @param resource an indexable resource instance.
      * @return a resolved indexable resource instance.
-     * @throws IndexingException
      */
-    ResolvedResources resolveResourcesFor(IndexableResource resource)
-            throws IndexingException;
+    ResolvedResources resolveResourcesFor(IndexableResource resource);
 
     /**
      * Resolves an indexable resources and returns an aggregated resolved

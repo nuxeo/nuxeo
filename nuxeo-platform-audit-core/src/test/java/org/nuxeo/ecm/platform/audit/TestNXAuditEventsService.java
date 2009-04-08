@@ -44,17 +44,13 @@ public class TestNXAuditEventsService extends RepositoryOSGITestCase {
         super.setUp();
 
         deployBundle("org.nuxeo.ecm.platform.usermanager");
-
         deployBundle("org.nuxeo.ecm.platform.audit");
 
         NXAuditEventsService.persistenceProvider.setHibernateConfiguration(new TestHibernateConfiguration());
-
         serviceUnderTest = Framework.getService(NXAuditEvents.class);
-
         assertNotNull(serviceUnderTest);
 
         openRepository();
-
     }
 
     protected DocumentModel doCreateDocument() throws ClientException {
@@ -72,6 +68,7 @@ public class TestNXAuditEventsService extends RepositoryOSGITestCase {
         DocumentModel source = doCreateDocument();
         List<LogEntry> entries = serviceUnderTest.getLogEntriesFor(source.getId());
         assertEquals(1, entries.size());
+
         LogEntry entry = entries.get(0);
         assertEquals("eventDocumentCategory", entry.getCategory());
         assertEquals("project", entry.getDocLifeCycle());
@@ -87,8 +84,10 @@ public class TestNXAuditEventsService extends RepositoryOSGITestCase {
         long count = serviceUnderTest.syncLogCreationEntries(
                 getRepository().getName(), rootDocument.getPathAsString(), true);
         assertEquals(2, count);
+
         List<LogEntry> entries = serviceUnderTest.getLogEntriesFor(rootDocument.getId());
         assertEquals(1, entries.size());
+
         LogEntry entry = entries.get(0);
         assertEquals("eventDocumentCategory", entry.getCategory());
         assertNull(entry.getComment());
@@ -98,4 +97,5 @@ public class TestNXAuditEventsService extends RepositoryOSGITestCase {
         assertEquals("documentCreated", entry.getEventId());
         assertEquals("system", entry.getPrincipalName());
     }
+
 }

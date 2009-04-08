@@ -61,7 +61,6 @@ import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
-import org.nuxeo.ecm.platform.util.ECInvalidParameterException;
 import org.nuxeo.ecm.webapp.base.InputController;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.table.cell.AbstractTableCell;
@@ -456,8 +455,7 @@ public class SecurityActionsBean extends InputController implements
         return null;
     }
 
-    public String removePermissions() throws ClientException,
-            ECInvalidParameterException {
+    public String removePermissions() throws ClientException {
         for (String user : getDataTableModel().getSelectedUsers()) {
             securityData.removeModifiablePrivilege(user);
             if (!checkPermissions()) {
@@ -471,8 +469,7 @@ public class SecurityActionsBean extends InputController implements
         return null;
     }
 
-    public String removePermissionsAndUpdate() throws ClientException,
-            ECInvalidParameterException {
+    public String removePermissionsAndUpdate() throws ClientException {
         for (String user : getDataTableModel().getSelectedUsers()) {
             securityData.removeModifiablePrivilege(user);
             if (!checkPermissions()) {

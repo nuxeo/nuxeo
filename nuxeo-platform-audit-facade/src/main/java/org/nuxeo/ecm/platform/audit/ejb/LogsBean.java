@@ -117,7 +117,7 @@ public class LogsBean implements Logs {
 
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public long syncLogCreationEntries(String repoId, String path,
-            Boolean recurs) throws ClientException {
+            Boolean recurs) {
         return service().syncLogCreationEntries(em, repoId, path, recurs);
     }
 

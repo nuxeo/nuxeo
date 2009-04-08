@@ -63,11 +63,11 @@ public class UserSessionBean implements Serializable, UserSession {
     }
 
     @Factory(value = "currentNuxeoPrincipal", scope = SESSION)
-    public NuxeoPrincipal getCurrentNuxeoPrincipal() throws Exception {
+    public NuxeoPrincipal getCurrentNuxeoPrincipal() {
         return (NuxeoPrincipal) getCurrentUser();
     }
 
-    public boolean isAdministrator() throws Exception {
+    public boolean isAdministrator() {
         NuxeoPrincipal user = getCurrentNuxeoPrincipal();
         if (user == null) {
             return false;

@@ -25,6 +25,7 @@ import java.net.URL;
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
  *
  */
+// Not used.
 public interface ProcessDefinitionDeployer {
 
     void deploy(URL url) throws Exception;

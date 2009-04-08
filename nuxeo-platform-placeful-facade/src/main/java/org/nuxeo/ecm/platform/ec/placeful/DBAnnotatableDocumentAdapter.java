@@ -37,7 +37,7 @@ public class DBAnnotatableDocumentAdapter implements DBAnnotatableDocument {
         this.doc = doc;
     }
 
-    public Object getAnnotation(String name) throws ClientException, ClassNotFoundException {
+    public Object getAnnotation(String name) throws ClientException {
         EJBPlacefulService bean = getServiceBean();
         return bean.getAnnotation(doc.getId(), name);
     }

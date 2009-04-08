@@ -40,10 +40,7 @@ public class TestExtendedInfoEvaluation extends RepositoryOSGITestCase {
                 rootDocument.getPathAsString(), "youps", "File");
         model.setProperty("dublincore", "title", "huum");
 
-        DocumentModel source = coreSession.createDocument(model);
-
-
-        return source;
+        return coreSession.createDocument(model);
     }
 
     @Override
@@ -69,7 +66,8 @@ public class TestExtendedInfoEvaluation extends RepositoryOSGITestCase {
                 context, "${context.arguments[0]}", DocumentModel.class);
         assertNotNull(value);
         assertEquals(source, value);
-        String test = evaluatorUnderTest.evaluateExpression(context, "${context.properties.test}", String.class);
+        String test = evaluatorUnderTest.evaluateExpression(
+                context, "${context.properties.test}", String.class);
         assertNotNull(value);
         assertEquals("test", test);
     }

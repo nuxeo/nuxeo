@@ -282,17 +282,12 @@ public interface UserManager {
     /**
      * Returns true is users referential is read only (ie : LDAP) -> can not add
      * users -> can not delete users.
-     *
-     * @return
      */
     Boolean areGroupsReadOnly() throws ClientException;
 
     /**
      * Returns true is groups referential is read only (ie : LDAP) -> can not
      * add groups -> can not delete groups.
-     *
-     * @return
-     * @throws ClientException
      */
     Boolean areUsersReadOnly() throws ClientException;
 

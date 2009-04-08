@@ -27,9 +27,9 @@ public interface UserSession {
 
     Principal getCurrentUser();
 
-    NuxeoPrincipal getCurrentNuxeoPrincipal() throws Exception;
+    NuxeoPrincipal getCurrentNuxeoPrincipal();
 
-    boolean isAdministrator() throws Exception;
+    boolean isAdministrator();
 
     void destroy();
 

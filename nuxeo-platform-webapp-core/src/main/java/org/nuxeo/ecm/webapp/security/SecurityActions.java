@@ -25,7 +25,6 @@ import java.util.Map;
 import javax.faces.model.SelectItem;
 
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.platform.util.ECInvalidParameterException;
 import org.nuxeo.ecm.webapp.base.StatefulBaseLifeCycle;
 import org.nuxeo.ecm.webapp.table.model.UserPermissionsTableModel;
 
@@ -106,8 +105,7 @@ public interface SecurityActions extends StatefulBaseLifeCycle {
      */
     String removePermissionAndUpdate() throws ClientException;
 
-    String removePermissionsAndUpdate() throws ClientException,
-            ECInvalidParameterException;
+    String removePermissionsAndUpdate() throws ClientException;
 
     /**
      * Marks the current security data info as obsolete so that it gets lazily
@@ -207,8 +205,7 @@ public interface SecurityActions extends StatefulBaseLifeCycle {
 
     List<String> getParentDocumentsUsers() throws ClientException;
 
-    String removePermissions() throws ClientException,
-            ECInvalidParameterException;
+    String removePermissions() throws ClientException;
 
     String saveSecurityUpdates() throws ClientException;
 

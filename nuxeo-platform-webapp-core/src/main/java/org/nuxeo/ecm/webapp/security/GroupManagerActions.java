@@ -81,9 +81,9 @@ public interface GroupManagerActions extends Serializable {
 
     void setSearchString(String searchString);
 
-    String searchGroups() throws ClientException;
+    String searchGroups();
 
-    String clearSearch() throws ClientException;
+    String clearSearch();
 
     boolean isSearchOverflow();
 

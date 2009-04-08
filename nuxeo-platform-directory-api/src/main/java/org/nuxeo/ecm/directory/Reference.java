@@ -34,17 +34,15 @@ import java.util.List;
  */
 public interface Reference {
 
-    String getFieldName() throws DirectoryException;
+    String getFieldName();
 
     Directory getSourceDirectory() throws DirectoryException;
 
-    void setSourceDirectoryName(String sourceDirectoryName)
-            throws DirectoryException;
+    void setSourceDirectoryName(String sourceDirectoryName);
 
     Directory getTargetDirectory() throws DirectoryException;
 
-    void setTargetDirectoryName(String targetDirectoryName)
-            throws DirectoryException;
+    void setTargetDirectoryName(String targetDirectoryName);
 
     void addLinks(String sourceId, List<String> targetIds)
             throws DirectoryException;

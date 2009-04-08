@@ -41,7 +41,7 @@ public abstract class AbstractReference implements Reference {
 
     protected String fieldName;
 
-    public String getFieldName() throws DirectoryException {
+    public String getFieldName() {
         return fieldName;
     }
 
@@ -53,8 +53,7 @@ public abstract class AbstractReference implements Reference {
         return sourceDirectory;
     }
 
-    public void setSourceDirectoryName(String sourceDirectoryName)
-            throws DirectoryException {
+    public void setSourceDirectoryName(String sourceDirectoryName) {
         sourceDirectory = null;
         this.sourceDirectoryName = sourceDirectoryName;
     }
@@ -67,8 +66,7 @@ public abstract class AbstractReference implements Reference {
         return targetDirectory;
     }
 
-    public void setTargetDirectoryName(String targetDirectoryName)
-            throws DirectoryException {
+    public void setTargetDirectoryName(String targetDirectoryName) {
         targetDirectory = null;
         this.targetDirectoryName = targetDirectoryName;
     }

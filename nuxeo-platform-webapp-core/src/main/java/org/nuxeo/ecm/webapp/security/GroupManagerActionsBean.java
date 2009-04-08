@@ -266,13 +266,13 @@ public class GroupManagerActionsBean implements GroupManagerActions {
         this.searchString = searchString;
     }
 
-    public String searchGroups() throws ClientException {
+    public String searchGroups() {
         // reset so that groups are recomputed
         resetGroups();
         return viewGroups();
     }
 
-    public String clearSearch() throws ClientException {
+    public String clearSearch() {
         searchString = null;
         return searchGroups();
     }

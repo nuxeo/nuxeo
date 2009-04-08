@@ -54,8 +54,7 @@ public class AuditIndexableResourceFactory extends
         return null;
     }
 
-    public ResolvedResources resolveResourcesFor(IndexableResource resource)
-            throws IndexingException {
+    public ResolvedResources resolveResourcesFor(IndexableResource resource) {
         // TODO Auto-generated method stub
         return null;
     }

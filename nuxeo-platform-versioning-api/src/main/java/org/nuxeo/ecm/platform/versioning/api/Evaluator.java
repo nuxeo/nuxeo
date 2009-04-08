@@ -29,7 +29,9 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  *
  * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
  */
+// Not used.
 public interface Evaluator {
 
     boolean evaluate(DocumentModel docModel) throws ClientException ;
+
 }

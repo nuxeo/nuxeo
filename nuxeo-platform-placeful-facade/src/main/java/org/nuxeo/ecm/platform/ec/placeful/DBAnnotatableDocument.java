@@ -21,13 +21,11 @@ package org.nuxeo.ecm.platform.ec.placeful;
 import org.nuxeo.ecm.core.api.ClientException;
 
 /**
- *
  * @author <a href="mailto:rspivak@nuxeo.com">Ruslan Spivak</a>
- *
  */
 public interface DBAnnotatableDocument {
 
-    Object getAnnotation(String name) throws ClientException, ClassNotFoundException;
+    Object getAnnotation(String name) throws ClientException;
 
     void setAnnotation(String name, Object value) throws ClientException;
 

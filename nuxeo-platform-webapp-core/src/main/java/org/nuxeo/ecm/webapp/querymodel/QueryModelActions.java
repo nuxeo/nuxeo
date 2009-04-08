@@ -26,31 +26,25 @@ import org.nuxeo.ecm.platform.ui.web.api.ResultsProviderFarm;
 
 /**
  * Action listener dedicated to the session management QueryModels.
- *
- * <p>QueryModels are non
- * persistent structures to build advanced NXQueries by incrementally editing
+ * <p>
+ * QueryModels are non persistent structures to build advanced NXQueries by incrementally editing
  * fields of a model that will be translated into search criteria once the
- * search is actually performed.</p>
+ * search is actually performed.
  *
- * <p>This bean extends {@link ResultsProviderFarm} for <emph>stateful</emph>
+ * <p>
+ * This bean extends {@link ResultsProviderFarm} for <emph>stateful</emph>
  * Query Models <emph>only</emph>. Stateless models have to be handled by \]
  * another farm, which typically would still call the present bean to get the
- * QueryModel instance.</p>
- *
+ * QueryModel instance.
  *
  * @author Olivier Grisel (ogrisel@nuxeo.com)
  */
-
 public interface QueryModelActions extends ResultsProviderFarm {
 
     boolean isInitialized();
 
     /**
      * Obtain a scoped instance of QueryModel.
-     *
-     * @param queryModelName
-     * @return the
-     * @throws ClientException
      */
     QueryModel get(String queryModelName) throws ClientException;
 
@@ -70,21 +64,23 @@ public interface QueryModelActions extends ResultsProviderFarm {
 
     /**
      * Save the specified <strong>stateful</strong> QueryModel.
-     *
-     * <p>The DocumentModel instance that backs the QueryModel is saved
+     * <p>
+     * The DocumentModel instance that backs the QueryModel is saved
      * in the CoreSession available in Seam's context. Necessary updates
      * are performed. The returned QueryModel instance is identical to the
-     * one obtained by a subsequent call to {@see get}. </p>
-     * <p>Further document operations, e.g., modifications, for this QueryModel
+     * one obtained by a subsequent call to {@see get}.
+     * <p>
+     * Further document operations, e.g., modifications, for this QueryModel
      * can be done on the DocumentModel instance directly, but CoreSession methods
      * returning a new DocumentModel instance must be followed by a call to
      * {@see load} and dependent objects (page providers, etc.) must be updated
-     * as well</p>
-     * <p>It is not possible to call again this method on the same QueryModel, to
+     * as well.
+     * <p>
+     * It is not possible to call again this method on the same QueryModel, to
      * avoid consistency problems at the DocumentModel level. Therefore
      * If one wants to save a QueryModel, then change and eventually save it to
      * a different target in Nuxeo Core, one <strong>must</strong> call the
-     * {@see reset} method before performing the changes.</p>
+     * {@see reset} method before performing the changes.
      *
      * @since 5.2
      * @param queryModelName
@@ -134,6 +130,6 @@ public interface QueryModelActions extends ResultsProviderFarm {
      * @param qm the query model that's been changed
      * @throws ClientException
      */
-    void queryModelChanged(QueryModel qm) throws ClientException;
+    void queryModelChanged(QueryModel qm);
 
 }

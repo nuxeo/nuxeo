@@ -90,8 +90,7 @@ public class DocumentBuiltinsIndexableResourceFactory extends
                 (DocumentModel) targetResource, conf, sid);
     }
 
-    public ResolvedResources resolveResourcesFor(IndexableResource resource)
-            throws IndexingException {
+    public ResolvedResources resolveResourcesFor(IndexableResource resource) {
         // TODO Auto-generated method stub
         return null;
     }

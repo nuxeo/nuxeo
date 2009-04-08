@@ -151,26 +151,6 @@ public class BreadcrumbActionsBean implements BreadcrumbActions {
     }
 
     /**
-     * This gets called when the user selects a document from the list of
-     * documents that form the breadcrumb.
-     *
-     * @return the page that is going to be displayed next
-     * @throws ClientException
-     * @deprecated templates should use restful links instead
-     */
-    @Deprecated
-    public String select() throws ClientException {
-        return "";
-    }
-
-    @Deprecated
-    /*@Observer(value = { EventNames.LOCATION_SELECTION_CHANGED,
-            EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED,
-            EventNames.GO_HOME }, create = false)*/
-    public void clearPath() {
-    }
-
-    /**
      * Computes the current path by making calls to backend. TODO: need to
      * change to compute the path from the seam context state.
      *

@@ -131,8 +131,7 @@ public final class Functions {
         return label.toString();
     }
 
-    public static boolean userIsMemberOf(String groupName)
-            throws ClientException {
+    public static boolean userIsMemberOf(String groupName) {
         FacesContext context = FacesContext.getCurrentInstance();
         NuxeoPrincipal principal = (NuxeoPrincipal) context.getExternalContext().getUserPrincipal();
         return principal.isMemberOf(groupName);
