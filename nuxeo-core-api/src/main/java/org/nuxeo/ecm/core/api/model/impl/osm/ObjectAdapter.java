@@ -31,7 +31,7 @@ import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
  */
 public interface ObjectAdapter extends Serializable {
 
-    Object create(Map<String, Object> value) throws PropertyException;
+    Object create(Map<String, Object> value);
 
     Map<String, Object> getMap(Object object) throws PropertyException;
 
@@ -43,6 +43,6 @@ public interface ObjectAdapter extends Serializable {
 
     ObjectAdapter getAdapter(String name) throws PropertyNotFoundException;
 
-    Serializable getDefaultValue() throws PropertyNotFoundException;
+    Serializable getDefaultValue();
 
 }

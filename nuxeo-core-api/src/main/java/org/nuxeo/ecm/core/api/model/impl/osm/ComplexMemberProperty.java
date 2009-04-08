@@ -116,11 +116,7 @@ public class ComplexMemberProperty extends MapProperty implements Adaptable {
 
     @Override
     protected Serializable getDefaultValue() {
-        try {
-            return adapter.getDefaultValue();
-        } catch (PropertyNotFoundException e) {
-            return null;
-        }
+        return adapter.getDefaultValue();
     }
 
     @Override

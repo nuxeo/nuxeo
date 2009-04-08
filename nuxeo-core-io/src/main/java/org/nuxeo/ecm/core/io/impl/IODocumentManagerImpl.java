@@ -82,8 +82,7 @@ public class IODocumentManagerImpl implements IODocumentManager {
     }
 
     public DocumentTranslationMap importDocuments(InputStream in, String repo,
-            DocumentRef root) throws ImportDocumentException, ClientException,
-            IOException {
+            DocumentRef root) throws ImportDocumentException, ClientException {
         CoreSession coreSession = getCoreSession(repo);
         final DocumentModel dst = coreSession.getDocument(root);
 
@@ -112,9 +111,8 @@ public class IODocumentManagerImpl implements IODocumentManager {
         }
      }
 
-    public DocumentTranslationMap importDocuments(InputStream in,
-            DocumentWriter customDocWriter) throws ImportDocumentException,
-            ClientException, IOException {
+    public DocumentTranslationMap importDocuments(InputStream in, DocumentWriter customDocWriter)
+            throws ImportDocumentException {
 
         DocumentReader reader = null;
 
@@ -141,8 +139,7 @@ public class IODocumentManagerImpl implements IODocumentManager {
 
     public DocumentTranslationMap exportDocuments(OutputStream out,
             String repo, Collection<DocumentRef> sources, boolean recurse,
-            String format) throws ExportDocumentException, ClientException,
-            IOException {
+            String format) throws ExportDocumentException, ClientException {
         CoreSession coreSession = getCoreSession(repo);
 
         DocumentReader reader = null;
@@ -185,7 +182,7 @@ public class IODocumentManagerImpl implements IODocumentManager {
 
     public DocumentTranslationMap exportDocuments(OutputStream out,
             DocumentReader customDocReader, String format)
-            throws ExportDocumentException, ClientException, IOException {
+            throws ExportDocumentException {
 
         DocumentWriter writer = null;
 
@@ -215,7 +212,7 @@ public class IODocumentManagerImpl implements IODocumentManager {
 
     public DocumentTranslationMap importDocuments(
             DocumentReader customDocReader, DocumentWriter customDocWriter)
-            throws ImportDocumentException, ClientException, IOException {
+            throws ImportDocumentException {
 
         try {
             DocumentPipe pipe = new DocumentPipeImpl(10);

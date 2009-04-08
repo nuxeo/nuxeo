@@ -504,7 +504,7 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         assertEquals(7, dml.totalSize());
     }
 
-    public void TODOtestQueryResultsTypes() throws Exception {
+    public void TODOtestQueryResultsTypes() {
         // assertEquals("testQueryResultsTypes", doc.getPropertyValue("title"));
         // assertEquals(Boolean.TRUE, doc.getPropertyValue("my:boolean"));
         // assertEquals(3.14, doc.getPropertyValue("my:double"));

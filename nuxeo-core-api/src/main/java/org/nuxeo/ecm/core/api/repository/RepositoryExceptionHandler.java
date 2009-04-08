@@ -38,6 +38,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
+// Not used.
 public interface RepositoryExceptionHandler {
 
     /**

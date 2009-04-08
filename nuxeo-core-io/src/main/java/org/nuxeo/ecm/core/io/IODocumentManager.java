@@ -44,30 +44,25 @@ public interface IODocumentManager extends Serializable {
             IOException;
 
     DocumentTranslationMap importDocuments(InputStream in,
-            DocumentWriter customDocWriter) throws ImportDocumentException,
-            ClientException, IOException;
+            DocumentWriter customDocWriter) throws ImportDocumentException;
 
     /**
-     *
      * @param customDocReader reader from the input stream
      * @param customDocWriter
      * @return
      * @throws ImportDocumentException
-     * @throws ClientException
-     * @throws IOException
      */
     DocumentTranslationMap importDocuments(DocumentReader customDocReader,
-            DocumentWriter customDocWriter) throws ImportDocumentException,
-            ClientException, IOException;
+            DocumentWriter customDocWriter) throws ImportDocumentException;
 
     DocumentTranslationMap exportDocuments(OutputStream out, String repo,
             Collection<DocumentRef> sources, boolean recurse, String format)
-            throws ExportDocumentException, ClientException, IOException;
+            throws ExportDocumentException, ClientException;
 
     /**
      * Used in pair with importDocuments(... customDocWriter)
      */
     DocumentTranslationMap exportDocuments(OutputStream out,
             DocumentReader customDocReader, String format)
-            throws ExportDocumentException, ClientException, IOException;
+            throws ExportDocumentException;
 }

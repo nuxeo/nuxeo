@@ -26,6 +26,7 @@ import java.io.IOException;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
+// Not used.
 public interface DocumentTransformer {
 
     /**
