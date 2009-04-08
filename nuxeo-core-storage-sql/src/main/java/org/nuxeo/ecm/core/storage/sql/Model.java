@@ -207,8 +207,8 @@ public class Model {
     public static final String FULLTEXT_BINARYTEXT_KEY = "binarytext";
 
     /** Special (non-schema-based) simple fragments present in all types. */
-    public static final String[] COMMON_SIMPLE_FRAGMENTS = {
-            MISC_TABLE_NAME, FULLTEXT_TABLE_NAME };
+    public static final String[] COMMON_SIMPLE_FRAGMENTS = { MISC_TABLE_NAME,
+            FULLTEXT_TABLE_NAME };
 
     /** Special (non-schema-based) collection fragments present in all types. */
     public static final String[] COMMON_COLLECTION_FRAGMENTS = { ACL_TABLE_NAME };
@@ -232,24 +232,24 @@ public class Model {
             this.fragmentKey = fragmentKey;
             this.readonly = readonly;
             // TODO use some config to decide this
-            fulltext = (propertyType.equals(PropertyType.STRING) ||
-                    propertyType.equals(PropertyType.BINARY) || propertyType.equals(PropertyType.ARRAY_STRING)) &&
-                    (fragmentKey == null || !fragmentKey.equals(MAIN_KEY)) &&
-                    !fragmentName.equals(HIER_TABLE_NAME) &&
-                    !fragmentName.equals(MAIN_TABLE_NAME) &&
-                    !fragmentName.equals(VERSION_TABLE_NAME) &&
-                    !fragmentName.equals(PROXY_TABLE_NAME) &&
-                    !fragmentName.equals(FULLTEXT_TABLE_NAME) &&
-                    !fragmentName.equals(LOCK_TABLE_NAME) &&
-                    !fragmentName.equals(UID_SCHEMA_NAME) &&
-                    !fragmentName.equals(MISC_TABLE_NAME);
+            fulltext = (propertyType.equals(PropertyType.STRING)
+                    || propertyType.equals(PropertyType.BINARY) || propertyType.equals(PropertyType.ARRAY_STRING))
+                    && (fragmentKey == null || !fragmentKey.equals(MAIN_KEY))
+                    && !fragmentName.equals(HIER_TABLE_NAME)
+                    && !fragmentName.equals(MAIN_TABLE_NAME)
+                    && !fragmentName.equals(VERSION_TABLE_NAME)
+                    && !fragmentName.equals(PROXY_TABLE_NAME)
+                    && !fragmentName.equals(FULLTEXT_TABLE_NAME)
+                    && !fragmentName.equals(LOCK_TABLE_NAME)
+                    && !fragmentName.equals(UID_SCHEMA_NAME)
+                    && !fragmentName.equals(MISC_TABLE_NAME);
         }
 
         @Override
         public String toString() {
-            return "PropertyInfo(" + fragmentName + ", " + fragmentKey + ", " +
-                    propertyType + (readonly ? ", RO" : "") +
-                    (fulltext ? ", FT" : "") + ')';
+            return "PropertyInfo(" + fragmentName + ", " + fragmentKey + ", "
+                    + propertyType + (readonly ? ", RO" : "")
+                    + (fulltext ? ", FT" : "") + ')';
         }
     }
 
@@ -501,8 +501,8 @@ public class Model {
                 if (!info.fulltext) {
                     continue;
                 }
-                if (info.propertyType == PropertyType.STRING ||
-                        info.propertyType == PropertyType.ARRAY_STRING) {
+                if (info.propertyType == PropertyType.STRING
+                        || info.propertyType == PropertyType.ARRAY_STRING) {
                     stringPropertyInfos.put(name, info);
                 } else if (info.propertyType == PropertyType.BINARY) {
                     binaryPropertyInfos.put(name, info);
@@ -555,8 +555,8 @@ public class Model {
             String fragmentKey) {
         if (fragmentKey == null) {
             PropertyType type = collectionTables.get(fragmentName);
-            if (type == PropertyType.ARRAY_STRING ||
-                    type == PropertyType.ARRAY_BINARY) {
+            if (type == PropertyType.ARRAY_STRING
+                    || type == PropertyType.ARRAY_BINARY) {
                 return type.getArrayBaseType();
             }
             return null;
@@ -763,8 +763,8 @@ public class Model {
             for (String fragmentName : COMMON_COLLECTION_FRAGMENTS) {
                 addTypeCollectionFragment(typeName, fragmentName);
             }
-            log.debug("Fragments for " + typeName + ": " +
-                    getTypeFragments(typeName));
+            log.debug("Fragments for " + typeName + ": "
+                    + getTypeFragments(typeName));
 
             // record doc type and facets, super type, sub types
             documentTypesFacets.put(typeName, new HashSet<String>(
@@ -967,8 +967,8 @@ public class Model {
                     PropertyType propertyType = PropertyType.fromFieldType(
                             fieldType, false);
                     String fragmentKey = field.getName().getLocalName();
-                    if (fragmentName.equals(UID_SCHEMA_NAME) &&
-                            (fragmentKey.equals(UID_MAJOR_VERSION_KEY) || fragmentKey.equals(UID_MINOR_VERSION_KEY))) {
+                    if (fragmentName.equals(UID_SCHEMA_NAME)
+                            && (fragmentKey.equals(UID_MAJOR_VERSION_KEY) || fragmentKey.equals(UID_MINOR_VERSION_KEY))) {
                         // HACK special-case the "uid" schema, put major/minor
                         // in the hierarchy table
                         fragmentKey = fragmentKey.equals(UID_MAJOR_VERSION_KEY) ? MAIN_MAJOR_VERSION_KEY
