@@ -1324,6 +1324,9 @@
       <selector path="div" view="nuxeo5 tree explorer">
         <font preset="default (Galaxy fonts)"/>
       </selector>
+      <selector path="td.dr-tree-h-text" view="nuxeo5 tree explorer">
+        <white-space>wrap</white-space>
+      </selector>
     </style>
     <style element="page[1]/section[2]/cell[1]/fragment[2]" inherit="default tabs">
       <selector path="div" view="nuxeo5 clip board">
