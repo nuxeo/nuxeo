@@ -9,3 +9,5 @@ target
 *.iml
 *.iws
 *.orig
+*/src/test/resources/log4j.xml
+*/src/test/resources/log4j.properties
