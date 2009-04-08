@@ -13,3 +13,5 @@ target
 nuxeo-platform-jbpm/nuxeo-platform-jbpm-web/src/main/resources/nuxeo.war/linkXhtml.sh
 *.gpd.*
 *cpJar*
+*/src/test/resources/log4j.properties
+*/src/test/resources/log4j.xml
