@@ -156,6 +156,7 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         file1.setPropertyValue("dc:created", cal1);
         file1.setPropertyValue("dc:coverage", "foo/bar");
         file1.setPropertyValue("dc:subjects", new String[] { "foo", "gee/moo" });
+        file1.setPropertyValue("uid", "uid123");
         file1 = session.createDocument(file1);
 
         DocumentModel file2 = new DocumentModelImpl("/testfolder1",
@@ -261,6 +262,13 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         assertEquals(1, dml.size());
 
         dml = session.query("SELECT * FROM Note WHERE dc:title = 'testfile3_Title'");
+        assertEquals(1, dml.size());
+
+        // property in a schema with no prefix
+        dml = session.query("SELECT * FROM Document WHERE uid = 'uid123'");
+        assertEquals(1, dml.size());
+        // compat syntax for old search service:
+        dml = session.query("SELECT * FROM Document WHERE uid:uid = 'uid123'");
         assertEquals(1, dml.size());
 
         // this needs an actual LEFT OUTER JOIN

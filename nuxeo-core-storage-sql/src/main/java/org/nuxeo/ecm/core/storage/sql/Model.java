@@ -464,6 +464,15 @@ public class Model {
                             + "unqualified reference in queries will use schema '%1$s'",
                     previous.fragmentName, fragmentName, propertyName));
         }
+        // compatibility for use of schema name as prefix
+        if (!propertyName.contains(":")) {
+            // allow schema name as prefix
+            propertyName = schemaName + ':' + propertyName;
+            previous = mergedPropertyInfos.get(propertyName);
+            if (previous == null) {
+                mergedPropertyInfos.put(propertyName, propertyInfo);
+            }
+        }
     }
 
     /**

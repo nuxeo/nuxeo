@@ -38,6 +38,7 @@ import org.nuxeo.ecm.core.query.sql.model.OrderByList;
 import org.nuxeo.ecm.core.query.sql.model.Reference;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.query.sql.model.StringLiteral;
+import org.nuxeo.ecm.core.schema.SchemaManager;
 
 /**
  * @author Bogdan Stefanescu
@@ -51,18 +52,21 @@ public class XPathBuilder {
 
     private final SQLQuery query;
 
-    private XPathBuilder(SQLQuery query) {
+    private final SchemaManager schemaManager;
+
+    private XPathBuilder(SQLQuery query, SchemaManager schemaManager) {
         xq = new XPathQuery();
         this.query = query;
+        this.schemaManager = schemaManager;
     }
 
     public static String fromNXQL(String query) throws QueryException {
-        return fromNXQL(SQLQueryParser.parse(query));
+        return fromNXQL(SQLQueryParser.parse(query), null);
     }
 
-    public static String fromNXQL(SQLQuery query)
+    public static String fromNXQL(SQLQuery query, SchemaManager schemaManager)
             throws QueryException {
-        return new XPathBuilder(query).fromNXQL();
+        return new XPathBuilder(query, schemaManager).fromNXQL();
     }
 
     private String fromNXQL() throws QueryException {
@@ -504,6 +508,18 @@ public class XPathBuilder {
                 name = NodeConstants.ECM_LIFECYCLE_STATE.rawname;
             } else if (NXQL.ECM_VERSIONLABEL.equals(name)) {
                 name = NodeConstants.ECM_VERSION_LABEL.rawname;
+            } else if (schemaManager != null) {
+                // compatibility for use of schema name as prefix
+                // which is illegal for the jcr query
+                int pos = name.indexOf(':');
+                if (pos != -1) {
+                    String prefix = name.substring(0, pos);
+                    if (schemaManager.getSchemaFromPrefix(prefix) == null
+                            && schemaManager.getSchema(prefix) != null) {
+                        // remove artificial prefix
+                        name = name.substring(pos + 1);
+                    }
+                }
             }
             buf.append("@").append(name);
         }
