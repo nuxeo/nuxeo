@@ -278,8 +278,7 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
         registeredPermissions.add(descriptor);
     }
 
-    public synchronized void unregisterDescriptor(
-            PermissionDescriptor descriptor) {
+    public synchronized void unregisterDescriptor(PermissionDescriptor descriptor) {
         int lastOccurence = registeredPermissions.lastIndexOf(descriptor);
         if (lastOccurence != -1) {
             // invalidate merged permission
@@ -290,15 +289,13 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
         }
     }
 
-    public synchronized void registerDescriptor(
-            PermissionVisibilityDescriptor descriptor) throws Exception {
+    public synchronized void registerDescriptor(PermissionVisibilityDescriptor descriptor) {
         // invalidate cached merged descriptors
         mergedPermissionsVisibility = null;
         registeredPermissionsVisibility.add(descriptor);
     }
 
-    public synchronized void unregisterDescriptor(
-            PermissionVisibilityDescriptor descriptor) throws Exception {
+    public synchronized void unregisterDescriptor(PermissionVisibilityDescriptor descriptor) {
         int lastOccurence = registeredPermissionsVisibility
                 .lastIndexOf(descriptor);
         if (lastOccurence != -1) {

@@ -37,8 +37,7 @@ public class MockCreatorSecurityPolicy extends AbstractSecurityPolicy {
 
     public Access checkPermission(Document doc, ACP mergedAcp,
             Principal principal, String permission,
-            String[] resolvedPermissions, String[] additionalPrincipals)
-            throws SecurityException {
+            String[] resolvedPermissions, String[] additionalPrincipals) {
         Access access = Access.UNKNOWN;
         String creator = null;
         if (doc != null) {

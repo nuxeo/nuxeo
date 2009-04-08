@@ -49,7 +49,7 @@ public interface SecurityPolicy {
      */
     Access checkPermission(Document doc, ACP mergedAcp, Principal principal,
             String permission, String[] resolvedPermissions,
-            String[] additionalPrincipals) throws SecurityException;
+            String[] additionalPrincipals);
 
     /**
      * Checks if this policy is restricting the given permission.

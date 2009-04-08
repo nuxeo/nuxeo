@@ -46,8 +46,7 @@ public abstract class ScalarPropertyFactory {
     static final Map<String, ScalarPropertyFactory> factories = new HashMap<String, ScalarPropertyFactory>();
 
     public abstract org.nuxeo.ecm.core.model.Property create(
-            JCRNodeProxy parent, Property property, Field field)
-            throws DocumentException;
+            JCRNodeProxy parent, Property property, Field field);
 
 
     /**
@@ -158,4 +157,5 @@ public abstract class ScalarPropertyFactory {
         factories.put(BooleanType.ID, BOOLEAN);
         factories.put(BinaryType.ID, BINARY);
     }
+
 }

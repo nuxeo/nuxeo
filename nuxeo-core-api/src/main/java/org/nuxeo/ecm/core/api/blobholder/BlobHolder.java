@@ -34,55 +34,37 @@ public interface BlobHolder {
 
     /**
      * Returns the Blob held inside the object.
-     *
-     * @return
-     * @throws ClientException
      */
     Blob getBlob() throws ClientException;
 
     /**
      * Returns a filesystem-like path to represent the held blob.
-     *
-     * @return
      */
     String getFilePath() throws ClientException;
 
     /**
      * Returns the held blob modification date.
-     *
-     * @return
-     * @throws ClientException
      */
     Calendar getModificationDate() throws ClientException;
 
     /**
      * Returns a hash for the held blob.
-     *
-     * @return
-     * @throws ClientException
      */
     String getHash() throws ClientException;
 
     /**
      * Returns a list of blobs, if holder implementation supports multiple blobs.
-     *
-     * @return
      */
     List<Blob> getBlobs() throws ClientException;
 
     /**
      * Returns a named property.
-     *
-     * @param name
-     * @return
      */
     Serializable getProperty(String name) throws ClientException;
 
     /**
      * Returns all properties as a Map.
-     *
-     * @return
      */
-    Map<String,Serializable> getProperties() throws ClientException;
+    Map<String, Serializable> getProperties();
 
 }

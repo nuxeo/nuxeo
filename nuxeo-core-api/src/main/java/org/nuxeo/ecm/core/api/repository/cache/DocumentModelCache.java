@@ -42,7 +42,7 @@ public interface DocumentModelCache {
 
     /** Children Cache */
 
-    void cacheChildren(DocumentRef parent, DocumentModelList children) throws ClientException;
+    void cacheChildren(DocumentRef parent, DocumentModelList children);
 
     void uncacheChildren(DocumentRef parent);
 

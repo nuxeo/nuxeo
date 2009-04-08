@@ -51,25 +51,14 @@ public interface SecurityPolicyService extends Serializable {
      * @param principalsToCheck principals (groups) to check for principal
      * @return access: true, false, or nothing. When nothing is returned,
      *         following policies or default core security are applied.
-     * @throws SecurityException
      */
     Access checkPermission(Document doc, ACP mergedAcp, Principal principal,
             String permission, String[] resolvedPermissions,
-            String[] principalsToCheck) throws SecurityException;
+            String[] principalsToCheck);
 
-    /**
-     * @param descriptor
-     * @throws Exception
-     */
-    void registerDescriptor(SecurityPolicyDescriptor descriptor)
-            throws Exception;
+    void registerDescriptor(SecurityPolicyDescriptor descriptor);
 
-    /**
-     * @param descriptor
-     * @throws Exception
-     */
-    void unregisterDescriptor(SecurityPolicyDescriptor descriptor)
-            throws Exception;
+    void unregisterDescriptor(SecurityPolicyDescriptor descriptor);
 
     /**
      * Checks if any policy restricts the given permission.

@@ -46,9 +46,8 @@ import org.osgi.framework.BundleException;
 public class NuxeoApp {
 
     protected OSGiAdapter osgi;
-    protected ClassLoader loader;
-    protected Environment env;
-
+    protected final ClassLoader loader;
+    protected final Environment env;
 
     public static ClassLoader getDefaultClassLoader() {
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
@@ -71,7 +70,6 @@ public class NuxeoApp {
     public Environment getEnvironment() {
         return this.env;
     }
-
 
     public synchronized void deployBundles(Collection<File> files) throws BundleException, IOException {
         if (!isStarted()) {
@@ -113,7 +111,6 @@ public class NuxeoApp {
         osgi.shutdown();
         osgi = null;
     }
-
 
     public static Collection<File> getBundleFiles(File baseDir, String bundles, String delim) throws IOException {
         LinkedHashSet<File> result = new LinkedHashSet<File>();

@@ -55,9 +55,8 @@ public interface Property {
      * Gets the property type.
      *
      * @return the property type
-     * @throws DocumentException if the type cannot be resolved
      */
-    Type getType() throws DocumentException;
+    Type getType();
 
     /**
      * Gets the value of this property.
@@ -85,9 +84,8 @@ public interface Property {
      * on it the property will be created by the underlying storage
      *
      * @return true if the property is null, false otherwise
-     * @throws DocumentException
      */
-    boolean isNull() throws DocumentException;
+    boolean isNull();
 
     /**
      * Nullify this property.

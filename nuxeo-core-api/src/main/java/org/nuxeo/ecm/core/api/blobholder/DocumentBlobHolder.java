@@ -58,7 +58,6 @@ public class DocumentBlobHolder extends AbstractBlobHolder {
 
     @Override
     public String getHash() throws ClientException {
-
         Blob blob = getBlob();
         if (blob != null) {
             String h = blob.getDigest();
@@ -73,7 +72,7 @@ public class DocumentBlobHolder extends AbstractBlobHolder {
         return doc.getPropertyValue(name);
     }
 
-    public Map<String, Serializable> getProperties() throws ClientException {
+    public Map<String, Serializable> getProperties() {
         return doc.getPrefetch();
     }
 

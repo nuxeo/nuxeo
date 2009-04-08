@@ -104,7 +104,7 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         closeSession(session);
     }
 
-    protected void closeSession(CoreSession session) throws ClientException {
+    protected void closeSession(CoreSession session) {
         CoreInstance.getInstance().close(session);
     }
 
@@ -291,16 +291,22 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
 
         dml = session.query("SELECT * FROM File WHERE dc:contributors = 'pete'");
         assertEquals(1, dml.size());
+
         dml = session.query("SELECT * FROM File WHERE dc:contributors = 'bob'");
         assertEquals(1, dml.size());
+
         dml = session.query("SELECT * FROM Document WHERE dc:contributors = 'bob'");
         assertEquals(2, dml.size());
+
         dml = session.query("SELECT * FROM Document WHERE dc:contributors IN ('bob', 'pete')");
         assertEquals(2, dml.size());
+
         dml = session.query("SELECT * FROM Document WHERE dc:contributors IN ('bob', 'john')");
         assertEquals(2, dml.size());
+
         dml = session.query("SELECT * FROM Document WHERE dc:contributors NOT IN ('bob', 'pete')");
         assertEquals(5, dml.size());
+
         dml = session.query("SELECT * FROM Document WHERE dc:contributors NOT IN ('bob', 'john')");
         assertEquals(5, dml.size());
     }
@@ -311,10 +317,13 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         createDocs();
         dml = session.query("SELECT * FROM Document WHERE dc:contributors <> 'pete'");
         assertEquals(6, dml.size());
+
         dml = session.query("SELECT * FROM Document WHERE dc:contributors <> 'blah'");
         assertEquals(7, dml.size());
+
         dml = session.query("SELECT * FROM File WHERE dc:contributors <> 'blah' AND ecm:isProxy = 0");
         assertEquals(3, dml.size());
+
         dml = session.query("SELECT * FROM Document WHERE ecm:mixinType = 'Versionable' AND ecm:mixinType <> 'Downloadable'");
         assertEquals(1, dml.size()); // 1 note
     }
@@ -607,9 +616,11 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         sql = "SELECT * FROM document WHERE dc:created >= DATE '2007-01-01'";
         dml = session.query(sql);
         assertEquals(2, dml.size());
+
         sql = "SELECT * FROM document WHERE dc:created >= DATE '2007-03-15'";
         dml = session.query(sql);
         assertEquals(1, dml.size());
+
         sql = "SELECT * FROM document WHERE dc:created >= DATE '2007-05-01'";
         dml = session.query(sql);
         assertEquals(0, dml.size());

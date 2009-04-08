@@ -83,9 +83,8 @@ public interface NuxeoPrincipal extends Principal, Serializable {
      * Recursively test if the user is member of this group.
      *
      * @param group The name of the group
-     * @return
      */
-    boolean isMemberOf(String group) throws ClientException;
+    boolean isMemberOf(String group);
 
     /**
      * Gets the roles for this principal.
@@ -124,11 +123,7 @@ public interface NuxeoPrincipal extends Principal, Serializable {
 
     DocumentModel getModel();
 
-    /**
-     * @param model The model to set.
-     * @throws ClientException
-     */
-    void setModel(DocumentModel model) throws ClientException;
+    void setModel(DocumentModel model);
 
     /**
      * Checks if the principal is an administrator (superuser).

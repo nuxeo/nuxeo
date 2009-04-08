@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core.query;
 import java.util.Iterator;
 
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.repository.DocumentIterator;
 
 /**
  * @author Bogdan Stefanescu
@@ -67,6 +68,9 @@ public interface QueryResult {
 
     double getDouble(String column, double defaultValue) throws QueryException;
 
+    /**
+     * Currently not implemented.
+     */
     Object getObject(String column) throws QueryException;
 
     Object getObject() throws QueryException;

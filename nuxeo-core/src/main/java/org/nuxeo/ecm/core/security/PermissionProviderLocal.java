@@ -30,25 +30,10 @@ public interface PermissionProviderLocal extends PermissionProvider {
     void registerDescriptor(PermissionDescriptor descriptor)
             throws Exception;
 
-    /**
-     * @param descriptor
-     * @throws Exception
-     */
-    void unregisterDescriptor(PermissionDescriptor descriptor)
-            throws Exception;
+    void unregisterDescriptor(PermissionDescriptor descriptor);
 
-    /**
-     * @param descriptor
-     * @throws Exception
-     */
-    void registerDescriptor(PermissionVisibilityDescriptor descriptor)
-            throws Exception;
+    void registerDescriptor(PermissionVisibilityDescriptor descriptor);
 
-    /**
-     * @param descriptor
-     * @throws Exception
-     */
-    void unregisterDescriptor(PermissionVisibilityDescriptor descriptor)
-            throws Exception;
+    void unregisterDescriptor(PermissionVisibilityDescriptor descriptor);
 
 }

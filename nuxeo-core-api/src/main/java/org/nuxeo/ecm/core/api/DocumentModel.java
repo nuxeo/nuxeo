@@ -421,7 +421,6 @@ public interface DocumentModel extends Serializable {
      * @see org.nuxeo.ecm.core.lifecycle
      *
      * @return the life cycle as a string
-     * @throws ClientException
      */
     String getCurrentLifeCycleState() throws ClientException;
 
@@ -431,7 +430,6 @@ public interface DocumentModel extends Serializable {
      * @see org.nuxeo.ecm.core.lifecycle
      *
      * @return the life cycle policy
-     * @throws ClientException
      */
     String getLifeCyclePolicy() throws ClientException;
 
@@ -442,7 +440,6 @@ public interface DocumentModel extends Serializable {
      *
      * @param transition the name of the transition to follow
      * @return a boolean representing the status if the operation
-     * @throws ClientException
      */
     boolean followTransition(String transition) throws ClientException;
 
@@ -498,9 +495,6 @@ public interface DocumentModel extends Serializable {
 
     /**
      * Copies all the data from a source document.
-     *
-     * @param sourceDoc
-     * @throws ClientException
      */
     void copyContent(DocumentModel sourceDoc) throws ClientException;
 
@@ -551,23 +545,16 @@ public interface DocumentModel extends Serializable {
 
     /**
      * Store a value in the prefetched inner map.
-     *
-     * @param id
-     * @param value
      */
     void prefetchProperty(String id, Object value);
 
     /**
      * Used to set lifecycle state along with prefetching other properties.
-     *
-     * @param lifecycle
      */
     void prefetchCurrentLifecycleState(String lifecycle);
 
     /**
      * Used to set lifecycle policy along with prefetching other properties.
-     *
-     * @param lifeCyclePolicy
      */
     void prefetchLifeCyclePolicy(String lifeCyclePolicy);
 
@@ -578,13 +565,6 @@ public interface DocumentModel extends Serializable {
      * Gets system property of the specified type. This is not a lazy loaded
      * property, thus the request is made directly to the server. This is needed
      * as some critical system properties might be changed directly in the core.
-     *
-     * @param <T>
-     * @param systemProperty
-     * @param type
-     * @return
-     * @throws ClientException
-     * @throws DocumentException
      */
     <T extends Serializable> T getSystemProp(String systemProperty, Class<T> type)
             throws ClientException, DocumentException;
@@ -594,53 +574,33 @@ public interface DocumentModel extends Serializable {
      * Get a document part given its schema name
      * @param schema the schema
      * @return the document aprt or null if none exists for that schema
-     * TODO throw an exception if schema is not impl  by the doc?
      * @throws ClientException
      */
+    // TODO throw an exception if schema is not impl  by the doc?
     DocumentPart getPart(String schema) throws ClientException;
 
     /**
      * Gets this document's parts.
-     *
-     * @return
-     * @throws ClientException
      */
     DocumentPart[] getParts() throws ClientException;
 
     /**
      * Gets a property given a xpath.
-     *
-     * @param xpath
-     * @return
-     * @throws PropertyException
-     * @throws ClientException
      */
     Property getProperty(String xpath) throws PropertyException, ClientException;
 
     /**
      * Gets a property value given a xpath.
-     *
-     * @param xpath
-     * @return
-     * @throws PropertyException
-     * @throws ClientException
      */
     Serializable getPropertyValue(String xpath) throws PropertyException, ClientException;
 
     /**
      * Sets a property value given a xpath.
-     *
-     * @param xpath
-     * @param value
-     * @throws PropertyException
-     * @throws ClientException
      */
     void setPropertyValue(String xpath, Serializable value) throws PropertyException, ClientException;
 
     /**
      * Returns the flags set on the document model.
-     *
-     * @return
      */
     long getFlags();
 
@@ -689,8 +649,6 @@ public interface DocumentModel extends Serializable {
 
     /**
      * Same as {@code DocumentModel.refresh(REFRESH_DEFAULT)}.
-     *
-     * @throws ClientException
      */
     void refresh() throws ClientException;
 

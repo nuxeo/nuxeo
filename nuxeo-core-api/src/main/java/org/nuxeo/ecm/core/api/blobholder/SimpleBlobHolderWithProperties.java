@@ -36,14 +36,14 @@ public class SimpleBlobHolderWithProperties extends SimpleBlobHolder {
 
     @Override
     public Serializable getProperty(String name) throws ClientException {
-        if (properties==null) {
+        if (properties == null) {
             return null;
         }
         return properties.get(name);
     }
 
     @Override
-    public Map<String, Serializable> getProperties() throws ClientException {
+    public Map<String, Serializable> getProperties() {
         return properties;
     }
 

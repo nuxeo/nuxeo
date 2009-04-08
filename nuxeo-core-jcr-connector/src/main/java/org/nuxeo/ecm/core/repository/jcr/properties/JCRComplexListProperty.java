@@ -84,7 +84,7 @@ public class JCRComplexListProperty implements Property, JCRNodeProxy {
         return parent.getDocument();
     }
 
-    public Type getType() throws DocumentException {
+    public Type getType() {
         return type;
     }
 
@@ -136,7 +136,7 @@ public class JCRComplexListProperty implements Property, JCRNodeProxy {
         }
     }
 
-    public boolean isNull() throws DocumentException {
+    public boolean isNull() {
         return node == null;
     }
 

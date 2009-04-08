@@ -146,33 +146,43 @@ public class TestQueryParser extends TestCase {
         SQLQuery query = SQLQueryParser.parse("SELECT p FROM t WHERE p = 'test'");
         Operator op = query.getWhereClause().predicate.operator;
         assertEquals(Operator.EQ, op);
+
         query = SQLQueryParser.parse("SELECT p FROM t WHERE p > 1");
         op = query.getWhereClause().predicate.operator;
         assertEquals(Operator.GT, op);
+
         query = SQLQueryParser.parse("SELECT p FROM t WHERE p >= 1");
         op = query.getWhereClause().predicate.operator;
         assertEquals(Operator.GTEQ, op);
+
         query = SQLQueryParser.parse("SELECT p FROM t WHERE p < 1");
         op = query.getWhereClause().predicate.operator;
         assertEquals(Operator.LT, op);
+
         query = SQLQueryParser.parse("SELECT p FROM t WHERE p <= 1");
         op = query.getWhereClause().predicate.operator;
         assertEquals(Operator.LTEQ, op);
+
         query = SQLQueryParser.parse("SELECT p FROM t WHERE p <> 1");
         op = query.getWhereClause().predicate.operator;
         assertEquals(Operator.NOTEQ, op);
+
         query = SQLQueryParser.parse("SELECT p FROM t WHERE p != 1");
         op = query.getWhereClause().predicate.operator;
         assertEquals(Operator.NOTEQ, op);
+
         query = SQLQueryParser.parse("SELECT p FROM t WHERE p + 2 = 2");
         op = ((Expression) query.getWhereClause().predicate.lvalue).operator;
         assertEquals(Operator.SUM, op);
+
         query = SQLQueryParser.parse("SELECT p FROM t WHERE p - 2 = 3");
         op = ((Expression) query.getWhereClause().predicate.lvalue).operator;
         assertEquals(Operator.SUB , op);
+
         query = SQLQueryParser.parse("SELECT p FROM t WHERE p * 2 = 3");
         op = ((Expression) query.getWhereClause().predicate.lvalue).operator;
         assertEquals(Operator.MUL, op);
+
         query = SQLQueryParser.parse("SELECT p FROM t WHERE p / 2 = 4");
         op = ((Expression) query.getWhereClause().predicate.lvalue).operator;
         assertEquals(Operator.DIV, op);
@@ -192,8 +202,10 @@ public class TestQueryParser extends TestCase {
         SQLQuery query = SQLQueryParser.parse("SELECT p FROM t WHERE p IN (12, 13) AND q='test'");
         Operator op = query.getWhereClause().predicate.operator;
         assertEquals(Operator.AND, op);
+
         Expression e = (Expression) query.getWhereClause().predicate.lvalue;
         assertEquals(Operator.IN, e.operator);
+
         LiteralList list = new LiteralList();
         list.add(new IntegerLiteral(12)); list.add(new IntegerLiteral(13));
         assertEquals(list, e.rvalue);
@@ -202,8 +214,10 @@ public class TestQueryParser extends TestCase {
         query = SQLQueryParser.parse("SELECT p FROM t WHERE p NOT IN (12, 13) AND q='test'");
         op = query.getWhereClause().predicate.operator;
         assertEquals(Operator.AND, op);
+
         e = (Expression) query.getWhereClause().predicate.lvalue;
         assertEquals(Operator.NOTIN, e.operator);
+
         list = new LiteralList();
         list.add(new IntegerLiteral(12)); list.add(new IntegerLiteral(13));
         assertEquals(list, e.rvalue);
@@ -214,8 +228,10 @@ public class TestQueryParser extends TestCase {
         SQLQuery query = SQLQueryParser.parse("SELECT p FROM t WHERE p BETWEEN 10 AND 20 AND q='test'");
         Operator op = query.getWhereClause().predicate.operator;
         assertEquals(Operator.AND, op);
+
         Expression e = (Expression) query.getWhereClause().predicate.lvalue;
         assertEquals(Operator.BETWEEN, e.operator);
+
         LiteralList list = new LiteralList();
         list.add(new IntegerLiteral(10)); list.add(new IntegerLiteral(20));
         assertEquals(list, e.rvalue);
@@ -224,8 +240,10 @@ public class TestQueryParser extends TestCase {
         query = SQLQueryParser.parse("SELECT p FROM t WHERE p NOT BETWEEN 10 AND 20 AND q='test'");
         op = query.getWhereClause().predicate.operator;
         assertEquals(Operator.AND, op);
+
         e = (Expression) query.getWhereClause().predicate.lvalue;
         assertEquals(Operator.NOTBETWEEN, e.operator);
+
         list = new LiteralList();
         list.add(new IntegerLiteral(10)); list.add(new IntegerLiteral(20));
         assertEquals(list, e.rvalue);
@@ -236,8 +254,10 @@ public class TestQueryParser extends TestCase {
         SQLQuery query = SQLQueryParser.parse("SELECT getDate(), p FROM t WHERE substring(title, 2) = 'test'");
         Operator op = query.getWhereClause().predicate.operator;
         assertEquals(Operator.EQ, op);
+
         Function fn = (Function) query.getWhereClause().predicate.lvalue;
         assertEquals("substring", fn.name);
+
         OperandList args = new OperandList();
         args.add(new Reference("title"));
         args.add(new IntegerLiteral(2));
@@ -266,12 +286,16 @@ public class TestQueryParser extends TestCase {
         SQLQuery query = SQLQueryParser.parse("SELECT p FROM t WHERE p * -2 / 3 + 4 - 5 = 2");
         Predicate pred = query.getWhereClause().predicate;
         assertEquals(Operator.EQ, pred.operator);
+
         Expression e = (Expression) pred.lvalue;
         assertEquals(Operator.SUB, e.operator);
+
         e = (Expression) e.lvalue;
         assertEquals(Operator.SUM, e.operator);
+
         e = (Expression) e.lvalue;
         assertEquals(Operator.DIV, e.operator);
+
         e = (Expression) e.lvalue;
         assertEquals(Operator.MUL, e.operator);
         assertEquals(-2, ((IntegerLiteral) e.rvalue).value);
@@ -280,12 +304,15 @@ public class TestQueryParser extends TestCase {
         pred = query.getWhereClause().predicate;
         assertEquals(Operator.OR, pred.operator);
         assertEquals(Operator.EQ, ((Expression) pred.rvalue).operator);
+
         e = (Expression) pred.lvalue;
         assertEquals(Operator.OR, e.operator);
         assertEquals(Operator.EQ, ((Expression) e.rvalue).operator);
+
         e = (Expression) e.lvalue;
         assertEquals(Operator.AND, e.operator);
         assertEquals(Operator.EQ, ((Expression) e.rvalue).operator);
+
         e = (Expression) e.lvalue;
         assertEquals(Operator.AND, e.operator);
         assertEquals(Operator.EQ, ((Expression) e.rvalue).operator);
@@ -295,9 +322,11 @@ public class TestQueryParser extends TestCase {
         pred = query.getWhereClause().predicate;
         assertEquals(Operator.OR, pred.operator);
         assertEquals(Operator.EQ, ((Expression) pred.lvalue).operator);
+
         e = (Expression) pred.rvalue;
         assertEquals(Operator.AND, e.operator);
         assertEquals(Operator.EQ, ((Expression) e.lvalue).operator);
+
         e = (Expression) e.rvalue;
         assertEquals(Operator.NOT, e.operator);
         assertEquals(Operator.EQ, ((Expression) e.lvalue).operator);
@@ -447,10 +476,13 @@ public class TestQueryParser extends TestCase {
     public void testSelectClause() {
         SQLQuery query = SQLQueryParser.parse("SELECT p FROM t");
         assertFalse(query.getSelectClause().distinct);
+
         query = SQLQueryParser.parse("SELECT DISTINCT p FROM t");
         assertTrue(query.getSelectClause().distinct);
+
         query = SQLQueryParser.parse("SELECT ALL p FROM t");
         assertFalse(query.getSelectClause().distinct);
+
         query = SQLQueryParser.parse("SELECT * FROM t");
         assertTrue(query.getSelectClause().getSelectList().isEmpty());
     }
@@ -459,6 +491,7 @@ public class TestQueryParser extends TestCase {
         SQLQuery query = SQLQueryParser.parse("SELECT p, q, r FROM t ORDER BY p, q");
         String expected = "SELECT p, q, r FROM t ORDER BY p, q";
         assertEquals(expected, query.toString());
+
         OrderByClause clause = query.getOrderByClause();
         OrderByList elements = clause.elements;
         assertEquals("p", elements.get(0).reference.name);
@@ -470,6 +503,7 @@ public class TestQueryParser extends TestCase {
         query = SQLQueryParser.parse("SELECT p, q, r FROM t ORDER BY p, q ASC");
         expected = "SELECT p, q, r FROM t ORDER BY p, q ASC";
         assertEquals(expected, query.toString());
+
         clause = query.getOrderByClause();
         elements = clause.elements;
         assertEquals("p", elements.get(0).reference.name);
@@ -481,6 +515,7 @@ public class TestQueryParser extends TestCase {
         query = SQLQueryParser.parse("SELECT p, q, r FROM t ORDER BY p, q DESC");
         expected = "SELECT p, q, r FROM t ORDER BY p, q DESC";
         assertEquals(expected, query.toString());
+
         clause = query.getOrderByClause();
         elements = clause.elements;
         assertEquals("p", elements.get(0).reference.name);
@@ -492,6 +527,7 @@ public class TestQueryParser extends TestCase {
         query = SQLQueryParser.parse("SELECT p, q, r FROM t ORDER BY p DESC, q");
         expected = "SELECT p, q, r FROM t ORDER BY p DESC, q";
         assertEquals(expected, query.toString());
+
         clause = query.getOrderByClause();
         elements = clause.elements;
         assertEquals("p", elements.get(0).reference.name);
@@ -505,10 +541,12 @@ public class TestQueryParser extends TestCase {
         SQLQuery query = SQLQueryParser.parse("SELECT p, q, r FROM TYPE t1");
         assertEquals(FromClause.DOCTYPE, query.getFromClause().getType());
         assertEquals("t1", query.getFromClause().elements.get(0));
+
         query = SQLQueryParser.parse("SELECT p, q, r FROM TYPE t1,t2,t3");
         assertEquals("t1", query.getFromClause().elements.get(0));
         assertEquals("t2", query.getFromClause().elements.get(1));
         assertEquals("t3", query.getFromClause().elements.get(2));
+
         query = SQLQueryParser.parse("SELECT p, q, r FROM t1,t2,t3");
         assertEquals(FromClause.DOCTYPE, query.getFromClause().getType());
     }
@@ -517,6 +555,7 @@ public class TestQueryParser extends TestCase {
         SQLQuery query = SQLQueryParser.parse("SELECT p, q, r FROM LOCATION l1");
         assertEquals(FromClause.LOCATION, query.getFromClause().getType());
         assertEquals("l1", query.getFromClause().elements.get(0));
+
         query = SQLQueryParser.parse("SELECT p, q, r FROM TYPE l1, l2,l3");
         assertEquals("l1", query.getFromClause().elements.get(0));
         assertEquals("l2", query.getFromClause().elements.get(1));

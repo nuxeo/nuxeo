@@ -34,7 +34,6 @@ import org.w3c.dom.NodeList;
 public class LifeCycleTypesConfiguration {
 
     private static final String TAG_TYPE = "type";
-
     private static final String ATTR_TYPE_NAME = "name";
 
     /** The DOM element holding the states. */

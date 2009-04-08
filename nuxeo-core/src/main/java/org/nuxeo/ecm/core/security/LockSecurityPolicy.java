@@ -42,8 +42,7 @@ public class LockSecurityPolicy extends AbstractSecurityPolicy {
 
     public Access checkPermission(Document doc, ACP mergedAcp,
             Principal principal, String permission,
-            String[] resolvedPermissions, String[] additionalPrincipals)
-            throws SecurityException {
+            String[] resolvedPermissions, String[] additionalPrincipals) {
         Access access = Access.UNKNOWN;
         try {
             String username = principal.getName();

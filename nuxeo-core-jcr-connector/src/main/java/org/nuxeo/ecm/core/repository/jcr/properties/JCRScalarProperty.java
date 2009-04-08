@@ -65,7 +65,7 @@ public abstract class JCRScalarProperty implements Property {
         return field.getType();
     }
 
-    public boolean isNull() throws DocumentException {
+    public boolean isNull() {
         return property == null;
     }
 

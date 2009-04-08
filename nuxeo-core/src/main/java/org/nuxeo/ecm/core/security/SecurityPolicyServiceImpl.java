@@ -127,8 +127,7 @@ public class SecurityPolicyServiceImpl implements SecurityPolicyService {
         return transformers;
     }
 
-    public void registerDescriptor(SecurityPolicyDescriptor descriptor)
-            throws Exception {
+    public void registerDescriptor(SecurityPolicyDescriptor descriptor) {
         String id = descriptor.getName();
         if (policyDescriptors.containsKey(id)) {
             log.info("Overriding security policy " + id);
@@ -137,8 +136,7 @@ public class SecurityPolicyServiceImpl implements SecurityPolicyService {
         resetPolicies();
     }
 
-    public void unregisterDescriptor(SecurityPolicyDescriptor descriptor)
-            throws Exception {
+    public void unregisterDescriptor(SecurityPolicyDescriptor descriptor) {
         String id = descriptor.getName();
         if (policyDescriptors.containsKey(id)) {
             policyDescriptors.remove(id);
@@ -148,8 +146,7 @@ public class SecurityPolicyServiceImpl implements SecurityPolicyService {
 
     public Access checkPermission(Document doc, ACP mergedAcp,
             Principal principal, String permission,
-            String[] resolvedPermissions, String[] additionalPrincipals)
-            throws SecurityException {
+            String[] resolvedPermissions, String[] additionalPrincipals) {
         Access access = Access.UNKNOWN;
         List<SecurityPolicy> policies = getPolicies();
         for (SecurityPolicy policy : policies) {

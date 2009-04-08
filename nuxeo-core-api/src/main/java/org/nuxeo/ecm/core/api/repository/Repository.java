@@ -150,10 +150,8 @@ public class Repository implements Serializable {
     public String toString() {
         StringBuilder buf = new StringBuilder();
         buf.append(Repository.class.getSimpleName());
-        buf.append(" {name=");
-        buf.append(name);
-        buf.append(", label=");
-        buf.append(label);
+        buf.append(" {name=").append(name);
+        buf.append(", label=").append(label);
         buf.append('}');
 
         return buf.toString();

@@ -226,8 +226,8 @@ public class DocumentsPageProvider implements PagedDocumentsProvider {
     /**
      * Nothing can't be done to refresh this provider's pages
      * the whole provider should be instead replaced
-     **/
-    public void refresh() throws ClientException {
+     */
+    public void refresh() {
     }
 
     // TODO stop duplication

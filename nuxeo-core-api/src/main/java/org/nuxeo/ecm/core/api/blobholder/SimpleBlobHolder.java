@@ -84,7 +84,7 @@ public class SimpleBlobHolder extends AbstractBlobHolder {
         return null;
     }
 
-    public Map<String, Serializable> getProperties() throws ClientException {
+    public Map<String, Serializable> getProperties() {
         return null;
     }
 

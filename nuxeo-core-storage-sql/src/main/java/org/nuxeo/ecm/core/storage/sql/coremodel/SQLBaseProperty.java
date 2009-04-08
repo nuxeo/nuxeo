@@ -52,7 +52,7 @@ public abstract class SQLBaseProperty implements Property {
         return type;
     }
 
-    public boolean isNull() throws DocumentException {
+    public boolean isNull() {
         throw new UnsupportedOperationException();
     }
 

@@ -52,15 +52,13 @@ public interface PagedDocumentsProvider extends Serializable {
      * Sets the current page of results to the required one and return it.
      *
      * @param page the page index, starting from 0
-     * @return
      */
     DocumentModelList getPage(int page);
 
     /**
-     * Force refresh of the current page
-     * @throws ClientException
+     * Forces refresh of the current page.
      */
-    void refresh() throws ClientException;
+    void refresh();
 
     /**
      * @return a boolean expressing if there are further pages.
@@ -72,14 +70,12 @@ public interface PagedDocumentsProvider extends Serializable {
      */
     boolean isPreviousPageAvailable();
 
-
     /**
      * @return the number of elements in current page.
      */
     int getCurrentPageSize();
 
     /**
-     *
      * @return the number of requested page size.
      */
     int getPageSize();

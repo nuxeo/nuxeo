@@ -25,8 +25,8 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 
 public abstract class AbstractRepositoryOperation implements RepositoryOperation {
 
-    protected CoreSession session;
-    protected DocumentModel doc;
+    protected final CoreSession session;
+    protected final DocumentModel doc;
 
     protected AbstractRepositoryOperation(CoreSession session, DocumentModel doc) {
         this.session = session;

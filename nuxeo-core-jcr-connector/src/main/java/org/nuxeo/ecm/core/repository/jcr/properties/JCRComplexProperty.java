@@ -63,11 +63,11 @@ public class JCRComplexProperty implements Property, JCRNodeProxy {
         return parent.getDocument();
     }
 
-    public Type getType() throws DocumentException {
+    public Type getType() {
         return type;
     }
 
-    public String getName() throws DocumentException {
+    public String getName() {
         return field.getName().getPrefixedName();
     }
 
@@ -117,7 +117,7 @@ public class JCRComplexProperty implements Property, JCRNodeProxy {
         }
     }
 
-    public boolean isNull() throws DocumentException {
+    public boolean isNull() {
         return node == null;
     }
 

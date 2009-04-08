@@ -136,21 +136,15 @@ public class UserPrincipal implements NuxeoPrincipal, Serializable {
         // TODO Auto-generated method stub
     }
 
-    /**
-     * @return Returns the model.
-     */
     public DocumentModel getModel() {
         return model;
     }
 
-    /**
-     * @param model The model to set.
-     */
     public void setModel(DocumentModel model) {
         this.model = model;
     }
 
-    public boolean isMemberOf(String group) throws ClientException {
+    public boolean isMemberOf(String group) {
         // TODO Auto-generated method stub
         return false;
     }
@@ -210,12 +204,7 @@ public class UserPrincipal implements NuxeoPrincipal, Serializable {
     }
 
     public boolean isAdministrator() {
-        try {
-            return isMemberOf(SecurityConstants.ADMINISTRATORS);
-        } catch (ClientException e) {
-            log.error(e);
-            return false;
-        }
+        return isMemberOf(SecurityConstants.ADMINISTRATORS);
     }
 
     public boolean isAnonymous() {

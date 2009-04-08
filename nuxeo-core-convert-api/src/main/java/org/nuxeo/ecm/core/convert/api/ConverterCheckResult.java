@@ -33,7 +33,7 @@ public class ConverterCheckResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    protected boolean available;
+    protected final boolean available;
 
     protected String installationMessage;
 
@@ -55,24 +55,12 @@ public class ConverterCheckResult implements Serializable {
         return available;
     }
 
-    public void setAvailable(boolean available) {
-        this.available = available;
-    }
-
     public String getInstallationMessage() {
         return installationMessage;
     }
 
-    public void setInstallationMessage(String installationMessage) {
-        this.installationMessage = installationMessage;
-    }
-
     public String getErrorMessage() {
         return errorMessage;
-    }
-
-    public void setErrorMessage(String errorMessage) {
-        this.errorMessage = errorMessage;
     }
 
     public List<String> getSupportedInputMimeTypes() {

@@ -44,11 +44,11 @@ public class BlobHolderTestImpl extends AbstractBlobHolder {
         return null;
     }
 
-    public Serializable getProperty(String name) throws ClientException {
+    public Serializable getProperty(String name) {
         return null;
     }
 
-    public Map<String, Serializable> getProperties() throws ClientException {
+    public Map<String, Serializable> getProperties() {
         return null;
     }
 

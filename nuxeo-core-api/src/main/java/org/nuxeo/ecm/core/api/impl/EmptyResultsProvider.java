@@ -81,7 +81,7 @@ public class EmptyResultsProvider implements PagedDocumentsProvider {
     public void previous() {
     }
 
-    public void refresh() throws ClientException {
+    public void refresh() {
     }
 
     public void rewind() {

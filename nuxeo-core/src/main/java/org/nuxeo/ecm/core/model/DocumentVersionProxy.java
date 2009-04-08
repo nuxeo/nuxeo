@@ -29,16 +29,11 @@ public interface DocumentVersionProxy extends Document {
 
     /**
      * Gets the version to which this proxy points.
-     *
-     * @throws DocumentException
      */
-    DocumentVersion getTargetVersion() throws DocumentException;
+    DocumentVersion getTargetVersion();
 
     /**
      * Gets the source document (not the version) to which this proxy points.
-     *
-     * @return
-     * @throws DocumentException
      */
     Document getTargetDocument() throws DocumentException;
 
@@ -46,8 +41,6 @@ public interface DocumentVersionProxy extends Document {
      * Updates this proxy to point to the base version.
      * <p>
      * If the node is already pointing to the base version does nothing.
-     *
-     * @throws DocumentException
      */
     void updateToBaseVersion() throws DocumentException;
 

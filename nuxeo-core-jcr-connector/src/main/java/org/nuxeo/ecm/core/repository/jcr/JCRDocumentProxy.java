@@ -95,7 +95,7 @@ public class JCRDocumentProxy extends JCRDocument implements
     // this.type = type;
     // }
 
-    public DocumentVersion getTargetVersion() throws DocumentException {
+    public DocumentVersion getTargetVersion() {
         return (DocumentVersion) doc;
     }
 

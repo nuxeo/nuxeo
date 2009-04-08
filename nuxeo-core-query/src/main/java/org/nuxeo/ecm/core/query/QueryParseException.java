@@ -29,9 +29,6 @@ public class QueryParseException extends CoreRuntimeException {
 
     private static final long serialVersionUID = -3557588796412733083L;
 
-    public QueryParseException() {
-    }
-
     public QueryParseException(String message) {
         super(message);
     }

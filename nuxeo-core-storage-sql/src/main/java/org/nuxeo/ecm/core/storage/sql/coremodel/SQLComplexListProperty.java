@@ -107,7 +107,7 @@ public class SQLComplexListProperty extends SQLBaseProperty {
         }
     }
 
-    public void setList(ListDiff list) throws DocumentException {
+    public void setList(ListDiff list) {
         if (!list.isDirty()) {
             return;
         }
