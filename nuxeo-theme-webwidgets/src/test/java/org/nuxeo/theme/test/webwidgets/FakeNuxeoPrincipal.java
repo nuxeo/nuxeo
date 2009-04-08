@@ -99,7 +99,7 @@ public class FakeNuxeoPrincipal implements NuxeoPrincipal {
         return anonymous;
     }
 
-    public boolean isMemberOf(String group) throws ClientException {
+    public boolean isMemberOf(String group) {
         // TODO Auto-generated method stub
         return false;
     }

@@ -15,11 +15,18 @@
 package org.nuxeo.theme.editor;
 
 public class PageInfo {
-    public String name;
 
-    public String link;
+    public final String name;
 
-    public String className;
+    public final String link;
+
+    public final String className;
+
+    public PageInfo(String name, String link, String className) {
+        this.name = name;
+        this.link = link;
+        this.className = className;
+    }
 
     public String getName() {
         return name;
@@ -33,9 +40,4 @@ public class PageInfo {
         return className;
     }
 
-    public PageInfo(String name, String link, String className) {
-        this.name = name;
-        this.link = link;
-        this.className = className;
-    }
 }
