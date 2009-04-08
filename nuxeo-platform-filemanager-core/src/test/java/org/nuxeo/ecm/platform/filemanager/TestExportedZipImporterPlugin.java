@@ -42,10 +42,9 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class TestExportedZipImporterPlugin extends RepositoryOSGITestCase {
 
-
     private String archiveFileName;
 
-    protected String tmpDir = System.getProperty("java.io.tmpdir");
+    protected final String tmpDir = System.getProperty("java.io.tmpdir");
 
     protected DocumentModel sourceWS;
     protected DocumentModel destWS;

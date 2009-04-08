@@ -105,7 +105,7 @@ public class CoreSearchBackend extends AbstractSearchEngineBackend {
     }
 
     public ResultSet searchQuery(ComposedNXQuery nxQuery, int offset, int limit)
-            throws SearchException, QueryException {
+            throws SearchException {
         SearchPrincipal searchPrincipal = nxQuery.getSearchPrincipal();
         Serializable principal = getPrincipal(searchPrincipal);
 

@@ -115,7 +115,7 @@ public interface SecurityActions extends StatefulBaseLifeCycle {
      *
      * @throws ClientException
      */
-    void resetSecurityData() throws ClientException;
+    void resetSecurityData();
 
     /**
      * Rebuilds the security displayable data from the current selected
@@ -132,10 +132,8 @@ public interface SecurityActions extends StatefulBaseLifeCycle {
      * @return a UserPermissionsTableModel used to build a checkboxable listing
      *         of managed permissions
      * @throws ClientException
-     * @throws ECInvalidParameterException
      */
-    UserPermissionsTableModel getDataTableModel() throws ClientException,
-            ECInvalidParameterException;
+    UserPermissionsTableModel getDataTableModel() throws ClientException;
 
     /**
      * @return the SecurityData object that manages a stateful representation of

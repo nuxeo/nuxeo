@@ -30,7 +30,7 @@ public class CachableUserIdentificationInfo implements Serializable {
 
     private static final long serialVersionUID = 13278976543651L;
 
-    protected UserIdentificationInfo userInfo;
+    protected final UserIdentificationInfo userInfo;
 
     protected boolean alreadyAuthenticated;
 

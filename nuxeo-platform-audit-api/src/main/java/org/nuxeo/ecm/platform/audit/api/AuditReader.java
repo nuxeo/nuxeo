@@ -39,22 +39,20 @@ public interface AuditReader {
      *
      * @param uuid the document uuid
      * @return a list of log entries
-     * @throws AuditException
      */
-    List<LogEntry> getLogEntriesFor(String uuid) throws AuditException;
+    List<LogEntry> getLogEntriesFor(String uuid);
 
     List<LogEntry> getLogEntriesFor(String uuid,
-            Map<String, FilterMapEntry> filterMap, boolean doDefaultSort)
-            throws AuditException;
+            Map<String, FilterMapEntry> filterMap, boolean doDefaultSort);
 
     /**
      * Returns a given log entry given its id.
      *
      * @param id the log entry identifier
+     *
      * @return a LogEntry instance
-     * @throws AuditException
      */
-    LogEntry getLogEntryByID(long id) throws AuditException;
+    LogEntry getLogEntryByID(long id);
 
     /**
      * Returns the list of log entries.
@@ -66,11 +64,10 @@ public interface AuditReader {
      *
      * @param eventIds the event ids.
      * @param dateRange a preset date range.
+     *
      * @return a list of log entries.
-     * @throws AuditException
      */
-    List<LogEntry> queryLogs(String[] eventIds, String dateRange)
-            throws AuditException;
+    List<LogEntry> queryLogs(String[] eventIds, String dateRange);
 
     /**
      * Returns the batched list of log entries.
@@ -86,12 +83,11 @@ public interface AuditReader {
      * @param path add filter on document path
      * @param pageNb page number (ignore if <=1)
      * @param pageSize number of results per page
+     *
      * @return a list of log entries.
-     * @throws AuditException
      */
     List<LogEntry> queryLogsByPage(String[] eventIds, String dateRange,
-            String category, String path, int pageNb, int pageSize)
-            throws AuditException;
+            String category, String path, int pageNb, int pageSize);
 
     /**
      * Returns the batched list of log entries.
@@ -107,12 +103,11 @@ public interface AuditReader {
      * @param path add filter on document path
      * @param pageNb page number (ignore if <=1)
      * @param pageSize number of results per page
+     *
      * @return a list of log entries.
-     * @throws AuditException
      */
     List<LogEntry> queryLogsByPage(String[] eventIds, Date limit,
-            String category, String path, int pageNb, int pageSize)
-            throws AuditException;
+            String category, String path, int pageNb, int pageSize);
 
     /**
      * Returns a batched list of log entries. WhereClause is a native where
@@ -122,9 +117,7 @@ public interface AuditReader {
      * @param pageNb
      * @param pageSize
      * @return
-     * @throws AuditException
      */
-    List<LogEntry> nativeQueryLogs(String whereClause, int pageNb, int pageSize)
-            throws AuditException;
+    List<LogEntry> nativeQueryLogs(String whereClause, int pageNb, int pageSize);
 
 }

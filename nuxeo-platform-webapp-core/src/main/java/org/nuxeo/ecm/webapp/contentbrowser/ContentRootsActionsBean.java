@@ -236,7 +236,7 @@ public class ContentRootsActionsBean extends InputController implements
     // @Observer( { EventNames.DOMAIN_SELECTION_CHANGED })
     // @Factory("contentRootChildrenList")
     public void getWorkspaces() throws ClientException,
-            AlreadyConnectedException, ECInvalidParameterException {
+            AlreadyConnectedException {
         try {
             String selectedTab = "";
             // we display workspaces first
@@ -262,7 +262,7 @@ public class ContentRootsActionsBean extends InputController implements
     // @Observer( { EventNames.DOMAIN_SELECTION_CHANGED })
     // @Factory("contentRootChildrenList")
     public void getSections() throws ClientException,
-            AlreadyConnectedException, ECInvalidParameterException {
+            AlreadyConnectedException {
         try {
             String selectedTab = "";
             // we display workspaces first

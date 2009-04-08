@@ -128,8 +128,7 @@ public class TreeActionsBean implements TreeActions, Serializable {
         return tree;
     }
 
-    public void changeExpandListener(NodeExpandedEvent event)
-            throws ClientException {
+    public void changeExpandListener(NodeExpandedEvent event) {
         FacesContext facesContext = FacesContext.getCurrentInstance();
         Map<String, Object> requestMap = facesContext.getExternalContext().getRequestMap();
         requestMap.put(NODE_SELECTED_MARKER, Boolean.TRUE);

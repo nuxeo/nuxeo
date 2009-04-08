@@ -30,7 +30,7 @@ import org.nuxeo.runtime.model.RegistrationInfo;
 public class ComponentInventoryAdapter
         implements ComponentInventoryMBean {
 
-    protected RegistrationInfo info;
+    protected final RegistrationInfo info;
 
     public ComponentInventoryAdapter(RegistrationInfo info) {
         this.info = info;

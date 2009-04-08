@@ -60,15 +60,12 @@ import org.nuxeo.runtime.services.event.EventService;
  */
 public class UserManagerImpl implements UserManager {
 
-    private static final Log log = LogFactory.getLog(UserManagerImpl.class);
-
     public static final String USERMANAGER_TOPIC = "usermanager";
-
     public static final String USERCHANGED_EVENT_ID = "user_changed";
-
     public static final String GROUPCHANGED_EVENT_ID = "group_changed";
-
     public static final String DEFAULT_ANONYMOUS_USER_ID = "Anonymous";
+
+    private static final Log log = LogFactory.getLog(UserManagerImpl.class);
 
     private final DirectoryService dirService;
 

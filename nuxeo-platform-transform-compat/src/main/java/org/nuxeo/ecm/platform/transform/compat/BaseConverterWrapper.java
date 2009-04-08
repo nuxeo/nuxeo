@@ -33,7 +33,7 @@ import org.nuxeo.runtime.api.Framework;
 
 public class BaseConverterWrapper {
 
-    protected ConverterDescriptor descriptor;
+    protected final ConverterDescriptor descriptor;
     protected Map<String, Serializable> specOptions;
 
     protected ConversionService cs;
@@ -41,7 +41,6 @@ public class BaseConverterWrapper {
     public BaseConverterWrapper(ConverterDescriptor descriptor) {
         this.descriptor = descriptor;
     }
-
 
     protected ConversionService getConversionService() throws Exception {
         if (cs == null) {
@@ -74,12 +73,8 @@ public class BaseConverterWrapper {
         if (mt == null) {
             return false;
         }
-        if (getSourceMimeTypes().contains(mt)) {
-            return true;
-        }
-        return false;
+        return getSourceMimeTypes().contains(mt);
     }
-
 
     public void setDestinationMimeType(String destinationMimeType) {
         throw new IllegalStateException("This method is no longer supported");

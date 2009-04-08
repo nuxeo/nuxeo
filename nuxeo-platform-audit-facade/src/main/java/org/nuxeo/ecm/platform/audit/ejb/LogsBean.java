@@ -60,78 +60,69 @@ import org.nuxeo.runtime.api.Framework;
 @Remote(LogsRemote.class)
 public class LogsBean implements Logs {
 
-    @SuppressWarnings("unused")
-    private static final Log log = LogFactory.getLog(LogsBean.class);
-
     @PersistenceContext(unitName = "NXAudit")
     private EntityManager em;
-
 
     protected NXAuditEventsService service() {
         return (NXAuditEventsService) Framework.getRuntime().getComponent(
                 NXAuditEventsService.NAME);
     }
 
-    public void addLogEntries(List<LogEntry> entries) throws AuditException {
+    public void addLogEntries(List<LogEntry> entries) {
         service().addLogEntries(null, entries);
     }
 
-    public List<LogEntry> getLogEntriesFor(String uuid)
-            throws AuditException {
+    public List<LogEntry> getLogEntriesFor(String uuid) {
         List<LogEntry> entries = service().getLogEntriesFor(em, uuid);
         return entries;
     }
 
     public List<LogEntry> getLogEntriesFor(String uuid,
-            Map<String, FilterMapEntry> filterMap, boolean doDefaultSort)
-            throws AuditException {
+            Map<String, FilterMapEntry> filterMap, boolean doDefaultSort) {
         List<LogEntry> entries = service().getLogEntriesFor(em,
                 uuid, filterMap, doDefaultSort);
         return entries;
     }
 
     public List<LogEntry> nativeQueryLogs(String whereClause,
-            int pageNb, int pageSize) throws AuditException {
+            int pageNb, int pageSize) {
         List<LogEntry> entries = service().nativeQueryLogs(em,whereClause, pageNb, pageSize);
         return entries;
     }
 
     public List<LogEntry> queryLogsByPage(String[] eventIds,
-            Date limit, String category, String path, int pageNb, int pageSize)
-            throws AuditException {
+            Date limit, String category, String path, int pageNb, int pageSize) {
         List<LogEntry> entries = service().queryLogsByPage(em,eventIds,limit,category,path,pageNb,pageSize);
         return entries;
     }
 
     public List<LogEntry> queryLogsByPage(String[] eventIds,
             String dateRange, String category, String path, int pageNb,
-            int pageSize) throws AuditException {
+            int pageSize) {
         List<LogEntry> entries =
             service().queryLogsByPage(em, eventIds, dateRange, category, path, pageNb, pageSize);
         return entries;
     }
 
-    public List<LogEntry> queryLogs(String[] eventIds,
-            String dateRange) throws AuditException {
+    public List<LogEntry> queryLogs(String[] eventIds, String dateRange) {
         List<LogEntry> entries =
             service().queryLogs(em, eventIds, dateRange);
         return entries;
     }
 
-    public LogEntry getLogEntryByID(long id) throws AuditException {
+    public LogEntry getLogEntryByID(long id) {
         LogEntry entry = service().getLogEntryByID(em, id);
         return entry;
     }
 
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public long syncLogCreationEntries(String repoId, String path,
-            Boolean recurs) throws AuditException, ClientException {
+            Boolean recurs) throws ClientException {
         return service().syncLogCreationEntries(em, repoId, path, recurs);
     }
 
     public void logEvent(Event event) throws AuditException {
         service().logEvent(em, event);
-
     }
 
     public void logEvents(EventBundle eventBundle) throws AuditException {

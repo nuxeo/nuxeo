@@ -153,7 +153,7 @@ public class ClipboardActionsBean extends InputController implements
         log.debug("add to worklist processed...");
     }
 
-    public void putSelectionInWorkList() throws ClientException {
+    public void putSelectionInWorkList() {
         putSelectionInWorkList(false);
     }
 

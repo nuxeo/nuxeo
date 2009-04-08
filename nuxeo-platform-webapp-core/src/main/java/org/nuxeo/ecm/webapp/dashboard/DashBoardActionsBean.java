@@ -43,7 +43,6 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 import org.nuxeo.ecm.core.api.SortInfo;
-import org.nuxeo.ecm.core.search.api.client.query.QueryException;
 import org.nuxeo.ecm.platform.jbpm.JbpmEventNames;
 import org.nuxeo.ecm.platform.jbpm.JbpmService;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
@@ -51,6 +50,7 @@ import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.ui.web.pagination.ResultsProviderFarmUserException;
 import org.nuxeo.ecm.webapp.pagination.ResultsProvidersCache;
 import org.nuxeo.ecm.webapp.querymodel.QueryModelActions;
+import org.nuxeo.ecm.webapp.helpers.EventNames;
 
 /**
  * Dash board actions.
@@ -195,9 +195,9 @@ public class DashBoardActionsBean implements DashboardActions {
             JbpmEventNames.WORK_ITEMS_LIST_LOADED,
             JbpmEventNames.WORKFLOW_TASKS_COMPUTED,
             JbpmEventNames.WORKFLOW_ABANDONED,
-            org.nuxeo.ecm.webapp.helpers.EventNames.DOMAIN_SELECTION_CHANGED }, create = false, inject = false)
+            EventNames.DOMAIN_SELECTION_CHANGED }, create = false, inject = false)
     @BypassInterceptors
-    public void invalidateDocumentProcessItems() throws ClientException {
+    public void invalidateDocumentProcessItems() {
         currentUserProcesses = null;
     }
 
@@ -212,9 +212,9 @@ public class DashBoardActionsBean implements DashboardActions {
             JbpmEventNames.WORK_ITEMS_LIST_LOADED,
             JbpmEventNames.WORKFLOW_TASKS_COMPUTED,
             JbpmEventNames.WORKFLOW_ABANDONED,
-            org.nuxeo.ecm.webapp.helpers.EventNames.DOMAIN_SELECTION_CHANGED }, create = false, inject = false)
+            EventNames.DOMAIN_SELECTION_CHANGED }, create = false, inject = false)
     @BypassInterceptors
-    public void invalidateDashboardItems() throws ClientException {
+    public void invalidateDashboardItems() {
         currentUserTasks = null;
     }
 
@@ -286,31 +286,30 @@ public class DashBoardActionsBean implements DashboardActions {
         return resultsProvidersCache.get("DOMAIN_DOCUMENTS").getCurrentPage();
     }
 
-    public DocumentModelList getUserDocuments() throws ClientException {
+    public DocumentModelList getUserDocuments() {
         return null;
     }
 
-    public DocumentModelList getUserWorkspaces() throws ClientException {
+    public DocumentModelList getUserWorkspaces() {
         return null;
     }
 
-    public String refreshDashboardItems() throws ClientException {
+    public String refreshDashboardItems() {
         currentUserTasks = null;
         return null;
     }
 
-    public String refreshDocumentProcessItems() throws ClientException {
+    public String refreshDocumentProcessItems() {
         currentUserProcesses = null;
         return null;
     }
 
-    public String refreshProvider(String providerName) throws ClientException {
+    public String refreshProvider(String providerName) {
         resultsProvidersCache.invalidate(providerName);
-
         return null;
     }
 
-    public String doSearch() throws ClientException {
+    public String doSearch() {
         return null;
     }
 

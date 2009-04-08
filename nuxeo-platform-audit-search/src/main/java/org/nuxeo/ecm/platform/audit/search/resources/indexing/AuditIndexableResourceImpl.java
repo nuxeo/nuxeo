@@ -77,12 +77,7 @@ public class AuditIndexableResourceImpl extends AbstractIndexableResource
             throw new IndexingException("LogsBean remote stub is null...");
         }
 
-        LogEntry entry;
-        try {
-            entry = logsRemote.getLogEntryByID(logUUID);
-        } catch (AuditException e) {
-            throw new IndexingException(e.getMessage(), e);
-        }
+        LogEntry entry = logsRemote.getLogEntryByID(logUUID);
 
         if (entry == null) {
             throw new IndexingException(

@@ -54,6 +54,6 @@ public interface LoginPlugin {
 
     //public String validateUsernamePassword(String username, String password) throws Exception;
 
-    String validatedUserIdentity(UserIdentificationInfo userIdent) throws Exception;
+    String validatedUserIdentity(UserIdentificationInfo userIdent);
 
 }

@@ -48,10 +48,6 @@ public class SystemPrincipal implements NuxeoPrincipal {
 
     private int hash;
 
-    public SystemPrincipal() {
-        this(null);
-    }
-
     public SystemPrincipal(String origUserName) {
         this.origUserName = origUserName == null ? LoginComponent.SYSTEM_USERNAME
                 : origUserName;
@@ -166,7 +162,7 @@ public class SystemPrincipal implements NuxeoPrincipal {
     public void setModel(DocumentModel model) {
     }
 
-    public boolean isMemberOf(String group) throws ClientException {
+    public boolean isMemberOf(String group) {
         return SYS_GROUPS.contains(group);
     }
 

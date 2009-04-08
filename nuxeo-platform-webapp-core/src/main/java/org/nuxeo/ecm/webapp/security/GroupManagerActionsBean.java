@@ -128,7 +128,7 @@ public class GroupManagerActionsBean implements GroupManagerActions {
         return groups;
     }
 
-    public void resetGroups() throws ClientException {
+    public void resetGroups() {
         groups = null;
     }
 
@@ -152,7 +152,7 @@ public class GroupManagerActionsBean implements GroupManagerActions {
         return null;
     }
 
-    public String viewGroups() throws ClientException {
+    public String viewGroups() {
         return "view_groups";
     }
 
@@ -169,7 +169,7 @@ public class GroupManagerActionsBean implements GroupManagerActions {
         return "edit_group";
     }
 
-    public DocumentModel getSelectedGroup() throws ClientException {
+    public DocumentModel getSelectedGroup() {
         return selectedGroup;
     }
 

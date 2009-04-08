@@ -36,9 +36,8 @@ public interface AuditLogger {
      * Adds given log entries.
      *
      * @param entries the list of log entries.
-     * @throws AuditException
      */
-    void addLogEntries(List<LogEntry> entries) throws AuditException;
+    void addLogEntries(List<LogEntry> entries);
 
 
     /**

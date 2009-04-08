@@ -349,14 +349,14 @@ public class CommentManagerActionsBean extends InputController implements
         this.newContent = newContent;
     }
 
-    public String beginComment() throws ClientException {
+    public String beginComment() {
         commentStarted = true;
         savedReplyCommentId = replyCommentId;
         showCreateForm = false;
         return null;
     }
 
-    public String cancelComment() throws ClientException {
+    public String cancelComment() {
         cleanContextVariable();
         return null;
     }

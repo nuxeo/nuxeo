@@ -180,10 +180,8 @@ public interface ClipboardActions {
 
     /**
      * Copies the lists of selected documents into the current WorkList.
-     *
-     * @throws ClientException
      */
-    void putSelectionInWorkList() throws ClientException;
+    void putSelectionInWorkList();
 
     void putSelectionInWorkList(Boolean forceAppend);
 
@@ -195,24 +193,18 @@ public interface ClipboardActions {
 
     /**
      * Retries contents of current WorkList.
-     *
-     * @return
      */
     List<DocumentModel> getCurrentSelectedList();
 
-    /**
+    /*
     List<DocumentModel> getWorkingList();
-    **/
+    */
 
     /**
      * Returns the name of the current selected WorkList.
      */
     String getCurrentSelectedListName();
 
-    /**
-     *
-     * @return
-     */
     String getCurrentSelectedListTitle();
 
     /**
@@ -223,15 +215,11 @@ public interface ClipboardActions {
     /**
      *  Returns the list of available lists
      *  (ie: the lists from the CLIPBOARD Category).
-     *
-     * @return
      */
     List<String> getAvailableLists();
 
     /**
-     *  Returns the list of Descriptors for available lists.
-     *
-     * @return
+     * Returns the list of Descriptors for available lists.
      */
     List<DocumentsListDescriptor> getDescriptorsForAvailableLists();
 

@@ -27,6 +27,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  * @author glefter@nuxeo.com
  *
  */
+//FIXME: not used, remove?
 public interface DirectoryResultSet {
 
     /**

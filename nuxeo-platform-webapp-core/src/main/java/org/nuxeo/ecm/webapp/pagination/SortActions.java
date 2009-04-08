@@ -31,10 +31,8 @@ public interface SortActions {
 
     /**
      * Declaration for [Seam]Create method.
-     * @throws ClientException
-     *
      */
-    void init() throws ClientException;
+    void init();
 
     void destroy();
 

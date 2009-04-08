@@ -82,7 +82,6 @@ import org.nuxeo.ecm.webapp.querymodel.QueryModelActions;
  * on different query types, to retrieve results and handle selections.
  *
  * @author DM
- *
  */
 @Name("searchActions")
 @Scope(ScopeType.CONVERSATION)
@@ -165,7 +164,7 @@ public class SearchActionsBean extends InputController implements
     // used for direct nxql only
     private static final int maxResultsCount = 10;
 
-    public void init() throws ClientException {
+    public void init() {
         log.debug("Initializing...");
     }
 
@@ -271,8 +270,7 @@ public class SearchActionsBean extends InputController implements
      * results providers. The search perform then relies on the provider farms
      * (including the present bean).
      */
-    public String performSearch() throws ClientException,
-            ECInvalidParameterException {
+    public String performSearch() {
 
         // notify search performed
         Events evtManager = Events.instance();
@@ -321,8 +319,8 @@ public class SearchActionsBean extends InputController implements
                     return ACTION_PAGE_SEARCH_NO_KEYWORDS;
                 }
                 String[] keywords = simpleSearchKeywords.split(" ");
-                for (String string : keywords) {
-                    if (string.startsWith("*")) {
+                for (String keyword : keywords) {
+                    if (keyword.startsWith("*")) {
                         log.warn("Can't begin search with * character");
                         facesMessages.add(FacesMessage.SEVERITY_INFO,
                                 resourcesAccessor.getMessages().get(

@@ -41,8 +41,7 @@ public class TrustingLoginPlugin extends BaseLoginModule {
         return Boolean.TRUE;
     }
 
-    public String validatedUserIdentity(UserIdentificationInfo userIdent)
-            throws Exception {
+    public String validatedUserIdentity(UserIdentificationInfo userIdent) {
         return userIdent.getUserName();
     }
 

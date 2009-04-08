@@ -25,6 +25,7 @@ import java.net.URL;
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
  *
  */
+// FIXME: not implemented. Remove ?
 public abstract class AbstractProcessDefinitionDeployer implements
         ProcessDefinitionDeployer {
 

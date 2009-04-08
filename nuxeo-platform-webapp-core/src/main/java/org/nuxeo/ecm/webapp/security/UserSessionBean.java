@@ -47,7 +47,7 @@ public class UserSessionBean implements Serializable, UserSession {
     private static final Log log = LogFactory.getLog(UserSessionBean.class);
 
     @Factory(value = "currentUser", scope = SESSION)
-    public Principal getCurrentUser() throws Exception {
+    public Principal getCurrentUser() {
         if (currentUser == null) {
             FacesContext fContext = FacesContext.getCurrentInstance();
             if (fContext == null) {

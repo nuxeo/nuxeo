@@ -39,7 +39,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
 public class ProbeSchedulerService extends DefaultComponent implements
         ProbeScheduler, ProbeSchedulerMBean {
 
-    protected static ComponentName NAME = new ComponentName(
+    protected static final ComponentName NAME = new ComponentName(
             ProbeScheduler.class.getCanonicalName());
 
     protected static String SCHEDULE_ID = "ProbeSchedule";
@@ -140,16 +140,16 @@ public class ProbeSchedulerService extends DefaultComponent implements
         }
     }
 
-    protected ManagementPublisher managementPublisher = new ManagementPublisher();
+    protected final ManagementPublisher managementPublisher = new ManagementPublisher();
 
     protected class RunnerRegistry {
 
         protected final Map<Class<? extends Probe>, ProbeContext> scheduledProbesContext
                 = new HashMap<Class<? extends Probe>, ProbeContext>();
 
-        protected Set<ProbeContext> failedProbesContext = new HashSet<ProbeContext>();
+        protected final Set<ProbeContext> failedProbesContext = new HashSet<ProbeContext>();
 
-        protected Set<ProbeContext> succeedProbesContext = new HashSet<ProbeContext>();
+        protected final Set<ProbeContext> succeedProbesContext = new HashSet<ProbeContext>();
 
         protected void doRegisterProbe(ProbeDescriptor descriptor) {
             Class<? extends Probe> probeClass = descriptor.getProbeClass();
@@ -211,7 +211,7 @@ public class ProbeSchedulerService extends DefaultComponent implements
         }
     }
 
-    protected RunnerRegistry runnerRegistry = new RunnerRegistry();
+    protected final RunnerRegistry runnerRegistry = new RunnerRegistry();
 
     @Override
     public void activate(ComponentContext context) throws Exception {

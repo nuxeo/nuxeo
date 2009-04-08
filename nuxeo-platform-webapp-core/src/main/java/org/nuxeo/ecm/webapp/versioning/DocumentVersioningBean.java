@@ -547,20 +547,12 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
      */
     @Deprecated
     public void incrementMajor(DocumentModel doc) throws ClientException {
-        try {
-            versioningManager.incrementMajor(doc);
-        } catch (VersioningException e) {
-            throw new ClientException(e);
-        }
+        versioningManager.incrementMajor(doc);
     }
 
     @Deprecated
     public void incrementMinor(DocumentModel doc) throws ClientException {
-        try {
-            versioningManager.incrementMinor(doc);
-        } catch (VersioningException e) {
-            throw new ClientException(e);
-        }
+        versioningManager.incrementMinor(doc);
     }
 
 }

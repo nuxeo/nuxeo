@@ -68,7 +68,7 @@ public class FakeUserManagerImpl implements UserManager {
 
     VirtualUser anonymousUser;
 
-    Map<String, VirtualUserDescriptor> virtualUsers;
+    final Map<String, VirtualUserDescriptor> virtualUsers;
 
     public FakeUserManagerImpl() {
         virtualUsers = new HashMap<String, VirtualUserDescriptor>();

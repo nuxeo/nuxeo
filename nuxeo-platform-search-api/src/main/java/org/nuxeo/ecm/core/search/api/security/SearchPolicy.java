@@ -28,6 +28,7 @@ import org.nuxeo.ecm.core.search.api.client.query.ComposedNXQuery;
  * @author Anahide Tchertchian
  *
  */
+// FIXME: not used. Remove ?
 public interface SearchPolicy {
 
     /**

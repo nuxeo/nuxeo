@@ -602,10 +602,9 @@ public class FileManageWS extends InputController implements
      *
      * @param doc_url
      * @return
-     * @throws ClientException
      */
     @WebMethod
-    public String[] getPreEditActions(String doc_url) throws ClientException {
+    public String[] getPreEditActions(String doc_url) {
         List<String> preEditActList = new ArrayList<String>();
         preEditActList.add(getTranslation("Lock"));
         preEditActList.add("Lock");

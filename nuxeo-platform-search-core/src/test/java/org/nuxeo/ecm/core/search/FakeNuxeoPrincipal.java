@@ -75,7 +75,7 @@ public class FakeNuxeoPrincipal implements NuxeoPrincipal {
         return null;
     }
 
-    public boolean isMemberOf(String groupName) throws ClientException {
+    public boolean isMemberOf(String groupName) {
         return false;
     }
 

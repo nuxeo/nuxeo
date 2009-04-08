@@ -33,9 +33,7 @@ import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.webapp.base.InputController;
 
 /**
- *
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
- *
  */
 @Name("sortActions")
 @Scope(ScopeType.CONVERSATION)
@@ -53,7 +51,7 @@ public class SortActionsBean extends InputController implements SortActions, Ser
     @RequestParameter("providerName")
     private String providerName;
 
-    public void init() throws ClientException {
+    public void init() {
         log.debug("Initializing...");
     }
 

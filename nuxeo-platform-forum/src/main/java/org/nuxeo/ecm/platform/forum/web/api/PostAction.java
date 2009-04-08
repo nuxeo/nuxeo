@@ -32,7 +32,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  */
 public interface PostAction extends Serializable {
 
-    boolean checkWritePermissionOnThread() throws ClientException;
+    boolean checkWritePermissionOnThread();
 
     /**
      * Creates the Post and add it inside the Thread.
@@ -60,17 +60,11 @@ public interface PostAction extends Serializable {
 
     /**
      * Gets the Thread in which the Post is.
-     *
-     * @return
      */
-    DocumentModel getParentThread() throws ClientException;
+    DocumentModel getParentThread();
 
     /**
      * Returns true if the post is published, false otherwise.
-     *
-     * @param post
-     * @return
-     * @throws ClientException
      */
     boolean isPostPublished(DocumentModel post) throws ClientException;
 
@@ -83,56 +77,41 @@ public interface PostAction extends Serializable {
 
     /**
      * Gets the title of the post at creation time.
-     *
-     * @return
-     * @throws ClientException
      */
     String getTitle() throws ClientException;
 
     /**
      * Sets the title of the post at creation time.
-     *
-     * @param title
      */
     void setTitle(String title);
 
     /**
      * Gets the text of the post at creation time.
-     *
-     * @return
      */
     String getText();
 
     /**
      * Sets the text of the post at creation time.
-     *
-     * @param text
      */
     void setText(String text);
 
     /**
      * Gets the name of the attached file of the post at creation time.
-     *
-     * @return
      */
     String getFilename();
 
     /**
      * Sets the name of the attached file of the post at creation time.
-     *
      */
     void setFilename(String filename);
 
     /**
      * Gets the content of the attached file of the post at creation time.
-     *
-     * @return
      */
     Blob getFileContent();
 
     /**
      * Sets the content of the attached file of the post at creation time.
-     *
      */
     void setFileContent(Blob fileContent);
 

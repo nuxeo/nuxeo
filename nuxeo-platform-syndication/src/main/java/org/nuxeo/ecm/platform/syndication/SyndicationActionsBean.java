@@ -216,11 +216,7 @@ public class SyndicationActionsBean implements SyndicationActions {
                 "searchActions", true);
         searchActions.setSearchTypeId(SearchType.NXQL.name());
         searchActions.setNxql(searchQuery);
-        try {
-            searchActions.performSearch();
-        } catch (ECInvalidParameterException e) {
-            throw new ClientException(e);
-        }
+        searchActions.performSearch();
         List<DocumentModel> docList = searchActions.getResultDocuments(SearchActionsBean.PROV_NXQL);
         if (docList == null) {
             docList = Collections.emptyList();

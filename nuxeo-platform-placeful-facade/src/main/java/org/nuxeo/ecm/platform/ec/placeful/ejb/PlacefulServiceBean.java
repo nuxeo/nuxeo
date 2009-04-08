@@ -55,18 +55,17 @@ public class PlacefulServiceBean implements PlacefulServiceLocal, PlacefulServic
         service = (PlacefulServiceImpl) Framework.getRuntime().getComponent(PlacefulService.ID);
     }
 
-    public Annotation getAnnotation(String id, String name) throws ClassNotFoundException {
+    public Annotation getAnnotation(String id, String name) {
         return service.getAnnotation(em, id, name);
     }
 
     public List<Annotation> getAnnotationListByParamMap(
-            Map<String, Object> paramMap, String name) throws ClassNotFoundException {
+            Map<String, Object> paramMap, String name) {
         return service.getAnnotationListByParamMap(em, paramMap, name);
     }
 
     public void removeAnnotationListByParamMap(Map<String, Object> paramMap,
-            String name) throws ClassNotFoundException {
-
+            String name) {
         service.removeAnnotationListByParamMap(em, paramMap, name);
     }
 

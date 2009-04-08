@@ -30,26 +30,11 @@ public interface CommentConverter {
 
     /**
      * Transforms the comment object into the document model.
-     *
-     * @param docModel
-     * @param comment
-     * @throws ClientException
      */
-    void updateDocumentModel(DocumentModel docModel, DocumentModel comment) throws ClientException;
-
-    /**
-     * Transforms a documentModel into a comment.
-     *
-     * @param docModel
-     * @return
-     * @throws ClientException
-     */
-    //public Comment getComment(DocumentModel docModel) throws ClientException;
+    void updateDocumentModel(DocumentModel docModel, DocumentModel comment);
 
     /**
      * Returns the type for comment document models.
-     *
-     * @return
      */
     String getDocumentType();
 

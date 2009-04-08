@@ -61,7 +61,7 @@ public class ConversionActionBean implements ConversionAction {
 
     protected static ConverterCheckResult any2PDFAvailability;
 
-    protected static String PDF_PREVIEW_CONVERTER = "any2pdf";
+    protected static final String PDF_PREVIEW_CONVERTER = "any2pdf";
 
     @In(create = true, required = false)
     CoreSession documentManager;

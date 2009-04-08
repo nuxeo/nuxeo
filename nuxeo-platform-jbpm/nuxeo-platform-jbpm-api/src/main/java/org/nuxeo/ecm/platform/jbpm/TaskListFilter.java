@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.jbpm;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Arrays;
 
 import org.jbpm.JbpmContext;
 import org.jbpm.taskmgmt.exe.TaskInstance;
@@ -40,9 +41,7 @@ public class TaskListFilter implements JbpmListFilter {
 
     public TaskListFilter(String... taskNames) {
         this.taskNames = new ArrayList<String>();
-        for (String taskName : taskNames) {
-            this.taskNames.add(taskName);
-        }
+        this.taskNames.addAll(Arrays.asList(taskNames));
     }
 
     public TaskListFilter(List<String> taskNames) {

@@ -51,8 +51,7 @@ public class NotificationsRenderingEngine extends DocumentRenderingEngine {
     }
 
     @Override
-    protected FreemarkerRenderingJob createJob(RenderingContext ctx)
-            throws RenderingException {
+    protected FreemarkerRenderingJob createJob(RenderingContext ctx) {
         return new NotifsRenderingJob("ftl");
     }
 
@@ -84,7 +83,7 @@ public class NotificationsRenderingEngine extends DocumentRenderingEngine {
             return template;
         }
 
-        public Writer getWriter() throws IOException {
+        public Writer getWriter() {
             return strWriter;
         }
     }

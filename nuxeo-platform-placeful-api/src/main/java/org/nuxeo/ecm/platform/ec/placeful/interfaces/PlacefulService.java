@@ -36,17 +36,16 @@ public interface PlacefulService {
 
     Map<String, String> getAnnotationRegistry();
 
-    Annotation getAnnotation(String uuid, String name)
-            throws ClassNotFoundException;
+    Annotation getAnnotation(String uuid, String name);
 
     List<Annotation> getAnnotationListByParamMap(Map<String, Object> paramMap,
-            String name) throws ClassNotFoundException;
+            String name);
 
     void setAnnotation(Annotation annotation);
 
     void removeAnnotation(Annotation annotation);
 
     void removeAnnotationListByParamMap(Map<String, Object> paramMap,
-            String name) throws ClassNotFoundException;
+            String name);
 
 }

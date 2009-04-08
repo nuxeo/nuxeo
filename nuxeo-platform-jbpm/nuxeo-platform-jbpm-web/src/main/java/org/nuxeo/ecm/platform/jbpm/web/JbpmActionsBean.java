@@ -308,7 +308,7 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
         showAddVirtualTaskForm = !getShowAddVirtualTaskForm();
     }
 
-    public VirtualTaskInstance getNewVirtualTask() throws ClientException {
+    public VirtualTaskInstance getNewVirtualTask() {
         if (newVirtualTask == null) {
             newVirtualTask = new VirtualTaskInstance();
         }
@@ -645,11 +645,11 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
         return null;
     }
 
-    public String getUserComment() throws ClientException {
+    public String getUserComment() {
         return userComment;
     }
 
-    public void setUserComment(String comment) throws ClientException {
+    public void setUserComment(String comment) {
         this.userComment = comment;
     }
 

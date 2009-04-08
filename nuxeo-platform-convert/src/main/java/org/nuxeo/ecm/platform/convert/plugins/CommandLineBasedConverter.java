@@ -116,8 +116,9 @@ public abstract class CommandLineBasedConverter implements ExternalConverter {
     protected abstract BlobHolder buildResult(List<String> cmdOutput, CmdParameters cmdParams) throws ConversionException;
 
     protected class CmdReturn {
-        protected CmdParameters params;
-        protected List<String> output;
+
+        protected final CmdParameters params;
+        protected final List<String> output;
 
         protected CmdReturn(CmdParameters params, List<String> output) {
             this.params = params;

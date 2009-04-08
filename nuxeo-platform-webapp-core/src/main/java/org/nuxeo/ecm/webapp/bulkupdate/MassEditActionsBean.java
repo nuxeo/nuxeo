@@ -467,10 +467,8 @@ public class MassEditActionsBean extends InputController implements
 
     /**
      * Action method called from JSF.
-     *
-     * @return
      */
-    public String previewChanges() throws ClientException {
+    public String previewChanges() {
         // impacted docs...
 
         if (docsList == null || docsList.isEmpty()) {

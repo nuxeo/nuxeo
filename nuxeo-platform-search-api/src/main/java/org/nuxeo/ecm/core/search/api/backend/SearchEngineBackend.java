@@ -140,10 +140,9 @@ public interface SearchEngineBackend extends Serializable {
      * @param range number of results.
      * @return a result set instance
      * @throws SearchException if an error occured while performing the search
-     * @throws QueryException if the query is invalid or unsupported
      */
     ResultSet searchQuery(ComposedNXQuery nxqlQuery, int offset, int range)
-            throws SearchException, QueryException;
+            throws SearchException;
 
     /**
      * Searches results given a backened specific native query string.

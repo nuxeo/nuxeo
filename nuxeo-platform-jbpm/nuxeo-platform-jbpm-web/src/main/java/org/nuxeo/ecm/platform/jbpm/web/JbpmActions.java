@@ -65,7 +65,7 @@ public interface JbpmActions extends Serializable {
 
     void toggleShowAddVirtualTaskForm(ActionEvent event) throws ClientException;
 
-    VirtualTaskInstance getNewVirtualTask() throws ClientException;
+    VirtualTaskInstance getNewVirtualTask();
 
     String addNewVirtualTask() throws ClientException;
 
@@ -75,9 +75,9 @@ public interface JbpmActions extends Serializable {
 
     String moveDownVirtualTask(int index) throws ClientException;
 
-    String getUserComment() throws ClientException;
+    String getUserComment();
 
-    void setUserComment(String comment) throws ClientException;
+    void setUserComment(String comment);
 
     void validateTaskDueDate(FacesContext context, UIComponent component,
             Object value);
@@ -94,6 +94,6 @@ public interface JbpmActions extends Serializable {
 
     String abandonCurrentProcess() throws ClientException;
 
-    void resetCurrentData() throws ClientException;
+    void resetCurrentData();
 
 }

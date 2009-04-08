@@ -40,17 +40,17 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 @Local
 public interface GroupManagerActions extends Serializable {
 
-    static final String ALL = "all";
+    String ALL = "all";
 
-    static final String VALID_CHARS = "0123456789_-"
+    String VALID_CHARS = "0123456789_-"
             + "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
     @Factory(value = "groupList", scope = EVENT)
     DocumentModelList getGroups() throws ClientException;
 
-    void resetGroups() throws ClientException;
+    void resetGroups();
 
-    String viewGroups() throws ClientException;
+    String viewGroups();
 
     String viewGroup() throws ClientException;
 
@@ -58,7 +58,7 @@ public interface GroupManagerActions extends Serializable {
 
     String editGroup() throws ClientException;
 
-    DocumentModel getSelectedGroup() throws ClientException;
+    DocumentModel getSelectedGroup();
 
     DocumentModel getNewGroup() throws ClientException;
 

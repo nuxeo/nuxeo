@@ -70,7 +70,7 @@ public class UserManagerBusinessDelegate implements Serializable {
 
     @Destroy
     @PermitAll
-    public void destroy() throws ClientException {
+    public void destroy() {
         if (userManager != null) {
             userManager = null;
         }

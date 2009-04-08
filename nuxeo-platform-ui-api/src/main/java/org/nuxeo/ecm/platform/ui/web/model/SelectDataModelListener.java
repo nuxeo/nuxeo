@@ -32,6 +32,6 @@ import org.nuxeo.ecm.platform.ui.web.model.impl.SelectDataModelRowEvent;
  */
 public interface SelectDataModelListener extends EventListener {
 
-    void processSelectRowEvent(SelectDataModelRowEvent event) throws ClientException;
+    void processSelectRowEvent(SelectDataModelRowEvent event);
 
 }

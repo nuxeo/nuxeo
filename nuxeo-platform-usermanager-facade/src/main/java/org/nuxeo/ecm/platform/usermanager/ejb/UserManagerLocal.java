@@ -36,6 +36,6 @@ public interface UserManagerLocal extends UserManager {
     @PostConstruct
     void initialize();
 
-    void remove() throws ClientException;
+    void remove();
 
 }

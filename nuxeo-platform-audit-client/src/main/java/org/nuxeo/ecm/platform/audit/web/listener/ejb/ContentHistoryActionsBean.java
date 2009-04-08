@@ -194,7 +194,7 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
         }
     }
 
-    public String doSearch() throws AuditException {
+    public String doSearch() {
         // toggle newOrderDirection
         if (StringUtils.isEmpty(newSortColumn)) {
             newSortColumn = EVENT_DATE;

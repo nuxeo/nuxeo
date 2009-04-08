@@ -390,7 +390,7 @@ public class NXAuditEventsService extends DefaultComponent implements NXAuditEve
 
     public List<LogEntry> queryLogsByPage(final String[] eventIds,
             final String dateRange, final String category, final String path,
-            final int pageNb, final int pageSize) throws AuditException {
+            final int pageNb, final int pageSize) {
         return persistenceProvider.run(false,
                 new RunCallback<List<LogEntry>>() {
                     public List<LogEntry> runWith(EntityManager em) {
@@ -409,7 +409,7 @@ public class NXAuditEventsService extends DefaultComponent implements NXAuditEve
 
     public List<LogEntry> queryLogsByPage(final String[] eventIds,
             final Date limit, final String category, final String path,
-            final int pageNb, final int pageSize) throws AuditException {
+            final int pageNb, final int pageSize) {
         return persistenceProvider.run(false,
                 new RunCallback<List<LogEntry>>() {
                     public List<LogEntry> runWith(EntityManager em) {

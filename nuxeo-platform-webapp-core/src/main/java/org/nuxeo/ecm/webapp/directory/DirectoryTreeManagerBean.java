@@ -145,8 +145,7 @@ public class DirectoryTreeManagerBean implements DirectoryTreeManager {
         return directoryTreeService;
     }
 
-    public void changeExpandListener(NodeExpandedEvent event)
-            throws ClientException {
+    public void changeExpandListener(NodeExpandedEvent event) {
         FacesContext facesContext = FacesContext.getCurrentInstance();
         Map<String, Object> requestMap = facesContext.getExternalContext().getRequestMap();
         requestMap.put(NODE_SELECTED_MARKER, Boolean.TRUE);
@@ -164,8 +163,7 @@ public class DirectoryTreeManagerBean implements DirectoryTreeManager {
         return false;
     }
 
-    public Boolean adviseNodeOpened(UITree treeComponent)
-            throws ClientException {
+    public Boolean adviseNodeOpened(UITree treeComponent) {
         if (!isNodeExpandEvent()) {
             try {
                 Object value = treeComponent.getRowData();

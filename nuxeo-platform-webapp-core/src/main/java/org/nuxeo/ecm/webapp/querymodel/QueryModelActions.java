@@ -129,7 +129,7 @@ public interface QueryModelActions extends ResultsProviderFarm {
     void reset(String queryModelName) throws ClientException;
 
     /**
-     * Observer on seam event to perform some necessary invalidations
+     * Observer on Seam event to perform some necessary invalidations
      *
      * @param qm the query model that's been changed
      * @throws ClientException

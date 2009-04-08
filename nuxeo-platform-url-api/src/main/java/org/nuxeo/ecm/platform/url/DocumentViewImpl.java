@@ -59,6 +59,7 @@ public class DocumentViewImpl implements DocumentView {
         this.parameters = parameters;
     }
 
+    // Not used. Deprecate?
     public DocumentViewImpl(DocumentLocation documentLocation, String viewId,
             String subURI, Map<String, String> parameters) {
         this.documentLocation = documentLocation;
@@ -87,14 +88,6 @@ public class DocumentViewImpl implements DocumentView {
             }
         }
         this.subURI = subURI;
-    }
-
-    @Deprecated
-    public DocumentViewImpl(DocumentLocation docLoc, String viewId, String tabId) {
-        documentLocation = docLoc;
-        this.viewId = viewId;
-        this.tabId = tabId;
-        subURI = null;
     }
 
     public DocumentViewImpl(DocumentLocation docLoc) {

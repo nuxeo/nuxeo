@@ -54,7 +54,7 @@ public interface RenderingResult extends Adaptable, Serializable {
      *
      * @return the stream or null if the outcome cannot be expressed as a stream
      */
-    InputStream getStream() throws IOException;
+    InputStream getStream();
 
     /**
      * Gets the rendering result object.

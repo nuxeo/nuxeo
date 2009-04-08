@@ -24,11 +24,11 @@ import org.nuxeo.runtime.model.ExtensionPoint;
 public class ExtensionPointInventoryAdapter implements
         ExtensionPointInventoryMBean {
 
+    protected final ExtensionPoint point;
+
     public ExtensionPointInventoryAdapter(ExtensionPoint point) {
         this.point = point;
     }
-
-    protected ExtensionPoint point;
 
     public Integer getContributionsCount() {
         return point.getContributions().length;

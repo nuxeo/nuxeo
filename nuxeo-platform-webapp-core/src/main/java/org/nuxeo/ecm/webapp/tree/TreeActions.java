@@ -52,12 +52,12 @@ public interface TreeActions {
      * <p>
      * Used to not interfere with node state when manually changing open nodes.
      */
-    void changeExpandListener(NodeExpandedEvent event) throws ClientException;
+    void changeExpandListener(NodeExpandedEvent event);
 
     /**
      * Returns true if node should be opened according to current document.
      */
-    Boolean adviseNodeOpened(UITree tree) throws ClientException;
+    Boolean adviseNodeOpened(UITree tree);
 
     void resetCurrentDocumentData();
 

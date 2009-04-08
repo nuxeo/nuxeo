@@ -164,7 +164,7 @@ public class UserManagerActionsBean implements UserManagerActions {
         return users;
     }
 
-    public void resetUsers() throws ClientException {
+    public void resetUsers() {
         users = null;
     }
 
@@ -194,7 +194,7 @@ public class UserManagerActionsBean implements UserManagerActions {
         }
     }
 
-    public DocumentModel getSelectedUser() throws ClientException {
+    public DocumentModel getSelectedUser() {
         return selectedUser;
     }
 

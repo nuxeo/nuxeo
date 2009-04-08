@@ -109,7 +109,7 @@ public class SearchResultsBean extends InputController implements
         provider = null;
     }
 
-    public void init() throws ClientException {
+    public void init(){
         log.debug("Initializing...");
     }
 

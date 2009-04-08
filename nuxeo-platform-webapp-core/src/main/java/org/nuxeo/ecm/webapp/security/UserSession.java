@@ -25,7 +25,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
 public interface UserSession {
 
-    Principal getCurrentUser() throws Exception;
+    Principal getCurrentUser();
 
     NuxeoPrincipal getCurrentNuxeoPrincipal() throws Exception;
 

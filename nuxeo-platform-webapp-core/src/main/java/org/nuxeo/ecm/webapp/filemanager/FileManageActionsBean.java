@@ -263,7 +263,7 @@ public class FileManageActionsBean extends InputController implements
      */
     @Deprecated
     public String addBinaryFile(byte[] content, String mimetype,
-            String fullName, DocumentRef docRef) throws ClientException {
+            String fullName, DocumentRef docRef) {
         try {
             DocumentModel targetContainer = documentManager.getDocument(docRef);
 

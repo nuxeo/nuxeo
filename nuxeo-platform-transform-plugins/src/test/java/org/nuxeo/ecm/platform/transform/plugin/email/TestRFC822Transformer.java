@@ -51,7 +51,7 @@ public class TestRFC822Transformer extends AbstractPluginTestCase {
         super.tearDown();
     }
 
-    private Blob getTestBlob(String filePath) throws Exception {
+    private Blob getTestBlob(String filePath) {
         File file = FileUtils.getResourceFileFromContext(filePath);
         return new FileBlob(file);
     }

@@ -45,9 +45,7 @@ public class TypeManagerBean implements TypeManager {
 
     @PostConstruct
     public void initialize() {
-        log.debug("initialize : getTypeService");
         typeService = Framework.getLocalService(TypeManager.class);
-        //typeService = (TypeManager) Framework.getRuntime().getComponent(TypeService.ID);
     }
 
     public String[] getSuperTypes(String typeName) {
@@ -75,12 +73,6 @@ public class TypeManagerBean implements TypeManager {
         return getTypeService().getAllowedSubTypes(typeName);
     }
 
-    // Deprecated, remove in 5.2.
-    @Deprecated
-    public String getDefaultWidget(String fieldType) {
-        return getTypeService().getDefaultWidget(fieldType);
-    }
-
     @Remove
     public void remove() {
         typeService = null;
@@ -94,17 +86,4 @@ public class TypeManagerBean implements TypeManager {
         return typeService;
     }
 
-    /*
-    @PostActivate
-    public void readState() {
-        log.info("PostActivate");
-        initialize();
-    }
-
-    @PrePassivate
-    public void saveState() {
-        log.info("@PrePassivate");
-        remove();
-    }
-    */
 }

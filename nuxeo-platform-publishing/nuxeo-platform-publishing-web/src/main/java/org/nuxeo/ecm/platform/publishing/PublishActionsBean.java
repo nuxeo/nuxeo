@@ -451,8 +451,7 @@ public class PublishActionsBean implements PublishActions, Serializable {
         this.comment = comment;
     }
 
-    public void processSelectRowEvent(SelectDataModelRowEvent event)
-            throws ClientException {
+    public void processSelectRowEvent(SelectDataModelRowEvent event) {
     }
 
     public boolean hasValidationTask() {

@@ -43,7 +43,7 @@ public class PlacefulServiceImpl extends DefaultComponent implements
 
     private Map<String, String> registry;
 
-    public static PersistenceProvider persistenceProvider = new PersistenceProvider(
+    public static final PersistenceProvider persistenceProvider = new PersistenceProvider(
             new ContainerManagedHibernateConfiguration(
                     "jdbc/placeful_service_ds"));
 
@@ -107,8 +107,7 @@ public class PlacefulServiceImpl extends DefaultComponent implements
         return query.getResultList();
     }
 
-    public List<Annotation> getAllAnnotations(final String name)
-            throws ClassNotFoundException {
+    public List<Annotation> getAllAnnotations(final String name) {
         return persistenceProvider.run(false,
                 new RunCallback<List<Annotation>>() {
                     public List<Annotation> runWith(EntityManager em) {
@@ -117,8 +116,7 @@ public class PlacefulServiceImpl extends DefaultComponent implements
                 });
     }
 
-    public Annotation getAnnotation(final String uuid, final String name)
-            throws ClassNotFoundException {
+    public Annotation getAnnotation(final String uuid, final String name) {
         return persistenceProvider.run(false, new RunCallback<Annotation>() {
             public Annotation runWith(EntityManager em) {
                 return getAnnotation(em, uuid, name);

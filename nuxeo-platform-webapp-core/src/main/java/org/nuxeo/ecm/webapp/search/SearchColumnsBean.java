@@ -95,7 +95,7 @@ public class SearchColumnsBean extends InputController implements SearchColumns,
 
 
     @Create
-    public void init() throws ClientException {
+    public void init() {
         log.debug("Initializing...");
         fieldMap = buildFieldMap();
         buildVocabularyEntries();
@@ -273,7 +273,7 @@ public class SearchColumnsBean extends InputController implements SearchColumns,
         this.resultColumns = resultColumns;
     }
 
-    public Map<String, FieldWidget> getFieldMap() throws ClientException {
+    public Map<String, FieldWidget> getFieldMap() {
         if (fieldMap == null) {
             fieldMap = buildFieldMap();
         }

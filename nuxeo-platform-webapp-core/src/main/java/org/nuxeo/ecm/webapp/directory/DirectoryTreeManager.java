@@ -49,14 +49,13 @@ public interface DirectoryTreeManager extends Serializable {
      * Listener for node opening/closing events.
      * <p>
      * Used to not interfere with node state when manually changing open nodes.
-     * </p>
      */
-    void changeExpandListener(NodeExpandedEvent event) throws ClientException;
+    void changeExpandListener(NodeExpandedEvent event);
 
     /**
      * Returns true if node should be opened according to last selection.
      */
-    Boolean adviseNodeOpened(UITree tree) throws ClientException;
+    Boolean adviseNodeOpened(UITree tree);
 
     @Remove
     @Destroy

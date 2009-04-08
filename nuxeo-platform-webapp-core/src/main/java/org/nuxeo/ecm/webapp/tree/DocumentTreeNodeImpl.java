@@ -137,13 +137,8 @@ public class DocumentTreeNodeImpl implements DocumentTreeNode {
                         SecurityConstants.READ, filter, sorter);
             } else {
                 // get the children using a query model
-                try {
-                    documents = queryModel.getDocuments(session,
-                            new Object[] { getId() });
-                } catch (QueryException e) {
-                    log.warn("Could not query children", e);
-                    documents = Collections.emptyList();
-                }
+                documents = queryModel.getDocuments(session,
+                        new Object[] { getId() });
             }
             // build the children nodes
             for (DocumentModel child : documents) {

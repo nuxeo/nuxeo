@@ -70,12 +70,12 @@ public interface VersioningManager {
             throws ClientException;
 
     DocumentModel incrementMinor(DocumentModel docModel)
-            throws ClientException, VersioningException;
+            throws ClientException;
 
     DocumentModel incrementMajor(DocumentModel docModel)
-            throws ClientException, VersioningException;
+            throws ClientException;
 
-    DocVersion getNextVersion(DocumentModel docModel) throws ClientException,
-            VersioningException;
+    DocVersion getNextVersion(DocumentModel docModel)
+            throws ClientException;
 
 }

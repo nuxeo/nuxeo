@@ -137,7 +137,7 @@ public class SecurityActionsBean extends InputController implements
     protected List<String> selectedEntries;
 
     @Observer(value = EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED, create = false, inject = false)
-    public void resetSecurityData() throws ClientException {
+    public void resetSecurityData() {
         obsoleteSecurityData = true;
         blockRightInheritance = null;
     }
@@ -259,8 +259,7 @@ public class SecurityActionsBean extends InputController implements
         return new UserPermissionsTableRow(user, cells);
     }
 
-    public UserPermissionsTableModel getDataTableModel()
-            throws ClientException, ECInvalidParameterException {
+    public UserPermissionsTableModel getDataTableModel() throws ClientException {
         if (obsoleteSecurityData) {
             // lazy initialization at first time access
             rebuildSecurityData();

@@ -132,7 +132,7 @@ public interface DocumentActions extends StatefulBaseLifeCycle,
 
     @WebRemote
     String processSelectPage(String providerName, String listName,
-            Boolean selection) throws ClientException;
+            Boolean selection);
 
     String getComment();
 
@@ -145,6 +145,6 @@ public interface DocumentActions extends StatefulBaseLifeCycle,
      *            - false otherwise
      * @throws ClientException
      */
-    boolean getCanUnpublish() throws ClientException;
+    boolean getCanUnpublish();
 
 }

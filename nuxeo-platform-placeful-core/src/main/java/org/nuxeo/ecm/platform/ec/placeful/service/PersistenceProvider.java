@@ -36,7 +36,7 @@ public class PersistenceProvider {
 
     protected HibernateConfiguration hibernateConfiguration;
 
-    protected List<String> annotedClasses = new ArrayList<String>();
+    protected final List<String> annotedClasses = new ArrayList<String>();
 
     public PersistenceProvider(HibernateConfiguration configuration) {
         hibernateConfiguration = configuration;

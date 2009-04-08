@@ -53,7 +53,7 @@ public abstract class DefaultRenderingResult implements RenderingResult {
 
     public abstract Object getOutcome();
 
-    public InputStream getStream() throws IOException {
+    public InputStream getStream() {
         Object outcome = getOutcome();
         if (outcome instanceof InputStream) {
             return (InputStream) outcome;

@@ -29,6 +29,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 @Deprecated
 @XObject("widget")
 public class TypeWidget {
+
     @XNode("@jsfcomponent")
     String jsfComponent;
 
@@ -39,16 +40,8 @@ public class TypeWidget {
         return fieldtype;
     }
 
-    public void setFieldtype(String fieldtype) {
-        this.fieldtype = fieldtype;
-    }
-
     public String getJsfComponent() {
         return jsfComponent;
-    }
-
-    public void setJsfComponent(String jsfComponent) {
-        this.jsfComponent = jsfComponent;
     }
 
 }

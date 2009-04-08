@@ -250,7 +250,7 @@ public class VocabularyActionsBean implements VocabularyActions {
         return editVocabulary();
     }
 
-    public String editVocabularyEntry() throws ClientException {
+    public String editVocabularyEntry() {
         editable = true;
         showAddEntryForm = true;
         commandName1 = VocabularyConstants.COMMAND_EDIT;
@@ -259,7 +259,7 @@ public class VocabularyActionsBean implements VocabularyActions {
         return "view_vocabulary";
     }
 
-    public String viewVocabularyEntry() throws ClientException {
+    public String viewVocabularyEntry() {
         editable = false;
         showAddEntryForm = true;
         commandName2 = "command.ok";
@@ -614,7 +614,8 @@ public class VocabularyActionsBean implements VocabularyActions {
     }
 
     public boolean isHierarchical() throws DirectoryException {
-        return VocabularyConstants.VOCABULARY_TYPE_HIER.equals(dirService.getDirectorySchema(selectedVocabularyName));
+        return VocabularyConstants.VOCABULARY_TYPE_HIER.equals(
+                dirService.getDirectorySchema(selectedVocabularyName));
     }
 
     public boolean isNullParentAllowed() throws DirectoryException {

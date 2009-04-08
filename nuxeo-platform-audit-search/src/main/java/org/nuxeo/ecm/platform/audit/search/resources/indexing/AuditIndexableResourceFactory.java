@@ -44,7 +44,7 @@ public class AuditIndexableResourceFactory extends
 
     public IndexableResource createIndexableResourceFrom(
             Serializable targetResource, IndexableResourceConf conf,
-            String sid) throws IndexingException {
+            String sid) {
         return new AuditIndexableResourceImpl((Long) targetResource);
     }
 

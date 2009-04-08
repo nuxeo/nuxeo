@@ -48,9 +48,9 @@ public interface CommentManagerActions  {
 
     List<ThreadEntry> getCommentsAsThreadOnDoc(DocumentModel doc) throws ClientException;
 
-    String beginComment() throws ClientException;
+    String beginComment();
 
-    String cancelComment() throws ClientException;
+    String cancelComment();
 
     String addComment() throws ClientException;
 

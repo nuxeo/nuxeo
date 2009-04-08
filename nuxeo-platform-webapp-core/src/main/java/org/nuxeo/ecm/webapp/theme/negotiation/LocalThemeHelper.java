@@ -57,13 +57,8 @@ public class LocalThemeHelper {
         Map<String, Object> paramMap = new HashMap<String, Object>();
         paramMap.put("docId", docId);
         List<Annotation> configs;
-        try {
-            configs = placefulService.getAnnotationListByParamMap(paramMap,
-                    LocalThemeConfig.LOCAL_THEME_NAME);
-        } catch (ClassNotFoundException e) {
-            log.error("Could not get the local theme configuration.", e);
-            return null;
-        }
+        configs = placefulService.getAnnotationListByParamMap(paramMap,
+                LocalThemeConfig.LOCAL_THEME_NAME);
         if (!configs.isEmpty()) {
             return (LocalThemeConfig) configs.get(0);
         }
@@ -119,12 +114,8 @@ public class LocalThemeHelper {
         }
         Map<String, Object> paramMap = new HashMap<String, Object>();
         paramMap.put("docId", docId);
-        try {
-            placefulService.removeAnnotationListByParamMap(paramMap,
+        placefulService.removeAnnotationListByParamMap(paramMap,
                     LocalThemeConfig.LOCAL_THEME_NAME);
-        } catch (ClassNotFoundException e) {
-            log.error(e);
-        }
     }
 
 }

@@ -88,7 +88,7 @@ public class TestUIDGeneratorService extends NXRuntimeTestCase {
         assertEquals(expected, uid);
     }
 
-    private static DocumentModel createDocumentModel(String type) throws Exception {
+    private static DocumentModel createDocumentModel(String type) {
         DocumentModelImpl docModel = new DocumentModelImpl(type);
         Map<String, Object> dcMap = new HashMap<String, Object>();
         dcMap.put("title", null);

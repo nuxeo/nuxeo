@@ -42,7 +42,7 @@ public interface VocabularyActions extends Serializable {
     /**
      * Initializes the vocabulary bean Seam component.
      */
-    void initialize() throws ClientException;
+    void initialize();
 
     /**
      * Edits a vocabulary.
@@ -80,17 +80,15 @@ public interface VocabularyActions extends Serializable {
      * Edit an entry of a vocabulary.
      *
      * @return the page to which to forward after.
-     * @throws ClientException
      */
-    String editVocabularyEntry() throws ClientException;
+    String editVocabularyEntry();
 
     /**
      * Views (does not to edit) the entry of a vocabulary.
      *
      * @return the page to which to forward after.
-     * @throws ClientException
      */
-    String viewVocabularyEntry() throws ClientException;
+    String viewVocabularyEntry();
 
     /**
      * Deletes an entry of a vocabulary.
@@ -102,8 +100,6 @@ public interface VocabularyActions extends Serializable {
 
     /**
      * Sets the name of vocabulary which the user is going to use for modifying actions.
-     *
-     * @param name
      */
     void setSelectedVocabularyName(String name);
 
@@ -188,9 +184,8 @@ public interface VocabularyActions extends Serializable {
      * Cancels the process of adding or editing a vocabulary entry.
      *
      * @return where to forward to after canceling
-     * @throws Exception
      */
-    String cancel() throws Exception;
+    String cancel();
 
     /**
      * Sets the style of the page depending on the action that was chosen, view
@@ -225,7 +220,6 @@ public interface VocabularyActions extends Serializable {
     /**
      * Resets the search criteria.
      *
-     * @return
      * @throws ClientException
      */
     String clearSearchCriteria() throws ClientException;
@@ -248,10 +242,8 @@ public interface VocabularyActions extends Serializable {
 
     /**
      * This method is used to populated the select for parent ids.
-     * @return
-     * @throws ClientException
      */
-    List<SelectItem> getParentIds() throws ClientException;
+    List<SelectItem> getParentIds();
 
     /**
      * Checks if the vocabulary is hierarchical (has parents).

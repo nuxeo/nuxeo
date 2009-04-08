@@ -78,9 +78,8 @@ public interface MassEditAction {
      * selected documents.
      *
      * @return view of the change confirmation page
-     * @throws ClientException
      */
-    String previewChanges() throws ClientException;
+    String previewChanges();
 
     /**
      *

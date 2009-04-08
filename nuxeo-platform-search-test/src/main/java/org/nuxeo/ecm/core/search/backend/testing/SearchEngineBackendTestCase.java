@@ -826,12 +826,9 @@ public abstract class SearchEngineBackendTestCase extends NXRuntimeTestCase {
         // Now a text field that's not declared as sortable. We can get a
         // QueryException and nothing else
 
-        try {
-            results = backend.searchQuery(
-                    composeQuery("SELECT * FROM Document ORDER BY bk:abstract"),
-                    0, 100);
-        } catch (QueryException e) {
-        }
+        results = backend.searchQuery(
+                composeQuery("SELECT * FROM Document ORDER BY bk:abstract"),
+                0, 100);
         // don't catch other exceptions, to get the stack trace
     }
 
@@ -899,13 +896,12 @@ public abstract class SearchEngineBackendTestCase extends NXRuntimeTestCase {
         // Book is declared to extend Folder
         assertEquals(1, backend.searchQuery(
                 composeQuery("SELECT * FROM Folder"), 0, 100).getTotalHits());
-        try {
-            @SuppressWarnings("unused")
-            ResultSet dummy = backend.searchQuery(
-                    composeQuery("SELECT * FROM Unknown"), 0, 1);
-            fail("Expected a QueryException");
-        } catch (QueryException e) {
-        }
+
+        // XXX: fixme ?
+        @SuppressWarnings("unused")
+        ResultSet dummy = backend.searchQuery(
+                composeQuery("SELECT * FROM Unknown"), 0, 1);
+        fail("Expected a QueryException");
 
         // FROM and WHERE
         assertEquals(1, backend.searchQuery(

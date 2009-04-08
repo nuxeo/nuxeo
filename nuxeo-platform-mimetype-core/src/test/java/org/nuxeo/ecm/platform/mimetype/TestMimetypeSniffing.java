@@ -122,17 +122,17 @@ public class TestMimetypeSniffing extends NXRuntimeTestCase {
     // Ms Office Visio
     public void xtestVisioDocument() throws Exception {
         assertEquals("getMimetypeFromExtension vsd",
-                            "application/visio",
-                            mimetypeRegistry.getMimetypeFromExtension("vsd"));
+                "application/visio",
+                mimetypeRegistry.getMimetypeFromExtension("vsd"));
         assertEquals("getMimetypeFromExtension vst",
-                            "application/visio",
-                            mimetypeRegistry.getMimetypeFromExtension("vst"));
+                "application/visio",
+                mimetypeRegistry.getMimetypeFromExtension("vst"));
         assertEquals("getMimetypeFromFilename",
-                            "application/visio",
-                            mimetypeRegistry.getMimetypeFromFilename("test-data/hello.vsd"));
+                "application/visio",
+                mimetypeRegistry.getMimetypeFromFilename("test-data/hello.vsd"));
         assertEquals("getMimetypeFromFile",
-                            "application/visio",
-                            mimetypeRegistry.getMimetypeFromFile( getFileFromResource("test-data/hello.vsd")));
+                "application/visio",
+                mimetypeRegistry.getMimetypeFromFile(getFileFromResource("test-data/hello.vsd")));
     }
 
     // CSV file
@@ -141,7 +141,7 @@ public class TestMimetypeSniffing extends NXRuntimeTestCase {
         assertEquals("text/csv", mimetypeRegistry
                 .getMimetypeFromFilename("test-data/test.csv"));
         assertEquals("text/csv", mimetypeRegistry
-                .getMimetypeFromFile( getFileFromResource("test-data/test.csv")));
+                .getMimetypeFromFile(getFileFromResource("test-data/test.csv")));
     }
 
     // OpenDocument Writer

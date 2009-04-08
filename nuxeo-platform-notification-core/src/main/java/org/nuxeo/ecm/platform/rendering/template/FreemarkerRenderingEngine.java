@@ -53,8 +53,7 @@ public abstract class FreemarkerRenderingEngine implements RenderingEngine {
         return config;
     }
 
-    protected abstract FreemarkerRenderingJob createJob(RenderingContext ctx)
-            throws RenderingException;
+    protected abstract FreemarkerRenderingJob createJob(RenderingContext ctx) ;
 
     public RenderingResult process(RenderingContext ctx)
             throws RenderingException {

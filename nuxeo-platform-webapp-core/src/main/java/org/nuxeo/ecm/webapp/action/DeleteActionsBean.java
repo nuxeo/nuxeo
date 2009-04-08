@@ -252,8 +252,9 @@ public class DeleteActionsBean extends InputController implements
         return false;
     }
 
-    public boolean getCanDelete() throws ClientException {
-        List<DocumentModel> docsToDelete = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
+    public boolean getCanDelete() {
+        List<DocumentModel> docsToDelete
+                = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
 
         if (docsToDelete == null || docsToDelete.isEmpty()) {
             return false;
@@ -263,7 +264,7 @@ public class DeleteActionsBean extends InputController implements
         return checkDeletePermOnParents(docsToDelete);
     }
 
-    public boolean getCanDeleteSections() throws ClientException {
+    public boolean getCanDeleteSections() {
         List<DocumentModel> docsToDelete = documentsListsManager.getWorkingList(
                 DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION);
 
@@ -615,7 +616,7 @@ public class DeleteActionsBean extends InputController implements
         return computeOutcome(DELETE_OUTCOME);
     }
 
-    public boolean isTrashManagementEnabled() throws ClientException {
+    public boolean isTrashManagementEnabled() {
         return trashManager.isTrashManagementEnabled();
     }
 
@@ -694,13 +695,9 @@ public class DeleteActionsBean extends InputController implements
         }
 
         try {
-
             resultsProvidersCache.invalidate(DELETED_CHILDREN_BY_COREAPI);
-
             resultsProvider = resultsProvidersCache.get(DELETED_CHILDREN_BY_COREAPI);
-
             currentDocumentChildren = resultsProvider.getCurrentPage();
-
         } catch (Throwable t) {
             throw ClientException.wrap(t);
         }
@@ -711,8 +708,7 @@ public class DeleteActionsBean extends InputController implements
      * Listener method - not used for now because the binding is not used but
      * might be used after the refactoring.
      */
-    public void processSelectRowEvent(SelectDataModelRowEvent event)
-            throws ClientException {
+    public void processSelectRowEvent(SelectDataModelRowEvent event) {
         Boolean selection = event.getSelected();
         DocumentModel data = (DocumentModel) event.getRowData();
         if (selection) {

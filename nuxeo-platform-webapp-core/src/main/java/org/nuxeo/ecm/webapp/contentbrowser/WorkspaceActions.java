@@ -36,7 +36,8 @@ import org.nuxeo.ecm.webapp.base.StatefulBaseLifeCycle;
  */
 // XXX AT: content roots should be handled like documents => deprecated, use
 public interface WorkspaceActions extends StatefulBaseLifeCycle {
-    void initialize() throws ClientException;
+
+    void initialize();
 
     @Destroy
     @Remove

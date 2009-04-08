@@ -42,10 +42,8 @@ public interface SearchActions extends StatefulBaseLifeCycle,
 
     /**
      * Declaration for [Seam]Create method.
-     * @throws ClientException
-     *
      */
-    void init() throws ClientException;
+    void init();
 
     void destroy();
 
@@ -78,8 +76,7 @@ public interface SearchActions extends StatefulBaseLifeCycle,
     String getReindexPath();
 
     /**
-     * Set the current targeted reindexation path.
-     * @param path
+     * Sets the current targeted reindexation path.
      */
     void setReindexPath(String path);
 
@@ -89,18 +86,14 @@ public interface SearchActions extends StatefulBaseLifeCycle,
 
     /**
      * Request dispatcher. Normally it will be called from a action link.
-     *
-     * @return
      */
     String search();
 
     void resetSearchField();
 
-    String performSearch() throws ClientException,
-            ECInvalidParameterException;
+    String performSearch();
 
-    String getDocumentLocation(DocumentModel doc)
-            throws ClientException;
+    String getDocumentLocation(DocumentModel doc);
 
     SelectDataModel getResultsSelectModel(String providerName) throws ClientException;
 

@@ -203,12 +203,8 @@ public class NotificationService extends DefaultComponent implements
 
         PlacefulService serviceBean = NotificationServiceHelper.getPlacefulServiceBean();
         List<Annotation> subscriptions = new ArrayList<Annotation>();
-        try {
-            subscriptions = serviceBean.getAnnotationListByParamMap(paramMap,
-                    shortClassName);
-        } catch (ClassNotFoundException e) {
-            log.error(e);
-        }
+        subscriptions = serviceBean.getAnnotationListByParamMap(paramMap,
+                shortClassName);
         List<String> subscribers = new ArrayList<String>();
         for (Object obj : subscriptions) {
             UserSubscription subscription = (UserSubscription) obj;
@@ -318,21 +314,15 @@ public class NotificationService extends DefaultComponent implements
         paramMap.put("docId", docId);
         paramMap.put("notification", notification);
 
-        try {
-            serviceBean.removeAnnotationListByParamMap(paramMap,
+        serviceBean.removeAnnotationListByParamMap(paramMap,
                     SUBSCRIPTION_NAME);
-            /*
-             * List<Annotation> subscriptions = serviceBean
-             * .getAnnotationListByParamMap(paramMap, SUBSCRIPTION_NAME); if
-             * (subscriptions != null && subscriptions.size() > 0) { for
-             * (Annotation subscription : subscriptions) { if (subscription !=
-             * null) { serviceBean.removeAnnotation(subscription); } } }
-             */
-        } catch (ClassNotFoundException e) {
-            log.debug(
-                    "Exception occured getting the annotation for removal : ",
-                    e);
-        }
+        /*
+        * List<Annotation> subscriptions = serviceBean
+        * .getAnnotationListByParamMap(paramMap, SUBSCRIPTION_NAME); if
+        * (subscriptions != null && subscriptions.size() > 0) { for
+        * (Annotation subscription : subscriptions) { if (subscription !=
+        * null) { serviceBean.removeAnnotation(subscription); } } }
+        */
     }
 
     public List<String> getUsersSubscribedToNotificationOnDocument(
@@ -342,15 +332,11 @@ public class NotificationService extends DefaultComponent implements
         paramMap.put("docId", docId);
         paramMap.put("notification", notification);
         List<String> subscribers = new ArrayList<String>();
-        try {
-            List<Annotation> subscriptions = serviceBean.getAnnotationListByParamMap(
-                    paramMap, SUBSCRIPTION_NAME);
-            for (Annotation annoSubscription : subscriptions) {
-                UserSubscription subscription = (UserSubscription) annoSubscription;
-                subscribers.add(subscription.getUserId());
-            }
-        } catch (ClassNotFoundException e) {
-            throw new ClientException(e.getMessage());
+        List<Annotation> subscriptions = serviceBean.getAnnotationListByParamMap(
+                paramMap, SUBSCRIPTION_NAME);
+        for (Annotation annoSubscription : subscriptions) {
+            UserSubscription subscription = (UserSubscription) annoSubscription;
+            subscribers.add(subscription.getUserId());
         }
         return subscribers;
     }

@@ -40,14 +40,14 @@ import org.nuxeo.ecm.webapp.table.model.DocModelTableModel;
  */
 public interface ContentRootsActions extends StatefulBaseLifeCycle {
 
-    void initialize() throws ClientException;
+    void initialize();
 
     @Destroy
     @Remove
     @PermitAll
     void destroy();
 
-    String display() throws ClientException, ECInvalidParameterException;
+    String display();
 
     /**
      * Called when a workspace {@link DocumentModel} is selected. It saves the
@@ -90,7 +90,7 @@ public interface ContentRootsActions extends StatefulBaseLifeCycle {
      * @throws ClientException
      * @throws ECInvalidParameterException
      */
-    void getWorkspaces() throws ClientException, ECInvalidParameterException;
+    void getWorkspaces() throws ClientException;
 
     /**
      * Gets the sections contained in the selected domain.
@@ -98,7 +98,7 @@ public interface ContentRootsActions extends StatefulBaseLifeCycle {
      * @throws ClientException
      * @throws ECInvalidParameterException
      */
-    void getSections() throws ClientException, ECInvalidParameterException;
+    void getSections() throws ClientException;
 
     List<DocumentModel> getContentRootDocuments() throws ClientException;
 

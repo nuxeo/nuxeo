@@ -24,6 +24,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
+// FIXME: this interface has no implementation. Remove?
 public interface PublicationHelper extends Serializable {
 
     String decide(ExecutionContext executionContext) throws Exception;

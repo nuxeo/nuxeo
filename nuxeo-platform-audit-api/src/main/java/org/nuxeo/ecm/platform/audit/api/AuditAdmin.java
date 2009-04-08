@@ -40,8 +40,7 @@ public interface AuditAdmin {
      * @param recurs
      * @return
      * @throws AuditException
-     * @throws ClientException
      */
     long syncLogCreationEntries(String repoId, String path, Boolean recurs)
-            throws AuditException, ClientException;
+            throws ClientException;
 }

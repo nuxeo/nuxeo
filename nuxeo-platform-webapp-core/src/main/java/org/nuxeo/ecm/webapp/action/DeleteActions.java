@@ -95,9 +95,9 @@ public interface DeleteActions {
 
     boolean getCanDeleteItem(DocumentModel container) throws ClientException;
 
-    boolean getCanDelete() throws ClientException;
+    boolean getCanDelete();
 
-    boolean getCanDeleteSections() throws ClientException;
+    boolean getCanDeleteSections();
 
     boolean getCanPurge() throws ClientException;
 
@@ -106,7 +106,7 @@ public interface DeleteActions {
     DocumentModelList getCurrentDocumentDeletedChildrenPage()
             throws ClientException;
 
-    boolean isTrashManagementEnabled() throws ClientException;
+    boolean isTrashManagementEnabled();
 
     boolean checkDeletePermOnParents(List<DocumentModel> docsToDelete);
 

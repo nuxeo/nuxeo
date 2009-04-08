@@ -39,12 +39,4 @@ public interface TypeManager {
 
     Collection<Type> getAllowedSubTypes(String typeName);
 
-    /**
-     * @deprecated old widget notion, don't know how to replace it since can't
-     *             understand what it's used for anyway.
-     * Not used. Remove in 5.2.
-     */
-    @Deprecated
-    String getDefaultWidget(String fieldType);
-
 }

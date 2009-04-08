@@ -119,12 +119,12 @@ public class QueryModel implements Serializable {
     }
 
     public DocumentModelList getDocuments(CoreSession session)
-            throws ClientException, QueryException {
+            throws ClientException {
         return getDocuments(session, null);
     }
 
     public DocumentModelList getDocuments(CoreSession session, Object[] params)
-            throws ClientException, QueryException {
+            throws ClientException {
         return getResultsProvider(session, params).getCurrentPage();
     }
 

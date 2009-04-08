@@ -55,9 +55,9 @@ public interface UserManagerActions extends Serializable {
     @Factory(value = "userList", scope = EVENT)
     DocumentModelList getUsers() throws ClientException;
 
-    void resetUsers() throws ClientException;
+    void resetUsers();
 
-    DocumentModel getSelectedUser() throws ClientException;
+    DocumentModel getSelectedUser();
 
     String viewUser() throws ClientException;
 

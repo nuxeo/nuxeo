@@ -264,10 +264,4 @@ public class TypeService extends DefaultComponent implements TypeManager {
         return allowed;
     }
 
-    @Deprecated
-    public String getDefaultWidget(String fieldType) {
-        log.warn("getDefaultWidget: this method is deprecated, use the new layout system instead");
-        return typeWidgetRegistry.getMap().get(fieldType);
-    }
-
 }

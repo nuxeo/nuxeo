@@ -645,7 +645,7 @@ public class DocumentActionsBean extends InputController implements
         this.comment = comment;
     }
 
-    public boolean getCanUnpublish() throws ClientException {
+    public boolean getCanUnpublish() {
         List<DocumentModel> docList = documentsListsManager.getWorkingList(
                 DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION);
 

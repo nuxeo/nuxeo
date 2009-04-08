@@ -305,7 +305,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
         updateAllGroups();
     }
 
-    public boolean isMemberOf(String group) throws ClientException {
+    public boolean isMemberOf(String group) {
         return allGroups.contains(group);
     }
 
@@ -360,13 +360,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
     }
 
     public boolean isAdministrator() {
-        try {
-            return isMemberOf(SecurityConstants.ADMINISTRATORS);
-        } catch (ClientException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            return false;
-        }
+        return isMemberOf(SecurityConstants.ADMINISTRATORS);
     }
 
     public boolean isAnonymous() {
