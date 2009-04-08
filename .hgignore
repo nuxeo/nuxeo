@@ -8,5 +8,3 @@ target
 *~
 *.orig
 *.DS_Store
-*/src/test/resources/log4j.xml
-*/src/test/resources/log4j.properties
