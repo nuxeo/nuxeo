@@ -25,6 +25,7 @@ import org.wikimodel.wem.WikiParameters;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
+// FIXME: not used. Remove ?
 public interface WikiExpression {
 
     String getName();

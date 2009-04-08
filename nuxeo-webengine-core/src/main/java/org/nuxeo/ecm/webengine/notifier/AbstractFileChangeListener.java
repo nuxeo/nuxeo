@@ -23,6 +23,7 @@ import java.util.List;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
+// FIXME: not used.
 public abstract class AbstractFileChangeListener implements FileChangeListener {
 
     public static final int CREATED = 1;

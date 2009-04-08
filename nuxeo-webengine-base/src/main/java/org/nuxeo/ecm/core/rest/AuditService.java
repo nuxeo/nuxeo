@@ -71,12 +71,7 @@ public class AuditService extends DefaultAdapter {
         DocumentObject document = (DocumentObject) getTarget();
         DocumentModel model = document.getAdapter(DocumentModel.class);
         String id = model.getId();
-        try {
-            return logs.getLogEntriesFor(id);
-
-        } catch (AuditException e) {
-            throw WebException.wrap("Failed to get audit on document " + id, e);
-        }
+        return logs.getLogEntriesFor(id);
     }
 
 }

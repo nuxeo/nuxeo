@@ -183,6 +183,7 @@ public class FileChangeNotifier implements FileChangeListener {
             return file.toString();
         }
 
+        @SuppressWarnings({"unchecked"})
         public void scanForChanges(List<File> created, List<File> removed, List<File> modified) throws IOException {
             long tm = file.lastModified();
             if (tm > lastModified) {
