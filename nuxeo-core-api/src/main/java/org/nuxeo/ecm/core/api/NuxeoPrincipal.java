@@ -123,7 +123,7 @@ public interface NuxeoPrincipal extends Principal, Serializable {
 
     DocumentModel getModel();
 
-    void setModel(DocumentModel model);
+    void setModel(DocumentModel model) throws ClientException;
 
     /**
      * Checks if the principal is an administrator (superuser).

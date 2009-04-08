@@ -100,7 +100,7 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         return CoreInstance.getInstance().open(REPOSITORY_NAME, context);
     }
 
-    public void closeSession() throws ClientException {
+    public void closeSession() {
         closeSession(session);
     }
 
