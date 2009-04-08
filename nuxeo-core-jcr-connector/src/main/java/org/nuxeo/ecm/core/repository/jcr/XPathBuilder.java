@@ -44,23 +44,31 @@ import org.nuxeo.ecm.core.query.sql.model.StringLiteral;
  * @author Florent Guillaume
  */
 // TODO: fdate literals need special handling - make a xpathLiteral() method to
-// be
-// able to intercept date literals to adapt them
+// be able to intercept date literals to adapt them
 public class XPathBuilder {
 
-    // Utility class
-    private XPathBuilder() {
+    private final XPathQuery xq;
+
+    private final SQLQuery query;
+
+    private XPathBuilder(SQLQuery query) {
+        xq = new XPathQuery();
+        this.query = query;
     }
 
     public static String fromNXQL(String query) throws QueryException {
         return fromNXQL(SQLQueryParser.parse(query));
     }
 
-    public static String fromNXQL(SQLQuery query) throws QueryException {
-        XPathQuery xq = new XPathQuery();
-        buildElementPart(xq, query);
-        whereClause(xq, query);
-        orderBy(xq, query);
+    public static String fromNXQL(SQLQuery query)
+            throws QueryException {
+        return new XPathBuilder(query).fromNXQL();
+    }
+
+    private String fromNXQL() throws QueryException {
+        buildElementPart();
+        whereClause();
+        orderBy();
         return xq.toString();
     }
 
@@ -68,7 +76,7 @@ public class XPathBuilder {
      * Builds the element part of the XPATH query. Example: {@code element(*,
      * ecmdt:Document)} for {@code SELECT * FROM Document}.
      */
-    static void buildElementPart(XPathQuery xq, SQLQuery query) {
+    private void buildElementPart() {
         if (query.from.elements.size() != 1) {
             throw new QueryParseException("Invalid query");
         }
@@ -93,7 +101,7 @@ public class XPathBuilder {
         }
     }
 
-    static void orderBy(XPathQuery xq, SQLQuery query) {
+    private void orderBy() {
         if (query.orderBy == null) {
             return;
         }
@@ -114,41 +122,39 @@ public class XPathBuilder {
         }
     }
 
-    static void whereClause(XPathQuery xq, SQLQuery sqlQuery)
-            throws QueryException {
-        if (sqlQuery.where != null) {
-            Expression expr = sqlQuery.where.predicate;
+    private void whereClause() throws QueryException {
+        if (query.where != null) {
+            Expression expr = query.where.predicate;
             if (expr != null) {
                 if (expr.isPathExpression()) {
-                    pathExpression(xq, expr);
+                    pathExpression(expr);
                 } else {
-                    expression(xq, expr);
+                    expression(expr);
                 }
             }
         }
     }
 
-    static Operand lookaheadPathExpression(XPathQuery xq, Expression expr)
+    private Operand lookaheadPathExpression(Expression expr)
             throws QueryException {
         if (expr.lvalue instanceof Expression) {
             Expression lexpr = (Expression) expr.lvalue;
             if (lexpr.isPathExpression()) {
-                pathExpression(xq, lexpr);
+                pathExpression(lexpr);
                 return expr.rvalue;
             }
         }
         if (expr.rvalue instanceof Expression) {
             Expression rexpr = (Expression) expr.rvalue;
             if (rexpr.isPathExpression()) {
-                pathExpression(xq, rexpr);
+                pathExpression(rexpr);
                 return expr.lvalue;
             }
         }
         return null;
     }
 
-    static void pathExpression(XPathQuery xq, Expression expr)
-            throws QueryException {
+    private void pathExpression(Expression expr) throws QueryException {
         if (xq.path != null) { // path already set
             throw new QueryException(
                     "Invalid query:  multiple path constraint are not supported");
@@ -181,29 +187,23 @@ public class XPathBuilder {
      * If the expression is not a special one, return false so that the
      * expression will be processed in the default way. Otherwise process it and
      * return true.
-     *
-     * @param xq
-     * @param expr
-     * @return
-     * @throws QueryException
      */
-    static boolean specialExpression(XPathQuery xq, Expression expr)
-            throws QueryException {
+    private boolean specialExpression(Expression expr) throws QueryException {
         if (expr.lvalue instanceof Reference) { // TODO remove this
             String name = ((Reference) expr.lvalue).name;
             if (name.equals(NXQL.ECM_FULLTEXT)) {
                 if (expr.rvalue.getClass() != StringLiteral.class) {
-                    throw new QueryException("Invalid query: " +
-                            NXQL.ECM_FULLTEXT +
-                            " can only be compared against string values");
+                    throw new QueryException("Invalid query: "
+                            + NXQL.ECM_FULLTEXT
+                            + " can only be compared against string values");
                 }
                 xq.predicate.append("jcr:contains(., '").append(
                         ((StringLiteral) expr.rvalue).value).append("')");
                 return true;
             } else if (name.equals(NXQL.ECM_NAME)) {
                 if (expr.rvalue.getClass() != StringLiteral.class) {
-                    throw new QueryException("Invalid query: " + NXQL.ECM_NAME +
-                            "can only be compared against string values");
+                    throw new QueryException("Invalid query: " + NXQL.ECM_NAME
+                            + "can only be compared against string values");
                 }
                 xq.predicate.append("fn:name() ").append(
                         operator(expr.operator)).append(" '").append(
@@ -211,12 +211,12 @@ public class XPathBuilder {
                 return true;
             } else if (name.equals(NXQL.ECM_MIXINTYPE)) {
                 if (expr.operator.equals(Operator.NOTEQ)) {
-                LiteralList rvalue = new LiteralList();
-                rvalue.add((Literal) expr.rvalue);
-                xq.predicate.append(" not(");
-                inclusion(xq.predicate, expr.lvalue, rvalue);
-                xq.predicate.append(") ");
-                return true;
+                    LiteralList rvalue = new LiteralList();
+                    rvalue.add((Literal) expr.rvalue);
+                    xq.predicate.append(" not(");
+                    inclusion(xq.predicate, expr.lvalue, rvalue);
+                    xq.predicate.append(") ");
+                    return true;
                 }
             } else if (expr.rvalue.getClass() == DateLiteral.class) { // dates
                 // *[@dc:created > "2008-06-03T00:00:00.000+01:00" and
@@ -282,8 +282,8 @@ public class XPathBuilder {
                 } else {
                     reference(xq.predicate, ref);
                     operator(xq.predicate, expr.operator);
-                    xq.predicate.append("xs:dateTime('" +
-                            DateLiteral.dateTime(dl) + "')");
+                    xq.predicate.append("xs:dateTime('"
+                            + DateLiteral.dateTime(dl) + "')");
                 }
                 return true;
             }
@@ -291,7 +291,7 @@ public class XPathBuilder {
         return false;
     }
 
-    static void compareDate(StringBuilder buf, Reference ref,
+    private void compareDate(StringBuilder buf, Reference ref,
             Operator operator, DateTime date) {
         int month = date.getMonthOfYear();
         int day = date.getDayOfMonth();
@@ -312,7 +312,7 @@ public class XPathBuilder {
         buf.append("T00:00:00.000Z')");
     }
 
-    static void between(XPathQuery xq, Operand lvalue, Operand rvalue) {
+    private void between(Operand lvalue, Operand rvalue) {
         String name = ((Reference) lvalue).name;
         xq.predicate.append(" (").append(name).append(" >= ");
         LiteralList list = (LiteralList) rvalue;
@@ -324,7 +324,7 @@ public class XPathBuilder {
         xq.predicate.append(")");
     }
 
-    static void inclusion(StringBuilder buf, Operand lvalue, Operand rvalue) {
+    private void inclusion(StringBuilder buf, Operand lvalue, Operand rvalue) {
         buf.append(" (");
         LiteralList list = (LiteralList) rvalue;
         for (int i = 0; i < list.size(); i++) {
@@ -337,36 +337,35 @@ public class XPathBuilder {
         buf.append(") ");
     }
 
-    static void expression(XPathQuery xq, Expression expr)
-            throws QueryException {
+    private void expression(Expression expr) throws QueryException {
         // look ahead for path expressions
         if (xq.path == null) {
-            Operand remaining = lookaheadPathExpression(xq, expr);
+            Operand remaining = lookaheadPathExpression(expr);
             if (remaining != null) { // was a path expr
-                operand(xq, remaining);
+                operand(remaining);
                 return;
             }
         }
         // test for a special expression
-        if (specialExpression(xq, expr)) {
+        if (specialExpression(expr)) {
             // special expression are exception from the general rule and should
             // be processed separately
             return;
         }
         // default processing
         if (expr.operator == Operator.AND) {
-            operand(xq, expr.lvalue);
+            operand(expr.lvalue);
             xq.predicate.append(" and ");
-            operand(xq, expr.rvalue);
+            operand(expr.rvalue);
         } else if (expr.operator == Operator.OR) {
             xq.initPath();
-            operand(xq, expr.lvalue);
+            operand(expr.lvalue);
             xq.predicate.append(" or ");
-            operand(xq, expr.rvalue);
+            operand(expr.rvalue);
         } else if (expr.operator == Operator.NOT) {
             xq.initPath();
             xq.predicate.append(" not(");
-            operand(xq, expr.lvalue);
+            operand(expr.lvalue);
             xq.predicate.append(") ");
         } else if (expr.operator == Operator.LIKE) {
             xq.predicate.append(" jcr:like(");
@@ -383,31 +382,31 @@ public class XPathBuilder {
         } else if (expr.operator == Operator.IN) {
             inclusion(xq.predicate, expr.lvalue, expr.rvalue);
         } else if (expr.operator == Operator.BETWEEN) {
-            between(xq, expr.lvalue, expr.rvalue);
+            between(expr.lvalue, expr.rvalue);
         } else if (expr.operator == Operator.NOTBETWEEN) {
             xq.predicate.append(" not(");
-            between(xq, expr.lvalue, expr.rvalue);
+            between(expr.lvalue, expr.rvalue);
             xq.predicate.append(") ");
         } else if (expr.operator == Operator.NOTIN) {
             xq.predicate.append(" not(");
             inclusion(xq.predicate, expr.lvalue, expr.rvalue);
             xq.predicate.append(") ");
         } else if (expr.rvalue != null) { // other binary operation
-            if (expr.lvalue instanceof Reference &&
-                    expr.rvalue instanceof Literal) {
+            if (expr.lvalue instanceof Reference
+                    && expr.rvalue instanceof Literal) {
                 LiteralFixer fixer = reference(xq.predicate,
                         (Reference) expr.lvalue);
                 operator(xq.predicate, expr.operator);
-                operand(xq, fixer.fix((Literal) expr.rvalue));
+                operand(fixer.fix((Literal) expr.rvalue));
             } else {
-                operand(xq, expr.lvalue);
+                operand(expr.lvalue);
                 operator(xq.predicate, expr.operator);
-                operand(xq, expr.rvalue);
+                operand(expr.rvalue);
             }
         } else { // other unary operation
             operator(xq.predicate, expr.operator);
             xq.predicate.append(" (");
-            operand(xq, expr.lvalue);
+            operand(expr.lvalue);
             xq.predicate.append(") ");
         }
         return;
@@ -417,11 +416,11 @@ public class XPathBuilder {
         buf.append(" ").append(operator(operator)).append(" ");
     }
 
-    static void operand(XPathQuery xq, Operand operand) throws QueryException {
+    private void operand(Operand operand) throws QueryException {
         StringBuilder buf = xq.predicate;
         if (operand instanceof Expression) {
             buf.append("(");
-            expression(xq, (Expression) operand);
+            expression((Expression) operand);
             buf.append(")");
         } else if (operand instanceof Reference) {
             reference(buf, (Reference) operand);
@@ -445,8 +444,8 @@ public class XPathBuilder {
             // xs:date seems to not be correctly handled in jackrabbit .
             // see
             // https://issues.apache.org/jira/browse/JCR-1386?page=com.atlassian.jira.plugin.system.issuetabpanels:all-tabpanel
-            buf.append("xs:dateTime('" +
-                    DateLiteral.dateTime((DateLiteral) literal) + "')");
+            buf.append("xs:dateTime('"
+                    + DateLiteral.dateTime((DateLiteral) literal) + "')");
         } else {
             buf.append(literal.asString());
         }
@@ -477,7 +476,7 @@ public class XPathBuilder {
         }
     }
 
-    static LiteralFixer reference(StringBuilder buf, Reference ref) {
+    private LiteralFixer reference(StringBuilder buf, Reference ref) {
         LiteralFixer fixer = IdentityFixer.INSTANCE;
         String name = ref.name;
         if (ref.isPathReference()) {
@@ -514,10 +513,10 @@ public class XPathBuilder {
     /**
      * LIKE path:
      * <ul>
-     * <li> if path ends with / only children
-     * <li> if path ends with /% all descendants
-     * <li> otherwise the last element will be the document name to find
-     * <li> if path begins with %/ - any sub tree containing that patch will
+     * <li>if path ends with / only children
+     * <li>if path ends with /% all descendants
+     * <li>otherwise the last element will be the document name to find
+     * <li>if path begins with %/ - any sub tree containing that patch will
      * match otherwise the absolute path will be used
      * </ul>
      * <p>
