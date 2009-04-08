@@ -91,19 +91,6 @@ public class Type implements Serializable {
         this.actions = actions;
     }
 
-    /**
-     * @deprecated Use {@link #getId} instead.
-     */
-    @Deprecated
-    public String getCoreType() {
-        return id;
-    }
-
-    @XNode("@coretype")
-    public void setCoreType(String coreType) {
-        log.debug("doctype: " + coreType + ": 'coretype' attribute is deprecated");
-    }
-
     public String getIcon() {
         return icon;
     }
