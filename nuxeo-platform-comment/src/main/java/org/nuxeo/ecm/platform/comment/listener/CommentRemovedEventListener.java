@@ -52,7 +52,7 @@ public class CommentRemovedEventListener extends AbstractCommentListener
             CommentServiceConfig config, DocumentModel docModel)
             throws ClientException {
         Resource commentRes = relationManager.getResource(
-                config.commentNamespace, docModel);
+                config.commentNamespace, docModel, null);
         if (commentRes == null) {
             log.error("Could not adapt document model to relation resource; "
                     + "check the service relation adapters configuration");

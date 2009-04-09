@@ -56,20 +56,6 @@ public interface RelationManager extends Serializable {
     Graph getTransientGraph(String type) throws ClientException;
 
     /**
-     * Gets a resource given a namespace and an object.
-     * <p>
-     * There can be several resources with different namespaces associated to an
-     * incoming object. A document can for instance be used to refer to itself
-     * as a precise version as well as to the set of all versions.
-     *
-     * @throws ClientException
-     * @deprecated use {@link #getResource(String, Serializable, Map)}
-     */
-    @Deprecated
-    Resource getResource(String namespace, Object object)
-            throws ClientException;
-
-    /**
      * Gets a resource given a namespace and a serializable object.
      * <p>
      * There can be several resources with different namespaces associated to an
@@ -87,16 +73,6 @@ public interface RelationManager extends Serializable {
 
     /**
      * Computes all resources corresponding to the given object.
-     *
-     * @return the resources as a set
-     * @throws ClientException
-     * @deprecated use {@link #getAllResources(Serializable, Map)}
-     */
-    @Deprecated
-    Set<Resource> getAllResources(Object object) throws ClientException;
-
-    /**
-     * Computes all resources corresponding to the given object.
      * <p>
      * Context can hold any object useful for the adapters, like a
      * {@link CoreSession}.
@@ -107,16 +83,6 @@ public interface RelationManager extends Serializable {
      */
     Set<Resource> getAllResources(Serializable object,
             Map<String, Serializable> context) throws ClientException;
-
-    /**
-     * Gets an object representing this resource given a namespace.
-     *
-     * @throws ClientException
-     * @deprecated use {@link #getResourceRepresentation(String, Resource, Map)}
-     */
-    @Deprecated
-    Object getResourceRepresentation(String namespace, Resource resource)
-            throws ClientException;
 
     /**
      * Gets an object representing this resource given a namespace.

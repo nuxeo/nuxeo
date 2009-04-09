@@ -42,34 +42,12 @@ public interface ResourceAdapter {
     /**
      * Transforms an incoming object into a Resource.
      *
-     * @param object TODO Serializable
-     * @return the resource
-     * @deprecated use {@link #getResource(Serializable, Map)}
-     */
-    @Deprecated
-    Resource getResource(Object object);
-
-    /**
-     * Transforms an incoming object into a Resource.
-     *
      * @since 5.2-M1
      * @param object the object to transform
      * @param context a context map
      * @return the resource
      */
     Resource getResource(Serializable object, Map<String, Serializable> context);
-
-    /**
-     * Resolves the resource to an applicative representation, for instance a
-     * DocumentModel.
-     *
-     * @since 5.2-M1
-     * @param resource
-     * @return the representation
-     * @deprecated use {@link #getResourceRepresentation(Resource, Map)}
-     */
-    @Deprecated
-    Object getResourceRepresentation(Resource resource);
 
     /**
      * Resolves the resource to an applicative representation, for instance a

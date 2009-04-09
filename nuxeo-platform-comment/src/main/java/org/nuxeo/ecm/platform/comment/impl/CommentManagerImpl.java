@@ -126,7 +126,7 @@ public class CommentManagerImpl implements CommentManager {
             throw new ClientException(e);
         }
         Resource docResource = relationManager.getResource(
-                config.documentNamespace, docModel);
+                config.documentNamespace, docModel, null);
         if (docResource == null) {
             throw new ClientException(
                     "Could not adapt document model to relation resource ; "
@@ -152,7 +152,7 @@ public class CommentManagerImpl implements CommentManager {
             DocumentModel commentDocModel = null;
             try {
                 commentDocModel = (DocumentModel) relationManager.getResourceRepresentation(
-                        config.commentNamespace, subject);
+                        config.commentNamespace, subject, null);
             } catch (Exception e) {
                 log.error("failed to retrieve commentDocModel from relations");
             }
@@ -247,10 +247,10 @@ public class CommentManagerImpl implements CommentManager {
             List<Statement> statementList = new ArrayList<Statement>();
 
             Resource commentRes = relationManager.getResource(
-                    config.commentNamespace, createdComment);
+                    config.commentNamespace, createdComment, null);
 
             Resource documentRes = relationManager.getResource(
-                    config.documentNamespace, docModel);
+                    config.documentNamespace, docModel, null);
 
             if (commentRes == null || documentRes == null) {
                 throw new ClientException(

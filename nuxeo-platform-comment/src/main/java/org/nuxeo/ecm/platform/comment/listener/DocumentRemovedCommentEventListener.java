@@ -47,13 +47,12 @@ public class DocumentRemovedCommentEventListener extends
         onDocumentRemoved(coreSession, relationManager, config, docMessage);
     }
 
-
     private static void onDocumentRemoved(CoreSession coreSession,
             RelationManager relationManager, CommentServiceConfig config,
             DocumentModel docMessage) throws ClientException {
 
         Resource documentRes = relationManager.getResource(
-                config.documentNamespace, docMessage);
+                config.documentNamespace, docMessage, null);
         if (documentRes == null) {
             log.error("Could not adapt document model to relation resource ; "
                     + "check the service relation adapters configuration");
@@ -67,9 +66,8 @@ public class DocumentRemovedCommentEventListener extends
         for (Statement stmt : statementList) {
             QNameResource resource = (QNameResource) stmt.getSubject();
             String commentId = resource.getLocalName();
-            DocumentModel docModel = (DocumentModel) relationManager
-                    .getResourceRepresentation(config.commentNamespace,
-                            resource);
+            DocumentModel docModel = (DocumentModel) relationManager.getResourceRepresentation(
+                    config.commentNamespace, resource, null);
 
             if (docModel != null) {
                 try {

@@ -41,26 +41,18 @@ public abstract class AbstractResourceAdapter implements ResourceAdapter {
         this.namespace = namespace;
     }
 
-    public Object getResourceRepresentation(Resource resource) {
-        return null;
-    }
-
-    public Resource getResource(Object object) {
-        return null;
-    }
-
     public Class<?> getKlass() {
         return null;
     }
 
     public Resource getResource(Serializable object,
             Map<String, Serializable> context) {
-        return getResource(object);
+        return null;
     }
 
     public Serializable getResourceRepresentation(Resource resource,
             Map<String, Serializable> context) {
-        return (Serializable) getResourceRepresentation(resource);
+        return null;
     }
 
 }

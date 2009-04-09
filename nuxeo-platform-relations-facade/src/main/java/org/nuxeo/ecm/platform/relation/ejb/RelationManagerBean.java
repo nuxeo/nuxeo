@@ -83,15 +83,6 @@ public class RelationManagerBean implements RelationManager {
         }
     }
 
-    public Object getResourceRepresentation(String namespace, Resource resource)
-            throws ClientException {
-        try {
-            return service.getResourceRepresentation(namespace, resource);
-        } catch (Throwable t) {
-            throw ClientException.wrap(t);
-        }
-    }
-
     public Serializable getResourceRepresentation(String namespace,
             Resource resource, Map<String, Serializable> context)
             throws ClientException {
@@ -103,27 +94,10 @@ public class RelationManagerBean implements RelationManager {
         }
     }
 
-    public Resource getResource(String namespace, Object object)
-            throws ClientException {
-        try {
-            return service.getResource(namespace, object);
-        } catch (Throwable t) {
-            throw ClientException.wrap(t);
-        }
-    }
-
     public Resource getResource(String namespace, Serializable object,
             Map<String, Serializable> context) throws ClientException {
         try {
             return service.getResource(namespace, object, context);
-        } catch (Throwable t) {
-            throw ClientException.wrap(t);
-        }
-    }
-
-    public Set<Resource> getAllResources(Object object) throws ClientException {
-        try {
-            return service.getAllResources(object);
         } catch (Throwable t) {
             throw ClientException.wrap(t);
         }

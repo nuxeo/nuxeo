@@ -115,7 +115,7 @@ public class RelationsTestHelper {
         QNameResource documentResource = null;
         if (document != null) {
             documentResource = (QNameResource) relationManager.getResource(
-                    DOCUMENT_NAMESPACE, document);
+                    DOCUMENT_NAMESPACE, document, null);
         }
         return documentResource;
     }

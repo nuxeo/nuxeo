@@ -108,21 +108,11 @@ public class DocumentModelResourceAdapter extends AbstractResourceAdapter
     }
 
     @Override
-    public Object getResourceRepresentation(Resource resource) {
-        return getResourceRepresentation(resource, null);
-    }
-
-    @Override
-    public Resource getResource(Object object) {
+    public Resource getResource(Serializable object,
+            Map<String, Serializable> context) {
         DocumentModel doc = (DocumentModel) object;
         String localName = doc.getRepositoryName() + '/' + doc.getId();
         return new QNameResourceImpl(namespace, localName);
-    }
-
-    @Override
-    public Resource getResource(Serializable object,
-            Map<String, Serializable> context) {
-        return getResource(object);
     }
 
     @Override
