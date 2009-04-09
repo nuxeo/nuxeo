@@ -3,6 +3,12 @@
 # the server is listening on localhost:8100
 # and it should be started before nuxeo
 #
+# For instance if you have setup the nuxeoctl with
+#   update-rc.d nuxoectl defaults
+#
+# Then setup the openofficectl with
+#   update-rc.d openofficectl defaults 19
+#
 
 OOO_HOME=/opt/openoffice.org3
 PIDFILE=$OOO_HOME/openoffice-headless.pid
