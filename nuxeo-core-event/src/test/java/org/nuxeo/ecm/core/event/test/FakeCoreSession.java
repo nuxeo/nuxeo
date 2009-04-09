@@ -254,12 +254,6 @@ public class FakeCoreSession implements CoreSession {
         return null;
     }
 
-    public byte[] getContentData(DocumentRef docRef, String path)
-            throws ClientException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
     public String getCurrentLifeCycleState(DocumentRef docRef)
             throws ClientException {
         // TODO Auto-generated method stub

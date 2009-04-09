@@ -801,24 +801,6 @@ public interface CoreSession {
             String[] fields) throws ClientException;
 
     /**
-     * Gets the full content of the given field in the given document from the
-     * given session.
-     * <p>
-     * This method is supposed to be called from the client to lazily load content
-     * fields data.
-     *
-     * @param docRef the document reference
-     * @param path the path of the content field. Must be the raw path of the
-     *            property (i.e. in the prefixed form)
-     * @return the content data as a byte array content source
-     *
-     * @deprecated not used will be removed in 5.2
-     */
-    @Deprecated
-    byte[] getContentData(DocumentRef docRef, String path)
-            throws ClientException;
-
-    /**
      * Gets the data input stream given its key.
      * <p>
      * The key is implementation-dependent - this can be a property path an ID,

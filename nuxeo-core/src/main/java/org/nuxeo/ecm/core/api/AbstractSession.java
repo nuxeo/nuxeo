@@ -2189,48 +2189,6 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
-    public byte[] getContentData(DocumentRef docRef, String path)
-            throws ClientException {
-        try {
-            Document doc = resolveReference(docRef);
-            checkPermission(doc, READ);
-            // TODO: add in Document support for retrieving properties by their
-            // path
-            Path pathObj = new Path(path);
-            int len = pathObj.segmentCount();
-            if (len == 0) {
-                throw new ClientException("Failed to get content for " + docRef
-                        + ". invalid path: " + path);
-            }
-            Property prop = doc.getProperty(pathObj.segment(0));
-            if (prop == null) {
-                throw new ClientException("Failed to get content for " + docRef
-                        + ". invalid path " + path);
-            }
-            for (int i = 1; i < len; i++) {
-                String seg = pathObj.segment(i);
-                prop = prop.getProperty(seg);
-                if (prop == null) {
-                    throw new ClientException("Failed to get content for "
-                            + docRef + ". no such property " + seg);
-                }
-            }
-            if (!prop.getType().getName().equals("content")) {
-                throw new DocumentException(
-                        "Invalid content node. Only nodes with type \"content\" are content nodes");
-            }
-            Blob blob = (Blob) prop.getValue();
-            if (blob != null) {
-                return blob.getByteArray();
-            }
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to get content data " + docRef, e);
-        } catch (IOException e) {
-            throw new ClientException("Failed to get content data " + docRef, e);
-        }
-        return null;
-    }
-
     public SerializableInputStream getContentData(String key)
             throws ClientException {
         try {
