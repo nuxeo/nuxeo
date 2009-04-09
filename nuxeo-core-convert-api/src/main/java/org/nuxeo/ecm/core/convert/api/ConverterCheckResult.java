@@ -33,7 +33,7 @@ public class ConverterCheckResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    protected final boolean available;
+    protected boolean available;
 
     protected String installationMessage;
 
@@ -53,6 +53,10 @@ public class ConverterCheckResult implements Serializable {
 
     public boolean isAvailable() {
         return available;
+    }
+
+    public void setAvailable(boolean available) {
+        this.available = available;
     }
 
     public String getInstallationMessage() {
