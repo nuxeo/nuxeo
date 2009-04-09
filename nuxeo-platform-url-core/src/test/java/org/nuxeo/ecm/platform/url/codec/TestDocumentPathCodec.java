@@ -24,10 +24,10 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 
+import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.platform.url.DocumentLocationImpl;
+import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
-import org.nuxeo.ecm.platform.url.api.DocumentLocation;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 
 /**
@@ -84,7 +84,7 @@ public class TestDocumentPathCodec extends TestCase {
         DocumentView docView = codec.getDocumentViewFromUrl(url);
 
         DocumentLocation docLoc = docView.getDocumentLocation();
-        assertEquals("demo", docLoc.getServerLocationName());
+        assertEquals("demo", docLoc.getServerName());
         assertEquals(new PathRef("/path/to/my/doc"), docLoc.getDocRef());
         assertEquals("view_documents", docView.getViewId());
         assertNull(docView.getSubURI());
@@ -95,7 +95,7 @@ public class TestDocumentPathCodec extends TestCase {
         url = "nxpath/demo/default-domain@view_documents";
         docView = codec.getDocumentViewFromUrl(url);
         docLoc = docView.getDocumentLocation();
-        assertEquals("demo", docLoc.getServerLocationName());
+        assertEquals("demo", docLoc.getServerName());
         assertEquals(new PathRef("/default-domain"), docLoc.getDocRef());
         assertEquals("view_documents", docView.getViewId());
         assertNull(docView.getSubURI());
@@ -103,7 +103,7 @@ public class TestDocumentPathCodec extends TestCase {
         url = "nxpath/demo/@view_domains";
         docView = codec.getDocumentViewFromUrl(url);
         docLoc = docView.getDocumentLocation();
-        assertEquals("demo", docLoc.getServerLocationName());
+        assertEquals("demo", docLoc.getServerName());
         assertEquals(new PathRef("/"), docLoc.getDocRef());
         assertEquals("view_domains", docView.getViewId());
         assertNull(docView.getSubURI());
@@ -112,7 +112,7 @@ public class TestDocumentPathCodec extends TestCase {
         url = "nxpath/demo@view_domains";
         docView = codec.getDocumentViewFromUrl(url);
         docLoc = docView.getDocumentLocation();
-        assertEquals("demo", docLoc.getServerLocationName());
+        assertEquals("demo", docLoc.getServerName());
         assertEquals(new PathRef("/"), docLoc.getDocRef());
         assertEquals("view_domains", docView.getViewId());
         assertNull(docView.getSubURI());
@@ -121,7 +121,7 @@ public class TestDocumentPathCodec extends TestCase {
         url = "nxpath/demo@view.domains";
         docView = codec.getDocumentViewFromUrl(url);
         docLoc = docView.getDocumentLocation();
-        assertEquals("demo", docLoc.getServerLocationName());
+        assertEquals("demo", docLoc.getServerName());
         assertEquals(new PathRef("/"), docLoc.getDocRef());
         assertEquals("view.domains", docView.getViewId());
         assertNull(docView.getSubURI());
@@ -130,7 +130,7 @@ public class TestDocumentPathCodec extends TestCase {
         url = "nxpath/demo.withdot@view_domains";
         docView = codec.getDocumentViewFromUrl(url);
         docLoc = docView.getDocumentLocation();
-        assertEquals("demo.withdot", docLoc.getServerLocationName());
+        assertEquals("demo.withdot", docLoc.getServerName());
         assertEquals(new PathRef("/"), docLoc.getDocRef());
         assertEquals("view_domains", docView.getViewId());
         assertNull(docView.getSubURI());
@@ -139,7 +139,7 @@ public class TestDocumentPathCodec extends TestCase {
         url = "nxpath/demo/doc.withdot@view_domains";
         docView = codec.getDocumentViewFromUrl(url);
         docLoc = docView.getDocumentLocation();
-        assertEquals("demo", docLoc.getServerLocationName());
+        assertEquals("demo", docLoc.getServerName());
         assertEquals(new PathRef("/doc.withdot"), docLoc.getDocRef());
         assertEquals("view_domains", docView.getViewId());
         assertNull(docView.getSubURI());

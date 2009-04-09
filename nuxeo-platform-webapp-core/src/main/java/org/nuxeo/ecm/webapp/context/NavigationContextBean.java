@@ -54,6 +54,7 @@ import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -76,7 +77,6 @@ import org.nuxeo.ecm.platform.ui.web.pathelements.VersionDocumentPathElement;
 import org.nuxeo.ecm.platform.ui.web.util.BadDocumentUriException;
 import org.nuxeo.ecm.platform.ui.web.util.DocumentLocator;
 import org.nuxeo.ecm.platform.ui.web.util.DocumentsListsUtils;
-import org.nuxeo.ecm.platform.url.api.DocumentLocation;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.nuxeo.ecm.webapp.action.TypesTool;
 import org.nuxeo.ecm.webapp.contentbrowser.DocumentChildrenStdFarm;
@@ -914,7 +914,7 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
             return null;
         }
         final DocumentRef docRef = docLoc.getDocRef();
-        RepositoryLocation repLoc = new RepositoryLocation(docLoc.getServerLocationName());
+        RepositoryLocation repLoc = new RepositoryLocation(docLoc.getServerName());
         return navigateTo(repLoc, docRef);
     }
 

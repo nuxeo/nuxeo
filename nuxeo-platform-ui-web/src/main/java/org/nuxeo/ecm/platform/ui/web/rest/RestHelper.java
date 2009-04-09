@@ -32,13 +32,13 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.core.Manager;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.platform.types.adapter.TypeInfo;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
-import org.nuxeo.ecm.platform.url.DocumentLocationImpl;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
-import org.nuxeo.ecm.platform.url.api.DocumentLocation;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
 
@@ -71,7 +71,7 @@ public class RestHelper implements Serializable {
         if (docView != null) {
             DocumentLocation docLoc = docView.getDocumentLocation();
             outcome = navigationContext.navigateTo(new RepositoryLocation(
-                    docLoc.getServerLocationName()), docLoc.getDocRef());
+                    docLoc.getServerName()), docLoc.getDocRef());
         }
 
         return outcome;

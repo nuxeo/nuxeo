@@ -24,10 +24,10 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 
+import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.platform.url.DocumentLocationImpl;
+import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
-import org.nuxeo.ecm.platform.url.api.DocumentLocation;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 
 /**
@@ -84,7 +84,7 @@ public class TestDocumentFileCodec extends TestCase {
         DocumentView docView = codec.getDocumentViewFromUrl(url);
 
         DocumentLocation docLoc = docView.getDocumentLocation();
-        assertEquals("demo", docLoc.getServerLocationName());
+        assertEquals("demo", docLoc.getServerName());
         assertEquals(new IdRef("dbefd5a0-35ee-4ed2-a023-6817714f32cf"),
                 docLoc.getDocRef());
         assertNull(docView.getViewId());
@@ -103,7 +103,7 @@ public class TestDocumentFileCodec extends TestCase {
         DocumentView docView = codec.getDocumentViewFromUrl(url);
 
         DocumentLocation docLoc = docView.getDocumentLocation();
-        assertEquals("demo", docLoc.getServerLocationName());
+        assertEquals("demo", docLoc.getServerName());
         assertEquals(new IdRef("dbefd5a0-35ee-4ed2-a023-6817714f32cf"),
                 docLoc.getDocRef());
         assertNull(docView.getViewId());
@@ -123,7 +123,7 @@ public class TestDocumentFileCodec extends TestCase {
         DocumentView docView = codec.getDocumentViewFromUrl(url);
 
         DocumentLocation docLoc = docView.getDocumentLocation();
-        assertEquals("demo", docLoc.getServerLocationName());
+        assertEquals("demo", docLoc.getServerName());
         assertEquals(new IdRef("dbefd5a0-35ee-4ed2-a023-6817714f32cf"),
                 docLoc.getDocRef());
         assertNull(docView.getViewId());
@@ -144,7 +144,7 @@ public class TestDocumentFileCodec extends TestCase {
         DocumentView docView = codec.getDocumentViewFromUrl(url);
 
         DocumentLocation docLoc = docView.getDocumentLocation();
-        assertEquals("demo", docLoc.getServerLocationName());
+        assertEquals("demo", docLoc.getServerName());
         assertEquals(new IdRef("dbefd5a0-35ee-4ed2-a023-6817714f32cf"),
                 docLoc.getDocRef());
         assertNull(docView.getViewId());
