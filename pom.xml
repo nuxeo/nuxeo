@@ -123,12 +123,6 @@
     <module>nuxeo-platform-relations-io</module>
     <module>nuxeo-platform-el</module>
     <module>nuxeo-platform-convert</module>
-
-    <!-- NXP-3179 - DEPRECATED to be deleted -->
-    <module>nuxeo-platform-transform-api</module>
-    <module>nuxeo-platform-transform-compat</module>
-    <module>nuxeo-platform-transform-core</module>
-    <module>nuxeo-platform-transform-plugins</module>
   </modules>
 
   <dependencyManagement>
@@ -917,34 +911,6 @@
         <artifactId>nuxeo-runtime-test</artifactId>
         <version>${nuxeo.runtime.version}</version>
         <scope>test</scope>
-      </dependency>
-
-      <!-- NXP-3179 - DEPRECATED to be deleted -->
-      <dependency>
-        <groupId>org.nuxeo.ecm.core</groupId>
-        <artifactId>nuxeo-core-event-compat</artifactId>
-        <version>${nuxeo.core.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-transform-api</artifactId>
-        <version>${nuxeo.platform.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-transform-compat</artifactId>
-        <version>${nuxeo.platform.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-transform-core</artifactId>
-        <version>${nuxeo.platform.version}</version>
-        <type>ejb</type>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-transform-plugins</artifactId>
-        <version>${nuxeo.platform.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
