@@ -46,10 +46,8 @@ public interface DashboardActions extends Serializable, ResultsProviderFarm {
      * Invalidates dashboard items.
      *
      * @see Seam Observer
-     *
-     * @throws ClientException
      */
-    void invalidateDashboardItems() throws ClientException;
+    void invalidateDashboardItems();
 
     /**
      * Computes dashboard items.
@@ -75,25 +73,18 @@ public interface DashboardActions extends Serializable, ResultsProviderFarm {
      * Invalidates document process items.
      *
      * @see Seam Observer
-     *
-     * @throws ClientException
      */
-    void invalidateDocumentProcessItems() throws ClientException;
+    void invalidateDocumentProcessItems();
 
     /**
      * View dashboard.
-     *
-     * @return XXX
      */
     String viewDashboard();
 
     /**
      * Computes the list of documents recently edited by the current user.
-     *
-     * @return XXX
-     * @throws ClientException
      */
-    DocumentModelList getUserDocuments() throws ClientException;
+    DocumentModelList getUserDocuments();
 
     /**
      * Computes the list of documents recently modified in the current domain if
@@ -106,26 +97,22 @@ public interface DashboardActions extends Serializable, ResultsProviderFarm {
 
     /**
      * Computes the list of workspaces the user has the right to see.
-     *
-     * @return XXX
-     * @throws ClientException
      */
-    DocumentModelList getUserWorkspaces() throws ClientException;
+    DocumentModelList getUserWorkspaces();
 
     /**
      * Navigates to the a given tab.
      *
      * @param dm document model
-     * @param tabId the tab id.
      * @return a navigation id.
      */
     String navigateToDocumentTab(DocumentModel dm) throws ClientException;
 
-    String refreshDashboardItems() throws ClientException;
+    String refreshDashboardItems();
 
-    String refreshDocumentProcessItems() throws ClientException;
+    String refreshDocumentProcessItems();
 
-    String doSearch() throws ClientException;
+    String doSearch();
 
     SortInfo getSortInfo();
 

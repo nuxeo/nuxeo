@@ -19,97 +19,36 @@
 package org.nuxeo.ecm.platform.forum.web.api;
 
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.List;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMActivityInstance;
-import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMWorkItemInstance;
-import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMWorkflowException;
 
 /**
  * Represents the Action Listener for a Post, created inside a Thread.
  *
  * @author <a href="bchaffangeon@nuxeo.com">Brice Chaffangeon</a>
+ * @author Anahide Tchertchian
  */
 public interface PostAction extends Serializable {
 
     boolean checkWritePermissionOnThread();
 
     /**
-     * Gets the title of the post at creation time.
-     *
-     * @return
-     * @throws ClientException
-     */
-    String getTitle() throws ClientException;
-
-    /**
-     * Sets the title of the post at creation time.
-     *
-     * @param title
-     */
-    void setTitle(String title);
-
-    /**
-     * Gets the text of the post at creation time.
-     *
-     * @return
-     */
-    String getText();
-
-    /**
-     * Sets the text of the post at creation time.
-     *
-     * @param text
-     */
-    void setText(String text);
-
-    /**
-     * Gets the name of the attached file of the post at creation time.
-     *
-     * @return
-     */
-    String getFilename();
-
-    /**
-     * Sets the name of the attached file of the post at creation time.
-     *
-     */
-    void setFilename(String filename);
-
-    /**
-     * Gets the content of the attached file of the post at creation time.
-     *
-     * @return
-     */
-    Blob getFileContent();
-
-    /**
-     * Sets the content of the attached file of the post at creation time.
-     *
-     */
-    void setFileContent(Blob fileContent);
-
-    /**
      * Creates the Post and add it inside the Thread.
      *
      * @return the view id
      * @throws ClientException
-     * @throws WMWorkflowException
      */
-    String addPost() throws ClientException, WMWorkflowException;
+    String addPost() throws ClientException;
 
     /**
      * Deletes the Post and in a the Thread.
      *
      * @return the view id after delete operation
      * @throws ClientException
-     * @throws WMWorkflowException
      */
-    String deletePost() throws ClientException, WMWorkflowException;
+    String deletePost() throws ClientException;
 
     /**
      * Cancels the action of adding a Post.
@@ -121,70 +60,59 @@ public interface PostAction extends Serializable {
 
     /**
      * Gets the Thread in which the Post is.
-     *
-     * @return
      */
     DocumentModel getParentThread();
 
     /**
-     * Gets the parent post of the given post
-     *
-     * @return the parent Post is exist, null otherwise (if no parent is not a
-     *         post).
-     * @throws ClientException
-     */
-    // DocumentModel getParentPost(String postNumber) throws ClientException;
-    /**
-     * Gets the moderators List set on the Thread containing the Post.
-     *
-     * @return
-     */
-    List<String> getModeratorsOnParentThread();
-
-    /**
-     * Starts the moderation process on a Post. Simply start the Workflow.
-     *
-     * @param post
-     * @return the WMactivity instance created
-     * @throws WMWorkflowException
-     * @throws ClientException
-     */
-    WMActivityInstance startModeration(DocumentModel post)
-            throws WMWorkflowException, ClientException;
-
-    /**
-     * Gets Moderation worklow Id.
-     *
-     * @return
-     * @throws WMWorkflowException
-     */
-    String getModerationWorkflowId() throws WMWorkflowException;
-
-    /**
      * Returns true if the post is published, false otherwise.
-     *
-     * @param post
-     * @return
-     * @throws ClientException
      */
     boolean isPostPublished(DocumentModel post) throws ClientException;
 
-    /*
-     * Returns true if the parent of the specified post, is a published Post.
-     *
-     * @return @throws ClientException @throws WMWorkflowException
+    String approvePost(DocumentModel post) throws ClientException;
+
+    String rejectPost(DocumentModel post) throws ClientException;
+
+    // FIXME : all getters/setters on document metadata should be replaced by a
+    // single getter/setter tupole using a document model
+
+    /**
+     * Gets the title of the post at creation time.
      */
-    // boolean isParentPostPublished(String postNumber) throws ClientException;
-    Collection<WMWorkItemInstance> getPendingTasksForPrincipal()
-            throws WMWorkflowException;
+    String getTitle() throws ClientException;
 
-    Collection<WMWorkItemInstance> getCurrentTasksForPrincipal(String name)
-            throws WMWorkflowException;
+    /**
+     * Sets the title of the post at creation time.
+     */
+    void setTitle(String title);
 
-    String approvePost(DocumentModel post) throws WMWorkflowException,
-            ClientException;
+    /**
+     * Gets the text of the post at creation time.
+     */
+    String getText();
 
-    String rejectPost(DocumentModel post) throws WMWorkflowException,
-            ClientException;
+    /**
+     * Sets the text of the post at creation time.
+     */
+    void setText(String text);
+
+    /**
+     * Gets the name of the attached file of the post at creation time.
+     */
+    String getFilename();
+
+    /**
+     * Sets the name of the attached file of the post at creation time.
+     */
+    void setFilename(String filename);
+
+    /**
+     * Gets the content of the attached file of the post at creation time.
+     */
+    Blob getFileContent();
+
+    /**
+     * Sets the content of the attached file of the post at creation time.
+     */
+    void setFileContent(Blob fileContent);
 
 }

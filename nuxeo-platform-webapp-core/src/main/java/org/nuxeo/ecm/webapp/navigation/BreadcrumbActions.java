@@ -32,16 +32,8 @@ import org.nuxeo.ecm.platform.ui.web.pathelements.PathElement;
 @Local
 public interface BreadcrumbActions {
 
-    String select() throws ClientException;
-
     String navigateToParent() throws ClientException;
 
     List<PathElement> getBackendPath() throws ClientException;
-
-    /**
-     * Resets the current document list when location or user selection has
-     * been changed.
-     */
-    void clearPath();
 
 }

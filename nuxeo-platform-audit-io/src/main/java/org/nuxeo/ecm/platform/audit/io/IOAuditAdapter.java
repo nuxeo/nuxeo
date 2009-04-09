@@ -39,6 +39,7 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.io.DocumentTranslationMap;
 import org.nuxeo.ecm.platform.audit.api.AuditException;
+import org.nuxeo.ecm.platform.audit.api.AuditRuntimeException;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.api.Logs;
 import org.nuxeo.ecm.platform.audit.api.NXAuditEvents;
@@ -58,7 +59,7 @@ public class IOAuditAdapter extends AbstractIOResourceAdapter {
 
     private static final long serialVersionUID = -3661302796286246086L;
 
-    Map<String, Serializable> properties;
+    private Map<String, Serializable> properties;
 
     /**
      * Should be overridden if IOLogEntryBase is subclassed.
@@ -72,18 +73,9 @@ public class IOAuditAdapter extends AbstractIOResourceAdapter {
 
     @Override
     public void setProperties(Map<String, Serializable> properties) {
-        // TODO
-        // if (properties != null) {
-        // for (Map.Entry<String, Serializable> prop : properties.entrySet()) {
-        // String propName = prop.getKey();
-        // Serializable propValue = prop.getValue();
-        // }
-        // } else {
-        // log.warn("no props");
-        // }
     }
 
-    protected static CoreSession getCoreSession(String repo) throws Exception {
+    protected static CoreSession getCoreSession(String repo) throws ClientException {
         CoreSession coreSession;
         try {
             Framework.login();
@@ -99,7 +91,7 @@ public class IOAuditAdapter extends AbstractIOResourceAdapter {
         return coreSession;
     }
 
-    protected static Logs getLogService() throws Exception {
+    protected static Logs getLogService() throws AuditException {
         Logs logService;
         try {
             logService = Framework.getService(Logs.class);
@@ -163,7 +155,6 @@ public class IOAuditAdapter extends AbstractIOResourceAdapter {
             return;
         }
         IOAuditResources auditResources = (IOAuditResources) resources;
-        IOLogEntryBase helper = getLogEntryHelper();
 
         List<LogEntry> logEntries = new ArrayList<LogEntry>();
 
@@ -175,22 +166,19 @@ public class IOAuditAdapter extends AbstractIOResourceAdapter {
         }
 
         try {
-            helper.write(logEntries, out);
+            IOLogEntryBase.write(logEntries, out);
         } catch (IOException e) {
-            log.error(e);
+            throw new AuditRuntimeException("Cannot write logs", e);
         }
     }
 
     @Override
     public IOResources loadResourcesFromXML(InputStream stream) {
-
-        IOLogEntryBase logEntriesHelper = getLogEntryHelper();
         List<LogEntry> allEntries;
         try {
-            allEntries = logEntriesHelper.read(stream);
+            allEntries = IOLogEntryBase.read(stream);
         } catch (IOException e) {
-            log.error(e);
-            return null;
+            throw new AuditRuntimeException("Cannot read entries from " + stream);
         }
 
         // will put each log entry to its correspondent document ref
@@ -216,25 +204,20 @@ public class IOAuditAdapter extends AbstractIOResourceAdapter {
         }
 
         IOAuditResources auditResources = (IOAuditResources) newResources;
-
         Map<DocumentRef, List<LogEntry>> docLogs = auditResources.getLogsMap();
-
         try {
             for (Map.Entry<DocumentRef, List<LogEntry>> mapEntry : docLogs.entrySet()) {
 
                 DocumentRef docRef = mapEntry.getKey();
-
                 List<LogEntry> logs = mapEntry.getValue();
 
                 // need to set the given docRef - so transfer with the help of
                 // IOLogEntryBase (subclass eventually)
-                IOLogEntryBase helper = getLogEntryHelper();
-                List<LogEntry> newLogs = helper.translate(logs, docRef);
-
+                List<LogEntry> newLogs = IOLogEntryBase.translate(logs, docRef);
                 getLogService().addLogEntries(newLogs);
             }
         } catch (Exception e) {
-            log.error(e);
+            throw new AuditRuntimeException("Cannot store log entries for " + newResources, e);
         }
     }
 
@@ -249,27 +232,27 @@ public class IOAuditAdapter extends AbstractIOResourceAdapter {
         }
 
         IOAuditResources auditResources = (IOAuditResources) resources;
-
         Map<DocumentRef, List<LogEntry>> newResourcesMap = new HashMap<DocumentRef, List<LogEntry>>();
 
         for (Map.Entry<DocumentRef, List<LogEntry>> entry : auditResources.getLogsMap().entrySet()) {
             DocumentRef oldRef = entry.getKey();
             DocumentRef newRef = map.getDocRefMap().get(oldRef);
             if (newRef == null) {
-                log.error("newRef does not exist in translation map for "
-                        + oldRef);
+                if (log.isErrorEnabled()) {
+                    log.error("newRef does not exist in translation map for "
+                            + oldRef);
+                }
                 continue;
             }
             List<LogEntry> docLogs = auditResources.getDocumentLogs(oldRef);
 
             // need to set the given docRef - so transfer with the help of
             // IOLogEntryBase (subclass eventually)
-            IOLogEntryBase helper = getLogEntryHelper();
-            List<LogEntry> newLogs = helper.translate(docLogs, newRef);
-
+            List<LogEntry> newLogs = IOLogEntryBase.translate(docLogs, newRef);
             newResourcesMap.put(newRef, newLogs);
         }
 
         return new IOAuditResources(newResourcesMap);
     }
+
 }

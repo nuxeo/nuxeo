@@ -42,11 +42,9 @@ public interface IndexableResourceFactory extends Serializable {
 
     /**
      * Returns an empty indexable resource instance.
-     *
      * <p>
      * Useful for complete computations of indexable resources outside of the
      * factory.
-     * </p>
      *
      * @return an empty indexable resource instance.
      */
@@ -55,32 +53,27 @@ public interface IndexableResourceFactory extends Serializable {
     /**
      * Returns an indexable resource instance given a target object needed by
      * the resource along with its configuration.
-     *
      * <p>
      * For instance it could be a document model or log entry id or still a
      * relation.
-     * </p>
      *
-     * @param conf : the bound indexable resource configuration.
-     * @param sid : optional Nuxeo Core session id. (XXX should be removed from
+     * @param conf the bound indexable resource configuration.
+     * @param sid optional Nuxeo Core session id. (XXX should be removed from
      *            the signature)
-     * @param targetResource : the target object on which the indexable resource
+     * @param targetResource the target object on which the indexable resource
      *            applies.
      * @return an indexable resource instance.
-     * @throws IndexingException
      */
     IndexableResource createIndexableResourceFrom(Serializable targetResource,
-            IndexableResourceConf conf, String sid) throws IndexingException;
+            IndexableResourceConf conf, String sid);
 
     /**
      * Resolves an indexable resource instance.
-     *
      * <p>
      * Note the indexable resource instance contains the configuration and the
      * target object on which it applies.
-     * </p>
      *
-     * @param resource : the indexable resource instance.
+     * @param resource the indexable resource instance.
      *
      * @return a resolved indexable resource instance.
      * @throws IndexingException
@@ -93,8 +86,8 @@ public interface IndexableResourceFactory extends Serializable {
      *
      * @param targetResource the target object on which the indexable resource
      *            applies.
-     * @param conf : the indexable resource configuration
-     * @param sid : optional Nuxeo Core session id. (XXX should be removed from
+     * @param conf the indexable resource configuration
+     * @param sid optional Nuxeo Core session id. (XXX should be removed from
      *            the signature)
      * @return a resolved indexable resource instance.
      * @throws IndexingException
@@ -107,8 +100,8 @@ public interface IndexableResourceFactory extends Serializable {
      *
      * @param targetResource the target object on which the indexable resource
      *            applies.
-     * @param conf : the indexable resource configuration
-     * @param sid : optional Nuxeo Core session id. (XXX should be removed from
+     * @param conf the indexable resource configuration
+     * @param sid optional Nuxeo Core session id. (XXX should be removed from
      *            the signature)
      * @return a resolved indexable resource instance.
      * @throws IndexingException
@@ -119,32 +112,26 @@ public interface IndexableResourceFactory extends Serializable {
     /**
      * Resolves an indexable resources and returns an aggregated resolved
      * resources instances.
-     *
      * <p>
      * The idea here is to simplify the generations of aggregated resources when
      * only one indexable resource is involved.
-     * </p>
      *
-     * @param resource : an indexable resource instance.
+     * @param resource an indexable resource instance.
      * @return a resolved indexable resource instance.
-     * @throws IndexingException
      */
-    ResolvedResources resolveResourcesFor(IndexableResource resource)
-            throws IndexingException;
+    ResolvedResources resolveResourcesFor(IndexableResource resource);
 
     /**
      * Resolves an indexable resources and returns an aggregated resolved
      * resources instances.
-     *
      * <p>
      * The idea here is to simplify the generations of aggregated resources when
      * only one indexable resource is involved.
-     * </p>
      *
      * @param targetResource the target object on which the indexable resource
      *            applies.
-     * @param conf : the indexable resource configuration
-     * @param sid : optional Nuxeo Core session id. (XXX should be removed from
+     * @param conf the indexable resource configuration
+     * @param sid optional Nuxeo Core session id. (XXX should be removed from
      *            the signature)
      * @return a resolved indexable resource instance.
      * @throws IndexingException

@@ -108,7 +108,7 @@ public class SQLHelper {
 
             if (dataFileName == null) {
                 // no dataFile found, do not try to execute it
-                log.warn(String.format("Table '%s': no data file found",
+                log.debug(String.format("Table '%s': no data file found",
                         tableName));
                 return true;
             }
@@ -139,7 +139,7 @@ public class SQLHelper {
         }
     }
 
-    public boolean hasMatchingColumns() throws DirectoryException {
+    public boolean hasMatchingColumns() {
         ResultSet rs = null;
         String tableName = this.tableName;
         try {

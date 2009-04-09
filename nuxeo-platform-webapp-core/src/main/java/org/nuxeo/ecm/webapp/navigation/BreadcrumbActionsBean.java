@@ -35,7 +35,7 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
-import org.jboss.seam.core.Pages;
+import org.jboss.seam.navigation.Pages;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -77,7 +77,7 @@ public class BreadcrumbActionsBean implements BreadcrumbActions {
     private static final Log log = LogFactory.getLog(BreadcrumbActionsBean.class);
 
     @In(create = true)
-    transient NavigationContext navigationContext;
+    NavigationContext navigationContext;
 
     @In(create = true, required = false)
     private CoreSession documentManager;
@@ -148,26 +148,6 @@ public class BreadcrumbActionsBean implements BreadcrumbActions {
             return navigationContext.navigateToDocument(currentDoc);
         }
         return null;
-    }
-
-    /**
-     * This gets called when the user selects a document from the list of
-     * documents that form the breadcrumb.
-     *
-     * @return the page that is going to be displayed next
-     * @throws ClientException
-     * @deprecated templates should use restful links instead
-     */
-    @Deprecated
-    public String select() throws ClientException {
-        return "";
-    }
-
-    @Deprecated
-    /*@Observer(value = { EventNames.LOCATION_SELECTION_CHANGED,
-            EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED,
-            EventNames.GO_HOME }, create = false)*/
-    public void clearPath() {
     }
 
     /**

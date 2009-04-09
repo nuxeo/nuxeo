@@ -31,7 +31,7 @@ import org.nuxeo.runtime.model.RuntimeContext;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
- * @deprecated use {@link Framework} API instead
+ * @deprecated use {@link Framework} API instead - Remove in 5.2.
  */
 @SuppressWarnings({"ALL"})
 @Deprecated
@@ -57,16 +57,10 @@ public class PlatformService extends DefaultComponent {
         return instance;
     }
 
-    /**
-     * @return the context.
-     */
     public RuntimeContext getContext() {
         return context;
     }
 
-    /**
-     * @return the platform.
-     */
     public Platform getPlatform() {
         return platform;
     }
@@ -76,7 +70,7 @@ public class PlatformService extends DefaultComponent {
         this.context = context.getRuntimeContext();
         String name = (String) context.getPropertyValue("platform-name");
         platform = new Platform(name);
-        ECM.setPlatform(platform);
+        //ECM.setPlatform(platform);
     }
 
     @Override

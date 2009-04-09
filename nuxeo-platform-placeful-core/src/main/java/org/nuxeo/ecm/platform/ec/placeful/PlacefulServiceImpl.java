@@ -19,11 +19,17 @@
 package org.nuxeo.ecm.platform.ec.placeful;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+
 import org.nuxeo.ecm.platform.ec.placeful.interfaces.PlacefulService;
+import org.nuxeo.ecm.platform.ec.placeful.service.ContainerManagedHibernateConfiguration;
+import org.nuxeo.ecm.platform.ec.placeful.service.PersistenceProvider;
+import org.nuxeo.ecm.platform.ec.placeful.service.PersistenceProvider.RunCallback;
+import org.nuxeo.ecm.platform.ec.placeful.service.PersistenceProvider.RunVoid;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.Extension;
@@ -32,12 +38,14 @@ import org.nuxeo.runtime.model.Extension;
  *
  * @author <a href="mailto:rspivak@nuxeo.com">Ruslan Spivak</a>
  */
-public class PlacefulServiceImpl extends DefaultComponent implements PlacefulService {
-
-    private static final Log log = LogFactory.getLog(PlacefulServiceImpl.class);
+public class PlacefulServiceImpl extends DefaultComponent implements
+        PlacefulService {
 
     private Map<String, String> registry;
 
+    public static final PersistenceProvider persistenceProvider = new PersistenceProvider(
+            new ContainerManagedHibernateConfiguration(
+                    "jdbc/placeful_service_ds"));
 
     @Override
     public void activate(ComponentContext context) {
@@ -55,8 +63,10 @@ public class PlacefulServiceImpl extends DefaultComponent implements PlacefulSer
         for (Object contrib : contribs) {
             AnnotationDescriptor descriptor = (AnnotationDescriptor) contrib;
             for (String className : descriptor.getClassNames()) {
-                String unqualifiedName = className.substring(className.lastIndexOf('.') + 1);
+                String unqualifiedName = className.substring(className
+                        .lastIndexOf('.') + 1);
                 registry.put(unqualifiedName, className);
+                persistenceProvider.addAnnotedClass(className);
             }
         }
     }
@@ -67,8 +77,10 @@ public class PlacefulServiceImpl extends DefaultComponent implements PlacefulSer
         for (Object contrib : contribs) {
             AnnotationDescriptor descriptor = (AnnotationDescriptor) contrib;
             for (String className : descriptor.getClassNames()) {
-                String unqualifiedName = className.substring(className.lastIndexOf('.') + 1);
+                String unqualifiedName = className.substring(className
+                        .lastIndexOf('.') + 1);
                 registry.remove(unqualifiedName);
+                persistenceProvider.removeAnnotedClass(className);
             }
         }
     }
@@ -76,5 +88,138 @@ public class PlacefulServiceImpl extends DefaultComponent implements PlacefulSer
     public Map<String, String> getAnnotationRegistry() {
         return registry;
     }
+
+    public Annotation getAnnotation(EntityManager em, String id, String name) {
+        String className = registry.get(name);
+        String shortClassName = className
+                .substring(className.lastIndexOf('.') + 1);
+        Query query = em
+                .createQuery("FROM " + shortClassName + " WHERE id=:id");
+        query.setParameter("id", id);
+        return (Annotation) query.getSingleResult();
+    }
+
+    public List<Annotation> getAllAnnotations(EntityManager em, String name) {
+        String className = registry.get(name);
+        String shortClassName = className
+                .substring(className.lastIndexOf('.') + 1);
+        Query query = em.createQuery("FROM " + shortClassName);
+        return query.getResultList();
+    }
+
+    public List<Annotation> getAllAnnotations(final String name) {
+        return persistenceProvider.run(false,
+                new RunCallback<List<Annotation>>() {
+                    public List<Annotation> runWith(EntityManager em) {
+                        return getAllAnnotations(em, name);
+                    }
+                });
+    }
+
+    public Annotation getAnnotation(final String uuid, final String name) {
+        return persistenceProvider.run(false, new RunCallback<Annotation>() {
+            public Annotation runWith(EntityManager em) {
+                return getAnnotation(em, uuid, name);
+            }
+
+        });
+    }
+
+    public List<Annotation> getAnnotationListByParamMap(EntityManager em,
+            Map<String, Object> paramMap, String name) {
+        String className = registry.get(name);
+        String shortClassName = className
+                .substring(className.lastIndexOf('.') + 1);
+        StringBuilder queryString = new StringBuilder("FROM " + shortClassName);
+        if (paramMap != null && !paramMap.isEmpty()) {
+            queryString.append(" WHERE ");
+            int size = paramMap.size();
+            int index = 1;
+            for (String key : paramMap.keySet()) {
+                queryString.append(key + "=:" + key);
+                if (index != size) {
+                    queryString.append(" and ");
+                }
+                index++;
+            }
+        }
+        Query query = em.createQuery(queryString.toString());
+
+        if (paramMap != null && !paramMap.isEmpty()) {
+            for (String key : paramMap.keySet()) {
+                query.setParameter(key, paramMap.get(key));
+            }
+        }
+
+        return query.getResultList();
+    }
+
+    public List<Annotation> getAnnotationListByParamMap(
+            final Map<String, Object> paramMap, final String name) {
+        return persistenceProvider.run(false,
+                new RunCallback<List<Annotation>>() {
+                    public List<Annotation> runWith(EntityManager em) {
+                        return getAnnotationListByParamMap(em, paramMap, name);
+                    }
+
+                });
+    }
+
+    public void removeAnnotationListByParamMap(EntityManager em,
+            Map<String, Object> paramMap, String name) {
+
+        List<Annotation> annotationsToRemove = getAnnotationListByParamMap(em,
+                paramMap, name);
+        if (annotationsToRemove != null && !annotationsToRemove.isEmpty()) {
+            for (Annotation anno : annotationsToRemove) {
+                if (anno != null) {
+                    em.remove(anno);
+                }
+            }
+        }
+    }
+
+    public void removeAnnotationListByParamMap(
+            final Map<String, Object> paramMap, final String name) {
+        persistenceProvider.run(true, new RunVoid() {
+            public void runWith(EntityManager em) {
+                removeAnnotationListByParamMap(em, paramMap, name);
+            }
+
+        });
+    }
+
+    public void setAnnotation(EntityManager em, Annotation annotation) {
+        em.persist(annotation);
+    }
+
+    public void setAnnotation(final Annotation annotation) {
+        persistenceProvider.run(true, new RunVoid() {
+            public void runWith(EntityManager em) {
+                setAnnotation(em, annotation);
+            }
+
+        });
+    }
+
+    public void removeAnnotation(EntityManager em, Annotation annotation) {
+        em.remove(annotation);
+    }
+
+    public void removeAnnotation(final Annotation annotation) {
+        persistenceProvider.run(true, new RunVoid() {
+            public void runWith(EntityManager em) {
+                removeAnnotation(em, annotation);
+            }
+        });
+    }
+
+    // protected void doRegisterHibernateOptions(HibernateOptionsDescriptor
+    // desc) {
+    // if (log.isDebugEnabled())
+    // log.debug("Registered hibernate datasource : "
+    // + desc.getDatasource());
+    // hibernateConfiguration.setDescriptor(desc);
+    // }
 
 }

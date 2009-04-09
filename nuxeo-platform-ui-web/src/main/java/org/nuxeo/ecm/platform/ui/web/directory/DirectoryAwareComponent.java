@@ -91,14 +91,13 @@ public abstract class DirectoryAwareComponent extends UIInput {
         } else {
             return defaultValue;
         }
-
     }
 
     protected Boolean getBooleanValue(String name, boolean defaultValue) {
         ValueExpression ve = getValueExpression(name);
         if (ve != null) {
             try {
-                return (!Boolean.FALSE.equals(ve.getValue(getFacesContext().getELContext())));
+                return !Boolean.FALSE.equals(ve.getValue(getFacesContext().getELContext()));
             } catch (ELException e) {
                 throw new FacesException(e);
             }
@@ -350,6 +349,7 @@ public abstract class DirectoryAwareComponent extends UIInput {
         return values;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void restoreState(FacesContext context, Object state) {
         Object[] values = (Object[]) state;
@@ -372,7 +372,6 @@ public abstract class DirectoryAwareComponent extends UIInput {
         caseSensitive = (Boolean) values[16];
     }
 
-    @SuppressWarnings("unchecked")
     public Boolean getBooleanProperty(String key, Boolean defaultValue) {
         Map<String, Object> map = getAttributes();
         Boolean value = (Boolean) map.get(key);
@@ -382,7 +381,6 @@ public abstract class DirectoryAwareComponent extends UIInput {
         return value;
     }
 
-    @SuppressWarnings("unchecked")
     public String getStringProperty(String key, String defaultValue) {
         Map<String, Object> map = getAttributes();
         String value = (String) map.get(key);

@@ -39,9 +39,10 @@ import org.restlet.data.Response;
 public class UpdateDocumentRestlet extends BaseStatelessNuxeoRestlet implements
         LiveEditConstants {
 
-    private Log log = LogFactory.getLog(UpdateDocumentRestlet.class);
+    private static final Log log = LogFactory.getLog(UpdateDocumentRestlet.class);
+
     @Override
-    public void handle(Request req, Response res) {
+    protected void doHandleStatelessRequest(Request req, Response res) {
         String repoId = (String) req.getAttributes().get("repo");
         String docId = (String) req.getAttributes().get("docid");
 
@@ -56,7 +57,6 @@ public class UpdateDocumentRestlet extends BaseStatelessNuxeoRestlet implements
         }
 
         try {
-
             Form queryParameters = req.getResourceRef().getQueryAsForm();
             for (String paramName : queryParameters.getNames()) {
                 if (!DOC_TYPE.equals(paramName)) {
@@ -78,4 +78,5 @@ public class UpdateDocumentRestlet extends BaseStatelessNuxeoRestlet implements
             handleError(res, e);
         }
     }
+
 }

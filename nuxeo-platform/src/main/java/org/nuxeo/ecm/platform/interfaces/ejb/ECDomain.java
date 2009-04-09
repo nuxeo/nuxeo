@@ -21,36 +21,33 @@ package org.nuxeo.ecm.platform.interfaces.ejb;
 
 import java.util.List;
 
-import javax.ejb.Remote;
+import javax.ejb.Remove;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.util.ECInvalidParameterException;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
 
 /**
  * Domain-specific operations. Usually one can obtain workspaces using it.
  *
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
- *
  */
-@Remote
 public interface ECDomain {
-    @Deprecated
+
+    /**
+     * Removes the instance from the container once the client has no more
+     * business with it.
+     *
+     */
+    @Remove
     void remove();
 
     /**
      * Returns the {@link DocumentModel}s available in the passed
      * {@link RepositoryLocation} that are domains.
-     *
-     * @return
-     * @throws ECInvalidParameterException
-     * @throws ClientException
-     * @throws NoSuchRepositoryException
-     * @throws DocumentException
      */
     List<DocumentModel> getDomains(CoreSession handle)
-            throws ECInvalidParameterException, ClientException;
+            throws ClientException;
+
 }

@@ -27,6 +27,8 @@ import javax.persistence.Persistence;
 
 import junit.framework.TestCase;
 
+import org.nuxeo.ecm.platform.ec.placeful.PlacefulServiceImpl;
+import org.nuxeo.ecm.platform.ec.placeful.SubscriptionConfig;
 import org.nuxeo.ecm.platform.ec.placeful.interfaces.PlacefulService;
 
 /**
@@ -51,10 +53,11 @@ public class PlacefulServiceTest extends TestCase {
         em = emf.createEntityManager();
         createTestData();
 
-        service = new PlacefulService() {
+        service = new PlacefulServiceImpl() {
             public Map<String, String> getAnnotationRegistry() {
                 Map<String, String> registry = new HashMap<String, String>();
-                registry.put(ANNOTATION_NAME, "org.nuxeo.ecm.platform.ec.placeful.SubscriptionConfig");
+                registry.put(ANNOTATION_NAME,
+                        "org.nuxeo.ecm.platform.ec.placeful.SubscriptionConfig");
                 return registry;
             }
         };
@@ -91,9 +94,11 @@ public class PlacefulServiceTest extends TestCase {
 
     public void testGetAnnotation() throws Exception {
         PlacefulServiceBean serviceBean = new PlacefulServiceBean();
+
         serviceBean.em = em;
-        serviceBean.service = service;
-        SubscriptionConfig annotation = (SubscriptionConfig) serviceBean.getAnnotation(ID, ANNOTATION_NAME);
+        serviceBean.service = (PlacefulServiceImpl) service;
+        SubscriptionConfig annotation = (SubscriptionConfig) serviceBean
+                .getAnnotation(ID, ANNOTATION_NAME);
         assertNotNull(annotation);
         assertEquals(ID, annotation.getId());
         assertEquals(EVENT, annotation.getEvent());
@@ -102,18 +107,20 @@ public class PlacefulServiceTest extends TestCase {
     public void testSetAnnotation() throws Exception {
         PlacefulServiceBean serviceBean = new PlacefulServiceBean();
         serviceBean.em = em;
-        serviceBean.service = service;
+        serviceBean.service = (PlacefulServiceImpl) service;
         SubscriptionConfig annotation = new SubscriptionConfig();
         annotation.setId(ID_1);
         annotation.setEvent(EVENT_1);
 
         em.getTransaction().begin();
         serviceBean.setAnnotation(annotation);
-        annotation = (SubscriptionConfig) serviceBean.getAnnotation(ID_1, ANNOTATION_NAME);
+        annotation = (SubscriptionConfig) serviceBean.getAnnotation(ID_1,
+                ANNOTATION_NAME);
         em.getTransaction().rollback();
 
         assertNotNull(annotation);
         assertEquals(ID_1, annotation.getId());
         assertEquals(EVENT_1, annotation.getEvent());
     }
+
 }

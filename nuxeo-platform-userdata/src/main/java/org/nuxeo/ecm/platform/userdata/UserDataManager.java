@@ -50,23 +50,10 @@ public class UserDataManager {
     public static final String USER_DATA_ROOT = "UserDatas";
 
     /**
-     * @deprecated Use add(domainPath, session, username, category, docModel)
-     * instead. See NXP-1617
-     *
-     */
-    @Deprecated
-    public void add(DocumentModel domain, String username,
-            String category, DocumentModel docModel) throws ClientException {
-        String domainPath = domain.getPathAsString();
-        CoreSession session = CoreInstance.getInstance().getSession(domain.getSessionId());
-        add(domainPath, session, username, category, docModel);
-    }
-
-    /**
-     * Create a new document in the userdata area from a document model.
+     * Creates a new document in the userdata area from a document model.
      * <p>
      * The passed document model is actually copied,
-     *    since it's assumed to be transient
+     * since it's assumed to be transient
      * <p>
      * The user's data area as well as the whole <code>UserDatas</code>
      * root for this domain are created by a system session, if needed.
@@ -105,7 +92,7 @@ public class UserDataManager {
      * @return A {@link PathRef} to the user data folder.
      * @throws ClientException
      */
-    private PathRef getOrCreateUserDataFolder(String username,
+    private static PathRef getOrCreateUserDataFolder(String username,
             CoreSession session, PathRef domainRef)
             throws ClientException {
 
@@ -116,8 +103,7 @@ public class UserDataManager {
             if (session.exists(userDataRef)) {
                 return userDataRef;
             }
-        }
-        catch (ClientException e) {
+        } catch (ClientException e) {
             // Missing in some odd way or insufficient rights.
             // The code below will handle non pathological cases.
         }
@@ -139,7 +125,7 @@ public class UserDataManager {
         if (systemSession.exists(userDataRef)) {
             userDataFolder = systemSession.getDocument(userDataRef);
         } else {
-            log.info("creating " + userDataRef.toString());
+            log.debug("creating " + userDataRef.toString());
             DocumentModel dm = systemSession.createDocumentModel(
                     rootRef.toString(), username, "HiddenFolder");
             // TODO maybe put user full name as title ?
@@ -178,7 +164,7 @@ public class UserDataManager {
         // create category subfolder if needed
         PathRef pathRef = new PathRef(userDataRef.toString(), category);
         if (!session.exists(pathRef)) {
-            log.info("Creating category subfolder: " + pathRef.toString());
+            log.debug("Creating category subfolder: " + pathRef.toString());
             DocumentModel dm = session.createDocumentModel(
                     userDataRef.toString(), category, "HiddenFolder");
             dm.setProperty("dublincore", "title", category);
@@ -189,13 +175,12 @@ public class UserDataManager {
         return pathRef;
     }
 
-    private CoreSession getSystemSession(CoreSession userSession)
+    private static CoreSession getSystemSession(CoreSession userSession)
             throws ClientException {
         CoreSession systemSession;
         try {
             Framework.login();
-            RepositoryManager manager = Framework
-                    .getService(RepositoryManager.class);
+            RepositoryManager manager = Framework.getService(RepositoryManager.class);
             systemSession = manager.getRepository(
                     userSession.getRepositoryName()).open();
         } catch (Exception e) {
@@ -204,35 +189,9 @@ public class UserDataManager {
         return systemSession;
     }
 
-    /**
-     * @deprecated Use <code>remove(domainPath, session, username,
-     * category, docModel) instead. See NXP-1617
-     *
-     */
-    @Deprecated
-    public static void remove(DocumentModel domain, String username, String category,
-            DocumentModel docModel) throws ClientException {
-        String domainPath = domain.getPathAsString();
-        CoreSession session = CoreInstance.getInstance().getSession(domain.getSessionId());
-        remove(domainPath, session, username, category, docModel);
-    }
-
     public static void remove(String domainPath, CoreSession session, String username, String category,
             DocumentModel docModel) throws ClientException {
         session.removeDocument(docModel.getRef());
-    }
-
-    /**
-     * @deprecated Use <code>get(domainPath, session, username,
-     *             category) instead. See NXP-1617
-     *
-     */
-    @Deprecated
-    public static DocumentModelList get(DocumentModel domain, String username,
-            String category) throws ClientException {
-        String domainPath = domain.getPathAsString();
-        CoreSession session = CoreInstance.getInstance().getSession(domain.getSessionId());
-        return get(domainPath, session, username, category);
     }
 
     public static DocumentModelList get(String domainPath, CoreSession session,
@@ -240,18 +199,15 @@ public class UserDataManager {
         if (domainPath == null) {
             throw new IllegalArgumentException("domainPath cannot be null");
         }
-
         if (username == null) {
             throw new IllegalArgumentException("username cannot be null");
         }
-
         if (category == null) {
             throw new IllegalArgumentException("category cannot be null");
         }
 
         PathRef ref = new PathRef(domainPath);
-        String[] elements = new String[] {USER_DATA_ROOT,
-                username, category};
+        String[] elements = {USER_DATA_ROOT, username, category};
         for (String elt: elements) {
             ref = new PathRef(ref.toString(), elt);
         }

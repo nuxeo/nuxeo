@@ -27,13 +27,12 @@ import java.util.regex.Pattern;
 
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.common.utils.URIUtils;
+import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.platform.url.DocumentLocationImpl;
+import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
-import org.nuxeo.ecm.platform.url.api.DocumentLocation;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
-import org.nuxeo.ecm.platform.url.codec.api.DocumentViewCodec;
 import org.nuxeo.ecm.platform.url.service.AbstractDocumentViewCodec;
 
 /**
@@ -42,13 +41,13 @@ import org.nuxeo.ecm.platform.url.service.AbstractDocumentViewCodec;
  *
  * @author Anahide Tchertchian
  */
-public class DocumentIdCodec extends AbstractDocumentViewCodec implements
-        DocumentViewCodec {
+public class DocumentIdCodec extends AbstractDocumentViewCodec {
 
     public static final String PREFIX = "nxdoc";
 
     // nxdoc/server/docId/view_id/?requestParams
-    public static final String URLPattern = "/(\\w+)/([a-zA-Z_0-9\\-]+)(/([a-zA-Z_0-9\\-\\.]*))?(/)?(\\?(.*)?)?";
+    public static final String URLPattern
+            = "/(\\w+)/([a-zA-Z_0-9\\-]+)(/([a-zA-Z_0-9\\-\\.]*))?(/)?(\\?(.*)?)?";
 
     public DocumentIdCodec() {
     }

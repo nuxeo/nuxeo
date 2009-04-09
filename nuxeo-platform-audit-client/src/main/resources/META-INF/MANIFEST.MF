@@ -3,7 +3,8 @@ Bundle-ManifestVersion: 1
 Bundle-Name: Nuxeo ECM Audit Web Fragment
 Bundle-SymbolicName: org.nuxeo.ecm.platform.audit.web;singleton:=true
 Bundle-Category: web,stateless
-Require-Bundle: org.nuxeo.ecm.actions,
+Require-Bundle: org.nuxeo.ecm.platform,
+ org.nuxeo.ecm.actions,
  org.nuxeo.ecm.platform.audit.api,
  org.nuxeo.ecm.webapp.core
 Provide-Package: org.nuxeo.ecm.platform.audit.web,

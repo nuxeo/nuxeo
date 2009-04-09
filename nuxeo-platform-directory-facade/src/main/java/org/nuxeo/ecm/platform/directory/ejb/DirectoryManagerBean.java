@@ -30,8 +30,6 @@ import javax.ejb.Local;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.directory.Directory;
@@ -45,7 +43,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Facade Bean provide Remoting API for DirectoryService
- * 
+ *
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
  * @author <a href="mailto:ogrisel@nuxeo.com">Olivier Grisel</a>
  */
@@ -53,9 +51,6 @@ import org.nuxeo.runtime.api.Framework;
 @Remote(DirectoryManager.class)
 @Local(DirectoryManager.class)
 public class DirectoryManagerBean implements DirectoryManager {
-	
-    @SuppressWarnings("unused")
-	private static final Log log = LogFactory.getLog(DirectoryManagerBean.class);
 
     private static final Map<Long, Session> sessionMap = new ConcurrentHashMap<Long, Session>();
 
@@ -63,7 +58,7 @@ public class DirectoryManagerBean implements DirectoryManager {
 
     private static final AtomicLong sessionIdCounter = new AtomicLong(0);
 
-    private transient DirectoryService directoryService;
+    private DirectoryService directoryService;
 
     @PostConstruct
     public void initialize() {
@@ -96,7 +91,7 @@ public class DirectoryManagerBean implements DirectoryManager {
         try {
             return getSession(sessionId).authenticate(username, password);
         } catch (Throwable e) {
-            throw EJBExceptionHandler.wrapException(e);
+            throw DirectoryException.wrap(e);
         }
     }
 
@@ -106,7 +101,7 @@ public class DirectoryManagerBean implements DirectoryManager {
             sessionMap.remove(sessionId);
             sessionDirectoryNames.remove(sessionId);
         } catch (Throwable e) {
-            throw EJBExceptionHandler.wrapException(e);
+            throw DirectoryException.wrap(e);
         }
     }
 
@@ -114,7 +109,7 @@ public class DirectoryManagerBean implements DirectoryManager {
         try {
             getSession(sessionId).commit();
         } catch (Throwable e) {
-            throw EJBExceptionHandler.wrapException(e);
+            throw DirectoryException.wrap(e);
         }
     }
 
@@ -123,7 +118,7 @@ public class DirectoryManagerBean implements DirectoryManager {
         try {
             return getSession(sessionId).createEntry(map);
         } catch (Throwable e) {
-            throw EJBExceptionHandler.wrapException(e);
+            throw DirectoryException.wrap(e);
         }
     }
 
@@ -132,16 +127,16 @@ public class DirectoryManagerBean implements DirectoryManager {
         try {
             getSession(sessionId).deleteEntry(docModel);
         } catch (Throwable e) {
-            throw EJBExceptionHandler.wrapException(e);
+            throw DirectoryException.wrap(e);
         }
     }
 
-    public void deleteEntry(long sessionId, String id) throws
-            DirectoryException {
+    public void deleteEntry(long sessionId, String id)
+            throws DirectoryException {
         try {
             getSession(sessionId).deleteEntry(id);
         } catch (Throwable e) {
-            throw EJBExceptionHandler.wrapException(e);
+            throw DirectoryException.wrap(e);
         }
     }
 
@@ -150,15 +145,16 @@ public class DirectoryManagerBean implements DirectoryManager {
         try {
             getSession(sessionId).deleteEntry(id, map);
         } catch (Throwable e) {
-            throw EJBExceptionHandler.wrapException(e);
+            throw DirectoryException.wrap(e);
         }
     }
 
-    public DocumentModelList getEntries(long sessionId) throws DirectoryException {
+    public DocumentModelList getEntries(long sessionId)
+            throws DirectoryException {
         try {
             return getSession(sessionId).getEntries();
         } catch (Throwable e) {
-            throw EJBExceptionHandler.wrapException(e);
+            throw DirectoryException.wrap(e);
         }
     }
 
@@ -167,7 +163,16 @@ public class DirectoryManagerBean implements DirectoryManager {
         try {
             return getSession(sessionId).getEntry(id);
         } catch (Throwable e) {
-            throw EJBExceptionHandler.wrapException(e);
+            throw DirectoryException.wrap(e);
+        }
+    }
+
+    public DocumentModel getEntry(long sessionId, String id,
+            boolean fetchReferences) throws DirectoryException {
+        try {
+            return getSession(sessionId).getEntry(id, fetchReferences);
+        } catch (Throwable e) {
+            throw DirectoryException.wrap(e);
         }
     }
 
@@ -175,7 +180,7 @@ public class DirectoryManagerBean implements DirectoryManager {
         try {
             return getSession(sessionId).getIdField();
         } catch (Throwable e) {
-            throw EJBExceptionHandler.wrapException(e);
+            throw DirectoryException.wrap(e);
         }
     }
 
@@ -183,7 +188,7 @@ public class DirectoryManagerBean implements DirectoryManager {
         try {
             return getSession(sessionId).getPasswordField();
         } catch (Throwable e) {
-            throw EJBExceptionHandler.wrapException(e);
+            throw DirectoryException.wrap(e);
         }
     }
 
@@ -193,7 +198,7 @@ public class DirectoryManagerBean implements DirectoryManager {
         try {
             return getSession(sessionId).getProjection(filter, columnName);
         } catch (Throwable e) {
-            throw EJBExceptionHandler.wrapException(e);
+            throw DirectoryException.wrap(e);
         }
     }
 
@@ -204,7 +209,7 @@ public class DirectoryManagerBean implements DirectoryManager {
             return getSession(sessionId).getProjection(filter, fulltext,
                     columnName);
         } catch (Throwable e) {
-            throw EJBExceptionHandler.wrapException(e);
+            throw DirectoryException.wrap(e);
         }
     }
 
@@ -212,7 +217,7 @@ public class DirectoryManagerBean implements DirectoryManager {
         try {
             return getSession(sessionId).isAuthenticating();
         } catch (Throwable e) {
-            throw EJBExceptionHandler.wrapException(e);
+            throw DirectoryException.wrap(e);
         }
     }
 
@@ -220,7 +225,7 @@ public class DirectoryManagerBean implements DirectoryManager {
         try {
             return getSession(sessionId).isReadOnly();
         } catch (Throwable e) {
-            throw EJBExceptionHandler.wrapException(e);
+            throw DirectoryException.wrap(e);
         }
     }
 
@@ -229,7 +234,7 @@ public class DirectoryManagerBean implements DirectoryManager {
         try {
             return getSession(sessionId).query(filter);
         } catch (Throwable e) {
-            throw EJBExceptionHandler.wrapException(e);
+            throw DirectoryException.wrap(e);
         }
     }
 
@@ -238,7 +243,7 @@ public class DirectoryManagerBean implements DirectoryManager {
         try {
             return getSession(sessionId).query(filter, fulltext);
         } catch (Throwable e) {
-            throw EJBExceptionHandler.wrapException(e);
+            throw DirectoryException.wrap(e);
         }
     }
 
@@ -248,7 +253,18 @@ public class DirectoryManagerBean implements DirectoryManager {
         try {
             return getSession(sessionId).query(filter, fulltext, orderBy);
         } catch (Throwable e) {
-            throw EJBExceptionHandler.wrapException(e);
+            throw DirectoryException.wrap(e);
+        }
+    }
+
+    public DocumentModelList query(long sessionId, Map<String, Object> filter,
+            Set<String> fulltext, Map<String, String> orderBy,
+            boolean fetchReferences) throws DirectoryException {
+        try {
+            return getSession(sessionId).query(filter, fulltext, orderBy,
+                    fetchReferences);
+        } catch (Throwable e) {
+            throw DirectoryException.wrap(e);
         }
     }
 
@@ -256,7 +272,7 @@ public class DirectoryManagerBean implements DirectoryManager {
         try {
             getSession(sessionId).rollback();
         } catch (Throwable e) {
-            throw EJBExceptionHandler.wrapException(e);
+            throw DirectoryException.wrap(e);
         }
     }
 
@@ -265,7 +281,7 @@ public class DirectoryManagerBean implements DirectoryManager {
         try {
             getSession(sessionId).updateEntry(docModel);
         } catch (Throwable e) {
-            throw EJBExceptionHandler.wrapException(e);
+            throw DirectoryException.wrap(e);
         }
     }
 
@@ -273,7 +289,7 @@ public class DirectoryManagerBean implements DirectoryManager {
         try {
             return getService().getDirectoryNames();
         } catch (Throwable e) {
-            throw EJBExceptionHandler.wrapException(e);
+            throw DirectoryException.wrap(e);
         }
     }
 
@@ -282,7 +298,7 @@ public class DirectoryManagerBean implements DirectoryManager {
         try {
             return getService().getDirectorySchema(directoryName);
         } catch (Throwable e) {
-            throw EJBExceptionHandler.wrapException(e);
+            throw DirectoryException.wrap(e);
         }
     }
 
@@ -294,7 +310,7 @@ public class DirectoryManagerBean implements DirectoryManager {
             sessionDirectoryNames.put(id, directoryName);
             return new DirectoryClientImpl(id);
         } catch (Throwable e) {
-            throw EJBExceptionHandler.wrapException(e);
+            throw DirectoryException.wrap(e);
         }
     }
 
@@ -328,6 +344,24 @@ public class DirectoryManagerBean implements DirectoryManager {
     public String getParentDirectoryName(String directoryName)
             throws DirectoryException {
         return getService().getParentDirectoryName(directoryName);
+    }
+
+    public DocumentModel createEntry(long sessionId, DocumentModel entry)
+            throws DirectoryException {
+        try {
+            return getSession(sessionId).createEntry(entry);
+        } catch (Throwable e) {
+            throw DirectoryException.wrap(e);
+        }
+    }
+
+    public boolean hasEntry(long sessionId, String id)
+            throws DirectoryException {
+        try {
+            return getSession(sessionId).hasEntry(id);
+        } catch (Throwable e) {
+            throw DirectoryException.wrap(e);
+        }
     }
 
 }

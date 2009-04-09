@@ -1,5 +1,4 @@
 <?xml version="1.0"?>
-
 <component name="org.nuxeo.ecm.platform.relations.services.RelationService">
 
   <implementation
@@ -8,14 +7,6 @@
   <service>
     <provide interface="org.nuxeo.ecm.platform.relations.api.RelationManager" />
   </service>
-
-  <extension target="org.nuxeo.ecm.platform.api.PlatformService"
-    point="servers">
-    <server name="default">
-      <service class="org.nuxeo.ecm.platform.relations.api.RelationManager"
-        jndiName="%RelationManagerBean" />
-    </server>
-  </extension>
 
   <extension-point name="graphtypes">
     <object

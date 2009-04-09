@@ -22,30 +22,27 @@ package org.nuxeo.ecm.directory;
 import java.util.List;
 
 /**
- * Base interface for references between directory fields
- *
+ * Base interface for references between directory fields.
+ * <p>
  * References are used to leverage SQL joins or attributes that store a list of
  * distinguished names in LDAP servers (e.g. uniqueMember).
- *
+ * <p>
  * In nuxeo directories, references are special entry fields that are string
  * list of entry ids of a target directory.
  *
  * @author ogrisel
- *
  */
 public interface Reference {
 
-    String getFieldName() throws DirectoryException;
+    String getFieldName();
 
     Directory getSourceDirectory() throws DirectoryException;
 
-    void setSourceDirectoryName(String sourceDirectoryName)
-            throws DirectoryException;
+    void setSourceDirectoryName(String sourceDirectoryName);
 
     Directory getTargetDirectory() throws DirectoryException;
 
-    void setTargetDirectoryName(String targetDirectoryName)
-            throws DirectoryException;
+    void setTargetDirectoryName(String targetDirectoryName);
 
     void addLinks(String sourceId, List<String> targetIds)
             throws DirectoryException;

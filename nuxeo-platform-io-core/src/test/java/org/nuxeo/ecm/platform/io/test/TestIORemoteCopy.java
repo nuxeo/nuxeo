@@ -53,7 +53,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
  * A test/sample class for remote copying of documents and resources.
- *
+ * <p>
  * Warning : this test is deactivated from autorun unit tests as it needs a particular configuration
  *
  * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
@@ -78,7 +78,7 @@ public class TestIORemoteCopy extends NXRuntimeTestCase {
     protected IOManager ioService;
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
 
         System.setProperty("org.nuxeo.runtime.streaming.isServer", "false");
         System.setProperty("org.nuxeo.runtime.server.port", "62475");
@@ -89,10 +89,9 @@ public class TestIORemoteCopy extends NXRuntimeTestCase {
         super.setUp();
 
         // the core bundle
-        deployContrib("org.nuxeo.ecm.platform.io.core.tests", "CoreService.xml");
+        deployContrib("org.nuxeo.ecm.core", "OSGI-INF/CoreService.xml");
         deployContrib("org.nuxeo.ecm.platform.io.core.tests", "TypeService.xml");
-        deployContrib("org.nuxeo.ecm.platform.io.core.tests",
-                "SecurityService.xml");
+        deployContrib("org.nuxeo.ecm.core", "OSGI-INF/SecurityService.xml");
         deployContrib("org.nuxeo.ecm.platform.io.core.tests",
                 "RepositoryService.xml");
         deployContrib("org.nuxeo.ecm.platform.io.core.tests",
@@ -255,7 +254,7 @@ public class TestIORemoteCopy extends NXRuntimeTestCase {
         assertEquals(2, DummyIOResourceAdapter.backend.size());
     }
 
-    private void printInfo(String title, Object obj) {
+    private static void printInfo(String title, Object obj) {
         log.info("-------------------");
         log.info(title);
         log.info(obj);

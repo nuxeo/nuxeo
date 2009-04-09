@@ -46,7 +46,6 @@ public class ChainSelectListboxComponent extends UIInput {
 
     public static final String COMPONENT_FAMILY = "nxdirectory.chainSelectListbox";
 
-    @SuppressWarnings("unused")
     private static final Log log = LogFactory.getLog(ChainSelectListboxComponent.class);
 
     public boolean ajaxUpdated = false;
@@ -80,7 +79,7 @@ public class ChainSelectListboxComponent extends UIInput {
     private String display;
 
     public ChainSelectListboxComponent() {
-        this.setRendererType(COMPONENT_TYPE);
+        setRendererType(COMPONENT_TYPE);
     }
 
     @Override
@@ -110,7 +109,6 @@ public class ChainSelectListboxComponent extends UIInput {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public void restoreState(FacesContext context, Object state) {
         Object[] values = (Object[]) state;
         super.restoreState(context, values[0]);
@@ -222,7 +220,6 @@ public class ChainSelectListboxComponent extends UIInput {
         return (ChainSelect) component;
     }
 
-    @SuppressWarnings("unchecked")
     public Object getProperty(String name) {
         ValueBinding vb = getValueBinding(name);
         if (vb != null) {

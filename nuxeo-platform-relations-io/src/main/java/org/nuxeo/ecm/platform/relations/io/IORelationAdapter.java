@@ -39,6 +39,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.io.DocumentTranslationMap;
 import org.nuxeo.ecm.platform.io.api.AbstractIOResourceAdapter;
@@ -49,6 +50,7 @@ import org.nuxeo.ecm.platform.relations.api.Node;
 import org.nuxeo.ecm.platform.relations.api.QNameResource;
 import org.nuxeo.ecm.platform.relations.api.RelationManager;
 import org.nuxeo.ecm.platform.relations.api.Resource;
+import org.nuxeo.ecm.platform.relations.api.ResourceAdapter;
 import org.nuxeo.ecm.platform.relations.api.Statement;
 import org.nuxeo.ecm.platform.relations.api.Subject;
 import org.nuxeo.ecm.platform.relations.api.impl.RelationDate;
@@ -224,23 +226,44 @@ public class IORelationAdapter extends AbstractIOResourceAdapter {
         return newStatements;
     }
 
+    // protected DocumentRef getDocumentRef(RelationManager relManager,
+    // QNameResource resource) {
+    // Object object = null;
+    // try {
+    // object = relManager.getResourceRepresentation(
+    // resource.getNamespace(), resource);
+    // } catch (ClientException e) {
+    // log.error("Error while retrieving DocumentRef for resource "
+    // + resource, e);
+    // }
+    // if (object instanceof DocumentModel) {
+    // return ((DocumentModel) object).getRef();
+    // }
+    // if (object instanceof DocumentRef) {
+    // return (DocumentRef) object;
+    // }
+    // log.warn("Cannot obtain DocumentRef for resource " + resource);
+    // return null;
+    // }
+
     protected DocumentRef getDocumentRef(RelationManager relManager,
             QNameResource resource) {
-        Object object = null;
-        try {
-            object = relManager.getResourceRepresentation(
-                    resource.getNamespace(), resource);
-        } catch (ClientException e) {
-            log.error("Error while retrieving DocumentRef for resource "
-                    + resource, e);
+        String ns = resource.getNamespace();
+        if ("http://www.nuxeo.org/document/uid/".equals(ns)) {
+            // BS: Avoid using default resource resolver since it is not working
+            // when
+            // the resource document is not currently existing in the target
+            // repository.
+            // TODO This is a hack and should be fixed in the lower layers or by
+            // changing
+            // import logic.
+            String id = resource.getLocalName();
+            int p = id.indexOf('/');
+            if (p > -1) {
+                id = id.substring(p + 1);
+            }
+            return new IdRef(id);
         }
-        if (object instanceof DocumentModel) {
-            return ((DocumentModel) object).getRef();
-        }
-        if (object instanceof DocumentRef) {
-            return (DocumentRef) object;
-        }
-        log.warn("Cannot obtain DocumentRef for resource " + resource);
         return null;
     }
 
@@ -276,7 +299,10 @@ public class IORelationAdapter extends AbstractIOResourceAdapter {
             for (DocumentRef docRef : sources) {
                 try {
                     DocumentModel doc = session.getDocument(docRef);
-                    Set<Resource> resources = relManager.getAllResources(doc);
+                    Map<String, Serializable> context = new HashMap<String, Serializable>();
+                    context.put(ResourceAdapter.CORE_SESSION_ID_CONTEXT_KEY,
+                            session.getSessionId());
+                    Set<Resource> resources = relManager.getAllResources(doc, context);
                     docResources.put(docRef, resources);
                     allResources.addAll(resources);
                     for (Resource resource : resources) {
@@ -453,6 +479,7 @@ public class IORelationAdapter extends AbstractIOResourceAdapter {
             List<Resource> dateProperties = null;
             if (dateUris != null) {
                 for (String dateUri : dateUris) {
+                    // FIXME: this can't work, dateProperties is null!
                     dateProperties.add(new ResourceImpl(dateUri));
                 }
             }
@@ -486,10 +513,12 @@ public class IORelationAdapter extends AbstractIOResourceAdapter {
                         // do not replace
                         continue;
                     }
-
                     QNameResource qnameRes = (QNameResource) resource;
+                    Map<String, Serializable> context = new HashMap<String, Serializable>();
+                    context.put(ResourceAdapter.CORE_SESSION_ID_CONTEXT_KEY,
+                            session.getSessionId());
                     Resource newResource = relManager.getResource(
-                            qnameRes.getNamespace(), newDoc);
+                            qnameRes.getNamespace(), newDoc, context);
                     Statement newStatement;
                     List<Statement> newOutgoing = new ArrayList<Statement>();
                     for (Statement stmt : outgoing) {

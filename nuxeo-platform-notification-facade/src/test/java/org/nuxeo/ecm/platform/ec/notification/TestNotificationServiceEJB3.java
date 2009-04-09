@@ -25,10 +25,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.api.ECM;
 import org.nuxeo.ecm.platform.api.login.UserSession;
 import org.nuxeo.ecm.platform.api.test.NXClientTestCase;
 import org.nuxeo.ecm.platform.notification.api.NotificationManager;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:npaslaru@nuxeo.com">Narcis Paslaru</a>
@@ -56,24 +56,15 @@ public class TestNotificationServiceEJB3 extends NXClientTestCase {
         us.login();
         // ------------ user session started -----------
 
-        service = ECM.getPlatform().getService(NotificationManager.class);
+        service = Framework.getService(NotificationManager.class);
 //        coreSession = ECM.getPlatform().openRepository("demo");
 //
         assertNotNull("EJB3 not found", service);
     }
 
-    /**
-     * @see junit.framework.TestCase#tearDown()
-     */
     @Override
     protected void tearDown() throws Exception {
-        log.info("");
-        log.info("--------------------------------------------------------");
-
-//        CoreInstance.getInstance().close(coreSession);
-        // ---------------------------------------------------
         us.logout();
-
         super.tearDown();
     }
 
@@ -87,21 +78,21 @@ public class TestNotificationServiceEJB3 extends NXClientTestCase {
 
         List<String> users = service.getSubscribers(notifTest, docIdTest);
         assertNotNull("No subscribers", users);
-        assertEquals("Should be 1 user subscribed", users.size(), 1);
+        assertEquals("Should be 1 user subscribed", 1, users.size());
         assertEquals("Wrong name!!!", usernameTest, users.get(0));
 
         List<String> subscriptions = service.getSubscriptionsForUserOnDocument(
                 usernameTest, docIdTest);
         assertNotNull("No subscriptions", subscriptions);
         assertEquals("Should be 1 subscription for user on document",
-                subscriptions.size(), 1);
+                1, subscriptions.size());
         assertEquals("Wrong subscription", notifTest, subscriptions.get(0));
 
         service.removeSubscription(usernameTest, notifTest, docIdTest);
 
         users = service.getSubscribers(notifTest, docIdTest);
         assertNotNull("No subscribers", users);
-        assertEquals("Should be no user subscribed", users.size(), 0);
+        assertEquals("Should be no user subscribed", 0, users.size());
     }
 
 }

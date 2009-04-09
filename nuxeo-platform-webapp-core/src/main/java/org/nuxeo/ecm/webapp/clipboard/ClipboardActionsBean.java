@@ -51,12 +51,12 @@ import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.RequestParameter;
 import org.jboss.seam.annotations.Scope;
-import org.jboss.seam.annotations.WebRemote;
+import org.jboss.seam.annotations.remoting.WebRemote;
+import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.core.Events;
-import org.jboss.seam.core.FacesMessages;
-import org.jboss.seam.core.LocaleSelector;
+import org.jboss.seam.faces.FacesMessages;
+import org.jboss.seam.international.LocaleSelector;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -64,11 +64,11 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.platform.actions.Action;
-import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
 import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.webapp.base.InputController;
@@ -128,9 +128,9 @@ public class ClipboardActionsBean extends InputController implements
 
     private transient List<DocumentsListDescriptor> descriptorsForAvailableLists;
 
-    private Boolean canEditSelectedDocs = null;
+    private Boolean canEditSelectedDocs;
 
-    private transient Map<String, List<Action>> actionCache = null;
+    private transient Map<String, List<Action>> actionCache;
 
     // @Observer({EventNames.DOCUMENT_SELECTION_CHANGED})
     public void releaseClipboardableDocuments() {
@@ -153,7 +153,7 @@ public class ClipboardActionsBean extends InputController implements
         log.debug("add to worklist processed...");
     }
 
-    public void putSelectionInWorkList() throws ClientException {
+    public void putSelectionInWorkList() {
         putSelectionInWorkList(false);
     }
 
@@ -198,9 +198,9 @@ public class ClipboardActionsBean extends InputController implements
             Object[] params = { docsList.size() };
 
             FacesMessage message = FacesMessages.createFacesMessage(
-                    FacesMessage.SEVERITY_INFO, "#0 "
-                            + resourcesAccessor.getMessages().get(
-                                    "n_copied_docs"), params);
+                    FacesMessage.SEVERITY_INFO,
+                    "#0 " + resourcesAccessor.getMessages().get("n_copied_docs"),
+                    params);
 
             facesMessages.add(message);
 
@@ -225,9 +225,9 @@ public class ClipboardActionsBean extends InputController implements
         canEditSelectedDocs = null;
         if (null != docsList) {
             Object[] params = { docsList.size() };
-            facesMessages.add(FacesMessage.SEVERITY_INFO, "#0 "
-                    + resourcesAccessor.getMessages().get(
-                            "n_added_to_worklist_docs"), params);
+            facesMessages.add(FacesMessage.SEVERITY_INFO,
+                    "#0 " + resourcesAccessor.getMessages().get("n_added_to_worklist_docs"),
+                    params);
 
             // Add to the default working list
             documentsListsManager.addToWorkingList(
@@ -248,8 +248,8 @@ public class ClipboardActionsBean extends InputController implements
     public void copySelection(List<DocumentModel> copiedDocs) {
         if (null != copiedDocs) {
             Object[] params = { copiedDocs.size() };
-            facesMessages.add(FacesMessage.SEVERITY_INFO, "#0 "
-                    + resourcesAccessor.getMessages().get("n_copied_docs"),
+            facesMessages.add(FacesMessage.SEVERITY_INFO,
+                    "#0 " + resourcesAccessor.getMessages().get("n_copied_docs"),
                     params);
 
             // clipboard.copy(copiedDocs);
@@ -271,7 +271,6 @@ public class ClipboardActionsBean extends InputController implements
     }
 
     public String removeWorkListItem(DocumentRef ref) throws ClientException {
-
         DocumentModel doc = documentManager.getDocument(ref);
         documentsListsManager.removeFromWorkingList(
                 getCurrentSelectedListName(), doc);
@@ -301,8 +300,8 @@ public class ClipboardActionsBean extends InputController implements
                     getParent(currentDocument), docPaste);
 
             Object[] params = { newDocs.size() };
-            facesMessages.add(FacesMessage.SEVERITY_INFO, "#0 "
-                    + resourcesAccessor.getMessages().get("n_pasted_docs"),
+            facesMessages.add(FacesMessage.SEVERITY_INFO,
+                    "#0 " + resourcesAccessor.getMessages().get("n_pasted_docs"),
                     params);
 
             eventManager.raiseEventsOnDocumentSelected(currentDocument);
@@ -325,8 +324,8 @@ public class ClipboardActionsBean extends InputController implements
                     targetDoc, docPaste);
 
             Object[] params = { newDocs.size() };
-            facesMessages.add(FacesMessage.SEVERITY_INFO, "#0 "
-                    + resourcesAccessor.getMessages().get("n_pasted_docs"),
+            facesMessages.add(FacesMessage.SEVERITY_INFO,
+                    "#0 " + resourcesAccessor.getMessages().get("n_pasted_docs"),
                     params);
 
             eventManager.raiseEventsOnDocumentSelected(targetDoc);
@@ -380,31 +379,27 @@ public class ClipboardActionsBean extends InputController implements
         }
 
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
-        if (null != docs) {
-            List<DocumentModel> newDocs = moveDocumentsToNewParent(
-                    currentDocument, docs);
+        List<DocumentModel> newDocs = moveDocumentsToNewParent(
+                currentDocument, docs);
 
-            documentsListsManager.getWorkingList(listName).clear();
+        documentsListsManager.getWorkingList(listName).clear();
 
-            Object[] params = { newDocs.size() };
-            facesMessages.add(FacesMessage.SEVERITY_INFO, "#0 "
-                    + resourcesAccessor.getMessages().get("n_moved_docs"),
-                    params);
+        Object[] params = { newDocs.size() };
+        facesMessages.add(FacesMessage.SEVERITY_INFO, "#0 "
+                + resourcesAccessor.getMessages().get("n_moved_docs"),
+                params);
 
-            eventManager.raiseEventsOnDocumentSelected(currentDocument);
-            Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
+        eventManager.raiseEventsOnDocumentSelected(currentDocument);
+        Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
                     currentDocument);
 
-            // Send event to all initial parents
-            for (DocumentRef docRef : parentRefs) {
-                Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
-                        documentManager.getDocument(docRef));
-            }
-
-            log.debug("Elements moved and created into the backend...");
-        } else {
-            log.debug("No documents to process move on...");
+        // Send event to all initial parents
+        for (DocumentRef docRef : parentRefs) {
+            Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
+                    documentManager.getDocument(docRef));
         }
+
+        log.debug("Elements moved and created into the backend...");
 
         return computeOutcome(PASTE_OUTCOME);
     }
@@ -433,12 +428,6 @@ public class ClipboardActionsBean extends InputController implements
 
     /**
      * Creates the documents in the backend under the target parent.
-     *
-     * @param parent
-     * @param documents
-     * @return
-     * @throws ClientException
-     * @throws SecurityException
      */
     protected List<DocumentModel> recreateDocumentsWithNewParent(
             DocumentModel parent, List<DocumentModel> documents)
@@ -528,11 +517,7 @@ public class ClipboardActionsBean extends InputController implements
      * <p>
      * In general the currentDocument is the parent. Exceptions to this rule:
      * when the currentDocument is a domain or null. If Domain then content root
-     * is the parent. If NULL is passed then the JCR root is taken as parent.
-     *
-     * @param currentDocument
-     * @return
-     * @throws ClientException
+     * is the parent. If null is passed, then the JCR root is taken as parent.
      */
     protected DocumentModel getParent(DocumentModel currentDocument)
             throws ClientException {
@@ -541,7 +526,7 @@ public class ClipboardActionsBean extends InputController implements
             return currentDocument;
         }
 
-        DocumentModel parent = null;
+        DocumentModel parent;
         DocumentModelList parents = navigationContext.getCurrentPath();
         for (int i = parents.size() - 1; i >= 0; i--) {
             parent = parents.get(i);
@@ -594,9 +579,11 @@ public class ClipboardActionsBean extends InputController implements
                 }
 
                 // NXP-2334 : skip deleted docs
-                if (doc.getCurrentLifeCycleState().equals(DELETED_LIFECYCLE_STATE))
+                if (doc.getCurrentLifeCycleState().equals(DELETED_LIFECYCLE_STATE)) {
                     continue;
+                }
 
+                BlobHolder bh = doc.getAdapter(BlobHolder.class);
                 if (doc.isFolder() && !isEmptyFolder(doc, documentManager)) {
 
                     SummaryEntry summaryLeaf = new SummaryEntry(doc);
@@ -610,12 +597,9 @@ public class ClipboardActionsBean extends InputController implements
 
                     addFolderToZip("", out, doc, data, documentManager,
                             summary.get(summaryLeaf.getPath()), summary);
-                } else if (doc.getType().equals("Note")) {
-                    addNoteToZip("", out, doc, data, summary.getSummaryRoot(),
-                            summary);
-                } else if (doc.hasSchema("file")) {
-                    addFileToZip("", out, doc, data, summary.getSummaryRoot(),
-                            summary);
+                } else if (bh != null) {
+                    addBlobHolderToZip("", out, doc, data,
+                            summary.getSummaryRoot(), summary, bh);
                 }
             }
             if (summary.size() > 1) {
@@ -635,7 +619,7 @@ public class ClipboardActionsBean extends InputController implements
             context.responseComplete();
             return null;
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -664,8 +648,6 @@ public class ClipboardActionsBean extends InputController implements
      * <li>the content of the list can be added as children of the current
      * document
      * </ul>
-     *
-     * @throws ClientException
      */
     public boolean getCanPaste(String listName) throws ClientException {
 
@@ -730,8 +712,6 @@ public class ClipboardActionsBean extends InputController implements
      * <li>an element in the list can be removed from its folder and added as
      * child of the current document
      * </ul>
-     *
-     * @throws ClientException
      */
     public boolean getCanMove(String listName) throws ClientException {
 
@@ -798,9 +778,11 @@ public class ClipboardActionsBean extends InputController implements
         for (DocumentModel docChild : docList) {
 
             // NXP-2334 : skip deleted docs
-            if (docChild.getCurrentLifeCycleState().equals(DELETED_LIFECYCLE_STATE))
+            if (docChild.getCurrentLifeCycleState().equals(DELETED_LIFECYCLE_STATE)) {
                 continue;
+            }
 
+            BlobHolder bh = docChild.getAdapter(BlobHolder.class);
             if (docChild.isFolder()
                     && !isEmptyFolder(docChild, documentManager)) {
 
@@ -815,14 +797,9 @@ public class ClipboardActionsBean extends InputController implements
                 addFolderToZip(path + title + "/", out, docChild, data,
                         documentManager, summary.get(summaryLeaf.getPath()),
                         summary);
-
-            } else if (docChild.getType().equals("Note")) {
-                addNoteToZip(path + title + "/", out, docChild, data,
-                        summary.get(parent.getPath()), summary);
-
-            } else if (docChild.hasSchema("file")) {
-                addFileToZip(path + title + "/", out, docChild, data,
-                        summary.get(parent.getPath()), summary);
+            } else if (bh != null) {
+                addBlobHolderToZip(path + title + "/", out, docChild, data,
+                        summary.get(parent.getPath()), summary, bh);
             }
         }
     }
@@ -832,30 +809,18 @@ public class ClipboardActionsBean extends InputController implements
 
         List<DocumentModel> docList = documentManager.getChildren(doc.getRef());
         for (DocumentModel docChild : docList) {
+            BlobHolder bh = docChild.getAdapter(BlobHolder.class);
             if (docChild.isFolder()) {
                 return isEmptyFolder(docChild, documentManager);
-            } else if (docChild.getType().equals("Note")) {
-                String content = (String) docChild.getProperty("note", "note");
-                if (content != null && !"".equals(content)) {
-                    return false;
-                }
-            } else if (docChild.hasSchema("file")) {
-                Blob content = (Blob) docChild.getProperty("file", "content");
-                if (content != null) {
-                    return false;
-                }
+            } else if (bh != null) {
+                return false;
             }
-
         }
         return true;
     }
 
     /**
      * Writes a summary file and puts it in the archive.
-     *
-     * @param out
-     * @param data
-     * @throws IOException
      */
     private void addSummaryToZip(ZipOutputStream out, byte[] data,
             SummaryImpl summary) throws IOException {
@@ -880,98 +845,61 @@ public class ClipboardActionsBean extends InputController implements
         buffi.close();
     }
 
-    private void addNoteToZip(String path, ZipOutputStream out,
+    private void addBlobHolderToZip(String path, ZipOutputStream out,
             DocumentModel doc, byte[] data, SummaryEntry parent,
-            SummaryImpl summary) throws IOException {
+            SummaryImpl summary, BlobHolder bh) throws IOException,
+            ClientException {
+        List<Blob> blobs = bh.getBlobs();
+        for (Blob content : blobs) {
 
-        String note = (String) doc.getProperty("note", "note");
-        String fileName = doc.getProperty("dublincore", "title") + ".html";
-        Blob content = new StringBlob(note);
+            String fileName = content.getFilename();
 
-        SummaryEntry summaryLeaf = new SummaryEntry(doc);
-        summaryLeaf.setParent(parent);
-        summary.put(summaryLeaf.getPath(), summaryLeaf);
+            if (content != null) {
 
-        BufferedInputStream buffi = new BufferedInputStream(
-                content.getStream(), BUFFER);
+                SummaryEntry summaryLeaf = new SummaryEntry(doc);
+                summaryLeaf.setParent(parent);
+                summary.put(summaryLeaf.getPath(), summaryLeaf);
 
-        // Workaround to deal with duplicate file names.
-        int tryCount = 0;
-        while (true) {
-            try {
-                ZipEntry entry;
-                if (tryCount == 0) {
-                    entry = new ZipEntry(path + fileName);
-                } else {
-                    entry = new ZipEntry(path + fileName + '(' + tryCount
-                            + ')');
+                BufferedInputStream buffi = new BufferedInputStream(
+                        content.getStream(), BUFFER);
+
+                // Workaround to deal with duplicate file names.
+                int tryCount = 0;
+                while (true) {
+                    try {
+                        ZipEntry entry;
+                        if (tryCount == 0) {
+                            entry = new ZipEntry(path + fileName);
+                        } else {
+                            entry = new ZipEntry(path
+                                    + formatFileName(fileName, "(" + tryCount
+                                            + ")"));
+                        }
+                        out.putNextEntry(entry);
+                        break;
+                    } catch (ZipException e) {
+                        tryCount++;
+                    }
                 }
-                out.putNextEntry(entry);
-                break;
-            } catch (ZipException e) {
-                tryCount++;
+
+                int count = buffi.read(data, 0, BUFFER);
+                while (count != -1) {
+                    out.write(data, 0, count);
+                    count = buffi.read(data, 0, BUFFER);
+                }
+                out.closeEntry();
+                buffi.close();
             }
         }
-        int count = buffi.read(data, 0, BUFFER);
-
-        while (count != -1) {
-            out.write(data, 0, count);
-            count = buffi.read(data, 0, BUFFER);
-        }
-        out.closeEntry();
-        buffi.close();
     }
 
-    private void addFileToZip(String path, ZipOutputStream out,
-            DocumentModel doc, byte[] data, SummaryEntry parent,
-            SummaryImpl summary) throws IOException, ClientException {
-
-        String fileName = (String) doc.getProperty("file", "filename");
-        Blob content = (Blob) doc.getProperty("file", "content");
-
-        // TODO : Quickfix to avoid a workspace to send his Logo as Blob. Need
-        // an EP to deal with that
-        // WS also have the schema file
-        // We have to ensure that there are not empty to be
-        // added to the summary.
-        if (doc.isFolder() && isEmptyFolder(doc, documentManager)) {
-            content = null;
-        }
-        if (content != null) {
-
-            SummaryEntry summaryLeaf = new SummaryEntry(doc);
-            summaryLeaf.setParent(parent);
-            summary.put(summaryLeaf.getPath(), summaryLeaf);
-
-            BufferedInputStream buffi = new BufferedInputStream(
-                    content.getStream(), BUFFER);
-
-            // Workaround to deal with duplicate file names.
-            int tryCount = 0;
-            while (true) {
-                try {
-                    ZipEntry entry;
-                    if (tryCount == 0) {
-                        entry = new ZipEntry(path + fileName);
-                    } else {
-                        entry = new ZipEntry(path + fileName + '(' + tryCount
-                                + ')');
-                    }
-                    out.putNextEntry(entry);
-                    break;
-                } catch (ZipException e) {
-                    tryCount++;
-                }
-            }
-
-            int count = buffi.read(data, 0, BUFFER);
-            while (count != -1) {
-                out.write(data, 0, count);
-                count = buffi.read(data, 0, BUFFER);
-            }
-            out.closeEntry();
-            buffi.close();
-        }
+    private String formatFileName(String filename, String count) {
+        StringBuilder sb = new StringBuilder();
+        CharSequence name = filename.subSequence(0, filename.lastIndexOf("."));
+        CharSequence extension = filename.subSequence(
+                filename.lastIndexOf("."), filename.length());
+        sb.append(name).append(count).append(extension);
+        return sb.toString();
     }
 
     public void setCurrentSelectedList(String listId) {

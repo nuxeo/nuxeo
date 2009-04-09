@@ -25,8 +25,6 @@ import javax.faces.application.Application;
 import javax.faces.context.FacesContext;
 import javax.faces.el.MethodBinding;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 
 /**
@@ -50,12 +48,11 @@ import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  * @Deprecated use {@link MetaMethodExpression}
  */
+@SuppressWarnings({"ALL"})
 @Deprecated
 public class MetaMethodBinding extends MethodBinding implements Serializable {
 
     private static final long serialVersionUID = -2721042412903607760L;
-
-    private static final Log log = LogFactory.getLog(MetaMethodBinding.class);
 
     private final MethodBinding originalMethodBinding;
 

@@ -46,6 +46,19 @@ public interface DirectoryManager extends DirectoryService {
     DocumentModel getEntry(long sessionId, String id) throws DirectoryException;
 
     /**
+     * Retrieves a directory entry using its id.
+     *
+     * @see #getEntry(long, String)
+     *
+     * @param id the entry id
+     * @param fetchReferences boolean stating if references have to be fetched
+     * @return a DocumentModel representing the entry
+     * @throws DirectoryException
+     */
+    DocumentModel getEntry(long sessionId, String id, boolean fetchReferences)
+            throws DirectoryException;
+
+    /**
      * Retrieves all the entries in the directory.
      *
      * @return a collection with all the entries in the directory
@@ -65,9 +78,9 @@ public interface DirectoryManager extends DirectoryService {
      * @return The new entry created in the directory
      * @throws UnsupportedOperationException if the directory does not allow the
      *             creation of new entries
-     * @throws DirectoryException if a communication exception occurs
+     * @throws DirectoryException if a communication exception occurs or if an
+     *             entry with the same id already exists.
      */
-
     DocumentModel createEntry(long sessionId, Map<String, Object> fieldMap)
             throws DirectoryException;
 
@@ -182,6 +195,10 @@ public interface DirectoryManager extends DirectoryService {
             Set<String> fulltext, Map<String, String> orderBy)
             throws DirectoryException;
 
+    DocumentModelList query(long sessionId, Map<String, Object> filter,
+            Set<String> fulltext, Map<String, String> orderBy,
+            boolean fetchReferences) throws DirectoryException;
+
     // TODO: create an API to allow sql AND/OR/NOT/LIKE conditions
     // public DocumentModelList query(Criteria criteria ) throws
     // DirectoryException;
@@ -256,6 +273,7 @@ public interface DirectoryManager extends DirectoryService {
      * @param username
      * @param password
      * @return true is the credentials match those stored in the directory
+     * @throws DirectoryException
      */
     boolean authenticate(long sessionId, String username, String password)
             throws DirectoryException;
@@ -266,15 +284,39 @@ public interface DirectoryManager extends DirectoryService {
      * login field if the directory is authenticating.
      *
      * @return the name of the id field
+     * @throws DirectoryException
      */
     String getIdField(long sessionId) throws DirectoryException;
 
     /**
      * @return the name of the field to store the password if the directory is
      *         authenticating (can be null)
+     * @throws DirectoryException
      */
     String getPasswordField(long sessionId) throws DirectoryException;
 
     boolean isReadOnly(long sessionId) throws DirectoryException;
+
+    /**
+     * Returns true if session has an entry with given id.
+     *
+     * @since 5.2M4
+     * @throws DirectoryException
+     */
+    boolean hasEntry(long sessionId, String id) throws DirectoryException;
+
+    /**
+     * Creates an entry in a directory.
+     *
+     * @since 5.2M4
+     * @param entry the document model representing the entry to create
+     * @return The new entry created in the directory
+     * @throws UnsupportedOperationException if the directory does not allow the
+     *             creation of new entries
+     * @throws DirectoryException if a communication exception occurs or if an
+     *             entry with the same id already exists.
+     */
+    DocumentModel createEntry(long sessionId, DocumentModel entry)
+            throws DirectoryException;
 
 }

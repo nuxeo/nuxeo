@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
     <artifactId>nuxeo-platform-parent</artifactId>
-    <version>5.1.7-SNAPSHOT</version>
+    <version>5.2-SNAPSHOT</version>
   </parent>
 
   <artifactId>nuxeo-platform-search-core</artifactId>
@@ -22,12 +22,12 @@
       <artifactId>nuxeo-core-schema</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-search-api</artifactId>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-convert-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-transform-api</artifactId>
+      <artifactId>nuxeo-platform-search-api</artifactId>
     </dependency>
     <dependency>
       <groupId>javax.transaction</groupId>

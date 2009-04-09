@@ -23,8 +23,6 @@ import java.io.Serializable;
 
 import javax.naming.NamingException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.audit.ws.api.WSAudit;
 
 /**
@@ -36,16 +34,11 @@ public class WSAuditBeanBusinessDelegate implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Log log = LogFactory.getLog(WSAuditBeanBusinessDelegate.class);
-
-    protected final EJBFactory ejbFactory = new EJBFactory();
-
     protected WSAudit ws;
 
     public WSAudit getWSAuditRemote() throws NamingException {
-        log.debug("getWSAuditRemote()");
         if (ws == null) {
-            ws = ejbFactory.getWSAuditRemote();
+            ws = EJBFactory.getWSAuditRemote();
         }
         return ws;
     }

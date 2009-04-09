@@ -21,6 +21,8 @@ package org.nuxeo.ecm.platform.url.api;
 
 import java.util.Map;
 
+import org.nuxeo.ecm.core.api.DocumentLocation;
+
 /**
  * Document information describing a document context.
  * <p>

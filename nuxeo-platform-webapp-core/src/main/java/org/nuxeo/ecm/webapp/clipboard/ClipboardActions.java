@@ -47,7 +47,6 @@ public interface ClipboardActions {
      * The selection is added to the clipboard and to the WorkingList.
      *
      * @param docCopied the list of documents we want to copy
-     * @throws ClientException
      */
     void copySelection(List<DocumentModel> docCopied);
 
@@ -60,8 +59,6 @@ public interface ClipboardActions {
 
     /**
      * Called when the "delete all" button is clicked on the clipboard.
-     *
-     * @throws ClientException
      */
     String clearWorkingList();
 
@@ -161,7 +158,7 @@ public interface ClipboardActions {
     boolean getCanPasteInside(String listName, DocumentModel document) throws ClientException;
 
     /**
-     * Checks if there are selected items that can be copied into the current Worklist.
+     * Checks if there are selected items that can be copied into the current worklist.
      *
      * @return
      */
@@ -183,10 +180,8 @@ public interface ClipboardActions {
 
     /**
      * Copies the lists of selected documents into the current WorkList.
-     *
-     * @throws ClientException
      */
-    void putSelectionInWorkList() throws ClientException;
+    void putSelectionInWorkList();
 
     void putSelectionInWorkList(Boolean forceAppend);
 
@@ -194,28 +189,22 @@ public interface ClipboardActions {
 
     void putSelectionInDefaultWorkList();
 
-    public void putInClipboard(String docId) throws ClientException;
+    void putInClipboard(String docId) throws ClientException;
 
     /**
      * Retries contents of current WorkList.
-     *
-     * @return
      */
     List<DocumentModel> getCurrentSelectedList();
 
-    /**
+    /*
     List<DocumentModel> getWorkingList();
-    **/
+    */
 
     /**
      * Returns the name of the current selected WorkList.
      */
     String getCurrentSelectedListName();
 
-    /**
-     *
-     * @return
-     */
     String getCurrentSelectedListTitle();
 
     /**
@@ -226,15 +215,11 @@ public interface ClipboardActions {
     /**
      *  Returns the list of available lists
      *  (ie: the lists from the CLIPBOARD Category).
-     *
-     * @return
      */
     List<String> getAvailableLists();
 
     /**
-     *  Returns the list of Descriptors for available lists.
-     *
-     * @return
+     * Returns the list of Descriptors for available lists.
      */
     List<DocumentsListDescriptor> getDescriptorsForAvailableLists();
 
@@ -277,10 +262,10 @@ public interface ClipboardActions {
 
     boolean factoryForIsCurrentWorkListEmpty();
 
-
     boolean isCacheEnabled();
 
     String getCacheKey();
 
     boolean isCacheEnabledForSelection();
+
 }

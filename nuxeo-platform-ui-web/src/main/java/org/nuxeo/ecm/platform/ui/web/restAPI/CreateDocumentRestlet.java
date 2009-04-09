@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.platform.ui.web.restAPI;
 
+import java.io.Serializable;
+
 import static org.jboss.seam.ScopeType.EVENT;
 
 import org.dom4j.Element;
@@ -48,10 +50,12 @@ import org.restlet.data.Response;
 @Name("createDocumentRestlet")
 @Scope(EVENT)
 public class CreateDocumentRestlet extends BaseNuxeoRestlet implements
-        LiveEditConstants {
+        LiveEditConstants, Serializable {
+
+    private static final long serialVersionUID = -7223939557577366747L;
 
     @In(create = true)
-    protected NavigationContext navigationContext;
+    protected transient NavigationContext navigationContext;
 
     protected CoreSession documentManager;
 
@@ -63,7 +67,7 @@ public class CreateDocumentRestlet extends BaseNuxeoRestlet implements
             return;
         }
 
-        DocumentModel parentDm = null;
+        DocumentModel parentDm;
         try {
             navigationContext.setCurrentServerLocation(new RepositoryLocation(
                     repo));

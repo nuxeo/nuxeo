@@ -36,7 +36,6 @@ public class DefaultServiceConnector implements ServiceConnector {
         return INSTANCE;
     }
 
-    @SuppressWarnings("unchecked")
     public Object connect(ServiceDescriptor sd) throws NamingException {
         return sd.server.getJndiContext().lookup(sd.jndiName);
     }

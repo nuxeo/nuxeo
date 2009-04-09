@@ -16,8 +16,6 @@ package org.nuxeo.ecm.webapp.theme.fragment;
 
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.Component;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -29,13 +27,13 @@ import org.nuxeo.ecm.platform.ui.web.util.SeamContextHelper;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.theme.fragments.AbstractFragment;
+import org.nuxeo.theme.models.Menu;
 import org.nuxeo.theme.models.MenuItem;
 import org.nuxeo.theme.models.Model;
+import org.nuxeo.theme.models.ModelException;
 import org.nuxeo.theme.properties.FieldInfo;
 
 public final class ActionFragment extends AbstractFragment {
-
-    private static final Log log = LogFactory.getLog(ActionFragment.class);
 
     @FieldInfo(type = "string", label = "category", description = "The action category.")
     public String category = "";
@@ -51,7 +49,7 @@ public final class ActionFragment extends AbstractFragment {
     }
 
     @Override
-    public Model getModel() {
+    public Model getModel() throws ModelException {
         ResourcesAccessor resourcesAccessor = (ResourcesAccessor) Component.getInstance("resourcesAccessor");
         Map<String, String> messages = resourcesAccessor.getMessages();
 
@@ -64,21 +62,21 @@ public final class ActionFragment extends AbstractFragment {
         if (documentManager != null) {
             ctx.setCurrentPrincipal((NuxeoPrincipal) documentManager.getPrincipal());
         }
-        NavigationContext navigationContext = null;
-        navigationContext = (NavigationContext) Component.getInstance("navigationContext");
+        NavigationContext navigationContext = (NavigationContext) Component.getInstance(
+                "navigationContext");
         if (navigationContext != null) {
             ctx.setCurrentDocument(navigationContext.getCurrentDocument());
         }
 
-        // Create menu items
-        MenuItem root = new MenuItem("", "", "", true, "");
+        // Create menu
+        Menu menu = new Menu();
         for (Action action : actionService.getActions(category, ctx)) {
             final String label = action.getLabel();
             // FIXME: use the actual link url, not a JSF view id
             final String url = action.getLink();
-            root.addChild(new MenuItem(messages.get(label), "", url, true,
+            menu.addItem(new MenuItem(messages.get(label), "", url, true,
                     action.getIcon()));
         }
-        return root;
+        return menu;
     }
 }

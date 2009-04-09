@@ -1,0 +1,59 @@
+<div xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+<c:if test="#{jbpmActions.canManageParticipants}">
+
+  <div class="foldableBox">
+
+    <c:choose>
+      <c:when test="#{jbpmActions.showAddVirtualTaskForm}">
+        <c:set var="h3Class" value="unfolded"/>
+        <c:set var="boxBodyStyle" value=""/>
+      </c:when>
+      <c:otherwise>
+        <c:set var="h3Class" value="folded"/>
+        <c:set var="boxBodyStyle" value="display: none"/>
+      </c:otherwise>
+    </c:choose>
+
+    <h3 class="#{h3Class}">
+      <h:form>
+        <h:commandLink actionListener="#{jbpmActions.toggleShowAddVirtualTaskForm}">
+          <h:outputText value="#{messages['label.review.choose.reviewer']}"/>
+        </h:commandLink>
+      </h:form>
+    </h3>
+    
+    <div class="boxBody" style="#{boxBodyStyle}">
+    
+      <h:form id="addReviewers">
+      
+        <nxl:layout name="add_workflow_task" mode="create"
+          value="#{jbpmActions.newVirtualTask}" />
+
+        <table class="dataInput">
+          <tbody>
+            <tr>
+              <td class="labelColumn"></td>
+              <td class="fieldColumn">
+                <h:commandButton type="submit"
+                  value="#{messages['label.review.create.task']}"
+                  styleClass="button"
+                  action="#{jbpmActions.addNewVirtualTask}"/>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+      </h:form>
+
+    </div>
+  
+  </div>
+
+</c:if>
+
+</div>

@@ -1,7 +1,6 @@
 <div xmlns="http://www.w3.org/1999/xhtml"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:t="http://myfaces.apache.org/tomahawk"
   xmlns:s="http://jboss.com/products/seam/taglib"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:nxh="http://nuxeo.org/nxweb/html"
@@ -12,13 +11,12 @@
 <div class="printButton">
 <ui:include src="/incl/document_actions_upperbuttons.xhtml"/>
 <script type="text/javascript">
-function printView()
-{
+function printView() {
   baseURL=window.location.href;
-  if (baseURL.indexOf("?")==-1){
+  if (baseURL.indexOf("?")==-1) {
     baseURL+='?';
   }
-  if (baseURL.indexOf("conversationId")==-1){
+  if (baseURL.indexOf("conversationId")==-1) {
     baseURL+='currentConversationId='+currentConversationId;
   }
   window.open(baseURL+'&amp;theme=default/print','_blank')
@@ -39,7 +37,7 @@ function printView()
 
   <f:subview rendered="#{!empty backendPath}">
 
-  <t:dataList var="pathElement"
+  <nxu:dataList var="pathElement"
     value="#{backendPath}">
     <f:verbatim>&amp;gt;&amp;nbsp;</f:verbatim>
 
@@ -48,7 +46,7 @@ function printView()
   </nxd:restDocumentLink>
   <h:outputText value="#{pathElement.name}" rendered="#{!pathElement.link}"/>
 
-  </t:dataList>
+  </nxu:dataList>
 
 <h:panelGroup rendered="false">
   <!-- Permalink -->
@@ -67,7 +65,7 @@ function printView()
   </f:subview>
   </h:form>
 </div>
-<div style="clear:both"></div>
 
+<div style="clear:both"></div>
 
 </div>

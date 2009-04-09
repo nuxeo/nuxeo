@@ -5,8 +5,8 @@
     Default versioning rules contributed to versioning service. These rules are
     designated for default provided document types (File, Note).
 
-    @version 1.0
-    @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
+    @version 1.0 @author
+    <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
   </documentation>
 
   <require>org.nuxeo.ecm.platform.versioning.service.VersioningService</require>
@@ -15,14 +15,6 @@
   <extension
     target="org.nuxeo.ecm.platform.versioning.service.VersioningService"
     point="rules">
-
-    <!-- rule to point to the worklow variable and default to configurable
-      options is it decides to ask_user -->
-    <versioningRuleEdit name="sampleEditRuleReview" action="query_workflow"
-      lifecycleState="review">
-      <option value="no_inc" default="true" />
-      <option value="inc_minor" />
-    </versioningRuleEdit>
 
     <versioningRuleEdit name="sampleEditRuleProject" action="ask_user"
       lifecycleState="project">
@@ -40,8 +32,8 @@
     </versioningRuleEdit>
 
     <!-- obsolete state -->
-    <versioningRuleEdit name="DocEditRule_if_in_obsolete_state" action="ask_user"
-      lifecycleState="obsolete">
+    <versioningRuleEdit name="DocEditRule_if_in_obsolete_state"
+      action="ask_user" lifecycleState="obsolete">
       <option value="inc_minor" lifecycleTransition="backToProject" />
       <option value="inc_major" lifecycleTransition="backToProject"
         default="true" />

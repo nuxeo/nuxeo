@@ -43,11 +43,9 @@ import org.nuxeo.common.utils.i18n.I18NUtils;
  */
 public class SelectOneListboxRenderer extends Renderer {
 
-    @SuppressWarnings("unused")
     private static final Log log = LogFactory.getLog(SelectOneListboxRenderer.class);
 
     @Override
-    @SuppressWarnings("unchecked")
     public void decode(FacesContext facesContext, UIComponent component) {
         // String compId = component.getClientId(facesContext);
         SelectOneListboxComponent comp = (SelectOneListboxComponent) component;

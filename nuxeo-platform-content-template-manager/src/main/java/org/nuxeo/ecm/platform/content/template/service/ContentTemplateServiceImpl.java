@@ -49,6 +49,8 @@ public class ContentTemplateServiceImpl extends DefaultComponent implements
 
     private Map<String, ContentFactory> factoryInstancesByType;
 
+    private RepositoryInitializationHandler initializationHandler;
+
     @Override
     public void activate(ComponentContext context) {
         factories = new HashMap<String, ContentFactoryDescriptor>();
@@ -56,8 +58,15 @@ public class ContentTemplateServiceImpl extends DefaultComponent implements
         factoryInstancesByType = new HashMap<String, ContentFactory>();
 
         // register our Repo init listener
-        RepositoryInitializationHandler.setInstance(new RepositoryInitializationListener());
+        initializationHandler = new RepositoryInitializationListener();
+        initializationHandler.install();
+    }
 
+    @Override
+    public void deactivate(ComponentContext context) throws Exception {
+        if (initializationHandler != null) {
+            initializationHandler.uninstall();
+        }
     }
 
     @Override
@@ -78,7 +87,7 @@ public class ContentTemplateServiceImpl extends DefaultComponent implements
                 // create factory instance : one instance per binding
                 ContentFactoryDescriptor factoryDescriptor = factories.get(descriptor.getFactoryName());
                 try {
-                    ContentFactory factory = (ContentFactory) factoryDescriptor.getClassName().newInstance();
+                    ContentFactory factory = factoryDescriptor.getClassName().newInstance();
                     Boolean factoryOK = factory.initFactory(
                             descriptor.getOptions(), descriptor.getRootAcl(),
                             descriptor.getTemplate());
@@ -88,10 +97,9 @@ public class ContentTemplateServiceImpl extends DefaultComponent implements
                         return;
                     }
 
-                    // store initialied instance
+                    // store initialized instance
                     factoryInstancesByType.put(descriptor.getTargetType(),
                             factory);
-
                 } catch (InstantiationException e) {
                     log.error("Error while creating instance of factory "
                             + factoryDescriptor.getName() + " :"

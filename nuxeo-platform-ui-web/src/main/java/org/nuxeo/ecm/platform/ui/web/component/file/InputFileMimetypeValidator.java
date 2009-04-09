@@ -28,7 +28,6 @@ import javax.faces.validator.ValidatorException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jetbrains.annotations.NotNull;
 
 import com.sun.faces.util.MessageFactory;
 
@@ -82,7 +81,7 @@ public class InputFileMimetypeValidator implements Validator, StateHolder {
      */
     public static final String MIMETYPE_UNAUTHORIZED_EXTENSIONS_MESSAGE_ID = "error.inputFile.unauthorizedExtensions";
 
-    public void validate(@NotNull FacesContext context, @NotNull UIComponent component,
+    public void validate(FacesContext context, UIComponent component,
             Object value) throws ValidatorException {
         if (value != null && extensions != null && extensions.length > 0) {
             if (value instanceof InputFileInfo) {
@@ -101,6 +100,7 @@ public class InputFileMimetypeValidator implements Validator, StateHolder {
                             break;
                         }
                     }
+                    // TODO: handle content types
                     if (error) {
                         String messageId = authorized ? MIMETYPE_AUTHORIZED_EXTENSIONS_MESSAGE_ID
                                 : MIMETYPE_UNAUTHORIZED_EXTENSIONS_MESSAGE_ID;

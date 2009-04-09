@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.core.search.ejb;
 
-import org.nuxeo.ecm.core.search.NXSearch;
 import org.nuxeo.ecm.core.search.api.client.SearchService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
@@ -35,15 +34,13 @@ public class TestSearchService extends NXRuntimeTestCase {
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.ecm.platform.search.ejb.tests",
-                "PlatformService.xml");
-        deployContrib("org.nuxeo.ecm.platform.search.ejb.tests",
                 "nxsearch-framework.xml");
         deployContrib("org.nuxeo.ecm.platform.search.ejb.tests",
                 "nxsearch-contrib.xml");
         deployContrib("org.nuxeo.ecm.platform.search.ejb.tests",
                 "nxsearch-platform-contrib.xml");
 
-        SearchService service = NXSearch.getSearchService();
+        SearchService service = Framework.getLocalService(SearchService.class);
         assertNotNull(service);
     }
 
@@ -52,7 +49,7 @@ public class TestSearchService extends NXRuntimeTestCase {
         assertNotNull(service);
 
         // Singleton !
-        SearchService service2 = NXSearch.getSearchService();
+        SearchService service2 = Framework.getLocalService(SearchService.class);
         assertEquals(service2, service);
     }
 

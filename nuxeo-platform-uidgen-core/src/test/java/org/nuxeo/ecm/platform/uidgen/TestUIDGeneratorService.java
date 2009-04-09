@@ -26,12 +26,9 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
-import org.nuxeo.ecm.core.listener.CoreEventListenerService;
-import org.nuxeo.ecm.core.listener.EventListener;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.SchemaNames;
 import org.nuxeo.ecm.core.schema.TypeRef;
@@ -39,6 +36,7 @@ import org.nuxeo.ecm.core.schema.types.QName;
 import org.nuxeo.ecm.core.schema.types.SchemaImpl;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
+import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.platform.uidgen.service.ServiceHelper;
 import org.nuxeo.ecm.platform.uidgen.service.UIDGeneratorService;
 import org.nuxeo.runtime.api.Framework;
@@ -48,16 +46,22 @@ public class TestUIDGeneratorService extends NXRuntimeTestCase {
 
     final Log log = LogFactory.getLog(TestUIDGeneratorService.class);
 
+    UIDGeneratorService service;
+
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
 
         deployBundle("org.nuxeo.ecm.core.schema");
+        deployBundle("org.nuxeo.ecm.core.event");
         deployBundle("org.nuxeo.ecm.core"); // for dublincore
+
         // define geide schema
         SchemaImpl sch = new SchemaImpl("geide");
-        sch.addField(QName.valueOf("application_emetteur"), new TypeRef<Type>(SchemaNames.BUILTIN, StringType.ID));
-        sch.addField(QName.valueOf("atelier_emetteur"), new TypeRef<Type>(SchemaNames.BUILTIN, StringType.ID));
+        sch.addField(QName.valueOf("application_emetteur"),
+                new TypeRef<Type>(SchemaNames.BUILTIN, StringType.ID));
+        sch.addField(QName.valueOf("atelier_emetteur"),
+                new TypeRef<Type>(SchemaNames.BUILTIN, StringType.ID));
         Framework.getLocalService(SchemaManager.class).registerSchema(sch);
 
         deployContrib("org.nuxeo.ecm.platform.uidgen.core.tests",
@@ -65,35 +69,8 @@ public class TestUIDGeneratorService extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.ecm.platform.uidgen.core.tests",
                 "nxuidgenerator-bundle-contrib.xml");
 
-    }
-
-    private CoreEventListenerService getListenerService() {
-        return NXCore.getCoreEventListenerService();
-    }
-
-    public void testServiceRegistration() {
-        CoreEventListenerService listenerService = getListenerService();
-        assertNotNull(listenerService);
-        EventListener dcListener = listenerService.getEventListenerByName("uidlistener");
-        assertNotNull(dcListener);
-        log.info("UIDGenerator listener registered");
-    }
-
-    public void testStorageService() {
-        UIDGeneratorService service = ServiceHelper.getUIDGeneratorService();
+        service = ServiceHelper.getUIDGeneratorService();
         assertNotNull(service);
-    }
-
-    private DocumentModel createDocumentModel(String type) throws Exception {
-        DocumentModelImpl docModel = new DocumentModelImpl(type);
-        Map<String, Object> dcMap = new HashMap<String, Object>();
-        dcMap.put("title", null);
-        dcMap.put("description", null);
-        docModel.addDataModel(new DataModelImpl("dublincore", dcMap));
-        Map<String, Object> geideMap = new HashMap<String, Object>();
-        geideMap.put("application_emetteur", null);
-        docModel.addDataModel(new DataModelImpl("geide", geideMap));
-        return docModel;
     }
 
     public void testUIDGenerator() throws Exception {
@@ -104,12 +81,23 @@ public class TestUIDGeneratorService extends NXRuntimeTestCase {
         gdoc.setProperty("dublincore", "description", "testGdoc_description");
         gdoc.setProperty("geide", "application_emetteur", "T4");
 
-        UIDGeneratorService service = ServiceHelper.getUIDGeneratorService();
         String uid = service.createUID(gdoc);
 
         final int year = new GregorianCalendar().get(Calendar.YEAR);
         final String expected = "T4" + year + "00001";
         assertEquals(expected, uid);
+    }
+
+    private static DocumentModel createDocumentModel(String type) {
+        DocumentModelImpl docModel = new DocumentModelImpl(type);
+        Map<String, Object> dcMap = new HashMap<String, Object>();
+        dcMap.put("title", null);
+        dcMap.put("description", null);
+        docModel.addDataModel(new DataModelImpl("dublincore", dcMap));
+        Map<String, Object> geideMap = new HashMap<String, Object>();
+        geideMap.put("application_emetteur", null);
+        docModel.addDataModel(new DataModelImpl("geide", geideMap));
+        return docModel;
     }
 
 }

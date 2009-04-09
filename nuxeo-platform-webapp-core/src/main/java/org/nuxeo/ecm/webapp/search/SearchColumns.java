@@ -41,11 +41,8 @@ public interface SearchColumns {
 
     /**
      * Declaration for [Seam]Create method.
-     *
-     * @throws ClientException
-     *
      */
-    void init() throws ClientException;
+    void init();
 
     @Remove
     @Destroy
@@ -54,8 +51,6 @@ public interface SearchColumns {
 
     /**
      * The list of schemas to be displayed.
-     *
-     * @return
      */
     List<FieldWidget> getResultColumns();
 
@@ -87,7 +82,7 @@ public interface SearchColumns {
 
     void setFieldRef2(String fieldRef2);
 
-    Map<String, FieldWidget> getFieldMap() throws ClientException;
+    Map<String, FieldWidget> getFieldMap();
 
     boolean getSortAscending();
 

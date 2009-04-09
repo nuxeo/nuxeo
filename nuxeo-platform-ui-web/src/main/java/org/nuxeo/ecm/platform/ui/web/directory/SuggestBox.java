@@ -22,17 +22,25 @@ package org.nuxeo.ecm.platform.ui.web.directory;
 import javax.ejb.Local;
 import javax.ejb.Remote;
 
-import org.jboss.seam.annotations.WebRemote;
+import org.jboss.seam.annotations.remoting.WebRemote;
+import org.nuxeo.ecm.platform.ui.web.util.SuggestionActionsBean;
 
-
+/**
+ * @deprecated, use {@link SuggestionActionsBean} with specific components to get
+ * search results from a given directory
+ *
+ * @author Anahide Tchertchian
+ */
 @Local
 @Remote
+@Deprecated
 public interface SuggestBox {
 
-    /*
-     *return values of a directory given its name, and the input.
-     *
+    /**
+     * return values of a directory given its name, and the input.
      */
     @WebRemote
-    String getSuggestedValues(String directoryName, String input) throws Exception;
+    String getSuggestedValues(String directoryName, String input)
+            throws Exception;
+
 }

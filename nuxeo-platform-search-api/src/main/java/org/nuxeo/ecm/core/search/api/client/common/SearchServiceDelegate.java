@@ -19,8 +19,6 @@
 
 package org.nuxeo.ecm.core.search.api.client.common;
 
-import java.io.Serializable;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.search.api.client.SearchService;
@@ -28,16 +26,12 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Search service stateless delegate.
- *
  * <p>
  * Helper to reach the search service.
- * </p>
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
-public final class SearchServiceDelegate implements Serializable {
-
-    private static final long serialVersionUID = -8140952341564417509L;
+public final class SearchServiceDelegate {
 
     private static final Log log = LogFactory.getLog(SearchServiceDelegate.class);
 
@@ -46,12 +40,10 @@ public final class SearchServiceDelegate implements Serializable {
     }
 
     /**
-     * Returns a distant search service.
-     *
+     * Returns a remote search service.
      * <p>
      * Returns null if an exception occurs.
      * XXX Should return an exception instead
-     * </p>
      *
      * @return a search service instance.
      */
@@ -66,16 +58,13 @@ public final class SearchServiceDelegate implements Serializable {
     }
 
     /**
-     *
      * Returns a local search service.
-     *
      * <p>
      * Returns null if an exception occurs
-     * </p>
      *
      * @return a search service instance
      */
-    public static SearchService getLocalSearchService() throws Exception {
+    public static SearchService getLocalSearchService() {
         return Framework.getLocalService(SearchService.class);
     }
 

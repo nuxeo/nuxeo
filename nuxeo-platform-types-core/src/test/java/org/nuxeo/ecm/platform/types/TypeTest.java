@@ -29,7 +29,7 @@ public class TypeTest extends NXRuntimeTestCase {
     TypeService typeService;
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.ecm.platform.types.core.tests",
                 "types-bundle.xml");
@@ -44,7 +44,6 @@ public class TypeTest extends NXRuntimeTestCase {
 
         Type type = typeService.getTypeRegistry().getType("MyDocType");
         assertEquals("MyDocType", type.getId());
-        assertEquals("MyDocType", type.getCoreType());
         assertEquals("type icon", type.getIcon());
         assertEquals("type label", type.getLabel());
 
@@ -121,7 +120,6 @@ public class TypeTest extends NXRuntimeTestCase {
         assertNotNull(type);
 
         assertEquals("MyDocType", type.getId());
-        assertEquals("MyDocType", type.getCoreType());
         assertEquals("type icon 2", type.getIcon());
         assertEquals("type label 2", type.getLabel());
 

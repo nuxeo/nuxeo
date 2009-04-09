@@ -22,8 +22,8 @@ package org.nuxeo.ecm.webapp.dashboard;
 import java.io.Serializable;
 import java.util.Date;
 
+import org.jbpm.graph.exe.ProcessInstance;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMProcessInstance;
 
 /**
  * Item holding information about a Document under a process.
@@ -45,11 +45,11 @@ public interface DocumentProcessItem extends Serializable {
     DocumentModel getDocumentModel();
 
     /**
-     * Returns the process identifier bound to a given documenñt.
+     * Returns the process identifier bound to a given document.
      *
      * @return a process instance identifier.
      */
-    WMProcessInstance getProcessInstance();
+    ProcessInstance getProcessInstance();
 
     /**
      * Return the bound document title.
@@ -71,7 +71,5 @@ public interface DocumentProcessItem extends Serializable {
      * @return the process instance name.
      */
     String getProcessInstanceName();
-
-
 
 }

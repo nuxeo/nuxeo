@@ -19,42 +19,57 @@
 
 package org.nuxeo.ecm.webapp.security;
 
-import java.util.List;
+import static org.jboss.seam.ScopeType.EVENT;
+
+import java.io.Serializable;
 
 import javax.ejb.Local;
-import javax.faces.model.SelectItem;
+import javax.faces.component.UIComponent;
+import javax.faces.context.FacesContext;
 
+import org.jboss.seam.annotations.Factory;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 
 /**
  * Provides user manager related operations.
  *
- * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
+ * @author Razvan Caraghin
  */
 @Local
-public interface GroupManagerActions {
+public interface GroupManagerActions extends Serializable {
 
-    void initialize() throws ClientException;
+    String ALL = "all";
 
-    String createGroup() throws ClientException;
+    String VALID_CHARS = "0123456789_-"
+            + "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
-    String deleteGroup() throws ClientException;
+    @Factory(value = "groupList", scope = EVENT)
+    DocumentModelList getGroups() throws ClientException;
 
-    void destroy();
+    void resetGroups();
 
-    void recomputeGroupList() throws ClientException;
-
-    String editGroup() throws ClientException;
+    String viewGroups();
 
     String viewGroup() throws ClientException;
 
-    String updateGroup() throws ClientException;
-
     String viewGroup(String groupName) throws ClientException;
 
-    String saveGroup() throws ClientException;
+    String editGroup() throws ClientException;
 
-    List<SelectItem> getAvailableGroups() throws ClientException;
+    DocumentModel getSelectedGroup();
+
+    DocumentModel getNewGroup() throws ClientException;
+
+    String deleteGroup() throws ClientException;
+
+    String updateGroup() throws ClientException;
+
+    void validateGroupName(FacesContext context, UIComponent component,
+            Object value);
+
+    String createGroup() throws ClientException;
 
     boolean getAllowCreateGroup() throws ClientException;
 
@@ -62,13 +77,13 @@ public interface GroupManagerActions {
 
     boolean getAllowEditGroup() throws ClientException;
 
-    String getSearchString() throws ClientException;
+    String getSearchString();
 
-    void setSearchString(String searchString) throws ClientException;
+    void setSearchString(String searchString);
 
-    String searchGroups() throws ClientException;
+    String searchGroups();
 
-    String clearSearch() throws ClientException;
+    String clearSearch();
 
     boolean isSearchOverflow();
 

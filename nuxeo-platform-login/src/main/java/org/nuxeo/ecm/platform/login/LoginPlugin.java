@@ -43,6 +43,7 @@ public interface LoginPlugin {
      *
      * @param pluginName the plugin name.
      */
+    // Not used. Remove?
     void setName(String pluginName);
 
     Map<String, String> getParameters();
@@ -53,6 +54,6 @@ public interface LoginPlugin {
 
     //public String validateUsernamePassword(String username, String password) throws Exception;
 
-    String validatedUserIdentity(UserIdentificationInfo userIdent) throws Exception;
+    String validatedUserIdentity(UserIdentificationInfo userIdent);
 
 }

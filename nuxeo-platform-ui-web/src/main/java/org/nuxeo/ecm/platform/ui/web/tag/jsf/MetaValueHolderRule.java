@@ -23,8 +23,6 @@ import javax.el.ValueExpression;
 import javax.faces.component.UIComponent;
 import javax.faces.component.ValueHolder;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.ui.web.binding.MetaValueExpression;
 
 import com.sun.facelets.FaceletContext;
@@ -42,11 +40,8 @@ import com.sun.facelets.tag.TagAttribute;
  * if no parameters are needed.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public class MetaValueHolderRule extends MetaRule {
-
-    private static final Log log = LogFactory.getLog(MetaValueHolderRule.class);
 
     static final class LiteralValueMetadata extends Metadata {
 

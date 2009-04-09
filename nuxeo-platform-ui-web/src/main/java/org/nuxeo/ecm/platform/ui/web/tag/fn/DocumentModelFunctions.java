@@ -38,7 +38,9 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
@@ -58,9 +60,7 @@ import org.nuxeo.ecm.platform.ui.web.rest.RestHelper;
 import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
-import org.nuxeo.ecm.platform.url.DocumentLocationImpl;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
-import org.nuxeo.ecm.platform.url.api.DocumentLocation;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.platform.url.codec.DocumentFileCodec;
 import org.nuxeo.runtime.api.Framework;
@@ -91,6 +91,10 @@ public final class DocumentModelFunctions implements LiveEditConstants {
 
     // static cache of default viewId per document type shared all among threads
     private static final Map<String, String> defaultViewCache = Collections.synchronizedMap(new HashMap<String, String>());
+
+    // Utility class.
+    private DocumentModelFunctions() {
+    }
 
     private static DirectoryService getDirectoryService() {
         if (dirService == null) {
@@ -139,10 +143,6 @@ public final class DocumentModelFunctions implements LiveEditConstants {
         }
     }
 
-    // Utility class.
-    private DocumentModelFunctions() {
-    }
-
     public static TypeInfo typeInfo(DocumentModel document) {
         if (document != null) {
             return document.getAdapter(TypeInfo.class);
@@ -176,7 +176,11 @@ public final class DocumentModelFunctions implements LiveEditConstants {
     public static String iconPath(DocumentModel document) {
         String iconPath = "";
         if (document != null) {
-            iconPath = (String) document.getProperty("common", "icon");
+            try {
+                iconPath = (String) document.getProperty("common", "icon");
+            } catch (ClientException e) {
+                iconPath = null;
+            }
             if (iconPath == null || iconPath.length() == 0
                     || document.getType().equals("Workspace")) {
                 TypeInfo typeInfo = document.getAdapter(TypeInfo.class);
@@ -191,7 +195,11 @@ public final class DocumentModelFunctions implements LiveEditConstants {
     public static String iconExpandedPath(DocumentModel document) {
         String iconPath = "";
         if (document != null) {
-            iconPath = (String) document.getProperty("common", "icon-expanded");
+            try {
+                iconPath = (String) document.getProperty("common", "icon-expanded");
+            } catch (ClientException e) {
+                iconPath = null;
+            }
             if (iconPath == null || iconPath.length() == 0) {
                 TypeInfo typeInfo = document.getAdapter(TypeInfo.class);
                 if (typeInfo != null) {
@@ -228,7 +236,11 @@ public final class DocumentModelFunctions implements LiveEditConstants {
     public static String titleOrId(DocumentModel document) {
         String title = null;
         if (document != null) {
-            title = (String) document.getProperty("dublincore", "title");
+            try {
+                title = (String) document.getProperty("dublincore", "title");
+            } catch (ClientException e) {
+                title = null;
+            }
             if (title == null || title.length() == 0) {
                 title = document.getId();
             }
@@ -250,13 +262,11 @@ public final class DocumentModelFunctions implements LiveEditConstants {
         if (document == null) {
             return false;
         }
-        CoreSession session;
+
+        CoreSession session = (CoreSession) Component.getInstance("documentManager", ScopeType.CONVERSATION);
+
         boolean sessionOpened = false;
-
-        session = (CoreSession) Component.getInstance("documentManager", ScopeType.CONVERSATION);
-
         if (session == null) {
-
             String sid = document.getSessionId();
             if (sid != null) {
                 session = CoreInstance.getInstance().getSession(sid);
@@ -278,7 +288,6 @@ public final class DocumentModelFunctions implements LiveEditConstants {
                         + document.getTitle() + " with sid=" + sid);
                 return false;
             }
-
         }
 
         boolean granted = session.hasPermission(document.getRef(), permission);

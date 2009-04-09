@@ -85,7 +85,7 @@ public abstract class SearchEngineBackendTestCase extends NXRuntimeTestCase {
         return (SearchServiceInternals) service;
     }
 
-    public void testRegistration() throws Exception {
+    public void testRegistration() {
         assertEquals(1,
                 getSearchServiceInternals().getSearchEngineBackends().size());
         SearchEngineBackend backend = getBackend();
@@ -93,17 +93,17 @@ public abstract class SearchEngineBackendTestCase extends NXRuntimeTestCase {
         assertEquals(ENGINE_NAME, backend.getName());
     }
 
-    public SearchEngineBackend getBackend() throws Exception {
+    public SearchEngineBackend getBackend() {
         return getSearchServiceInternals().getSearchEngineBackendByName(
                 ENGINE_NAME);
     }
 
-    private ComposedNXQuery composeQuery(String query) {
+    private static ComposedNXQuery composeQuery(String query) {
         SQLQuery nxqlQuery = SQLQueryParser.parse(query);
         return new ComposedNXQueryImpl(nxqlQuery);
     }
 
-    private ComposedNXQuery composeQuery(String query, String name,
+    private static ComposedNXQuery composeQuery(String query, String name,
             String... groups) {
         SQLQuery nxqlQuery = SQLQueryParser.parse(query);
         return new ComposedNXQueryImpl(nxqlQuery, new SearchPrincipalImpl(name,
@@ -497,7 +497,6 @@ public abstract class SearchEngineBackendTestCase extends NXRuntimeTestCase {
                         + " LIKE '+about +life optional stuff'"), 0, 100);
         assertEquals(1, results.getTotalHits());
         assertEquals("About Life", results.get(0).get("dc:title"));
-
     }
 
     /*
@@ -572,7 +571,6 @@ public abstract class SearchEngineBackendTestCase extends NXRuntimeTestCase {
         assertEquals("1350004", results.get(0).get("bk:barcode"));
         assertEquals("1350005", results.get(1).get("bk:barcode"));
         assertEquals("1350006", results.get(2).get("bk:barcode"));
-
     }
 
     public void testResultItem() throws Exception {
@@ -762,7 +760,6 @@ public abstract class SearchEngineBackendTestCase extends NXRuntimeTestCase {
                 composeQuery("SELECT * FROM Document WHERE bk:tags = ()"), 0, 2);
         assertEquals(1, results.getTotalHits());
         assertEquals("War and Peace", results.get(0).get("Title"));
-
     }
 
     public void testIntOrderClauses() throws Exception {
@@ -829,12 +826,9 @@ public abstract class SearchEngineBackendTestCase extends NXRuntimeTestCase {
         // Now a text field that's not declared as sortable. We can get a
         // QueryException and nothing else
 
-        try {
-            results = backend.searchQuery(
-                    composeQuery("SELECT * FROM Document ORDER BY bk:abstract"),
-                    0, 100);
-        } catch (QueryException e) {
-        }
+        results = backend.searchQuery(
+                composeQuery("SELECT * FROM Document ORDER BY bk:abstract"),
+                0, 100);
         // don't catch other exceptions, to get the stack trace
     }
 
@@ -902,13 +896,12 @@ public abstract class SearchEngineBackendTestCase extends NXRuntimeTestCase {
         // Book is declared to extend Folder
         assertEquals(1, backend.searchQuery(
                 composeQuery("SELECT * FROM Folder"), 0, 100).getTotalHits());
-        try {
-            @SuppressWarnings("unused")
-            ResultSet dummy = backend.searchQuery(
-                    composeQuery("SELECT * FROM Unknown"), 0, 1);
-            fail("Expected a QueryException");
-        } catch (QueryException e) {
-        }
+
+        // XXX: fixme ?
+        @SuppressWarnings("unused")
+        ResultSet dummy = backend.searchQuery(
+                composeQuery("SELECT * FROM Unknown"), 0, 1);
+        fail("Expected a QueryException");
 
         // FROM and WHERE
         assertEquals(1, backend.searchQuery(

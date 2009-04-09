@@ -85,14 +85,12 @@ public class DocumentBuiltinsIndexableResourceFactory extends
     }
 
     public IndexableResource createIndexableResourceFrom(
-            Serializable targetResource, IndexableResourceConf conf, String sid)
-            throws IndexingException {
+            Serializable targetResource, IndexableResourceConf conf, String sid) {
         return new DocumentBuiltinsIndexableResourceImpl(
                 (DocumentModel) targetResource, conf, sid);
     }
 
-    public ResolvedResources resolveResourcesFor(IndexableResource resource)
-            throws IndexingException {
+    public ResolvedResources resolveResourcesFor(IndexableResource resource) {
         // TODO Auto-generated method stub
         return null;
     }

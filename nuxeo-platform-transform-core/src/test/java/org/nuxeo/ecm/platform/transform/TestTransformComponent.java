@@ -30,10 +30,11 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestTransformComponent extends NXRuntimeTestCase {
+
     private TransformServiceCommon service;
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.ecm.platform.transform.tests",
                 "PlatformService.xml");

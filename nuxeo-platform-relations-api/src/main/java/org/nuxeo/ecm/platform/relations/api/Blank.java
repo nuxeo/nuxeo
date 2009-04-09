@@ -23,11 +23,11 @@ package org.nuxeo.ecm.platform.relations.api;
  * Blank node.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
-public interface Blank extends Node, Subject {
+public interface Blank extends Subject {
 
     String getId();
 
     void setId(String id);
+
 }

@@ -84,8 +84,7 @@ public class TypeService extends DefaultComponent implements TypeManager {
         for (Object contrib : contribs) {
             Type type = (Type) contrib;
             String typeId = type.getId();
-            Boolean remove = type.getRemove();
-            if (remove != null && remove) {
+            if (type.getRemove()) {
                 log.debug("Removing type with id " + typeId);
                 typeRegistry.removeType(typeId);
             } else {
@@ -263,12 +262,6 @@ public class TypeService extends DefaultComponent implements TypeManager {
             }
         }
         return allowed;
-    }
-
-    @Deprecated
-    public String getDefaultWidget(String fieldType) {
-        log.warn("getDefaultWidget: this method is deprecated, use the new layout system instead");
-        return typeWidgetRegistry.getMap().get(fieldType);
     }
 
 }

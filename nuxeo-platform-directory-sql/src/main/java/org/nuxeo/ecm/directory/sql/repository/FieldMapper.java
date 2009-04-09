@@ -33,11 +33,6 @@ public class FieldMapper {
     private FieldMapper() {
     }
 
-    /**
-     * @param name
-     * @return
-     * @throws DirectoryException
-     */
     public static int getSqlField(String name) throws DirectoryException {
         if (name.equals("integer")) {
             return Types.INTEGER;

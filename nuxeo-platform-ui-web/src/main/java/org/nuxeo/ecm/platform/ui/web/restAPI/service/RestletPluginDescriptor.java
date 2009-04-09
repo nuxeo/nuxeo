@@ -25,6 +25,7 @@ import java.util.List;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.restlet.Restlet;
 
 /**
  * Descriptor for a Restlet
@@ -38,25 +39,28 @@ public class RestletPluginDescriptor {
     private String name;
 
     @XNode("@enabled")
-    private Boolean enabled = true;
+    private Boolean enabled = Boolean.TRUE;
 
     @XNodeList(value = "urlPatterns/urlPattern", type = ArrayList.class, componentType = String.class)
     private List<String> urlPatterns = new ArrayList<String>();
 
     @XNode("@useSeam")
-    private Boolean useSeam;
+    private boolean useSeam;
 
     @XNode("@useConversation")
-    private Boolean useConversation=false;
+    private boolean useConversation;
 
     @XNode("@class")
-    private Class className;
+    private Class<Restlet> className;
 
-    public Class getClassName() {
+    @XNode("@isSingleton")
+    private boolean isSingleton = Boolean.FALSE;
+
+    public Class<Restlet> getClassName() {
         return className;
     }
 
-    public void setClassName(Class className) {
+    public void setClassName(Class<Restlet> className) {
         this.className = className;
     }
 
@@ -84,20 +88,28 @@ public class RestletPluginDescriptor {
         this.urlPatterns = urlPatterns;
     }
 
-    public Boolean getUseSeam() {
+    public boolean getUseSeam() {
         return useSeam;
     }
 
-    public void setUseSeam(Boolean useSeam) {
+    public void setUseSeam(boolean useSeam) {
         this.useSeam = useSeam;
     }
 
-    public Boolean getUseConversation() {
+    public boolean getUseConversation() {
         return useConversation;
     }
 
-    public void setUseConversation(Boolean useConversation) {
+    public void setUseConversation(boolean useConversation) {
         this.useConversation = useConversation;
+    }
+
+    public boolean isSingleton() {
+        return isSingleton;
+    }
+
+    public void setIsSingleton(boolean isSingleton) {
+        this.isSingleton = isSingleton;
     }
 
 }

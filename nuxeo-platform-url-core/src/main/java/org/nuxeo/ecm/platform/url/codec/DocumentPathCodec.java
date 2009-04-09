@@ -27,13 +27,12 @@ import java.util.regex.Pattern;
 
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.common.utils.URIUtils;
+import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.platform.url.DocumentLocationImpl;
+import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
-import org.nuxeo.ecm.platform.url.api.DocumentLocation;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
-import org.nuxeo.ecm.platform.url.codec.api.DocumentViewCodec;
 import org.nuxeo.ecm.platform.url.service.AbstractDocumentViewCodec;
 
 /**
@@ -42,13 +41,13 @@ import org.nuxeo.ecm.platform.url.service.AbstractDocumentViewCodec;
  *
  * @author Anahide Tchertchian
  */
-public class DocumentPathCodec extends AbstractDocumentViewCodec implements
-        DocumentViewCodec {
+public class DocumentPathCodec extends AbstractDocumentViewCodec {
 
     public static final String PREFIX = "nxpath";
 
     // nxpath/server/path/to/doc@view_id/?requestParams
-    public static final String URLPattern = "/([\\w\\.]+)(/([\\w/\\-\\.]*))?(@([\\w\\-\\.]+))(/)?(\\?(.*)?)?";
+    public static final String URLPattern
+            = "/([\\w\\.]+)(/([\\w/\\-\\.]*))?(@([\\w\\-\\.]+))(/)?(\\?(.*)?)?";
 
     public DocumentPathCodec() {
     }
@@ -94,7 +93,7 @@ public class DocumentPathCodec extends AbstractDocumentViewCodec implements
     }
 
     /**
-     * Extracts document location from a Zope-like URL ie :
+     * Extracts document location from a Zope-like URL, eg:
      * server/path_or_docId/view_id/tab_id .
      */
     public DocumentView getDocumentViewFromUrl(String url) {

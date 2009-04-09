@@ -23,9 +23,9 @@ import java.util.Collection;
 /**
  * The directory interface.
  * <p>
- * This interface is implemented in order to create an NXDirectory.
- * One should implement this interface in order to create either
- * a new Directory implementation or a new Directory Source.
+ * This interface is implemented in order to create an NXDirectory. One should
+ * implement this interface in order to create either a new Directory
+ * implementation or a new Directory Source.
  *
  * @author glefter@nuxeo.com
  */
@@ -47,7 +47,6 @@ public interface Directory {
      * @throws DirectoryException
      */
     String getSchema() throws DirectoryException;
-
 
     /**
      * Gets the name of the parent directory. This is used for hierarchical
@@ -85,7 +84,6 @@ public interface Directory {
      * Shuts down the directory.
      *
      * @throws DirectoryException
-     *
      */
     void shutdown() throws DirectoryException;
 
@@ -96,7 +94,6 @@ public interface Directory {
      * @throws DirectoryException if a session cannot be created
      */
     Session getSession() throws DirectoryException;
-
 
     /**
      * Lookup a Reference by field name.

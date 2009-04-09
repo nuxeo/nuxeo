@@ -41,13 +41,12 @@ public class EjbSequencerFactory implements UIDSequencerFactory {
         try {
             return getSequencerManager();
         } catch (NamingException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error(e);
             return null;
         }
     }
 
-    private UIDSequencerManager getSequencerManager() throws NamingException {
+    private static UIDSequencerManager getSequencerManager() throws NamingException {
         final InitialContext ctx = new InitialContext();
         try {
         return (UIDSequencerManager) ctx

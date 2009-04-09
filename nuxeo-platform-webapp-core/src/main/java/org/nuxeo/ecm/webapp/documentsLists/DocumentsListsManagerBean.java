@@ -282,8 +282,7 @@ public class DocumentsListsManagerBean extends BaseDocumentsListsManager
 
     // Event listener
     @Observer(value = { EventNames.FOLDERISHDOCUMENT_SELECTION_CHANGED }, create = false)
-    public void refreshLists(DocumentModel currentDocument)
-            throws ClientException {
+    public void refreshLists(DocumentModel currentDocument) {
 
         if (lastDocumentRef != null
                 && lastDocumentRef.equals(currentDocument.getRef())) {

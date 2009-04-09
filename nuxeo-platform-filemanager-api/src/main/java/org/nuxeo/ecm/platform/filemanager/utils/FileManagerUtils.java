@@ -25,8 +25,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -35,8 +33,6 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 
 public final class FileManagerUtils {
-
-    private static final Log log = LogFactory.getLog(FileManagerUtils.class);
 
     // This is an utility class
     private FileManagerUtils() {
@@ -84,22 +80,24 @@ public final class FileManagerUtils {
      */
     public static String fetchFileName(File file) throws MalformedURLException {
         // Fetching filename
-        URL pathUrl = file.toURL();
+        URL pathUrl = file.toURI().toURL();
         String[] pathArray = pathUrl.getFile().split("/");
         return pathArray[pathArray.length - 1];
     }
 
     /**
-     * Returns the fileName of an uploadedfile.
+     * Returns the fileName of an uploaded file.
      *
      * @param fullName the full name that we need to parse
      * @return the FileName String
      */
+    // FIXME: badly named method
+    // FIXME: doesn't work in some corner cases, for instance a Unix filename with a \, or a DOS file with a /
     public static String fetchFileName(String fullName) {
         // Fetching filename
         String ret = fullName;
-        int lastWinSeparator = fullName.lastIndexOf("\\");
-        int lastUnixSeparator = fullName.lastIndexOf("/");
+        int lastWinSeparator = fullName.lastIndexOf('\\');
+        int lastUnixSeparator = fullName.lastIndexOf('/');
         int lastSeparator = Math.max(lastWinSeparator, lastUnixSeparator);
         if (lastSeparator != -1) {
             ret = fullName.substring(lastSeparator + 1, fullName.length());
@@ -118,10 +116,10 @@ public final class FileManagerUtils {
             return filename;
         }
         // Fetching title
-        int dot = filename.lastIndexOf(".");
+        int dot = filename.lastIndexOf('.');
         String title = filename;
         if (dot != -1) {
-            title = filename.substring(0, filename.lastIndexOf("."));
+            title = filename.substring(0, filename.lastIndexOf('.'));
         }
         return title;
     }

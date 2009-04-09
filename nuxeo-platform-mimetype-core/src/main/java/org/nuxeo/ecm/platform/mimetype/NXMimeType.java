@@ -35,7 +35,8 @@ public final class NXMimeType {
     }
 
     public static MimetypeRegistryService getMimetypeRegistryService() {
-        return (MimetypeRegistryService) Framework.getRuntime().getComponent(
+        return (MimetypeRegistryService)
+                Framework.getRuntime().getComponent(
                 MimetypeRegistryService.NAME);
     }
 }

@@ -28,8 +28,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
-import org.nuxeo.ecm.platform.comment.service.CommentService;
-import org.nuxeo.ecm.platform.comment.service.CommentServiceHelper;
 import org.nuxeo.ecm.platform.relations.api.QNameResource;
 import org.nuxeo.ecm.platform.relations.api.RelationManager;
 import org.nuxeo.ecm.platform.relations.api.Resource;
@@ -45,9 +43,9 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class RelationsTestHelper {
 
-    private static final Log log = LogFactory.getLog(RelationsTestHelper.class);
-
     public static final String DOCUMENT_NAMESPACE = "http://www.nuxeo.org/document/uid/";
+
+    private static final Log log = LogFactory.getLog(RelationsTestHelper.class);
 
     private static RelationManager relationManager;
 
@@ -65,11 +63,7 @@ public class RelationsTestHelper {
 
     public static DocumentModel createComment(DocumentModel docModel,
             DocumentModel comment) throws Exception {
-
-        CommentService csHelper = CommentServiceHelper.getCommentService();
-        DocumentModel createdComment = getCommentManager().createComment(
-                docModel, comment);
-        return createdComment;
+        return getCommentManager().createComment(docModel, comment);
     }
 
     public static CommentManager getCommentManager() throws Exception {
@@ -115,15 +109,15 @@ public class RelationsTestHelper {
     }
 
     public static void checkRelation() {
-
     }
 
     private static QNameResource getDocumentResource(DocumentModel document) throws Exception {
         QNameResource documentResource = null;
         if (document != null) {
             documentResource = (QNameResource) relationManager.getResource(
-                    DOCUMENT_NAMESPACE, document);
+                    DOCUMENT_NAMESPACE, document, null);
         }
         return documentResource;
     }
+
 }

@@ -39,20 +39,17 @@ import org.jboss.seam.annotations.Create;
 import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.RequestParameter;
+import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.datamodel.DataModel;
 import org.jboss.seam.contexts.Context;
-import org.nuxeo.ecm.core.api.AlreadyConnectedException;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
 import org.nuxeo.ecm.platform.interfaces.ejb.ECContentRoot;
 import org.nuxeo.ecm.platform.ui.web.api.UserAction;
-import org.nuxeo.ecm.platform.util.ECInvalidParameterException;
 import org.nuxeo.ecm.webapp.base.InputController;
 import org.nuxeo.ecm.webapp.table.cell.AbstractTableCell;
 import org.nuxeo.ecm.webapp.table.cell.DateTableCell;
@@ -73,11 +70,11 @@ import org.nuxeo.ecm.webapp.table.row.TableRow;
  * domain.
  *
  * @author <a href="mailto:npaslaru@nuxeo.com">Narcis Paslaru</a>
- *
  */
 @Name("contentRootsActions")
 @Scope(SESSION)
 @Deprecated
+@SuppressWarnings({"ALL"})
 public class ContentRootsActionsBean extends InputController implements
         ContentRootsActions, Serializable {
 
@@ -99,7 +96,7 @@ public class ContentRootsActionsBean extends InputController implements
     @In
     protected transient Context sessionContext;
 
-    @In(required = true, create = true)
+    @In(create = true)
     protected transient ECContentRoot ecContentRoot;
 
     DocumentModel currentItem;
@@ -150,7 +147,7 @@ public class ContentRootsActionsBean extends InputController implements
                     .getSelectedDocModel();
             return navigationContext.getActionResult(doc, UserAction.VIEW);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -162,13 +159,12 @@ public class ContentRootsActionsBean extends InputController implements
                     .getSelectedDocModel();
             return navigationContext.getActionResult(doc, UserAction.VIEW);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
     // TODO a editSections method is alse necessary
-    public String editWorkspace() throws AlreadyConnectedException,
-            ClientException, ECInvalidParameterException {
+    public String editWorkspace() throws ClientException {
         sessionContext.set("changeableDocument",
                 getWorkspacesTableModel().getSelectedDocModel());
 
@@ -186,7 +182,7 @@ public class ContentRootsActionsBean extends InputController implements
             return navigationContext
                     .getActionResult(doc, UserAction.AFTER_EDIT);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -199,44 +195,29 @@ public class ContentRootsActionsBean extends InputController implements
 
     /**
      * Lazy getter to return the list of workspace type documents.
-     *
-     * @return
-     * @throws AlreadyConnectedException
-     * @throws ClientException
-     * @throws ECInvalidParameterException
      */
     protected List<DocumentModel> getWorkspacesChildren()
-            throws AlreadyConnectedException, ClientException,
-            ECInvalidParameterException {
+            throws ClientException {
         if (null == workspacesChildren) {
             getWorkspaces();
         }
-
         return workspacesChildren;
     }
 
     /**
      * Lazy getter to return the list of section type documents.
-     *
-     * @return
-     * @throws AlreadyConnectedException
-     * @throws ClientException
-     * @throws ECInvalidParameterException
      */
     protected List<DocumentModel> getSectionsChildren()
-            throws AlreadyConnectedException, ClientException,
-            ECInvalidParameterException {
+            throws ClientException {
         if (null == sectionsChildren) {
             getSections();
         }
-
         return sectionsChildren;
     }
 
     // @Observer( { EventNames.DOMAIN_SELECTION_CHANGED })
     // @Factory("contentRootChildrenList")
-    public void getWorkspaces() throws ClientException,
-            AlreadyConnectedException, ECInvalidParameterException {
+    public void getWorkspaces() throws ClientException {
         try {
             String selectedTab = "";
             // we display workspaces first
@@ -253,16 +234,15 @@ public class ContentRootsActionsBean extends InputController implements
                     selectedTab, currentDomain.getRef(), documentManager);
 
             log.debug("Retrieved workspace type children for domain: "
-                    + currentDomain + " " + workspacesChildren);
+                    + currentDomain + ' ' + workspacesChildren);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
     // @Observer( { EventNames.DOMAIN_SELECTION_CHANGED })
     // @Factory("contentRootChildrenList")
-    public void getSections() throws ClientException,
-            AlreadyConnectedException, ECInvalidParameterException {
+    public void getSections() throws ClientException {
         try {
             String selectedTab = "";
             // we display workspaces first
@@ -279,9 +259,9 @@ public class ContentRootsActionsBean extends InputController implements
                     selectedTab, currentDomain.getRef(), documentManager);
 
             log.debug("Retrieved workspace type children for domain: "
-                    + currentDomain + " " + sectionsChildren);
+                    + currentDomain + ' ' + sectionsChildren);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -293,19 +273,17 @@ public class ContentRootsActionsBean extends InputController implements
         contentRootDocuments = null;
     }
 
-    protected List<DocumentModel> getContentRoots()
-            throws AlreadyConnectedException, ClientException {
+    protected List<DocumentModel> getContentRoots() throws ClientException {
         if (null == contentRootDocuments) {
             getContentRootDocuments();
         }
-
         return contentRootDocuments;
     }
 
     // @Observer( { EventNames.DOMAIN_SELECTION_CHANGED })
     // @Factory("contentRootDocumentList")
     public List<DocumentModel> getContentRootDocuments()
-            throws ClientException, AlreadyConnectedException {
+            throws ClientException {
         try {
             contentRootDocuments = ecContentRoot.getContentRootDocuments(
                     currentDomain.getRef(), documentManager);
@@ -315,20 +293,15 @@ public class ContentRootsActionsBean extends InputController implements
 
             return contentRootDocuments;
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
     /**
      * Returns the type of documents that should be under this content root doc.
-     *
-     * @param type
-     * @return
-     * @throws ClientException
-     * @throws AlreadyConnectedException
      */
     protected DocumentModel getContentRootWithType(String type)
-            throws AlreadyConnectedException, ClientException {
+            throws ClientException {
         for (DocumentModel rightDocModel : getContentRoots()) {
             if (type.equalsIgnoreCase((String) rightDocModel.getProperty(
                     "dublincore", "description"))) {
@@ -366,19 +339,15 @@ public class ContentRootsActionsBean extends InputController implements
                         || !getSectionsTableModel().getSelectedRows().isEmpty())
                     && currentItem.isFolder();
         } catch (Exception e) {
-            throw EJBExceptionHandler.wrapException(e);
+            throw ClientException.wrap(e);
         }
     }
 
     public List<DocumentModel> copy() throws ClientException {
-        try {
-            List<DocumentModel> selectedDocs = new ArrayList<DocumentModel>();
-            selectedDocs.addAll(getWorkspacesTableModel().getSelectedDocs());
-            selectedDocs.addAll(getSectionsTableModel().getSelectedDocs());
-            return selectedDocs;
-        } catch (ECInvalidParameterException e) {
-            throw EJBExceptionHandler.wrapException(e);
-        }
+        List<DocumentModel> selectedDocs = new ArrayList<DocumentModel>();
+        selectedDocs.addAll(getWorkspacesTableModel().getSelectedDocs());
+        selectedDocs.addAll(getSectionsTableModel().getSelectedDocs());
+        return selectedDocs;
     }
 
     public void removeDocumentFromList(DocumentModel doc) {
@@ -386,7 +355,7 @@ public class ContentRootsActionsBean extends InputController implements
     }
 
     public DocModelTableModel reconstructWorkspacesTableModel()
-            throws ClientException, ECInvalidParameterException {
+            throws ClientException {
         List<TableColHeader> headers = new ArrayList<TableColHeader>();
 
         TableColHeader header = new CheckBoxColHeader(
@@ -413,20 +382,13 @@ public class ContentRootsActionsBean extends InputController implements
             rows.add(createDataTableRow(doc));
         }
 
-        if (workspacesTableModel != null) {
-            cacheUpdateNotifier.removeCacheListener(workspacesTableModel);
-        }
-
         workspacesTableModel = new DocModelTableModel(headers, rows);
-
         workspacesTableModel.setSort("label.content.header.title");
-        cacheUpdateNotifier.addCacheListener(workspacesTableModel);
-
         return workspacesTableModel;
     }
 
     public DocModelTableModel reconstructSectionsTableModel()
-            throws ClientException, ECInvalidParameterException {
+            throws ClientException {
         List<TableColHeader> headers = new ArrayList<TableColHeader>();
 
         TableColHeader header = new CheckBoxColHeader(
@@ -453,44 +415,29 @@ public class ContentRootsActionsBean extends InputController implements
             rows.add(createDataTableRow(doc));
         }
 
-        if (workspacesTableModel != null) {
-            cacheUpdateNotifier.removeCacheListener(sectionsTableModel);
-        }
-
         sectionsTableModel = new DocModelTableModel(headers, rows);
-
         sectionsTableModel.setSort("label.content.header.title");
-        cacheUpdateNotifier.addCacheListener(sectionsTableModel);
-
         return sectionsTableModel;
     }
 
     public DocModelTableModel getWorkspacesTableModel()
-            throws AlreadyConnectedException, ClientException,
-            ECInvalidParameterException {
+            throws ClientException {
         if (null == workspacesTableModel) {
             workspacesTableModel = reconstructWorkspacesTableModel();
         }
-
         return workspacesTableModel;
     }
 
     public DocModelTableModel getSectionsTableModel()
-            throws AlreadyConnectedException, ClientException,
-            ECInvalidParameterException {
+            throws ClientException {
         if (null == sectionsTableModel) {
             sectionsTableModel = reconstructSectionsTableModel();
         }
-
         return sectionsTableModel;
     }
 
     /**
      * Creates a custom table row based on a {@link DocumentModel}.
-     *
-     * @param doc
-     * @return
-     * @throws ClientException
      */
     protected DocModelTableRow createDataTableRow(DocumentModel doc)
             throws ClientException {
@@ -537,9 +484,7 @@ public class ContentRootsActionsBean extends InputController implements
         return row;
     }
 
-    public void selectAllRows(boolean checked)
-            throws AlreadyConnectedException, ClientException,
-            ECInvalidParameterException {
+    public void selectAllRows(boolean checked) throws ClientException {
         getWorkspacesTableModel().selectAllRows(checked);
         getSectionsTableModel().selectAllRows(checked);
     }

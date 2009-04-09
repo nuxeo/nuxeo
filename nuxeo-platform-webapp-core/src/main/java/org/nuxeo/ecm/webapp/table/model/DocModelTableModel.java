@@ -28,7 +28,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.cache.CacheListener;
 import org.nuxeo.ecm.webapp.table.header.TableColHeader;
 import org.nuxeo.ecm.webapp.table.row.DocModelTableRow;
 import org.nuxeo.ecm.webapp.table.row.TableRow;
@@ -37,8 +36,9 @@ import org.nuxeo.ecm.webapp.table.row.TableRow;
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
  *
  */
+@SuppressWarnings({"ALL"})
 @Deprecated
-public class DocModelTableModel extends TableModel implements CacheListener {
+public class DocModelTableModel extends TableModel {
     private static final long serialVersionUID = -2063444397095908727L;
 
     private static final Log log = LogFactory.getLog(DocModelTableModel.class);
@@ -158,21 +158,19 @@ public class DocModelTableModel extends TableModel implements CacheListener {
     public void documentRemove(DocumentModel docModel) {
         try {
             boolean removed = removeRow(docModel);
-            log.info("<documentRemove> removed: " + removed);
+            log.debug("<documentRemove> removed: " + removed);
         } catch (ClientException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            // TODO: more robust exception handling?
+            log.error(e);
         }
     }
 
     public void documentRemoved(String fqn) {
         // TODO Auto-generated method stub
-
     }
 
     public void documentUpdate(DocumentModel docModel, boolean pre) {
         // TODO Auto-generated method stub
-
     }
     // CacheListener intf implementation - end
     // --------------------------------------------------------

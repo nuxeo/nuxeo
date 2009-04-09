@@ -33,7 +33,6 @@ import org.nuxeo.ecm.core.api.DocumentRef;
  * Workspace specific operations.
  *
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
- *
  */
 @Remote
 public interface ECContentRoot {
@@ -41,28 +40,20 @@ public interface ECContentRoot {
     /**
      * Removes the instance from the container once the client has no more
      * business with it.
-     *
      */
     @Remove
     void remove();
 
     /**
      * Returns the children list of the specified content root document.
-     *
-     * @return
-     * @throws ClientException
      */
     List<DocumentModel> getContentRootChildren(String documentType,
             DocumentRef documentRef, CoreSession handle) throws ClientException;
 
     /**
      * Retrieves the content root documents associated with a specific domain.
-     *
-     * @param docRef
-     * @param handle
-     * @return
-     * @throws ClientException
      */
     List<DocumentModel> getContentRootDocuments(DocumentRef docRef,
             CoreSession handle) throws ClientException;
+
 }

@@ -275,12 +275,9 @@ public interface DocumentsListsManager {
 
     /**
      * Method called by Seam event service to reset lists.
-     *
-     * @throws ClientException
      */
     @Observer(value={ EventNames.DOCUMENT_SELECTION_CHANGED }, create=false)
-    void refreshLists(DocumentModel currentDocument)
-            throws ClientException;
+    void refreshLists(DocumentModel currentDocument);
 
     /**
      * Removes documentsToRemove from all lists.

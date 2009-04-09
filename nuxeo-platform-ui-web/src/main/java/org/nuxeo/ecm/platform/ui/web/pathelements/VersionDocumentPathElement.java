@@ -43,7 +43,7 @@ public class VersionDocumentPathElement extends DocumentPathElement {
             VersioningDocument docVer = docModel.getAdapter(VersioningDocument.class);
             String minorVer = docVer.getMinorVersion().toString();
             String majorVer = docVer.getMajorVersion().toString();
-            return majorVer.concat(".").concat(minorVer);
+            return majorVer + '.' + minorVer;
         } catch (DocumentException e) {
             throw new RuntimeException("failed to compute document version", e);
         }

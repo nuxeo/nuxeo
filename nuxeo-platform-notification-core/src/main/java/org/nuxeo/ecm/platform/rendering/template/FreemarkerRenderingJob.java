@@ -30,7 +30,7 @@ import org.nuxeo.ecm.platform.rendering.RenderingResult;
  */
 public interface FreemarkerRenderingJob {
 
-    Writer getWriter() throws IOException;
+    Writer getWriter();
 
     String getTemplate();
 

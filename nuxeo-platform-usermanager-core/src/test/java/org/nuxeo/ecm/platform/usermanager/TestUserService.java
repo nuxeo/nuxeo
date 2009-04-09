@@ -37,7 +37,7 @@ public class TestUserService extends NXRuntimeTestCase {
     UserManager userManager;
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.ecm.platform.usermanager",
                 "OSGI-INF/UserService.xml");
@@ -46,7 +46,7 @@ public class TestUserService extends NXRuntimeTestCase {
         userManager = Framework.getService(UserManager.class);
     }
 
-    public void testGetUserManagerFromFramework() throws Exception {
+    public void testGetUserManagerFromFramework() {
         assertNotNull(userManager);
     }
 
@@ -73,12 +73,40 @@ public class TestUserService extends NXRuntimeTestCase {
         assertEquals("members", fum.groupMembersField);
         assertEquals("subg", fum.groupSubGroupsField);
         assertEquals("parentg", fum.groupParentGroupsField);
+
         // anonymous user
         Map<String, String> props = new HashMap<String, String>();
         props.put("first", "Anonymous");
         props.put("last", "Coward");
-        props.put(UserManager.ANONYMOUS_USER_ID_KEY, "Guest");
-        assertEquals(props, fum.anonymousUser);
+        assertEquals("Guest", fum.getAnonymousUserId());
+        assertEquals(props, fum.anonymousUser.getProperties());
+
+        // virtual users
+        // custom admin
+        assertTrue(fum.virtualUsers.containsKey("MyCustomAdministrator"));
+        VirtualUser customAdmin = fum.virtualUsers.get("MyCustomAdministrator");
+        assertNotNull(customAdmin);
+        assertEquals("MyCustomAdministrator", customAdmin.getId());
+        assertEquals(1, customAdmin.getGroups().size());
+        assertTrue(customAdmin.getGroups().contains("administrators"));
+        assertEquals("secret", customAdmin.getPassword());
+        props.clear();
+        props.put("first", "My Custom");
+        props.put("last", "Administrator");
+        assertEquals(props, customAdmin.getProperties());
+        // custom member
+        assertTrue(fum.virtualUsers.containsKey("MyCustomMember"));
+        VirtualUser customMember = fum.virtualUsers.get("MyCustomMember");
+        assertNotNull(customMember);
+        assertEquals("MyCustomMember", customMember.getId());
+        assertEquals(2, customMember.getGroups().size());
+        assertTrue(customMember.getGroups().contains("members"));
+        assertTrue(customMember.getGroups().contains("othergroup"));
+        assertEquals("secret", customMember.getPassword());
+        props.clear();
+        props.put("first", "My Custom");
+        props.put("last", "Member");
+        assertEquals(props, customMember.getProperties());
     }
 
     public void testOverride() throws Exception {
@@ -94,6 +122,22 @@ public class TestUserService extends NXRuntimeTestCase {
         assertEquals("sn", fum.groupSortField);
         // anonymous user removed
         assertNull(fum.anonymousUser);
+
+        // custom admin overriden
+        assertTrue(fum.virtualUsers.containsKey("MyCustomAdministrator"));
+        VirtualUser customAdmin = fum.virtualUsers.get("MyCustomAdministrator");
+        assertNotNull(customAdmin);
+        assertEquals("MyCustomAdministrator", customAdmin.getId());
+        assertEquals(1, customAdmin.getGroups().size());
+        assertTrue(customAdmin.getGroups().contains("administrators2"));
+        assertEquals("secret2", customAdmin.getPassword());
+        Map<String, String> props = new HashMap<String, String>();
+        props.put("first", "My Custom 2");
+        props.put("last", "Administrator 2");
+        assertEquals(props, customAdmin.getProperties());
+        // custom member removed
+        assertFalse(fum.virtualUsers.containsKey("MyCustomMember"));
+        assertNull(fum.virtualUsers.get("MyCustomMember"));
     }
 
     public void testValidatePassword() throws Exception {
@@ -110,4 +154,5 @@ public class TestUserService extends NXRuntimeTestCase {
         assertFalse(fum.validatePassword("aZE1RTY2"));
         assertTrue(fum.validatePassword("aZ1eR2tY3"));
     }
+
 }

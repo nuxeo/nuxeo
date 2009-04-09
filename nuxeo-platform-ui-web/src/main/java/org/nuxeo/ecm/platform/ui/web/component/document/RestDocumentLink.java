@@ -27,8 +27,6 @@ import javax.el.ValueExpression;
 import javax.faces.FacesException;
 import javax.faces.component.html.HtmlOutputLink;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -39,11 +37,8 @@ import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
  * Component that gives generates a Restful link given a document.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public class RestDocumentLink extends HtmlOutputLink {
-
-    private static final Log log = LogFactory.getLog(RestDocumentLink.class);
 
     public static final String COMPONENT_FAMILY = RestDocumentLink.class.getName();
 
@@ -71,7 +66,6 @@ public class RestDocumentLink extends HtmlOutputLink {
      */
     @Override
     public Object getValue() {
-        String value = null;
 
         DocumentModel doc = getDocument();
         if (doc == null) {
@@ -95,10 +89,9 @@ public class RestDocumentLink extends HtmlOutputLink {
 
         String pattern = getPattern();
         Boolean nc = getNewConversation();
-        value = DocumentModelFunctions.documentUrl(pattern, doc, viewId,
-                params, nc != null ? nc : false);
 
-        return value;
+        return DocumentModelFunctions.documentUrl(pattern, doc, viewId,
+                params, nc != null ? nc : false);
     }
 
     // setters and getters for tag attributes
@@ -120,7 +113,7 @@ public class RestDocumentLink extends HtmlOutputLink {
     }
 
     public void setPattern(String codec) {
-        this.pattern = codec;
+        pattern = codec;
     }
 
     public DocumentModel getDocument() {
@@ -181,7 +174,7 @@ public class RestDocumentLink extends HtmlOutputLink {
         ValueExpression ve = getValueExpression("newConversation");
         if (ve != null) {
             try {
-                return (!Boolean.FALSE.equals(ve.getValue(getFacesContext().getELContext())));
+                return !Boolean.FALSE.equals(ve.getValue(getFacesContext().getELContext()));
             } catch (ELException e) {
                 throw new FacesException(e);
             }

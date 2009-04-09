@@ -23,8 +23,6 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -41,26 +39,14 @@ import org.nuxeo.ecm.core.api.facet.VersioningDocument;
  */
 public class TestVersioningAdapter extends VersioningBaseTestCase {
 
-    private static final Log log = LogFactory.getLog(TestVersioningAdapter.class);
-
     private CoreSession coreSession;
-
-    public void testNothing() {
-    }
 
     @Override
     public void setUp() throws Exception {
-        log.info("Initializing NX Core for local tests");
         super.setUp();
         deployContrib("org.nuxeo.ecm.platform.versioning.tests",
                 "DocumentAdapterService.xml");
         openCoreSession();
-    }
-
-    @Override
-    public void tearDown() throws Exception {
-        log.info("Shutting down NX Core for local tests");
-        super.tearDown();
     }
 
     @Override
@@ -71,60 +57,49 @@ public class TestVersioningAdapter extends VersioningBaseTestCase {
         assertNotNull(coreSession);
     }
 
+    public void testNothing() {
+    }
+
     public void testVersionDocEditLockedState() throws DocumentException,
             ClientException {
         DocumentModel rootDM = coreSession.getRootDocument();
-
         DocumentModel childFile = coreSession.createDocumentModel(
                 rootDM.getPathAsString(), "testfile1", "VerFile");
-
         // should fill datamodel
         childFile = coreSession.createDocument(childFile);
-
         DocumentModel doc = childFile;
-
         final VersioningDocument vdoc = doc.getAdapter(VersioningDocument.class);
-
         assertNotNull("Fail to get VersioningDocument adapter for document: "
                 + doc.getTitle(), vdoc);
-
         checkVersion(doc, 1L, 0L);
 
         vdoc.incrementMinor();
-
         checkVersion(doc, 1L, 1L);
 
         coreSession.saveDocument(doc);
         coreSession.save();
-
         checkVersion(doc, 1L, 1L);
 
         vdoc.incrementMajor();
         coreSession.save();
-
         checkVersion(doc, 2L, 0L);
     }
 
-    public void testDefinedRules() throws DocumentException, ClientException {
+    public void testDefinedRules() throws ClientException {
         DocumentModel rootDM = coreSession.getRootDocument();
-
         DocumentModel childFile = coreSession.createDocumentModel(
                 rootDM.getPathAsString(), "testfile1", "VerFile");
 
         // should fill datamodel
         childFile = coreSession.createDocument(childFile);
-
         DocumentModel doc = childFile;
 
         final VersioningDocument vdoc = doc.getAdapter(VersioningDocument.class);
-
         assertNotNull("Fail to get VersioningDocument adapter for document: "
                 + doc.getTitle(), vdoc);
-
         checkVersion(doc, 1L, 0L);
 
         DocumentRef docRef = doc.getRef();
-
         assertEquals("project", coreSession.getCurrentLifeCycleState(docRef));
 
         vdoc.incrementVersions();

@@ -45,11 +45,11 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.impl.DataModelImpl;
-import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.utils.SIDGenerator;
+import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.EntrySource;
@@ -68,12 +68,9 @@ import org.nuxeo.ecm.directory.sql.repository.Update;
  * This class represents a session against an SQLDirectory.
  *
  * @author glefter@nuxeo.com
- *
  */
+public class SQLSession extends BaseSession implements EntrySource {
 
-public class SQLSession implements Session, EntrySource {
-
-    @SuppressWarnings("unused")
     private static final Log log = LogFactory.getLog(SQLSession.class);
 
     protected final Map<String, Field> schemaFieldMap;
@@ -100,7 +97,7 @@ public class SQLSession implements Session, EntrySource {
 
     Connection sqlConnection;
 
-    private boolean managedSQLSession;
+    private final boolean managedSQLSession;
 
     private final Dialect dialect;
 
@@ -126,16 +123,16 @@ public class SQLSession implements Session, EntrySource {
         return directory;
     }
 
-    private DocumentModel fieldMapToDocumentModel(Map<String, Object> fieldMap) {
-        DataModel dataModel = new DataModelImpl(schemaName, fieldMap);
-
-        String id = String.valueOf(fieldMap.get(idField));
-        DocumentModelImpl docModel = new DocumentModelImpl(sid, schemaName, id,
-                null, null, null, new String[] { schemaName }, null);
-        dataModel.setMap(fieldMap);
-        docModel.addDataModel(dataModel);
-
-        return docModel;
+    protected DocumentModel fieldMapToDocumentModel(Map<String, Object> fieldMap) {
+        String id = String.valueOf(fieldMap.get(getIdField()));
+        try {
+            DocumentModel docModel = BaseSession.createEntryModel(sid,
+                    schemaName, id, fieldMap);
+            return docModel;
+        } catch (PropertyException e) {
+            log.error(e);
+            return null;
+        }
     }
 
     private void acquireConnection() throws DirectoryException {
@@ -155,6 +152,17 @@ public class SQLSession implements Session, EntrySource {
         if (idGenerator != null) {
             Integer idValue = idGenerator.nextId();
             fieldMap.put(idField, idValue);
+        } else {
+            // check id that was given
+            Object rawId = fieldMap.get(idField);
+            if (rawId == null) {
+                throw new DirectoryException("Missing id");
+            }
+            String id = String.valueOf(rawId);
+            if (hasEntry(id)) {
+                throw new DirectoryException(String.format(
+                        "Entry with id %s already exists", id));
+            }
         }
 
         // first step: insert stored fields
@@ -188,16 +196,14 @@ public class SQLSession implements Session, EntrySource {
             }
             ps.execute();
             entry = fieldMapToDocumentModel(fieldMap);
-
         } catch (SQLException e) {
             throw new DirectoryException("createEntry failed", e);
         }
 
         // second step: add references fields
         String sourceId = entry.getId();
-        List<String> targetIds;
         for (Reference reference : getDirectory().getReferences()) {
-            targetIds = (List<String>) fieldMap.get(reference.getFieldName());
+            List<String> targetIds = (List<String>) fieldMap.get(reference.getFieldName());
             if (reference instanceof TableReference) {
                 // optim: reuse the current session
                 // but still initialize the reference if not yet done
@@ -213,15 +219,26 @@ public class SQLSession implements Session, EntrySource {
     }
 
     public DocumentModel getEntry(String id) throws DirectoryException {
-        return directory.getCache().getEntry(id, this);
+        return getEntry(id, true);
     }
 
+    public DocumentModel getEntry(String id, boolean fetchReferences)
+            throws DirectoryException {
+        return directory.getCache().getEntry(id, this, fetchReferences);
+    }
+
+    @Deprecated
+    // Not used. Remove in 5.2
     public DocumentModel getEntryFromSource(String id)
+            throws DirectoryException {
+        return getEntry(id, true);
+    }
+
+    public DocumentModel getEntryFromSource(String id, boolean fetchReferences)
             throws DirectoryException {
         acquireConnection();
         // String sql = String.format("SELECT * FROM %s WHERE %s = ?",
-        // tableName,
-        // idField);
+        // tableName, idField);
         Select select = new Select(dialect);
         select.setFrom(table.getQuotedName(dialect));
         select.setWhat("*");
@@ -244,13 +261,18 @@ public class SQLSession implements Session, EntrySource {
                 fieldMap.put(fieldName, value);
             }
 
-            // fetch the reference fields
             DocumentModel entry = fieldMapToDocumentModel(fieldMap);
-            List<String> targetIds;
-            for (Reference reference : directory.getReferences()) {
-                targetIds = reference.getTargetIdsForSource(entry.getId());
-                entry.setProperty(schemaName, reference.getFieldName(),
-                        targetIds);
+            // fetch the reference fields
+            if (fetchReferences) {
+                for (Reference reference : directory.getReferences()) {
+                    List<String> targetIds = reference.getTargetIdsForSource(entry.getId());
+                    try {
+                        entry.setProperty(schemaName, reference.getFieldName(),
+                                targetIds);
+                    } catch (ClientException e) {
+                        throw new DirectoryException(e);
+                    }
+                }
             }
             return entry;
         } catch (SQLException e) {
@@ -418,6 +440,13 @@ public class SQLSession implements Session, EntrySource {
     public DocumentModelList query(Map<String, Object> filter,
             Set<String> fulltext, Map<String, String> orderBy)
             throws ClientException {
+        // XXX not fetch references by default: breaks current behavior
+        return query(filter, fulltext, orderBy, false);
+    }
+
+    public DocumentModelList query(Map<String, Object> filter,
+            Set<String> fulltext, Map<String, String> orderBy,
+            boolean fetchReferences) throws ClientException {
         acquireConnection();
         Map<String, Object> filterMap = new LinkedHashMap<String, Object>(
                 filter);
@@ -425,7 +454,6 @@ public class SQLSession implements Session, EntrySource {
             // build count query statement
             StringBuilder whereClause = new StringBuilder();
             String separator = "";
-            String operator;
             List<String> orderedFields = new LinkedList<String>();
             for (String columnName : filterMap.keySet()) {
 
@@ -444,6 +472,7 @@ public class SQLSession implements Session, EntrySource {
                             + columnName + "' for table: " + table);
                 }
                 String leftSide = column.getQuotedName(dialect);
+                String operator;
                 if (value != null) {
                     if (fulltext != null && fulltext.contains(columnName)) {
                         // NB : remove double % in like query NXGED-833
@@ -528,13 +557,15 @@ public class SQLSession implements Session, EntrySource {
             select.setFrom(table.getQuotedName(dialect));
             select.setWhere(whereClause.toString());
             StringBuilder orderby = new StringBuilder(128);
-            for (Iterator<Map.Entry<String, String>> it = orderBy.entrySet().iterator(); it.hasNext();) {
-                Entry<String, String> entry = it.next();
-                orderby.append(dialect.openQuote()).append(entry.getKey()).append(
-                        dialect.closeQuote()).append(' ').append(
-                        entry.getValue());
-                if (it.hasNext()) {
-                    orderby.append(',');
+            if (orderBy != null) {
+                for (Iterator<Map.Entry<String, String>> it = orderBy.entrySet().iterator(); it.hasNext();) {
+                    Entry<String, String> entry = it.next();
+                    orderby.append(dialect.openQuote()).append(entry.getKey()).append(
+                            dialect.closeQuote()).append(' ').append(
+                            entry.getValue());
+                    if (it.hasNext()) {
+                        orderby.append(',');
+                    }
                 }
             }
             select.setOrderBy(orderby.toString());
@@ -559,18 +590,20 @@ public class SQLSession implements Session, EntrySource {
                     Object o = getFieldValue(rs, fieldName);
                     map.put(fieldName, o);
                 }
+
                 DocumentModel docModel = fieldMapToDocumentModel(map);
 
                 // fetch the reference fields
-                for (Reference reference : directory.getReferences()) {
-                    List<String> targetIds = reference.getTargetIdsForSource(docModel.getId());
-                    docModel.setProperty(schemaName, reference.getFieldName(),
-                            targetIds);
+                if (fetchReferences) {
+                    for (Reference reference : directory.getReferences()) {
+                        List<String> targetIds = reference.getTargetIdsForSource(docModel.getId());
+                        docModel.setProperty(schemaName,
+                                reference.getFieldName(), targetIds);
+                    }
                 }
                 list.add(docModel);
             }
             return list;
-
         } catch (SQLException e) {
             try {
                 sqlConnection.close();
@@ -590,11 +623,17 @@ public class SQLSession implements Session, EntrySource {
         try {
             Field field = schemaFieldMap.get(fieldName);
             String typeName = field.getType().getName();
-            String columnName = table.getColumn(fieldName).getName();
+            Column column = table.getColumn(fieldName);
+            if (column == null) {
+                throw new DirectoryException(String.format(
+                        "Column '%s' does not exist in table '%s'", fieldName,
+                        table.getName()));
+            }
+            String columnName = column.getName();
             if ("string".equals(typeName)) {
                 return rs.getString(columnName);
             } else if ("integer".equals(typeName) || "long".equals(typeName)) {
-                return rs.getLong(columnName);
+                return Long.valueOf(rs.getLong(columnName));
             } else if ("date".equals(typeName)) {
                 Timestamp ts = rs.getTimestamp(columnName);
                 if (ts == null) {
@@ -611,7 +650,6 @@ public class SQLSession implements Session, EntrySource {
         } catch (SQLException e) {
             throw new DirectoryException("getFieldValue failed", e);
         }
-
     }
 
     private void setFieldValue(PreparedStatement ps, int index,
@@ -629,13 +667,13 @@ public class SQLSession implements Session, EntrySource {
             } else if ("integer".equals(typeName) || "long".equals(typeName)) {
                 long longValue;
                 if (value instanceof Integer) {
-                    longValue = (Integer) value;
+                    longValue = ((Integer) value).intValue();
                     ps.setLong(index, longValue);
                 } else if (value instanceof Long) {
-                    longValue = (Long) value;
+                    longValue = ((Long) value).longValue();
                     ps.setLong(index, longValue);
                 } else if (value instanceof String) {
-                    longValue = Long.valueOf((String) value);
+                    longValue = Long.valueOf((String) value).longValue();
                     ps.setLong(index, longValue);
                 } else if (value == null) {
                     ps.setNull(index, Types.INTEGER);
@@ -660,7 +698,6 @@ public class SQLSession implements Session, EntrySource {
         } catch (SQLException e) {
             throw new DirectoryException("setFieldValue failed", e);
         }
-
     }
 
     public void commit() throws DirectoryException {
@@ -737,12 +774,36 @@ public class SQLSession implements Session, EntrySource {
     }
 
     public boolean isReadOnly() {
-        return directory.getConfig().getReadOnly();
+        return Boolean.TRUE.equals(directory.getConfig().getReadOnly());
     }
 
     public DocumentModelList query(Map<String, Object> filter,
             Set<String> fulltext) throws ClientException {
         return query(filter, fulltext, new HashMap<String, String>());
+    }
+
+    public DocumentModel createEntry(DocumentModel entry)
+            throws ClientException {
+        Map<String, Object> fieldMap = entry.getProperties(schemaName);
+        return createEntry(fieldMap);
+    }
+
+    public boolean hasEntry(String id) throws ClientException {
+        acquireConnection();
+        Select select = new Select(dialect);
+        select.setFrom(table.getQuotedName(dialect));
+        select.setWhat("*");
+        select.setWhere(table.getPrimaryColumn().getQuotedName(dialect)
+                + " = ?");
+        String sql = select.getStatement();
+        try {
+            PreparedStatement ps = sqlConnection.prepareStatement(sql);
+            ps.setString(1, id);
+            ResultSet rs = ps.executeQuery();
+            return rs.next();
+        } catch (SQLException e) {
+            throw new DirectoryException("hasEntry failed", e);
+        }
     }
 
     /**

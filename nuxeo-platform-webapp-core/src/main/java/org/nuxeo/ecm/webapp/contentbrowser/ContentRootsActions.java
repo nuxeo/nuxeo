@@ -25,10 +25,9 @@ import javax.annotation.security.PermitAll;
 import javax.ejb.Remove;
 
 import org.jboss.seam.annotations.Destroy;
-import org.jboss.seam.annotations.WebRemote;
+import org.jboss.seam.annotations.remoting.WebRemote;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.util.ECInvalidParameterException;
 import org.nuxeo.ecm.webapp.base.StatefulBaseLifeCycle;
 import org.nuxeo.ecm.webapp.table.model.DocModelTableModel;
 
@@ -40,14 +39,14 @@ import org.nuxeo.ecm.webapp.table.model.DocModelTableModel;
  */
 public interface ContentRootsActions extends StatefulBaseLifeCycle {
 
-    void initialize() throws ClientException;
+    void initialize();
 
     @Destroy
     @Remove
     @PermitAll
     void destroy();
 
-    String display() throws ClientException, ECInvalidParameterException;
+    String display();
 
     /**
      * Called when a workspace {@link DocumentModel} is selected. It saves the
@@ -71,10 +70,9 @@ public interface ContentRootsActions extends StatefulBaseLifeCycle {
      * Called when user wants to edit a selected document.
      *
      * @return the edit page
-     * @throws ECInvalidParameterException
      * @throws ClientException
      */
-    String editWorkspace() throws ClientException, ECInvalidParameterException;
+    String editWorkspace() throws ClientException;
 
     /**
      * Called when the user finishes editing.
@@ -88,17 +86,15 @@ public interface ContentRootsActions extends StatefulBaseLifeCycle {
      * Gets the workspaces contained in the selected domain.
      *
      * @throws ClientException
-     * @throws ECInvalidParameterException
      */
-    void getWorkspaces() throws ClientException, ECInvalidParameterException;
+    void getWorkspaces() throws ClientException;
 
     /**
      * Gets the sections contained in the selected domain.
      *
      * @throws ClientException
-     * @throws ECInvalidParameterException
      */
-    void getSections() throws ClientException, ECInvalidParameterException;
+    void getSections() throws ClientException;
 
     List<DocumentModel> getContentRootDocuments() throws ClientException;
 
@@ -117,7 +113,6 @@ public interface ContentRootsActions extends StatefulBaseLifeCycle {
      * <p>
      * This way we achieve lazy loading of data from backend - only when its
      * needed and not loading it when the event is fired.
-     *
      */
     void resetTableModel();
 
@@ -128,28 +123,22 @@ public interface ContentRootsActions extends StatefulBaseLifeCycle {
      * <p>
      * This way we achieve lazy loading of data from backend - only when its
      * needed and not loading it when the event is fired.
-     *
      */
     void resetContentRootDocuments();
 
     String cancel();
 
-    DocModelTableModel getWorkspacesTableModel()
-            throws ClientException, ECInvalidParameterException;
+    DocModelTableModel getWorkspacesTableModel() throws ClientException;
 
-    DocModelTableModel getSectionsTableModel() throws ClientException,
-            ECInvalidParameterException;
+    DocModelTableModel getSectionsTableModel() throws ClientException;
 
-    DocModelTableModel reconstructWorkspacesTableModel() throws ClientException,
-            ECInvalidParameterException;
+    DocModelTableModel reconstructWorkspacesTableModel() throws ClientException;
 
-    DocModelTableModel reconstructSectionsTableModel() throws ClientException,
-    ECInvalidParameterException;
+    DocModelTableModel reconstructSectionsTableModel() throws ClientException;
 
     boolean getAdministrator();
 
     @WebRemote
-    void selectAllRows(boolean checked) throws ClientException,
-            ECInvalidParameterException;
+    void selectAllRows(boolean checked) throws ClientException;
 
 }

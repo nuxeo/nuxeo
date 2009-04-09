@@ -89,22 +89,19 @@ public class OOoMimetypeSniffer implements MagicDetector {
 
     public String[] process(byte[] data, int offset, int length, long bitmask,
             char comparator, String mimeType, Map params) {
-
         String[] mimetypes = {};
         File file = null;
-
         try {
             file = File.createTempFile("magicdetector", ".xml");
             FileUtils.writeFile(file, data);
             mimetypes = guessOOo(file);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e);
         } finally {
             if (file != null) {
                 file.delete();
             }
         }
-
         return mimetypes;
     }
 
@@ -133,14 +130,14 @@ public class OOoMimetypeSniffer implements MagicDetector {
                 }
                 ZipUtils.unzip(file, tempFile);
 
-                // retreives mimetypefile
+                // retrieves mimetypefile
                 String path = tempFile.getAbsolutePath();
                 path += File.separator + "mimetype";
                 File mimetypeFile = new File(path);
                 mimetype = new String[] { FileUtils.readFile(mimetypeFile) };
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            // probably not a zip file
         } finally {
             if (tempFile != null) {
                 FileUtils.deleteTree(tempFile);

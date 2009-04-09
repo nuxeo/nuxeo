@@ -1,7 +1,6 @@
 <h:outputText xmlns:h="http://java.sun.com/jsf/html" rendered="#{! empty documents}">
   <div xmlns:h="http://java.sun.com/jsf/html"
-    xmlns:ui="http://java.sun.com/jsf/facelets"
-    xmlns:t="http://myfaces.apache.org/tomahawk">
+    xmlns:ui="http://java.sun.com/jsf/facelets">
 
     <div class="foldableBox">
 
@@ -12,12 +11,6 @@
       </h3>
 
       <div class="boxBody">
-
-      <h:form>
-        <ui:decorate template="/pagination/pageNavigationControls.xhtml">
-          <ui:param name="provider" value="#{provider}" />
-        </ui:decorate>
-      </h:form>
 
       <ui:include src="/incl/documents_table_simple.xhtml" >
         <ui:param name="provider" value="#{provider}" />

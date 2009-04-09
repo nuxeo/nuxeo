@@ -31,8 +31,8 @@ import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Begin;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.RequestParameter;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.annotations.web.RequestParameter;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -44,7 +44,6 @@ import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
-import org.nuxeo.ecm.platform.util.ECInvalidParameterException;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.nuxeo.ecm.webapp.search.SearchActions;
 import org.nuxeo.ecm.webapp.search.SearchActionsBean;
@@ -216,11 +215,7 @@ public class SyndicationActionsBean implements SyndicationActions {
                 "searchActions", true);
         searchActions.setSearchTypeId(SearchType.NXQL.name());
         searchActions.setNxql(searchQuery);
-        try {
-            searchActions.performSearch();
-        } catch (ECInvalidParameterException e) {
-            throw new ClientException(e);
-        }
+        searchActions.performSearch();
         List<DocumentModel> docList = searchActions.getResultDocuments(SearchActionsBean.PROV_NXQL);
         if (docList == null) {
             docList = Collections.emptyList();
@@ -252,7 +247,7 @@ public class SyndicationActionsBean implements SyndicationActions {
      * @return the feed items
      * @throws ClientException
      */
-    protected List<FeedItem> getFeedItems(List<DocumentModel> docs)
+    protected static List<FeedItem> getFeedItems(List<DocumentModel> docs)
             throws ClientException {
         return FeedItemAdapter.toFeedItemList(docs);
     }
@@ -273,18 +268,18 @@ public class SyndicationActionsBean implements SyndicationActions {
         url.append(path);
         url.append('?');
         url.append(key);
-        url.append("=");
+        url.append('=');
         url.append(urlencode(value));
-        url.append("&");
+        url.append('&');
         url.append(FEEDTYPE_KEY);
-        url.append("=");
+        url.append('=');
         if (feedType != null) {
             url.append(urlencode(feedType));
         }
         return url.toString();
     }
 
-    protected void writeFeed(SyndFeed feed) {
+    protected static void writeFeed(SyndFeed feed) {
         FacesContext context = FacesContext.getCurrentInstance();
         HttpServletResponse response = (HttpServletResponse) context.getExternalContext().getResponse();
         response.setContentType("application/xml; charset=UTF-8");
@@ -296,7 +291,7 @@ public class SyndicationActionsBean implements SyndicationActions {
         context.responseComplete();
     }
 
-    protected void sendForbidden() {
+    protected static void sendForbidden() {
         FacesContext context = FacesContext.getCurrentInstance();
         HttpServletResponse response = (HttpServletResponse) context.getExternalContext().getResponse();
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);

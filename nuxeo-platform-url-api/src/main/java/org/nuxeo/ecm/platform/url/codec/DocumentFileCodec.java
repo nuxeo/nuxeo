@@ -31,13 +31,13 @@ import java.util.regex.Pattern;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.core.utils.DocumentModelUtils;
-import org.nuxeo.ecm.platform.url.DocumentLocationImpl;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
-import org.nuxeo.ecm.platform.url.api.DocumentLocation;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.platform.url.service.AbstractDocumentViewCodec;
 
@@ -80,7 +80,7 @@ public class DocumentFileCodec extends AbstractDocumentViewCodec {
         if (docLoc != null && filepath != null && filename != null) {
             List<String> items = new ArrayList<String>();
             items.add(getPrefix());
-            items.add(docLoc.getServerLocationName());
+            items.add(docLoc.getServerName());
             items.add(docLoc.getDocRef().toString());
             items.add(filepath);
             items.add(URIUtils.quoteURIPathComponent(filename, true));

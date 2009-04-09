@@ -27,7 +27,6 @@ import java.util.Map;
  * Query result interface.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public interface QueryResult extends Serializable {
 

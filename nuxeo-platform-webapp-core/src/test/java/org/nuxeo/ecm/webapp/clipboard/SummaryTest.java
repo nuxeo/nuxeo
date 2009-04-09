@@ -34,7 +34,7 @@ public class SummaryTest extends NXRuntimeTestCase {
     private Summary summary;
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         summary = new SummaryImpl();
 
@@ -113,6 +113,7 @@ public class SummaryTest extends NXRuntimeTestCase {
         assertEquals("root/child 1", childEntry.getPath());
     }
 
+    @SuppressWarnings({"SimplifiableJUnitAssertion"})
     public void testCompareSummaryEntry() {
         // Add new child to root
         SummaryEntry childEntry = new SummaryEntry("1", "child 1",

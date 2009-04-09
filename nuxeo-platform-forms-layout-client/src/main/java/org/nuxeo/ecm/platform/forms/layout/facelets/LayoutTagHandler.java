@@ -58,15 +58,11 @@ import com.sun.facelets.tag.TagHandler;
  */
 public class LayoutTagHandler extends TagHandler implements TemplateClient {
 
-    @SuppressWarnings("unused")
     private static final Log log = LogFactory.getLog(LayoutTagHandler.class);
 
     protected final TagConfig config;
-
     protected final TagAttribute name;
-
     protected final TagAttribute mode;
-
     protected final TagAttribute value;
 
     // composition attributes

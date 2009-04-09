@@ -23,9 +23,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.platform.types.adapter.TypeInfo;
-import org.nuxeo.ecm.platform.url.api.DocumentLocation;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 
 /**
@@ -59,6 +60,7 @@ public class DocumentViewImpl implements DocumentView {
         this.parameters = parameters;
     }
 
+    // Not used. Deprecate?
     public DocumentViewImpl(DocumentLocation documentLocation, String viewId,
             String subURI, Map<String, String> parameters) {
         this.documentLocation = documentLocation;
@@ -87,14 +89,6 @@ public class DocumentViewImpl implements DocumentView {
             }
         }
         this.subURI = subURI;
-    }
-
-    @Deprecated
-    public DocumentViewImpl(DocumentLocation docLoc, String viewId, String tabId) {
-        documentLocation = docLoc;
-        this.viewId = viewId;
-        this.tabId = tabId;
-        subURI = null;
     }
 
     public DocumentViewImpl(DocumentLocation docLoc) {

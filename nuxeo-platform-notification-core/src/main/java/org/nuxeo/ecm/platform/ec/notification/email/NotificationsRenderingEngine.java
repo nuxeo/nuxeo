@@ -29,7 +29,6 @@ import org.nuxeo.ecm.platform.rendering.RenderingResult;
 import org.nuxeo.ecm.platform.rendering.impl.DefaultRenderingResult;
 import org.nuxeo.ecm.platform.rendering.template.DocumentRenderingEngine;
 import org.nuxeo.ecm.platform.rendering.template.FreemarkerRenderingJob;
-
 import freemarker.template.Configuration;
 
 /**
@@ -50,11 +49,9 @@ public class NotificationsRenderingEngine extends DocumentRenderingEngine {
         cfg.setSharedVariable("htmlEscape", new HtmlEscapeMethod() );
         return cfg;
     }
-    
-    
+
     @Override
-    protected FreemarkerRenderingJob createJob(RenderingContext ctx)
-            throws RenderingException {
+    protected FreemarkerRenderingJob createJob(RenderingContext ctx) {
         return new NotifsRenderingJob("ftl");
     }
 
@@ -67,11 +64,11 @@ public class NotificationsRenderingEngine extends DocumentRenderingEngine {
 
         private static final long serialVersionUID = -7133062841713259967L;
 
+        final Writer strWriter = new StringWriter();
+
         NotifsRenderingJob(String formatName) {
             super(formatName);
         }
-
-        final Writer strWriter = new StringWriter();
 
         @Override
         public Object getOutcome() {
@@ -86,10 +83,9 @@ public class NotificationsRenderingEngine extends DocumentRenderingEngine {
             return template;
         }
 
-        public Writer getWriter() throws IOException {
+        public Writer getWriter() {
             return strWriter;
         }
-
     }
 
 }

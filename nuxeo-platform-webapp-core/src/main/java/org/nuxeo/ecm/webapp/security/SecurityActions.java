@@ -25,14 +25,13 @@ import java.util.Map;
 import javax.faces.model.SelectItem;
 
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.platform.util.ECInvalidParameterException;
 import org.nuxeo.ecm.webapp.base.StatefulBaseLifeCycle;
 import org.nuxeo.ecm.webapp.table.model.UserPermissionsTableModel;
 
 /**
  * Provides security related operations on the current document.
  *
- * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
+ * @author Razvan Caraghin
  */
 public interface SecurityActions extends StatefulBaseLifeCycle {
 
@@ -106,8 +105,7 @@ public interface SecurityActions extends StatefulBaseLifeCycle {
      */
     String removePermissionAndUpdate() throws ClientException;
 
-    String removePermissionsAndUpdate() throws ClientException,
-            ECInvalidParameterException;
+    String removePermissionsAndUpdate() throws ClientException;
 
     /**
      * Marks the current security data info as obsolete so that it gets lazily
@@ -115,7 +113,7 @@ public interface SecurityActions extends StatefulBaseLifeCycle {
      *
      * @throws ClientException
      */
-    void resetSecurityData() throws ClientException;
+    void resetSecurityData();
 
     /**
      * Rebuilds the security displayable data from the current selected
@@ -132,10 +130,8 @@ public interface SecurityActions extends StatefulBaseLifeCycle {
      * @return a UserPermissionsTableModel used to build a checkboxable listing
      *         of managed permissions
      * @throws ClientException
-     * @throws ECInvalidParameterException
      */
-    UserPermissionsTableModel getDataTableModel() throws ClientException,
-            ECInvalidParameterException;
+    UserPermissionsTableModel getDataTableModel() throws ClientException;
 
     /**
      * @return the SecurityData object that manages a stateful representation of
@@ -209,7 +205,28 @@ public interface SecurityActions extends StatefulBaseLifeCycle {
 
     List<String> getParentDocumentsUsers() throws ClientException;
 
-    String removePermissions() throws ClientException, ECInvalidParameterException;
+    String removePermissions() throws ClientException;
 
     String saveSecurityUpdates() throws ClientException;
+
+    /**
+     * Returns selected entry used in add/remove methods
+     */
+    String getSelectedEntry();
+
+    /**
+     * Sets selected entry used in add/remove methods
+     */
+    void setSelectedEntry(String selectedEntry);
+
+    /**
+     * Returns selected entries used in add/remove methods
+     */
+    List<String> getSelectedEntries();
+
+    /**
+     * Sets selected entries used in add/remove methods
+     */
+    void setSelectedEntries(List<String> selectedEntries);
+
 }

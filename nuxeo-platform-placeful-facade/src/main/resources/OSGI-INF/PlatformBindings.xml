@@ -13,7 +13,7 @@
 
     <server name="default">
       <service
-        class="org.nuxeo.ecm.platform.ec.placeful.ejb.interfaces.EJBPlacefulService"
+        class="org.nuxeo.ecm.platform.ec.placeful.interfaces.PlacefulService"
         group="platform">
         <locator>%PlacefulServiceBean</locator>
       </service>

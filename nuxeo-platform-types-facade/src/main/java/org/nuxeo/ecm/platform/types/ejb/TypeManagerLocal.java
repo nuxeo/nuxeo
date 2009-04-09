@@ -26,9 +26,10 @@ import org.nuxeo.ecm.platform.types.TypeManager;
 
 public interface TypeManagerLocal extends TypeManager {
 
-      @PostConstruct
-      void initialize();
+    @PostConstruct
+    void initialize();
 
-      @Remove
-      void remove();
+    @Remove
+    void remove();
+
 }

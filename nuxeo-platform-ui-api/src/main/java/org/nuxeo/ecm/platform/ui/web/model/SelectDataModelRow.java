@@ -21,8 +21,6 @@ package org.nuxeo.ecm.platform.ui.web.model;
 
 import javax.faces.event.ValueChangeEvent;
 
-import org.nuxeo.ecm.core.api.ClientException;
-
 /**
  * Used in SelectModel to represent a row and handle its selection/unselection.
  *
@@ -40,11 +38,9 @@ public interface SelectDataModelRow {
      * This is supposed to trigger SelectModelListener methods declared on the
      * SelectModel.
      *
-     * @param event
-     *            ValueChangeEvent
-     * @throws ClientException
+     * @param event ValueChangeEvent
      */
-    void selectionChanged(ValueChangeEvent event) throws ClientException;
+    void selectionChanged(ValueChangeEvent event);
 
     void setSelected(Boolean selected);
 

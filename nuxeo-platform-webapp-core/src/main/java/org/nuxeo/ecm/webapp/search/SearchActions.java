@@ -21,13 +21,12 @@ package org.nuxeo.ecm.webapp.search;
 
 import java.util.List;
 
-import org.jboss.seam.annotations.WebRemote;
+import org.jboss.seam.annotations.remoting.WebRemote;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.ui.web.api.ResultsProviderFarm;
 import org.nuxeo.ecm.platform.ui.web.model.SelectDataModel;
 import org.nuxeo.ecm.platform.ui.web.model.SelectDataModelListener;
-import org.nuxeo.ecm.platform.util.ECInvalidParameterException;
 import org.nuxeo.ecm.webapp.base.StatefulBaseLifeCycle;
 
 /**
@@ -42,10 +41,8 @@ public interface SearchActions extends StatefulBaseLifeCycle,
 
     /**
      * Declaration for [Seam]Create method.
-     * @throws ClientException
-     *
      */
-    void init() throws ClientException;
+    void init();
 
     void destroy();
 
@@ -58,7 +55,6 @@ public interface SearchActions extends StatefulBaseLifeCycle,
     void setSimpleSearchKeywords(String k);
 
     /**
-     *
      * @return the nxql query text if the option for nxql is selected
      */
     String getNxql();
@@ -79,8 +75,7 @@ public interface SearchActions extends StatefulBaseLifeCycle,
     String getReindexPath();
 
     /**
-     * Set the current targeted reindexation path.
-     * @param path
+     * Sets the current targeted reindexation path.
      */
     void setReindexPath(String path);
 
@@ -90,21 +85,16 @@ public interface SearchActions extends StatefulBaseLifeCycle,
 
     /**
      * Request dispatcher. Normally it will be called from a action link.
-     *
-     * @return
      */
     String search();
 
     void resetSearchField();
 
-    String performSearch() throws ClientException,
-            ECInvalidParameterException;
+    String performSearch();
 
-    String getDocumentLocation(DocumentModel doc)
-            throws ClientException;
+    String getDocumentLocation(DocumentModel doc);
 
     SelectDataModel getResultsSelectModel(String providerName) throws ClientException;
-
 
     /**
      * @return the Document Model backing the advanced search form up
@@ -115,14 +105,18 @@ public interface SearchActions extends StatefulBaseLifeCycle,
     /** Reindex all documents.
      *
      * @throws ClientException
+     * @deprecated does nothing
      */
+    @Deprecated
     void reindexDocuments() throws ClientException;
 
     /** Reindex all documents under given path (inclusive).
      *
      * @param path
      * @throws ClientException
+     * @deprecated does nothing
      */
+    @Deprecated
     void reindexDocuments(String path) throws ClientException;
 
     /**
@@ -152,11 +146,12 @@ public interface SearchActions extends StatefulBaseLifeCycle,
      * Refresh cache
      */
     void refreshCache();
-    
+
     /**
      * Is search service reindexing all ?
-     * 
+     *
      * @return bool flag
      */
     boolean isReindexingAll();
+
 }

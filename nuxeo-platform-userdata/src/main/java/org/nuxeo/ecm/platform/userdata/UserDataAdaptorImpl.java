@@ -24,6 +24,7 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
@@ -40,7 +41,8 @@ public class UserDataAdaptorImpl implements UserDataAdaptor {
         this.domain = domain;
         domainPath = domain.getPathAsString();
         sessionId = domain.getSessionId();
-        userDataManager = UserDataServiceHelper.getService().getManager();
+        UserDataService userDataService = (UserDataService) Framework.getRuntime().getComponent(UserDataService.NAME);
+        userDataManager = userDataService.getManager();
     }
 
     private CoreSession getSession() {

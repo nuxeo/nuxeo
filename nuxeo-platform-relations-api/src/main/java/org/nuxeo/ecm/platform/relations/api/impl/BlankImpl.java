@@ -26,7 +26,6 @@ import org.nuxeo.ecm.platform.relations.api.NodeType;
  * Blank node.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public class BlankImpl extends AbstractNode implements Blank {
 

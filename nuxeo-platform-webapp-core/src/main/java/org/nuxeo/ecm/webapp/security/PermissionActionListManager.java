@@ -27,8 +27,6 @@ import java.util.List;
 
 import javax.faces.model.SelectItem;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
@@ -38,16 +36,13 @@ import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 /**
  * Lists the available permission actions. Hardcoded. ATM Grant/Deny supported.
  *
- * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
- *
+ * @author Razvan Caraghin
  */
 @Name("permissionActionListManager")
 @Scope(SESSION)
 public class PermissionActionListManager implements Serializable {
 
     private static final long serialVersionUID = -327848199566592785L;
-
-    private static final Log log = LogFactory.getLog(PermissionActionListManager.class);
 
     private static final Labeler labeler = new Labeler("label.security");
 
@@ -57,7 +52,6 @@ public class PermissionActionListManager implements Serializable {
     private transient ResourcesAccessor resourcesAccessor;
 
     public SelectItem[] getPermissionActionItems() {
-
         List<String> permissionActions = new ArrayList<String>();
         List<SelectItem> jsfModelList = new ArrayList<SelectItem>();
 
@@ -72,7 +66,6 @@ public class PermissionActionListManager implements Serializable {
         }
 
         SelectItem[] permissionActionItems = jsfModelList.toArray(new SelectItem[0]);
-
         return permissionActionItems;
     }
 

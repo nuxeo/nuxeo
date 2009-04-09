@@ -27,31 +27,16 @@ public class TestScheduler extends NXRuntimeTestCase {
     private static final Log log = LogFactory.getLog(TestScheduler.class);
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
-        // platform
-        deployContrib("org.nuxeo.ecm.platform.scheduler.core.tests",
-                "test-PlatformService.xml");
-        deployContrib("org.nuxeo.ecm.platform.scheduler.core.tests",
-                "test-DefaultPlatform.xml");
-        // core services and registrations
-        deployContrib("org.nuxeo.ecm.core", "OSGI-INF/CoreService.xml");
-        deployContrib("org.nuxeo.ecm.core.tests", "TypeService.xml");
-        deployContrib("org.nuxeo.ecm.core", "OSGI-INF/SecurityService.xml");
-        deployContrib("org.nuxeo.ecm.platform.scheduler.core.tests",
-                "test-RepositoryService.xml");
-        deployContrib("org.nuxeo.ecm.core",
-                "OSGI-INF/CoreEventListenerService.xml");
-        deployContrib("org.nuxeo.ecm.platform.scheduler.core.tests",
-                "test-CoreExtensions.xml");
-        deployContrib("org.nuxeo.ecm.platform.scheduler.core.tests",
-                "test-DemoRepository.xml");
+
         // scheduler service
         deployContrib("org.nuxeo.ecm.platform.scheduler.core.tests",
                 "test-nxscheduler-service.xml");
         // our event listener
         deployContrib("org.nuxeo.ecm.platform.scheduler.core.tests",
                 "test-eventlistener.xml");
+        deployBundle("org.nuxeo.ecm.core.event");
     }
 
     @Override
@@ -70,7 +55,7 @@ public class TestScheduler extends NXRuntimeTestCase {
         try {
             Thread.sleep(2000); // 1s so that job is called at least once
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            log.error(e);
             fail("Timer failed");
         }
 

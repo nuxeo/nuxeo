@@ -29,9 +29,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.platform.interfaces.ejb.ECDomain;
 import org.nuxeo.ecm.platform.interfaces.local.ECDomainLocal;
-import org.nuxeo.ecm.platform.util.ECInvalidParameterException;
 
 /**
  * Domain implementation.
@@ -39,10 +37,10 @@ import org.nuxeo.ecm.platform.util.ECInvalidParameterException;
  * @author Razvan Caraghin
  */
 @Stateless
-public class ECDomainBean implements ECDomain, ECDomainLocal {
+public class ECDomainBean implements ECDomainLocal {
 
     public List<DocumentModel> getDomains(CoreSession handle)
-            throws ECInvalidParameterException, ClientException {
+            throws ClientException {
         try {
             assert null != handle;
             // assert(handle.getSessionId());
@@ -55,7 +53,7 @@ public class ECDomainBean implements ECDomain, ECDomainLocal {
 
             return handle.getChildren(rootRef);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 

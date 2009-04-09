@@ -34,7 +34,7 @@ import org.nuxeo.ecm.directory.Session;
  */
 public class MultiDirectory extends AbstractDirectory {
 
-    private MultiDirectoryDescriptor descriptor;
+    private final MultiDirectoryDescriptor descriptor;
 
     private Set<MultiDirectorySession> sessions;
 
@@ -88,7 +88,7 @@ public class MultiDirectory extends AbstractDirectory {
         try {
             // use toArray to avoid concurrent modification of list
             for (Object session : sessions.toArray()) {
-                ((MultiDirectorySession) session).close();
+                ((Session) session).close();
             }
             sessions = null;
         } catch (ClientException e) {

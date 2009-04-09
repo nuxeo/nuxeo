@@ -24,11 +24,14 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
+import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.EventContext;
+import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.core.event.impl.EventImpl;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.SchemaNames;
 import org.nuxeo.ecm.core.schema.TypeRef;
@@ -36,38 +39,30 @@ import org.nuxeo.ecm.core.schema.types.QName;
 import org.nuxeo.ecm.core.schema.types.SchemaImpl;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
-import org.nuxeo.ecm.platform.uidgen.tests.UIDGenFactory;
+import org.nuxeo.ecm.platform.uidgen.corelistener.DocUIDGeneratorListener;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestGen extends NXRuntimeTestCase {
 
-    final Log log = LogFactory.getLog(TestGen.class);
-
-
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core"); // for dublincore
+        deployBundle("org.nuxeo.ecm.core.event");
+
+        deployContrib("org.nuxeo.ecm.platform.uidgen.core.tests", "test-uid-CoreExtensions.xml");
+        deployContrib("org.nuxeo.ecm.platform.uidgen.core.tests", "nxuidgenerator-bundle.xml");
+        deployContrib("org.nuxeo.ecm.platform.uidgen.core.tests", "nxuidgenerator-bundle-contrib.xml");
+
         // define geide schema
         SchemaImpl sch = new SchemaImpl("geide");
-        sch.addField(QName.valueOf("application_emetteur"), new TypeRef<Type>(SchemaNames.BUILTIN, StringType.ID));
-        sch.addField(QName.valueOf("atelier_emetteur"), new TypeRef<Type>(SchemaNames.BUILTIN, StringType.ID));
+        sch.addField(QName.valueOf("application_emetteur"),
+                new TypeRef<Type>(SchemaNames.BUILTIN, StringType.ID));
+        sch.addField(QName.valueOf("atelier_emetteur"),
+                new TypeRef<Type>(SchemaNames.BUILTIN, StringType.ID));
         Framework.getLocalService(SchemaManager.class).registerSchema(sch);
-    }
-
-    private DocumentModel createDocumentModel(String type) throws Exception {
-        DocumentModelImpl docModel = new DocumentModelImpl(type);
-        Map<String, Object> dcMap = new HashMap<String, Object>();
-        dcMap.put("title", null);
-        dcMap.put("description", null);
-        docModel.addDataModel(new DataModelImpl("dublincore", dcMap));
-        Map<String, Object> geideMap = new HashMap<String, Object>();
-        geideMap.put("application_emetteur", null);
-        geideMap.put("atelier_emetteur", null);
-        docModel.addDataModel(new DataModelImpl("geide", geideMap));
-        return docModel;
     }
 
     public void testUIDGenerator() throws Exception {
@@ -123,13 +118,69 @@ public class TestGen extends NXRuntimeTestCase {
         for (int i = 1; i < 100; i++) {
             String uid = generator.createUID(gdoc);
 
-            log.info("UID : " + uid);
-
             final int year = new GregorianCalendar().get(Calendar.YEAR);
             final String suffix = String.format("%05d", i);
             final String expected = "ATELIER3_" + year + suffix;
             assertEquals(expected, uid);
         }
+    }
+
+    /**
+     * Test multiple UID properties set.
+     */
+    public void testUIDGenerator3_multi() throws Exception {
+        // create Geide doc
+        String docTypeName = "GeideDoc";
+        DocumentModel gdoc = createDocumentModel(docTypeName);
+        gdoc.setProperty("dublincore", "title", "testGdoc_Title");
+        gdoc.setProperty("dublincore", "description", "testGdoc_description");
+        gdoc.setProperty("geide", "application_emetteur", "T4");
+        gdoc.setProperty("geide", "atelier_emetteur", "ATELIER3_");
+
+        final UIDSequencer sequencer = new DummySequencer();
+        final UIDGenerator generator = UIDGenFactory.createGeneratorForDocType(
+                docTypeName, sequencer);
+
+        for (int i = 1; i < 100; i++) {
+            // local instantiation
+            // TODO make it real
+
+            EventContext ctx = new DocumentEventContext(null, null, gdoc);
+            Event event = new EventImpl(DocumentEventTypes.DOCUMENT_CREATED, ctx);
+            new DocUIDGeneratorListener().handleEvent(event);
+
+            //String uid = generator.createUID(gdoc);
+            String uid = (String) gdoc.getProperty("uid", "uid");
+            String uid2 = (String) gdoc.getProperty("other_uid_schema", "uid2");
+
+            final int year = new GregorianCalendar().get(Calendar.YEAR);
+            final String suffix = String.format("%05d", i);
+            final String expected = "ATELIER3_" + year + suffix;
+            assertEquals(expected, uid);
+            assertEquals(expected, uid2);
+        }
+    }
+
+    private static DocumentModel createDocumentModel(String type) {
+        DocumentModelImpl docModel = new DocumentModelImpl(type);
+        Map<String, Object> dcMap = new HashMap<String, Object>();
+        dcMap.put("title", null);
+        dcMap.put("description", null);
+        docModel.addDataModel(new DataModelImpl("dublincore", dcMap));
+        Map<String, Object> geideMap = new HashMap<String, Object>();
+        geideMap.put("application_emetteur", null);
+        geideMap.put("atelier_emetteur", null);
+        docModel.addDataModel(new DataModelImpl("geide", geideMap));
+
+        Map<String, Object> uidMap = new HashMap<String, Object>();
+        uidMap.put("uid", null);
+        docModel.addDataModel(new DataModelImpl("uid", uidMap));
+
+        Map<String, Object> uid2Map = new HashMap<String, Object>();
+        uid2Map.put("uid2", null);
+        docModel.addDataModel(new DataModelImpl("other_uid_schema", uid2Map));
+
+        return docModel;
     }
 
 }

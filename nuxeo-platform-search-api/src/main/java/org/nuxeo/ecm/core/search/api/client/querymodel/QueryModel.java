@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,40 +12,48 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
+ *     Olivier Grisel
+ *     Georges Racinet
+ *     Florent Guillaume
  */
 
 package org.nuxeo.ecm.core.search.api.client.querymodel;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.DataModel;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 import org.nuxeo.ecm.core.api.SortInfo;
-import org.nuxeo.ecm.core.query.QueryParseException;
-import org.nuxeo.ecm.core.query.sql.SQLQueryParser;
-import org.nuxeo.ecm.core.search.api.client.SearchException;
-import org.nuxeo.ecm.core.search.api.client.SearchService;
-import org.nuxeo.ecm.core.search.api.client.common.SearchServiceDelegate;
+import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.search.api.client.query.QueryException;
-import org.nuxeo.ecm.core.search.api.client.query.SearchPrincipal;
-import org.nuxeo.ecm.core.search.api.client.query.impl.ComposedNXQueryImpl;
 import org.nuxeo.ecm.core.search.api.client.querymodel.descriptor.FieldDescriptor;
 import org.nuxeo.ecm.core.search.api.client.querymodel.descriptor.QueryModelDescriptor;
+import org.nuxeo.ecm.core.search.api.client.search.results.ResultItem;
 import org.nuxeo.ecm.core.search.api.client.search.results.ResultSet;
 import org.nuxeo.ecm.core.search.api.client.search.results.document.SearchPageProvider;
+import org.nuxeo.ecm.core.search.api.client.search.results.impl.DocumentModelResultItem;
+import org.nuxeo.ecm.core.search.api.client.search.results.impl.ResultSetImpl;
 import org.nuxeo.runtime.api.Framework;
 
+/**
+ * Query model maintaining the context about a query descriptor, and for
+ * stateful models a document containing parameters that can be used by the
+ * model.
+ *
+ * @author Olivier Grisel
+ * @author Georges Racinet
+ * @author Florent Guillaume
+ */
 public class QueryModel implements Serializable {
 
     private static final long serialVersionUID = 762348097532723566L;
@@ -56,72 +64,68 @@ public class QueryModel implements Serializable {
 
     protected String descriptorName;
 
-    protected Integer max;
+    protected int max;
 
     protected final DocumentModel documentModel;
 
-    protected final Map<String, Map<String, Object>> defaultValues;
+    protected final DocumentModel originalDocumentModel;
 
-    protected final SearchPrincipal principal;
+    protected boolean isPersisted = false;
 
     protected transient QueryModelService queryModelService;
 
-    protected transient SearchService searchService;
-
     public QueryModel(QueryModelDescriptor descriptor,
-            DocumentModel documentModel, NuxeoPrincipal principal) {
+            DocumentModel documentModel) {
         this.descriptor = descriptor;
         if (descriptor != null) {
             descriptorName = descriptor.getName();
-            setMax(descriptor.getMax());
+            max = descriptor.getMax() == null ? 0 : descriptor.getMax().intValue();
         }
 
         this.documentModel = documentModel;
-
-        // store default values to be able to reset the DocumentModel offline
-        defaultValues = new HashMap<String, Map<String, Object>>();
-
-        if (documentModel != null) {
-            for (DataModel dm : documentModel.getDataModels().values()) {
-                defaultValues.put(dm.getSchema(), new HashMap<String, Object>(
-                        dm.getMap()));
-            }
-        }
-
-        lookupSearchService();
-        if (principal == null) {
-            this.principal = null;
+        if (documentModel == null) {
+            originalDocumentModel = null;
         } else {
-            this.principal = searchService.getSearchPrincipal(principal);
+            // detach and keep a copy of the original to be able to reset
+            try {
+                ((DocumentModelImpl) documentModel).detach(true);
+            } catch (ClientException e) {
+                throw new ClientRuntimeException(e);
+            }
+            originalDocumentModel = new DocumentModelImpl(
+                    documentModel.getType());
+            try {
+                originalDocumentModel.copyContent(documentModel);
+            } catch (ClientException e) {
+                throw new ClientRuntimeException(e);
+            }
         }
     }
 
-    public QueryModel(QueryModelDescriptor descriptor, NuxeoPrincipal principal) {
-        this(descriptor, null, principal);
+    public QueryModel(QueryModelDescriptor descriptor) {
+        this(descriptor, null);
+    }
+
+    public boolean isPersisted() {
+        return isPersisted;
+    }
+
+    public void setPersisted(boolean isPersisted) {
+        this.isPersisted = isPersisted;
     }
 
     public DocumentModel getDocumentModel() {
         return documentModel;
     }
 
-    public DocumentModelList getDocuments() throws ClientException,
-            QueryException {
-        return getDocuments(null);
+    public DocumentModelList getDocuments(CoreSession session)
+            throws ClientException {
+        return getDocuments(session, null);
     }
 
-    public DocumentModelList getDocuments(Object[] params)
-            throws ClientException, QueryException {
-        return getResultsProvider(params).getCurrentPage();
-    }
-
-    private SearchPrincipal getSearchPrincipal() {
-        return principal;
-    }
-
-    private void lookupSearchService() {
-        if (searchService == null) {
-            searchService = SearchServiceDelegate.getRemoteSearchService();
-        }
+    public DocumentModelList getDocuments(CoreSession session, Object[] params)
+            throws ClientException {
+        return getResultsProvider(session, params).getCurrentPage();
     }
 
     /**
@@ -137,19 +141,14 @@ public class QueryModel implements Serializable {
         }
     }
 
-    public PagedDocumentsProvider getResultsProvider(Object[] params)
-            throws ClientException, QueryException {
-        return getResultsProvider(params, null);
+    public PagedDocumentsProvider getResultsProvider(CoreSession session,
+            Object[] params) throws ClientException {
+        return getResultsProvider(session, params, null);
     }
 
-    public PagedDocumentsProvider getResultsProvider(Object[] params,
-            SortInfo sortInfo) throws ClientException, QueryException {
-        lookupSearchService();
+    public PagedDocumentsProvider getResultsProvider(CoreSession session,
+            Object[] params, SortInfo sortInfo) throws ClientException {
         checkDescriptor();
-        if (searchService == null) {
-            log.warn("Cannot find Search Service");
-            return null;
-        }
 
         if (sortInfo == null) {
             sortInfo = descriptor.getDefaultSortInfo(documentModel);
@@ -162,38 +161,31 @@ public class QueryModel implements Serializable {
             query = descriptor.getQuery(params, sortInfo);
         }
 
-        try {
-            if (log.isDebugEnabled()) {
-                log.debug("execute query: " + query.replace('\n', ' '));
-            }
-            ResultSet resultSet = searchService.searchQuery(
-                    new ComposedNXQueryImpl(SQLQueryParser.parse(query),
-                            principal), 0, getMaxForSearch());
-            return new SearchPageProvider(resultSet, isSortable(), sortInfo,
-                    query);
-        } catch (Exception e) {
-            // re-run the query without sort parameters
-            try {
-                log.error("sorted query failed: " + query, e);
-                if (descriptor.isStateful()) {
-                    query = descriptor.getQuery(documentModel, null);
-                } else {
-                    query = descriptor.getQuery(params, null);
-                }
-                log.debug("re-execute query without sort: " + query);
-                ResultSet resultSet = searchService.searchQuery(
-                        new ComposedNXQueryImpl(SQLQueryParser.parse(query),
-                                principal), 0, getMaxForSearch());
-                return new SearchPageProvider(resultSet, isSortable(), null,
-                        query);
-            } catch (SearchException e2) {
-                throw new ClientException(String.format(
-                        "%s in search by QueryModel %s", e2.getMessage(),
-                        descriptor.getName()), e2);
-            } catch (QueryParseException e3) {
-                throw new QueryException("Invalid query syntax", e3);
-            }
+        if (log.isDebugEnabled()) {
+            log.debug("execute query: " + query.replace('\n', ' '));
         }
+
+        DocumentModelList documentModelList = session.query(query, null, max,
+                0, true);
+        int size = documentModelList.size();
+        List<ResultItem> resultItems = new ArrayList<ResultItem>(size);
+        for (DocumentModel doc : documentModelList) {
+            if (doc == null) {
+                log.error("Got null document from query: " + query);
+                continue;
+            }
+            // detach the document so that we can use it beyond the session
+            try {
+                ((DocumentModelImpl) doc).detach(true);
+            } catch (DocumentSecurityException e) {
+                // no access to the document (why?)
+                continue;
+            }
+            resultItems.add(new DocumentModelResultItem(doc));
+        }
+        ResultSet resultSet = new ResultSetImpl(query, session, 0, max,
+                resultItems, (int) documentModelList.totalSize(), size);
+        return new SearchPageProvider(resultSet, isSortable(), sortInfo, query);
     }
 
     public QueryModelDescriptor getDescriptor() {
@@ -206,59 +198,97 @@ public class QueryModel implements Serializable {
      */
 
     public Object getProperty(String schemaName, String name) {
-        return documentModel.getProperty(schemaName, name);
+        try {
+            return documentModel.getProperty(schemaName, name);
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
     }
 
     public void setProperty(String schemaName, String name, Object value) {
-        documentModel.setProperty(schemaName, name, value);
+        try {
+            documentModel.setProperty(schemaName, name, value);
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
+    }
+
+    public Object getPropertyValue(String xpath) {
+        try {
+            return documentModel.getPropertyValue(xpath);
+        } catch (PropertyException e) {
+            throw new ClientRuntimeException(e);
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
+    }
+
+    public void setPropertyValue(String xpath, Serializable value) {
+        try {
+            documentModel.setPropertyValue(xpath, value);
+        } catch (PropertyException e) {
+            throw new ClientRuntimeException(e);
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
     }
 
     public void setSortColumn(String value) {
         FieldDescriptor fd = getDescriptor().getSortColumnField();
-        setProperty(fd.getSchema(), fd.getName(), value);
+        if (fd.getXpath() != null) {
+            setPropertyValue(fd.getXpath(), value);
+        } else {
+            setProperty(fd.getSchema(), fd.getName(), value);
+        }
     }
 
     public String getSortColumn() {
         FieldDescriptor fd = getDescriptor().getSortColumnField();
-        return (String) getProperty(fd.getSchema(), fd.getName());
+        if (fd.getXpath() != null) {
+            return (String) getPropertyValue(fd.getXpath());
+        } else {
+            return (String) getProperty(fd.getSchema(), fd.getName());
+        }
     }
 
     public boolean getSortAscending() {
         FieldDescriptor fd = getDescriptor().getSortAscendingField();
-        Boolean result = (Boolean) getProperty(fd.getSchema(), fd.getName());
+        Boolean result;
+        if (fd.getXpath() != null) {
+            result = (Boolean) getPropertyValue(fd.getXpath());
+        } else {
+            result = (Boolean) getProperty(fd.getSchema(), fd.getName());
+        }
         return Boolean.TRUE.equals(result);
     }
 
     public void setSortAscending(boolean sortAscending) {
         FieldDescriptor fd = getDescriptor().getSortAscendingField();
-        setProperty(fd.getSchema(), fd.getName(), sortAscending);
+        if (fd.getXpath() != null) {
+            setPropertyValue(fd.getXpath(), Boolean.valueOf(sortAscending));
+        } else {
+            setProperty(fd.getSchema(), fd.getName(),
+                    Boolean.valueOf(sortAscending));
+        }
     }
 
     public boolean isSortable() {
         return getDescriptor().isSortable();
     }
 
-    public void reset() throws ClientException {
-        for (String schemaName : defaultValues.keySet()) {
-            Map<String, Object> defaultData = new HashMap<String, Object>(
-                    defaultValues.get(schemaName));
-            documentModel.setProperties(schemaName, defaultData);
+    public void reset() {
+        try {
+            documentModel.copyContent(originalDocumentModel);
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
         }
     }
 
-    protected int getMaxForSearch() {
-        // dummy method that makes resolution Integer -> int
-        if (max == null) {
-            max = Integer.MAX_VALUE -1;
-        }
+    public int getMax() {
         return max;
     }
 
-    public Integer getMax() {
-        return max;
-    }
-
-    public void setMax(Integer max) {
+    public void setMax(int max) {
         this.max = max;
     }
 

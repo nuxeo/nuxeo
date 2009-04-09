@@ -57,7 +57,7 @@ public class SelectDataModelRowImpl implements SelectDataModelRow {
         return model;
     }
 
-    public void selectionChanged(ValueChangeEvent event) throws ClientException {
+    public void selectionChanged(ValueChangeEvent event) {
         if (model == null) {
             log.error("Could not send selection event: SelectModel is null");
             return;

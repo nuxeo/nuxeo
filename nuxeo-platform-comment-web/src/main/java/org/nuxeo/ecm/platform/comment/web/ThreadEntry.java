@@ -21,8 +21,6 @@ package org.nuxeo.ecm.platform.comment.web;
 
 import java.io.Serializable;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
@@ -32,8 +30,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 public class ThreadEntry implements Serializable{
 
     private static final long serialVersionUID = 8765190624691092L;
-
-    private static final Log log = LogFactory.getLog(ThreadEntry.class);
 
     DocumentModel comment;
 

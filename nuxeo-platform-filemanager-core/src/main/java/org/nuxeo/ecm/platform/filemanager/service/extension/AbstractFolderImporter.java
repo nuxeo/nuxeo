@@ -27,6 +27,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.filemanager.service.FileManagerService;
 import org.nuxeo.ecm.platform.types.TypeManager;
 
+// Not used.
 public abstract class AbstractFolderImporter implements FolderImporter {
 
     protected String name = "";

@@ -24,32 +24,23 @@ package org.nuxeo.ecm.platform.util;
  * Invalid parameters have been passed to NXPlatform methods.
  *
  * @author Razvan Caraghin
- *
+ * @deprecated will be removed
  */
+@Deprecated
 public class ECInvalidParameterException extends Exception {
     private static final long serialVersionUID = 650130019430248750L;
 
     public ECInvalidParameterException() {
     }
 
-    /**
-     * @param message
-     */
     public ECInvalidParameterException(String message) {
         super(message);
     }
 
-    /**
-     * @param message
-     * @param cause
-     */
     public ECInvalidParameterException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    /**
-     * @param cause
-     */
     public ECInvalidParameterException(Throwable cause) {
         super(cause);
     }

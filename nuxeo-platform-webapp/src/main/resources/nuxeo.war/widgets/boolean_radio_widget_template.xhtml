@@ -1,0 +1,24 @@
+<f:subview xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout" id="#{widget.id}">
+
+  <f:subview rendered="#{widget.mode == 'edit' }">
+    <h:selectOneRadio value="#{field_0}" id="#{widget.id}_checkbox">
+      <f:selectItem itemValue="#{true}" itemLabel="#{messages['label.yes']}" />
+      <f:selectItem itemValue="#{false}" itemLabel="#{messages['label.no']}" />
+    </h:selectOneRadio>
+    <h:message styleClass="errorMessage" for="#{widget.id}_checkbox"
+      id="#{widget.id}_message" />
+  </f:subview>
+
+  <f:subview rendered="#{widget.mode == 'view' }">
+    <h:outputText rendered="#{field_0}" value="#{messages['label.yes']}" />
+    <h:outputText rendered="#{! field_0}"
+      value="#{messages['label.no']}" />
+  </f:subview>
+
+</f:subview>
