@@ -88,44 +88,6 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
         return getUserVisiblePermissionDescriptors("");
     }
 
-    @Deprecated // use getUserVisiblePermissionDescriptors instead
-    public String[] getUserVisiblePermissions() throws ClientException {
-        if (mergedPermissionsVisibility == null) {
-            try {
-                computeMergedPermissionsVisibility();
-            } catch (Exception e) {
-                throw new ClientException(e);
-            }
-        }
-        // grab the default items (type is "")
-        PermissionVisibilityDescriptor defaultVisibility = mergedPermissionsVisibility
-                .get("");
-        if (defaultVisibility == null) {
-            throw new ClientException(
-                    "no permission visibility configuration registered");
-        }
-        return defaultVisibility.getSortedItems();
-    }
-
-    @Deprecated // use getUserVisiblePermissionDescriptors instead
-    public String[] getUserVisiblePermissions(String typeName)
-            throws ClientException {
-        if (mergedPermissionsVisibility == null) {
-            try {
-                computeMergedPermissionsVisibility();
-            } catch (Exception e) {
-                throw new ClientException(e);
-            }
-        }
-        PermissionVisibilityDescriptor defaultVisibility = mergedPermissionsVisibility
-                .get(typeName);
-        if (defaultVisibility == null) {
-            // fallback to default conf
-            return getUserVisiblePermissions();
-        }
-        return defaultVisibility.getSortedItems();
-    }
-
     private void computeMergedPermissionsVisibility() throws Exception {
         mergedPermissionsVisibility = new HashMap<String, PermissionVisibilityDescriptor>();
         for (PermissionVisibilityDescriptor pvd : registeredPermissionsVisibility) {

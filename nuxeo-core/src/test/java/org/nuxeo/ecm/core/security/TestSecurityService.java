@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.core.security;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -87,26 +88,34 @@ public class TestSecurityService extends NXRuntimeTestCase {
                 "ReadWrite"), Arrays.asList(groups));
     }
 
+    protected List<String> permStrings(List<UserVisiblePermission> perms) {
+        List<String> list = new ArrayList<String>(perms.size());
+        for (UserVisiblePermission perm : perms) {
+            list.add(perm.getPermission());
+        }
+        return list;
+    }
+
     public void testDefaultVisiblePermission() throws Exception {
         PermissionProvider pp = service.getPermissionProvider();
 
-        String[] orderedVisiblePermissions = pp.getUserVisiblePermissions();
+        List<UserVisiblePermission> orderedVisiblePermissions = pp.getUserVisiblePermissionDescriptors();
         assertNotNull(orderedVisiblePermissions);
 
         assertEquals(Arrays.asList("Read", "ReadWrite", "ReadRemove",
-                "Everything"), Arrays.asList(orderedVisiblePermissions));
+                "Everything"), permStrings(orderedVisiblePermissions));
 
-        orderedVisiblePermissions = pp.getUserVisiblePermissions("Section");
+        orderedVisiblePermissions = pp.getUserVisiblePermissionDescriptors("Section");
         assertNotNull(orderedVisiblePermissions);
 
         assertEquals(Arrays.asList("Read", "ReadWrite", "ReadRemove",
-                "Everything"), Arrays.asList(orderedVisiblePermissions));
+                "Everything"), permStrings(orderedVisiblePermissions));
 
-        orderedVisiblePermissions = pp.getUserVisiblePermissions("Workspace");
+        orderedVisiblePermissions = pp.getUserVisiblePermissionDescriptors("Workspace");
         assertNotNull(orderedVisiblePermissions);
 
         assertEquals(Arrays.asList("Read", "ReadWrite", "ReadRemove",
-                "Everything"), Arrays.asList(orderedVisiblePermissions));
+                "Everything"), permStrings(orderedVisiblePermissions));
     }
 
     public void testOverridedPermissions1() throws Exception {
@@ -152,27 +161,27 @@ public class TestSecurityService extends NXRuntimeTestCase {
                 "permissions-override1-contrib.xml");
 
         PermissionProvider pp = service.getPermissionProvider();
-        String[] orderedVisiblePermissions = pp.getUserVisiblePermissions();
+        List<UserVisiblePermission> orderedVisiblePermissions = pp.getUserVisiblePermissionDescriptors();
         assertNotNull(orderedVisiblePermissions);
 
         assertEquals(Arrays.asList("Read", "CustomCompoundPerm", "ReadWrite",
                 "ReadRemove", "Everything"),
-                Arrays.asList(orderedVisiblePermissions));
+                permStrings(orderedVisiblePermissions));
 
         // Section is overridden
-        orderedVisiblePermissions = pp.getUserVisiblePermissions("Section");
+        orderedVisiblePermissions = pp.getUserVisiblePermissionDescriptors("Section");
         assertNotNull(orderedVisiblePermissions);
 
         assertEquals(Arrays.asList("Read", "Everything"),
-                Arrays.asList(orderedVisiblePermissions));
+                permStrings(orderedVisiblePermissions));
 
         // Workspace falls back to default thus is overridden too
-        orderedVisiblePermissions = pp.getUserVisiblePermissions("Workspace");
+        orderedVisiblePermissions = pp.getUserVisiblePermissionDescriptors("Workspace");
         assertNotNull(orderedVisiblePermissions);
 
         assertEquals(Arrays.asList("Read", "CustomCompoundPerm", "ReadWrite",
                 "ReadRemove", "Everything"),
-                Arrays.asList(orderedVisiblePermissions));
+                permStrings(orderedVisiblePermissions));
     }
 
     public void testOverriddenPermissions2() throws Exception {
@@ -199,27 +208,27 @@ public class TestSecurityService extends NXRuntimeTestCase {
                 "permissions-override2-contrib.xml");
 
         PermissionProvider pp = service.getPermissionProvider();
-        String[] orderedVisiblePermissions = pp.getUserVisiblePermissions();
+        List<UserVisiblePermission> orderedVisiblePermissions = pp.getUserVisiblePermissionDescriptors();
         assertNotNull(orderedVisiblePermissions);
 
         assertEquals(
                 Arrays.asList("Write", "Read", "ReadRemove", "Everything"),
-                Arrays.asList(orderedVisiblePermissions));
+                permStrings(orderedVisiblePermissions));
 
         // custom settings for the Section type
-        orderedVisiblePermissions = pp.getUserVisiblePermissions("Section");
+        orderedVisiblePermissions = pp.getUserVisiblePermissionDescriptors("Section");
         assertNotNull(orderedVisiblePermissions);
 
         assertEquals(Arrays.asList("Read"),
-                Arrays.asList(orderedVisiblePermissions));
+                permStrings(orderedVisiblePermissions));
 
         // Workspace falls back to default thus is overridden too
-        orderedVisiblePermissions = pp.getUserVisiblePermissions("Workspace");
+        orderedVisiblePermissions = pp.getUserVisiblePermissionDescriptors("Workspace");
         assertNotNull(orderedVisiblePermissions);
 
         assertEquals(
                 Arrays.asList("Write", "Read", "ReadRemove", "Everything"),
-                Arrays.asList(orderedVisiblePermissions));
+                permStrings(orderedVisiblePermissions));
     }
 
     public void testPermissionsVsDeny() throws Exception {
