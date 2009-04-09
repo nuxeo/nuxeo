@@ -28,7 +28,9 @@ import javax.ws.rs.core.Response;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.rest.DocumentObject;
+import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebObject;
 
 @WebObject(type = "Wiki", superType="Document")
@@ -37,7 +39,14 @@ public class WikiObject extends DocumentObject {
 
     @Override
     public void initialize(Object... args) {
-        super.initialize(args);
+        assert args != null && args.length == 1;
+        try {
+            String docId = (String) args[0];
+            doc = ctx.getCoreSession().getDocument(new IdRef(docId));
+        } catch (Exception e) {
+            throw WebException.wrap(e);
+        }
+
         setRoot(true);
     }
 

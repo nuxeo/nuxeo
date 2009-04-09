@@ -69,6 +69,11 @@ public class WikiPageLinkResolver implements WikiFilter{
         StringBuffer links = new StringBuffer();
         StringBuffer relativePath  = new StringBuffer();
 
+        /*
+         * WEB-228 Remove the if branch for the moment.
+         * This will be reconsidered by WEB-236
+         *
+
         if (pageName.startsWith(".")) { // Absolute path
             basePath = ctx.getModulePath();
             String[] segments = pageName.substring(1).split("\\.");
@@ -82,6 +87,7 @@ public class WikiPageLinkResolver implements WikiFilter{
                 links.append(buildLink(basePath, relativePath, s, doc));
             }
         } else { // relative path
+         */
             basePath = resource.getPrevious().getPath();
             doc = getResourceDocument(resource.getPrevious());
             String[] segments = pageName.split("\\.");
@@ -92,7 +98,12 @@ public class WikiPageLinkResolver implements WikiFilter{
                 }
                 links.append(buildLink(basePath, relativePath, s, doc));
                 links.append(".");
+        /*
+         * WEB-228 Remove the if branch for the moment.
+         * This will be reconsidered by WEB-236
+         *
             }
+        */
             // remove last dot
             links.deleteCharAt(links.length() - 1);
         }
@@ -109,6 +120,9 @@ public class WikiPageLinkResolver implements WikiFilter{
         return String.format(LINK_TEMPLATE, basePath + relativePath  , linkClass, s);
     }
 
+    /*
+     * WEB-228 Remove getWikisRoot() method for the moment.
+     *
     protected DocumentModel getWikisRoot(){
         WebContext ctx = WebEngine.getActiveContext();
         CoreSession session = ctx.getCoreSession();
@@ -120,6 +134,7 @@ public class WikiPageLinkResolver implements WikiFilter{
         }
         return null;
     }
+    */
 
     protected DocumentModel getResourceDocument(Resource resource) {
         if (resource instanceof DocumentObject) {
