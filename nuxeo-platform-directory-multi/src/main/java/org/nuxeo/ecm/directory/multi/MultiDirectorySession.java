@@ -782,7 +782,7 @@ public class MultiDirectorySession implements Session {
                 results.add(entry);
             }
         }
-        if (!orderBy.isEmpty()) {
+        if (orderBy != null && !orderBy.isEmpty()) {
             directory.orderEntries(results, orderBy);
         }
         return results;
