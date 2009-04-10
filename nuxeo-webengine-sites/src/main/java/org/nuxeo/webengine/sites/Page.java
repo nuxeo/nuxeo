@@ -26,6 +26,7 @@ import static org.nuxeo.webengine.utils.SiteUtilsConstants.PAGE_TITLE;
 import static org.nuxeo.webengine.utils.SiteUtilsConstants.RESULTS;
 import static org.nuxeo.webengine.utils.SiteUtilsConstants.WELCOME_TEXT;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,19 +40,19 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.rest.DocumentObject;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
+import org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.Template;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.webcomments.utils.WebCommentUtils;
+import org.nuxeo.ecm.webengine.webcomments.utils.WebCommentsConstants;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.webengine.utils.SiteUtils;
-
 
 /**
  * @author stan
@@ -66,38 +67,23 @@ public class Page extends DocumentObject {
     @GET
     public Object doGet() {
         ctx.getRequest().setAttribute("org.nuxeo.theme.theme", "sites/page");
-        try {
-            return ((Template) super.doGet()).args(getPageArguments());
-        } catch (ClientException e) {
-            log.debug("Problems while trying to set the arguments for the Page ...");
-        }
-        return null;
+        return ((Template) super.doGet()).args(getPageArguments());
     }
 
+    @Override
     @POST
     public Response doPost() {
         String name = ctx.getForm().getString("comment");
         return null;
     }
 
-    @GET
-    @Path("comments")
-    public List<DocumentModel> getComments() {
-        try {
-            CommentManager commentManager = WebCommentUtils.getCommentManager();
-            return commentManager.getComments(this.getDocument());
-        } catch (Exception e) {
-            throw WebException.wrap("Failed to get all published comments", e);
-        }
-
-    }
 
     @GET
     @Path("numberComments")
     public int getNumberCommentsOnPage() {
         try {
             CommentManager commentManager = WebCommentUtils.getCommentManager();
-            return commentManager.getComments(this.getDocument()).size();
+            return commentManager.getComments(getDocument()).size();
         } catch (Exception e) {
             throw WebException.wrap("Failed to get all published comments", e);
         }
@@ -106,14 +92,25 @@ public class Page extends DocumentObject {
 
     public boolean isModerator() {
         try {
-            CoreSession session = this.getCoreSession();
+            CoreSession session = getCoreSession();
             return WebCommentUtils.isModeratedByCurrentUser(session,
+                    getDocument());
+        } catch (Exception e) {
+            throw WebException.wrap("Failed to delete comment", e);
+        }
+    }
+
+    public boolean isModerated() {
+        try {
+            CoreSession session = this.getCoreSession();
+            return WebCommentUtils.isCurrentModerated(session,
                     this.getDocument());
         } catch (Exception e) {
             throw WebException.wrap("Failed to delete comment", e);
         }
     }
 
+    
     @GET
     @Path("logo")
     public Response getLogo() {
@@ -122,7 +119,7 @@ public class Page extends DocumentObject {
             DocumentModel parentWorkspace = SiteUtils.getFirstWorkspaceParent(getCoreSession(), doc);
             resp = SiteUtils.getLogoResponse(parentWorkspace);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Unable to retrive the workspace parent. " , e);
         }
         //return a default image, maybe you want to change this in future
         if (resp == null) {
@@ -176,15 +173,15 @@ public class Page extends DocumentObject {
 
     public boolean isUserWithCommentPermission() {
         try {
-            CoreSession session = this.getCoreSession();
+            CoreSession session = getCoreSession();
             return WebCommentUtils.currentUserHasCommentPermision(session,
-                    this.getDocument());
+                    getDocument());
         } catch (Exception e) {
             throw WebException.wrap("Failed to delete comment", e);
         }
     }
 
-    protected Map<String, Object> getPageArguments() throws ClientException {
+    protected Map<String, Object> getPageArguments() {
 
         Map<String, Object> root = new HashMap<String, Object>();
         try {
@@ -204,8 +201,7 @@ public class Page extends DocumentObject {
 
             // add all webpages that are directly connected to an webpage
             root.put(ALL_WEBPAGES, SiteUtils.getAllWebPages(doc));
-            MimetypeRegistry mimetypeService = null;
-            mimetypeService = Framework.getService(MimetypeRegistry.class);
+            MimetypeRegistry mimetypeService = Framework.getService(MimetypeRegistry.class);
             root.put("mimetypeService", mimetypeService);
         } catch (Exception e) {
             log.error("Unable to get mimetype service : " + e.getMessage());
@@ -214,5 +210,52 @@ public class Page extends DocumentObject {
 
         return root;
     }
+
+
+  @GET
+    @Path("publishedComments")
+    public List<DocumentModel> getPublishedComments() {
+        List<DocumentModel> publishedComments = new ArrayList<DocumentModel>();
+        try {
+            CommentManager commentManager = WebCommentUtils.getCommentManager();
+            for (DocumentModel doc : commentManager.getComments(this.getDocument())) {
+                if (CommentsConstants.PUBLISHED_STATE.equals(doc.getCurrentLifeCycleState())) {
+                    publishedComments.add(doc);
+                }
+            }
+            return publishedComments;
+        } catch (Exception e) {
+            throw WebException.wrap("Failed to get all published comments", e);
+        }
+
+    }
+
+    @GET
+    @Path("pendingComments")
+    public List<DocumentModel> getPendingComments() {
+        List<DocumentModel> pendingComments = new ArrayList<DocumentModel>();
+        try {
+            CommentManager commentManager = WebCommentUtils.getCommentManager();
+            for (DocumentModel doc : commentManager.getComments(this.getDocument())) {
+                if (CommentsConstants.PENDING_STATE.equals(doc.getCurrentLifeCycleState())) {
+                    pendingComments.add(doc);
+                }
+            }
+            return pendingComments;
+        } catch (Exception e) {
+            throw WebException.wrap("Failed to get all pending comments", e);
+        }
+
+    }
+    
+    public boolean isAposteriori() {
+        try {
+            return WebCommentUtils.getModerationType(
+                    this.getCoreSession(), this.getDocument()).equals(WebCommentsConstants.MODERATION_APOSTERIORI);
+        } catch (Exception e) {
+            throw WebException.wrap("Failed to delete comment", e);
+        }
+    }
+
 
 }

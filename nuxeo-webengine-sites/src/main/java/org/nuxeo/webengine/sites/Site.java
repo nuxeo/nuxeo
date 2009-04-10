@@ -143,10 +143,10 @@ public class Site extends DefaultObject {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        // return a default image, maybe you want to change this in future
+        //return a default image, maybe you want to change this in future
         if (resp == null) {
-            resp = redirect(getContext().getModule().getSkinPathPrefix()
-                    + "/images/logo.gif");
+            resp = redirect(getContext().getModule().getSkinPathPrefix() +
+                    "/images/logo.gif");
         }
         return resp;
     }
@@ -161,16 +161,16 @@ public class Site extends DefaultObject {
                 resp = Response.ok().entity(blob).type(blob.getMimeType()).build();
             }
         } catch (Exception e) {
-            log.error("Error while trying to display the website. ", e);
+            log.error("Error while trying to display the website. " , e);
         }
-        // return a default image, maybe you want to change this in future
+        //return a default image, maybe you want to change this in future
         if (resp == null) {
-            resp = redirect(getContext().getModule().getSkinPathPrefix()
-                    + "/images/logo.gif");
+            resp = redirect(getContext().getModule().getSkinPathPrefix() +
+                    "/images/logo.gif");
         }
         return resp;
     }
- 
+
     @POST
     @Path("search")
     public Object getSearchParametres(
@@ -216,18 +216,21 @@ public class Site extends DefaultObject {
         root.put(WELCOME_TEXT, SiteHelper.getString(ws, "webc:welcomeText",
                 null));
         root.put(NAME, SiteHelper.getString(ws, "webc:name", null));
-        root.put(DESCRIPTION, SiteHelper.getString(ws, "dc:description", null));
+        root.put(DESCRIPTION, SiteHelper.getString(ws, "dc:description",
+                null));
         // add web pages
-        root.put(LAST_PUBLISHED_PAGES, SiteUtils.getLastModifiedWebPages(ws, 5,
-                50));
-        // add comments
+        root.put(LAST_PUBLISHED_PAGES, SiteUtils.getLastModifiedWebPages(
+                ws, 5, 50));
+        //add comments
         root.put(COMMENTS, SiteUtils.getLastCommentsFromPages(ws, 5, 50));
         // add contextual links
-        root.put(CONTEXTUAL_LINKS, SiteUtils.getContextualLinks(ws));
+        root.put(CONTEXTUAL_LINKS, SiteUtils.getContextualLinks(
+                ws));
         // add all webpages that are directly connected to an site
-        root.put(ALL_WEBPAGES, SiteUtils.getAllWebPages(ws));
+        root.put(ALL_WEBPAGES, SiteUtils.getAllWebPages(
+                ws));
         return root;
-    } 
+    }
 
     protected DocumentModel getSiteDocumentModelByUrl(String url) {
         WebContext context = WebEngine.getActiveContext();

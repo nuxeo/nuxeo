@@ -34,20 +34,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 import javax.servlet.http.HttpServletRequest;
-
-
-
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang.StringUtils;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.nuxeo.common.utils.IdUtils;
-import org.nuxeo.common.utils.Path;
-
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -70,7 +65,7 @@ public class SiteUtils {
 
     private static final Log log = LogFactory.getLog(SiteUtils.class);
 
-    private SiteUtils() { 
+    private SiteUtils() {
     }
 
     /**
@@ -398,7 +393,6 @@ public class SiteUtils {
         }
         return webPages;
     }
-
 
     /**
      * Returns the path to all the existing web containers.
