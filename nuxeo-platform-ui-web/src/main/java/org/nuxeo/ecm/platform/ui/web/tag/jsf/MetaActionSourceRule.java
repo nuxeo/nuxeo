@@ -22,13 +22,10 @@ package org.nuxeo.ecm.platform.ui.web.tag.jsf;
 import javax.el.MethodExpression;
 import javax.faces.component.ActionSource;
 import javax.faces.component.ActionSource2;
-import javax.faces.el.MethodBinding;
 
-import org.nuxeo.ecm.platform.ui.web.binding.MetaMethodBinding;
 import org.nuxeo.ecm.platform.ui.web.binding.MetaMethodExpression;
 
 import com.sun.facelets.FaceletContext;
-import com.sun.facelets.el.LegacyMethodBinding;
 import com.sun.facelets.tag.MetaRule;
 import com.sun.facelets.tag.Metadata;
 import com.sun.facelets.tag.MetadataTarget;
@@ -57,45 +54,18 @@ public class MetaActionSourceRule extends MetaRule {
         @Override
         public void applyMetadata(FaceletContext ctx, Object instance) {
             ActionSource2 as = (ActionSource2) instance;
-            MethodExpression originalExpression = attr.getMethodExpression(
-                    ctx, String.class, ACTION_SIG);
+            MethodExpression originalExpression = attr.getMethodExpression(ctx,
+                    String.class, ACTION_SIG);
             as.setActionExpression(new MetaMethodExpression(originalExpression));
         }
     }
-
-    static final class ActionBindingMapper extends Metadata {
-
-        private final TagAttribute attr;
-
-        ActionBindingMapper(TagAttribute attr) {
-            this.attr = attr;
-        }
-
-        @Override
-        public void applyMetadata(FaceletContext ctx, Object instance) {
-            ActionSource as = (ActionSource) instance;
-            MethodBinding originalBinding = new LegacyMethodBinding(
-                    attr.getMethodExpression(ctx, String.class, ACTION_SIG));
-            as.setAction(new MetaMethodBinding(originalBinding));
-        }
-    }
-
 
     @Override
     public Metadata applyRule(String name, TagAttribute attribute,
             MetadataTarget meta) {
         if (meta.isTargetInstanceOf(ActionSource.class)) {
             if ("action".equals(name)) {
-                // XXX AT: seam version does not handle expressions ok right now
-                return new ActionBindingMapper(attribute);
-                // boolean elSupport =
-                // FacesAPI.getComponentVersion(meta.getTargetClass()) >= 12;
-                // if (elSupport &&
-                // meta.isTargetInstanceOf(ActionSource2.class)) {
-                // return new ActionExpressionMapper(attribute);
-                // } else {
-                // return new ActionBindingMapper(attribute);
-                // }
+                return new ActionExpressionMapper(attribute);
             }
         }
         return null;

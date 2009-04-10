@@ -19,13 +19,17 @@
 
 package org.nuxeo.ecm.platform.ui.web.tag.handler;
 
+import javax.el.ELContext;
+import javax.el.ExpressionFactory;
+import javax.el.MethodExpression;
 import javax.faces.application.Application;
-import javax.faces.component.ActionSource;
+import javax.faces.component.ActionSource2;
 import javax.faces.component.UIComponent;
-import javax.faces.el.MethodBinding;
+import javax.faces.context.FacesContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.DocumentModel;
 
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.tag.MetaRuleset;
@@ -74,8 +78,8 @@ public class DocumentLinkTagHandler extends HtmlComponentHandler {
     @Override
     protected void onComponentCreated(FaceletContext ctx, UIComponent c,
             UIComponent parent) {
-        if (c instanceof ActionSource) {
-            ActionSource command = (ActionSource) c;
+        if (c instanceof ActionSource2) {
+            ActionSource2 command = (ActionSource2) c;
             String docValue = getDocumentValue();
             String viewId = getViewValue();
             String actionValue;
@@ -86,9 +90,14 @@ public class DocumentLinkTagHandler extends HtmlComponentHandler {
                 actionValue = "#{navigationContext.navigateToDocumentWithView("
                         + docValue + ", " + viewId + ")}";
             }
-            Application app = ctx.getFacesContext().getApplication();
-            MethodBinding meth = app.createMethodBinding(actionValue, null);
-            command.setAction(meth);
+            FacesContext facesContext = ctx.getFacesContext();
+            Application app = facesContext.getApplication();
+            ExpressionFactory ef = app.getExpressionFactory();
+            ELContext context = facesContext.getELContext();
+            MethodExpression action = ef.createMethodExpression(context,
+                    actionValue, String.class, new Class[] {
+                            DocumentModel.class, String.class });
+            command.setActionExpression(action);
         }
     }
 
