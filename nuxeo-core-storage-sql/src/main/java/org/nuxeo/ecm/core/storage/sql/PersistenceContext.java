@@ -552,13 +552,13 @@ public class PersistenceContext {
         SimpleFragment versionHier = (SimpleFragment) hierContext.get(
                 versionId, false);
         for (String key : model.getFragmentKeysType(model.hierTableName).keySet()) {
-            if (key.equals(model.HIER_PARENT_KEY) ||
-                    key.equals(model.HIER_CHILD_NAME_KEY) ||
-                    key.equals(model.HIER_CHILD_POS_KEY) ||
-                    key.equals(model.HIER_CHILD_ISPROPERTY_KEY) ||
-                    key.equals(model.MAIN_PRIMARY_TYPE_KEY) ||
-                    key.equals(model.MAIN_CHECKED_IN_KEY) ||
-                    key.equals(model.MAIN_BASE_VERSION_KEY)) {
+            if (key.equals(model.HIER_PARENT_KEY)
+                    || key.equals(model.HIER_CHILD_NAME_KEY)
+                    || key.equals(model.HIER_CHILD_POS_KEY)
+                    || key.equals(model.HIER_CHILD_ISPROPERTY_KEY)
+                    || key.equals(model.MAIN_PRIMARY_TYPE_KEY)
+                    || key.equals(model.MAIN_CHECKED_IN_KEY)
+                    || key.equals(model.MAIN_BASE_VERSION_KEY)) {
                 continue;
             }
             overwriteMap.put(key, versionHier.get(key));
