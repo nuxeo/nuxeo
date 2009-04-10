@@ -55,9 +55,23 @@
 		}
 	}
 
+	function isTitleSet()
+	{
+		var title = document.getElementById('titleInput');
+		if(title)
+		{
+			if(title.value == "")
+			{
+				alert("Please insert a valid title.");
+				return false;		
+			}
+		}
+		
+		return true;
+	}
 </script>
 
-<form method="POST" action="${This.path}/createWebPage" accept-charset="utf-8">
+<form method="POST" onsubmit="return isTitleSet();" action="${This.path}/createWebPage" accept-charset="utf-8">
   <table class="createWebPage">
     <tbody>
       <tr>
@@ -66,7 +80,7 @@
       </tr>
       <tr>
         <td>${Context.getMessage("label.page.title")}</td>
-        <td><input type="text" name="title" value=""/></td>
+        <td><input type="text" id="titleInput" name="title" value=""/></td>
       </tr>
       <tr>
         <td>${Context.getMessage("label.page.description")}</td>
