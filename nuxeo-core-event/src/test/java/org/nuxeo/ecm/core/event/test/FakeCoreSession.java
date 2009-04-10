@@ -649,12 +649,6 @@ public class FakeCoreSession implements CoreSession {
         return null;
     }
 
-    public DocumentModel saveDocumentAsNewVersion(DocumentModel docModel)
-            throws ClientException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
     public void saveDocuments(DocumentModel[] docModels) throws ClientException {
         // TODO Auto-generated method stub
 

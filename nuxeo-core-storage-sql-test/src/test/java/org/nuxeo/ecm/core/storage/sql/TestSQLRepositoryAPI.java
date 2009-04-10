@@ -2329,7 +2329,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals(name, file.getName());
 
         // Versioning
-        session.saveDocumentAsNewVersion(file);
+        // session.saveDocumentAsNewVersion(file);
 
         // Publishing
         session.publishDocument(file, sectionA);

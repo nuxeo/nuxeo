@@ -71,43 +71,6 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
     //
     //
 
-    public void testSaveAsNewVersion() throws Exception {
-
-        DocumentModel root = session.getRootDocument();
-
-        DocumentModel folder = new DocumentModelImpl(root.getPathAsString(),
-                "folder#1", "Folder");
-        folder = session.createDocument(folder);
-
-        DocumentModel file = new DocumentModelImpl(folder.getPathAsString(),
-                "file#1", "File");
-        file = session.createDocument(file);
-
-        VersionModel version = new VersionModelImpl();
-        version.setLabel("v1");
-
-        session.save();
-        session.checkIn(file.getRef(), version);
-        session.checkOut(file.getRef());
-
-        session.saveDocumentAsNewVersion(file);
-    }
-
-    public void testSaveAsNewVersion2() throws Exception {
-
-        DocumentModel root = session.getRootDocument();
-
-        DocumentModel folder = new DocumentModelImpl(root.getPathAsString(),
-                "folder#1", "Folder");
-        folder = session.createDocument(folder);
-
-        DocumentModel file = new DocumentModelImpl(folder.getPathAsString(),
-                "file#1", "File");
-        file = session.createDocument(file);
-
-        session.saveDocumentAsNewVersion(file);
-    }
-
     /**
      * Sleep 1s, useful for stupid databases (like MySQL) that don't have
      * subsecond resolution in TIMESTAMP fields.

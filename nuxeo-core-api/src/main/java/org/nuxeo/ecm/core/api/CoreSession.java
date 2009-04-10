@@ -549,22 +549,6 @@ public interface CoreSession {
     DocumentModel saveDocument(DocumentModel docModel) throws ClientException;
 
     /**
-     * Performs a checkin-checkout on the current document (not updated) to
-     * create a read-only copy of the previous version and updates the current
-     * version with data from the given DocumentModel.
-     *
-     * @param docModel
-     * @return
-     * @throws ClientException
-     *
-     * @deprecated instead use saveDocument with
-     *             VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY in contextData
-     */
-    @Deprecated
-    DocumentModel saveDocumentAsNewVersion(DocumentModel docModel)
-            throws ClientException;
-
-    /**
      * Bulk document saving.
      *
      * @param docModels the document models that needs to be saved

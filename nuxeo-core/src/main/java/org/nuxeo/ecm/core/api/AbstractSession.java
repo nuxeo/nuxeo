@@ -1666,23 +1666,6 @@ public abstract class AbstractSession implements CoreSession,
     }
 
     /**
-     * @deprecated instead use saveDocument with
-     *             VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY in contextData
-     */
-    @Deprecated
-    public DocumentModel saveDocumentAsNewVersion(DocumentModel doc)
-            throws ClientException {
-        createDocumentSnapshot(doc);
-
-        // save the changed data to the current working version
-        final DocumentModel savedDoc = saveDocument(doc);
-        // FIXME BS: why save is done explicitely here?
-        save();
-
-        return savedDoc;
-    }
-
-    /**
      * Creates a snapshot (version) for the given DocumentModel.
      *
      * @param doc

@@ -2260,53 +2260,6 @@ public abstract class TestAPI extends TestConnection {
         assertEquals("default", childFile.getRepositoryName());
     }
 
-    // TODO: fix and reenable, is this a bug?
-    public void XXXtestRetrieveProxies() throws ClientException {
-        DocumentModel root = getRootDocument();
-
-        // Section A
-        String name = "section" + generateUnique();
-        DocumentModel sectionA = new DocumentModelImpl(root.getPathAsString(),
-                name, "Section");
-        sectionA = createChildDocument(sectionA);
-
-        assertEquals("Section", sectionA.getType());
-        assertEquals(name, sectionA.getName());
-
-        // Section B
-        name = "section" + generateUnique();
-        DocumentModel sectionB = new DocumentModelImpl(root.getPathAsString(),
-                name, "Section");
-        sectionB = createChildDocument(sectionB);
-
-        assertEquals("Section", sectionB.getType());
-        assertEquals(name, sectionB.getName());
-
-        // File
-        name = "file" + generateUnique();
-        DocumentModel file = new DocumentModelImpl(root.getPathAsString(),
-                name, "File");
-        file = createChildDocument(file);
-
-        assertEquals("File", file.getType());
-        assertEquals(name, file.getName());
-
-        // Versioning
-        session.saveDocumentAsNewVersion(file);
-
-        // Publishing
-        session.publishDocument(file, sectionA);
-        // remote.publishDocument(file, sectionB);
-
-        // Retrieving proxies
-        DocumentModelList proxies = session.getProxies(file.getRef(),
-                sectionA.getRef());
-
-        assertFalse(proxies.isEmpty());
-        assertEquals(1, proxies.size());
-        // assertEquals(2, proxies.size());
-    }
-
     public void testCreateDocumentModel() throws ClientException {
         // first method: only the typename
         DocumentModel docModel = session.createDocumentModel("File");

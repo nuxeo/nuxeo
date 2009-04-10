@@ -85,48 +85,6 @@ public class TestVersioning extends NXRuntimeTestCase {
         super.tearDown();
     }
 
-    public void testSaveAsNewVersion() throws ClientException {
-
-        DocumentModel root = coreSession.getRootDocument();
-
-        DocumentModel folder = new DocumentModelImpl(root.getPathAsString(),
-                "folder#1", "Folder");
-        folder = coreSession.createDocument(folder);
-
-        DocumentModel file = new DocumentModelImpl(folder.getPathAsString(),
-                "file#1", "File");
-        file = coreSession.createDocument(file);
-
-
-        VersionModel version = new VersionModelImpl();
-        version.setLabel("v1");
-
-        coreSession.save();
-        coreSession.checkIn(file.getRef(), version);
-        coreSession.checkOut(file.getRef());
-
-        DocumentModel newFileVersion = coreSession.saveDocumentAsNewVersion(file);
-    }
-
-    public void testSaveAsNewVersion2() throws ClientException {
-
-        DocumentModel root = coreSession.getRootDocument();
-
-        DocumentModel folder = new DocumentModelImpl(root.getPathAsString(),
-                "folder#1", "Folder");
-        folder = coreSession.createDocument(folder);
-
-        DocumentModel file = new DocumentModelImpl(folder.getPathAsString(),
-                "file#1", "File");
-        file = coreSession.createDocument(file);
-
-        DocumentModel newFileVersion = coreSession.saveDocumentAsNewVersion(file);
-    }
-
-    /**
-     * SUPNXP-60: Suppression d'une version d'un document.
-     * @throws ClientException
-     */
     public void testRemoveSingleDocVersion() throws ClientException {
 
         DocumentModel root = coreSession.getRootDocument();
