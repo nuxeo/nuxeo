@@ -31,7 +31,7 @@
   <div id="webpage-actions">
     <ul>
       <#list This.getLinks("SITE_ACTIONS") as link>
-        <li><a href="${link.getCode(This)}" title="${link.id}"><span>${Context.getMessage(link.id)}</span></a></li>
+          <li><a href="${link.getCode(This)}" title="${link.id}"><span>${Context.getMessage(link.id)}</span></a></li>
       </#list>
     </ul>
   </div>
