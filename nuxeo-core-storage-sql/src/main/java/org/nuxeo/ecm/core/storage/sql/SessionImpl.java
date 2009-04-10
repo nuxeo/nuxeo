@@ -318,8 +318,8 @@ public class SessionImpl implements Session {
     public Node addChildNode(Node parent, String name, Long pos,
             String typeName, boolean complexProp) throws StorageException {
         checkLive();
-        if (name == null || name.contains("/") || name.equals(".") ||
-                name.equals("..")) {
+        if (name == null || name.contains("/") || name.equals(".")
+                || name.equals("..")) {
             throw new IllegalArgumentException("Illegal name: " + name);
         }
         if (!model.isType(typeName)) {
@@ -394,8 +394,8 @@ public class SessionImpl implements Session {
     public Node getChildNode(Node parent, String name, boolean complexProp)
             throws StorageException {
         checkLive();
-        if (name == null || name.contains("/") || name.equals(".") ||
-                name.equals("..")) {
+        if (name == null || name.contains("/") || name.equals(".")
+                || name.equals("..")) {
             // XXX real parsing
             throw new IllegalArgumentException("Illegal name: " + name);
         }
@@ -541,8 +541,9 @@ public class SessionImpl implements Session {
         return nodes;
     }
 
-    public PartialList<Serializable> query(SQLQuery query, QueryFilter queryFilter,
-            boolean countTotal) throws StorageException {
+    public PartialList<Serializable> query(SQLQuery query,
+            QueryFilter queryFilter, boolean countTotal)
+            throws StorageException {
         try {
             return mapper.query(query, queryFilter, countTotal, this);
         } catch (SQLException e) {
