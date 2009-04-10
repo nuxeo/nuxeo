@@ -40,7 +40,6 @@
     <module>nuxeo-core-storage-sql-extensions</module>
     <module>nuxeo-core-storage-sql-test</module>
     <module>nuxeo-core-storage-sql-ra</module>
-    <module>nuxeo-core-storage-sql-mbean</module>
     <module>nuxeo-core-convert-api</module>
     <module>nuxeo-core-convert</module>
     <module>nuxeo-core-convert-plugins</module>
@@ -181,6 +180,11 @@
       <dependency>
         <groupId>org.nuxeo.runtime</groupId>
         <artifactId>nuxeo-runtime-osgi</artifactId>
+        <version>${nuxeo.runtime.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.runtime</groupId>
+        <artifactId>nuxeo-runtime-management</artifactId>
         <version>${nuxeo.runtime.version}</version>
       </dependency>
 
