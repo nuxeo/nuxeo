@@ -1,2 +1,0 @@
-Entity tags (ETags) are used for identifying multiple versions of the same objects.
-ETags are transmitted in headers.

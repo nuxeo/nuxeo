@@ -29,11 +29,13 @@ public abstract class GuardTest extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
+
         deployBundle("nuxeo-core-schema");
         deployBundle("nuxeo-core-query");
         deployBundle("nuxeo-core-api");
         deployBundle("nuxeo-core");
         deployBundle("nuxeo-webengine-core");
+
         deployContrib("OSGI-INF/DemoRepository.xml");
         deployContrib("OSGI-INF/test-security-guards.xml");
     }

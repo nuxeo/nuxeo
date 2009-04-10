@@ -75,11 +75,6 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-webapp-core</artifactId>
-      <type>ejb</type>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-relations-api</artifactId>
     </dependency>
     <dependency>

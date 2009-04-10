@@ -153,7 +153,7 @@ public class Field {
         this.form = form;
     }
 
-    public Object decode(String value) throws TypeException {
+    public Object decode(String value) {
         return handler.decode(value);
     }
 
@@ -178,7 +178,7 @@ public class Field {
         Object decodedValue = null;
         try {
             decodedValue = handler.decode(value);
-        } catch (TypeException e) {
+        } catch (IllegalArgumentException e) {
             return new ErrorStatus(id, "Field '"+label+"' must be a "+handler.getType());
         }
         // check common constraints

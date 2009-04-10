@@ -53,9 +53,6 @@ public class WikiHelper {
 
     public static final Resource HAS_LINK_TO = new ResourceImpl("http://www.nuxeo.org/wiki/hasLinkTo");
 
-    // TODO fix this hardcoded path
-    public static final String WIKI_ROOT_PATH = "/default-domain/workspaces/wikis";
-
     // Utility class.
     private WikiHelper() {
     }

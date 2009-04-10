@@ -2,7 +2,7 @@
 <#assign pendingComments = This.pendingComments /> 
 
 <div class="commentspageBlock">
-<#if (comments?size != 0 || base.canWrite)>
+<#if (publishedComments?size != 0 || base.canWrite)>
   <h4>${Context.getMessage("label.page.comments.title")}</h4>
 </#if>
 <#if (This.userWithCommentPermission==true)> 
@@ -34,14 +34,9 @@
     <div class="commentBlock">
       <div class="commentInfos">${com['comment:creationDate']} by ${com['comment:author']}</div>
       <div class="commentContent">${com['comment:text']}</div>
-      <#if (This.moderator==true)>
-        <a href="${This.path}/@comments/delete?property=${com.ref}">Delete</a>
-      </#if>
-      <#if (This.moderated==false)>
-      	<#if (This.aposteriori==true)>
-        <a href="${This.path}/@comments/delete?property=${com.ref}">Delete</a>
-        </#if>
-      </#if>  
+      	<#if (This.moderator==true)>
+        	<a href="${This.path}/@comments/delete?property=${com.ref}">Delete</a>
+      	</#if>
     </div>
     </#list>
   </div>

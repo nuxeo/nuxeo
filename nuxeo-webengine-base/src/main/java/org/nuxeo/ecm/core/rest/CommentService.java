@@ -86,9 +86,7 @@ public class CommentService extends DefaultAdapter {
             CommentsModerationService commentsModerationService = getCommentsModerationService();
             if (WebCommentUtils.isCurrentModerated(session, pageDoc)
                     && (!WebCommentUtils.isModeratedByCurrentUser(session,
-                            pageDoc))
-                    && (WebCommentUtils.getModerationType(session, pageDoc).equals(
-                            WebCommentsConstants.MODERATION_APRIORI) == true)) {
+                            pageDoc))){
                 // if current page is moderated
                 // get all moderators
                 ArrayList<String> moderators = WebCommentUtils.getModerators(

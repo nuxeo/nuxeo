@@ -45,11 +45,11 @@ public abstract class TypeHandler {
         return type;
     }
 
-    public abstract Object decode(String value) throws TypeException;
+    public abstract Object decode(String value);
 
     public static final TypeHandler STRING = new TypeHandler("string") {
         @Override
-        public Object decode(String value) throws TypeException {
+        public Object decode(String value) {
             return value;
         }
     };

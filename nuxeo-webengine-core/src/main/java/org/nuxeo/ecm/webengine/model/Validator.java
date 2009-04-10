@@ -43,7 +43,9 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  * @author <a href="mailto:ei@nuxeo.com">Eugen Ionica</a>
  *
  */
-
+// FIXME: Not used.
 public interface Validator {
+
     DocumentModel validate( DocumentModel doc ) throws ValidatorException;
+
 }

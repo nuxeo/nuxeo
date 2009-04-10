@@ -63,13 +63,7 @@ public abstract class SimpleConstraint extends AbstractConstraint {
                 throw new IllegalArgumentException("Constraint "+getClass().getSimpleName()
                         +" cannot be empty. Form: "+field.getForm()+". Field "+field.getId());
             }
-            Object decodedValue = null;
-            try {
-                decodedValue = field.decode(value);
-            } catch (TypeException e) {
-                throw new IllegalArgumentException("constraint for "+field.getId()
-                        +" must have a value of type "+field.getHandler().getType()+" but is "+value, e);
-            }
+            Object decodedValue = field.decode(value);
             doInit(field, value, decodedValue);
         } // else the constraint value is a reference to another field
         // so it will be computed at validation time
@@ -85,13 +79,7 @@ public abstract class SimpleConstraint extends AbstractConstraint {
             // TODO handle references to multivalued fields
             SimpleConstraint sc = (SimpleConstraint)newInstance();
             sc.errorMessage = errorMessage;
-            Object decodedValue = null;
-            try {
-                decodedValue = field.decode(againstValue);
-            } catch (TypeException e) {
-                throw new IllegalArgumentException("constraint for "+field.getId()
-                        +" must have a value of type "+field.getHandler().getType()+" but is "+value, e);
-            }
+            Object decodedValue = field.decode(againstValue);
             sc.doInit(field, againstValue, decodedValue);
             return sc.doValidate(form, field, rawValue, value);
         } else {

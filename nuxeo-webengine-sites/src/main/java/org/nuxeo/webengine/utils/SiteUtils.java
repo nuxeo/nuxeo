@@ -55,6 +55,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
+import org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.WebContext;
@@ -131,6 +132,7 @@ public class SiteUtils {
         CoreSession session = context.getCoreSession();
         List<Object> pages = new ArrayList<Object>();
         try {
+            DocumentModel ws = getFirstWorkspaceParent(session, documentModel);
             DocumentModelList webPages = session.query(
                     String.format(
                             "SELECT * FROM Document WHERE "
@@ -138,7 +140,7 @@ public class SiteUtils {
                                     + " ecm:path STARTSWITH '%s'"
                                     + " AND ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0"
                                     + " AND ecm:currentLifeCycleState != 'deleted' ORDER BY dc:modified DESC",
-                            getFirstWorkspaceParent(session, documentModel).getPathAsString()),
+                            ws.getPathAsString()),
                     null, noPages, 0, true);
 
             for (DocumentModel webPage : webPages) {
@@ -161,7 +163,8 @@ public class SiteUtils {
                 String[] splittedFormatterdString = formattedString.split(" ");
                 page.put("day", splittedFormatterdString[0]);
                 page.put("month", splittedFormatterdString[1]);
-                page.put(NUMBER_COMMENTS, getNumberCommentsForPage(webPage));
+                page.put(NUMBER_COMMENTS, getNumberCommentsForPage(session, ws,
+                        webPage));
                 pages.add(page);
             }
         } catch (Exception e) {
@@ -223,10 +226,21 @@ public class SiteUtils {
         return null;
     }
 
-    private static String getNumberCommentsForPage(DocumentModel page)
-            throws Exception {
+    private static String getNumberCommentsForPage(CoreSession session,
+            DocumentModel ws, DocumentModel page) throws Exception {
         CommentManager commentManager = WebCommentUtils.getCommentManager();
-        return Integer.toString(commentManager.getComments(page).size());
+        List<DocumentModel> comments = commentManager.getComments(page);
+        if (WebCommentUtils.isCurrentModerated(session, ws)) {
+            List<DocumentModel> publishedComments = new ArrayList<DocumentModel>();
+            for (DocumentModel comment : comments) {
+                if (CommentsConstants.PUBLISHED_STATE.equals(comment.getCurrentLifeCycleState())) {
+                    publishedComments.add(comment);
+                }
+
+            }
+            return Integer.toString(publishedComments.size());
+        }
+        return Integer.toString(comments.size());
     }
 
     /**
@@ -244,14 +258,32 @@ public class SiteUtils {
             int noComments, int noWordsFromContent) throws ClientException {
         WebContext context = WebEngine.getActiveContext();
         CoreSession session = context.getCoreSession();
-        DocumentModelList comments = session.query(
-                String.format(
+        String queryString = null;
+        try {
+            if (WebCommentUtils.isCurrentModerated(session, ws)) {
+                queryString = String.format(
+                        "SELECT * FROM Document WHERE "
+                                + " ecm:primaryType like 'Comment' "
+                                + " AND ecm:path STARTSWITH '%s'"
+                                + " AND ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0"
+                                + " AND ecm:currentLifeCycleState = '%s' AND ecm:currentLifeCycleState != 'deleted' "
+                                + " ORDER BY dc:modified DESC",
+                        ws.getPathAsString() + "/",
+                        CommentsConstants.PUBLISHED_STATE);
+            } else {
+                queryString = String.format(
                         "SELECT * FROM Document WHERE "
                                 + " ecm:primaryType like 'Comment' "
                                 + " AND ecm:path STARTSWITH '%s'"
                                 + " AND ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0"
                                 + " AND ecm:currentLifeCycleState != 'deleted' ORDER BY dc:modified DESC",
-                        ws.getPathAsString() + "/"), null, noComments, 0, true);
+                        ws.getPathAsString() + "/");
+            }
+        } catch (Exception e1) {
+            throw new ClientException(e1);
+        }
+        DocumentModelList comments = session.query(queryString, null, noComments,
+                0, true);
         List<Object> lastWebComments = new ArrayList<Object>();
         for (DocumentModel documentModel : comments) {
             Map<String, String> comment = new HashMap<String, String>();

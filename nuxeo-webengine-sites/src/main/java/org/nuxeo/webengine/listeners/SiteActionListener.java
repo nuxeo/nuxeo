@@ -17,6 +17,7 @@
  */
 package org.nuxeo.webengine.listeners;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
@@ -49,6 +50,9 @@ public class SiteActionListener implements EventListener {
         }
 
         doc.setPropertyValue("webc:url", doc.getName());
+        if (StringUtils.isEmpty((String) doc.getPropertyValue("webc:name"))) {
+            doc.setPropertyValue("webc:name", doc.getTitle());
+        }
     }
 
 }
