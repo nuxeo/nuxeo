@@ -23,15 +23,15 @@
         <@nxthemes_button identifier="edit canvas"
           link="javascript:NXThemesEditor.editCanvas()"
           controlledBy="editor buttons"
-          switchTo="editor perspectives/edit canvas" label="Edit theme" />
-
+          switchTo="editor perspectives/edit canvas" label="Refresh theme" />
+        
         <@nxthemes_button identifier="manage presets"
           controlledBy="editor buttons"
-          switchTo="editor perspectives/manage presets" label="Manage presets" />
+          switchTo="editor perspectives/manage presets" label="Presets" />
         
         <@nxthemes_button identifier="manage styles"
           controlledBy="editor buttons"
-          switchTo="editor perspectives/manage styles" label="Manage styles" />
+          switchTo="editor perspectives/manage styles" label="Styles" />
                     
         <@nxthemes_button identifier="manage themes"
           controlledBy="editor buttons"

@@ -28,20 +28,20 @@
         <nxthemes:button identifier="edit canvas"
           link="javascript:NXThemesEditor.editCanvas()"
           controlledBy="editor buttons"
-          switchTo="editor perspectives/edit canvas" label="Edit theme" />
+          switchTo="editor perspectives/edit canvas" label="Refresh theme" />
      
         <nxthemes:button identifier="manage presets"
           controlledBy="editor buttons"
-          switchTo="editor perspectives/manage presets" label="Manage presets" />
+          switchTo="editor perspectives/manage presets" label="Presets" />
 
         <nxthemes:button identifier="manage styles"
           controlledBy="editor buttons"
-          switchTo="editor perspectives/manage styles" label="Manage styles" />
+          switchTo="editor perspectives/manage styles" label="Styles" />
                 
         <nxthemes:button identifier="manage themes"
           controlledBy="editor buttons"
           switchTo="editor perspectives/manage themes" label="Manage themes" />
-
+        
         <nxthemes:button identifier="save changes"
           link="javascript:NXThemesEditor.saveChanges()"
           label="Save changes" />
