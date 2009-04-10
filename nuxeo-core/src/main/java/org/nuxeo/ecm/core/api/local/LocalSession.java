@@ -117,7 +117,7 @@ public class LocalSession extends AbstractSession {
     }
 
     @Override
-    protected Session getSession() throws ClientException {
+    public Session getSession() throws ClientException {
         if (session == null) {
             session = createSession(repositoryName);
         }

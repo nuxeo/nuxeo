@@ -81,12 +81,13 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         } catch (Exception e) {
             // ignore
         }
+        super.tearDown();
+        // undeploy repository last
         try {
             undeployRepository();
         } catch (Exception e) {
             // ignore
         }
-        super.tearDown();
     }
 
     public void openSession() throws ClientException {
@@ -912,6 +913,10 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
      * Needed for MS SQL Server.
      */
     protected void sleepForFulltext() {
+        try {
+            Thread.sleep(1000); // sleep 1s for async thread pool
+        } catch (InterruptedException e) {
+        }
     }
 
     public void testSQLFulltext() throws Exception {

@@ -20,7 +20,6 @@ package org.nuxeo.ecm.core.storage.sql;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.security.AccessControlException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -82,7 +81,8 @@ public class SessionImpl implements Session {
         this.mapper = mapper;
         // this.credentials = credentials;
         model = mapper.getModel();
-        context = new PersistenceContext(mapper, invalidators);
+        context = new PersistenceContext(mapper, invalidators,
+                repository.getJobManager());
         live = true;
         transactionalSession = new TransactionalSession(this, mapper, context);
         computeRootNode();
@@ -144,6 +144,10 @@ public class SessionImpl implements Session {
 
     public boolean isLive() {
         return live;
+    }
+
+    public String getRepositoryName() {
+        return repository.getName();
     }
 
     public Model getModel() {
@@ -318,8 +322,8 @@ public class SessionImpl implements Session {
     public Node addChildNode(Node parent, String name, Long pos,
             String typeName, boolean complexProp) throws StorageException {
         checkLive();
-        if (name == null || name.contains("/") || name.equals(".") ||
-                name.equals("..")) {
+        if (name == null || name.contains("/") || name.equals(".")
+                || name.equals("..")) {
             throw new IllegalArgumentException("Illegal name: " + name);
         }
         if (!model.isType(typeName)) {
@@ -394,8 +398,8 @@ public class SessionImpl implements Session {
     public Node getChildNode(Node parent, String name, boolean complexProp)
             throws StorageException {
         checkLive();
-        if (name == null || name.contains("/") || name.equals(".") ||
-                name.equals("..")) {
+        if (name == null || name.contains("/") || name.equals(".")
+                || name.equals("..")) {
             // XXX real parsing
             throw new IllegalArgumentException("Illegal name: " + name);
         }
@@ -541,8 +545,9 @@ public class SessionImpl implements Session {
         return nodes;
     }
 
-    public PartialList<Serializable> query(SQLQuery query, QueryFilter queryFilter,
-            boolean countTotal) throws StorageException {
+    public PartialList<Serializable> query(SQLQuery query,
+            QueryFilter queryFilter, boolean countTotal)
+            throws StorageException {
         try {
             return mapper.query(query, queryFilter, countTotal, this);
         } catch (SQLException e) {
