@@ -35,11 +35,6 @@ public enum VersioningActions implements Serializable {
     ACTION_INCREMENT_MAJOR("inc_major"),
     ACTION_INCREMENT_DEFAULT("inc_default"),
     ACTION_CASE_DEPENDENT("ask_user"),
-    /**
-     * @deprecated: versioning does not handle workflow anymore
-     */
-    @Deprecated
-    ACTION_QUERY_WORKFLOW("query_workflow"),
     NO_VERSIONING("no_ver_doctype");
 
     public static final String KEY_FOR_INC_OPTION = "VersioningOption";

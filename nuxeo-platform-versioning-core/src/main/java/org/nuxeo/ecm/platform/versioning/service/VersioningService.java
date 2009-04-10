@@ -299,8 +299,7 @@ public class VersioningService extends DefaultComponent implements
 
             // will add options (these are to be displayed to user) only if
             // action is ask_user
-            if (VersioningActions.ACTION_CASE_DEPENDENT == descriptorAction
-                    || VersioningActions.ACTION_QUERY_WORKFLOW == descriptorAction) {
+            if (VersioningActions.ACTION_CASE_DEPENDENT == descriptorAction) {
                 log.debug(logPrefix + "adding options ");
                 final RuleOptionDescriptor[] descOptions = descriptor.getOptions();
                 for (RuleOptionDescriptor opt : descOptions) {
