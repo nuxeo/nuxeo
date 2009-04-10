@@ -57,7 +57,6 @@ import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.security.SecurityManager;
-import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Binary;
@@ -66,7 +65,6 @@ import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.Node;
 import org.nuxeo.ecm.core.storage.sql.SimpleProperty;
 import org.nuxeo.ecm.core.versioning.DocumentVersion;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * This class is the bridge between the Nuxeo SPI Session and the actual
@@ -85,8 +83,6 @@ public class SQLSession implements Session {
     private SQLDocument root;
 
     private final String userSessionId;
-
-    private final SecurityService securityService;
 
     public SQLSession(org.nuxeo.ecm.core.storage.sql.Session session,
             Repository repository, Map<String, Serializable> context)
@@ -108,7 +104,11 @@ public class SQLSession implements Session {
         root = newDocument(rootNode);
 
         userSessionId = (String) context.get("SESSION_ID");
-        securityService = Framework.getLocalService(SecurityService.class);
+    }
+
+    // needed by asynchronous jobs
+    protected org.nuxeo.ecm.core.storage.sql.Session getUnderlyingSession() {
+        return session;
     }
 
     /*

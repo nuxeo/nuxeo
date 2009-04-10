@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
-import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
@@ -35,6 +34,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Model.PropertyInfo;
+import org.nuxeo.ecm.core.storage.sql.Session.JobManager;
 
 /**
  * The persistence context in use by a session.
@@ -61,7 +61,7 @@ public class PersistenceContext {
 
     private final Model model;
 
-    private final BinaryConverter binaryConverter;
+    private final JobManager jobManager;
 
     /**
      * Fragment ids generated but not yet saved. We know that any fragment with
@@ -78,7 +78,8 @@ public class PersistenceContext {
      */
     private final HashMap<Serializable, Serializable> oldIdMap;
 
-    PersistenceContext(Mapper mapper, RepositoryImpl.Invalidators invalidators) {
+    PersistenceContext(Mapper mapper, RepositoryImpl.Invalidators invalidators,
+            JobManager jobManager) {
         this.mapper = mapper;
         this.invalidators = invalidators;
         model = mapper.getModel();
@@ -94,7 +95,7 @@ public class PersistenceContext {
         createdIds = new LinkedHashSet<Serializable>();
         oldIdMap = new HashMap<Serializable, Serializable>();
 
-        binaryConverter = new BinaryConverter();
+        this.jobManager = jobManager;
     }
 
     /**
@@ -173,10 +174,14 @@ public class PersistenceContext {
             return;
         }
 
+        // map docid -> binary nodes's props to index
+        Map<Serializable, Map<Serializable, String>> queuedBinaries = new HashMap<Serializable, Map<Serializable, String>>();
+
         log.debug("Computing fulltext");
         for (Serializable docId : dirtyDocuments) {
             boolean doStrings = dirtyStrings.contains(docId);
             boolean doBinaries = dirtyBinaries.contains(docId);
+
             Node document = session.getNodeById(docId);
             if (document == null) {
                 // cannot happen
@@ -186,8 +191,9 @@ public class PersistenceContext {
             queue.add(document);
 
             // collect strings on all the document's nodes recursively
+            // TODO use configuration to determine what strings to collect
             List<String> strings = new LinkedList<String>();
-            List<String> binaries = new LinkedList<String>();
+            Map<Serializable, String> binaries = new HashMap<Serializable, String>();
             while (!queue.isEmpty()) {
                 Node node = queue.remove();
                 // recurse into complex properties
@@ -198,9 +204,8 @@ public class PersistenceContext {
                 if (doStrings) {
                     Map<String, PropertyInfo> infos = model.getFulltextStringPropertyInfos(node.getPrimaryType());
                     if (infos != null) {
-                        for (Entry<String, PropertyInfo> entry : infos.entrySet()) {
-                            PropertyInfo info = entry.getValue();
-                            String name = entry.getKey();
+                        for (String name : infos.keySet()) {
+                            PropertyInfo info = infos.get(name);
                             if (info.propertyType == PropertyType.STRING) {
                                 String v = node.getSimpleProperty(name).getString();
                                 if (v != null) {
@@ -216,46 +221,24 @@ public class PersistenceContext {
                             }
                         }
                     }
-
                 }
                 if (doBinaries) {
                     Map<String, PropertyInfo> infos = model.getFulltextBinaryPropertyInfos(node.getPrimaryType());
                     if (infos != null) {
-                        for (Entry<String, PropertyInfo> entry : infos.entrySet()) {
-                            PropertyInfo info = entry.getValue();
-                            String name = entry.getKey();
+                        for (String name : infos.keySet()) {
+                            PropertyInfo info = infos.get(name);
                             if (info.propertyType == PropertyType.BINARY) {
                                 Binary binary = (Binary) node.getSimpleProperty(
                                         name).getValue();
-                                if (binary != null) {
-                                    /*
-                                     * Find mime-type (heuristic on schema)
-                                     */
-                                    String mimeType;
-                                    try {
-                                        mimeType = (String) node.getSimpleProperty(
-                                                "mime-type").getValue();
-                                    } catch (IllegalArgumentException e) {
-                                        // no mime-type column
-                                        mimeType = null;
-                                    } catch (ClassCastException e) {
-                                        // not a string
-                                        mimeType = null;
-                                    }
-                                    /*
-                                     * TODO: compute this in a post-commit
-                                     * asynchronous event
-                                     */
-                                    String text = binaryConverter.getString(
-                                            binary, mimeType);
-                                    if (text != null) {
-                                        binaries.add(text);
-                                    }
+                                if (binary == null || binary.getLength() == 0) {
+                                    // empty, nothing to do
+                                } else {
+                                    // queue for asynchronous indexing
+                                    binaries.put(node.getId(), name);
                                 }
-                            }
+                            } // TOOD ARRAY_BINARY
                         }
                     }
-
                 }
             }
 
@@ -266,8 +249,25 @@ public class PersistenceContext {
                         StringUtils.join(strings, " "));
             }
             if (doBinaries) {
-                document.setSingleProperty(model.FULLTEXT_BINARYTEXT_PROP,
-                        StringUtils.join(binaries, " "));
+                if (binaries.isEmpty()) {
+                    document.setSingleProperty(model.FULLTEXT_BINARYTEXT_PROP,
+                            "");
+                } else {
+                    queuedBinaries.put(docId, binaries);
+                }
+            }
+        }
+
+        if (!queuedBinaries.isEmpty()) {
+            log.debug("Queued documents for asynchronous indexing: "
+                    + queuedBinaries.size());
+            try {
+                jobManager.queueJob(new BinaryConversionJob(
+                        queuedBinaries), session);
+            } catch (Exception e) {
+                log.error(
+                        "Failed to start asynchronous binary conversion job: "
+                                + e, e);
             }
         }
         log.debug("End of fulltext");

@@ -189,7 +189,7 @@ public class DocumentManagerBean extends AbstractSession implements
     // session handling code
 
     @Override
-    protected synchronized Session getSession() throws ClientException {
+    public synchronized Session getSession() throws ClientException {
         assert repositoryName != null;
         // make sure we don't reuse closed sessions
         if (session == null || !session.isLive()) {

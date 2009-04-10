@@ -42,6 +42,7 @@ import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.RepositoryImpl;
 import org.nuxeo.ecm.core.storage.sql.RepositoryManagement;
 import org.nuxeo.ecm.core.storage.sql.SessionImpl;
+import org.nuxeo.ecm.core.storage.sql.coremodel.SQLJobManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -60,8 +61,6 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
     private static final long serialVersionUID = 1L;
 
     private final RepositoryDescriptor repositoryDescriptor;
-
-    private String name;
 
     private transient ResourceAdapter resourceAdapter;
 
@@ -82,11 +81,11 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
      */
 
     public void setName(String name) {
-        this.name = name;
+        repositoryDescriptor.name = name;
     }
 
     public String getName() {
-        return name;
+        return repositoryDescriptor.name;
     }
 
     public void setXaDataSource(String xaDataSourceName) {
@@ -198,26 +197,6 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
         return null;
     }
 
-    @Override
-    public int hashCode() {
-        return name == null ? 0 : name.hashCode();
-    }
-
-    @Override
-    public boolean equals(Object other) {
-        if (other == this) {
-            return true;
-        }
-        if (other instanceof ManagedConnectionFactoryImpl) {
-            return equals((ManagedConnectionFactoryImpl) other);
-        }
-        return false;
-    }
-
-    private boolean equals(ManagedConnectionFactoryImpl other) {
-        return name == null ? false : name.equals(other.name);
-    }
-
     /*
      * ----- org.nuxeo.ecm.core.storage.sql.RepositoryManagement -----
      */
@@ -251,7 +230,7 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
                     throw new StorageException(e);
                 }
                 repository = new RepositoryImpl(repositoryDescriptor,
-                        schemaManager);
+                        schemaManager, new SQLJobManager());
             }
         }
     }

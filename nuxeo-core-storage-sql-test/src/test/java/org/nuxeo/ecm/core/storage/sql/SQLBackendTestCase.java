@@ -18,6 +18,8 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.core.storage.sql.Session.Job;
+import org.nuxeo.ecm.core.storage.sql.Session.JobManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -38,7 +40,8 @@ public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
         assertNotNull(schemaManager);
 
         RepositoryDescriptor descriptor = DatabaseHelper.DATABASE.getRepositoryDescriptor();
-        repository = new RepositoryImpl(descriptor, schemaManager);
+        repository = new RepositoryImpl(descriptor, schemaManager,
+                new SyncJobManager());
     }
 
     @Override
@@ -48,6 +51,19 @@ public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
         }
         DatabaseHelper.DATABASE.tearDown();
         super.tearDown();
+    }
+
+    /**
+     * Job manager that executes the jobs immediately.
+     */
+    public static class SyncJobManager implements JobManager {
+
+        public void queueJob(Job job, Session session) throws Exception {
+            job.run(session, false); // no save
+        }
+
+        public void shutdown() {
+        }
     }
 
 }

@@ -132,6 +132,10 @@ public class ConnectionImpl implements Session {
         return session != null && session.isLive();
     }
 
+    public String getRepositoryName() throws StorageException {
+        return getSession().getRepositoryName();
+    }
+
     public Binary getBinary(InputStream in) throws StorageException {
         return getSession().getBinary(in);
     }

@@ -155,12 +155,12 @@ public abstract class AbstractSession implements CoreSession,
     private String sessionId;
 
     /**
-     * Gets the current session based on the client session id.
+     * Internal method: Gets the current session based on the client session id.
      *
      * @return the repository session
      * @throws ClientException
      */
-    protected abstract Session getSession() throws ClientException;
+    public abstract Session getSession() throws ClientException;
 
     public String connect(String repositoryName,
             Map<String, Serializable> context) throws ClientException {

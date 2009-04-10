@@ -20,7 +20,6 @@ package org.nuxeo.ecm.core.storage.sql;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.security.AccessControlException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -82,7 +81,8 @@ public class SessionImpl implements Session {
         this.mapper = mapper;
         // this.credentials = credentials;
         model = mapper.getModel();
-        context = new PersistenceContext(mapper, invalidators);
+        context = new PersistenceContext(mapper, invalidators,
+                repository.getJobManager());
         live = true;
         transactionalSession = new TransactionalSession(this, mapper, context);
         computeRootNode();
@@ -144,6 +144,10 @@ public class SessionImpl implements Session {
 
     public boolean isLive() {
         return live;
+    }
+
+    public String getRepositoryName() {
+        return repository.getName();
     }
 
     public Model getModel() {
