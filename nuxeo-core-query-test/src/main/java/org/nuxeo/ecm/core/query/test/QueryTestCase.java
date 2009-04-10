@@ -907,14 +907,14 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
     }
 
     /**
-     * Let databases with asynchronous fulltext indexers sleep a bit to give
-     * them time to do their indexing.
+     * Sleep a bit to give time to the asynchronous fulltext extractor.
      * <p>
-     * Needed for MS SQL Server.
+     * Subclassed for MS SQL Server which is itself asynchronous when indexing
+     * fulltext.
      */
     protected void sleepForFulltext() {
         try {
-            Thread.sleep(1000); // sleep 1s for async thread pool
+            Thread.sleep(2000); // sleep 2s for async thread pool
         } catch (InterruptedException e) {
         }
     }
