@@ -62,6 +62,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
+import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.types.Type;
@@ -360,7 +361,11 @@ public class DocumentActionsBean extends InputController implements
     public String updateDocumentAsNewVersion() throws ClientException {
         try {
             DocumentModel changeableDocument = navigationContext.getChangeableDocument();
-            changeableDocument = documentManager.saveDocumentAsNewVersion(changeableDocument);
+            changeableDocument.putContextData(
+                    org.nuxeo.common.collections.ScopeType.REQUEST,
+                    VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY,
+                    Boolean.TRUE);
+            changeableDocument = documentManager.saveDocument(changeableDocument);
 
             facesMessages.add(FacesMessage.SEVERITY_INFO,
                     resourcesAccessor.getMessages().get("new_version_created"));
