@@ -60,7 +60,7 @@ public class DocumentViewImpl implements DocumentView {
         this.parameters = parameters;
     }
 
-    // Not used. Deprecate?
+    // Not used. Deprecate? please keep: this is the most complete constructor.
     public DocumentViewImpl(DocumentLocation documentLocation, String viewId,
             String subURI, Map<String, String> parameters) {
         this.documentLocation = documentLocation;

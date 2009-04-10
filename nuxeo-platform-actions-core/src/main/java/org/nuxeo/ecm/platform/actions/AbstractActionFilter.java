@@ -49,16 +49,6 @@ public abstract class AbstractActionFilter implements ActionFilter {
         this.id = id;
     }
 
-    // XXX: Not used. Remove?
-    public String[] getAcceptedActions() {
-        return actions;
-    }
-
-    // XXX: Not used. Remove?
-    public void setAcceptedActions(String[] actions) {
-        this.actions = actions;
-    }
-
     @Override
     public String toString() {
         return id;

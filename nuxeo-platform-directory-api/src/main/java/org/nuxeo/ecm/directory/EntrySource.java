@@ -27,16 +27,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  */
 public interface EntrySource {
 
-    /**
-     * @deprecated use {@link #getEntryFromSource(String, boolean)}
-     *   Not used. Will be removed in 5.2.
-     * @param entryId
-     * @return
-     * @throws DirectoryException
-     */
-    @Deprecated
-    DocumentModel getEntryFromSource(String entryId) throws DirectoryException;
-
     DocumentModel getEntryFromSource(String entryId, boolean fetchReferences)
             throws DirectoryException;
 

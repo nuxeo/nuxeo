@@ -45,6 +45,7 @@ import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.api.login.LoginComponent;
+
 import sun.security.acl.GroupImpl;
 import sun.security.acl.PrincipalImpl;
 
@@ -360,14 +361,6 @@ public class NuxeoLoginModule extends NuxeoAbstractServerLoginModule {
             return null;
         }
         return (NuxeoPrincipal) createIdentity(username);
-    }
-
-    // Not used. Remove ?
-    private NuxeoPrincipal validatePrincipal(NuxeoPrincipal principal) throws Exception {
-        if (!manager.checkUsernamePassword(principal.getName(), principal.getPassword())) {
-            return null;
-        }
-        return principal;
     }
 
 }

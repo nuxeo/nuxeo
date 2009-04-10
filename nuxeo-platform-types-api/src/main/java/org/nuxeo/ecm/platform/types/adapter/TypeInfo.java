@@ -33,13 +33,6 @@ import org.nuxeo.ecm.platform.types.TypeView;
  */
 public interface TypeInfo {
 
-    /**
-     * @deprecated Use {@link #getId} instead.
-     * Not used. Remove in 5.2.
-     */
-    @Deprecated
-    String getCoreType();
-
     String getIcon();
 
     String getIconExpanded();
@@ -51,7 +44,7 @@ public interface TypeInfo {
     /**
      * @deprecated use {@link #getLayouts(String)} instead, using mode
      *             {@link BuiltinModes#ANY}.
-     * Not used. Remove in 5.2.
+     * Not used. Remove in 5.2 => No ! still used from xhtml files.
      */
     @Deprecated
     FieldWidget[] getLayout();

@@ -55,7 +55,6 @@ import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.EntrySource;
 import org.nuxeo.ecm.directory.IdGenerator;
 import org.nuxeo.ecm.directory.Reference;
-import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.SizeLimitExceededException;
 import org.nuxeo.ecm.directory.sql.repository.Column;
 import org.nuxeo.ecm.directory.sql.repository.Delete;
@@ -225,13 +224,6 @@ public class SQLSession extends BaseSession implements EntrySource {
     public DocumentModel getEntry(String id, boolean fetchReferences)
             throws DirectoryException {
         return directory.getCache().getEntry(id, this, fetchReferences);
-    }
-
-    @Deprecated
-    // Not used. Remove in 5.2
-    public DocumentModel getEntryFromSource(String id)
-            throws DirectoryException {
-        return getEntry(id, true);
     }
 
     public DocumentModel getEntryFromSource(String id, boolean fetchReferences)

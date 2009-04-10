@@ -27,7 +27,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.filemanager.service.FileManagerService;
 import org.nuxeo.ecm.platform.types.TypeManager;
 
-// Not used.
+// Not used but please keep, it will be needed once the
+// FileManagerService#createDefaultFolder method is extracted to a plugin.
 public abstract class AbstractFolderImporter implements FolderImporter {
 
     protected String name = "";

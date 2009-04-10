@@ -170,19 +170,6 @@ public class SearchPageProvider implements PagedDocumentsProvider {
         }
     }
 
-    /**
-     * Return the current list of document models
-     *
-     * @return the list
-     * @deprecated use {@link #getCurrentPage} (see in interface) instead. will
-     *             be removed in 5.2
-     */
-    @Deprecated
-    // Not used.
-    public DocumentModelList getDocumentModels() {
-        return getCurrentPage();
-    }
-
     public int getCurrentPageIndex() {
         int pag = searchResults.getPageNumber();
         // pag is 1 based

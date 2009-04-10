@@ -55,7 +55,7 @@ public class UserSubscription extends Annotation {
         return usId;
     }
 
-    // Not used.
+    // Not used => remove, except is this is needed for the Entity mechanism (?)
     public void setId(int id) {
         usId = id;
     }
@@ -64,7 +64,7 @@ public class UserSubscription extends Annotation {
         return notification;
     }
 
-    // Not used.
+    // Not used => remove, except is this is needed for the Entity mechanism (?)
     public void setNotification(String notif) {
         notification = notif;
     }
@@ -73,7 +73,7 @@ public class UserSubscription extends Annotation {
         return docId;
     }
 
-    // Not used.
+    // Not used => remove, except is this is needed for the Entity mechanism (?)
     public void setDocId(String docId) {
         this.docId = docId;
     }
@@ -82,7 +82,7 @@ public class UserSubscription extends Annotation {
         return userId;
     }
 
-    // Not used.
+    // Not used => remove, except is this is needed for the Entity mechanism (?)
     public void setUserId(String userId) {
         this.userId = userId;
     }

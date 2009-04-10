@@ -64,7 +64,4 @@ public interface Notification extends Serializable {
 
     boolean getEnabled();
 
-    // Not used.
-    void setEnabled(boolean enabled);
-
 }

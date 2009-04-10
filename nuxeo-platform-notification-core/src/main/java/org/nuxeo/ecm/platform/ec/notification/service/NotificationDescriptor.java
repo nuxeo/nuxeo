@@ -71,90 +71,40 @@ public class NotificationDescriptor implements Notification {
         return autoSubscribed;
     }
 
-    // Not used.
-    public void setAutoSubscribed(boolean autoSubscribed) {
-        this.autoSubscribed = autoSubscribed;
-    }
-
     public String getAvailableIn() {
         return availableIn;
-    }
-
-    // Not used.
-    public void setAvailableIn(String availableIn) {
-        this.availableIn = availableIn;
     }
 
     public String getChannel() {
         return channel;
     }
 
-    // Not used.
-    public void setChannel(String channel) {
-        this.channel = channel;
-    }
-
     public boolean getEnabled() {
         return enabled;
-    }
-
-    // Not used.
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
     }
 
     public List<NotificationEventDescriptor> getEvents() {
         return events;
     }
 
-    // Not used.
-    public void setEvents(List<NotificationEventDescriptor> events) {
-        this.events = events;
-    }
-
     public String getLabel() {
         return label;
-    }
-
-    // Not used.
-    public void setLabel(String label) {
-        this.label = label;
     }
 
     public String getName() {
         return name;
     }
 
-    // Not used.
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getSubject() {
         return subject;
-    }
-
-    // Not used.
-    public void setSubject(String subject) {
-        this.subject = subject;
     }
 
     public String getTemplate() {
         return template;
     }
 
-    // Not used.
-    public void setTemplate(String template) {
-        this.template = template;
-    }
-
     public String getSubjectTemplate() {
         return subjectTemplate;
-    }
-
-    // Not used.
-    public void setSubjectTemplate(String subjectTemplate) {
-        this.subjectTemplate = subjectTemplate;
     }
 
 }
