@@ -62,9 +62,7 @@ public class WikiObject extends DocumentObject {
             throws ClientException {
         CoreSession session = ctx.getCoreSession();
         DocumentModel newDoc = session.createDocumentModel(doc.getPathAsString(), segment, "WikiPage");
-        if (newDoc.getTitle().length() == 0) {
-            newDoc.getPart("dublincore").get("title").setValue(newDoc.getName());
-        }
+        newDoc.setPropertyValue("dc:title", segment);
         newDoc = session.createDocument(newDoc);
         session.save();
         return redirect(path + "/" + segment);
