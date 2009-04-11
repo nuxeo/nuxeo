@@ -505,13 +505,6 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         assertEquals(7, dml.totalSize());
     }
 
-    public void TODOtestQueryResultsTypes() {
-        // assertEquals("testQueryResultsTypes", doc.getPropertyValue("title"));
-        // assertEquals(Boolean.TRUE, doc.getPropertyValue("my:boolean"));
-        // assertEquals(3.14, doc.getPropertyValue("my:double"));
-        // assertEquals(1234567890, doc.getPropertyValue("my:long"));
-    }
-
     // from TestSQLWithPath
 
     public void testStartsWith() throws Exception {
@@ -609,7 +602,7 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
 
     // from TestSQLWithDate
 
-    public void testSQLWithDate() throws Exception {
+    public void testDate() throws Exception {
         String sql;
         DocumentModelList dml;
         createDocs();
@@ -919,7 +912,7 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         }
     }
 
-    public void testSQLFulltext() throws Exception {
+    public void testFulltext() throws Exception {
         createDocs();
         sleepForFulltext();
         String query;
@@ -984,7 +977,7 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         assertIdSet(dml, file1.getId());
     }
 
-    public void testSQLFulltextBlob() throws Exception {
+    public void testFulltextBlob() throws Exception {
         createDocs();
         sleepForFulltext();
         String query;

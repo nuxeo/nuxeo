@@ -61,7 +61,7 @@ public class TestJCRRepositoryQuery extends QueryTestCase {
     }
 
     @Override
-    public void testSQLFulltextBlob() {
+    public void testFulltextBlob() {
         // TODO blob indexing configuration
     }
 

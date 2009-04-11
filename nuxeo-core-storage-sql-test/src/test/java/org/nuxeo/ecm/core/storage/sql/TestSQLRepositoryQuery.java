@@ -44,11 +44,11 @@ public class TestSQLRepositoryQuery extends QueryTestCase {
     }
 
     @Override
-    public void testSQLFulltextBlob() throws Exception {
+    public void testFulltextBlob() throws Exception {
         deployBundle("org.nuxeo.ecm.core.convert.api");
         deployBundle("org.nuxeo.ecm.core.convert");
         deployBundle("org.nuxeo.ecm.core.convert.plugins");
-        super.testSQLFulltextBlob();
+        super.testFulltextBlob();
     }
 
 }
