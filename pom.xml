@@ -21,7 +21,6 @@
     <nuxeo.runtime.version>1.5-SNAPSHOT</nuxeo.runtime.version>
     <nuxeo.common.version>1.5-SNAPSHOT</nuxeo.common.version>
     <nuxeo.core.version>1.5-SNAPSHOT</nuxeo.core.version>
-    <jackrabbit.version>1.5.0</jackrabbit.version>
   </properties>
 
   <modules>
@@ -198,7 +197,7 @@
       <dependency>
         <groupId>org.apache.jackrabbit</groupId>
         <artifactId>jackrabbit-core</artifactId>
-        <version>${jackrabbit.version}</version>
+        <version>${jackrabbit.core.version}</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
@@ -216,7 +215,7 @@
       <dependency>
         <groupId>org.apache.jackrabbit</groupId>
         <artifactId>jackrabbit-jcr-commons</artifactId>
-        <version>${jackrabbit.version}</version>
+        <version>${jackrabbit.jcr-commons.version}</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
