@@ -70,6 +70,10 @@ public class AsyncEventExecutor {
     }
 
     public void run(List<PostCommitEventListener> listeners, EventBundle event) {
+        // The following avoids incorrect counts, because ThreadPool workers
+        // started normally may be holding on to a firstTask about to start that
+        // isn't accounted for anywhere (getActiveCount doesn't return it).
+        executor.prestartAllCoreThreads();
         for (PostCommitEventListener listener : listeners) {
             executor.execute(new Job(listener, event));
         }

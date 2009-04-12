@@ -78,12 +78,13 @@ public class EventServiceImpl implements EventService {
     }
 
     public void waitForAsyncCompletion() {
-        while (asyncExec.getUnfinishedCount() > 0) {
+        do {
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
             }
-        }
+
+        } while (asyncExec.getUnfinishedCount() > 0);
     }
 
     public void addEventListener(EventListenerDescriptor listener) {
