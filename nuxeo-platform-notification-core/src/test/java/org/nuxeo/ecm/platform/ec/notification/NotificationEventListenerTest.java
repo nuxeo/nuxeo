@@ -28,7 +28,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.PostCommitEventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
-import org.nuxeo.ecm.core.event.impl.EventServiceImpl;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationService;
 import org.nuxeo.ecm.platform.ec.placeful.PlacefulServiceImpl;
@@ -111,33 +110,21 @@ public class NotificationEventListenerTest extends RepositoryOSGITestCase {
     }
 
     protected void waitForAsyncExec() {
-        EventServiceImpl evtService = (EventServiceImpl) Framework.getLocalService(EventService.class);
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        while ((evtService.getActiveAsyncTaskCount()) > 0) {
-            try {
-                Thread.sleep(100);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
     }
 
     public void testListener() throws ClientException {
         EventService eventService = Framework.getLocalService(EventService.class);
         PlacefulServiceImpl placefulServiceImpl = (PlacefulServiceImpl) runtime.getComponent(PlacefulService.ID);
         DocumentModel noteDoc = createNoteDocument();
-        // Enregistrement de la notification
+        // Record notification
         UserSubscription userSubscription = new UserSubscription(
                 "Workflow Change", "user:"
                         + getCoreSession().getPrincipal().getName(),
                 noteDoc.getId());
         placefulServiceImpl.setAnnotation(userSubscription);
 
-        // DŽclenchement de la notification
+        // Trigger notification
         DocumentEventContext ctx = new DocumentEventContext(getCoreSession(),
                 getCoreSession().getPrincipal(), noteDoc);
         ctx.setProperty("recipients", new Object[] { "jt@nuxeo.com" });

@@ -23,7 +23,6 @@ import java.util.List;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.EventService;
-import org.nuxeo.ecm.core.event.impl.EventServiceImpl;
 import org.nuxeo.ecm.core.event.jms.AsyncProcessorConfig;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
 import org.nuxeo.ecm.platform.comment.api.CommentableDocument;
@@ -92,21 +91,7 @@ public class SimpleListenerTest extends RepositoryOSGITestCase {
     }
 
     protected void waitForAsyncExec() {
-
-        EventServiceImpl evtService = (EventServiceImpl) Framework.getLocalService(EventService.class);
-        int runningTasks = evtService.getActiveAsyncTaskCount();
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        while (evtService.getActiveAsyncTaskCount() > 0) {
-            try {
-                Thread.sleep(100);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
     }
 
     public void testDocumentRemovedCommentEventListener() throws Exception {

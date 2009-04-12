@@ -24,7 +24,6 @@ import java.util.Collection;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.EventService;
-import org.nuxeo.ecm.core.event.impl.EventServiceImpl;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
 import org.nuxeo.runtime.api.Framework;
 
@@ -43,20 +42,7 @@ public class BulkLifeCycleChangeListenerTest extends RepositoryOSGITestCase {
     }
 
     protected void waitForAsyncExec() {
-
-        EventServiceImpl evtService = (EventServiceImpl) Framework.getLocalService(EventService.class);
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        while ((evtService.getActiveAsyncTaskCount()) > 0) {
-            try {
-                Thread.sleep(100);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
     }
 
     public void testLifeCycleAPI() throws ClientException {
