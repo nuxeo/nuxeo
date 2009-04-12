@@ -29,16 +29,21 @@ import org.nuxeo.ecm.core.query.sql.model.DateLiteral;
 import org.nuxeo.ecm.core.query.sql.model.Expression;
 import org.nuxeo.ecm.core.query.sql.model.FromClause;
 import org.nuxeo.ecm.core.query.sql.model.Function;
+import org.nuxeo.ecm.core.query.sql.model.IVisitor;
+import org.nuxeo.ecm.core.query.sql.model.IntegerLiteral;
 import org.nuxeo.ecm.core.query.sql.model.Literal;
 import org.nuxeo.ecm.core.query.sql.model.LiteralList;
 import org.nuxeo.ecm.core.query.sql.model.Operand;
 import org.nuxeo.ecm.core.query.sql.model.Operator;
 import org.nuxeo.ecm.core.query.sql.model.OrderByExpr;
 import org.nuxeo.ecm.core.query.sql.model.OrderByList;
+import org.nuxeo.ecm.core.query.sql.model.Predicate;
 import org.nuxeo.ecm.core.query.sql.model.Reference;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.query.sql.model.StringLiteral;
 import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.core.schema.types.Field;
+import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
 
 /**
  * @author Bogdan Stefanescu
@@ -356,6 +361,25 @@ public class XPathBuilder {
             // be processed separately
             return;
         }
+        // boolean literals are true() and false()
+        String name = expr.lvalue instanceof Reference ? ((Reference) expr.lvalue).name
+                : null;
+        Field field = schemaManager != null && name != null ? schemaManager.getField(name)
+                : null;
+        if (field != null && field.getType() == BooleanType.INSTANCE) {
+            if (!(expr.rvalue instanceof IntegerLiteral)) {
+                throw new QueryParseException(
+                        "Boolean expressions require literal 0 or 1 as right argument");
+            }
+            long v = ((IntegerLiteral) expr.rvalue).value;
+            if (v != 0 && v != 1) {
+                throw new QueryParseException(
+                        "Boolean expressions require literal 0 or 1 as right argument");
+            }
+            expr = new Predicate(expr.lvalue, expr.operator,
+                    new BooleanLiteral(v == 1));
+        }
+
         // default processing
         if (expr.operator == Operator.AND) {
             operand(expr.lvalue);
@@ -478,6 +502,51 @@ public class XPathBuilder {
             String type = TypeAdapter.docType2Jcr(((StringLiteral) literal).value);
             return new StringLiteral(type);
         }
+    }
+
+    /**
+     * Boolean literal for XPath, printed as true() and false().
+     */
+    protected static class BooleanLiteral extends Literal {
+
+        private static final long serialVersionUID = 1L;
+
+        public final boolean value;
+
+        public BooleanLiteral(boolean value) {
+            this.value = value;
+        }
+
+        public void accept(IVisitor visitor) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public String asString() {
+            return String.valueOf(value) + "()";
+        }
+
+        @Override
+        public String toString() {
+            return asString();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == this) {
+                return true;
+            }
+            if (obj instanceof BooleanLiteral) {
+                return value == ((BooleanLiteral) obj).value;
+            }
+            return false;
+        }
+
+        @Override
+        public int hashCode() {
+            return Boolean.valueOf(value).hashCode();
+        }
+
     }
 
     private LiteralFixer reference(StringBuilder buf, Reference ref) {

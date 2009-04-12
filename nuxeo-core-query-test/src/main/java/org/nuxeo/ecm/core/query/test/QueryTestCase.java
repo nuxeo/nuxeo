@@ -630,6 +630,43 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
 
     // other tests
 
+    public void testBoolean() throws Exception {
+        String sql;
+        DocumentModelList dml;
+        createDocs();
+
+        sql = "SELECT * FROM document WHERE my:boolean = 1";
+        dml = session.query(sql);
+        assertEquals(0, dml.size());
+        sql = "SELECT * FROM document WHERE my:boolean = 0";
+        dml = session.query(sql);
+        assertEquals(0, dml.size());
+
+        DocumentModel doc = new DocumentModelImpl("/testfolder1", "mydoc",
+                "MyDocType");
+        doc.setPropertyValue("my:boolean", Boolean.TRUE);
+        doc = session.createDocument(doc);
+        session.save();
+
+        sql = "SELECT * FROM document WHERE my:boolean = 1";
+        dml = session.query(sql);
+        assertEquals(1, dml.size());
+        sql = "SELECT * FROM document WHERE my:boolean = 0";
+        dml = session.query(sql);
+        assertEquals(0, dml.size());
+
+        doc.setPropertyValue("my:boolean", Boolean.FALSE);
+        session.saveDocument(doc);
+        session.save();
+
+        sql = "SELECT * FROM document WHERE my:boolean = 1";
+        dml = session.query(sql);
+        assertEquals(0, dml.size());
+        sql = "SELECT * FROM document WHERE my:boolean = 0";
+        dml = session.query(sql);
+        assertEquals(1, dml.size());
+    }
+
     public void testQueryWithSecurity() throws Exception {
         createDocs();
         DocumentModel root = session.getRootDocument();

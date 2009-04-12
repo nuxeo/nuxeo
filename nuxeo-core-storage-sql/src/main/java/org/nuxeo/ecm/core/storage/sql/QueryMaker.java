@@ -38,6 +38,7 @@ import org.nuxeo.ecm.core.query.sql.model.Expression;
 import org.nuxeo.ecm.core.query.sql.model.FromClause;
 import org.nuxeo.ecm.core.query.sql.model.FromList;
 import org.nuxeo.ecm.core.query.sql.model.Function;
+import org.nuxeo.ecm.core.query.sql.model.IVisitor;
 import org.nuxeo.ecm.core.query.sql.model.IntegerLiteral;
 import org.nuxeo.ecm.core.query.sql.model.Literal;
 import org.nuxeo.ecm.core.query.sql.model.LiteralList;
@@ -47,6 +48,7 @@ import org.nuxeo.ecm.core.query.sql.model.Operator;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
 import org.nuxeo.ecm.core.query.sql.model.OrderByExpr;
 import org.nuxeo.ecm.core.query.sql.model.OrderByList;
+import org.nuxeo.ecm.core.query.sql.model.Predicate;
 import org.nuxeo.ecm.core.query.sql.model.Reference;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.query.sql.model.StringLiteral;
@@ -858,6 +860,51 @@ public class QueryMaker {
     }
 
     /**
+     * Boolean literal.
+     */
+    protected static class BooleanLiteral extends Literal {
+
+        private static final long serialVersionUID = 1L;
+
+        public final boolean value;
+
+        public BooleanLiteral(boolean value) {
+            this.value = value;
+        }
+
+        public void accept(IVisitor visitor) {
+            ((WhereBuilder) visitor).visitBooleanLiteral(this);
+        }
+
+        @Override
+        public String asString() {
+            return String.valueOf(value);
+        }
+
+        @Override
+        public String toString() {
+            return String.valueOf(value);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == this) {
+                return true;
+            }
+            if (obj instanceof BooleanLiteral) {
+                return value == ((BooleanLiteral) obj).value;
+            }
+            return false;
+        }
+
+        @Override
+        public int hashCode() {
+            return Boolean.valueOf(value).hashCode();
+        }
+
+    }
+
+    /**
      * Builds the database-level WHERE query from the AST.
      */
     public class WhereBuilder extends DefaultQueryVisitor {
@@ -940,6 +987,21 @@ public class QueryMaker {
                     node.rvalue.accept(this);
                     buf.append("))");
                 } else {
+                    // boolean literals have to be translated according the
+                    // database dialect
+                    if (propertyInfo.propertyType == PropertyType.BOOLEAN) {
+                        if (!(node.rvalue instanceof IntegerLiteral)) {
+                            throw new QueryMakerException(
+                                    "Boolean expressions require literal 0 or 1 as right argument");
+                        }
+                        long v = ((IntegerLiteral) node.rvalue).value;
+                        if (v != 0 && v != 1) {
+                            throw new QueryMakerException(
+                                    "Boolean expressions require literal 0 or 1 as right argument");
+                        }
+                        node = new Predicate(node.lvalue, node.operator,
+                                new BooleanLiteral(v == 1));
+                    }
                     // use normal processing
                     super.visitExpression(node);
                 }
@@ -1181,6 +1243,11 @@ public class QueryMaker {
         public void visitIntegerLiteral(IntegerLiteral node) {
             buf.append('?');
             whereParams.add(Long.valueOf(node.value));
+        }
+
+        public void visitBooleanLiteral(BooleanLiteral node) {
+            buf.append('?');
+            whereParams.add(Boolean.valueOf(node.value));
         }
 
         @Override
