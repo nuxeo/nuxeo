@@ -363,7 +363,7 @@ public class DialectPostgreSQL extends Dialect {
                                 + "RETURNS trigger " //
                                 + "AS $$ " //
                                 + "BEGIN" //
-                                + "  NEW.%s := NEW.%s || NEW.%s;" //
+                                + "  NEW.%s := COALESCE(NEW.%s, ''::TSVECTOR) || COALESCE(NEW.%s, ''::TSVECTOR);" //
                                 + "  RETURN NEW; " //
                                 + "END " //
                                 + "$$ " //
