@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,7 +12,9 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     bstefanescu
+ *     Bogdan Stefanescu
+ *     Thierry Delprat
+ *     Florent Guillaume
  */
 package org.nuxeo.ecm.core.event.impl;
 
@@ -26,7 +28,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.collections.ListenerList;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventContext;
@@ -38,11 +39,9 @@ import org.nuxeo.ecm.core.event.jms.AsyncProcessorConfig;
 import org.nuxeo.ecm.core.event.tx.PostCommitSynchronousRunner;
 
 /**
- * This implementation is always recording the event even if no transaction was started.
- * If the transaction was not started, the SAVE event is used to flush the event bundle.
- *
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * @author tiry
+ * @author Bogdan Stefanescu
+ * @author Thierry Delprat
+ * @author Florent Guillaume
  */
 public class EventServiceImpl implements EventService {
 
@@ -58,7 +57,9 @@ public class EventServiceImpl implements EventService {
     };
 
     protected final ListenerList listeners;
+
     protected final ListenerList postCommitListeners;
+
     protected final AsyncEventExecutor asyncExec;
 
     public EventServiceImpl() {
@@ -66,11 +67,23 @@ public class EventServiceImpl implements EventService {
         listeners = new ListenerList(cmp);
         postCommitListeners = new ListenerList(cmp);
         asyncExec = AsyncEventExecutor.create();
-
     }
 
+    /**
+     * @deprecated use {@link #waitForAsyncCompletion()} instead.
+     */
+    @Deprecated
     public int getActiveAsyncTaskCount() {
-        return asyncExec.getNbTasksRunning();
+        return asyncExec.getUnfinishedCount();
+    }
+
+    public void waitForAsyncCompletion() {
+        while (asyncExec.getUnfinishedCount() > 0) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+            }
+        }
     }
 
     public void addEventListener(EventListenerDescriptor listener) {
@@ -115,7 +128,8 @@ public class EventServiceImpl implements EventService {
         }
     }
 
-    public void fireEvent(String name, EventContext context) throws ClientException {
+    public void fireEvent(String name, EventContext context)
+            throws ClientException {
         fireEvent(new EventImpl(name, context));
     }
 
@@ -127,7 +141,7 @@ public class EventServiceImpl implements EventService {
             b.push(event);
             // check for commit events to flush the event bundle
             if (!b.isTransacted() && event.isCommitEvent()) {
-                transactionCommited();
+                transactionCommitted();
             }
         } else {
             EventBundleImpl b = new EventBundleImpl();
@@ -140,13 +154,12 @@ public class EventServiceImpl implements EventService {
             if (entry.acceptEvent(ename)) {
                 try {
                     entry.listener.handleEvent(event);
-                }
-                catch (Throwable t) {
+                } catch (Throwable t) {
                     log.error("Error during sync listener execution", t);
-                }
-                finally {
+                } finally {
                     if (event.isMarkedForRollBack()) {
-                        throw new RuntimeException("Exception during sync listener execution, rollingback");
+                        throw new RuntimeException(
+                                "Exception during sync listener execution, rollingback");
                     }
                     if (event.isCanceled()) {
                         return;
@@ -187,7 +200,8 @@ public class EventServiceImpl implements EventService {
             // - there is no transaction started by JMS listener
             log.debug("Desactivating sync post-commit listener since we are called from JMS");
         } else {
-            PostCommitSynchronousRunner syncRunner = new PostCommitSynchronousRunner(syncListeners, event);
+            PostCommitSynchronousRunner syncRunner = new PostCommitSynchronousRunner(
+                    syncListeners, event);
             syncRunner.run();
 
         }
@@ -200,12 +214,6 @@ public class EventServiceImpl implements EventService {
         }
     }
 
-    /**
-     * Force sync mode. This will ignore async flags on the listeners
-     *
-     * @param event
-     * @throws ClientException
-     */
     @SuppressWarnings("unchecked")
     public void fireEventBundleSync(EventBundle event) throws ClientException {
         Object[] ar = postCommitListeners.getListeners();
@@ -235,19 +243,11 @@ public class EventServiceImpl implements EventService {
         return result;
     }
 
-    public ListenerList getInternalListeners() {
-        return listeners;
-    }
-
-    public ListenerList getInternalPostCommitListeners() {
-        return postCommitListeners;
-    }
-
     public void transactionStarted() {
         bundle.get().setTransacted(true);
     }
 
-    public void transactionCommited() throws ClientException {
+    public void transactionCommitted() throws ClientException {
         EventBundleImpl b = bundle.get();
         bundle.remove();
         if (b != null && !b.isEmpty()) {
@@ -255,7 +255,7 @@ public class EventServiceImpl implements EventService {
         }
     }
 
-    public void transactionRollbacked() {
+    public void transactionRolledback() {
         bundle.remove();
     }
 
@@ -263,21 +263,22 @@ public class EventServiceImpl implements EventService {
         return bundle.get().isTransacted();
     }
 
-    protected boolean isSaveEvent(Event event) {
-        return event.getName().equals(DocumentEventTypes.SESSION_SAVED);
-    }
-
     /**
      * A listener entry having a priority
      */
     public static class Entry<T> {
         public final int priority;
+
         public final T listener;
+
         public final Set<String> events;
+
         public final boolean async;
+
         public final String name;
 
-        public Entry(T listener, int priority, boolean async, Set<String> events, String name) {
+        public Entry(T listener, int priority, boolean async,
+                Set<String> events, String name) {
             this.listener = listener;
             this.priority = priority;
             this.events = events;

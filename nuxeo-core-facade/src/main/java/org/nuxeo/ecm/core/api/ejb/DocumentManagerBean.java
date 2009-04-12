@@ -327,9 +327,9 @@ public class DocumentManagerBean extends AbstractSession implements
         }
         try {
             if (committed) {
-                getEventService().transactionCommited();
+                getEventService().transactionCommitted();
             } else {
-                getEventService().transactionRollbacked();
+                getEventService().transactionRolledback();
             }
         } catch (Exception e) {
             log.error("Error while notifying transaction completion", e);

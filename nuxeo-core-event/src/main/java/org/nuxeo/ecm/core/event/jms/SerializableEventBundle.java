@@ -12,9 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Thierry Delprat
  */
 
 package org.nuxeo.ecm.core.event.jms;
@@ -47,15 +45,16 @@ import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.ecm.core.event.impl.EventImpl;
 
 /**
- * Serializable representation of an {@link EventBundle} that is used for JMS forwarding.
+ * Serializable representation of an {@link EventBundle} that is used for JMS
+ * forwarding.
  *
- * @author tiry
+ * @author Thierry Delprat
  */
-public class JMSEventBundle implements Serializable {
+public class SerializableEventBundle implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Log log = LogFactory.getLog(JMSEventBundle.class);
+    private static final Log log = LogFactory.getLog(SerializableEventBundle.class);
 
     protected final List<Map<String, Serializable>> serialisableEvents;
 
@@ -67,7 +66,7 @@ public class JMSEventBundle implements Serializable {
 
     protected String coreInstanceName;
 
-    public JMSEventBundle(EventBundle events) {
+    public SerializableEventBundle(EventBundle events) {
         eventBundleName = events.getName();
         sourceVMID = events.getSourceVMID();
         serialisableEvents = new ArrayList<Map<String, Serializable>>();
@@ -91,11 +90,14 @@ public class JMSEventBundle implements Serializable {
 
             serializableEvent.put("name", event.getName());
             serializableEvent.put("time", Long.toString(event.getTime()));
-            serializableEvent.put("contextProperties", (Serializable) event.getContext().getProperties());
+            serializableEvent.put("contextProperties",
+                    (Serializable) event.getContext().getProperties());
             if (evtSession != null) {
-                serializableEvent.put("contextSessionId", evtSession.getSessionId());
+                serializableEvent.put("contextSessionId",
+                        evtSession.getSessionId());
             }
-            serializableEvent.put("principal", event.getContext().getPrincipal().getName());
+            serializableEvent.put("principal",
+                    event.getContext().getPrincipal().getName());
 
             serializableEvent.put("contextSessionRepositoryName", repoName);
 
@@ -111,11 +113,13 @@ public class JMSEventBundle implements Serializable {
             for (Object arg : args) {
                 if (arg instanceof DocumentModel) {
                     DocumentModel doc = (DocumentModel) arg;
-                    String strRepresentation = doc.getRepositoryName() + ":" + doc.getId()
-                            + ":" + doc.getType() + ":" + doc.getPathAsString();
+                    String strRepresentation = doc.getRepositoryName() + ":"
+                            + doc.getId() + ":" + doc.getType() + ":"
+                            + doc.getPathAsString();
                     listArgs.add("DOCREF:" + strRepresentation);
                 } else if (arg instanceof Serializable) {
-                    log.debug("Adding serializable argument of class " + arg.getClass().getCanonicalName());
+                    log.debug("Adding serializable argument of class "
+                            + arg.getClass().getCanonicalName());
                     listArgs.add((Serializable) arg);
                 } else {
                     listArgs.add(null);
@@ -128,7 +132,8 @@ public class JMSEventBundle implements Serializable {
     }
 
     // Should not be necessary since this is noww done in CoreSession
-    protected Map<String, Serializable> filterContextProperties(Map<String, Serializable> properties) {
+    protected Map<String, Serializable> filterContextProperties(
+            Map<String, Serializable> properties) {
         Map<String, Serializable> serializableProps = new HashMap<String, Serializable>();
 
         for (String key : properties.keySet()) {
@@ -137,7 +142,8 @@ public class JMSEventBundle implements Serializable {
                 Serializable serializableValue = (Serializable) value;
                 serializableProps.put(key, serializableValue);
             } else {
-                log.error("ContextMap contains non serializable object under key " + key);
+                log.error("ContextMap contains non serializable object under key "
+                        + key);
             }
         }
         return serializableProps;
@@ -157,6 +163,7 @@ public class JMSEventBundle implements Serializable {
 
     public class EventBundleRelayedViaJMS extends EventBundleImpl {
         private static final long serialVersionUID = 1L;
+
         public EventBundleRelayedViaJMS() {
             // init VMID
             super(sourceVMID);
@@ -164,10 +171,12 @@ public class JMSEventBundle implements Serializable {
     }
 
     @SuppressWarnings("unchecked")
-    public EventBundle reconstructEventBundle(CoreSession session) throws CannotReconstructEventBundle {
+    public EventBundle reconstructEventBundle(CoreSession session)
+            throws CannotReconstruct {
 
         if (!session.getRepositoryName().equals(coreInstanceName)) {
-            throw new CannotReconstructEventBundle("This session can not be used on this Bundle");
+            throw new CannotReconstruct(
+                    "This session can not be used on this Bundle");
         }
         EventBundle bundle = new EventBundleRelayedViaJMS();
 
@@ -181,7 +190,8 @@ public class JMSEventBundle implements Serializable {
             Long time = Long.parseLong((String) evt.get("time"));
 
             Map<String, Serializable> ctxProperties = (Map<String, Serializable>) evt.get("contextProperties");
-            Principal principal = new SimplePrincipal((String) evt.get("principal"));
+            Principal principal = new SimplePrincipal(
+                    (String) evt.get("principal"));
 
             List<Serializable> listArgs = (List<Serializable>) evt.get("args");
 
@@ -202,14 +212,14 @@ public class JMSEventBundle implements Serializable {
                             if (session != null && session.exists(idRef)) {
                                 doc = session.getDocument(idRef);
                             } else {
-                                String parentPath = new Path(part[4]).removeLastSegments(1).toString();
+                                String parentPath = new Path(part[4]).removeLastSegments(
+                                        1).toString();
                                 doc = new DocumentModelImpl(
                                         session.getSessionId(), part[3],
                                         part[2], new Path(part[4]), idRef,
                                         new PathRef(parentPath), null, null);
                             }
-                        }
-                        catch (ClientException e) {
+                        } catch (ClientException e) {
                             // TODO
                         }
                         value = doc;
@@ -225,8 +235,8 @@ public class JMSEventBundle implements Serializable {
 
             EventContext ctx;
             if ((Boolean) evt.get("isDocumentEventContext")) {
-                ctx = new DocumentEventContext(
-                        session, principal, (DocumentModel) args[0], (DocumentRef) args[1]);
+                ctx = new DocumentEventContext(session, principal,
+                        (DocumentModel) args[0], (DocumentRef) args[1]);
                 // XXX we loose other args ...
             } else {
                 ctx = new EventContextImpl(session, principal);
@@ -238,6 +248,15 @@ public class JMSEventBundle implements Serializable {
             bundle.push(e);
         }
         return bundle;
+    }
+
+    public static class CannotReconstruct extends ClientException {
+
+        private static final long serialVersionUID = 1L;
+
+        public CannotReconstruct(String message) {
+            super(message);
+        }
     }
 
 }

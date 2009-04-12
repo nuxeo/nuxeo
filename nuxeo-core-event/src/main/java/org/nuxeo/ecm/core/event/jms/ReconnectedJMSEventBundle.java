@@ -30,7 +30,8 @@ import org.nuxeo.ecm.core.event.impl.EventServiceImpl;
 import org.nuxeo.ecm.core.event.impl.ReconnectedEventBundleImpl;
 
 /**
- * Default implementation for an {@link EventBundle} that need to be reconnected to a usable Session
+ * Default implementation for an {@link EventBundle} that need to be reconnected
+ * to a usable Session
  *
  * @author tiry
  *
@@ -38,11 +39,12 @@ import org.nuxeo.ecm.core.event.impl.ReconnectedEventBundleImpl;
 public class ReconnectedJMSEventBundle extends ReconnectedEventBundleImpl {
 
     private static final Log log = LogFactory.getLog(ReconnectedJMSEventBundle.class);
+
     private static final long serialVersionUID = 1L;
 
-    protected final JMSEventBundle jmsEventBundle;
+    protected final SerializableEventBundle jmsEventBundle;
 
-    public ReconnectedJMSEventBundle(JMSEventBundle jmsEventBundle) {
+    public ReconnectedJMSEventBundle(SerializableEventBundle jmsEventBundle) {
         this.jmsEventBundle = jmsEventBundle;
     }
 
@@ -50,9 +52,8 @@ public class ReconnectedJMSEventBundle extends ReconnectedEventBundleImpl {
     protected List<Event> getReconnectedEvents() {
         if (sourceEventBundle == null) {
             try {
-                sourceEventBundle = jmsEventBundle.reconstructEventBundle(
-                        getReconnectedCoreSession(jmsEventBundle.getCoreInstanceName()));
-            } catch (CannotReconstructEventBundle e) {
+                sourceEventBundle = jmsEventBundle.reconstructEventBundle(getReconnectedCoreSession(jmsEventBundle.getCoreInstanceName()));
+            } catch (SerializableEventBundle.CannotReconstruct e) {
                 log.error("Error while reconstructing Bundle from JMS", e);
                 return null;
             }

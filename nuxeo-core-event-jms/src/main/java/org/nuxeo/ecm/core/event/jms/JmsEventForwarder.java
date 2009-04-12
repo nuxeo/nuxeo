@@ -46,7 +46,7 @@ public class JmsEventForwarder implements PostCommitEventListener {
 
     protected boolean jmsBusIsActive = true;
 
-    protected void produceJMSMessage(JMSEventBundle message) throws JMSBusNotActiveException {
+    protected void produceJMSMessage(SerializableEventBundle message) throws JMSBusNotActiveException {
         InitialContext ctx;
         Topic nuxeoTopic;
         try {
@@ -99,7 +99,7 @@ public class JmsEventForwarder implements PostCommitEventListener {
             return;
         }
         try {
-            produceJMSMessage(new JMSEventBundle(events));
+            produceJMSMessage(new SerializableEventBundle(events));
         }
         catch (JMSBusNotActiveException e) {
             log.debug("JMS Bus is not active, cannot forward message");

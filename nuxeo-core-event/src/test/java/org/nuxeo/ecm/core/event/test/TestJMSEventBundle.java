@@ -36,7 +36,7 @@ import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.event.impl.EventBundleImpl;
 import org.nuxeo.ecm.core.event.impl.EventContextImpl;
-import org.nuxeo.ecm.core.event.jms.JMSEventBundle;
+import org.nuxeo.ecm.core.event.jms.SerializableEventBundle;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestJMSEventBundle extends NXRuntimeTestCase {
@@ -84,8 +84,8 @@ public class TestJMSEventBundle extends NXRuntimeTestCase {
 
     public void testBundleSerialization() throws Exception {
         EventBundle srcEventBundle = createTestEventBundle();
-        JMSEventBundle srcJmsEventBundle = new JMSEventBundle(srcEventBundle);
-        JMSEventBundle dstJmsEventBundle2 = (JMSEventBundle) serialize(srcJmsEventBundle);
+        SerializableEventBundle srcJmsEventBundle = new SerializableEventBundle(srcEventBundle);
+        SerializableEventBundle dstJmsEventBundle2 = (SerializableEventBundle) serialize(srcJmsEventBundle);
         assertNotNull(dstJmsEventBundle2);
 
         EventBundle dstEventBundle2 = dstJmsEventBundle2.reconstructEventBundle(fakeCoreSession);

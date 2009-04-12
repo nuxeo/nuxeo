@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,7 +12,9 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     bstefanescu
+ *     Bogdan Stefanescu
+ *     Thierry Delprat
+ *     Florent Guillaume
  */
 package org.nuxeo.ecm.core.event.impl;
 
@@ -31,8 +33,11 @@ import org.nuxeo.ecm.core.event.tx.EventBundleTransactionHandler;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * @author tiry
+ * ThreadPoolExecutor of listeners for event bundles.
+ *
+ * @author Bogdan Stefanescu
+ * @author Thierry Delprat
+ * @author Florent Guillaume
  */
 public class AsyncEventExecutor {
 
@@ -44,7 +49,6 @@ public class AsyncEventExecutor {
 
     protected final BlockingQueue<Runnable> queue;
 
-
     public static AsyncEventExecutor create() {
         String val = Framework.getProperty("org.nuxeo.ecm.core.event.async.poolSize");
         int poolSize = val == null ? 4 : Integer.parseInt(val);
@@ -54,40 +58,31 @@ public class AsyncEventExecutor {
         int keepAliveTime = val == null ? 4 : Integer.parseInt(val);
         val = Framework.getProperty("org.nuxeo.ecm.core.event.async.queueSize");
         int queueSize = val == null ? QUEUE_SIZE : Integer.parseInt(val);
-        return new AsyncEventExecutor(poolSize, maxPoolSize, keepAliveTime, queueSize);
+        return new AsyncEventExecutor(poolSize, maxPoolSize, keepAliveTime,
+                queueSize);
     }
 
-    public int getNbTasksRunning() {
-        return executor.getActiveCount();
-    }
-
-    public AsyncEventExecutor() {
-        this(4, 16, 4, QUEUE_SIZE);
-    }
-
-    public AsyncEventExecutor(int poolSize, int maxPoolSize, int keepAliveTime) {
-        this(poolSize, maxPoolSize, keepAliveTime, QUEUE_SIZE);
-    }
-
-    public AsyncEventExecutor(int poolSize, int maxPoolSize, int keepAliveTime, int queueSize) {
+    public AsyncEventExecutor(int poolSize, int maxPoolSize, int keepAliveTime,
+            int queueSize) {
         queue = new LinkedBlockingQueue<Runnable>(queueSize);
-        executor = new ThreadPoolExecutor(poolSize, maxPoolSize,
-                keepAliveTime, TimeUnit.SECONDS, queue);
+        executor = new ThreadPoolExecutor(poolSize, maxPoolSize, keepAliveTime,
+                TimeUnit.SECONDS, queue);
     }
 
     public void run(List<PostCommitEventListener> listeners, EventBundle event) {
         for (PostCommitEventListener listener : listeners) {
-            run(listener, event);
+            executor.execute(new Job(listener, event));
         }
     }
 
-    public void run(PostCommitEventListener listener, EventBundle event) {
-        executor.execute(new Job(listener, event));
+    public int getUnfinishedCount() {
+        return executor.getQueue().size() + executor.getActiveCount();
     }
 
-    public static class Job implements Runnable {
+    protected static class Job implements Runnable {
 
         protected final ReconnectedEventBundle bundle;
+
         protected final PostCommitEventListener listener;
 
         public Job(PostCommitEventListener listener, EventBundle bundle) {
@@ -108,7 +103,8 @@ public class AsyncEventExecutor {
                 txh.commitOrRollbackTransaction();
                 log.debug("Async listener executed, commiting tx");
             } catch (Throwable t) {
-                log.error("Failed to execute async event " + bundle.getName() + " on listener " + listener, t);
+                log.error("Failed to execute async event " + bundle.getName()
+                        + " on listener " + listener, t);
                 txh.rollbackTransaction();
             } finally {
                 bundle.disconnect();
