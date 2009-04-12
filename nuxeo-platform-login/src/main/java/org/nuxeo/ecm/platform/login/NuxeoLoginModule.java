@@ -127,6 +127,7 @@ public class NuxeoLoginModule extends NuxeoAbstractServerLoginModule {
         return new Group[] { roleSet, callerPrincipal };
     }
 
+    @SuppressWarnings({"unchecked"})
     private NuxeoPrincipal getPrincipal() throws LoginException {
         UserIdentificationInfo userIdent = null;
 
@@ -257,14 +258,14 @@ public class NuxeoLoginModule extends NuxeoAbstractServerLoginModule {
             throw new LoginException("UserManager implementation not found");
         }
 
-        super.loginOk = false;
+        loginOk = false;
 
         identity = getPrincipal();
         if (identity == null) { // auth failed
             throw new LoginException("Authentication Failed");
         }
 
-        super.loginOk = true;
+        loginOk = true;
         log.trace("User '" + identity + "' authenticated");
 
         /*if( getUseFirstPass() == true )
@@ -283,17 +284,17 @@ public class NuxeoLoginModule extends NuxeoAbstractServerLoginModule {
     }
 
     @Override
-    public Principal createIdentity(String name) throws LoginException {
-        log.debug("createIdentity: " + name);
+    public Principal createIdentity(String username) throws LoginException {
+        log.debug("createIdentity: " + username);
         try {
-            NuxeoPrincipal principal = null;
+            NuxeoPrincipal principal;
             if (manager == null) {
-                principal = new NuxeoPrincipalImpl(name);
+                principal = new NuxeoPrincipalImpl(username);
             } else {
-                principal = manager.getPrincipal(name);
+                principal = manager.getPrincipal(username);
                 if (principal == null) {
                     throw new LoginException(String.format(
-                            "principal %s does not exist", name));
+                            "principal %s does not exist", username));
                 }
             }
 
@@ -302,7 +303,7 @@ public class NuxeoLoginModule extends NuxeoAbstractServerLoginModule {
             return principal;
         } catch (Exception e) {
             log.error("createIdentity failed", e);
-            LoginException le = new LoginException("createIdentity failed for user " + name);
+            LoginException le = new LoginException("createIdentity failed for user " + username);
             le.initCause(e);
             throw le;
         }

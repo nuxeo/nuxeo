@@ -63,6 +63,7 @@ public class TestNXAuditEventsServiceManagement extends RepositoryOSGITestCase {
         openRepository();
     }
 
+    @SuppressWarnings({"unchecked"})
     protected Set<ObjectName> doQuery(String name) {
         String qualifiedName = ObjectNameFactory.getQualifiedName(name);
         ObjectName objectName = ObjectNameFactory.getObjectName(qualifiedName);

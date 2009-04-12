@@ -125,6 +125,7 @@ public class PlacefulServiceImpl extends DefaultComponent implements
         });
     }
 
+    @SuppressWarnings({"unchecked"})
     public List<Annotation> getAnnotationListByParamMap(EntityManager em,
             Map<String, Object> paramMap, String name) {
         String className = registry.get(name);

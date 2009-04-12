@@ -844,7 +844,7 @@ public class UserManagerImpl implements UserManager {
         } else {
             Map<String, DocumentModel> uniqueEntries = new HashMap<String, DocumentModel>();
 
-            for (Map.Entry<String, MatchType> fieldEntry : userSearchFields.entrySet()) {
+            for (Entry<String, MatchType> fieldEntry : userSearchFields.entrySet()) {
                 Map<String, Object> filter = new HashMap<String, Object>();
                 filter.put(fieldEntry.getKey(), pattern);
                 DocumentModelList fetchedEntries;

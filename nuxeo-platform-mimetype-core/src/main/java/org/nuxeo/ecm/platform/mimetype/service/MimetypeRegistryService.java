@@ -184,6 +184,7 @@ public class MimetypeRegistryService extends DefaultComponent implements
         return mimetypeByNormalisedRegistry.get(name);
     }
 
+    @SuppressWarnings({"unchecked"})
     public String getMimetypeFromFile(File file)
             throws MimetypeNotFoundException, MimetypeDetectionException {
         try {
