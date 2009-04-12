@@ -8,6 +8,9 @@ target
 *.orig
 .pydevproject
 *.pyc
+*.iml
+*.ipr
+*.iws
 nuxeo-platform-ear/ftest/funkload/log/*
 nuxeo-platform-ear/ftest/selenium/result-*.html
 nuxeo-platform-ear/ftest/selenium/run.conf
