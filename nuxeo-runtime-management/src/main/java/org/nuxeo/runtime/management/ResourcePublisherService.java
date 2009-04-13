@@ -218,7 +218,6 @@ public class ResourcePublisherService extends DefaultComponent implements
         }
 
         protected void doRegisterResource(Resource resource) {
-            doBind(resource);
             registry.put(resource.getManagementName(), resource);
             if (log.isDebugEnabled()) {
                 log.debug("registered " + resource.getManagementName());
@@ -377,6 +376,7 @@ public class ResourcePublisherService extends DefaultComponent implements
                     return;
                 }
                 factoriesRegistry.doRegisterResources();
+                doBindResources();
             }
         });
     }
