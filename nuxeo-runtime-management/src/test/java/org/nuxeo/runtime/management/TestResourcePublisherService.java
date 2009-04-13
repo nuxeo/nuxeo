@@ -39,6 +39,7 @@ public class TestResourcePublisherService extends ManagementTestCase {
     public void testRegisterResource() throws Exception {
         publisherService.registerResource("dummy", "nx:name=dummy",
                 DummyMBean.class, new DummyService());
+        publisherService.bindResources();
         Set<ObjectName> registeredNames = doQuery("nx:name=dummy");
         assertNotNull(registeredNames);
         assertEquals(1, registeredNames.size());
@@ -57,6 +58,7 @@ public class TestResourcePublisherService extends ManagementTestCase {
         MBeanServer testServer = MBeanServerFactory.createMBeanServer("test");
         ObjectName testName = new ObjectName("test:test=test");
         publisherService.bindForTest(testServer, testName, new DummyService(), DummyMBean.class);
+        publisherService.bindResources();
         locatorService.registerLocator("test", true);
         MBeanServer locatedServer = locatorService.lookupServer(testName);
         assertNotNull(locatedServer);
@@ -67,6 +69,7 @@ public class TestResourcePublisherService extends ManagementTestCase {
         deployContrib(OSGI_BUNDLE_NAME_TESTS, "management-tests-service.xml");
         deployContrib(OSGI_BUNDLE_NAME_TESTS, "management-tests-contrib.xml");
 
+        publisherService.bindResources();
         String qualifiedName = ObjectNameFactory.formatTypeQuery("service");
 
         Set<ObjectName> registeredNames = doQuery(qualifiedName);
