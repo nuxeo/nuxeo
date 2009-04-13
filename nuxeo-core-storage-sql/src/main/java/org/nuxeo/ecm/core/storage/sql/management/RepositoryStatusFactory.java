@@ -16,7 +16,10 @@
  */
 package org.nuxeo.ecm.core.storage.sql.management;
 
+import javax.management.ObjectName;
+
 import org.nuxeo.runtime.management.AbstractResourceFactory;
+import org.nuxeo.runtime.management.ObjectNameFactory;
 
 /**
  * @author Florent Guillaume
@@ -26,7 +29,7 @@ public class RepositoryStatusFactory extends AbstractResourceFactory {
     public void registerResources() {
         RepositoryStatus instance = new RepositoryStatus();
         service.registerResource("SQLRepositoryStatus",
-                "nx:service=RepositoryStatus,type=SQLStorage",
+                ObjectNameFactory.formatQualifiedName("SQLStorage"),
                 RepositoryStatusMBean.class, instance);
     }
 
