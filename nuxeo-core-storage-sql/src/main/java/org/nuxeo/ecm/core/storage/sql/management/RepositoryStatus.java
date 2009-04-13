@@ -27,6 +27,7 @@ import javax.naming.NamingException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.storage.sql.Repository;
 import org.nuxeo.ecm.core.storage.sql.RepositoryManagement;
 
 /**
@@ -37,7 +38,7 @@ import org.nuxeo.ecm.core.storage.sql.RepositoryManagement;
 public class RepositoryStatus implements RepositoryStatusMBean {
 
     private static final Log log = LogFactory.getLog(RepositoryStatus.class);
-
+    
     protected List<RepositoryManagement> getRepositories()
             throws NamingException {
         LinkedList<RepositoryManagement> list = new LinkedList<RepositoryManagement>();
@@ -85,6 +86,20 @@ public class RepositoryStatus implements RepositoryStatusMBean {
         return buf.toString();
     }
 
+    public int getActiveSessionsCount() {
+        List<RepositoryManagement> repositories;
+        try {
+            repositories = getRepositories();
+        } catch (NamingException e) {
+            throw new IllegalStateException("Cannot get repositories", e);
+        }
+        int count = 0;
+        for (RepositoryManagement repository : repositories) {
+            count += repository.getActiveSessionsCount();
+        }
+        return count;
+    }
+    
     public String clearCaches() {
         List<RepositoryManagement> repositories;
         try {
