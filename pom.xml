@@ -9,7 +9,7 @@
   <packaging>pom</packaging>
   <name>Nuxeo ECM Projects</name>
   <description>Nuxeo ECM Platform and related components.</description>
-  
+
   <url>http://www.nuxeo.com/en/products/platform</url>
   <organization>
     <name>Nuxeo SAS</name>
@@ -1101,7 +1101,7 @@
           <version>2.2</version>
         </plugin>
         <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
+          <groupId>net.sourceforge.maven-taglib</groupId>
           <artifactId>maven-taglib-plugin</artifactId>
           <version>2.3.1</version>
         </plugin>
@@ -1167,6 +1167,16 @@
               <version>1.0.9</version>
             </dependency>
           </dependencies>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-pmd-plugin</artifactId>
+          <version>2.4</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-report-plugin</artifactId>
+          <version>2.3</version>
         </plugin>
       </plugins>
     </pluginManagement>
