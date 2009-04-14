@@ -4,10 +4,11 @@
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   xmlns:nxu="http://nuxeo.org/nxweb/util">
 
-<!-- cpriceputu@nuxeo.com fix for input file content clear -->
     <script type="text/javascript"
       src="#{baseURL}scripts/contextKeeper.js"></script>
-    <!-- cpriceputu@nuxeo.com fix for input file content clear -->
+    <script type="text/javascript">
+        document.NXContextKeeper = new InputContextKeeper();
+    </script>
 
 <nxu:methodResult name="hasFiles" value="#{currentDocument.hasSchema('files')}">
   <h:form enctype="multipart/form-data" rendered="#{hasFiles}">
@@ -22,8 +23,8 @@
 
             <h:panelGrid columns="2">
               <a4j:commandLink immediate="true"
-                onclick="removeFromKeeper(#{model.rowIndex});"
-                oncomplete="onReturnAnswer();"
+                onclick="document.NXContextKeeper.removeFromKeeper(#{model.rowIndex});"
+                oncomplete="document.NXContextKeeper.onReturnAnswer();"
                 actionListener="#{editableListBean.performAction}"
                 reRender="geideForm" bypassUpdates="true">
                 <h:graphicImage value="/icons/action_delete.gif" />
@@ -44,7 +45,8 @@
         </a4j:outputPanel>
 
         <a4j:commandLink immediate="true"
-          oncomplete="onReturnAnswer();" onclick="onAddFile();"
+          oncomplete="document.NXContextKeeper.onReturnAnswer();" 
+          onclick="document.NXContextKeeper.onAddFile();"
           actionListener="#{editableListBean.performAction}"
           reRender="geideForm">
           <f:param name="for" value="files" />
