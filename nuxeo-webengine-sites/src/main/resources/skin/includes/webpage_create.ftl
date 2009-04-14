@@ -1,7 +1,5 @@
 <#macro webPageCreate>
 <!-- markit up -->
-
-
 <link rel="stylesheet" type="text/css"
   href="${skinPath}/script/markitup/skins/markitup/style.css" />
 <link rel="stylesheet" type="text/css"
@@ -80,9 +78,9 @@
     <tr>
       <td>${Context.getMessage("label.page.format")}</td>
       <td><input type="radio" onclick="onSelectRadio(this);"
-        name="format" id="wikitext" value="wikitext" checked="true" />${Context.getMessage("label.page.format.wikitext")}
-      <input type="radio" onclick="onSelectRadio(this);" name="format"
-        id="richtext" value="richtext" />${Context.getMessage("label.page.format.richtext")}
+        name="isRichtext" id="wikitext" value="false" checked="true" />${Context.getMessage("label.page.format.wikitext")}
+      <input type="radio" onclick="onSelectRadio(this);" name="isRichtext"
+        id="richtext" value="true" />${Context.getMessage("label.page.format.richtext")}
       </td>
     </tr>
     <tr>
@@ -111,7 +109,7 @@
 <script>
 	function launchEditor() {
 		$('#wiki_editor').markItUp(myWikiSettings);
-		document.getElementById('wikitext').cheked = true;
+		document.getElementById('wikitext').checked = true;
 	}
 
 	$('#richtextEditor')

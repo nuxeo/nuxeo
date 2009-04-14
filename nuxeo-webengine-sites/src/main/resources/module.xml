@@ -4,10 +4,11 @@
     <link id="tab_view" path="/@views/content">
       <category>SITE_ACTIONS</category>
     </link>
-    <!--
-      <link id="tab_edit" path="/@views/webpage_edit">
-      <category>WEBPAGE_ACTIONS</category> <type>WebPage</type> </link>
-    -->
+    <link id="tab_webpage_edit" path="/@views/webpage_edit">
+      <category>SITE_ACTIONS</category>
+      <type>WebPage</type>
+      <guard>Write</guard>
+    </link>
     <link id="tab_webpage_create" path="/@views/webpage_create">
       <category>SITE_ACTIONS</category>
       <guard>Write</guard>

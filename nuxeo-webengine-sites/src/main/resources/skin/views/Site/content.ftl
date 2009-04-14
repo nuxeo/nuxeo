@@ -1,4 +1,3 @@
 <div>
-  <#include "includes/content.ftl"/>
-  <@content/>
+  ${Document.webcontainer.welcomeText}
 </div>

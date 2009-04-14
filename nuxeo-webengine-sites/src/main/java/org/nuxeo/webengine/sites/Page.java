@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -110,7 +111,7 @@ public class Page extends DocumentObject {
         }
     }
 
-    
+
     @GET
     @Path("logo")
     public Response getLogo() {
@@ -146,6 +147,7 @@ public class Page extends DocumentObject {
             root.put(WELCOME_TEXT, SiteHelper.getString(ws, "webc:welcomeText",
                     null));
             root.put(NAME, ws.getTitle());
+
             return getTemplate("template_default.ftl").args(root);
 
         } catch (Exception e) {
@@ -171,6 +173,43 @@ public class Page extends DocumentObject {
         }
     }
 
+    @POST
+    @Path("modifyWebPage")
+    public Object modifyWebPage() {
+        try {
+            CoreSession session = this.getCoreSession();
+            HttpServletRequest request = ctx.getRequest();
+
+            String title = request.getParameter("title");
+            String description = request.getParameter("description");
+
+            Boolean isRichtext = (Boolean) doc.getPropertyValue("webp:isRichtext");
+            String content = null;
+            if (isRichtext) {
+                content = request.getParameter("richtextEditor");
+            } else {
+                content = request.getParameter("wikitextEditor");
+            }
+            String pushToMenu = request.getParameter("pushToMenu");
+
+            doc.setPropertyValue("dc:title", title);
+            doc.setPropertyValue("dc:description", description);
+            doc.setPropertyValue("webp:content", content);
+            doc.setPropertyValue("webp:pushtomenu", Boolean.valueOf(pushToMenu));
+
+            session.saveDocument(doc);
+            session.save();
+
+            DocumentModel webContainer = SiteUtils.getFirstWorkspaceParent(
+                    session, doc);
+            String path = SiteUtils.getPagePath(webContainer, doc);
+
+            return redirect(path);
+        } catch (Exception e) {
+            throw WebException.wrap(e);
+        }
+    }
+
     public boolean isUserWithCommentPermission() {
         try {
             CoreSession session = getCoreSession();
@@ -188,8 +227,6 @@ public class Page extends DocumentObject {
             DocumentModel ws = SiteUtils.getFirstWorkspaceParent(
                     getCoreSession(), doc);
             root.put(PAGE_TITLE, doc.getTitle());
-            root.put(WELCOME_TEXT, SiteHelper.getString(doc, "webp:content",
-                    null));
             root.put(NAME, SiteHelper.getString(ws, "webc:name", null));
             root.put(DESCRIPTION, SiteHelper.getString(doc, "dc:description",
                     null));
@@ -247,7 +284,7 @@ public class Page extends DocumentObject {
         }
 
     }
-    
+
     public boolean isAposteriori() {
         try {
             return WebCommentUtils.getModerationType(
@@ -256,6 +293,5 @@ public class Page extends DocumentObject {
             throw WebException.wrap("Failed to delete comment", e);
         }
     }
-
 
 }

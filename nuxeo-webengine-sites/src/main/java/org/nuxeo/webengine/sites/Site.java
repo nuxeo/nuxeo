@@ -47,40 +47,38 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.rest.DocumentObject;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.WebObject;
-import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 import org.nuxeo.webengine.utils.SiteUtils;
 
 @WebObject(type = "site", facets = { "Site" })
 @Produces("text/html; charset=UTF-8")
-public class Site extends DefaultObject {
+public class Site extends DocumentObject {
 
     private static final Log log = LogFactory.getLog(Site.class);
 
     String url;
 
-    DocumentModel ws;
-
     @Override
     public void initialize(Object... args) {
         assert args != null && args.length == 1;
         url = (String) args[0];
-        ws = getSiteDocumentModelByUrl(url);
+        doc = getSiteDocumentModelByUrl(url);
     }
 
     @GET
     public Object doGet() {
         ctx.getRequest().setAttribute("org.nuxeo.theme.theme", "sites/default");
-        if (ws == null) {
+        if (doc == null) {
             return getTemplate("no_site.ftl").arg("url", url);
         }
         // getting theme config from document.
         String theme = null;
         try {
-            theme = (String) ws.getProperty("webpage", "theme");
+            theme = (String) doc.getProperty("webpage", "theme");
         } catch (ClientException e) {
             log.error(
                     "Error while trying to display the webworkspace page. Couldn't get theme properties from the webpage",
@@ -91,7 +89,7 @@ public class Site extends DefaultObject {
         }
         String themePage = null;
         try {
-            themePage = (String) ws.getProperty("webpage", "themePage");
+            themePage = (String) doc.getProperty("webpage", "themePage");
         } catch (ClientException e) {
             log.error(
                     "Error while trying to display the webworkspace page. Couldn't get theme properties from the webpage",
@@ -112,7 +110,7 @@ public class Site extends DefaultObject {
     @Path("{page}")
     public Object doGet(@PathParam("page") String page) {
         try {
-            DocumentModel pageDoc = ctx.getCoreSession().getChild(ws.getRef(),
+            DocumentModel pageDoc = ctx.getCoreSession().getChild(doc.getRef(),
                     page);
 
             // getting theme config from document.
@@ -139,7 +137,7 @@ public class Site extends DefaultObject {
     public Response getLogo() {
         Response resp = null;
         try {
-            resp = SiteUtils.getLogoResponse(ws);
+            resp = SiteUtils.getLogoResponse(doc);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -156,7 +154,7 @@ public class Site extends DefaultObject {
     public Response getWelcomeMedia() {
         Response resp = null;
         try {
-            Blob blob = SiteHelper.getBlob(ws, "webc:welcomeMedia");
+            Blob blob = SiteHelper.getBlob(doc, "webc:welcomeMedia");
             if (blob != null) {
                 resp = Response.ok().entity(blob).type(blob.getMimeType()).build();
             }
@@ -179,13 +177,13 @@ public class Site extends DefaultObject {
                 "sites" + "/" + "search");
         Map<String, Object> root = new HashMap<String, Object>();
         try {
-            List<Object> pages = SiteUtils.searchPagesInSite(ws, searchParam,
+            List<Object> pages = SiteUtils.searchPagesInSite(doc, searchParam,
                     50);
             root.put(RESULTS, pages);
-            root.put(CONTEXTUAL_LINKS, SiteUtils.getContextualLinks(ws));
-            root.put(WELCOME_TEXT, SiteHelper.getString(ws, "webc:welcomeText",
+            root.put(CONTEXTUAL_LINKS, SiteUtils.getContextualLinks(doc));
+            root.put(WELCOME_TEXT, SiteHelper.getString(doc, "webc:welcomeText",
                     null));
-            root.put(NAME, SiteHelper.getString(ws, "webc:name", null));
+            root.put(NAME, SiteHelper.getString(doc, "webc:name", null));
             return getTemplate("template_default.ftl").args(root);
         } catch (Exception e) {
             throw WebException.wrap(e);
@@ -199,9 +197,9 @@ public class Site extends DefaultObject {
             CoreSession session = ctx.getCoreSession();
 
             DocumentModel createdDocument = SiteUtils.createWebPageDocument(
-                    ctx.getRequest(), session, ws.getPathAsString());
+                    ctx.getRequest(), session, doc.getPathAsString());
 
-            String path = SiteUtils.getPagePath(ws, createdDocument);
+            String path = SiteUtils.getPagePath(doc, createdDocument);
 
             return redirect(path);
 
@@ -213,22 +211,21 @@ public class Site extends DefaultObject {
     protected Map<String, Object> getSiteArguments() throws ClientException {
         Map<String, Object> root = new HashMap<String, Object>();
 
-        root.put(WELCOME_TEXT, SiteHelper.getString(ws, "webc:welcomeText",
-                null));
-        root.put(NAME, SiteHelper.getString(ws, "webc:name", null));
-        root.put(DESCRIPTION, SiteHelper.getString(ws, "dc:description",
+        root.put(NAME, SiteHelper.getString(doc, "webc:name", null));
+        root.put(DESCRIPTION, SiteHelper.getString(doc, "dc:description",
                 null));
         // add web pages
         root.put(LAST_PUBLISHED_PAGES, SiteUtils.getLastModifiedWebPages(
-                ws, 5, 50));
+                doc, 5, 50));
         //add comments
-        root.put(COMMENTS, SiteUtils.getLastCommentsFromPages(ws, 5, 50));
+        root.put(COMMENTS, SiteUtils.getLastCommentsFromPages(doc, 5, 50));
         // add contextual links
         root.put(CONTEXTUAL_LINKS, SiteUtils.getContextualLinks(
-                ws));
+                doc));
         // add all webpages that are directly connected to an site
         root.put(ALL_WEBPAGES, SiteUtils.getAllWebPages(
-                ws));
+                doc));
+
         return root;
     }
 
@@ -249,7 +246,7 @@ public class Site extends DefaultObject {
     }
 
     public DocumentModel getWorkspace() {
-        return ws;
+        return doc;
     }
 
 }

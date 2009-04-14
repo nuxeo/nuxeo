@@ -19,11 +19,8 @@ package org.nuxeo.webengine.utils;
 import static org.nuxeo.webengine.utils.SiteUtilsConstants.CONTEXTUAL_LINK;
 import static org.nuxeo.webengine.utils.SiteUtilsConstants.NUMBER_COMMENTS;
 import static org.nuxeo.webengine.utils.SiteUtilsConstants.WEBPAGE;
-
 import static org.nuxeo.webengine.utils.SiteUtilsConstants.WEB_CONTAINER_FACET;
-
 import static org.nuxeo.webengine.utils.SiteUtilsConstants.WORKSPACE;
-
 import static org.nuxeo.webengine.utils.SiteUtilsConstants.DELETED;
 
 import java.text.SimpleDateFormat;
@@ -33,7 +30,6 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
@@ -426,7 +422,7 @@ public class SiteUtils {
     public static DocumentModel createWebPageDocument(HttpServletRequest request, CoreSession session, String parentPath) throws ClientException {
         String title = request.getParameter("title");
         String description = request.getParameter("description");
-        String format = request.getParameter("format");
+        Boolean isRichtext = Boolean.parseBoolean(request.getParameter("isRichtext"));
         String wikitextEditor = request.getParameter("wikitextEditor");
         String richtextEditor = request.getParameter("richtextEditor");
         String pushToMenu = request.getParameter("pushToMenu");
@@ -436,12 +432,13 @@ public class SiteUtils {
                 WEBPAGE);
         documentModel.setPropertyValue("dc:title", title);
         documentModel.setPropertyValue("dc:description", description);
-        if ("wikitext".equals(format)) {
-            // Is wiki text editor
-            documentModel.setPropertyValue("webp:content", wikitextEditor);
-        } else {
+        documentModel.setPropertyValue("webp:isRichtext", isRichtext);
+        if (isRichtext) {
             // Is rich text editor
             documentModel.setPropertyValue("webp:content", richtextEditor);
+        } else {
+            // Is wiki text editor
+            documentModel.setPropertyValue("webp:content", wikitextEditor);
         }
         documentModel.setPropertyValue("webp:pushtomenu", Boolean.valueOf(pushToMenu));
 
