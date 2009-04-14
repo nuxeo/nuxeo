@@ -28,7 +28,7 @@ import org.nuxeo.runtime.management.inspector.ModelMBeanInfoFactory;
  */
 public class TestMBeanInfoFactory extends TestCase {
 
-    protected ModelMBeanInfoFactory factoryUnderTest =
+    protected final ModelMBeanInfoFactory factoryUnderTest =
             new ModelMBeanInfoFactory();
 
     public void testInterfaceProperty() throws Exception {

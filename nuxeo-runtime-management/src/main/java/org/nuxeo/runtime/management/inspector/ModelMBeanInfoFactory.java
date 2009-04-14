@@ -32,8 +32,7 @@ public class ModelMBeanInfoFactory {
         super(); // enabled breaking
     }
 
-    public ModelMBeanInfo getModelMBeanInfo(Class<?> resourceClass)
-            throws Exception {
+    public ModelMBeanInfo getModelMBeanInfo(Class<?> resourceClass) {
         if (infos.containsKey(resourceClass)) {
             return infos.get(resourceClass);
         }

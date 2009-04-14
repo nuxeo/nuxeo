@@ -176,7 +176,7 @@ public class ModelMBeanIntrospector {
             boolean returnValue = returnType != null && void.class.equals(returnType) == false;
             if ((name.startsWith("get") && hasParameters && returnValue)
                     || (name.startsWith("is")
-                            && hasParameters == false && boolean.class.equals(returnType))) {
+                            && !hasParameters && boolean.class.equals(returnType))) {
                 descriptor.setField("role", "getter");
             }  else if (methodInfo.getName().startsWith("set")
                     && void.class.equals(returnType)

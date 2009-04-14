@@ -32,8 +32,6 @@ import javax.management.ObjectName;
 import javax.management.remote.JMXServiceURL;
 import javax.management.remote.rmi.RMIConnectorServer;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -42,9 +40,7 @@ public class ServerLocatorService extends DefaultComponent implements
 
     public static final String LOCATORS_EXT_KEY = "locators";
 
-    private static final Log log = LogFactory.getLog(ServerLocatorService.class);
-
-    protected Map<String, MBeanServer> otherServers = new HashMap<String, MBeanServer>();
+    protected final Map<String, MBeanServer> otherServers = new HashMap<String, MBeanServer>();
 
     protected MBeanServer defaultServer = ManagementFactory.getPlatformMBeanServer();
 

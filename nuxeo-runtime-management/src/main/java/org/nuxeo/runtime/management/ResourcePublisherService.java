@@ -56,6 +56,14 @@ public class ResourcePublisherService extends DefaultComponent implements
 
     private static final Log log = LogFactory.getLog(ResourcePublisherService.class);
 
+    protected final ShortcutsRegistry shortcutsRegistry = new ShortcutsRegistry();
+
+    protected final FactoriesRegistry factoriesRegistry = new FactoriesRegistry();
+
+    protected final ResourcesRegistry resourcesRegistry = new ResourcesRegistry();
+
+    protected ServerLocatorService serverLocatorService;
+
     public ResourcePublisherService() {
         super(); // enables breaking
     }
@@ -115,8 +123,6 @@ public class ResourcePublisherService extends DefaultComponent implements
         }
     }
 
-    protected final FactoriesRegistry factoriesRegistry = new FactoriesRegistry();
-
     protected class ShortcutsRegistry {
         protected final Map<String, ObjectName> registry = new TreeMap<String, ObjectName>();
 
@@ -148,8 +154,6 @@ public class ResourcePublisherService extends DefaultComponent implements
         }
     }
 
-    protected ShortcutsRegistry shortcutsRegistry = new ShortcutsRegistry();
-
     protected class ResourcesRegistry {
 
         protected final Map<ObjectName, Resource> registry = new HashMap<ObjectName, Resource>();
@@ -172,7 +176,7 @@ public class ResourcePublisherService extends DefaultComponent implements
             }
         }
 
-        protected ModelMBeanInfoFactory mbeanInfoFactory = new ModelMBeanInfoFactory();
+        protected final ModelMBeanInfoFactory mbeanInfoFactory = new ModelMBeanInfoFactory();
 
         protected RequiredModelMBean doBind(MBeanServer server, ObjectName name,
                 Object instance, Class<?> clazz) throws Exception {
@@ -299,10 +303,6 @@ public class ResourcePublisherService extends DefaultComponent implements
         }
 
     }
-
-    protected final ResourcesRegistry resourcesRegistry = new ResourcesRegistry();
-
-    protected ServerLocatorService serverLocatorService;
 
     public void registerResource(String shortName, String qualifiedName,
             Class<?> managementClass, Object instance) {

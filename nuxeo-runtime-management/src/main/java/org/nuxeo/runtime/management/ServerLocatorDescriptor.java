@@ -26,8 +26,20 @@ import org.nuxeo.common.xmap.annotation.XObject;
 @XObject("locator")
 public class ServerLocatorDescriptor {
 
+    @XNode("@domain")
+    protected String domainName;
+
+    @XNode("@default")
+    protected boolean isDefaultServer = true;
+
+    @XNode("@exist")
+    protected boolean isExistingServer = true;
+
+    @XNode("@rmiPort")
+    protected int rmiPort = 1099;
+
     public ServerLocatorDescriptor() {
-        this.domainName = "";
+        domainName = "";
     }
 
     public ServerLocatorDescriptor(String domainName, boolean isDefaultServer) {
@@ -35,31 +47,20 @@ public class ServerLocatorDescriptor {
         this.isDefaultServer = isDefaultServer;
     }
 
-    @XNode("@domain")
-    protected String domainName;
-
     public String getDomainName() {
         return domainName;
     }
 
-    @XNode("@default")
-    protected boolean isDefaultServer = true;
-
     public boolean isDefaultServer() {
         return isDefaultServer;
     }
-    
-    @XNode("@exist")
-    protected boolean isExistingServer = true;
-    
+
     public boolean isExistingServer() {
         return isExistingServer;
     }
 
-    @XNode("@rmiPort")
-    protected int rmiPort = 1099;
-
     public int getRmiPort() {
         return rmiPort;
     }
+
 }

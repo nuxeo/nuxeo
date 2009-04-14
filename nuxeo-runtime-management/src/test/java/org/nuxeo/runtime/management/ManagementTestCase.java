@@ -39,6 +39,8 @@ public abstract class ManagementTestCase extends NXRuntimeTestCase {
     protected static final String OSGI_BUNDLE_NAME_TESTS = OSGI_BUNDLE_NAME
             + ".tests";
 
+    protected final MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
+
     protected ResourcePublisherService publisherService;
 
     protected ServerLocatorService locatorService;
@@ -49,8 +51,6 @@ public abstract class ManagementTestCase extends NXRuntimeTestCase {
     public ManagementTestCase(String name) {
         super(name);
     }
-
-    protected MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
 
     @Override
     public void setUp() throws Exception {

@@ -16,7 +16,6 @@
  */
 package org.nuxeo.runtime.management;
 
-import java.util.Hashtable;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
