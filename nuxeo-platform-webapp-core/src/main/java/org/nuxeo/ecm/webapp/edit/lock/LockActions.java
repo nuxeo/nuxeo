@@ -93,12 +93,26 @@ public interface LockActions extends Serializable {
     void unlockDocuments(List<DocumentModel> documents) throws ClientException;
 
     /**
+     * Tests if the user can get the lock of a document.
+     *
+     * @return true if the user has this right, false otherwise
+     */
+    Boolean getCanLockDoc(DocumentModel document);
+    
+    /**
      * Tests if the user can get the lock of the current document.
      *
      * @return true if the user has this right, false otherwise
      */
     Boolean getCanLockCurrentDoc();
 
+    /**
+     * Tests if the user can unlock a document.
+     *
+     * @return true if the user has this right, false otherwise
+     */
+    Boolean getCanUnlockDoc(DocumentModel document);
+    
     /**
      * Tests if the user can unlock the current document.
      *

@@ -93,26 +93,26 @@ public class LockActionsBean implements LockActions {
 
     private Boolean isLiveEditable;
 
-    public Boolean getCanLockCurrentDoc() {
+    
+    public Boolean getCanLockDoc(DocumentModel document) {
         if (canLock == null) {
-            DocumentModel currentDocument = navigationContext.getCurrentDocument();
-            if (currentDocument == null) {
+            if (document == null) {
                 log.warn("Can't evaluate lock action : currentDocument is null");
                 canLock = false;
-            } else if (currentDocument.isProxy()) {
+            } else if (document.isProxy()) {
                 canLock = false;
             } else {
                 try {
                     NuxeoPrincipal userName = (NuxeoPrincipal) documentManager.getPrincipal();
-                    String docLock = documentManager.getLock(currentDocument.getRef());
+                    String docLock = documentManager.getLock(document.getRef());
                     canLock = docLock == null
                             && (userName.isAdministrator() || documentManager.hasPermission(
-                                    currentDocument.getRef(),
+                                    document.getRef(),
                                     SecurityConstants.WRITE_PROPERTIES))
-                            && !currentDocument.isVersion();
+                            && !document.isVersion();
                 } catch (Exception e) {
                     log.debug("evaluation of document lock "
-                            + currentDocument.getName() + " failed ("
+                            + document.getName() + " failed ("
                             + e.getMessage() + ": returning false");
                     canLock = false;
                 }
@@ -120,37 +120,47 @@ public class LockActionsBean implements LockActions {
         }
         return canLock;
     }
+    
+    public Boolean getCanLockCurrentDoc() {
+        DocumentModel currentDocument = navigationContext.getCurrentDocument();
+        return getCanLockDoc(currentDocument);
+    }
 
-    public Boolean getCanUnlockCurrentDoc() {
+    public Boolean getCanUnlockDoc(DocumentModel document) {
         if (canUnlock == null) {
-            DocumentModel currentDocument = navigationContext.getCurrentDocument();
-            if (currentDocument == null) {
+            if (document == null) {
                 canUnlock = false;
             } else {
                 try {
                     NuxeoPrincipal userName = (NuxeoPrincipal) documentManager.getPrincipal();
-                    Map<String, String> lockDetails = getLockDetails(currentDocument);
-                    if (lockDetails.isEmpty() || currentDocument.isProxy()) {
+                    Map<String, String> lockDetails = getLockDetails(document);
+                    if (lockDetails.isEmpty() || document.isProxy()) {
                         canUnlock = false;
                     } else {
                         canUnlock = ((userName.isAdministrator() || documentManager.hasPermission(
-                                currentDocument.getRef(),
+                                document.getRef(),
                                 SecurityConstants.EVERYTHING)) ? true
                                 : (userName.getName().equals(
                                         lockDetails.get(LOCKER)) && documentManager.hasPermission(
-                                        currentDocument.getRef(),
+                                                document.getRef(),
                                         SecurityConstants.WRITE_PROPERTIES)))
-                                && !currentDocument.isVersion();
+                                && !document.isVersion();
                     }
                 } catch (Exception e) {
                     log.debug("evaluation of document lock "
-                            + currentDocument.getName() + " failed ("
+                            + document.getName() + " failed ("
                             + e.getMessage() + ": returning false");
                     canUnlock = false;
                 }
             }
         }
         return canUnlock;
+    }
+    
+    
+    public Boolean getCanUnlockCurrentDoc() {
+        DocumentModel currentDocument = navigationContext.getCurrentDocument();
+        return getCanUnlockDoc(currentDocument);
     }
 
     public String lockCurrentDocument() throws ClientException {

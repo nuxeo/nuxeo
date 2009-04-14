@@ -101,6 +101,8 @@ public interface ClipboardActions {
     String pasteClipboard() throws ClientException;
 
     String pasteClipboardInside(String docId) throws ClientException;
+    
+    String moveClipboardInside(String docId) throws ClientException;
 
     /**
      * Removes the component.
@@ -142,6 +144,11 @@ public interface ClipboardActions {
     boolean getCanPasteFromClipboard() throws ClientException;
 
     boolean getCanPasteFromClipboardInside(DocumentModel document) throws ClientException;
+    
+    /**
+     * Checks if the documents from the clipboard can be moved into the given document
+     */
+    boolean getCanMoveFromClipboardInside(DocumentModel document)throws ClientException;
 
     /**
      * Checks if the content of a given workList can be pasted.
@@ -168,6 +175,11 @@ public interface ClipboardActions {
      * Checks if there are documents in current worklist can be moved into the current folder.
      */
     boolean getCanMoveWorkingList() throws ClientException;
+    
+    /**
+     * Checks if the documents in a given worklist can be moved into the given document
+     */
+    boolean getCanMoveInside(String listName, DocumentModel document) throws ClientException;
 
     /**
      * Copies docsList into the current WorkList.

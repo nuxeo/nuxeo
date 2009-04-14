@@ -369,18 +369,17 @@ public class ClipboardActionsBean extends InputController implements
         return newDocs;
     }
 
-    public String moveDocumentList(String listName) throws ClientException {
+    public String moveDocumentList(String listName, String docId) throws ClientException {
         List<DocumentModel> docs = documentsListsManager.getWorkingList(listName);
-
+        DocumentModel targetDoc = documentManager.getDocument(new IdRef(docId));
         // Get all parent folders
         Set<DocumentRef> parentRefs = new HashSet<DocumentRef>();
         for (DocumentModel doc : docs) {
             parentRefs.add(doc.getParentRef());
         }
 
-        DocumentModel currentDocument = navigationContext.getCurrentDocument();
         List<DocumentModel> newDocs = moveDocumentsToNewParent(
-                currentDocument, docs);
+                targetDoc, docs);
 
         documentsListsManager.getWorkingList(listName).clear();
 
@@ -389,9 +388,9 @@ public class ClipboardActionsBean extends InputController implements
                 + resourcesAccessor.getMessages().get("n_moved_docs"),
                 params);
 
-        eventManager.raiseEventsOnDocumentSelected(currentDocument);
+        eventManager.raiseEventsOnDocumentSelected(targetDoc);
         Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
-                    currentDocument);
+                targetDoc);
 
         // Send event to all initial parents
         for (DocumentRef docRef : parentRefs) {
@@ -402,6 +401,12 @@ public class ClipboardActionsBean extends InputController implements
         log.debug("Elements moved and created into the backend...");
 
         return computeOutcome(PASTE_OUTCOME);
+    }
+
+    
+    public String moveDocumentList(String listName) throws ClientException {
+        DocumentModel currentDocument = navigationContext.getCurrentDocument();
+        return moveDocumentList(listName, currentDocument.getId());
     }
 
     public String moveWorkingList() throws ClientException {
@@ -426,6 +431,13 @@ public class ClipboardActionsBean extends InputController implements
         return computeOutcome(PASTE_OUTCOME);
     }
 
+    @WebRemote
+    public String moveClipboardInside(String docId) throws ClientException {
+        moveDocumentList(DocumentsListsManager.CLIPBOARD, docId);
+        return computeOutcome(MOVE_OUTCOME);
+    }
+
+    
     /**
      * Creates the documents in the backend under the target parent.
      */
@@ -703,27 +715,23 @@ public class ClipboardActionsBean extends InputController implements
     }
 
     /**
-     * Checks if the Move action is available in the context of the current
-     * Document. Conditions:
+     * Checks if the Move action is available in the context of the document
+     * document. Conditions:
      * <p>
      * <ul>
      * <li>list is not empty
-     * <li>user has the needed permissions on the current document
+     * <li>user has the needed permissions on the document
      * <li>an element in the list can be removed from its folder and added as
      * child of the current document
      * </ul>
      */
-    public boolean getCanMove(String listName) throws ClientException {
-
-        DocumentModel currentDocument = navigationContext.getCurrentDocument();
-
+    public boolean getCanMoveInside(String listName, DocumentModel document) throws ClientException {
         if (documentsListsManager.isWorkingListEmpty(listName)
-                || currentDocument == null) {
+                || document == null) {
             return false;
         }
-
-        DocumentRef destFolderRef = currentDocument.getRef();
-        DocumentModel destFolder = currentDocument;
+        DocumentRef destFolderRef = document.getRef();
+        DocumentModel destFolder = document;
         if (!documentManager.hasPermission(destFolderRef,
                 SecurityConstants.ADD_CHILDREN)) {
             return false;
@@ -749,6 +757,22 @@ public class ClipboardActionsBean extends InputController implements
             return false;
         }
     }
+    
+    /**
+     * Checks if the Move action is available in the context of the current
+     * Document. Conditions:
+     * <p>
+     * <ul>
+     * <li>list is not empty
+     * <li>user has the needed permissions on the current document
+     * <li>an element in the list can be removed from its folder and added as
+     * child of the current document
+     * </ul>
+     */
+    public boolean getCanMove(String listName) throws ClientException {
+        DocumentModel currentDocument = navigationContext.getCurrentDocument();
+        return getCanMoveInside(listName, currentDocument);
+    }
 
     public boolean getCanPasteWorkList() throws ClientException {
         return getCanPaste(getCurrentSelectedListName());
@@ -765,6 +789,11 @@ public class ClipboardActionsBean extends InputController implements
     public boolean getCanPasteFromClipboardInside(DocumentModel document)
             throws ClientException {
         return getCanPasteInside(DocumentsListsManager.CLIPBOARD, document);
+    }
+
+    public boolean getCanMoveFromClipboardInside(DocumentModel document)
+            throws ClientException {
+        return getCanMoveInside(DocumentsListsManager.CLIPBOARD, document);
     }
 
     // Misc internal function for Ziping Clipboard

@@ -41,6 +41,11 @@ function doPaste(docid)
 	Seam.Component.getInstance("clipboardActions").pasteClipboardInside(docid,refreshPage);
 }
 
+function doMove(docid)
+{
+	Seam.Component.getInstance("clipboardActions").moveClipboardInside(docid,refreshPage);
+}
+
 function doDelete(docid)
 {
 	if (confirmDeleteDocuments()) {
@@ -73,6 +78,35 @@ function doRename(docid)
  };
  input.focus();
 }
+
+function doAccessRights(docid) {
+  navigateOnPopupDoc('TAB_RIGHTS');
+}
+
+function doPreview(docid) {
+	  navigateOnPopupDoc('TAB_PREVIEW');
+}
+
+function doDownload(docid) {
+  Seam.Component.getInstance("popupHelper").downloadDocument(docid, 'file:content', 'file:filename', navigationCB);
+}
+
+function doWorkflow(docid) {
+  navigateOnPopupDoc('TAB_CONTENT_JBPM');
+}
+
+function doLock(docid){
+  Seam.Component.getInstance("popupHelper").lockDocument(docid, refreshPage);
+}
+
+function doUnlock(docid){
+  Seam.Component.getInstance("popupHelper").unlockDocument(docid, refreshPage);
+}
+
+function doSendEmail(docid){
+  Seam.Component.getInstance("popupHelper").sendEmail(docid, navigationCB);
+}
+
 
 function onEditKeyPress(event)
 {
