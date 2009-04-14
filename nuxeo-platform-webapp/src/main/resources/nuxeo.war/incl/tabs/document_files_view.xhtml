@@ -1,16 +1,11 @@
-<div xmlns="http://www.w3.org/1999/xhtml"
-  xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:nxu="http://nuxeo.org/nxweb/util">
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
 
-<h:outputText value="#{messages['label.files.noAttachedFiles']}"
-  rendered="#{empty currentDocument.files.files}" />
+<h:form rendered="#{currentDocument.hasSchema('files')}">
+  
+  <nxl:layout name="files" mode="view" value="#{currentDocument}" />  
 
-<h:form rendered="#{not empty currentDocument.files.files}">
-  <h:dataTable value="#{currentDocument.files.files}" var="row">
-    <h:column>
-      <nxu:outputFile value="#{row['file']}" filename="#{row['filename']}" />
-    </h:column>
-  </h:dataTable>
 </h:form>
 
 </div>

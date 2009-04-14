@@ -287,14 +287,19 @@
           <widget>files</widget>
         </row>
       </rows>
-      <widget name="files" type="list">
+      <widget name="files" type="template">
         <labels>
-          <label mode="any">action.view.files</label>
+          <label mode="any"></label>
         </labels>
         <translated>true</translated>
         <fields>
           <field schema="files">files</field>
         </fields>
+        <properties mode="any">
+          <property name="template">
+            /widgets/files_list_widget_template.xhtml
+          </property>
+        </properties>
         <properties widgetMode="edit">
           <property name="diff">true</property>
         </properties>
@@ -311,6 +316,9 @@
               <property name="template">
                 /widgets/extended_subfile_widget.xhtml
               </property>
+            </properties>
+            <properties widgetMode="edit">
+              <property name="required">true</property>
             </properties>
           </widget>
         </subWidgets>

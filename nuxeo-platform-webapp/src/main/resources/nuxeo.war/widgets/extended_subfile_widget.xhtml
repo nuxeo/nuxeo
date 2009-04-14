@@ -8,7 +8,7 @@
   xmlns:fn="http://java.sun.com/jsp/jstl/functions"
   id="#{widget.id}">
 
-  <c:if test="#{widget.mode != 'create' and widget.mode != 'edit'}">
+  <c:if test="#{widget.mode != 'edit'}">
 
     <nxh:outputLink
       value="#{nxd:complexFileUrl('downloadFile', layoutValue, widget_0.fieldDefinitions[0].propertyName, model.rowIndex, widget.fieldDefinitions[0].propertyName, field_1)}">
@@ -48,7 +48,7 @@
 
   </c:if>
 
-  <c:if test="#{widget.mode == 'create' or widget.mode == 'edit'}">
+  <c:if test="#{widget.mode == 'edit'}">
 
     <nxu:inputFile id="#{widget.id}_file" value="#{field_0}"
       filename="#{field_1}" required="#{widget.required}" editFilename="false" />
