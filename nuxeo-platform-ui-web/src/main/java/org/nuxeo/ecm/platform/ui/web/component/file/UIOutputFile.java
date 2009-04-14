@@ -335,7 +335,8 @@ public class UIOutputFile extends UIOutput implements NamingContainer {
                 Blob blob = (Blob) value;
                 String filenameSet = getFilename();
                 UICommand downloadComp = (UICommand) downloadFacet;
-                ComponentUtils.hookSubComponent(context, this, downloadComp);
+                ComponentUtils.hookSubComponent(context, this, downloadComp,
+                        DOWNLOAD_FACET_NAME);
                 // action expression will be set thanks to parent values
                 downloadComp.setValue(getDownloadLinkValue(context, blob,
                         filenameSet));

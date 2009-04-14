@@ -578,7 +578,7 @@ public class UIInputFile extends UIInput implements NamingContainer {
                     if (downloadFacet != null) {
                         UIOutputFile downloadComp = (UIOutputFile) downloadFacet;
                         ComponentUtils.hookSubComponent(context, this,
-                                downloadComp);
+                                downloadComp, DEFAULT_DOWNLOAD_FACET_NAME);
                         downloadComp.setQueryParent(true);
                         ComponentUtils.copyValues(
                                 this,
@@ -594,7 +594,7 @@ public class UIInputFile extends UIInput implements NamingContainer {
                     if (filenameFacet instanceof HtmlInputText) {
                         HtmlInputText filenameComp = (HtmlInputText) filenameFacet;
                         ComponentUtils.hookSubComponent(context, this,
-                                filenameComp);
+                                filenameComp, EDIT_FILENAME_FACET_NAME);
                         filenameComp.setValue(filename);
                         filenameComp.setLocalValueSet(false);
                         String onClick = "document.getElementById('%s').checked='checked'";
@@ -664,7 +664,8 @@ public class UIInputFile extends UIInput implements NamingContainer {
                 UIComponent uploadFacet = getFacet(UPLOAD_FACET_NAME);
                 if (uploadFacet instanceof HtmlFileUpload) {
                     HtmlFileUpload uploadComp = (HtmlFileUpload) uploadFacet;
-                    ComponentUtils.hookSubComponent(context, this, uploadComp);
+                    ComponentUtils.hookSubComponent(context, this, uploadComp,
+                            UPLOAD_FACET_NAME);
                     String onClick = "document.getElementById('%s').checked='checked'";
                     uploadComp.setOnclick(String.format(onClick, id));
                     // TODO: add size limit info

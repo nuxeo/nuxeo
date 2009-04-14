@@ -91,12 +91,18 @@ public final class ComponentUtils {
      * @param context
      * @param parent
      * @param child
+     * @param defaultChildId
      * @return child comp
      */
     public static UIComponent hookSubComponent(FacesContext context,
-            UIComponent parent, UIComponent child) {
+            UIComponent parent, UIComponent child, String defaultChildId) {
         // build a valid id using the parent id so that it's found everytime.
         String childId = child.getId();
+        if (defaultChildId != null) {
+            // override with default
+            childId = defaultChildId;
+        }
+        // make sure it's set
         if (childId == null) {
             childId = context.getViewRoot().createUniqueId();
         }
