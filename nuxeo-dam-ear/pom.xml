@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.nuxeo.dam</groupId>
+    <artifactId>nuxeo-dam-parent</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>nuxeo-dam-ear</artifactId>
+  <packaging>pom</packaging>
+  <name>Nuxeo DAM EAR</name>
+  <description>Nuxeo DAM EAR</description>
+
+  <properties>
+    <dam.ear.assembly>dam-dev</dam.ear.assembly>
+  </properties>
+
+  <profiles>
+    <profile>
+      <id>dev</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <properties>
+        <dam.ear.assembly>dam-dev</dam.ear.assembly>
+      </properties>
+    </profile>
+  </profiles>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-ear</artifactId>
+      <type>pom</type>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.dam</groupId>
+      <artifactId>nuxeo-dam-webapp-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.dam</groupId>
+      <artifactId>nuxeo-dam-webapp</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.dam</groupId>
+      <artifactId>nuxeo-dam-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.dam</groupId>
+      <artifactId>nuxeo-dam-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.dam</groupId>
+      <artifactId>nuxeo-dam-facade</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.dam</groupId>
+      <artifactId>nuxeo-dam-web</artifactId>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-nuxeo-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <runPreprocessor>false</runPreprocessor>
+          <format>directory</format>
+          <outputDirectory>target</outputDirectory>
+          <targetFile>${dam.ear.assembly}</targetFile>
+          <descriptor>${basedir}/src/main/assemble/${dam.ear.assembly}.xml</descriptor>
+        </configuration>
+        <executions>
+          <execution>
+            <id>assemble-ear</id>
+            <phase>package</phase>
+            <goals>
+              <goal>assembly</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- build server/default/lib nuxeo modules -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-installed</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.nuxeo.common</groupId>
+                  <artifactId>nuxeo-common</artifactId>
+                  <version>${nuxeo.common.version}</version>
+                  <overWrite>true</overWrite>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.nuxeo.runtime</groupId>
+                  <artifactId>nuxeo-runtime-jboss-extensions</artifactId>
+                  <version>${nuxeo.runtime.version}</version>
+                  <overWrite>true</overWrite>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.nuxeo.ecm.core</groupId>
+                  <artifactId>nuxeo-core-storage-sql-extensions</artifactId>
+                  <version>${nuxeo.core.version}</version>
+                  <overWrite>true</overWrite>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.apache.derby</groupId>
+                  <artifactId>derby</artifactId>
+                </artifactItem>
+              </artifactItems>
+              <outputDirectory>../target/lib</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- Required for the "jboss-sar" type resolution -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>jboss-packaging-maven-plugin</artifactId>
+        <version>2.0-beta-1</version>
+        <!-- required for enabling mevenide -->
+        <extensions>true</extensions>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>
