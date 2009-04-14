@@ -633,10 +633,10 @@
         <row>
           <widget>url</widget>
         </row>
-       <!--  Not needed yet        
-       <row>
+        <!--  Not needed yet        
+          <row>
           <widget>theme</widget>
-        </row> -->
+          </row> -->
         <row>
           <widget>email</widget>
         </row>
@@ -653,8 +653,8 @@
           <widget>useCaptcha</widget>
         </row>
         <row>
-         <widget>moderationType</widget>
-       </row>
+          <widget>moderationType</widget>
+        </row>
       </rows>
 
       <widget name="isWebContainer" type="checkbox">
@@ -689,18 +689,18 @@
       </widget>
 
       <!--  Not needed yet        
-      <widget name="theme" type="template">
+        <widget name="theme" type="template">
         <translated>true</translated>
         <fields>
-          <field>webc:theme</field>
-          <field>webc:themePage</field>
+        <field>webc:theme</field>
+        <field>webc:themePage</field>
         </fields>
         <properties mode="any">
-          <property name="template">
-            /widgets/site_theme_widget.xhtml
-          </property>
+        <property name="template">
+        /widgets/site_theme_widget.xhtml
+        </property>
         </properties>
-      </widget>
+        </widget>
       -->
 
       <widget name="email" type="text">
@@ -740,19 +740,19 @@
           <field>webc:useCaptcha</field>
         </fields>
       </widget>
-      
+
       <widget name="moderationType" type="template">
-       <translated>true</translated>
-       <fields>
-         <field>webc:moderationType</field>
-       </fields>
-       <properties mode="any">
-         <property name="template">
-           /widgets/moderation_type_widget_template.xhtml
-         </property>
-       </properties>
-     </widget>
-      
+        <translated>true</translated>
+        <fields>
+          <field>webc:moderationType</field>
+        </fields>
+        <properties mode="any">
+          <property name="template">
+            /widgets/moderation_type_widget_template.xhtml
+          </property>
+        </properties>
+      </widget>
+
     </layout>
 
   </extension>
