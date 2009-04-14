@@ -59,15 +59,18 @@ import org.nuxeo.runtime.test.TestRuntime;
  * @author Bogdan Stefanescu
  *
  */
-// We're declaring variables as HashMaps / ArrayLists so they can be Serializable
-@SuppressWarnings({"CollectionDeclaredAsConcreteClass"})
+// We're declaring variables as HashMaps / ArrayLists so they can be
+// Serializable
+@SuppressWarnings( { "CollectionDeclaredAsConcreteClass" })
 public class TestPropertyModel extends TestCase {
 
     protected RuntimeService runtime;
+
     protected Schema schema;
+
     protected DocumentPartImpl dp;
 
-    static <T> ArrayList<T> arrayList(T ... args) {
+    static <T> ArrayList<T> arrayList(T... args) {
         ArrayList<T> list = new ArrayList<T>(args.length);
         list.addAll(Arrays.asList(args));
         return list;
@@ -75,8 +78,10 @@ public class TestPropertyModel extends TestCase {
 
     private static class Name {
         String firstName;
+
         String lastName;
-        HashMap<String,Serializable> getMap() {
+
+        HashMap<String, Serializable> getMap() {
             HashMap<String, Serializable> map = new HashMap<String, Serializable>();
             map.put("lastName", lastName);
             map.put("firstName", firstName);
@@ -86,14 +91,17 @@ public class TestPropertyModel extends TestCase {
 
     private static class Author {
         Name name = new Name();
+
         Long age;
 
-        Author() {}
+        Author() {
+        }
+
         Author(long age) {
             this.age = age;
         }
 
-        HashMap<String,Serializable> getMap() {
+        HashMap<String, Serializable> getMap() {
             HashMap<String, Serializable> map = new HashMap<String, Serializable>();
             map.put("name", name.getMap());
             map.put("age", age);
@@ -103,10 +111,12 @@ public class TestPropertyModel extends TestCase {
 
     private class FileName implements Serializable {
         private static final long serialVersionUID = -3238719896844696496L;
+
         String name;
+
         String extension;
 
-        HashMap<String,Serializable> getMap() {
+        HashMap<String, Serializable> getMap() {
             HashMap<String, Serializable> map = new HashMap<String, Serializable>();
             map.put("name", name);
             map.put("extension", extension);
@@ -116,10 +126,12 @@ public class TestPropertyModel extends TestCase {
 
     private class BlobFile implements Serializable {
         private static final long serialVersionUID = 4486693420148155780L;
+
         final FileName fileName = new FileName();
+
         StringBlob blob;
 
-        HashMap<String,Serializable> getMap() {
+        HashMap<String, Serializable> getMap() {
             HashMap<String, Serializable> map = new HashMap<String, Serializable>();
             map.put("fileName", fileName.getMap());
             map.put("blob", blob);
@@ -130,14 +142,20 @@ public class TestPropertyModel extends TestCase {
     private class Book {
 
         private String title;
+
         private Calendar creationDate;
+
         private Long price;
+
         private String[] keywords;
+
         private ArrayList<String> references;
+
         private ArrayList<Author> authors;
+
         private BlobFile file;
 
-        HashMap<String,Serializable> getMap() {
+        HashMap<String, Serializable> getMap() {
             HashMap<String, Serializable> map = new HashMap<String, Serializable>();
             map.put("book:title", title);
             map.put("book:creationDate", creationDate);
@@ -148,11 +166,13 @@ public class TestPropertyModel extends TestCase {
             } else {
                 map.put("book:references", references);
             }
-            map.put("book:file", file != null ? file.getMap() : new HashMap<String,Serializable>());
+            map.put("book:file", file != null ? file.getMap()
+                    : new HashMap<String, Serializable>());
             if (authors == null) {
-                map.put("book:authors", new ArrayList<HashMap<String,Serializable>>());
+                map.put("book:authors",
+                        new ArrayList<HashMap<String, Serializable>>());
             } else {
-                ArrayList<HashMap<String,Serializable>> list = new ArrayList<HashMap<String,Serializable>>();
+                ArrayList<HashMap<String, Serializable>> list = new ArrayList<HashMap<String, Serializable>>();
                 for (Author author : authors) {
                     list.add(author.getMap());
                 }
@@ -169,15 +189,17 @@ public class TestPropertyModel extends TestCase {
         if (runtime != null) {
             Framework.shutdown();
             runtime = null; // be sure no runtime is intialized (this may happen
-                            // when some test crashes)
+            // when some test crashes)
         }
         runtime = new TestRuntime();
         Framework.initialize(runtime);
         SchemaManagerImpl mgr = new SchemaManagerImpl();
         XSDLoader loader = new XSDLoader(mgr);
-        schema = loader.loadSchema("test", "book", getResource("TestSchema.xsd"));
+        schema = loader.loadSchema("test", "book",
+                getResource("TestSchema.xsd"));
         dp = new DocumentPartImpl(schema);
-        // set a custom service provider to be able to lookup services without loading the framework
+        // set a custom service provider to be able to lookup services without
+        // loading the framework
         DefaultServiceProvider provider = new DefaultServiceProvider();
         provider.registerService(SchemaManager.class, mgr);
         DefaultServiceProvider.setProvider(provider);
@@ -240,7 +262,7 @@ public class TestPropertyModel extends TestCase {
             if (list1.size() != list2.size()) {
                 return false;
             }
-            for (int i=0; i<list1.size(); i++) {
+            for (int i = 0; i < list1.size(); i++) {
                 if (!valueEquals(list1.get(i), list2.get(i))) {
                     return false;
                 }
@@ -320,20 +342,23 @@ public class TestPropertyModel extends TestCase {
         // test raw values
         Map<String, Serializable> expected = new Book().getMap();
         expected.put("book:price", 111L);
-        assertTrue(valueEquals(expected,  dp.getValue()));
+        assertTrue(valueEquals(expected, dp.getValue()));
 
         // test resolve path
         prop = dp.resolvePath("title");
         assertEquals(prop, dp.get("title"));
         assertEquals(fileNameProp, dp.resolvePath("file/fileName"));
-        assertEquals(fileNameProp.get("name"), dp.resolvePath("file/fileName/name"));
+        assertEquals(fileNameProp.get("name"),
+                dp.resolvePath("file/fileName/name"));
         assertEquals(fileNameProp.get("name"), fileNameProp.resolvePath("name"));
-        assertEquals(fileNameProp.get("name"), fileNameProp.resolvePath("../fileName/name"));
+        assertEquals(fileNameProp.get("name"),
+                fileNameProp.resolvePath("../fileName/name"));
         assertEquals(dp, fileNameProp.resolvePath("../.."));
         assertEquals(dp.get("title"), fileNameProp.resolvePath("../../title"));
 
         // using prefixed names
-        assertEquals(fileNameProp.resolvePath("name/../extension"), dp.resolvePath("book:file/fileName/extension"));
+        assertEquals(fileNameProp.resolvePath("name/../extension"),
+                dp.resolvePath("book:file/fileName/extension"));
 
         // testing list access - for this we need a phantom property??
         assertEquals(keysProp, dp.resolvePath("book:keywords"));
@@ -387,8 +412,10 @@ public class TestPropertyModel extends TestCase {
         // test add(index)
         author.name.lastName = "Toto";
         dp.get("authors").add(0, author.getMap());
-        assertEquals("Toto", dp.resolvePath("authors/author[0]/name/lastName").getValue());
-        assertEquals("Tete", dp.resolvePath("authors/author[1]/name/lastName").getValue());
+        assertEquals("Toto",
+                dp.resolvePath("authors/author[0]/name/lastName").getValue());
+        assertEquals("Tete",
+                dp.resolvePath("authors/author[1]/name/lastName").getValue());
     }
 
     public void testReadOnlyValue() throws Exception {
@@ -427,7 +454,7 @@ public class TestPropertyModel extends TestCase {
         BlobFile file = new BlobFile();
         file.fileName.extension = "xml";
         book.file = file;
-        book.keywords = new String[] {"a", "b"};
+        book.keywords = new String[] { "a", "b" };
 
         dp.setValue(book.getMap());
 
@@ -439,7 +466,8 @@ public class TestPropertyModel extends TestCase {
     }
 
     /**
-     * Compatibility test - this should be removed when ListDiff will be no more used in nuxeo
+     * Compatibility test - this should be removed when ListDiff will be no more
+     * used in nuxeo
      */
     public void testListDiffCompatibility() throws Exception {
         Book book = new Book();
@@ -456,7 +484,7 @@ public class TestPropertyModel extends TestCase {
 
         ListDiff ld = new ListDiff();
         ld.add(new Author(6).getMap()); // 123456
-        ld.insert(4, new Author(7).getMap()); //1234756
+        ld.insert(4, new Author(7).getMap()); // 1234756
         ld.move(0, 1); // 2134756
         ld.remove(2); // 214756
 
@@ -478,7 +506,8 @@ public class TestPropertyModel extends TestCase {
     }
 
     /**
-     * Compatibility test - this should be removed when ListDiff will be no more used in nuxeo
+     * Compatibility test - this should be removed when ListDiff will be no more
+     * used in nuxeo
      */
     public void testListDiffCompatibilityForScalarList() throws Exception {
         ArrayList<String> references = arrayList("a", "b", "c", "d", "e");
@@ -509,24 +538,23 @@ public class TestPropertyModel extends TestCase {
         assertEquals(references, prop.getValue(List.class));
         assertEquals(references, prop.getValue());
 
-
         // FIXME: NXP-1994: New property model makes list properties return null
         // values instead of empty list
 
         // setting an empty list at initialization time should not give null at
         // fetching time
 
-//        ArrayList<String> emptyList = arrayList();
-//        dp.get("references").init(emptyList);
-//
-//        prop = dp.get("references");
-//        prop.setValue(emptyList);
-//
-//        assertEquals(emptyList, prop.getValue(List.class));
-//        assertEquals(emptyList, prop.getValue());
+        // ArrayList<String> emptyList = arrayList();
+        // dp.get("references").init(emptyList);
+        //
+        // prop = dp.get("references");
+        // prop.setValue(emptyList);
+        //
+        // assertEquals(emptyList, prop.getValue(List.class));
+        // assertEquals(emptyList, prop.getValue());
     }
 
-    public void testBlob()  throws Exception {
+    public void testBlob() throws Exception {
         Book book = new Book();
         BlobFile file = new BlobFile();
         file.fileName.extension = "xml";
@@ -546,16 +574,16 @@ public class TestPropertyModel extends TestCase {
         assertEquals(blob.getMimeType(), pblob.getValue("mime-type"));
 
         // TODO
-//        Map<String, Object> map = new HashMap<String, Object>();
-//        map.put("encoding", "LATIN2");
-//        map.put("mime-type", "test/plain");
-//        map.put("length", 123);
-//        map.put("data", new ByteArrayInputStream("abc".getBytes()));
-//        pblob.setValue(map);
-//        assertEquals("LATIN2", pblob.getValue("encoding"));
+        // Map<String, Object> map = new HashMap<String, Object>();
+        // map.put("encoding", "LATIN2");
+        // map.put("mime-type", "test/plain");
+        // map.put("length", 123);
+        // map.put("data", new ByteArrayInputStream("abc".getBytes()));
+        // pblob.setValue(map);
+        // assertEquals("LATIN2", pblob.getValue("encoding"));
     }
 
-    public void testSerialization()  throws Exception {
+    public void testSerialization() throws Exception {
         Book book = new Book();
         BlobFile file = new BlobFile();
         file.fileName.extension = "xml";
@@ -568,8 +596,8 @@ public class TestPropertyModel extends TestCase {
         ObjectOutputStream out = new ObjectOutputStream(baos);
         out.writeObject(dp);
 
-        ObjectInputStream in = new ObjectInputStream(
-                new ByteArrayInputStream(baos.toByteArray()));
+        ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(
+                baos.toByteArray()));
         DocumentPartImpl dp2 = (DocumentPartImpl) in.readObject();
 
         // blobs are equals only if they are the same object so we need
@@ -660,7 +688,7 @@ public class TestPropertyModel extends TestCase {
         BlobFile file = new BlobFile();
         file.fileName.extension = "xml";
         book.file = file;
-        book.keywords = new String[] {"a", "b"};
+        book.keywords = new String[] { "a", "b" };
         book.references = arrayList("a", "b");
 
         HashMap<String, Serializable> map = book.getMap();
@@ -711,7 +739,7 @@ public class TestPropertyModel extends TestCase {
         BlobFile file = new BlobFile();
         file.fileName.extension = "xml";
         book.file = file;
-        book.keywords = new String[] {"a", "b"};
+        book.keywords = new String[] { "a", "b" };
 
         HashMap<String, Serializable> map = book.getMap();
         // remove name so that it will be a phantom
@@ -730,28 +758,5 @@ public class TestPropertyModel extends TestCase {
 
         assertEquals(map, export);
     }
-
-//    public void testExportNV() throws Exception {
-//        DocumentPartImpl dp = new DocumentPartImpl(schema);
-//
-//        dp.setValue("author/pName/FirstName", "John");
-//        dp.setValue("price", 123);
-//        dp.setValue("title", "Export test");
-//
-//        double s = System.currentTimeMillis();
-//        Map<String, Serializable> map = dp.exportValues();
-//        double e = System.currentTimeMillis();
-//        System.out.println("#########no-visitor >>>> "+((e-s)/1000));
-//
-//        Map<String, Serializable> expected = new HashMap<String, Serializable>();
-//        HashMap<String, Serializable> map1 = new HashMap<String, Serializable>();
-//        HashMap<String, Serializable> map2 = new HashMap<String, Serializable>();
-//        map2.put("FirstName", "John");
-//        map1.put("pName", map2);
-//        expected.put("book:author", map1);
-//        expected.put("book:price", 123);
-//        expected.put("book:title", "Export test");
-//        assertEquals(expected, map);
-//    }
 
 }
