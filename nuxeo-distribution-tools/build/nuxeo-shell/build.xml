@@ -1,0 +1,20 @@
+<project name="nuxeo-shell" default="build"
+xmlns:artifact="urn:nuxeo-artifact" xmlns:nx="urn:nuxeo-build">
+  <import file="../config.xml" />
+  <target name="build" depends="configure">
+    <ant dir="../nuxeo-app-base" />
+    <copy todir="${stagedir}" overwrite="true">
+      <fileset dir="resources" />
+    </copy>
+    <copy todir="${stagedir}/bundles">
+      <artifact:file key="org.nuxeo.ecm.platform:nuxeo-platform-audit-api" />
+      <artifact:file key="org.nuxeo.ecm.platform:nuxeo-platform-search-api" />
+    </copy>
+    <zip destfile="${outdir}/nxserver.zip">
+      <zipfileset dir="${stagedir}" excludes="*.sh"
+      prefix="nxserver" />
+      <zipfileset dir="${stagedir}" includes="*.sh"
+      prefix="nxserver" filemode="777" />
+    </zip>
+  </target>
+</project>

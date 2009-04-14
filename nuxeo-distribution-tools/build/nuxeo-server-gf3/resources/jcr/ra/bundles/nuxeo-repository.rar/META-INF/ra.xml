@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<connector xmlns="http://java.sun.com/xml/ns/j2ee"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee
+                               http://java.sun.com/xml/ns/j2ee/connector_1_5.xsd"
+           version="1.5">
+
+	<description>NX Repository JCA Adapter</description>
+	<display-name>NX Repository JCA Adapter</display-name>
+	<vendor-name>Nuxeo.org</vendor-name>
+	<eis-type>NX Repository Adapter</eis-type>
+	<resourceadapter-version>1.0</resourceadapter-version>
+
+	<license>
+	  <description>CPL</description>
+	  <license-required>false</license-required>
+	</license>
+
+	<resourceadapter>
+		<resourceadapter-class>org.nuxeo.ecm.core.jca.JCAResourceAdapter</resourceadapter-class>
+
+    <outbound-resourceadapter>
+            <connection-definition>
+        <managedconnectionfactory-class>org.nuxeo.ecm.core.jca.JCAManagedConnectionFactory</managedconnectionfactory-class>
+        <connectionfactory-interface>org.nuxeo.ecm.core.model.Repository</connectionfactory-interface>
+        <connectionfactory-impl-class>org.nuxeo.ecm.core.jca.JCAConnectionFactory</connectionfactory-impl-class>
+        <connection-interface>org.nuxeo.ecm.core.model.Session</connection-interface>
+        <connection-impl-class>org.nuxeo.ecm.core.jca.JCAConnection</connection-impl-class>    
+    </connection-definition>
+    <transaction-support>XATransaction</transaction-support>
+
+        <config-property>
+            <config-property-name>Name</config-property-name>
+            <config-property-type>java.lang.String</config-property-type>
+        </config-property>
+        <config-property>
+            <config-property-name>RepositoryFactory</config-property-name>
+            <config-property-type>java.lang.String</config-property-type>
+        </config-property>
+        <config-property>
+            <config-property-name>HomeDir</config-property-name>
+            <config-property-type>java.lang.String</config-property-type>
+        </config-property>
+        <config-property>
+            <config-property-name>ConfigFile</config-property-name>
+            <config-property-type>java.lang.String</config-property-type>
+        </config-property>
+
+    </outbound-resourceadapter>
+
+	</resourceadapter>
+
+</connector>
+
+
+
+
