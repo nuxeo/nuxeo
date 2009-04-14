@@ -59,12 +59,17 @@ import com.sun.faces.util.MessageFactory;
 public class UIInputFile extends UIInput implements NamingContainer {
 
     public static final String COMPONENT_TYPE = UIInputFile.class.getName();
+
     public static final String COMPONENT_FAMILY = "javax.faces.Input";
 
     private static final String CHOICE_FACET_NAME = "choice";
+
     private static final String UPLOAD_FACET_NAME = "upload";
+
     private static final String DEFAULT_DOWNLOAD_FACET_NAME = "default_download";
+
     private static final String DOWNLOAD_FACET_NAME = "download";
+
     private static final String EDIT_FILENAME_FACET_NAME = "edit_filename";
 
     private static final Log log = LogFactory.getLog(UIInputFile.class);
@@ -539,7 +544,7 @@ public class UIInputFile extends UIInput implements NamingContainer {
         writer.writeAttribute("class", getAttributes().get("styleClass"), null);
         writer.writeAttribute("border", "0", null);
         for (InputFileChoice radioChoice : choices) {
-            String id = context.getViewRoot().createUniqueId();
+            String id = radioClientId + radioChoice.name();
             writer.startElement("tr", this);
             writer.startElement("td", this);
             writer.writeAttribute("class", "radioColumn", null);
