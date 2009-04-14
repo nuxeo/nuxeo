@@ -33,8 +33,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import junit.framework.TestCase;
-
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.ReadOnlyPropertyException;
@@ -50,9 +48,8 @@ import org.nuxeo.ecm.core.schema.SchemaManagerImpl;
 import org.nuxeo.ecm.core.schema.XSDLoader;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.runtime.RuntimeService;
-import org.nuxeo.runtime.api.DefaultServiceProvider;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.TestRuntime;
+import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
  *
@@ -62,7 +59,7 @@ import org.nuxeo.runtime.test.TestRuntime;
 // We're declaring variables as HashMaps / ArrayLists so they can be
 // Serializable
 @SuppressWarnings( { "CollectionDeclaredAsConcreteClass" })
-public class TestPropertyModel extends TestCase {
+public class TestPropertyModel extends NXRuntimeTestCase {
 
     protected RuntimeService runtime;
 
@@ -183,32 +180,17 @@ public class TestPropertyModel extends TestCase {
     }
 
     @Override
-    protected void setUp() throws Exception {
-        // Duplicated from NXRuntimeTestCase
-        runtime = Framework.getRuntime();
-        if (runtime != null) {
-            Framework.shutdown();
-            runtime = null; // be sure no runtime is intialized (this may happen
-            // when some test crashes)
-        }
-        runtime = new TestRuntime();
-        Framework.initialize(runtime);
-        SchemaManagerImpl mgr = new SchemaManagerImpl();
-        XSDLoader loader = new XSDLoader(mgr);
-        schema = loader.loadSchema("test", "book",
-                getResource("TestSchema.xsd"));
+    public void setUp() throws Exception {
+        super.setUp();
+        deployBundle("org.nuxeo.ecm.core.schema");
+        deployContrib("org.nuxeo.ecm.core.api.tests",
+                "OSGI-INF/test-propmodel-types-contrib.xml");
+        SchemaManager mgr = Framework.getService(SchemaManager.class);
+//        XSDLoader loader = new XSDLoader((SchemaManagerImpl) mgr);
+//         schema = loader.loadSchema("test", "book",
+//         getResource("TestSchema.xsd"));
+        schema = mgr.getSchema("test");
         dp = new DocumentPartImpl(schema);
-        // set a custom service provider to be able to lookup services without
-        // loading the framework
-        DefaultServiceProvider provider = new DefaultServiceProvider();
-        provider.registerService(SchemaManager.class, mgr);
-        DefaultServiceProvider.setProvider(provider);
-    }
-
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-        Framework.shutdown();
     }
 
     @SuppressWarnings("unchecked")

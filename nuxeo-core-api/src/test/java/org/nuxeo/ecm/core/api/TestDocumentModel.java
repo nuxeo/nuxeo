@@ -19,11 +19,16 @@
 
 package org.nuxeo.ecm.core.api;
 
-import junit.framework.TestCase;
-
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
+import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
-public class TestDocumentModel extends TestCase {
+public class TestDocumentModel extends NXRuntimeTestCase {
+
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        deployBundle("org.nuxeo.ecm.core.schema");
+    }
 
     @SuppressWarnings({"ObjectEqualsNull", "SimplifiableJUnitAssertion"})
     public void testDocumentModelImpl() throws Exception {
