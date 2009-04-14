@@ -76,7 +76,7 @@ public class ArtifactSetParser {
                 int p = line.lastIndexOf('?');
                 if (p > -1) {
                     List<String> profiles = split(line.substring(p+1), ',');
-                    if (!profileMgr.areProfilesActive(profiles)) {
+                    if (!profileMgr.isAnyProfileActive(profiles)) {
                         line = reader.readLine();
                         continue;                        
                     }

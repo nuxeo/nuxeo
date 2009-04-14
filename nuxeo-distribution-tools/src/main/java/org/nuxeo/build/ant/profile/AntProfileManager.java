@@ -59,13 +59,13 @@ public class AntProfileManager {
         return false;
     }
 
-    public boolean areProfilesActive(List<String> profileNames) {
+    public boolean isAnyProfileActive(List<String> profileNames) {
         for (String profileName : profileNames) {
-            if (!isProfileActive(profileName)) {
-                return false;
+            if (isProfileActive(profileName)) {
+                return true;
             }
         }
-        return true;
+        return false;
     }
     
     public void activateProfile(String profile, boolean isActive) {
