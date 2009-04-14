@@ -20,7 +20,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.apache.tools.ant.Project;
 import org.nuxeo.build.ant.profile.AntProfileManager;
@@ -73,10 +75,10 @@ public class ArtifactSetParser {
             } else {
                 int p = line.lastIndexOf('?');
                 if (p > -1) {
-                    String profile = line.substring(p+1);
-                    if (!profileMgr.isProfileActive(profile)) {
+                    List<String> profiles = split(line.substring(p+1), ',');
+                    if (!profileMgr.areProfilesActive(profiles)) {
                         line = reader.readLine();
-                        continue;
+                        continue;                        
                     }
                     line = line.substring(0, p);                     
                 }
@@ -103,6 +105,24 @@ public class ArtifactSetParser {
             line = reader.readLine();
         }
         return null;
+    }
+
+    
+    protected List<String> split(String text, char ch) {
+        ArrayList<String> result = new ArrayList<String>();
+        int p = 0;
+        int q = text.indexOf(ch, p);
+        while (q > -1) {
+            result.add(text.substring(p, q).trim());
+            p = q+1;
+            q = text.indexOf(ch, p);
+        }
+        if (p == 0) {
+            result.add(text.trim());
+        } else {
+            result.add(text.substring(p).trim());
+        }
+        return result;
     }
 
 }

@@ -1,5 +1,4 @@
-<project name="nuxeo-assembly" default="build"
-xmlns:nx="urn:nuxeo-build">
+<project name="nuxeo-assembly" default="build" xmlns:nx="urn:nuxeo-build" xmlns:artifact="urn:nuxeo-artifact">
   <property name="outdir" value="${basedir}/target" />
   <import file="config.xml" />
   <target name="build" depends="configure">
@@ -30,4 +29,9 @@ xmlns:nx="urn:nuxeo-build">
       <ant dir="${basedir}/nuxeo-server-base" target="build" />
     </nx:profile>
   </target>
+  <!--target name="test" depends="configure">
+    <copy todir="target/test">
+	<artifact:set src="test.xml"/>
+    </copy>
+  </target-->
 </project>

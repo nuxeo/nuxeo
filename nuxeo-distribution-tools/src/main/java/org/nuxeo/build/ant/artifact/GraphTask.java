@@ -40,7 +40,7 @@ public class GraphTask extends Task {
 
     protected List<ArtifactKey> selects;
     protected List<ArtifactKey> resolves;
-    protected String importFile;
+    protected String src;
     protected Expand expand;
 
     
@@ -58,8 +58,8 @@ public class GraphTask extends Task {
         selects.add(new ArtifactKey(select));
     }
     
-    public void setImport(String file) {
-        this.importFile = file;
+    public void setSrc(String file) {
+        this.src = file;
     }
 
     public void addExpand(Expand expand) {
@@ -83,19 +83,20 @@ public class GraphTask extends Task {
     @Override
     public void execute() throws BuildException {
         MavenClient maven = MavenClient.getInstance();
-        if (importFile != null) {
+        if (src != null) {
             if (resolves == null) {
                 resolves = new ArrayList<ArtifactKey>();
             }
             try {
-                BufferedReader reader = new BufferedReader(new FileReader(importFile));
+                BufferedReader reader = new BufferedReader(new FileReader(src));
                 String line = reader.readLine();
                 while (line != null) {
+                    line = getProject().replaceProperties(line.trim());                    
                     resolves.add(new ArtifactKey(line));
                     line = reader.readLine();
                 }            
             } catch (IOException e) {
-                throw new BuildException("Failed to import file: "+importFile, e);
+                throw new BuildException("Failed to import file: "+src, e);
             }
         }
         if (resolves != null) {

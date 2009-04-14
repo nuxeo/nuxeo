@@ -17,6 +17,7 @@
 package org.nuxeo.build;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import org.nuxeo.build.ant.AntClient;
 import org.nuxeo.build.maven.MavenClient;
@@ -35,21 +36,17 @@ public class Main {
 
         AntClient ant = new AntClient();
         
+        ArrayList<String> targets = new ArrayList<String>();
         String profiles = null;
         File buildFile = null;
-        if (args.length == 0) {
-           buildFile = new File("build.xml"); 
-        } else if (args[0].equals("-f")) {
-            if (args.length == 1) {
-                System.err.println("Syntac Error. Usage: ...");
-                System.exit(1);
+        for (int i=0; i<args.length; i++) {
+            if (args[i].startsWith("-f")) {
+                buildFile = new File(args[i].substring(2));
+            } else if (args[i].startsWith("-p")) {
+                profiles = args[i].substring(2);
+            } else {
+                targets.add(args[i]);
             }
-            buildFile = new File(args[1]);
-            if (args.length > 2) {
-                profiles = args[2];
-            }
-        } else {
-            profiles = args[0];
         }
         if (profiles != null) {
             MavenClient.getInstance().getAntProfileManager().activateProfiles(profiles);
@@ -61,7 +58,11 @@ public class Main {
         
         buildFile = buildFile.getCanonicalFile();
         
-        ant.run(buildFile);
+        if (targets.isEmpty()) {
+            ant.run(buildFile);    
+        } else {
+            ant.run(buildFile, targets);
+        }
         
     }
     
