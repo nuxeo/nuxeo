@@ -24,7 +24,7 @@ import org.nuxeo.ecm.core.event.impl.EventBundleImpl;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class TestEventBundle extends EventBundleImpl {
+public class FakeEventBundle extends EventBundleImpl {
 
     private static final long serialVersionUID = 1L;
 

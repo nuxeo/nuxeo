@@ -2370,6 +2370,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals("File", docModel.getType());
     }
 
+    @SuppressWarnings({"unchecked"})
     public void testCopyContent() throws ClientException {
         DocumentModel root = session.getRootDocument();
         DocumentModel doc = new DocumentModelImpl(root.getPathAsString(),

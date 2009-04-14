@@ -44,8 +44,6 @@
     <module>nuxeo-core-convert-plugins</module>
     <module>nuxeo-core-event</module>
     <module>nuxeo-core-event-jms</module>
-    <!-- NXP-3179 - DEPRECATED to be deleted -->
-    <module>nuxeo-core-event-compat</module>
   </modules>
 
   <profiles>
@@ -230,7 +228,7 @@
         <version>${jackrabbit.version}</version>
         <scope>provided</scope>
       </dependency>
-
+      
       <!-- scope: test -->
       <dependency>
         <groupId>org.nuxeo.runtime</groupId>

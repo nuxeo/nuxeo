@@ -169,19 +169,23 @@ public class EventListenerTest extends NXRuntimeTestCase {
             }
         }
 
-        TestEventBundle event = new TestEventBundle();
+        FakeEventBundle event = new FakeEventBundle();
         assertFalse(event.hasRemoteSource());
+
         // change the vmid of the event as it was created on another machine
         event.setVMID(vmid2);
         assertTrue(event.hasRemoteSource());
+
         // serialize the event as it was sent from vmid2 to vmid1
-        event = (TestEventBundle)serialize(event);
+        event = (FakeEventBundle) serialize(event);
         // now test the event - it should be marked as remote
         assertTrue(event.hasRemoteSource());
         // redo the test but with a non remote event
-        event = new TestEventBundle();
+
+        event = new FakeEventBundle();
         assertFalse(event.hasRemoteSource());
-        event = (TestEventBundle)serialize(event);
+
+        event = (FakeEventBundle) serialize(event);
         // now test the event - it should be marked as local
         assertFalse(event.hasRemoteSource());
     }

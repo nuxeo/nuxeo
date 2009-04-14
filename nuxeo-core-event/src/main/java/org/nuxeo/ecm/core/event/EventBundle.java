@@ -30,7 +30,6 @@ import java.rmi.dgc.VMID;
  * events marked as inline or for duplicate events.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface EventBundle extends Iterable<Event>, Serializable {
 
