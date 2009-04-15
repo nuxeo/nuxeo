@@ -2,9 +2,12 @@
 NXThemesWebWidgets.uploaders = new Hash();
 
 NXThemesWebWidgets.addWidget = function(info) {
-    var widgetName = info.source.getAttribute('typename');
     var provider = info.target.getAttribute('provider');
     var region = info.target.getAttribute('region');
+    if (!provider || !region) {
+    	return;
+    }
+    var widgetName = info.source.getAttribute('typename');
     var order = info.order;
     var url = nxthemesBasePath + "/nxthemes-webwidgets/add_widget";
     new Ajax.Request(url, {
