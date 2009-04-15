@@ -93,6 +93,7 @@ xmlns:artifact="urn:nuxeo-artifact" xmlns:nx="urn:nuxeo-build">
       </copy>
     </nx:profile>
     <copy todir="${stagedir}/lib">
+      <artifact:file key="javax.mail:mail" />
       <artifact:file key="commons-beanutils:commons-beanutils" />
       <artifact:file key="commons-io:commons-io" />
       <artifact:file key="commons-fileupload:commons-fileupload" />
