@@ -258,7 +258,7 @@ public class Editor {
         }
         if (!ok) {
             throw new ThemeIOException(
-                    "None of the existing themes can be overwritten.");
+                    "None of the existing themes can be saved.");
         }
     }
 
