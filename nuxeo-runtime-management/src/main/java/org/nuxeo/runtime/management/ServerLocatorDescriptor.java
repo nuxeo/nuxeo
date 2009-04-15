@@ -16,8 +16,11 @@
  */
 package org.nuxeo.runtime.management;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author matic
@@ -26,41 +29,44 @@ import org.nuxeo.common.xmap.annotation.XObject;
 @XObject("locator")
 public class ServerLocatorDescriptor {
 
+    private static final Log log = LogFactory.getLog(ServerLocatorDescriptor.class);
+    
+    @XNode("@default")
+    protected boolean isDefault = true;
+
+    protected boolean isExisting = true;
+    
+    protected int rmiPort = 1099;
+    
     @XNode("@domain")
     protected String domainName;
-
-    @XNode("@default")
-    protected boolean isDefaultServer = true;
-
-    @XNode("@exist")
-    protected boolean isExistingServer = true;
-
-    @XNode("@rmiPort")
-    protected int rmiPort = 1099;
-
+    
     public ServerLocatorDescriptor() {
-        domainName = "";
+        this.domainName = "";
     }
 
     public ServerLocatorDescriptor(String domainName, boolean isDefaultServer) {
         this.domainName = domainName;
-        this.isDefaultServer = isDefaultServer;
+        this.isDefault = isDefaultServer;
     }
 
-    public String getDomainName() {
-        return domainName;
+    @XNode("@exist")
+    public void setExisting(String value) {
+        String expandedValue = Framework.expandVars(value);
+        if (expandedValue.startsWith("$")) {
+            log.warn("Cannot expand " + value + " for existing server");
+            return;
+        }
+        isExisting = Boolean.parseBoolean(expandedValue);
     }
-
-    public boolean isDefaultServer() {
-        return isDefaultServer;
+   
+    @XNode("@rmiPort")
+    public void setRmiPort(String value) {
+        String expandedValue = Framework.expandVars(value);
+        if (expandedValue.startsWith("$")) {
+            log.warn("Cannot expand " + value + " for server locator");
+            return;
+        }
+        rmiPort = Integer.parseInt(expandedValue);
     }
-
-    public boolean isExistingServer() {
-        return isExistingServer;
-    }
-
-    public int getRmiPort() {
-        return rmiPort;
-    }
-
 }

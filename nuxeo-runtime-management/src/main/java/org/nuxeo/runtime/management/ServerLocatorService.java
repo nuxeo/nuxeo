@@ -32,6 +32,8 @@ import javax.management.ObjectName;
 import javax.management.remote.JMXServiceURL;
 import javax.management.remote.rmi.RMIConnectorServer;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -40,7 +42,10 @@ public class ServerLocatorService extends DefaultComponent implements
 
     public static final String LOCATORS_EXT_KEY = "locators";
 
-    protected final Map<String, MBeanServer> otherServers = new HashMap<String, MBeanServer>();
+    @SuppressWarnings("unused")
+    private static final Log log = LogFactory.getLog(ServerLocatorService.class);
+
+    protected Map<String, MBeanServer> otherServers = new HashMap<String, MBeanServer>();
 
     protected MBeanServer defaultServer = ManagementFactory.getPlatformMBeanServer();
 
@@ -65,10 +70,10 @@ public class ServerLocatorService extends DefaultComponent implements
     }
 
     protected void doRegisterLocator(ServerLocatorDescriptor descriptor) {
-        MBeanServer server = descriptor.isExistingServer() ? doFindServer(descriptor)
+        MBeanServer server = descriptor.isExisting  ? doFindServer(descriptor)
                 : doCreateServer(descriptor);
         otherServers.put(descriptor.domainName, server);
-        if (descriptor.isDefaultServer) {
+        if (descriptor.isDefault) {
             defaultServer = server;
         }
     }
@@ -143,7 +148,7 @@ public class ServerLocatorService extends DefaultComponent implements
 
     protected void doUnregisterLocator(ServerLocatorDescriptor descriptor) {
         otherServers.remove(descriptor.domainName);
-        if (descriptor.isDefaultServer) {
+        if (descriptor.isDefault) {
             defaultServer = ManagementFactory.getPlatformMBeanServer();
         }
     }
