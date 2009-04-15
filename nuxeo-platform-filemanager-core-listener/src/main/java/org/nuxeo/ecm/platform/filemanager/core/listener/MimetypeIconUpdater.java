@@ -51,9 +51,9 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class MimetypeIconUpdater implements EventListener {
 
-    public static final String ICON_FIELD = "common:/icon";
+    public static final String ICON_FIELD = "/common:icon";
 
-    public static final String MAIN_BLOB_FIELD = "file:/content";
+    public static final String MAIN_BLOB_FIELD = "/file:content";
 
     @Deprecated
     // the length of the main blob is now stored inside the blob itself
@@ -126,8 +126,12 @@ public class MimetypeIconUpdater implements EventListener {
     public static void updateBlobProperty(DocumentModel doc,
             MimetypeRegistry mimetypeService, Property dirtyProperty)
             throws Exception {
-        String fieldPath = String.format("%s:%s", dirtyProperty.getSchema()
-                .getName(), dirtyProperty.getPath());
+    	String fieldPath = dirtyProperty.getPath();
+    	//cas shema without prefix : we need to add shema name as prefix
+    	if(!fieldPath.contains(":"))
+    		fieldPath = "/"+dirtyProperty.getSchema().getName()+":"+fieldPath.substring(1);
+
+
         Blob blob = dirtyProperty.getValue(Blob.class);
         if (blob != null) {
             // update the mimetype using the the mimetype registry
