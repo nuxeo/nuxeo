@@ -30,7 +30,7 @@ import org.nuxeo.runtime.model.ComponentName;
  */
 public class ObjectNameFactory {
 
-    public static final String NUXEO_DOMAIN_NAME = "nx";
+    public static final String NUXEO_DOMAIN_NAME = "org.nuxeo";
 
     private ObjectNameFactory() {
     }
