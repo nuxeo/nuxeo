@@ -49,6 +49,7 @@ import org.jboss.resteasy.specimpl.UriInfoImpl;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.util.threadpool.ThreadPoolFullException;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.session.UserSession;
@@ -146,6 +147,9 @@ public class WebEngineServlet extends HttpServlet {
             } finally {
                 ResteasyProviderFactory.clearContextData();
             }
+        } catch (Throwable t) { 
+            t.printStackTrace();
+            response.sendError(500);
         }
         finally {
             ResteasyProviderFactory defaultInstance = ResteasyProviderFactory.getInstance();

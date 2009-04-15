@@ -18,6 +18,8 @@ package org.nuxeo.ecm.webengine.cmis;
 
 import java.util.Map;
 
+import javax.ws.rs.Consumes;
+
 import org.apache.abdera.protocol.server.TargetType;
 import org.apache.chemistry.atompub.CMIS;
 import org.apache.chemistry.repository.Repository;
@@ -44,6 +46,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  */
 @WebObject(type="cmis")
+@Consumes({"application/atom+xml;type=entry", "*/*"})
 public class CMISServiceResource extends ServiceResource {
 
     private static ServiceInfo info = null;
@@ -117,7 +120,7 @@ public class CMISServiceResource extends ServiceResource {
         } else if (type == TargetType.TYPE_COLLECTION) {                    
             String rtype = args.get(CMISCollection.RESOURCE_TYPE);
             String rid = args.get(CMISCollection.RESOURCE_ID);
-            Resource rs = ctx.head().getNext(); // get the repository resource
+            Resource rs = ctx.head().getNext().getNext(); // get the repository resource
             StringBuilder result = ctx.getServerURL().append(rs.getPath()).append("/").append(rtype);
             if (rid != null) {
                 result.append("/").append(rid);
@@ -130,22 +133,22 @@ public class CMISServiceResource extends ServiceResource {
     }
 
     public static String urlForObject(WebContext ctx, String id) {
-        Resource rs = ctx.head().getNext(); // get the repository resource
+        Resource rs = ctx.head().getNext().getNext(); // get the repository resource
         return ctx.getServerURL().append(rs.getPath()).append("/objects/").append(id).toString();
     }
 
     public static String urlForType(WebContext ctx, String id) {
-        Resource rs = ctx.head().getNext(); // get the repository resource
+        Resource rs = ctx.head().getNext().getNext(); // get the repository resource
         return ctx.getServerURL().append(rs.getPath()).append("/types/").append(id).toString();
     }
 
     public static String urlForFile(WebContext ctx, String id) {
-        Resource rs = ctx.head().getNext(); // get the repository resource
+        Resource rs = ctx.head().getNext().getNext(); // get the repository resource
         return ctx.getServerURL().append(rs.getPath()).append("/files/").append(id).toString();
     }
 
     public static String urlForService(WebContext ctx, String id) {
-        Resource rs = ctx.head().getNext(); // get the repository resource
+        Resource rs = ctx.head().getNext().getNext(); // get the repository resource
         return ctx.getServerURL().append(rs.getPath()).append("/services/").append(id).toString();
     }
 

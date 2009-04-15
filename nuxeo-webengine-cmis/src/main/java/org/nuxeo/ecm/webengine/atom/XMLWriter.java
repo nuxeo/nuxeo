@@ -47,6 +47,8 @@ import org.apache.chemistry.atompub.CMIS;
 /**
  * This file contains code from org.apache.commons.betwixt.XMLUtils
  *  
+ *  TODO better handle encoding and writer ...
+ *  
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
@@ -58,9 +60,12 @@ public class XMLWriter {
     protected Writer writer;    
     protected String crlf;
     protected boolean emitHeader = true;
+    protected String encoding;
     
+    protected ArrayList<String> globalNsMap;
     protected Element element; //current element
     protected int depth = -1;
+
     
     public XMLWriter(Writer writer) {
         this (writer, 0);
@@ -76,6 +81,36 @@ public class XMLWriter {
         this.crlf = crlf;
     }
     
+    public void setEncoding(String encoding) {
+        this.encoding = encoding;
+    }
+    
+    public String getEncoding() {
+        return encoding;
+    }
+    
+    public void putXmlns(String uri) {
+        putXmlns("", uri);
+    }
+    public void putXmlns(String prefix, String uri) {
+        if (globalNsMap == null) {
+            globalNsMap = new ArrayList<String>();
+        }
+        globalNsMap.add(uri);
+        globalNsMap.add(prefix);
+    }
+    
+    public String getXmlNs(String uri) {
+        if (globalNsMap != null) {
+            for (int i=0,len=globalNsMap.size(); i<len; i+=2) {
+                if (uri.equals(globalNsMap.get(i))) {
+                    return globalNsMap.get(i+1);
+                }
+            }
+        }
+        return null;
+    }
+
     public void setIndent(int indent) {
 		this.indent = indent;
 	}
@@ -142,9 +177,25 @@ public class XMLWriter {
             pop();
             writer.write("/>");            
         }        
-        push(name); // push myself to the stack
         indent("<");
         writer.write(name);
+        if (element == null) { // the first element - write any global ns
+            if (globalNsMap != null) {
+                for (int i=0,len=globalNsMap.size(); i<len; i+=2) {
+                    String prefix = globalNsMap.get(i+1);
+                    String uri = globalNsMap.get(i);
+                    writer.write(" xmlns");
+                    if (prefix != null  && prefix.length() > 0) {
+                        writer.write(":");
+                        writer.write(prefix);
+                    }
+                    writer.write("=\"");
+                    writer.write(uri);
+                    writer.write("\"");
+                }
+            }
+        }
+        push(name); // push myself to the stack
         return this;
     }    
 
@@ -152,7 +203,11 @@ public class XMLWriter {
         depth++;
         if (element == null) { // the root
             if (emitHeader) {
-                writer.write("<?xml version=\"1.0\"?>");
+                if (encoding != null) {
+                    writer.write("<?xml version=\"1.0\" encoding="+encoding+"?>");
+                } else {
+                    writer.write("<?xml version=\"1.0\"?>");
+                }
                 writer.write(crlf);
             }            
         } else {
@@ -197,7 +252,7 @@ public class XMLWriter {
     public XMLWriter content(boolean value) throws IOException {
         return content(value ? "true" : "false");
     }
-
+    
     public XMLWriter text(String text) throws IOException {
         indent(text);
         return this;
@@ -287,20 +342,24 @@ public class XMLWriter {
         return attr(name, value.toString());
     }
     
-    
-    
     public String resolve(QName name) {
-        if (element != null) {
-            String prefix = element.getXmlNs(name.getNamespaceURI());
+        String prefix = null;
+        String uri = name.getNamespaceURI();
+        if (element != null) {            
+            prefix = element.getXmlNs(uri);
             if (prefix == null) {
-                return name.toString();
+                prefix = getXmlNs(uri);
             }
-            if (prefix.length() == 0) {
-                return name.getLocalPart();
-            }
-            return prefix+":"+name.getLocalPart();
+        } else {
+            prefix = getXmlNs(uri);
+        }        
+        if (prefix == null) {   
+            return name.toString();
         }
-        return name.toString();
+        if (prefix.length() == 0) {
+            return name.getLocalPart();
+        }
+        return prefix+":"+name.getLocalPart();
     }
     
     public XMLWriter element(QName name) throws IOException {

@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.webengine.cmis;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.HEAD;
@@ -63,11 +64,18 @@ public class ObjectResource extends DefaultObject {
     }
 
     @PUT
+    @Consumes("application/atom+xml;type=entry")
     public Response doPut() {
         return AbderaService.putEntry(ctx, getCollectionAdapter());
     }
 
-    @PUT
+    @POST
+    @Consumes("application/atom+xml;type=entry")
+    public Response doPost() {     
+        return AbderaService.postEntry(ctx, getCollectionAdapter());
+    }
+    
+    @DELETE    
     public Response doDelete() {
         return AbderaService.deleteEntry(ctx, getCollectionAdapter());
     }

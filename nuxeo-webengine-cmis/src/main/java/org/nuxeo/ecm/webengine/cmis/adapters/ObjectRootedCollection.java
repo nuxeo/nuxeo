@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.abdera.Abdera;
 import org.apache.abdera.factory.Factory;
 import org.apache.abdera.i18n.iri.IRI;
 import org.apache.abdera.model.Document;
@@ -147,6 +148,23 @@ public abstract class ObjectRootedCollection extends CMISCollection<ObjectEntry>
         return rc;
     }
     
+        
+    public Entry buildEntry(ObjectEntry entryObj, RequestContext request) throws ResponseContextException {        
+        IRI feedIri = new IRI(getFeedIriForEntry(entryObj, request));
+        Abdera abdera = request.getAbdera();
+        Factory factory = abdera.getFactory();
+        Entry entry = factory.newEntry();
+        addEntryDetails(request, entry, feedIri, entryObj);
+
+        if (isMediaEntry(entryObj)) {
+          addMediaContent(feedIri, entry, entryObj, request);
+        } else {
+          addContent(entry, entryObj, request);
+        }
+
+        return entry;
+    }
+
     @Override
     protected String addEntryDetails(RequestContext request, Entry entry,
             IRI feedIri, ObjectEntry object) throws ResponseContextException {
