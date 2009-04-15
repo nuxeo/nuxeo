@@ -100,9 +100,10 @@ function InputContextKeeper() {
 				_this.remove(_this.getKeeper(),index);
 				for ( var i = 0; i < _this.getKeeper().length; i++) {
 					_this.getKeeper()[i].id = _this.rebuildIdIndex(_this.getKeeper()[i].id, i);
+					_this.getKeeper()[i].name = _this.rebuildIdIndex(_this.getKeeper()[i].name, i);
 				}
 
-				_this.replaceAllInputs();
+				//_this.replaceAllInputs();
 			}
 		} catch (e) {
 			alert(e);
@@ -122,6 +123,7 @@ function InputContextKeeper() {
 				var inputInKeeper = _this.getInputFromKeeper(index);
 
 				if (inputInKeeper != null) {
+					inputInKeeper.onclick = allInputs[i].onclick;
 					parent.removeChild(allInputs[i]);
 					parent.appendChild(inputInKeeper);
 					index++;
