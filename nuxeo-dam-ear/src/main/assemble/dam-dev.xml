@@ -46,7 +46,8 @@
       <artifact name="nuxeo-platform-ear" />
       <artifact name="nuxeo-apt-extensions" />
 
-      <artifact group="org.nuxeo.dam" />
+      <artifact name="nuxeo-dam-webapp" />
+      <artifact name="nuxeo-dam-webapp-core" />
     </excludes>
   </artifactSet>
 
@@ -124,24 +125,6 @@
     </artifacts>
   </artifactSet>
 
-  <!-- CUSTOMER ARTIFACTS -->
-  <assemble>
-    <outputFile>plugins</outputFile>
-    <set>dam-plugins</set>
-  </assemble>
-  <artifactSet id="dam-plugins">
-    <import>**</import>
-    <includeDependencies>false</includeDependencies>
-    <includes>
-      <artifact group="org.nuxeo.dam" />
-    </includes>
-    <excludes>
-      <artifact name="nuxeo-dam-webapp" />
-      <artifact name="nuxeo-dam-webapp-core" />
-    </excludes>
-  </artifactSet>
-
-  <!-- CUSTOMER RESOURCES -->
   <assemble>
     <outputFile>/</outputFile>
     <set>dam-common-resources</set>

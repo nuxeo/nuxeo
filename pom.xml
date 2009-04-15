@@ -19,13 +19,12 @@
   <version>1.0-SNAPSHOT</version>
 
   <modules>
-    <module>nuxeo-dam-webapp-core</module>
-    <module>nuxeo-dam-webapp</module>
     <module>nuxeo-dam-api</module>
     <module>nuxeo-dam-core</module>
     <module>nuxeo-dam-facade</module>
-    <module>nuxeo-dam-web</module>
     <module>nuxeo-dam-test</module>
+    <module>nuxeo-dam-webapp-core</module>
+    <module>nuxeo-dam-webapp</module>
     <module>nuxeo-dam-ear</module>
   </modules>
 
@@ -35,16 +34,6 @@
 
   <dependencyManagement>
     <dependencies>
-      <dependency>
-        <groupId>org.nuxeo.dam</groupId>
-        <artifactId>nuxeo-dam-webapp-core</artifactId>
-        <version>${nuxeo.dam.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.dam</groupId>
-        <artifactId>nuxeo-dam-webapp</artifactId>
-        <version>${nuxeo.dam.version}</version>
-      </dependency>
       <dependency>
         <groupId>org.nuxeo.dam</groupId>
         <artifactId>nuxeo-dam-api</artifactId>
@@ -62,14 +51,19 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.dam</groupId>
-        <artifactId>nuxeo-dam-web</artifactId>
+        <artifactId>nuxeo-dam-test</artifactId>
+        <version>${nuxeo.dam.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.dam</groupId>
+        <artifactId>nuxeo-dam-webapp-core</artifactId>
         <version>${nuxeo.dam.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.dam</groupId>
-        <artifactId>nuxeo-dam-test</artifactId>
+        <artifactId>nuxeo-dam-webapp</artifactId>
         <version>${nuxeo.dam.version}</version>
-        <scope>test</scope>
       </dependency>
     </dependencies>
   </dependencyManagement>
