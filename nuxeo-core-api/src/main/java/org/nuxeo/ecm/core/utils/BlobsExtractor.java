@@ -124,6 +124,7 @@ public class BlobsExtractor {
                 ComplexType ctype = (ComplexType) type;
                 if (type.getName().equals(TypeConstants.CONTENT)) {
                     blobFields.add(field);
+                    interestingTypes.add(type);
                     interesting = true;
                 } else {
                     interesting |= findInteresting(ctype);

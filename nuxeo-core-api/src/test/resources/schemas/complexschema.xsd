@@ -5,6 +5,8 @@
   targetNamespace="http://www.nuxeo.org/ecm/schemas/ComplexSchema"
   >
 
+  <xs:include schemaLocation="core-types.xsd" />
+
   <xs:element name="attachedFile" type="nxs:fileext" />
 
   <xs:complexType name="fileext">
@@ -25,18 +27,6 @@
       <xs:element name="width" type="xs:integer" />
       <xs:element name="height" type="xs:integer" />
       <xs:element name="content" type="nxs:content"/>
-    </xs:sequence>
-  </xs:complexType>
-
-  <!-- copied from core-types.xsd -->
-  <xs:complexType name="content">
-    <xs:sequence>
-      <xs:element name="encoding" type="xs:string"/>
-      <xs:element name="mime-type" type="xs:string"/>
-      <xs:element name="data" type="xs:base64Binary"/>
-      <xs:element name="name" type="xs:string"/>
-      <xs:element name="length" type="xs:long"/>
-      <xs:element name="digest" type="xs:string"/>
     </xs:sequence>
   </xs:complexType>
 

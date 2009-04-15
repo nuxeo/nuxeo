@@ -27,7 +27,6 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
-import org.nuxeo.ecm.core.utils.BlobsExtractor;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
@@ -74,11 +73,16 @@ public class TestBlobsExtractor extends NXRuntimeTestCase {
         attachedFile.put("vignettes", vignettes);
         doc.setPropertyValue("cmpf:attachedFile", (Serializable) attachedFile);
 
+        Blob blob3 = new ByteArrayBlob("foo3 bar3".getBytes("UTF-8"),
+                "text/plain");
+        doc.setProperty("file", "content", blob3);
+
         BlobsExtractor extractor = new BlobsExtractor();
         List<Blob> blobs = extractor.getBlobs(doc);
-        assertEquals(2, blobs.size());
+        assertEquals(3, blobs.size());
         assertTrue(blobs.contains(blob1));
         assertTrue(blobs.contains(blob2));
+        assertTrue(blobs.contains(blob3));
     }
 
 }
