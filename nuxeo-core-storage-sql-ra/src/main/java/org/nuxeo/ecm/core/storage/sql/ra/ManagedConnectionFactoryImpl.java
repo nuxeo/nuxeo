@@ -19,9 +19,10 @@ package org.nuxeo.ecm.core.storage.sql.ra;
 
 import java.io.PrintWriter;
 import java.util.HashMap;
-import java.util.NoSuchElementException;
+import java.util.Map;
 import java.util.Set;
-import java.util.StringTokenizer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.resource.ResourceException;
 import javax.resource.cci.ConnectionFactory;
@@ -97,12 +98,14 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
 
     /**
      * Properties are specified in the format key=val1[;key2=val2;...]
+     * <p>
+     * If a value has to contain a semicolon, it can be escaped by doubling it.
      *
      * @see #parseProperties(String)
      * @param property
      */
     public void setProperty(String property) {
-        parseProperties(property);
+        repositoryDescriptor.properties.putAll(parseProperties(property));
     }
 
     public String getProperty() {
@@ -244,45 +247,43 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
         return repository.getConnection(connectionSpec);
     }
 
+    private static final Pattern KEYVALUE = Pattern.compile("([^=]*)=(.*)");
+
     /**
-     * Parse a string of the form: key1=val1;key2=val2;... and collect the key,
-     * value pairs in the repository descriptor properties. A ; character may
-     * end the expression. Examples of valid expressions: <code>key1=val1</code>
-     * , <code>key1=val1;</code>, <code>key1=val1;key2=val2</code>
-     *
+     * Parses a string of the form: <code>key1=val1;key2=val2;...</code> and
+     * collects the key/value pairs.
+     * <p>
+     * A ';' character may end the expression. If a value has to contain a ';',
+     * it can be escaped by doubling it.
+     * <p>
+     * Examples of valid expressions: <code>key1=val1</code>,
+     * <code>key1=val1;</code>, <code>key1=val1;key2=val2</code>,
+     * <code>key1=a=b;;c=d;key2=val2</code>.
+     * <p>
      * Syntax errors are reported using the logger and will stop the parsing but
      * already collected properties will be available. The ';' or '=' characters
-     * cannot be escaped so values or keys containing these characters will
-     * break the result.
+     * cannot be escaped in keys.
      *
      * @param expr the expression to parse
+     * @return a key/value map
      */
-    protected void parseProperties(String expr) {
-        try {
-            StringTokenizer tokenizer = new StringTokenizer(expr, ";=", true);
-            while (tokenizer.hasMoreTokens()) {
-                String key = tokenizer.nextToken();
-                String delim = tokenizer.nextToken();
-                if (!"=".equals(delim)) {
-                    log.error("Invalid property expression: " + expr);
-                }
-                if (!tokenizer.hasMoreTokens()) {
-                    repositoryDescriptor.properties.put(key, "");
-                    break;
-                }
-                String val = tokenizer.nextToken();
-                repositoryDescriptor.properties.put(key, val);
-                if (!tokenizer.hasMoreTokens()) {
-                    break;
-                }
-                delim = tokenizer.nextToken();
-                if (!";".equals(delim)) {
-                    log.error("Invalid property expression: " + expr);
-                }
+    public static Map<String, String> parseProperties(String expr) {
+        String SPECIAL = "\u1fff"; // never present in the strings to parse
+        Map<String, String> props = new HashMap<String, String>();
+        for (String kv : expr.replace(";;", SPECIAL).split(";")) {
+            kv = kv.replace(SPECIAL, ";");
+            if ("".equals(kv)) {
+                // empty starting string
+                continue;
             }
-        } catch (NoSuchElementException e) {
-            log.error("Invalid property expression: " + expr);
+            Matcher m = KEYVALUE.matcher(kv);
+            if (m == null || !m.matches()) {
+                log.error("Invalid property expression: " + kv);
+                continue;
+            }
+            props.put(m.group(1), m.group(2));
         }
+        return props;
     }
 
 }
