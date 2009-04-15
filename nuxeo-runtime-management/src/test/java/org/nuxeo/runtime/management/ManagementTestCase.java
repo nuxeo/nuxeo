@@ -39,8 +39,6 @@ public abstract class ManagementTestCase extends NXRuntimeTestCase {
     protected static final String OSGI_BUNDLE_NAME_TESTS = OSGI_BUNDLE_NAME
             + ".tests";
 
-    protected final MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
-
     protected ResourcePublisherService publisherService;
 
     protected ServerLocatorService locatorService;
@@ -75,14 +73,16 @@ public abstract class ManagementTestCase extends NXRuntimeTestCase {
             ReflectionException, MBeanException {
         String qualifiedName = ObjectNameFactory.formatQualifiedName(ResourcePublisherService.NAME);
         ObjectName objectName = ObjectNameFactory.getObjectName(qualifiedName);
-        mbeanServer.invoke(objectName, "bindResources", null, null);
+        MBeanServer server = locatorService.lookupServer(objectName.getDomain());
+        server.invoke(objectName, "bindResources", null, null);
     }
 
     @SuppressWarnings("unchecked")
     protected Set<ObjectName> doQuery(String name) {
         String qualifiedName = ObjectNameFactory.getQualifiedName(name);
         ObjectName objectName = ObjectNameFactory.getObjectName(qualifiedName);
-        return mbeanServer.queryNames(objectName, null);
+        MBeanServer server = locatorService.lookupServer(objectName.getDomain());
+        return server.queryNames(objectName, null);
     }
 
 }

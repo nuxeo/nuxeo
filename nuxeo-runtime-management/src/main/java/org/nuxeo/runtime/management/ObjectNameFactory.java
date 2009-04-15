@@ -140,7 +140,7 @@ public class ObjectNameFactory {
     public static String getQualifiedName(String name) {
         String qualifiedName = name;
         if (!hasAttributeValueAssertion(qualifiedName)) {
-            qualifiedName = "nx:name=" + name + ",type=service";
+            qualifiedName = NUXEO_DOMAIN_NAME + ":name=" + name + ",type=service";
         } else if (!hasDomain(qualifiedName)) {
             qualifiedName = NUXEO_DOMAIN_NAME + ":" + qualifiedName;
         }

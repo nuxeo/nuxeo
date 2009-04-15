@@ -27,7 +27,7 @@
   <extension target="org.nuxeo.runtime.management.ResourcePublisher"
     point="shortcuts">
     <shortcut name="dummy"
-      qualifiedName="nx:type=service,name=rg.nuxeo.runtime.management.Dummy" />
+      qualifiedName="org.nuxeo:type=service,name=rg.nuxeo.runtime.management.Dummy" />
   </extension>
 
   <extension targets="org.nuxeo.runtime.management.ResourcePublisher"

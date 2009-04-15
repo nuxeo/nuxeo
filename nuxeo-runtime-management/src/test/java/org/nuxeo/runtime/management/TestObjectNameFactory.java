@@ -27,12 +27,12 @@ public class TestObjectNameFactory extends TestCase {
 
     public void testSimpleForm() {
         ObjectName name = ObjectNameFactory.getObjectName("simple");
-        assertEquals("nx:name=simple,type=service", name.getCanonicalName());
+        assertEquals("org.nuxeo:name=simple,type=service", name.getCanonicalName());
     }
 
     public void testAvaForm() {
         ObjectName name = ObjectNameFactory.getObjectName("name=value");
-        assertEquals("nx:name=value", name.getCanonicalName());
+        assertEquals("org.nuxeo:name=value", name.getCanonicalName());
     }
 
     public void testFullForm() {

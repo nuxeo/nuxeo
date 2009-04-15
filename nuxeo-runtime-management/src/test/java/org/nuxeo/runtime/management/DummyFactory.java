@@ -22,7 +22,7 @@ package org.nuxeo.runtime.management;
 public class DummyFactory extends AbstractResourceFactory {
 
     public void registerResources() {
-        service.registerResource("dummy", "nx:name=dummy", DummyMBean.class, new DummyService());
+        service.registerResource("dummy", "org.nuxeo:name=dummy", DummyMBean.class, new DummyService());
     }
 
 }

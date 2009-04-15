@@ -37,10 +37,10 @@ public class TestResourcePublisherService extends ManagementTestCase {
     }
 
     public void testRegisterResource() throws Exception {
-        publisherService.registerResource("dummy", "nx:name=dummy",
+        publisherService.registerResource("dummy", "org.nuxeo:name=dummy",
                 DummyMBean.class, new DummyService());
         publisherService.bindResources();
-        Set<ObjectName> registeredNames = doQuery("nx:name=dummy");
+        Set<ObjectName> registeredNames = doQuery("org.nuxeo:name=dummy");
         assertNotNull(registeredNames);
         assertEquals(1, registeredNames.size());
     }
@@ -49,7 +49,7 @@ public class TestResourcePublisherService extends ManagementTestCase {
 //        ResourceFactoryDescriptor descriptor = new ResourceFactoryDescriptor(
 //                DummyFactory.class);
 //        publisherService.registerContribution(descriptor, "factories", null);
-//        Set<ObjectName> registeredNames = doQuery("nx:name=dummy");
+//        Set<ObjectName> registeredNames = doQuery("org.nuxeo:name=dummy");
 //        assertNotNull(registeredNames);
 //        assertEquals(registeredNames.size(), 1);
 //    }
