@@ -1,0 +1,8 @@
+#javax.script:script-api
+org.codehaus.groovy:groovy-all
+log4j:log4j
+jline:jline
+dom4j:dom4j
+org.osgi:osgi-core
+commons-logging
+jbossall-client

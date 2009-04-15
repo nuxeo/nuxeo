@@ -1,0 +1,37 @@
+<project name="nuxeo-assembly" default="build" xmlns:nx="urn:nuxeo-build" xmlns:artifact="urn:nuxeo-artifact">
+  <property name="outdir" value="${basedir}/target" />
+  <import file="config.xml" />
+  <target name="build" depends="configure">
+    <nx:profile group="jboss,gf3,jetty,tomcat,shell,server"
+    default="jetty" />
+    <nx:profile name="jboss">
+      <echo>Entering JBoss profile</echo>
+      <ant dir="${basedir}/nuxeo-ear" target="build" />
+    </nx:profile>
+    <nx:profile name="gf3">
+      <echo>Entering GF3 profile</echo>
+      <ant dir="${basedir}/nuxeo-server-gf3" target="build" />
+    </nx:profile>
+    <nx:profile name="jetty">
+      <echo>Entering Jetty profile</echo>
+      <ant dir="${basedir}/nuxeo-server-jetty" target="build" />
+    </nx:profile>
+    <nx:profile name="tomcat">
+      <echo>Entering Tomcat profile</echo>
+      <ant dir="${basedir}/nuxeo-server-tomcat" target="build" />
+    </nx:profile>
+    <nx:profile name="shell">
+      <echo>Entering Shell profile</echo>
+      <ant dir="${basedir}/nuxeo-shell" target="build" />
+    </nx:profile>
+    <nx:profile name="server">
+      <echo>Entering Server profile</echo>
+      <ant dir="${basedir}/nuxeo-server-base" target="build" />
+    </nx:profile>
+  </target>
+  <!--target name="test" depends="configure">
+    <copy todir="target/test">
+	<artifact:set src="test.xml"/>
+    </copy>
+  </target-->
+</project>

@@ -1,0 +1,45 @@
+<project name="nuxeo-app-base" default="build"
+xmlns:artifact="urn:nuxeo-artifact" xmlns:nx="urn:nuxeo-build">
+  <import file="../config.xml" />
+  <target name="build" depends="configure">
+    <echo>Build app base in stage dir: ${stagedir}</echo>
+    <artifact:graph resolve="org.nuxeo.runtime:nuxeo-runtime-launcher:${nuxeo.runtime.version}:jar" />
+    <artifact:graph resolve="org.jboss.client:jbossall-client:4.2.3.GA" />
+    <mkdir dir="${stagedir}/lib" />
+    <mkdir dir="${stagedir}/config" />
+    <mkdir dir="${stagedir}/bundles" />
+    <mkdir dir="${stagedir}/data" />
+    <mkdir dir="${stagedir}/log" />
+    <copy todir="${stagedir}">
+      <fileset dir="resources" />
+    </copy>
+    <copy todir="${stagedir}">
+      <artifact:file key="org.nuxeo.runtime:nuxeo-runtime-launcher" />
+    </copy>
+    <copy todir="${stagedir}/bundles">
+      <artifact:set src="bundles" />
+      <!--mapper classname="org.nuxeo.build.ant.artifact.VersionMapper"/-->
+      <!--artifact:file key="org.nuxeo.common:nuxeo-common"/>
+          <artifact:file key="org.nuxeo.runtime:nuxeo-runtime"/>
+          <artifact:file key="org.nuxeo.runtime:nuxeo-runtime-osgi"/>
+          <artifact:file key="org.nuxeo.ecm.core:nuxeo-core-api" />
+          <artifact:file key="org.nuxeo.ecm.core:nuxeo-core-schema" />
+          <artifact:file key="org.nuxeo.ecm.core:nuxeo-core-query" />
+          <artifact:file key="org.nuxeo.ecm.core:nuxeo-core-io" />
+          <artifact:file key="org.nuxeo.ecm.core:nuxeo-core-client" />
+          <artifact:file key="org.nuxeo.ecm.platform:nuxeo-shell-commands-base"/-->
+    </copy>
+    <copy todir="${stagedir}/lib">
+      <artifact:set src="libs" />
+      <!--artifact:file key="javax.script:script-api" /-->
+      <!--artifact:file key="org.codehaus.groovy:groovy-all" />
+      <artifact:file key="log4j:log4j" />
+      <artifact:set groupId="jline" />
+      <artifact:set groupId="dom4j" />
+      <artifact:set groupId="org.osgi" />
+      <artifact:file key="commons-logging" />
+      <artifact:file key="jbossall-client" /-->
+    </copy>
+    <chmod dir="${stagedir}" perm="ugo+rx" includes="*.sh" />
+  </target>
+</project>
