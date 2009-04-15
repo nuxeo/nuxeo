@@ -25,7 +25,9 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Begin;
+import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
@@ -38,6 +40,7 @@ import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.platform.types.adapter.TypeInfo;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
+import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
@@ -62,6 +65,8 @@ public class RestHelper implements Serializable {
     transient WebActions webActions;
 
     private DocumentView docView;
+
+    private String baseURL = "";
 
     @Begin(id = "#{conversationIdGenerator.currentOrNewMainConversationId}", join = true)
     public String initContextFromRestRequest(DocumentView docView)
@@ -117,11 +122,10 @@ public class RestHelper implements Serializable {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put(conversationManager.getConversationIdParameter(),
                 conversationId);
-        /*      Not needed anymore ????
+        /* Not needed anymore ????
         if (conversationManager.isLongRunningConversation()) {
-            params.put(
-                    conversationManager.getConversationIsLongRunningParameter(),
-                    "true");
+            params.put(conversationManager.getConversationIsLongRunningParameter(),
+                "true");
         }*/
         return conversationManager.encodeParameters(url, params);
     }
@@ -161,6 +165,14 @@ public class RestHelper implements Serializable {
             return addConversationRequestParameters(url, conversationManager,
                     conversationId);
         }
+    }
+
+    @Factory(value = "baseURL", scope = ScopeType.CONVERSATION)
+    public String getBaseURL() {
+        if (baseURL.equals("")) {
+            baseURL = BaseURL.getBaseURL();
+        }
+        return baseURL;
     }
 
 }
