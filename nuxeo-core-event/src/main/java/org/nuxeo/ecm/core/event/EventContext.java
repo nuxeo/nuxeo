@@ -45,8 +45,8 @@ import org.nuxeo.ecm.core.event.Event.Flag;
  * contexts.
  * <p>
  * An event context also acts as an event factory. See {@link #newEvent(String)}
- * and {@link #newEvent(String, Set<Flag>)} methods. Events created by an event context
- * are automatically mapped to that context.
+ * and {@link #newEvent(String, Set<Flag>)} methods. Events created by an event
+ * context are automatically mapped to that context.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -154,10 +154,18 @@ public interface EventContext extends Serializable {
      */
     Event newEvent(String name, Set<Flag> flags);
 
-
     /**
-     * returns the repository name associated to CoreSession if any
-     * @return
+     * Returns the repository name associated to the event context, if any.
+     *
+     * @return the repository name
      */
     String getRepositoryName();
+
+    /**
+     * Sets the repository name. Only used if no CoreSession is available.
+     *
+     * @param repositoryName the repository name, or {@code null}
+     */
+    void setRepositoryName(String repositoryName);
+
 }

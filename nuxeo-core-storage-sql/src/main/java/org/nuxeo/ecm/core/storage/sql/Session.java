@@ -342,40 +342,4 @@ public interface Session extends Connection {
     PartialList<Serializable> query(SQLQuery query, QueryFilter queryFilter,
             boolean countTotal) throws StorageException;
 
-    /**
-     * A job that's executed in the context of a session.
-     */
-    public interface Job extends Serializable {
-
-        /**
-         * Does the job.
-         */
-        public void run(Session session, boolean save);
-
-    }
-
-    /**
-     * A service that enqueues jobs for (probably asynchronous) processing in
-     * the context of a low-level session.
-     */
-    public interface JobManager {
-
-        /**
-         * Queues a job for later processing.
-         * <p>
-         * If the job is run asynchronously, the passed session will not be used
-         * directly.
-         *
-         * @param job a runnable job
-         * @param session the session with which to run the job
-         */
-        void queueJob(Job job, Session session) throws Exception;
-
-        /**
-         * Releases resources allocated by this JobManager.
-         */
-        void shutdown();
-
-    }
-
 }

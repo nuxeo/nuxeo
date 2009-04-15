@@ -170,6 +170,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         session.setDocumentSystemProp(doc.getRef(), "WfinProgress",
                 Boolean.TRUE);
         session.setDocumentSystemProp(doc.getRef(), "WfIncOption", "option1");
+        session.save();
         closeSession();
         openSession();
         root = session.getRootDocument();

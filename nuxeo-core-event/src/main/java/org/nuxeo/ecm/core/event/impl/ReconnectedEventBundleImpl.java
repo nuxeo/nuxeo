@@ -114,13 +114,9 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
         if (reconnectedEvents == null) {
             reconnectedEvents = new ArrayList<Event>();
             for (Event event : sourceEventBundle.getEvents()) {
-
                 EventContext ctx = event.getContext();
-                CoreSession session = null;
-
-                if (ctx.getCoreSession() != null) {
-                    session = getReconnectedCoreSession(ctx.getRepositoryName());
-                }
+                CoreSession session = ctx.getRepositoryName() == null ? null
+                        : getReconnectedCoreSession(ctx.getRepositoryName());
 
                 List<Object> newArgs = new ArrayList<Object>();
                 for (Object arg : ctx.getArguments()) {

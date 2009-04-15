@@ -81,8 +81,7 @@ public class SessionImpl implements Session {
         this.mapper = mapper;
         // this.credentials = credentials;
         model = mapper.getModel();
-        context = new PersistenceContext(mapper, invalidators,
-                repository.getJobManager());
+        context = new PersistenceContext(mapper, invalidators);
         live = true;
         transactionalSession = new TransactionalSession(this, mapper, context);
         computeRootNode();

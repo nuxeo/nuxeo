@@ -380,8 +380,8 @@ public class Model {
     public Serializable generateNewId() {
         switch (idGenPolicy) {
         case APP_UUID:
-            return UUID.randomUUID().toString();
-            // return "UUID_" + temporaryIdCounter.incrementAndGet();
+            // return UUID.randomUUID().toString();
+            return "UUID_" + temporaryIdCounter.incrementAndGet();
         case DB_IDENTITY:
             return "T" + temporaryIdCounter.incrementAndGet();
         default:

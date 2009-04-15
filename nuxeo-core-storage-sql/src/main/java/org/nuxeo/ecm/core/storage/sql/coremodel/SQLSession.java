@@ -106,11 +106,6 @@ public class SQLSession implements Session {
         userSessionId = (String) context.get("SESSION_ID");
     }
 
-    // needed by asynchronous jobs
-    protected org.nuxeo.ecm.core.storage.sql.Session getUnderlyingSession() {
-        return session;
-    }
-
     /*
      * ----- org.nuxeo.ecm.core.model.Session -----
      */

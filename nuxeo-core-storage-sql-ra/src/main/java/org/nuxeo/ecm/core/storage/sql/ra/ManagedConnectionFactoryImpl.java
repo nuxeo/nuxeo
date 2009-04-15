@@ -42,7 +42,6 @@ import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.RepositoryImpl;
 import org.nuxeo.ecm.core.storage.sql.RepositoryManagement;
 import org.nuxeo.ecm.core.storage.sql.SessionImpl;
-import org.nuxeo.ecm.core.storage.sql.coremodel.SQLJobManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -98,6 +97,7 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
 
     /**
      * Properties are specified in the format key=val1[;key2=val2;...]
+     *
      * @see #parseProperties(String)
      * @param property
      */
@@ -230,7 +230,7 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
                     throw new StorageException(e);
                 }
                 repository = new RepositoryImpl(repositoryDescriptor,
-                        schemaManager, new SQLJobManager());
+                        schemaManager);
             }
         }
     }
@@ -245,14 +245,15 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
     }
 
     /**
-     * Parse a string of the form: key1=val1;key2=val2;...
-     * and collect the key, value pairs in the repository descriptor properties.
-     * A ; character may end the expression.
-     * Examples of valid expressions:
-     * <code>key1=val1</code>, <code>key1=val1;</code>, <code>key1=val1;key2=val2</code>
+     * Parse a string of the form: key1=val1;key2=val2;... and collect the key,
+     * value pairs in the repository descriptor properties. A ; character may
+     * end the expression. Examples of valid expressions: <code>key1=val1</code>
+     * , <code>key1=val1;</code>, <code>key1=val1;key2=val2</code>
      *
-     * Syntax errors are reported using the logger and will stop the parsing but already collected properties will be available.
-     * The ';' or '=' characters cannot be escaped so values or keys containing these characters will break the result.
+     * Syntax errors are reported using the logger and will stop the parsing but
+     * already collected properties will be available. The ';' or '=' characters
+     * cannot be escaped so values or keys containing these characters will
+     * break the result.
      *
      * @param expr the expression to parse
      */
@@ -263,7 +264,7 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
                 String key = tokenizer.nextToken();
                 String delim = tokenizer.nextToken();
                 if (!"=".equals(delim)) {
-                    log.error("Invalid property expression: "+expr);
+                    log.error("Invalid property expression: " + expr);
                 }
                 if (!tokenizer.hasMoreTokens()) {
                     repositoryDescriptor.properties.put(key, "");
@@ -276,11 +277,11 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
                 }
                 delim = tokenizer.nextToken();
                 if (!";".equals(delim)) {
-                    log.error("Invalid property expression: "+expr);
+                    log.error("Invalid property expression: " + expr);
                 }
             }
         } catch (NoSuchElementException e) {
-            log.error("Invalid property expression: "+expr);
+            log.error("Invalid property expression: " + expr);
         }
     }
 

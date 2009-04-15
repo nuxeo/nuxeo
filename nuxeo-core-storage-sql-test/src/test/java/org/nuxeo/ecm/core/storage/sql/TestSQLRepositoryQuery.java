@@ -38,7 +38,7 @@ public class TestSQLRepositoryQuery extends QueryTestCase {
     }
 
     @Override
-    protected void sleepForFulltext() {
+    protected void sleepForFulltext() throws Exception {
         super.sleepForFulltext();
         DatabaseHelper.DATABASE.sleepForFulltext();
     }
@@ -48,6 +48,7 @@ public class TestSQLRepositoryQuery extends QueryTestCase {
         deployBundle("org.nuxeo.ecm.core.convert.api");
         deployBundle("org.nuxeo.ecm.core.convert");
         deployBundle("org.nuxeo.ecm.core.convert.plugins");
+        deployBundle("org.nuxeo.ecm.core.storage.sql"); // event listener
         super.testFulltextBlob();
     }
 

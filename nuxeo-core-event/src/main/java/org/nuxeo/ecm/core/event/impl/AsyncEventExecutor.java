@@ -21,8 +21,10 @@ package org.nuxeo.ecm.core.event.impl;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -65,8 +67,9 @@ public class AsyncEventExecutor {
     public AsyncEventExecutor(int poolSize, int maxPoolSize, int keepAliveTime,
             int queueSize) {
         queue = new LinkedBlockingQueue<Runnable>(queueSize);
+        NamedThreadFactory threadFactory = new NamedThreadFactory("Nuxeo Async Events");
         executor = new ThreadPoolExecutor(poolSize, maxPoolSize, keepAliveTime,
-                TimeUnit.SECONDS, queue);
+                TimeUnit.SECONDS, queue, threadFactory);
     }
 
     public void run(List<PostCommitEventListener> listeners, EventBundle event) {
@@ -113,6 +116,35 @@ public class AsyncEventExecutor {
             } finally {
                 bundle.disconnect();
             }
+        }
+    }
+
+    /**
+     * Creates non-daemon threads at normal priority.
+     */
+    public static class NamedThreadFactory implements ThreadFactory {
+
+        private static final AtomicInteger poolNumber = new AtomicInteger();
+
+        private final AtomicInteger threadNumber = new AtomicInteger();
+
+        private final ThreadGroup group;
+
+        private final String namePrefix;
+
+        public NamedThreadFactory(String prefix) {
+            SecurityManager sm = System.getSecurityManager();
+            group = sm == null ? Thread.currentThread().getThreadGroup()
+                    : sm.getThreadGroup();
+            namePrefix = prefix + ' ' + poolNumber.incrementAndGet() + '-';
+        }
+
+        public Thread newThread(Runnable r) {
+            String name = namePrefix + threadNumber.incrementAndGet();
+            Thread t = new Thread(group, r, name);
+            t.setDaemon(false);
+            t.setPriority(Thread.NORM_PRIORITY);
+            return t;
         }
     }
 

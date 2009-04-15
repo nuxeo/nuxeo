@@ -32,9 +32,15 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.EventContext;
+import org.nuxeo.ecm.core.event.EventProducer;
+import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Model.PropertyInfo;
-import org.nuxeo.ecm.core.storage.sql.Session.JobManager;
+import org.nuxeo.ecm.core.storage.sql.coremodel.BinaryTextListener;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * The persistence context in use by a session.
@@ -61,7 +67,7 @@ public class PersistenceContext {
 
     private final Model model;
 
-    private final JobManager jobManager;
+    private EventProducer eventProducer;
 
     /**
      * Fragment ids generated but not yet saved. We know that any fragment with
@@ -78,8 +84,7 @@ public class PersistenceContext {
      */
     private final HashMap<Serializable, Serializable> oldIdMap;
 
-    PersistenceContext(Mapper mapper, RepositoryImpl.Invalidators invalidators,
-            JobManager jobManager) {
+    PersistenceContext(Mapper mapper, RepositoryImpl.Invalidators invalidators) {
         this.mapper = mapper;
         this.invalidators = invalidators;
         model = mapper.getModel();
@@ -94,8 +99,17 @@ public class PersistenceContext {
         // are used and need this
         createdIds = new LinkedHashSet<Serializable>();
         oldIdMap = new HashMap<Serializable, Serializable>();
+    }
 
-        this.jobManager = jobManager;
+    protected EventProducer getEventProducer() throws StorageException {
+        if (eventProducer == null) {
+            try {
+                eventProducer = Framework.getService(EventProducer.class);
+            } catch (Exception e) {
+                throw new StorageException("Unable to find EventProducer", e);
+            }
+        }
+        return eventProducer;
     }
 
     /**
@@ -167,110 +181,71 @@ public class PersistenceContext {
         for (Context context : contexts.values()) {
             context.findDirtyDocuments(dirtyStrings, dirtyBinaries);
         }
-        Set<Serializable> dirtyDocuments = new HashSet<Serializable>(
-                dirtyStrings);
-        dirtyDocuments.addAll(dirtyBinaries);
-        if (dirtyDocuments.isEmpty()) {
+        if (dirtyStrings.isEmpty() && dirtyBinaries.isEmpty()) {
             return;
         }
 
-        // map docid -> binary nodes's props to index
-        Map<Serializable, Map<Serializable, String>> queuedBinaries = new HashMap<Serializable, Map<Serializable, String>>();
-
-        log.debug("Computing fulltext");
-        for (Serializable docId : dirtyDocuments) {
-            boolean doStrings = dirtyStrings.contains(docId);
-            boolean doBinaries = dirtyBinaries.contains(docId);
-
+        // update simpletext on documents with dirty strings
+        for (Serializable docId : dirtyStrings) {
             Node document = session.getNodeById(docId);
             if (document == null) {
                 // cannot happen
                 continue;
             }
-            Queue<Node> queue = new LinkedList<Node>();
-            queue.add(document);
 
             // collect strings on all the document's nodes recursively
             // TODO use configuration to determine what strings to collect
             List<String> strings = new LinkedList<String>();
-            Map<Serializable, String> binaries = new HashMap<Serializable, String>();
-            while (!queue.isEmpty()) {
+
+            // queue of nodes to visit for this document
+            Queue<Node> queue = new LinkedList<Node>();
+            queue.add(document);
+            do {
                 Node node = queue.remove();
                 // recurse into complex properties
                 // TODO could avoid recursion if no know fulltext properties
                 // there
                 queue.addAll(session.getChildren(node, null, true));
 
-                if (doStrings) {
-                    Map<String, PropertyInfo> infos = model.getFulltextStringPropertyInfos(node.getPrimaryType());
-                    if (infos != null) {
-                        for (String name : infos.keySet()) {
-                            PropertyInfo info = infos.get(name);
-                            if (info.propertyType == PropertyType.STRING) {
-                                String v = node.getSimpleProperty(name).getString();
+                Map<String, PropertyInfo> infos = model.getFulltextStringPropertyInfos(node.getPrimaryType());
+                if (infos != null) {
+                    for (String name : infos.keySet()) {
+                        PropertyInfo info = infos.get(name);
+                        if (info.propertyType == PropertyType.STRING) {
+                            String v = node.getSimpleProperty(name).getString();
+                            if (v != null) {
+                                strings.add(v);
+                            }
+                        } else /* ARRAY_STRING */{
+                            for (Serializable v : node.getCollectionProperty(
+                                    name).getValue()) {
                                 if (v != null) {
-                                    strings.add(v);
-                                }
-                            } else /* ARRAY_STRING */{
-                                for (Serializable v : node.getCollectionProperty(
-                                        name).getValue()) {
-                                    if (v != null) {
-                                        strings.add((String) v);
-                                    }
+                                    strings.add((String) v);
                                 }
                             }
                         }
                     }
                 }
-                if (doBinaries) {
-                    Map<String, PropertyInfo> infos = model.getFulltextBinaryPropertyInfos(node.getPrimaryType());
-                    if (infos != null) {
-                        for (String name : infos.keySet()) {
-                            PropertyInfo info = infos.get(name);
-                            if (info.propertyType == PropertyType.BINARY) {
-                                Binary binary = (Binary) node.getSimpleProperty(
-                                        name).getValue();
-                                if (binary == null || binary.getLength() == 0) {
-                                    // empty, nothing to do
-                                } else {
-                                    // queue for asynchronous indexing
-                                    binaries.put(node.getId(), name);
-                                }
-                            } // TOOD ARRAY_BINARY
-                        }
-                    }
-                }
-            }
+            } while (!queue.isEmpty());
 
             // set the computed full text
             // on INSERT/UPDATE a trigger will change the actual fulltext
-            if (doStrings) {
-                document.setSingleProperty(model.FULLTEXT_SIMPLETEXT_PROP,
-                        StringUtils.join(strings, " "));
-            }
-            if (doBinaries) {
-                if (binaries.isEmpty()) {
-                    document.setSingleProperty(model.FULLTEXT_BINARYTEXT_PROP,
-                            "");
-                } else {
-                    queuedBinaries.put(docId, binaries);
-                }
-            }
+            document.setSingleProperty(model.FULLTEXT_SIMPLETEXT_PROP,
+                    StringUtils.join(strings, " "));
         }
 
-        if (!queuedBinaries.isEmpty()) {
-            log.debug("Queued documents for asynchronous indexing: "
-                    + queuedBinaries.size());
+        if (!dirtyBinaries.isEmpty()) {
+            log.debug("Queued documents for asynchronous fulltext extraction: "
+                    + dirtyBinaries.size());
+            EventContext eventContext = new EventContextImpl(dirtyBinaries);
+            eventContext.setRepositoryName(session.getRepositoryName());
+            Event event = eventContext.newEvent(BinaryTextListener.EVENT_NAME);
             try {
-                jobManager.queueJob(new BinaryConversionJob(
-                        queuedBinaries), session);
-            } catch (Exception e) {
-                log.error(
-                        "Failed to start asynchronous binary conversion job: "
-                                + e, e);
+                getEventProducer().fireEvent(event);
+            } catch (ClientException e) {
+                throw new StorageException(e);
             }
         }
-        log.debug("End of fulltext");
     }
 
     /**

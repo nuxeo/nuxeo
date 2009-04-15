@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.storage.sql.listener">
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
+    point="listener">
+    <listener name="sql-storage-binary-text" async="true"
+      postCommit="true" priority="500"
+      class="org.nuxeo.ecm.core.storage.sql.coremodel.BinaryTextListener">
+    </listener>
+  </extension>
+
+</component>

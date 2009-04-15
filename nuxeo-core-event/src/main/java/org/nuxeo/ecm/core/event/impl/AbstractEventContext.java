@@ -101,4 +101,8 @@ public abstract class AbstractEventContext implements EventContext {
         return repositoryName;
     }
 
+    public void setRepositoryName(String repositoryName) {
+        this.repositoryName = repositoryName;
+    }
+
 }

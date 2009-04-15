@@ -39,7 +39,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.storage.Credentials;
 import org.nuxeo.ecm.core.storage.StorageException;
-import org.nuxeo.ecm.core.storage.sql.Session.JobManager;
 import org.nuxeo.ecm.core.storage.sql.db.dialect.Dialect;
 import org.nuxeo.runtime.api.Framework;
 
@@ -62,8 +61,6 @@ public class RepositoryImpl implements Repository {
 
     private final BinaryManager binaryManager;
 
-    private final JobManager jobManager;
-
     private final XADataSource xadatasource;
 
     // initialized at first login
@@ -77,11 +74,10 @@ public class RepositoryImpl implements Repository {
     private SQLInfo sqlInfo;
 
     public RepositoryImpl(RepositoryDescriptor repositoryDescriptor,
-            SchemaManager schemaManager, JobManager jobManager)
+            SchemaManager schemaManager)
             throws StorageException {
         this.repositoryDescriptor = repositoryDescriptor;
         this.schemaManager = schemaManager;
-        this.jobManager = jobManager;
         sessions = new CopyOnWriteArrayList<SessionImpl>();
         invalidators = new Invalidators();
         xadatasource = getXADataSource();
@@ -98,10 +94,6 @@ public class RepositoryImpl implements Repository {
 
     protected BinaryManager getBinaryManager() {
         return binaryManager;
-    }
-
-    protected JobManager getJobManager() {
-        return jobManager;
     }
 
     /*
@@ -181,7 +173,6 @@ public class RepositoryImpl implements Repository {
      */
 
     public synchronized void close() {
-        jobManager.shutdown();
         for (SessionImpl session : sessions) {
             if (!session.isLive()) {
                 continue;

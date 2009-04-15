@@ -2587,19 +2587,13 @@ public abstract class AbstractSession implements CoreSession,
     public <T extends Serializable> void setDocumentSystemProp(DocumentRef ref,
             String systemProperty, T value) throws ClientException,
             DocumentException {
-
         Document doc;
         try {
             doc = resolveReference(ref);
         } catch (DocumentException e) {
             throw new ClientException("Failed to get document " + ref, e);
         }
-
         doc.setSystemProp(systemProperty, value);
-        // FIXME BS: why this save() is done explicitely here?
-        // AT: because this is ******* code used by versioning, save should
-        // be moved there.
-        save();
     }
 
     public void orderBefore(DocumentRef parent, String src, String dest)

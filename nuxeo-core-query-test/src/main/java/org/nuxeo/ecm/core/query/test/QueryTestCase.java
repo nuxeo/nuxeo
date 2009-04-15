@@ -46,6 +46,8 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
+import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
@@ -937,16 +939,13 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
     }
 
     /**
-     * Sleep a bit to give time to the asynchronous fulltext extractor.
+     * Wait a bit to give time to the asynchronous fulltext extractor.
      * <p>
      * Subclassed for MS SQL Server which is itself asynchronous when indexing
      * fulltext.
      */
-    protected void sleepForFulltext() {
-        try {
-            Thread.sleep(2000); // sleep 2s for async thread pool
-        } catch (InterruptedException e) {
-        }
+    protected void sleepForFulltext() throws Exception {
+        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
     }
 
     public void testFulltext() throws Exception {

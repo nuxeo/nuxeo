@@ -58,7 +58,7 @@ public class SQLRepository implements Repository {
     public SQLRepository(RepositoryDescriptor descriptor) throws Exception {
         schemaManager = Framework.getService(SchemaManager.class);
         repository = new RepositoryImpl(getDescriptor(descriptor),
-                schemaManager, new SQLJobManager());
+                schemaManager);
         if (descriptor.getSecurityManagerClass() == null) {
             securityManager = new SQLSecurityManager();
         } else {

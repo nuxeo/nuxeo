@@ -54,6 +54,8 @@ import org.nuxeo.ecm.core.versioning.DocumentVersionIterator;
  */
 public class SQLDocument extends SQLComplexProperty implements Document {
 
+    protected static final String BINARY_TEXT_SYS_PROP = "binaryText";
+
     private static final Log log = LogFactory.getLog(SQLDocument.class);
 
     // cache of the lock state, for efficiency
@@ -169,6 +171,8 @@ public class SQLDocument extends SQLComplexProperty implements Document {
         systemPropNameMap = new HashMap<String, String>();
         systemPropNameMap.put("WfinProgress", Model.MISC_WF_IN_PROGRESS_PROP);
         systemPropNameMap.put("WfIncOption", Model.MISC_WF_INC_OPTION_PROP);
+        systemPropNameMap.put(BINARY_TEXT_SYS_PROP,
+                Model.FULLTEXT_BINARYTEXT_PROP);
     }
 
     public <T extends Serializable> void setSystemProp(String name, T value)
@@ -226,7 +230,8 @@ public class SQLDocument extends SQLComplexProperty implements Document {
         }
     }
 
-    public void setCurrentLifeCycleState(String state) throws LifeCycleException {
+    public void setCurrentLifeCycleState(String state)
+            throws LifeCycleException {
         try {
             setString(Model.MISC_LIFECYCLE_STATE_PROP, state);
         } catch (DocumentException e) {
@@ -463,8 +468,8 @@ public class SQLDocument extends SQLComplexProperty implements Document {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + '(' + getName() + ',' + getUUID() +
-                ')';
+        return getClass().getSimpleName() + '(' + getName() + ',' + getUUID()
+                + ')';
     }
 
     @Override
