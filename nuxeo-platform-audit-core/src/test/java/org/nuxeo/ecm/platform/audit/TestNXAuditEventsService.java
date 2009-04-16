@@ -39,12 +39,17 @@ public class TestNXAuditEventsService extends RepositoryOSGITestCase {
 
     private NXAuditEvents serviceUnderTest;
 
+    // protected final MBeanServer mbeanServer =
+    // ManagementFactory.getPlatformMBeanServer();
+
     @Override
     public void setUp() throws Exception {
         super.setUp();
 
         deployBundle("org.nuxeo.ecm.platform.usermanager");
         deployBundle("org.nuxeo.ecm.platform.audit");
+        // deployBundle("org.nuxeo.runtime.management");
+        // deployBundle("org.nuxeo.ecm.platform.management");
 
         NXAuditEventsService.persistenceProvider.setHibernateConfiguration(new TestHibernateConfiguration());
         serviceUnderTest = Framework.getService(NXAuditEvents.class);
@@ -96,6 +101,27 @@ public class TestNXAuditEventsService extends RepositoryOSGITestCase {
         assertEquals("Root", entry.getDocType());
         assertEquals("documentCreated", entry.getEventId());
         assertEquals("system", entry.getPrincipalName());
+    }
+
+    // protected Set<ObjectName> doQuery(String name) {
+    // String qualifiedName = ObjectNameFactory.getQualifiedName(name);
+    // ObjectName objectName = ObjectNameFactory.getObjectName(qualifiedName);
+    // return mbeanServer.queryNames(objectName, null);
+    // }
+
+    public void TODOtestCount() throws Exception {
+        // CoreSession session = getCoreSession();
+        // DocumentModel rootDocument = getCoreSession().getRootDocument();
+        // DocumentModel model = session.createDocumentModel(
+        // rootDocument.getPathAsString(), "youps", "File");
+        // model.setProperty("dublincore", "title", "huum");
+        // session.createDocument(model);
+        // session.save();
+        // waitForEventsDispatched();
+        // ObjectName objectName =
+        // AuditEventMetricFactory.getObjectName("documentCreated");
+        // Long count = (Long) mbeanServer.getAttribute(objectName, "count");
+        // assertEquals(new Long(1L), count);
     }
 
 }
