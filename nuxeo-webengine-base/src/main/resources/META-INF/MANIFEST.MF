@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo WebEngine Base
+Bundle-SymbolicName: org.nuxeo.ecm.webengine.base;singleton:=true
+Require-Bundle: org.nuxeo.ecm.webengine.core
+Nuxeo-Component: OSGI-INF/root-resource-contrib.xml

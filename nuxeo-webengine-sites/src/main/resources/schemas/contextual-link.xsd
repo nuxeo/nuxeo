@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://project.nuxeo.org/schemas/webengine/site/sites/contextual-link"
+	xmlns:tns="http://project.nuxeo.org/schemas/webengine/site/wiki/contextual-link"
+	elementFormDefault="qualified">
+
+	<element name="link" type="string"></element>
+
+</schema>

@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<module name="Admin" root-type="Admin" path="/admin" extends="base">
+
+  <links>
+    <link id="tab_content" path="/@views/content_page">
+      <!--guard>Write</guard-->
+      <category>TABVIEW</category>
+    </link>
+    <link id="tab_edit" path="/@views/edit_page">
+      <category>TABVIEW</category>
+    </link>
+    <link id="tab_versions" path="/@views/versions_page">
+      <category>TABVIEW</category>
+      <facet>Versionable</facet>
+    </link>
+    <link id="tab_permissions" path="/@permissions">
+      <facet>Folderish</facet>
+      <guard>user=Administrator</guard>
+      <category>TABVIEW</category>
+    </link>
+    <link id="tab_audits" path="/@audits">
+      <category>TABVIEW</category>
+    </link>
+    <link id="link_print" path="/@views/print">
+      <category>TOOLBOX</category>
+      <type>Document</type>
+    </link>
+    <link id="link_delete_doc" path="/@delete">
+      <type>Document</type>
+      <category>TOOLBOX</category>
+    </link>
+    <link id="link_create_doc" path="/@views/create">
+      <facet>Folderish</facet>
+      <category>TOOLBOX</category>
+    </link>
+
+    <!-- user management -->
+    <link id="link_delete_user" path="/@delete">
+      <type>User</type>
+      <category>TOOLBOX</category>
+    </link>
+    <link id="link_create_user" path="/@views/create_user">
+      <type>UserManager</type>
+      <category>TOOLBOX</category>
+    </link>
+    <link id="link_delete_group" path="/@delete">
+      <type>Group</type>
+      <category>TOOLBOX</category>
+    </link>
+    <link id="link_create_group" path="/@views/create_group">
+      <type>UserManager</type>
+      <category>TOOLBOX</category>
+    </link>
+
+  </links>
+</module>

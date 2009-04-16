@@ -1,0 +1,58 @@
+/* CSS for Print Version (on screen). © 2008 Nuxeo */
+
+form {
+    margin-bottom: 0;
+}
+
+.printButton {
+    float: right;
+    margin: 10px;
+}
+
+.closeWindow {
+    background-color: #f1f2f3;
+    padding: 10px;
+}
+
+.wikiName span {
+    font-weight: bold;
+}
+
+#entry-attachments, .toc {
+    border-left: 5px solid #ccc;
+    padding-left: 20px;
+    margin-left: 20px;
+}
+
+.tocTitle, .attachedTitle {
+    font-weight: bold;
+    font-size: 133%;
+}
+
+#entry-print blockquote {
+    font-style: italic;
+}
+
+#entry-attachments form {
+    display: none;
+}
+
+/* Css 2 for firefox */
+
+body {
+    counter-reset: chapter;
+}
+
+#entry-print h2:before {
+    content: counter( chapter ) " ";
+    counter-increment: chapter;
+}
+
+#entry-print h2 {
+    counter-reset: section;
+}
+
+#entry-print h3:before {
+    content: counter( chapter ) "." counter( section ) " ";
+    counter-increment: section;
+}
