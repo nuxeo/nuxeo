@@ -30,6 +30,7 @@
   <properties>
     <nuxeo.webengine.version>5.2-SNAPSHOT</nuxeo.webengine.version>
     <nuxeo.services.version>5.2-SNAPSHOT</nuxeo.services.version>
+    <nuxeo.shell.version>5.2-SNAPSHOT</nuxeo.shell.version>
   </properties>
 
   <dependencies>
@@ -86,6 +87,11 @@
         <artifactId>nuxeo-webengine-resteasy-adapter</artifactId>
         <version>${nuxeo.webengine.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.webengine</groupId>
+        <artifactId>nuxeo-webengine-management</artifactId>
+        <version>${nuxeo.webengine.version}</version>
+      </dependency>
 
       <dependency>
         <groupId>org.nuxeo.runtime</groupId>
@@ -107,7 +113,7 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-shell-commands-base</artifactId>
-        <version>${nuxeo.platform.version}</version>
+        <version>${nuxeo.shell.version}</version>
       </dependency>
 
       <!-- jetty -->
