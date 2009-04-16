@@ -16,7 +16,7 @@
   </description>
 
   <properties>
-    <nuxeo.webengine.version>${nuxeo.platform.version}</nuxeo.webengine.version>
+    <nuxeo.webengine.version>${nuxeo.features.version}</nuxeo.webengine.version>
     <nuxeo.ear.assembly>nuxeo</nuxeo.ear.assembly>
     <nuxeo.ear>${nuxeo.ear.assembly}.ear</nuxeo.ear>
   </properties>
@@ -547,7 +547,7 @@
     <dependency>
       <groupId>org.nuxeo.ecm.webengine</groupId>
       <artifactId>nuxeo-webengine-core</artifactId>
-      <version>${nuxeo.platform.version}</version>
+      <version>${nuxeo.webengine.version}</version>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
