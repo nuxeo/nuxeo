@@ -20,8 +20,9 @@
     <nuxeo.runtime.version>1.5-SNAPSHOT</nuxeo.runtime.version>
     <nuxeo.core.version>1.5-SNAPSHOT</nuxeo.core.version>
     <nuxeo.theme.version>5.2-SNAPSHOT</nuxeo.theme.version>
-    <nuxeo.ear.assembly>nuxeo</nuxeo.ear.assembly>
     <nuxeo.platform.version>5.2-SNAPSHOT</nuxeo.platform.version>
+    <nuxeo.webengine.version>5.2-SNAPSHOT</nuxeo.webengine.version>
+    <nuxeo.services.version>5.2-SNAPSHOT</nuxeo.services.version>
   </properties>
 
   <modules>
@@ -67,6 +68,7 @@
     <module>nuxeo-platform-io-client</module>
     <module>nuxeo-platform-audit-io</module>
     <module>nuxeo-platform-relations-io</module>
+    <module>nuxeo-platform-wiki</module>
   </modules>
 
   <dependencyManagement>
@@ -814,6 +816,11 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-rendering</artifactId>
+        <version>${nuxeo.services.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-ear</artifactId>
         <version>${nuxeo.platform.version}</version>
         <type>pom</type>
@@ -856,6 +863,18 @@
         <version>${nuxeo.runtime.version}</version>
         <scope>test</scope>
       </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.webengine</groupId>
+        <artifactId>nuxeo-webengine-core</artifactId>
+        <version>${nuxeo.webengine.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.webengine</groupId>
+        <artifactId>nuxeo-webengine-base</artifactId>
+        <version>${nuxeo.webengine.version}</version>
+      </dependency>
+
+
     </dependencies>
   </dependencyManagement>
 
