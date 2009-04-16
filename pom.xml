@@ -74,9 +74,12 @@
     <module>nuxeo-runtime</module>
     <module>nuxeo-core</module>
     <module>nuxeo-theme</module>
-    <module>nuxeo-platform</module>
+    <module>nuxeo-services</module>
+    <module>nuxeo-jsf</module>
+    <module>nuxeo-features</module>
     <module>nuxeo-shell</module>
     <module>nuxeo-webengine</module>
+    <module>nuxeo-dm</module>
     <module>nuxeo-distribution</module>
   </modules>
 
