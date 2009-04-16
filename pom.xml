@@ -49,11 +49,6 @@
     <module>nuxeo-platform-relations-jena-plugin</module>
     <module>nuxeo-platform-relations-web</module>
     <module>nuxeo-platform-relations-facade</module>
-    <module>nuxeo-platform-search-api</module>
-    <module>nuxeo-platform-search-backend-core</module>
-    <module>nuxeo-platform-search-core</module>
-    <module>nuxeo-platform-search-facade</module>
-    <module>nuxeo-platform-search-test</module>
     <module>nuxeo-platform-syndication</module>
     <module>nuxeo-platform-userdata</module>
     <module>nuxeo-platform-userdata-core-contrib</module>
