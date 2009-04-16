@@ -45,7 +45,7 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-ui-web</artifactId>
+      <artifactId>nuxeo-platform-mimetype-api</artifactId>
     </dependency>
 
     <dependency>
