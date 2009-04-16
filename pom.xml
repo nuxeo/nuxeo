@@ -64,6 +64,9 @@
     <module>nuxeo-platform-audit-io</module>
     <module>nuxeo-platform-relations-io</module>
     <module>nuxeo-platform-wiki</module>
+    <module>nuxeo-webengine-base</module>
+    <module>nuxeo-webengine-sites</module>
+    <module>nuxeo-webengine-admin</module>
   </modules>
 
   <dependencyManagement>
@@ -810,15 +813,25 @@
         <version>${nuxeo.features.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.nuxeo.ecm.webengine</groupId>
+        <artifactId>nuxeo-webengine-base</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.webengine</groupId>
+        <artifactId>nuxeo-webengine-sites</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.webengine</groupId>
+        <artifactId>nuxeo-webengine-admin</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+
+      <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-rendering</artifactId>
         <version>${nuxeo.services.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-ear</artifactId>
-        <version>${nuxeo.features.version}</version>
-        <type>pom</type>
       </dependency>
 
       <!-- scope test -->
@@ -865,7 +878,7 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.webengine</groupId>
-        <artifactId>nuxeo-webengine-base</artifactId>
+        <artifactId>nuxeo-webengine-ui</artifactId>
         <version>${nuxeo.webengine.version}</version>
       </dependency>
 

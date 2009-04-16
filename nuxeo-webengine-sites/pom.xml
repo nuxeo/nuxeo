@@ -4,8 +4,8 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.nuxeo.ecm.webengine</groupId>
-    <artifactId>nuxeo-webengine-parent</artifactId>
+    <groupId>org.nuxeo.ecm.platform</groupId>
+    <artifactId>nuxeo-features-parent</artifactId>
     <version>5.2-SNAPSHOT</version>
   </parent>
 
@@ -51,17 +51,14 @@
     <dependency>
       <groupId>org.nuxeo.ecm.webengine</groupId>
       <artifactId>nuxeo-webengine-core</artifactId>
-      <version>${nuxeo.webengine.version}</version>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.webengine</groupId>
       <artifactId>nuxeo-webengine-base</artifactId>
-      <version>${nuxeo.webengine.version}</version>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.webengine</groupId>
        <artifactId>nuxeo-webengine-ui</artifactId>
-      <version>${nuxeo.webengine.version}</version>
     </dependency>
 
     <dependency>
