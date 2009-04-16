@@ -26,6 +26,7 @@
     <module>nuxeo-platform-ui-api</module>
     <module>nuxeo-platform-ui-web-compat</module>
     <module>nuxeo-platform-ui-web</module>
+    <module>nuxeo-platform-forms-layout-client</module>
   </modules>
 
   <dependencyManagement>
@@ -95,6 +96,11 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-mimetype-api</artifactId>
+        <version>${nuxeo.services.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-forms-layout-api</artifactId>
         <version>${nuxeo.services.version}</version>
       </dependency>
       <dependency>

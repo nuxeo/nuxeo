@@ -23,8 +23,10 @@
   </properties>
 
   <modules>
+    <module>nuxeo-platform-ui-api</module>
     <module>nuxeo-platform-ui-web-compat</module>
     <module>nuxeo-platform-ui-web</module>
+    <module>nuxeo-platform-forms-layout-client</module>
   </modules>
 
   <dependencyManagement>
