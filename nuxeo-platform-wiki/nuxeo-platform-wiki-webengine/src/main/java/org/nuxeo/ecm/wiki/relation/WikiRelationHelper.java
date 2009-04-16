@@ -29,8 +29,8 @@ import org.nuxeo.ecm.platform.relations.api.RelationManager;
 import org.nuxeo.ecm.platform.relations.api.Statement;
 import org.nuxeo.ecm.platform.relations.api.impl.LiteralImpl;
 import org.nuxeo.ecm.platform.relations.api.impl.StatementImpl;
-import org.nuxeo.ecm.webengine.util.RelationConstants;
-import org.nuxeo.ecm.webengine.util.RelationHelper;
+import org.nuxeo.ecm.platform.relations.api.util.RelationConstants;
+import org.nuxeo.ecm.platform.relations.api.util.RelationHelper;
 import org.nuxeo.ecm.wiki.listener.WikiHelper;
 
 public class WikiRelationHelper {

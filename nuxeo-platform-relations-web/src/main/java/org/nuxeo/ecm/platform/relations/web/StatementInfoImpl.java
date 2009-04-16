@@ -27,6 +27,7 @@ import org.nuxeo.ecm.platform.relations.api.Resource;
 import org.nuxeo.ecm.platform.relations.api.Statement;
 import org.nuxeo.ecm.platform.relations.api.Subject;
 import org.nuxeo.ecm.platform.relations.api.impl.RelationDate;
+import org.nuxeo.ecm.platform.relations.api.util.RelationConstants;
 
 /**
  * Statement representation for easier display.
