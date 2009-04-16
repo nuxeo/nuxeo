@@ -40,7 +40,6 @@
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-jcr-connector-test</artifactId>
-      <version>${nuxeo.core.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -51,7 +50,6 @@
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-usermanager-core</artifactId>
-      <version>${nuxeo.platform.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
