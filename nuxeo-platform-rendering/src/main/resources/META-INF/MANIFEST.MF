@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo ECM Platform Site Add On
+Bundle-SymbolicName: org.nuxeo.ecm.platform.rendering;singleton:=true
+Require-Bundle: org.nuxeo.ecm.core.api,
+ freemarker
+Nuxeo-Require: org.nuxeo.ecm.core.api
+Bundle-ClassPath: .,lib/wem-2.0.2.jar
+Nuxeo-Component: OSGI-INF/freemarker-engine.xml
+Provide-Package: org.nuxeo.ecm.platform.rendering.api,
+ org.nuxeo.ecm.platform.rendering.fm,
+ org.nuxeo.ecm.platform.rendering.fm.adapters,
+ org.nuxeo.ecm.platform.rendering.fm.extensions,
+ org.nuxeo.ecm.platform.rendering.test,
+ org.nuxeo.ecm.platform.rendering.wiki,
+ org.nuxeo.ecm.platform.rendering.wiki.extensions

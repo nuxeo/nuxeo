@@ -70,6 +70,7 @@
     <module>nuxeo-platform-el</module>
     <module>nuxeo-platform-convert</module>
     <module>nuxeo-platform-forms-layout-api</module>
+    <module>nuxeo-platform-rendering</module>
   </modules>
 
   <dependencyManagement>
