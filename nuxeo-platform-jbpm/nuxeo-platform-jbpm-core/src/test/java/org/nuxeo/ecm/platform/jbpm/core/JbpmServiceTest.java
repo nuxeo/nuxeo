@@ -64,7 +64,7 @@ public class JbpmServiceTest extends RepositoryOSGITestCase {
         deployBundle("org.nuxeo.ecm.platform.usermanager");
         deployBundle("org.nuxeo.ecm.directory.types.contrib");
         deployBundle("org.nuxeo.ecm.directory.sql");
-        deployBundle("org.nuxeo.ecm.default.config");
+        deployContrib("org.nuxeo.ecm.platform.jbpm.core.test", "OSGI-INF/jbpmService-contrib.xml");
 
         deployBundle(JbpmTestConstants.CORE_BUNDLE_NAME);
         deployBundle(JbpmTestConstants.TESTING_BUNDLE_NAME);
