@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.core.repository.jcr.versioning.Versioning.custom" version="1.0">
+
+   <documentation>
+      The custom Versioning component used for tests
+    </documentation>
+
+	<property name="versioningService" value="org.nuxeo.ecm.core.versioning.custom.CustomVersioningService"/>
+
+ 	<implementation class="org.nuxeo.ecm.core.repository.jcr.versioning.Versioning"/>
+
+</component>

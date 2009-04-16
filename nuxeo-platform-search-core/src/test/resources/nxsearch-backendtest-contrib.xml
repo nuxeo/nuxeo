@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.core.search.testing.backend.common">
+
+  <extension target="org.nuxeo.ecm.core.search.service.SearchServiceImpl"
+    point="indexableDocType">
+
+    <indexableDocType name="Book">
+      <resource>dublincore</resource>
+      <resource>book</resource>
+    </indexableDocType>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.search.service.SearchServiceImpl"
+    point="resource">
+
+    <resource name="dublincore" prefix="dc" type="schema"
+      class="org.nuxeo.ecm.core.search.api.client.indexing.resources.document.impl.DocumentIndexableResourceImpl">
+      <field name="title" analyzer="standard" type="Text" stored="true"
+        indexed="true" sortable="true" binary="false"/>
+    </resource>
+
+    <resource name="book" prefix="bk" type="schema"
+      class="org.nuxeo.ecm.core.search.api.client.indexing.resources.document.impl.DocumentIndexableResourceImpl">
+      <field name="barcode" analyzer="standard" stored="true" indexed="true"
+        type="Keyword" binary="false"/>
+
+      <field name="frenchtitle" analyzer="french" stored="true" indexed="true"
+        type="Text" binary="false"/>
+
+      <field name="category" analyzer="standard" stored="true" indexed="true"
+        type="Keyword" binary="false"/>
+
+      <field name="tags" analyzer="standard" stored="true" indexed="true"
+        type="Keyword" binary="false" multiple="true"/>
+
+      <field name="abstract" analyzer="standard" stored="true" indexed="false"
+        type="Text" binary="false"/>
+
+      <field name="published" stored="true" indexed="true" type="Date"
+        binary="false"/>
+
+    </resource>
+
+      </extension>
+
+      </component>

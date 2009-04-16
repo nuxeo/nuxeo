@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.search.testing.fulltextall">
+	<extension
+		target="org.nuxeo.ecm.core.search.service.SearchServiceImpl"
+		point="fullTextField">
+		<fullText name="ecm:fulltext" analyzer="french"
+			blobExtractorName="nuxeoTransform">
+			<field>*:*</field>
+			<mimetype name="application/pdf">pdf2text</mimetype>
+			<mimetype name="application/ms-word">word2text</mimetype>
+			<mimetype name=".*/.*">any2text</mimetype>
+		</fullText>
+	</extension>
+</component>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- an example of schema with a complex property -->
+<xs:schema xmlns:nxt="http://nuxeo.org/ecm/test/schemas" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://nuxeo.org/ecm/test/schemas">
+ 
+  <!-- dest + date externe -->
+  <xs:element name="tasks" type="nxt:tasks"/>
+
+  <xs:complexType name="tasks">
+    <xs:sequence>
+      <xs:element maxOccurs="unbounded" minOccurs="0" name="rec" type="nxt:task"/>
+    </xs:sequence>
+  </xs:complexType>
+  
+  <xs:complexType name="task">
+    <xs:sequence>
+      <xs:element name="what" type="xs:string"/>
+      <xs:element name="when" type="xs:date"/>
+    </xs:sequence>
+  </xs:complexType>
+
+</xs:schema>

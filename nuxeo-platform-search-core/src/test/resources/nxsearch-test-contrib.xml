@@ -1,0 +1,147 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.search.testing">
+        <extension
+                target="org.nuxeo.ecm.core.search.service.SearchServiceImpl"
+                point="searchEngineBackend">
+                <searchEngineBackend name="fake" default="true"
+                        class="org.nuxeo.ecm.core.search.FakeSearchEnginePlugin">
+                        <configurationFileName>fake.xml</configurationFileName>
+                </searchEngineBackend>
+        </extension>
+        <extension
+                target="org.nuxeo.ecm.core.search.service.SearchServiceImpl"
+                point="fullTextField">
+                <fullText name="ecm:fulltext" analyzer="french"
+                        blobExtractorName="nuxeoTransform">
+                        <field>dublincore:title</field>
+                        <field>dublincore:description</field>
+                        <field>file:content</field>
+                        <field>fake:fake</field>
+                        <mimetype name="application/pdf">pdf2text</mimetype>
+                        <mimetype name="application/ms-word">word2text</mimetype>
+                        <mimetype name=".*/.*">any2text</mimetype>
+                </fullText>
+        </extension>
+        <extension
+                target="org.nuxeo.ecm.core.search.service.SearchServiceImpl"
+                point="indexableDocType">
+                <indexableDocType name="File" indexAllSchemas="true">
+                        <resource>dublincore</resource>
+                        <excludedSchema>common</excludedSchema>
+                        <excludedSchema>Versionable</excludedSchema>
+                        <excludedSchema>Downloadable</excludedSchema>
+                </indexableDocType>
+                <indexableDocType indexAllSchemas="true" name="Domain" />
+                <indexableDocType indexAllSchemas="true" name="MyDocType" />
+        </extension>
+        <extension
+                target="org.nuxeo.ecm.core.search.service.SearchServiceImpl"
+                point="resource">
+                <resource name="fake" indexAllFields="true" type="schema">
+                        <excludedField>ef1</excludedField>
+                        <excludedField>ef2</excludedField>
+                        <field name="fake" analyzer="standard" stored="false"
+                                indexed="false" type="Text" binary="True">
+                                <termVector propName="x">y</termVector>
+                                <termVector propName="z">x</termVector>
+                        </field>
+                        <field name="pipe" type="path" stored="true" indexed="true">
+                        <properties name="pathSeparator">|</properties>
+                        </field>
+                </resource>
+                <resource name="dublincore" prefix="dc" indexAllFields="true"
+                        type="schema">
+                        <excludedField>subjects</excludedField>
+                        <excludedField>rights</excludedField>
+                        <excludedField>source</excludedField>
+                        <excludedField>coverage</excludedField>
+                        <excludedField>modified</excludedField>
+                        <excludedField>issued</excludedField>
+                        <excludedField>valid</excludedField>
+                        <excludedField>expired</excludedField>
+                        <excludedField>format</excludedField>
+                        <excludedField>language</excludedField>
+                        <field name="title" analyzer="standard" stored="true"
+                                indexed="true" sortable="true" type="Text" binary="false" />
+                        <field name="description" analyzer="standard" stored="true"
+                                indexed="true" type="Text" binary="false" />
+                        <field name="contributors" analyzer="default" stored="true"
+                                indexed="true" type="keyword" binary="false" multiple="true" />
+                </resource>
+                <resource name="ecm" prefix="ecm" indexAllFields="true"
+                        type="documentBuiltins">
+                        <field name="id" analyzer="keyword" stored="true"
+                                indexed="true" sortable="false" type="keyword">
+                        </field>
+                        <field name="qid" analyzer="keyword" stored="true"
+                                indexed="true" sortable="false" type="keyword">
+                        </field>
+                        <field name="uuid" analyzer="keyword" stored="true"
+                                indexed="true" sortable="false" type="keyword">
+                        </field>
+                        <field name="name" analyzer="keyword" stored="true"
+                                indexed="true" sortable="false" type="keyword">
+                        </field>
+                        <field name="parentId" analyzer="keyword" stored="true"
+                                indexed="true" sortable="false" type="keyword">
+                        </field>
+                        <field name="primaryType" analyzer="keyword" stored="true"
+                                indexed="true" sortable="false" type="keyword">
+                        </field>
+                        <field name="path" stored="true" indexed="true"
+                                sortable="false" type="Path">
+                        </field>
+                        <field name="url" analyzer="keyword" stored="true"
+                                indexed="true" sortable="false" type="keyword">
+                        </field>
+                        <field name="currentLifeCycleState" analyzer="keyword"
+                                stored="true" indexed="true" sortable="false" type="keyword">
+                        </field>
+                        <field name="versionLabel" analyzer="keyword" stored="true"
+                                indexed="true" sortable="false" type="keyword">
+                        </field>
+                        <field name="isCheckedInVersion" analyzer="boolean"
+                                stored="true" indexed="true" sortable="false" type="boolean">
+                        </field>
+                        <field name="isProxy" analyzer="boolean" stored="true"
+                                indexed="true" sortable="false" type="boolean">
+                        </field>
+                        <field name="repositoryName" analyzer="keyword"
+                                stored="true" indexed="true" sortable="false" type="keyword">
+                        </field>
+                        <field name="mixinType" analyzer="default" stored="true"
+                                indexed="true" type="keyword" binary="false" multiple="true" />
+                </resource>
+        </extension>
+        <extension
+                target="org.nuxeo.ecm.core.search.service.SearchServiceImpl"
+                point="indexingEvent">
+                <indexingEvent name="modify" action="ReIndex" />
+                <indexingEvent name="secu" action="UnIndex" recursive="true">
+                        <resource>security</resource>
+                </indexingEvent>
+        </extension>
+        <extension
+                target="org.nuxeo.ecm.core.search.service.SearchServiceImpl"
+                point="blobExtractor">
+                <blobExtractor name="nuxeoTransform"
+                        class="org.nuxeo.ecm.core.search.blobs.NXTransformBlobExtractor" />
+        </extension>
+        <extension
+                target="org.nuxeo.ecm.core.search.service.SearchServiceImpl"
+                point="resourceType">
+                <resourceType name="schema"
+                        factoryClass="org.nuxeo.ecm.core.search.api.client.indexing.resources.document.factory.DocumentIndexableResourceFactory" />
+        </extension>
+        <extension
+                target="org.nuxeo.ecm.core.search.service.SearchServiceImpl"
+                point="resourceType">
+                <resourceType name="documentBuiltins"
+                        factoryClass="org.nuxeo.ecm.core.search.api.client.indexing.resources.document.factory.DocumentBuiltinsIndexableResourceFactory" />
+        </extension>
+        <extension
+                target="org.nuxeo.ecm.core.search.service.SearchServiceImpl"
+                point="indexingThreadPool">
+                <indexingThreadPool maxPoolSize="16" />
+        </extension>
+</component>

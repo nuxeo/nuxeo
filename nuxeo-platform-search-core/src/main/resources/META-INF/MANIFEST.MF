@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo ECM Search Core
+Bundle-SymbolicName: org.nuxeo.ecm.platform.search;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Category: search,stateful
+Eclipse-LazyStart: false
+Nuxeo-Component: OSGI-INF/nxsearch-framework.xml,
+  OSGI-INF/nxsearch-contrib.xml
+Require-Bundle: org.nuxeo.ecm.platform.search.api,
+  org.nuxeo.ecm.core.api,
+  org.nuxeo.ecm.core.convert.api

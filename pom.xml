@@ -36,6 +36,11 @@
     <module>nuxeo-platform-directory-multi</module>
     <module>nuxeo-platform-directory-types-contrib</module>
     <module>nuxeo-platform-dublincore</module>
+    <module>nuxeo-platform-search-api</module>
+    <module>nuxeo-platform-search-core</module>
+    <module>nuxeo-platform-search-facade</module>
+    <module>nuxeo-platform-search-backend-core</module>
+    <module>nuxeo-platform-search-test</module>
     <module>nuxeo-platform-filemanager-core</module>
     <module>nuxeo-platform-filemanager-core-listener</module>
     <module>nuxeo-platform-filemanager-api</module>

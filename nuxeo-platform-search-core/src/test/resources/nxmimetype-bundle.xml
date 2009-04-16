@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService">
+
+	<implementation	class="org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService"/>
+
+  <extension-point name="mimetype">
+    <object
+      class="org.nuxeo.ecm.platform.mimetype.service.MimetypeDescriptor" />
+    <object
+      class="org.nuxeo.ecm.platform.mimetype.service.ExtensionDescriptor" />
+  </extension-point>
+
+	<extension  target="org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService" point="mimetype">
+		<mimetype normalized="application/msword" binary="True" iconPath="word.png">
+			<mimetypes>
+			  <mimetype>application/msword</mimetype>
+			  <mimetype>app-ms-word-whatever</mimetype>
+			</mimetypes>
+			<extensions>
+				<extension>doc</extension>
+			<extension>fake</extension>
+			</extensions>
+		</mimetype>
+	</extension>
+
+	<extension  target="org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService" point="mimetype">
+		<mimetype normalized="application/pdf" binary="True" iconPath="pdf.png">
+			<mimetypes>
+				<mimetype>application/pdf</mimetype>
+			</mimetypes>
+			<extensions>
+				<extension>pdf</extension>
+			</extensions>
+		</mimetype>
+	</extension>
+
+</component>
+
