@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.webapp.resultsprovider.default">
+
+  <extension
+    target="org.nuxeo.ecm.webapp.pagination.ResultsProviderService"
+    point="model">
+
+    <resultsProvider name="SIMPLE_SEARCH" farm="searchActions"/>
+    <resultsProvider name="ADVANCED_SEARCH" farm="queryModelActions"/>
+    <resultsProvider name="USER_DOCUMENTS" farm="dashboardActions"/>
+    <resultsProvider name="USER_SECTIONS" farm="dashboardActions"/>
+    <resultsProvider name="USER_DELETED_DOCUMENTS" farm="deleteActions"/>
+    <resultsProvider name="USER_WORKSPACES" farm="dashboardActions"/>
+    <resultsProvider name="USER_SITES" farm="dashboardActions"/>
+    <resultsProvider name="DOMAIN_DOCUMENTS" farm="dashboardActions"/>
+    <resultsProvider name="DOMAIN_PUBLISHED_DOCUMENTS" farm="dashboardActions"/>
+    <!-- resultsProvider name="CURRENT_DOC_CHILDREN" farm="documentChildrenFarm"/-->
+    <resultsProvider name="CURRENT_DOC_CHILDREN" farm="documentChildrenSearchFarm"/>
+    <resultsProvider name="CURRENT_DOC_DELETED_CHILDREN" farm="deleteActions"/>
+    <resultsProvider name="SEARCH_BEAN_NXQL_PROVIDER" farm="searchActions"/>
+
+  </extension>
+
+</component>

@@ -1,0 +1,24 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+  <ui:include src="/incl/document_actions.xhtml" />
+  <nxu:methodResult name="provider" value="#{resultsProvidersCache.get('CURRENT_DOC_CHILDREN')}" >
+
+  <ui:decorate template="/incl/documents_table.xhtml">
+    <ui:param name="documents" value="#{documentActions.sectionChildrenSelectModel}" />
+    <ui:param name="showCheckboxes" value="#{true}" />
+    <ui:param name="provider" value="#{provider}" />
+    <ui:param name="providerName" value="CURRENT_DOC_CHILDREN" />
+    <ui:param name="listName" value="CURRENT_SELECTION_SECTIONS" />
+    <ui:define name="buttons">
+      <ui:include src="/incl/section_clipboard.xhtml" />
+    </ui:define>
+  </ui:decorate>
+
+  </nxu:methodResult>
+</div>

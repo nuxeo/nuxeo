@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.CoreService">
+
+  <implementation class="org.nuxeo.ecm.core.CoreService"/>
+
+  <service>
+    <provide interface="org.nuxeo.ecm.core.CoreService" />
+  </service>
+
+  <extension-point name="sessionFactory">
+    <object
+      class="org.nuxeo.ecm.core.CoreServiceFactoryDescriptor" />
+  </extension-point>
+
+  <extension-point name="versionRemovalPolicy">
+    <object
+      class="org.nuxeo.ecm.core.CoreServicePolicyDescriptor" />
+  </extension-point>
+
+</component>

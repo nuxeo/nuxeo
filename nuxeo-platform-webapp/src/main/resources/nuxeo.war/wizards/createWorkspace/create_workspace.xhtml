@@ -1,0 +1,58 @@
+<div
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax">
+
+    <h:form enctype="multipart/form-data">
+    <div id="content" class="wizardFrame">
+
+    <table class="dataInput">
+    <tbody>
+	    <tr>
+		    <td class="labelColumn">
+			    <h:outputText value="${messages['title']}"
+			      styleClass="required" />
+		    </td>
+			<td class="fieldColumn">
+			    <h:inputText id="title"
+			      value="#{tmpWorkspace.dublincore.title}"
+			      class="dataInputText"
+			      required="true"/>
+			    <h:message styleClass="errorMessage" for="title" />
+			</td>
+		</tr>
+
+	    <tr>
+		    <td class="labelColumn">
+			    <h:outputText value="${messages['description']}" />
+		    </td>
+			<td class="fieldColumn">
+			    <h:inputTextarea id="description"
+			      value="#{tmpWorkspace.dublincore.description}"
+			      class="dataInputText"/>
+			    <h:message styleClass="errorMessage" for="description" />
+			</td>
+		</tr>
+        <tr>
+          <td class="labelColumn">
+            <h:outputText value="#{messages['workspace.wizard.useTemplate']}" rendered="#{ !empty availableWorkspaceTemplates}"/>
+          </td>
+          <td class="fieldColumn">
+           <h:selectBooleanCheckbox value="#{workspaceActions.useTemplate}" rendered="#{ !empty availableWorkspaceTemplates}"/>
+          </td>
+        </tr>
+    </tbody>
+	</table>
+
+
+
+    <div class="wizardButtonBar">
+   	  <h:commandButton styleClass="button" value="#{messages['wizard.cancel']}" action="cancel" immediate="true"/>
+	  <a4j:commandButton styleClass="button" action="toTemplateDecision" value="#{messages['wizard.next']}" reRender="wizard"/>
+	</div>
+</div>
+</h:form>
+
+</div>

@@ -1,0 +1,184 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  class="massEditForm">
+
+<table width="100%"><tbody><tr><td valign="top" width="50%">
+
+
+<div class="foldableBox"><h3 class="unfolded"><a href="#nogo" onclick="return toggleBox(this)">
+ <h:outputText
+  value="#{messages['label.massedit.preview.changingDocuments']}" />
+</a></h3><div class="boxBody">
+
+  <h:dataTable id="changingDocumentsListId"
+      styleClass="dataList"
+      var="document"
+      value="#{massEditActions.changingDocuments}"
+      columnClasses="iconColumn,"
+      rowClasses="dataRowEven,dataRowOdd">
+     <h:column>
+        <nxu:graphicImage value="#{nxd:iconPath(document)}" styleClass="iconImage" />
+     </h:column>
+     <h:column>
+        <h:commandLink value="#{nxd:titleOrId(document)}" immediate="true"
+          action="#{massEditActions.viewDocument}" >
+        </h:commandLink>
+     </h:column>
+  </h:dataTable>
+</div>
+</div>
+</td><td valign="top" width="50%">
+<div class="foldableBox"><h3 class="folded"><a href="#nogo" onclick="return toggleBox(this)">
+  <h:outputText value="#{messages['label.massedit.preview.unchangingDocuments']}" />
+</a></h3>
+<div class="boxBody">
+  <h:dataTable id="unchangingDocumentsListId"
+      styleClass="dataList"
+      var="document"
+      value="#{massEditActions.unchangingDocuments}"
+      columnClasses="iconColumn,"
+      rowClasses="dataRowEven,dataRowOdd">
+        <h:column>
+        <nxu:graphicImage value="#{nxd:iconPath(document)}" styleClass="iconImage" />
+        </h:column>
+        <h:column>
+        <h:commandLink value="#{nxd:titleOrId(document)}" immediate="true"
+          action="#{massEditActions.viewDocument}" >
+        </h:commandLink>
+</h:column>
+</h:dataTable>
+</div>
+</div>
+
+</td></tr></tbody></table>
+
+  <h:dataTable var="field" value="#{massEditActions.previewLayout}"
+    class="dataOutput" columnClasses="boldColumn,,focusColumn"
+    rowClasses="dataRowEven,dataRowOdd">
+    <h:column>
+    <f:facet name="header">
+          <h:outputText value="#{messages['label.massedit.preview.field']}" />
+    </f:facet>
+      <h:outputText value="${messages[field.fieldName]}"
+        styleClass="#{nxu:test(field.required, 'required', '')}"
+        rendered="${empty field.label}" />
+      <h:outputText value="${messages[field.label]}"
+        styleClass="#{nxu:test(field.required, 'required', '')}"
+        rendered="${not empty field.label}" />
+    </h:column>
+
+    <h:column>
+    <f:facet name="header">
+          <h:outputText value="#{messages['label.massedit.preview.formerValue']}" />
+    </f:facet>
+      <h:outputText value="#{docModelExistingSelectVerbose[field.schemaName][field.fieldName]}"
+        rendered="${field.jsfComponent=='h:inputText'}" />
+
+      <h:outputText value="#{docModelExistingSelectVerbose[field.schemaName][field.fieldName]}"
+        rendered="${field.jsfComponent=='h:inputTextarea'}" />
+
+      <h:outputText value="#{docModelExistingSelectVerbose[field.schemaName][field.fieldName]}"
+        rendered="${field.jsfComponent=='nxu:editor'}" escape="false" />
+
+      <h:outputText value="#{docModelExistingSelectVerbose[field.schemaName][field.fieldName]}"
+        rendered="${field.jsfComponent=='t:inputCalendar'}">
+        <f:convertDateTime pattern="#{nxu:basicDateFormater()}"
+          timeZone="#{timeZone}" />
+      </h:outputText>
+
+    <!--
+    "TOUT" not found in directories..
+      <nxdir:directoryEntryOutput
+        value="#{docModelExistingSelectVerbose[field.schemaName][field.fieldName]}"
+        directoryName="#{field.directory}"
+        rendered="${field.jsfComponent=='nxdir:selectOneListbox'}" />
+     -->
+
+
+      <nxu:dataList
+          var="item"
+          value="#{docModelExistingSelectVerbose[field.schemaName][field.fieldName]}"
+          layout="simple"
+          rendered="${field.jsfComponent=='nxdir:selectManyListbox'}">
+        <div>
+          <nxdir:directoryEntryOutput
+            value="#{item}"
+            directoryName="#{field.directory}" />
+        </div>
+      </nxu:dataList>
+
+      <nxu:dataList
+          value="#{fictiveDocumentModel[field.schemaName][field.fieldName]}"
+          var="entry"
+          layout="simple"
+          rendered="${field.jsfComponent=='nxdir:chainSelect'}">
+      <nxdir:chainSelectOutput
+        directoryNameList="#{field.directory}"
+        value="#{entry}"
+        entrySeparator=" "
+        display="idAndLabel"
+      />
+      </nxu:dataList>
+
+    </h:column>
+
+    <h:column>
+  <f:facet name="header">
+          <h:outputText value="#{messages['label.massedit.preview.newValue']}" />
+    </f:facet>
+      <h:outputText value="#{fictiveDocumentModel[field.schemaName][field.fieldName]}"
+        rendered="${field.jsfComponent=='h:inputText'}" />
+
+      <h:outputText value="#{fictiveDocumentModel[field.schemaName][field.fieldName]}"
+        rendered="${field.jsfComponent=='h:inputTextarea'}" />
+
+      <h:outputText value="#{fictiveDocumentModel[field.schemaName][field.fieldName]}"
+        rendered="${field.jsfComponent=='nxu:editor'}" escape="false" />
+
+      <h:outputText value="#{fictiveDocumentModel[field.schemaName][field.fieldName]}"
+        rendered="${field.jsfComponent=='t:inputCalendar'}">
+        <f:convertDateTime pattern="#{nxu:basicDateFormater()}"
+          timeZone="#{timeZone}" />
+      </h:outputText>
+
+      <nxdir:directoryEntryOutput
+        value="#{fictiveDocumentModel[field.schemaName][field.fieldName]}"
+        directoryName="#{field.directory}"
+        rendered="${field.jsfComponent=='nxdir:selectOneListbox'}"
+        displayIdAndLabel="true" display="idAndLabel" />
+
+      <nxu:dataList
+          var="item"
+          value="#{fictiveDocumentModel[field.schemaName][field.fieldName]}"
+          layout="simple"
+          rendered="${field.jsfComponent=='nxdir:selectManyListbox'}">
+        <div>
+          <nxdir:directoryEntryOutput
+            value="#{item}"
+            directoryName="#{field.directory}" />
+        </div>
+      </nxu:dataList>
+
+      <nxu:dataList
+          var="entry"
+          value="#{fictiveDocumentModel[field.schemaName][field.fieldName]}"
+          layout="simple"
+          rendered="${field.jsfComponent=='nxdir:chainSelect'}">
+      <nxdir:chainSelectOutput
+        directoryNameList="#{field.directory}"
+        value="#{entry}"
+        entrySeparator=" "
+        display="idAndLabel"
+      />
+      </nxu:dataList>
+
+    </h:column>
+  </h:dataTable>
+
+</div>

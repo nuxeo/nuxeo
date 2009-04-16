@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: NuxeoWeb
+Bundle-SymbolicName: org.nuxeo.ecm.webapp.core.tests
+Bundle-Localization: plugin
+Bundle-Vendor: Nuxeo
+

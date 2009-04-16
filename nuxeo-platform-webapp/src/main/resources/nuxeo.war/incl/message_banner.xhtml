@@ -1,0 +1,23 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+     xmlns:h="http://java.sun.com/jsf/html">
+  <div class="facesStatusMessage">
+    <h:outputText value="#{messages['feedback.correctErrors']}"
+      rendered="#{facesContext.maximumSeverity.ordinal >= 3}"
+      class="errorFeedback" />
+  </div>
+  <div id="facesStatusMessage" class="facesStatusMessage">
+    <h:messages globalOnly="true"
+      infoClass="infoFeedback"
+      warnClass="warningFeedback"
+      errorClass="errorFeedback"/>
+  </div>
+  <script>
+  <!--
+  function HideStatus()
+    {
+    document.getElementById("facesStatusMessage").style.visibility="hidden";
+    }
+  window.setTimeout("HideStatus()",5000);
+  -->
+  </script>
+</div>

@@ -1,0 +1,56 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"><a4j:region
+  rendered="#{documents != null}">
+
+  <h:form id="#{documents.name}">
+    <h:outputText value="#{messages['label.sections.not.defined']}"
+      rendered="#{documents.rowCount == 0}" />
+    <nxu:dataTable id="dataTable" value="#{documents.rows}" var="row"
+      rowClasses="dataRowEven,dataRowOdd" styleClass="dataOutput"
+      rendered="#{documents.rowCount > 0}">
+      <!-- id and selection -->
+      <nxu:column styleClass="iconColumn" rendered="#{showCheckboxes or false}">
+        <!-- XXX AT: select all buggy right now -->
+        <f:facet name="header">
+          <h:selectBooleanCheckbox rendered="false">
+            <a4j:support event="onclick"
+              onsubmit="onSelectAllCheckboxClick('#{documents.name}:dataTable', this.checked)">
+              <a4j:ajaxListener type="org.ajax4jsf.ajax.ForceRender" />
+            </a4j:support>
+          </h:selectBooleanCheckbox>
+        </f:facet>
+        <h:selectBooleanCheckbox value="#{row.selected}"
+          valueChangeListener="#{row.selectionChanged}">
+         <a4j:support event="onclick"
+            onsubmit="disableCheckBoxesIn('#{documents.name}:dataTable')"
+            oncomplete="enableCheckBoxesIn('#{documents.name}:dataTable')">
+            <a4j:ajaxListener type="org.ajax4jsf.ajax.ForceRender" />
+          </a4j:support>
+
+        </h:selectBooleanCheckbox>
+      </nxu:column>
+      <!--  Title -->
+      <nxu:column>
+        <f:facet name="header">
+          <h:outputText value="#{messages['label.publish.header.title']}" />
+        </f:facet>
+        <h:outputText value="#{row.data.treeLabel}" escape="false"/>
+      </nxu:column>
+      <!--  Version of the published document -->
+      <h:column>
+        <f:facet name="header">
+          <h:outputText
+            value="#{messages['label.publish.header.version']}" />
+        </f:facet>
+        <h:outputText value="#{messages[row.data.version]}" />
+      </h:column>
+    </nxu:dataTable>
+    <a4j:outputPanel ajaxRendered="true">
+      <ui:insert name="buttons" />
+    </a4j:outputPanel>
+  </h:form>
+</a4j:region></div>

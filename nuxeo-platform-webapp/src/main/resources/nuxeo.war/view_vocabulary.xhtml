@@ -1,0 +1,229 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<nxthemes:composition xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core">
+
+  <ui:define name="page title">Nuxeo 5 EP</ui:define>
+
+  <ui:define name="body">
+    <div>
+      <h:form>
+
+        <script type="text/javascript">
+                function confirmDeleteVocabularyEntry() {
+                       return confirm("#{messages['label.vocabulary.entry.confirmDelete']}");
+                }
+        </script>
+
+        <p class="directoryBack">
+          <h:commandLink type="submit"
+            value="#{messages['command.directoryBack']}"
+            action="view_vocabularies" />
+        </p>
+        <h3>
+          <h:commandLink
+            actionListener="#{vocabularyActions.toggleAddEntryForm}">
+            <h:graphicImage url="/img/toggle_plus.png"
+              rendered="#{!vocabularyActions.showAddEntryForm}" />
+            <h:graphicImage url="/img/toggle_minus.png"
+              rendered="#{vocabularyActions.showAddEntryForm}" />
+            <h:outputText
+              value="#{messages['title.create.vocabulary.entry']}" />
+          </h:commandLink>
+        </h3>
+      </h:form>
+
+      <h:form id="addEntryForm"
+        rendered="#{vocabularyActions.showAddEntryForm}">
+
+        <div class="vocabularyEntryContent">
+
+          <h4>
+            <h:outputText
+              value="#{messages['title.vocabulary.entry.details']}" />
+          </h4>
+
+          <h:panelGrid columns="2"
+            styleClass="dataInput currentDocumentInformation"
+            columnClasses="relationCreateLabelColumn, relationCreateFieldColumn">
+
+            <h:outputLabel for="id"
+              value="#{messages['label.vocabulary.entry.id']}"
+              styleClass="required" />
+            <h:panelGroup>
+              <h:inputText id="id" required="true"
+                value="#{vocabularyActions.selectedVocabularyEntry.id}"
+                readonly="#{vocabularyActions.commandName1 != 'command.add'}"
+                disabled="#{vocabularyActions.commandName1 != 'command.add'}"
+                styleClass="notEditable" size="30">
+              </h:inputText>
+              <h:message styleClass="errorMessage" for="id" />
+              <h:messages />
+            </h:panelGroup>
+
+            <h:outputLabel for="parent"
+              value="#{messages['label.vocabulary.entry.parent']}"
+              styleClass="required"
+              rendered="#{vocabularyActions.hierarchical}" />
+            <h:panelGroup
+              rendered="#{vocabularyActions.hierarchical}">
+              <h:inputText id="parent" required="#{! vocabularyActions.nullParentAllowed}"
+                value="#{vocabularyActions.selectedVocabularyEntry.parent}"
+                readonly="#{vocabularyActions.commandName1 != 'command.add'}"
+                disabled="#{vocabularyActions.commandName1 != 'command.add'}"
+                styleClass="#{vocabularyActions.style}" size="10">
+              </h:inputText>
+              <h:message styleClass="errorMessage" for="parent" />
+            </h:panelGroup>
+
+            <h:outputLabel for="label"
+              value="#{messages['label.vocabulary.entry.label']}"
+              styleClass="required" />
+            <h:panelGroup>
+              <h:inputText id="label" required="true"
+                value="#{vocabularyActions.selectedVocabularyEntry.label}"
+                readonly="#{!vocabularyActions.editable}"
+                disabled="#{!vocabularyActions.editable}"
+                styleClass="#{vocabularyActions.style}" size="50">
+              </h:inputText>
+              <h:message styleClass="errorMessage" for="label" />
+            </h:panelGroup>
+
+            <h:outputLabel for="obsolete"
+              value="#{messages['label.vocabulary.entry.obsolete']}" />
+            <h:panelGroup>
+              <h:selectOneMenu id="obsolete"
+                value="#{vocabularyActions.selectedVocabularyEntry.obsolete}"
+                readonly="#{!vocabularyActions.editable}"
+                disabled="#{!vocabularyActions.editable}"
+                styleClass="#{vocabularyActions.style}">
+                <f:selectItem itemValue="false" itemLabel="#{messages['label.vocabulary.obsolete.no']}" />
+                <f:selectItem itemValue="true" itemLabel="#{messages['label.vocabulary.obsolete.yes']}" />
+              </h:selectOneMenu>
+              <h:message styleClass="errorMessage" for="obsolete" />
+            </h:panelGroup>
+
+            <h:outputLabel for="ordering"
+              value="#{messages['label.vocabulary.entry.order']}" />
+            <h:panelGroup>
+              <h:inputText id="ordering"
+                value="#{vocabularyActions.selectedVocabularyEntry.ordering}"
+                readonly="#{!vocabularyActions.editable}"
+                disabled="#{!vocabularyActions.editable}"
+                styleClass="#{vocabularyActions.style}" size="10">
+                <f:validateLongRange minimum="0" />
+              </h:inputText>
+              <h:message styleClass="errorMessage" for="ordering" />
+            </h:panelGroup>
+            <h:outputText value=" " />
+            <h:panelGroup>
+              <h:commandButton type="submit"
+                value="#{messages[vocabularyActions.commandName1]}"
+                styleClass="button"
+                action="#{vocabularyActions.addVocabularyEntry}"
+                rendered="#{vocabularyActions.editable}" />
+
+              <h:commandButton type="submit"
+                value="#{messages[vocabularyActions.commandName2]}"
+                styleClass="button"
+                action="#{vocabularyActions.cancel}" />
+            </h:panelGroup>
+          </h:panelGrid>
+
+        </div>
+      </h:form>
+
+      <h:form id="searchVocabularyEntry">
+        <h:panelGrid columns="2"
+            styleClass="dataInput currentDocumentInformation"
+            columnClasses="labelColumn, fieldColumn">
+
+            <h:outputLabel for="idSearchText"
+                value="#{messages['label.vocabulary.entry.id']}" />
+            <h:panelGroup>
+              <h:inputText id="idSearchText"
+                value="#{vocabularyActions.searchCriteria.id}"
+                class="directoryFilter" />
+            </h:panelGroup>
+
+            <h:outputLabel for="labelSearchText"
+            value="#{messages['label.vocabulary.entry.label']}" />
+            <h:panelGroup>
+              <h:inputText id="labelSearchText"
+                value="#{vocabularyActions.searchCriteria.label}"
+                class="directoryFilter" />
+            </h:panelGroup>
+
+            <h:outputLabel for="parentSearchText"
+            value="#{messages['label.vocabulary.entry.parent']}"
+            rendered="#{not empty vocabularyActions.parentIds}" />
+            <h:panelGroup
+              rendered="#{not empty vocabularyActions.parentIds}">
+
+            <h:selectOneMenu value="#{vocabularyActions.searchCriteria.parent}"
+                class="directoryFilter" id="parentSearchText">
+                <f:selectItems value="#{vocabularyActions.parentIds}"/>
+            </h:selectOneMenu>
+            </h:panelGroup>
+
+            <h:commandButton id="searchButton"
+              value="#{messages['command.search']}"
+              action="#{vocabularyActions.searchVocabularyEntries}"
+              class="button" />
+            <h:commandButton id="clearButton"
+              value="#{messages['command.clearSearch']}"
+              action="#{vocabularyActions.clearSearchCriteria}"
+              class="button" />
+        </h:panelGrid>
+      </h:form>
+      <h3>
+        <h:outputText value="#{messages[vocabularyActions.title]}" />
+      </h3>
+      <div>
+        <h:form rendered="#{selectedVocabularyEntries.rowCount != 0}">
+
+          <h:dataTable var="entry" value="${selectedVocabularyEntries}"
+            class="dataOutput" rowClasses="dataRowEven,dataRowOdd"
+            columnClasses=",buttonColumn">
+
+            <h:column>
+              <f:facet name="header">
+                <h:outputText
+                  value="#{messages['label.vocabulary.entry.id.value']}" />
+              </f:facet>
+              <h:outputText value="#{entry.id}" />
+            </h:column>
+
+            <h:column>
+              <f:facet name="header">
+                <h:outputText value="Action" />
+              </f:facet>
+
+              <h:commandButton value="#{messages['command.edit']}"
+                class="button"
+                action="#{vocabularyActions.editVocabularyEntry}" />
+              <h:outputText value=" " />
+
+              <h:commandButton value="#{messages['command.view']}"
+                class="button"
+                action="#{vocabularyActions.viewVocabularyEntry}" />
+              <h:outputText value=" " />
+
+              <h:commandButton value="#{messages['command.delete']}"
+                class="button"
+                action="#{vocabularyActions.deleteVocabularyEntry}"
+                onclick="return confirmDeleteVocabularyEntry()" />
+            </h:column>
+
+          </h:dataTable>
+        </h:form>
+      </div>
+    </div>
+  </ui:define>
+
+
+</nxthemes:composition>

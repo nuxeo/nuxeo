@@ -1,0 +1,60 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<nxthemes:composition xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core">
+
+<ui:define name="page title">
+  <h:outputText value="#{messages['title.search.form']}"/>
+</ui:define>
+
+<ui:define name="body">
+
+  <h:form id="searchForm">
+
+    <div class="foldableBox">
+      <h3 class="unfolded">
+        <a href="#nologo" onclick="return toggleBox(this)">
+          <h:outputText value="#{messages['label.search.criteria']}"/>
+        </a>
+      </h3>
+      <div class="boxBody">
+        <ui:include src="/search/search_simpleform.xhtml" />
+      </div>
+    </div>
+
+    <div class="foldableBox">
+      <h3 class="unfolded">
+        <a href="#nologo" onclick="return toggleBox(this)">
+          <h:outputText value="#{messages['label.search.results']}"/>
+        </a>
+      </h3>
+      <div class="boxBody">
+        <ui:include src="/search/search_columns.xhtml" />
+      </div>
+    </div>
+
+    <ui:include src="/search/search_buttons.xhtml" />
+  </h:form>
+
+  <f:subview rendered="#{currentNuxeoPrincipal.administrator}">
+    <div class="foldableBox">
+      <h3 class="unfolded">
+        <a href="#nologo" onclick="return toggleBox(this)">
+          <h:outputText value="#{messages['label.search.administrate']}"/>
+        </a>
+      </h3>
+      <div class="boxBody">
+        <ui:include src="/search/search_admin.xhtml" />
+      </div>
+    </div>
+  </f:subview>
+
+</ui:define>
+
+</nxthemes:composition>

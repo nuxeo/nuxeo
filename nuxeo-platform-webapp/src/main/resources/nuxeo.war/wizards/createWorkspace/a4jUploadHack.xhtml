@@ -1,0 +1,14 @@
+<div
+  xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  >
+  <h:form enctype="multipart/form-data">
+    <nxu:inputFile value="#{tmpWorkspace.file.content}" filename="#{tmpWorkspace.file.filename}"/>
+    <h:commandButton styleClass="button" value="#{messages['wizard.upload']}"
+      action="whatever" />
+  </h:form>
+</div>

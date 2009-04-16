@@ -1,0 +1,43 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core">
+
+  <h3>
+    An error occurred
+  </h3>
+
+  <c:if test="${applicationException != null}">
+    <p>
+      <h:outputText value="#{applicationException.localizedMessage}" />
+    </p>
+  </c:if>
+
+<script language="javascript" type="text/javascript">
+function toggleError(id) {
+  var style = document.getElementById(id).style;
+  if ("block" == style.display) {
+    style.display = "none";
+    document.getElementById(id+"Off").style.display = "inline";
+    document.getElementById(id+"On").style.display = "none";
+  } else {
+    style.display = "block";
+    document.getElementById(id+"Off").style.display = "none";
+    document.getElementById(id+"On").style.display = "inline";
+  }
+}
+</script>
+
+  <c:if test="${errorPageActionListener != null}">
+    <a href="#"
+      onclick="javascript:toggleError('stackTrace'); return false;">
+      <span id="stackTraceOff">+</span>
+      <span id="stackTraceOn" style="display: none;">-</span>
+      Show stacktrace
+    </a>
+    <div id="stackTrace" style="display: none;">
+      <h:inputTextarea rows="20" cols="100" readonly="true"
+        value="#{errorPageActionListener.stackTrace}" />
+    </div>
+  </c:if>
+
+</div>

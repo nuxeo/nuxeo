@@ -1,0 +1,61 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+     xmlns:f="http://java.sun.com/jsf/core"
+     xmlns:nxh="http://nuxeo.org/nxweb/html"
+     xmlns:nxu="http://nuxeo.org/nxweb/util"
+     xmlns:nxd="http://nuxeo.org/nxweb/document">
+  <h:form>
+    <div class="action_bar">
+
+      <f:subview rendered="false"><!-- TODO: re-enable once nxh:outputLink works as expected -->
+      <nxu:methodResult name="actions"
+                        value="#{webActions.getActionsList('LIVEEDIT_CREATE_ACTIONS')}">
+        <nxu:dataList layout="simple"
+                      var="action"
+                      value="#{actions}">
+          <!-- This does not work as it works for the nxh:commandLink JSF tags (nested JSF EL evaluations) -->
+          <nxh:outputLink value="#{action.getLink()}">
+            <h:graphicImage value="#{action.icon}" title="#{messages[action.label]}" alt="#{messages[action.label]}"/>
+          </nxh:outputLink>
+        </nxu:dataList>
+      </nxu:methodResult>
+     </f:subview>
+
+     <f:subview rendered="false">
+       <!-- TODO: remove the following hardcoded links once nxh:outputLink is able to perform nested JSF EL evaluations -->
+     </f:subview>
+     <div class="liveEditCreateButtons">
+     <nxh:outputLink value="#{nxd:liveCreateUrl('application/msword', 'File', 'file', 'content', 'filename')}" rendered="#{msword_liveeditable}">
+       <h:graphicImage value="/icons/doc.png" title="#{messages['action.liveedit.create.msword']}"
+        alt="#{messages['action.liveedit.create.msword']}"/>
+     </nxh:outputLink>
+
+     <nxh:outputLink value="#{nxd:liveCreateUrl('application/vnd.ms-excel', 'File', 'file', 'content', 'filename')}" rendered="#{msexcel_liveeditable}">
+       <h:graphicImage value="/icons/xls.png" title="#{messages['action.liveedit.create.msexcel']}"
+        alt="#{messages['action.liveedit.create.msexcel']}"/>
+     </nxh:outputLink>
+
+     <nxh:outputLink value="#{nxd:liveCreateUrl('application/vnd.ms-powerpoint', 'File', 'file', 'content', 'filename')}" rendered="#{mspowerpoint_liveeditable}">
+       <h:graphicImage value="/icons/ppt.png" title="#{messages['action.liveedit.create.mspowerpoint']}"
+        alt="#{messages['action.liveedit.create.mspowerpoint']}"/>
+     </nxh:outputLink>
+
+
+     <nxh:outputLink value="#{nxd:liveCreateUrl('application/vnd.oasis.opendocument.text', 'File', 'file', 'content', 'filename')}" rendered="#{ootext_liveeditable}">
+       <h:graphicImage value="/icons/odt.png" title="#{messages['action.liveedit.create.writer']}"
+    alt="#{messages['action.liveedit.create.writer']}"/>
+    </nxh:outputLink>
+
+   <nxh:outputLink value="#{nxd:liveCreateUrl('application/vnd.oasis.opendocument.spreadsheet', 'File', 'file', 'content', 'filename')}" rendered="#{oocalc_liveeditable}">
+     <h:graphicImage value="/icons/ods.png" title="#{messages['action.liveedit.create.calc']}"
+        alt="#{messages['action.liveedit.create.calc']}"/>
+   </nxh:outputLink>
+
+     <nxh:outputLink value="#{nxd:liveCreateUrl('application/vnd.oasis.opendocument.presentation', 'File', 'file', 'content', 'filename')}" rendered="#{oopresentation_liveeditable}">
+       <h:graphicImage value="/icons/odp.png" title="#{messages['action.liveedit.create.impress']}"
+        alt="#{messages['action.liveedit.create.impress']}"/>
+     </nxh:outputLink>
+
+     </div>
+    </div>
+  </h:form>
+</div>

@@ -1,0 +1,17 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+     xmlns:ui="http://java.sun.com/jsf/facelets"
+     xmlns:nxu="http://nuxeo.org/nxweb/util"
+     xmlns:h="http://java.sun.com/jsf/html">
+<h:panelGroup rendered="#{currentUser.anonymous}">
+<nxu:methodResult name="provider"
+                  value="#{resultsProvidersCache.get('USER_SECTIONS')}">
+  <ui:decorate template="/incl/foldable_box_document_listing.xhtml">
+    <ui:param name="documents" value="#{provider.currentPage}" />
+    <ui:param name="provider" value="#{provider}" />
+    <ui:param name="heading"
+      value="#{messages['title.dashboard.sections']}" />
+    <ui:param name="idParam" value="USER_SECTIONS" />
+  </ui:decorate>
+</nxu:methodResult>
+</h:panelGroup>
+</div>

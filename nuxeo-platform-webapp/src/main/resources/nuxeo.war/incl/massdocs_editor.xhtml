@@ -1,0 +1,128 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  class="massEditForm">
+
+
+<div class="foldableBox"><h3 class="folded"><a href="#nogo" onclick="return toggleBox(this)">
+<h:outputText
+  value="#{messages['label.massedit.preview.changingDocuments']}" />
+</a></h3>
+<div class="boxBody">
+  <h:dataTable id="documentsListId"
+      styleClass="dataList"
+      var="document"
+      value="#{massEditActions.documentsList}"
+      columnClasses="iconColumn,"
+      rowClasses="dataRowEven,dataRowOdd">
+     <h:column>
+       <nxu:graphicImage value="#{nxd:iconPath(document)}" />
+     </h:column>
+     <h:column>
+       <h:commandLink value="#{nxd:titleOrId(document)}" immediate="true"
+         action="#{massEditActions.viewDocument}" >
+        </h:commandLink>
+     </h:column>
+  </h:dataTable>
+</div>
+</div>
+
+<a4j:outputPanel id="dataTable">
+  <h:dataTable
+    class="dataInput" var="field"
+    value="#{massEditActions.changeLayout}"
+    columnClasses="labelColumn, fieldColumn, fieldColumn, fieldColumn focusColumn">
+
+  <h:column>
+    <h:outputText value="${messages[field.fieldName]}"
+      styleClass="#{nxu:test(field.required, 'required', '')}"
+      rendered="${empty field.label}" />
+    <h:outputText value="${messages[field.label]}"
+      styleClass="#{nxu:test(field.required, 'required', '')}"
+      rendered="${not empty field.label}" />
+  </h:column>
+
+  <h:column>
+    <h:selectBooleanCheckbox title="${message['change']}"
+           value="#{changeCheckboxes[field.schemaName][field.fieldName]}" >
+    </h:selectBooleanCheckbox>
+  </h:column>
+
+  <h:column>
+    <h:selectOneListbox id="existingval"
+      rendered="${field.jsfComponent!='nxdir:chainSelect'}"
+      value="#{docModelExistingSelect[field.schemaName][field.fieldName]}">
+      <f:selectItems
+         value="#{currentFieldValues[field.schemaName][field.fieldName]}" />
+    </h:selectOneListbox>
+
+    <h:selectOneListbox id="existingval_chainSelect"
+      rendered="${field.jsfComponent=='nxdir:chainSelect'}"
+      value="#{docModelExistingSelect[field.schemaName][field.fieldName]}">
+      <f:selectItems
+         value="#{currentFieldValues[field.schemaName][field.fieldName]}" />
+    </h:selectOneListbox>
+  </h:column>
+
+  <h:column>
+    <h:inputText id="h_inputText"
+      value="#{fictiveDocumentModel[field.schemaName][field.fieldName]}"
+      class="dataInputText"
+      required="${field.required}"
+      rendered="${field.jsfComponent=='h:inputText'}" />
+    <h:message styleClass="errorMessage" for="h_inputText" />
+
+    <h:inputTextarea id="h_inputTextarea"
+      value="#{fictiveDocumentModel[field.schemaName][field.fieldName]}"
+      required="${field.required}"
+      class="dataInputText"
+      rendered="${field.jsfComponent=='h:inputTextarea'}" />
+    <h:message styleClass="errorMessage" for="h_inputTextarea" />
+
+       <nxu:inputDateTime
+         value="#{fictiveDocumentModel[field.schemaName][field.fieldName]}"
+         format="#{nxu:basicDateFormater()}"
+         id="t_inputCalendar"
+         rendered="${field.jsfComponent=='t:inputCalendar'}"
+         required="${field.required}"
+        />
+
+    <h:message styleClass="errorMessage" for="t_inputCalendar" />
+
+    <nxu:editor id="nxeditor"
+      rendered="${field.jsfComponent=='nxu:editor'}"
+      value="#{fictiveDocumentModel[field.schemaName][field.fieldName]}"
+      required="${field.required}" />
+
+    <nxu:inputFile id="t_inputFileUpload"
+      value="#{fictiveDocumentModel[field.schemaName][field.fieldName]}"
+      filename="#{fictiveDocumentModel.file.filename}"
+      editFilename="false"
+      rendered="${field.jsfComponent=='t:inputFileUpload'}">
+    </nxu:inputFile>
+    <h:message styleClass="errorMessage" for="t_inputFileUpload" />
+
+    <nxdir:selectOneListbox id="nxdir_selectOneListbox"
+      rendered="${field.jsfComponent=='nxdir:selectOneListbox'}"
+      value="#{fictiveDocumentModel[field.schemaName][field.fieldName]}"
+      directoryName="#{field.directory}"
+      required="${field.required}"
+      displayIdAndLabel="${field.displayIdAndLabel}" />
+    <h:message styleClass="errorMessage" for="nxdir_selectOneListbox" />
+
+    <nxdir:selectManyListbox id="nxdir_selectManyListbox"
+      rendered="${field.jsfComponent=='nxdir:selectManyListbox'}"
+      value="#{fictiveDocumentModel[field.schemaName][field.fieldName]}"
+      directoryName="#{field.directory}"
+      required="${field.required}" />
+    <h:message styleClass="errorMessage" for="nxdir_selectManyListbox" />
+
+  </h:column>
+</h:dataTable>
+</a4j:outputPanel> <!-- ui:include src="/incl/document_versioning.xhtml" /--></div>

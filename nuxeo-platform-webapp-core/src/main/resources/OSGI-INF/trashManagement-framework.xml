@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.webapp.trashManagement.TrashManagementService">
+  <implementation
+          class="org.nuxeo.ecm.webapp.trashManagement.TrashManagementService" />
+  <documentation>
+    The TrashManagement service registers a flag that enables / disables the
+    "recycle bin"-like behaviour of the delete action
+
+    @author Narcis Paslaru (npaslaru@nuxeo.com)
+  </documentation>
+  <extension-point name="config">
+    <object
+      class="org.nuxeo.ecm.webapp.trashManagement.TrashConfigDescriptor" />
+  </extension-point>
+  <documentation>
+    Flag for trash management behaviour
+    @author Narcis Paslaru (npaslaru@nuxeo.com)
+  </documentation>
+</component>
