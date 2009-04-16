@@ -303,23 +303,23 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-filemanager-core</artifactId>
-        <version>${nuxeo.features.version}</version>
+        <version>${nuxeo.services.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-filemanager-core-listener</artifactId>
-        <version>${nuxeo.features.version}</version>
+        <version>${nuxeo.services.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-filemanager-facade</artifactId>
-        <version>${nuxeo.features.version}</version>
+        <version>${nuxeo.services.version}</version>
         <type>ejb</type>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-filemanager-api</artifactId>
-        <version>${nuxeo.features.version}</version>
+        <version>${nuxeo.services.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
@@ -480,22 +480,22 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-search-api</artifactId>
-        <version>${nuxeo.features.version}</version>
+        <version>${nuxeo.services.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-search-backend-core</artifactId>
-        <version>${nuxeo.features.version}</version>
+        <version>${nuxeo.services.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-search-core</artifactId>
-        <version>${nuxeo.features.version}</version>
+        <version>${nuxeo.services.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-search-facade</artifactId>
-        <version>${nuxeo.features.version}</version>
+        <version>${nuxeo.services.version}</version>
         <type>ejb</type>
       </dependency>
       <dependency>
@@ -843,7 +843,7 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-search-test</artifactId>
-        <version>${nuxeo.features.version}</version>
+        <version>${nuxeo.services.version}</version>
         <scope>test</scope>
       </dependency>
       <dependency>
