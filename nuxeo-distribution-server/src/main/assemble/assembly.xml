@@ -87,7 +87,7 @@
       <artifact group="org.nuxeo.ecm.webengine" name="nuxeo-webengine-resteasy-adapter" version="${nuxeo.webengine.version}"/>
       <artifact group="org.nuxeo.ecm.webengine" name="nuxeo-webengine-admin" version="${nuxeo.webengine.version}"/>
       <artifact group="org.nuxeo.ecm.webengine" name="nuxeo-webengine-ui" version="${nuxeo.webengine.version}"/>
-      <artifact group="org.nuxeo.ecm.webengine" name="nuxeo-webengine-wiki" version="${nuxeo.webengine.version}"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-wiki-webengine" version="${nuxeo.webengine.version}"/>
       <artifact group="org.nuxeo.ecm.webengine" name="nuxeo-webengine-base" version="${nuxeo.webengine.version}"/>
       <artifact group="org.nuxeo.ecm.webengine" name="nuxeo-webengine-sites" version="${nuxeo.webengine.version}"/>
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-rendering" version="${nuxeo.platform.version}"/>
