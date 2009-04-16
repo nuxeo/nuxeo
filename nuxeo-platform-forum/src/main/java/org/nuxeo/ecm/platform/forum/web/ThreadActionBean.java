@@ -53,7 +53,7 @@ import org.nuxeo.ecm.platform.forum.web.api.ThreadAction;
 import org.nuxeo.ecm.platform.forum.web.api.ThreadAdapter;
 import org.nuxeo.ecm.platform.forum.workflow.ForumConstants;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
-import org.nuxeo.ecm.webapp.contentbrowser.DocumentActions;
+//import org.nuxeo.ecm.webapp.contentbrowser.DocumentActions;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 
@@ -81,9 +81,6 @@ public class ThreadActionBean implements ThreadAction {
 
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
-
-    @In(create = true)
-    protected transient DocumentActions documentActions;
 
     @In(create = true)
     protected transient CommentManagerActions commentManagerActions;
