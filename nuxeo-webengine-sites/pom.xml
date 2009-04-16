@@ -9,6 +9,7 @@
     <version>5.2-SNAPSHOT</version>
   </parent>
 
+  <groupId>org.nuxeo.ecm.webengine</groupId>
   <artifactId>nuxeo-webengine-sites</artifactId>
   <name>Nuxeo WebEngine Sites Module</name>
   <description>Sites Module to handle webcontainers</description>

@@ -8,6 +8,7 @@
     <version>5.2-SNAPSHOT</version>
   </parent>
 
+  <groupId>org.nuxeo.ecm.webengine</groupId>
   <artifactId>nuxeo-webengine-base</artifactId>
   <name>Nuxeo WebEngine Base</name>
   <description>
