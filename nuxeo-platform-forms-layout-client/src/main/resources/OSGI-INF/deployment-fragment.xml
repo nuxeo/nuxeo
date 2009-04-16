@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<fragment>
+
+  <extension target="application#MODULE">
+    <module>
+      <ejb>${bundle.fileName}</ejb>
+    </module>
+  </extension>
+
+  <install>
+    <!--  unzip the war template -->
+    <unzip from="${bundle.fileName}" to="/">
+      <include>nuxeo.war/**</include>
+    </unzip>
+
+    <delete path="${bundle.fileName}.tmp"/>
+    <mkdir path="${bundle.fileName}.tmp"/>
+
+    <unzip from="${bundle.fileName}" to="${bundle.fileName}.tmp">
+      <include>WEB/**</include>
+    </unzip>
+
+    <copy from="${bundle.fileName}.tmp/WEB/" to="nuxeo.war/META-INF/"/>
+
+    <delete path="${bundle.fileName}.tmp"/>
+  </install>
+
+</fragment>
+
