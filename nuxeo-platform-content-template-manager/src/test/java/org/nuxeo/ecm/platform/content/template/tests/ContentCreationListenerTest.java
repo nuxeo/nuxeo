@@ -33,7 +33,6 @@ public class ContentCreationListenerTest extends RepositoryOSGITestCase {
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.platform.content.template");
-        deployBundle("org.nuxeo.ecm.relations");
         openRepository();
     }
 
