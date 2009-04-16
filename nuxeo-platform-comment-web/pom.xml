@@ -38,8 +38,7 @@
       classes, to remove when package is split -->
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-webapp-core</artifactId>
-      <type>ejb</type>
+      <artifactId>nuxeo-platform-webapp-base</artifactId>
     </dependency>
 
     <dependency>

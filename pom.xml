@@ -23,6 +23,7 @@
     <nuxeo.features.version>5.2-SNAPSHOT</nuxeo.features.version>
     <nuxeo.webengine.version>5.2-SNAPSHOT</nuxeo.webengine.version>
     <nuxeo.services.version>5.2-SNAPSHOT</nuxeo.services.version>
+    <nuxeo.jsf.version>5.2-SNAPSHOT</nuxeo.jsf.version>
   </properties>
 
   <modules>
@@ -546,12 +547,12 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-ui-web-compat</artifactId>
-        <version>${nuxeo.features.version}</version>
+        <version>${nuxeo.jsf.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-ui-web</artifactId>
-        <version>${nuxeo.features.version}</version>
+        <version>${nuxeo.jsf.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
@@ -592,9 +593,10 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-webapp</artifactId>
-        <version>${nuxeo.features.version}</version>
+        <artifactId>nuxeo-platform-webapp-base</artifactId>
+        <version>${nuxeo.jsf.version}</version>
       </dependency>
+      <!-- should be removed -->
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-webapp-core</artifactId>

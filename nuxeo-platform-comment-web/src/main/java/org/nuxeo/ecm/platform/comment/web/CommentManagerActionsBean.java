@@ -50,8 +50,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.comment.api.CommentableDocument;
+import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
-import org.nuxeo.ecm.webapp.base.InputController;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.security.UserSession;
 
@@ -61,8 +61,7 @@ import org.nuxeo.ecm.webapp.security.UserSession;
  */
 @Name("commentManagerActions")
 @Scope(CONVERSATION)
-public class CommentManagerActionsBean extends InputController implements
-        CommentManagerActions, Serializable {
+public class CommentManagerActionsBean implements CommentManagerActions, Serializable {
 
     public static final String COMMENTS_ACTIONS = "COMMENT_ACTIONS";
 
@@ -106,8 +105,11 @@ public class CommentManagerActionsBean extends InputController implements
 
     protected List<UIComment> flatComments;
 
-    @In
+    @In(create = true)
     protected transient UserSession userSession;
+
+    @In(create = true)
+    protected NavigationContext navigationContext;
 
     @Create
     public void initialize() throws Exception {
