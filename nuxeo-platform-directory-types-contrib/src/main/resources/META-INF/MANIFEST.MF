@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo Directory
+Bundle-SymbolicName: org.nuxeo.ecm.directory.types.contrib;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Localization: bundle
+Bundle-ClassPath: .
+Bundle-Category: core
+Nuxeo-Component: OSGI-INF/DirectoryTypes.xml
+Require-Bundle: org.nuxeo.ecm.core.api

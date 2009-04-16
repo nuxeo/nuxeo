@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.actions.test">
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService" point="actions">
+    <action id="newDocument" link="select_document_type" enabled="true"
+      label="action.new.document" icon="/icons/action_add.gif">
+      <category>folder</category>
+      <filter id="createChild">
+        <rule grant="true">
+          <permission>Write</permission>
+          <type>Workspace</type>
+          <type>Section</type>
+          <schema>Folder</schema>
+          <facet>Versionable</facet>
+          <condition>principal.getName()=='gandalf'</condition>
+        </rule>
+      </filter>
+    </action>
+
+    <action id="logout" link="logout" label="Logout" icon="/icons/logout.gif">
+      <category>global</category>
+    </action>
+
+    <action id="viewHiddenInfo" link="view_hidden_info" enabled="false">
+      <category>global</category>
+    </action>
+
+    <action id="TAB_VIEW" link="view" enabled="true" label="View"
+      icon="/icons/view.gif">
+      <filter-id>MyCustomFilter</filter-id>
+      <category>tabs</category>
+      <category>view</category>
+    </action>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService" point="filters">
+    <custom-filter id="MyCustomFilter"
+      class="org.nuxeo.ecm.platform.actions.DummyFilter">
+      <rule grant="true" />
+    </custom-filter>
+
+    <filter id="theFilter">
+      <rule grant="true">
+        <permission>admin</permission>
+        <permission>editor</permission>
+        <facet>Viewable</facet>
+        <facet>Writable</facet>
+        <condition>EL condition</condition>
+      </rule>
+      <rule grant="true">
+        <condition>EL condition 1</condition>
+        <condition>EL condition 2</condition>
+      </rule>
+    </filter>
+  </extension>
+
+</component>

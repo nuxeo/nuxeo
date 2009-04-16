@@ -1,0 +1,25 @@
+<component name="org.nuxeo.ecm.platform.ws.session.WSRemotingSessionManagerImpl.platform" version="1.0">
+
+  <documentation> Expose the Web Service remote session manager as a platform
+  service.
+
+    @version 1.0
+    @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
+  </documentation>
+
+  <require>org.nuxeo.ecm.platform.ws.session.WSRemotingSessionManagerImpl</require>
+
+    <extension target="org.nuxeo.ecm.platform.api.PlatformService"
+      point="servers">
+
+      <documentation> Define the Web Service remote session manager as a platform
+      service. </documentation>
+
+      <server name="default">
+
+        <service class="org.nuxeo.ecm.platform.api.ws.session.WSRemotingSessionManager"
+          jndiName="%WSRemotingSessionBean"/>
+      </server>
+
+    </extension>
+</component>

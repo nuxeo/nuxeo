@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo Versioning API
+Bundle-SymbolicName: org.nuxeo.ecm.platform.versioning.api
+Bundle-Vendor: Nuxeo
+Bundle-Category: runtime
+Require-Bundle: org.nuxeo.ecm.core.api
+Nuxeo-Component: OSGI-INF/VersioningDocumentAdapter.xml
+Eclipse-LazyStart: false
+Export-Package: org.nuxeo.ecm.platform.versioning.api, org.nuxeo.ecm.platform.versioning.facet
+

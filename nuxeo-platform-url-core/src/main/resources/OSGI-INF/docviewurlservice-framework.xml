@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.url.service.DocumentViewCodecService">
+  <documentation>
+    This service provides extension points for document url generation from
+    pluggable codecs.
+
+    @version 1.0
+    @author Anahide Tchertchian (at@nuxeo.com)
+  </documentation>
+
+  <implementation
+    class=" org.nuxeo.ecm.platform.url.service.DocumentViewCodecService" />
+
+  <service>
+    <provide
+      interface="org.nuxeo.ecm.platform.url.api.DocumentViewCodecManager" />
+  </service>
+
+  <extension-point name="codecs">
+    <documentation>
+      Codecs perform the translation between a url and a document view that
+      holds information about the document context as well as other parameters
+      (current tab for instance).
+    </documentation>
+    <object
+      class="org.nuxeo.ecm.platform.url.codec.descriptor.DocumentViewCodecDescriptor" />
+  </extension-point>
+
+</component>

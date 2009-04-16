@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<fragment>
+
+  <template name="persistence" src="OSGI-INF/persistence.xml"
+      installPath="META-INF/persistence.xml" required="true"/>
+
+  <extension target="application#MODULE">
+    <module>
+      <ejb>${bundle.fileName}</ejb>
+    </module>
+  </extension>
+
+  <module>
+    <java>datasources/nxplaceful-ds.xml</java>
+  </module>
+
+</fragment>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.url.service.binding.contrib">
+
+  <extension target="org.nuxeo.runtime.api.ServiceManagement"
+    point="services">
+
+    <documentation>
+      Define the DocumentViewCodecManager bean as a platform service.
+    </documentation>
+    <service class="org.nuxeo.ecm.platform.url.api.DocumentViewCodecManager"
+      group="platform/url">
+      <locator>%DocumentViewCodecManagerBean</locator>
+    </service>
+
+  </extension>
+</component>

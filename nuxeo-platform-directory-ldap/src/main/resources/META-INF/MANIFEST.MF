@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo ECM LDAP Directory
+Bundle-SymbolicName: org.nuxeo.ecm.directory.ldap;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Localization: bundle
+Bundle-ClassPath: .
+Export-Package: org.nuxeo.ecm.directory.ldap
+Eclipse-LazyStart: true
+Nuxeo-Component: OSGI-INF/LDAPDirectoryFactory.xml
+Require-Bundle: org.nuxeo.ecm.directory

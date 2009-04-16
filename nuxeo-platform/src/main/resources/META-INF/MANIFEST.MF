@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: NXPlatform
+Bundle-SymbolicName: org.nuxeo.ecm.platform
+Bundle-Localization: plugin
+Bundle-Vendor: Nuxeo
+Bundle-Category: web
+Require-Bundle: org.nuxeo.ecm.platform.api, org.nuxeo.ecm.platform.ws, org.nuxeo.ecm.platform.mimetype.api
+Export-Package: org.nuxeo.ecm.platform.cache.client
+Nuxeo-Component: OSGI-INF/nxws_remoting_session_manager-framework.xml,
+ OSGI-INF/nxws_remoting_session_manager-platform-contrib.xml,
+ OSGI-INF/service-platform-contrib.xml

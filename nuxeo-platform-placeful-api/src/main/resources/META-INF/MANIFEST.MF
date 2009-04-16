@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo ECM PlacefulService API
+Bundle-SymbolicName: org.nuxeo.ecm.platform.placeful.api;singleton:=true
+Bundle-Vendor: Nuxeo
+Export-Package: org.nuxeo.ecm.platform.ec.placeful,
+  org.nuxeo.ecm.platform.ec.placeful.ejb.interfaces

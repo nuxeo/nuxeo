@@ -1,0 +1,83 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.directory.multi.MultiDirectoryFactory">
+
+  <implementation
+      class="org.nuxeo.ecm.directory.multi.MultiDirectoryFactory"/>
+
+  <require>org.nuxeo.ecm.directory.DirectoryServiceImpl</require>
+
+  <documentation>Multi-directory implementation.</documentation>
+
+  <extension target="org.nuxeo.ecm.directory.DirectoryServiceImpl"
+      point="factoryDescriptor">
+    <factoryDescriptor
+        component="org.nuxeo.ecm.directory.multi.MultiDirectoryFactory"/>
+  </extension>
+
+  <extension-point name="directories">
+    <object
+        class="org.nuxeo.ecm.directory.multi.MultiDirectoryDescriptor"/>
+    <object class="org.nuxeo.ecm.directory.multi.SourceDescriptor"/>
+    <object
+        class="org.nuxeo.ecm.directory.multi.SubDirectoryDescriptor"/>
+    <object class="org.nuxeo.ecm.directory.multi.FieldDescriptor"/>
+
+    <documentation>
+      This extension point can be used to register new
+      multi-directories. The extension can contain any number of
+      directories declarations of the form:
+
+      <code>
+        ...
+        <directory name="userDirectory">
+          <schema>user</schema>
+          <idField>username</idField>
+          <passwordField>password</passwordField>
+
+          <querySizeLimit>1000</querySizeLimit>
+
+          <source name="ldapusers">
+            <subDirectory name="authinfo">
+              <field for="email">mail</field>
+            </subDirectory>
+            <subDirectory name="userinfo">
+              <field for="firstName">givenName</field>
+              <field for="lastName">sn</field>
+              <field for="company">o</field>
+            </subDirectory>
+          </source>
+
+          <source name="sqlusers" creation="true">
+            <subDirectory name="sqlUserDirectory"/>
+          </source>
+
+        </directory>
+        ...
+      </code>
+
+      Here is the description for each field:
+      <ul>
+        <li>
+          schema - the name of the schema to be used for the directory
+          entries.
+        </li>
+        <li>
+          idField - the id field designs the primary key in the table,
+          used for retrieving entries by id.
+        </li>
+        <li>
+          querySizeLimit - the maximum number of results that the
+          queries on this directory should return; if there are more
+          results than this, an exception will be raised.
+        </li>
+        <li>
+          init-dependencies - a list of directories that should be
+          initialized before this one
+        </li>
+      </ul>
+      The references tag is used to define relations between
+      directories. (TODO: describe the references types.)
+    </documentation>
+  </extension-point>
+
+</component>

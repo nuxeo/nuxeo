@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.versioning.service.VersioningModifierService">
+  <implementation class="org.nuxeo.ecm.platform.versioning.service.VersioningModifierService" />
+  <documentation>
+    This component provide ability to perform custom
+    action on document properties at version changing time
+
+    @version 1.0
+    @author <a href="mailto:bchaffangeon@nuxeo.com">Brice Chaffangeon</a>
+  </documentation>
+  <extension-point name="versioningModifier">
+    <documentation>
+     This Extension Point configure which action to perform, for a given document type,
+     and for given fieldname.
+     This is intended to be use like :
+
+    <documentType name="document_type">
+      <property schema="schema1" action="action_to_perform">fieldname1</property>
+      <property schema="schema1" action="action_to_perform">fieldname2</property>
+      <property schema="schema2" action="action_to_perform">fieldname1</property>
+      <property schema="schema2" action="action_to_perform">fieldname2</property>
+    </documentType>
+
+    action_to_perform is the action to perform on these properties.
+    For now only reset is available.
+    And there can be just a single <documentType></documentType> for a given document_type (no merging)
+    Be also careful that fieldname1 exists in schema1.
+    </documentation>
+    <object
+      class="org.nuxeo.ecm.platform.versioning.service.VersioningModifierDescriptor" />
+    <object
+      class="org.nuxeo.ecm.platform.versioning.service.VersioningModifierPropertyDescriptor" />
+  </extension-point>
+
+</component>

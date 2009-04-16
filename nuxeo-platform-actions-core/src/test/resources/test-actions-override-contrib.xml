@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.actions.test.override">
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService" point="actions">
+    <action id="TAB_VIEW" link="view2" label="View2" icon="/icons/view2.gif" confirm="newConfirm">
+      <category>OVERRIDE</category>
+      <!-- duplicate view category to test merging -->
+      <category>view</category>
+      <filter-id>newFilter</filter-id>
+      <filter id="otherNewFilter" />
+    </action>
+  </extension>
+
+</component>

@@ -1,0 +1,13 @@
+<component name="org.nuxeo.ecm.webapp.theme.negotiation">
+
+  <extension target="org.nuxeo.ecm.platform.ec.placeful.PlacefulService"
+    point="annotations">
+
+    <!--  Local theme configuration -->
+    <annotation>
+      <class>org.nuxeo.ecm.webapp.theme.negotiation.LocalThemeConfig</class>
+    </annotation>
+
+  </extension>
+
+ </component>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component
+  name="org.nuxeo.ecm.platform.usermanager.service.binding.contrib">
+
+  <extension target="org.nuxeo.runtime.api.ServiceManagement"
+        point="services">
+
+      <documentation> Define the UserManager bean as a platform service. </documentation>
+
+      <service class="org.nuxeo.ecm.platform.usermanager.UserManager" group="platform/usermanager">
+        <locator>%UserManagerBean</locator>
+      </service>
+
+
+    </extension>
+</component>

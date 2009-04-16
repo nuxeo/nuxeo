@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: NXScheduler
+Bundle-SymbolicName: org.nuxeo.ecm.platform.scheduler.core
+Bundle-Localization: plugin
+Export-Package: org.nuxeo.ecm.platform.scheduler.core
+Bundle-Vendor: Nuxeo
+Nuxeo-Component: OSGI-INF/nxscheduler-service.xml
+Require-Bundle: org.nuxeo.ecm.platform.api,
+ org.nuxeo.ecm.core,
+ org.nuxeo.runtime

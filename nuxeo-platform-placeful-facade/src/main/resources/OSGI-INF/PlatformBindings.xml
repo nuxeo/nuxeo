@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.placeful.facade.PlatformBindings"
+  version="1.0">
+  <documentation>
+    Defines the placeful service binding @author
+    <a href="mailto:np@nuxeo.com">Narcis Paslaru</a>
+  </documentation>
+
+  <extension target="org.nuxeo.runtime.api.ServiceManagement"
+    point="services">
+    <documentation>Defines the placeful service binding</documentation>
+
+    <server name="default">
+      <service
+        class="org.nuxeo.ecm.platform.ec.placeful.interfaces.PlacefulService"
+        group="platform">
+        <locator>%PlacefulServiceBean</locator>
+      </service>
+    </server>
+
+  </extension>
+
+</component>

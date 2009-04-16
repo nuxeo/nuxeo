@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.api.DefaultPlatform" version="1.0">
+
+  <!--extension target="org.nuxeo.ecm.platform.api.PlatformService"
+             point="servers">
+    <server name="default" host="localhost">
+      <service class="org.nuxeo.ecm.platform.types.TypeManager" jndiName="%TypeManagerBean"/>
+      <repository name="demo" class="org.nuxeo.ecm.core.api.CoreSession" description="Demo Repository"/>
+    </server>
+  </extension-->
+
+  <extension target="org.nuxeo.ecm.core.api.repository.RepositoryManager"
+             point="repositories">
+    <repository name="demo" label="Default Repository"/>
+  </extension>
+
+  <extension target="org.nuxeo.runtime.api.ServiceManagement" point="servers">
+    <server class="org.nuxeo.runtime.api.JBossServiceLocator">
+      <group>*</group>
+      <property name="java.naming.factory.initial">org.jnp.interfaces.NamingContextFactory
+      </property>
+      <property name="java.naming.provider.url">jnp://localhost:1099</property>
+      <property name="java.naming.factory.url.pkgs">org.jboss.naming:org.jnp.interfaces</property>
+    </server>
+  </extension>
+
+</component>

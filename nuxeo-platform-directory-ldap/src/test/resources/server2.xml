@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<server name="server2Name">
+  <!-- complete description -->
+  <ldapUrl>ldap://localhost:389</ldapUrl>
+  <ldapUrl>ldap://server2</ldapUrl>
+  <ldapUrl>ldap://server3</ldapUrl>
+  <bindDn>cn=nuxeo5,ou=applications,dc=example,dc=com</bindDn>
+  <bindPassword>changeme</bindPassword>
+  <poolingEnabled>false</poolingEnabled>
+</server>

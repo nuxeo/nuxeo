@@ -1,0 +1,58 @@
+version: 1
+
+# Branch to store groups of users
+# (User's passwords are equal to their uids)
+#
+dn: ou=groups,dc=example,dc=com
+objectClass: top
+objectClass: organizationalUnit
+ou: groups
+
+dn: cn=administrators,ou=groups,dc=example,dc=com
+uniqueMember: uid=Administrator,ou=people,dc=example,dc=com
+objectClass: top
+objectClass: groupOfUniqueNames
+description: Group of users that have the Everything permissions by default
+cn: administrators
+
+dn: cn=members,ou=groups,dc=example,dc=com
+uniqueMember: uid=Administrator,ou=people,dc=example,dc=com
+uniqueMember: uid=user1,ou=people,dc=example,dc=com
+uniqueMember: uid=user2,ou=people,dc=example,dc=com
+uniqueMember: cn=submembers,ou=groups,dc=example,dc=com
+objectClass: top
+objectClass: groupOfUniqueNames
+description: Statically defined group of users that have the Read permissions by default
+cn: members
+
+dn: cn=submembers,ou=groups,dc=example,dc=com
+uniqueMember: uid=user2,ou=people,dc=example,dc=com
+objectClass: top
+objectClass: groupOfUniqueNames
+description: A sample (static) subgroup of members
+cn: submembers
+
+#
+# The following emptygroup is not valid with OpenLDAP schemacheck
+# enabled (depending of the LDAP schema as uniqueMember might be a
+# compulsory attribute)
+#
+#dn: cn=emptygroup,ou=groups,dc=example,dc=com
+#objectClass: top
+#objectClass: groupOfUniqueNames
+#description: A sample empty group
+#cn: emptygroup
+
+dn: ou=someotherbranch,dc=example,dc=com
+objectClass: top
+objectClass: organizationalUnit
+ou: someotherbranch
+
+dn: cn=disabledgroup,ou=someotherbranch,dc=example,dc=com
+uniqueMember: uid=Administrator,ou=people,dc=example,dc=com
+uniqueMember: uid=user1,ou=people,dc=example,dc=com
+objectClass: top
+objectClass: groupOfUniqueNames
+description: A group in someotherbranch that is not part of groupDirectory
+cn: disabledgroup
+

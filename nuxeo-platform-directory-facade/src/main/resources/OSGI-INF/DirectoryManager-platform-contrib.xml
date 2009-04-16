@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component
+    name="org.nuxeo.ecm.platform.direcotory.service.binding.contrib">
+
+  <extension target="org.nuxeo.runtime.api.ServiceManagement"
+      point="services">
+
+    <documentation>Define the DirectoryManager bean as a platform service.</documentation>
+
+    <service class="org.nuxeo.ecm.directory.api.DirectoryService" group="platform/directory">
+      <locator>%DirectoryManagerBean</locator>
+    </service>
+
+  </extension>
+
+</component>

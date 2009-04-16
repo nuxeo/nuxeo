@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: ECM Platform API
+Bundle-SymbolicName: org.nuxeo.ecm.platform.api
+Bundle-Localization: plugin
+Bundle-Vendor: Nuxeo
+Require-Bundle: org.nuxeo.runtime,
+ org.nuxeo.ecm.core.api
+Export-Package: org.nuxeo.ecm.platform.api,
+ org.nuxeo.ecm.platform.api.login
+Nuxeo-Component: OSGI-INF/PlatformService.xml
+Import-Package: org.jboss.security;resolution:=optional,
+ org.jnp.interfaces;resolution:=optional

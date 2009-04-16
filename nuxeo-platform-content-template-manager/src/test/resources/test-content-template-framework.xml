@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.content.template.service.ContentTemplateService">
+  <implementation
+          class="org.nuxeo.ecm.platform.content.template.service.ContentTemplateServiceImpl" />
+
+   <service>
+    <provide interface="org.nuxeo.ecm.platform.content.template.service.ContentTemplateService" />
+  </service>
+
+
+  <documentation>
+    @author Thierry Delprat (td@nuxeo.com)
+  </documentation>
+
+  <extension-point name="factory">
+  <documentation>
+    @author Thierry Delprat (td@nuxeo.com)
+  </documentation>
+
+    <object
+      class="org.nuxeo.ecm.platform.content.template.service.ContentFactoryDescriptor" />
+  </extension-point>
+
+
+  <extension-point name="factoryBinding">
+  <documentation>
+    @author Thierry Delprat (td@nuxeo.com)
+  </documentation>
+
+    <object
+      class="org.nuxeo.ecm.platform.content.template.service.FactoryBindingDescriptor" />
+  </extension-point>
+
+</component>

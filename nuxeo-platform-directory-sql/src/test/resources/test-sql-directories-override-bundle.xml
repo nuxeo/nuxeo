@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+
+<!-- This is a test setup for SQL directories that is similar to the
+  default-sql-directories-bundles.xml setup except that the datasource is set
+  to a in memory backend -->
+
+<component name="org.nuxeo.ecm.directory.sql.storage.override">
+
+  <implementation class="org.nuxeo.ecm.directory.sql.SQLDirectoryDescriptor" />
+
+  <require>org.nuxeo.ecm.directory.sql.storage</require>
+
+  <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory"
+    point="directories">
+
+    <directory name="userDirectory">
+
+      <createTablePolicy>never</createTablePolicy>
+
+    </directory>
+
+  </extension>
+</component>
