@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: NuxeoWeb
+Bundle-SymbolicName: org.nuxeo.ecm.webapp.base
+Bundle-Localization: plugin
+Bundle-Vendor: Nuxeo
+Bundle-Category: web
+Nuxeo-Component: 
+Require-Bundle: org.nuxeo.ecm.platform.ui
