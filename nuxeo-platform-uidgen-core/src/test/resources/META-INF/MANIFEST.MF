@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.nuxeo.ecm.platform.uidgen.core.tests
+Nuxeo-Component: OSGI-INF/nxuidgenerator-service-test.xml,OSGI-INF/nxuidgenerator-contrib-service-test.xml

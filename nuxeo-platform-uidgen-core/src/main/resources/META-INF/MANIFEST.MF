@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: NXUIDGen
+Bundle-SymbolicName: org.nuxeo.ecm.platform.uidgen.core
+Bundle-Localization: plugin
+Bundle-Vendor: Nuxeo
+Bundle-Category: stateful
+Require-Bundle: org.nuxeo.ecm.core
+Nuxeo-Component: OSGI-INF/nxuidgenerator-service.xml,OSGI-INF/nxuidgenerator-contrib-service.xml

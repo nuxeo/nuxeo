@@ -2,7 +2,7 @@
 <project>
 
   <parent>
-    <artifactId>nuxeo-platform-parent</artifactId>
+    <artifactId>nuxeo-services-parent</artifactId>
     <groupId>org.nuxeo.ecm.platform</groupId>
     <version>5.2-SNAPSHOT</version>
   </parent>
