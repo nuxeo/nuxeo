@@ -33,7 +33,6 @@
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-el</artifactId>
-      <version>${nuxeo.platform.version}</version>
     </dependency>
     <dependency>
       <groupId>commons-lang</groupId>
@@ -79,7 +78,6 @@
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-usermanager-core</artifactId>
-      <version>${nuxeo.platform.version}</version>
       <scope>test</scope>
     </dependency>
 
