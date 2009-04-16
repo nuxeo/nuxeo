@@ -19,7 +19,7 @@
   <properties>
     <nuxeo.common.version>1.5-SNAPSHOT</nuxeo.common.version>
     <nuxeo.runtime.version>1.5-SNAPSHOT</nuxeo.runtime.version>
-    <nuxeo.platform.version>${pom.version}</nuxeo.platform.version>
+    <nuxeo.services.version>${pom.version}</nuxeo.services.version>
     <nuxeo.theme.version>${pom.version}</nuxeo.theme.version>
     <nuxeo.webengine.version>${pom.version}</nuxeo.webengine.version>
   </properties>
@@ -81,7 +81,7 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-rendering</artifactId>
-        <version>${nuxeo.platform.version}</version>
+        <version>${nuxeo.services.version}</version>
       </dependency>
 
       <dependency>
