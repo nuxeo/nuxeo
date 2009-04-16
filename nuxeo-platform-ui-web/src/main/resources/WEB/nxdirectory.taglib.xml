@@ -1,0 +1,147 @@
+<?xml version="1.0"?>
+<!DOCTYPE facelet-taglib PUBLIC "-//Sun Microsystems, Inc.//DTD Facelet Taglib 1.0//EN" "facelet-taglib_1_0.dtd">
+<facelet-taglib>
+  <namespace>http://nuxeo.org/nxdirectory</namespace>
+  <function>
+    <function-name>directoryEntry</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.directory.DirectoryFunctions
+    </function-class>
+    <function-signature>
+      DocumentModel getDirectoryEntry(java.lang.String, java.lang.String)
+    </function-signature>
+  </function>
+  <function>
+    <function-name>directoryListEntries</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.directory.DirectoryFunctions
+    </function-class>
+    <function-signature>
+      DocumentModel getDirectoryListEntries(java.lang.String, java.util.Collection)
+    </function-signature>
+  </function>
+  <function>
+    <function-name>directoryEntries</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.directory.DirectoryFunctions
+    </function-class>
+    <function-signature>
+      DocumentModel getDirectoryEntries(java.lang.String, java.lang.String[])
+    </function-signature>
+  </function>
+  <tag>
+    <tag-name>selectItems</tag-name>
+    <component>
+      <component-type>
+        org.nuxeo.ecm.platform.ui.web.directory.UIDirectorySelectItems
+      </component-type>
+    </component>
+  </tag>
+  <tag>
+    <tag-name>selectItem</tag-name>
+    <component>
+      <component-type>
+        org.nuxeo.ecm.platform.ui.web.directory.UIDirectorySelectItem
+      </component-type>
+    </component>
+  </tag>
+  <tag>
+    <tag-name>selectOneListbox</tag-name>
+    <component>
+      <component-type>nxdirectory.selectOneListbox</component-type>
+      <renderer-type>nxdirectory.selectOneListbox</renderer-type>
+    </component>
+  </tag>
+  <tag>
+    <tag-name>selectManyListbox</tag-name>
+    <component>
+      <component-type>nxdirectory.selectManyListbox</component-type>
+      <renderer-type>nxdirectory.selectManyListbox</renderer-type>
+    </component>
+  </tag>
+  <tag>
+    <tag-name>directoryEntryOutput</tag-name>
+    <component>
+      <component-type>nxdirectory.DirectoryEntryOutput</component-type>
+      <renderer-type>nxdirectory.DirectoryEntryOutput</renderer-type>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>chainSelectOutput</tag-name>
+    <component>
+      <component-type>nxdirectory.ChainSelectOutput</component-type>
+      <renderer-type>nxdirectory.ChainSelectOutput</renderer-type>
+    </component>
+  </tag>
+
+  <!--  chain select -->
+  <tag>
+    <tag-name>chainSelect</tag-name>
+    <component>
+      <component-type>nxdirectory.chainSelect</component-type>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>chainSelectOne</tag-name>
+    <component>
+      <component-type>nxdirectory.ChainSelectOne</component-type>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>chainSelectMany</tag-name>
+    <component>
+      <component-type>nxdirectory.ChainSelectMany</component-type>
+    </component>
+  </tag>
+
+
+  <tag>
+    <tag-name>chainSelectListbox</tag-name>
+    <component>
+      <component-type>nxdirectory.chainSelectListbox</component-type>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>chainSelectMultiListbox</tag-name>
+    <component>
+      <component-type>nxdirectory.chainSelectMultiListbox</component-type>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>chainSelectStatus</tag-name>
+    <component>
+      <component-type>nxdirectory.chainSelectStatus</component-type>
+    </component>
+  </tag>
+
+  <!--  Suggest Box -->
+
+  <function>
+    <function-name>getLabelFromId</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions
+    </function-class>
+    <function-signature>
+      java.lang.String getLabelFromId(java.lang.String, java.lang.String)
+    </function-signature>
+  </function>
+  <function>
+    <function-name>getSuggestedValues</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.directory.SuggestBoxBean
+    </function-class>
+    <function-signature>
+      java.lang.String getSuggestedValues(java.lang.String, java.lang.String)
+    </function-signature>
+  </function>
+  <tag>
+    <tag-name>suggestBox</tag-name>
+    <source>util/suggestBox.xhtml</source>
+  </tag>
+
+</facelet-taglib>

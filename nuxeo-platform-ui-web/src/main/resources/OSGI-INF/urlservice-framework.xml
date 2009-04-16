@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.ui.web.rest.URLService">
+
+  <documentation>
+    The URL service provides extension points for url generation and related
+    actions.
+
+    @version 1.0
+    @author Anahide Tchertchian (at@nuxeo.com)
+  </documentation>
+
+  <implementation
+      class="org.nuxeo.ecm.platform.ui.web.rest.services.URLServiceComponent"/>
+
+  <service>
+    <provide
+        interface="org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService"/>
+  </service>
+
+  <extension-point name="urlpatterns">
+    <documentation>
+      URL patterns are used on the web layer to perform actions when a url is
+      entered, and to rewrite urls after a post.
+
+      They are designed to use a given codec.
+    </documentation>
+    <object
+        class="org.nuxeo.ecm.platform.ui.web.rest.descriptors.URLPatternDescriptor"/>
+  </extension-point>
+
+</component>
