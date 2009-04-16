@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: NuxeoWeb
+Bundle-SymbolicName: org.nuxeo.ecm.default.config
+Bundle-Localization: plugin
+Bundle-Vendor: Nuxeo
+Bundle-Category: web,stateful
+Nuxeo-Component: OSGI-INF/nxdirectories-contrib.xml,
+  OSGI-INF/jbpmService-contrib.xml
+Require-Bundle: org.nuxeo.ecm.directory.api,
+  org.nuxeo.ecm.platform.jbpm.core

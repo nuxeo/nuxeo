@@ -28,6 +28,7 @@
     <module>nuxeo-platform-webapp-core</module>
     <module>nuxeo-platform-webapp</module>
     <module>nuxeo-platform-webapp-types</module>
+    <module>nuxeo-platform-default-config</module>
   </modules>
 
   <dependencyManagement>
