@@ -21,17 +21,12 @@
     <nuxeo.runtime.version>1.5-SNAPSHOT</nuxeo.runtime.version>
     <nuxeo.services.version>${pom.version}</nuxeo.services.version>
     <nuxeo.theme.version>${pom.version}</nuxeo.theme.version>
-    <nuxeo.webengine.version>${pom.version}</nuxeo.webengine.version>
   </properties>
 
   <modules>
     <module>nuxeo-theme-core</module>
     <module>nuxeo-theme-fragments</module>
     <module>nuxeo-theme-html</module>
-    <module>nuxeo-theme-editor</module>
-    <module>nuxeo-theme-webengine</module>
-    <module>nuxeo-theme-webwidgets</module>
-    <module>nuxeo-theme-webwidgets-ui</module>
   </modules>
 
   <organization>

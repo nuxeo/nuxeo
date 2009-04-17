@@ -1,5 +1,0 @@
-<?xml version="1.0"?>
-
-<module name="nxthemes-editor" root-type="nxthemes-editor" path="/nxthemes-editor" headless="true">
-  <nature>groovy</nature>
-</module>
