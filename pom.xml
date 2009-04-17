@@ -22,12 +22,14 @@
     <module>nuxeo-webengine-core</module>
     <module>nuxeo-webengine-ui</module>
     <module>nuxeo-webengine-management</module>
+    <module>nuxeo-theme-webengine</module>
   </modules>
 
   <properties>
     <nuxeo.webengine.version>5.2-SNAPSHOT</nuxeo.webengine.version>
     <nuxeo.services.version>5.2-SNAPSHOT</nuxeo.services.version>
     <nuxeo.shell.version>5.2-SNAPSHOT</nuxeo.shell.version>
+    <nuxeo.theme.version>5.2-SNAPSHOT</nuxeo.theme.version>
   </properties>
 
   <dependencies>
@@ -73,6 +75,21 @@
         <groupId>org.nuxeo.ecm.webengine</groupId>
         <artifactId>nuxeo-webengine-management</artifactId>
         <version>${nuxeo.webengine.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.theme</groupId>
+        <artifactId>nuxeo-theme-core</artifactId>
+        <version>${nuxeo.theme.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.theme</groupId>
+        <artifactId>nuxeo-theme-fragments</artifactId>
+        <version>${nuxeo.theme.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.theme</groupId>
+        <artifactId>nuxeo-theme-html</artifactId>
+        <version>${nuxeo.theme.version}</version>
       </dependency>
 
       <dependency>
