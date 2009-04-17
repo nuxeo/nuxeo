@@ -1,1 +1,0 @@
-<div xmlns:h="http://java.sun.com/jsf/html"><h:outputText escape="false" value="#{nxthemesInfo.model.body}" /></div>

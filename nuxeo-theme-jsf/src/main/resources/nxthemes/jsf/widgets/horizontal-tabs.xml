@@ -1,7 +1,0 @@
-<div xmlns:ui="http://java.sun.com/jsf/facelets">
-<ul>
-  <ui:repeat value="#{nxthemesInfo.model.items}" var="item">
-    <li style="display: inline"><a href="#{item.url}">#{item.title}</a></li>
-  </ui:repeat>
-</ul>
-</div>
