@@ -11,7 +11,6 @@
 
   <artifactId>nuxeo-core-facade</artifactId>
   <name>Nuxeo Core Facade</name>
-  <packaging>ejb</packaging>
   <description>Nuxeo Core: Facade.</description>
 
   <dependencies>
