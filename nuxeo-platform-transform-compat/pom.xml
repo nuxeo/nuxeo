@@ -8,7 +8,6 @@
   </parent>
 
   <artifactId>nuxeo-platform-transform-compat</artifactId>
-  <packaging>ejb</packaging>
   <name>Nuxeo Content Transformation Service - Compatibility package</name>
   <description>DEPRECATED - Provide backward compatibility with the deprecated transformers API</description>
 
@@ -17,7 +16,7 @@
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-api</artifactId>
     </dependency>
-    <!-- NXP-3179 - DEPRECATED -->    
+    <!-- NXP-3179 - DEPRECATED -->
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-transform-api</artifactId>

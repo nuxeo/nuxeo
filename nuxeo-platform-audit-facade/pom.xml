@@ -11,7 +11,6 @@
 
   <artifactId>nuxeo-platform-audit-facade</artifactId>
   <name>Nuxeo Platform Audit Service - Facade</name>
-  <packaging>ejb</packaging>
   <description>Nuxeo Enterprise Platform: Audit Service Facade.</description>
 
   <dependencies>

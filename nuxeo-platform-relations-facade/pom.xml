@@ -10,7 +10,6 @@
 
   <artifactId>nuxeo-platform-relations-facade</artifactId>
   <name>Nuxeo Relation Service - facade </name>
-  <packaging>ejb</packaging>
   <description>Nuxeo Enterprise Platform: Nuxeo's EJB facade for the Relation
     Service.</description>
 

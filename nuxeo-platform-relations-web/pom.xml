@@ -10,7 +10,6 @@
 
   <artifactId>nuxeo-platform-relations-web</artifactId>
   <name>Nuxeo Relation Service - Web UI</name>
-  <packaging>ejb</packaging>
   <description>Nuxeo Enterprise Platform: Nuxeo's webapp UI for the Relation
     Service.</description>
 

@@ -9,7 +9,6 @@
 
   <artifactId>nuxeo-platform-notification-facade</artifactId>
   <name>Nuxeo User Notification Service - Facade</name>
-  <packaging>ejb</packaging>
   <description>
     Nuxeo Enterprise Platform: Notification Facade.
   </description>
@@ -26,7 +25,6 @@
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-notification-core</artifactId>
-      <type>ejb</type>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
@@ -48,7 +46,7 @@
     <dependency>
       <groupId>javax.annotation</groupId>
       <artifactId>jsr250-api</artifactId>
-    </dependency>   
+    </dependency>
     <dependency>
       <groupId>javax.jms</groupId>
       <artifactId>jms</artifactId>

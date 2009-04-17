@@ -10,7 +10,6 @@
 
   <artifactId>nuxeo-platform-notification-core</artifactId>
   <name>Nuxeo User Notification Service - Core</name>
-  <packaging>ejb</packaging>
   <description>Nuxeo Enterprise Platform: User Notification Service Core.
     This service handle user notification when events occur in the platform.
     Notifications are configurable (through extension points) and can be sent
@@ -111,7 +110,6 @@
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-placeful-facade</artifactId>
       <scope>test</scope>
-      <type>ejb</type>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>

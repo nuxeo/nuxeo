@@ -8,7 +8,6 @@
   </parent>
 
   <artifactId>nuxeo-platform-comment</artifactId>
-  <packaging>ejb</packaging>
   <name>Nuxeo Comment Service</name>
   <description>Nuxeo Enterprise Platform: Comment Service.</description>
 

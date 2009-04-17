@@ -8,7 +8,6 @@
   </parent>
 
   <artifactId>nuxeo-platform-comment-web</artifactId>
-  <packaging>ejb</packaging>
   <name>Nuxeo Comment Service Web client</name>
   <description>Nuxeo Enterprise Platform: Comment Service Web Client.</description>
 
@@ -20,7 +19,6 @@
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-actions-core</artifactId>
-      <type>ejb</type>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
