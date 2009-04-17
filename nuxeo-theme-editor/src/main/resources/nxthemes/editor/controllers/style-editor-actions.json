@@ -1,0 +1,12 @@
+  {"id": "style editor actions",
+   "type": "behaviour",
+   "rules": {
+     "#stylePreviewArea": {
+       "click": "select style tag",
+       "mousemove": "update style label",
+       "mouseout": "hide style label"
+     },
+     "input.picker": {
+       "click": "pick property value"
+     }
+  }}

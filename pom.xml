@@ -68,6 +68,8 @@
     <module>nuxeo-webengine-base</module>
     <module>nuxeo-webengine-sites</module>
     <module>nuxeo-webengine-admin</module>
+    <module>nuxeo-theme-editor</module>
+    <module>nuxeo-platform-webwidgets</module>
   </modules>
 
   <dependencyManagement>

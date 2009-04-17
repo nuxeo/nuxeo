@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.theme.webwidgets.providers.PersistenceConfigurator">
+  <documentation>
+    Simple component used to declare persistence Unit on component startup
+  </documentation>
+  <implementation class="org.nuxeo.theme.webwidgets.providers.PersistenceConfigurator" />
+</component>

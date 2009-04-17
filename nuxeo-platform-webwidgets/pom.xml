@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.nuxeo.ecm.platform</groupId>
+    <artifactId>nuxeo-features-parent</artifactId>
+    <version>5.2-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>nuxeo-platform-webwidgets-parent</artifactId>
+  <name>Nuxeo WebWidgets Parent</name>
+  <description>Parent for WebWidgets</description>
+  <packaging>pom</packaging>
+  <modules>
+    <module>nuxeo-theme-webwidgets</module>
+    <module>nuxeo-theme-webwidgets-ui</module>
+  </modules>
+
+  <dependencyManagement>
+  <dependencies>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-theme-webwidgets</artifactId>
+      <version>${nuxeo.features.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>net.sf.json-lib</groupId>
+      <artifactId>json-lib</artifactId>
+      <version>2.2.1</version>
+      <classifier>jdk15</classifier>
+    </dependency>    
+
+  </dependencies>
+  </dependencyManagement>
+
+</project>
