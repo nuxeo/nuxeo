@@ -29,6 +29,12 @@
         <artifactId>nuxeo-platform-webapp</artifactId>
         <version>${nuxeo.dm.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-webapp-core</artifactId>
+        <version>${nuxeo.dm.version}</version>
+        <type>ejb</type>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
