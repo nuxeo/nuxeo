@@ -246,7 +246,12 @@
         <artifactId>nuxeo-platform-forms-layout-client</artifactId>
         <version>${nuxeo.services.version}</version>
       </dependency>
-
+      <dependency>
+       <groupId>org.nuxeo.ecm.core</groupId>
+       <artifactId>nuxeo-core-jcr-connector-test</artifactId>
+       <version>${nuxeo.core.version}</version>
+       <scope>test</scope>
+      </dependency>
       <dependency>
         <groupId>org.nuxeo.runtime</groupId>
         <artifactId>nuxeo-runtime-test</artifactId>
