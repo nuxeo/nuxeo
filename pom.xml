@@ -596,13 +596,6 @@
         <artifactId>nuxeo-platform-webapp-base</artifactId>
         <version>${nuxeo.jsf.version}</version>
       </dependency>
-      <!-- should be removed -->
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-webapp-core</artifactId>
-        <version>${nuxeo.features.version}</version>
-        <type>ejb</type>
-      </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-webapp-types</artifactId>

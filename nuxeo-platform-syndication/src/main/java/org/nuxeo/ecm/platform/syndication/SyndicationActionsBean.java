@@ -46,7 +46,6 @@ import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.nuxeo.ecm.webapp.search.SearchActions;
-import org.nuxeo.ecm.webapp.search.SearchActionsBean;
 import org.nuxeo.ecm.webapp.search.SearchType;
 
 import com.sun.syndication.feed.synd.SyndFeed;
@@ -216,7 +215,7 @@ public class SyndicationActionsBean implements SyndicationActions {
         searchActions.setSearchTypeId(SearchType.NXQL.name());
         searchActions.setNxql(searchQuery);
         searchActions.performSearch();
-        List<DocumentModel> docList = searchActions.getResultDocuments(SearchActionsBean.PROV_NXQL);
+        List<DocumentModel> docList = searchActions.getResultDocuments(SearchActions.PROV_NXQL);
         if (docList == null) {
             docList = Collections.emptyList();
         }
