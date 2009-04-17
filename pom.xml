@@ -21,6 +21,7 @@
     <nuxeo.core.version>1.5-SNAPSHOT</nuxeo.core.version>
     <nuxeo.services.version>5.2-SNAPSHOT</nuxeo.services.version>
     <nuxeo.jsf.version>5.2-SNAPSHOT</nuxeo.jsf.version>
+    <nuxeo.theme.version>5.2-SNAPSHOT</nuxeo.theme.version>
   </properties>
 
   <modules>
