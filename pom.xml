@@ -694,46 +694,6 @@
         <version>${nuxeo.runtime.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.nuxeo.theme</groupId>
-        <artifactId>nuxeo-theme-core</artifactId>
-        <version>${nuxeo.theme.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.theme</groupId>
-        <artifactId>nuxeo-theme-fragments</artifactId>
-        <version>${nuxeo.theme.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.theme</groupId>
-        <artifactId>nuxeo-theme-html</artifactId>
-        <version>${nuxeo.theme.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.theme</groupId>
-        <artifactId>nuxeo-theme-jsf</artifactId>
-        <version>${nuxeo.theme.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.theme</groupId>
-        <artifactId>nuxeo-theme-webengine</artifactId>
-        <version>${nuxeo.theme.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.theme</groupId>
-        <artifactId>nuxeo-theme-editor</artifactId>
-        <version>${nuxeo.theme.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.theme</groupId>
-        <artifactId>nuxeo-theme-webwidgets</artifactId>
-        <version>${nuxeo.theme.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.theme</groupId>
-        <artifactId>nuxeo-theme-webwidgets-ui</artifactId>
-        <version>${nuxeo.theme.version}</version>
-      </dependency>
-      <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-content-template-manager</artifactId>
         <version>${nuxeo.services.version}</version>
