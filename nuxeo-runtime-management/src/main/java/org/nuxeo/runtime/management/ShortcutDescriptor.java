@@ -40,8 +40,6 @@ public class ShortcutDescriptor {
     @XNode("@qualifiedName")
     private String qualifiedName;
 
-    @XNode("@locator")
-    private String locator;
 
     public String getShortName() {
         return shortName;
@@ -49,10 +47,6 @@ public class ShortcutDescriptor {
 
     public String getQualifiedName() {
         return qualifiedName;
-    }
-
-    public String getLocator() {
-        return locator;
     }
 
 }

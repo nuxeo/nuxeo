@@ -26,9 +26,6 @@ import org.nuxeo.common.xmap.annotation.XObject;
 @XObject("factory")
 public class ResourceFactoryDescriptor {
 
-    @XNode("@name")
-    private String name;
-
     @XNode("@class")
     private Class<? extends ResourceFactory> factoryClass;
 
@@ -38,10 +35,6 @@ public class ResourceFactoryDescriptor {
     }
 
     public ResourceFactoryDescriptor() {
-    }
-
-    public String getName() {
-        return name;
     }
 
     public Class<? extends ResourceFactory> getFactoryClass() {

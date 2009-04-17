@@ -137,7 +137,8 @@ public class ServerLocatorService extends DefaultComponent implements
     protected MBeanServer doFindServer(ServerLocatorDescriptor descriptor) {
         String domainName = descriptor.domainName;
         for (MBeanServer server : (List<MBeanServer>) MBeanServerFactory.findMBeanServer(null)) {
-            if (!server.getDefaultDomain().equals(domainName)) {
+            String domain = server.getDefaultDomain();
+            if (domain == null || !domain.equals(domainName)) {
                 continue;
             }
             return server;

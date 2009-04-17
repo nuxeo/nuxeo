@@ -3,7 +3,7 @@
 
   <extension target="org.nuxeo.runtime.management.ServerLocator"
     point="locators">
-    <locator domain="org.nueo" default="true" exist="${org.nuxeo.runtime.management.serverExist}" rmiPort="${org.nuxeo.runtime.management.serverRmiPort}"/>
+    <locator domain="org.nuxeo" default="true" exist="${org.nuxeo.runtime.management.exist}" rmiPort="${org.nuxeo.runtime.management.serverRmiPort}"/>
   </extension>
   
 </component>
