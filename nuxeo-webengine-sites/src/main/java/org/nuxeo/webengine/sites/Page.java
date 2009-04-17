@@ -78,7 +78,6 @@ public class Page extends DocumentObject {
         return null;
     }
 
-
     @GET
     @Path("numberComments")
     public int getNumberCommentsOnPage() {
@@ -159,7 +158,7 @@ public class Page extends DocumentObject {
     @Path("createWebPage")
     public Object createWebPage() {
         try {
-            CoreSession session = this.getCoreSession();
+            CoreSession session = ctx.getCoreSession();
 
             DocumentModel createdDocument = SiteUtils.createWebPageDocument(ctx.getRequest(), session, doc.getPathAsString());
 
@@ -177,7 +176,7 @@ public class Page extends DocumentObject {
     @Path("modifyWebPage")
     public Object modifyWebPage() {
         try {
-            CoreSession session = this.getCoreSession();
+            CoreSession session = ctx.getCoreSession();
             HttpServletRequest request = ctx.getRequest();
 
             String title = request.getParameter("title");
@@ -186,9 +185,9 @@ public class Page extends DocumentObject {
             Boolean isRichtext = (Boolean) doc.getPropertyValue("webp:isRichtext");
             String content = null;
             if (isRichtext) {
-                content = request.getParameter("richtextEditor");
+                content = request.getParameter("richtextEditorEdit");
             } else {
-                content = request.getParameter("wikitextEditor");
+                content = request.getParameter("wikitextEditorEdit");
             }
             String pushToMenu = request.getParameter("pushToMenu");
 
