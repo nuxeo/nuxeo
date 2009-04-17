@@ -101,11 +101,14 @@ public class SearchActionsBean extends InputController implements
 
     private static final Log log = LogFactory.getLog(SearchActionsBean.class);
 
-    public static final String QM_ADVANCED = "ADVANCED_SEARCH";
+    @Deprecated
+    public static final String QM_ADVANCED = SearchActions.QM_ADVANCED;
 
-    public static final String QM_SIMPLE = "SIMPLE_SEARCH";
+    @Deprecated
+    public static final String QM_SIMPLE = SearchActions.QM_SIMPLE;
 
-    public static final String PROV_NXQL = "SEARCH_BEAN_NXQL_PROVIDER";
+    @Deprecated
+    public static final String PROV_NXQL = SearchActions.PROV_NXQL;
 
     private static final String ACTION_PAGE_SEARCH_NXQL = "search_results_nxql";
 
