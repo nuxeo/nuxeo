@@ -10,7 +10,6 @@
 
   <artifactId>nuxeo-platform</artifactId>
   <name>Nuxeo Platform Base</name>
-  <packaging>ejb</packaging>
   <description>Nuxeo Enterprise Platform: Foundations of Nuxeo EP.</description>
 
   <dependencies>

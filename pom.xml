@@ -104,7 +104,6 @@
         <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core-facade</artifactId>
         <version>${nuxeo.core.version}</version>
-        <type>ejb</type>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
@@ -167,13 +166,11 @@
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform</artifactId>
         <version>${nuxeo.services.version}</version>
-        <type>ejb</type>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-actions-core</artifactId>
         <version>${nuxeo.services.version}</version>
-        <type>ejb</type>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
@@ -199,13 +196,11 @@
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-archive-facade</artifactId>
         <version>${nuxeo.services.version}</version>
-        <type>ejb</type>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-archive-web</artifactId>
         <version>${nuxeo.services.version}</version>
-        <type>ejb</type>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
@@ -216,7 +211,6 @@
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-audit-client</artifactId>
         <version>${nuxeo.services.version}</version>
-        <type>ejb</type>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
@@ -227,7 +221,6 @@
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-audit-facade</artifactId>
         <version>${nuxeo.services.version}</version>
-        <type>ejb</type>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
@@ -243,7 +236,6 @@
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-comment</artifactId>
         <version>${nuxeo.services.version}</version>
-        <type>ejb</type>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
@@ -259,7 +251,6 @@
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-comment-web</artifactId>
         <version>${nuxeo.services.version}</version>
-        <type>ejb</type>
       </dependency>
        <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
@@ -295,7 +286,6 @@
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-directory-facade</artifactId>
         <version>${nuxeo.services.version}</version>
-        <type>ejb</type>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
@@ -326,7 +316,6 @@
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-filemanager-facade</artifactId>
         <version>${nuxeo.services.version}</version>
-        <type>ejb</type>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
@@ -397,7 +386,6 @@
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-mimetype-facade</artifactId>
         <version>${nuxeo.services.version}</version>
-        <type>ejb</type>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
@@ -413,13 +401,11 @@
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-notification-core</artifactId>
         <version>${nuxeo.services.version}</version>
-        <type>ejb</type>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-notification-facade</artifactId>
         <version>${nuxeo.services.version}</version>
-        <type>ejb</type>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
@@ -440,7 +426,6 @@
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-placeful-facade</artifactId>
         <version>${nuxeo.services.version}</version>
-        <type>ejb</type>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
@@ -471,13 +456,11 @@
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-relations-web</artifactId>
         <version>${nuxeo.services.version}</version>
-        <type>ejb</type>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-relations-facade</artifactId>
         <version>${nuxeo.services.version}</version>
-        <type>ejb</type>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
@@ -508,13 +491,11 @@
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-search-facade</artifactId>
         <version>${nuxeo.services.version}</version>
-        <type>ejb</type>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-syndication</artifactId>
         <version>${nuxeo.services.version}</version>
-        <type>ejb</type>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
@@ -540,7 +521,6 @@
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-uidgen-core</artifactId>
         <version>${nuxeo.services.version}</version>
-        <type>ejb</type>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
@@ -581,7 +561,6 @@
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-usermanager-facade</artifactId>
         <version>${nuxeo.services.version}</version>
-        <type>ejb</type>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
@@ -602,7 +581,6 @@
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-versioning-core</artifactId>
         <version>${nuxeo.services.version}</version>
-        <type>ejb</type>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
@@ -613,7 +591,6 @@
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-webapp-core</artifactId>
         <version>${nuxeo.services.version}</version>
-        <type>ejb</type>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
@@ -634,7 +611,6 @@
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-imaging-facade</artifactId>
         <version>${nuxeo.services.version}</version>
-        <type>ejb</type>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
@@ -655,7 +631,6 @@
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-url-facade</artifactId>
         <version>${nuxeo.services.version}</version>
-        <type>ejb</type>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
@@ -734,7 +709,6 @@
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-io-facade</artifactId>
         <version>${nuxeo.services.version}</version>
-        <type>ejb</type>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>

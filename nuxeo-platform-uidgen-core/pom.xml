@@ -9,7 +9,6 @@
   </parent>
 
   <artifactId>nuxeo-platform-uidgen-core</artifactId>
-  <packaging>ejb</packaging>
   <name>Nuxeo UID Generator Service</name>
   <description>Nuxeo Enterprise Platform: UID Generator Service. This service
     is used to manage UID. It can manage several UID generators. Each UID
@@ -57,7 +56,7 @@
       <artifactId>jta</artifactId>
       <scope>test</scope>
     </dependency>
-    
+
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-jcr-connector-test</artifactId>

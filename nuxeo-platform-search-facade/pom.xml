@@ -10,7 +10,6 @@
 
   <artifactId>nuxeo-platform-search-facade</artifactId>
   <name>Nuxeo Search Service - Facade</name>
-  <packaging>ejb</packaging>
   <description>Nuxeo Enterprise Platform: Java EE 5 Facade for the Search
     Service.</description>
 

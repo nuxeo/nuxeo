@@ -9,7 +9,6 @@
 
   <artifactId>nuxeo-platform-usermanager-facade</artifactId>
   <name>Nuxeo User Manager - Facade</name>
-  <packaging>ejb</packaging>
   <description>
     Nuxeo Enterprise Platform: User Manager - Facade.
   </description>

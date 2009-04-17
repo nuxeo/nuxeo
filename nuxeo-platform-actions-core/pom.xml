@@ -12,7 +12,6 @@
 
   <artifactId>nuxeo-platform-actions-core</artifactId>
   <name>Nuxeo Actions Service - Core</name>
-  <packaging>ejb</packaging>
   <description>Nuxeo Enterprise Platform: Actions Core.</description>
 
   <dependencies>

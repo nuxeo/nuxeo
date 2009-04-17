@@ -11,7 +11,6 @@
 
   <artifactId>nuxeo-platform-mimetype-facade</artifactId>
   <name>Nuxeo MimeType Service - Facade</name>
-  <packaging>ejb</packaging>
   <description>Nuxeo Enterprise Platform: MimeType Service Facade.</description>
 
   <dependencies>

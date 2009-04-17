@@ -9,7 +9,6 @@
   </parent>
 
   <artifactId>nuxeo-platform-versioning-core</artifactId>
-  <packaging>ejb</packaging>
   <name>Nuxeo Versioning Service - Core</name>
   <description>Nuxeo Enterprise Platform: Versioning Service. This
     service (core-level) offers a flexible and configurable versioning system.
