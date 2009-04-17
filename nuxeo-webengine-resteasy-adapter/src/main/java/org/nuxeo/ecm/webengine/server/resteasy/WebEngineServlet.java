@@ -113,8 +113,15 @@ public class WebEngineServlet extends HttpServlet {
         if (null == httpServletRequest.getCharacterEncoding()) {
             httpServletRequest.setCharacterEncoding("UTF-8");
         }
+
         httpServletResponse.setContentType("text/html; charset=UTF-8");
-        httpServletResponse.setHeader("Pragma", "no-cache");
+        httpServletResponse.addHeader("Pragma", "no-cache");
+        httpServletResponse.addHeader("Cache-Control", "no-cache");
+        httpServletResponse.addHeader("Cache-Control", "no-store");
+        httpServletResponse.addHeader("Cache-Control", "must-revalidate");
+        httpServletResponse.addHeader("Expires", "0");
+        httpServletResponse.setDateHeader ("Expires", 0); //prevents caching at the proxy server
+
         service(httpServletRequest.getMethod(), httpServletRequest,
                 httpServletResponse);
     }
@@ -147,7 +154,7 @@ public class WebEngineServlet extends HttpServlet {
             } finally {
                 ResteasyProviderFactory.clearContextData();
             }
-        } catch (Throwable t) { 
+        } catch (Throwable t) {
             t.printStackTrace();
             response.sendError(500);
         }
