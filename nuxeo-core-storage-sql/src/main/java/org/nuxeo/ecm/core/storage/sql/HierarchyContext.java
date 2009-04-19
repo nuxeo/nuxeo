@@ -258,8 +258,9 @@ public class HierarchyContext extends Context {
         Serializable pid = parentId;
         do {
             if (pid.equals(id)) {
-                throw new StorageException("Cannot " + op +
-                        " a node under itself: " + parentId + " is under " + id);
+                throw new StorageException("Cannot " + op
+                        + " a node under itself: " + parentId + " is under "
+                        + id);
             }
             SimpleFragment p = (SimpleFragment) get(pid, false);
             if (p == null) {
@@ -277,8 +278,8 @@ public class HierarchyContext extends Context {
             String name, boolean complexProp) throws StorageException {
         Fragment prev = getChildByName(parentId, name, complexProp);
         if (prev != null) {
-            throw new StorageException("Destination name already exists: " +
-                    name);
+            throw new StorageException("Destination name already exists: "
+                    + name);
         }
     }
 

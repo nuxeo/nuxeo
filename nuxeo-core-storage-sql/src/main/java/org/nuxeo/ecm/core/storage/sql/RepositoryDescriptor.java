@@ -95,8 +95,8 @@ public class RepositoryDescriptor {
         try {
             idGenPolicy = IdGenPolicy.fromString(value);
         } catch (IllegalArgumentException e) {
-            log.error("Illegal id generation policy: " + value +
-                    ", using default: " + idGenPolicy.getValue());
+            log.error("Illegal id generation policy: " + value
+                    + ", using default: " + idGenPolicy.getValue());
         }
     }
 

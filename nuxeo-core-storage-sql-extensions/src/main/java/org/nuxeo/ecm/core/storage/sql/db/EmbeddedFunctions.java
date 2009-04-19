@@ -143,8 +143,8 @@ public class EmbeddedFunctions {
             Set<String> principals, Set<String> permissions)
             throws SQLException {
         if (log.isDebugEnabled()) {
-            logDebug("isAccessAllowed " + id + " " + principals + " " +
-                    permissions);
+            logDebug("isAccessAllowed " + id + " " + principals + " "
+                    + permissions);
         }
         PreparedStatement ps1 = null;
         PreparedStatement ps2 = null;
@@ -168,8 +168,8 @@ public class EmbeddedFunctions {
                     if (log.isDebugEnabled()) {
                         logDebug(" -> " + user + " " + permission + " " + grant);
                     }
-                    if (principals.contains(user) &&
-                            permissions.contains(permission)) {
+                    if (principals.contains(user)
+                            && permissions.contains(permission)) {
                         if (log.isDebugEnabled()) {
                             logDebug(" => " + grant);
                         }
