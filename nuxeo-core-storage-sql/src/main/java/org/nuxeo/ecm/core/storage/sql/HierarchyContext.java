@@ -445,8 +445,16 @@ public class HierarchyContext extends Context {
     }
 
     @Override
-    protected void processInvalidations() {
-        super.processInvalidations();
+    protected void gatherInvalidations(Invalidations invalidations) {
+        super.gatherInvalidations(invalidations);
+        invalidations.addModified(Invalidations.PARENTS_KEY,
+                modifiedParentsInTransaction);
+        modifiedParentsInTransaction.clear();
+    }
+
+    @Override
+    protected void processReceivedInvalidations() {
+        super.processReceivedInvalidations();
         synchronized (modifiedParentsInvalidations) {
             for (Serializable parentId : modifiedParentsInvalidations) {
                 childrenRegular.remove(parentId);
@@ -457,20 +465,13 @@ public class HierarchyContext extends Context {
     }
 
     @Override
-    protected boolean notifyInvalidations() {
-        boolean done = super.notifyInvalidations();
-        if (!done && !modifiedParentsInTransaction.isEmpty()) {
-            persistenceContext.invalidateOthers(this);
-            done = true;
-        }
-        return done;
-    }
-
-    @Override
-    protected void invalidate(Context other) {
-        super.invalidate(other);
-        synchronized (modifiedParentsInvalidations) {
-            modifiedParentsInvalidations.addAll(((HierarchyContext) other).modifiedParentsInTransaction);
+    protected void invalidate(Invalidations invalidations) {
+        super.invalidate(invalidations);
+        Set<Serializable> set = invalidations.modified.get(Invalidations.PARENTS_KEY);
+        if (set != null) {
+            synchronized (modifiedParentsInvalidations) {
+                modifiedParentsInvalidations.addAll(set);
+            }
         }
     }
 

@@ -74,16 +74,15 @@ public class SessionImpl implements Session {
     private Node rootNode;
 
     SessionImpl(RepositoryImpl repository, SchemaManager schemaManager,
-            Mapper mapper, RepositoryImpl.Invalidators invalidators,
-            Credentials credentials) throws StorageException {
+            Mapper mapper, Credentials credentials) throws StorageException {
         this.repository = repository;
         this.schemaManager = schemaManager;
         this.mapper = mapper;
         // this.credentials = credentials;
         model = mapper.getModel();
-        context = new PersistenceContext(mapper, invalidators);
+        context = new PersistenceContext(mapper);
         live = true;
-        transactionalSession = new TransactionalSession(this, mapper, context);
+        transactionalSession = new TransactionalSession(this, mapper);
         computeRootNode();
     }
 
@@ -170,16 +169,45 @@ public class SessionImpl implements Session {
         checkLive();
         flush();
         if (!transactionalSession.isInTransaction()) {
-            context.notifyInvalidations();
+            sendInvalidationsToOthers();
             // as we don't have a way to know when the next non-transactional
             // statement will start, process invalidations immediately
-            context.processInvalidations();
+            processReceivedInvalidations();
         }
     }
 
     protected void flush() throws StorageException {
         context.updateFulltext(this);
         context.save();
+    }
+
+    /**
+     * Post-transaction invalidations notification.
+     */
+    protected void sendInvalidationsToOthers() throws StorageException {
+        repository.invalidate(context.gatherInvalidations(), this);
+    }
+
+    /**
+     * Pre-transaction invalidations processing.
+     */
+    protected void processReceivedInvalidations() {
+        context.processReceivedInvalidations();
+    }
+
+    /**
+     * Processes invalidations received by another session or cluster node.
+     * <p>
+     * Invalidations from other local session can happen asynchronously at any
+     * time (when the other session commits). Invalidations from another cluster
+     * node happen when the transaction starts.
+     */
+    protected void invalidate(Invalidations invalidations) {
+        context.invalidate(invalidations);
+    }
+
+    protected void rollback() {
+        context.rollback();
     }
 
     public Node getNodeById(Serializable id) throws StorageException {

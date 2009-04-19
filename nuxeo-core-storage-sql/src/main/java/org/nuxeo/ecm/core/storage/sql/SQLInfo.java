@@ -31,6 +31,7 @@ import java.util.Map.Entry;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
+import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.db.Column;
 import org.nuxeo.ecm.core.storage.sql.db.Database;
 import org.nuxeo.ecm.core.storage.sql.db.Delete;
@@ -52,6 +53,7 @@ import org.nuxeo.ecm.core.storage.sql.db.dialect.Dialect;
 public class SQLInfo {
 
     private static final String ORDER_DESC = "DESC";
+
     private static final String ORDER_ASC = "ASC";
 
     private static final Log log = LogFactory.getLog(SQLInfo.class);
@@ -127,12 +129,19 @@ public class SQLInfo {
     protected final Map<String, SQLInfoSelect> selectFragmentById;
 
     protected SQLInfoSelect selectVersionsByLabel;
+
     protected SQLInfoSelect selectVersionsByVersionable;
+
     protected SQLInfoSelect selectVersionsByVersionableLastFirst;
+
     protected SQLInfoSelect selectProxiesByVersionable;
+
     protected SQLInfoSelect selectProxiesByTarget;
+
     protected SQLInfoSelect selectChildrenByIsProperty;
+
     protected SQLInfoSelect selectProxiesByVersionableAndParent;
+
     protected SQLInfoSelect selectProxiesByTargetAndParent;
 
     /**
@@ -142,7 +151,7 @@ public class SQLInfo {
      * @param model the model
      * @param dialect the SQL dialect
      */
-    public SQLInfo(Model model, Dialect dialect) {
+    public SQLInfo(Model model, Dialect dialect) throws StorageException {
         this.model = model;
         this.dialect = dialect;
 
@@ -382,7 +391,7 @@ public class SQLInfo {
     /**
      * Creates all the sql from the models.
      */
-    protected void initSQL() {
+    protected void initSQL() throws StorageException {
 
         // structural tables
         initHierarchySQL();

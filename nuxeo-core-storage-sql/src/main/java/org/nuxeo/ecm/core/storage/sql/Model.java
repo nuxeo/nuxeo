@@ -76,9 +76,9 @@ public class Model {
 
     public final String mainTableName;
 
-    public static final String MAIN_PRIMARY_TYPE_PROP = "ecm:primaryType";
-
     public static final String MAIN_TABLE_NAME = "types";
+
+    public static final String MAIN_PRIMARY_TYPE_PROP = "ecm:primaryType";
 
     public static final String MAIN_PRIMARY_TYPE_KEY = "primarytype";
 
@@ -255,6 +255,8 @@ public class Model {
 
     private final BinaryManager binaryManager;
 
+    protected final RepositoryDescriptor repositoryDescriptor;
+
     /** The id generation policy. */
     public final IdGenPolicy idGenPolicy;
 
@@ -317,7 +319,7 @@ public class Model {
 
     public Model(RepositoryImpl repository, SchemaManager schemaManager) {
         binaryManager = repository.getBinaryManager();
-        RepositoryDescriptor repositoryDescriptor = repository.getRepositoryDescriptor();
+        repositoryDescriptor = repository.getRepositoryDescriptor();
         idGenPolicy = repositoryDescriptor.idGenPolicy;
         separateMainTable = repositoryDescriptor.separateMainTable;
         temporaryIdCounter = new AtomicLong(0);
@@ -356,6 +358,15 @@ public class Model {
         initModels(schemaManager);
 
         inferFulltextInfo();
+    }
+
+    /**
+     * Gets the repository descriptor used for this model.
+     *
+     * @return the repository descriptor
+     */
+    public RepositoryDescriptor getRepositoryDescriptor() {
+        return repositoryDescriptor;
     }
 
     /**
