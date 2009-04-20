@@ -93,16 +93,6 @@
         <artifactId>nuxeo-theme-html</artifactId>
         <version>${nuxeo.theme.version}</version>
       </dependency>
-      <dependency>
-        <groupId>org.nuxeo.theme</groupId>
-        <artifactId>nuxeo-theme-webwidgets</artifactId>
-        <version>${nuxeo.theme.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.theme</groupId>
-        <artifactId>nuxeo-theme-webwidgets-ui</artifactId>
-        <version>${nuxeo.theme.version}</version>
-      </dependency>
 
       <!-- scope test -->
       <dependency>
