@@ -38,6 +38,8 @@ import org.nuxeo.ecm.core.storage.StorageException;
  */
 public class HierarchyContext extends Context {
 
+    protected static final String INVAL_PARENT = "__PARENT__";
+
     protected final Map<Serializable, Children> childrenRegular;
 
     protected final Map<Serializable, Children> childrenComplexProp;
@@ -447,8 +449,7 @@ public class HierarchyContext extends Context {
     @Override
     protected void gatherInvalidations(Invalidations invalidations) {
         super.gatherInvalidations(invalidations);
-        invalidations.addModified(Invalidations.PARENTS_KEY,
-                modifiedParentsInTransaction);
+        invalidations.addModified(INVAL_PARENT, modifiedParentsInTransaction);
         modifiedParentsInTransaction.clear();
     }
 
@@ -467,7 +468,7 @@ public class HierarchyContext extends Context {
     @Override
     protected void invalidate(Invalidations invalidations) {
         super.invalidate(invalidations);
-        Set<Serializable> set = invalidations.modified.get(Invalidations.PARENTS_KEY);
+        Set<Serializable> set = invalidations.modified.get(INVAL_PARENT);
         if (set != null) {
             synchronized (modifiedParentsInvalidations) {
                 modifiedParentsInvalidations.addAll(set);

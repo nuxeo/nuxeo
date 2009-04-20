@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.core.storage.sql.db.dialect;
 
 import java.sql.DatabaseMetaData;
+import java.sql.Types;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -138,6 +139,12 @@ public class DialectH2 extends Dialect {
         statements.add(makeFunction("NX_ACCESS_ALLOWED", //
                 "isAccessAllowed" + methodSuffix));
 
+        statements.add(makeFunction("NX_CLUSTER_INVAL", //
+                "clusterInvalidate" + methodSuffix));
+
+        statements.add(makeFunction("NX_CLUSTER_GET_INVALS", //
+                "getClusterInvalidations" + methodSuffix));
+
         statements.add(new ConditionalStatement( //
                 false, // late
                 Boolean.FALSE, // no drop
@@ -171,4 +178,50 @@ public class DialectH2 extends Dialect {
                         h2Functions, methodName));
     }
 
+    @Override
+    public int getClusterNodeType() {
+        return Types.INTEGER;
+    }
+
+    @Override
+    public String getCleanupClusterNodesSql(Model model, Database database) {
+        Table cln = database.getTable(model.CLUSTER_NODES_TABLE_NAME);
+        Column clnid = cln.getColumn(model.CLUSTER_NODES_NODEID_KEY);
+        // delete nodes for sessions don't exist anymore, and old node for this
+        // session (session ids are recycled)
+        return String.format(
+                "DELETE FROM %s C WHERE "
+                        + "NOT EXISTS(SELECT * FROM INFORMATION_SCHEMA.SESSIONS S WHERE C.%s = S.ID) "
+                        + "OR C.%<s = SESSION_ID()", cln.getQuotedName(),
+                clnid.getQuotedName());
+    }
+
+    @Override
+    public String getCreateClusterNodeSql(Model model, Database database) {
+        Table cln = database.getTable(model.CLUSTER_NODES_TABLE_NAME);
+        Column clnid = cln.getColumn(model.CLUSTER_NODES_NODEID_KEY);
+        Column clncr = cln.getColumn(model.CLUSTER_NODES_CREATED_KEY);
+        return String.format(
+                "INSERT INTO %s (%s, %s) VALUES (SESSION_ID(), CURRENT_TIMESTAMP)",
+                cln.getQuotedName(), clnid.getQuotedName(),
+                clncr.getQuotedName());
+    }
+
+    @Override
+    public String getRemoveClusterNodeSql(Model model, Database database) {
+        Table cln = database.getTable(model.CLUSTER_NODES_TABLE_NAME);
+        Column clnid = cln.getColumn(model.CLUSTER_NODES_NODEID_KEY);
+        return String.format("DELETE FROM %s WHERE %s = SESSION_ID()",
+                cln.getQuotedName(), clnid.getQuotedName());
+    }
+
+    @Override
+    public String getClusterInsertInvalidations() {
+        return "CALL NX_CLUSTER_INVAL(?, ?, ?)";
+    }
+
+    @Override
+    public String getClusterGetInvalidations() {
+        return "SELECT * FROM NX_CLUSTER_GET_INVALS()";
+    }
 }

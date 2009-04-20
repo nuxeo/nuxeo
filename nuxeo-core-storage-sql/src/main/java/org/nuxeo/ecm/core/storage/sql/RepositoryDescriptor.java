@@ -39,6 +39,9 @@ public class RepositoryDescriptor {
     @XNode("@name")
     public String name;
 
+    @XNode("clustering@enabled")
+    public boolean clusteringEnabled;
+
     @XNode("indexing/fulltext@analyzer")
     public String fulltextAnalyzer;
 

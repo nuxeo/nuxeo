@@ -60,15 +60,15 @@ public class RepositoryImpl implements Repository {
 
     private final XADataSource xadatasource;
 
-    // initialized at first login
-
-    private boolean initialized;
+    private boolean initialized; // initialized at first access
 
     private Dialect dialect;
 
     private Model model;
 
     private SQLInfo sqlInfo;
+
+    private Mapper clusterMapper; // used synchronized
 
     public RepositoryImpl(RepositoryDescriptor repositoryDescriptor,
             SchemaManager schemaManager) throws StorageException {
@@ -131,6 +131,12 @@ public class RepositoryImpl implements Repository {
         if (!initialized) {
             // first connection, initialize the database
             mapper.createDatabase();
+            if (repositoryDescriptor.clusteringEnabled) {
+                // use the mapper that created the database as cluster mapper
+                clusterMapper = mapper;
+                clusterMapper.createClusterNode();
+                mapper = new Mapper(model, sqlInfo, xadatasource);
+            }
             initialized = true;
         }
 
@@ -175,6 +181,17 @@ public class RepositoryImpl implements Repository {
             session.closeSession();
         }
         sessions.clear();
+        if (clusterMapper != null) {
+            synchronized (clusterMapper) {
+                try {
+                    clusterMapper.removeClusterNode();
+                } catch (StorageException e) {
+                    log.error(e.getMessage(), e);
+                }
+                clusterMapper.close();
+            }
+            clusterMapper = null;
+        }
     }
 
     /*
@@ -295,6 +312,27 @@ public class RepositoryImpl implements Repository {
         // local invalidations
         for (SessionImpl session : sessions) {
             if (session != fromSession) {
+                session.invalidate(invalidations);
+            }
+        }
+        // cluster invalidations
+        if (clusterMapper != null) {
+            synchronized (clusterMapper) {
+                clusterMapper.insertClusterInvalidations(invalidations);
+            }
+        }
+    }
+
+    /**
+     * Reads cluster invalidations and queues them locally.
+     */
+    protected void receiveClusterInvalidations() throws StorageException {
+        if (clusterMapper != null) {
+            Invalidations invalidations;
+            synchronized (clusterMapper) {
+                invalidations = clusterMapper.getClusterInvalidations();
+            }
+            for (SessionImpl session : sessions) {
                 session.invalidate(invalidations);
             }
         }

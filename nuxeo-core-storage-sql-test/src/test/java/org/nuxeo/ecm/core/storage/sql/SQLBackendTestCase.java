@@ -29,18 +29,23 @@ public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
 
     public Repository repository;
 
+    public Repository repository2;
+
     @Override
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core.event");
         DatabaseHelper.DATABASE.setUp();
+        repository = newRepository(false);
+    }
 
+    protected Repository newRepository(boolean clustered) throws Exception {
         SchemaManager schemaManager = Framework.getService(SchemaManager.class);
         assertNotNull(schemaManager);
-
         RepositoryDescriptor descriptor = DatabaseHelper.DATABASE.getRepositoryDescriptor();
-        repository = new RepositoryImpl(descriptor, schemaManager);
+        descriptor.clusteringEnabled = clustered;
+        return new RepositoryImpl(descriptor, schemaManager);
     }
 
     @Override
@@ -48,6 +53,9 @@ public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
         Framework.getLocalService(EventService.class).waitForAsyncCompletion();
         if (repository != null) {
             repository.close();
+        }
+        if (repository2 != null) {
+            repository2.close();
         }
         DatabaseHelper.DATABASE.tearDown();
         super.tearDown();
