@@ -678,14 +678,14 @@
         <version>${nuxeo.theme.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.nuxeo.theme</groupId>
+        <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-theme-webwidgets</artifactId>
-        <version>${nuxeo.theme.version}</version>
+        <version>${nuxeo.features.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.nuxeo.theme</groupId>
+        <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-theme-webwidgets-ui</artifactId>
-        <version>${nuxeo.theme.version}</version>
+        <version>${nuxeo.features.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
