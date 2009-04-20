@@ -184,6 +184,11 @@ public class DialectH2 extends Dialect {
     }
 
     @Override
+    public int getClusterFragmentsType() {
+        return Types.VARCHAR;
+    }
+
+    @Override
     public String getCleanupClusterNodesSql(Model model, Database database) {
         Table cln = database.getTable(model.CLUSTER_NODES_TABLE_NAME);
         Column clnid = cln.getColumn(model.CLUSTER_NODES_NODEID_KEY);

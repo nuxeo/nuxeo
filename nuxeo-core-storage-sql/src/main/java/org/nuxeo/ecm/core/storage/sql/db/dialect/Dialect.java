@@ -404,6 +404,21 @@ public abstract class Dialect {
     }
 
     /**
+     * Gets the type of the column containing the cluster fragments.
+     */
+    public int getClusterFragmentsType() throws StorageException {
+        return 0;
+    }
+
+    /**
+     * Gets a dialect-specific string for the type of the cluster fragments
+     * column.
+     */
+    public String getClusterFragmentsTypeString() {
+        return null;
+    }
+
+    /**
      * Gets the SQL to cleanup info about old (crashed) cluster nodes.
      */
     public String getCleanupClusterNodesSql(Model model, Database database) {
