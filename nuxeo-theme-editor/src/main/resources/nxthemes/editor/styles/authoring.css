@@ -361,6 +361,12 @@ h1.nxthemesEditor, h2.nxthemesEditor, h3.nxthemesEditor {
 
 h1.nxthemesEditor {
   font-size: 20px;
+  color: #600;
+  background-color: #fc3;
+  padding: 0 8px;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
 }
 	
 h2.nxthemesEditor {
@@ -964,8 +970,8 @@ ul.nxthemesSelector li a:hover {
 }
 
 ul.nxthemesSelector li.selected a {
-  background-color: #fc3;
-  border: 1px solid #c93;
+  background-color: #eee;
+  border: 1px solid #ccc;
 }
 
 ul.nxthemesSelector img {

@@ -4,14 +4,6 @@
 
 <div id="nxthemesThemeManager" class="nxthemesScreen">
 
-<form style="float: right;" action="javascript:void(0)">
-  <div class="nxthemesEditor">
-    <button onclick="javascript:NXThemesEditor.addTheme()">
-    <img src="${skinPath}/img/add-theme-16.png" width="16" height="16" />
-    Add theme</button>
-  </div>
-</form>
-
 <h1 class="nxthemesEditor">Themes</h1>
 
 <table cellpadding="0" cellspacing="0" style="width: 100%"><tr>
@@ -37,6 +29,14 @@
 
 </td>
 <td style="padding-left: 10px; vertical-align: top;">
+
+<form style="float: right" action="javascript:void(0)">
+  <div>
+    <button onclick="javascript:NXThemesEditor.addTheme()">
+    <img src="${skinPath}/img/add-theme-16.png" width="16" height="16" />
+    Add theme</button>
+  </div>
+</form>
 
 <#list themes as theme>
   <#if theme.name = current_theme_name>
