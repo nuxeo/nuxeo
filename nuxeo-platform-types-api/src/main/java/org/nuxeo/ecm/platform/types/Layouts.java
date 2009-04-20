@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.types;
 
 import java.io.Serializable;
 
+import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 
@@ -34,11 +35,18 @@ public class Layouts implements Serializable {
 
     private static final long serialVersionUID = -5870562997550545838L;
 
+    @XNode("@append")
+    private boolean append;
+
     @XNodeList(value = "layout", type = String[].class, componentType = String.class)
     String[] layouts = new String[0];
 
     public String[] getLayouts() {
         return layouts;
+    }
+
+    public boolean getAppend() {
+        return append;
     }
 
 }

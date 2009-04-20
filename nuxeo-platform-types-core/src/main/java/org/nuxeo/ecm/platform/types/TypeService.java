@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.types;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -179,8 +180,28 @@ public class TypeService extends DefaultComponent implements TypeManager {
         }
 
         Map<String, Layouts> layouts = newType.getLayouts();
-        if (layouts != null && !layouts.isEmpty()) {
-            oldType.setLayouts(layouts);
+        if (layouts != null) {
+            Map<String, Layouts> layoutsMerged = new HashMap<String, Layouts>(
+                    oldType.getLayouts());
+            for (Map.Entry<String, Layouts> entry : layouts.entrySet()) {
+                String key = entry.getKey();
+                Layouts newLayouts = entry.getValue();
+                if (layoutsMerged.containsKey(key) && newLayouts.getAppend()) {
+                    List<String> allLayouts = new ArrayList<String>();
+                    for (String layoutName : layoutsMerged.get(key).getLayouts()) {
+                        allLayouts.add(layoutName);
+                    }
+                    for (String layoutName : newLayouts.getLayouts()) {
+                        allLayouts.add(layoutName);
+                    }
+                    Layouts mergedLayouts = new Layouts();
+                    mergedLayouts.layouts = allLayouts.toArray(new String[allLayouts.size()]);
+                    layoutsMerged.put(key, mergedLayouts);
+                } else {
+                    layoutsMerged.put(key, newLayouts);
+                }
+            }
+            oldType.setLayouts(layoutsMerged);
         }
 
         // TODO: actions

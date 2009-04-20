@@ -57,6 +57,17 @@
       </layouts>
     </type>
 
+    <type id="DocTypeTestLayoutOverride">
+      <label>doc type with layout to override</label>
+      <layouts mode="any">
+        <layout>dublincore</layout>
+      </layouts>
+      <layouts mode="create">
+        <layout>dublincore</layout>
+        <layout>file</layout>
+      </layouts>
+    </type>
+
   </extension>
 
 
