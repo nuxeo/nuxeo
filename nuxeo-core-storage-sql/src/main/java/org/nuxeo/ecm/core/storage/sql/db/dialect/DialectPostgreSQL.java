@@ -353,7 +353,50 @@ public class DialectPostgreSQL extends Dialect {
                                 + "STABLE " //
                         , fulltextAnalyzer)));
 
-        statements.add(new ConditionalStatement( //
+        statements.add(new ConditionalStatement(
+                true, // early
+                Boolean.FALSE, // no drop needed
+                null, //
+                null, //
+                String.format(
+                        "CREATE OR REPLACE FUNCTION NX_CLUSTER_INVAL" //
+                                + "(i %s, f varchar[], k int) " //
+                                + "RETURNS VOID " //
+                                + "AS $$ " //
+                                + "DECLARE" //
+                                + "  nid int; " //
+                                + "BEGIN" //
+                                + "  FOR nid IN SELECT nodeid FROM cluster_nodes WHERE nodeid <> pg_backend_pid() LOOP" //
+                                + "  INSERT INTO cluster_invals (nodeid, id, fragments, kind) VALUES (nid, i, f, k);" //
+                                + "  END LOOP; " //
+                                + "END " //
+                                + "$$ " //
+                                + "LANGUAGE plpgsql" //
+                        , idType)));
+
+        statements.add(new ConditionalStatement(
+                true, // early
+                Boolean.FALSE, // no drop needed
+                null, //
+                null, //
+                "CREATE OR REPLACE FUNCTION NX_CLUSTER_GET_INVALS() " //
+                        + "RETURNS SETOF RECORD " //
+                        + "AS $$ " //
+                        + "DECLARE" //
+                        + "  r RECORD; " //
+                        + "BEGIN" //
+                        + "  FOR r IN SELECT id, fragments, kind FROM cluster_invals WHERE nodeid = pg_backend_pid() LOOP" //
+                        + "    RETURN NEXT r;" //
+                        + "  END LOOP;" //
+                        + "  DELETE FROM cluster_invals WHERE nodeid = pg_backend_pid();" //
+                        + "  RETURN; " //
+                        + "END " //
+                        + "$$ " //
+                        + "LANGUAGE plpgsql" //
+        ));
+
+        statements.add(new ConditionalStatement(
+                //
                 false, // late
                 Boolean.FALSE, // no drop needed
                 null, //
@@ -387,4 +430,60 @@ public class DialectPostgreSQL extends Dialect {
         return statements;
     }
 
+    @Override
+    public int getClusterNodeType() {
+        return Types.INTEGER;
+    }
+
+    @Override
+    public int getClusterFragmentsType() {
+        return Types.ARRAY;
+    }
+
+    @Override
+    public String getClusterFragmentsTypeString() {
+        return "varchar[]";
+    }
+
+    @Override
+    public String getCleanupClusterNodesSql(Model model, Database database) {
+        Table cln = database.getTable(model.CLUSTER_NODES_TABLE_NAME);
+        Column clnid = cln.getColumn(model.CLUSTER_NODES_NODEID_KEY);
+        // delete nodes for sessions don't exist anymore
+        return String.format(
+                "DELETE FROM %s N WHERE "
+                        + "NOT EXISTS(SELECT * FROM pg_stat_activity S WHERE N.%s = S.procpid) ",
+                cln.getQuotedName(), clnid.getQuotedName());
+    }
+
+    @Override
+    public String getCreateClusterNodeSql(Model model, Database database) {
+        Table cln = database.getTable(model.CLUSTER_NODES_TABLE_NAME);
+        Column clnid = cln.getColumn(model.CLUSTER_NODES_NODEID_KEY);
+        Column clncr = cln.getColumn(model.CLUSTER_NODES_CREATED_KEY);
+        return String.format(
+                "INSERT INTO %s (%s, %s) VALUES (pg_backend_pid(), CURRENT_TIMESTAMP)",
+                cln.getQuotedName(), clnid.getQuotedName(),
+                clncr.getQuotedName());
+    }
+
+    @Override
+    public String getRemoveClusterNodeSql(Model model, Database database) {
+        Table cln = database.getTable(model.CLUSTER_NODES_TABLE_NAME);
+        Column clnid = cln.getColumn(model.CLUSTER_NODES_NODEID_KEY);
+        return String.format("DELETE FROM %s WHERE %s = pg_backend_pid()",
+                cln.getQuotedName(), clnid.getQuotedName());
+    }
+
+    @Override
+    public String getClusterInsertInvalidations() {
+        return "SELECT NX_CLUSTER_INVAL(?, ?, ?)";
+    }
+
+    @Override
+    public String getClusterGetInvalidations() {
+        // TODO id type
+        return "SELECT * FROM NX_CLUSTER_GET_INVALS() "
+                + "AS invals(id varchar(36), fragments varchar[], kind int)";
+    }
 }
