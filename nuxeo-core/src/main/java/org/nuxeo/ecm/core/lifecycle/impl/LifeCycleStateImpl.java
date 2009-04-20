@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.core.lifecycle.impl;
 
 import java.util.Collection;
+import java.util.Collections;
 
 import org.nuxeo.ecm.core.lifecycle.LifeCycleState;
 
@@ -46,7 +47,7 @@ public class LifeCycleStateImpl implements LifeCycleState {
             Collection<String> allowedStateTransitions, boolean initial) {
         this.name = name;
         this.description = description;
-        this.allowedStateTransitions = allowedStateTransitions;
+        this.allowedStateTransitions = Collections.unmodifiableCollection(allowedStateTransitions);
         this.initial = initial;
     }
 

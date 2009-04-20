@@ -110,6 +110,16 @@ public class TestLifeCycleService extends NXRuntimeTestCase {
         assertTrue(transitions.contains("cancel"));
         assertTrue(transitions.contains("obsolete"));
 
+        // check mutation fails
+        try {
+            transitions.remove("approve");
+            fail("Mutation should fail");
+        } catch (Exception e) {
+            // ok
+        }
+        transitions = lcd.getAllowedStateTransitionsFrom("work");
+        assertEquals(3, transitions.size());
+
         // approved
         transitions = lcd.getAllowedStateTransitionsFrom("approved");
         assertEquals(1, transitions.size());
