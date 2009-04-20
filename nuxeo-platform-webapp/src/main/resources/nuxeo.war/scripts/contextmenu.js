@@ -23,53 +23,62 @@ jQuery.noConflict();
 
    var menu, shadow, trigger, content, hash, currentTarget;
   var defaults = {
-    menuStyle: {},
-    itemStyle: {},
-    itemHoverStyle: {},
     eventPosX: 'pageX',
     eventPosY: 'pageY',
     shadow : true,
     onContextMenu: null,
-    onShowMenu: null
+    onShowMenu: null,
+    bind: 'contextmenu',
+    useFilter: true,
+    anchor: 'body',
+    ctxMenuStyle : 'ctxMenuStyle',
+    ctxMenuItemHoverStyle : 'ctxMenuItemHoverStyle',
+    ctxMenuItemStyle : 'ctxMenuItemStyle',
+    ctxMenuImg : 'ctxMenuImg'
    };
 
   jQuery.fn.contextMenu = function(id, options) {
     if (!options)
        options={};
-    if (!menu) {                                      // Create singleton menu
-      menu = jQuery('<div id="jqContextMenu"></div>')
-               .hide()
-               .css({position:'absolute', zIndex:'500'})
-               .appendTo('body')
-               .bind('click', function(e) {
-                 e.stopPropagation();
-               });
-    }
-    if (!shadow) {
-      shadow = jQuery('<div></div>')
-                 .addClass('ctxMenuShadow')
-                 .appendTo('body')
-                 .hide();
-    }
     hash = hash || [];
     hash.push({
       id : id,
-//      menuStyle: jQuery.extend({}, defaults.menuStyle, options.menuStyle || {}),
-//      itemStyle: jQuery.extend({}, defaults.itemStyle, options.itemStyle || {}),
-//      itemHoverStyle: jQuery.extend({}, defaults.itemHoverStyle, options.itemHoverStyle || {}),
       bindings: options.bindings || null,
       shadow: options.shadow || options.shadow === false ? options.shadow : defaults.shadow,
       onContextMenu: options.onContextMenu || defaults.onContextMenu,
       onShowMenu: options.onShowMenu || defaults.onShowMenu,
       eventPosX: options.eventPosX || defaults.eventPosX,
-      eventPosY: options.eventPosY || defaults.eventPosY
+      eventPosY: options.eventPosY || defaults.eventPosY,
+      bind: options.bind || defaults.bind,
+      useFilter: options.useFilter || options.useFilter === false ? options.useFilter : defaults.useFilter,
+      anchor: options.anchor || defaults.anchor,
+      ctxMenuStyle: options.ctxMenuStyle || defaults.ctxMenuStyle,
+      ctxMenuItemHoverStyle: options.ctxMenuItemHoverStyle || defaults.ctxMenuItemHoverStyle,
+      ctxMenuItemStyle: options.ctxMenuItemStyle || defaults.ctxMenuItemStyle,
+      ctxMenuImg: options.ctxMenuImg || defaults.ctxMenuImg
     });
-
     var index = hash.length - 1;
-    jQuery(this).bind('contextmenu', function(e) {
+    
+    if (!menu) {                                      // Create singleton menu
+        menu = jQuery('<div id="jqContextMenu"></div>')
+                 .hide()
+                 .css({position:'absolute', zIndex:'500'})
+                 .appendTo(hash[index].anchor)
+                 .bind('click', function(e) {
+                   e.stopPropagation();
+                 });
+      }
+      if (!shadow) {
+        shadow = jQuery('<div></div>')
+                   .addClass('ctxMenuShadow')
+                   .appendTo(hash[index].anchor)
+                   .hide();
+      }
+      
+    jQuery(this).bind(hash[index].bind, function(e) {
       // Check if onContextMenu() defined
       var bShowContext = (!!hash[index].onContextMenu) ? hash[index].onContextMenu(e) : true;
-      if (bShowContext) display(index, this, e, options);
+      if (bShowContext) display(index, this, e, hash[index]);
       return false;
     });
     return this;
@@ -78,18 +87,15 @@ jQuery.noConflict();
   function display(index, trigger, e, options) {
     var cur = hash[index];
     content = jQuery('#'+cur.id).find('ul:first').clone(true);
-    //content.css(cur.menuStyle).find('li').css(cur.itemStyle).hover(
-    content.addClass('ctxMenuStyle').find('li').addClass('ctxMenuItemStyle').hover(
-      function() {
-        jQuery(this).toggleClass('ctxMenuItemHoverStyle');
-        jQuery(this).toggleClass('ctxMenuItemStyle');
-      },
-      function(){
-        jQuery(this).toggleClass('ctxMenuItemHoverStyle');
-        jQuery(this).toggleClass('ctxMenuItemStyle');
-      }
-    ).find('img').addClass('ctxMenuImg');
-
+    		content.addClass(options.ctxMenuStyle);
+			content.find('li').addClass(options.ctxMenuItemStyle).hover( function() {
+				jQuery(this).toggleClass(options.ctxMenuItemHoverStyle);
+				jQuery(this).toggleClass(options.ctxMenuItemStyle);
+			}, function() {
+				jQuery(this).toggleClass(options.ctxMenuItemHoverStyle);
+				jQuery(this).toggleClass(options.ctxMenuItemStyle);
+			}).find('img').addClass(options.ctxMenuImg);
+    content.find('li').bind('click', hide);
     // Send the content to the menu
     menu.html(content);
 
@@ -122,7 +128,7 @@ jQuery.noConflict();
     });
 
     jQuery(document).one('click', hide);
-    beforeDisplayCallBack(e,cur,menu,shadow,trigger,e.pageX,e.pageY);
+	beforeDisplayCallBack(e,cur,menu,shadow,trigger,e.pageX,e.pageY, options.useFilter);
   }
 
   function show() {
@@ -174,20 +180,19 @@ function getMenuItemsToHideCallBacks(actionsToRemove)
     cur=currentMenuContext['cur'];
     menuX=currentMenuContext['menuX'];
     menuY=currentMenuContext['menuY'];
+    if (actionsToRemove) {
+		// filter menu items
+		var deleteQuery = null;
+		for (i = 0; i < actionsToRemove.length; i++) {
+			if (!deleteQuery)
+				deleteQuery = '#ctxMenu_' + actionsToRemove[i];
+			else
+				deleteQuery = deleteQuery + ',#ctxMenu_' + actionsToRemove[i];
+		}
 
-    // filter menu items
-    var deleteQuery=null;
-    for(i=0;i<actionsToRemove.length;i++)
-    {
-      if (!deleteQuery)
-       deleteQuery='#ctxMenu_' + actionsToRemove[i];
-      else
-       deleteQuery=deleteQuery + ',#ctxMenu_' + actionsToRemove[i];
-    }
-
-     if (actionsToRemove.length>0)
-       jQuery(deleteQuery, menu).remove();
-
+		if (actionsToRemove.length > 0)
+			jQuery(deleteQuery, menu).remove();
+	}
     // display menu
     menu.css({'left':menuX,'top':menuY}).show();
     if (cur.shadow) shadow.css({width:menu.width(),height:menu.height(),left:menuX+2,top:menuY+2}).show();
@@ -200,14 +205,19 @@ function getDocRef(trigger)
   return trigger.getAttribute('docref');
 }
 
-function beforeDisplayCallBack(e,cur,menu,shadow,trigger,menuX,menuY)
+function beforeDisplayCallBack(e,cur,menu,shadow,trigger,menuX,menuY,useFilter)
 {
     // save call context
     currentMenuContext = {'e':e,'cur':cur,'menu':menu,'shadow':shadow,'menuX':menuX,'menuY':menuY};
 
     var docRef=getDocRef(trigger);
-    // trigger Seam filter call
-    getMenuItemsToHide(docRef);
+
+    if (useFilter) {
+		// trigger Seam filter call
+		getMenuItemsToHide(docRef);
+	} else {
+		getMenuItemsToHideCallBacks();
+	}
 }
 
 function hideMenu()
@@ -218,12 +228,23 @@ function hideMenu()
     shadow.hide();
 }
 
-
-function setupContextMenu(target)
+function setupContextMenu(target, id, options)
 {
+  var menuId;
+  if (id) menuId = id;
+  else menuId = "popupMenu";
+  if (options) {
+		if (options.bind)
+			options.onContextMenu = function(e) {
+				if (e.type == options.bind)
+					return true;
+				else
+					return false;
+			}
+	}
   if (window.addEventListener) {
-    window.addEventListener("load", function (e) {jQuery(target).contextMenu("popupMenu")}, true);
+    window.addEventListener("load", function (e) {jQuery(target).contextMenu(menuId, options )}, true);
   } else if (window.attachEvent) {
-  window.attachEvent("onload", function (e) {jQuery(target).contextMenu("popupMenu")});
+  window.attachEvent("onload", function (e) {jQuery(target).contextMenu(menuId, options)});
   }
 }
