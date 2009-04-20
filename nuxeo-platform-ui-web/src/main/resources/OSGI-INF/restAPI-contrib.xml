@@ -139,7 +139,7 @@
         name="createDocumentRestlet"
         class="org.nuxeo.ecm.platform.ui.web.restAPI.CreateDocumentRestlet"
         enabled="true"
-        useSeam="false">
+        useSeam="true">
       <urlPatterns>
         <urlPattern>/{repo}/{parentdocid}/createDocument</urlPattern>
       </urlPatterns>
