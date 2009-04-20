@@ -202,10 +202,12 @@ public class DocumentModelResolver extends BeanELResolver {
             value = FieldAdapterManager.getValueForStorage(value);
             try {
                 ctx.doc.setProperty(ctx.schema, (String) property, value);
+                context.setPropertyResolved(true);
             } catch (ClientException e) {
-                context.setPropertyResolved(false);
+                // XXX avoid errors here too?
+                log.warn(e.getMessage());
+                context.setPropertyResolved(true);
             }
-            context.setPropertyResolved(true);
         } else if (base instanceof Property) {
             try {
                 Property docProperty = (Property) base;
