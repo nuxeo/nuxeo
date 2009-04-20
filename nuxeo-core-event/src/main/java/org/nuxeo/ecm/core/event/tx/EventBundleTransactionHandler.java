@@ -56,6 +56,9 @@ public class EventBundleTransactionHandler {
     protected boolean disabled;
 
     public void beginNewTransaction() {
+        beginNewTransaction(null);
+    }
+    public void beginNewTransaction(Integer transactionTimeout) {
         if (disabled) {
             return;
         }
@@ -63,7 +66,7 @@ public class EventBundleTransactionHandler {
             throw new UnsupportedOperationException(
                     "There is already an uncommited transaction running");
         }
-        tx = createUT();
+        tx = createUT(transactionTimeout);
         if (tx == null) {
             log.debug("No TransactionManager");
             disabled = true;
@@ -79,7 +82,7 @@ public class EventBundleTransactionHandler {
         }
     }
 
-    protected UserTransaction createUT() {
+    protected UserTransaction createUT(Integer transactionTimeout) {
         InitialContext context = null;
         try {
             context = new InitialContext();
@@ -96,6 +99,14 @@ public class EventBundleTransactionHandler {
                 ut = (UserTransaction) context.lookup(UT_NAME_ALT);
             } catch (NamingException ne2) {
                 disabled = true;
+            }
+        }
+
+        if (transactionTimeout!=null) {
+            try {
+                ut.setTransactionTimeout(transactionTimeout);
+            } catch (SystemException e) {
+                log.error("Error while setting transaction timeout to " + transactionTimeout, e);
             }
         }
         return ut;

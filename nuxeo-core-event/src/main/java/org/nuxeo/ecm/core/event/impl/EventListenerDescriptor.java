@@ -68,13 +68,16 @@ public class EventListenerDescriptor {
      * Applies only for post commit listener
      */
     @XNode("@async")
-    protected boolean isAsync;
+    protected Boolean isAsync;
+
+    @XNode("@transactionTimeOut")
+    protected Integer transactionTimeOut;
 
     /**
      * The priority to be used to order listeners.
      */
     @XNode("@priority")
-    protected int priority;
+    protected Integer priority;
 
     @XNode("@enabled")
     protected boolean isEnabled = true;
@@ -83,7 +86,14 @@ public class EventListenerDescriptor {
 
     protected RuntimeContext rc;
 
+    protected EventListener inLineListener = null;
+
+    protected PostCommitEventListener postCommitEventListener = null;
+
     public int getPriority() {
+    	if (priority==null) {
+    		return 0;
+    	}
         return priority;
     }
 
@@ -112,40 +122,36 @@ public class EventListenerDescriptor {
         this.isEnabled = isEnabled;
     }
 
-    public EventListener asEventListener() throws Exception {
-        if (clazz != null) {
+    public void initListener() throws Exception {
+
+    	if (clazz != null) {
             if (EventListener.class.isAssignableFrom(clazz)) {
-                return (EventListener) clazz.newInstance();
+            	inLineListener = (EventListener) clazz.newInstance();
+               	isPostCommit=false;
             }
-            return null;
-        }
-        if (script == null) {
-            throw new IllegalArgumentException("Listener extension must define either a class or a script");
-        }
-        if (isPostCommit) {
-            return null;
-        }
-        return new ScriptingEventListener(getScript());
+            else if (PostCommitEventListener.class.isAssignableFrom(clazz)) {
+            	postCommitEventListener =  (PostCommitEventListener) clazz.newInstance();
+            	isPostCommit=true;
+            }
+    	}
+    	else if (script != null) {
+    		if (isPostCommit) {
+    	        postCommitEventListener =  new ScriptingPostCommitEventListener(getScript());
+    		}
+    		else {
+    			inLineListener =  new ScriptingEventListener(getScript());
+    		}
+    	} else {
+    		throw new IllegalArgumentException("Listener extension must define either a class or a script");
+    	}
     }
 
-    public PostCommitEventListener asPostCommitListener() throws Exception {
-        if (clazz != null) {
-            try {
-                if (PostCommitEventListener.class.isAssignableFrom(clazz)) {
-                    return (PostCommitEventListener) clazz.newInstance();
-                }
-            } catch (Exception e) {
-                log.error("Failed to instantiate post commit event listener " + clazz, e);
-            }
-            return null;
-        }
-        if (script == null) {
-            throw new IllegalArgumentException("Listener extension must define either a class or a script");
-        }
-        if (!isPostCommit) {
-            return null;
-        }
-        return new ScriptingPostCommitEventListener(getScript());
+    public EventListener asEventListener(){
+        return inLineListener;
+    }
+
+    public PostCommitEventListener asPostCommitListener() {
+   		return postCommitEventListener;
     }
 
     public Script getScript() throws Exception {
@@ -175,5 +181,52 @@ public class EventListenerDescriptor {
         }
         return name;
     }
+
+    public Integer getTransactionTimeout() {
+        return transactionTimeOut;
+    }
+
+
+    public void merge(EventListenerDescriptor other) {
+
+    	this.isEnabled=other.isEnabled;
+
+    	if (other.clazz!=null) {
+    		this.clazz=other.clazz;
+    		this.rc=other.rc;
+    	}else if (other.script!=null) {
+    		this.script=other.script;
+    		this.clazz=null;
+    		this.rc=other.rc;
+    	}
+
+    	if (other.isAsync!=null) {
+    		this.isAsync=other.isAsync;
+    	}
+
+    	if (other.events!=null) {
+    		this.events=other.events;
+    	}
+
+    	if (other.transactionTimeOut!=null) {
+    		this.transactionTimeOut=other.transactionTimeOut;
+    	}
+
+    	if (other.priority!=null) {
+    		other.priority=this.priority;
+    	}
+
+    }
+
+    public final boolean acceptEvent(String eventName) {
+        return events == null || events.contains(eventName);
+    }
+
+	public void setIsAsync(Boolean isAsync) {
+		this.isAsync = isAsync;
+	}
+
+
+
 
 }

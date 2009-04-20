@@ -24,7 +24,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.event.EventBundle;
-import org.nuxeo.ecm.core.event.PostCommitEventListener;
+import org.nuxeo.ecm.core.event.impl.EventListenerDescriptor;
 
 /**
  *
@@ -40,18 +40,18 @@ public class PostCommitSynchronousRunner {
 
     private static final Log log = LogFactory.getLog(PostCommitSynchronousRunner.class);
 
-    protected final List<PostCommitEventListener> listeners;
+    protected final List<EventListenerDescriptor> listeners;
     protected final EventBundle event;
     protected long timeout = 0;
 
-    public PostCommitSynchronousRunner(List<PostCommitEventListener> listeners,
+    public PostCommitSynchronousRunner(List<EventListenerDescriptor> listeners,
             EventBundle event, long timeout) {
         this.listeners = listeners;
         this.event = event;
         this.timeout = timeout;
     }
 
-    public PostCommitSynchronousRunner(List<PostCommitEventListener> listeners,
+    public PostCommitSynchronousRunner(List<EventListenerDescriptor> listeners,
             EventBundle event) {
         this(listeners, event, DEFAULT_TIME_OUT_MS);
     }
@@ -68,7 +68,7 @@ public class PostCommitSynchronousRunner {
         try {
             runner.join(timeout);
             if (runner.isAlive()) {
-                log.warn("One of the PostCommitListener is too slow, check your listeners ...");
+                log.warn("PostCommitListeners are too slow, check debug log ...");
                 log.warn("Exit before the end of processing");
             }
         } catch (InterruptedException e) {
@@ -85,16 +85,19 @@ public class PostCommitSynchronousRunner {
             long t0 = System.currentTimeMillis();
             log.debug("Start post commit sync execution in Thread "
                     + Thread.currentThread().getId());
-            for (PostCommitEventListener listener : listeners) {
+            for (EventListenerDescriptor listener : listeners) {
                 try {
+                    long t1 = System.currentTimeMillis();
                     txh.beginNewTransaction();
-                    listener.handleEvent(event);
+                    listener.asPostCommitListener().handleEvent(event);
                     txh.commitOrRollbackTransaction();
+                    log.debug("End of post commit sync execution for listener " + listener.getName() + " " +
+                            + (System.currentTimeMillis() - t1) + "ms");
                 } catch (Throwable t) {
                     txh.rollbackTransaction();
                 }
             }
-            log.debug("End of post commit sync execution : "
+            log.debug("End of all post commit sync executions : "
                     + (System.currentTimeMillis() - t0) + "ms");
         }
 

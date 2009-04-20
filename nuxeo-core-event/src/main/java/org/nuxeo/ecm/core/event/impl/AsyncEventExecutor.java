@@ -72,12 +72,12 @@ public class AsyncEventExecutor {
                 TimeUnit.SECONDS, queue, threadFactory);
     }
 
-    public void run(List<PostCommitEventListener> listeners, EventBundle event) {
+    public void run(List<EventListenerDescriptor> listeners, EventBundle event) {
         // The following avoids incorrect counts, because ThreadPool workers
         // started normally may be holding on to a firstTask about to start that
         // isn't accounted for anywhere (getActiveCount doesn't return it).
         executor.prestartAllCoreThreads();
-        for (PostCommitEventListener listener : listeners) {
+        for (EventListenerDescriptor listener : listeners) {
             executor.execute(new Job(listener, event));
         }
     }
@@ -90,9 +90,9 @@ public class AsyncEventExecutor {
 
         protected final ReconnectedEventBundle bundle;
 
-        protected final PostCommitEventListener listener;
+        protected final EventListenerDescriptor listener;
 
-        public Job(PostCommitEventListener listener, EventBundle bundle) {
+        public Job(EventListenerDescriptor listener, EventBundle bundle) {
             this.listener = listener;
 
             if (bundle instanceof ReconnectedEventBundle) {
@@ -105,13 +105,13 @@ public class AsyncEventExecutor {
         public void run() {
             EventBundleTransactionHandler txh = new EventBundleTransactionHandler();
             try {
-                txh.beginNewTransaction();
-                listener.handleEvent(bundle);
+                txh.beginNewTransaction(listener.getTransactionTimeout());
+                listener.asPostCommitListener().handleEvent(bundle);
                 txh.commitOrRollbackTransaction();
                 log.debug("Async listener executed, commiting tx");
             } catch (Throwable t) {
                 log.error("Failed to execute async event " + bundle.getName()
-                        + " on listener " + listener, t);
+                        + " on listener " + listener.getName(), t);
                 txh.rollbackTransaction();
             } finally {
                 bundle.disconnect();

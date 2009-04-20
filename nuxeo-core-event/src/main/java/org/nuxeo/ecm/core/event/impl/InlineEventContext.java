@@ -29,6 +29,13 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.Event.Flag;
 
+/**
+ * Minimal eventContext implementation that can be
+ * used for events that are not bound to a CoreSession
+ *
+ * @author Thierry Delprat
+ *
+ */
 public class InlineEventContext extends EventContextImpl {
 
     private static final long serialVersionUID = 1L;
