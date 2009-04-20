@@ -95,11 +95,6 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.theme</groupId>
-        <artifactId>nuxeo-theme-editor</artifactId>
-        <version>${nuxeo.theme.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.theme</groupId>
         <artifactId>nuxeo-theme-webwidgets</artifactId>
         <version>${nuxeo.theme.version}</version>
       </dependency>
