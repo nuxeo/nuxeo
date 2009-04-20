@@ -119,6 +119,9 @@ public class ConversionActionBean implements ConversionAction {
     }
 
     public boolean isExportableToPDF(Blob blob) {
+        if (blob == null) {
+            return false;
+        }
         String mimetype = blob.getMimeType();
         return isMimeTypeExportableToPDF(mimetype);
     }

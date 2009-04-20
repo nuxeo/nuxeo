@@ -30,7 +30,7 @@
       <p class="buttonsGadget">
         <input type="hidden" name="parentDocumentPath" value="#{currentDocument.pathAsString}" />
         <h:commandButton type="submit" class="button" value="#{messages['command.create']}"
-          action="#{documentActions.saveDocument}" />
+          action="#{documentActions.saveDocument}" id="button_create" />
         <h:commandButton class="button" value="#{messages['command.cancel']}"
           action="#{navigationContext.goBack()}" immediate="true" />
       </p>
