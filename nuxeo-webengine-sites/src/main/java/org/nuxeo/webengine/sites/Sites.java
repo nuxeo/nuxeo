@@ -39,7 +39,13 @@ import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
+import org.nuxeo.webengine.utils.SiteConstants;
+import org.nuxeo.webengine.utils.SiteQueriesColection;
+import org.nuxeo.webengine.utils.SiteUtils;
 
+/**
+ * Web object implementation corresponding to module root.
+ */
 @WebObject(type = "sites", facets = { "Sites" })
 @Produces("text/html; charset=UTF-8")
 public class Sites extends DefaultObject {
@@ -74,22 +80,20 @@ public class Sites extends DefaultObject {
         WebContext context = WebEngine.getActiveContext();
         CoreSession session = context.getCoreSession();
 
-        DocumentModelList webSites = session.query(
-                "SELECT * FROM Document WHERE ecm:mixinType = 'WebView' AND webc:isWebContainer = 1 AND " +
-                " ecm:currentLifeCycleState != 'deleted' ");
-        // filter by hand ( avoiding some core search issues )
+        DocumentModelList webSites = SiteQueriesColection.queryAllSites(session);
         List<Object> sites = new ArrayList<Object>();
         for (DocumentModel webSite : webSites) {
             try {
                 Map<String, String> site = new HashMap<String, String>();
-                site.put("href", SiteHelper.getString(webSite, "webc:url"));
-                site.put("name", SiteHelper.getString(webSite, "webc:name"));
+                site.put("href", SiteUtils.getString(
+                        webSite, SiteConstants.WEBCONTAINER_URL));
+                site.put("name", SiteUtils.getString(
+                        webSite, SiteConstants.WEBCONATINER_NAME));
                 sites.add(site);
             } catch (Exception e) {
                 log.error("Problem retrieving the existings websites ...", e);
             }
         }
-
         return sites;
     }
 

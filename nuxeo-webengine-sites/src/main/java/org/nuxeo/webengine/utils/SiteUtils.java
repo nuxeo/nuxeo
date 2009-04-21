@@ -16,6 +16,7 @@
  */
 package org.nuxeo.webengine.utils;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,10 +37,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
@@ -47,7 +50,6 @@ import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.webengine.sites.JsonAdapter;
-import org.nuxeo.webengine.sites.SiteHelper;
 
 /**
  * Utility class for sites implementation.
@@ -72,20 +74,17 @@ public class SiteUtils {
     public static List<Object> getContextualLinks(CoreSession session, 
             DocumentModel documentModel) throws Exception {
         List<Object> contextualLinks = new ArrayList<Object>();
-        if (SiteUtilsConstants.WORKSPACE.equals(documentModel.getType())
-                || SiteUtilsConstants.WEBPAGE.equals(documentModel.getType())) {
+        if (SiteConstants.WORKSPACE.equals(documentModel.getType())
+                || SiteConstants.WEBPAGE.equals(documentModel.getType())) {
             for (DocumentModel document : session.getChildren(
-                    documentModel.getRef(), SiteUtilsConstants.CONTEXTUAL_LINK)) {
+                    documentModel.getRef(), SiteConstants.CONTEXTUAL_LINK)) {
                 if (!document.getCurrentLifeCycleState().equals(
-                        SiteUtilsConstants.DELETED)) {
+                        SiteConstants.DELETED)) {
                     try {
                         Map<String, String> contextualLink = new HashMap<String, String>();
-                        contextualLink.put("title", SiteHelper.getString(
-                                document, "dc:title"));
-                        contextualLink.put("description", SiteHelper.getString(
-                                document, "dc:description"));
-                        contextualLink.put("link", SiteHelper.getString(
-                                document, "clink:link"));
+                        contextualLink.put("title", getString(document, "dc:title"));
+                        contextualLink.put("description", getString(document, "dc:description"));
+                        contextualLink.put("link", getString(document, "clink:link"));
                         contextualLinks.add(contextualLink);
                     } catch (Exception e) {
                         log.debug("Problems retrieving the contextual links for "
@@ -114,26 +113,20 @@ public class SiteUtils {
             throws Exception {
         List<Object> pages = new ArrayList<Object>();
         DocumentModel ws = getFirstWorkspaceParent(session, documentModel);
-        DocumentModelList webPages = session.query(String.format(
-            "SELECT * FROM Document WHERE "
-                    + " ecm:primaryType like 'WebPage' AND "
-                    + " ecm:path STARTSWITH '%s'"
-                    + " AND ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0"
-                    + " AND ecm:currentLifeCycleState != 'deleted' ORDER BY dc:modified DESC",
-             ws.getPathAsString()), null, noPages, 0, true);
+        DocumentModelList webPages =  SiteQueriesColection.
+            queryLastModifiedPages(session, ws.getPathAsString(), noPages);
 
         for (DocumentModel webPage : webPages) {
             try {
                 Map<String, String> page = new HashMap<String, String>();
-                page.put("name", SiteHelper.getString(webPage, "dc:title"));
+                page.put("name", getString(webPage, "dc:title"));
                 page.put("path", getPagePath(ws, webPage));
-                page.put("description", SiteHelper.getString(webPage,
-                        "dc:description"));
-                page.put("content", SiteHelper.getFistNWordsFromString(
-                        SiteHelper.getString(webPage, "webp:content"),
+                page.put("description", getString(webPage, "dc:description"));
+                page.put("content", getFistNWordsFromString(
+                        getString(webPage, SiteConstants.WEBPAGE_CONTENT),
                         noWordsFromContent));
-                page.put("author", SiteHelper.getString(webPage, "dc:creator"));
-                GregorianCalendar modificationDate = SiteHelper.getGregorianCalendar(
+                page.put("author", getString(webPage, "dc:creator"));
+                GregorianCalendar modificationDate = getGregorianCalendar(
                         webPage, "dc:modified");
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
                         "dd MMMM", WebEngine.getActiveContext().getLocale());
@@ -142,7 +135,7 @@ public class SiteUtils {
                 String[] splittedFormatterdString = formattedString.split(" ");
                 page.put("day", splittedFormatterdString[0]);
                 page.put("month", splittedFormatterdString[1]);
-                page.put(SiteUtilsConstants.NUMBER_COMMENTS, 
+                page.put(SiteConstants.NUMBER_COMMENTS, 
                         Integer.toString(getNumberCommentsForPage(session, webPage)));
                 pages.add(page);
             } catch (Exception e) {
@@ -153,11 +146,10 @@ public class SiteUtils {
     }
 
     public static Response getLogoResponse(DocumentModel document) throws Exception {
-        Blob blob = SiteHelper.getBlob(document, "webc:logo");
+        Blob blob = getBlob(document, SiteConstants.WEBCONTAINER_LOGO);
         if (blob != null) {
             return Response.ok().entity(blob).type(blob.getMimeType()).build();
         }
-
         return null;
     }
 
@@ -171,13 +163,12 @@ public class SiteUtils {
             DocumentModel document) throws Exception {
         List<Object> webPages = new ArrayList<Object>();
         for (DocumentModel webPage : session.getChildren(document.getRef(),
-                SiteUtilsConstants.WEBPAGE)) {
+                SiteConstants.WEBPAGE)) {
             try {
                 if (!webPage.getCurrentLifeCycleState().equals(
-                        SiteUtilsConstants.DELETED)) {
+                        SiteConstants.DELETED)) {
                     Map<String, String> details = new HashMap<String, String>();
-                    details.put("name", SiteHelper.getString(webPage,
-                            "dc:title"));
+                    details.put("name", getString(webPage, "dc:title"));
                     details.put("path", JsonAdapter.getRelativPath(document,
                             webPage).toString());
                     webPages.add(details);
@@ -190,22 +181,30 @@ public class SiteUtils {
     }
 
     /**
-     * Get the first Workspace parent
+     * Get the first mini-site parent
      * */
     public static DocumentModel getFirstWorkspaceParent(CoreSession session,
             DocumentModel doc) throws Exception {
         List<DocumentModel> parents = session.getParentDocuments(doc.getRef());
         Collections.reverse(parents);
         for (DocumentModel currentDocumentModel : parents) {
-            if (SiteUtilsConstants.WORKSPACE.equals(currentDocumentModel.getType())
+            if (SiteConstants.WORKSPACE.equals(currentDocumentModel.getType())
                     && currentDocumentModel.hasFacet(
-                            SiteUtilsConstants.WEB_CONTAINER_FACET)) {
+                            SiteConstants.WEB_CONTAINER_FACET)) {
                 return currentDocumentModel;
             }
         }
         return null;
     }
 
+    /**
+     * Gets the number of comment added on a page (published actually, if the 
+     * moderation is on).
+     * @param session
+     * @param page
+     * @return
+     * @throws Exception
+     */
     public static int getNumberCommentsForPage(CoreSession session,
             DocumentModel page) throws Exception {
         List<DocumentModel> comments = getCommentManager().getComments(page);
@@ -234,34 +233,16 @@ public class SiteUtils {
      */
     public static List<Object> getLastCommentsFromPages(CoreSession session,
             DocumentModel ws, int noComments, int noWordsFromContent) throws Exception {
-        String queryString = null;
-        if (isCurrentModerated(session, ws)) {
-             queryString = String.format(
-                    "SELECT * FROM Document WHERE "
-                            + " ecm:primaryType like 'Comment' "
-                            + " AND ecm:path STARTSWITH '%s'"
-                            + " AND ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0"
-                            + " AND ecm:currentLifeCycleState = '%s' AND ecm:currentLifeCycleState != 'deleted' "
-                            + " ORDER BY dc:modified DESC",
-                    ws.getPathAsString() + "/", CommentsConstants.PUBLISHED_STATE);
-        } else {
-             queryString = String.format(
-                    "SELECT * FROM Document WHERE "
-                            + " ecm:primaryType like 'Comment' "
-                            + " AND ecm:path STARTSWITH '%s'"
-                            + " AND ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0"
-                            + " AND ecm:currentLifeCycleState != 'deleted' ORDER BY dc:modified DESC",
-                    ws.getPathAsString() + "/");
-        }
-        DocumentModelList comments = session.query(queryString, null, noComments,
-                0, true);
+        DocumentModelList comments = SiteQueriesColection.queryLastComments(
+                session, ws.getPathAsString(), noComments, 
+                isCurrentModerated(session, ws)); 
         List<Object> lastWebComments = new ArrayList<Object>();
         for (DocumentModel documentModel : comments) {
             Map<String, String> comment = new HashMap<String, String>();
             try {
                 DocumentModel parentPage = getPageForComment(documentModel);
                 if (parentPage != null) {
-                    GregorianCalendar creationDate = SiteHelper.getGregorianCalendar(
+                    GregorianCalendar creationDate = getGregorianCalendar(
                             documentModel, "comment:creationDate");
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
                             "dd MMMM", WebEngine.getActiveContext().getLocale());
@@ -269,14 +250,13 @@ public class SiteUtils {
                     String[] splittedFormatterdString = formattedString.split(" ");
                     comment.put("day", splittedFormatterdString[0]);
                     comment.put("month", splittedFormatterdString[1]);
-                    comment.put("author", getUserDetails(SiteHelper.getString(
+                    comment.put("author", getUserDetails(getString(
                             documentModel, "comment:author")));
                     comment.put("pageTitle", parentPage.getTitle());
                     comment.put("pagePath", JsonAdapter.getRelativPath(ws,
                             parentPage).toString());
-                    comment.put("content", SiteHelper.getFistNWordsFromString(
-                            SiteHelper.getString(documentModel, "comment:text"),
-                            noWordsFromContent));
+                    comment.put("content", getFistNWordsFromString(
+                            getString(documentModel, "comment:text"), noWordsFromContent));
                     lastWebComments.add(comment);
                 }
             } catch (Exception e) {
@@ -323,37 +303,28 @@ public class SiteUtils {
             throws Exception {
         List<Object> webPages = new ArrayList<Object>();
         if (!StringUtils.isEmpty(searchParam)) {
-            DocumentModelList results = session.query(String.format(
-                    "SELECT * FROM WebPage WHERE ecm:fulltext LIKE '%s' AND "
-                            + " ecm:path STARTSWITH  '%s' AND "
-                            + " ecm:mixinType != 'HiddenInNavigation' AND "
-                            + " ecm:isCheckedInVersion = 0 AND "
-                            + "ecm:currentLifeCycleState != 'deleted'",
-                    searchParam, ws.getPathAsString() + "/"));
+            DocumentModelList results = SiteQueriesColection.querySearchPages(
+                    session, searchParam, ws.getPathAsString());
             for (DocumentModel documentModel : results) {
                 try {
                     Map<String, String> page = new HashMap<String, String>();
-                    GregorianCalendar creationDate = SiteHelper.getGregorianCalendar(
+                    GregorianCalendar creationDate = getGregorianCalendar(
                             documentModel, "dc:created");
-    
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
                             "dd MMMM yyyy",
                             WebEngine.getActiveContext().getLocale());
                     String formattedString = simpleDateFormat.format(creationDate.getTime());
                     page.put("created", formattedString);
-                    GregorianCalendar modificationDate = SiteHelper.getGregorianCalendar(
+                    GregorianCalendar modificationDate = getGregorianCalendar(
                             documentModel, "dc:modified");
                     formattedString = simpleDateFormat.format(modificationDate.getTime());
                     page.put("modified", formattedString);
-    
-                    page.put("author", getUserDetails(SiteHelper.getString(
-                            documentModel, "dc:creator")));
+                    page.put("author", getUserDetails(getString(documentModel, 
+                            "dc:creator")));
                     page.put("path", getPagePath(ws, documentModel));
-                    page.put("name",
-                            SiteHelper.getString(documentModel, "dc:title"));
-                    page.put("description", SiteHelper.getFistNWordsFromString(
-                            SiteHelper.getString(documentModel, "dc:description"),
-                            nrWordsFromDescription));
+                    page.put("name", getString(documentModel, "dc:title"));
+                    page.put("description", getFistNWordsFromString(
+                            getString(documentModel, "dc:description"), nrWordsFromDescription));
                     webPages.add(page);
                 } catch (Exception e) {
                     log.debug("Problems retrieving pages in site", e);
@@ -411,18 +382,19 @@ public class SiteUtils {
 
         DocumentModel documentModel = session.createDocumentModel(parentPath,
                 IdUtils.generateId(title + System.currentTimeMillis()),
-                SiteUtilsConstants.WEBPAGE);
+                SiteConstants.WEBPAGE);
         documentModel.setPropertyValue("dc:title", title);
         documentModel.setPropertyValue("dc:description", description);
-        documentModel.setPropertyValue("webp:isRichtext", isRichtext);
+        documentModel.setPropertyValue(SiteConstants.WEBPAGE_EDITOR, isRichtext);
         if (isRichtext) {
             // Is rich text editor
-            documentModel.setPropertyValue("webp:content", richtextEditor);
+            documentModel.setPropertyValue(SiteConstants.WEBPAGE_CONTENT, richtextEditor);
         } else {
             // Is wiki text editor
-            documentModel.setPropertyValue("webp:content", wikitextEditor);
+            documentModel.setPropertyValue(SiteConstants.WEBPAGE_CONTENT, wikitextEditor);
         }
-        documentModel.setPropertyValue("webp:pushtomenu", Boolean.valueOf(pushToMenu));
+        documentModel.setPropertyValue(SiteConstants.WEBPAGE_PUSHTOMENU, 
+                Boolean.valueOf(pushToMenu));
 
         documentModel = session.createDocument(documentModel);
         documentModel = session.saveDocument(documentModel);
@@ -463,7 +435,7 @@ public class SiteUtils {
      public static boolean isCurrentModerated(CoreSession session,
              DocumentModel doc) throws Exception {
          if (!getModerationType(session, doc).equals(
-                 SiteUtilsConstants.MODERATION_APRIORI)) {
+                 SiteConstants.MODERATION_APRIORI)) {
              //no moderation set
              return false;
          }
@@ -486,7 +458,7 @@ public class SiteUtils {
      public static boolean isModeratedByCurrentUser(CoreSession session,
              DocumentModel doc) throws Exception {
          return session.hasPermission(doc.getRef(), 
-                 SiteUtilsConstants.PERMISSION_MODERATE);
+                 SiteConstants.PERMISSION_MODERATE);
      }
 
      /**
@@ -496,7 +468,7 @@ public class SiteUtils {
      public static boolean currentUserHasCommentPermision(CoreSession session,
              DocumentModel doc) throws Exception {
          return session.hasPermission(doc.getRef(), 
-                 SiteUtilsConstants.PERMISSION_COMMENT);
+                 SiteConstants.PERMISSION_COMMENT);
      }
 
      public static CommentManager getCommentManager() throws Exception {
@@ -528,7 +500,7 @@ public class SiteUtils {
          List<DocumentModel> list = getCommentManager().getDocumentsForComment(comment);
          if (list.size() != 0) {
              DocumentModel page = list.get(0);
-             if (page.getCurrentLifeCycleState().equals("deleted") == false){
+             if (!SiteConstants.DELETED.equals(page.getCurrentLifeCycleState())){
                  return page;
              }
          }
@@ -543,25 +515,102 @@ public class SiteUtils {
              DocumentModel doc) throws Exception {
          Set<String> moderatePermissions = new HashSet<String>();
          moderatePermissions.addAll(Arrays.asList(
-                 session.getPermissionsToCheck(SiteUtilsConstants.PERMISSION_MODERATE)));
+                 session.getPermissionsToCheck(SiteConstants.PERMISSION_MODERATE)));
          return getUsersWithPermission(session, doc, moderatePermissions);
      }
      
      /**
-      * @return the moderation type for the corresponding workspace ; default is aposteriori
+      * @return the moderation type for the corresponding workspace ; 
+      * default is aposteriori
       * @throws Exception
       * */
      public static String getModerationType(CoreSession session,
              DocumentModel doc) throws Exception {
          DocumentModel workspaceParent = getFirstWorkspaceParent(session, doc);
          if (workspaceParent != null) {
-             Object prop = workspaceParent.getProperty("webcontainer", "moderationType");
-             if (prop == null) {
-                 return SiteUtilsConstants.MODERATION_APOSTERIORI;
-             }
-             return prop.toString();
+             return getString(workspaceParent, 
+                     SiteConstants.WEBCONTAINER_MODERATION, 
+                     SiteConstants.MODERATION_APOSTERIORI);
          }
-         return SiteUtilsConstants.MODERATION_APOSTERIORI;
+         return SiteConstants.MODERATION_APOSTERIORI;
      }
+     
+     public static String getString(DocumentModel d, String xpath,
+             String defaultValue) {
+         try {
+             return getString(d, xpath);
+         } catch (ClientException e) {
+             return defaultValue;
+         }
+     }
+
+     public static String getString(DocumentModel d, String xpath)
+             throws ClientException {
+         Property p = d.getProperty(xpath);
+         if (p != null) {
+             Serializable v = p.getValue();
+             if (v != null) {
+                 return v.toString();
+             }
+         }
+         return "";
+     }
+
+     public static GregorianCalendar getGregorianCalendar(DocumentModel d,
+             String xpath) throws ClientException {
+         Property p = d.getProperty(xpath);
+         if (p != null) {
+             Serializable v = p.getValue();
+             if (v != null) {
+                 return (GregorianCalendar) v;
+             }
+         }
+         return null;
+     }
+
+     public static Blob getBlob(DocumentModel d, String xpath)
+             throws ClientException {
+         Property p = d.getProperty(xpath);
+         if (p != null) {
+             Serializable v = p.getValue();
+             if (v != null) {
+                 return (Blob) v;
+             }
+         }
+         return null;
+     }
+
+     public static boolean getBoolean(DocumentModel d, String xpath,
+             boolean defaultValue) {
+         try {
+             return getBoolean(d, xpath);
+         } catch (ClientException e) {
+             return defaultValue;
+         }
+     }
+
+     public static boolean getBoolean(DocumentModel d, String xpath)
+             throws ClientException {
+         Property p = d.getProperty(xpath);
+         if (p != null) {
+             Serializable v = p.getValue();
+             if (v != null) {
+                 return (Boolean) v;
+             }
+         }
+         throw new ClientException("value is null");
+     }
+
+     public static String getFistNWordsFromString(String string, int n) {
+         String[] result = string.split(" ", n + 1);
+         StringBuffer firstNwords = new StringBuffer();
+         for (int i = 0; i < ((n <= result.length) ? n : result.length); i++) {
+             firstNwords.append(result[i]);
+             firstNwords.append(" ");
+
+         }
+         return new String(firstNwords);
+     }
+
 
 }

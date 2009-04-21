@@ -24,13 +24,18 @@ import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.webengine.utils.SiteConstants;
 
 /**
- * Site related actions listener.
+ * Site related actions listener. It performs when a mini-site is created.
  * @author rux
  */
 public class SiteActionListener implements EventListener {
 
+    /**
+     * Sets the url field and the site name (if not already set) to the name, 
+     * respectively the title of the document model. 
+     */
     public void handleEvent(Event event) throws ClientException {
         String eventId = event.getName();
 
@@ -45,13 +50,15 @@ public class SiteActionListener implements EventListener {
             return;
         }
         DocumentModel doc = docCtx.getSourceDocument();
-        if (!doc.getType().equals("Workspace")) {
+        if (!SiteConstants.WORKSPACE.equals(doc.getType())) {
             return;
         }
 
-        doc.setPropertyValue("webc:url", doc.getName());
-        if (StringUtils.isEmpty((String) doc.getPropertyValue("webc:name"))) {
-            doc.setPropertyValue("webc:name", doc.getTitle());
+        doc.setPropertyValue(SiteConstants.WEBCONTAINER_URL, doc.getName());
+        if (StringUtils.isEmpty((String) doc.getPropertyValue(
+                SiteConstants.WEBCONATINER_NAME))) {
+            doc.setPropertyValue(SiteConstants.WEBCONATINER_NAME, 
+                    doc.getTitle());
         }
     }
 

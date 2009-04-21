@@ -19,9 +19,9 @@ package org.nuxeo.webengine.utils;
 /**
  * Utility class used for registering constants.
  */
-public final class SiteUtilsConstants {
+public final class SiteConstants {
 
-    private SiteUtilsConstants() {
+    private SiteConstants() {
     }
 
     /**
@@ -33,7 +33,18 @@ public final class SiteUtilsConstants {
 
     public static final String WEBPAGE = "WebPage";
     
-    public static final String WEBCONTAINER = "webcontainer"; 
+    public static final String WEBCONTAINER_URL = "webc:url";
+    public static final String WEBCONATINER_NAME = "webc:name";
+    public static final String WEBCONTAINER_WELCOMETEXT = "webc:welcomeText";
+    public static final String WEBCONTAINER_WELCOMEMEDIA = "webc:welcomeMedia";
+    public static final String WEBCONTAINER_LOGO = "webc:logo";
+    public static final String WEBCONTAINER_MODERATION = "webcontainer:moderationType";
+    
+    public static final String WEBPAGE_THEME = "webp:theme";
+    public static final String WEBPAGE_THEMEPAGE = "webp:themePage";
+    public static final String WEBPAGE_EDITOR = "webp:isRichtext";
+    public static final String WEBPAGE_PUSHTOMENU = "webp:pushtomenu";
+    public static final String WEBPAGE_CONTENT = "webp:content";
 
     /**
      * Constants used in pages like site or webpage
@@ -42,7 +53,7 @@ public final class SiteUtilsConstants {
     
     public static final String WELCOME_TEXT = "welcomeText";
 
-    public static final String NAME = "name";
+    public static final String PAGE_NAME = "name";
 
     public static final String DESCRIPTION = "description";
 

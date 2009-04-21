@@ -19,14 +19,7 @@
 
 package org.nuxeo.webengine.sites;
 
-import static org.nuxeo.webengine.utils.SiteUtilsConstants.ALL_WEBPAGES;
-import static org.nuxeo.webengine.utils.SiteUtilsConstants.COMMENTS;
-import static org.nuxeo.webengine.utils.SiteUtilsConstants.CONTEXTUAL_LINKS;
-import static org.nuxeo.webengine.utils.SiteUtilsConstants.DESCRIPTION;
-import static org.nuxeo.webengine.utils.SiteUtilsConstants.LAST_PUBLISHED_PAGES;
-import static org.nuxeo.webengine.utils.SiteUtilsConstants.NAME;
-import static org.nuxeo.webengine.utils.SiteUtilsConstants.WELCOME_TEXT;
-import static org.nuxeo.webengine.utils.SiteUtilsConstants.RESULTS;
+import static org.nuxeo.webengine.utils.SiteConstants.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -52,7 +45,14 @@ import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.WebObject;
+import org.nuxeo.webengine.utils.SiteQueriesColection;
 import org.nuxeo.webengine.utils.SiteUtils;
+
+/**
+ * Web object implementation corresponding to Site. It is resolved from module 
+ * root web object. It holds the site fragments back methods.
+ * @author stan
+ */
 
 @WebObject(type = "site", facets = { "Site" })
 @Produces("text/html; charset=UTF-8")
@@ -60,7 +60,7 @@ public class Site extends DocumentObject {
 
     private static final Log log = LogFactory.getLog(Site.class);
 
-    String url;
+    private String url;
 
     @Override
     public void initialize(Object... args) {
@@ -76,28 +76,8 @@ public class Site extends DocumentObject {
             return getTemplate("no_site.ftl").arg("url", url);
         }
         // getting theme config from document.
-        String theme = null;
-        try {
-            theme = (String) doc.getProperty("webpage", "theme");
-        } catch (ClientException e) {
-            log.error(
-                    "Error while trying to display the webworkspace page. Couldn't get theme properties from the webpage",
-                    e);
-        }
-        if (theme == null) {
-            theme = "sites";
-        }
-        String themePage = null;
-        try {
-            themePage = (String) doc.getProperty("webpage", "themePage");
-        } catch (ClientException e) {
-            log.error(
-                    "Error while trying to display the webworkspace page. Couldn't get theme properties from the webpage",
-                    e);
-        }
-        if (themePage == null) {
-            themePage = "workspace";
-        }
+        String theme = SiteUtils.getString(doc, WEBPAGE_THEME, "sites");
+        String themePage = SiteUtils.getString(doc, WEBPAGE_THEMEPAGE, "workspace");
         ctx.getRequest().setAttribute("org.nuxeo.theme.theme",
                 theme + "/" + themePage);
         try {
@@ -112,20 +92,11 @@ public class Site extends DocumentObject {
         try {
             DocumentModel pageDoc = ctx.getCoreSession().getChild(doc.getRef(),
                     page);
-
             // getting theme config from document.
-            String theme = (String) pageDoc.getProperty("webpage", "theme");
-            if (theme == null) {
-                theme = "sites";
-            }
-            String themePage = (String) pageDoc.getProperty("webpage",
-                    "themePage");
-            if (themePage == null) {
-                themePage = "page";
-            }
+            String theme = SiteUtils.getString(doc, WEBPAGE_THEME, "sites");
+            String themePage = SiteUtils.getString(doc, WEBPAGE_THEMEPAGE, "page");
             ctx.getRequest().setAttribute("org.nuxeo.theme.theme",
                     theme + "/" + themePage);
-
             return ctx.newObject(pageDoc.getType(), pageDoc);
         } catch (Exception e) {
             throw WebException.wrap(e);
@@ -154,7 +125,7 @@ public class Site extends DocumentObject {
     public Response getWelcomeMedia() {
         Response resp = null;
         try {
-            Blob blob = SiteHelper.getBlob(doc, "webc:welcomeMedia");
+            Blob blob = SiteUtils.getBlob(doc, WEBCONTAINER_WELCOMEMEDIA);
             if (blob != null) {
                 resp = Response.ok().entity(blob).type(blob.getMimeType()).build();
             }
@@ -173,8 +144,7 @@ public class Site extends DocumentObject {
     @Path("search")
     public Object getSearchParametres(
             @FormParam("searchParam") String searchParam) {
-        ctx.getRequest().setAttribute("org.nuxeo.theme.theme",
-                "sites" + "/" + "search");
+        ctx.getRequest().setAttribute("org.nuxeo.theme.theme", "sites/search");
         CoreSession session = getCoreSession();
         Map<String, Object> root = new HashMap<String, Object>();
         try {
@@ -182,9 +152,9 @@ public class Site extends DocumentObject {
                     searchParam, 50);
             root.put(RESULTS, pages);
             root.put(CONTEXTUAL_LINKS, SiteUtils.getContextualLinks(session, doc));
-            root.put(WELCOME_TEXT, SiteHelper.getString(doc, "webc:welcomeText",
-                    null));
-            root.put(NAME, SiteHelper.getString(doc, "webc:name", null));
+            root.put(WELCOME_TEXT, SiteUtils.getString(doc, 
+                    WEBCONTAINER_WELCOMETEXT, null));
+            root.put(PAGE_NAME, SiteUtils.getString(doc, WEBCONATINER_NAME, null));
             return getTemplate("template_default.ftl").args(root);
         } catch (Exception e) {
             throw WebException.wrap(e);
@@ -196,14 +166,10 @@ public class Site extends DocumentObject {
     public Object createWebPage() {
         try {
             CoreSession session = ctx.getCoreSession();
-
             DocumentModel createdDocument = SiteUtils.createWebPageDocument(
                     ctx.getRequest(), session, doc.getPathAsString());
-
             String path = SiteUtils.getPagePath(doc, createdDocument);
-
             return redirect(path);
-
         } catch (Exception e) {
             throw WebException.wrap(e);
         }
@@ -213,9 +179,8 @@ public class Site extends DocumentObject {
         Map<String, Object> root = new HashMap<String, Object>();
         CoreSession session = getCoreSession();
 
-        root.put(NAME, SiteHelper.getString(doc, "webc:name", null));
-        root.put(DESCRIPTION, SiteHelper.getString(doc, "dc:description",
-                null));
+        root.put(PAGE_NAME, SiteUtils.getString(doc, WEBCONATINER_NAME, null));
+        root.put(DESCRIPTION, SiteUtils.getString(doc, "dc:description", null));
         // add web pages
         root.put(LAST_PUBLISHED_PAGES, SiteUtils.getLastModifiedWebPages(
                 session, doc, 5, 50));
@@ -232,9 +197,8 @@ public class Site extends DocumentObject {
         WebContext context = WebEngine.getActiveContext();
         CoreSession session = context.getCoreSession();
         try {
-            DocumentModelList list = session.query(String.format(
-                    "SELECT * FROM Document WHERE ecm:mixinType = 'WebView' AND webc:url = \"%s\"",
-                    url));
+            DocumentModelList list = 
+                SiteQueriesColection.querySitesByUrl(session, url);
             if (list.size() != 0) {
                 return list.get(0);
             }

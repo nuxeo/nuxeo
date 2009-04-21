@@ -17,14 +17,8 @@
 
 package org.nuxeo.webengine.sites;
 
-import static org.nuxeo.webengine.utils.SiteUtilsConstants.ALL_WEBPAGES;
-import static org.nuxeo.webengine.utils.SiteUtilsConstants.CONTEXTUAL_LINKS;
-import static org.nuxeo.webengine.utils.SiteUtilsConstants.DESCRIPTION;
-import static org.nuxeo.webengine.utils.SiteUtilsConstants.LAST_PUBLISHED_PAGES;
-import static org.nuxeo.webengine.utils.SiteUtilsConstants.NAME;
-import static org.nuxeo.webengine.utils.SiteUtilsConstants.PAGE_TITLE;
-import static org.nuxeo.webengine.utils.SiteUtilsConstants.RESULTS;
-import static org.nuxeo.webengine.utils.SiteUtilsConstants.WELCOME_TEXT;
+
+import static org.nuxeo.webengine.utils.SiteConstants.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -52,9 +46,10 @@ import org.nuxeo.ecm.webengine.model.Template;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.webengine.utils.SiteUtils;
-import org.nuxeo.webengine.utils.SiteUtilsConstants;
 
 /**
+ * Web object implementation corresponding to WebPage. It is resolved from site.
+ * It holds the web page fragments back methods.
  * @author stan
  */
 @WebObject(type = "WebPage", superType = "Document")
@@ -73,7 +68,7 @@ public class Page extends DocumentObject {
     @Override
     @POST
     public Response doPost() {
-        String name = ctx.getForm().getString("comment");
+//        String name = ctx.getForm().getString("comment");
         return null;
     }
 
@@ -81,8 +76,8 @@ public class Page extends DocumentObject {
     @Path("numberComments")
     public int getNumberCommentsOnPage() {
         try {
-            return SiteUtils.getNumberCommentsForPage(
-                    getCoreSession(), getDocument());
+            CoreSession session = getCoreSession();
+            return SiteUtils.getNumberCommentsForPage(session, getDocument());
         } catch (Exception e) {
             throw WebException.wrap("Failed to get all published comments", e);
         }
@@ -131,8 +126,7 @@ public class Page extends DocumentObject {
     @Path("search")
     public Object getSearchParametres(
             @FormParam("searchParam") String searchParam) {
-        ctx.getRequest().setAttribute("org.nuxeo.theme.theme",
-                "sites" + "/" + "search");
+        ctx.getRequest().setAttribute("org.nuxeo.theme.theme", "sites/search");
         CoreSession session = getCoreSession();
         Map<String, Object> root = new HashMap<String, Object>();
         try {
@@ -141,9 +135,9 @@ public class Page extends DocumentObject {
                     searchParam, 50);
             root.put(RESULTS, pages);
             root.put(CONTEXTUAL_LINKS, SiteUtils.getContextualLinks(session, ws));
-            root.put(WELCOME_TEXT, SiteHelper.getString(ws, "webc:welcomeText",
-                    null));
-            root.put(NAME, ws.getTitle());
+            root.put(WELCOME_TEXT, SiteUtils.getString(
+                    ws, WEBCONTAINER_WELCOMETEXT, null));
+            root.put(PAGE_NAME, ws.getTitle());
             return getTemplate("template_default.ftl").args(root);
         } catch (Exception e) {
             throw WebException.wrap(e);
@@ -158,7 +152,8 @@ public class Page extends DocumentObject {
 
             DocumentModel createdDocument = SiteUtils.createWebPageDocument(
                     ctx.getRequest(), session, doc.getPathAsString());
-            DocumentModel webContainer = SiteUtils.getFirstWorkspaceParent(session, doc);
+            DocumentModel webContainer = SiteUtils.getFirstWorkspaceParent(
+                    session, doc);
             String path = SiteUtils.getPagePath(webContainer, createdDocument);
             return redirect(path);
         } catch (Exception e) {
@@ -174,7 +169,7 @@ public class Page extends DocumentObject {
             HttpServletRequest request = ctx.getRequest();
             String title = request.getParameter("title");
             String description = request.getParameter("description");
-            Boolean isRichtext = (Boolean) doc.getPropertyValue("webp:isRichtext");
+            Boolean isRichtext = SiteUtils.getBoolean(doc, WEBPAGE_EDITOR, false);
             String content = null;
             if (isRichtext) {
                 content = request.getParameter("richtextEditorEdit");
@@ -185,8 +180,8 @@ public class Page extends DocumentObject {
 
             doc.setPropertyValue("dc:title", title);
             doc.setPropertyValue("dc:description", description);
-            doc.setPropertyValue("webp:content", content);
-            doc.setPropertyValue("webp:pushtomenu", Boolean.valueOf(pushToMenu));
+            doc.setPropertyValue(WEBPAGE_CONTENT, content);
+            doc.setPropertyValue(WEBPAGE_PUSHTOMENU, Boolean.valueOf(pushToMenu));
             session.saveDocument(doc);
             session.save();
             DocumentModel webContainer = SiteUtils.getFirstWorkspaceParent(
@@ -214,8 +209,8 @@ public class Page extends DocumentObject {
         try {
             DocumentModel ws = SiteUtils.getFirstWorkspaceParent(session, doc);
             root.put(PAGE_TITLE, doc.getTitle());
-            root.put(NAME, SiteHelper.getString(ws, "webc:name", null));
-            root.put(DESCRIPTION, SiteHelper.getString(doc, "dc:description",
+            root.put(PAGE_NAME, SiteUtils.getString(ws, WEBCONATINER_NAME, null));
+            root.put(DESCRIPTION, SiteUtils.getString(doc, "dc:description",
                     null));
             // add web pages
             List<Object> pages = SiteUtils.getLastModifiedWebPages(
@@ -244,8 +239,9 @@ public class Page extends DocumentObject {
         List<DocumentModel> publishedComments = new ArrayList<DocumentModel>();
         try {
             CommentManager commentManager = SiteUtils.getCommentManager();
-            for (DocumentModel doc : commentManager.getComments(this.getDocument())) {
-                if (CommentsConstants.PUBLISHED_STATE.equals(doc.getCurrentLifeCycleState())) {
+            for (DocumentModel doc : commentManager.getComments(getDocument())) {
+                if (CommentsConstants.PUBLISHED_STATE.equals(
+                        doc.getCurrentLifeCycleState())) {
                     publishedComments.add(doc);
                 }
             }
@@ -262,8 +258,9 @@ public class Page extends DocumentObject {
         List<DocumentModel> pendingComments = new ArrayList<DocumentModel>();
         try {
             CommentManager commentManager = SiteUtils.getCommentManager();
-            for (DocumentModel doc : commentManager.getComments(this.getDocument())) {
-                if (CommentsConstants.PENDING_STATE.equals(doc.getCurrentLifeCycleState())) {
+            for (DocumentModel doc : commentManager.getComments(getDocument())) {
+                if (CommentsConstants.PENDING_STATE.equals(
+                        doc.getCurrentLifeCycleState())) {
                     pendingComments.add(doc);
                 }
             }
@@ -277,7 +274,7 @@ public class Page extends DocumentObject {
     public boolean isAposteriori() {
         try {
             return SiteUtils.getModerationType(getCoreSession(), getDocument()).
-                equals(SiteUtilsConstants.MODERATION_APOSTERIORI);
+                equals(MODERATION_APOSTERIORI);
         } catch (Exception e) {
             throw WebException.wrap("Failed to delete comment", e);
         }
