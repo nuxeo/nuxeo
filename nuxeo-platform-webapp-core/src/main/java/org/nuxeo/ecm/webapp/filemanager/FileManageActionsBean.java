@@ -74,7 +74,7 @@ import sun.misc.BASE64Decoder;
 /**
  * @author <a href="mailto:andreas.kalogeropoulos@nuxeo.com">Andreas
  *         Kalogeropoulos</a>
- *
+ * 
  */
 @Name("FileManageActions")
 @Scope(ScopeType.PAGE)
@@ -98,24 +98,24 @@ public class FileManageActionsBean extends InputController implements
     public static final String MOVE_OK = "MOVE_OK";
 
     protected InputStream fileUpload;
-    
+
     protected File tempFile;
 
     protected String fileName;
-    
+
     protected Collection<UploadItem> uploadedFiles = new ArrayList<UploadItem>();
 
     @In(create = true, required = false)
     protected CoreSession documentManager;
 
-    @In(create=true)
+    @In(create = true)
     protected TypeManager typeManager;
 
     @In(create = true)
     protected ClipboardActions clipboardActions;
 
-    //@In(create = true)
-    //protected PublishActions publishActions;
+    // @In(create = true)
+    // protected PublishActions publishActions;
 
     protected FileManager fileManager;
 
@@ -142,10 +142,11 @@ public class FileManageActionsBean extends InputController implements
     }
 
     public String addFile() throws ClientException {
-    	return addFile(fileUpload, fileName);
+        return addFile(fileUpload, fileName);
     }
-    		
-    public String addFile(InputStream fileUpload,String fileName) throws ClientException {
+
+    public String addFile(InputStream fileUpload, String fileName)
+            throws ClientException {
         try {
             if (fileUpload == null || fileName == null) {
                 facesMessages.add(FacesMessage.SEVERITY_ERROR,
@@ -274,7 +275,6 @@ public class FileManageActionsBean extends InputController implements
         Blob blob = StreamingBlob.createFromByteArray(content, null);
         return addBinaryFileFromPlugin(blob, fullName, morePath);
     }
-
 
     public String addFolderFromPlugin(String fullName, String morePath)
             throws ClientException {
@@ -515,74 +515,71 @@ public class FileManageActionsBean extends InputController implements
     public void initialize() {
         log.info("Initializing...");
     }
-    
+
     public void processUpload(UploadEvent uploadEvent) {
-		try {
-			tempFile = uploadEvent.getUploadItem().getFile();
-			fileName = uploadEvent.getUploadItem().getFileName();
-		} catch (Exception e) {
-			log.error(e);
-			return;
-		}
-	}
-    
-    public void validateMultiplesUpload() throws ClientException, FileNotFoundException {
-    	DocumentModel current = navigationContext.getCurrentDocument();
-    	if(!current.hasSchema("files"))
-    		return;
-    	Collection files = (Collection) current.getProperty("files", "files");
-    	for (UploadItem file : uploadedFiles) {
-    		String filename = FileUtils.getCleanFileName(file.getFileName());
-			Blob blob = FileUtils.createSerializableBlob(new FileInputStream(file.getFile()), filename, null);
-			
-			HashMap<String,Object> fileMap= new HashMap<String, Object>(2);
-			fileMap.put("file",blob);
-			fileMap.put("filename", filename);
-			if(!files.contains(fileMap))
-				files.add(fileMap);
-		}
-    	current.setProperty("files", "files", files);
-    	documentManager.saveDocument(current);
-    	documentManager.save();
-	}
-    
-    public void performAction(ActionEvent event)
-    {
-    	FacesContext context = FacesContext.getCurrentInstance();
+        try {
+            tempFile = uploadEvent.getUploadItem().getFile();
+            fileName = uploadEvent.getUploadItem().getFileName();
+        } catch (Exception e) {
+            log.error(e);
+            return;
+        }
+    }
+
+    public void validateMultiplesUpload() throws ClientException,
+            FileNotFoundException {
+        DocumentModel current = navigationContext.getCurrentDocument();
+        if (!current.hasSchema("files"))
+            return;
+        Collection files = (Collection) current.getProperty("files", "files");
+        for (UploadItem file : uploadedFiles) {
+            String filename = FileUtils.getCleanFileName(file.getFileName());
+            Blob blob = FileUtils.createSerializableBlob(new FileInputStream(
+                    file.getFile()), filename, null);
+
+            HashMap<String, Object> fileMap = new HashMap<String, Object>(2);
+            fileMap.put("file", blob);
+            fileMap.put("filename", filename);
+            if (!files.contains(fileMap))
+                files.add(fileMap);
+        }
+        current.setProperty("files", "files", files);
+        documentManager.saveDocument(current);
+        documentManager.save();
+    }
+
+    public void performAction(ActionEvent event) {
+        FacesContext context = FacesContext.getCurrentInstance();
         ExternalContext eContext = context.getExternalContext();
         String index = eContext.getRequestParameterMap().get("index");
-        
-    	try {
-    		DocumentModel current = navigationContext.getCurrentDocument();
-        	if(!current.hasSchema("files"))
-        		return;
-        	Collection files = (Collection) current.getProperty("files", "files");
-        	Object file = CollectionUtils.get(files, new Integer(index));
-        	files.remove(file);
-        	current.setProperty("files", "files", files);
-        	documentManager.saveDocument(current);
-        	documentManager.save();
-		} catch (Exception e) {
-			log.error(e);
-		}
+
+        try {
+            DocumentModel current = navigationContext.getCurrentDocument();
+            if (!current.hasSchema("files"))
+                return;
+            Collection files = (Collection) current.getProperty("files",
+                    "files");
+            Object file = CollectionUtils.get(files, new Integer(index));
+            files.remove(file);
+            current.setProperty("files", "files", files);
+            documentManager.saveDocument(current);
+            documentManager.save();
+        } catch (Exception e) {
+            log.error(e);
+        }
     }
-    
-    public String validate() throws ClientException{
-    	InputStream stream = null;
-    	try{
-    		stream = new FileInputStream( tempFile );
-    		return addFile( stream , fileName) ;
-    	}
-    	catch( Exception e )
-    	{
-    		throw new ClientException(e);
-    	}
-    	finally
-    	{
-    		if( stream!=null )
-    		 IOUtils.closeQuietly(stream);
-    	}
-    	
+
+    public String validate() throws ClientException {
+        InputStream stream = null;
+        try {
+            stream = new FileInputStream(tempFile);
+            return addFile(stream, fileName);
+        } catch (Exception e) {
+            throw new ClientException(e);
+        } finally {
+            if (stream != null)
+                IOUtils.closeQuietly(stream);
+        }
     }
 
     public InputStream getFileUpload() {
@@ -609,12 +606,12 @@ public class FileManageActionsBean extends InputController implements
         navigationContext.setChangeableDocument(changeableDocument);
     }
 
-	public Collection<UploadItem> getUploadedFiles() {
-		return uploadedFiles;
-	}
+    public Collection<UploadItem> getUploadedFiles() {
+        return uploadedFiles;
+    }
 
-	public void setUploadedFiles(Collection<UploadItem> uploadedFiles) {
-		this.uploadedFiles = uploadedFiles;
-	}
+    public void setUploadedFiles(Collection<UploadItem> uploadedFiles) {
+        this.uploadedFiles = uploadedFiles;
+    }
 
 }
