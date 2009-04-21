@@ -32,6 +32,8 @@ Running test suites
 You can setup a run.conf file with your default options, look at
 run.conf.sample.
 
+Note that run.sh update the user-extensions.js and ffprofile/pref.js.
+
 Test suites description
 =========================
 
