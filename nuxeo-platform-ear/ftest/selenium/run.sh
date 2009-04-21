@@ -17,13 +17,19 @@ CMD="java -jar selenium-server.jar -port 14440 -timeout 7200 \
 if [ ! -z $HIDE_FF ]; then
     CMD="xvfb-run $CMD"
 fi
-CMD_END=" -userExtensions user-extensions.js"
+CMD_END="-firefoxProfileTemplate ffprofile -userExtensions user-extensions.js"
 
 # Clean old results
 rm -rf $HERE/result-*.html
 
-# Launch suites
 cd $HERE
+# Update path in user-extensions.js
+sed "s,\(storedVars\['testfolderpath'\]\ \=\).*$,\1\ \"$HERE\";,g" < user-extensions.js.sample > user-extensions.js
+
+# Update url in profile
+sed "s,\(capability.principal.codebase.p0.id...\).*$,\1\"$URL\",g" < ffprofile/prefs.js.sample > ffprofile/prefs.js
+
+# Launch suites
 for suite in $SUITES; do
     echo "### Running test suite $suite ..."
     $CMD "$PWD/tests/$suite.html" "$PWD/result-$suite.html" $CMD_END || exit 1
