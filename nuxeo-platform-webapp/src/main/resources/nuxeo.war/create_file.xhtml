@@ -5,7 +5,8 @@
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:nxthemes="http://nuxeo.org/nxthemes"
-  xmlns:s="http://jboss.com/products/seam/taglib">
+  xmlns:s="http://jboss.com/products/seam/taglib"
+  xmlns:rich="http://richfaces.org/rich">
 
   <ui:define name="page title">
     <h:outputText value="#{messages['title.create.file']}"/>
@@ -16,12 +17,17 @@
     <h3 onclick="testAddFileFromPlugin()"><h:outputText
         value="#{messages['label.selectFileToImport']}"/></h3>
       <h:form enctype="multipart/form-data">
-        <s:fileUpload data="#{FileManageActions.fileUpload}"
-          fileName="#{FileManageActions.fileName}"/>
+        <!-- <s:fileUpload data="#{FileManageActions.fileUpload}"
+          fileName="#{FileManageActions.fileName}"/> -->
+        <rich:fileUpload fileUploadListener="#{FileManageActions.processUpload}"
+                maxFilesQuantity="1"
+                listHeight="50"
+                immediateUpload="true"/>
+        
         <br />
         <h:commandButton type="submit" class="button"
           value="#{messages['command.upload']}"
-          action="#{FileManageActions.addFile}" />
+          action="#{FileManageActions.validate}" />
         <h:commandButton class="button"
           value="#{messages['command.cancel']}"
           action="#{navigationContext.goBack()}" immediate="true" />

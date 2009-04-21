@@ -19,22 +19,32 @@
 
 package org.nuxeo.ecm.webapp.filemanager;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import javax.ejb.Local;
-import javax.ejb.Remote;
 import javax.ejb.Remove;
-import javax.ejb.Stateless;
 import javax.faces.application.FacesMessage;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
+import javax.faces.event.ActionEvent;
+import javax.xml.transform.stream.StreamSource;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.annotation.ejb.SerializedConcurrentAccess;
+import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
+import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.core.Events;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -48,6 +58,7 @@ import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.platform.filemanager.api.FileManagerPermissionException;
 import org.nuxeo.ecm.platform.types.TypeManager;
+import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.UserAction;
 import org.nuxeo.ecm.platform.ui.web.util.files.FileUtils;
 import org.nuxeo.ecm.webapp.base.InputController;
@@ -55,6 +66,8 @@ import org.nuxeo.ecm.webapp.clipboard.ClipboardActions;
 import org.nuxeo.ecm.webapp.helpers.EventManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;
+import org.richfaces.event.UploadEvent;
+import org.richfaces.model.UploadItem;
 
 import sun.misc.BASE64Decoder;
 
@@ -63,11 +76,8 @@ import sun.misc.BASE64Decoder;
  *         Kalogeropoulos</a>
  *
  */
-@Stateless
 @Name("FileManageActions")
-@SerializedConcurrentAccess
-@Local(FileManageActionsLocal.class)
-@Remote(FileManageActions.class)
+@Scope(ScopeType.PAGE)
 public class FileManageActionsBean extends InputController implements
         FileManageActionsLocal {
 
@@ -88,8 +98,12 @@ public class FileManageActionsBean extends InputController implements
     public static final String MOVE_OK = "MOVE_OK";
 
     protected InputStream fileUpload;
+    
+    protected File tempFile;
 
     protected String fileName;
+    
+    protected Collection<UploadItem> uploadedFiles = new ArrayList<UploadItem>();
 
     @In(create = true, required = false)
     protected CoreSession documentManager;
@@ -128,6 +142,10 @@ public class FileManageActionsBean extends InputController implements
     }
 
     public String addFile() throws ClientException {
+    	return addFile(fileUpload, fileName);
+    }
+    		
+    public String addFile(InputStream fileUpload,String fileName) throws ClientException {
         try {
             if (fileUpload == null || fileName == null) {
                 facesMessages.add(FacesMessage.SEVERITY_ERROR,
@@ -257,27 +275,6 @@ public class FileManageActionsBean extends InputController implements
         return addBinaryFileFromPlugin(blob, fullName, morePath);
     }
 
-    /**
-     * @deprecated Use addBinaryFileFromPlugin(Blob, String, DocumentRef) to
-     *             avoid loading the data in memory as a Bytes array
-     */
-    @Deprecated
-    public String addBinaryFile(byte[] content, String mimetype,
-            String fullName, DocumentRef docRef) {
-        try {
-            DocumentModel targetContainer = documentManager.getDocument(docRef);
-
-            String path = targetContainer.getPathAsString();
-            Blob blob = StreamingBlob.createFromByteArray(content, mimetype);
-
-            DocumentModel createdDoc = getFileManagerService().createDocumentFromBlob(
-                    documentManager, blob, path, true, fullName);
-            return createdDoc.getName();
-        } catch (Throwable t) {
-            log.error(t, t);
-            return getErrorMessage(TRANSF_ERROR, fullName);
-        }
-    }
 
     public String addFolderFromPlugin(String fullName, String morePath)
             throws ClientException {
@@ -518,6 +515,75 @@ public class FileManageActionsBean extends InputController implements
     public void initialize() {
         log.info("Initializing...");
     }
+    
+    public void processUpload(UploadEvent uploadEvent) {
+		try {
+			tempFile = uploadEvent.getUploadItem().getFile();
+			fileName = uploadEvent.getUploadItem().getFileName();
+		} catch (Exception e) {
+			log.error(e);
+			return;
+		}
+	}
+    
+    public void validateMultiplesUpload() throws ClientException, FileNotFoundException {
+    	DocumentModel current = navigationContext.getCurrentDocument();
+    	if(!current.hasSchema("files"))
+    		return;
+    	Collection files = (Collection) current.getProperty("files", "files");
+    	for (UploadItem file : uploadedFiles) {
+    		String filename = FileUtils.getCleanFileName(file.getFileName());
+			Blob blob = FileUtils.createSerializableBlob(new FileInputStream(file.getFile()), filename, null);
+			
+			HashMap<String,Object> fileMap= new HashMap<String, Object>(2);
+			fileMap.put("file",blob);
+			fileMap.put("filename", filename);
+			if(!files.contains(fileMap))
+				files.add(fileMap);
+		}
+    	current.setProperty("files", "files", files);
+    	documentManager.saveDocument(current);
+    	documentManager.save();
+	}
+    
+    public void performAction(ActionEvent event)
+    {
+    	FacesContext context = FacesContext.getCurrentInstance();
+        ExternalContext eContext = context.getExternalContext();
+        String index = eContext.getRequestParameterMap().get("index");
+        
+    	try {
+    		DocumentModel current = navigationContext.getCurrentDocument();
+        	if(!current.hasSchema("files"))
+        		return;
+        	Collection files = (Collection) current.getProperty("files", "files");
+        	Object file = CollectionUtils.get(files, new Integer(index));
+        	files.remove(file);
+        	current.setProperty("files", "files", files);
+        	documentManager.saveDocument(current);
+        	documentManager.save();
+		} catch (Exception e) {
+			log.error(e);
+		}
+    }
+    
+    public String validate() throws ClientException{
+    	InputStream stream = null;
+    	try{
+    		stream = new FileInputStream( tempFile );
+    		return addFile( stream , fileName) ;
+    	}
+    	catch( Exception e )
+    	{
+    		throw new ClientException(e);
+    	}
+    	finally
+    	{
+    		if( stream!=null )
+    		 IOUtils.closeQuietly(stream);
+    	}
+    	
+    }
 
     public InputStream getFileUpload() {
         return fileUpload;
@@ -542,5 +608,13 @@ public class FileManageActionsBean extends InputController implements
     public void setChangeableDocument(DocumentModel changeableDocument) {
         navigationContext.setChangeableDocument(changeableDocument);
     }
+
+	public Collection<UploadItem> getUploadedFiles() {
+		return uploadedFiles;
+	}
+
+	public void setUploadedFiles(Collection<UploadItem> uploadedFiles) {
+		this.uploadedFiles = uploadedFiles;
+	}
 
 }

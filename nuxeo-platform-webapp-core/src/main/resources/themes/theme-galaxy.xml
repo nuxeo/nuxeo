@@ -604,6 +604,14 @@
         <border>none</border>
       </selector>
       <!-- end of rich faces tree -->
+      <!-- Rich Faces fileUpload-->
+      <selector path=".rich-fileupload-ico">
+        <padding-left>19px</padding-left>
+      </selector>
+      <selector path=".rich-fileupload-button-content">
+        <padding>2px 6px 2px 3px</padding>
+      </selector>
+      <!-- End of Rich Faces fileUpload-->
       <selector path=".rightsAddSelect">
         <border>1px normal #666</border>
         <margin-top>0px</margin-top>
