@@ -230,6 +230,12 @@
       <param-name>javax.faces.DEFAULT_SUFFIX</param-name>
       <param-value>.xhtml</param-value>
     </context-param>
+    
+    <!-- Plugging the "Blue Sky" skin into the project -->
+    <context-param>
+      <param-name>org.richfaces.SKIN</param-name>
+      <param-value>blueSky</param-value>
+    </context-param>
 
     <context-param>
       <param-name>facelets.LIBRARIES</param-name>

@@ -32,9 +32,6 @@ public interface SimpleFileManager {
     String addBinaryFileFromPlugin(Blob blob, String fullName,
             DocumentModel targetContainer) throws ClientException;
 
-    String addBinaryFile(byte[] content, String mimetype, String fullName,
-            DocumentRef docRef);
-
     String addBinaryFileFromPlugin(byte[] content, String mimetype,
             String fullName, String morePath) throws ClientException;
 
