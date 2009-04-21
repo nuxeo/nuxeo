@@ -34,7 +34,7 @@
       </filter>
     </action>
 
-    <action id="newDocument" link="select_document_type" enabled="true">
+    <action id="newDocument">
       <filter id="not_inside_forum">
         <rule grant="false">
           <type>Forum</type>
