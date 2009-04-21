@@ -624,7 +624,8 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
 
             // end process and tasks
             List<TaskInstance> tis = jbpmService.getTaskInstances(
-                    navigationContext.getCurrentDocument(), (NuxeoPrincipal) null, null);
+                    navigationContext.getCurrentDocument(),
+                    (NuxeoPrincipal) null, null);
             Set<String> recipients = new HashSet<String>();
             for (TaskInstance ti : tis) {
                 String actor = ti.getActorId();
@@ -651,6 +652,14 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
 
     public void setUserComment(String comment) {
         this.userComment = comment;
+    }
+
+    public List<String> getAllowedStateTransitions(DocumentRef ref)
+            throws ClientException {
+        // break reference: core gives an unmodifiable collection unsuitable for
+        // UI.
+        return new ArrayList<String>(
+                documentManager.getAllowedStateTransitions(ref));
     }
 
     public void resetCurrentData() {
