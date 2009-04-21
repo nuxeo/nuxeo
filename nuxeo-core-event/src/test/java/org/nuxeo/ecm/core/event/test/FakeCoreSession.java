@@ -683,4 +683,9 @@ public class FakeCoreSession implements CoreSession {
         return null;
     }
 
+    public String[] getPermissionsToCheck(String permission) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }

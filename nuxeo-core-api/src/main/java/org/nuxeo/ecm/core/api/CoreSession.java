@@ -1425,5 +1425,15 @@ public interface CoreSession {
      */
     Object[] refreshDocument(DocumentRef ref, int refreshFlags, String[] schemas)
             throws ClientException;
+    
+    /**
+     * Provides the full list of all permissions or groups of permissions that
+     * contain the given one (inclusive).
+     * It makes the method {@link SecurityService#getPermissionsToCheck()} 
+     * available remote.
+     * @param permission
+     * @return the list, as an array of strings.
+     */
+    String[] getPermissionsToCheck(String permission);
 
 }

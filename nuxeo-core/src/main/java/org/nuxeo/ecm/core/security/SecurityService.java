@@ -180,11 +180,10 @@ public class SecurityService extends DefaultComponent {
     /**
      * Provides the full list of all permissions or groups of permissions that
      * contain the given one (inclusive).
-     *
+     * It is exposed remotely through {@link CoreSession#getPermissionsToCheck()}
      * @param permission
      * @return the list, as an array of strings.
      */
-    // TODO nicely expose for other (remote) services (Search...)
     public String[] getPermissionsToCheck(String permission) {
         String[] groups = permissionProvider.getPermissionGroups(permission);
         if (groups == null) {

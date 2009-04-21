@@ -2748,5 +2748,10 @@ public abstract class AbstractSession implements CoreSession,
         return result;
 
     }
+    
+    public String[] getPermissionsToCheck(String permission) {
+        return getSecurityService().getPermissionsToCheck(permission);
+    }
+    
 
 }
