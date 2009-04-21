@@ -27,7 +27,7 @@ cd $HERE
 sed "s,\(storedVars\['testfolderpath'\]\ \=\).*$,\1\ \"$HERE\";,g" < user-extensions.js.sample > user-extensions.js
 
 # Update url in profile
-sed "s,\(capability.principal.codebase.p0.id...\).*$,\1\"$URL\",g" < ffprofile/prefs.js.sample > ffprofile/prefs.js
+sed "s,\(capability.principal.codebase.p0.id...\).*$,\1\"$URL\");,g" < ffprofile/prefs.js.sample > ffprofile/prefs.js
 
 # Launch suites
 for suite in $SUITES; do
