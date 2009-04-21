@@ -51,7 +51,6 @@ import org.nuxeo.webengine.utils.SiteUtils;
 /**
  * Web object implementation corresponding to Site. It is resolved from module 
  * root web object. It holds the site fragments back methods.
- * @author stan
  */
 
 @WebObject(type = "site", facets = { "Site" })
