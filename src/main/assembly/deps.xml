@@ -1,0 +1,20 @@
+<assembly>
+  <id>deps</id>
+
+  <formats>
+    <format>dir</format>
+  </formats>
+
+  <includeBaseDirectory>false</includeBaseDirectory>
+
+  <dependencySets id="deps">
+    <dependencySet>
+      <excludes>
+        <exclude>org.nuxeo.ecm.cmis:nuxeo-cmis*</exclude>
+      </excludes>
+      <unpack>false</unpack>
+      <scope>runtime</scope>
+    </dependencySet>
+  </dependencySets>
+
+</assembly>
