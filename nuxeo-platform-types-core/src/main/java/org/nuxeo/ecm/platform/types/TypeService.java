@@ -114,12 +114,28 @@ public class TypeService extends DefaultComponent implements TypeManager {
             oldType.setIcon(icon);
         }
         String iconExpanded = newType.getIconExpanded();
-        if (icon != null) {
+        if (iconExpanded != null) {
             oldType.setIconExpanded(iconExpanded);
+        }
+        String bigIcon = newType.getBigIcon();
+        if (bigIcon != null) {
+            oldType.setBigIcon(bigIcon);
+        }
+        String bigIconExpanded = newType.getBigIconExpanded();
+        if (bigIconExpanded != null) {
+            oldType.setBigIconExpanded(bigIconExpanded);
         }
         String label = newType.getLabel();
         if (label != null) {
             oldType.setLabel(label);
+        }
+        String description = newType.getDescription();
+        if (description != null) {
+            oldType.setDescription(description);
+        }
+        String category = newType.getCategory();
+        if (category != null) {
+            oldType.setCategory(category);
         }
         String[] allowedsubTypes = newType.getAllowedSubTypes();
         if (allowedsubTypes != null) {

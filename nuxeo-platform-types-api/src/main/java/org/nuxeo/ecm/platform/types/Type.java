@@ -50,6 +50,12 @@ public class Type implements Serializable {
     @XNode("icon-expanded")
     protected String iconExpanded;
 
+    @XNode("bigIcon")
+    protected String bigIcon;
+
+    @XNode("bigIcon-expanded")
+    protected String bigIconExpanded;
+
     @XNode("label")
     protected String label;
 
@@ -67,6 +73,12 @@ public class Type implements Serializable {
 
     @XNode("edit-view")
     protected String editView;
+
+    @XNode("description")
+    protected String description;
+
+    @XNode("category")
+    protected String category;
 
     protected Map<String, TypeView> views;
 
@@ -98,6 +110,21 @@ public class Type implements Serializable {
     public void setIcon(String icon) {
         this.icon = icon;
     }
+    public String getBigIcon() {
+        return bigIcon;
+    }
+
+    public void setBigIcon(String bigIcon) {
+        this.bigIcon = bigIcon;
+    }
+
+    public String getBigIconExpanded() {
+        return bigIconExpanded;
+    }
+
+    public void setBigIconExpanded(String bigIconExpanded) {
+        this.bigIconExpanded = bigIconExpanded;
+    }
 
     public String getLabel() {
         return label;
@@ -113,6 +140,22 @@ public class Type implements Serializable {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
     }
 
     /**
