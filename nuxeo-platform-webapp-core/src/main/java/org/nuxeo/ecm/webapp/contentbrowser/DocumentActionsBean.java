@@ -664,13 +664,4 @@ public class DocumentActionsBean extends InputController implements
         return false;
     }
 
-    public List<String> getAllowedStateTransitions(DocumentRef ref)
-            throws ClientException {
-        // break reference: core gives an unmodifiable collection unsuitable for
-        // UI.
-        List<String> res = new ArrayList<String>();
-        res.addAll(documentManager.getAllowedStateTransitions(ref));
-        return res;
-    }
-
 }

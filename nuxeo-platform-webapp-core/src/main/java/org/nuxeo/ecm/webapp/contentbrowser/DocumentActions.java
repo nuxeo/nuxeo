@@ -19,8 +19,6 @@
 
 package org.nuxeo.ecm.webapp.contentbrowser;
 
-import java.util.List;
-
 import javax.annotation.security.PermitAll;
 import javax.ejb.Remove;
 
@@ -28,7 +26,6 @@ import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.remoting.WebRemote;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.ui.web.model.SelectDataModel;
 import org.nuxeo.ecm.platform.ui.web.model.SelectDataModelListener;
@@ -151,11 +148,5 @@ public interface DocumentActions extends StatefulBaseLifeCycle,
      * @throws ClientException
      */
     boolean getCanUnpublish();
-
-    /**
-     * Returns the list of allowed life cycle state transitions for given document.
-     */
-    List<String> getAllowedStateTransitions(DocumentRef ref)
-            throws ClientException;
 
 }
