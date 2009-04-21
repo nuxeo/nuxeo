@@ -129,7 +129,7 @@ public class DocumentActionsBean extends InputController implements
 
     protected String comment;
 
-    //@Create
+    // @Create
     public void initialize() {
         log.debug("Initializing...");
     }
@@ -151,7 +151,7 @@ public class DocumentActionsBean extends InputController implements
         log.debug("PostActivate");
     }
 
-    @Factory(autoCreate=true, value="currentDocumentType", scope = ScopeType.EVENT)
+    @Factory(autoCreate = true, value = "currentDocumentType", scope = ScopeType.EVENT)
     public Type getCurrentType() {
         DocumentModel doc = navigationContext.getCurrentDocument();
         if (doc == null) {
@@ -250,10 +250,9 @@ public class DocumentActionsBean extends InputController implements
                     bigDownloadURL += "nxbigfile" + "/";
                     bigDownloadURL += doc.getRepositoryName() + "/";
                     bigDownloadURL += doc.getRef().toString() + "/";
-                    bigDownloadURL += docView.getParameter(
-                            DocumentFileCodec.FILE_PROPERTY_PATH_KEY) + "/";
-                    bigDownloadURL += docView.getParameter(
-                            DocumentFileCodec.FILENAME_KEY);
+                    bigDownloadURL += docView.getParameter(DocumentFileCodec.FILE_PROPERTY_PATH_KEY)
+                            + "/";
+                    bigDownloadURL += docView.getParameter(DocumentFileCodec.FILENAME_KEY);
                     try {
                         response.sendRedirect(bigDownloadURL);
                     } catch (IOException e) {
@@ -470,8 +469,7 @@ public class DocumentActionsBean extends InputController implements
         // XXX : this proves that this method is called too many times
         // log.debug("Getter children select model");
         DocumentModelList documents = navigationContext.getCurrentDocumentChildrenPage();
-        List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(
-                DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
+        List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
         SelectDataModel model = new SelectDataModelImpl(CHILDREN_DOCUMENT_LIST,
                 documents, selectedDocuments);
         model.addSelectModelListener(this);
@@ -490,8 +488,7 @@ public class DocumentActionsBean extends InputController implements
         // XXX : this proves that this method is called too many times
         // log.debug("Getter children select model");
         DocumentModelList documents = navigationContext.getCurrentDocumentChildrenPage();
-        List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(
-                DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION);
+        List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION);
         SelectDataModel model = new SelectDataModelImpl(CHILDREN_DOCUMENT_LIST,
                 documents, selectedDocuments);
         model.addSelectModelListener(this);
@@ -626,7 +623,8 @@ public class DocumentActionsBean extends InputController implements
     }
 
     public boolean getWriteRight() throws ClientException {
-        // TODO: WRITE is a high level compound permission (i.e. more like a user
+        // TODO: WRITE is a high level compound permission (i.e. more like a
+        // user
         // profile), public methods of the Nuxeo framework should only check
         // atomic / specific permissions such as WRITE_PROPERTIES, REMOVE,
         // ADD_CHILDREN depending on the action to execute instead
@@ -651,8 +649,7 @@ public class DocumentActionsBean extends InputController implements
     }
 
     public boolean getCanUnpublish() {
-        List<DocumentModel> docList = documentsListsManager.getWorkingList(
-                DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION);
+        List<DocumentModel> docList = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION);
 
         if (!(docList == null || docList.isEmpty())
                 && deleteActions.checkDeletePermOnParents(docList)) {
