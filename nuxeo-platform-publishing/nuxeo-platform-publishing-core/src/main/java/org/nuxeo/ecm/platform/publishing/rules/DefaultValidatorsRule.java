@@ -26,11 +26,9 @@ import java.util.Set;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.security.ACP;
-import org.nuxeo.ecm.core.api.security.PermissionProvider;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.publishing.api.AbstractNuxeoCoreValidatorsRule;
 import org.nuxeo.ecm.platform.publishing.api.PublishingValidatorException;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * Default NXP validator.
@@ -70,24 +68,30 @@ public class DefaultValidatorsRule extends AbstractNuxeoCoreValidatorsRule {
          * I am replicating the code here based on PermissionProvider.getPermissionsGroups
          * in order to have the same business logic.
          */
+        /*WEB-244 Rux: the SecurityService.getPermissionsToCheck() is finally exposed,
+         * use it instead.
+         */
 //        SecurityService secuService = NXCore.getSecurityService();
 //        Set<String> requiredPermissions = new HashSet<String>(
 //                Arrays.asList(secuService.getPermissionsToCheck(SecurityConstants.WRITE)));
-        PermissionProvider permProvider;
-        try {
-            permProvider = Framework.getService(PermissionProvider.class);
-        } catch (Exception e) {
-            throw new PublishingValidatorException(e);
-        }
-
-        Set<String> requiredPermissions = new HashSet<String>();
-        requiredPermissions.addAll(Arrays.asList(permProvider.getPermissionGroups(
-                SecurityConstants.WRITE)));
-        requiredPermissions.add(SecurityConstants.WRITE);
-
-        /*Rux: Everything is not added!!! Go workaround*/
-        requiredPermissions.add(SecurityConstants.EVERYTHING);
+//        PermissionProvider permProvider;
+//        try {
+//            permProvider = Framework.getService(PermissionProvider.class);
+//        } catch (Exception e) {
+//            throw new PublishingValidatorException(e);
+//        }
+//
+//        Set<String> requiredPermissions = new HashSet<String>();
+//        requiredPermissions.addAll(Arrays.asList(permProvider.getPermissionGroups(
+//                SecurityConstants.WRITE)));
+//        requiredPermissions.add(SecurityConstants.WRITE);
+//
+//        /*Rux: Everything is not added!!! Go workaround*/
+//        requiredPermissions.add(SecurityConstants.EVERYTHING);
         //String[] reviewers = acp.listUsernamesForPermission(SecurityConstants.EVERYTHING);
+        Set<String> requiredPermissions = new HashSet<String>();
+        requiredPermissions.addAll(Arrays.asList(
+                session.getPermissionsToCheck(SecurityConstants.WRITE)));
         String[] reviewers = acp.listUsernamesForAnyPermission(requiredPermissions);
 
         try {

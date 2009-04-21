@@ -21,7 +21,7 @@
   } 
 </script>
 
-<form id="comment" action="${This.path}/@comments" method="POST" accept-charset="utf-8">  
+<form id="comment" action="${This.path}/@webcomments" method="POST" accept-charset="utf-8">  
 
   <div id="webComment" class="addWebComment" style="display: none">
     <textarea name="text" rows="4" cols="40" class="commentText">Your comment</textarea>
@@ -35,7 +35,7 @@
       <div class="commentInfos">${com['comment:creationDate']} by ${com['comment:author']}</div>
       <div class="commentContent">${com['comment:text']}</div>
       	<#if (This.moderator==true)>
-        	<a href="${This.path}/@comments/delete?property=${com.ref}">Delete</a>
+        	<a href="${This.path}/@webcomments/delete?property=${com.ref}">Delete</a>
       	</#if>
     </div>
     </#list>
@@ -47,9 +47,9 @@
     <div class="commentBlock">
       <div class="commentInfos">${com['comment:creationDate']} by ${com['comment:author']}</div>
       <div class="commentContent">${com['comment:text']}</div>
-        <a href="${This.path}/@comments/reject?property=${com.ref}">Reject</a>
+        <a href="${This.path}/@webcomments/reject?property=${com.ref}">Reject</a>
           <br/>
-          <a href="${This.path}/@comments/approve?property=${com.ref}">Approve</a>
+          <a href="${This.path}/@webcomments/approve?property=${com.ref}">Approve</a>
     </div>
     </#list>
     </#if> 

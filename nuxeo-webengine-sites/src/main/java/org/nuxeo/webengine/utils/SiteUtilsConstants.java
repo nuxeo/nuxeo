@@ -32,6 +32,8 @@ public final class SiteUtilsConstants {
     public static final String WORKSPACE = "Workspace";
 
     public static final String WEBPAGE = "WebPage";
+    
+    public static final String WEBCONTAINER = "webcontainer"; 
 
     /**
      * Constants used in pages like site or webpage
@@ -62,6 +64,18 @@ public final class SiteUtilsConstants {
 
 
     public static final String WEB_CONTAINER_FACET = "WebView";
+    
+    /**
+     * Constants used for Comments
+     */
+    public static final String PERMISSION_COMMENT = "Comment";
+
+    public static final String PERMISSION_MODERATE = "Moderate";
+
+    public static final String MODERATION_APRIORI = "apriori";
+    
+    public static final String MODERATION_APOSTERIORI = "aposteriori";
+
 
 }
 

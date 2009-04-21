@@ -175,12 +175,13 @@ public class Site extends DocumentObject {
             @FormParam("searchParam") String searchParam) {
         ctx.getRequest().setAttribute("org.nuxeo.theme.theme",
                 "sites" + "/" + "search");
+        CoreSession session = getCoreSession();
         Map<String, Object> root = new HashMap<String, Object>();
         try {
-            List<Object> pages = SiteUtils.searchPagesInSite(doc, searchParam,
-                    50);
+            List<Object> pages = SiteUtils.searchPagesInSite(session ,doc, 
+                    searchParam, 50);
             root.put(RESULTS, pages);
-            root.put(CONTEXTUAL_LINKS, SiteUtils.getContextualLinks(doc));
+            root.put(CONTEXTUAL_LINKS, SiteUtils.getContextualLinks(session, doc));
             root.put(WELCOME_TEXT, SiteHelper.getString(doc, "webc:welcomeText",
                     null));
             root.put(NAME, SiteHelper.getString(doc, "webc:name", null));
@@ -208,24 +209,22 @@ public class Site extends DocumentObject {
         }
     }
 
-    protected Map<String, Object> getSiteArguments() throws ClientException {
+    protected Map<String, Object> getSiteArguments() throws Exception {
         Map<String, Object> root = new HashMap<String, Object>();
+        CoreSession session = getCoreSession();
 
         root.put(NAME, SiteHelper.getString(doc, "webc:name", null));
         root.put(DESCRIPTION, SiteHelper.getString(doc, "dc:description",
                 null));
         // add web pages
         root.put(LAST_PUBLISHED_PAGES, SiteUtils.getLastModifiedWebPages(
-                doc, 5, 50));
+                session, doc, 5, 50));
         //add comments
-        root.put(COMMENTS, SiteUtils.getLastCommentsFromPages(doc, 5, 50));
+        root.put(COMMENTS, SiteUtils.getLastCommentsFromPages(session, doc, 5, 50));
         // add contextual links
-        root.put(CONTEXTUAL_LINKS, SiteUtils.getContextualLinks(
-                doc));
+        root.put(CONTEXTUAL_LINKS, SiteUtils.getContextualLinks(session, doc));
         // add all webpages that are directly connected to an site
-        root.put(ALL_WEBPAGES, SiteUtils.getAllWebPages(
-                doc));
-
+        root.put(ALL_WEBPAGES, SiteUtils.getAllWebPages(session, doc));
         return root;
     }
 
