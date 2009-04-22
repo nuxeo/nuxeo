@@ -23,6 +23,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -31,6 +33,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.SimplePrincipal;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
+import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
@@ -90,19 +93,23 @@ public class TestJMSEventBundle extends NXRuntimeTestCase {
 
         EventBundle dstEventBundle2 = dstJmsEventBundle2.reconstructEventBundle(fakeCoreSession);
         assertNotNull(dstEventBundle2);
-        assertEquals(3, dstEventBundle2.getEvents().length);
+        List<Event> events = new ArrayList<Event>();
+        for (Event event : dstEventBundle2) {
+            events.add(event);
+        }
+        assertEquals(3, events.size());
 
-        if (!(dstEventBundle2.getEvents()[0].getContext() instanceof EventContextImpl)) {
+        if (!(events.get(0).getContext() instanceof EventContextImpl)) {
             fail();
         }
-        if (!(dstEventBundle2.getEvents()[1].getContext() instanceof EventContextImpl)) {
+        if (!(events.get(1).getContext() instanceof EventContextImpl)) {
             fail();
         }
-        if (!(dstEventBundle2.getEvents()[2].getContext() instanceof DocumentEventContext)) {
+        if (!(events.get(2).getContext() instanceof DocumentEventContext)) {
             fail();
         }
 
-        DocumentEventContext docCtx = (DocumentEventContext) dstEventBundle2.getEvents()[2].getContext();
+        DocumentEventContext docCtx = (DocumentEventContext) events.get(2).getContext();
         assertNotNull(docCtx.getSourceDocument());
         assertNotNull(docCtx.getDestination());
 

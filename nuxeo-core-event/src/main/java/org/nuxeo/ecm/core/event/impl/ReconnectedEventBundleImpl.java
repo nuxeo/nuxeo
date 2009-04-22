@@ -113,7 +113,7 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
     protected List<Event> getReconnectedEvents() {
         if (reconnectedEvents == null) {
             reconnectedEvents = new ArrayList<Event>();
-            for (Event event : sourceEventBundle.getEvents()) {
+            for (Event event : sourceEventBundle) {
                 EventContext ctx = event.getContext();
                 CoreSession session = ctx.getRepositoryName() == null ? null
                         : getReconnectedCoreSession(ctx.getRepositoryName());
@@ -175,15 +175,6 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
             }
         }
         return reconnectedEvents;
-    }
-
-    public String[] getEventNames() {
-        return sourceEventBundle.getEventNames();
-    }
-
-    public Event[] getEvents() {
-        return getReconnectedEvents().toArray(
-                new Event[getReconnectedEvents().size()]);
     }
 
     public String getName() {

@@ -62,16 +62,6 @@ public class ReconnectedJMSEventBundle extends ReconnectedEventBundleImpl {
     }
 
     @Override
-    public String[] getEventNames() {
-        List<Event> events = getReconnectedEvents();
-        String[] names = new String[events.size()];
-        for (int i = 0; i < names.length; i++) {
-            names[i] = events.get(i).getName();
-        }
-        return names;
-    }
-
-    @Override
     public String getName() {
         return jmsEventBundle.getEventBundleName();
     }

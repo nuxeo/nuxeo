@@ -18,8 +18,10 @@ package org.nuxeo.ecm.core.event.impl;
 
 import java.rmi.dgc.VMID;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
@@ -36,6 +38,8 @@ public class EventBundleImpl implements EventBundle {
 
     protected final List<Event> events;
 
+    protected final Set<String> eventNames;
+
     /**
      * If true the bundle is controlled by a transaction, otherwise it is controlled by the SAVE event.
      * <p>
@@ -46,6 +50,7 @@ public class EventBundleImpl implements EventBundle {
 
     public EventBundleImpl(VMID sourceVMID) {
         events = new ArrayList<Event>();
+        eventNames = new HashSet<String>();
         vmid = sourceVMID;
     }
 
@@ -66,18 +71,6 @@ public class EventBundleImpl implements EventBundle {
         this.isTransacted = isTransacted;
     }
 
-    public String[] getEventNames() {
-        String[] names = new String[events.size()];
-        for (int i = 0; i < names.length; i++) {
-            names[i] = events.get(i).getName();
-        }
-        return names;
-    }
-
-    public Event[] getEvents() {
-        return events.toArray(new Event[events.size()]);
-    }
-
     public String getName() {
         if (events.isEmpty()) {
             return null;
@@ -95,6 +88,10 @@ public class EventBundleImpl implements EventBundle {
 
     public void push(Event event) {
         events.add(event);
+        String eventName = event.getName();
+        if (eventName != null) {
+            eventNames.add(eventName);
+        }
     }
 
     public int size() {
@@ -113,12 +110,7 @@ public class EventBundleImpl implements EventBundle {
         if (eventName == null) {
             return false;
         }
-        for (Event event : events) {
-            if (eventName.equals(event.getName())) {
-                return true;
-            }
-        }
-        return false;
+        return eventNames.contains(eventName);
     }
 
 }

@@ -44,22 +44,6 @@ public interface EventBundle extends Iterable<Event>, Serializable {
     String getName();
 
     /**
-     * Gets a list of event names in this bundle.
-     *
-     * @return an array of event names. cannot be null.
-     */
-    String[] getEventNames();
-
-    /**
-     * Gets a list of events in this bundle.
-     * <p>
-     * The return array is a copy of internal list of events in that bundle.
-     *
-     * @return the events in that bundle
-     */
-    Event[] getEvents();
-
-    /**
      * Adds an event in that bundle at the end of the list.
      * <p>
      * The bundle implementation must ignore redundant events and events marked
