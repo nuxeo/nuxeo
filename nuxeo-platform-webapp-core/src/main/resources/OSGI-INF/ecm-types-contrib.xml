@@ -11,6 +11,9 @@
     <type id="Root" coretype="Root">
       <label>Server Root</label>
       <icon>/icons/folder.gif</icon>
+      <bigIcon>/icons/folder_100.gif</bigIcon>
+      <description>serverRoot.description</description>
+      <category>SuperDocument</category>
       <default-view>view_domains</default-view>
       <subtypes>
         <type>Domain</type>
@@ -23,6 +26,9 @@
     <type id="Domain" coretype="Domain">
       <label>Domain</label>
       <icon>/icons/domain.gif</icon>
+      <bigIcon>/icons/domain.gif</bigIcon>
+      <category>SuperDocument</category>
+      <description>Domain.description</description>
       <default-view>view_documents</default-view>
       <create-view>create_domain</create-view>
       <views>
@@ -41,6 +47,9 @@
     <type id="WorkspaceRoot" coretype="WorkspaceRoot">
       <label>WorkspaceRoot</label>
       <icon>/icons/workspace.gif</icon>
+      <bigIcon>/icons/workspace_100.gif</bigIcon>
+      <category>SuperDocument</category>
+      <description>WorkspaceRoot.description</description>
       <icon-expanded>/icons/workspace_open.gif</icon-expanded>
       <default-view>view_documents</default-view>
       <subtypes>
@@ -54,7 +63,10 @@
     <type id="TemplateRoot" coretype="TemplateRoot">
       <label>TemplateRoot</label>
       <icon>/icons/folder_template.gif</icon>
+      <bigIcon>/icons/folder_template_100.gif</bigIcon>
       <icon-expanded>/icons/folder_template_open.gif</icon-expanded>
+      <category>SuperDocument</category>
+      <description>TemplateRoot.description</description>
       <default-view>view_documents</default-view>
       <subtypes>
         <type>Workspace</type>
@@ -67,7 +79,10 @@
     <type id="Workspace" coretype="Workspace">
       <label>Workspace</label>
       <icon>/icons/workspace.gif</icon>
+      <bigIcon>/icons/workspace_100.gif</bigIcon>
       <icon-expanded>/icons/workspace_open.gif</icon-expanded>
+      <category>SimpleDocument</category>
+      <description>Workspace.description</description>
       <default-view>view_documents</default-view>
       <create-view>create_workspace</create-view>
       <subtypes>
@@ -86,7 +101,10 @@
     <type id="SectionRoot" coretype="SectionRoot">
       <label>SectionRoot</label>
       <icon>/icons/folder.gif</icon>
+      <bigIcon>/icons/folder_100.gif</bigIcon>
       <icon-expanded>/icons/folder_open.gif</icon-expanded>
+      <category>SuperDocument</category>
+      <description>SectionRoot.description</description>
       <default-view>view_documents</default-view>
       <subtypes>
         <type>Section</type>
@@ -99,7 +117,10 @@
     <type id="Section" coretype="Section">
       <label>Section</label>
       <icon>/icons/folder.gif</icon>
+      <bigIcon>/icons/folder_100.gif</bigIcon>
       <icon-expanded>/icons/folder_open.gif</icon-expanded>
+      <category>SimpleDocument</category>
+      <description>Section.description</description>
       <default-view>view_documents</default-view>
       <subtypes>
         <type>Section</type>
@@ -112,7 +133,10 @@
     <type id="Folder" coretype="Folder">
       <label>Folder</label>
       <icon>/icons/folder.gif</icon>
+      <bigIcon>/icons/folder_100.gif</bigIcon>
       <icon-expanded>/icons/folder_open.gif</icon-expanded>
+      <category>SimpleDocument</category>
+      <description>Folder.description</description>
       <default-view>view_documents</default-view>
       <subtypes>
         <type>Folder</type>
@@ -127,6 +151,9 @@
     <type id="File" coretype="File">
       <label>File</label>
       <icon>/icons/file.gif</icon>
+      <bigIcon>/icons/file_100.gif</bigIcon>
+      <category>SimpleDocument</category>
+      <description>File.description</description>
       <default-view>view_documents</default-view>
       <layouts mode="any">
         <layout>heading</layout>
@@ -137,6 +164,9 @@
     <type id="Note" coretype="Note">
       <label>Note</label>
       <icon>/icons/note.gif</icon>
+      <bigIcon>/icons/note_100.gif</bigIcon>
+      <category>SimpleDocument</category>
+      <description>Note.description</description>
       <default-view>view_documents</default-view>
       <layouts mode="any">
         <layout>heading</layout>
@@ -147,6 +177,7 @@
     <type id="AdvancedSearch" coretype="AdvancedSearch">
       <label>Advanced Search</label>
       <icon>/icons/folder.gif</icon>
+      <bigIcon>/icons/folder_100.gif</bigIcon>
       <default-view>view_user</default-view>
     </type>
 

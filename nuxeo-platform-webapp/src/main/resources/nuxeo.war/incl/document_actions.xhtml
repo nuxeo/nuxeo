@@ -3,6 +3,9 @@
      xmlns:f="http://java.sun.com/jsf/core"
      xmlns:ui="http://java.sun.com/jsf/facelets"
      xmlns:nxu="http://nuxeo.org/nxweb/util">
+     
+  <ui:include src="/select_document_type.xhtml"/>
+     
   <h:form>
     <nxu:methodResult name="actions"
                       value="#{webActions.getActionsList('SUBVIEW_UPPER_LIST')}">
@@ -19,6 +22,23 @@
     </div>
     </f:subview>
     </nxu:methodResult>
+    <nxu:methodResult name="actions"
+                      value="#{webActions.getActionsList('SUBVIEW_UPPER_LIST_HREF')}">
+    <f:subview rendered="#{!empty actions}">
+    <div class="action_bar">
+        <nxu:dataList layout="unorderedList"
+                      var="action"
+                      value="#{actions}">
+          <a href="#{action.getLink()}">
+            <h:graphicImage value="#{action.icon}" />
+            <h:outputText value="#{messages[action.label]}" />
+          </a>
+        </nxu:dataList>
+    </div>
+    </f:subview>
+    </nxu:methodResult>
+    
+    
     
     <h:panelGroup rendered="#{currentDocument.hasFacet('WebView') and currentDocument.webc.isWebContainer}">
       <div class="syndicationContainer">

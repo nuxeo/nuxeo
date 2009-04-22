@@ -1,31 +1,50 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<nxthemes:composition xmlns="http://www.w3.org/1999/xhtml"
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:c="http://java.sun.com/jstl/core"
   xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:rich="http://richfaces.org/rich"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:nxthemes="http://nuxeo.org/nxthemes">
 
-  <ui:define name="page title">
-    <h:outputText value="#{message[title.create.document]}"/>
-  </ui:define>
+<h:form>
+  <rich:modalPanel id="selectDocTypePanel" autosized="true"
+    onmaskclick="Richfaces.hideModalPanel('selectDocTypePanel')">
 
-  <ui:define name="body">
-    <div class="mainNoTabs">
-      <h3><h:outputText value="#{messages['title.availableDocumentTypes']}"/></h3>
-      <h:outputText value="#{messages['help.chooseDocumentType']}"/>
-      <h:form>
-        <h:dataTable var="type" value="#{typesList}"
-          class="selectDocumentType">
-          <h:column>
-            <h:commandLink action="#{documentActions.createDocument(type.id)}">
-              <h:graphicImage value="#{type.icon}" />
-              <h:outputText value="#{messages[type.label]}" />
-            </h:commandLink>
-          </h:column>
-        </h:dataTable>
-      </h:form>
-    </div>
-  </ui:define>
 
-</nxthemes:composition>
+    <f:facet name="header">
+      <h:outputText value="#{messages['title.availableDocumentTypes']}" />
+    </f:facet>
+
+    <f:facet name="controls">
+      <h:panelGroup>
+        <h:graphicImage value="/icons/action_delete_mini.gif"
+          id="hideDocTypePanel" />
+        <rich:componentControl for="selectDocTypePanel"
+          attachTo="hideDocTypePanel" operation="hide" event="onclick" />
+      </h:panelGroup>
+    </f:facet>
+
+    <h:outputText value="#{messages['help.chooseDocumentType']}" />
+
+    <nxu:dataList value="#{typesMap.entrySet}" var="typesList">
+      <div>
+      <h3 class="documentType"><h:outputText value="#{typesList.key}" /></h3>
+      <nxu:dataList value="#{typesList.value}" var="type">
+        <div class="documentType">
+          <h:commandLink action="#{documentActions.createDocument(type.id)}">
+            <h:graphicImage height="32" width="32" value="#{type.bigIcon}" />
+          </h:commandLink>
+          <h:commandLink action="#{documentActions.createDocument(type.id)}">
+            <h:outputText value="#{messages[type.label]}" />
+          </h:commandLink>
+          <br />
+          <span>
+            <h:outputText value="#{messages[type.description]}" />
+          </span>
+        </div>
+      </nxu:dataList>
+      </div>
+    </nxu:dataList>
+  </rich:modalPanel>
+</h:form></div>
