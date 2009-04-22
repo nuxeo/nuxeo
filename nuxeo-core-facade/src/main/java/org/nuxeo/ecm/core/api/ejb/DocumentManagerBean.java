@@ -38,7 +38,6 @@ import javax.ejb.Remote;
 import javax.ejb.Remove;
 import javax.ejb.SessionSynchronization;
 import javax.ejb.Stateful;
-import javax.interceptor.Interceptors;
 import javax.persistence.Transient;
 
 import org.apache.commons.logging.Log;
@@ -51,7 +50,6 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.RollbackClientException;
 import org.nuxeo.ecm.core.api.VersionModel;
@@ -209,85 +207,6 @@ public class DocumentManagerBean extends AbstractSession implements
             NoSuchRepositoryException {
         Repository repo = NXCore.getRepository(repoName);
         return repo.getSession(context);
-    }
-
-    // ----------------------- cache interceptors ------------
-
-    @Override
-    @Interceptors(DocumentManagerCacheStatInterceptor.class)
-    public DocumentModel getDocument(DocumentRef docRef) throws ClientException {
-        try {
-            return super.getDocument(docRef);
-        } catch (Throwable t) {
-            throw ClientException.wrap(t);
-        }
-    }
-
-    @Override
-    @Interceptors(DocumentManagerCacheStatInterceptor.class)
-    public DocumentModel getDocument(DocumentRef docRef, String[] schemas)
-            throws ClientException {
-        try {
-            return super.getDocument(docRef, schemas);
-        } catch (Throwable t) {
-            throw ClientException.wrap(t);
-        }
-    }
-
-    @Override
-    @Interceptors(DocumentManagerCacheStatInterceptor.class)
-    public DocumentModel getChild(DocumentRef parent, String name)
-            throws ClientException {
-        try {
-            if (log.isDebugEnabled()) {
-                log.debug("UUID: " + parent.toString() + ", name: " + name);
-            }
-            return super.getChild(parent, name);
-        } catch (Throwable t) {
-            throw ClientException.wrap(t);
-        }
-    }
-
-    @Override
-    @Interceptors(DocumentManagerCacheStatInterceptor.class)
-    public DocumentModelList getChildren(DocumentRef parent)
-            throws ClientException {
-        try {
-            if (log.isDebugEnabled()) {
-                log.debug("UUID: " + parent.toString());
-            }
-            return super.getChildren(parent);
-        } catch (Throwable t) {
-            throw ClientException.wrap(t);
-        }
-    }
-
-    @Override
-    @Interceptors(DocumentManagerCacheStatInterceptor.class)
-    public DocumentModelList getChildren(DocumentRef parent, String type)
-            throws ClientException {
-        try {
-            if (log.isDebugEnabled()) {
-                log.debug("UUID: " + parent.toString() + " type: " + type);
-            }
-            return super.getChildren(parent, type);
-        } catch (Throwable t) {
-            throw ClientException.wrap(t);
-        }
-    }
-
-    @Override
-    @Interceptors(DocumentManagerCacheStatInterceptor.class)
-    public DocumentModelList getChildren(DocumentRef parent, String type,
-            String perm) throws ClientException {
-        try {
-            if (log.isDebugEnabled()) {
-                log.debug("UUID: " + parent.toString() + " type: " + type);
-            }
-            return super.getChildren(parent, type, perm);
-        } catch (Throwable t) {
-            throw ClientException.wrap(t);
-        }
     }
 
     @Override
