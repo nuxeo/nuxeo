@@ -1,0 +1,35 @@
+<div id="relation"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory"
+  xmlns:nxd="http://nuxeo.org/nxweb/document">
+  <f:subview>
+    <h3>
+      <h:outputText value="#{messages['label.resum.links.title']}" />
+    </h3>
+    <nxu:dataTable id="dataTable" value="#{relationActions.outgoingStatementsInfo}" var="statement" styleClass="dataOutput">
+      <!-- id and selection -->
+      <nxu:column>
+        <div>
+        <nxu:graphicImage value="#{nxd:iconPath(statement.objectInfo.documentModel)}" />
+        <nxd:restDocumentLink document="#{statement.objectInfo.documentModel}">
+	      <h:outputText value="#{statement.objectInfo.documentModel.title} :"/>  
+        </nxd:restDocumentLink>    
+        </div>
+      </nxu:column>
+      <nxu:column>
+        <nxdir:directoryEntryOutput
+        value="#{statement.predicate.uri}"
+        directoryName="predicates"
+        localize="true" />
+      </nxu:column>
+    </nxu:dataTable>
+  </f:subview>
+</div>

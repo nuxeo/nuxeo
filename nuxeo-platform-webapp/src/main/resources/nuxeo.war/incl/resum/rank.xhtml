@@ -1,0 +1,25 @@
+<div id="rank"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core">
+<f:subview>
+  <c:set var="andLabel" value=" #{messages['label.and']} " scope="page" />
+  <b><h:outputText value="#{messages['label.resum.rank.title']}"/></b>
+  <table id="rank_table">
+    <tr>
+      <td><h:outputText value="#{messages['label.dublincore.subjects']}"/></td>
+      <td><h:outputText value="#{nxu:joinArrayWithFinalDelimiter(currentDocument.dc.subjects,', ',andLabel)}"/></td>
+    </tr>
+    <tr>
+      <td><h:outputText value="#{messages['label.dublincore.coverage']}"/></td>
+      <td><h:outputText value="#{currentDocument.dc.coverage}"/></td>
+    </tr>
+  </table>
+  
+  </f:subview>
+
+</div>

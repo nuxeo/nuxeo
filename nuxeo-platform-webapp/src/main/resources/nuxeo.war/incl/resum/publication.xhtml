@@ -1,0 +1,27 @@
+<div id="publication"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxd="http://nuxeo.org/nxweb/document">
+  <f:subview>
+    <c:set var="selectedSections" value="#{publishActions.getPublishingInfo().toArray()}" scope="page" />
+    <b><h:outputText value="#{messages['label.resum.publication']} : " /></b>
+    <nxu:dataTable id="dataTable" value="#{selectedSections}" var="proxy"
+      styleClass="dataOutput">
+      <!-- id and selection -->
+      <nxu:column>
+        <nxd:restDocumentLink document="#{proxy.section}" tab="TAB_CONTENT" >
+	      <h:outputText value="#{proxy.section.path}"/>
+        </nxd:restDocumentLink>
+      </nxu:column>
+      <nxu:column>
+        <h:outputText value="#{proxy.proxyVersion}"/>
+      </nxu:column>
+    </nxu:dataTable>
+  </f:subview>
+</div>

@@ -71,16 +71,26 @@
             rendered="#{!provider.sortable}" />
           </h:panelGroup>
         </f:facet>
-      <div class="popupTarget" docRef="#{row.data.ref}">
+        <div class="popupTarget" docRef="#{row.data.ref}">
+        <!-- Download Link -->
+      <nxu:methodResult name="hasFileFacet" value="#{currentDocument.hasSchema('file')}">
+        <h:panelGroup rendered="#{hasFileFacet}">
+          <nxh:outputLink rendered="#{!empty row.data.file}"  value="#{nxd:fileUrl('downloadFile', row.data, 'file:content',
+            row.data.file.filename)}">
+            <nxh:graphicImage value="/icons/download.png" title="#{row.data.file.filename}" rendered="#{! empty row.data.file.filename}" />
+          </nxh:outputLink>
+        </h:panelGroup>
+      </nxu:methodResult>
+        <!-- Title -->
         <nxd:documentLink title="#{nxd:titleOrId(row.data)}"
-          document="#{row.data}" rendered="false"/>
+          document="#{row.data}" rendered="false" />
       <nxd:restDocumentLink document="#{row.data}">
       <span id="title_#{row.data.ref}">
-       <nxh:outputText value="#{nxd:titleOrId(row.data)}"/>
-
+       <nxh:outputText value="#{nxd:titleOrId(row.data)}" title="#{row.data.dc.description}" rendered="#{!empty row.data.dc}"/>
+       <nxh:outputText value="#{nxd:titleOrId(row.data)}" rendered="#{empty row.data.dc}"/>
        </span>
-
       </nxd:restDocumentLink>
+      <!-- Open in a new window -->
       <nxd:restDocumentLink document="#{row.data}" newConversation="true" target="_tab">
         <img src="img/external.gif" style="vertical-align:middle"
             alt="#{messages['permalink.newTab']}"
