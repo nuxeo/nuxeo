@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.ui.web.rest;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -90,9 +91,7 @@ public class FancyURLFilter implements Filter {
                 if (target != null) {
                     dispatcher = httpRequest.getRequestDispatcher(target);
                 } else {
-                    // use a dummy view id: if it's displayed then something
-                    // went wrong
-                    dispatcher = httpRequest.getRequestDispatcher("/generic_error_page.faces");
+                    throw new MalformedURLException("Target Page is not valid: "+ target);
                 }
                 try {
                     // set force encoding in case forward triggers a redirect
