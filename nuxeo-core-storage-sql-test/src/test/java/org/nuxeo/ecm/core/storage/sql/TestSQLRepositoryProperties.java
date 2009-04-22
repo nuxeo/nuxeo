@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.core.repository.jcr.model;
+package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -31,8 +31,6 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.model.Property;
-import org.nuxeo.ecm.core.repository.jcr.testing.CoreJCRConnectorTestConstants;
-import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
@@ -43,48 +41,57 @@ import org.nuxeo.runtime.api.Framework;
  * @author Anahide Tchertchian
  *
  */
+// copied and adapted from TestPropertyModel in nuxeo-core-jcr-connector-test
 @SuppressWarnings("unchecked")
-public class TestPropertyModel extends RepositoryOSGITestCase {
+public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
 
     DocumentModel doc;
+
+    public TestSQLRepositoryProperties(String name) {
+        super(name);
+    }
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
 
-        deployContrib(CoreJCRConnectorTestConstants.TESTS_BUNDLE,
-                "test-core-types.xml");
+        deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
+                "OSGI-INF/test-repo-core-types-contrib.xml");
 
-        openRepository();
-        doc = coreSession.createDocumentModel("TestDocument");
+        openSession();
+        doc = session.createDocumentModel("TestDocument");
         doc.setPathInfo("/", "doc");
-        doc = coreSession.createDocument(doc);
+        doc = session.createDocument(doc);
     }
 
     // NXP-2467
     public void testCreationWithDefaultPrefetch() throws Exception {
-        DocumentModel doc = coreSession.createDocumentModel("TestDocumentWithDefaultPrefetch");
+        DocumentModel doc = session.createDocumentModel("TestDocumentWithDefaultPrefetch");
         doc.setPathInfo("/", "docwithDefaultPrefetch");
-        coreSession.createDocument(doc);
+        session.createDocument(doc);
     }
 
     public void testStringArray() throws Exception {
-        assertNull(doc.getPropertyValue("tp:stringArray"));
+        // this used to be the behavior on JCR
+        // assertNull(doc.getPropertyValue("tp:stringArray"));
+        assertNotNull(doc.getPropertyValue("tp:stringArray"));
         String[] values = { "foo", "bar" };
         doc.setPropertyValue("tp:stringArray", values);
-        doc = coreSession.saveDocument(doc);
+        doc = session.saveDocument(doc);
         assertTrue(Arrays.equals(values,
                 (Object[]) doc.getPropertyValue("tp:stringArray")));
     }
 
     // NXP-2454
     public void testDateArray() throws Exception {
-        assertNull(doc.getPropertyValue("tp:dateArray"));
+        // this used to be the behavior on JCR
+        // assertNull(doc.getPropertyValue("tp:dateArray"));
+        assertNotNull(doc.getPropertyValue("tp:dateArray"));
         Calendar cal = Calendar.getInstance();
         cal.set(2008, 6, 10);
         Calendar[] values = { cal };
         doc.setPropertyValue("tp:dateArray", values);
-        doc = coreSession.saveDocument(doc);
+        doc = session.saveDocument(doc);
         // currently returning long[] instead of Calendar[]
         assertTrue(Arrays.equals(values,
                 (Object[]) doc.getPropertyValue("tp:dateArray")));
@@ -92,10 +99,12 @@ public class TestPropertyModel extends RepositoryOSGITestCase {
 
     // NXP-2454
     public void testIntArray() throws Exception {
-        assertNull(doc.getPropertyValue("tp:intArray"));
+        // this used to be the behavior on JCR
+        // assertNull(doc.getPropertyValue("tp:intArray"));
+        assertNotNull(doc.getPropertyValue("tp:intArray"));
         Long[] values = { 1L, 2L, 3L };
         doc.setPropertyValue("tp:intArray", values);
-        doc = coreSession.saveDocument(doc);
+        doc = session.saveDocument(doc);
         // currently returning long[], maybe this is the wanted behaviour (?)
         assertTrue(Arrays.equals(values,
                 (Object[]) doc.getPropertyValue("tp:intArray")));
@@ -114,7 +123,7 @@ public class TestPropertyModel extends RepositoryOSGITestCase {
         item.put("int", 3L);
         values.add(item);
         doc.setPropertyValue("tp:complexList", values);
-        doc = coreSession.saveDocument(doc);
+        doc = session.saveDocument(doc);
 
         Serializable actual = doc.getPropertyValue("tp:complexList");
         assertTrue(actual instanceof List);
@@ -154,7 +163,7 @@ public class TestPropertyModel extends RepositoryOSGITestCase {
         StringBlob blob = new StringBlob("My content");
         values.add(blob);
         doc.setPropertyValue("tp:fileList", values);
-        doc = coreSession.saveDocument(doc);
+        doc = session.saveDocument(doc);
 
         Serializable actual = doc.getPropertyValue("tp:fileList");
         assertTrue(actual instanceof List);
@@ -177,7 +186,7 @@ public class TestPropertyModel extends RepositoryOSGITestCase {
         item.put("filename", "My filename");
         values.add(item);
         doc.setPropertyValue("tp:fileComplexList", values);
-        doc = coreSession.saveDocument(doc);
+        doc = session.saveDocument(doc);
 
         Object actual = doc.getPropertyValue("tp:fileComplexList");
         assertTrue(actual instanceof List);
@@ -196,19 +205,21 @@ public class TestPropertyModel extends RepositoryOSGITestCase {
     public void testComplexPropertyChain() throws Exception {
         Property p = doc.getProperty("tp:complexChain");
         assertTrue(p.getValue() instanceof Map);
-        assertEquals(0, ((Map) p.getValue()).size());
+        // this used to be the behavior on JCR
+        // assertEquals(0, ((Map) p.getValue()).size());
+        assertEquals(2, ((Map) p.getValue()).size());
         p.setValue("string", "test");
-        Map<String,Serializable> map = new HashMap<String,Serializable>();
+        Map<String, Serializable> map = new HashMap<String, Serializable>();
         map.put("string", "test2");
         p.setValue("complex", map);
 
-        doc = coreSession.saveDocument(doc);
+        doc = session.saveDocument(doc);
 
         p = doc.getProperty("tp:complexChain");
         assertTrue(p.getValue() instanceof Map);
         assertEquals("test", p.getValue("string"));
         assertEquals("test2", p.getValue("complex/string"));
-        p= p.get("complex");
+        p = p.get("complex");
         assertTrue(p.getValue() instanceof Map);
         assertEquals("test2", p.getValue("string"));
     }
