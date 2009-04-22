@@ -108,6 +108,11 @@ public class BinaryTextListener implements PostCommitEventListener {
                 continue;
             }
             DocumentModel doc = session.getDocument(docRef);
+            if (doc.isProxy()) {
+                // proxies don't have any fulltext attached, it's
+                // the target document that carries it
+                continue;
+            }
             List<Blob> blobs = extractor.getBlobs(doc);
             String text = blobsToText(blobs);
             try {
