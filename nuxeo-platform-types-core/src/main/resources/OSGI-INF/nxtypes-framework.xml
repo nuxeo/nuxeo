@@ -30,6 +30,16 @@
 
       - icon: icon path used to represent the document type.
 
+      - icon-expanded: icon used for instance in tree view
+
+      - bigIcon: icon path aimed at rich application
+      
+      - bigIcon-expanded: same as icon-expanded for rich application
+      
+      - category: Category of the document type.
+      
+      - description: Description of the document type.
+
       - label: string title.
 
       - subtypes: list of the allowed sub document types for a given container.
