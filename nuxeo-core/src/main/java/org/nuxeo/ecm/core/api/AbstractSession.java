@@ -130,8 +130,8 @@ public abstract class AbstractSession implements CoreSession,
     protected Map<String, Serializable> sessionContext;
 
     /**
-     * Private access to protected it again direct access since this field is lazy loaded.
-     * You must use {@link #getEventService()} to get the service
+     * Private access to protected it again direct access since this field is
+     * lazy loaded. You must use {@link #getEventService()} to get the service
      */
     private transient EventService eventService;
 
@@ -241,8 +241,8 @@ public abstract class AbstractSession implements CoreSession,
      * be unique in the system)
      *
      * <ul>
-     * <li>A is the repository name (which uniquely identifies the repository
-     * in the system)
+     * <li>A is the repository name (which uniquely identifies the repository in
+     * the system)
      * <li>B is the time of the session creation in milliseconds
      * </ul>
      *
@@ -307,7 +307,8 @@ public abstract class AbstractSession implements CoreSession,
     }
 
     public DocumentEventContext newEventContext(DocumentModel source) {
-        DocumentEventContext ctx = new DocumentEventContext(this, getPrincipal(), source);
+        DocumentEventContext ctx = new DocumentEventContext(this,
+                getPrincipal(), source);
         ctx.setProperty(CoreEventConstants.REPOSITORY_NAME, repositoryName);
         ctx.setProperty(CoreEventConstants.SESSION_ID, sessionId);
         return ctx;
@@ -318,7 +319,7 @@ public abstract class AbstractSession implements CoreSession,
             try {
                 eventService = Framework.getLocalService(EventService.class);
             } catch (Exception e) {
-                throw new Error("Nuxeo is missconfigured - Core Event Service was not found");
+                throw new Error("Core Event Service not found");
             }
         }
         return eventService;
@@ -332,9 +333,11 @@ public abstract class AbstractSession implements CoreSession,
             Map<String, Serializable> options, String category, String comment,
             boolean withLifeCycle) throws ClientException {
 
-        DocumentEventContext ctx = new DocumentEventContext(this, getPrincipal(), source);
+        DocumentEventContext ctx = new DocumentEventContext(this,
+                getPrincipal(), source);
 
-        // compatibility with old code (< 5.2.M4) - import info from old event model
+        // compatibility with old code (< 5.2.M4) - import info from old event
+        // model
         if (options != null) {
             ctx.setProperties(options);
         }
@@ -355,8 +358,10 @@ public abstract class AbstractSession implements CoreSession,
         if (comment != null) {
             ctx.setProperty("comment", comment);
         }
-        ctx.setProperty("category", category == null ?
-                DocumentEventCategories.EVENT_DOCUMENT_CATEGORY : category);
+        ctx.setProperty(
+                "category",
+                category == null ? DocumentEventCategories.EVENT_DOCUMENT_CATEGORY
+                        : category);
         // compat code: mark SAVE event as a commit event
         Event event = ctx.newEvent(eventId);
         if (DocumentEventTypes.SESSION_SAVED.equals(eventId)) {
@@ -364,8 +369,8 @@ public abstract class AbstractSession implements CoreSession,
         }
         // compat code: set isLocal on event if JMS is blocked
         if (source != null) {
-            Boolean blockJms = (Boolean)source.getContextData("BLOCK_JMS_PRODUCING");
-            if (blockJms != null  && blockJms) {
+            Boolean blockJms = (Boolean) source.getContextData("BLOCK_JMS_PRODUCING");
+            if (blockJms != null && blockJms) {
                 event.setLocal(true);
             }
         }
@@ -384,7 +389,8 @@ public abstract class AbstractSession implements CoreSession,
      * @param options additional info to pass to the event
      */
     protected void notifyVersionChange(DocumentModel oldDocument,
-            DocumentModel newDocument, Map<String, Serializable> options) throws ClientException {
+            DocumentModel newDocument, Map<String, Serializable> options)
+            throws ClientException {
         final Map<String, Serializable> info = new HashMap<String, Serializable>();
         if (options != null) {
             info.putAll(options);
@@ -392,8 +398,9 @@ public abstract class AbstractSession implements CoreSession,
         info.put(VersioningChangeNotifier.EVT_INFO_NEW_DOC_KEY, newDocument);
         info.put(VersioningChangeNotifier.EVT_INFO_OLD_DOC_KEY, oldDocument);
         notifyEvent(VersioningChangeNotifier.CORE_EVENT_ID_VERSIONING_CHANGE,
-                newDocument, info, DocumentEventCategories.EVENT_CLIENT_NOTIF_CATEGORY,
-                null, false);
+                newDocument, info,
+                DocumentEventCategories.EVENT_CLIENT_NOTIF_CATEGORY, null,
+                false);
     }
 
     public boolean hasPermission(DocumentRef docRef, String permission)
@@ -679,8 +686,10 @@ public abstract class AbstractSession implements CoreSession,
             DocumentModel docModel = readModel(doc, null);
 
             Map<String, Serializable> options = new HashMap<String, Serializable>();
-            options.put(CoreEventConstants.OLD_ACP, (Serializable)docModel.getACP().clone());
-            options.put(CoreEventConstants.NEW_ACP, (Serializable)newAcp.clone());
+            options.put(CoreEventConstants.OLD_ACP,
+                    (Serializable) docModel.getACP().clone());
+            options.put(CoreEventConstants.NEW_ACP,
+                    (Serializable) newAcp.clone());
 
             notifyEvent(DocumentEventTypes.BEFORE_DOC_SECU_UPDATE, docModel,
                     options, null, null, true);
@@ -747,7 +756,8 @@ public abstract class AbstractSession implements CoreSession,
         Map<String, Serializable> serializableOptions = new HashMap<String, Serializable>();
 
         for (Entry<String, Object> entry : options.entrySet()) {
-            serializableOptions.put(entry.getKey(), (Serializable)entry.getValue());
+            serializableOptions.put(entry.getKey(),
+                    (Serializable) entry.getValue());
         }
         return createDocumentModelFromTypeName(typeName, serializableOptions);
     }
@@ -1543,8 +1553,8 @@ public abstract class AbstractSession implements CoreSession,
             coreService.getVersionRemovalPolicy().removeVersions(getSession(),
                     doc, this);
         } else {
-            notifyEvent(DocumentEventTypes.ABOUT_TO_REMOVE_VERSION, docModel, options,
-                    null, null, true);
+            notifyEvent(DocumentEventTypes.ABOUT_TO_REMOVE_VERSION, docModel,
+                    options, null, null, true);
         }
         doc.remove();
         if (!doc.isVersion()) {
@@ -1790,8 +1800,9 @@ public abstract class AbstractSession implements CoreSession,
                     continue;
                 }
                 if (docVersion.getType() == null) {
-                    throw new IllegalStateException("FAILED TO GET VERSIONS FOR"
-                            + docRef + " with path: " + doc.getPath());
+                    throw new IllegalStateException(
+                            "FAILED TO GET VERSIONS FOR" + docRef
+                                    + " with path: " + doc.getPath());
                 }
                 DocumentModel versionModel = readModel(docVersion, null);
                 versions.add(versionModel);
@@ -1878,7 +1889,8 @@ public abstract class AbstractSession implements CoreSession,
             // add the uuid of the version being restored
             Document docVersion = doc.getVersion(version.getLabel());
             String versionUUID = docVersion.getUUID();
-            options.put(VersioningDocument.RESTORED_VERSION_UUID_KEY, versionUUID);
+            options.put(VersioningDocument.RESTORED_VERSION_UUID_KEY,
+                    versionUUID);
 
             notifyEvent(DocumentEventTypes.BEFORE_DOC_RESTORE, docModel,
                     options, null, null, true);
@@ -2651,15 +2663,17 @@ public abstract class AbstractSession implements CoreSession,
     }
 
     public void startOperation(Operation<?> operation) {
-        //TODO rework operations
-//        CoreEventListenerService service = NXCore.getCoreEventListenerService();
-//        service.fireOperationStarted(operation);
+        // TODO rework operations
+        // CoreEventListenerService service =
+        // NXCore.getCoreEventListenerService();
+        // service.fireOperationStarted(operation);
     }
 
     public void endOperation(Operation<?> operation) {
-        //TODO rework operations
-//        CoreEventListenerService service = NXCore.getCoreEventListenerService();
-//        service.fireOperationTerminated(operation);
+        // TODO rework operations
+        // CoreEventListenerService service =
+        // NXCore.getCoreEventListenerService();
+        // service.fireOperationTerminated(operation);
     }
 
     public Object[] refreshDocument(DocumentRef ref, int refreshFlags,
@@ -2748,10 +2762,9 @@ public abstract class AbstractSession implements CoreSession,
         return result;
 
     }
-    
+
     public String[] getPermissionsToCheck(String permission) {
         return getSecurityService().getPermissionsToCheck(permission);
     }
-    
 
 }
