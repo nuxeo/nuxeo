@@ -490,7 +490,9 @@ h3.documentTypes {
  color:#333;
    
 }
-
+.documentType {
+ margin-bottom:10px; 
+}
 .documentType img {
  float:left;
  margin-right:5px

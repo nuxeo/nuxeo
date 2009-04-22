@@ -29,7 +29,7 @@
 
     <nxu:dataList value="#{typesMap.entrySet}" var="typesList">
       <div>
-      <h3 class="documentType"><h:outputText value="#{messages[typesList.key]}" /></h3>
+      <h3 class="documentTypes"><h:outputText value="#{messages[typesList.key]}" /></h3>
       <nxu:dataList value="#{typesList.value}" var="type">
         <div class="documentType">
           <h:commandLink action="#{documentActions.createDocument(type.id)}">
@@ -45,6 +45,7 @@
         </div>
       </nxu:dataList>
       </div>
+      <div style="clear:both;"></div>
     </nxu:dataList>
   </rich:modalPanel>
 </h:form></div>
