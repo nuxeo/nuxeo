@@ -115,9 +115,9 @@
       <filter-id>create</filter-id>
     </action>
 
-    <action id="newFile" link="create_file" enabled="true"
+    <action id="newFile" link="javascript:Richfaces.showModalPanel('importFile');" enabled="true"
       label="action.new.file" icon="/icons/action_add_file.gif">
-      <category>SUBVIEW_UPPER_LIST</category>
+      <category>SUBVIEW_UPPER_LIST_HREF</category>
       <filter-id>importFile</filter-id>
     </action>
 

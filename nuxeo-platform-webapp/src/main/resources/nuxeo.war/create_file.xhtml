@@ -1,17 +1,27 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<nxthemes:composition xmlns="http://www.w3.org/1999/xhtml"
-  xmlns:ui="http://java.sun.com/jsf/facelets"
+<div xmlns="http://www.w3.org/1999/xhtml"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:rich="http://richfaces.org/rich"
   xmlns:s="http://jboss.com/products/seam/taglib">
 
-  <ui:define name="page title">
-    <h:outputText value="#{messages['title.create.file']}"/>
-  </ui:define>
+  <rich:modalPanel id="importFile" autosized="true"
+    onmaskclick="Richfaces.hideModalPanel('importFile')">
+    
+    
+    <f:facet name="header">
+      <h:outputText value="#{messages['title.create.file']}"/>
+    </f:facet>
 
-  <ui:define name="body">
+    <f:facet name="controls">
+      <h:panelGroup>
+        <h:graphicImage value="/icons/action_delete_mini.gif"
+          id="hideImportFilePanel" />
+        <rich:componentControl for="importFile"
+          attachTo="hideImportFilePanel" operation="hide" event="onclick" />
+      </h:panelGroup>
+    </f:facet>
+    
+    
     <div id="content">
     <h3 onclick="testAddFileFromPlugin()"><h:outputText
         value="#{messages['label.selectFileToImport']}"/></h3>
@@ -27,6 +37,6 @@
           action="#{navigationContext.goBack()}" immediate="true" />
       </h:form>
     </div>
-  </ui:define>
-
-</nxthemes:composition>
+    
+  </rich:modalPanel>
+</div>
