@@ -210,7 +210,7 @@ public class Page extends DocumentObject {
             DocumentModel ws = SiteUtils.getFirstWorkspaceParent(session, doc);
             root.put(PAGE_TITLE, doc.getTitle());
             root.put(PAGE_NAME, SiteUtils.getString(ws, WEBCONATINER_NAME, null));
-            root.put(DESCRIPTION, SiteUtils.getString(doc, "dc:description",
+            root.put(SITE_DESCRIPTION, SiteUtils.getString(ws, WEBCONTAINER_BASELINE,
                     null));
             // add web pages
             List<Object> pages = SiteUtils.getLastModifiedWebPages(

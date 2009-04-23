@@ -39,6 +39,7 @@ public final class SiteConstants {
     public static final String WEBCONTAINER_WELCOMEMEDIA = "webc:welcomeMedia";
     public static final String WEBCONTAINER_LOGO = "webc:logo";
     public static final String WEBCONTAINER_MODERATION = "webcontainer:moderationType";
+    public static final String WEBCONTAINER_BASELINE = "webcontainer:baseline";
     
     public static final String WEBPAGE_THEME = "webp:theme";
     public static final String WEBPAGE_THEMEPAGE = "webp:themePage";
@@ -55,7 +56,7 @@ public final class SiteConstants {
 
     public static final String PAGE_NAME = "name";
 
-    public static final String DESCRIPTION = "description";
+    public static final String SITE_DESCRIPTION = "siteDescription";
 
     public static final String LAST_PUBLISHED_PAGES = "pages";
 

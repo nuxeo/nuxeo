@@ -12,7 +12,7 @@
             ${name}
           </div>
           <div class="pageDescription">
-            ${description} 
+            ${siteDescription} 
           </div>
         </td>
       </tr>

@@ -179,7 +179,7 @@ public class Site extends DocumentObject {
         CoreSession session = getCoreSession();
 
         root.put(PAGE_NAME, SiteUtils.getString(doc, WEBCONATINER_NAME, null));
-        root.put(DESCRIPTION, SiteUtils.getString(doc, "dc:description", null));
+        root.put(SITE_DESCRIPTION, SiteUtils.getString(doc, WEBCONTAINER_BASELINE, null));
         // add web pages
         root.put(LAST_PUBLISHED_PAGES, SiteUtils.getLastModifiedWebPages(
                 session, doc, 5, 50));
