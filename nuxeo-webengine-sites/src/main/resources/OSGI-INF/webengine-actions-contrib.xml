@@ -15,6 +15,14 @@
         </rule>
       </filter>
     </action>
+    
+    <action id="newFile">
+      <filter id="no_file_in_WebPage">
+        <rule grant="false">
+          <type>WebPage</type>
+        </rule>
+      </filter>
+    </action>
 
   </extension>
 </component>
