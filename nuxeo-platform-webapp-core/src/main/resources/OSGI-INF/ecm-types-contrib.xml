@@ -6,9 +6,7 @@
 
   <extension target="org.nuxeo.ecm.platform.types.TypeService" point="types">
 
-    <!-- XXX AT: currently coretype and type *must* have the same name -->
-
-    <type id="Root" coretype="Root">
+    <type id="Root">
       <label>Server Root</label>
       <icon>/icons/folder.gif</icon>
       <bigIcon>/icons/folder_100.gif</bigIcon>
@@ -23,7 +21,7 @@
       </layouts>
     </type>
 
-    <type id="Domain" coretype="Domain">
+    <type id="Domain">
       <label>Domain</label>
       <icon>/icons/domain.gif</icon>
       <bigIcon>/icons/domain.gif</bigIcon>
@@ -44,7 +42,7 @@
       </layouts>
     </type>
 
-    <type id="WorkspaceRoot" coretype="WorkspaceRoot">
+    <type id="WorkspaceRoot">
       <label>WorkspaceRoot</label>
       <icon>/icons/workspace.gif</icon>
       <bigIcon>/icons/workspace_100.gif</bigIcon>
@@ -60,7 +58,7 @@
       </layouts>
     </type>
 
-    <type id="TemplateRoot" coretype="TemplateRoot">
+    <type id="TemplateRoot">
       <label>TemplateRoot</label>
       <icon>/icons/folder_template.gif</icon>
       <bigIcon>/icons/folder_template_100.gif</bigIcon>
@@ -76,7 +74,7 @@
       </layouts>
     </type>
 
-    <type id="Workspace" coretype="Workspace">
+    <type id="Workspace">
       <label>Workspace</label>
       <icon>/icons/workspace.gif</icon>
       <bigIcon>/icons/workspace_100.gif</bigIcon>
@@ -98,7 +96,7 @@
       </layouts>
     </type>
 
-    <type id="SectionRoot" coretype="SectionRoot">
+    <type id="SectionRoot">
       <label>SectionRoot</label>
       <icon>/icons/folder.gif</icon>
       <bigIcon>/icons/folder_100.gif</bigIcon>
@@ -114,7 +112,7 @@
       </layouts>
     </type>
 
-    <type id="Section" coretype="Section">
+    <type id="Section">
       <label>Section</label>
       <icon>/icons/folder.gif</icon>
       <bigIcon>/icons/folder_100.gif</bigIcon>
@@ -130,7 +128,7 @@
       </layouts>
     </type>
 
-    <type id="Folder" coretype="Folder">
+    <type id="Folder">
       <label>Folder</label>
       <icon>/icons/folder.gif</icon>
       <bigIcon>/icons/folder_100.gif</bigIcon>
@@ -148,7 +146,7 @@
       </layouts>
     </type>
 
-    <type id="File" coretype="File">
+    <type id="File">
       <label>File</label>
       <icon>/icons/file.gif</icon>
       <bigIcon>/icons/file_100.gif</bigIcon>
@@ -161,7 +159,7 @@
       </layouts>
     </type>
 
-    <type id="Note" coretype="Note">
+    <type id="Note">
       <label>Note</label>
       <icon>/icons/note.gif</icon>
       <bigIcon>/icons/note_100.gif</bigIcon>
@@ -174,7 +172,7 @@
       </layouts>
     </type>
 
-    <type id="AdvancedSearch" coretype="AdvancedSearch">
+    <type id="AdvancedSearch">
       <label>Advanced Search</label>
       <icon>/icons/folder.gif</icon>
       <bigIcon>/icons/folder_100.gif</bigIcon>
