@@ -81,11 +81,11 @@ xmlns:artifact="urn:nuxeo-artifact" xmlns:nx="urn:nuxeo-build">
       <copy todir="${stagedir}/bundles">
         <artifact:file key="org.nuxeo.theme:nuxeo-theme-core" />
         <artifact:file key="org.nuxeo.theme:nuxeo-theme-fragments" />
-        <artifact:file key="org.nuxeo.theme:nuxeo-theme-webengine" />
+        <artifact:file key="org.nuxeo.ecm.webengine:nuxeo-theme-webengine" />
         <artifact:file key="org.nuxeo.theme:nuxeo-theme-html" />
-        <artifact:file key="org.nuxeo.theme:nuxeo-theme-editor" />
-        <artifact:file key="org.nuxeo.theme:nuxeo-theme-webwidgets" />
-        <artifact:file key="org.nuxeo.theme:nuxeo-theme-webwidgets-ui" />
+        <artifact:file key="org.nuxeo.ecm.platform:nuxeo-theme-editor" />
+        <artifact:file key="org.nuxeo.ecm.platform:nuxeo-theme-webwidgets" />
+        <artifact:file key="org.nuxeo.ecm.platform:nuxeo-theme-webwidgets-ui" />
       </copy>
       <copy todir="${stagedir}/lib">
         <artifact:file key="cssparser:cssparser" />

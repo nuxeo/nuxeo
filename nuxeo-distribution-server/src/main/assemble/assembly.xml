@@ -98,11 +98,11 @@
     <artifacts>
       <artifact group="org.nuxeo.theme" name="nuxeo-theme-core" version="${nuxeo.theme.version}"/>
       <artifact group="org.nuxeo.theme" name="nuxeo-theme-fragments" version="${nuxeo.theme.version}"/>
-      <artifact group="org.nuxeo.theme" name="nuxeo-theme-webengine" version="${nuxeo.theme.version}"/>
       <artifact group="org.nuxeo.theme" name="nuxeo-theme-html" version="${nuxeo.theme.version}"/>
-      <artifact group="org.nuxeo.theme" name="nuxeo-theme-editor" version="${nuxeo.theme.version}"/>
-      <artifact group="org.nuxeo.theme" name="nuxeo-theme-webwidgets" version="${nuxeo.theme.version}"/>
-      <artifact group="org.nuxeo.theme" name="nuxeo-theme-webwidgets-ui" version="${nuxeo.theme.version}"/>
+      <artifact group="org.nuxeo.ecm.webengine" name="nuxeo-theme-webengine" version="${nuxeo.webengine.version}"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-theme-editor" version="${nuxeo.features.version}"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-theme-webwidgets" version="${nuxeo.features.version}"/>
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-theme-webwidgets-ui" version="${nuxeo.features.version}"/>
     </artifacts>
   </artifactSet>
 
