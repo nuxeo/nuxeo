@@ -641,6 +641,9 @@
         <row>
           <widget>url</widget>
         </row>
+        <row>
+          <widget>baseline</widget>
+        </row>
         <!--  Not needed yet        
           <row>
           <widget>theme</widget>
@@ -693,6 +696,16 @@
           <property name="template">
             /widgets/site_url_widget_template.xhtml
           </property>
+        </properties>
+      </widget>
+      
+      <widget name="baseline" type="text">
+        <translated>true</translated>
+        <fields>
+          <field>webc:baseline</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
         </properties>
       </widget>
 

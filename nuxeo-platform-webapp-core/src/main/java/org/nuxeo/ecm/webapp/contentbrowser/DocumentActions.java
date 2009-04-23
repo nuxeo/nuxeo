@@ -111,9 +111,9 @@ public interface DocumentActions extends StatefulBaseLifeCycle,
      * @throws ClientException if currentDocRef is not a valid document
      */
     @WebRemote
-    String checkCurrentDocAndProcessSelectRow(String docRef, String providerName,
-            String listName, Boolean selection, String currentDocRef)
-            throws ClientException;
+    String checkCurrentDocAndProcessSelectRow(String docRef,
+            String providerName, String listName, Boolean selection,
+            String currentDocRef) throws ClientException;
 
     @WebRemote
     String processSelectRow(String docRef, String providerName,
@@ -127,8 +127,9 @@ public interface DocumentActions extends StatefulBaseLifeCycle,
      * @throws ClientException if currentDocRef is not a valid document
      */
     @WebRemote
-    String checkCurrentDocAndProcessSelectPage(String providerName, String listName,
-            Boolean selection, String currentDocRef) throws ClientException;
+    String checkCurrentDocAndProcessSelectPage(String providerName,
+            String listName, Boolean selection, String currentDocRef)
+            throws ClientException;
 
     @WebRemote
     String processSelectPage(String providerName, String listName,
@@ -141,8 +142,9 @@ public interface DocumentActions extends StatefulBaseLifeCycle,
     /**
      * This method is used to test wheter the looged user has enough rights for
      * the unpublish support.
-     * @return - true if the user can unpublish<p>
-     *            - false otherwise
+     *
+     * @return - true if the user can unpublish
+     *         <p> - false otherwise
      * @throws ClientException
      */
     boolean getCanUnpublish();

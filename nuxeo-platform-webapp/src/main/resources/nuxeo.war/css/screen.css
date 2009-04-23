@@ -475,3 +475,36 @@ div.schedule-compact-default td.inactive-day td.header, div.schedule-compact-def
   opacity:0.2;
   z-index:499;
 }
+
+/* modal Panel from RichFaces*/
+.rich-mpnl-mask-div {
+  opacity:0.1;
+}
+
+
+h3.documentTypes {
+ padding:0;
+ margin:0;
+ margin-top:15px;
+ margin-bottom:5px;
+ color:#333;
+   
+}
+.documentType {
+ margin-bottom:10px; 
+}
+.documentType img {
+ float:left;
+ margin-right:5px
+}
+
+.documentType a:link, .documentType a:visted, .documentType a:hover {
+ font-weight:bold;
+ color:#0066CC;
+ text-decoration:none;
+ 
+}
+
+.documentType span {
+  color:#454545;
+}
