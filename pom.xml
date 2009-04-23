@@ -20,6 +20,7 @@
     <module>nuxeo-platform-login-mod_sso</module>
     <module>nuxeo-platform-login-ntlm</module>
     <module>nuxeo-platform-login-portal-sso</module>
+    <module>nuxeo-platform-login-cleartrust</module>
   </modules>
 
 </project>
