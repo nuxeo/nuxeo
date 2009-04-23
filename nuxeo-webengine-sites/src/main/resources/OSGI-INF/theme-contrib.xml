@@ -9,6 +9,22 @@
     <shortcut key="l" target="session" />
   </extension>
 
+  <!-- Perspectives -->
+  <extension target="org.nuxeo.theme.services.ThemeService"
+    point="perspectives">
+
+    <perspective name="view">
+      <title>VIEW mode</title>
+    </perspective>
+    <perspective name="create">
+      <title>CREATE mode</title>
+    </perspective>
+    <perspective name="edit">
+      <title>EDIT mode</title>
+    </perspective>
+
+  </extension>
+  
   <!-- Views -->
   <extension target="org.nuxeo.theme.services.ThemeService"
     point="views">
@@ -19,6 +35,18 @@
     <view name="Minisite Main" template-engine="freemarker">
       <format-type>widget</format-type>
       <template>widgets/main.ftl</template>
+    </view>
+    <view name="Page Main" template-engine="freemarker">
+      <format-type>widget</format-type>
+      <template>widgets/page_main.ftl</template>
+    </view>
+    <view name="Page Create" template-engine="freemarker">
+      <format-type>widget</format-type>
+      <template>widgets/webpage_create.ftl</template>
+    </view>
+    <view name="Page Edit" template-engine="freemarker">
+      <format-type>widget</format-type>
+      <template>widgets/webpage_edit.ftl</template>
     </view>
     <view name="Minisite Last Published" template-engine="freemarker">
       <format-type>widget</format-type>
@@ -52,9 +80,13 @@
       <format-type>widget</format-type>
       <template>widgets/search_results.ftl</template>
     </view>
-    <view name="Minisite Search " template-engine="freemarker">
+    <view name="Minisite Search" template-engine="freemarker">
       <format-type>widget</format-type>
       <template>widgets/search.ftl</template>
+    </view>
+    <view name="Minisite Buttons" template-engine="freemarker">
+      <format-type>widget</format-type>
+      <template>widgets/buttons.ftl</template>
     </view>
   </extension>
 

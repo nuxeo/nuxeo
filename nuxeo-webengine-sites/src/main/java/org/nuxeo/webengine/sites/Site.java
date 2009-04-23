@@ -19,7 +19,21 @@
 
 package org.nuxeo.webengine.sites;
 
-import static org.nuxeo.webengine.utils.SiteConstants.*;
+import static org.nuxeo.webengine.utils.SiteConstants.ALL_WEBPAGES;
+import static org.nuxeo.webengine.utils.SiteConstants.COMMENTS;
+import static org.nuxeo.webengine.utils.SiteConstants.CONTEXTUAL_LINKS;
+import static org.nuxeo.webengine.utils.SiteConstants.CREATE_PERSPECTIVE;
+import static org.nuxeo.webengine.utils.SiteConstants.DESCRIPTION;
+import static org.nuxeo.webengine.utils.SiteConstants.LAST_PUBLISHED_PAGES;
+import static org.nuxeo.webengine.utils.SiteConstants.PAGE_NAME;
+import static org.nuxeo.webengine.utils.SiteConstants.RESULTS;
+import static org.nuxeo.webengine.utils.SiteConstants.VIEW_PERSPECTIVE;
+import static org.nuxeo.webengine.utils.SiteConstants.WEBCONATINER_NAME;
+import static org.nuxeo.webengine.utils.SiteConstants.WEBCONTAINER_WELCOMEMEDIA;
+import static org.nuxeo.webengine.utils.SiteConstants.WEBCONTAINER_WELCOMETEXT;
+import static org.nuxeo.webengine.utils.SiteConstants.WEBPAGE_THEME;
+import static org.nuxeo.webengine.utils.SiteConstants.WEBPAGE_THEMEPAGE;
+import static org.nuxeo.webengine.utils.SiteConstants.WELCOME_TEXT;
 
 import java.util.HashMap;
 import java.util.List;
@@ -49,7 +63,7 @@ import org.nuxeo.webengine.utils.SiteQueriesColection;
 import org.nuxeo.webengine.utils.SiteUtils;
 
 /**
- * Web object implementation corresponding to Site. It is resolved from module 
+ * Web object implementation corresponding to Site. It is resolved from module
  * root web object. It holds the site fragments back methods.
  */
 
@@ -61,6 +75,8 @@ public class Site extends DocumentObject {
 
     private String url;
 
+    private String currentPerspective = VIEW_PERSPECTIVE;
+
     @Override
     public void initialize(Object... args) {
         assert args != null && args.length == 1;
@@ -71,6 +87,7 @@ public class Site extends DocumentObject {
     @GET
     public Object doGet() {
         ctx.getRequest().setAttribute("org.nuxeo.theme.theme", "sites/default");
+
         if (doc == null) {
             return getTemplate("no_site.ftl").arg("url", url);
         }
@@ -79,11 +96,28 @@ public class Site extends DocumentObject {
         String themePage = SiteUtils.getString(doc, WEBPAGE_THEMEPAGE, "workspace");
         ctx.getRequest().setAttribute("org.nuxeo.theme.theme",
                 theme + "/" + themePage);
+
+        ctx.getRequest().setAttribute("org.nuxeo.theme.perspective", currentPerspective);
+
         try {
             return getTemplate("template_default.ftl").args(getSiteArguments());
         } catch (Exception e) {
             throw WebException.wrap(e);
         }
+    }
+
+    @POST
+    @Path("view")
+    public Object view() {
+        currentPerspective = VIEW_PERSPECTIVE;
+        return doGet();
+    }
+
+    @POST
+    @Path("create")
+    public Object create() {
+        currentPerspective = CREATE_PERSPECTIVE;
+        return doGet();
     }
 
     @Path("{page}")
@@ -147,11 +181,11 @@ public class Site extends DocumentObject {
         CoreSession session = getCoreSession();
         Map<String, Object> root = new HashMap<String, Object>();
         try {
-            List<Object> pages = SiteUtils.searchPagesInSite(session ,doc, 
+            List<Object> pages = SiteUtils.searchPagesInSite(session ,doc,
                     searchParam, 50);
             root.put(RESULTS, pages);
             root.put(CONTEXTUAL_LINKS, SiteUtils.getContextualLinks(session, doc));
-            root.put(WELCOME_TEXT, SiteUtils.getString(doc, 
+            root.put(WELCOME_TEXT, SiteUtils.getString(doc,
                     WEBCONTAINER_WELCOMETEXT, null));
             root.put(PAGE_NAME, SiteUtils.getString(doc, WEBCONATINER_NAME, null));
             return getTemplate("template_default.ftl").args(root);
@@ -196,7 +230,7 @@ public class Site extends DocumentObject {
         WebContext context = WebEngine.getActiveContext();
         CoreSession session = context.getCoreSession();
         try {
-            DocumentModelList list = 
+            DocumentModelList list =
                 SiteQueriesColection.querySitesByUrl(session, url);
             if (list.size() != 0) {
                 return list.get(0);

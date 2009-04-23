@@ -1,3 +1,5 @@
+<#macro pageMain>
+
 <#assign isRichtext = Document.webpage.isRichtext /> 
 <div>
   <#if isRichtext == true>
@@ -6,3 +8,6 @@
     <@wiki>${Document.webpage.content}</@wiki> 
   </#if>
 </div>
+
+
+</#macro>

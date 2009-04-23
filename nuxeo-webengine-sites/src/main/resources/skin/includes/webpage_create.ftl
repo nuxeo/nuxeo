@@ -1,10 +1,16 @@
 <#macro webPageCreate>
-<!-- markit up -->
-<link rel="stylesheet" type="text/css"
-  href="${skinPath}/script/markitup/skins/markitup/style.css" />
-<link rel="stylesheet" type="text/css"
-  href="${skinPath}/script/markitup/sets/wiki/style.css" />
+<!-- markitup -->
+<script src="${skinPath}/script/markitup/jquery.markitup.pack.js"></script>
+<script src="${skinPath}/script/markitup/sets/wiki/set.js"></script>
+<link rel="stylesheet" type="text/css" href="${skinPath}/script/markitup/skins/markitup/style.css" />
+<link rel="stylesheet" type="text/css" href="${skinPath}/script/markitup/sets/wiki/style.css" />
 <!-- end markitup -->
+
+<!-- tinyMCE -->
+<script type="text/javascript" src="../../../${skinPath}/script/tiny_mce/tiny_mce.js"></script>
+<script type="text/javascript" src="../../../${skinPath}/script/tiny_mce/langs/en.js"></script>
+<script type="text/javascript" src="../../../${skinPath}/script/tiny_mce/themes/simple/editor_template.js"></script>
+<!-- end tinyMCE -->
 
 <script type="text/javascript">
 	function onSelectRadio(obj) {
@@ -59,7 +65,7 @@
 	}
 </script>
 
-<form method="POST" onsubmit="return isTitleSet();"
+<form name="pageCreate" method="POST" onsubmit="return isTitleSet();"
   action="${This.path}/createWebPage" accept-charset="utf-8">
 <table class="createWebPage">
   <tbody>
@@ -100,7 +106,10 @@
       </td>
     </tr>
     <tr>
-      <td colspan="2"><input type="submit" value="Save" /></td>
+      <td colspan="2">
+        <input type="submit" value="${Context.getMessage("action_save")}" />&nbsp;
+        <input type="button" value="${Context.getMessage("action_cancel")}" onclick="document.pageCreate.action='${This.path}/view'; document.pageCreate.submit();" />
+      </td>
     </tr>
   </tbody>
 </table>

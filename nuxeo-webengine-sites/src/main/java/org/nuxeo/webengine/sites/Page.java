@@ -58,17 +58,40 @@ public class Page extends DocumentObject {
 
     private static final Log log = LogFactory.getLog(Page.class);
 
+    private String currentPerspective = VIEW_PERSPECTIVE;
+
     @Override
     @GET
     public Object doGet() {
         ctx.getRequest().setAttribute("org.nuxeo.theme.theme", "sites/page");
+        ctx.getRequest().setAttribute("org.nuxeo.theme.perspective", currentPerspective);
         return ((Template) super.doGet()).args(getPageArguments());
+    }
+
+    @POST
+    @Path("view")
+    public Object view() {
+        currentPerspective = VIEW_PERSPECTIVE;
+        return doGet();
+    }
+
+    @POST
+    @Path("create")
+    public Object create() {
+        currentPerspective = CREATE_PERSPECTIVE;
+        return doGet();
+    }
+
+    @POST
+    @Path("edit")
+    public Object edit() {
+        currentPerspective = EDIT_PERSPECTIVE;
+        return doGet();
     }
 
     @Override
     @POST
     public Response doPost() {
-//        String name = ctx.getForm().getString("comment");
         return null;
     }
 
@@ -131,7 +154,7 @@ public class Page extends DocumentObject {
         Map<String, Object> root = new HashMap<String, Object>();
         try {
             DocumentModel ws = SiteUtils.getFirstWorkspaceParent(session, doc);
-            List<Object> pages = SiteUtils.searchPagesInSite(session, ws, 
+            List<Object> pages = SiteUtils.searchPagesInSite(session, ws,
                     searchParam, 50);
             root.put(RESULTS, pages);
             root.put(CONTEXTUAL_LINKS, SiteUtils.getContextualLinks(session, ws));
@@ -221,7 +244,7 @@ public class Page extends DocumentObject {
 
             // add all webpages that are directly connected to an webpage
             root.put(ALL_WEBPAGES, SiteUtils.getAllWebPages(session, doc));
-            MimetypeRegistry mimetypeService = 
+            MimetypeRegistry mimetypeService =
                 Framework.getService(MimetypeRegistry.class);
             root.put("mimetypeService", mimetypeService);
         } catch (Exception e) {
