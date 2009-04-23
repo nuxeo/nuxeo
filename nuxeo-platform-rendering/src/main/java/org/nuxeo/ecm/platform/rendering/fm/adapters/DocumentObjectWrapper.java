@@ -45,16 +45,15 @@ public class DocumentObjectWrapper extends DefaultObjectWrapper {
         this.engine = engine;
     }
 
-
     @Override
     public final TemplateModel wrap(Object obj) throws TemplateModelException {
         if (obj == null) {
             return null;
         }
         if (obj instanceof DocumentModel) {
-            return new DocumentTemplate(this, (DocumentModel)obj);
+            return new DocumentTemplate(this, (DocumentModel) obj);
         } else if (obj instanceof Property) {
-            Property p = (Property)obj;
+            Property p = (Property) obj;
             if (p.isScalar()) {
                 return new PropertyWrapper(this).wrap(p);
             } else if (p.isList()) {
@@ -63,18 +62,19 @@ public class DocumentObjectWrapper extends DefaultObjectWrapper {
                 } else if (obj instanceof ArrayProperty) {
                     Object value;
                     try {
-                        value = ((ArrayProperty)obj).getValue();
+                        value = ((ArrayProperty) obj).getValue();
                     } catch (PropertyException e) {
-                        throw new IllegalArgumentException("Cannot get array from array property " + obj);
+                        throw new IllegalArgumentException(
+                                "Cannot get array from array property " + obj);
                     }
                     if (value == null) {
                         return TemplateModel.NOTHING;
                     }
-                    return new ArrayModel(value,this);
+                    return new ArrayModel(value, this);
                 }
             } else if (p.getClass() == BlobProperty.class) {
                 try {
-                    Blob blob = (Blob)p.getValue();
+                    Blob blob = (Blob) p.getValue();
                     if (blob == null) {
                         return TemplateModel.NOTHING;
                     } else {
@@ -84,7 +84,7 @@ public class DocumentObjectWrapper extends DefaultObjectWrapper {
                     throw new TemplateModelException(e);
                 }
             } else {
-                return new ComplexPropertyTemplate(this, (Property)obj);
+                return new ComplexPropertyTemplate(this, (Property) obj);
             }
         }
         return super.wrap(obj);

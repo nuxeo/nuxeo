@@ -34,25 +34,30 @@ import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 
 /**
- * Base class to build views for Document oriented contexts (contexts that are bound to a document)
+ * Base class to build views for Document oriented contexts (contexts that are
+ * bound to a document)
  * <p>
- * Note that this class cannot be used with contexts for which the {@link RenderingContext#getDocument()}
- * method is returning null.
+ * Note that this class cannot be used with contexts for which the
+ * {@link RenderingContext#getDocument()} method is returning null.
  * <p>
- * This implementation ensure that the context argument is never used so it can be used outside
- * the scope of a rendering context to get a view over the document.
+ * This implementation ensure that the context argument is never used so it can
+ * be used outside the scope of a rendering context to get a view over the
+ * document.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public class DefaultDocumentView implements DocumentView {
 
-    // Must be returned by get() method when the key is unknown since the caller should be able to
-    // treat differently a key hit that returned null from a key that is not known by this view
+    // Must be returned by get() method when the key is unknown since the caller
+    // should be able to
+    // treat differently a key hit that returned null from a key that is not
+    // known by this view
     public static final Object UNKNOWN = new Object();
 
     public interface Field {
         String getName();
+
         Object getValue(DocumentModel doc) throws Exception;
     }
 
@@ -376,7 +381,8 @@ public class DefaultDocumentView implements DocumentView {
         }
 
         public Object getValue(DocumentModel doc) throws Exception {
-            CoreSession session = CoreInstance.getInstance().getSession(doc.getSessionId());
+            CoreSession session = CoreInstance.getInstance().getSession(
+                    doc.getSessionId());
             return session.getParentDocument(doc.getRef());
         }
     };
@@ -387,7 +393,8 @@ public class DefaultDocumentView implements DocumentView {
         }
 
         public Object getValue(DocumentModel doc) throws Exception {
-            CoreSession session = CoreInstance.getInstance().getSession(doc.getSessionId());
+            CoreSession session = CoreInstance.getInstance().getSession(
+                    doc.getSessionId());
             return session.getChildren(doc.getRef());
         }
     };
@@ -408,7 +415,8 @@ public class DefaultDocumentView implements DocumentView {
         }
 
         public Object getValue(DocumentModel doc) throws Exception {
-            return CoreInstance.getInstance().getSession(doc.getSessionId()).getVersions(doc.getRef());
+            return CoreInstance.getInstance().getSession(doc.getSessionId()).getVersions(
+                    doc.getRef());
         }
     };
 
@@ -418,7 +426,8 @@ public class DefaultDocumentView implements DocumentView {
         }
 
         public Object getValue(DocumentModel doc) throws Exception {
-            return CoreInstance.getInstance().getSession(doc.getSessionId()).getProxies(doc.getRef(), null);
+            return CoreInstance.getInstance().getSession(doc.getSessionId()).getProxies(
+                    doc.getRef(), null);
         }
     };
 
@@ -442,12 +451,12 @@ public class DefaultDocumentView implements DocumentView {
         }
     };
 
-
     /**
-     * The singleton instance that should be used by clients.
-     * Warn that this static field must be defined at the end of the class after any other field class
-     * since it will try to register these fields (otherwise fields will not be defined yet at the time of
-     * the initialization of that static member
+     * The singleton instance that should be used by clients. Warn that this
+     * static field must be defined at the end of the class after any other
+     * field class since it will try to register these fields (otherwise fields
+     * will not be defined yet at the time of the initialization of that static
+     * member
      */
     public static final DefaultDocumentView DEFAULT = new DefaultDocumentView();
 

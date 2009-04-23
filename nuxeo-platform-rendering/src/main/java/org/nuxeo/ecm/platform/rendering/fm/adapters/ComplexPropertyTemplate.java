@@ -35,11 +35,13 @@ import freemarker.template.TemplateModelException;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class ComplexPropertyTemplate extends PropertyWrapper implements TemplateHashModelEx, AdapterTemplateModel {
+public class ComplexPropertyTemplate extends PropertyWrapper implements
+        TemplateHashModelEx, AdapterTemplateModel {
 
     protected final Property property;
 
-    public ComplexPropertyTemplate(DocumentObjectWrapper wrapper, Property property) {
+    public ComplexPropertyTemplate(DocumentObjectWrapper wrapper,
+            Property property) {
         super(wrapper);
         this.property = property;
     }
@@ -54,7 +56,7 @@ public class ComplexPropertyTemplate extends PropertyWrapper implements Template
         for (Property p : property.getChildren()) {
             list.add(p.getName());
         }
-        return (TemplateCollectionModel)wrapper.wrap(list);
+        return (TemplateCollectionModel) wrapper.wrap(list);
     }
 
     public int size() throws TemplateModelException {
@@ -68,9 +70,10 @@ public class ComplexPropertyTemplate extends PropertyWrapper implements Template
                 Object value = p.getValue();
                 list.add(value == null ? "" : value);
             }
-            return (TemplateCollectionModel)wrapper.wrap(list);
+            return (TemplateCollectionModel) wrapper.wrap(list);
         } catch (PropertyException e) {
-            throw new TemplateModelException("Failed to adapt complex property values", e);
+            throw new TemplateModelException(
+                    "Failed to adapt complex property values", e);
         }
     }
 

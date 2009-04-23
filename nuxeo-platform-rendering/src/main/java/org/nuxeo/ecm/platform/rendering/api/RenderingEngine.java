@@ -43,6 +43,7 @@ public interface RenderingEngine {
      *
      * @throws RenderingException
      */
-    void render(String template, Object input, Writer writer) throws RenderingException;
+    void render(String template, Object input, Writer writer)
+            throws RenderingException;
 
 }

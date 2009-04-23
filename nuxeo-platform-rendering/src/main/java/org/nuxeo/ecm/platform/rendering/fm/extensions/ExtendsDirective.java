@@ -45,26 +45,25 @@ public class ExtendsDirective implements TemplateDirectiveModel {
             throw new TemplateModelException("Expecting a body");
         }
 
-
         String src = null;
-        SimpleScalar scalar = (SimpleScalar)params.get("src");
+        SimpleScalar scalar = (SimpleScalar) params.get("src");
         if (scalar != null) {
             src = scalar.getAsString();
         } else {
             throw new TemplateModelException("src attribute is not defined");
         }
 
-        BlockWriter writer = (BlockWriter)env.getOut();
+        BlockWriter writer = (BlockWriter) env.getOut();
         writer.suppressOutput = true;
         body.render(writer);
         writer.suppressOutput = false;
 
         // now we should go into the base template and render it
-        //String oldPath = writer.reg.path;
-        //writer.reg.path = src;
+        // String oldPath = writer.reg.path;
+        // writer.reg.path = src;
         Template temp = env.getConfiguration().getTemplate(src);
         env.include(temp);
-        //writer.reg.path = oldPath;
+        // writer.reg.path = oldPath;
     }
 
 }

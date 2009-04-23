@@ -37,10 +37,11 @@ import freemarker.template.TemplateModelException;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class BlobTemplate extends PropertyWrapper implements TemplateHashModelEx, AdapterTemplateModel {
+public class BlobTemplate extends PropertyWrapper implements
+        TemplateHashModelEx, AdapterTemplateModel {
 
-    protected static final String[] keys = {
-            "filename", "data", "length", "mimeType", "encoding", "digest"};
+    protected static final String[] keys = { "filename", "data", "length",
+            "mimeType", "encoding", "digest" };
 
     protected final Blob blob;
 
@@ -55,7 +56,7 @@ public class BlobTemplate extends PropertyWrapper implements TemplateHashModelEx
     }
 
     public TemplateCollectionModel keys() throws TemplateModelException {
-        return (TemplateCollectionModel)wrapper.wrap(keys);
+        return (TemplateCollectionModel) wrapper.wrap(keys);
     }
 
     public int size() throws TemplateModelException {
@@ -80,9 +81,10 @@ public class BlobTemplate extends PropertyWrapper implements TemplateHashModelEx
                 list.add("");
                 list.add("");
             }
-            return (TemplateCollectionModel)wrapper.wrap(list);
-        } catch (Exception  e) {
-            throw new TemplateModelException("Failed to adapt complex property values", e);
+            return (TemplateCollectionModel) wrapper.wrap(list);
+        } catch (Exception e) {
+            throw new TemplateModelException(
+                    "Failed to adapt complex property values", e);
         }
     }
 

@@ -33,8 +33,8 @@ import freemarker.template.TemplateMethodModelEx;
 import freemarker.template.TemplateModelException;
 
 /**
- * Message method that differe from the standard one as its second argument is
- * the local.
+ * Message method that differs from the standard one as its second argument is
+ * the locale.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * @author <a href="mailto:stan@nuxeo.com">Sun Seng David TAN</a>

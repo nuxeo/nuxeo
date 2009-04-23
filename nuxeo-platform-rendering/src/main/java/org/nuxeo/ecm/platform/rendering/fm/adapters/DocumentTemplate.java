@@ -41,11 +41,12 @@ import freemarker.template.TemplateModelException;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class DocumentTemplate implements TemplateHashModelEx, AdapterTemplateModel {
+public class DocumentTemplate implements TemplateHashModelEx,
+        AdapterTemplateModel {
 
     protected final ObjectWrapper wrapper;
-    protected final DocumentModel doc;
 
+    protected final DocumentModel doc;
 
     public DocumentTemplate(ObjectWrapper wrapper, DocumentModel doc) {
         this.doc = doc;
@@ -67,8 +68,9 @@ public class DocumentTemplate implements TemplateHashModelEx, AdapterTemplateMod
             if (value != DefaultDocumentView.UNKNOWN) {
                 return wrapper.wrap(value);
             }
-        } catch(Exception e) {
-            throw new TemplateModelException("Failed to get document field: "+key, e);
+        } catch (Exception e) {
+            throw new TemplateModelException("Failed to get document field: "
+                    + key, e);
         }
         return null;
     }
@@ -89,7 +91,7 @@ public class DocumentTemplate implements TemplateHashModelEx, AdapterTemplateMod
     }
 
     public TemplateCollectionModel keys() throws TemplateModelException {
-        return (TemplateCollectionModel)wrapper.wrap(getRawKeys());
+        return (TemplateCollectionModel) wrapper.wrap(getRawKeys());
     }
 
     public Collection<Object> getRawValues() throws TemplateModelException {
@@ -105,14 +107,12 @@ public class DocumentTemplate implements TemplateHashModelEx, AdapterTemplateMod
         return values;
     }
 
-
     public TemplateCollectionModel values() throws TemplateModelException {
-        return (TemplateCollectionModel)wrapper.wrap(getRawValues());
+        return (TemplateCollectionModel) wrapper.wrap(getRawValues());
     }
 
     public int size() throws TemplateModelException {
         return DefaultDocumentView.DEFAULT.size(null);
     }
-
 
 }

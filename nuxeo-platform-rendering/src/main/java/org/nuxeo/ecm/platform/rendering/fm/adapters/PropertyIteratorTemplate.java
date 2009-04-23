@@ -32,11 +32,13 @@ import freemarker.template.TemplateModelIterator;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class PropertyIteratorTemplate extends PropertyWrapper implements TemplateModelIterator, AdapterTemplateModel {
+public class PropertyIteratorTemplate extends PropertyWrapper implements
+        TemplateModelIterator, AdapterTemplateModel {
 
     protected final Iterator<Property> iterator;
 
-    public PropertyIteratorTemplate(DocumentObjectWrapper wrapper, Iterator<Property> iterator) {
+    public PropertyIteratorTemplate(DocumentObjectWrapper wrapper,
+            Iterator<Property> iterator) {
         super(wrapper);
         this.iterator = iterator;
     }
@@ -45,7 +47,6 @@ public class PropertyIteratorTemplate extends PropertyWrapper implements Templat
     public Object getAdaptedObject(Class hint) {
         return iterator;
     }
-
 
     public boolean hasNext() throws TemplateModelException {
         return iterator.hasNext();

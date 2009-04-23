@@ -40,19 +40,19 @@ public class BlockDirective implements TemplateDirectiveModel {
             TemplateDirectiveBody body) throws TemplateException, IOException {
 
         String name = null;
-        SimpleScalar scalar = (SimpleScalar)params.get("name");
+        SimpleScalar scalar = (SimpleScalar) params.get("name");
         if (scalar != null) {
             name = scalar.getAsString();
         }
 
-        scalar = (SimpleScalar)params.get("ifBlockDefined");
+        scalar = (SimpleScalar) params.get("ifBlockDefined");
         String ifBlockDefined = null;
         if (scalar != null) {
             ifBlockDefined = scalar.getAsString();
         }
 
         String page = env.getTemplate().getName();
-        BlockWriter writer = (BlockWriter)env.getOut();
+        BlockWriter writer = (BlockWriter) env.getOut();
         BlockWriterRegistry reg = writer.getRegistry();
         BlockWriter bw = new BlockWriter(page, name, reg);
         bw.ifBlockDefined = ifBlockDefined;

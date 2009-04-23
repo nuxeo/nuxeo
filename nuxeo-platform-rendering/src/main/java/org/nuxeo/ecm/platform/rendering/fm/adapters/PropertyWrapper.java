@@ -59,13 +59,16 @@ public class PropertyWrapper {
                 return wrapper.wrap(value);
             } else if (property.isList()) {
                 if (property.isContainer()) {
-                    return new ListPropertyTemplate(wrapper, (ListProperty) property);
+                    return new ListPropertyTemplate(wrapper,
+                            (ListProperty) property);
                 } else {
                     Object value;
                     try {
                         value = property.getValue();
                     } catch (PropertyException e) {
-                        throw new IllegalArgumentException("Cannot get array from array property " + property);
+                        throw new IllegalArgumentException(
+                                "Cannot get array from array property "
+                                        + property);
                     }
                     if (value == null) {
                         return TemplateModel.NOTHING;
@@ -73,7 +76,7 @@ public class PropertyWrapper {
                     return new ArrayModel(value, wrapper);
                 }
             } else if (property.getClass() == BlobProperty.class) {
-                return new BlobTemplate(wrapper, (Blob)property.getValue());
+                return new BlobTemplate(wrapper, (Blob) property.getValue());
             } else {
                 return new ComplexPropertyTemplate(wrapper, property);
             }

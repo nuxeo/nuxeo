@@ -39,9 +39,10 @@ import freemarker.cache.URLTemplateLoader;
 public class ResourceTemplateLoader implements TemplateLoader {
 
     protected ResourceLocator locator;
-    protected final MyURLTemplateLoader urlLoader;
-    protected final MyFileTemplateLoader fileLoader;
 
+    protected final MyURLTemplateLoader urlLoader;
+
+    protected final MyFileTemplateLoader fileLoader;
 
     public ResourceTemplateLoader(ResourceLocator locator) {
         this.locator = locator;
@@ -66,7 +67,8 @@ public class ResourceTemplateLoader implements TemplateLoader {
     }
 
     public Object findTemplateSource(String name) throws IOException {
-        if (name.startsWith("fs://"))  { // hack for absolute paths - see FreemarkerEngine#render()
+        if (name.startsWith("fs://")) { // hack for absolute paths - see
+                                        // FreemarkerEngine#render()
             name = name.substring(5);
         } else if (name.contains(":/")) {
             return urlLoader.findTemplateSource(name);
@@ -95,7 +97,6 @@ public class ResourceTemplateLoader implements TemplateLoader {
         }
     }
 
-
     class MyURLTemplateLoader extends URLTemplateLoader {
         @Override
         protected URL getURL(String arg0) {
@@ -112,7 +113,7 @@ public class ResourceTemplateLoader implements TemplateLoader {
 
     class MyFileTemplateLoader implements TemplateLoader {
         public void closeTemplateSource(Object templateSource)
-        throws IOException {
+                throws IOException {
             // do nothing
         }
 
@@ -132,23 +133,21 @@ public class ResourceTemplateLoader implements TemplateLoader {
 
         public long getLastModified(Object templateSource) {
             try {
-                return ((File)templateSource).lastModified();
+                return ((File) templateSource).lastModified();
             } catch (ClassCastException e) {
-                throw new IllegalArgumentException(
-                        "templateSource is a: " +
-                        templateSource.getClass().getName());
+                throw new IllegalArgumentException("templateSource is a: "
+                        + templateSource.getClass().getName());
             }
         }
 
         public Reader getReader(Object templateSource, String encoding)
-        throws IOException {
+                throws IOException {
             try {
                 return new InputStreamReader(new FileInputStream(
-                        (File)templateSource), encoding);
+                        (File) templateSource), encoding);
             } catch (ClassCastException e) {
-                throw new IllegalArgumentException(
-                        "templateSource is a: " +
-                        templateSource.getClass().getName());
+                throw new IllegalArgumentException("templateSource is a: "
+                        + templateSource.getClass().getName());
             }
         }
 
