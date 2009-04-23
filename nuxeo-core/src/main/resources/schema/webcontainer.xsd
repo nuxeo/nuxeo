@@ -19,6 +19,7 @@
   <xs:element name="email" type="xs:string"/>
 
   <xs:element name="welcomeText" type="xs:string"/>
+  <xs:element name="baseline" type="xs:string" />
   <xs:element name="welcomeMedia" type="nxs:content"/>
   <xs:element name="logo" type="nxs:content"/>
 
