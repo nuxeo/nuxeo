@@ -1,4 +1,10 @@
 
+Purpose
+-------
+
+This plugin makes it possible to use RSA ClearTrust authentication for Nuxeo.
+
+
 sample-cleartrust-authenticator-config.xml
 ------------------------------------------
 
