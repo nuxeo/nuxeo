@@ -91,7 +91,9 @@ public class FancyURLFilter implements Filter {
                 if (target != null) {
                     dispatcher = httpRequest.getRequestDispatcher(target);
                 } else {
-                    throw new MalformedURLException("Target Page is not valid: "+ target);
+                    // Use a dummy dispactcher if the target is not needed.
+                    // This comes handy for instance for nxfile url
+                    dispatcher = httpRequest.getRequestDispatcher("/malformed_url_error_page.faces");
                 }
                 try {
                     // set force encoding in case forward triggers a redirect
