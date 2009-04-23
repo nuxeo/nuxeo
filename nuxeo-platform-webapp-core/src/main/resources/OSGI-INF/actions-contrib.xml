@@ -175,6 +175,9 @@
           <facet>Folderish</facet>
           <condition>#{deleteActions.trashManagementEnabled}</condition>
         </rule>
+        <rule grant="false">
+          <filter-id>inSection</filter-id>
+        </rule>
       </filter>
     </action>
 
@@ -189,6 +192,7 @@
       <category>VIEW_ACTION_LIST</category>
       <filter-id>edit</filter-id>
       <filter-id>mutable_document</filter-id>
+      <filter-id>folder</filter-id>
     </action>
 
     <action id="TAB_WORKSPACE_EDIT" link="/incl/tabs/document_edit.xhtml"
@@ -686,6 +690,8 @@
         <type>Domain</type>
         <type>WorkspaceRoot</type>
         <type>Workspace</type>
+        <type>SectionRoot</type>
+        <type>TemplateRoot</type>
       </rule>
       <rule grant="true">
         <permission>Write</permission>
@@ -766,14 +772,13 @@
     
     <filter id="manage">
       <rule grant="true">
-        <permission>Write</permission>
+        <permission>Manage everything</permission>
       </rule>
       <rule grant="false">
         <type>Root</type>
         <type>Domain</type>
         <type>WorkspaceRoot</type>
         <type>SectionRoot</type>
-        <type>Section</type>
       </rule>
     </filter>
 
@@ -815,6 +820,12 @@
 
     <filter id="not_folder">
       <rule grant="false">
+        <facet>Folderish</facet>
+      </rule>
+    </filter>
+    
+    <filter id="folder">
+      <rule grant="true">
         <facet>Folderish</facet>
       </rule>
     </filter>
