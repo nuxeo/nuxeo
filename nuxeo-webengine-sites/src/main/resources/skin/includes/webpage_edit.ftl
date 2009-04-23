@@ -1,8 +1,19 @@
+<#macro webPageEdit>
+
+<!-- markitup -->
+<script src="${skinPath}/script/markitup/jquery.markitup.pack.js"></script>
+<script src="${skinPath}/script/markitup/sets/wiki/set.js"></script>
 <link rel="stylesheet" type="text/css" href="${skinPath}/script/markitup/skins/markitup/style.css" />
 <link rel="stylesheet" type="text/css" href="${skinPath}/script/markitup/sets/wiki/style.css" />
 <!-- end markitup -->
 
-<form method="POST" action="${This.path}/modifyWebPage" accept-charset="utf-8">
+<!-- tinyMCE -->
+<script type="text/javascript" src="../../../${skinPath}/script/tiny_mce/tiny_mce.js"></script>
+<script type="text/javascript" src="../../../${skinPath}/script/tiny_mce/langs/en.js"></script>
+<script type="text/javascript" src="../../../${skinPath}/script/tiny_mce/themes/simple/editor_template.js"></script>
+<!-- end tinyMCE -->
+
+<form name="pageEdit" method="POST" action="${This.path}/modifyWebPage" accept-charset="utf-8">
   <table class="modifyWebPage">
     <tbody>
       <tr>
@@ -35,7 +46,10 @@
         </td>
       </tr>
       <tr>
-        <td colspan="2"><input type="submit" value="${Context.getMessage("label.page.save")}"/></td>
+        <td colspan="2">
+          <input type="submit" value="${Context.getMessage("action_save")}" /> &nbsp;
+          <input type="button" value="${Context.getMessage("action_cancel")}" onclick="document.pageEdit.action='${This.path}/view'; document.pageEdit.submit();" />
+        </td>
       </tr>
     </tbody>
   </table>  
@@ -75,3 +89,5 @@ if ('${Document.webpage.pushtomenu}' == 'true') {
 }
 </script>
 
+
+</#macro>

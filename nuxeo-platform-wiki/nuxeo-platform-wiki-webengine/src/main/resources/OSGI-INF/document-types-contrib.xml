@@ -11,6 +11,9 @@
       <label>BlogSite</label>
       <icon>/icons/folder.gif</icon>
       <icon-expanded>/icons/folder_open.gif</icon-expanded>
+      <bigIcon>/icons/folder_100.gif</bigIcon>
+      <category>WebObject</category>
+      <description>Blog.description</description>
       <default-view>view_documents</default-view>
       <subtypes>
         <type>BlogPost</type>
@@ -25,6 +28,9 @@
     <type id="BlogPost" coretype="BlogPost">
       <label>Blog Entry</label>
       <icon>/icons/file.gif</icon>
+      <bigIcon>/icons/file_100.gif</bigIcon>
+      <category>WebObject</category>
+      <description>BlogPost.description</description>
       <!-- dummy default infos as an example -->
       <default-view>view_documents</default-view>
       <!-- new layout config -->
@@ -38,6 +44,9 @@
       <label>Wiki Site</label>
       <icon>/icons/folder.gif</icon>
       <icon-expanded>/icons/folder_open.gif</icon-expanded>
+      <bigIcon>/icons/folder_100.gif</bigIcon>
+      <category>Collaborative</category>
+      <description>Wiki.description</description>
       <default-view>view_documents</default-view>
       <subtypes>
         <type>WikiPage</type>
@@ -52,6 +61,9 @@
     <type id="WikiPage" coretype="WikiPage">
       <label>Wiki Page</label>
       <icon>/icons/file.gif</icon>
+      <bigIcon>/icons/folder_100.gif</bigIcon>
+      <category>Collaborative</category>
+      <description>WikiPage.description</description>
       <!-- dummy default infos as an example -->
       <default-view>view_documents</default-view>
       <!-- new layout config -->
