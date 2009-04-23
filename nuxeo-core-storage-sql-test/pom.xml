@@ -56,12 +56,18 @@
       <artifactId>nuxeo-core-storage-sql</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-storage-sql-extensions</artifactId>
+    </dependency>
+    <dependency>
       <groupId>commons-collections</groupId>
       <artifactId>commons-collections</artifactId>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>commons-beanutils</groupId>
       <artifactId>commons-beanutils</artifactId>
+      <scope>compile</scope>
     </dependency>
 
     <!-- TODO: Use the dep from the central repo -->
@@ -69,37 +75,34 @@
       <groupId>javax.ressource</groupId>
       <artifactId>jca-api</artifactId>
       <version>1.5</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
     </dependency>
 
     <dependency>
        <groupId>org.hibernate</groupId>
        <artifactId>hibernate</artifactId>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <!-- Needed by H2 fulltext -->
       <groupId>org.apache.lucene</groupId>
       <artifactId>lucene-core</artifactId>
-      <scope>provided</scope>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.lucene</groupId>
+      <artifactId>lucene-analyzers</artifactId>
+      <scope>compile</scope>
     </dependency>
 
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-query-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-storage-sql-extensions</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.lucene</groupId>
-      <artifactId>lucene-analyzers</artifactId>
       <scope>test</scope>
     </dependency>
 
