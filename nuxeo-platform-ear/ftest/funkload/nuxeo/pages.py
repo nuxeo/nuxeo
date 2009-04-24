@@ -93,9 +93,9 @@ class BasePage:
         fl.assert_('LoginFailed=true' not in fl.getLastUrl(),
                    'Login failed for %s:%s' % (user, password))
         fl.post(fl.server_url + "/view_documents.faces", params=[
-            ['j_id360', 'j_id360'],
-            ['j_id360:j_id362', 'en_US'],
-            ['j_id360:j_id364', 'Changer'],
+            ['j_id403', 'j_id403'],
+            ['j_id403:j_id405', 'en_US'],
+            ['j_id403:j_id407', 'Changer'],
             ['javax.faces.ViewState', fl.getLastJsfState()]],
             description="Change locale to en_US")
         fl.assert_(fl.listHref(content_pattern="Log out"),
@@ -326,10 +326,10 @@ class FolderPage(BasePage):
         fl = self.fl
 
         fl.post(fl.server_url + "/view_documents.faces", params=[
-            ['j_id198', 'j_id198'],
+            ['j_id233', 'j_id233'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['j_id198:j_id199:j_id201:0:j_id202',
-             'j_id198:j_id199:j_id201:0:j_id202']],
+            ['j_id233:j_id234:j_id236:0:j_id237',
+             'j_id233:j_id234:j_id236:0:j_id237']],
             description="Create workspace form")
         fl.assert_('nxw_title' in fl.getBody(),
                    "Workspace creation form not found.")
@@ -348,7 +348,7 @@ class FolderPage(BasePage):
             ['document_create:nxl_webcontainer:nxw_welcomeMedia:choice', 'none'],
             ['document_create:nxl_webcontainer:nxw_welcomeMedia:upload', Upload("")],
             ['document_create:nxl_webcontainer:nxw_moderationType:nxw_moderationType_field0', 'aposteriori'],
-            ['document_create:j_id275', 'Create'],
+            ['document_create:j_id282', 'Create'],
             ['javax.faces.ViewState', fl.getLastJsfState()]],
             description="Create workspace submit")
         fl.assert_('Workspace saved' in fl.getBody())
@@ -357,17 +357,12 @@ class FolderPage(BasePage):
     def createFolder(self, title, description):
         fl = self.fl
         fl.post(fl.server_url + "/view_documents.faces", params=[
-            ['j_id198', 'j_id198'],
+            ['j_id199', 'j_id199'],
+            ['j_id199:selectDocTypePanelOpenedState', ''],
             ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['j_id198:j_id199:j_id201:0:j_id202', 'j_id198:j_id199:j_id201:0:j_id202']],
-            description="Create folder: New document")
-        fl.assert_('j_id170' in fl.getBody(),
-                   "Document types selection not found.")
-        fl.post(fl.server_url + "/select_document_type.faces", params=[
-            ['j_id170', 'j_id170'],
-            ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['j_id170:j_id171:3:j_id173', 'j_id170:j_id171:3:j_id173']],
-            description="Create folder: Select folder type")
+            ['j_id199:j_id204:2:j_id208:1:j_id212',
+             'j_id199:j_id204:2:j_id208:1:j_id212']],
+            description="Create folder: New Folder")
         fl.assert_('document_create' in fl.getBody(),
                    "Folder form not found")
         fl.post(fl.server_url + "/create_document.faces", params=[
@@ -375,7 +370,7 @@ class FolderPage(BasePage):
             ['document_create:nxl_heading:nxw_title', title],
             ['document_create:nxl_heading:nxw_description', description],
             #['parentDocumentPath', '/default-domain/workspaces/flnxtest-page-workspace.1237992970017'],
-            ['document_create:j_id191', 'Create'],
+            ['document_create:button_create', 'Create'],
             ['javax.faces.ViewState', fl.getLastJsfState()]],
             description="Create folder: Submit")
         fl.assert_('Folder saved' in fl.getBody())
@@ -384,17 +379,12 @@ class FolderPage(BasePage):
     def createFile(self, title, description, file_path=None):
         fl = self.fl
         fl.post(fl.server_url + "/view_documents.faces", params=[
-            ['j_id198', 'j_id198'],
+            ['j_id199', 'j_id199'],
+            ['j_id199:selectDocTypePanelOpenedState', ''],
             ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['j_id198:j_id199:j_id201:0:j_id202', 'j_id198:j_id199:j_id201:0:j_id202']],
+            ['j_id199:j_id204:0:j_id208:1:j_id212',
+             'j_id199:j_id204:0:j_id208:1:j_id212']],
             description="Create file: New document")
-        fl.assert_('j_id170' in fl.getBody(),
-                   "Document types selection not found.")
-        fl.post(fl.server_url + "/select_document_type.faces", params=[
-            ['j_id170', 'j_id170'],
-            ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['j_id170:j_id171:1:j_id173', 'j_id170:j_id171:1:j_id173']],
-            description="Create file: Select file type")
         fl.assert_('document_create' in fl.getBody(),
                    "File form not found")
         fl.post(fl.server_url + "/create_document.faces", params=[
@@ -405,7 +395,7 @@ class FolderPage(BasePage):
              file_path and 'upload' or 'none'],
             ['document_create:nxl_file:nxw_file:nxw_file_file:upload',
              Upload(file_path or '')],
-            ['document_create:j_id200', 'Create'],
+            ['document_create:button_create', 'Create'],
             ['javax.faces.ViewState', fl.getLastJsfState()]],
             description="Create file: Sumbit")
         fl.assert_('File saved' in fl.getBody())
@@ -439,9 +429,9 @@ class FolderPage(BasePage):
         state = fl.getLastJsfState()
         self.selectItem(title)
         fl.post(fl.server_url + "/view_documents.faces", params=[
-             ['CHILDREN_DOCUMENT_LIST', 'CHILDREN_DOCUMENT_LIST'],
-            ['CHILDREN_DOCUMENT_LIST:dataTable:0:j_id228', 'on'],
-            ['CHILDREN_DOCUMENT_LIST:j_id308:1:j_id310', 'Delete'],
+            ['CHILDREN_DOCUMENT_LIST', 'CHILDREN_DOCUMENT_LIST'],
+            ['CHILDREN_DOCUMENT_LIST:dataTable:0:j_id271', 'on'],
+            ['CHILDREN_DOCUMENT_LIST:j_id351:1:j_id353', 'Delete'],
             ['javax.faces.ViewState', state]],
             description='Delete document "%s"' % title)
         fl.assert_('Document(s) deleted' in fl.getBody())
