@@ -660,7 +660,11 @@ public class SQLInfo {
 
         protected void newPrimitiveField(String key, PropertyType type) {
             // TODO find a way to put these exceptions in model
-            // note: VERSION_VERSIONABLE_KEY is not a foreign key!
+            if (tableName.equals(model.VERSION_TABLE_NAME)
+                    && key.equals(model.VERSION_VERSIONABLE_KEY)) {
+                newMainKey(key); // not a foreign key
+                return;
+            }
             if (tableName.equals(model.mainTableName)) {
                 if (key.equals(model.MAIN_BASE_VERSION_KEY)) {
                     newMainKey(key); // not a foreign key
