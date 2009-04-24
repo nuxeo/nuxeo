@@ -19,9 +19,23 @@
 
 package org.nuxeo.ecm.platform.layout.service;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+
+import org.dom4j.Document;
+import org.dom4j.io.OutputFormat;
+import org.dom4j.io.XMLWriter;
+import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 import org.nuxeo.ecm.platform.forms.layout.descriptors.FieldDescriptor;
 import org.nuxeo.ecm.platform.forms.layout.facelets.ValueExpressionHelper;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
@@ -50,6 +64,67 @@ public class TestHelpers extends NXRuntimeTestCase {
         expression = ValueExpressionHelper.createExpressionString("document",
                 fieldDef);
         assertEquals("#{document.dublincore.contributors[0].name}", expression);
+    }
+
+    public static String getTestFile(String filePath)
+            throws UnsupportedEncodingException {
+        return FileUtils.getResourcePathFromContext(filePath);
+    }
+
+    protected byte[] getGeneratedInputStream(Document doc) throws Exception {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        OutputFormat format = OutputFormat.createPrettyPrint();
+        XMLWriter writer = null;
+        try {
+            writer = new XMLWriter(out, format);
+            writer.write(doc.getDocument());
+
+        } finally {
+            if (writer != null) {
+                writer.close();
+            }
+        }
+
+        byte[] res = out.toByteArray();
+
+        // for debug
+        File file = File.createTempFile("test", ".xml");
+        FileOutputStream fileOut = new FileOutputStream(file);
+        fileOut.write(res);
+
+        return res;
+    }
+
+    public void testLayoutAutomaticGeneration() throws Exception {
+        SchemaManager sm = Framework.getService(SchemaManager.class);
+        Document doc = LayoutAutomaticGeneration.generateLayoutOutput(sm,
+                "dublincore", false);
+
+        byte[] generated = getGeneratedInputStream(doc);
+
+        InputStream expected = new FileInputStream(
+                getTestFile("layouts-generated-contrib.xml"));
+
+        InputStream generatedStream = new ByteArrayInputStream(generated);
+
+        assertEquals(FileUtils.read(expected).replaceAll("\r?\n", ""),
+                FileUtils.read(generatedStream).replaceAll("\r?\n", ""));
+    }
+
+    public void testLayoutAutomaticGenerationWithLabel() throws Exception {
+        SchemaManager sm = Framework.getService(SchemaManager.class);
+        Document doc = LayoutAutomaticGeneration.generateLayoutOutput(sm,
+                "dublincore", true);
+
+        byte[] generated = getGeneratedInputStream(doc);
+
+        InputStream expected = new FileInputStream(
+                getTestFile("layouts-generated-with-labels-contrib.xml"));
+
+        InputStream generatedStream = new ByteArrayInputStream(generated);
+
+        assertEquals(FileUtils.read(expected).replaceAll("\r?\n", ""),
+                FileUtils.read(generatedStream).replaceAll("\r?\n", ""));
     }
 
 }

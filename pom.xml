@@ -142,6 +142,11 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-theme-jsf</artifactId>
+        <version>${nuxeo.services.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-ui-web-compat</artifactId>
         <version>${nuxeo.jsf.version}</version>
       </dependency>
@@ -209,31 +214,6 @@
       <dependency>
         <groupId>org.nuxeo.theme</groupId>
         <artifactId>nuxeo-theme-html</artifactId>
-        <version>${nuxeo.theme.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.theme</groupId>
-        <artifactId>nuxeo-theme-jsf</artifactId>
-        <version>${nuxeo.theme.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.theme</groupId>
-        <artifactId>nuxeo-theme-webengine</artifactId>
-        <version>${nuxeo.theme.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.theme</groupId>
-        <artifactId>nuxeo-theme-editor</artifactId>
-        <version>${nuxeo.theme.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.theme</groupId>
-        <artifactId>nuxeo-theme-webwidgets</artifactId>
-        <version>${nuxeo.theme.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.theme</groupId>
-        <artifactId>nuxeo-theme-webwidgets-ui</artifactId>
         <version>${nuxeo.theme.version}</version>
       </dependency>
       <dependency>

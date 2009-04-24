@@ -25,7 +25,9 @@ import static org.jboss.seam.ScopeType.EVENT;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -55,10 +57,12 @@ public class TypesTool implements Serializable {
 
     private static final Log log = LogFactory.getLog(TypesTool.class);
 
+    private static String DEFAULT_CATEGORY = "misc";
+
     @In
     private transient TypeManager typeManager;
 
-    private List<Type> typesList;
+    private Map<String,List<Type>> typesMap;
 
     private Type selectedType;
 
@@ -69,7 +73,7 @@ public class TypesTool implements Serializable {
             EventNames.DOCUMENT_SELECTION_CHANGED }, create = false, inject=false)
     @BypassInterceptors
     public void resetTypesList() {
-        typesList = null;
+        typesMap = null;
     }
 
     /**
@@ -84,20 +88,25 @@ public class TypesTool implements Serializable {
         if (model != null) {
             Type docType = typeManager.getType(model.getType());
             if (docType != null) {
-                List<Type> allowed = new ArrayList<Type>();
+                String key;
+                typesMap = new HashMap<String, List<Type>>();
                 for (String typeName : docType.getAllowedSubTypes()) {
                     Type subType = typeManager.getType(typeName);
                     if (subType != null) {
-                        allowed.add(subType);
+                        key = subType.getCategory();
+                        if (key == null) key = DEFAULT_CATEGORY;
+                        if (!typesMap.containsKey(key)){
+                            typesMap.put(key, new ArrayList<Type>());
+                        }
+                        typesMap.get(key).add(subType);
                     }
                 }
-                typesList = allowed;
                 set = true;
             }
         }
         if (!set) {
             // set an empty list
-            typesList = new ArrayList<Type>();
+            typesMap = new HashMap<String, List<Type>>();
         }
     }
 
@@ -130,25 +139,25 @@ public class TypesTool implements Serializable {
      * @param type
      */
     public void setSelectedType(Type type) {
-        if (typesList == null) {
+        if (typesMap == null) {
             populateTypesList();
         }
         selectedType = type;
     }
 
-    @Factory(value = "typesList", scope = EVENT)
-    public List<Type> getTypesList() {
+    @Factory(value = "typesMap", scope = EVENT)
+    public Map<String,List<Type>>  getTypesList() {
         // XXX : should cache per currentDocument type
-        if (typesList == null) {
+        if (typesMap == null) {
             // cache the list of allowed subtypes
             populateTypesList();
         }
         selectedType = null;
-        return typesList;
+        return typesMap;
     }
 
-    public void setTypesList(List<Type> typesList) {
-        this.typesList = typesList;
+    public void setTypesList(Map<String,List<Type>>  typesList) {
+        this.typesMap = typesList;
     }
 
     public Type getType(String typeName) {
