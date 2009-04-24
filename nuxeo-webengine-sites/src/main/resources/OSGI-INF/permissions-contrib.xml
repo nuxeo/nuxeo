@@ -5,12 +5,6 @@
 
   <extension target="org.nuxeo.ecm.core.security.SecurityService"
     point="permissions">
-
-    <permission name="Comment">
-      <include>WriteLifeCycle</include>
-    </permission>
-    
-    <permission name="Moderate" />
     
     <permission name="Write">
       <include>AddChildren</include>
