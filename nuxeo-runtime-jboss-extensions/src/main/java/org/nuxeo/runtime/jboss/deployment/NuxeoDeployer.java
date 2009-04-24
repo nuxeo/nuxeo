@@ -46,6 +46,7 @@ import org.nuxeo.runtime.jboss.deployment.preprocessor.ContainerDescriptor;
 import org.nuxeo.runtime.jboss.deployment.preprocessor.DeploymentPreprocessor;
 import org.nuxeo.runtime.jboss.deployment.preprocessor.FragmentDescriptor;
 import org.nuxeo.runtime.jboss.deployment.preprocessor.FragmentRegistry;
+import org.nuxeo.runtime.jboss.deployment.preprocessor.SeamHotReloadPreprocessor;
 
 /**
  * @author Bogdan Stefanescu
@@ -155,6 +156,12 @@ public class NuxeoDeployer extends EARDeployer implements NuxeoDeployerMBean {
             url = url.replace(" ", "%20");
             File directory = new File(new URI(url));
             loadSystemProperties(directory);
+
+            // create the preprocessor for Seam Hot Reload
+            SeamHotReloadPreprocessor seamHRP = new SeamHotReloadPreprocessor(directory, log);
+            // clean up working directory
+            seamHRP.initSpecialDirectory();
+
             processor = new DeploymentPreprocessor(directory);
             // initialize
             processor.init();
@@ -200,6 +207,12 @@ public class NuxeoDeployer extends EARDeployer implements NuxeoDeployerMBean {
                 DeploymentSorter sorter = new DeploymentSorter(root);
                 sorter.addFirst(firstDeployments);
                 sorter.addLast(lastDeployments);
+
+                // handle Seam HotReload here
+                if (seamHRP.isSeamHotReloadEnabled()) {
+                	seamHRP.doProcess(subDeployments);
+                }
+
                 Collections.sort(subDeployments, sorter);
 
                 if (log.isInfoEnabled()) {
