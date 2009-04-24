@@ -24,6 +24,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.collections.ScopeType;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
@@ -34,6 +35,7 @@ import org.nuxeo.ecm.core.api.impl.VersionModelImpl;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 
@@ -484,15 +486,23 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         assertEquals("princ1", acl.get(0).getUsername());
 
         // remove live document (create a proxy so the version stays)
-        session.createProxy(folder.getRef(), file.getRef(), vm, true);
+        DocumentModel proxy = session.createProxy(folder.getRef(), file.getRef(), vm, true);
         session.save();
         session.removeDocument(file.getRef());
+        session.save();
         // recheck security on version
         try {
             session.getACP(version.getRef());
             fail();
         } catch (DocumentSecurityException e) {
             // ok
+        }
+        // check proxy still accessible (in another session)
+        CoreSession session2 = openSessionAs(SecurityConstants.ADMINISTRATOR);
+        try {
+            session2.getDocument(proxy.getRef());
+        } finally {
+            closeSession(session2);
         }
     }
 
