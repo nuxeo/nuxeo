@@ -35,36 +35,41 @@ public class NuxeoSeamHotReloadRestTrigger extends BaseStatelessNuxeoRestlet {
 	@Override
 	protected void doHandleStatelessRequest(Request req, Response res) {
 
-		long t0 = System.currentTimeMillis();
-		Set<String> reloadedComponents = SeamHotReloadHelper.reloadSeamComponents(getHttpRequest(req));
-		long t1 = System.currentTimeMillis();
-
 		StringBuffer sb = new StringBuffer();
 
-		if (reloadedComponents!=null) {
-			sb.append("Reloaded ");
-			sb.append(reloadedComponents.size());
-			sb.append(" Seam components in ");
-			sb.append(t1-t0);
-			sb.append("ms");
-			sb.append("\n");
-
-			for (String cn : reloadedComponents) {
-				sb.append("  ");
-				sb.append(cn);
-				sb.append("\n");
-			}
+		if (!SeamHotReloadHelper.isHotReloadEnabled()) {
+			sb.append("This operation is not permited");
 		}
 		else {
-			Set<String> reloadableComponents = SeamHotReloadHelper.getHotDeployableComponents(getHttpRequest(req));
-			if (reloadableComponents==null || reloadableComponents.size()==0) {
-				sb.append("Nothing to reload");
-			} else {
-				sb.append(reloadableComponents.size());
-				sb.append(" reloadable Seam Components\n");
-				sb.append("But nothing to reload (classes are up to date)");
-			}
 
+			long t0 = System.currentTimeMillis();
+			Set<String> reloadedComponents = SeamHotReloadHelper.reloadSeamComponents(getHttpRequest(req));
+			long t1 = System.currentTimeMillis();
+
+			if (reloadedComponents!=null) {
+				sb.append("Reloaded ");
+				sb.append(reloadedComponents.size());
+				sb.append(" Seam components in ");
+				sb.append(t1-t0);
+				sb.append("ms");
+				sb.append("\n");
+
+				for (String cn : reloadedComponents) {
+					sb.append("  ");
+					sb.append(cn);
+					sb.append("\n");
+				}
+			}
+			else {
+				Set<String> reloadableComponents = SeamHotReloadHelper.getHotDeployableComponents(getHttpRequest(req));
+				if (reloadableComponents==null || reloadableComponents.size()==0) {
+					sb.append("Nothing to reload");
+				} else {
+					sb.append(reloadableComponents.size());
+					sb.append(" reloadable Seam Components\n");
+					sb.append("But nothing to reload (classes are up to date)");
+				}
+			}
 		}
 		res.setEntity(sb.toString(), MediaType.TEXT_PLAIN);
     }

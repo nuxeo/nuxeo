@@ -47,6 +47,14 @@ public class SeamHotReloadHelper {
 
 	private static final Log log = LogFactory.getLog(SeamHotReloadHelper.class);
 
+	public static final String SEAM_HOT_RELOAD_SYSTEM_PROP = "org.nuxeo.seam.debug";
+
+
+	public static boolean isHotReloadEnabled() {
+		String sysProp = System.getProperty(SEAM_HOT_RELOAD_SYSTEM_PROP, "false");
+		return "true".equalsIgnoreCase(sysProp);
+	}
+
 	public static Set<String> reloadSeamComponents(HttpServletRequest httpRequest) {
 
 		ServletContext servletContext = httpRequest.getSession().getServletContext();

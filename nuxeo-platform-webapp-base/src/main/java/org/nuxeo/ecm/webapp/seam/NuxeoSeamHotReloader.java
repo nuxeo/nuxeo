@@ -56,13 +56,12 @@ public class NuxeoSeamHotReloader implements Serializable {
 	private static final Log log = LogFactory
 			.getLog(NuxeoSeamHotReloader.class);
 
-	public static final String SEAM_HOT_RELOAD_SYSTEM_PROP = "org.nuxeo.seam.debug";
+
 
 
 	@Factory(value="seamHotReloadIsEnabled", scope=ScopeType.APPLICATION)
 	public boolean isHotReloadEnabled() {
-		String sysProp = System.getProperty(SEAM_HOT_RELOAD_SYSTEM_PROP, "false");
-		return "true".equalsIgnoreCase(sysProp);
+		return SeamHotReloadHelper.isHotReloadEnabled();
 	}
 
 	public String doReload() {
