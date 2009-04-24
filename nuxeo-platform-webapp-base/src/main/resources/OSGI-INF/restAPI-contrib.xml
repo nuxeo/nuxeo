@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.webapp.seam.debug.restAPI.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.ui.web.restAPI.service.PluggableRestletService"
+      point="restlets">
+
+    <restletPlugin
+        name="seamReloadTrigger"
+        class="org.nuxeo.ecm.webapp.seam.NuxeoSeamHotReloadRestTrigger"
+        enabled="true"
+        useSeam="false">
+      <urlPatterns>
+        <urlPattern>/seamReload</urlPattern>
+      </urlPatterns>
+    </restletPlugin>
+
+  </extension>
+</component>
