@@ -65,6 +65,7 @@ public class NuxeoApp {
     public NuxeoApp(File home, ClassLoader loader) {
         this.loader = loader;
         env = new Environment(home);
+        Environment.setDefault(env);
     }
 
     public Environment getEnvironment() {
