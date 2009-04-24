@@ -16,7 +16,7 @@ endif
 
 
 # all test except bench
-all: start rest page test-nuxeo stop
+all: start rest page test-nuxeo webengine stop
 
 start:
 	-mkdir -p $(REPORT) $(LOG_HOME)
@@ -36,6 +36,10 @@ rest:
 
 page:
 	fl-run-test -v --simple-fetch test_pages.py $(FLOPS)
+
+webengine:
+	fl-run-test -v --simple-fetch test_webengine.py $(FLOPS)
+
 
 # test nuxeo ep
 init:

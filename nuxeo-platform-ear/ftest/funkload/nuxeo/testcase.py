@@ -18,7 +18,6 @@
 """
 """
 import unittest
-import random
 import re
 from funkload.Lipsum import Lipsum
 from funkload.FunkLoadTestCase import FunkLoadTestCase
