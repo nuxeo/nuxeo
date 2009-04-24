@@ -14,6 +14,7 @@
  * Contributors:
  *     Bogdan Stefanescu
  *     Florent Guillaume
+ *     Thierry Delprat
  */
 
 package org.nuxeo.runtime.jboss.deployment;
