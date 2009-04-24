@@ -65,7 +65,11 @@ public class Page extends DocumentObject {
     public Object doGet() {
         ctx.getRequest().setAttribute("org.nuxeo.theme.theme", "sites/page");
         ctx.getRequest().setAttribute("org.nuxeo.theme.perspective", currentPerspective);
-        return ((Template) super.doGet()).args(getPageArguments());
+        try {
+            return getTemplate("template_default.ftl").args(getPageArguments());
+        } catch (Exception e) {
+            throw WebException.wrap(e);
+        }
     }
 
     @POST
