@@ -33,7 +33,7 @@ import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.security.SecurityManager;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public interface Session {
@@ -53,9 +53,11 @@ public interface Session {
     /**
      * The unique ID of the user session on this repository.
      * <p>
-     * The ID is unique in the application (possible deployed on multiple machines).
+     * The ID is unique in the application (possible deployed on multiple
+     * machines).
      * <p>
-     * This ID is normally passed by the session creator through the session context.
+     * This ID is normally passed by the session creator through the session
+     * context.
      *
      * @return the user session id
      */
@@ -81,7 +83,8 @@ public interface Session {
      * @param query the SQL like query
      * @return the query
      */
-    Query createQuery(String query, Query.Type qType, String... params) throws QueryException;
+    Query createQuery(String query, Query.Type qType, String... params)
+            throws QueryException;
 
     /**
      * Gets the type manager used by the repository.
@@ -173,7 +176,8 @@ public interface Session {
      * @param name
      * @throws DocumentException if any error occurs
      */
-    Document copy(Document src, Document dst, String name) throws DocumentException;
+    Document copy(Document src, Document dst, String name)
+            throws DocumentException;
 
     /**
      * Moves the source document to the given folder.
@@ -186,13 +190,14 @@ public interface Session {
      *            should be preserved
      * @throws DocumentException if any error occurs
      */
-    Document move(Document src, Document dst, String name) throws DocumentException;
+    Document move(Document src, Document dst, String name)
+            throws DocumentException;
 
     /**
      * Gets a blob stream using the given key.
      * <p>
-     * The implementation may use anything as the key.
-     * It may use the property path or a unique ID of the property.
+     * The implementation may use anything as the key. It may use the property
+     * path or a unique ID of the property.
      * <p>
      * This method can be used to lazily fetch blob content.
      *
@@ -203,7 +208,8 @@ public interface Session {
     InputStream getDataStream(String key) throws DocumentException;
 
     /**
-     * Creates a proxy to the given version of the given document inside the given parent.
+     * Creates a proxy to the given version of the given document inside the
+     * given parent.
      *
      * @param parent the parent
      * @param doc the document
@@ -227,6 +233,7 @@ public interface Session {
      * @throws DocumentException if any error occurs
      * @since 1.4.1 for the case where doc is a proxy
      */
-    Collection<Document> getProxies(Document doc, Document folder) throws DocumentException;
+    Collection<Document> getProxies(Document doc, Document folder)
+            throws DocumentException;
 
 }
