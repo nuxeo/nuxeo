@@ -37,9 +37,10 @@ public class SQLDocumentProxy extends SQLDocumentVersion implements
     private final SQLDocumentVersion version;
 
     protected SQLDocumentProxy(Node proxyNode, Node versionNode,
-            ComplexType type, SQLSession session) throws DocumentException {
-        super(versionNode, type, session);
-        version = new SQLDocumentVersion(versionNode, type, session);
+            ComplexType type, SQLSession session, boolean readonly)
+            throws DocumentException {
+        super(versionNode, type, session, readonly);
+        version = new SQLDocumentVersion(versionNode, type, session, true);
         this.proxyNode = proxyNode;
     }
 

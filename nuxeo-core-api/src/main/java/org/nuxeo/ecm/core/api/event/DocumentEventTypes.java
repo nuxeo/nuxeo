@@ -44,6 +44,8 @@ public final class DocumentEventTypes {
      */
     public static final String DOCUMENT_CREATED = "documentCreated";
 
+    public static final String DOCUMENT_IMPORTED = "documentImported";
+
     @Deprecated
     public static final String ABOUT_TO_INITIALIZE = "aboutToInitialize";
 

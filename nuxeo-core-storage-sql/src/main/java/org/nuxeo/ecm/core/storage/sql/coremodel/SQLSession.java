@@ -20,18 +20,22 @@ package org.nuxeo.ecm.core.storage.sql.coremodel;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.resource.ResourceException;
 import javax.transaction.xa.XAResource;
 
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentException;
+import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.ecm.core.model.NoSuchPropertyException;
@@ -268,18 +272,37 @@ public class SQLSession implements Session {
         }
     }
 
+    public Document getVersion(String versionableId, VersionModel versionModel)
+            throws DocumentException {
+        try {
+            Serializable vid = session.getModel().unHackStringId(versionableId);
+            Node versionNode = session.getVersionByLabel(vid,
+                    versionModel.getLabel());
+            if (versionNode == null) {
+                return null;
+            }
+            versionModel.setDescription(versionNode.getSimpleProperty(
+                    Model.VERSION_DESCRIPTION_PROP).getString());
+            versionModel.setCreated((Calendar) versionNode.getSimpleProperty(
+                    Model.VERSION_CREATED_PROP).getValue());
+            return newDocument(versionNode);
+        } catch (StorageException e) {
+            throw new DocumentException(e);
+        }
+    }
+
     public Document createProxyForVersion(Document parent, Document document,
             String label) throws DocumentException {
         try {
-            Node versionableNode = ((SQLDocument) document).getHierarchyNode();
-            Node versionNode = session.getVersionByLabel(versionableNode, label);
+            Serializable versionableId = ((SQLDocument) document).getHierarchyNode().getId();
+            Node versionNode = session.getVersionByLabel(versionableId, label);
             if (versionNode == null) {
                 throw new DocumentException("Unknown version: " + label);
             }
             Node parentNode = ((SQLDocument) parent).getHierarchyNode();
             String name = findFreeName(parentNode, document.getName());
-            Node proxy = session.addProxy(versionNode.getId(),
-                    versionableNode.getId(), parentNode, name, null);
+            Node proxy = session.addProxy(versionNode.getId(), versionableId,
+                    parentNode, name, null);
             return newDocument(proxy);
         } catch (StorageException e) {
             throw new DocumentException(e);
@@ -308,6 +331,60 @@ public class SQLSession implements Session {
     public InputStream getDataStream(String key) throws DocumentException {
         // XXX TODO
         throw new UnsupportedOperationException();
+    }
+
+    // returned document is r/w even if a version or a proxy, so that normal
+    // props can be set
+    public Document importDocument(String uuid, Document parent, String name,
+            String typeName, Map<String, Serializable> properties)
+            throws DocumentException {
+        assert Model.PROXY_TYPE == CoreSession.IMPORT_PROXY_TYPE;
+        boolean isProxy = typeName.equals(Model.PROXY_TYPE);
+        Map<String, Serializable> props = new HashMap<String, Serializable>();
+        Node parentNode;
+        Long pos = null; // TODO pos
+        if (!isProxy) {
+            // version & live document
+            props.put(Model.MISC_LIFECYCLE_POLICY_PROP,
+                    properties.get(CoreSession.IMPORT_LIFECYCLE_POLICY));
+            props.put(Model.MISC_LIFECYCLE_STATE_PROP,
+                    properties.get(CoreSession.IMPORT_LIFECYCLE_STATE));
+            props.put(Model.LOCK_PROP, properties.get(CoreSession.IMPORT_LOCK));
+            props.put(Model.MISC_DIRTY_PROP,
+                    properties.get(CoreSession.IMPORT_DIRTY));
+            props.put(Model.MAIN_MAJOR_VERSION_PROP,
+                    properties.get(CoreSession.IMPORT_VERSION_MAJOR));
+            props.put(Model.MAIN_MINOR_VERSION_PROP,
+                    properties.get(CoreSession.IMPORT_VERSION_MINOR));
+        }
+        if (parent == null) {
+            // version
+            parentNode = null;
+            props.put(Model.VERSION_VERSIONABLE_PROP,
+                    properties.get(CoreSession.IMPORT_VERSION_VERSIONABLE_ID));
+            props.put(Model.VERSION_CREATED_PROP,
+                    properties.get(CoreSession.IMPORT_VERSION_CREATED));
+            props.put(Model.VERSION_LABEL_PROP,
+                    properties.get(CoreSession.IMPORT_VERSION_LABEL));
+            props.put(Model.VERSION_DESCRIPTION_PROP,
+                    properties.get(CoreSession.IMPORT_VERSION_DESCRIPTION));
+        } else {
+            parentNode = ((SQLDocument) parent).getHierarchyNode();
+            if (isProxy) {
+                // proxy
+                props.put(Model.PROXY_TARGET_PROP,
+                        properties.get(CoreSession.IMPORT_PROXY_TARGET_ID));
+                props.put(Model.PROXY_VERSIONABLE_PROP,
+                        properties.get(CoreSession.IMPORT_PROXY_VERSIONABLE_ID));
+            } else {
+                // live document
+                props.put(Model.MAIN_BASE_VERSION_PROP,
+                        properties.get(CoreSession.IMPORT_BASE_VERSION_ID));
+                props.put(Model.MAIN_CHECKED_IN_PROP,
+                        properties.get(CoreSession.IMPORT_CHECKED_IN));
+            }
+        }
+        return importChild(uuid, parentNode, name, pos, typeName, props);
     }
 
     public Query createQuery(String query, Query.Type qType, String... params)
@@ -387,6 +464,12 @@ public class SQLSession implements Session {
      */
 
     private SQLDocument newDocument(Node node) throws DocumentException {
+        return newDocument(node, true);
+    }
+
+    // "readonly" meaningful for proxies and versions, used for import
+    private SQLDocument newDocument(Node node, boolean readonly)
+            throws DocumentException {
         if (node == null) {
             // root's parent
             return null;
@@ -414,9 +497,9 @@ public class SQLSession implements Session {
         }
 
         if (node.isProxy()) {
-            return new SQLDocumentProxy(node, versionNode, type, this);
+            return new SQLDocumentProxy(node, versionNode, type, this, readonly);
         } else if (node.isVersion()) {
-            return new SQLDocumentVersion(node, type, this);
+            return new SQLDocumentVersion(node, type, this, readonly);
         } else {
             return new SQLDocument(node, type, this, false);
         }
@@ -527,6 +610,22 @@ public class SQLSession implements Session {
         }
     }
 
+    protected Document importChild(String uuid, Node parent, String name,
+            Long pos, String typeName, Map<String, Serializable> props)
+            throws DocumentException {
+        try {
+            Serializable id = session.getModel().unHackStringId(uuid);
+            Node node = session.addChildNode(id, parent, name, pos, typeName,
+                    false);
+            for (Entry<String, Serializable> entry : props.entrySet()) {
+                node.setSingleProperty(entry.getKey(), entry.getValue());
+            }
+            return newDocument(node, false); // not readonly
+        } catch (StorageException e) {
+            throw new DocumentException(e);
+        }
+    }
+
     protected List<Node> getComplexList(Node node, String name)
             throws DocumentException {
         List<Node> nodes;
@@ -575,11 +674,8 @@ public class SQLSession implements Session {
     protected Document getVersionByLabel(Node node, String label)
             throws DocumentException {
         try {
-            Node versionNode = session.getVersionByLabel(node, label);
-            if (versionNode == null) {
-                return null;
-            }
-            return newDocument(versionNode);
+            Node versionNode = session.getVersionByLabel(node.getId(), label);
+            return versionNode == null ? null : newDocument(versionNode);
         } catch (StorageException e) {
             throw new DocumentException(e);
         }

@@ -187,6 +187,22 @@ public interface Session extends Connection {
             boolean complexProp) throws StorageException;
 
     /**
+     * Creates a new child node with given id (used for import).
+     *
+     * @param id the id
+     * @param parent the parent to which the child is added
+     * @param name the child name
+     * @param pos the child position, or {@code null}
+     * @param typeName the child type
+     * @param complexProp whether this is a complex property ({@code true}) or a
+     *            regular child ({@code false})
+     * @return the new node
+     * @throws StorageException
+     */
+    Node addChildNode(Serializable id, Node parent, String name, Long pos,
+            String typeName, boolean complexProp) throws StorageException;
+
+    /**
      * Creates a proxy for a version node.
      *
      * @param targetId the target id
@@ -269,16 +285,15 @@ public interface Session extends Connection {
     void restoreByLabel(Node node, String label) throws StorageException;
 
     /**
-     * Gets a version of a node given its label.
-     * <p>
-     * A {@link #save} is automatically done first.
+     * Gets a version given its versionable id and label.
      *
-     * @param node the node
+     * @param versionableId the versionable id
      * @param label the label
      * @return the version node, or {@code null} if not found
      * @throws StorageException
      */
-    Node getVersionByLabel(Node node, String label) throws StorageException;
+    Node getVersionByLabel(Serializable versionableId, String label)
+            throws StorageException;
 
     /**
      * Gets all the versions for a given versionable node.

@@ -181,10 +181,12 @@ public class DocumentModelFactory {
         if (repository != null) {
             repositoryName = repository.getName();
         }
+        String p = doc.getPath();
+        // versions being imported before their live doc don't have a path
+        Path path = p == null ? null : new Path(p);
         DocumentModelImpl docModel = new DocumentModelImpl(sid, type.getName(),
-                doc.getUUID(), new Path(doc.getPath()), doc.getLock(), docRef,
-                parentRef, type.getSchemaNames(), typeFacets, sourceId,
-                repositoryName);
+                doc.getUUID(), path, doc.getLock(), docRef, parentRef,
+                type.getSchemaNames(), typeFacets, sourceId, repositoryName);
 
         if (doc.isVersion()) {
             docModel.setIsVersion(true);

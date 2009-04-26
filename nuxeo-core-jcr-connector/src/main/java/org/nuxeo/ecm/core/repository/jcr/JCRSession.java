@@ -22,6 +22,7 @@ package org.nuxeo.ecm.core.repository.jcr;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -45,6 +46,7 @@ import org.apache.jackrabbit.core.XASessionImpl;
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.DocumentException;
+import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.ecm.core.model.Repository;
@@ -347,6 +349,17 @@ public class JCRSession implements Session {
             throw new DocumentException("Could not move the document to "
                     + dst.getPath(), e);
         }
+    }
+
+    public Document importDocument(String uuid, Document parent, String name,
+            String typeName, Map<String, Serializable> props)
+            throws DocumentException {
+        throw new UnsupportedOperationException();
+    }
+
+    public Document getVersion(String versionableId, VersionModel versionModel)
+            throws DocumentException {
+        throw new UnsupportedOperationException();
     }
 
     public Document createProxyForVersion(Document parent, Document doc,

@@ -27,6 +27,7 @@ import java.util.Map;
 import javax.transaction.xa.XAResource;
 
 import org.nuxeo.ecm.core.api.DocumentException;
+import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.query.Query;
 import org.nuxeo.ecm.core.query.QueryException;
 import org.nuxeo.ecm.core.schema.SchemaManager;
@@ -234,6 +235,40 @@ public interface Session {
      * @since 1.4.1 for the case where doc is a proxy
      */
     Collection<Document> getProxies(Document doc, Document folder)
+            throws DocumentException;
+
+    /**
+     * Imports a document with a given id and parent.
+     * <p>
+     * The document can then be filled with the normal imported properties.
+     *
+     * @param uuid the document uuid
+     * @param parent the document parent, or {@code null} for a version
+     * @param name the document name in its parent
+     * @param typeName the document type, or {@code ecm:proxy} for a proxy
+     * @param properties system properties of the document, which will vary
+     *            depending whether it's a live document, a version or a proxy
+     *            (see the various {@code IMPORT_*} constants of
+     *            {@link CoreSession})
+     * @return a writable {@link Document}, even for proxies and versions
+     * @throws DocumentException
+     */
+    Document importDocument(String uuid, Document parent, String name,
+            String typeName, Map<String, Serializable> properties)
+            throws DocumentException;
+
+    /**
+     * Gets a version of a document, given its versionable id and label.
+     * <p>
+     * The version model contains the label of the version to look for. On
+     * return, it is filled with the version's description and creation date.
+     *
+     * @param versionableId the versionable id
+     * @param versionModel the version model
+     * @return the version, or {@code null} if not found
+     * @throws DocumentException
+     */
+    Document getVersion(String versionableId, VersionModel versionModel)
             throws DocumentException;
 
 }

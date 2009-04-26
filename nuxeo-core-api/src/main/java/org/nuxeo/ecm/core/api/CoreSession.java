@@ -55,6 +55,38 @@ import org.nuxeo.ecm.core.schema.DocumentType;
  */
 public interface CoreSession {
 
+    // used to pass properties to importDocument
+    String IMPORT_VERSION_VERSIONABLE_ID = "ecm:versionableId";
+
+    String IMPORT_VERSION_CREATED = "ecm:versionCreated";
+
+    String IMPORT_VERSION_LABEL = "ecm:versionLabel";
+
+    String IMPORT_VERSION_DESCRIPTION = "ecm:versionDescription";
+
+    String IMPORT_VERSION_MAJOR = "ecm:majorVersion";
+
+    String IMPORT_VERSION_MINOR = "ecm:minorVersion";
+
+    String IMPORT_PROXY_TARGET_ID = "ecm:proxyTargetId";
+
+    String IMPORT_PROXY_VERSIONABLE_ID = "ecm:proxyVersionableId";
+
+    String IMPORT_LIFECYCLE_POLICY = "ecm:lifeCyclePolicy";
+
+    String IMPORT_LIFECYCLE_STATE = "ecm:lifeCycleState";
+
+    String IMPORT_LOCK = "ecm:lock";
+
+    String IMPORT_DIRTY = "ecm:dirty";
+
+    String IMPORT_CHECKED_IN = "ecm:isCheckedIn";
+
+    String IMPORT_BASE_VERSION_ID = "ecm:baseVersion";
+
+    /** The document type to use to create a proxy by import. */
+    String IMPORT_PROXY_TYPE = "ecm:proxy";
+
     /**
      * Gets the document type object given its type name.
      *
@@ -541,6 +573,37 @@ public interface CoreSession {
             throws ClientException;
 
     /**
+     * Low-level import of documents, reserved for the administrator.
+     * <p>
+     * This method is used to import documents with given ids, or directly
+     * import versions and proxies.
+     * <p>
+     * The id, parent, name and typeName must be present in each docModel.
+     * <p>
+     * The context data needs to be filled with values depending on the type of
+     * the document:
+     * <p>
+     * For a proxy (type = {@code "ecm:proxyType"}):
+     * {@link #IMPORT_PROXY_TARGET_ID} and {@link #IMPORT_PROXY_VERSIONABLE_ID}.
+     * <p>
+     * For a version (no parent): {@link #IMPORT_VERSION_VERSIONABLE_ID},
+     * {@link #IMPORT_VERSION_CREATED}, {@link #IMPORT_VERSION_LABEL} and
+     * {@link #IMPORT_VERSION_DESCRIPTION}.
+     * <p>
+     * For a live document: {@link #IMPORT_BASE_VERSION_ID} and
+     * {@link #IMPORT_CHECKED_IN} (Boolean).
+     * <p>
+     * For a live document or a version: {@link #IMPORT_LIFECYCLE_POLICY} ,
+     * {@link #IMPORT_LIFECYCLE_STATE}, {@link #IMPORT_DIRTY} (Boolean),
+     * {@link #IMPORT_VERSION_MAJOR} (Long) and {@link #IMPORT_VERSION_MINOR}
+     * (Long).
+     *
+     * @param docModels the documents to create
+     * @throws ClientException
+     */
+    void importDocuments(List<DocumentModel> docModels) throws ClientException;
+
+    /**
      * Saves changes done on the given document model.
      *
      * @param docModel the document model that needs modified
@@ -876,6 +939,22 @@ public interface CoreSession {
      *         if none is found.
      */
     List<VersionModel> getVersionsForDocument(DocumentRef docRef)
+            throws ClientException;
+
+    /**
+     * Gets a document version, given the versionable id and label.
+     * <p>
+     * The version model contains the label of the version to look for. On
+     * return, it is filled with the version's description and creation date.
+     * <p>
+     * Restricted to administrators.
+     *
+     * @param versionableId the versionable id
+     * @param versionModel the version model holding the label
+     * @return the version, or {@code null} if not found
+     * @throws ClientException
+     */
+    DocumentModel getVersion(String versionableId, VersionModel versionModel)
             throws ClientException;
 
     /**
@@ -1425,11 +1504,11 @@ public interface CoreSession {
      */
     Object[] refreshDocument(DocumentRef ref, int refreshFlags, String[] schemas)
             throws ClientException;
-    
+
     /**
      * Provides the full list of all permissions or groups of permissions that
      * contain the given one (inclusive).
-     * It makes the method {@link SecurityService#getPermissionsToCheck()} 
+     * It makes the method {@link SecurityService#getPermissionsToCheck()}
      * available remote.
      * @param permission
      * @return the list, as an array of strings.

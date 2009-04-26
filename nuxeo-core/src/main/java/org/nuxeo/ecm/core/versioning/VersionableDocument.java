@@ -93,6 +93,13 @@ public interface VersionableDocument {
      */
     void restore(String label) throws DocumentException;
 
+    /**
+     * Gets a version of this document, given its label.
+     *
+     * @param label the version label
+     * @return the version
+     * @throws DocumentException
+     */
     Document getVersion(String label) throws DocumentException;
 
     /**

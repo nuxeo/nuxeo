@@ -119,6 +119,10 @@ public class FakeCoreSession implements CoreSession {
         return null;
     }
 
+    public void importDocuments(List<DocumentModel> docModels)
+            throws ClientException {
+    }
+
     public DocumentModel createDocumentModel(String typeName)
             throws ClientException {
         // TODO Auto-generated method stub
@@ -319,6 +323,11 @@ public class FakeCoreSession implements CoreSession {
 
     public DocumentType getDocumentType(String type) {
         // TODO Auto-generated method stub
+        return null;
+    }
+
+    public DocumentModel getVersion(String versionableId,
+            VersionModel versionModel) throws ClientException {
         return null;
     }
 

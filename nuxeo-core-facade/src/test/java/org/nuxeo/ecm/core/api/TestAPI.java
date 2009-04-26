@@ -1284,6 +1284,11 @@ public abstract class TestAPI extends TestConnection {
         session.save();
         session.checkIn(childFile.getRef(), version);
 
+        // test direct lookup (as administrator)
+        // not implemented for JCR
+        // DocumentModel ver = session.getVersion(childFile.getId(), version);
+        // assertNotNull(ver);
+
         List<VersionModel> versions = session.getVersionsForDocument(childFile.getRef());
 
         assertNotNull(versions);

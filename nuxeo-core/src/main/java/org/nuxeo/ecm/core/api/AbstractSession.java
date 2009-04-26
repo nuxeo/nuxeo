@@ -18,12 +18,12 @@
 
 package org.nuxeo.ecm.core.api;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -39,7 +39,6 @@ import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.common.collections.ScopedMap;
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.common.utils.Null;
-import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.CoreService;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
@@ -76,7 +75,6 @@ import org.nuxeo.ecm.core.model.DocumentIterator;
 import org.nuxeo.ecm.core.model.DocumentVersionProxy;
 import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.ecm.core.model.PathComparator;
-import org.nuxeo.ecm.core.model.Property;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.query.FilterableQuery;
 import org.nuxeo.ecm.core.query.Query;
@@ -288,6 +286,9 @@ public abstract class AbstractSession implements CoreSession,
 
     protected final void checkPermission(Document doc, String permission)
             throws DocumentSecurityException, DocumentException {
+        if (isAdministrator()) {
+            return;
+        }
         if (!hasPermission(doc, permission)) {
             throw new DocumentSecurityException("Privilege '" + permission
                     + "' is not granted to '" + getPrincipal().getName() + "'");
@@ -820,6 +821,58 @@ public abstract class AbstractSession implements CoreSession,
         } catch (DocumentException e) {
             throw new ClientException("Failed to create document " + name, e);
         }
+    }
+
+    public void importDocuments(List<DocumentModel> docModels)
+            throws ClientException {
+        try {
+            for (DocumentModel docModel : docModels) {
+                importDocument(docModel);
+            }
+        } catch (DocumentException e) {
+            throw new ClientException("Failed to import documents", e);
+        }
+    }
+
+    protected static final PathRef EMPTY_PATH = new PathRef("");
+
+    protected void importDocument(DocumentModel docModel)
+            throws DocumentException, ClientException {
+        if (!isAdministrator()) {
+            throw new DocumentSecurityException("Only Administrator can import");
+        }
+        String name = docModel.getName();
+        if (name == null || name.length() == 0) {
+            throw new IllegalArgumentException("Invalid empty name");
+        }
+        String typeName = docModel.getType();
+        if (typeName == null || typeName.length() == 0) {
+            throw new IllegalArgumentException("Invalid empty type");
+        }
+        String id = docModel.getId();
+        if (id == null || id.length() == 0) {
+            throw new IllegalArgumentException("Invalid empty id");
+        }
+        DocumentRef parentRef = docModel.getParentRef();
+        Document parent = parentRef == null || EMPTY_PATH.equals(parentRef) ? null
+                : resolveReference(parentRef);
+        Map<String, Serializable> props = docModel.getContextData().getDefaultScopeValues();
+
+        // create the document
+        Document doc = getSession().importDocument(id, parent, name, typeName,
+                props);
+
+        if (typeName.equals(CoreSession.IMPORT_PROXY_TYPE)) {
+            // just reread the final document
+            docModel = readModel(doc, null);
+        } else {
+            // init document with data from doc model
+            docModel = writeModel(doc, docModel);
+        }
+
+        // send an event about the import
+        notifyEvent(DocumentEventTypes.DOCUMENT_IMPORTED, docModel, null, null,
+                null, true);
     }
 
     /**
@@ -1985,6 +2038,22 @@ public abstract class AbstractSession implements CoreSession,
         } catch (DocumentException e) {
             throw new ClientException("Failed to check out document " + docRef,
                     e);
+        }
+    }
+
+    public DocumentModel getVersion(String versionableId, VersionModel versionModel)
+            throws ClientException {
+        if (!isAdministrator()) {
+            throw new DocumentSecurityException(
+                    "Only Administrator can fetch versions directly");
+        }
+        String label = versionModel.getLabel();
+        try {
+            Document doc = getSession().getVersion(versionableId, versionModel);
+            return doc == null ? null : readModel(doc, null);
+        } catch (DocumentException e) {
+            throw new ClientException("Failed to get version " + label
+                    + " for " + versionableId, e);
         }
     }
 

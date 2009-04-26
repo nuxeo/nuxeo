@@ -349,6 +349,12 @@ public class SessionImpl implements Session {
 
     public Node addChildNode(Node parent, String name, Long pos,
             String typeName, boolean complexProp) throws StorageException {
+        return addChildNode(null, parent, name, pos, typeName, complexProp);
+    }
+
+    public Node addChildNode(Serializable id, Node parent, String name,
+            Long pos, String typeName, boolean complexProp)
+            throws StorageException {
         checkLive();
         if (name == null || name.contains("/") || name.equals(".")
                 || name.equals("..")) {
@@ -358,7 +364,9 @@ public class SessionImpl implements Session {
             throw new IllegalArgumentException("Unknown type: " + typeName);
         }
 
-        Serializable id = context.generateNewId();
+        id = context.generateNewId(id);
+        Serializable parentId = parent == null ? null
+                : parent.mainFragment.getId();
 
         // main info
         Map<String, Serializable> mainMap = new HashMap<String, Serializable>();
@@ -372,7 +380,7 @@ public class SessionImpl implements Session {
         } else {
             hierMap = mainMap;
         }
-        hierMap.put(model.HIER_PARENT_KEY, parent.mainFragment.getId());
+        hierMap.put(model.HIER_PARENT_KEY, parentId);
         hierMap.put(model.HIER_CHILD_POS_KEY, pos);
         hierMap.put(model.HIER_CHILD_NAME_KEY, name);
         hierMap.put(model.HIER_CHILD_ISPROPERTY_KEY,
@@ -530,10 +538,10 @@ public class SessionImpl implements Session {
         context.restoreByLabel(node, label);
     }
 
-    public Node getVersionByLabel(Node node, String label)
+    public Node getVersionByLabel(Serializable versionableId, String label)
             throws StorageException {
         checkLive();
-        Serializable id = context.getVersionByLabel(node.getId(), label);
+        Serializable id = context.getVersionByLabel(versionableId, label);
         if (id == null) {
             return null;
         }
@@ -611,7 +619,7 @@ public class SessionImpl implements Session {
 
     // TODO factor with addChildNode
     private Node addRootNode() throws StorageException {
-        Serializable id = context.generateNewId();
+        Serializable id = context.generateNewId(null);
 
         // main info
         Map<String, Serializable> mainMap = new HashMap<String, Serializable>();

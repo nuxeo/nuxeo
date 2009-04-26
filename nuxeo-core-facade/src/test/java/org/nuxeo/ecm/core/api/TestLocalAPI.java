@@ -645,13 +645,8 @@ public class TestLocalAPI extends TestAPI {
         session.createProxy(folder.getRef(), file.getRef(), vm, true);
         session.save();
         session.removeDocument(file.getRef());
-        // recheck security on version
-        try {
-            session.getACP(version.getRef());
-            fail();
-        } catch (DocumentSecurityException e) {
-            // ok
-        }
+        // recheck security on version (works because we're administrator)
+        session.getACP(version.getRef());
     }
 
 }

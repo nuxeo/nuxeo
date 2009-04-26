@@ -186,6 +186,13 @@ public class ConnectionImpl implements Session {
                 complexProp);
     }
 
+    public Node addChildNode(Serializable id, Node parent, String name,
+            Long pos, String typeName, boolean complexProp)
+            throws StorageException {
+        return getSession().addChildNode(id, parent, name, pos, typeName,
+                complexProp);
+    }
+
     public void removeNode(Node node) throws StorageException {
         getSession().removeNode(node);
     }
@@ -221,9 +228,9 @@ public class ConnectionImpl implements Session {
         getSession().restoreByLabel(node, label);
     }
 
-    public Node getVersionByLabel(Node node, String label)
+    public Node getVersionByLabel(Serializable versionableId, String label)
             throws StorageException {
-        return getSession().getVersionByLabel(node, label);
+        return getSession().getVersionByLabel(versionableId, label);
     }
 
     public List<Node> getVersions(Node node) throws StorageException {

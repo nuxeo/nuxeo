@@ -17,6 +17,7 @@ package org.nuxeo.ecm.core.jca;
 
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Map;
 
@@ -25,6 +26,7 @@ import javax.transaction.xa.XAResource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentException;
+import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.model.Session;
@@ -180,6 +182,17 @@ public final class JCAConnection implements Session {
     public Collection<Document> getProxies(Document doc, Document folder)
             throws DocumentException {
         return session.getProxies(doc, folder);
+    }
+
+    public Document importDocument(String uuid, Document parent, String name,
+            String typeName, Map<String, Serializable> props)
+            throws DocumentException {
+        return session.importDocument(uuid, parent, name, typeName, props);
+    }
+
+    public Document getVersion(String versionableId, VersionModel versionModel)
+            throws DocumentException {
+        return session.getVersion(versionableId, versionModel);
     }
 
     @Override

@@ -42,6 +42,7 @@ import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
 import org.nuxeo.ecm.core.schema.types.primitives.DateType;
+import org.nuxeo.ecm.core.schema.types.primitives.LongType;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 import org.nuxeo.ecm.core.storage.sql.CollectionFragment.CollectionMaker;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.IdGenPolicy;
@@ -838,13 +839,14 @@ public class Model {
         addPropertyInfo(null, MAIN_PRIMARY_TYPE_PROP, PropertyType.STRING,
                 mainTableName, MAIN_PRIMARY_TYPE_KEY, true, null);
         addPropertyInfo(null, MAIN_CHECKED_IN_PROP, PropertyType.BOOLEAN,
-                mainTableName, MAIN_CHECKED_IN_KEY, true, BooleanType.INSTANCE);
+                mainTableName, MAIN_CHECKED_IN_KEY, false, BooleanType.INSTANCE);
         addPropertyInfo(null, MAIN_BASE_VERSION_PROP, mainIdType(),
-                mainTableName, MAIN_BASE_VERSION_KEY, true, null);
+                mainTableName, MAIN_BASE_VERSION_KEY, false,
+                StringType.INSTANCE);
         addPropertyInfo(null, MAIN_MAJOR_VERSION_PROP, PropertyType.LONG,
-                mainTableName, MAIN_MAJOR_VERSION_KEY, true, null);
+                mainTableName, MAIN_MAJOR_VERSION_KEY, false, LongType.INSTANCE);
         addPropertyInfo(null, MAIN_MINOR_VERSION_PROP, PropertyType.LONG,
-                mainTableName, MAIN_MINOR_VERSION_KEY, true, null);
+                mainTableName, MAIN_MINOR_VERSION_KEY, false, LongType.INSTANCE);
     }
 
     /**
@@ -872,16 +874,16 @@ public class Model {
      */
     private void initVersionsModel() {
         addPropertyInfo(null, VERSION_VERSIONABLE_PROP, mainIdType(),
-                VERSION_TABLE_NAME, VERSION_VERSIONABLE_KEY, true,
+                VERSION_TABLE_NAME, VERSION_VERSIONABLE_KEY, false,
                 StringType.INSTANCE);
         addPropertyInfo(null, VERSION_CREATED_PROP, PropertyType.DATETIME,
-                VERSION_TABLE_NAME, VERSION_CREATED_KEY, true,
+                VERSION_TABLE_NAME, VERSION_CREATED_KEY, false,
                 DateType.INSTANCE);
         addPropertyInfo(null, VERSION_LABEL_PROP, PropertyType.STRING,
-                VERSION_TABLE_NAME, VERSION_LABEL_KEY, true,
+                VERSION_TABLE_NAME, VERSION_LABEL_KEY, false,
                 StringType.INSTANCE);
         addPropertyInfo(null, VERSION_DESCRIPTION_PROP, PropertyType.STRING,
-                VERSION_TABLE_NAME, VERSION_DESCRIPTION_KEY, true,
+                VERSION_TABLE_NAME, VERSION_DESCRIPTION_KEY, false,
                 StringType.INSTANCE);
     }
 

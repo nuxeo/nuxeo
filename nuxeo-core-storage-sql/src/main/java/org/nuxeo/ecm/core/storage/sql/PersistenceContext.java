@@ -140,8 +140,13 @@ public class PersistenceContext {
         return hierContext;
     }
 
-    public Serializable generateNewId() {
-        Serializable id = model.generateNewId();
+    /**
+     * Generates a new id, or used a pre-generated one (import).
+     */
+    public Serializable generateNewId(Serializable id) {
+        if (id == null) {
+            id = model.generateNewId();
+        }
         createdIds.add(id);
         return id;
     }

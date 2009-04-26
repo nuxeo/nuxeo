@@ -267,6 +267,12 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         session.save();
         session.checkIn(childFile.getRef(), version);
 
+        // test direct lookup (as administrator)
+        DocumentModel ver = session.getVersion(childFile.getId(), version);
+        assertNotNull(ver);
+        assertEquals("d1", version.getDescription());
+        assertNotNull(version.getCreated());
+
         List<VersionModel> versions = session.getVersionsForDocument(childFile.getRef());
 
         assertNotNull(versions);
@@ -490,13 +496,9 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         session.save();
         session.removeDocument(file.getRef());
         session.save();
-        // recheck security on version
-        try {
-            session.getACP(version.getRef());
-            fail();
-        } catch (DocumentSecurityException e) {
-            // ok
-        }
+        // recheck security on version (works because we're administrator)
+        acp = session.getACP(version.getRef());
+        assertNull(acp);
         // check proxy still accessible (in another session)
         CoreSession session2 = openSessionAs(SecurityConstants.ADMINISTRATOR);
         try {

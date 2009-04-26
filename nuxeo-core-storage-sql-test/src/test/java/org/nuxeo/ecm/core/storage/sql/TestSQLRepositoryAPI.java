@@ -36,14 +36,17 @@ import java.util.Set;
 import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.common.collections.ScopedMap;
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelIterator;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.Filter;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.ListDiff;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersionModel;
@@ -788,9 +791,9 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals(name2, returnedChildDocs.get(1).getName());
 
         /*
-         * Filter filter = new NameFilter(name2); // get folder childs List<DocumentModel>
-         * retrievedChilds = session.getChildren(root.getRef(), null, null,
-         * filter, null);
+         * Filter filter = new NameFilter(name2); // get folder children
+         * List<DocumentModel> retrievedChilds =
+         * session.getChildren(root.getRef(), null, null, filter, null);
          *
          * assertNotNull(retrievedChilds); assertEquals(1,
          * retrievedChilds.size());
@@ -2371,7 +2374,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals("File", docModel.getType());
     }
 
-    @SuppressWarnings({"unchecked"})
+    @SuppressWarnings( { "unchecked" })
     public void testCopyContent() throws ClientException {
         DocumentModel root = session.getRootDocument();
         DocumentModel doc = new DocumentModelImpl(root.getPathAsString(),
@@ -2829,6 +2832,116 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         session.save();
         assertEquals(2, session.getChildrenRefs(folder.getRef(), null).size());
         assertEquals(3, session.getChildrenRefs(root.getRef(), null).size());
+    }
+
+    public void testImport() throws Exception {
+        DocumentModel folder = new DocumentModelImpl("/", "folder", "Folder");
+        folder.setProperty("dublincore", "title", "the title");
+        folder = session.createDocument(folder);
+        session.save();
+        String folderId = folder.getId();
+
+        // create a version by import
+        String id = "aaaaaaaa-1234-1234-1234-fedcba987654"; // versionable
+        String vid = "12345678-1234-1234-1234-fedcba987654"; // ver id
+        String typeName = "File";
+        DocumentRef parentRef = null;
+        String name = "foobar";
+        DocumentModel ver = new DocumentModelImpl((String) null, typeName, vid,
+                new Path(name), null, null, parentRef, null, null, null, null);
+        Calendar vcr = new GregorianCalendar(2009, Calendar.JANUARY, 1, 2, 3, 4);
+        ver.putContextData(CoreSession.IMPORT_VERSION_VERSIONABLE_ID, id);
+        ver.putContextData(CoreSession.IMPORT_VERSION_CREATED, vcr);
+        ver.putContextData(CoreSession.IMPORT_VERSION_LABEL, "v1");
+        ver.putContextData(CoreSession.IMPORT_VERSION_DESCRIPTION, "v descr");
+        ver.putContextData(CoreSession.IMPORT_VERSION_MAJOR, Long.valueOf(3));
+        ver.putContextData(CoreSession.IMPORT_VERSION_MINOR, Long.valueOf(14));
+        ver.putContextData(CoreSession.IMPORT_LIFECYCLE_POLICY, "v lcp");
+        ver.putContextData(CoreSession.IMPORT_LIFECYCLE_STATE, "v lcst");
+        ver.setProperty("dublincore", "title", "Ver title");
+        Calendar mod = new GregorianCalendar(2008, Calendar.JULY, 14, 12, 34,
+                56);
+        ver.setProperty("dublincore", "modified", mod);
+        session.importDocuments(Collections.singletonList(ver));
+        session.save();
+        closeSession();
+        openSession();
+        ver = session.getDocument(new IdRef(vid));
+        // assertEquals(name, doc.getName()); // no path -> no name...
+        assertEquals("Ver title", (String) ver.getProperty("dublincore",
+                "title"));
+        assertEquals(mod, (Calendar) ver.getProperty("dublincore", "modified"));
+        assertEquals("v lcp", ver.getLifeCyclePolicy());
+        assertEquals("v lcst", ver.getCurrentLifeCycleState());
+        assertEquals(Long.valueOf(3), ver.getProperty("uid", "major_version"));
+        assertEquals(Long.valueOf(14), ver.getProperty("uid", "minor_version"));
+        assertTrue(ver.isVersion());
+        assertFalse(ver.isProxy());
+        // lookup version by label
+        VersionModel versionModel = new VersionModelImpl();
+        versionModel.setLabel("v1");
+        ver = session.getVersion(id, versionModel);
+        assertNotNull(ver);
+        assertEquals(vid, ver.getId());
+        assertEquals("v descr", versionModel.getDescription());
+        assertEquals(vcr, versionModel.getCreated());
+
+        // create a proxy by import
+        String pid = "00000000-1234-1234-1234-fedcba987654"; // proxy id
+        typeName = CoreSession.IMPORT_PROXY_TYPE;
+        parentRef = new IdRef(folderId);
+        name = "myproxy";
+        DocumentModel proxy = new DocumentModelImpl((String) null, typeName,
+                pid, new Path(name), null, null, parentRef, null, null, null,
+                null);
+        proxy.putContextData(CoreSession.IMPORT_PROXY_TARGET_ID, vid);
+        proxy.putContextData(CoreSession.IMPORT_PROXY_VERSIONABLE_ID, id);
+        session.importDocuments(Collections.singletonList(proxy));
+        session.save();
+        closeSession();
+        openSession();
+        proxy = session.getDocument(new IdRef(pid));
+        assertEquals(name, proxy.getName());
+        assertEquals("Ver title", (String) proxy.getProperty("dublincore",
+                "title"));
+        assertEquals(mod,
+                (Calendar) proxy.getProperty("dublincore", "modified"));
+        assertEquals("v lcp", proxy.getLifeCyclePolicy());
+        assertEquals("v lcst", proxy.getCurrentLifeCycleState());
+        assertFalse(proxy.isVersion());
+        assertTrue(proxy.isProxy());
+
+        // create a normal doc by import
+        typeName = "File";
+        parentRef = new IdRef(folderId);
+        name = "mydoc";
+        DocumentModel doc = new DocumentModelImpl((String) null, typeName, id,
+                new Path(name), null, null, parentRef, null, null, null, null);
+        doc.putContextData(CoreSession.IMPORT_LIFECYCLE_POLICY, "lcp");
+        doc.putContextData(CoreSession.IMPORT_LIFECYCLE_STATE, "lcst");
+        doc.putContextData(CoreSession.IMPORT_LOCK, "somelock");
+        doc.putContextData(CoreSession.IMPORT_CHECKED_IN, Boolean.TRUE);
+        doc.putContextData(CoreSession.IMPORT_BASE_VERSION_ID, vid);
+        doc.putContextData(CoreSession.IMPORT_VERSION_MAJOR, Long.valueOf(8));
+        doc.putContextData(CoreSession.IMPORT_VERSION_MINOR, Long.valueOf(1));
+        doc.setProperty("dublincore", "title", "Live title");
+        session.importDocuments(Collections.singletonList(doc));
+        session.save();
+        closeSession();
+        openSession();
+        doc = session.getDocument(new IdRef(id));
+        assertEquals(name, doc.getName());
+        assertEquals("Live title", (String) doc.getProperty("dublincore",
+                "title"));
+        assertEquals(folderId, doc.getParentRef().toString());
+        assertEquals("lcp", doc.getLifeCyclePolicy());
+        assertEquals("lcst", doc.getCurrentLifeCycleState());
+        assertEquals(Long.valueOf(8), doc.getProperty("uid", "major_version"));
+        assertEquals(Long.valueOf(1), doc.getProperty("uid", "minor_version"));
+        assertTrue(doc.isLocked());
+        assertEquals("somelock", doc.getLock());
+        assertFalse(doc.isVersion());
+        assertFalse(doc.isProxy());
     }
 
 }
