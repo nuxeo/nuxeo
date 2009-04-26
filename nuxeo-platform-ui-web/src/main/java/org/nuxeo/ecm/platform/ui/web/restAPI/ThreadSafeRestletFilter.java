@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.ui.web.restAPI;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.platform.web.common.tx.SimpleTxManager;
 import org.restlet.Filter;
 import org.restlet.Restlet;import org.restlet.data.MediaType;
 import org.restlet.data.Request;
@@ -29,7 +30,7 @@ import org.restlet.data.Status;
 
 /**
  * Restlet Filter that ensure thread safety for seam unaware restlet.
- * 
+ *
  * @author <a href="mailto:ldoguin@nuxeo.com">Laurent Doguin</a>
  */
 
@@ -51,15 +52,25 @@ public class ThreadSafeRestletFilter extends Filter {
     @Override
     protected void doHandle(Request request, Response response) {
         if (getNext() != null) {
+        	boolean started=false;
             try {
                 //get a new instance of the restlet each time it is called.
                 Restlet next = getNext().getClass().newInstance();
+                // start TX
+                started = SimpleTxManager.startUserTransaction();
                 next.handle(request, response);
             } catch (Exception e) {
                 log.error("Restlet handling error", e);
+                SimpleTxManager.markTransactionForRollBack();
                 response.setEntity(
                         "Error while getting a new Restlet instance: "
                                 + e.getMessage(), MediaType.TEXT_PLAIN);
+            }
+            finally {
+            	if (started) {
+            		// commit Tx
+            		SimpleTxManager.commitOrRollBackUserTransaction();
+            	}
             }
         } else {
             response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
