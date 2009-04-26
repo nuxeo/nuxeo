@@ -75,7 +75,7 @@ public class WebLoader {
 
 
     public Class<?> loadClass(String name) throws ClassNotFoundException {
-        return engine.loadClass(name);
+        return classLoader.loadClass(name);
     }
 
 
