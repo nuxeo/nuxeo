@@ -52,6 +52,17 @@ public class FilterConfigDescriptor implements Serializable {
 
     protected Pattern compiledPattern;
 
+    public FilterConfigDescriptor() {
+    }
+
+    public FilterConfigDescriptor(String name, String pattern, boolean grant, boolean tx, boolean sync) {
+    	this.name=name;
+    	this.pattern=pattern;
+    	this.grant=grant;
+    	this.useSync=sync;
+    	this.useTx=tx;
+    }
+
     public String getName() {
         if (name == null) {
             return pattern;

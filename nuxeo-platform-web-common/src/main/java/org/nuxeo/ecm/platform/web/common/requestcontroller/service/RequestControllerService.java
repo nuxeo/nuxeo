@@ -58,17 +58,26 @@ public class RequestControllerService extends DefaultComponent implements
         if (FILTER_CONFIG_EP.equals(extensionPoint)) {
 
             FilterConfigDescriptor desc = (FilterConfigDescriptor) contribution;
-            if (desc.isGrantRule()) {
-                grantPatterns.put(desc.getName(), desc);
-                log.debug("Registred grant filter config");
-            }
-            else {
-                denyPatterns.put(desc.getName(), desc);
-                log.debug("Registred deny filter config");
-            }
+            registerFilterConfig(desc);
         }
         else {
             log.error("Unknow ExtensionPoint " + extensionPoint);
+        }
+    }
+
+    public void registerFilterConfig(String name, String pattern, boolean grant, boolean tx, boolean sync) {
+    	FilterConfigDescriptor desc = new FilterConfigDescriptor(name,pattern,grant,tx,sync);
+    	registerFilterConfig(desc);
+    }
+
+    public void registerFilterConfig(FilterConfigDescriptor desc) {
+        if (desc.isGrantRule()) {
+            grantPatterns.put(desc.getName(), desc);
+            log.debug("Registred grant filter config");
+        }
+        else {
+            denyPatterns.put(desc.getName(), desc);
+            log.debug("Registred deny filter config");
         }
     }
 
