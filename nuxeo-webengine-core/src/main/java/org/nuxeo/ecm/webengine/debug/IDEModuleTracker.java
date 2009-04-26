@@ -41,6 +41,7 @@ public class IDEModuleTracker extends ModuleTracker {
             // remove registered types (which are using older version of classes)
             flushTypeCache(module);
             // re-register main entry point?
+            flushRootResourcesCache(module);
             //module.getEngine().registerRootBinding();
             // to speed up things we also invalidate skin cache and then return
             flushSkinCache(module);

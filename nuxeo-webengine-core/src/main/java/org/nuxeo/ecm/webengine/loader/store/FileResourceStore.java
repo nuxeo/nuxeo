@@ -100,4 +100,8 @@ public class FileResourceStore implements ResourceStore {
         FileUtils.copyToFile(data, getFile(name));
     }
 
+    @Override
+    public String toString() {
+        return "FileResourceStore: "+root;
+    }
 }

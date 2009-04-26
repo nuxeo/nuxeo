@@ -45,24 +45,41 @@ public class ResourceBinding {
     @XNode("@singleton")
     public boolean singleton = false;
 
+    private boolean hasUserPath = false;
 
     /**
      * Use this to specify the resource class.
      */
     @XNode("@class")
-    void setClazz(Class<?> clazz) {
-        this.clazz = clazz;
-        if (path == null) {
-            Path p = clazz.getAnnotation(Path.class);
-            if (p == null) {
-                throw new WebException("Invalid resource binding. Path not defined");
+    public String className;
+    
+    public Class<?> clazz;
+    
+    /**
+     * Must be called before using this binding
+     * @param engine
+     * @throws ClassNotFoundException
+     */
+    public void resolve(WebEngine engine) throws ClassNotFoundException {
+        if (clazz == null) {
+            clazz = engine.loadClass(className);
+            if (path == null) {
+                hasUserPath = false;
+                Path p = clazz.getAnnotation(Path.class);
+                if (p == null) {
+                    throw new WebException("Invalid resource binding. Path not defined");
+                }
+                path = p.value();
+            } else {
+                hasUserPath = true;
             }
-            path = p.value();
         }
     }
-    public Class<?> clazz;
-
-
+    
+    public void reload(WebEngine engine) throws ClassNotFoundException {
+        clazz = null;
+        resolve(engine);
+    }
 
     public ResourceBinding() {
 
@@ -123,4 +140,9 @@ public class ResourceBinding {
         return singleton;
     }
 
+    @Override
+    public String toString() {
+        return path+" -> "+clazz;
+    }
+    
 }

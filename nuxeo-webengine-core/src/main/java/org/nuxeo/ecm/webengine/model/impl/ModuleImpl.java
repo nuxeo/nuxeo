@@ -295,12 +295,29 @@ public class ModuleImpl implements Module {
             typeReg = null; // type registry will be recreated on first access
         }
     }
+    
+    public void flushRootResourcesCache() {
+        if (configuration.resources != null) { //reregister resources
+            for (ResourceBinding rb : configuration.resources) {
+                try {
+                    System.out.println("Reloading JAX-RS resource: "+rb);
+                    engine.removeResourceBinding(rb);
+                    rb.reload(engine);                    
+                    engine.addResourceBinding(rb);
+                } catch (Exception e) {
+                    log.error("Failed to reload resource", e);
+                }
+            }
+        }        
+    }
 
     public void flushCache() {
         //TODO: reload module configuration or recreate module
         flushSkinCache();
         flushTypeCache();
         engine.getWebLoader().flushCache();
+        // must be called after reloading the web classloader
+        flushRootResourcesCache();
     }
 
     public static File getSkinDir(File moduleDir) {

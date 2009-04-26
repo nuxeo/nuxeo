@@ -40,6 +40,10 @@ public class ResourceStoreClassLoader extends ClassLoader {
         this.stores = stores;
     }
 
+    public ResourceStore[] getStores() {
+        return stores;
+    }
+    
     protected Class<?> fastFindClass(final String name) {
         if (stores != null) {
             for (final ResourceStore store : stores) {
@@ -48,11 +52,27 @@ public class ResourceStoreClassLoader extends ClassLoader {
                     if (log.isTraceEnabled()) {
                         log.trace(getId() + " found class: " + name + " (" + clazzBytes.length + " bytes)");
                     }
+                    doDefinePackage(name);
                     return defineClass(name, clazzBytes, 0, clazzBytes.length);
                 }
             }
         }
         return null;
+    }
+    
+    /**
+     * Without this method getPackage() returns null
+     * @param name
+     */
+    protected void doDefinePackage(String name) {
+        int i = name.lastIndexOf('.');
+        if (i > -1) {
+            String pkgname = name.substring(0, i);
+            Package pkg = getPackage(pkgname);
+            if (pkg == null) {
+                definePackage(pkgname, null, null, null, null, null, null, null);
+            }
+        }
     }
 
     @Override
@@ -152,6 +172,20 @@ public class ResourceStoreClassLoader extends ClassLoader {
             }
         }
         return url;
+    }
+
+    //TODO implement this method if you want packages to be supported by this loader 
+    @Override
+    protected Package getPackage(String name) {
+        return super.getPackage(name);
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.ClassLoader#getPackages()
+     */
+    @Override
+    protected Package[] getPackages() {
+        return super.getPackages();
     }
 
     protected String getId() {

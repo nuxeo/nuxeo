@@ -290,7 +290,12 @@ public class WebEngine implements ResourceLocator {
      * Manage jax-rs root resource bindings
      */
     public void addResourceBinding(ResourceBinding binding) {
-        registry.addBinding(binding);
+        try {
+            binding.resolve(this);
+            registry.addBinding(binding);
+        } catch (Exception e) {
+            throw WebException.wrap("Failed o register binding: "+binding, e);
+        }
     }
 
     public void removeResourceBinding(ResourceBinding binding) {

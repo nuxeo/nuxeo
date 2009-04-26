@@ -39,6 +39,7 @@ public class DefaultModuleTracker extends ModuleTracker {
             module.getEngine().getWebLoader().flushCache();
             // remove registered types (which are using older version of classes)
             flushTypeCache(module);
+            flushRootResourcesCache(module);
             // re-register main entry point?
             //module.getEngine().registerRootBinding();
             // to speed up things we also invalidate skin cache and then return

@@ -19,7 +19,6 @@ package org.nuxeo.ecm.webengine.model.impl;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Iterator;
@@ -133,6 +132,8 @@ public class ModuleManager {
     public void loadModule(File file) {
         ModuleConfiguration md = loadConfiguration(file);
         engine.getWebLoader().addClassPathElement(md.directory);
+        // this should be called after the class path is updated ...
+        loadModuleRootResources(md);
         md.setEngine(engine);
         registerModule(md);
     }
@@ -174,11 +175,6 @@ public class ModuleManager {
             InputStream in = new BufferedInputStream(new FileInputStream(file));
             ModuleConfiguration mc = (ModuleConfiguration) xmap.load(createXMapContext(), in);
             mc.file = file;
-            if (mc.resources != null) {
-                for (ResourceBinding rb : mc.resources) {
-                    engine.addResourceBinding(rb);
-                }
-            }
             if (mc.directory == null) {
                 mc.directory = file.getParentFile().getCanonicalFile();
             }
@@ -186,6 +182,19 @@ public class ModuleManager {
         } catch (Exception e) {
             throw WebException.wrap("Faile to load module configuration: " + file, e);
         }
+    }
+    
+    public void loadModuleRootResources(ModuleConfiguration mc) {
+        if (mc.resources != null) {
+            for (ResourceBinding rb : mc.resources) {
+                try {
+                    rb.resolve(engine);                    
+                    engine.addResourceBinding(rb);
+                } catch (Exception e) {
+                    throw WebException.wrap("Faile to load module root resource: " + rb, e);
+                }
+            }
+        }    
     }
 
     protected Context createXMapContext() {
