@@ -41,6 +41,7 @@ import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.core.Contexts;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
 import org.jbpm.JbpmContext;
@@ -566,14 +567,14 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
     }
 
     private String returnToCurrentDocOrHome() throws ClientException {
+        DocumentModel currentDocument;
         try {
-            //re-fetch the document, it might have change during the process
-            DocumentModel currentDocument = navigationContext.getCurrentDocument();
+            // re-fetch the document, it might have change during the process
+            currentDocument = navigationContext.getCurrentDocument();
             currentDocument = documentManager.getDocument(currentDocument.getRef());
             return navigationContext.navigateToDocument(currentDocument);
         } catch (DocumentSecurityException e) {
-            //the process might have remove READ right to the current document
-            //in such case => go home
+            navigationContext.setCurrentDocument(null);
             return navigationContext.goHome();
         }
     }
