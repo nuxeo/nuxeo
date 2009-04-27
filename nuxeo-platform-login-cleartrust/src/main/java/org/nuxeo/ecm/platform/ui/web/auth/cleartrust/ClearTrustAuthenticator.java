@@ -127,7 +127,7 @@ public class ClearTrustAuthenticator implements NuxeoAuthenticationPlugin,
                     log.debug("redirectUrl = " + redirectUrl);
                     if (redirectUrl.trim().equals(
                             request.getRequestURL().toString().trim())) {
-                        log.error("Stopping infinite redirect to URL : "
+                        log.debug("Stopping infinite redirect to URL : "
                                 + redirectUrl);
                         return false;
                     } else {
@@ -230,7 +230,7 @@ public class ClearTrustAuthenticator implements NuxeoAuthenticationPlugin,
     }
 
     public void initPlugin(Map<String, String> parameters) {
-        log.error("initPlugin v8");
+        log.debug("initPlugin v9");
         if (parameters.containsKey(ClearTrustParameters.COOKIE_DOMAIN)) {
             cookieDomain = parameters.get(ClearTrustParameters.COOKIE_DOMAIN);
         }
