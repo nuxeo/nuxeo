@@ -1,0 +1,9 @@
+<component name="org.nuxeo.ecm.platform.picture.web.search">
+
+  <extension
+      target="org.nuxeo.ecm.core.search.service.SearchServiceImpl"
+      point="indexableDocType">
+    <indexableDocType indexAllSchemas="true" name="PictureBook"/>
+  </extension>
+
+</component>

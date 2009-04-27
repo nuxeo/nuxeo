@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<component name="org.nuxeo.ecm.platform.audit.annotations.contrib">
+
+  <require>org.nuxeo.ecm.platform.audit.service.NXAuditEventsService</require>
+
+  <extension target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService"
+    point="event">
+    <documentation>Log after annotation events</documentation>
+    <event name="annotationCreated" />
+    <event name="annotationUpdated" />
+    <event name="annotationDeleted" />
+  </extension>
+
+</component>
