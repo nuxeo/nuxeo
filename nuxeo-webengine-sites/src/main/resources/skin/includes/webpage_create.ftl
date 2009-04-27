@@ -108,7 +108,7 @@
     <tr>
       <td colspan="2">
         <input type="submit" value="${Context.getMessage("action_save")}" />&nbsp;
-        <input type="button" value="${Context.getMessage("action_cancel")}" onclick="document.pageCreate.action='${This.path}/view'; document.pageCreate.submit();" />
+        <input type="button" value="${Context.getMessage("action_cancel")}" onclick="document.pageCreate.action='${This.path}/@perspective/view'; document.pageCreate.submit();" />
       </td>
     </tr>
   </tbody>

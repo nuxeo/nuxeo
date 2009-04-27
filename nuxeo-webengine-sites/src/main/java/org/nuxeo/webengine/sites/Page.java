@@ -33,6 +33,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -42,7 +43,6 @@ import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.webengine.WebException;
-import org.nuxeo.ecm.webengine.model.Template;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.webengine.utils.SiteUtils;
@@ -58,39 +58,20 @@ public class Page extends DocumentObject {
 
     private static final Log log = LogFactory.getLog(Page.class);
 
-    private String currentPerspective = VIEW_PERSPECTIVE;
-
     @Override
     @GET
     public Object doGet() {
         ctx.getRequest().setAttribute("org.nuxeo.theme.theme", "sites/page");
-        ctx.getRequest().setAttribute("org.nuxeo.theme.perspective", currentPerspective);
+        String currentPerspective = (String) ctx.getRequest().getAttribute("org.nuxeo.theme.perspective");
+        if (StringUtils.isEmpty(currentPerspective)) {
+            // Set view perspective if none present.
+            ctx.getRequest().setAttribute("org.nuxeo.theme.perspective", VIEW_PERSPECTIVE);
+        }
         try {
             return getTemplate("template_default.ftl").args(getPageArguments());
         } catch (Exception e) {
             throw WebException.wrap(e);
         }
-    }
-
-    @POST
-    @Path("view")
-    public Object view() {
-        currentPerspective = VIEW_PERSPECTIVE;
-        return doGet();
-    }
-
-    @POST
-    @Path("create")
-    public Object create() {
-        currentPerspective = CREATE_PERSPECTIVE;
-        return doGet();
-    }
-
-    @POST
-    @Path("edit")
-    public Object edit() {
-        currentPerspective = EDIT_PERSPECTIVE;
-        return doGet();
     }
 
     @Override

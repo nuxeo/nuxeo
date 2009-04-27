@@ -19,22 +19,7 @@
 
 package org.nuxeo.webengine.sites;
 
-import static org.nuxeo.webengine.utils.SiteConstants.ALL_WEBPAGES;
-import static org.nuxeo.webengine.utils.SiteConstants.COMMENTS;
-import static org.nuxeo.webengine.utils.SiteConstants.CONTEXTUAL_LINKS;
-import static org.nuxeo.webengine.utils.SiteConstants.CREATE_PERSPECTIVE;
-import static org.nuxeo.webengine.utils.SiteConstants.LAST_PUBLISHED_PAGES;
-import static org.nuxeo.webengine.utils.SiteConstants.PAGE_NAME;
-import static org.nuxeo.webengine.utils.SiteConstants.RESULTS;
-import static org.nuxeo.webengine.utils.SiteConstants.SITE_DESCRIPTION;
-import static org.nuxeo.webengine.utils.SiteConstants.VIEW_PERSPECTIVE;
-import static org.nuxeo.webengine.utils.SiteConstants.WEBCONATINER_NAME;
-import static org.nuxeo.webengine.utils.SiteConstants.WEBCONTAINER_WELCOMEMEDIA;
-import static org.nuxeo.webengine.utils.SiteConstants.WEBCONTAINER_WELCOMETEXT;
-import static org.nuxeo.webengine.utils.SiteConstants.WEBPAGE_THEME;
-import static org.nuxeo.webengine.utils.SiteConstants.WEBPAGE_THEMEPAGE;
-import static org.nuxeo.webengine.utils.SiteConstants.WELCOME_TEXT;
-import static org.nuxeo.webengine.utils.SiteConstants.WEBCONTAINER_BASELINE;
+import static org.nuxeo.webengine.utils.SiteConstants.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -48,6 +33,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
@@ -76,8 +62,6 @@ public class Site extends DocumentObject {
 
     private String url;
 
-    private String currentPerspective = VIEW_PERSPECTIVE;
-
     @Override
     public void initialize(Object... args) {
         assert args != null && args.length == 1;
@@ -98,27 +82,17 @@ public class Site extends DocumentObject {
         ctx.getRequest().setAttribute("org.nuxeo.theme.theme",
                 theme + "/" + themePage);
 
-        ctx.getRequest().setAttribute("org.nuxeo.theme.perspective", currentPerspective);
+        String currentPerspective = (String) ctx.getRequest().getAttribute("org.nuxeo.theme.perspective");
+        if (StringUtils.isEmpty(currentPerspective)) {
+            // Set view perspective if none present.
+            ctx.getRequest().setAttribute("org.nuxeo.theme.perspective", VIEW_PERSPECTIVE);
+        }
 
         try {
             return getTemplate("template_default.ftl").args(getSiteArguments());
         } catch (Exception e) {
             throw WebException.wrap(e);
         }
-    }
-
-    @POST
-    @Path("view")
-    public Object view() {
-        currentPerspective = VIEW_PERSPECTIVE;
-        return doGet();
-    }
-
-    @POST
-    @Path("create")
-    public Object create() {
-        currentPerspective = CREATE_PERSPECTIVE;
-        return doGet();
     }
 
     @Path("{page}")

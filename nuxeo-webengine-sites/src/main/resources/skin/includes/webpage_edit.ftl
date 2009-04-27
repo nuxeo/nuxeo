@@ -48,7 +48,7 @@
       <tr>
         <td colspan="2">
           <input type="submit" value="${Context.getMessage("action_save")}" /> &nbsp;
-          <input type="button" value="${Context.getMessage("action_cancel")}" onclick="document.pageEdit.action='${This.path}/view'; document.pageEdit.submit();" />
+          <input type="button" value="${Context.getMessage("action_cancel")}" onclick="document.pageEdit.action='${This.path}/@perspective/view'; document.pageEdit.submit();" />
         </td>
       </tr>
     </tbody>
