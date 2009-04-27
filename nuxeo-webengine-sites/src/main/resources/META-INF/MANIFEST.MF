@@ -13,6 +13,6 @@ Nuxeo-Component: OSGI-INF/webengine-layouts-contrib.xml,
  OSGI-INF/listener-contrib.xml,
  OSGI-INF/permissions-contrib.xml,
  OSGI-INF/webengine-nxsearch-contrib.xml
-Require-Bundle: org.nuxeo.ecm.webapp.core, org.nuxeo.ecm.webengine.core 
+Require-Bundle: org.nuxeo.ecm.webapp.core, org.nuxeo.ecm.webengine.core, org.nuxeo.theme.fragments 
 Nuxeo-RequiredBy: org.nuxeo.ecm.war
 Export-Package: org.nuxeo.webengine.site
