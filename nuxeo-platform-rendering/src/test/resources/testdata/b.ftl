@@ -1,5 +1,5 @@
 
-<@extends src="a.ftl">
+<@extends src="/testdata/a.ftl">
 
 <@block name="a1">
  default content [ <@superBlock/> ]

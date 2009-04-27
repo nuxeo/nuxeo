@@ -36,7 +36,7 @@ public class TestWiki extends TestCase {
 
     public void test() throws IOException, WikiParserException {
         double s = System.currentTimeMillis();
-        InputStream in = TestWiki.class.getResourceAsStream("/test.wiki");
+        InputStream in = TestWiki.class.getResourceAsStream("/testdata/test.wiki");
         Reader reader = new InputStreamReader(in);
 
         WikiSerializer engine = new WikiSerializer();
@@ -53,7 +53,7 @@ public class TestWiki extends TestCase {
     }
 
     public void test2() throws IOException, WikiParserException {
-        InputStream in = TestWiki.class.getResourceAsStream("/test2.wiki");
+        InputStream in = TestWiki.class.getResourceAsStream("/testdata/test2.wiki");
         Reader reader = new InputStreamReader(in);
 
         WikiSerializer engine = new WikiSerializer();

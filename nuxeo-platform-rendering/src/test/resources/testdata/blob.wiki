@@ -4,7 +4,7 @@ Here is some wiki in the *document* content.\
 See NXP-1256
 
 == Heading 1.1
-This is an inline macro {freemarker}doc title: ${dublincore.title}{/freemarker}
+This is an inline macro {freemarker}doc title: ${doc.dublincore.title}{/freemarker}
 
 = Heading 2
 TODO: make a JEXL wiki extension
