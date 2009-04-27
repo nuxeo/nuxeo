@@ -1,28 +1,25 @@
+img.annotated {
+border-width: 0;
+}
+
+span.decorate {
+background-color: #ffcc30;
+}
+
 div.decorate {
 position: absolute;
 border: 1px groove black;
 padding: 0;
 display: none;
-}
-area.decorate {
 background: white;
 opacity: 0.3;
--moz-opacity: 0.3;
-filter:alpha(opacity=30);
-}
-div.decorate:hover {
-border-color: yellow;
-}
-img.annotated {
-border-width: 0;
+filter: alpha(opacity=30);
+-khtml-opacity: 0.3;
+-moz-opacity:0.3;
 }
 
-.decorate {
-background-color: #ffcc30;
-}
-div.decorate {
-background: white;
-opacity: 0.3;
+div.decorate:hover {
+border-color: yellow;
 }
 
 div.decorateArea {
@@ -32,6 +29,9 @@ padding: 0;
 display: none;
 background: white;
 opacity: 0.3;
+filter: alpha(opacity=30);
+-khtml-opacity: 0.3;
+-moz-opacity:0.3;
 }
 
 .gwt-Label {
@@ -80,12 +80,12 @@ padding:3px 5px;
 text-decoration:none;
 }
 
-.selectedAnnotation {
+span.selectedAnnotation {
 text-decoration:underline;
 background-color: #30ccff;
 }
 div.selectedAnnotation {
-  border: 1px groove red;
+border: 1px groove red;
 }
 
 .annotation-body {

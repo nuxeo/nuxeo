@@ -1,11 +1,11 @@
 /** Add css rules here for your application. */
 button {
-  display: block;
-  font-size: 16pt;
+display: block;
+font-size: 16pt;
 }
 
 .widePanel {
-  width: 100%;
+width: 100%;
 }
 
 .thumbnail-panel {
@@ -16,6 +16,9 @@ button {
 div.thumbnailSelectedArea {
   background-color: #FFCB66;
   opacity: 0.3;
+  filter: alpha(opacity=30);
+  -khtml-opacity: 0.3;
+  -moz-opacity:0.3;
   border: 2px solid #FFCB66;
 }
 
@@ -44,7 +47,6 @@ padding-top:5px;
 }
 
 .tilingPreviewPanel {
-border:3px solid #3F3F3F;
 }
 
 button.resetZoomButton {
