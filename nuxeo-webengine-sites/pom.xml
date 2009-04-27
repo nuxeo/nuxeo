@@ -59,8 +59,13 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.webengine</groupId>
-       <artifactId>nuxeo-webengine-ui</artifactId>
+      <artifactId>nuxeo-webengine-ui</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.nuxeo.theme</groupId>
+      <artifactId>nuxeo-theme-core</artifactId>
+    </dependency>
+    
 
     <dependency>
       <groupId>org.jboss.resteasy</groupId>
@@ -104,7 +109,6 @@
       <artifactId>ejb-api</artifactId>
     </dependency>
     
-
     <!-- test scope -->
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>

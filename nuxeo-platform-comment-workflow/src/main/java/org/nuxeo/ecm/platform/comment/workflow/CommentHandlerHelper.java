@@ -47,14 +47,14 @@ public abstract class CommentHandlerHelper extends AbstractJbpmHandlerHelper {
     // need to open a system session for this to work ok: users may not have the
     // 'WriteLifeCycle' permission on doc
     protected void followTransition(String transition) throws Exception {
-        String postId = getStringVariable(CommentsConstants.COMMENT_ID);
-        DocumentRef postRef = new IdRef(postId);
+        String commentId = getStringVariable(CommentsConstants.COMMENT_ID);
+        DocumentRef commentRef = new IdRef(commentId);
         LoginContext loginContext = null;
         CoreSession systemSession = null;
         try {
             loginContext = Framework.login();
             systemSession = getSystemSession();
-            systemSession.followTransition(postRef, transition);
+            systemSession.followTransition(commentRef, transition);
             systemSession.save();
         } finally {
             if (loginContext != null) {

@@ -56,7 +56,7 @@ public class ForumWorkflowFilter implements JbpmListFilter {
             String name = pi.getProcessDefinition().getName();
             if (ForumConstants.PROCESS_INSTANCE_NAME.equals(name)) {
                 String postId = (String) pi.getContextInstance().getVariable(
-                        ForumConstants.POST_REF);
+                        ForumConstants.COMMENT_ID);
                 if (this.postId.equals(postId)) {
                     result.add(pi);
                 }
