@@ -70,6 +70,7 @@
     <module>nuxeo-webengine-admin</module>
     <module>nuxeo-theme-editor</module>
     <module>nuxeo-platform-webwidgets</module>
+    <module>nuxeo-platform-userworkspace</module>
   </modules>
 
   <dependencyManagement>
@@ -732,6 +733,34 @@
         <artifactId>nuxeo-platform-forms-layout-client</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
+
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-userworkspace-api</artifactId>
+      <version>${nuxeo.features.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-userworkspace-core</artifactId>
+      <version>${nuxeo.features.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-userworkspace-facade</artifactId>
+      <version>${nuxeo.features.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-userworkspace-web</artifactId>
+      <version>${nuxeo.features.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-userworkspace-types</artifactId>
+      <version>${nuxeo.features.version}</version>
+    </dependency>
+
+
 
       <!-- I/O feature -->
       <dependency>
