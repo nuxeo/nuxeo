@@ -196,6 +196,8 @@ public interface NavigationContext extends ResultsProviderFarm {
     String getActionResult(DocumentModel doc, UserAction action)
             throws ClientException;
 
+    String goToDashboard();
+
     String goHome();
 
     String goBack() throws ClientException;
