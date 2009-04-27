@@ -118,7 +118,7 @@
 function launchEditor() {
   mySitesWikiSettings = {
     nameSpace:          "wiki", // Useful to prevent multi-instances CSS conflict
-    previewParserPath:  ${shinPath} + "/@views/preview",
+    previewParserPath:   "${This.path}/@views/preview",
     previewParserVar: 'wiki_editor',
     previewAutorefresh: true,
     previewInWindow: 'width=500, height=700, resizable=yes, scrollbars=yes',
