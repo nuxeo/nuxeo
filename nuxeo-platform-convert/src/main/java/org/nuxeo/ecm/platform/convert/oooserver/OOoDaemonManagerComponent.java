@@ -47,6 +47,8 @@ public class OOoDaemonManagerComponent extends DefaultComponent implements
     protected static boolean configured = false;
     protected static String SERVER_CONFIG_EP = "oooServerConfig";
 
+    protected static int MAX_TRY = 30;
+
     private static final Log log = LogFactory.getLog(OOoDaemonManagerComponent.class);
 
     /**
@@ -128,22 +130,27 @@ public class OOoDaemonManagerComponent extends DefaultComponent implements
 
     }
 
-    public int startDaemon() {
+    public synchronized int startDaemon() {
         if (!isAvailable()) {
             log.error("Daemon is not available, don't try to start it");
             return -1;
         }
-        log.debug("Starting new Thread that will handle the Daemon");
-        runner = new Thread(new NXOOoServerRunner(getOrBuildConfig()));
-        runner.setDaemon(true);
-        runner.setUncaughtExceptionHandler(new ThreadExceptionHandler());
-        runner.start();
-        log.debug("Daemon thread started");
+        if (!isRunning()) {
+	        log.debug("Starting new Thread that will handle the Daemon");
+	        runner = new Thread(new NXOOoServerRunner(getOrBuildConfig()));
+	        runner.setDaemon(true);
+	        runner.setUncaughtExceptionHandler(new ThreadExceptionHandler());
+	        runner.start();
+	        log.debug("Daemon thread started");
+        }
+        else {
+        	log.debug("Daemon is already running");
+        }
         //runner.run();
         return 0;
     }
 
-    public boolean startDaemonAndWaitUntilReady() {
+    public synchronized boolean startDaemonAndWaitUntilReady() {
         int start = startDaemon();
         if (start < 0) {
             log.error("Unable to start Daemon thread");
@@ -156,13 +163,13 @@ public class OOoDaemonManagerComponent extends DefaultComponent implements
                 return false;
             }
             try {
-                Thread.sleep(500);
+                Thread.sleep(1000);
                 log.info("Waiting for Listener to be available ...");
             } catch (InterruptedException e) {
                 // NOP
             }
             nbTry++;
-            if (nbTry > 20) {
+            if (nbTry > serverDescriptor.getOooServerStartTimeout()) {
                 log.info("Maximum tries reached, kill Daemon thread");
                 runner.interrupt();
                 return false;

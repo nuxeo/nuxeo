@@ -20,6 +20,9 @@
 package org.nuxeo.ecm.platform.convert.oooserver;
 
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.anwrt.ooserver.daemon.Config;
 import com.anwrt.ooserver.daemon.Daemon;
 import com.anwrt.ooserver.daemon.Log4JLogger;
@@ -29,14 +32,19 @@ public class NXOOoServerRunner implements Runnable {
 
     protected Config ooServerConfig;
 
+    private static final Log log = LogFactory.getLog(NXOOoServerRunner.class);
+
+
     public NXOOoServerRunner(Config ooServerConfig) {
         this.ooServerConfig= ooServerConfig;
     }
 
     public void run() {
         Logger.newInstance(new Log4JLogger());
+        log.debug("Starting NXOOoServerRunner");
         Daemon daemon = new Daemon(ooServerConfig);
         daemon.run();
+        log.debug("NXOOoServerRunner terminated");
     }
 
 }

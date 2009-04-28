@@ -56,6 +56,9 @@ public class OOoServerDescriptor implements Serializable {
     @XNode("jpipeLibPath")
     private String jpipeLibPath;
 
+    @XNode("oooServerStartTimeout")
+    private int oooServerStartTimeout = 60;
+
     @XNode("logInfoAsDebug")
     private boolean logInfoAsDebug = true;
 
@@ -138,5 +141,9 @@ public class OOoServerDescriptor implements Serializable {
     public void setAutoStart(boolean autoStart) {
         this.autoStart = autoStart;
     }
+
+	public int getOooServerStartTimeout() {
+		return oooServerStartTimeout;
+	}
 
 }
