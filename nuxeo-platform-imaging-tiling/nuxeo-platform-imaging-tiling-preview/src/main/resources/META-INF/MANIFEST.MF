@@ -6,5 +6,6 @@ Bundle-Localization: plugin
 Bundle-Vendor: Nuxeo
 Require-Bundle: org.nuxeo.ecm.platform.pictures.tiles,
   org.nuxeo.ecm.platform.preview,
-  org.nuxeo.ecm.platform.picture.api
+  org.nuxeo.ecm.platform.picture.api,
+  org.nuxeo.ecm.platform.picture.preview
 Nuxeo-Component: OSGI-INF/preview-contrib.xml

@@ -31,8 +31,9 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
-import org.nuxeo.ecm.platform.picture.api.MetadataConstants;
 import org.nuxeo.ecm.platform.picture.api.ImagingService;
+import org.nuxeo.ecm.platform.picture.api.MetadataConstants;
+import org.nuxeo.ecm.platform.picture.preview.helper.PicturePreviewHelper;
 import org.nuxeo.ecm.platform.pictures.tiles.gwt.client.TilingPreviewConstant;
 import org.nuxeo.ecm.platform.preview.adapter.AbstractPreviewer;
 import org.nuxeo.ecm.platform.preview.adapter.ImagePreviewer;
@@ -70,15 +71,20 @@ public class TiledImagePreviewer extends AbstractPreviewer implements
 
         return new ImagePreviewer().getPreview(blob, dm);
     }
-    
+
     protected boolean useTiling(Blob blob, DocumentModel dm) {
     	Long width = Long.valueOf(0);
         Long height = Long.valueOf(0);
 
         if ("Picture".equals(dm.getType())) {
             try {
-                width = (Long) dm.getPropertyValue("picture:views/item[0]/width");
-                height = (Long) dm.getPropertyValue("picture:views/item[0]/height");
+                String xpath = PicturePreviewHelper.getOriginalViewXPath(dm);
+                if (xpath == null) {
+                    xpath = PicturePreviewHelper.getViewXPathFor(0);
+                }
+
+                width = (Long) dm.getPropertyValue(xpath + "width");
+                height = (Long) dm.getPropertyValue(xpath + "height");
             } catch (ClientException e) {
                 log.error("Failed to get picture dimensions", e);
             }
