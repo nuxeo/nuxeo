@@ -10,7 +10,7 @@
   <version>5.2-SNAPSHOT</version>
 
   <parent>
-    <artifactId>nuxeo-platform-parent</artifactId>
+    <artifactId>nuxeo-features-parent</artifactId>
     <groupId>org.nuxeo.ecm.platform</groupId>
     <version>5.2-SNAPSHOT</version>
   </parent>

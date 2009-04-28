@@ -10,7 +10,7 @@
   <description>Nuxeo Platform Annotations provides an annotation service
     based on W3C Annotea specification</description>
   <parent>
-    <artifactId>nuxeo-platform-parent</artifactId>
+    <artifactId>nuxeo-features-parent</artifactId>
     <groupId>org.nuxeo.ecm.platform</groupId>
     <version>5.2-SNAPSHOT</version>
   </parent>
