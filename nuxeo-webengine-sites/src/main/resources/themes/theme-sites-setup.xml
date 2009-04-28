@@ -154,7 +154,7 @@
     <layout element="page[2]/section[1]/cell[2]">
       <width>30%</width>
       <text-align>right</text-align>
-      <vertical-align>middle</vertical-align>
+      <vertical-align>top</vertical-align>
     </layout>
     <layout element="page[2]/section[2]">
       <width>100%</width>
@@ -206,7 +206,7 @@
     <layout element="page[3]/section[1]/cell[2]">
       <width>30%</width>
       <text-align>right</text-align>
-      <vertical-align>middle</vertical-align>
+      <vertical-align>top</vertical-align>
     </layout>
     <layout element="page[3]/section[2]">
       <width>100%</width>
@@ -239,7 +239,7 @@
     <layout element="page[4]/section[1]/cell[2]">
       <width>30%</width>
       <text-align>right</text-align>
-      <vertical-align>middle</vertical-align>
+      <vertical-align>top</vertical-align>
     </layout>
     <layout element="page[4]/section[2]">
       <width>100%</width>
@@ -460,6 +460,9 @@
       <selector
         path="input.button[disabled=disabled], input.button[disabled=disabled]:hover">
         <color>#ccc</color>
+      </selector>
+      <selector path=".radioButton">
+        <margin>0px 5px</margin>
       </selector>
     </style>
     <!-- common generic style -->
@@ -748,6 +751,13 @@
       </selector>
       <selector path=".treeview a">
         <padding>1px 4px</padding>
+        <font-weight>bold</font-weight>
+      </selector>
+      <selector path=".treeview li, .treeview .hitarea, .treeview li.lastCollapsable, .treeview li.lastExpandable">
+        <background>none</background>
+      </selector>
+      <selector path=".treeview li">
+        <padding>3px 0 0 8px</padding>
       </selector>
       <!-- end of rich faces tree -->
       <selector path=".currentItemDescription">
@@ -783,8 +793,14 @@
         <margin>0px 7px 0px 0px</margin>
         <text-align>center</text-align>
         <padding>0px 4px</padding>
-        <background-color>#dedede</background-color>
-        <border>1px solid #7e7a94</border>
+        <background-color>#f0f7ff</background-color>
+        <border>1px solid #225e79</border>
+        <color>#225e79</color>
+      </selector>
+      <selector path=".documentInfo">
+        <background>transparent url(/nuxeo/img/arrow_blue.gif) no-repeat scroll 4px 4px</background>
+        <padding>3px 3px 3px 20px</padding>
+        <margin>2px 0px</margin>
       </selector>
       <selector path=".documentInfo p">
         <padding>3px 0px 0px</padding>
@@ -871,6 +887,7 @@
         <background preset="tableevenlines (Sites backgrounds)" />
       </selector>
       <selector path=".searchService">
+        <padding>16px 0px 10px</padding>
         <margin-right>15px</margin-right>
       </selector>
       <selector path=".directoryFilter, .searchField">
@@ -880,7 +897,7 @@
         </background>
         <margin>0 5px 10px 0</margin>
         <padding>3px 3px 3px 20px</padding>
-        <font-size>11px</font-size>
+        <font-size>12px</font-size>
       </selector>
       <selector path=".searchResultBlock">
         <margin>15px 0px 0px</margin>
@@ -891,6 +908,22 @@
       </selector>
       <selector path=".modificationDate">
         <padding>0px 0px 0px 30px</padding>
+      </selector>
+      <selector path=".markItUp">
+        <width>470px</width>
+        <border>none</border>
+      </selector>
+      <selector path=".markItUpContainer">
+        <border>none</border>
+        <margin>20px 0px</margin>
+        <background>none</background>
+      </selector>
+      <selector path="textarea.wiki_editor, .wiki .markItUpEditor">
+        <background>none</background>
+      </selector>
+      <selector path=".markItUpEditor">
+        <background>none</background>
+        <width>460px</width>
       </selector>
     </style>
     <style element="page[1]/section[1]" inherit="common site style" />
@@ -948,10 +981,13 @@
       </selector>
     </style>
     <style element="page[2]/section[3]/cell[2]" inherit="common site style">
-      <selector path="" view="cell frame"></selector>
+      <selector path="" view="cell frame">
+      </selector>
     </style>
     <style element="page[2]/section[3]/cell[3]" inherit="common site style">
-      <selector path="" view="cell frame"></selector>
+      <selector path="" view="cell frame">
+        <border-right>2px solid #e7e7e7</border-right>
+      </selector>
       <selector path=".lastCommentsBlock" view="cell frame">
         <margin>0</margin>
       </selector>
