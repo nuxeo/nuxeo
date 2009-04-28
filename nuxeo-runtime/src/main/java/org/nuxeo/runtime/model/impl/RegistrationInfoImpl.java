@@ -106,6 +106,13 @@ public class RegistrationInfoImpl implements RegistrationInfo {
     // the managed component
     transient ComponentInstance component;
 
+    public Set<RegistrationInfoImpl> getDependsOnMe() {
+        return dependsOnMe;
+    }
+    
+    public Set<ComponentName> getWaitsFor() {
+        return waitsFor;
+    }
 
     public final boolean isPending() {
         return waitsFor != null;
