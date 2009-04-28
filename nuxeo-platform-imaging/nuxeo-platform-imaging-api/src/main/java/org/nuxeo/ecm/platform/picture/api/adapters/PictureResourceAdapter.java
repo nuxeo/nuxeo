@@ -38,7 +38,21 @@ public interface PictureResourceAdapter {
     void doRotate(int angle) throws ClientException;
 
     void doCrop(String coords) throws ClientException;
-    
+
     Blob getPictureFromTitle(String title) throws PropertyException, ClientException;
+
+    /**
+     * Returns the xpath of the given view name, or {@code null} if
+     * the view is not found on the Picture.
+     *
+     * @param viewName the view name
+     */
+    String getViewXPath(String viewName);
+
+    /**
+     * Convenient method to get the xpath of the first view of the Picture.
+     * @return the first veiw xpath
+     */
+    String getFirstViewXPath();
 
 }

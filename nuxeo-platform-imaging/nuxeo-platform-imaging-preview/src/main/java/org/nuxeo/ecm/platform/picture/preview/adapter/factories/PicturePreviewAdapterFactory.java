@@ -15,7 +15,7 @@
 package org.nuxeo.ecm.platform.picture.preview.adapter.factories;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.picture.preview.helper.PicturePreviewHelper;
+import org.nuxeo.ecm.platform.picture.api.adapters.PictureResourceAdapter;
 import org.nuxeo.ecm.platform.preview.adapter.PreviewAdapterFactory;
 import org.nuxeo.ecm.platform.preview.adapter.base.ConverterBasedHtmlPreviewAdapter;
 import org.nuxeo.ecm.platform.preview.api.HtmlPreviewAdapter;
@@ -29,16 +29,20 @@ import org.nuxeo.ecm.platform.preview.api.HtmlPreviewAdapter;
  */
 public class PicturePreviewAdapterFactory implements PreviewAdapterFactory {
 
+    protected static final String ORIGINAL_VIEW_NAME = "Original";
+
     public HtmlPreviewAdapter getAdapter(DocumentModel doc) {
         ConverterBasedHtmlPreviewAdapter adapter = new ConverterBasedHtmlPreviewAdapter();
         adapter.setAdaptedDocument(doc);
-        // set default xpath to first view
-        adapter.setDefaultPreviewFieldXPath(PicturePreviewHelper.getViewXPathFor(0) + "content");
 
-        String xpath = PicturePreviewHelper.getOriginalViewXPath(doc);
+        PictureResourceAdapter prAdapter = doc.getAdapter(PictureResourceAdapter.class);
+        String xpath = prAdapter.getViewXPath(ORIGINAL_VIEW_NAME);
         if (xpath != null) {
             adapter.setDefaultPreviewFieldXPath(xpath + "content");
+        } else {
+            adapter.setDefaultPreviewFieldXPath(prAdapter.getFirstViewXPath() + "content");
         }
+
         return adapter;
     }
 

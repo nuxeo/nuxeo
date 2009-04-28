@@ -21,28 +21,30 @@ package org.nuxeo.ecm.platform.picture.api.adapters;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants;
 
 public class DefaultPictureAdapter extends AbstractPictureAdapter {
     private static final Log log = LogFactory.getLog(DefaultPictureAdapter.class);
+
+    private static final String VIEWS_PROPERTY = "picture:views";
+
+    private static final String VIEW_XPATH = "picture:views/item[%d]/";
+
+    private static final String TITLE_PROPERTY = "title";
 
     public Boolean createPicture(Blob fileContent, String filename, String title,
             ArrayList<Map<String, Object>> pictureTemplates)
@@ -66,7 +68,7 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
     }
 
     public void doRotate(int angle) throws ClientException {
-        int size = doc.getProperty("picture:views").size();
+        int size = doc.getProperty(VIEWS_PROPERTY).size();
         for (int i = 0; i < size; i++) {
             String xpath = "picture:views/view[" + i + "]/";
             try {
@@ -93,16 +95,38 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
     public void doCrop(String coords) throws ClientException {
         doc.setPropertyValue("picture:cropCoords", coords);
     }
-    
+
     public Blob getPictureFromTitle(String title) throws PropertyException, ClientException{
-        Collection<Property> views = doc.getProperty("picture:views").getChildren();
+        Collection<Property> views = doc.getProperty(VIEWS_PROPERTY).getChildren();
         for (Property property : views) {
-            if (property.getValue("title").equals(title)) {
+            if (property.getValue(TITLE_PROPERTY).equals(title)) {
                 return (Blob) property.getValue(
                         "content");
             }
         }
         return null;
+    }
+
+    public String getFirstViewXPath() {
+        return getViewXPathFor(0);
+    }
+
+    public String getViewXPath(String viewName) {
+        try {
+            Property views = doc.getProperty(VIEWS_PROPERTY);
+            for (int i = 0; i < views.size(); i++) {
+                if (views.get(i).getValue(TITLE_PROPERTY).equals(viewName)) {
+                    return getViewXPathFor(i);
+                }
+            }
+        } catch (ClientException e) {
+            log.error("Unable to get picture views", e);
+        }
+        return null;
+    }
+
+    protected String getViewXPathFor(int index) {
+        return String.format(VIEW_XPATH, index);
     }
 
 }
