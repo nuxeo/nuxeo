@@ -43,7 +43,7 @@
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-url-api</artifactId>
-      <version>${nuxeo.platform.version}</version>
+      <version>${nuxeo.features.version}</version>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
