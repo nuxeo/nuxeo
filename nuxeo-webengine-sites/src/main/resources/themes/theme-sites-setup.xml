@@ -84,7 +84,7 @@
           <fragment type="generic fragment" />
         </cell>
         <cell>
-          <fragment type="region fragment" />
+          <fragment type="search results fragment" />
         </cell>
         <cell>
           <cell>
@@ -123,11 +123,6 @@
     <name/>
     <defaultBody/>
     <defaultSrc/>
-  </properties>
-  <properties element="page[4]/section[2]/cell[2]/fragment[1]">
-    <name>content</name>
-    <defaultBody />
-    <defaultSrc />
   </properties>
 
   <formats>

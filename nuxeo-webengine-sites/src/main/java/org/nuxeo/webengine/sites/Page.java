@@ -125,22 +125,24 @@ public class Page extends DocumentObject {
     public Object getSearchParametres(
             @FormParam("searchParam") String searchParam) {
         ctx.getRequest().setAttribute("org.nuxeo.theme.theme", "sites/search");
-        CoreSession session = getCoreSession();
-        Map<String, Object> root = new HashMap<String, Object>();
-        try {
-            DocumentModel ws = SiteUtils.getFirstWorkspaceParent(session, doc);
-            List<Object> pages = SiteUtils.searchPagesInSite(session, ws,
-                    searchParam, 50);
-            root.put(RESULTS, pages);
-            root.put(CONTEXTUAL_LINKS,
-                    SiteUtils.getContextualLinks(session, ws));
-            root.put(WELCOME_TEXT, SiteUtils.getString(ws,
-                    WEBCONTAINER_WELCOMETEXT, null));
-            root.put(PAGE_NAME, ws.getTitle());
-            return getTemplate("template_default.ftl").args(root);
-        } catch (Exception e) {
-            throw WebException.wrap(e);
-        }
+        ctx.setProperty(SEARCH_PARAM, searchParam);
+        return getTemplate("template_default.ftl").args(getPageArguments());
+//        CoreSession session = getCoreSession();
+//        Map<String, Object> root = new HashMap<String, Object>();
+//        try {
+//            DocumentModel ws = SiteUtils.getFirstWorkspaceParent(session, doc);
+//            List<Object> pages = SiteUtils.searchPagesInSite(session, ws,
+//                    searchParam, 50);
+//            root.put(RESULTS, pages);
+//            root.put(CONTEXTUAL_LINKS,
+//                    SiteUtils.getContextualLinks(session, ws));
+//            root.put(WELCOME_TEXT, SiteUtils.getString(ws,
+//                    WEBCONTAINER_WELCOMETEXT, null));
+//            root.put(PAGE_NAME, ws.getTitle());
+//            return getTemplate("template_default.ftl").args(root);
+//        } catch (Exception e) {
+//            throw WebException.wrap(e);
+//        }
     }
 
     @POST

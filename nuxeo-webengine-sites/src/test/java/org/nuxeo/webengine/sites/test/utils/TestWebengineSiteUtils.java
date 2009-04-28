@@ -25,6 +25,7 @@ import java.util.Map;
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
 import org.nuxeo.ecm.core.schema.NXSchema;
 import org.nuxeo.ecm.core.schema.SchemaManager;
@@ -113,13 +114,14 @@ public class TestWebengineSiteUtils extends RepositoryOSGITestCase {
 
         session.save();
 
-        List<Object> cLinks = SiteUtils.getContextualLinks(session, miniSite);
+        DocumentModelList cLinks = session.getChildren(miniSite.getRef(),
+                SiteConstants.CONTEXTUAL_LINK);
         assertTrue("Don't have 2 links?", cLinks.size() == 2);
-        for (Object linkObject : cLinks) {
-            Map<String, String> mapLink = (Map<String, String>) linkObject;
-            String linkTitle = mapLink.get("title");
-            String description = mapLink.get("description");
-            String link = mapLink.get("link");
+        for (DocumentModel linkObject : cLinks) {
+            String linkTitle = SiteUtils.getString(linkObject, "dc:title");
+            String description = SiteUtils.getString(linkObject,
+                    "dc:description");
+            String link = SiteUtils.getString(linkObject, "clink:link");
 
             assertTrue("Title not correct: " + linkTitle,
                     "CL1".equals(linkTitle) || "CL2".equals(linkTitle));

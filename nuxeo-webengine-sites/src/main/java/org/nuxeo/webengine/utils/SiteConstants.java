@@ -95,5 +95,7 @@ public final class SiteConstants {
     public static final String CREATE_PERSPECTIVE = "create";
 
     public static final String EDIT_PERSPECTIVE = "edit";
+    
+    public static final String SEARCH_PARAM = "searchParam";
 }
 
