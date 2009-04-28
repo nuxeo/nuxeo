@@ -24,17 +24,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.ejb.Local;
-import javax.ejb.Remote;
-import javax.ejb.Remove;
-import javax.ejb.Stateless;
 import javax.faces.application.FacesMessage;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.annotation.ejb.SerializedConcurrentAccess;
+import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
+import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.annotations.remoting.WebRemote;
 import org.jboss.seam.core.Events;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -63,13 +61,9 @@ import sun.misc.BASE64Decoder;
  *         Kalogeropoulos</a>
  *
  */
-@Stateless
 @Name("FileManageActions")
-@SerializedConcurrentAccess
-@Local(FileManageActionsLocal.class)
-@Remote(FileManageActions.class)
-public class FileManageActionsBean extends InputController implements
-        FileManageActionsLocal {
+@Scope(ScopeType.EVENT)
+public class FileManageActionsBean extends InputController implements FileManageActions {
 
     private static final Log log = LogFactory.getLog(FileManageActionsBean.class);
 
@@ -100,9 +94,6 @@ public class FileManageActionsBean extends InputController implements
     @In(create = true)
     protected ClipboardActions clipboardActions;
 
-    //@In(create = true)
-    //protected PublishActions publishActions;
-
     protected FileManager fileManager;
 
     protected FileManager getFileManagerService() throws ClientException {
@@ -118,7 +109,6 @@ public class FileManageActionsBean extends InputController implements
         return fileManager;
     }
 
-    @Remove
     public void destroy() {
         log.debug("Removing SEAM action listener...");
     }
@@ -175,30 +165,7 @@ public class FileManageActionsBean extends InputController implements
                         "message.operation.fails.generic"));
     }
 
-    /**
-     * @deprecated use addBinaryFileFromPlugin with a Blob argument API to avoid
-     *             loading the content in memory
-     */
-    @Deprecated
-    public String addFileFromPlugin(String content, String mimetype,
-            String fullName, String morePath, Boolean UseBase64)
-            throws ClientException {
-        try {
-            byte[] bcontent;
-            if (UseBase64.booleanValue()) {
-                BASE64Decoder decoder = new BASE64Decoder();
-                bcontent = decoder.decodeBuffer(content);
-            } else {
-                bcontent = content.getBytes();
-            }
-            return addBinaryFileFromPlugin(bcontent, mimetype, fullName,
-                    morePath);
-        } catch (Throwable t) {
-            log.error(t, t);
-            return getErrorMessage(TRANSF_ERROR, fullName);
-        }
-    }
-
+    @WebRemote
     public String addBinaryFileFromPlugin(Blob blob, String fullName,
             String morePath) throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
@@ -208,6 +175,7 @@ public class FileManageActionsBean extends InputController implements
         return createDocumentFromBlob(blob, fullName, path);
     }
 
+    @WebRemote
     public String addBinaryFileFromPlugin(Blob blob, String fullName,
             DocumentModel targetContainer) throws ClientException {
         return createDocumentFromBlob(blob, fullName,
@@ -257,28 +225,7 @@ public class FileManageActionsBean extends InputController implements
         return addBinaryFileFromPlugin(blob, fullName, morePath);
     }
 
-    /**
-     * @deprecated Use addBinaryFileFromPlugin(Blob, String, DocumentRef) to
-     *             avoid loading the data in memory as a Bytes array
-     */
-    @Deprecated
-    public String addBinaryFile(byte[] content, String mimetype,
-            String fullName, DocumentRef docRef) {
-        try {
-            DocumentModel targetContainer = documentManager.getDocument(docRef);
-
-            String path = targetContainer.getPathAsString();
-            Blob blob = StreamingBlob.createFromByteArray(content, mimetype);
-
-            DocumentModel createdDoc = getFileManagerService().createDocumentFromBlob(
-                    documentManager, blob, path, true, fullName);
-            return createdDoc.getName();
-        } catch (Throwable t) {
-            log.error(t, t);
-            return getErrorMessage(TRANSF_ERROR, fullName);
-        }
-    }
-
+    @WebRemote
     public String addFolderFromPlugin(String fullName, String morePath)
             throws ClientException {
         try {
@@ -314,26 +261,8 @@ public class FileManageActionsBean extends InputController implements
         }
     }
 
-    // TODO: this method is weird! What is it doing?
-    public String delCopyWithId(String docId) {
-        try {
-            String debug = "deleting copyId " + docId;
-            if (docId.startsWith("pasteRef_")) {
-                docId = docId.split("pasteRef_")[1];
-            }
-            // XXX - TD : fix that, is it used ????
-            // DocumentModel srcDoc = documentManager.getDocument(new
-            // IdRef(docId));
-            // removeDocumentFromList(clipboard.getClipboardDocuments(),
-            // srcDoc);
-            log.debug(debug);
-            return debug;
-        } catch (Throwable t) {
-            log.error(t, t);
-            return getErrorMessage(COPY_ERROR, docId);
-        }
-    }
 
+    @WebRemote
     protected String checkMoveAllowed(DocumentRef docRef,
             DocumentRef containerRef) throws ClientException {
 
@@ -418,6 +347,7 @@ public class FileManageActionsBean extends InputController implements
         return MOVE_OK;
     }
 
+    @WebRemote
     public String moveWithId(String docId, String containerId)
             throws ClientException {
         try {
@@ -471,6 +401,7 @@ public class FileManageActionsBean extends InputController implements
         }
     }
 
+    @WebRemote
     public String copyWithId(String docId) throws ClientException {
         try {
             String debug = "copying " + docId;
@@ -493,6 +424,7 @@ public class FileManageActionsBean extends InputController implements
         }
     }
 
+    @WebRemote
     public String pasteWithId(String docId) throws ClientException {
         try {
             String debug = "pasting " + docId;

@@ -49,14 +49,6 @@ public interface FileManageActions extends SimpleFileManager {
     String getFileName();
 
     @WebRemote
-    String addFileFromPlugin(String content, String mimetype, String fullName,
-            String morePath, Boolean UseBase64) throws ClientException;
-
-    @WebRemote
-    String addBinaryFileFromPlugin(byte[] content, String mimetype,
-            String fullName, String morePath) throws ClientException;
-
-    @WebRemote
     String addFolderFromPlugin(String fullName, String morePath)
             throws ClientException;
 

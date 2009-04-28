@@ -34,11 +34,6 @@
 
     <filter-mapping>
       <filter-name>Seam Context Filter</filter-name>
-      <url-pattern>/ws/FileManageWS</url-pattern>
-    </filter-mapping>
-
-    <filter-mapping>
-      <filter-name>Seam Context Filter</filter-name>
       <url-pattern>/DocumentManagerWS</url-pattern>
     </filter-mapping>
   </extension>
