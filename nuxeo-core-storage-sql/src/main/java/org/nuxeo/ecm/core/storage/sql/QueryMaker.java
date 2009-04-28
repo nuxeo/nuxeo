@@ -66,16 +66,16 @@ import org.nuxeo.ecm.core.storage.sql.db.TableAlias;
  * database.
  * <p>
  * This needs to transform statements like:
- *
+ * 
  * <pre>
  * SELECT * FROM File
  *   WHERE
  *         dc:title = 'abc' AND uid:uid = '123'
  *     AND dc:contributors = 'bob' -- multi-valued
  * </pre>
- *
+ * 
  * into:
- *
+ * 
  * <pre>
  * SELECT DISTINCT hierarchy.id
  *   FROM hierarchy
@@ -87,11 +87,11 @@ import org.nuxeo.ecm.core.storage.sql.db.TableAlias;
  *     AND (dublincore.title = 'abc' AND uid.uid = '123' AND dc_contributors.item = 'bob')
  *     AND NX_ACCESS_ALLOWED(hierarchy.id, 'user1|user2', 'perm1|perm2')
  * </pre>
- *
+ * 
  * when proxies are potential matches, we must do two additional joins and
  * differentiate between the uses of "hierarchy" as the hierarchy table or the
  * main table.
- *
+ * 
  * <pre>
  * SELECT DISTINCT _nxhier.id
  *   FROM hierarchy _nxhier
@@ -105,7 +105,7 @@ import org.nuxeo.ecm.core.storage.sql.db.TableAlias;
  *     AND (dublincore.title = 'abc' AND uid.uid = '123' AND dc_contributors.item = 'bob')
  *     AND NX_ACCESS_ALLOWED(_nxhier.id, 'user1|user2', 'perm1|perm2')
  * </pre>
- *
+ * 
  * @author Florent Guillaume
  */
 public class QueryMaker {
@@ -831,8 +831,11 @@ public class QueryMaker {
 
         @Override
         public void visitFunction(Function node) {
-            throw new QueryMakerException("Function not supported: "
-                    + node.toString());
+            if ((!"NX_ACCESS_ALLOWED".equals(node.name))
+                    && (!Function.NX_CURRENT_USER.equals(node))) {
+                throw new QueryMakerException("Function not supported: "
+                        + node.toString());
+            }
         }
 
         @Override
@@ -871,14 +874,17 @@ public class QueryMaker {
 
         @Override
         public void visitMultiExpression(MultiExpression node) {
-            // Don't add parentheses as for now this is always toplevel.
-            // This expression is implicitely ANDed with other toplevel clauses
-            // for types and security.
+            if (!node.isTopLevel) {
+                buf.append('(');
+            }
             for (Iterator<Operand> it = node.values.iterator(); it.hasNext();) {
                 it.next().accept(this);
                 if (it.hasNext()) {
                     node.operator.accept(this);
                 }
+            }
+            if (!node.isTopLevel) {
+                buf.append(')');
             }
         }
 
@@ -1128,6 +1134,40 @@ public class QueryMaker {
             }
             inOrderBy = false;
         }
+
+        @Override
+        public void visitFunction(Function node) {
+            if ("NX_ACCESS_ALLOWED".equals(node.name)) {
+                String[] principals = queryFilter.getPrincipals();
+                String[] rightToCheck = {((StringLiteral) node.args.get(0)).value};
+ 
+                String sql = String.format("NX_ACCESS_ALLOWED(%s, ?, ?)",
+                        hierId);
+                // if (dialect.get instanceof DerbyDialect) {
+                // // dialect has no boolean functions
+                // sql += " = 1";
+                // }
+
+                buf.append(sql);
+                whereParams.add(principals);
+                whereParams.add(rightToCheck);
+                return;
+            }
+            
+            if (Function.NX_CURRENT_USER.equals(node)) {
+                buf.append('(');
+                for (int i = 0; i < queryFilter.getPrincipals().length - 1; i ++) {
+                    buf.append("?, ");
+                }
+                buf.append("?)");
+                for (String it : queryFilter.getPrincipals()) {
+                    whereParams.add(it);
+                }
+                return;
+            }
+            throw new QueryMakerException("Function not supported: "
+                    + node.toString());
+        };
 
         @Override
         public void visitOrderByExpr(OrderByExpr node) {

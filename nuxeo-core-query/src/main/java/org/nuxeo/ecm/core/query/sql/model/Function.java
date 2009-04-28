@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.core.query.sql.model;
 
+import org.nuxeo.ecm.core.query.sql.parser.sym;
+
 /**
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
@@ -26,7 +28,7 @@ package org.nuxeo.ecm.core.query.sql.model;
 public class Function implements Operand {
 
     private static final long serialVersionUID = -6107133982072616209L;
-
+    
     public final String name;
     public final OperandList args;
 
@@ -68,6 +70,12 @@ public class Function implements Operand {
 
     public void accept(IVisitor visitor) {
         visitor.visitFunction(this);
+    }
+    
+    public static final Function NX_CURRENT_USER = new Function("NX_CURRENT_USER", null); 
+    
+    public static Function getNXAccessAllowedFunction(OperandList operand) {
+        return new Function("NX_ACCESS_ALLOWED", operand); 
     }
 
 }

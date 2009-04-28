@@ -34,6 +34,8 @@ public class MultiExpression extends Predicate {
     private static final long serialVersionUID = 1L;
 
     public final List<Operand> values;
+    
+    public boolean isTopLevel = true;
 
     public MultiExpression(Operator operator, List<Operand> values) {
         super(null, operator, null);
