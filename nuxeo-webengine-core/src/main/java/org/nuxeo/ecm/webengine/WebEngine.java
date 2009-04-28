@@ -45,8 +45,11 @@ import org.nuxeo.ecm.webengine.model.impl.GlobalTypes;
 import org.nuxeo.ecm.webengine.model.impl.ModuleConfiguration;
 import org.nuxeo.ecm.webengine.model.impl.ModuleManager;
 import org.nuxeo.ecm.webengine.model.io.BlobWriter;
+import org.nuxeo.ecm.webengine.model.io.FileWriter;
 import org.nuxeo.ecm.webengine.model.io.ScriptFileWriter;
+import org.nuxeo.ecm.webengine.model.io.TemplateViewWriter;
 import org.nuxeo.ecm.webengine.model.io.TemplateWriter;
+import org.nuxeo.ecm.webengine.model.io.URLWriter;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.scripting.Scripting;
 import org.nuxeo.runtime.annotations.AnnotationManager;
@@ -153,6 +156,9 @@ public class WebEngine implements ResourceLocator {
         registry.addMessageBodyWriter(new TemplateWriter());
         registry.addMessageBodyWriter(new ScriptFileWriter());
         registry.addMessageBodyWriter(new BlobWriter());
+        registry.addMessageBodyWriter(new FileWriter());
+        registry.addMessageBodyWriter(new URLWriter());
+        registry.addMessageBodyWriter(new TemplateViewWriter());
     }
 
     public WebLoader getWebLoader() {

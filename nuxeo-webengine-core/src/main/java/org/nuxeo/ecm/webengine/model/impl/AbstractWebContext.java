@@ -322,7 +322,11 @@ public abstract class AbstractWebContext implements WebContext {
     }
 
     public String getURL() {
-        return request.getRequestURL().toString();
+        StringBuffer sb = request.getRequestURL();
+        if (sb.charAt(sb.length()-1) == '/') {
+            sb.setLength(sb.length()-1);
+        }
+        return sb.toString();
     }
 
 
