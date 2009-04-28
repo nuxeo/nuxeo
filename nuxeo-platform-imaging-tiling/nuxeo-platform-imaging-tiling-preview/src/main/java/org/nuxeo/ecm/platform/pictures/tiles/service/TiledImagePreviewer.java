@@ -33,7 +33,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.platform.picture.api.ImagingService;
 import org.nuxeo.ecm.platform.picture.api.MetadataConstants;
-import org.nuxeo.ecm.platform.picture.preview.helper.PicturePreviewHelper;
+import org.nuxeo.ecm.platform.picture.api.adapters.PictureResourceAdapter;
 import org.nuxeo.ecm.platform.pictures.tiles.gwt.client.TilingPreviewConstant;
 import org.nuxeo.ecm.platform.preview.adapter.AbstractPreviewer;
 import org.nuxeo.ecm.platform.preview.adapter.ImagePreviewer;
@@ -49,6 +49,8 @@ public class TiledImagePreviewer extends AbstractPreviewer implements
         MimeTypePreviewer {
 
     private static final Log log = LogFactory.getLog(TiledImagePreviewer.class);
+
+    protected static final String ORIGINAL_VIEW_NAME = "Original";
 
     public List<Blob> getPreview(Blob blob, DocumentModel dm) throws PreviewException {
         if(useTiling(blob, dm)) {
@@ -78,9 +80,10 @@ public class TiledImagePreviewer extends AbstractPreviewer implements
 
         if ("Picture".equals(dm.getType())) {
             try {
-                String xpath = PicturePreviewHelper.getOriginalViewXPath(dm);
+                PictureResourceAdapter adapter = dm.getAdapter(PictureResourceAdapter.class);
+                String xpath = adapter.getViewXPath(ORIGINAL_VIEW_NAME);
                 if (xpath == null) {
-                    xpath = PicturePreviewHelper.getViewXPathFor(0);
+                    xpath = adapter.getFirstViewXPath();
                 }
 
                 width = (Long) dm.getPropertyValue(xpath + "width");
