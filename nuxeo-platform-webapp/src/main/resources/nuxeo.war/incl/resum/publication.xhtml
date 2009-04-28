@@ -1,4 +1,4 @@
-<div id="publication"
+<div class="publication_block"
   xmlns="http://www.w3.org/1999/xhtml"
   xmlns:nxthemes="http://nuxeo.org/nxthemes"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
@@ -10,7 +10,7 @@
   xmlns:nxd="http://nuxeo.org/nxweb/document">
   <f:subview>
     <c:set var="selectedSections" value="#{publishActions.getPublishingInfo().toArray()}" scope="page" />
-    <b><h:outputText value="#{messages['label.resum.publication']} : " /></b>
+    <h:outputText class="boldLabel" value="#{messages['label.resum.publication']}" />
     <nxu:dataTable id="dataTable" value="#{selectedSections}" var="proxy"
       styleClass="dataOutput">
       <!-- id and selection -->

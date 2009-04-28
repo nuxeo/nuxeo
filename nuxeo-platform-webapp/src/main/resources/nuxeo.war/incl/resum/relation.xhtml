@@ -1,4 +1,4 @@
-<div id="relation"
+<div class="relation_block"
   xmlns="http://www.w3.org/1999/xhtml"
   xmlns:nxthemes="http://nuxeo.org/nxthemes"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
@@ -11,24 +11,37 @@
   xmlns:nxdir="http://nuxeo.org/nxdirectory"
   xmlns:nxd="http://nuxeo.org/nxweb/document">
   <f:subview>
-    <h3>
+    <h3 class="resumeTitle">
       <h:outputText value="#{messages['label.resum.links.title']}" />
     </h3>
-    <nxu:dataTable id="dataTable" value="#{relationActions.outgoingStatementsInfo}" var="statement" styleClass="dataOutput">
-      <!-- id and selection -->
-      <nxu:column>
-        <div>
-        <nxu:graphicImage value="#{nxd:iconPath(statement.objectInfo.documentModel)}" />
-        <nxd:restDocumentLink document="#{statement.objectInfo.documentModel}">
-	      <h:outputText value="#{statement.objectInfo.documentModel.title} :"/>  
-        </nxd:restDocumentLink>    
-        </div>
-      </nxu:column>
+    <nxh:outputLink class="boldLabel" value="#{messages['title.relation.outgoing']}" />
+    <nxu:dataTable value="#{relationActions.outgoingStatementsInfo}" var="statement" styleClass="dataOutput">
       <nxu:column>
         <nxdir:directoryEntryOutput
         value="#{statement.predicate.uri}"
         directoryName="predicates"
         localize="true" />
+      </nxu:column>
+      <nxu:column>
+      <ui:include src="/relation_node_template.xhtml">
+        <ui:param name="statement" value="#{statement}" />
+        <ui:param name="node" value="#{statement.objectInfo}" />
+      </ui:include>  
+      </nxu:column>
+    </nxu:dataTable>
+    <nxu:dataTable value="#{relationActions.incomingStatementsInfo}" var="statement" styleClass="dataOutput">
+     <nxh:outputLink class="boldLabel" value="#{messages['title.relation.incoming']}" />
+      <nxu:column>
+        <nxdir:directoryEntryOutput
+        value="#{statement.predicate.uri}"
+        directoryName="predicates"
+        localize="true" />
+      </nxu:column>
+      <nxu:column>
+      <ui:include src="/relation_node_template.xhtml">
+        <ui:param name="statement" value="#{statement}" />
+        <ui:param name="node" value="#{statement.objectInfo}" />
+      </ui:include>  
       </nxu:column>
     </nxu:dataTable>
   </f:subview>

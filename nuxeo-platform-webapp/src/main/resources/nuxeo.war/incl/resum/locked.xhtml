@@ -1,4 +1,4 @@
-<div id="locked"
+<div class="lockFile_block"
   xmlns="http://www.w3.org/1999/xhtml"
   xmlns:nxthemes="http://nuxeo.org/nxthemes"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
@@ -11,20 +11,16 @@
     <h:form>
     <h:panelGroup rendered="${!empty lockActions.currentDocLockDetails}">
       <h:outputText value="#{messages['label.resum.locked.intro']}"/> 
-      <h:outputText style="resum_locked" value="#{messages['label.resum.locked']} "/>
+      <h:outputText class="resum_locked" value="#{messages['label.resum.locked']} "/>
       <h:panelGroup rendered="#{lockActions.canUnlockCurrentDoc}" >
         <h:outputText value=" | " />
         <h:commandLink value="#{messages['command.unlock']}"
           action="#{lockActions.unlockCurrentDocument}"/>
       </h:panelGroup>
-      <table id="lockDetails">
-        <tr>
-          <td><h:outputText value="#{messages['label.resum.by']}"/></td><td><h:outputText value="${lockActions.currentDocLockDetails['document.locker']}"/></td>
-        </tr>
-        <tr>  
-          <td><h:outputText value="#{messages['label.resum.the']}"/></td><td><h:outputText value="${lockActions.currentDocLockDetails['document.lock.time']}"/></td>
-        </tr>
-      </table>
+      <div class="lockDetail">
+        <h:outputText value="#{messages['label.resum.by']} "/><h:outputText value="${lockActions.currentDocLockDetails['document.locker']}, "/>
+        <h:outputText value="#{messages['label.resum.the']} "/><h:outputText value="${lockActions.currentDocLockDetails['document.lock.time']}"/>
+      </div>
     </h:panelGroup>
     <h:panelGroup rendered="${empty lockActions.currentDocLockDetails}">
       <h:outputText value="#{messages['label.resum.locked.intro']}"/> 

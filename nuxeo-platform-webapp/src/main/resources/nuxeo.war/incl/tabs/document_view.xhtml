@@ -1,4 +1,4 @@
-<div id="resum"
+<div class="resum"
   xmlns="http://www.w3.org/1999/xhtml"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:f="http://java.sun.com/jsf/core"
@@ -12,14 +12,20 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxu="http://nuxeo.org/nxweb/util">
   
-  <ui:include src="/incl/resum/description.xhtml" />
+  <div>
   <ui:include src="/incl/resum/locked.xhtml" />
+  <ui:include src="/incl/resum/description.xhtml" />
+  <div style="clear:both;"></div>
+  </div>
+  <div>
   <h:panelGroup rendered="#{currentDocument.hasSchema('file')}">
     <ui:include src="/incl/resum/content.xhtml" />
   </h:panelGroup>
   <h:panelGroup rendered="#{!empty relationActions.outgoingStatementsInfo}">
     <ui:include src="/incl/resum/relation.xhtml" />
   </h:panelGroup>
+  <div style="clear:both;"></div>
+  </div>
   <ui:include src="/incl/resum/metadata.xhtml" />
   <nxu:methodResult name="commentable" value="#{currentDocument.hasFacet('Commentable')}">
     <h:panelGroup rendered="#{commentable and (documentThreadedComments.size > 0)}">

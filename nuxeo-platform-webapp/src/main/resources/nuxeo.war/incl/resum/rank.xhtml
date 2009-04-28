@@ -1,4 +1,4 @@
-<div id="rank"
+<div class="rank_block"
   xmlns="http://www.w3.org/1999/xhtml"
   xmlns:nxthemes="http://nuxeo.org/nxthemes"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
@@ -8,14 +8,14 @@
   xmlns:c="http://java.sun.com/jstl/core">
 <f:subview>
   <c:set var="andLabel" value=" #{messages['label.and']} " scope="page" />
-  <b><h:outputText value="#{messages['label.resum.rank.title']}"/></b>
+  <h:outputText class="boldLabel" value="#{messages['label.resum.rank.title']}"/>
   <table id="rank_table">
     <tr>
-      <td><h:outputText value="#{messages['label.dublincore.subjects']}"/></td>
+      <td class="labelColumnLeftAlign"><h:outputText value="#{messages['label.dublincore.subjects']}"/></td>
       <td><h:outputText value="#{nxu:joinArrayWithFinalDelimiter(currentDocument.dc.subjects,', ',andLabel)}"/></td>
     </tr>
     <tr>
-      <td><h:outputText value="#{messages['label.dublincore.coverage']}"/></td>
+      <td class="labelColumnLeftAlign"><h:outputText value="#{messages['label.dublincore.coverage']}"/></td>
       <td><h:outputText value="#{currentDocument.dc.coverage}"/></td>
     </tr>
   </table>
