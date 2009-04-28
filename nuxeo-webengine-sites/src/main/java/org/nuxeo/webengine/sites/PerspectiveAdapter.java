@@ -23,6 +23,7 @@ import org.nuxeo.ecm.core.rest.DocumentObject;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
+import org.nuxeo.webengine.sites.utils.SiteConstants;
 
 /**
  *
@@ -38,7 +39,8 @@ public class PerspectiveAdapter extends DefaultAdapter {
     public Object changePerspective(@PathParam("path") String perspective) {
         try {
             DocumentObject documentObject = (DocumentObject) getTarget();
-            ctx.getRequest().setAttribute("org.nuxeo.theme.perspective", perspective);
+            ctx.getRequest().setAttribute(SiteConstants.THEME_PERSPECTIVE, 
+                    perspective);
             return documentObject.doGet();
         } catch (Exception e) {
             throw WebException.wrap(e);

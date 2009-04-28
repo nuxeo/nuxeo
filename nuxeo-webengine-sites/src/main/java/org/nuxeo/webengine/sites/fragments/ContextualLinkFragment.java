@@ -25,8 +25,8 @@ import org.nuxeo.theme.models.Model;
 import org.nuxeo.theme.models.ModelException;
 import org.nuxeo.webengine.sites.models.ContextualLinkListModel;
 import org.nuxeo.webengine.sites.models.ContextualLinkModel;
-import org.nuxeo.webengine.utils.SiteConstants;
-import org.nuxeo.webengine.utils.SiteUtils;
+import org.nuxeo.webengine.sites.utils.SiteConstants;
+import org.nuxeo.webengine.sites.utils.SiteUtils;
 
 /**
  * Action fragment for initializing the fragment related to the list with the

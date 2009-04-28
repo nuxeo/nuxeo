@@ -1,0 +1,10 @@
+<component name="org.nuxeo.ecm.platform.annotations.preview.adapter.contrib">
+
+  <extension
+    target="org.nuxeo.ecm.platform.preview.adapter.PreviewAdapterManagerComponent"
+    point="blobPostProcessor">
+    <blobPostProcessor
+      class="org.nuxeo.ecm.platform.annotations.preview.AnnotationBlobPostProcessor" />
+  </extension>
+
+</component>

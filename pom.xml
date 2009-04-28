@@ -27,6 +27,7 @@
   </properties>
 
   <modules>
+    <module>nuxeo-platform-annotations</module>
     <module>nuxeo-platform-audit-api</module>
     <module>nuxeo-platform-audit-client</module>
     <module>nuxeo-platform-audit-core</module>
@@ -37,12 +38,15 @@
     <module>nuxeo-platform-comment-web</module>
     <module>nuxeo-platform-comment-core</module>
     <module>nuxeo-platform-comment-workflow</module>
+    <module>nuxeo-platform-imaging</module>
+    <module>nuxeo-platform-imaging-tiling</module>
     <module>nuxeo-platform-jbpm</module>
     <module>nuxeo-platform-lang</module>
     <module>nuxeo-platform-notification-api</module>
     <module>nuxeo-platform-notification-core</module>
     <module>nuxeo-platform-notification-facade</module>
     <module>nuxeo-platform-notification-web</module>
+    <module>nuxeo-platform-preview</module>
     <module>nuxeo-platform-publishing</module>
     <module>nuxeo-platform-relations-api</module>
     <module>nuxeo-platform-relations-default-config</module>
@@ -71,6 +75,7 @@
     <module>nuxeo-theme-editor</module>
     <module>nuxeo-platform-webwidgets</module>
     <module>nuxeo-platform-userworkspace</module>
+    <module>nuxeo-platform-virtualnavigation</module>
   </modules>
 
   <dependencyManagement>
@@ -165,6 +170,36 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-actions-core</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-annotations-api</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-annotations-core</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-annotations-facade</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-annotations-http</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-annotations-repository-plugin</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-annotations-web</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
       <dependency>
@@ -339,6 +374,51 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-imaging-api</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-imaging-convert</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-imaging-core</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-imaging-facade</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-imaging-preview</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-imaging-transform</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-imaging-web</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-imaging-tiling</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-imaging-tiling-preview</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-jbpm-api</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
@@ -425,6 +505,11 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-placeful-theme</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-preview</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
       <dependency>
@@ -760,6 +845,16 @@
       <version>${nuxeo.features.version}</version>
     </dependency>
 
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-virtualnavigation-core</artifactId>
+      <version>${nuxeo.features.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-virtualnavigation-core-contrib</artifactId>
+      <version>${nuxeo.features.version}</version>
+    </dependency>
 
 
       <!-- I/O feature -->

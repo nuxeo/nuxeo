@@ -29,7 +29,7 @@ import org.nuxeo.theme.models.Model;
 import org.nuxeo.theme.models.ModelException;
 import org.nuxeo.webengine.sites.models.CommentListModel;
 import org.nuxeo.webengine.sites.models.CommentModel;
-import org.nuxeo.webengine.utils.SiteUtils;
+import org.nuxeo.webengine.sites.utils.SiteUtils;
 
 /**
  * Action fragment for initializing the fragment related to retrieving the

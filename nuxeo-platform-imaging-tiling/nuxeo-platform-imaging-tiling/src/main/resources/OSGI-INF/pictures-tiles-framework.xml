@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.pictures.tiles.service.PictureTilingComponent">
+  <implementation
+    class="org.nuxeo.ecm.platform.pictures.tiles.service.PictureTilingComponent" />
+
+  <documentation>
+    @author Thierry Delprat (td@nuxeo.com)
+  </documentation>
+
+  <service>
+    <provide
+      interface="org.nuxeo.ecm.platform.pictures.tiles.api.PictureTilingService" />
+  </service>
+
+
+  <extension-point name="environment">
+    <documentation>
+    Extension point to contribute environement configuration
+    @author Thierry Delprat (td@nuxeo.com)
+    </documentation>
+    <object
+      class="org.nuxeo.ecm.platform.pictures.tiles.service.TilingConfigurationDescriptor" />
+  </extension-point>
+
+  <extension-point name="blobProperties">
+    <documentation>
+    Extension point to contribute the blob property to use for a given document type.
+    @author Thomas Roger (troger@nuxeo.com)
+    </documentation>
+    <object
+      class="org.nuxeo.ecm.platform.pictures.tiles.service.TilingBlobPropertyDescriptor" />
+  </extension-point>
+
+  <extension-point name="imagesToConvert">
+    <documentation>
+    Extension point to contribute which images need to be converted to jpeg before any tiling operation.
+    @author Thomas Roger (troger@nuxeo.com)
+    </documentation>
+    <object
+      class="org.nuxeo.ecm.platform.pictures.tiles.service.ImageToConvertDescriptor" />
+  </extension-point>
+
+
+<!--
+  <extension-point name="settings">
+    <documentation>
+    Extension point to define default configuration for the spellchecker service
+    @author Thierry Delprat (td@nuxeo.com)
+    </documentation>
+    <object
+      class="org.nuxeo.ecm.platform.pictures.tiles.service.SettingsDescriptor" />
+  </extension-point>
+-->
+
+</component>

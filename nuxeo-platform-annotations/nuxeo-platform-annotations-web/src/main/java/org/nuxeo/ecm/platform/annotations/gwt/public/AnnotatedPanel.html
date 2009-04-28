@@ -1,0 +1,1985 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!-- The HTML 4.01 Transitional DOCTYPE declaration-->
+<!-- above set at the top of the file will set     -->
+<!-- the browser's rendering engine into           -->
+<!-- "Quirks Mode". Replacing this declaration     -->
+<!-- with a "Standards Mode" doctype is supported, -->
+<!-- but may lead to some differences in layout.   -->
+
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<!--                                           -->
+<!-- Any title is fine                         -->
+<!--                                           -->
+<title>AnnotatedPanel</title>
+<!--                                           -->
+<!-- This script loads your compiled module.   -->
+<!-- If you add any GWT meta tags, they must   -->
+<!-- be added before this line.                -->
+<!--                                           -->
+</head>
+<!--                                           -->
+<!-- The body can have arbitrary html, or      -->
+<!-- you can leave the body empty if you want  -->
+<!-- to create a completely dynamic UI.        -->
+<!--                                           -->
+<body bgcolor="#a0a0a0" >
+this is a very cute cat 1039
+<div>
+<img src="./cimg0158.jpg"/>
+</div>
+<div xmlns:fo="http://www.w3.org/1999/XSL/Format" id="banner">
+  <a	style="border: none;" href="http://nuxeo.org/"
+	    title="Nuxeo Enterprise Platform - Reference Guide"><img
+	    style="border: none;" width="455" height="69" alt="Nuxeo ECM Project"
+	    src="images/nuxeo_banner_logo.jpg">
+  </a>
+</div>
+<div class="book" lang="en">
+  <div class="titlepage">
+    <div>
+      <div>
+        <h1 class="title"><a name="nuxeo-reference-guide"></a>Nuxeo Enterprise Platform - Version 5.1</h1>
+      </div>
+<div>
+<h2 class="subtitle">The Reference guide</h2>
+</div>
+<div><span xmlns:fo="http://www.w3.org/1999/XSL/Format"
+	class="author">Julien Anguenot, Eric Barroca, Benoit Delbosc,
+Thierry Delprat, Damien Dupraz, Laurent Doguin, Alain Escaffre, Stefane
+Fermigier, Laurent Godard, Olivier Grisel, Florent Guillaume, Solen
+Guitter, Jean-Marc Orliaguet, Narcis Paslaru, Georges Racinet, Thibault
+Soulci&eacute;, Bogdan Stefanescu, Anahide Tchertchian, Quentin
+Lamerand, M.-A. Darche, Julien Carsique, Catalin Baican</span></div>
+<div>
+<p class="releaseinfo">5.1</p>
+</div>
+<div>
+<p class="copyright">Copyright &copy; 2007, 2008 Nuxeo SAS</p>
+</div>
+<div>
+<div class="legalnotice"><a name="d4e12"></a>
+<p>Permission is granted to copy, distribute and/or modify this
+document under the terms of the GNU Free Documentation License, Version
+1.2; with Invariant Section &#8220;Commercial Support&#8221;, no
+Front-Cover Te<b>fx</b>bts, and no Back-Cover Texts. A copy of the
+license is available at the URL: <code class="filename">http://www.gnu.org/copyleft/fdl.html</code></p>
+
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div class="toc">
+<p><b>Table of Contents</b></p>
+<dl>
+	<dt><span class="part"><a href="pt01.html">I.
+	Introduction</a></span></dt>
+	<dd>
+	<dl>
+		<dt><span class="chapter"><a href="preface.html">1.
+		Preface</a></span></dt>
+		<dd>
+		<dl>
+			<dt><span class="section"><a href="preface.html#d4e19">1.1.
+			What this Book Covers</a></span></dt>
+			<dt><span class="section"><a href="preface.html#d4e22">1.2.
+			What this book doesn't cover</a></span></dt>
+			<dt><span class="section"><a href="preface.html#d4e26">1.3.
+			Target Audience</a></span></dt>
+			<dt><span class="section"><a href="preface.html#d4e40">1.4.
+			About Nuxeo</a></span></dt>
+			<dt><span class="section"><a href="preface.html#d4e45">1.5.
+			About Open Source</a></span></dt>
+		</dl>
+		</dd>
+		<dt><span class="chapter"><a href="introduction.html">2.
+		Introduction</a></span></dt>
+		<dd>
+		<dl>
+			<dt><span class="section"><a
+				href="introduction.html#d4e56">2.1. Enterprise Content
+			Management</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="introduction.html#d4e59">2.1.1. Why ECM?</a></span></dt>
+			</dl>
+			</dd>
+			<dt><span class="section"><a
+				href="introduction.html#d4e62">2.2. The Nuxeo ECM platform</a></span></dt>
+			<dt><span class="section"><a
+				href="introduction.html#d4e65">2.3. Introduction FAQ</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="introduction.html#d4e67">2.3.1. What are Nuxeo EP 5,
+				Nuxeo EP and Nuxeo RCP?</a></span></dt>
+			</dl>
+			</dd>
+			<dt><span class="section"><a
+				href="introduction.html#d4e73">2.4. Intended audience</a></span></dt>
+			<dt><span class="section"><a
+				href="introduction.html#d4e76">2.5. What this book covers</a></span></dt>
+		</dl>
+		</dd>
+		<dt><span class="chapter"><a href="getting-started.html">3.
+		Getting Started</a></span></dt>
+		<dd>
+		<dl>
+			<dt><span class="section"><a
+				href="getting-started.html#d4e86">3.1. Introduction</a></span></dt>
+			<dt><span class="section"><a
+				href="getting-started.html#d4e91">3.2. Prerequisites</a></span></dt>
+			<dt><span class="section"><a
+				href="getting-started.html#dev-setup">3.3. Starting a new
+			project</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="getting-started.html#d4e117">3.3.1. About Maven</a></span></dt>
+				<dt><span class="section"><a
+					href="getting-started.html#archetypes-nuxeo-start">3.3.2.
+				Generate a new project with the nuxeo-archetype-start archetype</a></span></dt>
+				<dt><span class="section"><a
+					href="getting-started.html#archetypes-configuration-maven">3.3.3.
+				Ant settings</a></span></dt>
+				<dt><span class="section"><a
+					href="getting-started.html#d4e199">3.3.4. "Eclipsize" your
+				project</a></span></dt>
+				<dt><span class="section"><a
+					href="getting-started.html#d4e220">3.3.5. Running your custom
+				project</a></span></dt>
+				<dt><span class="section"><a
+					href="getting-started.html#d4e232">3.3.6. Refresh xhtml pages
+				without restarting jboss</a></span></dt>
+				<dt><span class="section"><a
+					href="getting-started.html#d4e236">3.3.7. Learning from the
+				nuxeo sample project</a></span></dt>
+			</dl>
+			</dd>
+			<dt><span class="section"><a
+				href="getting-started.html#d4e241">3.4. Using Documentation</a></span></dt>
+			<dt><span class="section"><a
+				href="getting-started.html#d4e256">3.5. Advanced tools and tips</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="getting-started.html#d4e258">3.5.1. Useful plugins when
+				developing on top of Nuxeo with Eclipse</a></span></dt>
+				<dt><span class="section"><a
+					href="getting-started.html#d4e272">3.5.2. Remote debugging in
+				Eclipse</a></span></dt>
+				<dt><span class="section"><a
+					href="getting-started.html#d4e290">3.5.3. Browsing a JCR
+				repository</a></span></dt>
+			</dl>
+			</dd>
+			<dt><span class="section"><a
+				href="getting-started.html#d4e295">3.6. Other IDEs: IntelliJ
+			IDEA and NetBeans</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="getting-started.html#d4e297">3.6.1. IDEA</a></span></dt>
+				<dt><span class="section"><a
+					href="getting-started.html#d4e306">3.6.2. NetBeans</a></span></dt>
+			</dl>
+			</dd>
+		</dl>
+		</dd>
+		<dt><span class="chapter"><a
+			href="architecture-overview.html">4. General Overview</a></span></dt>
+		<dd>
+		<dl>
+			<dt><span class="section"><a
+				href="architecture-overview.html#d4e315">4.1. Introduction</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="architecture-overview.html#d4e317">4.1.1. Architecture
+				Goals</a></span></dt>
+				<dt><span class="section"><a
+					href="architecture-overview.html#d4e451">4.1.2. Main concepts
+				and design</a></span></dt>
+			</dl>
+			</dd>
+			<dt><span class="section"><a
+				href="architecture-overview.html#d4e560">4.2. Nuxeo Runtime: the
+			Nuxeo EP component model</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="architecture-overview.html#d4e562">4.2.1. The motivations
+				for the runtime layer</a></span></dt>
+				<dt><span class="section"><a
+					href="architecture-overview.html#d4e610">4.2.2. Extensible
+				component model</a></span></dt>
+				<dt><span class="section"><a
+					href="architecture-overview.html#d4e706">4.2.3. Flexible
+				deployment system</a></span></dt>
+				<dt><span class="section"><a
+					href="architecture-overview.html#d4e736">4.2.4. Extension
+				points and Nuxeo 5</a></span></dt>
+			</dl>
+			</dd>
+			<dt><span class="section"><a
+				href="architecture-overview.html#d4e781">4.3. Nuxeo EP layered
+			architecture</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="architecture-overview.html#d4e783">4.3.1. Layers in Nuxeo
+				EP</a></span></dt>
+				<dt><span class="section"><a
+					href="architecture-overview.html#d4e863">4.3.2. API and
+				Packaging impacts</a></span></dt>
+				<dt><span class="section"><a
+					href="architecture-overview.html#d4e885">4.3.3. Illustration of
+				the layered architecture</a></span></dt>
+			</dl>
+			</dd>
+			<dt><span class="section"><a
+				href="architecture-overview.html#d4e888">4.4. Core Layer
+			overview</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="architecture-overview.html#d4e894">4.4.1. Features of
+				Nuxeo Core</a></span></dt>
+				<dt><span class="section"><a
+					href="architecture-overview.html#d4e914">4.4.2. Nuxeo Core main
+				modules</a></span></dt>
+				<dt><span class="section"><a
+					href="architecture-overview.html#d4e934">4.4.3. Schemas and
+				document types</a></span></dt>
+				<dt><span class="section"><a
+					href="architecture-overview.html#d4e951">4.4.4. Life cycle
+				associated to documents</a></span></dt>
+				<dt><span class="section"><a
+					href="architecture-overview.html#d4e968">4.4.5. Security model</a></span></dt>
+				<dt><span class="section"><a
+					href="architecture-overview.html#d4e990">4.4.6. Core events
+				system</a></span></dt>
+				<dt><span class="section"><a
+					href="architecture-overview.html#d4e995">4.4.7. Query system</a></span></dt>
+				<dt><span class="section"><a
+					href="architecture-overview.html#d4e999">4.4.8. Versioning
+				system</a></span></dt>
+				<dt><span class="section"><a
+					href="architecture-overview.html#d4e1011">4.4.9. Repository and
+				SPI Model</a></span></dt>
+				<dt><span class="section"><a
+					href="architecture-overview.html#d4e1016">4.4.10. DocumentModel</a></span></dt>
+				<dt><span class="section"><a
+					href="architecture-overview.html#d4e1055">4.4.11. Proxies</a></span></dt>
+				<dt><span class="section"><a
+					href="architecture-overview.html#d4e1068">4.4.12. Core API</a></span></dt>
+			</dl>
+			</dd>
+			<dt><span class="section"><a
+				href="architecture-overview.html#d4e1071">4.5. Service Layer
+			overview</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="architecture-overview.html#d4e1073">4.5.1. Role of
+				services in Nuxeo EP architecture</a></span></dt>
+				<dt><span class="section"><a
+					href="architecture-overview.html#d4e1086">4.5.2. Services
+				implementation patterns</a></span></dt>
+				<dt><span class="section"><a
+					href="architecture-overview.html#d4e1122">4.5.3. Platform API</a></span></dt>
+				<dt><span class="section"><a
+					href="architecture-overview.html#d4e1139">4.5.4. Adapters</a></span></dt>
+				<dt><span class="section"><a
+					href="architecture-overview.html#d4e1155">4.5.5. Some examples
+				of Nuxeo EP services</a></span></dt>
+			</dl>
+			</dd>
+			<dt><span class="section"><a
+				href="architecture-overview.html#d4e1158">4.6. Web presentation
+			layer overview</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="architecture-overview.html#d4e1161">4.6.1. Technology
+				choices</a></span></dt>
+				<dt><span class="section"><a
+					href="architecture-overview.html#d4e1196">4.6.2. Componentized
+				web application</a></span></dt>
+			</dl>
+			</dd>
+		</dl>
+		</dd>
+		<dt><span class="chapter"><a href="documents.html">5.
+		Schemas and Documents</a></span></dt>
+		<dd>
+		<dl>
+			<dt><span class="section"><a
+				href="documents.html#documents-intro">5.1. Introduction</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="documents.html#documents-sample">5.1.1. Concepts</a></span></dt>
+			</dl>
+			</dd>
+			<dt><span class="section"><a
+				href="documents.html#d4e1286">5.2. Schemas</a></span></dt>
+			<dt><span class="section"><a
+				href="documents.html#d4e1318">5.3. Core Document Types</a></span></dt>
+			<dt><span class="section"><a
+				href="documents.html#d4e1329">5.4. ECM Document Types</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="documents.html#d4e1339">5.4.1. Label and Icon</a></span></dt>
+				<dt><span class="section"><a
+					href="documents.html#d4e1343">5.4.2. Default view</a></span></dt>
+				<dt><span class="section"><a
+					href="documents.html#d4e1348">5.4.3. Layout</a></span></dt>
+				<dt><span class="section"><a
+					href="documents.html#d4e1363">5.4.4. Containment rules</a></span></dt>
+				<dt><span class="section"><a
+					href="documents.html#d4e1372">5.4.5. Summary</a></span></dt>
+			</dl>
+			</dd>
+		</dl>
+		</dd>
+	</dl>
+	</dd>
+	<dt><span class="part"><a href="pt02.html">II. Platform
+	Services</a></span></dt>
+	<dd>
+	<dl>
+		<dt><span class="chapter"><a href="actions-views.html">6.
+		Actions, Views and JSF tags</a></span></dt>
+		<dd>
+		<dl>
+			<dt><span class="section"><a
+				href="actions-views.html#actions-views-jsf-introduction">6.1.
+			Introduction</a></span></dt>
+			<dt><span class="section"><a
+				href="actions-views.html#actions">6.2. Actions</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="actions-views.html#actions-concepts">6.2.1. Concepts</a></span></dt>
+				<dt><span class="section"><a
+					href="actions-views.html#actions-manage">6.2.2. Manage actions</a></span></dt>
+			</dl>
+			</dd>
+			<dt><span class="section"><a
+				href="actions-views.html#views">6.3. Views</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="actions-views.html#views-concepts">6.3.1. UI Views</a></span></dt>
+				<dt><span class="section"><a
+					href="actions-views.html#views-manage">6.3.2. Manage views</a></span></dt>
+			</dl>
+			</dd>
+			<dt><span class="section"><a
+				href="actions-views.html#actions-views-document-lists">6.4.
+			Nuxeo Document Lists Manager</a></span></dt>
+			<dt><span class="section"><a
+				href="actions-views.html#actions-views-file-manager">6.5. Nuxeo
+			File Manager</a></span></dt>
+			<dt><span class="section"><a
+				href="actions-views.html#actions-views-jsf-tags">6.6. Nuxeo JSF
+			tags</a></span></dt>
+		</dl>
+		</dd>
+		<dt><span class="chapter"><a href="layouts.html">7.
+		Layouts</a></span></dt>
+		<dd>
+		<dl>
+			<dt><span class="section"><a
+				href="layouts.html#layouts-intro">7.1. Introduction</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a href="layouts.html#d4e1592">7.1.1.
+				Layouts</a></span></dt>
+				<dt><span class="section"><a href="layouts.html#d4e1596">7.1.2.
+				Widgets</a></span></dt>
+				<dt><span class="section"><a href="layouts.html#d4e1603">7.1.3.
+				Widget types</a></span></dt>
+				<dt><span class="section"><a href="layouts.html#d4e1607">7.1.4.
+				Modes</a></span></dt>
+			</dl>
+			</dd>
+			<dt><span class="section"><a
+				href="layouts.html#manage-layouts">7.2. Manage layouts</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="layouts.html#layout-registration">7.2.1. Layout
+				registration</a></span></dt>
+				<dt><span class="section"><a
+					href="layouts.html#layout-definition">7.2.2. Layout definition</a></span></dt>
+				<dt><span class="section"><a
+					href="layouts.html#widget-definition">7.2.3. Widget definition</a></span></dt>
+				<dt><span class="section"><a href="layouts.html#d4e1688">7.2.4.
+				EL expressions in layouts and widgets</a></span></dt>
+			</dl>
+			</dd>
+			<dt><span class="section"><a
+				href="layouts.html#document_layouts">7.3. Document layouts</a></span></dt>
+			<dt><span class="section"><a
+				href="layouts.html#layout-display">7.4. Layout display</a></span></dt>
+			<dt><span class="section"><a
+				href="layouts.html#standard-widget-types">7.5. Standard widget
+			types</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="layouts.html#widget-type-text">7.5.1. text</a></span></dt>
+				<dt><span class="section"><a
+					href="layouts.html#widget-type-int">7.5.2. int</a></span></dt>
+				<dt><span class="section"><a
+					href="layouts.html#widget-type-secret">7.5.3. secret</a></span></dt>
+				<dt><span class="section"><a
+					href="layouts.html#widget-type-textarea">7.5.4. textarea</a></span></dt>
+				<dt><span class="section"><a
+					href="layouts.html#widget-type-datetime">7.5.5. datetime</a></span></dt>
+				<dt><span class="section"><a
+					href="layouts.html#widget-type-template">7.5.6. template</a></span></dt>
+				<dt><span class="section"><a
+					href="layouts.html#widget-type-file">7.5.7. file</a></span></dt>
+				<dt><span class="section"><a
+					href="layouts.html#widget-type-htmltext">7.5.8. htmltext</a></span></dt>
+				<dt><span class="section"><a
+					href="layouts.html#widget-type-selectOneDirectory">7.5.9.
+				selectOneDirectory</a></span></dt>
+				<dt><span class="section"><a
+					href="layouts.html#widget-type-selectManyDirectory">7.5.10.
+				selectManyDirectory</a></span></dt>
+				<dt><span class="section"><a
+					href="layouts.html#widget-type-list">7.5.11. list</a></span></dt>
+				<dt><span class="section"><a
+					href="layouts.html#widget-type-checkbox">7.5.12. checkbox</a></span></dt>
+			</dl>
+			</dd>
+			<dt><span class="section"><a
+				href="layouts.html#custom-templates">7.6. Custom templates</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="layouts.html#custom-layout-template">7.6.1. Custom layout
+				template</a></span></dt>
+				<dt><span class="section"><a
+					href="layouts.html#custom-widget-template">7.6.2. Custom widget
+				template</a></span></dt>
+				<dt><span class="section"><a href="layouts.html#d4e1817">7.6.3.
+				Builtin templates to handle complex properties</a></span></dt>
+			</dl>
+			</dd>
+			<dt><span class="section"><a
+				href="layouts.html#custom-widget-types">7.7. Custom widget types</a></span></dt>
+			<dt><span class="section"><a
+				href="layouts.html#generic-layout-usage">7.8. Generic layout
+			usage</a></span></dt>
+		</dl>
+		</dd>
+		<dt><span class="chapter"><a href="events-scheduling.html">8.
+		Event Listeners and Scheduling</a></span></dt>
+		<dd>
+		<dl>
+			<dt><span class="section"><a
+				href="events-scheduling.html#events-scheduling-intro">8.1.
+			Introduction</a></span></dt>
+			<dt><span class="section"><a
+				href="events-scheduling.html#events-scheduling-concepts">8.2.
+			Concepts</a></span></dt>
+			<dt><span class="section"><a
+				href="events-scheduling.html#events-scheduling-adding-event-listener">8.3.
+			Adding an event listener</a></span></dt>
+			<dt><span class="section"><a
+				href="events-scheduling.html#events-scheduling-upgrading-listener">8.4.
+			Upgrading an event listener</a></span></dt>
+			<dt><span class="section"><a
+				href="events-scheduling.html#events-scheduling-adding-event">8.5.
+			Adding an event</a></span></dt>
+			<dt><span class="section"><a
+				href="events-scheduling.html#d4e1904">8.6. From CoreEvents to
+			JMS Messages</a></span></dt>
+			<dt><span class="section"><a
+				href="events-scheduling.html#d4e1912">8.7. Adding a JMS message
+			listener</a></span></dt>
+			<dt><span class="section"><a
+				href="events-scheduling.html#scheduling">8.8. Scheduling</a></span></dt>
+		</dl>
+		</dd>
+		<dt><span class="chapter"><a
+			href="notification-service.html">9. User Notification Service</a></span></dt>
+		<dd>
+		<dl>
+			<dt><span class="section"><a
+				href="notification-service.html#notification-service-intro">9.1.
+			Introduction</a></span></dt>
+			<dt><span class="section"><a
+				href="notification-service.html#d4e1951">9.2. Notification
+			concept</a></span></dt>
+			<dt><span class="section"><a
+				href="notification-service.html#d4e1965">9.3. Notification
+			channels</a></span></dt>
+			<dt><span class="section"><a
+				href="notification-service.html#d4e1978">9.4. E-mail
+			notifications</a></span></dt>
+		</dl>
+		</dd>
+		<dt><span class="chapter"><a href="search-service.html">10.
+		Indexing &amp; Searching</a></span></dt>
+		<dd>
+		<dl>
+			<dt><span class="section"><a
+				href="search-service.html#search-service-intro">10.1.
+			Introduction</a></span></dt>
+			<dt><span class="section"><a
+				href="search-service.html#search-service-configuration">10.2.
+			Configuration</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="search-service.html#search-service-conf-concepts">10.2.1.
+				Concepts</a></span></dt>
+				<dt><span class="section"><a
+					href="search-service.html#search-service-conf-doc-type">10.2.2.
+				The <code class="constant">indexableDocType</code> extension point</a></span></dt>
+				<dt><span class="section"><a
+					href="search-service.html#search-service-conf-doc-schema">10.2.3.
+				The <code class="constant">resource</code> extension point</a></span></dt>
+				<dt><span class="section"><a
+					href="search-service.html#search-service-conf-field">10.2.4.
+				Field configuration</a></span></dt>
+				<dt><span class="section"><a
+					href="search-service.html#search-service-conf-field-text">10.2.5.
+				Text fields and analyzers</a></span></dt>
+				<dt><span class="section"><a
+					href="search-service.html#search-service-conf-field-boolattrs">10.2.6.
+				Boolean attributes</a></span></dt>
+				<dt><span class="section"><a
+					href="search-service.html#search-service-conf-schema-default">10.2.7.
+				Schema resources and fields without configuration</a></span></dt>
+				<dt><span class="section"><a
+					href="search-service.html#search-service-conf-schema-default-rsrc">10.2.8.
+				Schema resources</a></span></dt>
+				<dt><span class="section"><a
+					href="search-service.html#search-service-conf-schema-default-field">10.2.9.
+				Automatic fields configuration</a></span></dt>
+			</dl>
+			</dd>
+			<dt><span class="section"><a
+				href="search-service.html#search-service-searching">10.3.
+			Programmatic Searching</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="search-service.html#search-service-query-operands">10.3.1.
+				Fields and literals</a></span></dt>
+				<dt><span class="section"><a
+					href="search-service.html#search-service-query-where">10.3.2. <code
+					class="constant">WHERE</code> statements</a></span></dt>
+			</dl>
+			</dd>
+			<dt><span class="section"><a
+				href="search-service.html#search-service-compass-backend">10.4.
+			The Compass plugin</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="search-service.html#search-service-compass-conf">10.4.1.
+				Configuring Compass</a></span></dt>
+				<dt><span class="section"><a
+					href="search-service.html#search-service-compass-conf-global">10.4.2.
+				Global configuration</a></span></dt>
+				<dt><span class="section"><a
+					href="search-service.html#search-service-compass-mappings">10.4.3.
+				Mappings for Nuxeo</a></span></dt>
+				<dt><span class="section"><a
+					href="search-service.html#search-service-compass-text-fields">10.4.4.
+				Text fields behavior</a></span></dt>
+			</dl>
+			</dd>
+			<dt><span class="section"><a
+				href="search-service.html#search-service-query-model">10.5.
+			Building a search UI with QueryModel</a></span></dt>
+		</dl>
+		</dd>
+		<dt><span class="chapter"><a href="theme-service.html">11.
+		Look and feel</a></span></dt>
+		<dd>
+		<dl>
+			<dt><span class="section"><a
+				href="theme-service.html#theme-service-intro">11.1. Introduction</a></span></dt>
+			<dt><span class="section"><a
+				href="theme-service.html#d4e2439">11.2. Principle</a></span></dt>
+			<dt><span class="section"><a
+				href="theme-service.html#d4e2468">11.3. Mechanism</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="theme-service.html#d4e2473">11.3.1. The Elements</a></span></dt>
+				<dt><span class="section"><a
+					href="theme-service.html#d4e2497">11.3.2. The format</a></span></dt>
+				<dt><span class="section"><a
+					href="theme-service.html#d4e2541">11.3.3. The negotiation</a></span></dt>
+				<dt><span class="section"><a
+					href="theme-service.html#d4e2555">11.3.4. The engine</a></span></dt>
+				<dt><span class="section"><a
+					href="theme-service.html#d4e2561">11.3.5. Resource management</a></span></dt>
+				<dt><span class="section"><a
+					href="theme-service.html#d4e2567">11.3.6. Application</a></span></dt>
+			</dl>
+			</dd>
+			<dt><span class="section"><a
+				href="theme-service.html#d4e2572">11.4. Customizing the theme</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="theme-service.html#d4e2585">11.4.1. Modifying the current
+				theme using <code class="sgmltag-element">theme-default.xml</code></a></span></dt>
+				<dt><span class="section"><a
+					href="theme-service.html#d4e2675">11.4.2. Modifying the current
+				theme</a></span></dt>
+				<dt><span class="section"><a
+					href="theme-service.html#d4e2752">11.4.3. Adding a new theme
+				and its pages</a></span></dt>
+			</dl>
+			</dd>
+		</dl>
+		</dd>
+		<dt><span class="chapter"><a href="auth-users-groups.html">12.
+		Authentication, Users &amp; Groups Management</a></span></dt>
+		<dd>
+		<dl>
+			<dt><span class="section"><a
+				href="auth-users-groups.html#auth-users-groups-intro">12.1.
+			Introduction</a></span></dt>
+			<dt><span class="section"><a
+				href="auth-users-groups.html#auth-users-groups-conf">12.2. Users
+			and Groups configuration</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="auth-users-groups.html#d4e2884">12.2.1. Schemas</a></span></dt>
+				<dt><span class="section"><a
+					href="auth-users-groups.html#d4e2897">12.2.2. Directories</a></span></dt>
+				<dt><span class="section"><a
+					href="auth-users-groups.html#d4e2916">12.2.3. UserManager</a></span></dt>
+				<dt><span class="section"><a
+					href="auth-users-groups.html#d4e2927">12.2.4. User Management
+				Interface</a></span></dt>
+			</dl>
+			</dd>
+			<dt><span class="section"><a
+				href="auth-users-groups.html#authentication-framework">12.3.
+			Authentication</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="auth-users-groups.html#d4e2950">12.3.1. Authentication
+				Framework Overview</a></span></dt>
+				<dt><span class="section"><a
+					href="auth-users-groups.html#d4e2961">12.3.2. Pluggable JAAS
+				Login Module</a></span></dt>
+				<dt><span class="section"><a
+					href="auth-users-groups.html#d4e3015">12.3.3. Pluggable Web
+				Authentication Filter</a></span></dt>
+			</dl>
+			</dd>
+		</dl>
+		</dd>
+		<dt><span class="chapter"><a href="policy-service.html">13.
+		Security Policy Service</a></span></dt>
+		<dd>
+		<dl>
+			<dt><span class="section"><a
+				href="policy-service.html#policy-service-intro">13.1.
+			Introduction</a></span></dt>
+			<dt><span class="section"><a
+				href="policy-service.html#d4e3176">13.2. Architecture</a></span></dt>
+			<dt><span class="section"><a
+				href="policy-service.html#d4e3189">13.3. Policy contributions</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="policy-service.html#d4e3191">13.3.1. Core policy
+				contribution</a></span></dt>
+				<dt><span class="section"><a
+					href="policy-service.html#d4e3202">13.3.2. Search policy
+				contribution</a></span></dt>
+			</dl>
+			</dd>
+		</dl>
+		</dd>
+		<dt><span class="chapter"><a href="workflow-service.html">14.
+		Workflow &amp; BPM</a></span></dt>
+		<dd>
+		<dl>
+			<dt><span class="section"><a
+				href="workflow-service.html#workflow-service-intro">14.1.
+			Introduction</a></span></dt>
+			<dt><span class="section"><a
+				href="workflow-service.html#workflow-service-architecture-overview">14.2.
+			Architecture</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="workflow-service.html#d4e3225">14.2.1. Big picture</a></span></dt>
+				<dt><span class="section"><a
+					href="workflow-service.html#d4e3231">14.2.2. Nuxeo Core
+				Workflow</a></span></dt>
+				<dt><span class="section"><a
+					href="workflow-service.html#d4e3238">14.2.3. Nuxeo Workflow
+				Document API and services</a></span></dt>
+			</dl>
+			</dd>
+			<dt><span class="section"><a
+				href="workflow-service.html#workflow-service-deploy-process-definitions">14.3.
+			Deploying process definitions</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="workflow-service.html#d4e3249">14.3.1. Using extension
+				points</a></span></dt>
+				<dt><span class="section"><a
+					href="workflow-service.html#d4e3269">14.3.2. Using the workflow
+				POJO service</a></span></dt>
+				<dt><span class="section"><a
+					href="workflow-service.html#d4e3272">14.3.3. Using EJB remoting</a></span></dt>
+			</dl>
+			</dd>
+			<dt><span class="section"><a
+				href="workflow-service.html#workflow-service-document-integration">14.4.
+			Nuxeo Core document integration</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="workflow-service.html#d4e3278">14.4.1. Security policy</a></span></dt>
+				<dt><span class="section"><a
+					href="workflow-service.html#d4e3281">14.4.2. Application level
+				rules and filters</a></span></dt>
+			</dl>
+			</dd>
+			<dt><span class="section"><a
+				href="workflow-service.html#workflow-service-versioning">14.5.
+			Document Versioning</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="workflow-service.html#d4e3286">14.5.1. Setting the
+				version of a document</a></span></dt>
+				<dt><span class="section"><a
+					href="workflow-service.html#d4e3295">14.5.2. Modifying
+				automatically the version of a document</a></span></dt>
+				<dt><span class="section"><a
+					href="workflow-service.html#d4e3310">14.5.3. Accessing document
+				from previous version</a></span></dt>
+				<dt><span class="section"><a
+					href="workflow-service.html#d4e3318">14.5.4. The versioning
+				service implementation</a></span></dt>
+			</dl>
+			</dd>
+			<dt><span class="section"><a
+				href="workflow-service.html#workflow-service-jbpm-plugins">14.6.
+			jBPM integration</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="workflow-service.html#d4e3331">14.6.1. Process definition
+				deployment</a></span></dt>
+				<dt><span class="section"><a
+					href="workflow-service.html#d4e3334">14.6.2. Business handlers
+				and Nuxeo Core integration</a></span></dt>
+			</dl>
+			</dd>
+			<dt><span class="section"><a
+				href="workflow-service.html#workflow-service-web-client">14.7.
+			Nuxeo Workflow Web Client</a></span></dt>
+			<dt><span class="section"><a
+				href="workflow-service.html#workflow-service-audit">14.8.
+			Auditing workflow related events</a></span></dt>
+			<dt><span class="section"><a
+				href="workflow-service.html#workflow-service-notifications">14.9.
+			Notification on workflow related events</a></span></dt>
+			<dt><span class="section"><a
+				href="workflow-service.html#workflow-service-tutorial">14.10.
+			Example of a document review process</a></span></dt>
+		</dl>
+		</dd>
+		<dt><span class="chapter"><a href="audit-service.html">15.
+		Logging and Audit Service</a></span></dt>
+		<dd>
+		<dl>
+			<dt><span class="section"><a
+				href="audit-service.html#audit-service-intro">15.1. Introduction</a></span></dt>
+			<dt><span class="section"><a
+				href="audit-service.html#d4e3361">15.2. Features</a></span></dt>
+			<dt><span class="section"><a
+				href="audit-service.html#nuxeo-platform-audit-web-access">15.3.
+			The nuxeo-platform-audit-web-access addon</a></span></dt>
+			<dt><span class="section"><a
+				href="audit-service.html#d4e3368">15.4. Architecture</a></span></dt>
+			<dt><span class="section"><a
+				href="audit-service.html#audit-service-sample">15.5. Extending
+			the audit service</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="audit-service.html#d4e3373">15.5.1. Register new events
+				to log</a></span></dt>
+				<dt><span class="section"><a
+					href="audit-service.html#d4e3376">15.5.2. Customize audit
+				entries schema</a></span></dt>
+			</dl>
+			</dd>
+		</dl>
+		</dd>
+		<dt><span class="chapter"><a
+			href="chapter-directories.html">16. Directories and Vocabularies</a></span></dt>
+		<dd>
+		<dl>
+			<dt><span class="section"><a
+				href="chapter-directories.html#directories-intro">16.1.
+			Introduction</a></span></dt>
+			<dt><span class="section"><a
+				href="chapter-directories.html#sql-directories">16.2. Directory
+			with a Relational Database Management System (SQL) server as backend
+			</a></span></dt>
+			<dt><span class="section"><a
+				href="chapter-directories.html#ldap-directories">16.3. Directory
+			with an LDAP server as backend</a></span></dt>
+			<dt><span class="section"><a
+				href="chapter-directories.html#directories-references">16.4.
+			Handling references between directory entries</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="chapter-directories.html#sql-references">16.4.1.
+				References defined by a many-to-many SQL table</a></span></dt>
+				<dt><span class="section"><a
+					href="chapter-directories.html#ldap-static-references">16.4.2.
+				Static reference as a dn-valued LDAP attribute</a></span></dt>
+				<dt><span class="section"><a
+					href="chapter-directories.html#ldap-dynamic-references">16.4.3.
+				Dynamic reference as a ldapUrl-valued LDAP attribute </a></span></dt>
+				<dt><span class="section"><a
+					href="chapter-directories.html#inverse-references">16.4.4.
+				Defining inverse references</a></span></dt>
+			</dl>
+			</dd>
+			<dt><span class="section"><a
+				href="chapter-directories.html#multi-directories">16.5.
+			Combining multiple directories into a single virtual directory</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="chapter-directories.html#d4e3414">16.5.1. Multi-directory
+				sources</a></span></dt>
+				<dt><span class="section"><a
+					href="chapter-directories.html#d4e3417">16.5.2. Sub-directories</a></span></dt>
+			</dl>
+			</dd>
+			<dt><span class="section"><a
+				href="chapter-directories.html#directories-api">16.6. The
+			Directory API</a></span></dt>
+			<dt><span class="section"><a
+				href="chapter-directories.html#vocabularies">16.7. Building
+			custom option lists in forms with vocabularies </a></span></dt>
+		</dl>
+		</dd>
+		<dt><span class="chapter"><a href="mimetype.html">17.
+		Mimetype detection</a></span></dt>
+		<dd>
+		<dl>
+			<dt><span class="section"><a
+				href="mimetype.html#mimetype-intro">17.1. Introduction</a></span></dt>
+			<dt><span class="section"><a href="mimetype.html#d4e3434">17.2.
+			MimetypeRegistry</a></span></dt>
+			<dt><span class="section"><a href="mimetype.html#d4e3500">17.3.
+			Mimetype sniffing</a></span></dt>
+			<dt><span class="section"><a href="mimetype.html#d4e3556">17.4.
+			Invoking the mimetype detection</a></span></dt>
+		</dl>
+		</dd>
+		<dt><span class="chapter"><a
+			href="transformation-service.html">18. Content Transformation</a></span></dt>
+		<dd>
+		<dl>
+			<dt><span class="section"><a
+				href="transformation-service.html#transformation-service-intro">18.1.
+			Introduction</a></span></dt>
+			<dt><span class="section"><a
+				href="transformation-service.html#d4e3582">18.2. Plugins module</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="transformation-service.html#d4e3589">18.2.1. Creating a
+				plugin</a></span></dt>
+				<dt><span class="section"><a
+					href="transformation-service.html#d4e3608">18.2.2. Declaring a
+				plugin module</a></span></dt>
+				<dt><span class="section"><a
+					href="transformation-service.html#d4e3641">18.2.3. Using a
+				transform plugin</a></span></dt>
+			</dl>
+			</dd>
+			<dt><span class="section"><a
+				href="transformation-service.html#d4e3690">18.3. Available
+			transforms</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="transformation-service.html#d4e3694">18.3.1. Document
+				conversion</a></span></dt>
+				<dt><span class="section"><a
+					href="transformation-service.html#d4e3763">18.3.2. Pdfbox</a></span></dt>
+				<dt><span class="section"><a
+					href="transformation-service.html#d4e3766">18.3.3. OLE objects
+				extraction</a></span></dt>
+				<dt><span class="section"><a
+					href="transformation-service.html#nuxeo-platform-transform-plugins-officemerger">18.3.4.
+				Office files merger</a></span></dt>
+				<dt><span class="section"><a
+					href="transformation-service.html#d4e3890">18.3.5. XSL
+				Transformation</a></span></dt>
+			</dl>
+			</dd>
+		</dl>
+		</dd>
+		<dt><span class="chapter"><a href="relation-service.html">19.
+		Relations</a></span></dt>
+		<dd>
+		<dl>
+			<dt><span class="section"><a
+				href="relation-service.html#relations-service-intro">19.1.
+			Introduction</a></span></dt>
+			<dt><span class="section"><a
+				href="relation-service.html#relations-service-concepts">19.2.
+			Concepts</a></span></dt>
+			<dt><span class="section"><a
+				href="relation-service.html#relations-service-configuration">19.3.
+			Configuration</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="relation-service.html#d4e3954">19.3.1. Graph instances</a></span></dt>
+				<dt><span class="section"><a
+					href="relation-service.html#d4e3966">19.3.2. Resource adapters</a></span></dt>
+			</dl>
+			</dd>
+			<dt><span class="section"><a
+				href="relation-service.html#relations-service-manage-relations">19.4.
+			Manage relations</a></span></dt>
+			<dt><span class="section"><a
+				href="relation-service.html#relations-service-display-relations">19.5.
+			Display relations</a></span></dt>
+			<dt><span class="section"><a
+				href="relation-service.html#relations-service-architecture">19.6.
+			Architecture overview</a></span></dt>
+		</dl>
+		</dd>
+		<dt><span class="chapter"><a
+			href="placeful-configuration.html">20. Placeful Configuration</a></span></dt>
+		<dd>
+		<dl>
+			<dt><span class="section"><a
+				href="placeful-configuration.html#intro">20.1. Introduction</a></span></dt>
+			<dt><span class="section"><a
+				href="placeful-configuration.html#usage">20.2. Using Placeful
+			Configuration</a></span></dt>
+			<dt><span class="section"><a
+				href="placeful-configuration.html#contribution">20.3.
+			Contributing a placeful configuration</a></span></dt>
+			<dt><span class="section"><a
+				href="placeful-configuration.html#storage">20.4. Available
+			storage</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="placeful-configuration.html#usage-storage-inmemory">20.4.1.
+				In memory storage</a></span></dt>
+				<dt><span class="section"><a
+					href="placeful-configuration.html#usage-storage-directory">20.4.2.
+				Directory storage</a></span></dt>
+			</dl>
+			</dd>
+			<dt><span class="section"><a
+				href="placeful-configuration.html#extension">20.5. Exemple of
+			extension definition</a></span></dt>
+		</dl>
+		</dd>
+		<dt><span class="chapter"><a href="vnavigation.html">21.
+		Virtual Navigation</a></span></dt>
+		<dd>
+		<dl>
+			<dt><span class="section"><a
+				href="vnavigation.html#virtual-navigation">21.1. Virtual
+			Navigation</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="vnavigation.html#d4e4103">21.1.1. Virtual Navigation
+				presentation</a></span></dt>
+				<dt><span class="section"><a
+					href="vnavigation.html#d4e4128">21.1.2. Virtual Navigation
+				configuration</a></span></dt>
+			</dl>
+			</dd>
+		</dl>
+		</dd>
+		<dt><span class="chapter"><a
+			href="nuxeo-platform-metadataext.html">22. Metadata Extraction
+		Service</a></span></dt>
+		<dd>
+		<dl>
+			<dt><span class="section"><a
+				href="nuxeo-platform-metadataext.html#metadataextraction-service-intro">22.1.
+			Introduction</a></span></dt>
+			<dt><span class="section"><a
+				href="nuxeo-platform-metadataext.html#d4e4239">22.2. Metadata
+			extraction module</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="nuxeo-platform-metadataext.html#d4e4257">22.2.1. Defining
+				a contribution for metadata extraction</a></span></dt>
+				<dt><span class="section"><a
+					href="nuxeo-platform-metadataext.html#d4e4268">22.2.2.
+				Specifying input parameters</a></span></dt>
+				<dt><span class="section"><a
+					href="nuxeo-platform-metadataext.html#d4e4273">22.2.3. Chaining
+				extractions</a></span></dt>
+				<dt><span class="section"><a
+					href="nuxeo-platform-metadataext.html#d4e4276">22.2.4. Creating
+				a plugin for metadata extraction</a></span></dt>
+				<dt><span class="section"><a
+					href="nuxeo-platform-metadataext.html#d4e4292">22.2.5. Using a
+				metadata extraction plugin</a></span></dt>
+			</dl>
+			</dd>
+		</dl>
+		</dd>
+		<dt><span class="chapter"><a href="unicity-service.html">23.
+		Unicity Service</a></span></dt>
+		<dd>
+		<dl>
+			<dt><span class="section"><a
+				href="unicity-service.html#unicity-service-how">23.1. How does
+			it works ?</a></span></dt>
+			<dt><span class="section"><a
+				href="unicity-service.html#unicity-service-what">23.2. What you
+			need:</a></span></dt>
+			<dt><span class="section"><a
+				href="unicity-service.html#unicity-service-conf">23.3.
+			Configuration</a></span></dt>
+			<dt><span class="section"><a
+				href="unicity-service.html#unicity-service-snippet">23.4.
+			Snippets</a></span></dt>
+		</dl>
+		</dd>
+		<dt><span class="chapter"><a
+			href="nuxeo-platform-mail.html">24. Nuxeo Mail Service</a></span></dt>
+		<dd>
+		<dl>
+			<dt><span class="section"><a
+				href="nuxeo-platform-mail.html#d4e4338">24.1. Presentation</a></span></dt>
+			<dt><span class="section"><a
+				href="nuxeo-platform-mail.html#d4e4343">24.2. Basic Use</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="nuxeo-platform-mail.html#d4e4345">24.2.1. Configuration</a></span></dt>
+			</dl>
+			</dd>
+			<dt><span class="section"><a
+				href="nuxeo-platform-mail.html#d4e4360">24.3. Advanced Use</a></span></dt>
+		</dl>
+		</dd>
+		<dt><span class="chapter"><a href="imaging.html">25.
+		Imaging</a></span></dt>
+		<dd>
+		<dl>
+			<dt><span class="section"><a
+				href="imaging.html#nuxeo-platform-imaging">25.1. Introduction</a></span></dt>
+			<dt><span class="section"><a
+				href="imaging.html#nuxeo-platform-imaging-api">25.2. Imaging API</a></span></dt>
+			<dt><span class="section"><a
+				href="imaging.html#nuxeo-platform-imaging-transform">25.3.
+			Imaging transform</a></span></dt>
+			<dt><span class="section"><a
+				href="imaging.html#nuxeo-platform-imaging-web">25.4. Imaging web</a></span></dt>
+			<dt><span class="section"><a
+				href="imaging.html#nuxeo-platform-imaging-core">25.5. Imaging
+			core</a></span></dt>
+		</dl>
+		</dd>
+		<dt><span class="chapter"><a
+			href="nuxeo-platform-preview.html">26. Nuxeo Preview Addon</a></span></dt>
+		<dd>
+		<dl>
+			<dt><span class="section"><a
+				href="nuxeo-platform-preview.html#d4e4393">26.1. Overview</a></span></dt>
+			<dt><span class="section"><a
+				href="nuxeo-platform-preview.html#d4e4417">26.2. Installing the
+			Preview Addon</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="nuxeo-platform-preview.html#d4e4420">26.2.1. Deploy the
+				Addon</a></span></dt>
+				<dt><span class="section"><a
+					href="nuxeo-platform-preview.html#d4e4425">26.2.2. Configure
+				Transformers</a></span></dt>
+			</dl>
+			</dd>
+			<dt><span class="section"><a
+				href="nuxeo-platform-preview.html#d4e4453">26.3. Extensions and
+			Pluggability</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="nuxeo-platform-preview.html#d4e4456">26.3.1. Pluggable
+				Adapters</a></span></dt>
+				<dt><span class="section"><a
+					href="nuxeo-platform-preview.html#d4e4485">26.3.2. Pluggable
+				HTML Transformers</a></span></dt>
+			</dl>
+			</dd>
+			<dt><span class="section"><a
+				href="nuxeo-platform-preview.html#d4e4496">26.4. Previews and
+			URLs</a></span></dt>
+		</dl>
+		</dd>
+	</dl>
+	</dd>
+	<dt><span class="part"><a href="pt03.html">III. Core
+	Services</a></span></dt>
+	<dd>
+	<dl>
+		<dt><span class="chapter"><a
+			href="chapter-nuxeo-runtime.html">27. Nuxeo Runtime</a></span></dt>
+		<dd>
+		<dl>
+			<dt><span class="section"><a
+				href="chapter-nuxeo-runtime.html#d4e4518">27.1. Overview</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="chapter-nuxeo-runtime.html#d4e4525">27.1.1. Main Goals</a></span></dt>
+				<dt><span class="section"><a
+					href="chapter-nuxeo-runtime.html#d4e4536">27.1.2. Main Features</a></span></dt>
+			</dl>
+			</dd>
+			<dt><span class="section"><a
+				href="chapter-nuxeo-runtime.html#d4e4546">27.2. What is OSGi?</a></span></dt>
+			<dt><span class="section"><a
+				href="chapter-nuxeo-runtime.html#d4e4565">27.3. OSGi Support</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="chapter-nuxeo-runtime.html#d4e4580">27.3.1. Supported
+				Features</a></span></dt>
+				<dt><span class="section"><a
+					href="chapter-nuxeo-runtime.html#d4e4600">27.3.2. Unsupported
+				Features</a></span></dt>
+				<dt><span class="section"><a
+					href="chapter-nuxeo-runtime.html#d4e4613">27.3.3. Planned
+				Features</a></span></dt>
+			</dl>
+			</dd>
+			<dt><span class="section"><a
+				href="chapter-nuxeo-runtime.html#d4e4620">27.4. Component Model</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="chapter-nuxeo-runtime.html#d4e4624">27.4.1. What are
+				components?</a></span></dt>
+				<dt><span class="section"><a
+					href="chapter-nuxeo-runtime.html#d4e4634">27.4.2. Main Features</a></span></dt>
+				<dt><span class="section"><a
+					href="chapter-nuxeo-runtime.html#d4e4655">27.4.3. Planned
+				Features</a></span></dt>
+				<dt><span class="section"><a
+					href="chapter-nuxeo-runtime.html#d4e4662">27.4.4. Adaptable
+				Components</a></span></dt>
+				<dt><span class="section"><a
+					href="chapter-nuxeo-runtime.html#d4e4667">27.4.5. Flexible
+				Model</a></span></dt>
+				<dt><span class="section"><a
+					href="chapter-nuxeo-runtime.html#d4e4675">27.4.6. Component
+				Life Cycle</a></span></dt>
+				<dt><span class="section"><a
+					href="chapter-nuxeo-runtime.html#d4e4696">27.4.7. Component
+				Extensibility</a></span></dt>
+			</dl>
+			</dd>
+			<dt><span class="section"><a
+				href="chapter-nuxeo-runtime.html#d4e4749">27.5. Supported Host
+			Platforms</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="chapter-nuxeo-runtime.html#d4e4751">27.5.1. JBoss
+				Integration</a></span></dt>
+				<dt><span class="section"><a
+					href="chapter-nuxeo-runtime.html#d4e4778">27.5.2. Eclipse
+				Integration</a></span></dt>
+			</dl>
+			</dd>
+			<dt><span class="section"><a
+				href="chapter-nuxeo-runtime.html#d4e4792">27.6. Using Nuxeo
+			Runtime</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="chapter-nuxeo-runtime.html#d4e4794">27.6.1. Creating
+				Components</a></span></dt>
+				<dt><span class="section"><a
+					href="chapter-nuxeo-runtime.html#d4e4853">27.6.2. Using
+				components</a></span></dt>
+				<dt><span class="section"><a
+					href="chapter-nuxeo-runtime.html#d4e4973">27.6.3. XML Component
+				Descriptors</a></span></dt>
+			</dl>
+			</dd>
+			<dt><span class="section"><a
+				href="chapter-nuxeo-runtime.html#d4e5007">27.7. Integration
+			tests for Nuxeo Runtime applications</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="chapter-nuxeo-runtime.html#nuxeo-runtime-test-NXRuntimeTestCase">27.7.1.
+				The NXRuntimeTestCase base class</a></span></dt>
+				<dt><span class="section"><a
+					href="chapter-nuxeo-runtime.html#d4e5033">27.7.2. Frequent
+				patterns</a></span></dt>
+			</dl>
+			</dd>
+			<dt><span class="section"><a
+				href="chapter-nuxeo-runtime.html#d4e5057">27.8. Detailed
+			Architecture</a></span></dt>
+			<dt><span class="section"><a
+				href="chapter-nuxeo-runtime.html#d4e5063">27.9. References</a></span></dt>
+		</dl>
+		</dd>
+		<dt><span class="chapter"><a
+			href="nuxeo-core-reference.html">28. Nuxeo Core Documentation</a></span></dt>
+		<dd>
+		<dl>
+			<dt><span class="section"><a
+				href="nuxeo-core-reference.html#d4e5079">28.1. TODO: BS</a></span></dt>
+			<dt><span class="section"><a
+				href="nuxeo-core-reference.html#d4e5083">28.2. Overview</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="nuxeo-core-reference.html#d4e5100">28.2.1. Main goals</a></span></dt>
+				<dt><span class="section"><a
+					href="nuxeo-core-reference.html#d4e5112">28.2.2. Nuxeo Core
+				Components</a></span></dt>
+			</dl>
+			</dd>
+			<dt><span class="section"><a
+				href="nuxeo-core-reference.html#d4e5125">28.3. Nuxeo Core
+			Architecture</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="nuxeo-core-reference.html#d4e5136">28.3.1. Model Layer
+				(or Internal API)</a></span></dt>
+				<dt><span class="section"><a
+					href="nuxeo-core-reference.html#d4e5142">28.3.2. Implementation
+				Layer</a></span></dt>
+				<dt><span class="section"><a
+					href="nuxeo-core-reference.html#d4e5146">28.3.3. Facade Layer
+				(or Public API)</a></span></dt>
+				<dt><span class="section"><a
+					href="nuxeo-core-reference.html#d4e5151">28.3.4. Deployment</a></span></dt>
+				<dt><span class="section"><a
+					href="nuxeo-core-reference.html#d4e5160">28.3.5. Client Session</a></span></dt>
+			</dl>
+			</dd>
+			<dt><span class="section"><a
+				href="nuxeo-core-reference.html#d4e5167">28.4. The Repository
+			Model</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="nuxeo-core-reference.html#d4e5183">28.4.1. Document and
+				Schemas</a></span></dt>
+				<dt><span class="section"><a
+					href="nuxeo-core-reference.html#d4e5208">28.4.2. Document
+				Facets</a></span></dt>
+				<dt><span class="section"><a
+					href="nuxeo-core-reference.html#d4e5221">28.4.3. Document
+				Annotations</a></span></dt>
+				<dt><span class="section"><a
+					href="nuxeo-core-reference.html#d4e5227">28.4.4. Document
+				Access Control</a></span></dt>
+				<dt><span class="section"><a
+					href="nuxeo-core-reference.html#d4e5303">28.4.5. Life Cycle</a></span></dt>
+				<dt><span class="section"><a
+					href="nuxeo-core-reference.html#d4e5369">28.4.6. Query Engine</a></span></dt>
+				<dt><span class="section"><a
+					href="nuxeo-core-reference.html#d4e5375">28.4.7. The Public API</a></span></dt>
+				<dt><span class="section"><a
+					href="nuxeo-core-reference.html#d4e5433">28.4.8. Integration
+				with Applications Servers</a></span></dt>
+			</dl>
+			</dd>
+			<dt><span class="section"><a
+				href="nuxeo-core-reference.html#d4e5441">28.5. Extension Points</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="nuxeo-core-reference.html#d4e5444">28.5.1. Session
+				Factories</a></span></dt>
+				<dt><span class="section"><a
+					href="nuxeo-core-reference.html#d4e5460">28.5.2. LifeCycle
+				Managers</a></span></dt>
+			</dl>
+			</dd>
+		</dl>
+		</dd>
+		<dt><span class="chapter"><a href="nuxeo-core-io.html">29.
+		Nuxeo Core Import / Export API</a></span></dt>
+		<dd>
+		<dl>
+			<dt><span class="section"><a
+				href="nuxeo-core-io.html#d4e5478">29.1. Export Format</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="nuxeo-core-io.html#d4e5488">29.1.1. document.xml format</a></span></dt>
+				<dt><span class="section"><a
+					href="nuxeo-core-io.html#d4e5500">29.1.2. Inlining Blobs</a></span></dt>
+			</dl>
+			</dd>
+			<dt><span class="section"><a
+				href="nuxeo-core-io.html#d4e5507">29.2. Document Pipe</a></span></dt>
+			<dt><span class="section"><a
+				href="nuxeo-core-io.html#d4e5541">29.3. Document Reader</a></span></dt>
+			<dt><span class="section"><a
+				href="nuxeo-core-io.html#d4e5571">29.4. Document Writer</a></span></dt>
+			<dt><span class="section"><a
+				href="nuxeo-core-io.html#d4e5605">29.5. Document Transformer</a></span></dt>
+			<dt><span class="section"><a
+				href="nuxeo-core-io.html#d4e5611">29.6. API Examples</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="nuxeo-core-io.html#d4e5641">29.6.1. Exporting data from a
+				Nuxeo repository to a Zip archive</a></span></dt>
+				<dt><span class="section"><a
+					href="nuxeo-core-io.html#d4e5645">29.6.2. Importing data from a
+				Zip archive to a Nuxeo repository</a></span></dt>
+				<dt><span class="section"><a
+					href="nuxeo-core-io.html#d4e5649">29.6.3. Export a single
+				document as an XML with blobs inlined.</a></span></dt>
+			</dl>
+			</dd>
+		</dl>
+		</dd>
+		<dt><span class="chapter"><a href="experimental.html">30.
+		Experimental Topics</a></span></dt>
+		<dd>
+		<dl>
+			<dt><span class="section"><a
+				href="experimental.html#d4e5657">30.1. Introduction</a></span></dt>
+			<dt><span class="section"><a
+				href="experimental.html#d4e5665">30.2. Runtime Support for
+			Scripting Languages</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="experimental.html#d4e5667">30.2.1. Introduction</a></span></dt>
+				<dt><span class="section"><a
+					href="experimental.html#d4e5680">30.2.2. Supported languages</a></span></dt>
+				<dt><span class="section"><a
+					href="experimental.html#d4e5698">30.2.3. Running a Script</a></span></dt>
+			</dl>
+			</dd>
+		</dl>
+		</dd>
+	</dl>
+	</dd>
+	<dt><span class="part"><a href="pt04.html">IV. SOA, Web
+	Services and various integration solutions</a></span></dt>
+	<dd>
+	<dl>
+		<dt><span class="chapter"><a href="nuxeo-restlet-api.html">31.
+		The Nuxeo Restlet API</a></span></dt>
+		<dd>
+		<dl>
+			<dt><span class="section"><a
+				href="nuxeo-restlet-api.html#d4e5734">31.1. Restlet Integration</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="nuxeo-restlet-api.html#d4e5748">31.1.1. Restlet types in
+				Nuxeo 5</a></span></dt>
+				<dt><span class="section"><a
+					href="nuxeo-restlet-api.html#d4e5770">31.1.2. Restlet URL and
+				parameters mapping</a></span></dt>
+				<dt><span class="section"><a
+					href="nuxeo-restlet-api.html#d4e5785">31.1.3. Contributing a
+				new restlet</a></span></dt>
+			</dl>
+			</dd>
+			<dt><span class="section"><a
+				href="nuxeo-restlet-api.html#d4e5798">31.2. Nuxeo default
+			restlets</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="nuxeo-restlet-api.html#d4e5801">31.2.1. Browse restlet</a></span></dt>
+				<dt><span class="section"><a
+					href="nuxeo-restlet-api.html#d4e5811">31.2.2. Export restlet</a></span></dt>
+				<dt><span class="section"><a
+					href="nuxeo-restlet-api.html#d4e5831">31.2.3. Lock restlet</a></span></dt>
+				<dt><span class="section"><a
+					href="nuxeo-restlet-api.html#d4e5852">31.2.4. Plugin upload
+				restlet</a></span></dt>
+			</dl>
+			</dd>
+			<dt><span class="section"><a
+				href="nuxeo-restlet-api.html#nuxeo-platform-restPack">31.3.
+			Nuxeo RestPack</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="nuxeo-restlet-api.html#d4e5867">31.3.1. Installing the
+				RestPack</a></span></dt>
+				<dt><span class="section"><a
+					href="nuxeo-restlet-api.html#d4e5871">31.3.2. Restlets included
+				in the RestPack</a></span></dt>
+			</dl>
+			</dd>
+		</dl>
+		</dd>
+		<dt><span class="chapter"><a href="nuxeo-http-client.html">32.
+		Nuxeo HTTP client</a></span></dt>
+		<dd>
+		<dl>
+			<dt><span class="section"><a
+				href="nuxeo-http-client.html#d4e5981">32.1. HTTP Client Library</a></span></dt>
+			<dt><span class="section"><a
+				href="nuxeo-http-client.html#d4e5987">32.2. HTTP client
+			authentication</a></span></dt>
+		</dl>
+		</dd>
+		<dt><span class="chapter"><a href="web-services.html">33.
+		Web services</a></span></dt>
+		<dd>
+		<dl>
+			<dt><span class="section"><a
+				href="web-services.html#d4e6010">33.1. Audit web service</a></span></dt>
+			<dt><span class="section"><a
+				href="web-services.html#d4e6014">33.2. Remoting web service</a></span></dt>
+			<dt><span class="section"><a
+				href="web-services.html#d4e6017">33.3. Indexing gateway service</a></span></dt>
+		</dl>
+		</dd>
+		<dt><span class="chapter"><a href="nuxeo-portlets.html">34.
+		Nuxeo JSR 168 Integration</a></span></dt>
+		<dd>
+		<dl>
+			<dt><span class="section"><a
+				href="nuxeo-portlets.html#d4e6045">34.1. Overview</a></span></dt>
+			<dt><span class="section"><a
+				href="nuxeo-portlets.html#d4e6048">34.2. Testing Nuxeo Portlets</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="nuxeo-portlets.html#d4e6050">34.2.1. Prerequisites</a></span></dt>
+				<dt><span class="section"><a
+					href="nuxeo-portlets.html#d4e6079">34.2.2. Generate a sample
+				project with nuxeo-archetype-portlet archetype</a></span></dt>
+				<dt><span class="section"><a
+					href="nuxeo-portlets.html#d4e6104">34.2.3. Test the newly
+				created portlet</a></span></dt>
+			</dl>
+			</dd>
+			<dt><span class="section"><a
+				href="nuxeo-portlets.html#d4e6118">34.3. Developping Nuxeo
+			Portlets</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="nuxeo-portlets.html#d4e6120">34.3.1. NuxeoPortlet class</a></span></dt>
+				<dt><span class="section"><a
+					href="nuxeo-portlets.html#d4e6132">34.3.2. Project from
+				nuxeo-archetype-portlet archetype</a></span></dt>
+				<dt><span class="section"><a
+					href="nuxeo-portlets.html#d4e6153">34.3.3. portlet.xml</a></span></dt>
+				<dt><span class="section"><a
+					href="nuxeo-portlets.html#d4e6161">34.3.4. Restlets</a></span></dt>
+			</dl>
+			</dd>
+			<dt><span class="section"><a
+				href="nuxeo-portlets.html#d4e6183">34.4. Available portlets</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="nuxeo-portlets.html#d4e6185">34.4.1. Nuxeo Search Portlet</a></span></dt>
+			</dl>
+			</dd>
+		</dl>
+		</dd>
+		<dt><span class="chapter"><a
+			href="nuxeo-desktop-integration.html">35. Desktop integration
+		tools</a></span></dt>
+		<dd>
+		<dl>
+			<dt><span class="section"><a
+				href="nuxeo-desktop-integration.html#d4e6214">35.1. Drag and
+			drop browser extensions </a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="nuxeo-desktop-integration.html#d4e6219">35.1.1. Server
+				side import service: the FileManagerService </a></span></dt>
+				<dt><span class="section"><a
+					href="nuxeo-desktop-integration.html#d4e6224">35.1.2. Microsoft
+				Internet Explorer plugin </a></span></dt>
+				<dt><span class="section"><a
+					href="nuxeo-desktop-integration.html#d4e6229">35.1.3. Mozilla
+				Firefox plugin </a></span></dt>
+			</dl>
+			</dd>
+			<dt><span class="section"><a
+				href="nuxeo-desktop-integration.html#d4e6235">35.2. Online
+			document editing with LiveEdit </a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="nuxeo-desktop-integration.html#d4e6238">35.2.1.
+				Functional overview</a></span></dt>
+				<dt><span class="section"><a
+					href="nuxeo-desktop-integration.html#d4e6250">35.2.2.
+				Functional use cases</a></span></dt>
+				<dt><span class="section"><a
+					href="nuxeo-desktop-integration.html#d4e6286">35.2.3.
+				Architectural overview</a></span></dt>
+				<dt><span class="section"><a
+					href="nuxeo-desktop-integration.html#d4e6458">35.2.4. The Web
+				Service component</a></span></dt>
+				<dt><span class="section"><a
+					href="nuxeo-desktop-integration.html#d4e6463">35.2.5. More on
+				editor launch</a></span></dt>
+				<dt><span class="section"><a
+					href="nuxeo-desktop-integration.html#d4e6468">35.2.6. More on
+				pre- and post-editing actions</a></span></dt>
+			</dl>
+			</dd>
+		</dl>
+		</dd>
+		<dt><span class="chapter"><a
+			href="nuxeo-platform-webdav-server.html">36. Nuxeo WebDAV
+		interface</a></span></dt>
+		<dd>
+		<dl>
+			<dt><span class="section"><a
+				href="nuxeo-platform-webdav-server.html#d4e6478">36.1. WebDAV
+			clients</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="nuxeo-platform-webdav-server.html#d4e6481">36.1.1. Path
+				vs displayName</a></span></dt>
+				<dt><span class="section"><a
+					href="nuxeo-platform-webdav-server.html#d4e6491">36.1.2.
+				Filesystem resource vs Nuxeo DocumentModel artifact</a></span></dt>
+				<dt><span class="section"><a
+					href="nuxeo-platform-webdav-server.html#d4e6494">36.1.3. MS Web
+				Folder client</a></span></dt>
+			</dl>
+			</dd>
+			<dt><span class="section"><a
+				href="nuxeo-platform-webdav-server.html#d4e6498">36.2. Fooling
+			WebDAV clients</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="nuxeo-platform-webdav-server.html#d4e6502">36.2.1.
+				Available hacks</a></span></dt>
+				<dt><span class="section"><a
+					href="nuxeo-platform-webdav-server.html#d4e6516">36.2.2.
+				Configuring Nuxeo WebDAV connector for each client.</a></span></dt>
+			</dl>
+			</dd>
+			<dt><span class="section"><a
+				href="nuxeo-platform-webdav-server.html#d4e6527">36.3. Nuxeo EP
+			WebDAV implementation</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="nuxeo-platform-webdav-server.html#d4e6529">36.3.1. Nuxeo
+				EP WebDAV-specific features</a></span></dt>
+				<dt><span class="section"><a
+					href="nuxeo-platform-webdav-server.html#d4e6559">36.3.2. Known
+				limitations</a></span></dt>
+			</dl>
+			</dd>
+			<dt><span class="section"><a
+				href="nuxeo-platform-webdav-server.html#d4e6564">36.4. Using the
+			Nuxeo WebDAV connector</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="nuxeo-platform-webdav-server.html#d4e6566">36.4.1.
+				Installing the WebDAV connector</a></span></dt>
+				<dt><span class="section"><a
+					href="nuxeo-platform-webdav-server.html#d4e6572">36.4.2.
+				Connecting a client to Nuxeo WebDAV connector</a></span></dt>
+			</dl>
+			</dd>
+		</dl>
+		</dd>
+		<dt><span class="chapter"><a
+			href="nuxeo-reporting-birt.html">37. Reporting: Eclipse BIRT
+		Driver</a></span></dt>
+		<dd>
+		<dl>
+			<dt><span class="section"><a
+				href="nuxeo-reporting-birt.html#d4e6580">37.1. Overview</a></span></dt>
+			<dt><span class="section"><a
+				href="nuxeo-reporting-birt.html#d4e6583">37.2. How to use it</a></span></dt>
+			<dt><span class="section"><a
+				href="nuxeo-reporting-birt.html#d4e6640">37.3. Tomcat
+			integration HOWTO</a></span></dt>
+		</dl>
+		</dd>
+	</dl>
+	</dd>
+	<dt><span class="part"><a href="pt05.html">V.
+	Administration</a></span></dt>
+	<dd>
+	<dl>
+		<dt><span class="chapter"><a href="administration.html">38.
+		Administration</a></span></dt>
+		<dd>
+		<dl>
+			<dt><span class="section"><a
+				href="administration.html#admin-smtp-configuration">38.1. SMTP
+			Server configuration</a></span></dt>
+			<dt><span class="section"><a
+				href="administration.html#admin-database-configuration">38.2.
+			RDBMS Storage and Database Configuration</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="administration.html#d4e6687">38.2.1. Storages in Nuxeo EP</a></span></dt>
+				<dt><span class="section"><a
+					href="administration.html#d4e6693">38.2.2. Install the JDBC
+				driver</a></span></dt>
+				<dt><span class="section"><a
+					href="administration.html#d4e6705">38.2.3. Configure Nuxeo Core
+				storage</a></span></dt>
+				<dt><span class="section"><a
+					href="administration.html#d4e6749">38.2.4. Configure Storage
+				for other Nuxeo Services</a></span></dt>
+				<dt><span class="section"><a
+					href="administration.html#d4e6868">38.2.5. Setting up a new
+				repository configuration</a></span></dt>
+			</dl>
+			</dd>
+			<dt><span class="section"><a
+				href="administration.html#admin-ldap-configuration">38.3. LDAP
+			Integration</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="administration.html#d4e6923">38.3.1. For users/groups
+				storage backend</a></span></dt>
+			</dl>
+			</dd>
+			<dt><span class="section"><a
+				href="administration.html#admin-openoffice">38.4. OpenOffice.org
+			server installation</a></span></dt>
+			<dt><span class="section"><a
+				href="administration.html#admin-specific_IP_binding-configuration">38.5.
+			Run Nuxeo EP with a specific IP binding</a></span></dt>
+			<dt><span class="section"><a
+				href="administration.html#admin-virtualhosting">38.6. Virtual
+			Hosting</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="administration.html#d4e6995">38.6.1. Motivations for
+				virtual hosting</a></span></dt>
+				<dt><span class="section"><a
+					href="administration.html#d4e7011">38.6.2. Virtual hosting
+				configuration for Apache 2.x</a></span></dt>
+			</dl>
+			</dd>
+			<dt><span class="section"><a
+				href="administration.html#nuxeo-shell">38.7. The Nuxeo Shell</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="administration.html#d4e7054">38.7.1. Overview</a></span></dt>
+				<dt><span class="section"><a
+					href="administration.html#d4e7081">38.7.2. User Manual</a></span></dt>
+				<dt><span class="section"><a
+					href="administration.html#d4e7300">38.7.3. Extending the shell</a></span></dt>
+			</dl>
+			</dd>
+		</dl>
+		</dd>
+	</dl>
+	</dd>
+	<dt><span class="part"><a href="pt06.html">VI. Core
+	developer guide</a></span></dt>
+	<dd>
+	<dl>
+		<dt><span class="chapter"><a href="code-dev.html">39.
+		Coding and Design Guidelines</a></span></dt>
+		<dd>
+		<dl>
+			<dt><span class="section"><a href="code-dev.html#d4e7318">39.1.
+			Introduction</a></span></dt>
+			<dt><span class="section"><a href="code-dev.html#d4e7331">39.2.
+			External Coding Standards</a></span></dt>
+			<dt><span class="section"><a href="code-dev.html#d4e7346">39.3.
+			Some points that need attention</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="code-dev.html#d4e7348">39.3.1. Java code formating</a></span></dt>
+				<dt><span class="section"><a
+					href="code-dev.html#d4e7390">39.3.2. XML code formatting</a></span></dt>
+				<dt><span class="section"><a
+					href="code-dev.html#d4e7397">39.3.3. Design</a></span></dt>
+				<dt><span class="section"><a
+					href="code-dev.html#d4e7422">39.3.4. Unit tests</a></span></dt>
+				<dt><span class="section"><a
+					href="code-dev.html#d4e7446">39.3.5. Security</a></span></dt>
+				<dt><span class="section"><a
+					href="code-dev.html#d4e7458">39.3.6. Naming convention</a></span></dt>
+				<dt><span class="section"><a
+					href="code-dev.html#d4e7468">39.3.7. Information hiding</a></span></dt>
+				<dt><span class="section"><a
+					href="code-dev.html#d4e7474">39.3.8. Use modern Java features</a></span></dt>
+				<dt><span class="section"><a
+					href="code-dev.html#d4e7482">39.3.9. Logging</a></span></dt>
+				<dt><span class="section"><a
+					href="code-dev.html#d4e7496">39.3.10. Documentation: Comments
+				and Javadoc</a></span></dt>
+				<dt><span class="section"><a
+					href="code-dev.html#d4e7570">39.3.11. Deprecation</a></span></dt>
+			</dl>
+			</dd>
+			<dt><span class="section"><a href="code-dev.html#d4e7580">39.4.
+			Methodology tips</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="code-dev.html#d4e7583">39.4.1. Use the power of your IDE
+				(and its plugins)</a></span></dt>
+				<dt><span class="section"><a
+					href="code-dev.html#d4e7633">39.4.2. Refactor</a></span></dt>
+			</dl>
+			</dd>
+			<dt><span class="section"><a href="code-dev.html#d4e7646">39.5.
+			Important references</a></span></dt>
+		</dl>
+		</dd>
+		<dt><span class="chapter"><a href="ch40.html">40.
+		Development Tools and Process</a></span></dt>
+		<dd>
+		<dl>
+			<dt><span class="section"><a href="ch40.html#d4e7663">40.1.
+			Code Quality with Eclipse Plugins</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a href="ch40.html#d4e7666">40.1.1.
+				Using Checkstyle</a></span></dt>
+				<dt><span class="section"><a href="ch40.html#d4e7680">40.1.2.
+				Using TPTP</a></span></dt>
+				<dt><span class="section"><a href="ch40.html#d4e7683">40.1.3.
+				Using FindBugs</a></span></dt>
+			</dl>
+			</dd>
+			<dt><span class="section"><a href="ch40.html#d4e7686">40.2.
+			Profiling with NetBeans Profiler</a></span></dt>
+			<dt><span class="section"><a
+				href="ch40.html#nxpointdoc-tool">40.3. NXPointDoc Documentation
+			tool</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a href="ch40.html#d4e7706">40.3.1.
+				Documenting a component</a></span></dt>
+				<dt><span class="section"><a href="ch40.html#d4e7824">40.3.2.
+				Creating the NxPointDoc site</a></span></dt>
+				<dt><span class="section"><a href="ch40.html#d4e7834">40.3.3.
+				Browsing NxPointDoc</a></span></dt>
+			</dl>
+			</dd>
+		</dl>
+		</dd>
+		<dt><span class="chapter"><a
+			href="release-management.html">41. Release Management</a></span></dt>
+		<dd>
+		<dl>
+			<dt><span class="section"><a
+				href="release-management.html#release-intro">41.1. Introduction</a></span></dt>
+			<dt><span class="section"><a
+				href="release-management.html#d4e7885">41.2. Let's release!</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="release-management.html#d4e7889">41.2.1. Remove all
+				dependencies on SNAPSHOT versions</a></span></dt>
+				<dt><span class="section"><a
+					href="release-management.html#d4e7932">41.2.2. Checkout the
+				code and clean your repository</a></span></dt>
+				<dt><span class="section"><a
+					href="release-management.html#d4e7938">41.2.3. Test the release</a></span></dt>
+				<dt><span class="section"><a
+					href="release-management.html#d4e7945">41.2.4. Perform the
+				release</a></span></dt>
+				<dt><span class="section"><a
+					href="release-management.html#d4e7951">41.2.5. You're done</a></span></dt>
+			</dl>
+			</dd>
+		</dl>
+		</dd>
+	</dl>
+	</dd>
+	<dt><span class="part"><a href="pt07.html">VII. Annexes</a></span></dt>
+	<dd>
+	<dl>
+		<dt><span class="appendix"><a href="faqs.html">A. FAQs</a></span></dt>
+		<dd>
+		<dl>
+			<dt><span class="section"><a href="faqs.html#d4e7962">A.1.
+			Deployment and Operations</a></span></dt>
+		</dl>
+		</dd>
+		<dt><span class="appendix"><a
+			href="dev-environment-installation.html">B. Detailed Development
+		Software Installation Instructions</a></span></dt>
+		<dd>
+		<dl>
+			<dt><span class="section"><a
+				href="dev-environment-installation.html#d4e8197">B.1. Installing
+			Java 5</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="dev-environment-installation.html#d4e8209">B.1.1. Using
+				the Sun Java Development Kit (Windows and linux)</a></span></dt>
+				<dt><span class="section"><a
+					href="dev-environment-installation.html#d4e8214">B.1.2. Using a
+				package management systems (Linux)</a></span></dt>
+				<dt><span class="section"><a
+					href="dev-environment-installation.html#d4e8232">B.1.3. Manual
+				installation (Linux)</a></span></dt>
+				<dt><span class="section"><a
+					href="dev-environment-installation.html#d4e8237">B.1.4. Setting
+				up JAVA_HOME (Windows, Linux, Mac OS)</a></span></dt>
+			</dl>
+			</dd>
+			<dt><span class="section"><a
+				href="dev-environment-installation.html#d4e8268">B.2. Installing
+			Ant</a></span></dt>
+			<dt><span class="section"><a
+				href="dev-environment-installation.html#d4e8295">B.3. Installing
+			Maven</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="dev-environment-installation.html#d4e8297">B.3.1. What is
+				Maven?</a></span></dt>
+				<dt><span class="section"><a
+					href="dev-environment-installation.html#d4e8309">B.3.2.
+				Installing Maven</a></span></dt>
+			</dl>
+			</dd>
+			<dt><span class="section"><a
+				href="dev-environment-installation.html#d4e8324">B.4. Installing
+			JBoss AS</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="dev-environment-installation.html#d4e8347">B.4.1. JBoss
+				AS listening ports customization</a></span></dt>
+				<dt><span class="section"><a
+					href="dev-environment-installation.html#d4e8374">B.4.2.
+				Affected JBoss services</a></span></dt>
+			</dl>
+			</dd>
+			<dt><span class="section"><a
+				href="dev-environment-installation.html#d4e8392">B.5. Installing
+			a Subversion client</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="dev-environment-installation.html#d4e8396">B.5.1. Generic
+				subversion clients with linux</a></span></dt>
+				<dt><span class="section"><a
+					href="dev-environment-installation.html#d4e8404">B.5.2. Windows</a></span></dt>
+			</dl>
+			</dd>
+			<dt><span class="section"><a
+				href="dev-environment-installation.html#d4e8409">B.6. Chapter
+			Key Point</a></span></dt>
+		</dl>
+		</dd>
+		<dt><span class="appendix"><a href="commercial.html">C.
+		Commercial Support</a></span></dt>
+		<dd>
+		<dl>
+			<dt><span class="section"><a
+				href="commercial.html#d4e8423">C.1. About Us</a></span></dt>
+			<dt><span class="section"><a
+				href="commercial.html#d4e8429">C.2. Contact information</a></span></dt>
+			<dd>
+			<dl>
+				<dt><span class="section"><a
+					href="commercial.html#d4e8431">C.2.1. General</a></span></dt>
+				<dt><span class="section"><a
+					href="commercial.html#d4e8436">C.2.2. France</a></span></dt>
+				<dt><span class="section"><a
+					href="commercial.html#d4e8442">C.2.3. UK</a></span></dt>
+			</dl>
+			</dd>
+		</dl>
+		</dd>
+	</dl>
+	</dd>
+</dl>
+</div>
+</div>
+<script xmlns:fo="http://www.w3.org/1999/XSL/Format"
+	src="http://www.google-analytics.com/urchin.js" type="text/javascript"></script>
+<script xmlns:fo="http://www.w3.org/1999/XSL/Format"
+	type="text/javascript">_uacct = "UA-81135-9"; urchinTracker();</script>
+<div xmlns:fo="http://www.w3.org/1999/XSL/Format" class="navfooter">
+<hr>
+<table width="100%" summary="Navigation footer">
+	<tr>
+		<td width="30%" align="left">&nbsp;</td>
+		<td width="40%" align="center">&nbsp;</td>
+		<td width="30%" align="right">&nbsp;<a accesskey="n"
+			href="pt01.html">Next</a></td>
+	</tr>
+	<tr>
+		<td width="30%" align="left" valign="top">&nbsp;</td>
+		<td width="40%" align="center"><span
+			style="color: white; font-size: 90%;"><a
+			href="http://www.nuxeo.com/"
+			title="Nuxeo - Professional Open Source ECM">Professional Open
+		Source ECM by Nuxeo </a></span></td>
+		<td width="30%" align="right" valign="top">&nbsp;Part&nbsp;I.&nbsp;Introduction</td>
+	</tr>
+</table>
+</div>
+this is a very cute cat
+<img src="./cimg0158.jpg" />
+</body>
+</html>

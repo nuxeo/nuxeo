@@ -38,11 +38,11 @@
             <td colspan="2">
                 <p class="entryEditOptions">
                     Version increment:
-                    <input type="radio" name="versioning" value="major" checked> Major
+                    <input class="radioButton" type="radio" name="versioning" value="major" checked> Major
                     &nbsp;&nbsp;
-                    <input type="radio" name="versioning" value="minor"/> Minor
+                    <input class="radioButton" type="radio" name="versioning" value="minor"/> Minor
                     &nbsp;&nbsp;
-                    <input type="radio" name="versioning" value=""/> None
+                    <input class="radioButton" type="radio" name="versioning" value=""/> None
                 </p>
             </td>
         </tr>

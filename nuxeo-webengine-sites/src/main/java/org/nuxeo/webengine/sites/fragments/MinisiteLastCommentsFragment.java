@@ -29,8 +29,8 @@ import org.nuxeo.theme.models.ModelException;
 import org.nuxeo.webengine.sites.JsonAdapter;
 import org.nuxeo.webengine.sites.models.WebpageCommentListModel;
 import org.nuxeo.webengine.sites.models.WebpageCommentModel;
-import org.nuxeo.webengine.utils.SiteQueriesColection;
-import org.nuxeo.webengine.utils.SiteUtils;
+import org.nuxeo.webengine.sites.utils.SiteQueriesColection;
+import org.nuxeo.webengine.sites.utils.SiteUtils;
 
 /**
  * Action fragment for initializing the fragment related to retrieving a certain

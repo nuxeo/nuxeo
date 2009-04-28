@@ -17,11 +17,9 @@
 
 package org.nuxeo.webengine.sites;
 
-import static org.nuxeo.webengine.utils.SiteConstants.*;
+import static org.nuxeo.webengine.sites.utils.SiteConstants.*;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -38,13 +36,11 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.rest.DocumentObject;
-import org.nuxeo.ecm.platform.comment.api.CommentManager;
-import org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.webengine.utils.SiteUtils;
+import org.nuxeo.webengine.sites.utils.SiteUtils;
 
 /**
  * Web object implementation corresponding to WebPage. It is resolved from site.
@@ -61,12 +57,12 @@ public class Page extends DocumentObject {
     @Override
     @GET
     public Object doGet() {
-        ctx.getRequest().setAttribute("org.nuxeo.theme.theme", "sites/page");
+        ctx.getRequest().setAttribute(THEME_BUNDLE, PAGE_THEME_PAGE);
         String currentPerspective = (String) ctx.getRequest().getAttribute(
-                "org.nuxeo.theme.perspective");
+                THEME_PERSPECTIVE);
         if (StringUtils.isEmpty(currentPerspective)) {
             // Set view perspective if none present.
-            ctx.getRequest().setAttribute("org.nuxeo.theme.perspective",
+            ctx.getRequest().setAttribute(THEME_PERSPECTIVE,
                     VIEW_PERSPECTIVE);
         }
         try {
@@ -80,25 +76,6 @@ public class Page extends DocumentObject {
     @POST
     public Response doPost() {
         return null;
-    }
-
-    public boolean isModerator() {
-        try {
-            CoreSession session = getCoreSession();
-            return SiteUtils.isModeratedByCurrentUser(session, getDocument());
-        } catch (Exception e) {
-            throw WebException.wrap("Failed to delete comment", e);
-        }
-    }
-
-    // not sure it is used anymore
-    public boolean isModerated() {
-        try {
-            CoreSession session = getCoreSession();
-            return SiteUtils.isCurrentModerated(session, getDocument());
-        } catch (Exception e) {
-            throw WebException.wrap("Failed to delete comment", e);
-        }
     }
 
     @GET
@@ -124,20 +101,10 @@ public class Page extends DocumentObject {
     @Path("search")
     public Object getSearchParametres(
             @FormParam("searchParam") String searchParam) {
-        ctx.getRequest().setAttribute("org.nuxeo.theme.theme", "sites/search");
-        CoreSession session = getCoreSession();
-        Map<String, Object> root = new HashMap<String, Object>();
+        ctx.getRequest().setAttribute(THEME_BUNDLE, SEARCH_THEME_PAGE);
+        ctx.setProperty(SEARCH_PARAM, searchParam);
         try {
-            DocumentModel ws = SiteUtils.getFirstWorkspaceParent(session, doc);
-            List<Object> pages = SiteUtils.searchPagesInSite(session, ws,
-                    searchParam, 50);
-            root.put(RESULTS, pages);
-            root.put(CONTEXTUAL_LINKS,
-                    SiteUtils.getContextualLinks(session, ws));
-            root.put(WELCOME_TEXT, SiteUtils.getString(ws,
-                    WEBCONTAINER_WELCOMETEXT, null));
-            root.put(PAGE_NAME, ws.getTitle());
-            return getTemplate("template_default.ftl").args(root);
+            return getTemplate("template_default.ftl").args(getPageArguments());
         } catch (Exception e) {
             throw WebException.wrap(e);
         }
@@ -194,45 +161,24 @@ public class Page extends DocumentObject {
         }
     }
 
-    public boolean isUserWithCommentPermission() {
-        try {
-            CoreSession session = getCoreSession();
-            return SiteUtils.currentUserHasCommentPermision(session,
-                    getDocument());
-        } catch (Exception e) {
-            throw WebException.wrap("Failed to delete comment", e);
-        }
-    }
-
-    protected Map<String, Object> getPageArguments() {
+    /**
+     * Computes the arguments for a page. It is needed because in page some of 
+     * the site properties need be displayed. 
+     * @return
+     * @throws Exception
+     */
+    protected Map<String, Object> getPageArguments() throws Exception {
 
         Map<String, Object> root = new HashMap<String, Object>();
         CoreSession session = getCoreSession();
-        try {
-            DocumentModel ws = SiteUtils.getFirstWorkspaceParent(session, doc);
-            root.put(PAGE_TITLE, doc.getTitle());
-            root.put(PAGE_NAME,
-                    SiteUtils.getString(ws, WEBCONATINER_NAME, null));
-            root.put(SITE_DESCRIPTION, SiteUtils.getString(ws,
-                    WEBCONTAINER_BASELINE, null));
-            MimetypeRegistry mimetypeService = Framework.getService(MimetypeRegistry.class);
-            root.put("mimetypeService", mimetypeService);
-        } catch (Exception e) {
-            log.error("Unable to get mimetype service : " + e.getMessage());
-            throw WebException.wrap(e);
-        }
-
+        DocumentModel ws = SiteUtils.getFirstWorkspaceParent(session, doc);
+        root.put(PAGE_NAME,
+                SiteUtils.getString(ws, WEBCONATINER_NAME, null));
+        root.put(SITE_DESCRIPTION, SiteUtils.getString(ws,
+                WEBCONTAINER_BASELINE, null));
+        MimetypeRegistry mimetypeService = Framework.getService(MimetypeRegistry.class);
+        root.put("mimetypeService", mimetypeService);
         return root;
-    }
-
-    // not sure it is used anymore
-    public boolean isAposteriori() {
-        try {
-            return SiteUtils.getModerationType(getCoreSession(), getDocument()).equals(
-                    MODERATION_APOSTERIORI);
-        } catch (Exception e) {
-            throw WebException.wrap("Failed to delete comment", e);
-        }
     }
 
 }

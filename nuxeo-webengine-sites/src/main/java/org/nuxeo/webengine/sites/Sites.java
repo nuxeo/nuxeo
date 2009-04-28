@@ -39,9 +39,9 @@ import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
-import org.nuxeo.webengine.utils.SiteConstants;
-import org.nuxeo.webengine.utils.SiteQueriesColection;
-import org.nuxeo.webengine.utils.SiteUtils;
+import org.nuxeo.webengine.sites.utils.SiteConstants;
+import org.nuxeo.webengine.sites.utils.SiteQueriesColection;
+import org.nuxeo.webengine.sites.utils.SiteUtils;
 
 /**
  * Web object implementation corresponding to module root.
@@ -64,8 +64,8 @@ public class Sites extends DefaultObject {
                 List<Object> sites = getWebContainers();
                 WebContext context = WebEngine.getActiveContext();
                 CoreSession session = context.getCoreSession();
-                ctx.getRequest().setAttribute("org.nuxeo.theme.theme",
-                        "sites/default");
+                ctx.getRequest().setAttribute(SiteConstants.THEME_BUNDLE,
+                        SiteConstants.SITES_THEME_PAGE);
                 return getTemplate("list_sites.ftl").arg("sites", sites).arg(
                         "rootDoc", session.getRootDocument());
             } else {

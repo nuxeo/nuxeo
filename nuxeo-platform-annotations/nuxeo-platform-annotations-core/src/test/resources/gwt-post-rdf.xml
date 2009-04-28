@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<r:RDF xmlns:a="http://www.w3.org/2000/10/annotation-ns#"
+       xmlns:r="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+       xmlns:dc="http://purl.org/dc/elements/1.0/"
+       xmlns:h="http://www.w3.org/1999/xx/http#">
+  <r:Description>
+    <r:type r:resource="http://www.w3.org/2000/10/annotation-ns#Annotation" />
+    <r:type r:resource="http://www.w3.org/2000/10/annotation-ns#Comment" />
+    <a:annotates r:resource="http://localhost:8080/nuxeo/nxdoc/default/f6c3a8c3-427f-40fc-a0a0-e7630c41fdce/" />
+    <dc:title>qsdfqsdf</dc:title>
+    <a:context>http://localhost:8080/nuxeo/nxdoc/default/f6c3a8c3-427f-40fc-a0a0-e7630c41fdce/#xpointer(string-range(/HTML[1]/BODY[0]/DIV[0]/DIV[0]/NOBR[0]/SPAN[\
+0],"",12,11))</a:context>
+    <a:body r:parseType="Literal">qsdfqsdfqsdf</a:body>
+  </r:Description>
+</r:RDF>
