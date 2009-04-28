@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.platform.annotations.gwt.client.view;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -38,11 +37,8 @@ import org.nuxeo.ecm.platform.annotations.gwt.client.model.AnnotationModel;
 import org.nuxeo.ecm.platform.annotations.gwt.client.util.AnnotationUtils;
 import org.nuxeo.ecm.platform.annotations.gwt.client.view.i18n.TranslationConstants;
 import org.nuxeo.ecm.platform.annotations.gwt.client.view.i18n.TranslationMessages;
-import org.nuxeo.ecm.platform.annotations.gwt.client.view.menu.AnnotationPopupMenu;
-import org.nuxeo.ecm.platform.annotations.gwt.client.view.menu.DeleteAnnotationCommand;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -63,39 +59,6 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class AnnotationManagerPanel extends VerticalPanel implements
         AnnotationChangeListener {
-
-    private static abstract class AnnotationIcon extends Image {
-
-        public AnnotationIcon(String url) {
-            super(url);
-            sinkEvents(Event.ONMOUSEDOWN | Event.ONCONTEXTMENU);
-        }
-
-        @Override
-        public void onBrowserEvent(Event event) {
-            event.cancelBubble(true);
-            event.preventDefault();
-
-            int button = event.getButton();
-            switch (event.getTypeInt()) {
-
-            case Event.ONMOUSEDOWN:
-                if (button == Event.BUTTON_LEFT) {
-                    onLeftClick(event);
-                } else if (button == Event.BUTTON_RIGHT) {
-                    onRightClick(event);
-                }
-                break;
-
-            case Event.ONCONTEXTMENU:
-                break;
-            }
-        }
-
-        public abstract void onLeftClick(Event event);
-
-        public abstract void onRightClick(Event event);
-    }
 
     private static final String CLASS_NAME = "annotationManagerPanel";
 
@@ -287,24 +250,13 @@ public class AnnotationManagerPanel extends VerticalPanel implements
             final HorizontalPanel hp = new HorizontalPanel();
             AnnotationDefinition def = webConfiguration.getAnnotationDefinition(annotation.getShortType());
 
-            List<AbstractAnnotationCommand> commands = buildMenuCommandsFor(row);
-            final AnnotationPopupMenu popupMenu = new AnnotationPopupMenu(
-                    commands);
-            AnnotationIcon icon = new AnnotationIcon(def.getIcon()) {
-                @Override
-                public void onLeftClick(Event event) {
+            Image icon = new Image(def.getIcon());
+            icon.addClickListener(new ClickListener() {
+                public void onClick(Widget sender) {
                     updateSelectedAnnotation(row);
                     selectAnnotation(hp, row);
                 }
-
-                @Override
-                public void onRightClick(Event event) {
-                    popupMenu.setPopupPosition(event.getClientX()
-                            + Window.getScrollLeft(), event.getClientY()
-                            + Window.getScrollTop());
-                    popupMenu.show();
-                }
-            };
+            });
             hp.add(icon);
 
             Label date = new Label(annotation.getFormattedDate());
@@ -352,7 +304,7 @@ public class AnnotationManagerPanel extends VerticalPanel implements
     private void selectAnnotation(HorizontalPanel hp, int index) {
         setSelectedannotationIndex(index);
         updateShownAnnotation(index);
-        updateSelectedRow(hp);
+        updateSelectedRow(hp, index);
     }
 
     private native void setSelectedannotationIndex(int index) /*-{
@@ -366,19 +318,6 @@ public class AnnotationManagerPanel extends VerticalPanel implements
             return -1;
         }
     }-*/;
-
-    private List<AbstractAnnotationCommand> buildMenuCommandsFor(
-            int annotationIndex) {
-        List<AbstractAnnotationCommand> commands = new ArrayList<AbstractAnnotationCommand>();
-        TranslationConstants translationConstants = GWT.create(TranslationConstants.class);
-
-        AbstractAnnotationCommand deleteCommand = new DeleteAnnotationCommand(
-                translationConstants.menuDeleteAnnotation(), controller,
-                annotationIndex);
-        commands.add(deleteCommand);
-
-        return commands;
-    }
 
     private void updateShownAnnotation(int y) {
         remove(shownAnnotation);
@@ -417,10 +356,25 @@ public class AnnotationManagerPanel extends VerticalPanel implements
         }
     }
 
-    protected void updateSelectedRow(HorizontalPanel hp) {
-        if (selectedRow != null)
+    protected void updateSelectedRow(HorizontalPanel hp, final int index) {
+        if (selectedRow != null) {
             selectedRow.removeStyleName("selectedAnnotationInList");
+            selectedRow.remove(selectedRow.getWidgetCount() - 1);
+        }
         hp.setStyleName("selectedAnnotationInList");
+
+        Image deleteImage = new Image("icons/delete.gif");
+        deleteImage.addClickListener(new ClickListener() {
+            public void onClick(Widget sender) {
+                TranslationConstants translationConstants = GWT.create(TranslationConstants.class);
+                if (Window.confirm(translationConstants.menuConfirmDelete())) {
+                    controller.deleteAnnotation(index);
+                    setSelectedannotationIndex(-1);
+                }
+            }
+        });
+        hp.add(deleteImage);
+
         selectedRow = hp;
     }
 
