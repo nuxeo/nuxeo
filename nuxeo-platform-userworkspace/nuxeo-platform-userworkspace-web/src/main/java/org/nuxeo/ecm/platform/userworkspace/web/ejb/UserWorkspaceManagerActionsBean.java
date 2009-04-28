@@ -153,6 +153,9 @@ public class UserWorkspaceManagerActionsBean implements
             returnView = DASHBOARD_VIEW;
         }
         showingPersonalWorkspace = false;
+
+        Events.instance().raiseEvent(EventNames.GO_HOME);
+
         return returnView;
     }
 
