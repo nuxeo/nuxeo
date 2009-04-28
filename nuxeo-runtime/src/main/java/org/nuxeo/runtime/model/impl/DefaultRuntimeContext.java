@@ -65,6 +65,10 @@ public class DefaultRuntimeContext implements RuntimeContext {
         return runtime;
     }
 
+    public Map<String, ComponentName> getDeployedFiles() {
+        return deployedFiles;
+    }
+    
     public URL getResource(String name) {
         return Thread.currentThread().getContextClassLoader().getResource(name);
     }
