@@ -8,17 +8,11 @@
   </parent>
 
   <artifactId>nuxeo-platform-userworkspace-parent</artifactId>
-  <version>5.2-SNAPSHOT</version>
   <name>Nuxeo User Workspace Service - Parent</name>
   <description>
     Nuxeo Enterprise Platform: Personal Workspace Parent.
   </description>
   <packaging>pom</packaging>
-
-  <properties>
-    <nuxeo.features.version>5.2-SNAPSHOT</nuxeo.features.version>
-    <nuxeo.core.version>1.5-SNAPSHOT</nuxeo.core.version>
-  </properties>
 
   <modules>
     <module>nuxeo-platform-userworkspace-api</module>
