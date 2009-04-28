@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.mail.web.types.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.types.TypeService" point="types">
+
+    <type id="MailMessage" coretype="MailMessage">
+      <label>MailMessage</label>
+      <icon>/icons/file.gif</icon>
+      <default-view>view_documents</default-view>
+      <layouts mode="any">
+        <layout>mailMessage</layout>
+        <layout>noLabelFiles</layout>
+      </layouts>
+    </type>
+
+    <type id="MailFolder" coretype="MailFolder">
+      <label>MailFolder</label>
+      <icon>/icons/folder.gif</icon>
+      <default-view>view_documents</default-view>
+      <layouts mode="any">
+        <layout>mail_folder</layout>
+      </layouts>
+      <subtypes>
+        <type>MailMessage</type>
+      </subtypes>
+    </type>
+
+    <!-- allow mail floders within workspaces -->
+    <type id="Workspace">
+      <subtypes>
+        <type>MailFolder</type>
+      </subtypes>
+    </type>
+    
+  </extension>
+
+</component>
