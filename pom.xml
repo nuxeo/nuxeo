@@ -75,6 +75,7 @@
     <module>nuxeo-theme-editor</module>
     <module>nuxeo-platform-webwidgets</module>
     <module>nuxeo-platform-userworkspace</module>
+    <module>nuxeo-platform-virtualnavigation</module>
   </modules>
 
   <dependencyManagement>
@@ -844,6 +845,16 @@
       <version>${nuxeo.features.version}</version>
     </dependency>
 
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-virtualnavigation-core</artifactId>
+      <version>${nuxeo.features.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-virtualnavigation-core-contrib</artifactId>
+      <version>${nuxeo.features.version}</version>
+    </dependency>
 
 
       <!-- I/O feature -->
