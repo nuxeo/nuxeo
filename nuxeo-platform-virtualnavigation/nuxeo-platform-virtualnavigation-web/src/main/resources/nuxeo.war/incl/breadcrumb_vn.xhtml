@@ -1,15 +1,16 @@
 <div xmlns="http://www.w3.org/1999/xhtml"
-  xmlns:f="http://java.sun.com/jsf/core"
-  xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:s="http://jboss.com/products/seam/taglib"
-  xmlns:nxd="http://nuxeo.org/nxweb/document"
-  xmlns:nxh="http://nuxeo.org/nxweb/html"
-  xmlns:nxu="http://nuxeo.org/nxweb/util"
-  xmlns:ui="http://java.sun.com/jsf/facelets">
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:nxd="http://nuxeo.org/nxweb/document"
+	xmlns:nxh="http://nuxeo.org/nxweb/html"
+	xmlns:nxu="http://nuxeo.org/nxweb/util"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	>
 
-<div class="printButton">
-  <ui:include src="/incl/document_actions_upperbuttons.xhtml"/>
-  <script type="text/javascript">
+	<div class="printButton">
+		<ui:include src="/incl/document_actions_upperbuttons.xhtml"/>
+		<script type="text/javascript">
   function printView()
   {
     baseURL=window.location.href;
@@ -21,37 +22,40 @@
     }
     window.open(baseURL+'&amp;theme=default/print','_blank')
   }
-  </script>
-</div>
+		</script>
+	</div>
 
+	<div class="printButton">
+		<ui:include src="/incl/liveedit_create_actions.xhtml"/>
+	</div>
 
-<div class="breadcrumbs">
-  <h:form>
+	<div class="breadcrumbs">
+		<h:form>
 
-    <h:commandLink action="#{breadcrumbActions.navigateToParent}">
-      <nxu:graphicImage value="/img/UpFolder_icon.gif"
-        style="vertical-align:middle"/>
-    </h:commandLink>
-  
-    <nxu:dataList var="pathElement"
-      value="#{breadcrumbActions.backendPath}"
-      rendered="#{!empty breadcrumbActions.backendPath and multiNavTreeManager.selectedNavigationTree == 'CONTENT_TREE'}">
-      <f:verbatim>&amp;gt;&amp;nbsp;</f:verbatim>
-  
-      <nxd:restDocumentLink document="#{pathElement.documentModel}"
-        rendered="#{pathElement.link}">
-        <nxh:outputText value="#{nxd:titleOrId(pathElement.documentModel)}" />
-      </nxd:restDocumentLink>
-      <h:outputText value="#{pathElement.name}" rendered="#{!pathElement.link}" />
-  
-    </nxu:dataList>
-  
-    <h:outputText value="#{multiNavTreeManager.virtualNavPath}"
-      rendered="#{multiNavTreeManager.selectedNavigationTree != 'CONTENT_TREE'}" />
+			<h:commandLink action="#{breadcrumbActions.navigateToParent}">
+				<nxu:graphicImage value="/img/UpFolder_icon.gif"
+					style="vertical-align:middle"/>
+			</h:commandLink>
 
-  </h:form>
-</div>
+			<nxu:dataList var="pathElement"
+				value="#{breadcrumbActions.backendPath}"
+				rendered="#{!empty breadcrumbActions.backendPath and multiNavTreeManager.selectedNavigationTree == 'CONTENT_TREE'}">
+				<f:verbatim>&amp;gt;&amp;nbsp;</f:verbatim>
 
-<div style="clear:both"></div>
+				<nxd:restDocumentLink document="#{pathElement.documentModel}"
+					rendered="#{pathElement.link}">
+					<nxh:outputText value="#{nxd:titleOrId(pathElement.documentModel)}" />
+				</nxd:restDocumentLink>
+				<h:outputText value="#{pathElement.name}" rendered="#{!pathElement.link}" />
+
+			</nxu:dataList>
+
+			<h:outputText value="#{multiNavTreeManager.virtualNavPath}"
+				rendered="#{multiNavTreeManager.selectedNavigationTree != 'CONTENT_TREE'}" />
+
+		</h:form>
+	</div>
+
+	<div style="clear:both"></div>
 
 </div>
