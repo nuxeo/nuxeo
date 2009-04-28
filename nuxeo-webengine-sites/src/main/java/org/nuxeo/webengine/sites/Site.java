@@ -153,20 +153,22 @@ public class Site extends DocumentObject {
     public Object getSearchParametres(
             @FormParam("searchParam") String searchParam) {
         ctx.getRequest().setAttribute("org.nuxeo.theme.theme", "sites/search");
-        CoreSession session = getCoreSession();
-        Map<String, Object> root = new HashMap<String, Object>();
-        try {
-            List<Object> pages = SiteUtils.searchPagesInSite(session ,doc,
-                    searchParam, 50);
-            root.put(RESULTS, pages);
-            root.put(CONTEXTUAL_LINKS, SiteUtils.getContextualLinks(session, doc));
-            root.put(WELCOME_TEXT, SiteUtils.getString(doc,
-                    WEBCONTAINER_WELCOMETEXT, null));
-            root.put(PAGE_NAME, SiteUtils.getString(doc, WEBCONATINER_NAME, null));
-            return getTemplate("template_default.ftl").args(root);
-        } catch (Exception e) {
-            throw WebException.wrap(e);
-        }
+        ctx.setProperty(SEARCH_PARAM, searchParam);
+        return getTemplate("template_default.ftl").args(getSiteArguments());
+//        CoreSession session = getCoreSession();
+//        Map<String, Object> root = new HashMap<String, Object>();
+//        try {
+//            List<Object> pages = SiteUtils.searchPagesInSite(session ,doc,
+//                    searchParam, 50);
+//            root.put(RESULTS, pages);
+//            root.put(CONTEXTUAL_LINKS, SiteUtils.getContextualLinks(session, doc));
+//            root.put(WELCOME_TEXT, SiteUtils.getString(doc,
+//                    WEBCONTAINER_WELCOMETEXT, null));
+//            root.put(PAGE_NAME, SiteUtils.getString(doc, WEBCONATINER_NAME, null));
+//            return getTemplate("template_default.ftl").args(root);
+//        } catch (Exception e) {
+//            throw WebException.wrap(e);
+//        }
     }
 
     @POST
@@ -189,15 +191,6 @@ public class Site extends DocumentObject {
 
         root.put(PAGE_NAME, SiteUtils.getString(doc, WEBCONATINER_NAME, null));
         root.put(SITE_DESCRIPTION, SiteUtils.getString(doc, WEBCONTAINER_BASELINE, null));
-        // add web pages
-        root.put(LAST_PUBLISHED_PAGES, SiteUtils.getLastModifiedWebPages(
-                session, doc, 5, 50));
-        //add comments
-        root.put(COMMENTS, SiteUtils.getLastCommentsFromPages(session, doc, 5, 50));
-        // add contextual links
-        root.put(CONTEXTUAL_LINKS, SiteUtils.getContextualLinks(session, doc));
-        // add all webpages that are directly connected to an site
-        root.put(ALL_WEBPAGES, SiteUtils.getAllWebPages(session, doc));
         return root;
     }
 

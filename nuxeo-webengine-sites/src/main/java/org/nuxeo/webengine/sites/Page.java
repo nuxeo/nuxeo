@@ -17,7 +17,6 @@
 
 package org.nuxeo.webengine.sites;
 
-
 import static org.nuxeo.webengine.utils.SiteConstants.*;
 
 import java.util.ArrayList;
@@ -50,6 +49,7 @@ import org.nuxeo.webengine.utils.SiteUtils;
 /**
  * Web object implementation corresponding to WebPage. It is resolved from site.
  * It holds the web page fragments back methods.
+ * 
  * @author stan
  */
 @WebObject(type = "WebPage", superType = "Document")
@@ -62,10 +62,12 @@ public class Page extends DocumentObject {
     @GET
     public Object doGet() {
         ctx.getRequest().setAttribute("org.nuxeo.theme.theme", "sites/page");
-        String currentPerspective = (String) ctx.getRequest().getAttribute("org.nuxeo.theme.perspective");
+        String currentPerspective = (String) ctx.getRequest().getAttribute(
+                "org.nuxeo.theme.perspective");
         if (StringUtils.isEmpty(currentPerspective)) {
             // Set view perspective if none present.
-            ctx.getRequest().setAttribute("org.nuxeo.theme.perspective", VIEW_PERSPECTIVE);
+            ctx.getRequest().setAttribute("org.nuxeo.theme.perspective",
+                    VIEW_PERSPECTIVE);
         }
         try {
             return getTemplate("template_default.ftl").args(getPageArguments());
@@ -80,18 +82,6 @@ public class Page extends DocumentObject {
         return null;
     }
 
-    @GET
-    @Path("numberComments")
-    public int getNumberCommentsOnPage() {
-        try {
-            CoreSession session = getCoreSession();
-            return SiteUtils.getNumberCommentsForPage(session, getDocument());
-        } catch (Exception e) {
-            throw WebException.wrap("Failed to get all published comments", e);
-        }
-
-    }
-
     public boolean isModerator() {
         try {
             CoreSession session = getCoreSession();
@@ -101,6 +91,7 @@ public class Page extends DocumentObject {
         }
     }
 
+    // not sure it is used anymore
     public boolean isModerated() {
         try {
             CoreSession session = getCoreSession();
@@ -109,7 +100,6 @@ public class Page extends DocumentObject {
             throw WebException.wrap("Failed to delete comment", e);
         }
     }
-
 
     @GET
     @Path("logo")
@@ -120,12 +110,12 @@ public class Page extends DocumentObject {
                     getCoreSession(), doc);
             resp = SiteUtils.getLogoResponse(parentWorkspace);
         } catch (Exception e) {
-            log.error("Unable to retrive the workspace parent. " , e);
+            log.error("Unable to retrive the workspace parent. ", e);
         }
-        //return a default image, maybe you want to change this in future
+        // return a default image, maybe you want to change this in future
         if (resp == null) {
-            resp = redirect(getContext().getModule().getSkinPathPrefix() +
-                    "/images/logo.gif");
+            resp = redirect(getContext().getModule().getSkinPathPrefix()
+                    + "/images/logo.gif");
         }
         return resp;
     }
@@ -135,21 +125,24 @@ public class Page extends DocumentObject {
     public Object getSearchParametres(
             @FormParam("searchParam") String searchParam) {
         ctx.getRequest().setAttribute("org.nuxeo.theme.theme", "sites/search");
-        CoreSession session = getCoreSession();
-        Map<String, Object> root = new HashMap<String, Object>();
-        try {
-            DocumentModel ws = SiteUtils.getFirstWorkspaceParent(session, doc);
-            List<Object> pages = SiteUtils.searchPagesInSite(session, ws,
-                    searchParam, 50);
-            root.put(RESULTS, pages);
-            root.put(CONTEXTUAL_LINKS, SiteUtils.getContextualLinks(session, ws));
-            root.put(WELCOME_TEXT, SiteUtils.getString(
-                    ws, WEBCONTAINER_WELCOMETEXT, null));
-            root.put(PAGE_NAME, ws.getTitle());
-            return getTemplate("template_default.ftl").args(root);
-        } catch (Exception e) {
-            throw WebException.wrap(e);
-        }
+        ctx.setProperty(SEARCH_PARAM, searchParam);
+        return getTemplate("template_default.ftl").args(getPageArguments());
+//        CoreSession session = getCoreSession();
+//        Map<String, Object> root = new HashMap<String, Object>();
+//        try {
+//            DocumentModel ws = SiteUtils.getFirstWorkspaceParent(session, doc);
+//            List<Object> pages = SiteUtils.searchPagesInSite(session, ws,
+//                    searchParam, 50);
+//            root.put(RESULTS, pages);
+//            root.put(CONTEXTUAL_LINKS,
+//                    SiteUtils.getContextualLinks(session, ws));
+//            root.put(WELCOME_TEXT, SiteUtils.getString(ws,
+//                    WEBCONTAINER_WELCOMETEXT, null));
+//            root.put(PAGE_NAME, ws.getTitle());
+//            return getTemplate("template_default.ftl").args(root);
+//        } catch (Exception e) {
+//            throw WebException.wrap(e);
+//        }
     }
 
     @POST
@@ -177,7 +170,8 @@ public class Page extends DocumentObject {
             HttpServletRequest request = ctx.getRequest();
             String title = request.getParameter("title");
             String description = request.getParameter("description");
-            Boolean isRichtext = SiteUtils.getBoolean(doc, WEBPAGE_EDITOR, false);
+            Boolean isRichtext = SiteUtils.getBoolean(doc, WEBPAGE_EDITOR,
+                    false);
             String content = null;
             if (isRichtext) {
                 content = request.getParameter("richtextEditorEdit");
@@ -189,7 +183,8 @@ public class Page extends DocumentObject {
             doc.setPropertyValue("dc:title", title);
             doc.setPropertyValue("dc:description", description);
             doc.setPropertyValue(WEBPAGE_CONTENT, content);
-            doc.setPropertyValue(WEBPAGE_PUSHTOMENU, Boolean.valueOf(pushToMenu));
+            doc.setPropertyValue(WEBPAGE_PUSHTOMENU,
+                    Boolean.valueOf(pushToMenu));
             session.saveDocument(doc);
             session.save();
             DocumentModel webContainer = SiteUtils.getFirstWorkspaceParent(
@@ -204,7 +199,8 @@ public class Page extends DocumentObject {
     public boolean isUserWithCommentPermission() {
         try {
             CoreSession session = getCoreSession();
-            return SiteUtils.currentUserHasCommentPermision(session, getDocument());
+            return SiteUtils.currentUserHasCommentPermision(session,
+                    getDocument());
         } catch (Exception e) {
             throw WebException.wrap("Failed to delete comment", e);
         }
@@ -217,20 +213,11 @@ public class Page extends DocumentObject {
         try {
             DocumentModel ws = SiteUtils.getFirstWorkspaceParent(session, doc);
             root.put(PAGE_TITLE, doc.getTitle());
-            root.put(PAGE_NAME, SiteUtils.getString(ws, WEBCONATINER_NAME, null));
-            root.put(SITE_DESCRIPTION, SiteUtils.getString(ws, WEBCONTAINER_BASELINE,
-                    null));
-            // add web pages
-            List<Object> pages = SiteUtils.getLastModifiedWebPages(
-                    session, doc, 5, 50);
-            root.put(LAST_PUBLISHED_PAGES, pages);
-            // add contextual links
-            root.put(CONTEXTUAL_LINKS, SiteUtils.getContextualLinks(session, doc));
-
-            // add all webpages that are directly connected to an webpage
-            root.put(ALL_WEBPAGES, SiteUtils.getAllWebPages(session, doc));
-            MimetypeRegistry mimetypeService =
-                Framework.getService(MimetypeRegistry.class);
+            root.put(PAGE_NAME,
+                    SiteUtils.getString(ws, WEBCONATINER_NAME, null));
+            root.put(SITE_DESCRIPTION, SiteUtils.getString(ws,
+                    WEBCONTAINER_BASELINE, null));
+            MimetypeRegistry mimetypeService = Framework.getService(MimetypeRegistry.class);
             root.put("mimetypeService", mimetypeService);
         } catch (Exception e) {
             log.error("Unable to get mimetype service : " + e.getMessage());
@@ -240,49 +227,11 @@ public class Page extends DocumentObject {
         return root;
     }
 
-
-  @GET
-    @Path("publishedComments")
-    public List<DocumentModel> getPublishedComments() {
-        List<DocumentModel> publishedComments = new ArrayList<DocumentModel>();
-        try {
-            CommentManager commentManager = SiteUtils.getCommentManager();
-            for (DocumentModel doc : commentManager.getComments(getDocument())) {
-                if (CommentsConstants.PUBLISHED_STATE.equals(
-                        doc.getCurrentLifeCycleState())) {
-                    publishedComments.add(doc);
-                }
-            }
-            return publishedComments;
-        } catch (Exception e) {
-            throw WebException.wrap("Failed to get all published comments", e);
-        }
-
-    }
-
-    @GET
-    @Path("pendingComments")
-    public List<DocumentModel> getPendingComments() {
-        List<DocumentModel> pendingComments = new ArrayList<DocumentModel>();
-        try {
-            CommentManager commentManager = SiteUtils.getCommentManager();
-            for (DocumentModel doc : commentManager.getComments(getDocument())) {
-                if (CommentsConstants.PENDING_STATE.equals(
-                        doc.getCurrentLifeCycleState())) {
-                    pendingComments.add(doc);
-                }
-            }
-            return pendingComments;
-        } catch (Exception e) {
-            throw WebException.wrap("Failed to get all pending comments", e);
-        }
-
-    }
-
+    // not sure it is used anymore
     public boolean isAposteriori() {
         try {
-            return SiteUtils.getModerationType(getCoreSession(), getDocument()).
-                equals(MODERATION_APOSTERIORI);
+            return SiteUtils.getModerationType(getCoreSession(), getDocument()).equals(
+                    MODERATION_APOSTERIORI);
         } catch (Exception e) {
             throw WebException.wrap("Failed to delete comment", e);
         }

@@ -1,4 +1,8 @@
+<#assign isRichtext = Document.webpage.isRichtext /> 
 <div>
-  <#include "includes/page_main.ftl"/>
-  <@pageMain/>
+  <#if isRichtext == true>
+    ${Document.webpage.content}
+  <#else>
+    <@wiki>${Document.webpage.content}</@wiki> 
+  </#if>
 </div>

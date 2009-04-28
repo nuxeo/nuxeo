@@ -24,20 +24,20 @@
         <cell>
           <fragment perspectives="view" type="region fragment"/>
           <fragment perspectives="create" type="region fragment"/>
-          <fragment type="generic fragment" />
+          <fragment type="all webpages fragment" />
         </cell>
         <cell>
-          <fragment type="generic fragment" />
+          <fragment type="contextual links fragment" />
           <fragment type="generic fragment" />
         </cell>
       </section>
       <section>
         <cell />
         <cell>
-          <fragment type="generic fragment" />
+          <fragment type="minisite last published fragment" />
         </cell>
         <cell>
-          <fragment type="generic fragment" />
+          <fragment type="minisite last comments fragment" />
         </cell>
         <cell />
       </section>
@@ -54,18 +54,18 @@
       <section>
         <cell>
           <fragment type="generic fragment" />
-          <fragment type="generic fragment" />
+          <fragment type="minisite last published fragment" />
         </cell>
         <cell>
           <fragment perspectives="view" type="region fragment"/>
           <fragment perspectives="create" type="region fragment"/>
           <fragment perspectives="edit" type="region fragment"/>
+          <fragment type="all webpages fragment" />
           <fragment type="generic fragment" />
-          <fragment type="generic fragment" />
-          <fragment type="generic fragment" />
+          <fragment type="page last comments fragment" />
         </cell>
         <cell>
-          <fragment type="generic fragment" />
+          <fragment type="contextual links fragment" />
           <fragment type="generic fragment" />
         </cell>
       </section>
@@ -84,11 +84,11 @@
           <fragment type="generic fragment" />
         </cell>
         <cell>
-          <fragment type="region fragment" />
+          <fragment type="search results fragment" />
         </cell>
         <cell>
           <cell>
-            <fragment type="generic fragment" />
+            <fragment type="contextual links fragment" />
           </cell>
         </cell>
       </section>
@@ -123,11 +123,6 @@
     <name/>
     <defaultBody/>
     <defaultSrc/>
-  </properties>
-  <properties element="page[4]/section[2]/cell[2]/fragment[1]">
-    <name>content</name>
-    <defaultBody />
-    <defaultSrc />
   </properties>
 
   <formats>
