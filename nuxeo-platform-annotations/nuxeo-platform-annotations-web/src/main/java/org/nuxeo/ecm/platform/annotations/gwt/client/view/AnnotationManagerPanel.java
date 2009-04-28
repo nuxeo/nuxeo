@@ -363,7 +363,7 @@ public class AnnotationManagerPanel extends VerticalPanel implements
         }
         hp.setStyleName("selectedAnnotationInList");
 
-        Image deleteImage = new Image("icons/delete.gif");
+        Image deleteImage = new Image("icons/delete.png");
         deleteImage.addClickListener(new ClickListener() {
             public void onClick(Widget sender) {
                 TranslationConstants translationConstants = GWT.create(TranslationConstants.class);
