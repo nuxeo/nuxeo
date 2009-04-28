@@ -6,15 +6,17 @@
 
   <OOoServer>
     <!-- enable Nuxeo Daemon to manage OOo server instances : default is true -->
-    <enableDaemon>false</enableDaemon>
-    <!-- define OOo server listen IP : used even if daemon is desabled -->
+    <enableDaemon>true</enableDaemon>
+    <!-- define OOo server listen IP : used even if daemon is disabled -->
     <oooListenIP>127.0.0.1</oooListenIP>
-    <!-- define OOo server listen port : used even if daemon is desabled -->
+    <!-- define OOo server listen port : used even if daemon is disabled -->
     <oooListenPort>8100</oooListenPort>
     <!-- define Daemon listen port : used only if daemon is enabled -->
     <oooDaemonListenPort>8101</oooDaemonListenPort>
     <!-- define number of OOo worker process : used only if daemon is enabled -->
     <oooWorkers>1</oooWorkers>
+    <!-- define maximum wait time in second before timeout -->
+    <oooServerStartTimeout>60</oooServerStartTimeout>
 
     <!-- define OOo installation path : used only if daemon is enabled -->
     <!-- if not defined Nuxeo will try to find the path automatically -->
