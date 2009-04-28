@@ -14,23 +14,26 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
+ * $Id: ChainSelectActions.java 28950 2008-01-11 13:35:06Z tdelprat $
  */
 
-package org.nuxeo.ecm.platform.ui.web.api;
+package org.nuxeo.ecm.webapp.directory;
 
-import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.DocumentModel;
+import javax.faces.event.ActionEvent;
 
-public interface SimpleFileManager {
+import org.nuxeo.ecm.webapp.base.StatefulBaseLifeCycle;
 
-    String addBinaryFileFromPlugin(Blob blob, String fullName,
-            String morePath) throws ClientException;
+/**
+ * An EJB that handles the add/remove actions on chain selects.
+ *
+ * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
+ */
+public interface ChainSelectActions extends StatefulBaseLifeCycle {
 
-    String addBinaryFileFromPlugin(Blob blob, String fullName,
-            DocumentModel targetContainer) throws ClientException;
+    void destroy();
 
-    String display();
+    void add(ActionEvent event);
+
+    void delete(ActionEvent event);
 
 }
