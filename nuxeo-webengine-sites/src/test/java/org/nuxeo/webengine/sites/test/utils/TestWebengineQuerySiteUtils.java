@@ -22,8 +22,6 @@ import java.util.List;
 
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.schema.NXSchema;
-import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.service.CommentService;
@@ -38,8 +36,6 @@ import org.nuxeo.webengine.sites.utils.SiteQueriesColection;
  * 
  */
 public class TestWebengineQuerySiteUtils extends SQLRepositoryTestCase {
-
-    private SchemaManager typeManager = null;
 
     private final String WorkspaceTitle = "Test Mini Site";
 
@@ -75,7 +71,6 @@ public class TestWebengineQuerySiteUtils extends SQLRepositoryTestCase {
         deployContrib(bundleFile, "OSGI-INF/core-types-contrib.xml");
         deployContrib(bundleFile, "OSGI-INF/ecm-types-contrib.xml");
 
-        typeManager = NXSchema.getSchemaManager();
         openSession();
         initializeTestData();
     }

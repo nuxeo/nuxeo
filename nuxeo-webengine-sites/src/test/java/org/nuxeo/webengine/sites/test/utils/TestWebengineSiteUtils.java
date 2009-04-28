@@ -18,21 +18,12 @@
 
 package org.nuxeo.webengine.sites.test.utils;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
-import org.nuxeo.ecm.core.schema.NXSchema;
-import org.nuxeo.ecm.core.schema.SchemaManager;
-import org.nuxeo.ecm.platform.comment.api.CommentManager;
-import org.nuxeo.ecm.platform.comment.workflow.services.CommentsModerationService;
 import org.nuxeo.osgi.BundleFile;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.webengine.sites.utils.SiteConstants;
 import org.nuxeo.webengine.sites.utils.SiteUtils;
 
@@ -43,8 +34,6 @@ import org.nuxeo.webengine.sites.utils.SiteUtils;
  * 
  */
 public class TestWebengineSiteUtils extends RepositoryOSGITestCase {
-
-    private SchemaManager typeManager = null;
 
     @Override
     public void setUp() throws Exception {
@@ -60,8 +49,6 @@ public class TestWebengineSiteUtils extends RepositoryOSGITestCase {
         deployContrib(bundleFile, "OSGI-INF/ecm-types-contrib.xml");
 
         openRepository();
-
-        typeManager = NXSchema.getSchemaManager();
     }
 
     @Override
