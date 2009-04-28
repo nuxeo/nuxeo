@@ -123,6 +123,39 @@
       <artifactId>nuxeo-platform-content-template-manager</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+       <artifactId>nuxeo-platform-comment</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+       <artifactId>nuxeo-platform-comment-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+     <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-storage-sql-test</artifactId>
+      <version>1.5-SNAPSHOT</version>
+      <scope>test</scope>
+    </dependency>
+     <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-io-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+     <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-relations-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-relations-jena-plugin</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+
   </dependencies>
 
 </project>
