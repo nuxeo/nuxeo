@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.ui.web.auth.cleartrust;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 
@@ -42,7 +43,8 @@ import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 public class ClearTrustAuthenticator implements NuxeoAuthenticationPlugin,
         NuxeoAuthenticationPluginLogoutExtension {
 
-    protected final static String CLEARTRUST_HEADER_UID = "HTTP_CT_REMOTE_USER";
+    //protected final static String CLEARTRUST_HEADER_UID = "HTTP_CT_REMOTE_USER";
+    protected final static String CLEARTRUST_HEADER_UID = "CT_REMOTE_USER";
 
     protected final static String CLEARTRUST_COOKIE_SESSION_A = "ACTSESSION";
 
@@ -79,7 +81,8 @@ public class ClearTrustAuthenticator implements NuxeoAuthenticationPlugin,
         for (Cookie cookie : cookies) {
             cookieList.add(cookie);
         }
-        log.debug("cookieList = " + cookieList);
+        displayRequestInformation(request);
+        displayCookieInformation(cookieList);
         String ctSession = getCookieValue(CLEARTRUST_COOKIE_SESSION, cookies);
         String ctSessionA = getCookieValue(CLEARTRUST_COOKIE_SESSION_A, cookies);
         log.debug("ctSession = " + ctSession);
@@ -154,14 +157,15 @@ public class ClearTrustAuthenticator implements NuxeoAuthenticationPlugin,
     public UserIdentificationInfo handleRetrieveIdentity(
             HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
         log.debug("handleRetrieveIdentity ...");
+        displayRequestInformation(httpRequest);
         String ctUid = null;
         Cookie[] cookies = httpRequest.getCookies();
         List<Cookie> cookieList = new ArrayList<Cookie>();
         for (Cookie cookie : cookies) {
             cookieList.add(cookie);
         }
-        log.debug("handleRetrieveIdentity cookieList = " + cookieList);
-        ctUid = getCookieValue(CLEARTRUST_HEADER_UID, cookies);
+        displayCookieInformation(cookieList);
+        ctUid = httpRequest.getParameter(CLEARTRUST_HEADER_UID);
         if (ctUid == null) {
             log.debug("handleRetrieveIdentity No user specified");
             return null;
@@ -229,8 +233,30 @@ public class ClearTrustAuthenticator implements NuxeoAuthenticationPlugin,
         log.debug("expiring cookie DONE");
     }
 
+    protected void displayCookieInformation(List<Cookie> cookies) {
+        log.debug(">>>>>>>>>>>>> Here are the cookies: ");
+        for (Cookie cookie : cookies) {
+            log.debug("displayCookieInformation cookie name: "
+                    + cookie.getName() + " path: " + cookie.getPath()
+                    + " domain: " + cookie.getDomain() + " max age: "
+                    + cookie.getMaxAge() + " value: " + cookie.getValue());
+        }
+    }
+
+    protected void displayRequestInformation(HttpServletRequest request) {
+        log.debug(">>>>>>>>>>>>> Here is the request: ");
+        for (Enumeration attributeNames = request.getAttributeNames(); attributeNames.hasMoreElements();) {
+            String attributeName = (String) attributeNames.nextElement(); 
+            log.debug("attribute " + attributeName + " : " + request.getAttribute(attributeName));
+        }
+        for (Enumeration parameterNames = request.getParameterNames(); parameterNames.hasMoreElements();) {
+            String parameterName = (String) parameterNames.nextElement(); 
+            log.debug("parameter " + parameterName + " : " + request.getAttribute(parameterName));
+        }
+    }
+
     public void initPlugin(Map<String, String> parameters) {
-        log.debug("initPlugin v9");
+        log.debug("initPlugin v14");
         if (parameters.containsKey(ClearTrustParameters.COOKIE_DOMAIN)) {
             cookieDomain = parameters.get(ClearTrustParameters.COOKIE_DOMAIN);
         }
