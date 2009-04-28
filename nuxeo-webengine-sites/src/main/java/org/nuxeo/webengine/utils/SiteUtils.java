@@ -96,88 +96,12 @@ public class SiteUtils {
         return contextualLinks;
     }
 
-    /**
-     * Retrieves a certain number of pages with information about the last
-     * modified <b>WebPage</b>-s that are made under an <b>Workspace</b> or
-     * <b>WebPage</b> that is received as parameter.
-     *
-     * @param documentModel the parent for webpages
-     * @param noPages the number of pages
-     * @param noWordsFromContent the number of words from the content of the
-     *            webpages
-     * @return the <b>WebPage</b>-s that are made under an <b>Workspace</b> or
-     *         <b>WebPage</b> that is received as parameter
-     */
-    public static List<Object> getLastModifiedWebPages(CoreSession session,
-            DocumentModel documentModel, int noPages, int noWordsFromContent) 
-            throws Exception {
-        List<Object> pages = new ArrayList<Object>();
-        DocumentModel ws = getFirstWorkspaceParent(session, documentModel);
-        DocumentModelList webPages =  SiteQueriesColection.
-            queryLastModifiedPages(session, ws.getPathAsString(), noPages);
-
-        for (DocumentModel webPage : webPages) {
-            try {
-                Map<String, String> page = new HashMap<String, String>();
-                page.put("name", getString(webPage, "dc:title"));
-                page.put("path", getPagePath(ws, webPage));
-                page.put("description", getString(webPage, "dc:description"));
-                page.put("content", getFistNWordsFromString(
-                        getString(webPage, SiteConstants.WEBPAGE_CONTENT),
-                        noWordsFromContent));
-                page.put("author", getString(webPage, "dc:creator"));
-                GregorianCalendar modificationDate = getGregorianCalendar(
-                        webPage, "dc:modified");
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
-                        "dd MMMM", WebEngine.getActiveContext().getLocale());
-                String formattedString = simpleDateFormat.format(
-                        modificationDate.getTime());
-                String[] splittedFormatterdString = formattedString.split(" ");
-                page.put("day", splittedFormatterdString[0]);
-                page.put("month", splittedFormatterdString[1]);
-                page.put(SiteConstants.NUMBER_COMMENTS, 
-                        Integer.toString(getNumberCommentsForPage(session, webPage)));
-                pages.add(page);
-            } catch (Exception e) {
-                log.debug("Problems while trying to retrieve last modified pages", e);
-            }
-        }
-        return pages;
-    }
-
     public static Response getLogoResponse(DocumentModel document) throws Exception {
         Blob blob = getBlob(document, SiteConstants.WEBCONTAINER_LOGO);
         if (blob != null) {
             return Response.ok().entity(blob).type(blob.getMimeType()).build();
         }
         return null;
-    }
-
-    /**
-     * Returns all the <b>WebPage</b>-s that are direct children of the received
-     * document.
-     *
-     * @param document the parent for the webpages
-     */
-    public static List<Object> getAllWebPages(CoreSession session, 
-            DocumentModel document) throws Exception {
-        List<Object> webPages = new ArrayList<Object>();
-        for (DocumentModel webPage : session.getChildren(document.getRef(),
-                SiteConstants.WEBPAGE)) {
-            try {
-                if (!webPage.getCurrentLifeCycleState().equals(
-                        SiteConstants.DELETED)) {
-                    Map<String, String> details = new HashMap<String, String>();
-                    details.put("name", getString(webPage, "dc:title"));
-                    details.put("path", JsonAdapter.getRelativPath(document,
-                            webPage).toString());
-                    webPages.add(details);
-                }
-            } catch (Exception e) {
-                log.debug("Problems while trying all the web pages", e);
-            }
-        }
-        return webPages;
     }
 
     /**
@@ -219,51 +143,6 @@ public class SiteUtils {
             return publishedComments.size();
         }
         return comments.size();
-    }
-
-    /**
-     * Retrieves a certain number of comments that are last added under a 
-     * <b>WebPage</b> under a <b>Workspace</b>
-     *
-     * @param ws - the workspace
-     * @param noComments - the number of comments
-     * @param noWordsFromContent - the number of words from the content of the
-     *            comment
-     * @return the <b>Comments</b>-s that are made under a <b>WebPage</b>
-     */
-    public static List<Object> getLastCommentsFromPages(CoreSession session,
-            DocumentModel ws, int noComments, int noWordsFromContent) throws Exception {
-        DocumentModelList comments = SiteQueriesColection.queryLastComments(
-                session, ws.getPathAsString(), noComments, 
-                isCurrentModerated(session, ws)); 
-        List<Object> lastWebComments = new ArrayList<Object>();
-        for (DocumentModel documentModel : comments) {
-            Map<String, String> comment = new HashMap<String, String>();
-            try {
-                DocumentModel parentPage = getPageForComment(documentModel);
-                if (parentPage != null) {
-                    GregorianCalendar creationDate = getGregorianCalendar(
-                            documentModel, "comment:creationDate");
-                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
-                            "dd MMMM", WebEngine.getActiveContext().getLocale());
-                    String formattedString = simpleDateFormat.format(creationDate.getTime());
-                    String[] splittedFormatterdString = formattedString.split(" ");
-                    comment.put("day", splittedFormatterdString[0]);
-                    comment.put("month", splittedFormatterdString[1]);
-                    comment.put("author", getUserDetails(getString(
-                            documentModel, "comment:author")));
-                    comment.put("pageTitle", parentPage.getTitle());
-                    comment.put("pagePath", JsonAdapter.getRelativPath(ws,
-                            parentPage).toString());
-                    comment.put("content", getFistNWordsFromString(
-                            getString(documentModel, "comment:text"), noWordsFromContent));
-                    lastWebComments.add(comment);
-                }
-            } catch (Exception e) {
-                log.debug("Problems retrieving comments", e);
-            }
-        }
-        return lastWebComments;
     }
 
     /**

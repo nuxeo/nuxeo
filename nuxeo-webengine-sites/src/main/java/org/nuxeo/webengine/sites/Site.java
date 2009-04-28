@@ -189,15 +189,6 @@ public class Site extends DocumentObject {
 
         root.put(PAGE_NAME, SiteUtils.getString(doc, WEBCONATINER_NAME, null));
         root.put(SITE_DESCRIPTION, SiteUtils.getString(doc, WEBCONTAINER_BASELINE, null));
-        // add web pages
-        root.put(LAST_PUBLISHED_PAGES, SiteUtils.getLastModifiedWebPages(
-                session, doc, 5, 50));
-        //add comments
-        root.put(COMMENTS, SiteUtils.getLastCommentsFromPages(session, doc, 5, 50));
-        // add contextual links
-        root.put(CONTEXTUAL_LINKS, SiteUtils.getContextualLinks(session, doc));
-        // add all webpages that are directly connected to an site
-        root.put(ALL_WEBPAGES, SiteUtils.getAllWebPages(session, doc));
         return root;
     }
 
