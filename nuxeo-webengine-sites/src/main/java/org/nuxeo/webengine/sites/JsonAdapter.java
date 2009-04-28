@@ -34,7 +34,7 @@ import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
 
-import static org.nuxeo.webengine.utils.SiteConstants.*;
+import static org.nuxeo.webengine.sites.utils.SiteConstants.*;
 
 /**
  * Adapter service for the tree in sites module.

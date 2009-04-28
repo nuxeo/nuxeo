@@ -33,8 +33,8 @@ import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.workflow.services.CommentsModerationService;
 import org.nuxeo.osgi.BundleFile;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.webengine.utils.SiteConstants;
-import org.nuxeo.webengine.utils.SiteUtils;
+import org.nuxeo.webengine.sites.utils.SiteConstants;
+import org.nuxeo.webengine.sites.utils.SiteUtils;
 
 /**
  * Unit tests for the utils methods.

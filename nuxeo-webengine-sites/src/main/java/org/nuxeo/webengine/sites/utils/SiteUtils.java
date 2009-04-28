@@ -14,18 +14,15 @@
  * Contributors:
  *     rdarlea
  */
-package org.nuxeo.webengine.utils;
+package org.nuxeo.webengine.sites.utils;
 
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -33,14 +30,11 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang.StringUtils;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
@@ -57,8 +51,6 @@ import org.nuxeo.webengine.sites.JsonAdapter;
  * @author rux added web comments related
  */
 public class SiteUtils {
-
-    private static final Log log = LogFactory.getLog(SiteUtils.class);
 
     private SiteUtils() {
     }
@@ -81,7 +73,7 @@ public class SiteUtils {
         Collections.reverse(parents);
         for (DocumentModel currentDocumentModel : parents) {
             if (SiteConstants.WORKSPACE.equals(currentDocumentModel.getType())
-                    && currentDocumentModel.hasFacet(SiteConstants.WEB_CONTAINER_FACET)) {
+                    && currentDocumentModel.hasFacet(SiteConstants.WEB_VIEW_FACET)) {
                 return currentDocumentModel;
             }
         }
@@ -206,14 +198,6 @@ public class SiteUtils {
     }
 
     /**
-     * @return true if the current user is an Administrator
-     * @throws Exception
-     * */
-    public static boolean currentUserIsAdministaror(CoreSession session) {
-        return ((NuxeoPrincipal) session.getPrincipal()).isAdministrator();
-    }
-
-    /**
      * @return all users with a given permission for the corresponding workspace
      * @throws Exception
      */
@@ -262,16 +246,6 @@ public class SiteUtils {
             DocumentModel doc) throws Exception {
         return session.hasPermission(doc.getRef(),
                 SiteConstants.PERMISSION_MODERATE);
-    }
-
-    /**
-     * @return true if the current user has comment permission on this document
-     * @throws Exception
-     */
-    public static boolean currentUserHasCommentPermision(CoreSession session,
-            DocumentModel doc) throws Exception {
-        return session.hasPermission(doc.getRef(),
-                SiteConstants.PERMISSION_COMMENT);
     }
 
     public static CommentManager getCommentManager() throws Exception {

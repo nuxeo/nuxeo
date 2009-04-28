@@ -19,10 +19,9 @@
 
 package org.nuxeo.webengine.sites;
 
-import static org.nuxeo.webengine.utils.SiteConstants.*;
+import static org.nuxeo.webengine.sites.utils.SiteConstants.*;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.FormParam;
@@ -46,8 +45,8 @@ import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.WebObject;
-import org.nuxeo.webengine.utils.SiteQueriesColection;
-import org.nuxeo.webengine.utils.SiteUtils;
+import org.nuxeo.webengine.sites.utils.SiteQueriesColection;
+import org.nuxeo.webengine.sites.utils.SiteUtils;
 
 /**
  * Web object implementation corresponding to Site. It is resolved from module
@@ -71,7 +70,7 @@ public class Site extends DocumentObject {
 
     @GET
     public Object doGet() {
-        ctx.getRequest().setAttribute("org.nuxeo.theme.theme", "sites/default");
+        ctx.getRequest().setAttribute(THEME_BUNDLE, SITES_THEME_PAGE);
 
         if (doc == null) {
             return getTemplate("no_site.ftl").arg("url", url);
@@ -79,13 +78,13 @@ public class Site extends DocumentObject {
         // getting theme config from document.
         String theme = SiteUtils.getString(doc, WEBPAGE_THEME, "sites");
         String themePage = SiteUtils.getString(doc, WEBPAGE_THEMEPAGE, "workspace");
-        ctx.getRequest().setAttribute("org.nuxeo.theme.theme",
-                theme + "/" + themePage);
+        ctx.getRequest().setAttribute(THEME_BUNDLE, theme + "/" + themePage);
 
-        String currentPerspective = (String) ctx.getRequest().getAttribute("org.nuxeo.theme.perspective");
+        String currentPerspective = (String) ctx.getRequest().getAttribute(
+                THEME_PERSPECTIVE);
         if (StringUtils.isEmpty(currentPerspective)) {
             // Set view perspective if none present.
-            ctx.getRequest().setAttribute("org.nuxeo.theme.perspective", VIEW_PERSPECTIVE);
+            ctx.getRequest().setAttribute(THEME_PERSPECTIVE, VIEW_PERSPECTIVE);
         }
 
         try {
@@ -103,8 +102,7 @@ public class Site extends DocumentObject {
             // getting theme config from document.
             String theme = SiteUtils.getString(doc, WEBPAGE_THEME, "sites");
             String themePage = SiteUtils.getString(doc, WEBPAGE_THEMEPAGE, "page");
-            ctx.getRequest().setAttribute("org.nuxeo.theme.theme",
-                    theme + "/" + themePage);
+            ctx.getRequest().setAttribute(THEME_BUNDLE, theme + "/" + themePage);
             return ctx.newObject(pageDoc.getType(), pageDoc);
         } catch (Exception e) {
             throw WebException.wrap(e);
@@ -152,23 +150,13 @@ public class Site extends DocumentObject {
     @Path("search")
     public Object getSearchParametres(
             @FormParam("searchParam") String searchParam) {
-        ctx.getRequest().setAttribute("org.nuxeo.theme.theme", "sites/search");
+        ctx.getRequest().setAttribute(THEME_BUNDLE, SEARCH_THEME_PAGE);
         ctx.setProperty(SEARCH_PARAM, searchParam);
-        return getTemplate("template_default.ftl").args(getSiteArguments());
-//        CoreSession session = getCoreSession();
-//        Map<String, Object> root = new HashMap<String, Object>();
-//        try {
-//            List<Object> pages = SiteUtils.searchPagesInSite(session ,doc,
-//                    searchParam, 50);
-//            root.put(RESULTS, pages);
-//            root.put(CONTEXTUAL_LINKS, SiteUtils.getContextualLinks(session, doc));
-//            root.put(WELCOME_TEXT, SiteUtils.getString(doc,
-//                    WEBCONTAINER_WELCOMETEXT, null));
-//            root.put(PAGE_NAME, SiteUtils.getString(doc, WEBCONATINER_NAME, null));
-//            return getTemplate("template_default.ftl").args(root);
-//        } catch (Exception e) {
-//            throw WebException.wrap(e);
-//        }
+        try {
+            return getTemplate("template_default.ftl").args(getSiteArguments());
+        } catch (Exception e) {
+            throw WebException.wrap(e);
+        }
     }
 
     @POST
@@ -185,10 +173,14 @@ public class Site extends DocumentObject {
         }
     }
 
+    /**
+     * Computes the arguments for a page. It is needed because in page some of 
+     * the site properties need be displayed. 
+     * @return
+     * @throws Exception
+     */
     protected Map<String, Object> getSiteArguments() throws Exception {
         Map<String, Object> root = new HashMap<String, Object>();
-        CoreSession session = getCoreSession();
-
         root.put(PAGE_NAME, SiteUtils.getString(doc, WEBCONATINER_NAME, null));
         root.put(SITE_DESCRIPTION, SiteUtils.getString(doc, WEBCONTAINER_BASELINE, null));
         return root;

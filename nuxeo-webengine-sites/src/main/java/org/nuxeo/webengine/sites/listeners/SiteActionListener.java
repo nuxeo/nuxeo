@@ -15,7 +15,7 @@
  *     Nuxeo - initial API and implementation
  *
  */
-package org.nuxeo.webengine.listeners;
+package org.nuxeo.webengine.sites.listeners;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -24,7 +24,7 @@ import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
-import org.nuxeo.webengine.utils.SiteConstants;
+import org.nuxeo.webengine.sites.utils.SiteConstants;
 
 /**
  * Site related actions listener. It performs when a mini-site is created.

@@ -15,7 +15,7 @@
  *     rdarlea
  */
 
-package org.nuxeo.webengine.utils;
+package org.nuxeo.webengine.sites.utils;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;

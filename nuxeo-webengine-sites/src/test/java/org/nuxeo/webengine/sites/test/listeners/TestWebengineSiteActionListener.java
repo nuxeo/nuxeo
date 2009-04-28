@@ -23,7 +23,7 @@ import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
-import org.nuxeo.webengine.utils.SiteConstants;
+import org.nuxeo.webengine.sites.utils.SiteConstants;
 
 /**
  * Unit tests for the SiteActionListener.

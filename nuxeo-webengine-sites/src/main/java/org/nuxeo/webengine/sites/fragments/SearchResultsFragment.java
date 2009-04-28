@@ -16,14 +16,10 @@
  */
 package org.nuxeo.webengine.sites.fragments;
 
-import static org.nuxeo.webengine.utils.SiteConstants.*;
+import static org.nuxeo.webengine.sites.utils.SiteConstants.*;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -34,13 +30,10 @@ import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.theme.fragments.AbstractFragment;
 import org.nuxeo.theme.models.Model;
 import org.nuxeo.theme.models.ModelException;
-import org.nuxeo.webengine.sites.models.ContextualLinkListModel;
-import org.nuxeo.webengine.sites.models.ContextualLinkModel;
 import org.nuxeo.webengine.sites.models.SearchListModel;
 import org.nuxeo.webengine.sites.models.SearchModel;
-import org.nuxeo.webengine.utils.SiteConstants;
-import org.nuxeo.webengine.utils.SiteQueriesColection;
-import org.nuxeo.webengine.utils.SiteUtils;
+import org.nuxeo.webengine.sites.utils.SiteQueriesColection;
+import org.nuxeo.webengine.sites.utils.SiteUtils;
 
 /**
  * Action fragment for initializing the fragment related to searching a certain

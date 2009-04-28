@@ -13,7 +13,7 @@
  *
  */
 
-package org.nuxeo.webengine.webcomments;
+package org.nuxeo.webengine.sites.webcomments;
 
 import java.util.ArrayList;
 
@@ -21,7 +21,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.rest.CommentService;
 import org.nuxeo.ecm.webengine.model.WebAdapter;
-import org.nuxeo.webengine.utils.SiteUtils;
+import org.nuxeo.webengine.sites.utils.SiteUtils;
 
 /**
  * Web Comment Service - extension of base's Comment Service with specifics
