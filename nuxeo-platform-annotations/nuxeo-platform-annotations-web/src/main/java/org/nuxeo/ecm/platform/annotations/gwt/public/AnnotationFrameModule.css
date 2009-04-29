@@ -19,7 +19,8 @@ filter: alpha(opacity=30);
 }
 
 div.decorate:hover {
-border-color: yellow;
+border:1px solid black;
+background-color:#e68d00
 }
 
 div.decorateArea {
@@ -53,6 +54,14 @@ span.selectedAnnotation {
 text-decoration:underline;
 }
 
+.popupContent {
+padding:0px 10px 10px;
+}
+
+.annotationsNewAnnotationPopup .gwt-TextArea {
+margin:10px 0px;
+padding:5px;
+}
 
 .gwt-TextArea gwt-TextArea-readonly {
 margin:5px 0px;
@@ -71,13 +80,19 @@ padding:0;
 }
 
 .gwt-Button {
-background:transparent url(images/hborder.png) repeat-x scroll 0 -27px;
-border:1px outset #CCCCCC;
+background:#cecfd1 url(/nuxeo/img/theme_galaxy/buttons.png) top left repeat-x;
+border:1px solid #bfc5cb;
 cursor:pointer;
 font-size:small;
-margin:0 5px 0 0;
+margin:0 10px 0 0;
 padding:3px 5px;
 text-decoration:none;
+color:#333333;
+}
+
+.gwt-Button:hover {
+color:#000000;
+border-color:#92999e;
 }
 
 span.selectedAnnotation {
@@ -85,7 +100,7 @@ text-decoration:underline;
 background-color: #30ccff;
 }
 div.selectedAnnotation {
-border: 1px groove red;
+border: 2px solid #E66C00;
 }
 
 .annotation-body {
@@ -134,27 +149,6 @@ border:1px solid gray;
 margin:10px 0;
 padding:0;
 color:#373632;
-}
-
-.gwt-Button {
-background:#E3E6EA url(/nuxeo/img/button_1.gif) repeat-x scroll 0 0;
-border-color:#CCCCCC #666666 #666666 #CCCCCC;
-border-style:solid;
-border-width:1px;
-color:#000000;
-cursor:pointer;
-font-family:Verdana,Arial,sans-serif;
-font-size:11px;
-padding:2px 5px;
-margin-right:5px;
-}
-
-.gwt-Button:hover {
-background:#3F89EF url(/nuxeo/img/button_2.gif) repeat-x scroll 0 0;
-border-color:#0099FF #0066CC #0066CC #0099FF;
-color:#FFFFFF;
-font-family:Verdana,Arial,sans-serif;
-font-size:11px;
 }
 
 .annotationsPopupEvent {

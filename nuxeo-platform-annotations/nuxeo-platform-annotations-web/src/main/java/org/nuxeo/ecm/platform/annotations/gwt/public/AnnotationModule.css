@@ -104,6 +104,10 @@ margin-top: 15px !important;
 width:100%;
 }
 
+table.annotation-action-list {
+width: 100%;
+}
+
 .shown-annotation {
 width:100%;
 }
@@ -188,22 +192,33 @@ margin: 1px;
 background-color:#DDECFF
 }
 
-.hideManagerButton, .gwt-ToggleButton-up {
+.gwt-ToggleButton-up {
 background: transparent url(/nuxeo/img/hidePanel.gif) no-repeat center center;
 width: 10px;
 border: none;
 }
 
+.hideManagerButton {
+background: transparent url(/nuxeo/img/hidePanel.gif) no-repeat center center;
+width: 10px;
+border-right: 1px solid #E3E5E7;
+outline: none;
+margin-right:3px;
+}
+
 .hideManagerButton-up-hovering {
 background: #ECF4FF url(/nuxeo/img/hidePanel.gif) no-repeat center center;
+outline: none;
 }
 
 .hideManagerButton-down {
 background: transparent url(/nuxeo/img/showPanel.gif) no-repeat center center;
+outline: none;
 }
 
 .hideManagerButton-down-hovering {
 background: #ECF4FF url(/nuxeo/img/showPanel.gif) no-repeat center center;
+outline: none;
 }
 
 .selectedAnnotationInList {
@@ -213,41 +228,39 @@ background-color: #b2def7;
 div .annotation-hide-show-button-down {
 background:transparent url(/nuxeo/icons/annotation-icon-hide.png) no-repeat scroll left top;
 border:medium none;
-color:#FFFFFF;
+color:#4A4A4A;
 cursor:pointer;
-height:30px;
-margin:0 10px 0 0;
-width:30px;
+margin:0 5px 0 0;
 }
 
 div .annotation-hide-show-button-down-hovering {
 background:transparent url(/nuxeo/icons/annotation-icon-hide.png) no-repeat scroll left top;
 border:medium none;
-color:#FFFFFF;
+color:#4A4A4A;
 cursor:pointer;
-height:30px;
-margin:0 10px 0 0;
-width:30px;
+margin:0 5px 0 0;
 }
 
 div .annotation-hide-show-button-up {
 background:transparent url(/nuxeo/icons/annotation-icon-show.png) no-repeat scroll left top;
 border:medium none;
-color:#FFFFFF;
+color:#4A4A4A;
 cursor:pointer;
-height:30px;
-margin:0 10px 0 0;
-width:30px;
+margin:0 5px 0 0;
 }
 
 div .annotation-hide-show-button-up-hovering {
 background:transparent url(/nuxeo/icons/annotation-icon-show.png) no-repeat scroll left top;
 border:medium none;
-color:#FFFFFF;
+color:#4A4A4A;
 cursor:pointer;
-height:30px;
-margin:0 10px 0 0;
-width:30px;
+margin:0 5px 0 0;
+}
+
+
+div.annotation-hide-show-button-up div.html-face, div.annotation-hide-show-button-down div.html-face, div.annotation-hide-show-button-up-hovering div.html-face, div.annotation-hide-show-button-down-hovering div.html-face{
+padding:1px 0px 0px 22px !important;
+outline:none;
 }
 
 .annotationPopupMenu {
