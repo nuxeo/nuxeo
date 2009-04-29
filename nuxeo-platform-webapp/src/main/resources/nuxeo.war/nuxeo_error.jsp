@@ -16,9 +16,9 @@ body {
 }
 
 H1 {
-  color: #000;
-  font: bold 28px Verdana, sans-serif;
-  margin: 72px 0 40px 0;
+  color: #0080ff;
+  font: bold 20px Verdana, sans-serif;
+  margin: 70px 0 40px 0;
 }
 
 H2 {
