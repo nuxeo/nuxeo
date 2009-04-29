@@ -37,7 +37,7 @@ public class HideShowAnnotationsButton extends Composite {
     public HideShowAnnotationsButton(
             final AnnotationController annotationController) {
         final TranslationConstants translationContants = GWT.create(TranslationConstants.class);
-        final ToggleButton button = new ToggleButton();
+        final ToggleButton button = new ToggleButton(translationContants.hideAnnotations());
         button.setStyleName("annotation-hide-show-button");
         button.setDown(!annotationController.isAnnotationsVisible());
 
@@ -48,6 +48,7 @@ public class HideShowAnnotationsButton extends Composite {
                     showAnnotations();
                 } else {
                     button.setTitle(translationContants.showAnnotations());
+                    button.setText(translationContants.showAnnotations());
                     hideAnnotations();
                 }
             }
