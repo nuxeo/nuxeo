@@ -136,7 +136,7 @@
      <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-storage-sql-test</artifactId>
-      <version>1.5-SNAPSHOT</version>
+      <version>${nuxeo.core.version}</version>
       <scope>test</scope>
     </dependency>
      <dependency>
