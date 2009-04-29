@@ -58,6 +58,10 @@ public class DocumentModelListImpl extends ArrayList<DocumentModel> implements
         this.totalSize = totalSize;
     }
 
+    public void setTotalSize(long totalSize) {
+        this.totalSize = totalSize;
+    }
+
     public long totalSize() {
         if (totalSize == -1) {
             return size();

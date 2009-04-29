@@ -692,6 +692,80 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         assertEquals(3, dml.size());
     }
 
+    public void testSecurityManagerBasic() throws Exception {
+        doTestSecurityManager("OSGI-INF/security-policy-contrib.xml");
+    }
+
+    public void testSecurityManagerWithTransformer() throws Exception {
+        doTestSecurityManager("OSGI-INF/security-policy2-contrib.xml");
+    }
+
+    public void doTestSecurityManager(String contrib) throws Exception {
+        createDocs();
+        DocumentModelList dml;
+
+        dml = session.query("SELECT * FROM Document");
+        assertEquals(7, dml.size());
+        assertEquals(7, dml.totalSize());
+        dml = session.query("SELECT * FROM Document", null, 2, 0, true);
+        assertEquals(2, dml.size());
+        assertEquals(7, dml.totalSize());
+        dml = session.query("SELECT * FROM Document", null, 2, 5, true);
+        assertEquals(2, dml.size());
+        assertEquals(7, dml.totalSize());
+        dml = session.query("SELECT * FROM Document", null, 2, 6, true);
+        assertEquals(1, dml.size());
+        assertEquals(7, dml.totalSize());
+
+        // now add a security policy hiding docs of type File
+        deployContrib("org.nuxeo.ecm.core.query.test", contrib);
+
+        dml = session.query("SELECT * FROM Document");
+        assertEquals(4, dml.size());
+        assertEquals(4, dml.totalSize());
+        dml = session.query("SELECT * FROM Document", null, 2, 0, true);
+        assertEquals(2, dml.size());
+        assertEquals(4, dml.totalSize());
+        dml = session.query("SELECT * FROM Document", null, 2, 2, true);
+        assertEquals(2, dml.size());
+        assertEquals(4, dml.totalSize());
+        dml = session.query("SELECT * FROM Document", null, 2, 3, true);
+        assertEquals(1, dml.size());
+        assertEquals(4, dml.totalSize());
+
+        // add an ACL as well
+        DocumentModel root = session.getRootDocument();
+        ACP acp = new ACPImpl();
+        ACL acl = new ACLImpl();
+        acl.add(new ACE("Administrator", "Everything", true));
+        acl.add(new ACE("bob", "Browse", true));
+        acp.addACL(acl);
+        root.setACP(acp, true);
+        DocumentModel folder1 = session.getDocument(new PathRef(
+                "/testfolder2/testfolder3"));
+        acp = new ACPImpl();
+        acl = new ACLImpl();
+        acl.add(new ACE("bob", "Browse", false));
+        acp.addACL(acl);
+        folder1.setACP(acp, true);
+        session.save();
+        closeSession();
+        session = openSessionAs("bob");
+
+        dml = session.query("SELECT * FROM Document");
+        assertEquals(3, dml.size());
+        assertEquals(3, dml.totalSize());
+        dml = session.query("SELECT * FROM Document", null, 2, 0, true);
+        assertEquals(2, dml.size());
+        assertEquals(3, dml.totalSize());
+        dml = session.query("SELECT * FROM Document", null, 2, 1, true);
+        assertEquals(2, dml.size());
+        assertEquals(3, dml.totalSize());
+        dml = session.query("SELECT * FROM Document", null, 2, 2, true);
+        assertEquals(1, dml.size());
+        assertEquals(3, dml.totalSize());
+    }
+
     private void assertIdSet(DocumentModelList dml, String... ids) {
         assertEquals(ids.length, dml.size());
         Collection<String> expected = new HashSet<String>(Arrays.asList(ids));

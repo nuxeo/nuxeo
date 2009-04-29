@@ -72,6 +72,20 @@ public class SQLQuery implements ASTNode {
         this.orderBy = orderBy;
     }
 
+    public SQLQuery(SelectClause select, FromClause from, WhereClause where,
+            GroupByClause groupBy, HavingClause having, OrderByClause orderBy,
+            long limit, long offset) {
+        assert select != null && from != null;
+        this.select = select;
+        this.from = from;
+        this.where = where;
+        this.groupBy = groupBy;
+        this.having = having;
+        this.orderBy = orderBy;
+        this.limit = limit;
+        this.offset = offset;
+    }
+
     /**
      * Copying constructor. Does not deep-copy the clauses though.
      */

@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.query.test.securitypolicy2">
+
+  <extension target="org.nuxeo.ecm.core.security.SecurityService"
+    point="policies">
+    <policy name="test"
+      class="org.nuxeo.ecm.core.query.test.NoFile2SecurityPolicy" />
+  </extension>
+
+</component>

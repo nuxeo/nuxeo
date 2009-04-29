@@ -1343,6 +1343,7 @@ public abstract class AbstractSession implements CoreSession,
         return query(query, filter, max, 0, false);
     }
 
+    @SuppressWarnings("null")
     public DocumentModelList query(String query, Filter filter, long limit,
             long offset, boolean countTotal) throws ClientException {
         SecurityService securityService = getSecurityService();
@@ -1350,20 +1351,18 @@ public abstract class AbstractSession implements CoreSession,
         try {
             Query compiledQuery = getSession().createQuery(query,
                     Query.Type.NXQL);
-            if (limit != 0) {
-                compiledQuery.setLimit(limit);
-                compiledQuery.setOffset(offset);
-            }
             QueryResult results;
             boolean postFilterPermission;
             boolean postFilterFilter;
             boolean postFilterPolicies;
+            boolean postFilter;
             String permission = BROWSE;
             if (compiledQuery instanceof FilterableQuery) {
                 postFilterPermission = false;
                 postFilterPolicies = !securityService.arePoliciesExpressibleInQuery();
                 postFilterFilter = filter != null
                         && !(filter instanceof FacetFilter);
+                postFilter = postFilterPolicies || postFilterFilter;
                 String[] principals;
                 if (principal.getName().equals("system")) {
                     principals = null; // means: no security check needed
@@ -1376,25 +1375,33 @@ public abstract class AbstractSession implements CoreSession,
                         filter instanceof FacetFilter ? (FacetFilter) filter
                                 : null,
                         securityService.getPoliciesQueryTransformers());
+                if (!postFilter && limit != 0) {
+                    compiledQuery.setLimit(limit);
+                    compiledQuery.setOffset(offset);
+                }
                 results = ((FilterableQuery) compiledQuery).execute(
-                        queryFilter, countTotal);
+                        queryFilter, countTotal && !postFilter);
             } else {
                 postFilterPermission = true;
                 postFilterPolicies = securityService.arePoliciesRestrictingPermission(permission);
                 postFilterFilter = filter != null;
-                results = compiledQuery.execute(countTotal);
+                postFilter = true;
+                results = compiledQuery.execute();
             }
-            if (!postFilterPermission && !postFilterFilter
-                    && !postFilterPolicies) {
+
+            DocumentModelList dms = results.getDocumentModels();
+
+            if (!postFilter) {
                 // the backend has done all the needed filtering
-                return results.getDocumentModels();
+                return dms;
             }
-            // post-filter the results if the query couldn't do it
-            final DocumentModelList docs = new DocumentModelListImpl(
-                    Collections.<DocumentModel> emptyList(),
-                    results.getTotalSize());
-            int nbr = 0;
-            for (DocumentModel model : results.getDocumentModels()) {
+
+            // post-filter the results "by hand", the backend couldn't do it
+            long start = limit == 0 || offset < 0 ? 0 : offset;
+            long stop = start + (limit == 0 ? dms.size() : limit);
+            int n = 0;
+            DocumentModelListImpl docs = new DocumentModelListImpl();
+            for (DocumentModel model : dms) {
                 if (postFilterPermission || postFilterPolicies) {
                     if (!hasPermission(model.getRef(), permission)) {
                         continue;
@@ -1405,18 +1412,28 @@ public abstract class AbstractSession implements CoreSession,
                         continue;
                     }
                 }
-                docs.add(model);
-                nbr++;
-                if (limit != 0 && nbr >= limit) {
-                    break;
+                if (n < start) {
+                    n++;
+                    continue;
                 }
+                if (n >= stop) {
+                    if (!countTotal) {
+                        // can break early
+                        break;
+                    }
+                    n++;
+                    continue;
+                }
+                n++;
+                docs.add(model);
+            }
+            if (countTotal) {
+                docs.setTotalSize(n);
             }
             return docs;
         } catch (Exception e) {
-            log.error("failed to execute query", e);
-            final String causeErrMsg = tryToExtractMeaningfulErrMsg(e);
-            throw new ClientException(
-                    "Failed to get the root document. Cause: " + causeErrMsg, e);
+            throw new ClientException("Failed to execute query: "
+                    + tryToExtractMeaningfulErrMsg(e), e);
         }
     }
 
@@ -1429,10 +1446,6 @@ public abstract class AbstractSession implements CoreSession,
                 filter);
     }
 
-    /**
-     * @param t
-     * @return
-     */
     private String tryToExtractMeaningfulErrMsg(Throwable t) {
         if (t instanceof QueryParseException) {
             return t.getMessage();
@@ -2041,8 +2054,8 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
-    public DocumentModel getVersion(String versionableId, VersionModel versionModel)
-            throws ClientException {
+    public DocumentModel getVersion(String versionableId,
+            VersionModel versionModel) throws ClientException {
         if (!isAdministrator()) {
             throw new DocumentSecurityException(
                     "Only Administrator can fetch versions directly");
