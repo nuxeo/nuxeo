@@ -88,7 +88,7 @@
                 </nxd:restDocumentLink>
                 <!-- download-->
         <f:subview rendered="#{row.data.type eq 'Picture'}">
-                  <img id="#{row.data.ref}_imgref" class="#{row.data.ref}_popupTarget" src="icons/download.png" style="vertical-align: middle"
+                  <img id="#{row.data.ref}_imgref" class="#{row.data.ref}_popupTarget" src="icons/download.png" style="vertical-align: middle; cursor:pointer;"
                     alt="#{messages['label.outputFile.download']} #{row.data.dublincore.title}"
                     title="#{messages['label.outputFile.download']} #{row.data.dublincore.title}"  />
                   <ui:include  src="/incl/picturebookPopupMenu.xhtml"/>
