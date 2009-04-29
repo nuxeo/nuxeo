@@ -14,11 +14,7 @@
         var options = {
       		  bind: 'click',
       		  useFilter: false,
-      		  anchor: '#popupReceiver',
-                ctxMenuStyle : 'imagingCtxMenuStyle',
-                ctxMenuItemHoverStyle : 'imagingCtxMenuItemHoverStyle',
-                ctxMenuItemStyle : 'imagingCtxMenuItemStyle',
-                ctxMenuImg : ''
+      		  anchor: '#popupReceiver'
         };
         setupContextMenu('img.<h:outputText value="#{row.data.ref}"/>_popupTarget','<h:outputText value="#{popupId}" />', options);
     </script>
