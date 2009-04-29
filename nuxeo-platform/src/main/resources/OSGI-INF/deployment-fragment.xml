@@ -16,9 +16,9 @@
   </extension>
   <extension target="web#SERVLET">
     <servlet>
-      <description>JAX-WS endpoint - dws</description>
-      <display-name>DWS</display-name>
-      <servlet-name>DWSServlet</servlet-name>
+      <description>JAX-WS Webservices</description>
+      <display-name>MetroWS</display-name>
+      <servlet-name>MetroWSServlet</servlet-name>
       <servlet-class>com.sun.xml.ws.transport.http.servlet.WSServlet
       </servlet-class>
       <load-on-startup>1</load-on-startup>
@@ -26,8 +26,8 @@
   </extension>
   <extension target="web#SERVLET-MAPPING">
     <servlet-mapping>
-      <servlet-name>DWSServlet</servlet-name>
-      <url-pattern> /webservices/*</url-pattern>
+      <servlet-name>MetroWSServlet</servlet-name>
+      <url-pattern>/webservices/*</url-pattern>
     </servlet-mapping>
   </extension>
   <extension target="jaxws#ENDPOINT">
