@@ -43,14 +43,13 @@ import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 public class ClearTrustAuthenticator implements NuxeoAuthenticationPlugin,
         NuxeoAuthenticationPluginLogoutExtension {
 
-    //protected final static String CLEARTRUST_HEADER_UID = "HTTP_CT_REMOTE_USER";
+    // protected final static String CLEARTRUST_HEADER_UID =
+    // "HTTP_CT_REMOTE_USER";
     protected final static String CLEARTRUST_HEADER_UID = "CT_REMOTE_USER";
 
     protected final static String CLEARTRUST_COOKIE_SESSION_A = "ACTSESSION";
 
     protected final static String CLEARTRUST_COOKIE_SESSION = "CTSESSION";
-
-    protected final static String NUXEO_CLEARTRUST_REDIRECT_DONE = "NUXEO_REDIRECT_DONE";
 
     protected String cookieDomain = "";
 
@@ -99,12 +98,8 @@ public class ClearTrustAuthenticator implements NuxeoAuthenticationPlugin,
             redirectToClearTrustLoginPage = true;
         }
 
-        // String cleartrustRedirect =
-        // getCookieValue(NUXEO_CLEARTRUST_REDIRECT_DONE, cookies);
-        // if ("ON".equals(cleartrustRedirect)) {
-        // redirectToClearTrustLoginPage = false;
-        // expireCookie(NUXEO_CLEARTRUST_REDIRECT_DONE, request, response);
-        // }
+        String ctUid = request.getHeader(CLEARTRUST_HEADER_UID);
+        log.debug("ctUid = " + ctUid);
 
         if (redirectToClearTrustLoginPage) {
             String loginUrl = cleartrustLoginUrl;
@@ -155,17 +150,17 @@ public class ClearTrustAuthenticator implements NuxeoAuthenticationPlugin,
     }
 
     public UserIdentificationInfo handleRetrieveIdentity(
-            HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
+            HttpServletRequest request, HttpServletResponse httpResponse) {
         log.debug("handleRetrieveIdentity ...");
-        displayRequestInformation(httpRequest);
-        String ctUid = null;
-        Cookie[] cookies = httpRequest.getCookies();
+        displayRequestInformation(request);
+        Cookie[] cookies = request.getCookies();
         List<Cookie> cookieList = new ArrayList<Cookie>();
         for (Cookie cookie : cookies) {
             cookieList.add(cookie);
         }
         displayCookieInformation(cookieList);
-        ctUid = httpRequest.getParameter(CLEARTRUST_HEADER_UID);
+        String ctUid = request.getHeader(CLEARTRUST_HEADER_UID);
+        log.debug("ctUid = " + ctUid);
         if (ctUid == null) {
             log.debug("handleRetrieveIdentity No user specified");
             return null;
@@ -178,7 +173,7 @@ public class ClearTrustAuthenticator implements NuxeoAuthenticationPlugin,
         return uui;
     }
 
-    public Boolean needLoginPrompt(HttpServletRequest httpRequest) {
+    public Boolean needLoginPrompt(HttpServletRequest request) {
         // Returning true means that the handleLoginPrompt method will be called
         return true;
     }
@@ -189,7 +184,6 @@ public class ClearTrustAuthenticator implements NuxeoAuthenticationPlugin,
     public Boolean handleLogout(HttpServletRequest request,
             HttpServletResponse response) {
         log.debug("handleLogout ...");
-        expireCookie(CLEARTRUST_HEADER_UID, request, response);
         expireCookie(CLEARTRUST_COOKIE_SESSION, request, response);
         expireCookie(CLEARTRUST_COOKIE_SESSION_A, request, response);
         log.debug("handleLogout DONE!");
@@ -245,18 +239,25 @@ public class ClearTrustAuthenticator implements NuxeoAuthenticationPlugin,
 
     protected void displayRequestInformation(HttpServletRequest request) {
         log.debug(">>>>>>>>>>>>> Here is the request: ");
+        for (Enumeration headerNames = request.getHeaderNames(); headerNames.hasMoreElements();) {
+            String headerName = (String) headerNames.nextElement();
+            log.debug("header " + headerName + " : "
+                    + request.getHeader(headerName));
+        }
         for (Enumeration attributeNames = request.getAttributeNames(); attributeNames.hasMoreElements();) {
-            String attributeName = (String) attributeNames.nextElement(); 
-            log.debug("attribute " + attributeName + " : " + request.getAttribute(attributeName));
+            String attributeName = (String) attributeNames.nextElement();
+            log.debug("attribute " + attributeName + " : "
+                    + request.getAttribute(attributeName));
         }
         for (Enumeration parameterNames = request.getParameterNames(); parameterNames.hasMoreElements();) {
-            String parameterName = (String) parameterNames.nextElement(); 
-            log.debug("parameter " + parameterName + " : " + request.getAttribute(parameterName));
+            String parameterName = (String) parameterNames.nextElement();
+            log.debug("parameter " + parameterName + " : "
+                    + request.getParameter(parameterName));
         }
     }
 
     public void initPlugin(Map<String, String> parameters) {
-        log.debug("initPlugin v14");
+        log.debug("initPlugin v18");
         if (parameters.containsKey(ClearTrustParameters.COOKIE_DOMAIN)) {
             cookieDomain = parameters.get(ClearTrustParameters.COOKIE_DOMAIN);
         }
