@@ -86,6 +86,10 @@
             <configuration>
               <outputDirectory>${project.build.outputDirectory}/nuxeo.war</outputDirectory>
               <style>DETAILED</style>
+              <modules>
+                <module>org.nuxeo.ecm.platform.annotations.gwt.AnnotationFrameModule</module>
+                <module>org.nuxeo.ecm.platform.annotations.gwt.AnnotationModule</module>
+              </modules>
             </configuration>
           </execution>
         </executions>
