@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.audit.api;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -65,7 +66,9 @@ import org.nuxeo.ecm.core.api.DocumentRef;
                 query = "select distinct log.eventId from LogEntry log")
         })
         @Table(name = "NXP_LOGS")
-public class LogEntry {
+public class LogEntry implements Serializable {
+
+    private static final long serialVersionUID = 3037187381843636097L;
 
     private long id;
 
