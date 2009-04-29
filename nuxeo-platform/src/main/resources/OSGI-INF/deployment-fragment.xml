@@ -6,5 +6,34 @@
       <ejb>${bundle.fileName}</ejb>
     </module>
   </extension>
+  
+  <extension target="web#LISTENER">
+    <listener>
+      <listener-class>
+        com.sun.xml.ws.transport.http.servlet.WSServletContextListener
+      </listener-class>
+    </listener>
+  </extension>
+  <extension target="web#SERVLET">
+    <servlet>
+      <description>JAX-WS endpoint - dws</description>
+      <display-name>DWS</display-name>
+      <servlet-name>DWSServlet</servlet-name>
+      <servlet-class>com.sun.xml.ws.transport.http.servlet.WSServlet
+      </servlet-class>
+      <load-on-startup>1</load-on-startup>
+    </servlet>
+  </extension>
+  <extension target="web#SERVLET-MAPPING">
+    <servlet-mapping>
+      <servlet-name>DWSServlet</servlet-name>
+      <url-pattern> /webservices/*</url-pattern>
+    </servlet-mapping>
+  </extension>
+  <extension target="jaxws#ENDPOINT">
+    <endpoint name="nuxeoremoting"
+      implementation="org.nuxeo.ecm.platform.ws.NuxeoRemotingBean"
+      url-pattern="/webservices/nuxeoremoting" />
+  </extension>
 
 </fragment>

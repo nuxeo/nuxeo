@@ -35,7 +35,7 @@ public class TestWSRemotingSessionManager extends NXRuntimeTestCase {
 
     @Override
     public void setUp() throws Exception {
-        super.setUp();
+        super.setUp(); 
 
         deployContrib("org.nuxeo.ecm.platform.tests",
                 "test-nxws_remoting_session_manager-framework.xml");
