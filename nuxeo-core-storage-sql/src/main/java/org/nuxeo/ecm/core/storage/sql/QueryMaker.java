@@ -175,8 +175,10 @@ public class QueryMaker {
         }
         // transform the query according to the transformers defined by the
         // security policies
-        for (SQLQuery.Transformer transformer : queryFilter.getQueryTransformers()) {
-            query = transformer.transform(query);
+        if (queryFilter.getPrincipals() != null) {
+            for (SQLQuery.Transformer transformer : queryFilter.getQueryTransformers()) {
+                query = transformer.transform(query);
+            }
         }
         this.query = query;
         FacetFilter filter = queryFilter.getFacetFilter();
@@ -1139,8 +1141,8 @@ public class QueryMaker {
         public void visitFunction(Function node) {
             if ("NX_ACCESS_ALLOWED".equals(node.name)) {
                 String[] principals = queryFilter.getPrincipals();
-                String[] rightToCheck = {((StringLiteral) node.args.get(0)).value};
- 
+                String[] rightToCheck = { ((StringLiteral) node.args.get(0)).value };
+
                 String sql = String.format("NX_ACCESS_ALLOWED(%s, ?, ?)",
                         hierId);
                 // if (dialect.get instanceof DerbyDialect) {
@@ -1153,10 +1155,10 @@ public class QueryMaker {
                 whereParams.add(rightToCheck);
                 return;
             }
-            
+
             if (Function.NX_CURRENT_USER.equals(node)) {
                 buf.append('(');
-                for (int i = 0; i < queryFilter.getPrincipals().length - 1; i ++) {
+                for (int i = 0; i < queryFilter.getPrincipals().length - 1; i++) {
                     buf.append("?, ");
                 }
                 buf.append("?)");
