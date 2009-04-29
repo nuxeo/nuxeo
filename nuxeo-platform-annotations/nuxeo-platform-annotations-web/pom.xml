@@ -51,9 +51,8 @@
       <version>${nuxeo.platform.preview.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.nuxeo.theme</groupId>
+      <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-theme-jsf</artifactId>
-      <version>${nuxeo.theme.version}</version>
     </dependency>
     <dependency>
       <groupId>javax.faces</groupId>
