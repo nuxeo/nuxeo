@@ -1,21 +1,18 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
   <modelVersion>4.0.0</modelVersion>
-
-  <groupId>org.nuxeo.ecm.platform</groupId>
-  <artifactId>nuxeo-platform-imaging-parent</artifactId>
-  <version>5.2-SNAPSHOT</version>
-  <name>Nuxeo Platform Imaging parent</name>
-  <packaging>pom</packaging>
-  <description>Nuxeo Platform Imaging provides picture managment
-               to Nuxeo Web Platform and RCP. It offers minor picture transformation
-               like rotation or resizing.</description>
-
   <parent>
     <artifactId>nuxeo-features-parent</artifactId>
     <groupId>org.nuxeo.ecm.platform</groupId>
     <version>5.2-SNAPSHOT</version>
   </parent>
+
+  <groupId>org.nuxeo.ecm.platform</groupId>
+  <artifactId>nuxeo-platform-imaging-parent</artifactId>
+  <name>Nuxeo Platform Imaging parent</name>
+  <packaging>pom</packaging>
+  <description>Nuxeo Platform Imaging provides picture managment
+               to Nuxeo Web Platform and RCP. It offers minor picture transformation
+               like rotation or resizing.</description>
 
   <modules>
     <module>nuxeo-platform-imaging-api</module>
@@ -26,42 +23,38 @@
     <module>nuxeo-platform-imaging-preview</module>
   </modules>
 
-  <properties>
-    <nuxeo.platform.imaging.version>5.2-SNAPSHOT</nuxeo.platform.imaging.version>
-  </properties>
-
   <dependencyManagement>
     <dependencies>
       <!-- Nuxeo platform imaging -->
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-imaging-api</artifactId>
-        <version>${nuxeo.platform.imaging.version}</version>
+        <version>${pom.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-imaging-convert</artifactId>
-        <version>${nuxeo.platform.imaging.version}</version>
+        <version>${pom.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-imaging-core</artifactId>
-        <version>${nuxeo.platform.imaging.version}</version>
+        <version>${pom.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-imaging-facade</artifactId>
-        <version>${nuxeo.platform.imaging.version}</version>
+        <version>${pom.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-imaging-preview</artifactId>
-        <version>${nuxeo.platform.imaging.version}</version>
+        <version>${pom.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-imaging-web</artifactId>
-        <version>${nuxeo.platform.imaging.version}</version>
+        <version>${pom.version}</version>
       </dependency>
       <!-- ImageJ --> 
       <dependency>

@@ -2,18 +2,17 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.nuxeo.ecm.platform</groupId>
-  <artifactId>nuxeo-platform-annotations-parent</artifactId>
-  <version>5.2-SNAPSHOT</version>
-  <name>Nuxeo Platform Annotations service parent</name>
-  <packaging>pom</packaging>
-  <description>Nuxeo Platform Annotations provides an annotation service
-    based on W3C Annotea specification</description>
   <parent>
     <artifactId>nuxeo-features-parent</artifactId>
     <groupId>org.nuxeo.ecm.platform</groupId>
     <version>5.2-SNAPSHOT</version>
   </parent>
+  <groupId>org.nuxeo.ecm.platform</groupId>
+  <artifactId>nuxeo-platform-annotations-parent</artifactId>
+  <name>Nuxeo Platform Annotations service parent</name>
+  <packaging>pom</packaging>
+  <description>Nuxeo Platform Annotations provides an annotation service
+    based on W3C Annotea specification</description>
   <modules>
     <module>nuxeo-platform-annotations-api</module>
     <module>nuxeo-platform-annotations-core</module>
@@ -23,8 +22,8 @@
     <module>nuxeo-platform-annotations-repository-plugin</module>
   </modules>
   <properties>
-    <nuxeo.platform.annotations.version>5.2-SNAPSHOT</nuxeo.platform.annotations.version>
-    <nuxeo.platform.preview.version>5.2-SNAPSHOT</nuxeo.platform.preview.version>
+    <nuxeo.platform.annotations.version>${pom.version}</nuxeo.platform.annotations.version>
+    <nuxeo.platform.preview.version>${pom.version}</nuxeo.platform.preview.version>
   </properties>
   <dependencyManagement>
     <dependencies>

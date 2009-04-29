@@ -14,12 +14,7 @@
   <artifactId>nuxeo-platform-mail-parent</artifactId>
   <packaging>pom</packaging>
   <name>Mail Module</name>
-  <version>5.2-SNAPSHOT</version>
   <description>Mail module to connect to mail server, send and process mail.</description>
-
-  <properties>
-    <nuxeo.platform.mail.version>${pom.version}</nuxeo.platform.mail.version>
-  </properties>
 
   <modules>
     <module>nuxeo-platform-mail-core</module>
@@ -32,17 +27,17 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-mail-core</artifactId>
-        <version>${nuxeo.platform.mail.version}</version>
+        <version>${pom.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-mail-web</artifactId>
-        <version>${nuxeo.platform.mail.version}</version>
+        <version>${pom.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-mail-test</artifactId>
-        <version>${nuxeo.platform.mail.version}</version>
+        <version>${pom.version}</version>
       </dependency>
 
       <dependency>
