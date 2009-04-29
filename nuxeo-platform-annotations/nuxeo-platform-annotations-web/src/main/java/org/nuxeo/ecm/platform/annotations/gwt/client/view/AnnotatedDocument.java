@@ -188,16 +188,24 @@ public class AnnotatedDocument implements AnnotationChangeListener {
                 Element element = spans.getItem(x);
                 if (processElement(annotation, element)) {
                     int[] absTopLeft = Utils.getAbsoluteTopLeft(element, Document.get());
-                    scrollTop = absTopLeft[0];
-                    scrollLeft = absTopLeft[1];
+                    if (absTopLeft[0] < scrollTop) {
+                        scrollTop = absTopLeft[0];
+                    }
+                    if (absTopLeft[1] < scrollLeft) {
+                        scrollLeft = absTopLeft[1];
+                    }
                 }
             }
             for (int x = 0; x < as.getLength(); x++) {
                 Element element = as.getItem(x);
                 if (processElement(annotation, element)) {
                     int[] absTopLeft = Utils.getAbsoluteTopLeft(element, Document.get());
-                    scrollTop = absTopLeft[0];
-                    scrollLeft = absTopLeft[1];
+                    if (absTopLeft[0] < scrollTop) {
+                        scrollTop = absTopLeft[0];
+                    }
+                    if (absTopLeft[1] < scrollLeft) {
+                        scrollLeft = absTopLeft[1];
+                    }
                 }
             }
             bodyElement.setScrollTop(scrollTop == Integer.MAX_VALUE ? 0
