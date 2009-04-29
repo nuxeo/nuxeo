@@ -124,7 +124,15 @@ public class NuxeoExceptionHandler {
         }
         String errorPage = handler.getPage();
         errorPage = (errorPage == null) ? defaultErrorPage : errorPage;
-        request.getRequestDispatcher(errorPage).forward(request, response);
+        try {
+            request.getRequestDispatcher(errorPage).forward(request, response);
+        } catch (Throwable throwable) {
+            // error while redirecting, we give up
+            log.fatal(
+                    "Nuxeo exception filter thrown an error while redirecting. Original error: "
+                            + t.getMessage() + "\n" + t.getStackTrace(),
+                    throwable);
+        }
         listener.afterDispatch(unwrappedException, request, response);
     }
 
