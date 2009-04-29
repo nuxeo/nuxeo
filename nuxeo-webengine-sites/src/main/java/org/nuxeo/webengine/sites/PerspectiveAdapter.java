@@ -18,6 +18,7 @@ package org.nuxeo.webengine.sites;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 
 import org.nuxeo.ecm.core.rest.DocumentObject;
 import org.nuxeo.ecm.webengine.WebException;
@@ -32,6 +33,7 @@ import org.nuxeo.webengine.sites.utils.SiteConstants;
  * @author <a href="mailto:cbaican@nuxeo.com">Catalin Baican</a>
  */
 @WebAdapter(name = "perspective", type = "PerspectiveAdapter", targetType = "Document")
+@Produces("text/html; charset=UTF-8")
 public class PerspectiveAdapter extends DefaultAdapter {
 
     @POST
@@ -39,7 +41,7 @@ public class PerspectiveAdapter extends DefaultAdapter {
     public Object changePerspective(@PathParam("path") String perspective) {
         try {
             DocumentObject documentObject = (DocumentObject) getTarget();
-            ctx.getRequest().setAttribute(SiteConstants.THEME_PERSPECTIVE, 
+            ctx.getRequest().setAttribute(SiteConstants.THEME_PERSPECTIVE,
                     perspective);
             return documentObject.doGet();
         } catch (Exception e) {
