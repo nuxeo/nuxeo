@@ -171,7 +171,14 @@ public class AnnotationController {
         Annotation newAnnotation = model.getNewAnnotation();
         annoteaClient.submitAnnotation(newAnnotation);
         model.setNewAnnotation(null);
+
+        // set the selected annotation to the newly created one
+        setSelectedAnnotationIndex(model.getAnnotations().size());
     }
+
+    private native void setSelectedAnnotationIndex(int index) /*-{
+        top['selectedAnnotationIndex'] = index;
+    }-*/;
 
     public void reloadAnnotations() {
         if (onFrame) {
