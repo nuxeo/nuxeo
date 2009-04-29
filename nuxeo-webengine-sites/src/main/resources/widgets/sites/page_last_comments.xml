@@ -1,8 +1,11 @@
+<#assign canComment=(Session.hasPermission(Document.ref, 'Comment'))/>
+<#assign canModerate=(Session.hasPermission(Document.ref, 'Moderate'))/>
+
 <div class="commentspageBlock">
 <#if (!nxthemesInfo.model.items.empty || base.canWrite)>
   <h4>${Context.getMessage("label.page.comments.title")}</h4>
 </#if>
-<#if (This.userWithCommentPermission==true)> 
+<#if (canComment)> 
 <div class="addCommentLink">
   <a class="addComment" onclick="showCommentForm();">${Context.getMessage("label.page.comments.add")}</a>
 </div>
@@ -33,7 +36,7 @@
         <#if (item.pendingComment!=true)>
           <div class="commentInfos">${item.creationDate} by ${item.author} </div>
           <div class="commentContent">${item.commentText}</div>   
-          <#if (This.moderator==true)>
+          <#if (canModerate)>
             <a href="${This.path}/@webcomments/delete?property=${item.ref}">Delete</a>
       	  </#if>
       	</#if>                  
@@ -42,7 +45,7 @@
   </div>
   
   <div class="lastCommentsBlock">
-    <#if (This.moderator==true)>
+    <#if (canModerate)>
       <#list nxthemesInfo.model.items as item>
         <#if (item.pendingComment==true)>
           <div class="commentBlock">
