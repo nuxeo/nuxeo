@@ -40,18 +40,12 @@ public class ImagePreviewer extends AbstractPreviewer implements
 
         try {
         StringBuffer htmlPage = new StringBuffer();
-        String description = (String) dm.getProperty("dublincore",
-                "description");
 
         htmlPage.append("<html><head><title>");
         htmlPage.append(getPreviewTitle(dm));
         htmlPage.append("</title></head><body>");
         appendPreviewSettings(htmlPage);
         htmlPage.append("<img src=\"image\">");
-        if (description != null) {
-            htmlPage.append("<br />");
-            htmlPage.append(description);
-        }
 
         Blob mainBlob = new StringBlob(htmlPage.toString());
         mainBlob.setFilename("index.html");
@@ -66,13 +60,13 @@ public class ImagePreviewer extends AbstractPreviewer implements
 
         return blobResults;
     }
-    
+
     protected void appendPreviewSettings(StringBuffer sb) {
-    	sb.append("<script type=\"text/javascript\">");
-    	sb.append("var previewSettings = { ");
-    	sb.append("imageOnly: true");
-    	sb.append("}");
-    	sb.append("</script>");
+        sb.append("<script type=\"text/javascript\">");
+        sb.append("var previewSettings = { ");
+        sb.append("imageOnly: true");
+        sb.append("}");
+        sb.append("</script>");
     }
 
 }
