@@ -1,0 +1,58 @@
+<component name="org.nuxeo.ecm.webengine.sites.search.service">
+  
+  <extension
+    target="org.nuxeo.ecm.core.search.service.SearchServiceImpl"
+    point="indexableDocType">
+    <indexableDocType indexAllSchemas="true" name="ContextualLink" />
+  </extension>
+  
+  <extension
+    target="org.nuxeo.ecm.core.search.service.SearchServiceImpl"
+    point="resource">
+
+    <resource name="contextualLink" prefix="cLink" indexAllFields="true"
+      type="schema">
+      <field name="name" analyzer="default" stored="true"
+        indexed="true" type="Text" binary="false" sortable="true"
+        sortOption="case-insensitive"/>
+      <field name="description" analyzer="default" stored="true"
+        indexed="true" type="Text" binary="false" sortable="true"
+        sortOption="case-insensitive"/>
+      <field name="link" analyzer="default" stored="true" 
+        indexed="true" type="Text" binary="false" sortable="true"
+        sortOption="case-insensitive"/>
+    </resource>
+    
+    <resource name="webpage" prefix="webp" indexAllFields="true"
+      type="schema">
+      <field name="content" analyzer="default" stored="true"
+        indexed="true" type="Text" binary="false" sortable="true"
+        sortOption="case-insensitive"/>
+    </resource>
+
+  </extension> 
+  
+  <extension
+    target="org.nuxeo.ecm.core.search.service.SearchServiceImpl"
+    point="fullTextField">
+    <fullText name="ecm:fulltext" analyzer="default"
+      blobExtractorName="nuxeoTransform">
+      <field>dublincore:title</field>
+      <field>dublincore:description</field>
+      <field>file:content</field>
+      <field>webpage:content</field>
+      <field>files:file</field>
+      <mimetype name="application/pdf">pdf2text</mimetype>
+      <mimetype name="application/msword">word2text_poi</mimetype>
+      <mimetype name="application/vnd.ms-powerpoint">ppt2text_poi</mimetype>
+      <mimetype name="application/vnd.ms-excel">xl2text_jr</mimetype>
+      <mimetype name="text/xml">xml2text_jr</mimetype>
+      <mimetype name="text/html">html2text_jr</mimetype>
+      <mimetype name="application/vnd.sun.xml.writer">oo2text_jr</mimetype>
+      <mimetype name="application/vnd.sun.xml.writer.template">oo2text_jr</mimetype>
+      <mimetype name="application/vnd.oasis.opendocument.text">oo2text_jr</mimetype>
+      <mimetype name="application/vnd.oasis.opendocument.text-template">oo2text_jr</mimetype>
+      <mimetype name=".*/.*">any2text</mimetype>
+    </fullText>
+  </extension>
+</component>

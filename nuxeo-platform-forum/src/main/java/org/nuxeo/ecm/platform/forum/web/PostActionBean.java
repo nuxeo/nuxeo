@@ -312,7 +312,7 @@ public class PostActionBean implements PostAction {
 
         Map<String, Serializable> vars = new HashMap<String, Serializable>();
         vars.put(VariableName.participants.name(), moderators);
-        vars.put(ForumConstants.POST_REF, post.getId());
+        vars.put(ForumConstants.COMMENT_ID, post.getId());
         jbpmService.createProcessInstance((NuxeoPrincipal) currentUser,
                 ForumConstants.PROCESS_INSTANCE_NAME, thread, vars, null);
         Events.instance().raiseEvent(JbpmEventNames.WORKFLOW_NEW_STARTED);

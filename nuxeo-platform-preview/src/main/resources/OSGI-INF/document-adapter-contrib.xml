@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.preview.adapters">
+  <documentation>
+    Adapters for preview
+  </documentation>
+
+  <extension target="org.nuxeo.ecm.core.api.DocumentAdapterService"
+    point="adapters">
+    <adapter class="org.nuxeo.ecm.platform.preview.api.HtmlPreviewAdapter"
+      factory="org.nuxeo.ecm.platform.preview.adapter.PreviewDocumentModelAdapterFactory" />
+  </extension>
+</component>

@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo ECM Mail Core Test
+Bundle-SymbolicName: org.nuxeo.ecm.platform.mail.test;singleton:=true
+Bundle-Vendor: Nuxeo
+Require-Bundle: org.nuxeo.ecm.platform.mail
+Eclipse-LazyStart: false
+Nuxeo-Component: OSGI-INF/mailService-test-contrib.xml

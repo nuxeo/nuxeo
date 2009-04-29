@@ -47,7 +47,7 @@
               value="#{lifecycleEndState}" required="true"
               layout="pageDirection">
               <c:forEach var="lcs"
-                items="#{documentManager.getAllowedStateTransitions(currentDocument.getRef())}">
+                items="#{jbpmActions.getAllowedStateTransitions(currentDocument.getRef())}">
                 <f:selectItem itemLabel="#{messages[lcs]}" itemValue="#{lcs}" />
               </c:forEach>
               <f:selectItem

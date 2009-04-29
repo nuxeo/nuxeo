@@ -15,6 +15,9 @@
       <label>Forum</label>
       <icon>/icons/forum.gif</icon>
       <default-view>view_documents</default-view>
+      <bigIcon>/icons/forum_100.gif</bigIcon>
+      <description>Forum.description</description>
+      <category>Collaborative</category>
       <subtypes>
         <type>Thread</type>
       </subtypes>
@@ -29,6 +32,9 @@
     <type id="Thread" coretype="Thread">
       <label>Thread</label>
       <icon>/icons/forum_thread.gif</icon>
+      <bigIcon>/icons/forum_thread.gif</bigIcon>
+      <description>Thread.description</description>
+      <category>Collaborative</category>
       <default-view>view_documents</default-view>
       <create-view>thread_create</create-view>
       <layout>

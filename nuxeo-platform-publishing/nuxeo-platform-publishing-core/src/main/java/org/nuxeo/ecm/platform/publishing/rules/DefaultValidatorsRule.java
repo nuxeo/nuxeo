@@ -26,11 +26,9 @@ import java.util.Set;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.security.ACP;
-import org.nuxeo.ecm.core.api.security.PermissionProvider;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.publishing.api.AbstractNuxeoCoreValidatorsRule;
 import org.nuxeo.ecm.platform.publishing.api.PublishingValidatorException;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * Default NXP validator.
@@ -60,34 +58,9 @@ public class DefaultValidatorsRule extends AbstractNuxeoCoreValidatorsRule {
             throw new PublishingValidatorException(ce);
         }
 
-        /*NXP-1822 Rux: instead of looking for users which have particularly EVERYTHING
-         * permission, collect the users which are allowed to accept publishing: with at
-         * least WRITE permission
-         */
-        /*NXP-1981 Rux: use the exported API instead of Core internal SecurityService. The
-         * code has to be duplicated, but this way at least we can keep the multi-server
-         * deployment working. Instead of using SecurityService.getPermissionsToCheck(),
-         * I am replicating the code here based on PermissionProvider.getPermissionsGroups
-         * in order to have the same business logic.
-         */
-//        SecurityService secuService = NXCore.getSecurityService();
-//        Set<String> requiredPermissions = new HashSet<String>(
-//                Arrays.asList(secuService.getPermissionsToCheck(SecurityConstants.WRITE)));
-        PermissionProvider permProvider;
-        try {
-            permProvider = Framework.getService(PermissionProvider.class);
-        } catch (Exception e) {
-            throw new PublishingValidatorException(e);
-        }
-
         Set<String> requiredPermissions = new HashSet<String>();
-        requiredPermissions.addAll(Arrays.asList(permProvider.getPermissionGroups(
-                SecurityConstants.WRITE)));
-        requiredPermissions.add(SecurityConstants.WRITE);
-
-        /*Rux: Everything is not added!!! Go workaround*/
-        requiredPermissions.add(SecurityConstants.EVERYTHING);
-        //String[] reviewers = acp.listUsernamesForPermission(SecurityConstants.EVERYTHING);
+        requiredPermissions.addAll(Arrays.asList(
+                session.getPermissionsToCheck(SecurityConstants.WRITE)));
         String[] reviewers = acp.listUsernamesForAnyPermission(requiredPermissions);
 
         try {

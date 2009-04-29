@@ -1,15 +1,12 @@
 <?xml version="1.0"?>
 <module name="sites" root-type="sites" path="/sites" extends="base">
   <links>
-    <link id="tab_view" path="/@views/content">
-      <category>SITE_ACTIONS</category>
-    </link>
-    <link id="tab_webpage_edit" path="/@views/webpage_edit">
+    <link id="action_webpage_edit" path="edit">
       <category>SITE_ACTIONS</category>
       <type>WebPage</type>
       <guard>Write</guard>
     </link>
-    <link id="tab_webpage_create" path="/@views/webpage_create">
+    <link id="action_webpage_create" path="create">
       <category>SITE_ACTIONS</category>
       <guard>Write</guard>
     </link>

@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<component
+  name="org.nuxeo.ecm.platform.annotations.repository.contrib.test">
+  <extension
+    target="org.nuxeo.ecm.platform.annotations.AnnotationsRepositoryService"
+    point="documentEventListener">
+    <listener  name="testAnnotatedDocumentListener"
+      class="org.nuxeo.ecm.platform.annotations.service.DocumentTestEventListener" />
+      <!-- Override the default listener -->
+    <listener  name="defaultAnnotatedDocumentListener"
+      class="org.nuxeo.ecm.platform.annotations.service.DocumentTestEventListener" />
+  </extension>
+
+</component>

@@ -28,6 +28,9 @@ import org.nuxeo.ecm.webengine.ui.tree.JSonTreeSerializer;
 import org.nuxeo.ecm.webengine.ui.tree.TreeItem;
 import org.nuxeo.ecm.webengine.ui.tree.document.DocumentTree;
 
+/**
+ * Implementation of customized tree.
+ */
 public class SiteDocumentTree extends DocumentTree {
 
     public SiteDocumentTree(WebContext ctx, DocumentModel rootDoc) {

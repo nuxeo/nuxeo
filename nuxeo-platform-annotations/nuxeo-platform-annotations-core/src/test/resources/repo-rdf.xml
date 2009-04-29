@@ -1,0 +1,9 @@
+<?xml version="1.0" ?>
+<r:RDF xmlns:r="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+       xmlns:a="http://www.w3.org/2000/10/annotation-ns#"
+       xmlns:d="http://purl.org/dc/elements/1.1/">
+ <r:Description r:about="urn:annotation:3ACF6D754">
+  <a:annotates r:resource="http://serv1.example.com/some/page.html"/>
+  <a:body r:resource="http://serv2.example.com/mycomment.html"/>
+ </r:Description> 
+</r:RDF>

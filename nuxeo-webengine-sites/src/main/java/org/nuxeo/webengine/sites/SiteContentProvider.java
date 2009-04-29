@@ -28,7 +28,12 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.webengine.ui.tree.document.DocumentContentProvider;
+import org.nuxeo.webengine.sites.utils.SiteConstants;
+import org.nuxeo.webengine.sites.utils.SiteUtils;
 
+/**
+ * Implementation of provider for the tree.
+ */
 public class SiteContentProvider extends DocumentContentProvider {
 
     private static final long serialVersionUID = 1L;
@@ -48,8 +53,8 @@ public class SiteContentProvider extends DocumentContentProvider {
             // filter pages
             // WEB-214
             try {
-                if (SiteHelper.getBoolean(d, "webp:pushtomenu", false)
-                        && !d.getCurrentLifeCycleState().equals("deleted")) {
+                if (SiteUtils.getBoolean(d, SiteConstants.WEBPAGE_PUSHTOMENU, false)
+                        && !SiteConstants.DELETED.equals(d.getCurrentLifeCycleState())) {
                     v.add(d);
                 }
             } catch (ClientException e) {

@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.picture.LifeCycleManagerExtensions">
+
+  <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
+             point="types">
+    <types>
+      <type name="Picture">default</type>
+    </types>
+  </extension>
+
+</component>

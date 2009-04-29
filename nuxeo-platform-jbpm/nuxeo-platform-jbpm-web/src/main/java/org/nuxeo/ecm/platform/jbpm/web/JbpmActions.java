@@ -31,6 +31,7 @@ import org.jbpm.graph.exe.ProcessInstance;
 import org.jbpm.taskmgmt.exe.TaskInstance;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.jbpm.VirtualTaskInstance;
 
@@ -74,6 +75,13 @@ public interface JbpmActions extends Serializable {
     String moveUpVirtualTask(int index) throws ClientException;
 
     String moveDownVirtualTask(int index) throws ClientException;
+
+    /**
+     * Returns the list of allowed life cycle state transitions for given
+     * document.
+     */
+    List<String> getAllowedStateTransitions(DocumentRef ref)
+            throws ClientException;
 
     String getUserComment();
 

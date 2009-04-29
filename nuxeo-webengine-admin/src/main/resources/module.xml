@@ -1,6 +1,10 @@
 <?xml version="1.0"?>
 <module name="Admin" root-type="Admin" path="/admin" extends="base">
 
+  <resources>
+  	<resource path="/server" class="org.nuxeo.ecm.webengine.admin.management.ServerManagement" />  	
+  </resources>
+  
   <links>
     <link id="tab_content" path="/@views/content_page">
       <!--guard>Write</guard-->

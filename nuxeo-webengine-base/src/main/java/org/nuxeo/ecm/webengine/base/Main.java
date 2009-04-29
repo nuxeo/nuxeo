@@ -65,15 +65,12 @@ public class Main extends ModuleRoot {
             throw new WebResourceNotFoundException("Root module not registered");
         }
         module = mc.get();
-        init(module);
-    }
-    
-    protected void init(Module module) {
         ((AbstractWebContext) ctx).setModule(module);
         type = (ResourceTypeImpl) ((ModuleImpl) module).getRootType();
         setRoot(true);
         ctx.push(this);        
     }
+    
 
     @GET
     public Object doGet() {
@@ -99,9 +96,7 @@ public class Main extends ModuleRoot {
     public Object dispatch(@PathParam("path") String path) {
         ModuleConfiguration md = mgr.getModuleByPath(path);
         if (md != null) {
-            Module module = md.get(); 
-            init(module);
-            return module.getRootObject(ctx);
+            return md.get().getRootObject(ctx);
         } else {
             throw new WebResourceNotFoundException("No resource found at " + path);
         }

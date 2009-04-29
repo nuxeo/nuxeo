@@ -17,18 +17,9 @@
 
 package org.nuxeo.webengine.sites;
 
-import static org.nuxeo.webengine.utils.SiteUtilsConstants.ALL_WEBPAGES;
-import static org.nuxeo.webengine.utils.SiteUtilsConstants.CONTEXTUAL_LINKS;
-import static org.nuxeo.webengine.utils.SiteUtilsConstants.DESCRIPTION;
-import static org.nuxeo.webengine.utils.SiteUtilsConstants.LAST_PUBLISHED_PAGES;
-import static org.nuxeo.webengine.utils.SiteUtilsConstants.NAME;
-import static org.nuxeo.webengine.utils.SiteUtilsConstants.PAGE_TITLE;
-import static org.nuxeo.webengine.utils.SiteUtilsConstants.RESULTS;
-import static org.nuxeo.webengine.utils.SiteUtilsConstants.WELCOME_TEXT;
+import static org.nuxeo.webengine.sites.utils.SiteConstants.*;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -39,23 +30,22 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.rest.DocumentObject;
-import org.nuxeo.ecm.platform.comment.api.CommentManager;
-import org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.webengine.WebException;
-import org.nuxeo.ecm.webengine.model.Template;
 import org.nuxeo.ecm.webengine.model.WebObject;
-import org.nuxeo.ecm.webengine.webcomments.utils.WebCommentUtils;
-import org.nuxeo.ecm.webengine.webcomments.utils.WebCommentsConstants;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.webengine.utils.SiteUtils;
+import org.nuxeo.webengine.sites.utils.SiteUtils;
 
 /**
+ * Web object implementation corresponding to WebPage. It is resolved from site.
+ * It holds the web page fragments back methods.
+ * 
  * @author stan
  */
 @WebObject(type = "WebPage", superType = "Document")
@@ -67,64 +57,42 @@ public class Page extends DocumentObject {
     @Override
     @GET
     public Object doGet() {
-        ctx.getRequest().setAttribute("org.nuxeo.theme.theme", "sites/page");
-        return ((Template) super.doGet()).args(getPageArguments());
+        ctx.getRequest().setAttribute(THEME_BUNDLE, PAGE_THEME_PAGE);
+        String currentPerspective = (String) ctx.getRequest().getAttribute(
+                THEME_PERSPECTIVE);
+        if (StringUtils.isEmpty(currentPerspective)) {
+            // Set view perspective if none present.
+            ctx.getRequest().setAttribute(THEME_PERSPECTIVE,
+                    VIEW_PERSPECTIVE);
+        }
+        try {
+            return getTemplate("template_default.ftl").args(getPageArguments());
+        } catch (Exception e) {
+            throw WebException.wrap(e);
+        }
     }
 
     @Override
     @POST
     public Response doPost() {
-        String name = ctx.getForm().getString("comment");
         return null;
     }
-
-    @GET
-    @Path("numberComments")
-    public int getNumberCommentsOnPage() {
-        try {
-            CommentManager commentManager = WebCommentUtils.getCommentManager();
-            return commentManager.getComments(getDocument()).size();
-        } catch (Exception e) {
-            throw WebException.wrap("Failed to get all published comments", e);
-        }
-
-    }
-
-    public boolean isModerator() {
-        try {
-            CoreSession session = getCoreSession();
-            return WebCommentUtils.isModeratedByCurrentUser(session,
-                    getDocument());
-        } catch (Exception e) {
-            throw WebException.wrap("Failed to delete comment", e);
-        }
-    }
-
-    public boolean isModerated() {
-        try {
-            CoreSession session = this.getCoreSession();
-            return WebCommentUtils.isCurrentModerated(session,
-                    this.getDocument());
-        } catch (Exception e) {
-            throw WebException.wrap("Failed to delete comment", e);
-        }
-    }
-
 
     @GET
     @Path("logo")
     public Response getLogo() {
         Response resp = null;
         try {
-            DocumentModel parentWorkspace = SiteUtils.getFirstWorkspaceParent(getCoreSession(), doc);
+            DocumentModel parentWorkspace = SiteUtils.getFirstWorkspaceParent(
+                    getCoreSession(), doc);
             resp = SiteUtils.getLogoResponse(parentWorkspace);
         } catch (Exception e) {
-            log.error("Unable to retrive the workspace parent. " , e);
+            log.error("Unable to retrive the workspace parent. ", e);
         }
-        //return a default image, maybe you want to change this in future
+        // return a default image, maybe you want to change this in future
         if (resp == null) {
-            resp = redirect(getContext().getModule().getSkinPathPrefix() +
-                    "/images/logo.gif");
+            resp = redirect(getContext().getModule().getSkinPathPrefix()
+                    + "/images/logo.gif");
         }
         return resp;
     }
@@ -133,22 +101,10 @@ public class Page extends DocumentObject {
     @Path("search")
     public Object getSearchParametres(
             @FormParam("searchParam") String searchParam) {
-        ctx.getRequest().setAttribute("org.nuxeo.theme.theme",
-                "sites" + "/" + "search");
-        Map<String, Object> root = new HashMap<String, Object>();
+        ctx.getRequest().setAttribute(THEME_BUNDLE, SEARCH_THEME_PAGE);
+        ctx.setProperty(SEARCH_PARAM, searchParam);
         try {
-            DocumentModel ws = SiteUtils.getFirstWorkspaceParent(
-                    getCoreSession(), doc);
-            List<Object> pages = SiteUtils.searchPagesInSite(ws, searchParam,
-                    50);
-            root.put(RESULTS, pages);
-            root.put(CONTEXTUAL_LINKS, SiteUtils.getContextualLinks(ws));
-            root.put(WELCOME_TEXT, SiteHelper.getString(ws, "webc:welcomeText",
-                    null));
-            root.put(NAME, ws.getTitle());
-
-            return getTemplate("template_default.ftl").args(root);
-
+            return getTemplate("template_default.ftl").args(getPageArguments());
         } catch (Exception e) {
             throw WebException.wrap(e);
         }
@@ -160,13 +116,12 @@ public class Page extends DocumentObject {
         try {
             CoreSession session = ctx.getCoreSession();
 
-            DocumentModel createdDocument = SiteUtils.createWebPageDocument(ctx.getRequest(), session, doc.getPathAsString());
-
-            DocumentModel webContainer = SiteUtils.getFirstWorkspaceParent(session, doc);
+            DocumentModel createdDocument = SiteUtils.createWebPageDocument(
+                    ctx.getRequest(), session, doc.getPathAsString());
+            DocumentModel webContainer = SiteUtils.getFirstWorkspaceParent(
+                    session, doc);
             String path = SiteUtils.getPagePath(webContainer, createdDocument);
-
             return redirect(path);
-
         } catch (Exception e) {
             throw WebException.wrap(e);
         }
@@ -178,11 +133,10 @@ public class Page extends DocumentObject {
         try {
             CoreSession session = ctx.getCoreSession();
             HttpServletRequest request = ctx.getRequest();
-
             String title = request.getParameter("title");
             String description = request.getParameter("description");
-
-            Boolean isRichtext = (Boolean) doc.getPropertyValue("webp:isRichtext");
+            Boolean isRichtext = SiteUtils.getBoolean(doc, WEBPAGE_EDITOR,
+                    false);
             String content = null;
             if (isRichtext) {
                 content = request.getParameter("richtextEditorEdit");
@@ -193,104 +147,38 @@ public class Page extends DocumentObject {
 
             doc.setPropertyValue("dc:title", title);
             doc.setPropertyValue("dc:description", description);
-            doc.setPropertyValue("webp:content", content);
-            doc.setPropertyValue("webp:pushtomenu", Boolean.valueOf(pushToMenu));
-
+            doc.setPropertyValue(WEBPAGE_CONTENT, content);
+            doc.setPropertyValue(WEBPAGE_PUSHTOMENU,
+                    Boolean.valueOf(pushToMenu));
             session.saveDocument(doc);
             session.save();
-
             DocumentModel webContainer = SiteUtils.getFirstWorkspaceParent(
                     session, doc);
             String path = SiteUtils.getPagePath(webContainer, doc);
-
             return redirect(path);
         } catch (Exception e) {
             throw WebException.wrap(e);
         }
     }
 
-    public boolean isUserWithCommentPermission() {
-        try {
-            CoreSession session = getCoreSession();
-            return WebCommentUtils.currentUserHasCommentPermision(session,
-                    getDocument());
-        } catch (Exception e) {
-            throw WebException.wrap("Failed to delete comment", e);
-        }
-    }
-
-    protected Map<String, Object> getPageArguments() {
+    /**
+     * Computes the arguments for a page. It is needed because in page some of 
+     * the site properties need be displayed. 
+     * @return
+     * @throws Exception
+     */
+    protected Map<String, Object> getPageArguments() throws Exception {
 
         Map<String, Object> root = new HashMap<String, Object>();
-        try {
-            DocumentModel ws = SiteUtils.getFirstWorkspaceParent(
-                    getCoreSession(), doc);
-            root.put(PAGE_TITLE, doc.getTitle());
-            root.put(NAME, SiteHelper.getString(ws, "webc:name", null));
-            root.put(DESCRIPTION, SiteHelper.getString(doc, "dc:description",
-                    null));
-            // add web pages
-            List<Object> pages = SiteUtils.getLastModifiedWebPages(doc, 5, 50);
-            root.put(LAST_PUBLISHED_PAGES, pages);
-            // add contextual links
-            root.put(CONTEXTUAL_LINKS, SiteUtils.getContextualLinks(doc));
-
-            // add all webpages that are directly connected to an webpage
-            root.put(ALL_WEBPAGES, SiteUtils.getAllWebPages(doc));
-            MimetypeRegistry mimetypeService = Framework.getService(MimetypeRegistry.class);
-            root.put("mimetypeService", mimetypeService);
-        } catch (Exception e) {
-            log.error("Unable to get mimetype service : " + e.getMessage());
-            throw WebException.wrap(e);
-        }
-
+        CoreSession session = getCoreSession();
+        DocumentModel ws = SiteUtils.getFirstWorkspaceParent(session, doc);
+        root.put(PAGE_NAME,
+                SiteUtils.getString(ws, WEBCONATINER_NAME, null));
+        root.put(SITE_DESCRIPTION, SiteUtils.getString(ws,
+                WEBCONTAINER_BASELINE, null));
+        MimetypeRegistry mimetypeService = Framework.getService(MimetypeRegistry.class);
+        root.put("mimetypeService", mimetypeService);
         return root;
-    }
-
-
-  @GET
-    @Path("publishedComments")
-    public List<DocumentModel> getPublishedComments() {
-        List<DocumentModel> publishedComments = new ArrayList<DocumentModel>();
-        try {
-            CommentManager commentManager = WebCommentUtils.getCommentManager();
-            for (DocumentModel doc : commentManager.getComments(this.getDocument())) {
-                if (CommentsConstants.PUBLISHED_STATE.equals(doc.getCurrentLifeCycleState())) {
-                    publishedComments.add(doc);
-                }
-            }
-            return publishedComments;
-        } catch (Exception e) {
-            throw WebException.wrap("Failed to get all published comments", e);
-        }
-
-    }
-
-    @GET
-    @Path("pendingComments")
-    public List<DocumentModel> getPendingComments() {
-        List<DocumentModel> pendingComments = new ArrayList<DocumentModel>();
-        try {
-            CommentManager commentManager = WebCommentUtils.getCommentManager();
-            for (DocumentModel doc : commentManager.getComments(this.getDocument())) {
-                if (CommentsConstants.PENDING_STATE.equals(doc.getCurrentLifeCycleState())) {
-                    pendingComments.add(doc);
-                }
-            }
-            return pendingComments;
-        } catch (Exception e) {
-            throw WebException.wrap("Failed to get all pending comments", e);
-        }
-
-    }
-
-    public boolean isAposteriori() {
-        try {
-            return WebCommentUtils.getModerationType(
-                    this.getCoreSession(), this.getDocument()).equals(WebCommentsConstants.MODERATION_APOSTERIORI);
-        } catch (Exception e) {
-            throw WebException.wrap("Failed to delete comment", e);
-        }
     }
 
 }

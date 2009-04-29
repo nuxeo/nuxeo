@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<component name="org.nuxeo.webengine.document.jsf.types">
+<component name="org.nuxeo.webengine.wiki.jsf.types">
 
   <require>org.nuxeo.ecm.platform.types.TypeService</require>
   <require>org.nuxeo.webengine.document.types</require>
   <extension target="org.nuxeo.ecm.platform.types.TypeService"
              point="types">
 
+    <!--
     <type id="Blog" coretype="Blog">
       <label>BlogSite</label>
       <icon>/icons/folder.gif</icon>
@@ -16,7 +17,6 @@
         <type>BlogPost</type>
         <type>File</type>
       </subtypes>
-      <!-- new layout config -->
       <layouts mode="any">
         <layout>heading</layout>
       </layouts>
@@ -25,14 +25,13 @@
     <type id="BlogPost" coretype="BlogPost">
       <label>Blog Entry</label>
       <icon>/icons/blogpost.png</icon>
-      <!-- dummy default infos as an example -->
       <default-view>view_documents</default-view>
-      <!-- new layout config -->
       <layouts mode="any">
         <layout>heading</layout>
         <layout>files</layout>
       </layouts>
     </type>
+    -->
 
     <type id="Wiki" coretype="Wiki">
       <label>Wiki Site</label>

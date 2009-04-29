@@ -15,13 +15,13 @@
 
   <node name="published">
     <action
-      class="org.nuxeo.ecm.platform.forum.workflow.AcceptForumPostHandler" />
+    class="org.nuxeo.ecm.platform.comment.workflow.AcceptCommentHandler" />
     <transition to="end" />
   </node>
 
   <node name="rejected">
     <action
-      class="org.nuxeo.ecm.platform.forum.workflow.RejectForumPostHandler" />
+   class="org.nuxeo.ecm.platform.comment.workflow.RejectCommentHandler" />
     <transition to="end" />
   </node>
 

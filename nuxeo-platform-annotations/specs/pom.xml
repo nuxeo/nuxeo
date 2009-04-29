@@ -1,0 +1,230 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>org.nuxeo.doc</groupId>
+  <artifactId>nuxeo-book</artifactId>
+  <version>5.1-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <name>Nuxeo Reference Documentation</name>
+  <description>Nuxeo Reference Documentation</description>
+
+  <properties>
+    <docbook.source>${basedir}/src/docbook</docbook.source>
+    <docbook.target>${basedir}/target/site/reference</docbook.target>
+  </properties>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>com.agilejava.docbkx</groupId>
+        <artifactId>docbkx-maven-plugin</artifactId>
+        <version>2.0.6</version>
+
+        <executions>
+          <execution>
+            <id>build-pdf-doc</id>
+            <phase>pre-site</phase>
+            <goals>
+              <goal>generate-pdf</goal>
+            </goals>
+            <configuration>
+              <sourceDirectory>${docbook.source}</sourceDirectory>
+              <targetDirectory>${docbook.target}/pdf</targetDirectory>
+              <xincludeSupported>true</xincludeSupported>
+              <!--includes>*-book-*.xml</includes-->
+              <includes>NXAS-specification.xml</includes>
+              <imgSrcPath>${docbook.source}/images</imgSrcPath>
+              <admonGraphicsPath>${docbook.source}/resources/images/admons/</admonGraphicsPath>
+              <foCustomization>${docbook.source}/resources/xsl/nuxeo-docbook-fopdf.xsl</foCustomization>
+            </configuration>
+          </execution>
+
+          <!--execution>
+            <id>build-singlehtml-doc</id>
+            <phase>pre-site</phase>
+            <goals>
+              <goal>generate-html</goal>
+            </goals>
+            <configuration>
+              <sourceDirectory>${docbook.source}</sourceDirectory>
+              <targetDirectory>${docbook.target}/html-single</targetDirectory>
+              <includes>*-book-*.xml</includes>
+              <includes>*-book.xml</includes>
+              <chunkedOutput>false</chunkedOutput>
+              <htmlStylesheet>css/nuxeo-docbook.css</htmlStylesheet>
+              <xincludeSupported>true</xincludeSupported>
+              <htmlCustomization>
+                ${docbook.source}/resources/xsl/nuxeo-docbook-html.xsl
+              </htmlCustomization>
+
+              <postProcess>
+                <copy todir="${docbook.target}/html-single">
+                  <fileset dir="${docbook.source}/resources">
+                    <include name="images/*.png" />
+                    <include name="images/*.gif" />
+                    <include name="images/*.jpg" />
+                  </fileset>
+                  <fileset dir="${docbook.source}/resources">
+                    <include name="css/*.css" />
+                  </fileset>
+                </copy>
+                <copy todir="${docbook.target}/html-single/pictures"
+                  flatten="true">
+                  <fileset dir="${docbook.source}">
+                    <include name="**/pictures/*" />
+                  </fileset>
+                </copy>
+              </postProcess>
+            </configuration>
+          </execution>
+
+          <execution>
+            <id>build-chunkedhtml-doc</id>
+            <phase>pre-site</phase>
+            <goals>
+              <goal>generate-html</goal>
+            </goals>
+            <configuration>
+              <sourceDirectory>${docbook.source}</sourceDirectory>
+              <targetDirectory>${docbook.target}/html</targetDirectory>
+              <includes>*-book-*.xml</includes>
+              <includes>*-book.xml</includes>
+              <chunkedOutput>true</chunkedOutput>
+              <htmlStylesheet>css/nuxeo-docbook.css</htmlStylesheet>
+              <xincludeSupported>true</xincludeSupported>
+              <htmlCustomization>
+                ${docbook.source}/resources/xsl/nuxeo-docbook-html_chunk.xsl
+              </htmlCustomization>
+              <entities>
+                <entity>
+                  <name>version</name>
+                  <value>${version}</value>
+                </entity>
+              </entities>
+              <postProcess>
+                <copy todir="${docbook.target}/html">
+                  <fileset dir="${docbook.source}/resources">
+                    <include name="images/*.png" />
+                    <include name="images/*.gif" />
+                    <include name="images/*.jpg" />
+                  </fileset>
+                  <fileset dir="${docbook.source}/resources">
+                    <include name="css/*.css" />
+                  </fileset>
+                </copy>
+                <copy todir="${docbook.target}/html/pictures" flatten="true">
+                  <fileset dir="${docbook.source}">
+                    <include name="**/pictures/*" />
+                  </fileset>
+                </copy>
+              </postProcess>
+            </configuration>
+          </execution-->
+        </executions>
+
+        <dependencies>
+          <dependency>
+            <groupId>org.docbook</groupId>
+            <artifactId>docbook-xml</artifactId>
+            <version>4.4</version>
+            <scope>runtime</scope>
+          </dependency>
+        </dependencies>
+      </plugin>
+    </plugins>
+  </build>
+
+  <distributionManagement>
+    <site>
+      <id>maven_website</id>
+      <url>
+        scp://gironde.nuxeo.com/home/mavenweb/doc-site/${project.version}
+      </url>
+    </site>
+  </distributionManagement>
+
+  <scm>
+    <connection>
+      scm:svn:http://svn.nuxeo.org/nuxeo/doc/nuxeo-book/trunk
+    </connection>
+    <developerConnection>
+      scm:svn:https://svn.nuxeo.org/nuxeo/doc/nuxeo-book/trunk
+    </developerConnection>
+    <url>scm:svn:http://svn.nuxeo.org/nuxeo/doc/nuxeo-book/trunk</url>
+  </scm>
+  
+  <pluginRepositories>
+    <pluginRepository>
+      <id>central_proxy</id>
+      <name>Central Mirror</name>
+      <url>http://archiva.nuxeo.org/archiva/repository/central</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </pluginRepository>
+    <pluginRepository>
+      <id>nuxeo_release</id>
+      <name>Nuxeo Release</name>
+      <url>http://archiva.nuxeo.org/archiva/repository/nuxeo_release</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </pluginRepository>
+    <pluginRepository>
+      <id>external_snapshot</id>
+      <name>External Snapshot Repository</name>
+      <url>http://archiva.nuxeo.org/archiva/repository/external_snapshot</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+    </pluginRepository>
+    <pluginRepository>
+      <id>nuxeo_snapshot</id>
+      <name>Nuxeo Snapshot</name>
+      <url>http://archiva.nuxeo.org/archiva/repository/nuxeo_snapshot</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+    </pluginRepository>
+  </pluginRepositories>
+
+  <repositories>
+    <repository>
+      <id>central_proxy</id>
+      <name>Central Mirror</name>
+      <url>http://archiva.nuxeo.org/archiva/repository/central</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>nuxeo_release</id>
+      <name>Nuxeo Release</name>
+      <url>http://archiva.nuxeo.org/archiva/repository/nuxeo_release</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>external_snapshot</id>
+      <name>External Snapshot Repository</name>
+      <url>http://archiva.nuxeo.org/archiva/repository/external_snapshot</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+    </repository>
+    <repository>
+      <id>nuxeo_snapshot</id>
+      <name>Nuxeo Snapshot</name>
+      <url>http://archiva.nuxeo.org/archiva/repository/nuxeo_snapshot</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+    </repository>
+  </repositories>
+
+</project>
+

@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<project name="Nuxeo Platform Mail Core" default="deploy" basedir=".">
+  <property file="../build.properties" />
+
+  <property name="jboss.dir" value="/opt/jboss" />
+  <property name="jboss.config" value="default" />
+  <property name="build.dir" value="target" />
+  <property name="mvn.opts" value="" />
+
+  <property name="deploy.dir" value="${jboss.dir}/server/${jboss.config}/deploy" />
+  <property name="nuxeo.ear" value="nuxeo.ear" />
+
+  <condition property="osfamily-unix">
+    <os family="unix" />
+  </condition>
+  <condition property="osfamily-windows">
+    <os family="windows" />
+  </condition>
+
+  <target name="install" depends="install-unix,install-windows" />
+  <target name="install-unix" if="osfamily-unix">
+    <exec executable="mvn" failonerror="true">
+      <arg value="install" />
+      <arg value="-Dmaven.test.skip=true" />
+      <arg value="${mvn.opts}" />
+    </exec>
+  </target>
+
+  <target name="install-windows" if="osfamily-windows">
+    <exec executable="cmd" failonerror="true">
+      <arg value="/c" />
+      <arg value="mvn.bat" />
+      <arg value="install" />
+      <arg value="-Dmaven.test.skip=true" />
+      <arg value="${mvn.opts}" />
+    </exec>
+  </target>
+
+  <target name="deploy" depends="install">
+    <copy todir="${deploy.dir}/${nuxeo.ear}/plugins" overwrite="true">
+      <fileset dir="${build.dir}">
+        <include name="*.jar" />
+        <exclude name="*-sources.jar" />
+      </fileset>
+    </copy>
+  </target>
+
+  <target name="scheduler" description="Copy scheduler configuration">
+    <copy file="src/main/resources/config/nxmail-scheduler-contrib.xml" tofile="${deploy.dir}/${nuxeo.ear}/config/nxmail-scheduler-config.xml" overwrite="true" />
+  </target>
+</project>

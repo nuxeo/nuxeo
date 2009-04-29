@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Platform Imaging API
+Bundle-SymbolicName: org.nuxeo.ecm.platform.picture.api;singleton=true
+Bundle-Vendor: Nuxeo
+Eclipse-LazyStart: true
+Require-Bundle: org.nuxeo.ecm.core.api
+Export-Package: org.nuxeo,
+ org.nuxeo.ecm.platform,
+ org.nuxeo.ecm.platform.picture.api,
+ org.nuxeo.ecm.platform.picture.convert,
+ org.nuxeo.ecm.platform.picture.api.adapters,
+ org.nuxeo.ecm.platform.picture.config
+Nuxeo-Component: OSGI-INF/picture-adapter-contrib.xml,
+ OSGI-INF/picture-blobholder-contrib.xml,
+ OSGI-INF/picture-config-framework.xml

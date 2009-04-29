@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<component
+	name="org.nuxeo.ecm.platform.annotations.repository.coreContrib">
+	<require>
+		org.nuxeo.ecm.platform.annotations.services.DefaultAnnotationContrib
+	</require>
+	<require>
+		org.nuxeo.ecm.platform.annotations.AnnotationsRepositoryService
+	</require>
+	<require>
+		org.nuxeo.ecm.platform.url.service.DocumentViewCodecService
+	</require>
+	<extension
+		target="org.nuxeo.ecm.platform.annotations.services.AnnotationsService"
+		point="uriResolver">
+		<urlResolver
+			class="org.nuxeo.ecm.platform.annotations.repository.DefaultNuxeoUriResolver" />
+	</extension>
+	<extension
+		target="org.nuxeo.ecm.platform.annotations.services.AnnotationsService"
+		point="metadataMapper">
+		<metadataMapper
+			class="org.nuxeo.ecm.platform.annotations.repository.DefaultNuxeoMetadataMapper" />
+	</extension>
+	<extension
+		target="org.nuxeo.ecm.platform.annotations.services.AnnotationsService"
+		point="permissionMapper">
+		<permissionMapper>
+			<createAnnotation>updateDocument</createAnnotation>
+			<readAnnotation>viewDocument</readAnnotation>
+			<updateAnnotation>updateDocument</updateAnnotation>
+			<deleteAnnotation>deleteDocument</deleteAnnotation>
+		</permissionMapper>
+	</extension>
+	<extension
+		target="org.nuxeo.ecm.platform.annotations.services.AnnotationsService"
+		point="annotabilityManager">
+		<annotabilityManager
+			class="org.nuxeo.ecm.platform.annotations.repository.service.RepositoryAnnotabilityManager" />
+	</extension>
+	<extension
+		target="org.nuxeo.ecm.platform.annotations.services.AnnotationsService"
+		point="eventListener">
+		<listener
+			class="org.nuxeo.ecm.platform.annotations.repository.core.AnnotationEventListener" />
+	</extension>
+</component>
