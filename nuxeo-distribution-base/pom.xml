@@ -81,6 +81,7 @@
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-shell-commands-base</artifactId>
+      <version>${nuxeo.services.version}</version>
     </dependency>
 
     <dependency>
