@@ -59,7 +59,7 @@ public class TestMailService extends NXRuntimeTestCase {
     public void setUp() throws Exception {
         Server.start();
         super.setUp();
-        deployBundle("org.nuxeo.ecm.webapp.core");
+        deployBundle("org.nuxeo.ecm.webapp.base");
         deployBundle("org.nuxeo.ecm.platform.mail");
         deployBundle("org.nuxeo.ecm.platform.mail.test");
         mailService = Framework.getService(MailService.class);
