@@ -150,7 +150,7 @@ class BasePage:
             ['j_id16:j_id18', ''],
             ['j_id16:j_id19', 'KEYWORDS'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['j_id16:j_id30:2:j_id32', 'j_id16:j_id30:2:j_id32']],
+            ['j_id16:j_id30:1:j_id32', 'j_id16:j_id30:1:j_id32']],
                description="View member management")
         return self
 
@@ -211,7 +211,7 @@ class BasePage:
             ['j_id15:j_id17', ''],
             ['j_id15:j_id18', 'KEYWORDS'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['j_id15:j_id29:2:j_id31', 'j_id15:j_id29:2:j_id31']],
+            ['j_id15:j_id29:1:j_id31', 'j_id15:j_id29:1:j_id31']],
             description="Back to member management")
         return self
 
@@ -360,8 +360,8 @@ class FolderPage(BasePage):
             ['j_id199', 'j_id199'],
             ['j_id199:selectDocTypePanelOpenedState', ''],
             ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['j_id199:j_id204:2:j_id208:1:j_id212',
-             'j_id199:j_id204:2:j_id208:1:j_id212']],
+            ['j_id199:j_id204:3:j_id208:1:j_id212',
+             'j_id199:j_id204:3:j_id208:1:j_id212']],
             description="Create folder: New Folder")
         fl.assert_('document_create' in fl.getBody(),
                    "Folder form not found")
