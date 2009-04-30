@@ -68,7 +68,7 @@
                 <f:subview rendered="#{userInfo.type == 'USER_TYPE'}">
                   <h:graphicImage value="/icons/user.gif" alt="user.gif" />
                   <h:outputText
-                    value="#{nxu:userDisplayName(info.id, info.entry[userSchema].firstName, info.entry[userSchema].lastName)}" />
+                    value="#{nxu:userDisplayName(userInfo.id, userInfo.entry[userSchema].firstName, userInfo.entry[userSchema].lastName)}" />
                 </f:subview>
                 <f:subview rendered="#{userInfo.type == 'GROUP_TYPE'}">
                   <h:graphicImage value="/icons/group.gif" alt="group.gif" />
@@ -87,7 +87,7 @@
                     <tr><td>
                     <f:subview rendered="#{userInfo.type == 'USER_TYPE'}">
                       <h:outputText
-                        value="#{nxu:userDisplayName(info.id, info.entry[userSchema].firstName, info.entry[userSchema].lastName)}" />
+                        value="#{nxu:userDisplayName(userInfo.id, userInfo.entry[userSchema].firstName, userInfo.entry[userSchema].lastName)}" />
                     </f:subview>
                     <f:subview rendered="#{userInfo.type != 'USER_TYPE'}">
                       <h:outputText value="#{comment.actorId}" />
