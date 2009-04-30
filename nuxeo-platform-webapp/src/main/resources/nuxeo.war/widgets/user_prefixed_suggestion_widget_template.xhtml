@@ -118,7 +118,7 @@
                   <nxu:methodResult name="info" value="#{userSuggestionActions.getPrefixedUserInfo(model.rowData)}">
                     <f:subview rendered="#{info.type == 'USER_TYPE'}">
                       <h:graphicImage value="/icons/user.gif" alt="user.gif" />
-                      <h:outputText value="#{nxu:userDisplayName(info.id, info.entry[userSchema].firstName, info.entry[user.lastName)}" />
+                      <h:outputText value="#{nxu:userDisplayName(info.id, info.entry[userSchema].firstName, info.entry[userSchema].lastName)}" />
                     </f:subview>
                     <f:subview rendered="#{info.type == 'GROUP_TYPE'}">
                       <h:graphicImage value="/icons/group.gif" alt="group.gif" />
