@@ -74,7 +74,7 @@
 			<filter-name>simpleCacheFilter</filter-name>
 			<filter-class>
 				org.nuxeo.ecm.platform.ui.web.cache.SimpleCacheFilter
-      </filter-class>
+			</filter-class>
 			<init-param>
 				<param-name>cacheTime</param-name>
 				<param-value>3600</param-value>
@@ -89,18 +89,29 @@
 				org.nuxeo.ecm.platform.ui.web.download.DownloadServlet
 			</servlet-class>
 		</servlet>
-
 		<servlet-mapping>
 			<servlet-name>Nuxeo Downloader</servlet-name>
 			<url-pattern>/nxbigfile/*</url-pattern>
 		</servlet-mapping>
+
+		<servlet>
+			<servlet-name>Nuxeo JS Provider</servlet-name>
+			<servlet-class>
+				org.nuxeo.ecm.platform.web.common.resources.AggregatedJSProvider
+			</servlet-class>
+		</servlet>
+		<servlet-mapping>
+			<servlet-name>Nuxeo JS Provider</servlet-name>
+			<url-pattern>/js/*</url-pattern>
+		</servlet-mapping>
+
 	</extension>
 
-  <extension target="web#ERROR-PAGE">
-    <error-page>
-      <error-code>404</error-code>
-      <location>/page_not_found.jsp</location>
-    </error-page>
-  </extension>
+	<extension target="web#ERROR-PAGE">
+		<error-page>
+			<error-code>404</error-code>
+			<location>/page_not_found.jsp</location>
+		</error-page>
+	</extension>
 </fragment>
 
