@@ -330,9 +330,6 @@ public class NuxeoConnection implements Connection, SPI {
         if (offset < 0) {
             throw new IllegalArgumentException("Offset: " + offset);
         }
-        if (length < 0) {
-            throw new IllegalArgumentException("Length: " + offset);
-        }
         DocumentModel doc;
         try {
             doc = session.getDocument(new IdRef(document.getId()));

@@ -92,8 +92,6 @@ public class NuxeoProperty implements Property {
             value = null;
         } else if (Property.CHECKIN_COMMENT.equals(name)) {
             value = null;
-        } else if (Property.CONTENT_STREAM_ALLOWED.equals(name)) {
-            value = type.getContentStreamAllowed().toString();
         } else if (Property.CONTENT_STREAM_LENGTH.equals(name)) {
             value = doc.hasSchema("file") ? doc.getPropertyValue("file:content/length")
                     : null;

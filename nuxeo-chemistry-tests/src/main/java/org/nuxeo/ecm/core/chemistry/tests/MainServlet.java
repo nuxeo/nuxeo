@@ -26,7 +26,9 @@ import org.apache.chemistry.Repository;
 import org.apache.chemistry.atompub.server.CMISServlet;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mortbay.jetty.Connector;
 import org.mortbay.jetty.Server;
+import org.mortbay.jetty.bio.SocketConnector;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -47,6 +49,8 @@ public class MainServlet extends SQLRepositoryTestCase {
     private static final Log log = LogFactory.getLog(MainServlet.class);
 
     private static final int MINUTES = 60 * 1000; // in ms
+
+    public static final String HOST = "0.0.0.0";
 
     public static final int PORT = 8080;
 
@@ -161,12 +165,17 @@ public class MainServlet extends SQLRepositoryTestCase {
 
     public void main() throws Exception {
         Repository repository = makeRepository();
-        Server server = new Server(PORT);
+        Server server = new Server();
+        Connector connector = new SocketConnector();
+        connector.setHost(HOST);
+        connector.setPort(PORT);
+        server.setConnectors(new Connector[] { connector });
         Servlet servlet = new CMISServlet(repository);
         Context context = new Context(server, SERVLET_PATH, Context.SESSIONS);
         context.addServlet(new ServletHolder(servlet), "/*");
         server.start();
-        String url = "http://localhost:" + PORT + SERVLET_PATH + CMIS_SERVICE;
+        String url = "http://" + HOST + ':' + PORT + SERVLET_PATH
+                + CMIS_SERVICE;
         log.info("CMIS server started, AtomPub service url: " + url);
         Thread.sleep(60 * MINUTES);
         server.stop();

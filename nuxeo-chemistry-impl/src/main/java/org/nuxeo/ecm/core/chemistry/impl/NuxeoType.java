@@ -156,12 +156,6 @@ public class NuxeoType implements Type {
             "", false, PropertyType.STRING, false, null, false, false, null,
             Updatability.READ_ONLY, true, true, 0, null, null, -1, null, null);
 
-    private static final NuxeoPropertyDefinition PROP_CONTENT_STREAM_ALLOWED = new NuxeoPropertyDefinition(
-            Property.CONTENT_STREAM_ALLOWED, "def:contentstreamallowed",
-            "Content Stream Allowed", "", false, PropertyType.STRING, false,
-            null, false, true, null, Updatability.READ_ONLY, true, true, 0,
-            null, null, -1, null, null);
-
     private static final NuxeoPropertyDefinition PROP_CONTENT_STREAM_LENGTH = new NuxeoPropertyDefinition(
             Property.CONTENT_STREAM_LENGTH, "def:contentstreamlength",
             "Content Stream Length", "", false, PropertyType.INTEGER, false,
@@ -330,7 +324,7 @@ public class NuxeoType implements Type {
                         PROP_ID, //
                         PROP_URI, //
                         PROP_TYPE_ID, //
-                        PROP_CREATED_BY,//
+                        PROP_CREATED_BY, //
                         PROP_CREATION_DATE, //
                         PROP_LAST_MODIFIED_BY,//
                         PROP_LAST_MODIFICATION_DATE, //
@@ -348,7 +342,6 @@ public class NuxeoType implements Type {
                     PROP_VERSION_SERIES_CHECKED_OUT_BY, //
                     PROP_VERSION_SERIES_CHECKED_OUT_ID, //
                     PROP_CHECKIN_COMMENT, //
-                    PROP_CONTENT_STREAM_ALLOWED, //
                     PROP_CONTENT_STREAM_LENGTH, //
                     PROP_CONTENT_STREAM_MIME_TYPE, //
                     PROP_CONTENT_STREAM_FILENAME, //
