@@ -150,7 +150,7 @@ class BasePage:
             ['j_id16:j_id18', ''],
             ['j_id16:j_id19', 'KEYWORDS'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['j_id16:j_id30:1:j_id32', 'j_id16:j_id30:1:j_id32']],
+            ['j_id16:j_id30:2:j_id32', 'j_id16:j_id30:2:j_id32']],
                description="View member management")
         return self
 
@@ -211,7 +211,7 @@ class BasePage:
             ['j_id15:j_id17', ''],
             ['j_id15:j_id18', 'KEYWORDS'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['j_id15:j_id29:1:j_id31', 'j_id15:j_id29:1:j_id31']],
+            ['j_id15:j_id29:2:j_id31', 'j_id15:j_id29:2:j_id31']],
             description="Back to member management")
         return self
 
