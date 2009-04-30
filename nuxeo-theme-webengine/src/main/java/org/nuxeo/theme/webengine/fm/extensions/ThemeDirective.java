@@ -45,6 +45,7 @@ import org.nuxeo.theme.webengine.negotiation.WebNegotiator;
 
 import freemarker.core.Environment;
 import freemarker.ext.beans.BeansWrapper;
+import freemarker.template.SimpleScalar;
 import freemarker.template.Template;
 import freemarker.template.TemplateDirectiveBody;
 import freemarker.template.TemplateDirectiveModel;
@@ -68,10 +69,6 @@ public class ThemeDirective implements TemplateDirectiveModel {
     public void execute(Environment env, Map params, TemplateModel[] loopVars,
             TemplateDirectiveBody body) throws TemplateException, IOException {
 
-        if (!params.isEmpty()) {
-            throw new TemplateModelException(
-                    "This directive doesn't allow parameters.");
-        }
         if (loopVars.length != 0) {
             throw new TemplateModelException(
                     "This directive doesn't allow loop variables.");
@@ -88,7 +85,13 @@ public class ThemeDirective implements TemplateDirectiveModel {
         env.setGlobalVariable("nxthemesInfo",
                 BeansWrapper.getDefaultInstance().wrap(Manager.getInfoPool()));
 
-        final URL themeUrl = getThemeUrlAndSetupRequest(ctx);
+        String strategy = null;
+        SimpleScalar strategyModel = (SimpleScalar) params.get("strategy");
+        if (strategyModel != null) {
+            strategy = strategyModel.getAsString();
+        }
+
+        final URL themeUrl = getThemeUrlAndSetupRequest(ctx, strategy);
         if (themeUrl == null) {
             return;
         }
@@ -146,8 +149,8 @@ public class ThemeDirective implements TemplateDirectiveModel {
         return false;
     }
 
-    private static URL getThemeUrlAndSetupRequest(WebContext context)
-            throws IOException {
+    private static URL getThemeUrlAndSetupRequest(WebContext context,
+            String strategy) throws IOException {
         HttpServletRequest request = context.getRequest();
         URL themeUrl = (URL) request.getAttribute("org.nuxeo.theme.url");
         if (themeUrl != null) {
@@ -175,7 +178,9 @@ public class ThemeDirective implements TemplateDirectiveModel {
                 negotiation.getDefaultEngine());
         request.setAttribute("org.nuxeo.theme.default.perspective",
                 negotiation.getDefaultPerspective());
-        String strategy = negotiation.getStrategy();
+        if (strategy == null) {
+            strategy = negotiation.getStrategy();
+        }
 
         if (strategy == null) {
             log.error("Negotiation strategy not set for: " + root);
