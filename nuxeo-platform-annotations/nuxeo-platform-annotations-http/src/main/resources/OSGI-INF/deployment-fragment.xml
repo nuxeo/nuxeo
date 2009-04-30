@@ -35,11 +35,16 @@
       <url-pattern>/Annotations/body/*</url-pattern>
     </servlet-mapping>
   </extension>
+
   <install>
-    <delete path="nxas-http.tmp" />
-    <mkdir path="nxas-http.tmp" />
-    <unzip from="${bundle.fileName}" to="nxas-http.tmp">
+
+    <delete path="${bundle.fileName}.tmp" />
+    <mkdir path="${bundle.fileName}.tmp" />
+    <unzip from="${bundle.fileName}" to="${bundle.fileName}.tmp">
       <include>OSGI-INF/**</include>
     </unzip>
+
+    <delete path="${bundle.fileName}.tmp" />
+
   </install>
 </fragment>
