@@ -94,6 +94,7 @@ public class XPathUtil {
             }
             return nodes;
         }
+        Log.debug("XPathUtil#getNode -- xpath: " + xpath);
         String[] paths = xpath.split("/");
         Node result = document;
         for (String path : paths) {
@@ -102,16 +103,21 @@ public class XPathUtil {
             }
             NodeList<Node> nodeList = result.getChildNodes();
             String name = path.substring(0, path.indexOf("["));
+            Log.debug("XPathUtil#getNode -- name: " + name);
             int index = Integer.parseInt(path.substring(path.indexOf("[") + 1,
                     path.indexOf("]")));
+            Log.debug("XPathUtil#getNode -- index: " + name);
             int counter = 1;
+            Log.debug("XPathUtil#getNode -- nodeList.length: " + nodeList.getLength());
             for (int x = 0; x < nodeList.getLength(); x++) {
                 Node node = nodeList.getItem(x);
+                Log.debug("XPathUtil#getNode -- node name: " + node.getNodeName());
                 if (node.getNodeName().equalsIgnoreCase(name)) {
                     if (isIgnored(node)) {// considered as text node
                         continue;
                     }
                     if (counter == index) {
+                        Log.debug("XPathUtil#getNode -- found node: " + counter);
                         result = node;
                         break;
                     }
@@ -121,6 +127,7 @@ public class XPathUtil {
 
         }
         nodes.add(result);
+        Log.debug("XPathUtil#getNode -- end function: ");
         return nodes;
     }
 
