@@ -21,8 +21,6 @@
       <!-- Icon + Type -->
       <nxu:column styleClass="iconColumn">
         <div id="docRef:#{doc.ref}" class="cell popupTarget" docRef="#{doc.ref}">
-         <h:graphicImage value="/icons/lock.gif"
-           rendered="#{not empty doc.lock}"/>
         <nxu:graphicImage
           value="#{nxd:iconPath(doc)}" alt="#{doc.type}" /></div>
         <script type="text/javascript">
@@ -75,6 +73,12 @@
         <h:outputLink value="#{baseURL}site/sites/#{doc.webc.url}" target="blank" rendered="#{idParam == 'USER_SITES'}">
           <h:outputText value="#{doc.webc.name}" />
         </h:outputLink> 
+      </nxu:column>
+      
+      <!-- Locking Icon -->
+      <nxu:column styleClass="iconColumn">
+        <h:graphicImage value="/icons/lock.gif"
+           rendered="#{not empty row.data.lock}"/>
       </nxu:column>
 
       <!--  Modification date -->

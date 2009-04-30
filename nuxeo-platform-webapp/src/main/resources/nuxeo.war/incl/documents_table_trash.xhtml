@@ -33,8 +33,6 @@
       <nxu:column styleClass="iconColumn">
         <div id="docRefTarget:#{row.data.ref}">
         <div id="docRef:#{row.data.ref}" class="cell">
-        <h:graphicImage value="/icons/lock.gif"
-           rendered="#{not empty row.data.lock}"/>
         <nxu:graphicImage
           value="#{nxd:iconPath(row.data)}" alt="#{row.data.type}">
        </nxu:graphicImage></div></div>
@@ -80,7 +78,12 @@
                title="#{messages['permalink.newTab']}"/>
       </nxd:restDocumentLink>
       </nxu:column>
-
+      
+      <!-- Locking Icon -->
+      <nxu:column styleClass="iconColumn">
+        <h:graphicImage value="/icons/lock.gif"
+           rendered="#{not empty row.data.lock}"/>
+      </nxu:column>
 
       <!--  Modification date -->
       <nxu:column>

@@ -1175,6 +1175,9 @@
         <margin>0</margin>
         <padding>0</padding>
       </selector>
+      <selector path="img, a" view="Nuxeo EP logo (Galaxy Theme)">
+        <outline>none</outline>
+      </selector>
     </style>
     <!-- user services -->
     <style
@@ -1445,8 +1448,11 @@
         <color preset="link (Nuxeo psd colors)"/>
         <text-decoration>underline</text-decoration>
       </selector>
-      <selector path="input.langSelect" view="Nuxeo EP footer (Galaxy Theme)">
+      <selector path="select.langSelect" view="Nuxeo EP footer (Galaxy Theme)">
         <margin>9px 5px 0px 5px</margin>
+      </selector>
+      <selector path="input.button" view="Nuxeo EP footer (Galaxy Theme)">
+        <margin>5px 0px 5px 10px</margin>
       </selector>
     </style>
     <!-- main fragment for default page & popup -->
