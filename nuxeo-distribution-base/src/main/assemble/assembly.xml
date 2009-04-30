@@ -11,22 +11,15 @@
   </artifactSet>
 
   <artifactSet id="bundles">
-    <artifacts>
-      <artifact group="org.nuxeo.common" name="nuxeo-common" />
-
-      <artifact group="org.nuxeo.runtime" name="nuxeo-runtime" />
-      <artifact group="org.nuxeo.runtime" name="nuxeo-runtime-osgi" />
-
-      <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-api" />
-      <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-schema" />
-      <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-query" />
-      <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-io" />
-      <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-client" version="${nuxeo.core.version}"/>
-
-      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-shell-core" version="${nuxeo.services.version}"/>
-    </artifacts>
+    <import>*</import>
+    <includes>
+      <artifact group="org.nuxeo*" />
+    </includes>
+    <excludes>
+      <artifact name="nuxeo-apt-extensions" />
+      <artifact name="nuxeo-runtime-test" />
+    </excludes>
   </artifactSet>
-
 
   <artifactSet id="third-party-libs">
     <import>*</import>
