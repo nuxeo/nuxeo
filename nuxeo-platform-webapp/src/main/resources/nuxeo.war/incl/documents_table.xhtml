@@ -72,15 +72,6 @@
           </h:panelGroup>
         </f:facet>
         <div class="popupTarget" docRef="#{row.data.ref}">
-        <!-- Download Link -->
-      <nxu:methodResult name="hasFileFacet" value="#{currentDocument.hasSchema('file')}">
-        <h:panelGroup rendered="#{hasFileFacet}">
-          <nxh:outputLink rendered="#{!empty row.data.file}"  value="#{nxd:fileUrl('downloadFile', row.data, 'file:content',
-            row.data.file.filename)}">
-            <nxh:graphicImage value="/icons/download.png" title="#{row.data.file.filename}" rendered="#{! empty row.data.file.filename}" />
-          </nxh:outputLink>
-        </h:panelGroup>
-      </nxu:methodResult>
         <!-- Title -->
         <nxd:documentLink title="#{nxd:titleOrId(row.data)}"
           document="#{row.data}" rendered="false" />
@@ -96,6 +87,15 @@
             alt="#{messages['permalink.newTab']}"
                title="#{messages['permalink.newTab']}"/>
       </nxd:restDocumentLink>
+       <!-- Download Link -->
+      <nxu:methodResult name="hasFileFacet" value="#{currentDocument.hasSchema('file')}">
+        <h:panelGroup rendered="#{hasFileFacet}">
+          <nxh:outputLink rendered="#{!empty row.data.file}"  value="#{nxd:fileUrl('downloadFile', row.data, 'file:content',
+            row.data.file.filename)}">
+            <nxh:graphicImage value="/icons/download.png" title="#{row.data.file.filename}" style="vertical-align:middle" rendered="#{! empty row.data.file.filename}" />
+          </nxh:outputLink>
+        </h:panelGroup>
+      </nxu:methodResult>
        </div>
 
       </nxu:column>
