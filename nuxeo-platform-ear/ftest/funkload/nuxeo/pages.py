@@ -93,9 +93,10 @@ class BasePage:
         fl.assert_('LoginFailed=true' not in fl.getLastUrl(),
                    'Login failed for %s:%s' % (user, password))
         fl.post(fl.server_url + "/view_documents.faces", params=[
+            ['j_id405', 'j_id405'],
+            ['j_id405:j_id407', 'en_US'],
+            ['j_id405:j_id409', 'Change'],
             ['j_id403', 'j_id403'],
-            ['j_id403:j_id405', 'en_US'],
-            ['j_id403:j_id407', 'Changer'],
             ['javax.faces.ViewState', fl.getLastJsfState()]],
             description="Change locale to en_US")
         fl.assert_(fl.listHref(content_pattern="Log out"),
@@ -431,7 +432,7 @@ class FolderPage(BasePage):
         fl.post(fl.server_url + "/view_documents.faces", params=[
             ['CHILDREN_DOCUMENT_LIST', 'CHILDREN_DOCUMENT_LIST'],
             ['CHILDREN_DOCUMENT_LIST:dataTable:0:j_id271', 'on'],
-            ['CHILDREN_DOCUMENT_LIST:j_id351:1:j_id353', 'Delete'],
+            ['CHILDREN_DOCUMENT_LIST:j_id353:1:j_id355', 'Delete'],
             ['javax.faces.ViewState', state]],
             description='Delete document "%s"' % title)
         fl.assert_('Document(s) deleted' in fl.getBody())
