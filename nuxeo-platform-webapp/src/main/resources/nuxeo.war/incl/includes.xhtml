@@ -11,8 +11,7 @@
     Seam.Remoting.getContext().setConversationId(currentConversationId);
 </script>
 
-<script type="text/javascript" src="#{baseURL}scripts/DragAndDrop.js"></script>
-<script type="text/javascript" src="#{baseURL}scripts/tableSelections.js"></script>
+<script type="text/javascript" src="#{baseURL}/js/?scripts=DragAndDrop.js|tableSelections.js|customSeamRemotingWaiter.js|custom-javascript.js|default-contextmenu-actions.js|custom-contextmenu-actions.js"></script>
 
 <script type="text/javascript">
 <h:outputText
@@ -303,7 +302,7 @@ function LogInBrowser(text)
     eval( 'window.external.LogText(\"' + text + '\")' );
   }
   catch(e)
-  { 
+  {
      alert("Error : " + e.name + "\n"+ e.message);
   }
 }
@@ -321,8 +320,6 @@ if (window.addEventListener)
 -->
 </script>
 
-<script type="text/javascript" src="#{baseURL}scripts/customSeamRemotingWaiter.js"></script>
-<script type="text/javascript" src="#{baseURL}scripts/custom-javascript.js"></script>
 
 <!-- waiter html -->
 <div id="waiter" style="display: none;">
