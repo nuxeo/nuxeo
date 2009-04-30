@@ -6,5 +6,8 @@ Bundle-Localization: plugin
 Require-Bundle: org.nuxeo.ecm.core.api,
  org.nuxeo.ecm.core.convert.api
 Bundle-Vendor: Nuxeo
+Export-package: org.nuxeo.ecm.core.convert.cache,
+ org.nuxeo.ecm.core.convert.extension,
+ org.nuxeo.ecm.core.convert.service
 Bundle-Category: search,web,stateful,stateless
 Nuxeo-Component: OSGI-INF/convert-service-framework.xml
