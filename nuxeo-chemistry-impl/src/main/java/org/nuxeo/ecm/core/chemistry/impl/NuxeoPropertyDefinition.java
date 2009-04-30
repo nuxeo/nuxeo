@@ -26,10 +26,10 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.chemistry.property.Choice;
-import org.apache.chemistry.property.PropertyDefinition;
-import org.apache.chemistry.property.PropertyType;
-import org.apache.chemistry.property.Updatability;
+import org.apache.chemistry.Choice;
+import org.apache.chemistry.PropertyDefinition;
+import org.apache.chemistry.PropertyType;
+import org.apache.chemistry.Updatability;
 
 public class NuxeoPropertyDefinition implements PropertyDefinition {
 
@@ -205,30 +205,30 @@ public class NuxeoPropertyDefinition implements PropertyDefinition {
                     : "Property is single-valued";
         }
         Class<?> klass;
-        switch (type) {
-        case STRING:
-        case ID:
+        switch (type.ordinal()) {
+        case PropertyType.STRING_ORD:
+        case PropertyType.ID_ORD:
             klass = String.class;
             break;
-        case DECIMAL:
+        case PropertyType.DECIMAL_ORD:
             klass = BigDecimal.class;
             break;
-        case INTEGER:
+        case PropertyType.INTEGER_ORD:
             klass = Integer.class; // TODO Long
             break;
-        case BOOLEAN:
+        case PropertyType.BOOLEAN_ORD:
             klass = Boolean.class;
             break;
-        case DATETIME:
+        case PropertyType.DATETIME_ORD:
             klass = Calendar.class;
             break;
-        case URI:
+        case PropertyType.URI_ORD:
             klass = URI.class;
             break;
-        case XML:
+        case PropertyType.XML_ORD:
             klass = String.class; // TODO
             break;
-        case HTML:
+        case PropertyType.HTML_ORD:
             klass = String.class; // TODO
             break;
         default:

@@ -29,29 +29,33 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.chemistry.BaseType;
 import org.apache.chemistry.CMISObject;
 import org.apache.chemistry.Connection;
 import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.Document;
 import org.apache.chemistry.Folder;
 import org.apache.chemistry.ObjectEntry;
+import org.apache.chemistry.ObjectId;
 import org.apache.chemistry.Policy;
 import org.apache.chemistry.Relationship;
 import org.apache.chemistry.RelationshipDirection;
+import org.apache.chemistry.Repository;
 import org.apache.chemistry.ReturnVersion;
 import org.apache.chemistry.SPI;
+import org.apache.chemistry.Type;
 import org.apache.chemistry.Unfiling;
 import org.apache.chemistry.VersioningState;
-import org.apache.chemistry.repository.Repository;
-import org.apache.chemistry.type.BaseType;
-import org.apache.chemistry.type.Type;
+import org.apache.chemistry.impl.simple.SimpleObjectId;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 
 public class NuxeoConnection implements Connection, SPI {
 
@@ -72,16 +76,10 @@ public class NuxeoConnection implements Connection, SPI {
         try {
             session = CoreInstance.getInstance().open(
                     repository.repositoryName, context);
-            String rootFolderId = session.getRootDocument().getId();
-            rootFolder = (NuxeoFolder) getObject(rootFolderId,
-                    ReturnVersion.THIS);
+            rootFolder = new NuxeoFolder(session.getRootDocument(), this);
         } catch (ClientException e) {
             throw new RuntimeException("Could not connect", e); // TODO
         }
-    }
-
-    public Connection getConnection() {
-        return this;
     }
 
     public SPI getSPI() {
@@ -104,7 +102,19 @@ public class NuxeoConnection implements Connection, SPI {
      * ----- Factories -----
      */
 
-    private DocumentModel createDoc(String typeId, ObjectEntry folder) {
+    public ObjectId newObjectId(String id) {
+        return new SimpleObjectId(id);
+    }
+
+    public ObjectEntry newObjectEntry(String typeId) {
+        DocumentModel doc = new DocumentModelImpl(typeId);
+        // doc = session.createDocumentModel(typeId);
+        // doc.setPathInfo(((NuxeoObjectEntry) folder).doc.getPathAsString(),
+        // "");
+        return new NuxeoObjectEntry(doc, this);
+    }
+
+    private DocumentModel createDoc(String typeId, Folder folder) {
         DocumentModel doc;
         try {
             doc = session.createDocumentModel(typeId);
@@ -112,13 +122,12 @@ public class NuxeoConnection implements Connection, SPI {
             throw new IllegalArgumentException(typeId);
         }
         if (folder != null) {
-            doc.setPathInfo(((NuxeoObjectEntry) folder).doc.getPathAsString(),
-                    "");
+            doc.setPathInfo(((NuxeoFolder) folder).doc.getPathAsString(), "");
         }
         return doc;
     }
 
-    public Document newDocument(String typeId, ObjectEntry folder) {
+    public Document newDocument(String typeId, Folder folder) {
         Type type = repository.getType(typeId);
         if (type == null || type.getBaseType() != BaseType.DOCUMENT) {
             throw new IllegalArgumentException(typeId);
@@ -126,7 +135,7 @@ public class NuxeoConnection implements Connection, SPI {
         return new NuxeoDocument(createDoc(typeId, folder), this);
     }
 
-    public Folder newFolder(String typeId, ObjectEntry folder) {
+    public Folder newFolder(String typeId, Folder folder) {
         Type type = repository.getType(typeId);
         if (type == null || type.getBaseType() != BaseType.FOLDER) {
             throw new IllegalArgumentException(typeId);
@@ -142,7 +151,7 @@ public class NuxeoConnection implements Connection, SPI {
         return new NuxeoRelationship(createDoc(typeId, null), this);
     }
 
-    public Policy newPolicy(String typeId, ObjectEntry folder) {
+    public Policy newPolicy(String typeId, Folder folder) {
         Type type = repository.getType(typeId);
         if (type == null || type.getBaseType() != BaseType.POLICY) {
             throw new IllegalArgumentException(typeId);
@@ -154,26 +163,26 @@ public class NuxeoConnection implements Connection, SPI {
      * ----- Navigation Services -----
      */
 
-    public List<ObjectEntry> getDescendants(String folderId, BaseType type,
+    public List<ObjectEntry> getDescendants(ObjectId folder, BaseType type,
             int depth, String filter, boolean includeAllowableActions,
             boolean includeRelationships, String orderBy) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public List<ObjectEntry> getChildren(String folderId, BaseType type,
+    public List<ObjectEntry> getChildren(ObjectId folder, BaseType type,
             String filter, boolean includeAllowableActions,
             boolean includeRelationships, int maxItems, int skipCount,
             String orderBy, boolean[] hasMoreItems) {
         // TODO type and orderBy
         DocumentModelList docs;
         try {
-            docs = session.getChildren(new IdRef(folderId));
+            docs = session.getChildren(new IdRef(folder.getId()));
         } catch (ClientException e) {
             throw new RuntimeException(e.toString(), e); // TODO
         }
         if (docs == null) {
-            throw new IllegalArgumentException(folderId);
+            throw new IllegalArgumentException(folder.getId());
         }
         List<ObjectEntry> all = new ArrayList<ObjectEntry>(docs.size());
         for (DocumentModel child : docs) {
@@ -196,21 +205,21 @@ public class NuxeoConnection implements Connection, SPI {
         return all.subList(fromIndex, toIndex);
     }
 
-    public List<ObjectEntry> getFolderParent(String folderId, String filter,
+    public List<ObjectEntry> getFolderParent(ObjectId folder, String filter,
             boolean includeAllowableActions, boolean includeRelationships,
             boolean returnToRoot) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public Collection<ObjectEntry> getObjectParents(String objectId,
+    public Collection<ObjectEntry> getObjectParents(ObjectId object,
             String filter, boolean includeAllowableActions,
             boolean includeRelationships) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public Collection<ObjectEntry> getCheckedoutDocuments(String folderId,
+    public Collection<ObjectEntry> getCheckedoutDocuments(ObjectId folder,
             String filter, boolean includeAllowableActions,
             boolean includeRelationships, int maxItems, int skipCount,
             boolean[] hasMoreItems) {
@@ -222,54 +231,65 @@ public class NuxeoConnection implements Connection, SPI {
      * ----- Object Services -----
      */
 
-    public String createDocument(String typeId,
-            Map<String, Serializable> properties, String folderId,
+    public ObjectId createDocument(String typeId,
+            Map<String, Serializable> properties, ObjectId folder,
             ContentStream contentStream, VersioningState versioningState) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public String createFolder(String typeId,
-            Map<String, Serializable> properties, String folderId) {
+    public ObjectId createFolder(String typeId,
+            Map<String, Serializable> properties, ObjectId folder) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public String createRelationship(String typeId,
-            Map<String, Serializable> properties, String sourceId,
-            String targetId) {
+    public ObjectId createRelationship(String typeId,
+            Map<String, Serializable> properties, ObjectId source,
+            ObjectId target) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public String createPolicy(String typeId,
-            Map<String, Serializable> properties, String folderId) {
+    public ObjectId createPolicy(String typeId,
+            Map<String, Serializable> properties, ObjectId folder) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public Collection<String> getAllowableActions(String objectId, String asUser) {
+    public Collection<String> getAllowableActions(ObjectId object, String asUser) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public ObjectEntry getProperties(String objectId,
+    public ObjectEntry getProperties(ObjectId object,
             ReturnVersion returnVersion, String filter,
             boolean includeAllowableActions, boolean includeRelationships) {
         // TODO filter, includeAllowableActions, includeRelationships
-        return getObject(objectId, returnVersion);
+        DocumentModel doc;
+        try {
+            DocumentRef docRef = new IdRef(object.getId());
+            if (!session.exists(docRef)) {
+                return null;
+            }
+            doc = session.getDocument(docRef);
+        } catch (ClientException e) {
+            throw new RuntimeException(e); // TODO
+        }
+        return new NuxeoObjectEntry(doc, this);
     }
 
-    public CMISObject getObject(String objectId, ReturnVersion returnVersion) {
+    public CMISObject getObject(ObjectId object, ReturnVersion returnVersion) {
         // TODO returnVersion
         DocumentModel doc;
         try {
-            doc = session.getDocument(new IdRef(objectId));
+            DocumentRef docRef = new IdRef(object.getId());
+            if (!session.exists(docRef)) {
+                return null;
+            }
+            doc = session.getDocument(docRef);
         } catch (ClientException e) {
-            throw new RuntimeException("Not found: " + objectId, e); // TODO
-        }
-        if (doc == null) {
-            throw new RuntimeException("Not found: " + objectId); // TODO
+            throw new RuntimeException(e); // TODO
         }
         switch (repository.getType(doc.getType()).getBaseType()) {
         case DOCUMENT:
@@ -281,11 +301,31 @@ public class NuxeoConnection implements Connection, SPI {
         case POLICY:
             return new NuxeoPolicy(doc, this);
         default:
-            throw new RuntimeException();
+            throw new AssertionError();
         }
     }
 
-    public InputStream getContentStream(String documentId, int offset,
+    public boolean hasContentStream(ObjectId document) {
+        DocumentModel doc;
+        try {
+            doc = session.getDocument(new IdRef(document.getId()));
+        } catch (ClientException e) {
+            throw new RuntimeException("Not found: " + document.getId(), e); // TODO
+        }
+        if (doc == null) {
+            throw new RuntimeException("Not found: " + document.getId()); // TODO
+        }
+        if (!doc.hasSchema("file")) {
+            return false;
+        }
+        try {
+            return doc.getProperty("file", "content") != null;
+        } catch (ClientException e) {
+            throw new RuntimeException(e.toString(), e); // TODO
+        }
+    }
+
+    public InputStream getContentStream(ObjectId document, int offset,
             int length) throws IOException {
         if (offset < 0) {
             throw new IllegalArgumentException("Offset: " + offset);
@@ -295,12 +335,12 @@ public class NuxeoConnection implements Connection, SPI {
         }
         DocumentModel doc;
         try {
-            doc = session.getDocument(new IdRef(documentId));
+            doc = session.getDocument(new IdRef(document.getId()));
         } catch (ClientException e) {
-            throw new RuntimeException("Not found: " + documentId, e); // TODO
+            throw new RuntimeException("Not found: " + document.getId(), e); // TODO
         }
         if (doc == null) {
-            throw new RuntimeException("Not found: " + documentId); // TODO
+            throw new RuntimeException("Not found: " + document.getId()); // TODO
         }
         if (!doc.hasSchema("file")) {
             return null;
@@ -326,73 +366,73 @@ public class NuxeoConnection implements Connection, SPI {
         return stream;
     }
 
-    public void setContentStream(String documentId, boolean overwrite,
+    public ObjectId setContentStream(ObjectId document, boolean overwrite,
             ContentStream contentStream) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public void deleteContentStream(String documentId) {
+    public void deleteContentStream(ObjectId document) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public String updateProperties(String objectId, String changeToken,
+    public ObjectId updateProperties(ObjectId objeId, String changeToken,
             Map<String, Serializable> properties) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public void moveObject(String objectId, String targetFolderId,
-            String sourceFolderId) {
+    public void moveObject(ObjectId object, ObjectId targetFolder,
+            ObjectId sourceFolder) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public void moveObject(ObjectEntry object, ObjectEntry targetFolder,
-            ObjectEntry sourceFolder) {
+    public void moveObject(CMISObject object, Folder targetFolder,
+            Folder sourceFolder) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public void deleteObject(String objectId) {
+    public void deleteObject(ObjectId object) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public void deleteObject(ObjectEntry object) {
+    public void deleteObject(CMISObject object) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public Collection<String> deleteTree(String folderId, Unfiling unfiling,
+    public Collection<String> deleteTree(ObjectId folder, Unfiling unfiling,
             boolean continueOnFailure) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public Collection<String> deleteTree(ObjectEntry folder, Unfiling unfiling,
+    public Collection<String> deleteTree(Folder folder, Unfiling unfiling,
             boolean continueOnFailure) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public void addObjectToFolder(String objectId, String folderId) {
+    public void addObjectToFolder(ObjectId object, ObjectId folder) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public void addObjectToFolder(ObjectEntry object, ObjectEntry folder) {
+    public void addObjectToFolder(CMISObject object, Folder folder) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public void removeObjectFromFolder(String objectId, String folderId) {
+    public void removeObjectFromFolder(ObjectId object, ObjectId folder) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public void removeObjectFromFolder(ObjectEntry object, ObjectEntry folder) {
+    public void removeObjectFromFolder(CMISObject object, Folder folder) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
@@ -409,7 +449,7 @@ public class NuxeoConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public Collection<ObjectEntry> query(String statement,
+    public Collection<CMISObject> query(String statement,
             boolean searchAllVersions) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
@@ -419,35 +459,34 @@ public class NuxeoConnection implements Connection, SPI {
      * ----- Versioning Services -----
      */
 
-    public String checkOut(String documentId, boolean[] contentCopied) {
+    public ObjectId checkOut(ObjectId document, boolean[] contentCopied) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public CMISObject checkOut(ObjectEntry document) {
+    public Document checkOut(Document document) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public void cancelCheckOut(String documentId) {
+    public void cancelCheckOut(ObjectId document) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public void cancelCheckOut(ObjectEntry document) {
+    public void cancelCheckOut(Document document) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public String checkIn(String documentId, boolean major,
+    public ObjectId checkIn(ObjectId document, boolean major,
             Map<String, Serializable> properties, ContentStream contentStream,
             String comment) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public CMISObject checkIn(ObjectEntry document, boolean major,
-            String comment) {
+    public Document checkIn(Document document, boolean major, String comment) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
@@ -458,7 +497,7 @@ public class NuxeoConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public CMISObject getLatestVersion(ObjectEntry document, boolean major) {
+    public Document getLatestVersion(Document document, boolean major) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
@@ -469,8 +508,7 @@ public class NuxeoConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public Collection<ObjectEntry> getAllVersions(ObjectEntry document,
-            String filter) {
+    public Collection<Document> getAllVersions(Document document, String filter) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
@@ -480,7 +518,7 @@ public class NuxeoConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public void deleteAllVersions(ObjectEntry document) {
+    public void deleteAllVersions(Document document) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
@@ -489,7 +527,7 @@ public class NuxeoConnection implements Connection, SPI {
      * ----- Relationship Services -----
      */
 
-    public List<ObjectEntry> getRelationships(String objectId,
+    public List<ObjectEntry> getRelationships(ObjectId object,
             RelationshipDirection direction, String typeId,
             boolean includeSubRelationshipTypes, String filter,
             String includeAllowableActions, int maxItems, int skipCount,
@@ -498,7 +536,7 @@ public class NuxeoConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public List<ObjectEntry> getRelationships(ObjectEntry object,
+    public List<Relationship> getRelationships(CMISObject object,
             RelationshipDirection direction, String typeId,
             boolean includeSubRelationshipTypes) {
         // TODO Auto-generated method stub
@@ -509,33 +547,33 @@ public class NuxeoConnection implements Connection, SPI {
      * ----- Policy Services -----
      */
 
-    public void applyPolicy(String policyId, String objectId) {
+    public void applyPolicy(ObjectId policy, ObjectId object) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public void applyPolicy(Policy policy, ObjectEntry object) {
+    public void applyPolicy(Policy policy, CMISObject object) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public void removePolicy(String policyId, String objectId) {
+    public void removePolicy(ObjectId policy, ObjectId object) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public void removePolicy(Policy policy, ObjectEntry object) {
+    public void removePolicy(Policy policy, CMISObject object) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public Collection<ObjectEntry> getAppliedPolicies(String policyId,
+    public Collection<ObjectEntry> getAppliedPolicies(ObjectId policy,
             String filter) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public Collection<Policy> getAppliedPolicies(ObjectEntry object) {
+    public Collection<Policy> getAppliedPolicies(CMISObject object) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }

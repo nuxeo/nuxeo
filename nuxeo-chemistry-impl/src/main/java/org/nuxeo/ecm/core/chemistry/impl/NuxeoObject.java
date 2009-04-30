@@ -19,60 +19,52 @@
 package org.nuxeo.ecm.core.chemistry.impl;
 
 import java.io.Serializable;
-import java.util.Map;
 
 import org.apache.chemistry.CMISObject;
-import org.apache.chemistry.Document;
 import org.apache.chemistry.Folder;
-import org.apache.chemistry.Policy;
-import org.apache.chemistry.Relationship;
-import org.apache.chemistry.property.Property;
-import org.apache.chemistry.type.BaseType;
+import org.apache.chemistry.Property;
+import org.apache.chemistry.Type;
+import org.apache.chemistry.impl.base.BaseObject;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 
-public class NuxeoObject extends NuxeoObjectEntry implements CMISObject {
+public class NuxeoObject extends BaseObject implements CMISObject {
+
+    protected DocumentModel doc;
+
+    protected NuxeoConnection connection;
 
     protected NuxeoObject(DocumentModel doc, NuxeoConnection connection) {
-        super(doc, connection);
+        this.doc = doc;
+        this.connection = connection;
     }
 
-    @Override
-    public Document getDocument() {
-        if (getType().getBaseType() != BaseType.DOCUMENT) {
-            throw new RuntimeException("Not a document: " + getId());
+    protected static NuxeoObject construct(DocumentModel doc,
+            NuxeoConnection connection) {
+        if (doc.isFolder()) {
+            return new NuxeoFolder(doc, connection);
+        } else {
+            return new NuxeoDocument(doc, connection);
         }
-        return (Document) this;
     }
 
-    @Override
-    public Folder getFolder() {
-        if (getType().getBaseType() != BaseType.FOLDER) {
-            throw new RuntimeException("Not a folder: " + getId());
+    public Type getType() {
+        return connection.repository.getType(doc.getType());
+    }
+
+    public void save() {
+        try {
+            if (getId() == null) {
+                connection.session.createDocument(doc);
+            } else {
+                connection.session.saveDocument(doc);
+            }
+            connection.session.save();
+        } catch (ClientException e) {
+            throw new RuntimeException("Cannot save: " + e, e); // TODO
         }
-        return (Folder) this;
     }
-
-    @Override
-    public Relationship getRelationship() {
-        if (getType().getBaseType() != BaseType.RELATIONSHIP) {
-            throw new RuntimeException("Not a relationship: " + getId());
-        }
-        return (Relationship) this;
-    }
-
-    @Override
-    public Policy getPolicy() {
-        if (getType().getBaseType() != BaseType.POLICY) {
-            throw new RuntimeException("Not a policy: " + getId());
-        }
-        return (Policy) this;
-    }
-
-    /*
-     * ----- CMISObject -----
-     */
 
     public Folder getParent() {
         DocumentRef parentRef = doc.getParentRef();
@@ -87,45 +79,18 @@ public class NuxeoObject extends NuxeoObjectEntry implements CMISObject {
         }
     }
 
-    public void setValue(String name, Serializable value) {
-        NuxeoPropertyDefinition pd = (NuxeoPropertyDefinition) getType().getPropertyDefinition(
-                name);
-        if (pd == null) {
-            throw new IllegalArgumentException(name);
-        }
-        String error = pd.validationError(value);
-        if (error != null) {
-            throw new RuntimeException("Property " + name + ": " + error); // TODO
-        }
-        getProperty(name).setValue(value);
+    public Serializable getValue(String name) {
+        // TODO avoid constructing property object
+        return getProperty(name).getValue();
     }
 
-    public void setValues(Map<String, Serializable> values) {
-        // don't use putAll as we want to do type checks
-        for (String name : values.keySet()) {
-            setValue(name, values.get(name));
-        }
-    }
-
-    public void save() {
+    public Property getProperty(String name) {
         try {
-            if (getId() == null) {
-                connection.session.createDocument(doc);
-            } else {
-                connection.session.saveDocument(doc);
-            }
-            connection.session.save();
+            return NuxeoProperty.getProperty(doc, getType(), name,
+                    connection.session);
         } catch (ClientException e) {
-            throw new RuntimeException("Cannot save: " + e, e);
+            throw new RuntimeException(e.toString(), e); // TODO
         }
-    }
-
-    /*
-     * ----- convenience methods for specific properties -----
-     */
-
-    public void setName(String name) {
-        setValue(Property.NAME, name);
     }
 
 }

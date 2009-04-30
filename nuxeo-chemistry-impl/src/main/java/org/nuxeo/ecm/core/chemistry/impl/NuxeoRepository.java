@@ -28,13 +28,16 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.chemistry.Connection;
-import org.apache.chemistry.repository.JoinCapability;
-import org.apache.chemistry.repository.QueryCapability;
-import org.apache.chemistry.repository.Repository;
-import org.apache.chemistry.repository.RepositoryCapabilities;
-import org.apache.chemistry.repository.RepositoryEntry;
-import org.apache.chemistry.repository.RepositoryInfo;
-import org.apache.chemistry.type.Type;
+import org.apache.chemistry.JoinCapability;
+import org.apache.chemistry.ObjectId;
+import org.apache.chemistry.QueryCapability;
+import org.apache.chemistry.Repository;
+import org.apache.chemistry.RepositoryCapabilities;
+import org.apache.chemistry.RepositoryEntry;
+import org.apache.chemistry.RepositoryInfo;
+import org.apache.chemistry.SPI;
+import org.apache.chemistry.Type;
+import org.apache.chemistry.impl.simple.SimpleObjectId;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.runtime.api.Framework;
@@ -46,7 +49,7 @@ public class NuxeoRepository implements Repository, RepositoryInfo,
 
     protected final Map<String, Type> types;
 
-    protected final String rootFolderId;
+    protected final ObjectId rootFolderId;
 
     public NuxeoRepository(String repositoryName) {
         this.repositoryName = repositoryName;
@@ -69,7 +72,7 @@ public class NuxeoRepository implements Repository, RepositoryInfo,
         // initialize root folder id
         Connection conn = getConnection(null);
         try {
-            rootFolderId = conn.getRootFolder().getId();
+            rootFolderId = new SimpleObjectId(conn.getRootFolder().getId());
         } finally {
             conn.close();
         }
@@ -102,6 +105,14 @@ public class NuxeoRepository implements Repository, RepositoryInfo,
 
     public Connection getConnection(Map<String, Serializable> parameters) {
         return new NuxeoConnection(this, parameters);
+    }
+
+    public SPI getSPI() {
+        return new NuxeoConnection(this, null);
+    }
+
+    public <T> T getExtension(Class<T> klass) {
+        return null; // not supported
     }
 
     public RepositoryInfo getInfo() {
@@ -169,7 +180,7 @@ public class NuxeoRepository implements Repository, RepositoryInfo,
         return "Repository " + repositoryName;
     }
 
-    public String getRootFolderId() {
+    public ObjectId getRootFolderId() {
         return rootFolderId;
     }
 

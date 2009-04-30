@@ -22,8 +22,8 @@ import java.util.TimeZone;
 
 import javax.servlet.Servlet;
 
+import org.apache.chemistry.Repository;
 import org.apache.chemistry.atompub.server.CMISServlet;
-import org.apache.chemistry.repository.Repository;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mortbay.jetty.Server;

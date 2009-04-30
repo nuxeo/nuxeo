@@ -27,14 +27,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.chemistry.property.Choice;
-import org.apache.chemistry.property.Property;
-import org.apache.chemistry.property.PropertyDefinition;
-import org.apache.chemistry.property.PropertyType;
-import org.apache.chemistry.property.Updatability;
-import org.apache.chemistry.type.BaseType;
-import org.apache.chemistry.type.ContentStreamPresence;
-import org.apache.chemistry.type.Type;
+import org.apache.chemistry.BaseType;
+import org.apache.chemistry.Choice;
+import org.apache.chemistry.ContentStreamPresence;
+import org.apache.chemistry.Property;
+import org.apache.chemistry.PropertyDefinition;
+import org.apache.chemistry.PropertyType;
+import org.apache.chemistry.Type;
+import org.apache.chemistry.Updatability;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.schema.DocumentType;
@@ -243,7 +243,6 @@ public class NuxeoType implements Type {
             }
             for (Field field : schema.getFields()) {
                 String prefixedName = field.getName().getPrefixedName();
-                String fieldName = field.getName().getLocalName();
 
                 String name;
                 boolean inherited = false;
@@ -254,7 +253,7 @@ public class NuxeoType implements Type {
                 Serializable defaultValue = null;
                 boolean queryable = true;
                 boolean orderable = true;
-                
+
                 PropertyType cmisType = PropertyType.STRING;
 
                 org.nuxeo.ecm.core.schema.types.Type fieldType = field.getType();
@@ -290,7 +289,7 @@ public class NuxeoType implements Type {
                     continue;
                 }
                 name = prefixedName;
-                
+
                 PropertyDefinition def = new NuxeoPropertyDefinition(name,
                         "def:nx:" + name, name, "", inherited,
                         cmisType, multiValued, choices, openChoice,
@@ -309,7 +308,7 @@ public class NuxeoType implements Type {
                 : ContentStreamPresence.NOT_ALLOWED;
 
     }
-    
+
     protected PropertyType getPropertType(org.nuxeo.ecm.core.schema.types.SimpleType type) {
         org.nuxeo.ecm.core.schema.types.SimpleType primitive = type.getPrimitiveType();
         if (primitive == StringType.INSTANCE) {

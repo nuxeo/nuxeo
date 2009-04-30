@@ -20,11 +20,10 @@ package org.nuxeo.ecm.core.chemistry.impl;
 
 import java.io.Serializable;
 
-import org.apache.chemistry.property.Property;
-import org.apache.chemistry.property.PropertyDefinition;
-import org.apache.chemistry.property.Updatability;
-import org.apache.chemistry.type.ContentStreamPresence;
-import org.apache.chemistry.type.Type;
+import org.apache.chemistry.Property;
+import org.apache.chemistry.PropertyDefinition;
+import org.apache.chemistry.Type;
+import org.apache.chemistry.Updatability;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;

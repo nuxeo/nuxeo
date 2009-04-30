@@ -22,14 +22,18 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.chemistry.ContentStream;
+import org.apache.chemistry.ContentStreamPresence;
 import org.apache.chemistry.Document;
-import org.apache.chemistry.type.ContentStreamPresence;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.InputStreamBlob;
 
 public class NuxeoDocument extends NuxeoObject implements Document {
+
+    private static final Log log = LogFactory.getLog(NuxeoDocument.class);
 
     public NuxeoDocument(DocumentModel doc, NuxeoConnection connection) {
         super(doc, connection);
@@ -43,6 +47,22 @@ public class NuxeoDocument extends NuxeoObject implements Document {
             return (Blob) doc.getProperty("file", "content");
         } catch (ClientException e) {
             throw new RuntimeException(e.toString(), e); // TODO
+        }
+    }
+
+    // TODO put in API?
+    public boolean hasContentStream() {
+        if (getType().getContentStreamAllowed() == ContentStreamPresence.NOT_ALLOWED) {
+            return false;
+        }
+        if (!doc.hasSchema("file")) {
+            return false;
+        }
+        try {
+            return (Blob) doc.getProperty("file", "content") != null;
+        } catch (ClientException e) {
+            log.error("Could not check blob presence", e);
+            return false;
         }
     }
 

@@ -21,10 +21,10 @@ package org.nuxeo.ecm.core.chemistry.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.chemistry.BaseType;
+import org.apache.chemistry.CMISObject;
 import org.apache.chemistry.Document;
 import org.apache.chemistry.Folder;
-import org.apache.chemistry.ObjectEntry;
-import org.apache.chemistry.type.BaseType;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -35,7 +35,7 @@ public class NuxeoFolder extends NuxeoObject implements Folder {
         super(doc, connection);
     }
 
-    public List<ObjectEntry> getChildren(BaseType type, String orderBy) {
+    public List<CMISObject> getChildren(BaseType type, String orderBy) {
         // TODO type and orderBy
         DocumentModelList docs;
         try {
@@ -46,9 +46,9 @@ public class NuxeoFolder extends NuxeoObject implements Folder {
         if (docs == null) {
             throw new IllegalArgumentException(doc.getId());
         }
-        List<ObjectEntry> children = new ArrayList<ObjectEntry>(docs.size());
+        List<CMISObject> children = new ArrayList<CMISObject>(docs.size());
         for (DocumentModel child : docs) {
-            children.add(new NuxeoObjectEntry(child, connection));
+            children.add(NuxeoObject.construct(child, connection));
         }
         return children;
     }
