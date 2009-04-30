@@ -55,7 +55,11 @@ public class TransactionalSession implements XAResource {
 
     public void start(Xid xid, int flags) throws XAException {
         if (flags == TMNOFLAGS) {
-            session.processReceivedInvalidations();
+            try {
+                session.processReceivedInvalidations();
+            } catch (StorageException e) {
+                throw (XAException) new XAException(XAException.XAER_RMERR).initCause(e);
+            }
         }
         mapper.start(xid, flags);
         inTransaction = true;
@@ -66,8 +70,8 @@ public class TransactionalSession implements XAResource {
             if (flags != TMFAIL) {
                 try {
                     session.flush();
-                } catch (Exception e) {
-                    throw new XAException(e.toString());
+                } catch (StorageException e) {
+                    throw (XAException) new XAException(XAException.XAER_RMERR).initCause(e);
                 }
             }
         } finally {

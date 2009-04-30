@@ -147,6 +147,14 @@ public class SQLInfo {
 
     protected SQLInfoSelect selectProxiesByTargetAndParent;
 
+    protected String clusterInsertInvalidationsSql;
+
+    protected List<Column> clusterInsertInvalidationsColumns;
+
+    protected String clusterGetInvalidationsSql;
+
+    protected List<Column> clusterGetInvalidationsColumns;
+
     /**
      * Generates and holds the needed SQL statements given a {@link Model} and a
      * {@link Dialect}.
@@ -213,6 +221,20 @@ public class SQLInfo {
         return database;
     }
 
+    // ----- cluster -----
+
+    public String getCleanupClusterNodesSql() {
+        return dialect.getCleanupClusterNodesSql(model, database);
+    }
+
+    public String getCreateClusterNodeSql() {
+        return dialect.getCreateClusterNodeSql(model, database);
+    }
+
+    public String getRemoveClusterNodeSql() {
+        return dialect.getRemoveClusterNodeSql(model, database);
+    }
+
     // ----- select -----
 
     public String getSelectRootIdSql() {
@@ -268,6 +290,24 @@ public class SQLInfo {
 
     public List<Column> getSelectChildrenIdsAndTypesWhatColumns() {
         return selectChildrenIdsAndTypesWhatColumns;
+    }
+
+    // ----- cluster -----
+
+    public String getClusterInsertInvalidationsSql() {
+        return clusterInsertInvalidationsSql;
+    }
+
+    public List<Column> getClusterInsertInvalidtionsColumns() {
+        return clusterInsertInvalidationsColumns;
+    }
+
+    public String getClusterGetInvalidationsSql() {
+        return clusterGetInvalidationsSql;
+    }
+
+    public List<Column> getClusterGetInvalidtionsColumns() {
+        return clusterGetInvalidationsColumns;
     }
 
     // ----- insert -----
@@ -403,6 +443,9 @@ public class SQLInfo {
     protected void initSQL() throws StorageException {
 
         // structural tables
+        if (model.getRepositoryDescriptor().clusteringEnabled) {
+            initClusterSQL();
+        }
         initHierarchySQL();
         initRepositorySQL();
 
@@ -450,6 +493,22 @@ public class SQLInfo {
         selectProxiesByTargetAndParent = makeSelect(table,
                 new String[] { model.PROXY_TARGET_KEY }, hierTable,
                 new String[] { model.HIER_PARENT_KEY });
+    }
+
+    protected void initClusterSQL() throws StorageException {
+        int clusterNodeType = dialect.getClusterNodeType();
+        TableMaker maker = new TableMaker(model.CLUSTER_NODES_TABLE_NAME);
+        maker.newColumn(model.CLUSTER_NODES_NODEID_KEY, null, clusterNodeType);
+        maker.newColumn(model.CLUSTER_NODES_CREATED_KEY, null, Types.TIMESTAMP);
+
+        maker = new TableMaker(model.CLUSTER_INVALS_TABLE_NAME);
+        maker.newColumn(model.CLUSTER_INVALS_NODEID_KEY, null, clusterNodeType);
+        maker.newMainKey(model.CLUSTER_INVALS_ID_KEY); // not a reference
+        // TODO could be an array in some DBs
+        maker.newColumn(model.CLUSTER_INVALS_FRAGMENTS_KEY, null, Types.VARCHAR);
+        maker.newColumn(model.CLUSTER_INVALS_KIND_KEY, null, Types.INTEGER);
+        maker.table.addIndex(model.CLUSTER_INVALS_NODEID_KEY);
+        maker.postProcessClusterInvalidations();
     }
 
     /**
@@ -661,6 +720,19 @@ public class SQLInfo {
         }
 
         // ----------------------- post processing -----------------------
+
+        protected void postProcessClusterInvalidations() {
+            clusterInsertInvalidationsSql = dialect.getClusterInsertInvalidations();
+            clusterInsertInvalidationsColumns = Arrays.asList(
+                    table.getColumn(model.CLUSTER_INVALS_ID_KEY),
+                    table.getColumn(model.CLUSTER_INVALS_FRAGMENTS_KEY),
+                    table.getColumn(model.CLUSTER_INVALS_KIND_KEY));
+            clusterGetInvalidationsSql = dialect.getClusterGetInvalidations();
+            clusterGetInvalidationsColumns = Arrays.asList(
+                    table.getColumn(model.CLUSTER_INVALS_ID_KEY),
+                    table.getColumn(model.CLUSTER_INVALS_FRAGMENTS_KEY),
+                    table.getColumn(model.CLUSTER_INVALS_KIND_KEY));
+        }
 
         protected void postProcessRepository() {
             postProcessRootIdSelect();

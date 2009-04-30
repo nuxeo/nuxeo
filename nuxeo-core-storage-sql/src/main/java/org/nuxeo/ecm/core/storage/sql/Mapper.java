@@ -401,6 +401,165 @@ public class Mapper {
     }
 
     /**
+     * Informs the cluster that this node exists.
+     */
+    protected void createClusterNode() throws StorageException {
+        try {
+            Statement st = connection.createStatement();
+            String sql = sqlInfo.getCleanupClusterNodesSql();
+            log(sql);
+            int n = st.executeUpdate(sql);
+            if (isLogEnabled()) {
+                logCount(n);
+            }
+            sql = sqlInfo.getCreateClusterNodeSql();
+            log(sql);
+            st.execute(sql);
+            st.close();
+        } catch (SQLException e) {
+            throw new StorageException(e);
+        }
+    }
+
+    /**
+     * Removes this node from the cluster.
+     */
+    protected void removeClusterNode() throws StorageException {
+        try {
+            Statement st = connection.createStatement();
+            String sql = sqlInfo.getRemoveClusterNodeSql();
+            log(sql);
+            st.execute(sql);
+            st.close();
+        } catch (SQLException e) {
+            throw new StorageException(e);
+        }
+    }
+
+    /**
+     * Inserts the invalidation rows for the other cluster nodes.
+     */
+    public void insertClusterInvalidations(Invalidations invalidations)
+            throws StorageException {
+        String sql = sqlInfo.getClusterInsertInvalidationsSql();
+        List<Column> columns = sqlInfo.getClusterInsertInvalidtionsColumns();
+        PreparedStatement ps = null;
+        try {
+            ps = connection.prepareStatement(sql);
+            for (int kind = 1; kind <= 2; kind++) {
+                Map<String, Set<Serializable>> map = invalidations.getKindMap(kind);
+                // turn fragment-based map into id-based map
+                Map<Serializable, Set<String>> m = invertMap(map);
+                for (Entry<Serializable, Set<String>> e : m.entrySet()) {
+                    Serializable id = e.getKey();
+                    String fragments = join(e.getValue(), ' ');
+                    if (isLogEnabled()) {
+                        logSQL(sql, Arrays.<Serializable> asList(id, fragments,
+                                Integer.valueOf(kind)));
+                    }
+                    columns.get(0).setToPreparedStatement(ps, 1, id);
+                    columns.get(1).setToPreparedStatement(ps, 2, fragments);
+                    columns.get(2).setToPreparedStatement(ps, 3,
+                            Long.valueOf(kind));
+                    ps.execute();
+                }
+            }
+        } catch (SQLException e) {
+            throw new StorageException("Could not invalidate", e);
+        } finally {
+            if (ps != null) {
+                try {
+                    ps.close();
+                } catch (SQLException e) {
+                    log.error(e.getMessage());
+                }
+            }
+        }
+    }
+
+    /**
+     * Turns a map of fragment -> set-of-ids into a map of id ->
+     * set-of-fragments.
+     */
+    public static Map<Serializable, Set<String>> invertMap(
+            Map<String, Set<Serializable>> map) {
+        Map<Serializable, Set<String>> res = new HashMap<Serializable, Set<String>>();
+        for (Entry<String, Set<Serializable>> entry : map.entrySet()) {
+            String fragment = entry.getKey();
+            for (Serializable id : entry.getValue()) {
+                Set<String> set = res.get(id);
+                if (set == null) {
+                    set = new HashSet<String>();
+                    res.put(id, set);
+                }
+                set.add(fragment);
+            }
+        }
+        return res;
+    }
+
+    // join that works on a set
+    protected static final String join(Collection<String> strings, char sep) {
+        if (strings.isEmpty()) {
+            throw new AssertionError();
+        }
+        if (strings.size() == 1) {
+            return strings.iterator().next();
+        }
+        int size = 0;
+        for (String word : strings) {
+            size += word.length() + 1;
+        }
+        StringBuilder buf = new StringBuilder(size);
+        for (String word : strings) {
+            buf.append(word);
+            buf.append(sep);
+        }
+        buf.setLength(size - 1);
+        return buf.toString();
+    }
+
+    /**
+     * Gets the invalidations from other cluster nodes.
+     */
+    public Invalidations getClusterInvalidations() throws StorageException {
+        Invalidations invalidations = new Invalidations();
+        String sql = sqlInfo.getClusterGetInvalidationsSql();
+        List<Column> columns = sqlInfo.getClusterGetInvalidtionsColumns();
+        Statement st = null;
+        try {
+            st = connection.createStatement();
+            if (isLogEnabled()) {
+                log(sql);
+            }
+            ResultSet rs = st.executeQuery(sql);
+            int n = 0;
+            while (rs.next()) {
+                n++;
+                Serializable id = columns.get(0).getFromResultSet(rs, 1);
+                String fragments = (String) columns.get(1).getFromResultSet(rs,
+                        2);
+                int kind = ((Long) columns.get(2).getFromResultSet(rs, 3)).intValue();
+                invalidations.add(id, fragments.split(" "), kind);
+            }
+            if (isLogEnabled()) {
+                logCount(n);
+            }
+            return invalidations;
+        } catch (SQLException e) {
+            throw new StorageException("Could not invalidate", e);
+        } finally {
+            if (st != null) {
+                try {
+                    st.close();
+                } catch (SQLException e) {
+                    log.error(e.getMessage());
+                }
+            }
+        }
+    }
+
+    /**
      * Gets the root id for a given repository, if registered.
      *
      * @param repositoryId the repository id, usually 0

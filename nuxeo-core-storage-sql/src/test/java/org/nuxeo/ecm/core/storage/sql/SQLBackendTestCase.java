@@ -40,11 +40,24 @@ public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
 
         SchemaManager schemaManager = Framework.getService(SchemaManager.class);
         assertNotNull(schemaManager);
-
+        // DatabaseHelper.DATABASE.setUp();
+        // repository = newRepository(false);
         RepositoryDescriptor descriptor = prepareDescriptor();
         repository = new RepositoryImpl(descriptor, schemaManager);
     }
 
+    protected Repository newRepository(boolean clustered) throws Exception {
+
+		SchemaManager schemaManager = Framework.getService(SchemaManager.class);
+		assertNotNull(schemaManager);
+		RepositoryDescriptor descriptor = DatabaseHelper.DATABASE
+				.getRepositoryDescriptor();
+		descriptor.clusteringEnabled = clustered;
+		return new RepositoryImpl(descriptor, schemaManager);
+	}
+  
+
+    
     @Override
     protected void tearDown() throws Exception {
         if (repository != null) {

@@ -5,6 +5,9 @@
     <repository name="default"
       factory="org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryFactory">
       <repository name="default">
+       <!-- uncomment this to enable clustering
+        <clustering enabled="true"/>
+        -->
       </repository>
     </repository>
   </extension>

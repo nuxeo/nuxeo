@@ -92,6 +92,21 @@ public class Dialect {
         }
         dialectName = dialect.getClass().getSimpleName();
     }
+    
+
+    public Dialect(org.hibernate.dialect.Dialect dialect,
+            DatabaseMetaData metadata) throws StorageException {
+
+        this.dialect = dialect;
+        try {
+            databaseName = metadata.getDatabaseProductName();
+            databaseMajor = metadata.getDatabaseMajorVersion();
+            storesUpperCaseIdentifiers = metadata.storesUpperCaseIdentifiers();
+        } catch (SQLException e) {
+            throw new StorageException(e);
+        }
+        dialectName = dialect.getClass().getSimpleName();
+    }
 
     @Override
     public String toString() {
@@ -278,6 +293,53 @@ public class Dialect {
         return sql;
     }
 
+    /**
+     * Gets the type of the column containing the cluster node id.
+     */
+    public int getClusterNodeType() throws StorageException {
+        throw new StorageException("Clustering not implemented for "
+                + dialect.getClass().getSimpleName());
+    }
+
+    /**
+     * Gets the SQL to cleanup info about old (crashed) cluster nodes.
+     */
+    public String getCleanupClusterNodesSql(Model model, Database database) {
+        return null;
+    }
+
+    /**
+     * Gets the SQL to create a cluster node.
+     */
+    public String getCreateClusterNodeSql(Model model, Database database) {
+        return null;
+    }
+
+    /**
+     * Gets the SQL to remove a node from the cluster.
+     */
+    public String getRemoveClusterNodeSql(Model model, Database database) {
+        return null;
+    }
+
+    /**
+     * Gets the SQL to send an invalidation to the cluster.
+     *
+     * @return an SQL statement with parameters for: id, fragments, kind
+     */
+    public String getClusterInsertInvalidations() {
+        return null;
+    }
+
+    /**
+     * Gets the SQL to query invalidations for this cluster node.
+     *
+     * @return an SQL statement returning a result set
+     */
+    public String getClusterGetInvalidations() {
+        return null;
+    }
+    
     /**
      * Does the dialect support passing ARRAY values (to stored procedures
      * mostly).
@@ -606,6 +668,9 @@ public class Dialect {
                     String.format("CREATE ALIAS %s FOR \"%s.%s\"",
                             functionName, h2Functions, methodName));
         }
+        
+
+  
     }
 
     public class PostgreSQLstoredProcedureInfoMaker {

@@ -30,11 +30,19 @@ import java.util.Set;
  */
 public class Invalidations {
 
-    public static final String PARENTS_KEY = "__PARENTS__";
-
     public final Map<String, Set<Serializable>> modified = new HashMap<String, Set<Serializable>>();
 
     public final Map<String, Set<Serializable>> deleted = new HashMap<String, Set<Serializable>>();
+
+    public Map<String, Set<Serializable>> getKindMap(int kind) {
+        if (kind == 1) {
+            return modified;
+        } else if (kind == 2) {
+            return deleted;
+        } else {
+            throw new AssertionError();
+        }
+    }
 
     public void addModified(String tableName, Set<Serializable> ids) {
         if (ids.isEmpty()) {
@@ -58,6 +66,18 @@ public class Invalidations {
             deleted.put(tableName, set);
         }
         set.addAll(ids);
+    }
+
+    public void add(Serializable id, String[] tableNames, int kind) {
+        Map<String, Set<Serializable>> map = getKindMap(kind);
+        for (String tableName : tableNames) {
+            Set<Serializable> set = map.get(tableName);
+            if (set == null) {
+                set = new HashSet<Serializable>();
+                map.put(tableName, set);
+            }
+            set.add(id);
+        }
     }
 
 }

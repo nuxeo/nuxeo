@@ -38,6 +38,9 @@ public class RepositoryDescriptor {
 
     @XNode("@name")
     public String name;
+    
+    @XNode("clustering@enabled")
+    public boolean clusteringEnabled;
 
     @XNode("xa-datasource")
     public String xaDataSourceName;

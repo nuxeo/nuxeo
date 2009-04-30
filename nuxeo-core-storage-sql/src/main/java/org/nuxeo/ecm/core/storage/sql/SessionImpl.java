@@ -187,7 +187,8 @@ public class SessionImpl implements Session {
     /**
      * Pre-transaction invalidations processing.
      */
-    protected void processReceivedInvalidations() {
+    protected void processReceivedInvalidations() throws StorageException {
+        repository.receiveClusterInvalidations();
         context.processReceivedInvalidations();
     }
 

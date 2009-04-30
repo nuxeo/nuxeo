@@ -76,6 +76,22 @@ public class Model {
 
     public final String mainTableName;
 
+    public static final String CLUSTER_NODES_TABLE_NAME = "cluster_nodes";
+
+    public static final String CLUSTER_NODES_NODEID_KEY = "nodeid";
+
+    public static final String CLUSTER_NODES_CREATED_KEY = "created";
+
+    public static final String CLUSTER_INVALS_TABLE_NAME = "cluster_invals";
+
+    public static final String CLUSTER_INVALS_NODEID_KEY = "nodeid";
+
+    public static final String CLUSTER_INVALS_ID_KEY = "id";
+
+    public static final String CLUSTER_INVALS_FRAGMENTS_KEY = "fragments";
+
+    public static final String CLUSTER_INVALS_KIND_KEY = "kind";
+
     public static final String MAIN_TABLE_NAME = "types";
 
     public static final String MAIN_PRIMARY_TYPE_PROP = "ecm:primaryType";
