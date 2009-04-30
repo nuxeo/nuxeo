@@ -17,6 +17,8 @@
       <h3><h:outputText
         value="#{messages['label.workflow.review.task.list']}" /></h3>
 
+      <c:set var="userSchema" value="#{userManager.userSchemaName}" />
+
       <table class="dataOutput">
         <thead>
           <tr>
@@ -66,7 +68,7 @@
                 <f:subview rendered="#{userInfo.type == 'USER_TYPE'}">
                   <h:graphicImage value="/icons/user.gif" alt="user.gif" />
                   <h:outputText
-                    value="#{nxu:userDisplayName(userInfo.id, userInfo.entry.user.firstName, userInfo.entry.user.lastName)}" />
+                    value="#{nxu:userDisplayName(info.id, info.entry[userSchema].firstName, info.entry[userSchema].lastName)}" />
                 </f:subview>
                 <f:subview rendered="#{userInfo.type == 'GROUP_TYPE'}">
                   <h:graphicImage value="/icons/group.gif" alt="group.gif" />
@@ -85,7 +87,7 @@
                     <tr><td>
                     <f:subview rendered="#{userInfo.type == 'USER_TYPE'}">
                       <h:outputText
-                        value="#{nxu:userDisplayName(userInfo.id, userInfo.entry.user.firstName, userInfo.entry.user.lastName)}" />
+                        value="#{nxu:userDisplayName(info.id, info.entry[userSchema].firstName, info.entry[userSchema].lastName)}" />
                     </f:subview>
                     <f:subview rendered="#{userInfo.type != 'USER_TYPE'}">
                       <h:outputText value="#{comment.actorId}" />
