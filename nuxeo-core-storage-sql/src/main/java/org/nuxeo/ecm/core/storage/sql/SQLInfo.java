@@ -400,7 +400,7 @@ public class SQLInfo {
     /**
      * Creates all the sql from the models.
      */
-    protected void initSQL() {
+    protected void initSQL() throws StorageException {
 
         // structural tables
         initHierarchySQL();

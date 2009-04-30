@@ -53,8 +53,6 @@ public class PersistenceContext {
 
     private final Mapper mapper;
 
-    private final RepositoryImpl.Invalidators invalidators;
-
     private final Map<String, Context> contexts;
 
     private final HierarchyContext hierContext;
@@ -76,9 +74,8 @@ public class PersistenceContext {
      */
     private final HashMap<Serializable, Serializable> oldIdMap;
 
-    PersistenceContext(Mapper mapper, RepositoryImpl.Invalidators invalidators) {
+    public PersistenceContext(Mapper mapper) {
         this.mapper = mapper;
-        this.invalidators = invalidators;
         model = mapper.getModel();
         // accessed by invalidator, needs to be concurrent
         contexts = new ConcurrentHashMap<String, Context>();
@@ -193,28 +190,40 @@ public class PersistenceContext {
     }
 
     /**
+     * Called post-transaction to gathers invalidations, to be sent to others.
+     */
+    protected Invalidations gatherInvalidations() {
+        Invalidations invalidations = new Invalidations();
+        for (Context context : contexts.values()) {
+            if (context.getTableName().equals(model.FULLTEXT_TABLE_NAME)) {
+                // hack to avoid gathering invalidations for a write-only table
+                continue;
+            }
+            context.gatherInvalidations(invalidations);
+        }
+        return invalidations;
+    }
+
+    /**
      * Pre-transaction invalidations processing.
      */
-    protected void processInvalidations() {
+    protected void processReceivedInvalidations() {
         for (Context context : contexts.values()) {
-            context.processInvalidations();
+            context.processReceivedInvalidations();
         }
     }
 
     /**
-     * Post-transaction invalidations notification.
+     * Processes invalidations received by another session or cluster node.
+     * <p>
+     * Invalidations from other local session can happen asynchronously at any
+     * time (when the other session commits). Invalidations from another cluster
+     * node happen when the transaction starts.
      */
-    protected void notifyInvalidations() {
+    protected void invalidate(Invalidations invalidations) {
         for (Context context : contexts.values()) {
-            context.notifyInvalidations();
+            context.invalidate(invalidations);
         }
-    }
-
-    /**
-     * Invalidate in other sessions.
-     */
-    protected void invalidateOthers(Context context) {
-        invalidators.getInvalidator(context.getTableName()).invalidate(context);
     }
 
     /**

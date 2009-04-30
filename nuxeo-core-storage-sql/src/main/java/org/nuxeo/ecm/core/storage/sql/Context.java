@@ -93,13 +93,13 @@ public class Context {
 
     /**
      * The set of fragments that have to be invalidated as modified in this
-     * session at post-commit time.
+     * session at post-commit time. Usage must be synchronized.
      */
     private final Set<Serializable> modifiedInvalidations;
 
     /**
      * The set of fragments that have to be invalidated as deleted in this
-     * session at post-commit time.
+     * session at post-commit time. Usage must be synchronized.
      */
     private final Set<Serializable> deletedInvalidations;
 
@@ -376,10 +376,19 @@ public class Context {
     }
 
     /**
-     * Process invalidations notified from other sessions. Called
-     * pre-transaction.
+     * Gathers invalidations from this context.
      */
-    protected void processInvalidations() {
+    protected void gatherInvalidations(Invalidations invalidations) {
+        invalidations.addModified(tableName, modifiedInTransaction);
+        invalidations.addDeleted(tableName, deletedInTransaction);
+        modifiedInTransaction.clear();
+        deletedInTransaction.clear();
+    }
+
+    /**
+     * Processes all invalidations accumulated. Called pre-transaction.
+     */
+    protected void processReceivedInvalidations() {
         synchronized (modifiedInvalidations) {
             for (Serializable id : modifiedInvalidations) {
                 Fragment fragment = pristine.remove(id);
@@ -401,29 +410,24 @@ public class Context {
     }
 
     /**
-     * Notify invalidations to other sessions. Called post-transaction.
-     *
-     * @return true if there were invalidations to send
+     * Processes invalidations received by another session or cluster node.
+     * <p>
+     * Invalidations from other local session can happen asynchronously at any
+     * time (when the other session commits). Invalidations from another cluster
+     * node happen when the transaction starts.
      */
-    protected boolean notifyInvalidations() {
-        if (!modifiedInTransaction.isEmpty() || !deletedInTransaction.isEmpty()) {
-            persistenceContext.invalidateOthers(this);
-            modifiedInTransaction.clear();
-            deletedInTransaction.clear();
-            return true;
+    protected void invalidate(Invalidations invalidations) {
+        Set<Serializable> set = invalidations.modified.get(tableName);
+        if (set != null) {
+            synchronized (modifiedInvalidations) {
+                modifiedInvalidations.addAll(set);
+            }
         }
-        return false;
-    }
-
-    /**
-     * Called by cross-session invalidation when another session just committed.
-     */
-    protected void invalidate(Context other) {
-        synchronized (modifiedInvalidations) {
-            modifiedInvalidations.addAll(other.modifiedInTransaction);
-        }
-        synchronized (deletedInvalidations) {
-            deletedInvalidations.addAll(other.deletedInTransaction);
+        set = invalidations.deleted.get(tableName);
+        if (set != null) {
+            synchronized (deletedInvalidations) {
+                deletedInvalidations.addAll(set);
+            }
         }
     }
 

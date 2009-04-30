@@ -3,7 +3,6 @@ package org.nuxeo.ecm.core.event;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.listener.CoreEventListenerService;
 import org.nuxeo.ecm.core.listener.EventListener;
-import org.nuxeo.ecm.core.listener.impl.Test;
 import org.nuxeo.ecm.core.repository.FakeEventListener;
 import org.nuxeo.ecm.core.repository.OverrideEventListener;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;

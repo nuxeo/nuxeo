@@ -25,7 +25,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.naming.Reference;
@@ -58,8 +57,6 @@ public class RepositoryImpl implements Repository {
 
     private final Collection<SessionImpl> sessions;
 
-    private final Invalidators invalidators;
-
     private final BinaryManager binaryManager;
 
     private final XADataSource xadatasource;
@@ -79,7 +76,6 @@ public class RepositoryImpl implements Repository {
         this.repositoryDescriptor = repositoryDescriptor;
         this.schemaManager = schemaManager;
         sessions = new CopyOnWriteArrayList<SessionImpl>();
-        invalidators = new Invalidators();
         xadatasource = getXADataSource();
         try {
             binaryManager = new BinaryManager(repositoryDescriptor);
@@ -140,7 +136,7 @@ public class RepositoryImpl implements Repository {
         }
 
         SessionImpl session = new SessionImpl(this, schemaManager, mapper,
-                invalidators, credentials);
+                credentials);
 
         sessions.add(session);
         return session;
@@ -358,40 +354,20 @@ public class RepositoryImpl implements Repository {
     }
 
     /**
-     * Deals with the invalidation of persistence contexts between sessions.
+     * Sends invalidation data to relevant sessions.
+     *
+     * @param invalidations the invalidations
+     * @param fromSession the session from which these invalidations originate,
+     *            or {@code null} if they come from another cluster node
+     * @throws StorageException on failure to insert invalidation information
+     *             into the cluster invalidation tables
      */
-    protected class Invalidators extends ConcurrentHashMap<String, Invalidator> {
-
-        private static final long serialVersionUID = 1L;
-
-        /**
-         * Gets an invalidator, or creates one if missing.
-         */
-        public Invalidator getInvalidator(String tableName) {
-            Invalidator invalidator = get(tableName);
-            if (invalidator == null) {
-                // create one if missing, in a concurrent-safe manner
-                putIfAbsent(tableName, new Invalidator());
-                invalidator = get(tableName);
-            }
-            return invalidator;
-        }
-    }
-
-    /**
-     * Class dealing with the cross-session invalidation of modified or deleted
-     * fragments after a session is saved.
-     */
-    protected class Invalidator {
-
-        public void invalidate(Context otherContext) {
-            String tableName = otherContext.getTableName();
-            for (SessionImpl session : sessions) {
-                Context context = session.getContext(tableName);
-                if (context == null || context == otherContext) {
-                    continue;
-                }
-                context.invalidate(otherContext);
+    protected void invalidate(Invalidations invalidations,
+            SessionImpl fromSession) throws StorageException {
+        // local invalidations
+        for (SessionImpl session : sessions) {
+            if (session != fromSession) {
+                session.invalidate(invalidations);
             }
         }
     }

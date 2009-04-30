@@ -21,6 +21,8 @@ import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
 
+import org.nuxeo.ecm.core.storage.StorageException;
+
 /**
  * The transactional session is an {@link XAResource} for this session.
  *
@@ -32,14 +34,11 @@ public class TransactionalSession implements XAResource {
 
     private final Mapper mapper;
 
-    private final PersistenceContext context;
-
     private boolean inTransaction;
 
-    TransactionalSession(SessionImpl session, Mapper mapper, PersistenceContext context) {
+    TransactionalSession(SessionImpl session, Mapper mapper) {
         this.session = session;
         this.mapper = mapper;
-        this.context = context;
     }
 
     public boolean isInTransaction() {
@@ -56,7 +55,7 @@ public class TransactionalSession implements XAResource {
 
     public void start(Xid xid, int flags) throws XAException {
         if (flags == TMNOFLAGS) {
-            context.processInvalidations();
+            session.processReceivedInvalidations();
         }
         mapper.start(xid, flags);
         inTransaction = true;
@@ -85,17 +84,25 @@ public class TransactionalSession implements XAResource {
             mapper.commit(xid, onePhase);
         } finally {
             inTransaction = false;
-            context.notifyInvalidations();
+            try {
+                session.sendInvalidationsToOthers();
+            } catch (StorageException e) {
+                throw (XAException) new XAException(XAException.XAER_RMERR).initCause(e);
+            }
         }
     }
 
     public void rollback(Xid xid) throws XAException {
         try {
             mapper.rollback(xid);
-            context.rollback();
+            session.rollback();
         } finally {
             inTransaction = false;
-            context.notifyInvalidations();
+            try {
+                session.sendInvalidationsToOthers();
+            } catch (StorageException e) {
+                throw (XAException) new XAException(XAException.XAER_RMERR).initCause(e);
+            }
         }
     }
 
