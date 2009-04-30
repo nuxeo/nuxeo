@@ -45,7 +45,14 @@ public class DirectoryTreeService extends DefaultComponent {
     protected Map<String, DirectoryTreeDescriptor> registry;
 
     public DirectoryTreeDescriptor getDirectoryTreeDescriptor(String treeName) {
-        return registry.get(treeName);
+
+    	DirectoryTreeDescriptor desc = registry.get(treeName);
+    	if (desc.getEnabled()) {
+    		return desc;
+    	}
+    	else {
+    		return null;
+    	}
     }
 
     @Override
@@ -63,8 +70,16 @@ public class DirectoryTreeService extends DefaultComponent {
             String extensionPoint, ComponentInstance contributor) {
 
         DirectoryTreeDescriptor descriptor = (DirectoryTreeDescriptor) contribution;
-        registry.put(descriptor.getName(), descriptor);
-        log.debug("registered DirectoryTreeDescriptor: " + descriptor.getName());
+
+        if (registry.containsKey(descriptor.getName())) {
+        	DirectoryTreeDescriptor existing_descriptor =registry.get(descriptor.getName());
+        	existing_descriptor.merge(descriptor);
+        	log.debug("merged DirectoryTreeDescriptor: " + descriptor.getName());
+        }
+        else {
+        	registry.put(descriptor.getName(), descriptor);
+        	log.debug("registered DirectoryTreeDescriptor: " + descriptor.getName());
+        }
     }
 
     @Override
@@ -79,7 +94,11 @@ public class DirectoryTreeService extends DefaultComponent {
 
     public List<String> getDirectoryTrees() {
         List<String> directoryTrees = new ArrayList<String>();
-        directoryTrees.addAll(registry.keySet());
+        for (DirectoryTreeDescriptor desc : registry.values()) {
+        	if (desc.getEnabled()) {
+        		directoryTrees.add(desc.getName());
+        	}
+        }
         Collections.sort(directoryTrees);
         return directoryTrees;
     }
