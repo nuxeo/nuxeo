@@ -30,6 +30,7 @@ function refreshPage()
 	Seam.Component.getInstance("popupHelper").getCurrentURL(navigationCB);
 }
 
+
 // menu actions callbacks
 function doCopy(docid)
 {
