@@ -1004,11 +1004,11 @@
   </dependencies>
 
   <scm>
-    <connection>scm:hg:http://hg.nuxeo.org/nuxeo/nuxeo-platform</connection>
+    <connection>scm:hg:http://hg.nuxeo.org/nuxeo/nuxeo-features</connection>
     <developerConnection>
-      scm:hg:https://hg.nuxeo.org/nuxeo/nuxeo-platform
+      scm:hg:https://hg.nuxeo.org/nuxeo/nuxeo-features
     </developerConnection>
-    <url>http://hg.nuxeo.org/nuxeo/nuxeo-platform</url>
+    <url>http://hg.nuxeo.org/nuxeo/nuxeo-features</url>
   </scm>
 
 </project>
