@@ -77,7 +77,6 @@
     <module>nuxeo-services</module>
     <module>nuxeo-jsf</module>
     <module>nuxeo-features</module>
-    <module>nuxeo-shell</module>
     <module>nuxeo-webengine</module>
     <module>nuxeo-dm</module>
     <module>nuxeo-distribution</module>
@@ -1102,7 +1101,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-nuxeo-plugin</artifactId>
-          <version>1.0.9</version>
+          <version>1.0.10</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -1173,7 +1172,7 @@
             <dependency>
               <groupId>org.apache.maven.plugins</groupId>
               <artifactId>maven-nuxeo-plugin</artifactId>
-              <version>1.0.9</version>
+              <version>1.0.10</version>
             </dependency>
           </dependencies>
         </plugin>

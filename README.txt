@@ -10,11 +10,15 @@ notably:
 
 - nuxeo-common
 - nuxeo-core
-- nuxeo-platform
-- nuxeo-runtime
-- nuxeo-theme
 - nuxeo-distribution
-- nuxeo-shell
+- nuxeo-dm
+- nuxeo-features
+- nuxeo-gwt
+- nuxeo-jsf
+- nuxeo-runtime
+- nuxeo-services
+- nuxeo-theme
+- nuxeo-webengine
 
 See http://doc.nuxeo.org/xwiki/bin/view/FAQ/DownloadingNuxeoSources for more
 information if needed.
