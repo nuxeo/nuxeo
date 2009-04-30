@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.webapp.directory.DirectoryTreeService">
+
+  <documentation>
+    The DirectoryTreeService is used to build tree-shaped explorer like
+    navigation menus (usging the &lt;richfaces:tree /&gt; components) from a hierarchical
+    set of directories (with schemas "vocabulary" and "xvocabulary").
+
+    DirectoryTreeDescriptors also reference a QueryModel to update on node selection
+    and a JSF view to display on node selection.
+
+    This is typically used to display results of a query where documents are filtered
+    upon a hierachical property (such as the dc:coverage metadata for instance).
+
+    @author Olivier Grisel (og@nuxeo.com)
+  </documentation>
+
+  <!-- XXX JC : see why this requirement
+  <require>org.nuxeo.ecm.directory.DirectoryServiceImpl</require>
+ -->
+  <implementation
+    class="org.nuxeo.ecm.webapp.directory.DirectoryTreeService" />
+  <extension-point name="trees">
+    <object
+      class="org.nuxeo.ecm.webapp.directory.DirectoryTreeDescriptor" />
+  </extension-point>
+  <documentation>
+    Registry for DirectoryTreeDescriptor instances used to build
+    DirectoryTreeNodes.
+
+    Extension point supports override and enable attribute in descriptor
+
+    @author Olivier Grisel (og@nuxeo.com)
+  </documentation>
+
+</component>

@@ -8,5 +8,6 @@ Bundle-Category: web
 Nuxeo-Component: OSGI-INF/nxtreemanager-framework.xml,
  OSGI-INF/nxtreemanager-contrib.xml,
  OSGI-INF/actions-contrib.xml,
- OSGI-INF/restAPI-contrib.xml
+ OSGI-INF/restAPI-contrib.xml,
+ OSGI-INF/directorytreemanager-framework.xml
 Require-Bundle: org.nuxeo.ecm.platform.ui
