@@ -8,18 +8,6 @@
   xmlns:s="http://jboss.com/products/seam/taglib"
   class="clipboard">
 
-<script type="text/javascript">
-function confirmDeleteDocuments() {
-    return confirm("#{messages['label.documents.confirmDeleteDocuments']}");
-}
-function confirmUndeleteDocuments() {
-    return confirm("#{messages['label.documents.confirmUndeleteDocuments']}");
-}
-function confirmDeleteDocumentsForever() {
-    return confirm("#{messages['label.documents.confirmDeleteDocumentsForever']}");
-}
-</script>
-
   <div id="selection_buttons">
     <nxu:dataList var="sel_action" value="#{clipboardActions.actionsForSelection}">
     <span id="#{sel_action.id}">

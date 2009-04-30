@@ -3,11 +3,6 @@
     xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
     xmlns:nxu="http://nuxeo.org/nxweb/util">
 
-  <script type="text/javascript">
-  function confirmDeleteDocuments() {
-      return confirm("#{messages['label.documents.confirmDeleteDocuments']}");
-  }
-  </script>
     <div style="display: none;" class="contextMenu" id="popupMenu">
   <ul>
    <nxu:dataList var="action" layout="simple"
