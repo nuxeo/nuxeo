@@ -40,15 +40,18 @@ public class AggregatedJSProvider extends HttpServlet {
 			throws ServletException, IOException {
 
 		String resultScript = null;
-		String cacheKey = req.getQueryString();
 		String scriptsStr = req.getParameter("scripts");
 		String refreshStr = req.getParameter("refresh");
+		String minimizeStr = req.getParameter("minimize");
+		boolean minimize = "true".equalsIgnoreCase(minimizeStr) ? true : false;
 		boolean refresh = "true".equalsIgnoreCase(refreshStr) ? true : false;
 
 		if (scriptsStr == null) {
 			super.doGet(req, resp);
 			return;
 		}
+
+		String cacheKey = scriptsStr + "*" + minimize;
 
 		if (!refresh) {
 			cacheLock.readLock().lock();
@@ -60,11 +63,7 @@ public class AggregatedJSProvider extends HttpServlet {
 		}
 
 		if (resultScript == null) {
-			String minimizeStr = req.getParameter("minimize");
 			String[] scripts = scriptsStr.split(SCRIPT_SEP);
-			boolean minimize = "true".equalsIgnoreCase(minimizeStr) ? true
-					: false;
-
 			resultScript = computeResult(scripts, minimize);
 
 			cacheLock.writeLock().lock();

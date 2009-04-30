@@ -105,6 +105,11 @@
 			<url-pattern>/js/*</url-pattern>
 		</servlet-mapping>
 
+		<filter-mapping>
+			<filter-name>simpleCacheFilter</filter-name>
+			<url-pattern>/js/*</url-pattern>
+		</filter-mapping>
+
 	</extension>
 
 	<extension target="web#ERROR-PAGE">
