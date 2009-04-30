@@ -76,6 +76,7 @@
     <module>nuxeo-platform-convert</module>
     <module>nuxeo-platform-forms-layout-api</module>
     <module>nuxeo-platform-rendering</module>
+    <module>nuxeo-shell-core</module>
   </modules>
 
   <dependencyManagement>
@@ -742,9 +743,8 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-ear</artifactId>
+        <artifactId>nuxeo-shell-core</artifactId>
         <version>${nuxeo.services.version}</version>
-        <type>pom</type>
       </dependency>
 
       <!-- scope test -->
@@ -803,11 +803,11 @@
   </dependencies>
 
   <scm>
-    <connection>scm:hg:http://hg.nuxeo.org/nuxeo/nuxeo-platform</connection>
+    <connection>scm:hg:http://hg.nuxeo.org/nuxeo/nuxeo-services</connection>
     <developerConnection>
-      scm:hg:https://hg.nuxeo.org/nuxeo/nuxeo-platform
+      scm:hg:https://hg.nuxeo.org/nuxeo/nuxeo-services
     </developerConnection>
-    <url>http://hg.nuxeo.org/nuxeo/nuxeo-platform</url>
+    <url>http://hg.nuxeo.org/nuxeo/nuxeo-services</url>
   </scm>
 
 </project>
