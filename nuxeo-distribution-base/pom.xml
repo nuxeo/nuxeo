@@ -21,8 +21,8 @@
     <dependencies>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-shell-commands-base</artifactId>
-        <version>${nuxeo.features.version}</version>
+        <artifactId>nuxeo-shell-core</artifactId>
+        <version>${nuxeo.services.version}</version>
       </dependency>
 
       <dependency>
@@ -80,7 +80,7 @@
       </dependencies>
     </profile>
   </profiles>
-  
+
   <build>
     <plugins>
       <plugin>
