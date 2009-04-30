@@ -8,4 +8,4 @@ org.nuxeo.ecm.core:nuxeo-core-schema
 org.nuxeo.ecm.core:nuxeo-core-query
 org.nuxeo.ecm.core:nuxeo-core-io
 org.nuxeo.ecm.core:nuxeo-core-client
-org.nuxeo.ecm.platform:nuxeo-shell-commands-base
+org.nuxeo.ecm.platform:nuxeo-shell-core
