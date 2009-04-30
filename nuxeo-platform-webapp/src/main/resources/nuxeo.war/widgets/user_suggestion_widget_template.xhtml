@@ -6,6 +6,9 @@
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:rich="http://richfaces.org/rich">
 
+y
+  <c:set var="userSchema" value="#{userManager.userSchemaName}" />
+
   <c:if test="#{widget.mode != 'edit'}">
 
     <h:dataTable value="#{field_0}"
@@ -14,7 +17,7 @@
         <nxu:methodResult name="info" value="#{userSuggestionActions.getUserInfo(item)}">
           <f:subview rendered="#{info.type == 'USER_TYPE'}">
             <h:graphicImage value="/icons/user.gif" alt="user.gif" />
-            <h:outputText value="#{nxu:userDisplayName(info.id, info.entry.user.firstName, info.entry.user.lastName)}" />
+            <h:outputText value="#{nxu:userDisplayName(info.id, info.entry[userSchema].firstName, info.entry[userSchema].lastName)}" />
           </f:subview>
           <f:subview rendered="#{info.type == 'GROUP_TYPE'}">
             <h:graphicImage value="/icons/group.gif" alt="group.gif" />
@@ -82,7 +85,7 @@
             <h:column>
               <f:subview rendered="#{result.type == 'USER_TYPE'}">
                 <h:graphicImage value="/icons/user.gif" alt="user.gif" />
-                <h:outputText value="#{nxu:userDisplayName(result.id, result.entry.user.firstName, result.entry.user.lastName)}" />
+                <h:outputText value="#{nxu:userDisplayName(result.id, result.entry[userSchema].firstName, result.entry[userSchema].lastName)}" />
               </f:subview>
               <f:subview rendered="#{result.type == 'GROUP_TYPE'}">
                 <h:graphicImage value="/icons/group.gif" alt="group.gif" />
@@ -116,7 +119,7 @@
                   <nxu:methodResult name="info" value="#{userSuggestionActions.getUserInfo(model.rowData)}">
                     <f:subview rendered="#{info.type == 'USER_TYPE'}">
                       <h:graphicImage value="/icons/user.gif" alt="user.gif" />
-                      <h:outputText value="#{nxu:userDisplayName(info.id, info.entry.user.firstName, info.entry.user.lastName)}" />
+                      <h:outputText value="#{nxu:userDisplayName(result.id, result.entry[userSchema].firstName, result.entry[userSchema].lastName)}" />
                     </f:subview>
                     <f:subview rendered="#{info.type == 'GROUP_TYPE'}">
                       <h:graphicImage value="/icons/group.gif" alt="group.gif" />
