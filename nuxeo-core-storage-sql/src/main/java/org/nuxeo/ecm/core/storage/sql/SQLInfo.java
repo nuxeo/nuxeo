@@ -298,7 +298,7 @@ public class SQLInfo {
         return clusterInsertInvalidationsSql;
     }
 
-    public List<Column> getClusterInsertInvalidtionsColumns() {
+    public List<Column> getClusterInsertInvalidationsColumns() {
         return clusterInsertInvalidationsColumns;
     }
 
@@ -497,16 +497,23 @@ public class SQLInfo {
 
     protected void initClusterSQL() throws StorageException {
         int clusterNodeType = dialect.getClusterNodeType();
+        int clusterFragmentsType = dialect.getClusterFragmentsType();
+        String clusterFragmentsTypeString = dialect.getClusterFragmentsTypeString();
+
         TableMaker maker = new TableMaker(model.CLUSTER_NODES_TABLE_NAME);
-        maker.newColumn(model.CLUSTER_NODES_NODEID_KEY, null, clusterNodeType);
-        maker.newColumn(model.CLUSTER_NODES_CREATED_KEY, null, Types.TIMESTAMP);
+        maker.newColumn(model.CLUSTER_NODES_NODEID_KEY, null, clusterNodeType,
+                null);
+        maker.newColumn(model.CLUSTER_NODES_CREATED_KEY, null, Types.TIMESTAMP,
+                null);
 
         maker = new TableMaker(model.CLUSTER_INVALS_TABLE_NAME);
-        maker.newColumn(model.CLUSTER_INVALS_NODEID_KEY, null, clusterNodeType);
+        maker.newColumn(model.CLUSTER_INVALS_NODEID_KEY, null, clusterNodeType,
+                null);
         maker.newMainKey(model.CLUSTER_INVALS_ID_KEY); // not a reference
-        // TODO could be an array in some DBs
-        maker.newColumn(model.CLUSTER_INVALS_FRAGMENTS_KEY, null, Types.VARCHAR);
-        maker.newColumn(model.CLUSTER_INVALS_KIND_KEY, null, Types.INTEGER);
+        maker.newColumn(model.CLUSTER_INVALS_FRAGMENTS_KEY, null,
+                clusterFragmentsType, clusterFragmentsTypeString);
+        maker.newColumn(model.CLUSTER_INVALS_KIND_KEY, null, Types.INTEGER,
+                null);
         maker.table.addIndex(model.CLUSTER_INVALS_NODEID_KEY);
         maker.postProcessClusterInvalidations();
     }
@@ -519,7 +526,7 @@ public class SQLInfo {
         TableMaker maker = new TableMaker(model.REPOINFO_TABLE_NAME);
         maker.newPrimaryKey(); // foreign key to main id
         maker.newColumn(model.REPOINFO_REPONAME_KEY, PropertyType.STRING,
-                Types.VARCHAR);
+                Types.VARCHAR, null);
         maker.postProcessRepository();
     }
 
@@ -535,11 +542,11 @@ public class SQLInfo {
         }
         maker.newMainKeyReference(model.HIER_PARENT_KEY, true);
         maker.newColumn(model.HIER_CHILD_POS_KEY, PropertyType.LONG,
-                Types.INTEGER);
+                Types.INTEGER, null);
         maker.newColumn(model.HIER_CHILD_NAME_KEY, PropertyType.STRING,
-                Types.VARCHAR); // text?
+                Types.VARCHAR, null); // text?
         maker.newColumn(model.HIER_CHILD_ISPROPERTY_KEY, PropertyType.BOOLEAN,
-                Types.BIT); // not null
+                Types.BIT, null); // not null
         if (!model.separateMainTable) {
             maker.newFragmentFields();
         }
@@ -600,11 +607,12 @@ public class SQLInfo {
             Column column;
             switch (model.idGenPolicy) {
             case APP_UUID:
-                column = newColumn(name, PropertyType.STRING, Types.VARCHAR);
+                column = newColumn(name, PropertyType.STRING, Types.VARCHAR,
+                        null);
                 column.setLength(36);
                 break;
             case DB_IDENTITY:
-                column = newColumn(name, PropertyType.LONG, Types.BIGINT);
+                column = newColumn(name, PropertyType.LONG, Types.BIGINT, null);
                 break;
             default:
                 throw new AssertionError(model.idGenPolicy);
@@ -704,7 +712,7 @@ public class SQLInfo {
             default:
                 throw new RuntimeException("Bad type: " + type);
             }
-            Column column = newColumn(key, type, sqlType);
+            Column column = newColumn(key, type, sqlType, null);
             if (type == PropertyType.BINARY) {
                 // log them, will be useful for GC of binaries
                 SQLInfo.log.info("Binary column: " + column.getFullQuotedName());
@@ -712,10 +720,11 @@ public class SQLInfo {
             // XXX apply defaults
         }
 
-        protected Column newColumn(String key, PropertyType type, int sqlType) {
+        protected Column newColumn(String key, PropertyType type, int sqlType,
+                String sqlTypeString) {
             String columnName = key;
-            Column column = table.addColumn(columnName, type, sqlType, key,
-                    model);
+            Column column = table.addColumn(columnName, type, sqlType,
+                    sqlTypeString, key, model);
             return column;
         }
 

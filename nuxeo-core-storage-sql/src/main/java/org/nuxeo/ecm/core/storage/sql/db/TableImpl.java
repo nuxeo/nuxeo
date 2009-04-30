@@ -90,13 +90,14 @@ public class TableImpl implements Table {
      * Adds a {@link Column} to the table.
      */
     public Column addColumn(String name, PropertyType type, int sqlType,
-            String key, Model model) {
+    		String sqlTypeString,  String key, Model model) {
         String physicalName = database.getColumnPhysicalName(name);
         if (columns.containsKey(physicalName)) {
             throw new IllegalArgumentException("duplicate column " +
                     physicalName);
         }
-        Column column = new Column(this, physicalName, type, sqlType, key,
+        Column column = new Column(this, physicalName, type, sqlType, sqlTypeString,
+        		key,
                 model);
         columns.put(name, column);
         return column;

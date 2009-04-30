@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.core.storage.sql.db;
 
 import java.io.Serializable;
+import java.sql.Array;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -58,6 +59,9 @@ public class Column implements Serializable {
     /** The {@link java.sql.Types} type */
     private int sqlType;
 
+    /** The type string, if non-standard */
+    private String sqlTypeString;
+
     private final String key;
 
     private final Model model;
@@ -89,16 +93,19 @@ public class Column implements Serializable {
      * @param physicalName the column name
      * @param type the backend type
      * @param sqlType the SQL type
+     * @param sqlTypeString the SQL type string (if non-standard), or {@code
+     *            null}
      * @param key the associated field name
      * @param model the model (to fetch binaries)
      */
     public Column(Table table, String physicalName, PropertyType type,
-            int sqlType, String key, Model model) {
+            int sqlType, String sqlTypeString, String key, Model model) {
         this.table = table;
         dialect = table.getDialect();
         this.physicalName = physicalName;
         this.type = type;
         this.sqlType = sqlType;
+        this.sqlTypeString = sqlTypeString;
         this.key = key;
         this.model = model;
         quotedName = dialect.openQuote() + physicalName + dialect.closeQuote();
@@ -110,7 +117,7 @@ public class Column implements Serializable {
      */
     public Column(Column column, Table table) {
         this(table, column.physicalName, column.type, column.sqlType,
-                column.key, column.model);
+                column.sqlTypeString, column.key, column.model);
     }
 
     public Table getTable() {
@@ -219,8 +226,12 @@ public class Column implements Serializable {
     }
 
     public String getSqlTypeString() {
-        return dialect.getTypeName(sqlType, getLength(), getPrecision(),
-                getScale());
+        if (sqlTypeString != null) {
+            return sqlTypeString;
+        } else {
+            return dialect.getTypeName(sqlType, getLength(), getPrecision(),
+                    getScale());
+        }
     }
 
     public void setToPreparedStatement(PreparedStatement ps, int index,
@@ -261,6 +272,14 @@ public class Column implements Serializable {
             Calendar cal = (Calendar) value;
             Timestamp ts = new Timestamp(cal.getTimeInMillis());
             ps.setTimestamp(index, ts, cal); // cal passed for timezone
+            return;
+        case Types.ARRAY:
+            if (!(value instanceof String[])) {
+                throw new SQLException("Expected String[] instead of: " + value);
+            }
+            Array array = dialect.createArrayOf(Types.VARCHAR,
+                    (Object[]) value, ps.getConnection());
+            ps.setArray(index, array);
             return;
         default:
             throw new SQLException("Unhandled SQL type: " + sqlType);
@@ -310,6 +329,9 @@ public class Column implements Serializable {
         case Types.SMALLINT: // Derby
         case Types.BOOLEAN: // H2
             result = rs.getBoolean(index);
+            break;
+        case Types.ARRAY:
+            result = (Serializable) rs.getArray(index).getArray();
             break;
         default:
             throw new SQLException("Unhandled SQL type: " + sqlType);

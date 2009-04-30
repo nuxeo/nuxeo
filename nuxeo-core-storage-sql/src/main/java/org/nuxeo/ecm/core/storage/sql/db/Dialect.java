@@ -302,6 +302,21 @@ public class Dialect {
     }
 
     /**
+         * Gets the type of the column containing the cluster fragments.
+         */
+      public int getClusterFragmentsType() throws StorageException {
+		return 0;
+	}
+
+	/**
+	 * Gets a dialect-specific string for the type of the cluster fragments
+	 * column.
+	 */
+	public String getClusterFragmentsTypeString() {
+		return null;
+	}
+    
+    /**
      * Gets the SQL to cleanup info about old (crashed) cluster nodes.
      */
     public String getCleanupClusterNodesSql(Model model, Database database) {
@@ -371,6 +386,23 @@ public class Dialect {
             String typeName = getTypeName(type, 0, 0, 0);
             return new PostgreSQLArray(type, typeName, elements);
         }
+        throw new SQLException("Not supported");
+    }
+    
+    /**
+     * Factory method for creating Array objects, suitable for passing to
+     * {@link PreparedStatement#setArray}.
+     * <p>
+     * (An equivalent method is defined by JDBC4 on the {@link Connection}
+     * class.)
+     *
+     * @param type the SQL type of the elements
+     * @param elements the elements of the array
+     * @param connection the connection
+     * @return an Array holding the elements
+     */
+    public Array createArrayOf(int type, Object[] elements,
+            Connection connection) throws SQLException {
         throw new SQLException("Not supported");
     }
 

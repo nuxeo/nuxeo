@@ -442,7 +442,7 @@ public class Mapper {
     public void insertClusterInvalidations(Invalidations invalidations)
             throws StorageException {
         String sql = sqlInfo.getClusterInsertInvalidationsSql();
-        List<Column> columns = sqlInfo.getClusterInsertInvalidtionsColumns();
+        List<Column> columns = sqlInfo.getClusterInsertInvalidationsColumns();
         PreparedStatement ps = null;
         try {
             ps = connection.prepareStatement(sql);
@@ -457,8 +457,14 @@ public class Mapper {
                         logSQL(sql, Arrays.<Serializable> asList(id, fragments,
                                 Integer.valueOf(kind)));
                     }
+                    Serializable frags;
+                    if (sqlInfo.dialect.supportsArrays()) {
+                        frags = fragments.split(" ");
+                    } else {
+                        frags = fragments;
+                    }
                     columns.get(0).setToPreparedStatement(ps, 1, id);
-                    columns.get(1).setToPreparedStatement(ps, 2, fragments);
+                    columns.get(1).setToPreparedStatement(ps, 2, frags);
                     columns.get(2).setToPreparedStatement(ps, 3,
                             Long.valueOf(kind));
                     ps.execute();
@@ -537,10 +543,15 @@ public class Mapper {
             while (rs.next()) {
                 n++;
                 Serializable id = columns.get(0).getFromResultSet(rs, 1);
-                String fragments = (String) columns.get(1).getFromResultSet(rs,
-                        2);
+                Serializable frags = columns.get(1).getFromResultSet(rs, 2);
                 int kind = ((Long) columns.get(2).getFromResultSet(rs, 3)).intValue();
-                invalidations.add(id, fragments.split(" "), kind);
+                String[] fragments;
+                if (sqlInfo.dialect.supportsArrays()) {
+                    fragments = (String[]) frags;
+                } else {
+                    fragments = ((String) frags).split(" ");
+                }
+                invalidations.add(id, fragments, kind);
             }
             if (isLogEnabled()) {
                 logCount(n);
