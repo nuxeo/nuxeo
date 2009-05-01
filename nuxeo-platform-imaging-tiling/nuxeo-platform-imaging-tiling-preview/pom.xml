@@ -86,7 +86,6 @@
             </goals>
             <configuration>
               <outputDirectory>${project.build.outputDirectory}/nuxeo.war</outputDirectory>
-              <style>DETAILED</style>
             </configuration>
           </execution>
         </executions>
