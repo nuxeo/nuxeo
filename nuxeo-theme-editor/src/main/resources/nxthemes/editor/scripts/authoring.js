@@ -1895,6 +1895,45 @@ NXThemes.addActions({
   'delete unused style view': NXThemesStyleManager.deleteUnusedStyleView
 });
 
+// Fragment factory
+if (typeof NXThemesFragmentFactory == "undefined") {
+    NXThemesFragmentFactory = {
+    }
+}
+
+NXThemesFragmentFactory.selectFragmentType = function(type) {
+    var url = nxthemesBasePath + "/nxthemes-editor/select_fragment_type"; 
+    new Ajax.Request(url, {
+         method: 'post',
+         parameters: {
+             type: type
+         },
+         onSuccess: function(r) {
+        	 NXThemes.getViewById("fragment factory").refresh();
+         },
+         onFailure: function(r) {
+             var text = r.responseText;
+             window.alert(text);
+         }         
+    });
+};
+
+NXThemesFragmentFactory.selectView = function(view) {
+    var url = nxthemesBasePath + "/nxthemes-editor/select_fragment_view"; 
+    new Ajax.Request(url, {
+         method: 'post',
+         parameters: {
+    	     view: view
+         },
+         onSuccess: function(r) {
+        	 NXThemes.getViewById("fragment factory").refresh();
+         },
+         onFailure: function(r) {
+             var text = r.responseText;
+             window.alert(text);
+         }         
+    });
+};
 
 
 

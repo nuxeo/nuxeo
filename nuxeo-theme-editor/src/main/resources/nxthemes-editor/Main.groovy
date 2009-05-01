@@ -94,7 +94,14 @@ public class Main extends ModuleRoot {
   @GET
   @Path("fragmentFactory")
   public Object renderFragmentFactory(@QueryParam("org.nuxeo.theme.application.path") String path) {
-    return getTemplate("fragmentFactory.ftl").arg("fragments", getFragments(path)).arg("selected_element_id", getSelectedElementId())
+    String fragmentType = getSelectedFragmentType()
+    String fragmentVIew = getSelectedFragmentView()
+    return getTemplate("fragmentFactory.ftl").arg(
+            "selected_fragment_type", fragmentType).arg(
+            "selected_fragment_view", fragmentVIew).arg(
+            "fragments", getFragments(path)).arg(
+            "views", getViews(fragmentType)).arg(
+            "selected_element_id", getSelectedElementId())
   }
 
   @GET
@@ -252,7 +259,8 @@ public class Main extends ModuleRoot {
     SessionManager.setStyleCategory(null);
     SessionManager.setPresetGroup(null);
     SessionManager.setClipboardElementId(null);
-
+    SessionManager.setFragmentView(null);
+    SessionManager.setFragmentType(null);
   }
   
   @POST
@@ -268,6 +276,8 @@ public class Main extends ModuleRoot {
     SessionManager.setStylePropertyCategory(null);
     SessionManager.setStyleCategory(null);
     SessionManager.setPresetGroup(null);
+    SessionManager.setFragmentView(null);
+    SessionManager.setFragmentType(null);
   }
   
   @POST
@@ -482,6 +492,23 @@ public class Main extends ModuleRoot {
       FormData form = ctx.getForm()
       String mode = form.getString("mode")        
       SessionManager.setPresetManagerMode(mode)
+  }
+  
+  @POST
+  @Path("select_fragment_type")
+  public void selectFragmentType() {
+      FormData form = ctx.getForm()
+      String type = form.getString("type")        
+      SessionManager.setFragmentType(type)
+      SessionManager.setFragmentView(null)
+  }
+  
+  @POST
+  @Path("select_fragment_view")
+  public void selectFragmentView() {
+      FormData form = ctx.getForm()
+      String view = form.getString("view")        
+      SessionManager.setFragmentView(view)
   }
   
   @POST
@@ -917,18 +944,23 @@ public class Main extends ModuleRoot {
       String templateEngine = getTemplateEngine(applicationPath)
       for (f in Manager.getTypeRegistry().getTypes(TypeFamily.FRAGMENT)) {
           FragmentType fragmentType = (FragmentType) f
-          FragmentInfo fragmentInfo = new FragmentInfo(fragmentType)
-          for (ViewType viewType : ThemeManager.getViewTypesForFragmentType(fragmentType)) {
-              String viewTemplateEngine = viewType.getTemplateEngine()
-              if (!"*".equals(viewType.getViewName()) && templateEngine.equals(viewTemplateEngine)) {
-                  fragmentInfo.addView(viewType)
-              }
+          if (fragments.contains(fragmentType)) {
+              continue
           }
-          if (fragmentInfo.size() > 0) {
-               fragments.add(fragmentInfo)
-          }
+          fragments.add(fragmentType)
       }
       return fragments
+  }
+  
+  public static List<ViewType> getViews(fragmentTypeName) {
+      if (fragmentTypeName == null) {
+          return []
+      }
+      FragmentType fragmentType = Manager.getTypeRegistry().lookup(TypeFamily.FRAGMENT, fragmentTypeName)
+      if (fragmentType == null) {
+          return []
+      }
+      return ThemeManager.getViewTypesForFragmentType(fragmentType)
   }
   
   public static String getSelectedElementId() {
@@ -1307,6 +1339,10 @@ public class Main extends ModuleRoot {
       return presets
   }
 
+  public static String getFragmentFactoryMode() {
+      return SessionManager.getFragmentFactoryMode()
+  }
+  
   public static String getPresetManagerMode() {
       return SessionManager.getPresetManagerMode()
   }
@@ -1347,6 +1383,14 @@ public class Main extends ModuleRoot {
             category = "page"
         }
         return category
+  }
+  
+  public static String getSelectedFragmentType() {
+      return SessionManager.getFragmentType()
+  }
+  
+  public static String getSelectedFragmentView() {
+      return SessionManager.getFragmentView()
   }
   
   public static String getTemplateEngine(applicationPath) {
