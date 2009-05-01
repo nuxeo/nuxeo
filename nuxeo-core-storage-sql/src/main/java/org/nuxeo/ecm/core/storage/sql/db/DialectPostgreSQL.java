@@ -1,0 +1,315 @@
+package org.nuxeo.ecm.core.storage.sql.db;
+/*
+ * (C) Copyright 2008-2009 Nuxeo SA (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Florent Guillaume
+ */
+
+import java.sql.Array;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
+import org.hibernate.dialect.PostgreSQLDialect;
+import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.sql.Model;
+import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
+import org.nuxeo.ecm.core.storage.sql.db.Column;
+import org.nuxeo.ecm.core.storage.sql.db.Database;
+import org.nuxeo.ecm.core.storage.sql.db.Table;
+
+/**
+ * PostgreSQL-specific dialect.
+ *
+ * @author Florent Guillaume
+ */
+public class DialectPostgreSQL extends Dialect {
+
+
+    public DialectPostgreSQL(DatabaseMetaData metadata,
+            RepositoryDescriptor repositoryDescriptor) throws StorageException {
+        super(new PostgreSQLDialect(), metadata);
+    }
+
+
+    @Override
+    public boolean supportsUpdateFrom() {
+        return true;
+    }
+
+    @Override
+    public boolean doesUpdateFromRepeatSelf() {
+        return false;
+    }
+
+    @Override
+    public String getSecurityCheckSql(String idColumnName) {
+        return String.format("NX_ACCESS_ALLOWED(%s, ?, ?)", idColumnName);
+    }
+
+
+    @Override
+    public boolean supportsArrays() {
+        return true;
+    }
+
+    @Override
+    public Array createArrayOf(int type, Object[] elements,
+            Connection connection) throws SQLException {
+        if (elements == null || elements.length == 0) {
+            return null;
+        }
+        String typeName = getTypeName(type, 0, 0, 0);
+        return new PostgreSQLArray(type, typeName, elements);
+    }
+
+    public static class PostgreSQLArray implements Array {
+
+        private static final String NOT_SUPPORTED = "Not supported";
+
+        protected final int type;
+
+        protected final String typeName;
+
+        protected final Object[] elements;
+
+        protected final String string;
+
+        public PostgreSQLArray(int type, String typeName, Object[] elements) {
+            this.type = type;
+            if (type == Types.VARCHAR) {
+                typeName = "varchar";
+            }
+            this.typeName = typeName;
+            this.elements = elements;
+            StringBuilder b = new StringBuilder();
+            appendArray(b, elements);
+            string = b.toString();
+        }
+
+        protected static void appendArray(StringBuilder b, Object[] elements) {
+            b.append('{');
+            for (int i = 0; i < elements.length; i++) {
+                Object e = elements[i];
+                if (i > 0) {
+                    b.append(',');
+                }
+                if (e == null) {
+                    b.append("NULL");
+                } else if (e.getClass().isArray()) {
+                    appendArray(b, (Object[]) e);
+                } else {
+                    // we always transform to a string, the postgres
+                    // array parsing methods will then reparse this as needed
+                    String s = e.toString();
+                    b.append('"');
+                    for (int j = 0; j < s.length(); j++) {
+                        char c = s.charAt(j);
+                        if (c == '"' || c == '\\') {
+                            b.append('\\');
+                        }
+                        b.append(c);
+                    }
+                    b.append('"');
+                }
+            }
+            b.append('}');
+        }
+
+        @Override
+        public String toString() {
+            return string;
+        }
+
+        public int getBaseType() {
+            return type;
+        }
+
+        public String getBaseTypeName() {
+            return typeName;
+        }
+
+        public Object getArray() {
+            return elements;
+        }
+
+        public Object getArray(Map<String, Class<?>> map) throws SQLException {
+            throw new SQLException(NOT_SUPPORTED);
+        }
+
+        public Object getArray(long index, int count) throws SQLException {
+            throw new SQLException(NOT_SUPPORTED);
+        }
+
+        public Object getArray(long index, int count, Map<String, Class<?>> map)
+                throws SQLException {
+            throw new SQLException(NOT_SUPPORTED);
+        }
+
+        public ResultSet getResultSet() throws SQLException {
+            throw new SQLException(NOT_SUPPORTED);
+        }
+
+        public ResultSet getResultSet(Map<String, Class<?>> map)
+                throws SQLException {
+            throw new SQLException(NOT_SUPPORTED);
+        }
+
+        public ResultSet getResultSet(long index, int count)
+                throws SQLException {
+            throw new SQLException(NOT_SUPPORTED);
+        }
+
+        public ResultSet getResultSet(long index, int count,
+                Map<String, Class<?>> map) throws SQLException {
+            throw new SQLException(NOT_SUPPORTED);
+        }
+
+        // this is needed by JDBC 4 (Java 6)
+        public void free() {
+        }
+    }
+
+    @Override
+    public Collection<ConditionalStatement> getConditionalStatements(
+            Model model, Database database) {
+        String idType;
+        switch (model.idGenPolicy) {
+        case APP_UUID:
+            idType = "varchar(36)";
+            break;
+        case DB_IDENTITY:
+            idType = "integer";
+            break;
+        default:
+            throw new AssertionError(model.idGenPolicy);
+        }
+
+
+        List<ConditionalStatement> statements = new LinkedList<ConditionalStatement>();
+
+
+
+
+        statements.add(new ConditionalStatement(
+                true, // early
+                Boolean.FALSE, // no drop needed
+                null, //
+                null, //
+                String.format(
+                        "CREATE OR REPLACE FUNCTION NX_CLUSTER_INVAL" //
+                                + "(i %s, f varchar[], k int) " //
+                                + "RETURNS VOID " //
+                                + "AS $$ " //
+                                + "DECLARE" //
+                                + "  nid int; " //
+                                + "BEGIN" //
+                                + "  FOR nid IN SELECT nodeid FROM cluster_nodes WHERE nodeid <> pg_backend_pid() LOOP" //
+                                + "  INSERT INTO cluster_invals (nodeid, id, fragments, kind) VALUES (nid, i, f, k);" //
+                                + "  END LOOP; " //
+                                + "END " //
+                                + "$$ " //
+                                + "LANGUAGE plpgsql" //
+                        , idType)));
+
+        statements.add(new ConditionalStatement(
+                true, // early
+                Boolean.FALSE, // no drop needed
+                null, //
+                null, //
+                "CREATE OR REPLACE FUNCTION NX_CLUSTER_GET_INVALS() " //
+                        + "RETURNS SETOF RECORD " //
+                        + "AS $$ " //
+                        + "DECLARE" //
+                        + "  r RECORD; " //
+                        + "BEGIN" //
+                        + "  FOR r IN SELECT id, fragments, kind FROM cluster_invals WHERE nodeid = pg_backend_pid() LOOP" //
+                        + "    RETURN NEXT r;" //
+                        + "  END LOOP;" //
+                        + "  DELETE FROM cluster_invals WHERE nodeid = pg_backend_pid();" //
+                        + "  RETURN; " //
+                        + "END " //
+                        + "$$ " //
+                        + "LANGUAGE plpgsql" //
+        ));
+
+
+
+
+        return statements;
+    }
+
+    @Override
+    public int getClusterNodeType() {
+        return Types.INTEGER;
+    }
+
+    @Override
+    public int getClusterFragmentsType() {
+        return Types.ARRAY;
+    }
+
+    @Override
+    public String getClusterFragmentsTypeString() {
+        return "varchar[]";
+    }
+
+    @Override
+    public String getCleanupClusterNodesSql(Model model, Database database) {
+        Table cln = database.getTable(model.CLUSTER_NODES_TABLE_NAME);
+        Column clnid = cln.getColumn(model.CLUSTER_NODES_NODEID_KEY);
+        // delete nodes for sessions don't exist anymore
+        return String.format(
+                "DELETE FROM %s N WHERE "
+                        + "NOT EXISTS(SELECT * FROM pg_stat_activity S WHERE N.%s = S.procpid) ",
+                cln.getQuotedName(), clnid.getQuotedName());
+    }
+
+    @Override
+    public String getCreateClusterNodeSql(Model model, Database database) {
+        Table cln = database.getTable(model.CLUSTER_NODES_TABLE_NAME);
+        Column clnid = cln.getColumn(model.CLUSTER_NODES_NODEID_KEY);
+        Column clncr = cln.getColumn(model.CLUSTER_NODES_CREATED_KEY);
+        return String.format(
+                "INSERT INTO %s (%s, %s) VALUES (pg_backend_pid(), CURRENT_TIMESTAMP)",
+                cln.getQuotedName(), clnid.getQuotedName(),
+                clncr.getQuotedName());
+    }
+
+    @Override
+    public String getRemoveClusterNodeSql(Model model, Database database) {
+        Table cln = database.getTable(model.CLUSTER_NODES_TABLE_NAME);
+        Column clnid = cln.getColumn(model.CLUSTER_NODES_NODEID_KEY);
+        return String.format("DELETE FROM %s WHERE %s = pg_backend_pid()",
+                cln.getQuotedName(), clnid.getQuotedName());
+    }
+
+    @Override
+    public String getClusterInsertInvalidations() {
+        return "SELECT NX_CLUSTER_INVAL(?, ?, ?)";
+    }
+
+    @Override
+    public String getClusterGetInvalidations() {
+        // TODO id type
+        return "SELECT * FROM NX_CLUSTER_GET_INVALS() "
+                + "AS invals(id varchar(36), fragments varchar[], kind int)";
+    }
+}

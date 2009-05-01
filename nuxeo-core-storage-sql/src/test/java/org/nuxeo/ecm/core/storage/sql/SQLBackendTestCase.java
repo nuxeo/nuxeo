@@ -31,6 +31,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
 
     public Repository repository;
+    public Repository repository2;
 
     @Override
     public void setUp() throws Exception {
@@ -40,7 +41,7 @@ public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
 
         SchemaManager schemaManager = Framework.getService(SchemaManager.class);
         assertNotNull(schemaManager);
-        // DatabaseHelper.DATABASE.setUp();
+        DatabaseHelper.DATABASE.setUp();
         // repository = newRepository(false);
         RepositoryDescriptor descriptor = prepareDescriptor();
         repository = new RepositoryImpl(descriptor, schemaManager);
