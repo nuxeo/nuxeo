@@ -88,7 +88,7 @@ public class TextAnnotater extends AbstractAnnotater {
         String text = node.getNodeValue();
         if (text != null) {
             text = text.substring(0, currentOffset);
-            String processedText = text.replaceAll("\\s+", " ");
+            String processedText = Utils.removeWhitespaces(text);
             difference = text.length() - processedText.length();
         }
         return currentOffset - difference;

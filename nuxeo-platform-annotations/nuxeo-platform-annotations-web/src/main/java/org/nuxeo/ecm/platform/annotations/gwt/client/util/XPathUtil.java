@@ -41,6 +41,8 @@ public class XPathUtil {
         Log.debug("XPathUtil] node: " + node.getNodeName() + " parent node: "
                 + node.getParentNode().getNodeName());
         Document document = node.getOwnerDocument();
+        // Log.debug("XPathUtil#getXPath -- document html: " +
+        // document.getNodeValue().substring(0, 75));
         Node current = node;
         StringBuilder xpath = new StringBuilder();
         while (!current.equals(document)) {
@@ -73,8 +75,8 @@ public class XPathUtil {
             start += processor.getText().length();
         }
         Log.debug("getSelectionXPointer; start: " + start);
-        return "#xpointer(string-range(" + getXPath(parentNode) + ",\"\"," + start
-                + "," + getShortLength(range.getSelectedText()) + "))";
+        return "#xpointer(string-range(" + getXPath(parentNode) + ",\"\","
+                + start + "," + getShortLength(range.getSelectedText()) + "))";
     }
 
     public int getShortLength(String selectedText) {
@@ -103,21 +105,16 @@ public class XPathUtil {
             }
             NodeList<Node> nodeList = result.getChildNodes();
             String name = path.substring(0, path.indexOf("["));
-            Log.debug("XPathUtil#getNode -- name: " + name);
             int index = Integer.parseInt(path.substring(path.indexOf("[") + 1,
                     path.indexOf("]")));
-            Log.debug("XPathUtil#getNode -- index: " + name);
             int counter = 1;
-            Log.debug("XPathUtil#getNode -- nodeList.length: " + nodeList.getLength());
             for (int x = 0; x < nodeList.getLength(); x++) {
                 Node node = nodeList.getItem(x);
-                Log.debug("XPathUtil#getNode -- node name: " + node.getNodeName());
                 if (node.getNodeName().equalsIgnoreCase(name)) {
                     if (isIgnored(node)) {// considered as text node
                         continue;
                     }
                     if (counter == index) {
-                        Log.debug("XPathUtil#getNode -- found node: " + counter);
                         result = node;
                         break;
                     }
@@ -132,6 +129,10 @@ public class XPathUtil {
     }
 
     private boolean isIgnored(Node node) {
+        int nodeType = node.getNodeType();
+        if (nodeType != Node.ELEMENT_NODE && nodeType != Node.TEXT_NODE) {
+            return true; // ignore non element and non text node
+        }
         if (node.getNodeName().equalsIgnoreCase("span")) {
             SpanElement spanElement = SpanElement.as(node).cast();
             String name = spanElement.getClassName();

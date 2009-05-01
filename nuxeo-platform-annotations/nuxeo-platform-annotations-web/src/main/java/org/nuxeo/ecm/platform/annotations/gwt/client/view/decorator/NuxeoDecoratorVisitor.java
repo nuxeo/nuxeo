@@ -7,6 +7,7 @@ package org.nuxeo.ecm.platform.annotations.gwt.client.view.decorator;
 import org.nuxeo.ecm.platform.annotations.gwt.client.AnnotationConstant;
 import org.nuxeo.ecm.platform.annotations.gwt.client.controler.AnnotationController;
 import org.nuxeo.ecm.platform.annotations.gwt.client.model.Annotation;
+import org.nuxeo.ecm.platform.annotations.gwt.client.util.Utils;
 import org.nuxeo.ecm.platform.annotations.gwt.client.util.XPathUtil;
 import org.nuxeo.ecm.platform.annotations.gwt.client.view.listener.AnnotationPopupEventListener;
 
@@ -100,8 +101,7 @@ public class NuxeoDecoratorVisitor implements DecoratorVisitor {
         Text text = (Text) currentNode;
         String data = text.getData();
         Log.debug("Decorator -- text data before: " + data);
-        //data = data.replaceAll("^\\s+", "");
-        data = data.replaceAll("\\s+", " ");
+        data = Utils.removeWhitespaces(data);
         Log.debug("Decorator -- text data after: " + data);
         if (data.length() < startOffset) {
             startOffset -= data.length();
@@ -124,16 +124,27 @@ public class NuxeoDecoratorVisitor implements DecoratorVisitor {
                     textToDecorate.length() - afterText.length());
         }
 
-        SpanElement spanElement = decorateTextWithSpan(textToDecorate);
-        if (spanElement == null) {
+        if (currentNode.getParentNode().getNodeName().equalsIgnoreCase("tr")) {
+            // don't add nodes to tr
             return;
         }
+
+        com.google.gwt.dom.client.Element spanElement = decorateTextWithSpan(textToDecorate);
+        if (spanElement == null) {
+            if (afterText.length() > 0) {
+                Document document = currentNode.getOwnerDocument();
+                Node parent = currentNode.getParentNode();
+                insertBefore(parent, currentNode,
+                        document.createTextNode(afterText));
+            }
+        } else {
         Log.debug("Decorator -- span element: " + spanElement.getInnerHTML());
         if (afterText.length() > 0) {
             Document document = currentNode.getOwnerDocument();
             Node parent = currentNode.getParentNode();
             insertBefore(parent, spanElement.getNextSibling(),
                     document.createTextNode(afterText));
+        }
         }
     }
 
@@ -152,8 +163,7 @@ public class NuxeoDecoratorVisitor implements DecoratorVisitor {
         Text text = (Text) currentNode;
         String data = text.getData();
         Log.debug("Decorator -- text data before: " + data);
-        //data = data.replaceAll("^\\s+", "");
-        data = data.replaceAll("\\s+", " ");
+        data = Utils.removeWhitespaces(data);
         Log.debug("Decorator -- text data after: " + data);
 
         String afterText = "";
@@ -167,9 +177,9 @@ public class NuxeoDecoratorVisitor implements DecoratorVisitor {
         return afterText;
     }
 
-    protected SpanElement decorateTextWithSpan(String data) {
-        if (currentNode.getParentNode().getNodeName().equalsIgnoreCase("tr")) {
-            // don't add nodes to tr
+    protected com.google.gwt.dom.client.Element decorateTextWithSpan(String data) {
+        if (data.trim().length() == 0) {
+            // don't add span to empty text
             return null;
         }
 
@@ -203,8 +213,7 @@ public class NuxeoDecoratorVisitor implements DecoratorVisitor {
         }
         Text text = (Text) currentNode;
         String data = text.getData();
-        //data = data.replaceAll("^\\s+", "");
-        data = data.replaceAll("\\s+", " ");
+        data = Utils.removeWhitespaces(data);
         decorateText(data);
         currentNode.getParentNode().removeChild(currentNode);
     }
