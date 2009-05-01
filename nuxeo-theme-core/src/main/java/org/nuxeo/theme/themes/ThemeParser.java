@@ -204,7 +204,6 @@ public class ThemeParser {
 
         themeManager.registerTheme(theme);
         return themeName;
-
     }
 
     private static void parseLayout(final Element parent, Node node)

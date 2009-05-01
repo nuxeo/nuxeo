@@ -1074,8 +1074,18 @@ public final class ThemeManager implements Registrable {
     public static List<ViewType> getViewTypesForFragmentType(
             final FragmentType fragmentType) {
         final List<ViewType> viewTypes = new ArrayList<ViewType>();
+        final List<String> viewNames = new ArrayList<String>();
+
         for (Type v : Manager.getTypeRegistry().getTypes(TypeFamily.VIEW)) {
             final ViewType viewType = (ViewType) v;
+            final String viewName = viewType.getViewName();
+            if (viewNames.contains(viewName)) {
+                continue;
+            }
+            
+            if ("*".equals(viewName)) {
+                continue;
+            }
 
             // select fragment views
             final ElementType elementType = viewType.getElementType();
@@ -1091,9 +1101,11 @@ public final class ThemeManager implements Registrable {
 
             // match model types
             final ModelType modelType = viewType.getModelType();
-            if (fragmentType.getModelType() == modelType) {
-                viewTypes.add(viewType);
+            if (fragmentType.getModelType() != modelType) {
+                continue;
             }
+            viewTypes.add(viewType);
+            viewNames.add(viewName);
         }
         return viewTypes;
     }
