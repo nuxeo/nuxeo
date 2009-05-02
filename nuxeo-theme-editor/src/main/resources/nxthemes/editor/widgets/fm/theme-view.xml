@@ -57,6 +57,10 @@
         controlledBy="editor perspectives,perspective selector"
         visibleInPerspectives="add fragments,edit canvas,edit padding" />
 
+      <div id="nxthemesEditorInfo">
+        FREEMARKER
+      </div>
+      
       <div id="nxthemesWaitAnimation" style="display:none">
         <img src="${basePath}/skin/nxthemes-editor/img/loader.gif" alt="" width="16" height="16" /> loading ...
       </div>

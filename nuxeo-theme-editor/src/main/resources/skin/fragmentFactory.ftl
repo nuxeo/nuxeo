@@ -4,31 +4,58 @@
 
 <h1 class="nxthemesEditor">Add fragment</h1>
 
-<table class="nxthemesTable">
+<#if selected_element_id>
+
+  <table class="fragmentFactory">
   <tr>
-    <th>Fragment (data source)</th>
-    <th>Data type</th>
-    <th>Presentation (view)</th>
-    <th>Action</th>
+  <th style="width: 30%">
+    1. Select fragment type
+  </th>
+  <th style="width: 30%">
+    2. Select view
+  </th>
+  <th style="width: 40%">
+    3. Add fragment 
+  </th>
   </tr>
-<#assign row = 1 />  
-<#list fragments as fragment>
-  <#list fragment.getViews() as v>
-  <#if row % 2 == 1>
-    <tr class="odd">
-  <#else>
-    <tr class="even">
-  </#if>
-  <#assign row = row + 1/>
-    <td>${fragment.getFragmentType().getTypeName()}</td>
-    <td>${fragment.getFragmentType().getModelName()}&nbsp;</td>
-    <td><img src="${basePath}/nxthemes-editor/render_view_icon?name=${v.getTypeName()}" width="16" height="16" />
-    ${v.getViewName()}</td>
-    <td><button onclick="NXThemesEditor.addFragment('${fragment.getFragmentType().getTypeName()}/${v.getViewName()}', '${selected_element_id}'); return false;">ADD</button></td>
-  </tr>
+  
+  <tr>
+  <td style="vertical-align: top">
+      
+  <ul class="nxthemesSelector">
+  <#list fragments as fragment>
+    <li <#if fragment.getTypeName() = selected_fragment_type>class="selected"</#if>><a href="javascript:void(0)" 
+  onclick="NXThemesFragmentFactory.selectFragmentType('${fragment.getTypeName()}', 'fragment factory')">${fragment.getTypeName()}</a></li>
   </#list>
-</#list>
-</table>
+  </ul>
+  <td style="vertical-align: top">
+  <ul class="nxthemesSelector">
+  <#list views as view>
+    <li <#if view.getViewName() = selected_fragment_view>class="selected"</#if>><a href="javascript:void(0)" 
+  onclick="NXThemesFragmentFactory.selectView('${view.getViewName()}', 'fragment factory')">${view.getViewName()}</a></li>
+  </#list>
+  </ul>
+  </td>
+  
+  <td style="vertical-align: top">
+    <#if selected_fragment_type & selected_fragment_view>
+    <div>
+      <button onclick="NXThemesEditor.addFragment('${selected_fragment_type}/${selected_fragment_view}', '${selected_element_id}'); return false;">ADD</button>
+    </div>
+    </#if>
+  </td>
+  </tr>
+  </table>
+  
+<#else>
+
+<p class="nxthemesEditor">
+  <em>No container is selected.</em>
+</p>
+<p>
+  <button onclick="NXThemesEditor.switchToCanvas()">Switch back to the editor</button>
+</p>
+</#if>
 
 </div>
 

@@ -1109,11 +1109,21 @@ img.nxthemesAlignSection:hover {
   padding: 0;
   font:  12px Arial, sans-serif;
   color: #666;
-  text-transform: uppercase;
+  text-transform: uppercase;  
+  background-color: #fff;
 }
 
 #nxthemesWaitAnimation img {
   vertical-align: bottom;
+}
+
+#nxthemesEditorInfo {
+  position: absolute;
+  top: 38px;
+  right: 10px;
+  padding: 0 4px;
+  font:  11px bold Arial, sans-serif;
+  color: #999;
 }
 
 #nxthemesElementPadding {
@@ -1411,4 +1421,15 @@ ul.namedStyleSelector li a {
 
 ul.namedStyleSelector li a.selected {
   background-color: #f3f3f3;
+}
+
+
+table.fragmentFactory {
+  width: 100%;
+}
+
+table.fragmentFactory th {
+  border-bottom: 1px solid #ccc;
+  text-align: left;
+  padding: 3px 9px;
 }
