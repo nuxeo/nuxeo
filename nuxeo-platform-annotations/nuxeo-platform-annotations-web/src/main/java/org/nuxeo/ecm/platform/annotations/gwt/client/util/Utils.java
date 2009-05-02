@@ -69,6 +69,12 @@ public class Utils {
     }-*/;
 
     public static String removeWhitespaces(String text) {
+        if (text == null) {
+            return "";
+        }
+        if (text.matches("^\\s+$")) {
+            return text;
+        }
         String processedText = text.replaceAll("^\\s+", "");
         processedText = processedText.replaceAll("\\s+", " ");
         return processedText;

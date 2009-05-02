@@ -45,6 +45,8 @@ public class NuxeoDecoratorVisitor implements DecoratorVisitor {
 
     protected boolean endNodeFound = false;
 
+    protected boolean endNodeBeforeStartNode = false;
+
     protected Node currentNode;
 
     public NuxeoDecoratorVisitor(Annotation annotation,
@@ -67,8 +69,15 @@ public class NuxeoDecoratorVisitor implements DecoratorVisitor {
 
     public void process(Node node) {
         currentNode = node;
+        checkEndNodeBeforeStartNode();
         shouldStartProcess();
         processNodeIfStarted();
+    }
+
+    protected void checkEndNodeBeforeStartNode() {
+        if (currentNode.equals(endNode)) {
+            endNodeBeforeStartNode = true;
+        }
     }
 
     protected void shouldStartProcess() {
@@ -204,9 +213,14 @@ public class NuxeoDecoratorVisitor implements DecoratorVisitor {
     }
 
     protected void decorateNode() {
+        if (endNodeBeforeStartNode && endNode.equals(currentNode.getPreviousSibling())) {
+            endNodeFound = true;
+            endOffset = 0;
+            return;
+        }
         if (!(currentNode.getNodeType() == Node.TEXT_NODE)) {
-            checkEndNodeFound();
-            if (endNodeFound) {
+            if (endNode.equals(currentNode.getPreviousSibling())) {
+                endNodeFound = true;
                 endOffset = 0;
             }
             return;
