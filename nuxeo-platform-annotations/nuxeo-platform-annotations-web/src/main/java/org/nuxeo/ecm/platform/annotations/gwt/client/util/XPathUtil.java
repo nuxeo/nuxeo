@@ -41,8 +41,6 @@ public class XPathUtil {
         Log.debug("XPathUtil] node: " + node.getNodeName() + " parent node: "
                 + node.getParentNode().getNodeName());
         Document document = node.getOwnerDocument();
-        // Log.debug("XPathUtil#getXPath -- document html: " +
-        // document.getNodeValue().substring(0, 75));
         Node current = node;
         StringBuilder xpath = new StringBuilder();
         while (!current.equals(document)) {
