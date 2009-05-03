@@ -81,16 +81,17 @@ public class Visitor {
         } else if (endNode == node) {
             processing = false;
         }
-        if(processor.doBreak()) {
+        if (processor.doBreak()) {
             return;
         }
+
         NodeList list = node.getChildNodes();
         if (list == null || list.getLength() == 0) {
             processIf(node);
         } else {
             int length = list.getLength();
             Node[] nodes = new Node[list.getLength()];
-            for(int x = 0; x < length; x++) {
+            for (int x = 0; x < length; x++) {
                 nodes[x] = list.getItem(x);
             }
             processIf(node);

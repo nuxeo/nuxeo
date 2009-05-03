@@ -30,25 +30,27 @@ import org.nuxeo.ecm.platform.preview.adapter.BlobPostProcessor;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- *
+ * 
  */
 public class AnnotationBlobPostProcessor implements BlobPostProcessor {
 
     private static final Log log = LogFactory.getLog(AnnotationBlobPostProcessor.class);
 
-    protected static final int BUFFER_SIZE = 4096*16;
+    protected static final int BUFFER_SIZE = 4096 * 16;
 
-    protected static final String ANNOTATION_MODULE_JS
-        = "<script type=\"text/javascript\" src='/nuxeo/org.nuxeo.ecm.platform.annotations.gwt.AnnotationFrameModule/org.nuxeo.ecm.platform.annotations.gwt.AnnotationFrameModule.nocache.js'></script>";
+    protected static final String ANNOTATION_MODULE_JS = "<script type=\"text/javascript\" src='/nuxeo/org.nuxeo.ecm.platform.annotations.gwt.AnnotationFrameModule/org.nuxeo.ecm.platform.annotations.gwt.AnnotationFrameModule.nocache.js'></script>";
 
-    protected static final String INTERNET_EXPLORER_RANGE_JS
-    = "<script type=\"text/javascript\" src='/nuxeo/scripts/InternetExplorerRange.js'></script>";
+    protected static final String INTERNET_EXPLORER_RANGE_JS = "<script type=\"text/javascript\" src='/nuxeo/scripts/InternetExplorerRange.js'></script>";
 
-    protected Pattern headPattern  = Pattern.compile("(.*)(<head>)(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+    protected Pattern headPattern = Pattern.compile("(.*)(<head>)(.*)",
+            Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
-    protected Pattern htmlPattern  = Pattern.compile("(.*)(<html>)(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+    protected Pattern htmlPattern = Pattern.compile("(.*)(<html>)(.*)",
+            Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
-    protected Pattern charsetPattern  = Pattern.compile("(.*) charset=(.*?)\"(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+    protected Pattern charsetPattern = Pattern.compile(
+            "(.*) charset=(.*?)\"(.*)", Pattern.CASE_INSENSITIVE
+                    | Pattern.DOTALL);
 
     public Blob process(Blob blob) {
         try {
@@ -65,15 +67,17 @@ public class AnnotationBlobPostProcessor implements BlobPostProcessor {
             String blobAsString = getBlobAsString(blob, encoding);
             String processedBlob = addAnnotationModule(blobAsString);
 
-            byte[] bytes = encoding == null ? processedBlob.getBytes() : processedBlob.getBytes(encoding);
+            byte[] bytes = encoding == null ? processedBlob.getBytes()
+                    : processedBlob.getBytes(encoding);
             blob = new ByteArrayBlob(bytes, blob.getMimeType(), encoding);
-        } catch(IOException e) {
+        } catch (IOException e) {
             log.debug("Unable to process Blob", e);
         }
         return blob;
     }
 
-    protected String getBlobAsString(Blob blob, String encoding) throws IOException {
+    protected String getBlobAsString(Blob blob, String encoding)
+            throws IOException {
         if (encoding == null) {
             return blob.getString();
         }

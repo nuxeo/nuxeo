@@ -21,95 +21,12 @@ package org.nuxeo.ecm.platform.annotations.gwt.client.util;
 
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.IFrameElement;
-import com.google.gwt.dom.client.Node;
 
 /**
  * @author Alexandre Russel
  *
  */
 public class Utils {
-    public native static String getSelectedText(IFrameElement iframe)/*-{
-        if(iframe.contentDocument.defaultView.getSelection()) {
-          return iframe.contentDocument.defaultView.getSelection().toString();
-        } else if(iframe.getSelection) {
-          return iframe.getSelection();
-        } else if(iframe.selection) {
-          return iframe.selection.createRange().innerHTML;
-        }
-    }-*/;
-    public native static void removeSelection(IFrameElement iframe)/*-{
-        if(iframe.contentDocument.defaultView.getSelection()) {
-          iframe.contentDocument.defaultView.getSelection().removeAllRanges();
-        } else if(iframe.selection) {
-          iframe.selection.empty();
-        }
-    }-*/;
-
-    /**
-     * offset for FF is the number of character from point click to previous
-     * node.
-     *
-     * @param iframe
-     * @return
-     */
-    public native static int getStartOffset(IFrameElement iframe)/*-{
-        // to add
-        //if (!window.getSelection) window.getSelection = function() { return document.selection.createRange().text; };
-        if( iframe &&
-            iframe.contentDocument &&
-            iframe.contentDocument.defaultView &&
-            iframe.contentDocument.defaultView.getSelection() &&
-            iframe.contentDocument.defaultView.getSelection().getRangeAt(0) &&
-            iframe.contentDocument.defaultView.getSelection().getRangeAt(0).startOffset) {
-            return iframe.contentDocument.defaultView.getSelection().getRangeAt(0).startOffset;
-        } else if(iframe.getSelection && iframe.getSelection()) {
-            return iframe.getSelection();
-        } else if(iframe.selection) {
-            return iframe.selection.createRange().startOffset;
-        }
-        return 0;
-    }-*/;
-
-    public native static Node getStartContainer(IFrameElement iframe)/*-{
-        if( iframe &&
-            iframe.contentDocument &&
-            iframe.contentDocument.defaultView &&
-            iframe.contentDocument.defaultView.getSelection() &&
-            iframe.contentDocument.defaultView.getSelection().getRangeAt(0) &&
-            iframe.contentDocument.defaultView.getSelection().getRangeAt(0).startContainer) {
-            return iframe.contentDocument.defaultView.getSelection().getRangeAt(0).startContainer;
-        }
-        return null;
-    }-*/;
-
-    public native static Node getEndContainer(IFrameElement iframe)/*-{
-        if( iframe &&
-            iframe.contentDocument &&
-            iframe.contentDocument.defaultView &&
-            iframe.contentDocument.defaultView.getSelection() &&
-            iframe.contentDocument.defaultView.getSelection().getRangeAt(0) &&
-            iframe.contentDocument.defaultView.getSelection().getRangeAt(0).endContainer) {
-             return iframe.contentDocument.defaultView.getSelection().getRangeAt(0).endContainer;
-            }
-        return null;
-    }-*/;
-
-    public native static int getEndOffset(IFrameElement iframe)/*-{
-        if( iframe &&
-            iframe.contentDocument &&
-            iframe.contentDocument.defaultView &&
-            iframe.contentDocument.defaultView.getSelection() &&
-            iframe.contentDocument.defaultView.getSelection().getRangeAt(0) &&
-            iframe.contentDocument.defaultView.getSelection().getRangeAt(0).endOffset) {
-            return iframe.contentDocument.defaultView.getSelection().getRangeAt(0).endOffset;
-        } else if(iframe.getSelection && iframe.getSelection()) {
-            return iframe.getSelection();
-        } else if(iframe.selection) {
-            return iframe.selection.createRange().endOffset;
-        }
-        return 0;
-    }-*/;
 
     public native static Document setDocument(Document document) /*-{
         $temp = $doc;
@@ -150,4 +67,16 @@ public class Utils {
         }
         return null;
     }-*/;
+
+    public static String removeWhitespaces(String text) {
+        if (text == null) {
+            return "";
+        }
+        if (text.matches("^\\s+$")) {
+            return text;
+        }
+        String processedText = text.replaceAll("^\\s+", "");
+        processedText = processedText.replaceAll("\\s+", " ");
+        return processedText;
+    }
 }

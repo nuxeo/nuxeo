@@ -21,6 +21,7 @@ import org.nuxeo.ecm.platform.annotations.gwt.client.controler.AnnotationControl
 import org.nuxeo.ecm.platform.annotations.gwt.client.model.Annotation;
 
 import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Node;
 import com.google.gwt.dom.client.SpanElement;
 
@@ -36,9 +37,9 @@ public class NuxeoSelectedTextDecoratorVisitor extends NuxeoDecoratorVisitor {
     }
 
     @Override
-    protected SpanElement decorateTextWithSpan(String data) {
-        if (currentNode.getParentNode().getNodeName().equalsIgnoreCase("tr")) {
-            // don't add nodes to tr
+    protected Element decorateTextWithSpan(String data) {
+        if (data.trim().length() == 0) {
+            // don't add span to empty text
             return null;
         }
 

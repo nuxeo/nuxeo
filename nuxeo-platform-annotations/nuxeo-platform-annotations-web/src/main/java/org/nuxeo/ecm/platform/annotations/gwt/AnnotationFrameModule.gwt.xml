@@ -14,7 +14,7 @@
     <!-- Loggers Enabled by default -->
     <set-property name="log_ConsoleLogger" value="DISABLED" />
     <set-property name="log_DivLogger" value="DISABLED" />
-    <set-property name="log_FirebugLogger" value="ENABLED" />
+    <set-property name="log_FirebugLogger" value="DISABLED" />
     <set-property name="log_GWTLogger" value="DISABLED" />
     <set-property name="log_SystemLogger" value="DISABLED" />
 

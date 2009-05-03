@@ -92,19 +92,19 @@ public class AnnotationController {
     }
 
     private native void registerOnFrameMethods() /*-{
-          top['addNewAnnotation'] = this.@org.nuxeo.ecm.platform.annotations.gwt.client.controler.AnnotationController::addNewAnnotation();
-          top['showAnnotations'] = this.@org.nuxeo.ecm.platform.annotations.gwt.client.controler.AnnotationController::showAnnotations();
-          top['hideAnnotations'] = this.@org.nuxeo.ecm.platform.annotations.gwt.client.controler.AnnotationController::hideAnnotations();
-          top['updateSelectedAnnotation'] = this.@org.nuxeo.ecm.platform.annotations.gwt.client.controler.AnnotationController::updateSelectedAnnotation(I);
-          top['cancelNewAnnotationPopup'] = this.@org.nuxeo.ecm.platform.annotations.gwt.client.controler.AnnotationController::cancelNewAnnotationPopup();
-          top['loadAnnotationsOnFrame'] = this.@org.nuxeo.ecm.platform.annotations.gwt.client.controler.AnnotationController::loadAnnotations();
-          top['isAnnotationsVisible'] = this.@org.nuxeo.ecm.platform.annotations.gwt.client.controler.AnnotationController::isAnnotationsVisible();
-          top['deleteAnnotation'] = this.@org.nuxeo.ecm.platform.annotations.gwt.client.controler.AnnotationController::deleteAnnotationOnFrame(I);
-      }-*/;
+        top['addNewAnnotation'] = this.@org.nuxeo.ecm.platform.annotations.gwt.client.controler.AnnotationController::addNewAnnotation();
+        top['showAnnotations'] = this.@org.nuxeo.ecm.platform.annotations.gwt.client.controler.AnnotationController::showAnnotations();
+        top['hideAnnotations'] = this.@org.nuxeo.ecm.platform.annotations.gwt.client.controler.AnnotationController::hideAnnotations();
+        top['updateSelectedAnnotation'] = this.@org.nuxeo.ecm.platform.annotations.gwt.client.controler.AnnotationController::updateSelectedAnnotation(I);
+        top['cancelNewAnnotationPopup'] = this.@org.nuxeo.ecm.platform.annotations.gwt.client.controler.AnnotationController::cancelNewAnnotationPopup();
+        top['loadAnnotationsOnFrame'] = this.@org.nuxeo.ecm.platform.annotations.gwt.client.controler.AnnotationController::loadAnnotations();
+        top['isAnnotationsVisible'] = this.@org.nuxeo.ecm.platform.annotations.gwt.client.controler.AnnotationController::isAnnotationsVisible();
+        top['deleteAnnotation'] = this.@org.nuxeo.ecm.platform.annotations.gwt.client.controler.AnnotationController::deleteAnnotationOnFrame(I);
+    }-*/;
 
     private native void registerMainModuleMethods() /*-{
-          top['loadAnnotationsOnMainModule'] = this.@org.nuxeo.ecm.platform.annotations.gwt.client.controler.AnnotationController::loadAnnotations();
-      }-*/;
+        top['loadAnnotationsOnMainModule'] = this.@org.nuxeo.ecm.platform.annotations.gwt.client.controler.AnnotationController::loadAnnotations();
+    }-*/;
 
     public void addNewAnnotation() {
         NewAnnotationPopup popup = getNewAnnotationPopup();
@@ -189,12 +189,12 @@ public class AnnotationController {
     }
 
     private native void reloadAnnotationsOnMainModule() /*-{
-           top['loadAnnotationsOnMainModule']();
-       }-*/;
+        top['loadAnnotationsOnMainModule']();
+    }-*/;
 
     private native void reloadAnnotationsOnFrame() /*-{
-           top['loadAnnotationsOnFrame']();
-       }-*/;
+        top['loadAnnotationsOnFrame']();
+    }-*/;
 
     public void cancelNewAnnotation() {
         model.setNewAnnotation(null);
@@ -232,14 +232,13 @@ public class AnnotationController {
             if (!isMultiImage()) {
                 annotatedDocument.preDecorateDocument();
             }
-            //annotatedDocument.update(true);
         }
         annoteaClient.getAnnotationList(getParentWindowUrl());
     }
 
     public native String getParentWindowUrl() /*-{
-           return $wnd.parent.location.href;
-       }-*/;
+        return $wnd.parent.location.href;
+    }-*/;
 
     public void decorateDocument() {
         Log.debug("decorate document");
@@ -288,10 +287,10 @@ public class AnnotationController {
 
     public native String filter(String xPointerFilter, ImageElement image,
             String xpath, int i, int j, int k, int l) /*-{
-           if(xPointerFilter && top[xPointerFilter]) {
-               return top[xPointerFilter](image, xpath, i, j, k, l);
-           }
-       }-*/;
+        if(xPointerFilter && top[xPointerFilter]) {
+            return top[xPointerFilter](image, xpath, i, j, k, l);
+        }
+    }-*/;
 
     public Point[] filterAnnotation(Point topLeft, Point bottomRight) {
         if (pointerAdapter == null) {
@@ -308,10 +307,10 @@ public class AnnotationController {
 
     private native String filterPoint(String pointerAdapter, int x, int y,
             int x2, int y2) /*-{
-           if(pointerAdapter && top[pointerAdapter]) {
-               return top[pointerAdapter](x, y, x2, y2);
-           }
-       }-*/;
+        if(pointerAdapter && top[pointerAdapter]) {
+            return top[pointerAdapter](x, y, x2, y2);
+        }
+    }-*/;
 
     public static void updateAnnotation(boolean forceDecorate) {
         CURRENT_INSTANCE.updateAnnotations(forceDecorate);
@@ -327,8 +326,8 @@ public class AnnotationController {
 
     public native void setAnnotationDecoratorFunction(
             String annotationDecoratorFunction) /*-{
-           top[annotationDecoratorFunction] = @org.nuxeo.ecm.platform.annotations.gwt.client.controler.AnnotationController::updateAnnotation(Z);
-       }-*/;
+        top[annotationDecoratorFunction] = @org.nuxeo.ecm.platform.annotations.gwt.client.controler.AnnotationController::updateAnnotation(Z);
+    }-*/;
 
     public void setNewAnnotationPopup(NewAnnotationPopup popup) {
         newAnnotationPopup = popup;

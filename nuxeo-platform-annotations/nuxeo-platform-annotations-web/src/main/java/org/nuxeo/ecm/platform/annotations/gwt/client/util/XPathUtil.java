@@ -73,8 +73,8 @@ public class XPathUtil {
             start += processor.getText().length();
         }
         Log.debug("getSelectionXPointer; start: " + start);
-        return "#xpointer(string-range(" + getXPath(parentNode) + ",\"\"," + start
-                + "," + getShortLength(range.getSelectedText()) + "))";
+        return "#xpointer(string-range(" + getXPath(parentNode) + ",\"\","
+                + start + "," + getShortLength(range.getSelectedText()) + "))";
     }
 
     public int getShortLength(String selectedText) {
@@ -94,6 +94,7 @@ public class XPathUtil {
             }
             return nodes;
         }
+        Log.debug("XPathUtil#getNode -- xpath: " + xpath);
         String[] paths = xpath.split("/");
         Node result = document;
         for (String path : paths) {
@@ -121,10 +122,15 @@ public class XPathUtil {
 
         }
         nodes.add(result);
+        Log.debug("XPathUtil#getNode -- end function: ");
         return nodes;
     }
 
     private boolean isIgnored(Node node) {
+        int nodeType = node.getNodeType();
+        if (nodeType != Node.ELEMENT_NODE && nodeType != Node.TEXT_NODE) {
+            return true; // ignore non element and non text node
+        }
         if (node.getNodeName().equalsIgnoreCase("span")) {
             SpanElement spanElement = SpanElement.as(node).cast();
             String name = spanElement.getClassName();
