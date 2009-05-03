@@ -961,7 +961,8 @@ public class QueryMaker {
             } else if (NXQL.ECM_FULLTEXT.equals(name)) {
                 visitExpressionFulltext(node);
             } else if ((op == Operator.EQ || op == Operator.NOTEQ
-                    || op == Operator.IN || op == Operator.NOTIN)
+                    || op == Operator.IN || op == Operator.NOTIN
+                    || op == Operator.LIKE || op == Operator.NOTLIKE)
                     && name != null && !name.startsWith(NXQL.ECM_PREFIX)) {
                 PropertyInfo propertyInfo = model.getPropertyInfo(name);
                 if (propertyInfo == null) {
@@ -969,9 +970,12 @@ public class QueryMaker {
                 }
                 if (propertyInfo.propertyType.isArray()) {
                     // use EXISTS with subselect clause
-                    boolean direct = op == Operator.EQ || op == Operator.IN;
+                    boolean direct = op == Operator.EQ || op == Operator.IN
+                            || op == Operator.LIKE;
                     Operator directOp = direct ? op
-                            : (op == Operator.NOTEQ ? Operator.EQ : Operator.IN);
+                            : (op == Operator.NOTEQ ? Operator.EQ
+                                    : op == Operator.NOTIN ? Operator.IN
+                                            : Operator.LIKE);
                     Table table = database.getTable(propertyInfo.fragmentName);
                     if (!direct) {
                         buf.append("NOT ");

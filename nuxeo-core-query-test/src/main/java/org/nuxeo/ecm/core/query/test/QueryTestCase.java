@@ -312,6 +312,21 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
 
         dml = session.query("SELECT * FROM Document WHERE dc:contributors NOT IN ('bob', 'john')");
         assertEquals(5, dml.size());
+
+        dml = session.query("SELECT * FROM Document WHERE dc:contributors LIKE 'pe%'");
+        assertEquals(1, dml.size());
+
+        dml = session.query("SELECT * FROM Document WHERE dc:contributors LIKE 'bo%'");
+        assertEquals(2, dml.size());
+
+        dml = session.query("SELECT * FROM Document WHERE dc:contributors LIKE '%o%'");
+        assertEquals(2, dml.size());
+
+        dml = session.query("SELECT * FROM Document WHERE dc:subjects LIKE '%oo%'");
+        assertEquals(1, dml.size());
+
+        dml = session.query("SELECT * FROM File WHERE dc:subjects NOT LIKE '%oo%'");
+        assertEquals(2, dml.size());
     }
 
     // this is disabled for JCR
