@@ -10,8 +10,8 @@
 
   <artifactId>nuxeo-core-storage-sql-ra${artifactSuffix}</artifactId>
   <packaging>rar</packaging>
-  <name>Nuxeo Core SQL Storage Resource Adapter</name>
-  <description>Nuxeo Core: SQL Storage Resource Adapter.</description>
+  <name>Nuxeo Core SQL Storage JCA Resource Adapter</name>
+  <description>Nuxeo Core: SQL Storage JCA Resource Adapter.</description>
 
   <!--repositories>
     <repository>

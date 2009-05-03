@@ -3,13 +3,14 @@
 
   <parent>
     <groupId>org.nuxeo.ecm.core</groupId>
-    <artifactId>nuxeo-core-parent</artifactId>
+    <artifactId>nuxeo-core-storage-jcr-parent</artifactId>
     <version>1.5-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
   </parent>
 
   <artifactId>nuxeo-core-jcr-connector</artifactId>
-  <name>Nuxeo Core JCR Connector</name>
-  <description>Nuxeo Core: JCR Connector.</description>
+  <name>Nuxeo Core JCR Storage</name>
+  <description>Nuxeo Core: JCR Storage.</description>
 
   <dependencies>
     <dependency>

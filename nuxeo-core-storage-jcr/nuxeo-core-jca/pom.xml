@@ -3,14 +3,15 @@
 
   <parent>
     <groupId>org.nuxeo.ecm.core</groupId>
-    <artifactId>nuxeo-core-parent</artifactId>
+    <artifactId>nuxeo-core-storage-jcr-parent</artifactId>
     <version>1.5-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
   </parent>
 
   <artifactId>nuxeo-core-jca${artifactSuffix}</artifactId>
   <packaging>rar</packaging>
-  <name>Nuxeo Core JCA</name>
-  <description>Nuxeo Core: JCA.</description>
+  <name>Nuxeo Core JCR Storage JCA Resource Adapter</name>
+  <description>Nuxeo Core: JCR Storage JCA Resource Adapter.</description>
 
   <!--
     there are currently 2 profiles: jboss the default one and glassfish
