@@ -3,8 +3,9 @@
 
   <parent>
     <groupId>org.nuxeo.ecm.core</groupId>
-    <artifactId>nuxeo-core-parent</artifactId>
+    <artifactId>nuxeo-core-storage-sql-parent</artifactId>
     <version>1.5-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
   </parent>
 
   <artifactId>nuxeo-core-storage-sql-extensions</artifactId>
