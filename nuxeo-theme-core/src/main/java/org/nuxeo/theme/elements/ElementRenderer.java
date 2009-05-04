@@ -65,13 +65,20 @@ public final class ElementRenderer {
 
         String markup = "";
         if (element.isLeaf()) {
+            if (!(element instanceof Fragment)) {
+                log.error(String.format(
+                        "Leaf nodes must be fragments, ignoring element: %s",
+                        element.getElementType().getTypeName()));
+                return copy;
+            }
             final Fragment fragment = (Fragment) element;
             try {
                 copy.setModel(fragment.getModel());
             } catch (ModelException e) {
-                log.error("Rendering of fragment '"
-                        + fragment.getFragmentType().getTypeName()
-                        + "' failed: " + e.getMessage());
+                final String fragmentName = fragment.getFragmentType().getTypeName();
+                log.error("Rendering of fragment '" + fragmentName
+                        + "' failed:");
+                e.printStackTrace();
                 return copy;
             }
             if (fragment.isDynamic()) {
@@ -102,7 +109,7 @@ public final class ElementRenderer {
         final String templateEngineName = info.getTemplateEngine().getName();
         final String engineName = info.getEngine().getName();
         final String viewMode = info.getViewMode();
-        for (String filterName : renderer.getFilters()) {
+        for (final String filterName : renderer.getFilters()) {
 
             // Look for a filter for the current engine
             FilterType filterType = getFilterFor(engineName, filterName,
