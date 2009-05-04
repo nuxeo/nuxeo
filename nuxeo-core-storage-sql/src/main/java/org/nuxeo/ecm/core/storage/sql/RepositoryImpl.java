@@ -43,7 +43,7 @@ import org.nuxeo.ecm.core.storage.sql.db.Dialect;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * @author Florent Guillaume
+ * @author Florent Guillaume 
  */
 public class RepositoryImpl implements Repository {
 
@@ -351,7 +351,7 @@ public class RepositoryImpl implements Repository {
             Connection connection = null;
             try {
                 connection = xaconnection.getConnection();
-                dialect = new Dialect(connection, repositoryDescriptor);
+                dialect = Dialect.createDialect(connection, repositoryDescriptor);
             } finally {
                 if (connection != null) {
                     connection.close();

@@ -821,7 +821,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
                 nodea.getSimpleProperty("ecm:wfIncOption").getValue());
     }
     
-        public void xtestClustering() throws Exception {
+    public void testClustering() throws Exception {
 		repository.close();
 		// get two clustered repositories
 		repository = newRepository(true);

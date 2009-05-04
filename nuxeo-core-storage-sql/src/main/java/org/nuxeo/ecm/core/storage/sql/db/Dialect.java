@@ -43,10 +43,10 @@ import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 
 /**
  * A Dialect encapsulates knowledge about database-specific behavior.
- *
+ * 
  * @author Florent Guillaume
  */
-public class Dialect {
+public abstract class Dialect {
 
     private final String databaseName;
 
@@ -61,10 +61,34 @@ public class Dialect {
     /**
      * Creates a {@code Dialect} by connecting to the datasource to check what
      * database is used.
-     *
+     * 
      * @throws StorageException if a SQL connection problem occurs
+     * 
      */
-    public Dialect(Connection connection,
+
+    public static Dialect createDialect(Connection connection,
+            RepositoryDescriptor repositoryDescriptor) throws StorageException {
+        DatabaseMetaData metadata;
+        String databaseName;
+        try {
+            metadata = connection.getMetaData();
+            databaseName = metadata.getDatabaseProductName();
+        } catch (SQLException e) {
+            throw new StorageException(e);
+        }
+
+        if ("H2".equals(databaseName)) {
+            return new DialectH2(metadata, repositoryDescriptor);
+        }
+
+        if ("PostgreSQL".equals(databaseName)) {
+            return new DialectPostgreSQL(metadata, repositoryDescriptor);
+        }
+
+        throw new StorageException("Unsupported database: " + databaseName);
+    }
+
+    protected Dialect(Connection connection,
             RepositoryDescriptor repositoryDescriptor) throws StorageException {
         try {
             DatabaseMetaData metadata = connection.getMetaData();
@@ -92,9 +116,8 @@ public class Dialect {
         }
         dialectName = dialect.getClass().getSimpleName();
     }
-    
 
-    public Dialect(org.hibernate.dialect.Dialect dialect,
+    protected Dialect(org.hibernate.dialect.Dialect dialect,
             DatabaseMetaData metadata) throws StorageException {
 
         this.dialect = dialect;
@@ -167,7 +190,7 @@ public class Dialect {
      * Needed for columns that need an expression around the value being set,
      * usually for conversion (this is the case for PostgreSQL fulltext {@code
      * TSVECTOR} columns for instance).
-     *
+     * 
      * @param type the JDBC or extended type
      * @return the expression containing a free variable
      */
@@ -262,7 +285,7 @@ public class Dialect {
      * with what pattern?
      * <p>
      * Needed for Derby and H2.
-     *
+     * 
      * @param inOrderBy {@code true} if the expression is for an ORDER BY column
      * @return a pattern for String.format with one parameter for the column
      *         name and one for the width
@@ -279,7 +302,7 @@ public class Dialect {
 
     /**
      * Gets the expression to use to check security.
-     *
+     * 
      * @param the quoted name of the id column to use
      * @return an SQL expression with two parameters (principals and
      *         permissions) that is true if access is allowed
@@ -302,20 +325,20 @@ public class Dialect {
     }
 
     /**
-         * Gets the type of the column containing the cluster fragments.
-         */
-      public int getClusterFragmentsType() throws StorageException {
-		return 0;
-	}
+     * Gets the type of the column containing the cluster fragments.
+     */
+    public int getClusterFragmentsType() throws StorageException {
+        return 0;
+    }
 
-	/**
-	 * Gets a dialect-specific string for the type of the cluster fragments
-	 * column.
-	 */
-	public String getClusterFragmentsTypeString() {
-		return null;
-	}
-    
+    /**
+     * Gets a dialect-specific string for the type of the cluster fragments
+     * column.
+     */
+    public String getClusterFragmentsTypeString() {
+        return null;
+    }
+
     /**
      * Gets the SQL to cleanup info about old (crashed) cluster nodes.
      */
@@ -339,7 +362,7 @@ public class Dialect {
 
     /**
      * Gets the SQL to send an invalidation to the cluster.
-     *
+     * 
      * @return an SQL statement with parameters for: id, fragments, kind
      */
     public String getClusterInsertInvalidations() {
@@ -348,19 +371,19 @@ public class Dialect {
 
     /**
      * Gets the SQL to query invalidations for this cluster node.
-     *
+     * 
      * @return an SQL statement returning a result set
      */
     public String getClusterGetInvalidations() {
         return null;
     }
-    
+
     /**
      * Does the dialect support passing ARRAY values (to stored procedures
      * mostly).
      * <p>
      * If not, we'll simulate them using a string and a separator.
-     *
+     * 
      * @return true if ARRAY values are supported
      */
     public boolean supportsArrays() {
@@ -373,7 +396,7 @@ public class Dialect {
      * <p>
      * (An equivalent method is defined by JDBC4 on the {@link Connection}
      * class.)
-     *
+     * 
      * @param type the SQL type of the elements
      * @param elements the elements of the array
      * @return an Array holding the elements
@@ -388,14 +411,14 @@ public class Dialect {
         }
         throw new SQLException("Not supported");
     }
-    
+
     /**
      * Factory method for creating Array objects, suitable for passing to
      * {@link PreparedStatement#setArray}.
      * <p>
      * (An equivalent method is defined by JDBC4 on the {@link Connection}
      * class.)
-     *
+     * 
      * @param type the SQL type of the elements
      * @param elements the elements of the array
      * @param connection the connection
@@ -700,9 +723,7 @@ public class Dialect {
                     String.format("CREATE ALIAS %s FOR \"%s.%s\"",
                             functionName, h2Functions, methodName));
         }
-        
 
-  
     }
 
     public class PostgreSQLstoredProcedureInfoMaker {
