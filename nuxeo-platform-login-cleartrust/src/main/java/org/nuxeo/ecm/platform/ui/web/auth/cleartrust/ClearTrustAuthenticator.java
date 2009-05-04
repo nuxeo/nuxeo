@@ -45,11 +45,13 @@ public class ClearTrustAuthenticator implements NuxeoAuthenticationPlugin,
 
     // protected final static String CLEARTRUST_HEADER_UID =
     // "HTTP_CT_REMOTE_USER";
-    protected final static String CLEARTRUST_HEADER_UID = "CT_REMOTE_USER";
+    protected final static String CLEARTRUST_HEADER_UID = "REMOTE_USER";
 
     protected final static String CLEARTRUST_COOKIE_SESSION_A = "ACTSESSION";
 
     protected final static String CLEARTRUST_COOKIE_SESSION = "CTSESSION";
+
+    protected final static String NUXEO_CLEARTRUST_USER_NAME = "NUXEO_CLEARTRUST_USER_NAME";
 
     protected String cookieDomain = "";
 
@@ -98,8 +100,16 @@ public class ClearTrustAuthenticator implements NuxeoAuthenticationPlugin,
             redirectToClearTrustLoginPage = true;
         }
 
+        // The username, sent in the CT_REMOTE_USER header, is only sent by
+        // ClearTrust in the first request. This happens only once and thus
+        // should not be missed, and the username should be stored in a local
+        // variable, here a cookie
         String ctUid = request.getHeader(CLEARTRUST_HEADER_UID);
         log.debug("ctUid = " + ctUid);
+        if (ctUid != null) {
+            log.debug("Saving ctUid " + ctUid + " for the whole session");
+            request.getSession().setAttribute(NUXEO_CLEARTRUST_USER_NAME, ctUid);
+        }
 
         if (redirectToClearTrustLoginPage) {
             String loginUrl = cleartrustLoginUrl;
@@ -159,15 +169,15 @@ public class ClearTrustAuthenticator implements NuxeoAuthenticationPlugin,
             cookieList.add(cookie);
         }
         displayCookieInformation(cookieList);
-        String ctUid = request.getHeader(CLEARTRUST_HEADER_UID);
-        log.debug("ctUid = " + ctUid);
-        if (ctUid == null) {
-            log.debug("handleRetrieveIdentity No user specified");
+        Object userNameAttr = request.getSession().getAttribute(
+                NUXEO_CLEARTRUST_USER_NAME);
+        if (userNameAttr == null) {
+            log.debug("handleRetrieveIdentity No user known");
             return null;
         }
-        String userName = ctUid;
+        String userName = (String) userNameAttr;
         UserIdentificationInfo uui = new UserIdentificationInfo(userName,
-                "No password for ClearTrust");
+                "No password needed for ClearTrust authentication");
         log.debug("handleRetrieveIdentity going on with authenticated user = "
                 + userName);
         return uui;
@@ -257,7 +267,7 @@ public class ClearTrustAuthenticator implements NuxeoAuthenticationPlugin,
     }
 
     public void initPlugin(Map<String, String> parameters) {
-        log.debug("initPlugin v18");
+        log.debug("initPlugin v20");
         if (parameters.containsKey(ClearTrustParameters.COOKIE_DOMAIN)) {
             cookieDomain = parameters.get(ClearTrustParameters.COOKIE_DOMAIN);
         }
