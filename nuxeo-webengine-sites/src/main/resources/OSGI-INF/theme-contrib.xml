@@ -4,11 +4,6 @@
   <require>org.nuxeo.theme.webengine
   </require>
 
-  <extension target="org.nuxeo.theme.services.ThemeService"
-    point="shortcuts">
-    <shortcut key="l" target="session" />
-  </extension>
-
   <!-- Perspectives -->
   <extension target="org.nuxeo.theme.services.ThemeService"
     point="perspectives">
