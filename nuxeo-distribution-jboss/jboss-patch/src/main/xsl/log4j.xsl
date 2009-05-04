@@ -21,6 +21,8 @@
   </xsl:template>
   <xsl:template match="category[@name='org.jboss.ejb3.cache.simple.StatefulSessionFilePersistenceManager']">
   </xsl:template>
+  <xsl:template match="category[@name='org.jboss.seam.contexts.Contexts']">
+  </xsl:template>
   <xsl:template match="category[@name='org.jboss.seam.contexts.Lifecycle']">
   </xsl:template>
   <xsl:template match="category[@name='org.jboss.mx.loading']">
@@ -108,6 +110,11 @@
    </xsl:text>
     <category name="org.jboss.ejb3.cache.simple.StatefulSessionFilePersistenceManager">
       <priority value="DEBUG"/>
+    </category>
+    <xsl:text>
+   </xsl:text>
+    <category name="org.jboss.seam.contexts.Contexts">
+      <priority value="WARN"/>
     </category>
     <xsl:text>
    </xsl:text>
