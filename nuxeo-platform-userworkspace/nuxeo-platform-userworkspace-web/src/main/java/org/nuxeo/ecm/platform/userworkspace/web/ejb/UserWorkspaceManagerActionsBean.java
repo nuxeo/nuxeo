@@ -80,7 +80,7 @@ public class UserWorkspaceManagerActionsBean implements
     private transient CoreSession documentManager;
 
     public void initialize() {
-        log.info("Initializing user workspace manager actions bean");
+        log.debug("Initializing user workspace manager actions bean");
         try {
             //Rux INA-252: use a getter
             //userWorkspaceService = Framework.getLocalService(UserWorkspaceService.class);
@@ -168,7 +168,7 @@ public class UserWorkspaceManagerActionsBean implements
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
 
         if (currentDoc==null || currentDoc.getPath().segmentCount()<2) {
-        	return false;
+            return false;
         }
 
         String secondSegment = currentDoc.getPath().segment(1);
