@@ -14,14 +14,16 @@
   
   <div>
   <ui:include src="/incl/resum/locked.xhtml" />
-  <ui:include src="/incl/resum/description.xhtml" />
+  <h:panelGroup rendered="#{!empty currentDocument.dc.description}">
+    <ui:include src="/incl/resum/description.xhtml" />
+  </h:panelGroup>
   <div style="clear:both;"></div>
   </div>
   <div>
   <h:panelGroup rendered="#{currentDocument.hasSchema('file')}">
     <ui:include src="/incl/resum/content.xhtml" />
-  </h:panelGroup>
-  <h:panelGroup rendered="#{!empty relationActions.outgoingStatementsInfo}">
+  </h:panelGroup> 
+  <h:panelGroup rendered="#{(!empty relationActions.outgoingStatementsInfo) || (!empty relationActions.incomingStatementsInfo)}">
     <ui:include src="/incl/resum/relation.xhtml" />
   </h:panelGroup>
   <div style="clear:both;"></div>

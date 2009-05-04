@@ -132,7 +132,7 @@
     <!-- tabs are handled by a specific template so links should be paths to
       template to include in the tab content
 -->
-    <action id="TAB_MANAGE" link="/incl/tabs/document_manage.xhtml" enabled="true" order="24" label="action.view.manage" icon="/icons/file.gif">
+    <action id="TAB_MANAGE" link="/incl/tabs/document_manage.xhtml" enabled="true" order="240" label="action.view.manage" icon="/icons/file.gif">
       <category>VIEW_ACTION_LIST</category>
       <filter-id>manage</filter-id>
     </action>
@@ -212,7 +212,7 @@
 
     <action id="TAB_METADATA_EDIT" order="40"
       link="/incl/tabs/edit_document_and_metadata.xhtml" enabled="true"
-      label="action.view.metadata" icon="/icons/file.gif">
+      label="action.view.modification" icon="/icons/file.gif">
       <category>VIEW_ACTION_LIST</category>
       <filter-id>metadata_edit</filter-id>
       <filter-id>mutable_document</filter-id>

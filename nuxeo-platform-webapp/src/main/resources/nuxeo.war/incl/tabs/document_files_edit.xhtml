@@ -15,8 +15,21 @@
 <h:form enctype="multipart/form-data" id="document_files_edit"
   rendered="#{currentDocument.hasSchema('files')}">
 
+  <h:panelGrid columns="2">
+
+  <h:outputText value="#{messages['label.upload.files.download']}" /> 
+  <h:outputText value="Fichiers Enregistré" />
+
+  <rich:fileUpload uploadData="#{FileManageActions.uploadedFiles}"
+                listHeight="150"
+                maxFilesQuantity="2"
+                immediateUpload="true"/>
+
+
   <a4j:region renderRegionOnly="true" id="files_region">
+
       <a4j:outputPanel ajaxRendered="true">
+
         <nxu:inputList value="#{currentDocument.files.files}"  id="files_input" model="model">
 
           <h:panelGrid columns="2">
@@ -42,14 +55,11 @@
       </a4j:outputPanel> 
   </a4j:region> 
 
-  <rich:fileUpload uploadData="#{FileManageActions.uploadedFiles}"
-                listHeight="150"
-                maxFilesQuantity="5"
-                immediateUpload="true"/>
+          </h:panelGrid>
 
   <p class="buttonsGadget">
     <h:commandButton type="submit"
-      value="#{messages['command.save']}" styleClass="button"
+      value="#{messages['command.add.files']}" styleClass="button"
       action="#{FileManageActions.validateMultiplesUpload}" />
   </p>
 

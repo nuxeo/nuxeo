@@ -10,7 +10,12 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout">
   <f:subview>
     <h3 class="resumeTitle"><h:outputText value="#{messages['action.view.content']}" /></h3>
-    <nxh:outputLink class="boldLabel" value="#{nxd:fileUrl('downloadFile', currentDocument, 'file:content', currentDocument.file.filename)}"><h:outputText value="#{currentDocument.file.filename}"/><nxh:graphicImage value="/icons/download.png" title="#{row.data.file.filename}"/></nxh:outputLink>
+   
+
+<h:panelGrid columns="2">
+<h:panelGroup>
+<h:outputText class="boldLabel" value=" #{messages['label.resum.download.file']}"/>      <br/>
+<nxh:outputLink class="boldLabel" value="#{nxd:fileUrl('downloadFile', currentDocument, 'file:content', currentDocument.file.filename)}"><h:outputText value="#{currentDocument.file.filename}"/><nxh:graphicImage value="/icons/download.png" title="#{row.data.file.filename}"/></nxh:outputLink>
     <c:if test="#{conversionActions.pdfConverterAvailability.available}">
       <nxu:methodResult name="hasPDFCapabilities" value="#{conversionActions.isFileExportableToPDF(field.fullName)}">
         <h:panelGroup rendered="#{hasPDFCapabilities}">
@@ -24,6 +29,9 @@
         </h:panelGroup>
       </nxu:methodResult>
     </c:if>
+ </h:panelGroup>
+
+
     <h:panelGroup rendered="#{currentDocument.hasSchema('files')  and (!empty currentDocument.files.files)}">
       <br/><br/>
       <div class="attachments">
@@ -53,5 +61,6 @@
         </nxu:inputList>
       </div>
     </h:panelGroup>
-  </f:subview>
+</h:panelGrid> 
+ </f:subview>
 </div>
