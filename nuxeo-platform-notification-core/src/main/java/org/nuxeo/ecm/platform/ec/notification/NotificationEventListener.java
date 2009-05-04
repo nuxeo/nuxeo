@@ -92,14 +92,12 @@ public class NotificationEventListener implements PostCommitEventListener {
     protected void handleNotifications(Event event, List<Notification> notifs)
             throws Exception {
 
-        String eventId = event.getName();
         EventContext ctx = event.getContext();
         DocumentEventContext docCtx = null;
         if (ctx instanceof DocumentEventContext) {
             docCtx = (DocumentEventContext) ctx;
         } else {
-            log
-                    .warn("Can not handle notification on a event that is not bound to a DocumentEventContext");
+            log.warn("Can not handle notification on a event that is not bound to a DocumentEventContext");
             return;
         }
 
@@ -108,20 +106,8 @@ public class NotificationEventListener implements PostCommitEventListener {
                 .getProperties();
         Map<Notification, List<String>> targetUsers = new HashMap<Notification, List<String>>();
 
-        if (eventId.equals("documentPublicationApproved")
-                || eventId.equals("documentPublished")) {
-            DocumentModel publishedDoc = getDocFromPath(coreSession,
-                    (String) properties.get("sectionPath"));
-            if (publishedDoc == null) {
-                log.error("unable to find published doc, exiting");
-                return;
-            }
-            gatherConcernedUsersForDocument(coreSession, publishedDoc, notifs,
-                    targetUsers);
-        } else {
-            gatherConcernedUsersForDocument(coreSession, docCtx
-                    .getSourceDocument(), notifs, targetUsers);
-        }
+        gatherConcernedUsersForDocument(coreSession,
+                docCtx.getSourceDocument(), notifs, targetUsers);
 
         for (Notification notif : targetUsers.keySet()) {
             if (!notif.getAutoSubscribed()) {
