@@ -26,28 +26,22 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.model.PropertyException;
-import org.nuxeo.ecm.core.utils.DocumentModelUtils;
-import org.nuxeo.ecm.platform.versioning.api.VersioningManager;
-import org.nuxeo.runtime.api.Framework;
 
 /**
- * When a conflict is
- * detected (transaction in progress on the given docRef) we wait the end of the first
- * document incremented and we checkin / checkout it in another transaction and we finish
- * the second transaction
+ * When a conflict is detected (transaction in progress on the given docRef) we
+ * wait the end of the first document incremented and we checkin / checkout it
+ * in another transaction and we finish the second transaction
  * 
  * @author <a href="mailto:bjalon@nuxeo.com">Benjamin JALON</a>
  */
 public class ConflictVersioningDetector {
 
-    private static final Log log = LogFactory
-            .getLog(ConflictVersioningDetector.class);
+    private static final Log log = LogFactory.getLog(ConflictVersioningDetector.class);
 
     private enum ConflictStateEnum {
-        NO_CONFLICT_DETECTED,
-        CONFLICT_DETECTED_AND_PREVIOUS_TRANSACTION_FINISHED,
-        CONFLICT_DETECTED_AND_PREVIOUS_TRANSACTION_NOT_FINISHED
+        NO_CONFLICT_DETECTED, CONFLICT_DETECTED_AND_PREVIOUS_TRANSACTION_FINISHED, CONFLICT_DETECTED_AND_PREVIOUS_TRANSACTION_NOT_FINISHED
     }
+
     /*
      * These two maps store last documents modified with minor and respectively
      * major version number and last modification date. This is used for detect
@@ -57,22 +51,24 @@ public class ConflictVersioningDetector {
     private static final Map<DocumentRef, Item> lastDocumentsIncremented = new ConcurrentHashMap<DocumentRef, Item>();
 
     private boolean conflictDetected = false;
+
     private DocumentModel doc;
+
     private DocumentRef docRef;
+
     private long lastModification;
 
     public ConflictVersioningDetector(DocumentModel doc)
             throws PropertyException {
         this.doc = doc;
         docRef = doc.getRef();
-        lastModification = ((Calendar) doc.getPropertyValue("dc:modified"))
-                .getTimeInMillis();
+        lastModification = ((Calendar) doc.getPropertyValue("dc:modified")).getTimeInMillis();
     }
 
     public DocumentModel deconflictIncrementVersion() throws Exception {
 
         // No two deconflictions in the same time on a same document
-        // So wait the "end" of the transaction 
+        // So wait the "end" of the transaction
         log.debug("Start conflict Detection of docRef : " + docRef);
         ConflictStateEnum conflictState = ConflictVersioningDetector.isOtherConflictTransactionInProgress(
                 docRef, lastModification);
@@ -85,7 +81,8 @@ public class ConflictVersioningDetector {
             }
             conflictState = ConflictVersioningDetector.isOtherConflictTransactionInProgress(
                     docRef, lastModification);
-        };
+        }
+        ;
 
         if (conflictState.equals(ConflictStateEnum.NO_CONFLICT_DETECTED)) {
             log.debug("No conflict decteted");
@@ -93,7 +90,8 @@ public class ConflictVersioningDetector {
             return doc;
         }
 
-        log.warn("Conflict detected for doc " + docRef + ", deconfliction started");
+        log.warn("Conflict detected for doc " + docRef
+                + ", deconfliction started");
         conflictDetected = true;
 
         // unlock is done on the commit of the ConflictResolver, but we need to
@@ -101,35 +99,27 @@ public class ConflictVersioningDetector {
         // checkined is in database
         Thread.sleep(7000);
 
-        ConflictResolver cr = new ConflictResolver(docRef, doc
-                .getRepositoryName());
-        // Checkin / Checkout in other transaction the previous document checkouted
+        ConflictResolver cr = new ConflictResolver(docRef,
+                doc.getRepositoryName());
+        // Checkin / Checkout in other transaction the previous document
+        // checkouted
         cr.start();
         cr.join();
 
         // Set the correct last version of the document in this context
-        log.debug("Set version " + cr.getMajor() + "." + cr.getMinor() + " to doc " + docRef);
-        VersioningManager versionService = Framework
-                .getService(VersioningManager.class);
-        String documentType = doc.getType();
+        log.debug("Set version " + cr.getMajor() + "." + cr.getMinor()
+                + " to doc " + docRef);
 
-        String majorPropName = versionService
-                .getMajorVersionPropertyName(documentType);
-        String minorPropName = versionService
-                .getMinorVersionPropertyName(documentType);
-        
         Long minor = cr.getMinor();
         Long major = cr.getMajor();
-        
+
         if (minor == null && major == null) {
             minor = new Long(1);
             major = new Long(0);
         }
 
-        doc.setProperty(DocumentModelUtils.getSchemaName(majorPropName),
-                DocumentModelUtils.getFieldName(majorPropName), major);
-        doc.setProperty(DocumentModelUtils.getSchemaName(minorPropName),
-                DocumentModelUtils.getFieldName(minorPropName), minor);
+        doc.setPropertyValue("uid:major_version", major);
+        doc.setPropertyValue("uid:minor_version", minor);
 
         log.debug("End conflict Detection of docRef : " + docRef);
 
@@ -176,7 +166,9 @@ public class ConflictVersioningDetector {
 
 class Item {
     public long deconflictionInProgressLock = 0;
+
     public long conflictTransactionInProgressLock = 0;
+
     public long lastModificationDate = 0;
 
     public synchronized boolean lockDeconflictionInProgress() {

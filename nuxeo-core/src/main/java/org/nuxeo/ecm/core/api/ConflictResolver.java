@@ -12,13 +12,13 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.impl.VersionModelImpl;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
-import org.nuxeo.ecm.platform.versioning.api.VersioningManager;
+
 import org.nuxeo.runtime.api.Framework;
 
 /**
  * Resolve the conflict with a checkin/checkout of the last version in a new
  * transaction.
- *
+ * 
  * @author <a href="mailto:bjalon@nuxeo.com">Benjamin JALON</a>
  */
 public class ConflictResolver extends Thread {
@@ -28,20 +28,24 @@ public class ConflictResolver extends Thread {
     private final static String USER_TRANSACTION_NAME = "UserTransaction";
 
     private CoreSession session = null;
+
     private UserTransaction userTransaction;
+
     private LoginContext loginContext;
+
     private Repository repository;
 
     private DocumentRef docRef;
+
     private String repositoryName;
-    private VersioningManager versioningManager;
 
     private boolean isTransactionRollbacked = false;
 
-    public ConflictResolver(DocumentRef docRef, String repositoryName) throws Exception {
+    public ConflictResolver(DocumentRef docRef, String repositoryName)
+            throws Exception {
         this.docRef = docRef;
         this.repositoryName = repositoryName;
-        versioningManager = Framework.getService(VersioningManager.class);
+
     }
 
     protected void beginTransaction() throws Exception {
@@ -76,8 +80,8 @@ public class ConflictResolver extends Thread {
             beginTransaction();
 
             loginContext = Framework.login();
-            repository = Framework.getService(RepositoryManager.class)
-                    .getRepository(repositoryName);
+            repository = Framework.getService(RepositoryManager.class).getRepository(
+                    repositoryName);
 
             if (repository == null) {
                 throw new ClientException("Cannot get repository: "
@@ -95,14 +99,8 @@ public class ConflictResolver extends Thread {
 
             DocumentModel doc = session.getDocument(docRef);
 
-            String docType = doc.getType();
-            String majorPropName = versioningManager
-                    .getMajorVersionPropertyName(docType);
-            String minorPropName = versioningManager
-                    .getMinorVersionPropertyName(docType);
-
-            major = doc.getProperty(majorPropName).getValue(Long.class);
-            minor = doc.getProperty(minorPropName).getValue(Long.class);
+            major = (Long) doc.getPropertyValue("uid:major_version");
+            minor = (Long) doc.getPropertyValue("uid:minor_version");
 
             session.save();
 
@@ -129,6 +127,7 @@ public class ConflictResolver extends Thread {
     }
 
     private Long minor;
+
     private Long major;
 
     public Long getMinor() {
