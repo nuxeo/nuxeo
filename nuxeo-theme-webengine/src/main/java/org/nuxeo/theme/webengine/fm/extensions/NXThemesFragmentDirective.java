@@ -69,9 +69,6 @@ public class NXThemesFragmentDirective implements TemplateDirectiveModel {
             throw new IllegalStateException("Not In a Web Context");
         }
 
-        env.setGlobalVariable("nxthemesInfo",
-                BeansWrapper.getDefaultInstance().wrap(Manager.getInfoPool()));
-
         Map<String, String> attributes = Utils.getTemplateDirectiveParameters(params);
         final URL elementUrl = new URL(String.format(
                 "nxtheme://element/%s/%s/%s/%s", attributes.get("engine"),
