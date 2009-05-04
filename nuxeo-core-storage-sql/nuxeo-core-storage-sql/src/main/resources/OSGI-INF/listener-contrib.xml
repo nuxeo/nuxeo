@@ -1,6 +1,8 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.core.storage.sql.listener">
 
+  <require>org.nuxeo.ecm.core.convert.service.ConversionServiceImpl</require>
+
   <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
     point="listener">
     <listener name="sql-storage-binary-text" async="true"
