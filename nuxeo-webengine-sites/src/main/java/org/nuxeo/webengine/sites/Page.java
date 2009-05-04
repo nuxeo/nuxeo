@@ -45,7 +45,7 @@ import org.nuxeo.webengine.sites.utils.SiteUtils;
 /**
  * Web object implementation corresponding to WebPage. It is resolved from site.
  * It holds the web page fragments back methods.
- * 
+ *
  * @author stan
  */
 @WebObject(type = "WebPage", superType = "Document")
@@ -83,9 +83,9 @@ public class Page extends DocumentObject {
     public Response getLogo() {
         Response resp = null;
         try {
-            DocumentModel parentWorkspace = SiteUtils.getFirstWorkspaceParent(
+            DocumentModel parentWebSite = SiteUtils.getFirstWebSiteParent(
                     getCoreSession(), doc);
-            resp = SiteUtils.getLogoResponse(parentWorkspace);
+            resp = SiteUtils.getLogoResponse(parentWebSite);
         } catch (Exception e) {
             log.error("Unable to retrive the workspace parent. ", e);
         }
@@ -118,7 +118,7 @@ public class Page extends DocumentObject {
 
             DocumentModel createdDocument = SiteUtils.createWebPageDocument(
                     ctx.getRequest(), session, doc.getPathAsString());
-            DocumentModel webContainer = SiteUtils.getFirstWorkspaceParent(
+            DocumentModel webContainer = SiteUtils.getFirstWebSiteParent(
                     session, doc);
             String path = SiteUtils.getPagePath(webContainer, createdDocument);
             return redirect(path);
@@ -152,7 +152,7 @@ public class Page extends DocumentObject {
                     Boolean.valueOf(pushToMenu));
             session.saveDocument(doc);
             session.save();
-            DocumentModel webContainer = SiteUtils.getFirstWorkspaceParent(
+            DocumentModel webContainer = SiteUtils.getFirstWebSiteParent(
                     session, doc);
             String path = SiteUtils.getPagePath(webContainer, doc);
             return redirect(path);
@@ -162,8 +162,8 @@ public class Page extends DocumentObject {
     }
 
     /**
-     * Computes the arguments for a page. It is needed because in page some of 
-     * the site properties need be displayed. 
+     * Computes the arguments for a page. It is needed because in page some of
+     * the site properties need be displayed.
      * @return
      * @throws Exception
      */
@@ -171,9 +171,9 @@ public class Page extends DocumentObject {
 
         Map<String, Object> root = new HashMap<String, Object>();
         CoreSession session = getCoreSession();
-        DocumentModel ws = SiteUtils.getFirstWorkspaceParent(session, doc);
+        DocumentModel ws = SiteUtils.getFirstWebSiteParent(session, doc);
         root.put(PAGE_NAME,
-                SiteUtils.getString(ws, WEBCONATINER_NAME, null));
+                SiteUtils.getString(ws, WEBCONTAINER_NAME, null));
         root.put(SITE_DESCRIPTION, SiteUtils.getString(ws,
                 WEBCONTAINER_BASELINE, null));
         MimetypeRegistry mimetypeService = Framework.getService(MimetypeRegistry.class);

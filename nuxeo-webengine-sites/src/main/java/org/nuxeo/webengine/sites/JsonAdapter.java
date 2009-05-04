@@ -55,7 +55,7 @@ public class JsonAdapter extends DefaultAdapter {
 
         if (o instanceof Site) {
             Site site = (Site) o;
-            rootDoc = site.getWorkspace();
+            rootDoc = site.getDocument();
             currentDoc = rootDoc;
         } else if (o instanceof DocumentObject) {
             DocumentObject docObj = (DocumentObject) o;
@@ -99,7 +99,7 @@ public class JsonAdapter extends DefaultAdapter {
             DocumentModel parent = doc;
             while (parent != null) {
                 // Check for 'WebView' facet. This is enough since only
-                // Workspace documents have this facet.
+                // Workspace and WebSite documents have this facet.
                 if (parent.hasFacet(WEB_VIEW_FACET)) {
                     return parent;
                 }

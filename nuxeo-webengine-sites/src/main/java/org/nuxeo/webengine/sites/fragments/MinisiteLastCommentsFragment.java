@@ -35,10 +35,10 @@ import org.nuxeo.webengine.sites.utils.SiteUtils;
 /**
  * Action fragment for initializing the fragment related to retrieving a certain
  * number of comments that are last added under a <b>WebPage</b> under a
- * <b>Workspace</b>
- * 
+ * <b>WebSite</b>
+ *
  * @author rux
- * 
+ *
  */
 public class MinisiteLastCommentsFragment extends AbstractFragment {
 
@@ -48,7 +48,7 @@ public class MinisiteLastCommentsFragment extends AbstractFragment {
 
     /**
      * Retrieves a certain number of comments that are last added under a
-     * <b>WebPage</b> under a <b>Workspace</b>
+     * <b>WebPage</b> under a <b>WebSite</b>
      */
     @Override
     public Model getModel() throws ModelException {
@@ -68,7 +68,7 @@ public class MinisiteLastCommentsFragment extends AbstractFragment {
             String author = null;
 
             try {
-                DocumentModel ws = SiteUtils.getFirstWorkspaceParent(session,
+                DocumentModel ws = SiteUtils.getFirstWebSiteParent(session,
                         documentModel);
                 DocumentModelList comments = SiteQueriesColection.queryLastComments(
                         session, ws.getPathAsString(), noComments,

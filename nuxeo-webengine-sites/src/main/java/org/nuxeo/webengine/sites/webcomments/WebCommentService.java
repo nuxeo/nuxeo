@@ -34,12 +34,12 @@ public class WebCommentService extends CommentService {
     @Override
     protected DocumentModel createCommentDocument(CoreSession session,
             DocumentModel target, DocumentModel comment) throws Exception {
-        DocumentModel site = SiteUtils.getFirstWorkspaceParent(session, target);
+        DocumentModel site = SiteUtils.getFirstWebSiteParent(session, target);
         if (site == null) {
             return super.createCommentDocument(session, target, comment);
         } else {
-            return getCommentManager().createLocatedComment(target, comment, 
-                    site.getPathAsString()); 
+            return getCommentManager().createLocatedComment(target, comment,
+                    site.getPathAsString());
         }
     }
 

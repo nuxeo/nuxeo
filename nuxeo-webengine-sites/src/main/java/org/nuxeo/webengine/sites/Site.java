@@ -174,14 +174,14 @@ public class Site extends DocumentObject {
     }
 
     /**
-     * Computes the arguments for a page. It is needed because in page some of 
-     * the site properties need be displayed. 
+     * Computes the arguments for a page. It is needed because in page some of
+     * the site properties need be displayed.
      * @return
      * @throws Exception
      */
     protected Map<String, Object> getSiteArguments() throws Exception {
         Map<String, Object> root = new HashMap<String, Object>();
-        root.put(PAGE_NAME, SiteUtils.getString(doc, WEBCONATINER_NAME, null));
+        root.put(PAGE_NAME, SiteUtils.getString(doc, WEBCONTAINER_NAME, null));
         root.put(SITE_DESCRIPTION, SiteUtils.getString(doc, WEBCONTAINER_BASELINE, null));
         return root;
     }
@@ -199,10 +199,6 @@ public class Site extends DocumentObject {
             log.error("Unable to retrive the webcontainer ", e);
         }
         return null;
-    }
-
-    public DocumentModel getWorkspace() {
-        return doc;
     }
 
 }

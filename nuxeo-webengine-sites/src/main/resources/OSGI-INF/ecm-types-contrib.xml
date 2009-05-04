@@ -13,12 +13,30 @@
       <bigIcon>/icons/forum_100.gif</bigIcon>
       <description>Comment.description</description>
       <category>WebObject</category>
-
+    </type>
+    
+    <type id="WebSite">
+      <label>WebSite</label>
+      <icon>/icons/folder.gif</icon>
+      <bigIcon>/icons/folder_100.gif</bigIcon>
+      <icon-expanded>/icons/folder_open.gif</icon-expanded>
+      <category>WebObject</category>
+      <description>WebSite.description</description>
+      <default-view>view_documents</default-view>
+      <subtypes>
+        <type>WebPage</type>
+        <type>ContextualLink</type>
+      </subtypes>
+      <layouts mode="any">
+        <layout>heading</layout>
+        <layout>webcontainer</layout>
+      </layouts>
     </type>
     
     <type id="WebPage" coretype="WebPage">
       <label>Web Page</label>
       <icon>/icons/page_white_world.png</icon>
+      <bigIcon>/icons/folder_100.gif</bigIcon>
       <icon-expanded>/icons/web_folder.png</icon-expanded>
       <category>WebObject</category>
       <description>WebPage.description</description>
@@ -51,8 +69,13 @@
 
     <type id="Workspace" coretype="Workspace">
       <subtypes>
-        <type>WebPage</type>
-        <type>ContextualLink</type>
+        <type>WebSite</type>
+      </subtypes>
+    </type>
+
+    <type id="Folder" coretype="Folder">
+      <subtypes>
+        <type>WebSite</type>
       </subtypes>
     </type>
 

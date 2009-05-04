@@ -28,13 +28,14 @@ import org.nuxeo.webengine.sites.utils.SiteConstants;
 
 /**
  * Site related actions listener. It performs when a mini-site is created.
+ *
  * @author rux
  */
 public class SiteActionListener implements EventListener {
 
     /**
-     * Sets the url field and the site name (if not already set) to the name, 
-     * respectively the title of the document model. 
+     * Sets the url field and the site name (if not already set) to the name,
+     * respectively the title of the document model.
      */
     public void handleEvent(Event event) throws ClientException {
         String eventId = event.getName();
@@ -50,15 +51,24 @@ public class SiteActionListener implements EventListener {
             return;
         }
         DocumentModel doc = docCtx.getSourceDocument();
-        if (!SiteConstants.WORKSPACE.equals(doc.getType())) {
+        String documentType = doc.getType();
+        if (!(SiteConstants.WORKSPACE.equals(documentType) || SiteConstants.WEBSITE.equals(documentType))) {
             return;
         }
 
         doc.setPropertyValue(SiteConstants.WEBCONTAINER_URL, doc.getName());
-        if (StringUtils.isEmpty((String) doc.getPropertyValue(
-                SiteConstants.WEBCONATINER_NAME))) {
-            doc.setPropertyValue(SiteConstants.WEBCONATINER_NAME, 
+        if (StringUtils.isEmpty((String) doc.getPropertyValue(SiteConstants.WEBCONTAINER_NAME))) {
+            doc.setPropertyValue(SiteConstants.WEBCONTAINER_NAME,
                     doc.getTitle());
+        }
+
+        if (SiteConstants.WEBSITE.equals(documentType)) {
+            // Is WebSite
+            // CB: Because, at least for a while, Workspaces need to work
+            // together with WebSites, "isWebContainer" flag needs to be kept
+            // and set to "true" for all new created WebSites.
+            doc.setPropertyValue(SiteConstants.WEBCONTAINER_ISWEBCONTAINER,
+                    Boolean.TRUE);
         }
     }
 

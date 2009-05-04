@@ -47,7 +47,7 @@ import org.nuxeo.webengine.sites.JsonAdapter;
 
 /**
  * Utility class for sites implementation.
- * 
+ *
  * @author rux added web comments related
  */
 public class SiteUtils {
@@ -67,14 +67,18 @@ public class SiteUtils {
     /**
      * Get the first mini-site parent
      * */
-    public static DocumentModel getFirstWorkspaceParent(CoreSession session,
+    public static DocumentModel getFirstWebSiteParent(CoreSession session,
             DocumentModel doc) throws Exception {
         List<DocumentModel> parents = session.getParentDocuments(doc.getRef());
         Collections.reverse(parents);
         for (DocumentModel currentDocumentModel : parents) {
-            if (SiteConstants.WORKSPACE.equals(currentDocumentModel.getType())
-                    && currentDocumentModel.hasFacet(SiteConstants.WEB_VIEW_FACET)) {
-                return currentDocumentModel;
+            if (currentDocumentModel.hasFacet(SiteConstants.WEB_VIEW_FACET)) {
+                // Check also if document has "webcontainer" schema and if has
+                // "isWebContainer" flag set on TRUE
+                if (currentDocumentModel.hasSchema(SiteConstants.WEBCONTAINER_SCHEMA)
+                        && ((Boolean) currentDocumentModel.getPropertyValue(SiteConstants.WEBCONTAINER_ISWEBCONTAINER))) {
+                    return currentDocumentModel;
+                }
             }
         }
         return null;
@@ -83,7 +87,7 @@ public class SiteUtils {
     /**
      * Gets the number of comment added on a page (published actually, if the
      * moderation is on).
-     * 
+     *
      * @param session
      * @param page
      * @return
@@ -107,7 +111,7 @@ public class SiteUtils {
 
     /**
      * Retrieves user details for a certain username.
-     * 
+     *
      * @param username
      * @return user first name + user last name
      * @throws Exception
@@ -127,7 +131,7 @@ public class SiteUtils {
 
     /**
      * Returns the path to all the existing web containers.
-     * 
+     *
      * @return the path to all the existing web containers
      */
     public static StringBuilder getWebContainersPath() {
@@ -139,7 +143,7 @@ public class SiteUtils {
 
     /**
      * Returns the path for a webPage from a webSite.
-     * 
+     *
      * @param ws the web site
      * @param documentModel the webPage
      * @return the path
@@ -155,7 +159,7 @@ public class SiteUtils {
 
     /**
      * Creates a web page as document model.
-     * 
+     *
      * @param request
      * @param session
      * @param parentPath
@@ -203,9 +207,9 @@ public class SiteUtils {
      */
     public static ArrayList<String> getUsersWithPermission(CoreSession session,
             DocumentModel doc, Set<String> permissions) throws Exception {
-        DocumentModel parentWorkspace = getFirstWorkspaceParent(session, doc);
-        if (parentWorkspace != null) {
-            String[] moderators = parentWorkspace.getACP().listUsernamesForAnyPermission(
+        DocumentModel parentWebSite = getFirstWebSiteParent(session, doc);
+        if (parentWebSite != null) {
+            String[] moderators = parentWebSite.getACP().listUsernamesForAnyPermission(
                     permissions);
             return new ArrayList<String>(Arrays.asList(moderators));
         }
@@ -267,7 +271,7 @@ public class SiteUtils {
     /**
      * This method is used to retrieve the <b>WebPage</b> where this
      * <b>WebComment</b> was published
-     * 
+     *
      * @param comment
      * @return the <b>WebPage</b>
      * @throws Exception
@@ -303,9 +307,9 @@ public class SiteUtils {
      * */
     public static String getModerationType(CoreSession session,
             DocumentModel doc) throws Exception {
-        DocumentModel workspaceParent = getFirstWorkspaceParent(session, doc);
-        if (workspaceParent != null) {
-            return getString(workspaceParent,
+        DocumentModel parentWebSite = getFirstWebSiteParent(session, doc);
+        if (parentWebSite != null) {
+            return getString(parentWebSite,
                     SiteConstants.WEBCONTAINER_MODERATION,
                     SiteConstants.MODERATION_APOSTERIORI);
         }

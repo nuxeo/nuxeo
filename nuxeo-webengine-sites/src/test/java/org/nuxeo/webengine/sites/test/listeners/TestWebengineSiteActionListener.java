@@ -20,9 +20,8 @@ package org.nuxeo.webengine.sites.test.listeners;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.common.utils.IdUtils;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
+import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.webengine.sites.utils.SiteConstants;
 
 /**
@@ -30,18 +29,26 @@ import org.nuxeo.webengine.sites.utils.SiteConstants;
  * @author rux
  *
  */
-public class TestWebengineSiteActionListener extends RepositoryOSGITestCase {
+public class TestWebengineSiteActionListener extends SQLRepositoryTestCase {
+
+    public TestWebengineSiteActionListener(String name) {
+        super(name);
+    }
 
     @Override
     public void setUp() throws Exception {
+        String bundleFile = "org.nuxeo.ecm.platform.webengine.sites.tests";
+
         super.setUp();
-        openRepository();
-        deployBundle("org.nuxeo.ecm.platform.webengine.sites");
+        deployContrib(bundleFile, "OSGI-INF/listener-contrib.xml");
+        deployContrib(bundleFile, "OSGI-INF/core-types-contrib.xml");
+        deployContrib(bundleFile, "OSGI-INF/ecm-types-contrib.xml");
+
+        openSession();
     }
-    
-    public void testSiteActionListener() throws Exception {
+
+    public void testSiteActionListenerWorkspace() throws Exception {
         final String WorkspaceTitle = "Test Workspace";
-        CoreSession session = getCoreSession();
         String id = IdUtils.generateId(WorkspaceTitle);
         DocumentModel workspace = session.createDocumentModel("/", id, "Workspace");
         workspace.setPropertyValue("dc:title", WorkspaceTitle);
@@ -51,7 +58,7 @@ public class TestWebengineSiteActionListener extends RepositoryOSGITestCase {
         //re-read the document model
         workspace = session.getDocument(workspace.getRef());
         String siteName = (String) workspace.getPropertyValue(
-                SiteConstants.WEBCONATINER_NAME);
+                SiteConstants.WEBCONTAINER_NAME);
         String siteUrl = (String) workspace.getPropertyValue(
                 SiteConstants.WEBCONTAINER_URL);
         String documentTitle = (String) workspace.getTitle();
@@ -61,10 +68,38 @@ public class TestWebengineSiteActionListener extends RepositoryOSGITestCase {
         assertFalse("No name in document?", StringUtils.isBlank(documentName));
         assertFalse("No title in document?", StringUtils.isBlank(documentTitle));
         //name contains the title
-        assertTrue("Name not valid for web container: " + siteName, 
+        assertTrue("Name not valid for web container: " + siteName,
                 documentTitle.equals(siteName));
         //url contains the name
-        assertTrue("URL not valid for web container: " + siteUrl, 
+        assertTrue("URL not valid for web container: " + siteUrl,
+                documentName.equals(siteUrl));
+    }
+
+    public void testSiteActionListenerWebSite() throws Exception {
+        final String webSiteTitle = "Test WebSite";
+        String id = IdUtils.generateId(webSiteTitle);
+        DocumentModel webSite = session.createDocumentModel("/", id, "WebSite");
+        webSite.setPropertyValue("dc:title", webSiteTitle);
+        webSite = session.createDocument(webSite);
+        webSite = session.saveDocument(webSite);
+        session.save();
+        //re-read the document model
+        webSite = session.getDocument(webSite.getRef());
+        String siteName = (String) webSite.getPropertyValue(
+                SiteConstants.WEBCONTAINER_NAME);
+        String siteUrl = (String) webSite.getPropertyValue(
+                SiteConstants.WEBCONTAINER_URL);
+        String documentTitle = (String) webSite.getTitle();
+        String documentName = (String) webSite.getName();
+        assertFalse("No name in site?", StringUtils.isBlank(siteName));
+        assertFalse("No url in site?", StringUtils.isBlank(siteUrl));
+        assertFalse("No name in document?", StringUtils.isBlank(documentName));
+        assertFalse("No title in document?", StringUtils.isBlank(documentTitle));
+        //name contains the title
+        assertTrue("Name not valid for web container: " + siteName,
+                documentTitle.equals(siteName));
+        //url contains the name
+        assertTrue("URL not valid for web container: " + siteUrl,
                 documentName.equals(siteUrl));
     }
 

@@ -20,11 +20,11 @@ import org.nuxeo.theme.models.AbstractModel;
 
 /**
  * Model related to the list with the details about the <b>Contextual Link</b>-s
- * that have been created under a <b>Workspace</b> or <b>Webpage</b> document
+ * that have been created under a <b>WebSite</b> or <b>Webpage</b> document
  * type, in the fragment initialization mechanism
- * 
+ *
  * @author rux
- * 
+ *
  */
 public class ContextualLinkModel extends AbstractModel {
 

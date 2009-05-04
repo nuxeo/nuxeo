@@ -31,18 +31,18 @@ import org.nuxeo.webengine.sites.utils.SiteUtils;
 /**
  * Action fragment for initializing the fragment related to the list with the
  * details about the <b>Contextual Link</b>-s that have been created under a
- * <b>Workspace</b> or <b>Webpage</b> document type.
- * 
+ * <b>WebSite</b> or <b>Webpage</b> document type.
+ *
  * @author rux
- * 
+ *
  */
 public class ContextualLinkFragment extends AbstractFragment {
 
     /**
      * Returns the list with the details about the <b>Contextual Link</b>-s that
-     * have been created under a <b>Workspace</b> or <b>Webpage</b> document
+     * have been created under a <b>WebSite</b> or <b>Webpage</b> document
      * type.
-     * 
+     *
      */
     @Override
     public Model getModel() throws ModelException {
@@ -52,9 +52,10 @@ public class ContextualLinkFragment extends AbstractFragment {
             CoreSession session = ctx.getCoreSession();
             DocumentModel documentModel = ctx.getTargetObject().getAdapter(
                     DocumentModel.class);
-            if (SiteConstants.WORKSPACE.equals(documentModel.getType())
-                    || SiteConstants.WEBPAGE.equals(documentModel.getType())) {
 
+            if (documentModel.hasFacet(SiteConstants.WEB_VIEW_FACET)
+                    || SiteConstants.WEBPAGE.equals(documentModel.getType())) {
+                // Is WebSite (has 'WebView' facet) or WebPage.
                 ContextualLinkModel linkModel = null;
                 String title = null;
                 String description = null;

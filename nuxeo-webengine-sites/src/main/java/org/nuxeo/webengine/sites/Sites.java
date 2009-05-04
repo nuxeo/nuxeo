@@ -88,7 +88,7 @@ public class Sites extends DefaultObject {
                 site.put("href", SiteUtils.getString(
                         webSite, SiteConstants.WEBCONTAINER_URL));
                 site.put("name", SiteUtils.getString(
-                        webSite, SiteConstants.WEBCONATINER_NAME));
+                        webSite, SiteConstants.WEBCONTAINER_NAME));
                 sites.add(site);
             } catch (Exception e) {
                 log.error("Problem retrieving the existings websites ...", e);

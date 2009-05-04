@@ -36,10 +36,10 @@ import org.nuxeo.webengine.sites.utils.SiteUtils;
 /**
  * Action fragment for initializing the fragment related to retrieving a
  * certain number of pages with information about the last modified
- * <b>WebPage</b>-s that are made under an <b>Workspace</b> or <b>WebPage</b>
- * 
+ * <b>WebPage</b>-s that are made under an <b>WebSite</b> or <b>WebPage</b>
+ *
  * @author rux
- * 
+ *
  */
 public class MinisiteLastPublishedFragment extends AbstractFragment {
 
@@ -49,7 +49,7 @@ public class MinisiteLastPublishedFragment extends AbstractFragment {
 
     /**
      * Retrieves a certain number of pages with information about the last
-     * modified <b>WebPage</b>-s that are made under an <b>Workspace</b> or
+     * modified <b>WebPage</b>-s that are made under an <b>WebSite</b> or
      * <b>WebPage</b> that is received as parameter.
      */
     @Override
@@ -70,7 +70,7 @@ public class MinisiteLastPublishedFragment extends AbstractFragment {
             String numberComments = null;
 
             try {
-                DocumentModel ws = SiteUtils.getFirstWorkspaceParent(session,
+                DocumentModel ws = SiteUtils.getFirstWebSiteParent(session,
                         documentModel);
                 DocumentModelList webPages = SiteQueriesColection.queryLastModifiedPages(
                         session, ws.getPathAsString(), noPages);

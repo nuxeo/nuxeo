@@ -29,9 +29,9 @@ import org.nuxeo.webengine.sites.utils.SiteUtils;
 
 /**
  * Unit tests for the utils methods.
- * 
+ *
  * @author rux
- * 
+ *
  */
 public class TestWebengineSiteUtils extends RepositoryOSGITestCase {
 
@@ -58,24 +58,24 @@ public class TestWebengineSiteUtils extends RepositoryOSGITestCase {
         super.tearDown();
     }
 
-    private final String WorkspaceTitle = "Test Mini Site";
+    private final String webSiteTitle = "Test Web Site";
 
-    private DocumentModel miniSite;
+    private DocumentModel webSite;
 
     private CoreSession session;
 
     protected void entryTest() throws Exception {
         session = getCoreSession();
-        String id = IdUtils.generateId(WorkspaceTitle);
-        miniSite = session.createDocumentModel("/", id, "Workspace");
-        miniSite.setPropertyValue("dc:title", WorkspaceTitle);
-        miniSite.setPropertyValue("webcontainer:isWebContainer", new Boolean(
+        String id = IdUtils.generateId(webSiteTitle);
+        webSite = session.createDocumentModel("/", id, "WebSite");
+        webSite.setPropertyValue("dc:title", webSiteTitle);
+        webSite.setPropertyValue("webcontainer:isWebContainer", new Boolean(
                 true));
-        miniSite = session.createDocument(miniSite);
-        miniSite = session.saveDocument(miniSite);
+        webSite = session.createDocument(webSite);
+        webSite = session.saveDocument(webSite);
         session.save();
         // re-read the document model
-        miniSite = session.getDocument(miniSite.getRef());
+        webSite = session.getDocument(webSite.getRef());
 
     }
 
@@ -83,7 +83,7 @@ public class TestWebengineSiteUtils extends RepositoryOSGITestCase {
 
         entryTest();
         DocumentModel contextualLink1 = session.createDocumentModel(
-                miniSite.getPathAsString(), "cl1",
+                webSite.getPathAsString(), "cl1",
                 SiteConstants.CONTEXTUAL_LINK);
         contextualLink1.setPropertyValue("dc:title", "CL1");
         contextualLink1.setPropertyValue("dc:description", "CL1 description");
@@ -91,7 +91,7 @@ public class TestWebengineSiteUtils extends RepositoryOSGITestCase {
         contextualLink1 = session.createDocument(contextualLink1);
         contextualLink1 = session.saveDocument(contextualLink1);
         DocumentModel contextualLink2 = session.createDocumentModel(
-                miniSite.getPathAsString(), "cl2",
+                webSite.getPathAsString(), "cl2",
                 SiteConstants.CONTEXTUAL_LINK);
         contextualLink2.setPropertyValue("dc:title", "CL2");
         contextualLink2.setPropertyValue("dc:description", "CL2 description");
@@ -101,7 +101,7 @@ public class TestWebengineSiteUtils extends RepositoryOSGITestCase {
 
         session.save();
 
-        DocumentModelList cLinks = session.getChildren(miniSite.getRef(),
+        DocumentModelList cLinks = session.getChildren(webSite.getRef(),
                 SiteConstants.CONTEXTUAL_LINK);
         assertTrue("Don't have 2 links?", cLinks.size() == 2);
         for (DocumentModel linkObject : cLinks) {

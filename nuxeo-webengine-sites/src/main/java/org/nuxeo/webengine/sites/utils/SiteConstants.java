@@ -28,6 +28,7 @@ public final class SiteConstants {
      * Nuxeo document type names
      */
     public static final String CONTEXTUAL_LINK = "ContextualLink";
+    public static final String WEBSITE = "WebSite";
     public static final String WORKSPACE = "Workspace";
     public static final String WEBPAGE = "WebPage";
     public static final String WEB_VIEW_FACET = "WebView";
@@ -35,9 +36,11 @@ public final class SiteConstants {
     /**
      * Schemes and fields.
      */
+    public static final String WEBCONTAINER_SCHEMA = "webcontainer";
     public static final String WEBCONTAINER_URL = "webc:url";
-    public static final String WEBCONATINER_NAME = "webc:name";
+    public static final String WEBCONTAINER_NAME = "webc:name";
     public static final String WEBCONTAINER_WELCOMETEXT = "webc:welcomeText";
+    public static final String WEBCONTAINER_ISWEBCONTAINER = "webc:isWebContainer";
     public static final String WEBCONTAINER_WELCOMEMEDIA = "webc:welcomeMedia";
     public static final String WEBCONTAINER_LOGO = "webc:logo";
     public static final String WEBCONTAINER_MODERATION = "webcontainer:moderationType";
@@ -79,6 +82,6 @@ public final class SiteConstants {
     public static final String PAGE_THEME_PAGE = "sites/page";
     public static final String SEARCH_THEME_PAGE = "sites/search";
     public static final String SITES_THEME_PAGE = "sites/default";
-    
+
 }
 

@@ -37,21 +37,21 @@ import org.nuxeo.webengine.sites.utils.SiteUtils;
 
 /**
  * Action fragment for initializing the fragment related to searching a certain
- * webPage between all the pages under a <b>Workspace</b> that contains in
+ * webPage between all the pages under a <b>WebSite</b> that contains in
  * title, description , main content or attached files the given searchParam.
- * 
+ *
  * @author rux
- * 
+ *
  */
 public class SearchResultsFragment extends AbstractFragment {
 
     private static final int nrWordsFromDescription = 50;
 
     /**
-     * Searches a certain webPage between all the pages under a <b>Workspace</b>
+     * Searches a certain webPage between all the pages under a <b>WebSite</b>
      * that contains in title, description , main content or attached files the
      * given searchParam.
-     * 
+     *
      */
     @Override
     public Model getModel() throws ModelException {
@@ -75,7 +75,7 @@ public class SearchResultsFragment extends AbstractFragment {
 
             try {
                 // get first workspace parent
-                DocumentModel ws = SiteUtils.getFirstWorkspaceParent(session,
+                DocumentModel ws = SiteUtils.getFirstWebSiteParent(session,
                         documentModel);
                 if (!StringUtils.isEmpty(searchParam) && ws != null) {
 
