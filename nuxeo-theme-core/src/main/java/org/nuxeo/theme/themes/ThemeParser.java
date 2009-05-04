@@ -206,7 +206,7 @@ public class ThemeParser {
         return themeName;
     }
 
-    private static void parseLayout(final Element parent, Node node)
+    public static void parseLayout(final Element parent, Node node)
             throws ThemeIOException {
         TypeRegistry typeRegistry = Manager.getTypeRegistry();
         for (String formatName : typeRegistry.getTypeNames(TypeFamily.FORMAT)) {
@@ -281,7 +281,7 @@ public class ThemeParser {
         }
     }
 
-    private static void parsePresets(final ThemeElement theme, Node node) {
+    public static void parsePresets(final ThemeElement theme, Node node) {
         final TypeRegistry typeRegistry = Manager.getTypeRegistry();
         final String themeName = theme.getName();
         PresetManager.clearCustomPresets(themeName);
@@ -299,7 +299,7 @@ public class ThemeParser {
         }
     }
 
-    private static void parseFormats(final ThemeElement theme,
+    public static void parseFormats(final ThemeElement theme,
             org.w3c.dom.Element doc, Node node) throws ThemeIOException,
             ThemeException {
         Node baseNode = getBaseNode(doc);
@@ -469,7 +469,7 @@ public class ThemeParser {
         }
     }
 
-    private static void parseProperties(org.w3c.dom.Element doc, Node node)
+    public static void parseProperties(org.w3c.dom.Element doc, Node node)
             throws ThemeIOException {
         NamedNodeMap attributes = node.getAttributes();
         Node elementAttr = attributes.getNamedItem("element");
@@ -522,7 +522,7 @@ public class ThemeParser {
         return nodes;
     }
 
-    private static List<Node> getChildElementsByTagName(Node node,
+    public static List<Node> getChildElementsByTagName(Node node,
             String tagName) {
         List<Node> nodes = new ArrayList<Node>();
         NodeList childNodes = node.getChildNodes();
@@ -536,7 +536,7 @@ public class ThemeParser {
         return nodes;
     }
 
-    private static Node getBaseNode(org.w3c.dom.Element doc)
+    public static Node getBaseNode(org.w3c.dom.Element doc)
             throws ThemeIOException {
         Node baseNode = null;
         try {
