@@ -179,12 +179,14 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
                     // just log error to know where is the cause of the
                     // exception
                     log.error("Error deploying resource: " + url);
+                    Framework.handleDevError(e);
                     throw e;
                 }
             } else {
                 String message = "Unknown component '" + path +
                         "' referenced by bundle '" + name + "'";
                 log.error(message + ". Check the MANIFEST.MF");
+                Framework.handleDevError(null);
                 warnings.add(message);
             }
         }

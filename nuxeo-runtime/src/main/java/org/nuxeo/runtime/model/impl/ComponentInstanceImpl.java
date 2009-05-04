@@ -22,6 +22,9 @@ package org.nuxeo.runtime.model.impl;
 import java.lang.reflect.Method;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.Adaptable;
 import org.nuxeo.runtime.model.Component;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -32,8 +35,6 @@ import org.nuxeo.runtime.model.ExtensionPoint;
 import org.nuxeo.runtime.model.Property;
 import org.nuxeo.runtime.model.RegistrationInfo;
 import org.nuxeo.runtime.model.RuntimeContext;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -68,6 +69,8 @@ public class ComponentInstanceImpl implements ComponentInstance {
                 return instance;
             } catch (Exception e) {
                 log.error(e);
+                // fatal error if development mode - exit
+                Framework.handleDevError(e);
             }
             return null;
         case RegistrationInfo.ACTIVATED:
@@ -103,35 +106,41 @@ public class ComponentInstanceImpl implements ComponentInstance {
     // TODO: cache info about implementation to avoid computing it each time
     public void activate() throws Exception {
         // activate the implementation instance
-        if (instance instanceof Component) {
-            ((Component) instance).activate(this);
-        } else { // try by reflection
-            try {
+        try {
+            if (instance instanceof Component) {
+                ((Component) instance).activate(this);
+            } else { // try by reflection
                 Method meth = instance.getClass().getDeclaredMethod("activate",
                         ComponentContext.class);
                 meth.setAccessible(true);
                 meth.invoke(instance, this);
-            } catch (Exception e) {
-                // no such method
             }
+        } catch (NoSuchMethodException e) {
+            // ignore this exception since the activate method is not mandatory
+        } catch (Exception e) {
+            log.error("Failed to activate component: "+getName(), e);
+            Framework.handleDevError(e);
         }
     }
 
     // TODO: cache info about implementation to avoid computing it each time
     public void deactivate() throws Exception {
         // activate the implementation instance
-        if (instance instanceof Component) {
-            ((Component) instance).deactivate(this);
-        } else {
-            // try by reflection
-            try {
+        try {
+            if (instance instanceof Component) {
+                ((Component) instance).deactivate(this);
+            } else {
+                // try by reflection
                 Method meth = instance.getClass().getDeclaredMethod(
                         "deactivate", ComponentContext.class);
                 meth.setAccessible(true);
                 meth.invoke(instance, this);
-            } catch (Exception e) {
-                // no such method
             }
+        } catch (NoSuchMethodException e) {
+            // ignore this exception since the activate method is not mandatory
+        } catch (Exception e) {
+            log.error("Failed to deactivate component: "+getName(), e);
+            Framework.handleDevError(e);
         }
     }
 
@@ -151,6 +160,8 @@ public class ComponentInstanceImpl implements ComponentInstance {
         } else {
             log.error("Warning: TARGET EXTENSION POINT IS UNKNOWN. Check your extension in "
                     +extension.getComponent().getName());
+            // fatal error if development mode - exit
+            Framework.handleDevError(null);
         }
         // this extension is for us - register it
         // activate the implementation instance
@@ -165,6 +176,7 @@ public class ComponentInstanceImpl implements ComponentInstance {
                 meth.invoke(instance, extension);
             } catch (Exception e) {
                 // no such method
+                Framework.handleDevError(e);
             }
         }
     }
@@ -184,6 +196,7 @@ public class ComponentInstanceImpl implements ComponentInstance {
                 meth.invoke(instance, extension);
             } catch (Exception e) {
                 // no such method
+                Framework.handleDevError(e);
             }
         }
     }

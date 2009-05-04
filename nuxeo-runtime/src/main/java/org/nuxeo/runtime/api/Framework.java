@@ -368,6 +368,34 @@ public final class Framework {
         return result.toString();
     }
 
+    public static boolean isDevModeSet() {
+        String dev = getProperty("org.nuxeo.dev");
+        if (dev == null) {
+            dev = System.getProperty("org.nuxeo.dev");
+        }
+        return dev != null && !dev.equals("false");  
+    }
+
+    /**
+     * This method stops the application if development mode is enabled (i.e. org.nuxeo.dev system property is set)
+     * and one of the following errors occurs during startup:
+     *  <ul>
+     *  <li> Component XML parse error.
+     *  <li> Contribution to an unknown extension point.
+     *  <li> Component with an unknown implementation class (the implementation entry exists in the XML descriptor but cannot be resolved to a class).
+     *  <li> Uncatched exception on extension registration / unregistration (either in framework or user component code)
+     *  <li> Uncatched exception on component activation / decativation (either in framework or user component code)
+     *  <li> Broken Nuxeo-Component MANIFEST entry. (i.e. the entry cannot be resolved to a resource) 
+     *  </ul>
+     * @param t the exception or null if none
+     */
+    public static void handleDevError(Throwable t) {
+        if (isDevModeSet()) {
+            System.err.println("Fatal error caught in dev. mode: exiting.");
+            System.exit(1);
+        }
+    }
+    
     public static void main(String[] args) {
     }
 

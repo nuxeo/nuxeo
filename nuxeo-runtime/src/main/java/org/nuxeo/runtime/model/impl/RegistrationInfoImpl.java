@@ -33,6 +33,7 @@ import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.runtime.ComponentEvent;
 import org.nuxeo.runtime.Version;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.model.ComponentName;
@@ -219,7 +220,13 @@ public class RegistrationInfoImpl implements RegistrationInfo {
     }
 
     protected ComponentInstance createComponentInstance() throws Exception {
-        return new ComponentInstanceImpl(this);
+        try {
+            return new ComponentInstanceImpl(this);
+        } catch (Exception e) {
+            log.error("Failed to instantiate component: "+implementation, e);
+            Framework.handleDevError(e);
+            throw e;
+        }
     }
 
     synchronized void activate() throws Exception {
@@ -242,7 +249,12 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         if (extensions != null) {
             for (Extension xt : extensions) {
                 xt.setComponent(component);
-                manager.registerExtension(xt);
+                try {
+                    manager.registerExtension(xt);
+                } catch (Exception e) {
+                    log.error("Failed to register extension. Contributor: "+xt.getComponent()+" to "+xt.getTargetComponent()+"; xpoint: "+xt.getExtensionPoint(), e);
+                    Framework.handleDevError(e);
+                }
             }
         }
 
@@ -255,7 +267,8 @@ public class RegistrationInfoImpl implements RegistrationInfo {
                 try {
                     component.registerExtension(xt);
                 } catch (Exception e) {
-                    log.error("Failed to register extension", e);
+                    log.error("Failed to register extension. Contributor: "+xt.getComponent()+" to "+xt.getTargetComponent()+"; xpoint: "+xt.getExtensionPoint(), e);
+                    Framework.handleDevError(e);
                 }
             }
         }
@@ -276,7 +289,8 @@ public class RegistrationInfoImpl implements RegistrationInfo {
                 try {
                     manager.unregisterExtension(xt);
                 } catch (Exception e) {
-                    log.error("Failed to unregister exception: " + e.getMessage(), e);
+                    log.error("Failed to unregister extension. Contributor: "+xt.getComponent()+" to "+xt.getTargetComponent()+"; xpoint: "+xt.getExtensionPoint(), e);
+                    Framework.handleDevError(e);
                 }
             }
         }
