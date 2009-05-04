@@ -62,21 +62,26 @@ public class SimpleCacheFilter implements Filter {
         HttpServletResponse httpResponse = (HttpServletResponse) response;
 
         if (httpRequest.getMethod().equals("GET")) {
-
-            httpResponse.addHeader("Cache-Control", "max-age=" + cacheTime);
-            httpResponse.addHeader("Cache-Control", "public");
-
-            // Generating expires using current date and adding cache time.
-            // we are using the format Expires: Thu, 01 Dec 1994 16:00:00 GMT
-            Date date = new Date();
-            long newDate = date.getTime() + new Long(cacheTime) * 1000;
-            date.setTime(newDate);
-
-            httpResponse.setHeader("Expires",
-                    HTTP_EXPIRES_DATE_FORMAT.format(date));
+            addCacheHeader(httpResponse, cacheTime);
         }
         chain.doFilter(request, response);
     }
+
+
+    public static void addCacheHeader(HttpServletResponse httpResponse, String cacheTime) {
+        httpResponse.addHeader("Cache-Control", "max-age=" + cacheTime);
+        httpResponse.addHeader("Cache-Control", "public");
+
+        // Generating expires using current date and adding cache time.
+        // we are using the format Expires: Thu, 01 Dec 1994 16:00:00 GMT
+        Date date = new Date();
+        long newDate = date.getTime() + new Long(cacheTime) * 1000;
+        date.setTime(newDate);
+
+        httpResponse.setHeader("Expires",
+                HTTP_EXPIRES_DATE_FORMAT.format(date));
+    }
+
 
     public void destroy() {
         cacheTime = null;
