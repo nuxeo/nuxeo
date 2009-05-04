@@ -6,7 +6,7 @@
   </documentation>
 
   <require>org.nuxeo.theme.webwidgets</require>
-  
+
   <!-- Sample widgets -->
   <extension target="org.nuxeo.theme.webwidgets.Service"
     point="widgets">
@@ -27,6 +27,12 @@
       <category>content</category>
       <path>nxthemes/webwidgets/samples/flashbox.html</path>
       <icon>nxthemes/webwidgets/samples/flashbox.png</icon>
+    </widget>
+
+    <widget name="feed reader">
+      <category>content</category>
+      <path>nxthemes/webwidgets/samples/feedreader.html</path>
+      <icon>nxthemes/webwidgets/samples/feed-reader.png</icon>
     </widget>
 
   </extension>
