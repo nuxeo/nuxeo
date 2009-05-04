@@ -92,7 +92,6 @@
       <layouts mode="any">
         <layout>heading</layout>
         <layout>file</layout>
-        <layout>webcontainer</layout>
       </layouts>
     </type>
 
