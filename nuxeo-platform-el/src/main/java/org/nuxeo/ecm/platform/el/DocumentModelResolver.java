@@ -123,6 +123,15 @@ public class DocumentModelResolver extends BeanELResolver {
             try {
                 value = super.getValue(context, base, property);
             } catch (Exception e) {
+                Throwable t = e;
+                do {
+                    if (t instanceof javax.ejb.EJBTransactionRolledbackException) {
+                        // log if ejb rollback (kills seam components silently)
+                        log.error(t, t);
+                        break;
+                    }
+                    t = t.getCause();
+                } while (t != null);
                 context.setPropertyResolved(false);
             }
         }
