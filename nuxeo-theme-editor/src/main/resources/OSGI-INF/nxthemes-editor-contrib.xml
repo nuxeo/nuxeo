@@ -365,6 +365,7 @@
       <class>org.nuxeo.theme.html.filters.BypassView</class>
     </view>
 
+    <!-- Default view when no widget is available -->
     <view template-engine="freemarker,jsf-facelets">
       <engine>page-editor</engine>
       <element-type>fragment</element-type>

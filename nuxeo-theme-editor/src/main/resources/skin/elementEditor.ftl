@@ -15,6 +15,8 @@
 
 <h1 class="nxthemesEditor">Element editor</h1>
 
+<a onclick="NXThemesEditor.editCanvas()" class="nxthemesBack">Back to canvas</a>
+
 <#if selected_element>
 
 <@nxthemes_tabs identifier="element editor tabs" styleClass="nxthemesEditTabs">

@@ -1433,3 +1433,14 @@ table.fragmentFactory th {
   text-align: left;
   padding: 3px 9px;
 }
+
+.nxthemesBack {
+  background: url(${basePath}/skin/nxthemes-editor/img/back-16.png) no-repeat;
+  padding: 2px 20px;
+  cursor: pointer;
+  text-transform: uppercase;
+  color: #030 !important;
+  font-size: 11px;
+  display: block;
+  margin: 0px 0 14px 0;
+}
