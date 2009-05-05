@@ -95,11 +95,13 @@ public class TestLayoutComponent extends NXRuntimeTestCase {
         assertNull(fieldDefs[0].getSchemaName());
         assertEquals("dc:title", fieldDefs[0].getFieldName());
         // props
-        Map<String, Serializable> anyProps = title.getProperties(BuiltinModes.ANY, BuiltinModes.ANY);
+        Map<String, Serializable> anyProps = title.getProperties(
+                BuiltinModes.ANY, BuiltinModes.ANY);
         assertEquals(2, anyProps.size());
         assertEquals("styleClass", anyProps.get("styleClass"));
         assertEquals("#{!currentUser.administrator}", anyProps.get("required"));
-        Map<String, Serializable> editProps = title.getProperties(BuiltinModes.EDIT, BuiltinModes.VIEW);
+        Map<String, Serializable> editProps = title.getProperties(
+                BuiltinModes.EDIT, BuiltinModes.VIEW);
         assertEquals(3, editProps.size());
         assertEquals("styleClass", editProps.get("styleClass"));
         assertEquals("#{!currentUser.administrator}", editProps.get("required"));
@@ -175,6 +177,17 @@ public class TestLayoutComponent extends NXRuntimeTestCase {
         assertEquals("bar1", handler.getProperty("foo1"));
         assertEquals("bar2", handler.getProperty("foo2"));
         assertNull(handler.getProperty("foo"));
+    }
+
+    public void testLayoutPropertiesRegistration() {
+        LayoutDefinition layoutPropertiesLayout = service.getLayoutDefinition("layoutPropertiesTest");
+        assertNotNull(layoutPropertiesLayout);
+        assertEquals("layoutPropertiesTest", layoutPropertiesLayout.getName());
+
+        assertNotNull(layoutPropertiesLayout.getProperties("any"));
+        assertEquals("bar", layoutPropertiesLayout.getProperties("any").get(
+                "foo"));
+
     }
 
 }

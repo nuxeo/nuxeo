@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.forms.layout.descriptors;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -53,6 +54,9 @@ public class LayoutDescriptor implements LayoutDefinition {
 
     @XNodeMap(value = "widget", key = "@name", type = HashMap.class, componentType = WidgetDescriptor.class)
     Map<String, WidgetDefinition> widgets = new HashMap<String, WidgetDefinition>();
+
+    @XNodeMap(value = "properties", key = "@mode", type = HashMap.class, componentType = PropertiesDescriptor.class)
+    Map<String, PropertiesDescriptor> properties = new HashMap<String, PropertiesDescriptor>();
 
     String[][] stringRows;
 
@@ -90,6 +94,35 @@ public class LayoutDescriptor implements LayoutDefinition {
 
     public WidgetDefinition getWidgetDefinition(String name) {
         return widgets.get(name);
+    }
+
+    private static Map<String, Serializable> getProperties(
+            Map<String, PropertiesDescriptor> map, String mode) {
+        if (map == null) {
+            return null;
+        }
+        PropertiesDescriptor defaultProps = map.get(BuiltinModes.ANY);
+        PropertiesDescriptor props = map.get(mode);
+
+        if (defaultProps == null && props == null) {
+            return null;
+        } else if (defaultProps == null) {
+            return props.getProperties();
+        } else if (props == null) {
+            return defaultProps.getProperties();
+        } else {
+            // take any mode values, and override with given mode values
+            Map<String, Serializable> res = new HashMap<String, Serializable>(
+                    defaultProps.getProperties());
+            res.putAll(props.getProperties());
+            return res;
+        }
+    }
+
+    public Map<String, Serializable> getProperties(String layoutMode) {
+        Map<String, Serializable> modeProps = getProperties(properties,
+                layoutMode);
+        return modeProps;
     }
 
 }

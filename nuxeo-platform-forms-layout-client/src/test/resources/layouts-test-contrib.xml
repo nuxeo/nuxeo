@@ -155,6 +155,11 @@
       </widget>
     </layout>
 
+    <layout name="layoutPropertiesTest">
+      <properties mode="any">
+        <property name="foo">bar</property>
+      </properties>
+    </layout>
   </extension>
 
 </component>

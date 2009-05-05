@@ -81,6 +81,9 @@
       - templates: a template can be provided to control the layout rendering.
       Different layouts can be used given the mode. The test for the layout mode
       can also be done in the template itself.
+      
+      - properties: map of properties that will apply to the layout in a given 
+      mode.
 
       - rows: rows describe the organization of widgets within the layout.
       Several widgets can be placed in the same row. When using the default
@@ -133,6 +136,9 @@
               /layouts/layout_default_template.xhtml
             </template>
           </templates>
+          <properties mode="any">
+            <property name="foo">bar</property>
+          </properties>
           <rows>
             <row>
               <widget>title</widget>
