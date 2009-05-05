@@ -68,8 +68,20 @@ public class NuxeoApp {
         Environment.setDefault(env);
     }
 
+    public ClassLoader getLoader() {
+        return loader;
+    }
+    
     public Environment getEnvironment() {
         return this.env;
+    }
+
+    public void deployBundles(String bundlePath) throws BundleException, IOException {        
+        deployBundles(NuxeoApp.getBundleFiles(new File("."), bundlePath, ":"));
+    }
+
+    public void deployBundles(File baseDir, String bundlePath) throws BundleException, IOException {        
+        deployBundles(NuxeoApp.getBundleFiles(baseDir, bundlePath, ":"));
     }
 
     public synchronized void deployBundles(Collection<File> files) throws BundleException, IOException {
@@ -86,7 +98,16 @@ public class NuxeoApp {
             throw new IllegalStateException("Framework not started");
         }
         BundleFile bf = file.isDirectory() ? new DirectoryBundleFile(file) : new JarBundleFile(file);
-        osgi.install(new BundleImpl(osgi, bf, loader));
+        BundleImpl bundle = null;        
+        try { 
+            bundle = new BundleImpl(osgi, bf, loader);
+            if (bundle.getSymbolicName() != null) {
+                osgi.install(bundle);
+            }
+        } catch (NullPointerException t) {
+            // do nothing: may happen with non OSGi manifests
+            //System.out.println("Ignore: "+file);
+        }
     }
 
     public synchronized void start() {
@@ -125,36 +146,50 @@ public class NuxeoApp {
         }
         return result;
     }
+    
+    public static File makeFile(File baseDir, String path) {
+        if (path.startsWith("/")) {
+            return new File(path);
+        }
+        return new File(baseDir, path);
+    }
 
     public static List<File> expandFiles(File baseDir, String line) {
         int p = line.lastIndexOf("/");
         String fileName = null;
         if (p > -1) {
             fileName = line.substring(p+1);
-            baseDir = new File(baseDir, line.substring(0, p));
+            baseDir = makeFile(baseDir, line.substring(0, p));
         } else {
             fileName = line;
         }
+        if (fileName.length() == 0) {
+            return Arrays.asList(baseDir.listFiles());
+        }
         p = fileName.indexOf("*");
         if (p == -1) {
-            return Collections.singletonList(new File(baseDir, fileName));
-        } else if (fileName.length() == 0) {
-            return Arrays.asList(baseDir.listFiles());
+            return Collections.singletonList(makeFile(baseDir, fileName));
         } else if (p == 0) {
             String suffix= fileName.substring(p+1);
             ArrayList<File> result = new ArrayList<File>();
-            for (String name : baseDir.list()) {
-                if (name.endsWith(suffix)) {
-                    result.add(new File(baseDir, name));
+            String[] names = baseDir.list();
+            if (names != null) {
+                for (String name : names) {
+                    if (name.endsWith(suffix)) {
+                        result.add(makeFile(baseDir, name));
+                    }
                 }
             }
             return result;
         } else if (p == fileName.length()-1) {
             String prefix= fileName.substring(0, p);
             ArrayList<File> result = new ArrayList<File>();
-            for (String name : baseDir.list()) {
-                if (name.startsWith(prefix)) {
-                    result.add(new File(baseDir, name));
+            String[] names = baseDir.list();
+            if (names != null) {
+                for (String name : baseDir.list()) {
+                    if (name.startsWith(prefix)) {
+                        result.add(makeFile(baseDir, name));
+                    }
                 }
             }
             return result;
@@ -162,9 +197,12 @@ public class NuxeoApp {
             String prefix= fileName.substring(0, p);
             String suffix= fileName.substring(p+1);
             ArrayList<File> result = new ArrayList<File>();
-            for (String name : baseDir.list()) {
-                if (name.startsWith(prefix) && name.endsWith(suffix)) {
-                    result.add(new File(baseDir, name));
+            String[] names = baseDir.list();
+            if (names != null) {
+                for (String name : names) {
+                    if (name.startsWith(prefix) && name.endsWith(suffix)) {
+                        result.add(makeFile(baseDir, name));
+                    }
                 }
             }
             return result;
