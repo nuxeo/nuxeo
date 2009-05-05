@@ -49,6 +49,10 @@ public class SelectOneListboxRenderer extends Renderer {
     public void decode(FacesContext facesContext, UIComponent component) {
         // String compId = component.getClientId(facesContext);
         SelectOneListboxComponent comp = (SelectOneListboxComponent) component;
+        if (comp.getDisplayValueOnly()) {
+            return;
+        }
+       
         String id = comp.getClientId(facesContext);
 
         Map<String, String> requestMap = facesContext.getExternalContext().getRequestParameterMap();

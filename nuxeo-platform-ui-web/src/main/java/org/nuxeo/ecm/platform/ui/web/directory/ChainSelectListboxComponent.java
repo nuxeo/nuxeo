@@ -399,9 +399,13 @@ public class ChainSelectListboxComponent extends UIInput {
     @Override
     public void decode(FacesContext context) {
 
+        ChainSelect chain = getChain();
+        if (chain.getDisplayValueOnly()) {
+            return;
+        }
+        
         index = getIndex();
 
-        ChainSelect chain = getChain();
         chain.setCompAtIndex(index, this);
         List<String> keyList = chain.getSelectionKeyList();
         int size = chain.getSize();

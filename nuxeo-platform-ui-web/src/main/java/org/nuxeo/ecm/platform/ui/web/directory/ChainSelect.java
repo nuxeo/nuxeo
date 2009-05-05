@@ -45,9 +45,9 @@ import com.sun.facelets.component.UIRepeat;
  * DOCUMENT ME.
  * <p>
  * Refactor me and it's christmas.
- *
+ * 
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
- *
+ * 
  */
 public class ChainSelect extends UIInput {
 
@@ -202,6 +202,10 @@ public class ChainSelect extends UIInput {
 
     @Override
     public void decode(FacesContext context) {
+        if (getDisplayValueOnly()) {
+            return;
+        }
+
         setValid(true);
         rebuildOptions();
 
@@ -344,9 +348,7 @@ public class ChainSelect extends UIInput {
     }
 
     public void setSelections(Selection[] sels) {
-        if (displayValueOnly == null || !displayValueOnly) {
-            selections = sels;
-        }
+        selections = sels;
     }
 
     public Integer getSize() {
@@ -372,11 +374,16 @@ public class ChainSelect extends UIInput {
      * reset. We only have to rebuild options for position k+1.
      */
     public void rebuildOptions() {
-        /*
-         * for (int i = 0; i < size; i++) { if (optionList[i] != null) {
-         * continue; } if (i == 0 || (selections.length != 0 &&
-         * selections[0].getColumnValue(i - 1) != null)) { rebuildOptions(i); } }
-         */
+        // for (int i = 0; i < size; i++) {
+        // if (optionList[i] != null) {
+        // continue;
+        // }
+        // if (i == 0
+        // || (selections.length != 0 && selections[0].getColumnValue(i - 1) !=
+        // null)) {
+        // rebuildOptions(i);
+        // }
+        // }
     }
 
     private void rebuildOptions(int index) {
@@ -418,9 +425,8 @@ public class ChainSelect extends UIInput {
                 }
             }
 
-            // // XXX : remove this section
+            // XXX : remove this section
             if (child instanceof UIRepeat) {
-                // ((UIRepeat)child).g
                 List<UIComponent> children2 = child.getChildren();
                 for (UIComponent child2 : children2) {
                     if (!(child2 instanceof ChainSelectListboxComponent)) {
@@ -459,7 +465,10 @@ public class ChainSelect extends UIInput {
     }
 
     public Boolean getDisplayValueOnly() {
-        return displayValueOnly;
+        if (displayValueOnly != null) {
+            return displayValueOnly;
+        }
+        return false;
     }
 
     public void setDisplayValueOnly(Boolean displayValueOnly) {
@@ -527,7 +536,7 @@ public class ChainSelect extends UIInput {
                         rows[i] = String.valueOf(valueList.get(i));
                     }
                 } else {
-                    rows = new String[]{};
+                    rows = new String[] {};
                 }
             } else {
                 rows = new String[] { (String) value };
