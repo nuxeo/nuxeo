@@ -25,6 +25,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
@@ -48,7 +50,7 @@ public class FeedItemAdapter {
      * @return a feed item, ready to be syndicate by ROME
      * @throws ClientException
      */
-    public static FeedItem toFeedItem(DocumentModel doc) throws ClientException {
+    public static FeedItem toFeedItem(DocumentModel doc, HttpServletRequest req) throws ClientException {
 
         FeedItem feedIt = new FeedItem();
 
@@ -70,7 +72,7 @@ public class FeedItemAdapter {
         feedIt.setContributors(contributors);
 
         feedIt.setLink(DocumentModelFunctions.documentUrl(null, doc, null,
-                null, true));
+                null, true,req));
 
         Date creationDate = ((Calendar) doc.getProperty("dublincore",
                 "created")).getTime();
@@ -94,11 +96,11 @@ public class FeedItemAdapter {
      * @return the list of feed items
      * @throws ClientException
      */
-    public static List<FeedItem> toFeedItemList(List<DocumentModel> docList)
+    public static List<FeedItem> toFeedItemList(List<DocumentModel> docList, HttpServletRequest req)
             throws ClientException {
         List<FeedItem> feedItems = new ArrayList<FeedItem>(docList.size());
         for (DocumentModel doc : docList) {
-            feedItems.add(toFeedItem(doc));
+            feedItems.add(toFeedItem(doc, req));
         }
         return feedItems;
     }

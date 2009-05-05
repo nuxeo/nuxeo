@@ -75,7 +75,9 @@ public class SyndicationActionsBean implements SyndicationActions {
 
     public static final String RSS_TYPE = "rss_2.0";
 
-    public static final String ATOM_TYPE = "atom_0.3";
+    public static final String ATOM_TYPE_OLD = "atom_0.3";
+
+    public static final String ATOM_TYPE = "atom_1.0";
 
     public static final String DEFAULT_TYPE = RSS_TYPE;
 
@@ -248,7 +250,7 @@ public class SyndicationActionsBean implements SyndicationActions {
      */
     protected static List<FeedItem> getFeedItems(List<DocumentModel> docs)
             throws ClientException {
-        return FeedItemAdapter.toFeedItemList(docs);
+        return FeedItemAdapter.toFeedItemList(docs,null);
     }
 
     protected static String urlencode(String string) {

@@ -6,4 +6,5 @@ Bundle-Vendor: Nuxeo
 Bundle-Category: web,stateless
 Require-Bundle: org.nuxeo.ecm.webapp.core,
  org.nuxeo.ecm.platform.ui
-
+Nuxeo-Component: OSGI-INF/restpack-contrib.xml,
+ OSGI-INF/querymodel-contrib.xml
