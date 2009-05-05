@@ -158,14 +158,6 @@ public class LogEntryProvider {
 
     @SuppressWarnings("unchecked")
     public List<LogEntry> queryLogs(String[] eventIds, String dateRange) {
-        if (eventIds == null || eventIds.length == 0) {
-            throw new IllegalArgumentException(
-                    "You must give a not null eventId");
-        }
-        if (log.isDebugEnabled()) {
-            log.debug("queryLogs() whereClause=" + eventIds);
-        }
-
         Date limit;
         try {
             limit = DateRangeParser.parseDateRangeQuery(new Date(), dateRange);
@@ -174,16 +166,29 @@ public class LogEntryProvider {
                     "Wrong date range query. Query was " + dateRange, aqe);
         }
 
-        String inClause = "(";
-        for (String eventId : eventIds) {
-            inClause += "'" + eventId + "',";
+        String queryStr = "";
+        if (eventIds == null || eventIds.length == 0) {
+            queryStr = "from LogEntry log"
+                + " where log.eventDate >= :limit"
+                + " ORDER BY log.eventDate DESC";
         }
-        inClause = inClause.substring(0, inClause.length() - 1);
-        inClause += ")";
-        Query query = em.createQuery("from LogEntry log"
-                + " where log.eventId in " + inClause
-                + " AND log.eventDate >= :limit"
-                + " ORDER BY log.eventDate DESC");
+        else {
+            String inClause = "(";
+            for (String eventId : eventIds) {
+                inClause += "'" + eventId + "',";
+            }
+            inClause = inClause.substring(0, inClause.length() - 1);
+            inClause += ")";
+
+            queryStr = "from LogEntry log"
+            + " where log.eventId in " + inClause
+            + " AND log.eventDate >= :limit"
+            + " ORDER BY log.eventDate DESC";
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("queryLogs() =" + queryStr);
+        }
+        Query query = em.createQuery(queryStr);
         query.setParameter("limit", limit);
 
         return doPublish(query.getResultList());

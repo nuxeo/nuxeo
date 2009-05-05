@@ -31,9 +31,14 @@ public class BatchHelper {
     }
 
     public static BatchInfo getBatchInfo(String sessionId, String dateRange) {
-        if (!pageInfo.containsKey(sessionId)) {
-            pageInfo.put(sessionId, new BatchInfo(dateRange));
+
+        BatchInfo bInfo = pageInfo.get(sessionId);
+        if (bInfo!=null) {
+            if (bInfo.getPageDateRange().equals(dateRange)) {
+                return bInfo;
+            }
         }
+        pageInfo.put(sessionId, new BatchInfo(dateRange));
         return pageInfo.get(sessionId);
     }
 

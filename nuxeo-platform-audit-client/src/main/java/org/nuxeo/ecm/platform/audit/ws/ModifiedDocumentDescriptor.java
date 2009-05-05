@@ -32,11 +32,15 @@ public class ModifiedDocumentDescriptor implements Serializable {
 
     private static final long serialVersionUID = 17654654654L;
 
-    private final String modified;
+    private String modified;
 
-    private final String type;
+    private String type;
 
-    private final String uuid;
+    private String uuid;
+
+    public String getUuid() {
+        return uuid;
+    }
 
     public ModifiedDocumentDescriptor() {
         this(null, null, null);
@@ -73,6 +77,18 @@ public class ModifiedDocumentDescriptor implements Serializable {
      */
     public String getUUID() {
         return uuid;
+    }
+
+    public void setModified(String modified) {
+        this.modified = modified;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
 }

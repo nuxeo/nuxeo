@@ -42,7 +42,6 @@ import org.nuxeo.ecm.core.schema.utils.DateParser;
 import org.nuxeo.ecm.platform.audit.api.AuditException;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.api.Logs;
-import org.nuxeo.ecm.platform.audit.api.AuditRuntimeException;
 import org.nuxeo.ecm.platform.audit.ws.api.WSAudit;
 import org.nuxeo.ecm.platform.ws.AbstractNuxeoWebService;
 import org.nuxeo.runtime.api.Framework;

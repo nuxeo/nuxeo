@@ -25,11 +25,11 @@ public class EventDescriptorPage implements Serializable {
 
     private static final long serialVersionUID = 876567561L;
 
-    private final int pageIndex;
+    private int pageIndex;
 
-    private final boolean bHasMorePage;
+    private boolean bHasMorePage;
 
-    private final EventDescriptor[] events;
+    private EventDescriptor[] events;
 
     public EventDescriptorPage() {
         this(null, 0, false);
@@ -56,6 +56,18 @@ public class EventDescriptorPage implements Serializable {
 
     public boolean getHasMorePage() {
         return bHasMorePage;
+    }
+
+    public void setPageIndex(int pageIndex) {
+        this.pageIndex = pageIndex;
+    }
+
+    public void setBHasMorePage(boolean hasMorePage) {
+        bHasMorePage = hasMorePage;
+    }
+
+    public void setEvents(EventDescriptor[] events) {
+        this.events = events;
     }
 
 }

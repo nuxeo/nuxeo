@@ -7,6 +7,12 @@
     </module>
   </extension>
 
+  <extension target="jaxws#ENDPOINT">
+    <endpoint name="nuxeoaudit"
+      implementation="org.nuxeo.ecm.platform.audit.ws.WSAuditBean"
+      url-pattern="/webservices/nuxeoaudit" />
+  </extension>
+
   <install>
     <!--  unzip the war template -->
     <unzip from="${bundle.fileName}" to="/">

@@ -25,11 +25,11 @@ public class ModifiedDocumentDescriptorPage implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private final int pageIndex;
+    private int pageIndex;
 
-    private final boolean bHasMorePage;
+    private boolean bHasMorePage;
 
-    private final ModifiedDocumentDescriptor[] modifiedDocuments;
+    private ModifiedDocumentDescriptor[] modifiedDocuments;
 
     public ModifiedDocumentDescriptorPage() {
         this(null, 0, false);
@@ -56,6 +56,22 @@ public class ModifiedDocumentDescriptorPage implements Serializable {
 
     public boolean getHasMorePage() {
         return bHasMorePage;
+    }
+
+    public boolean isBHasMorePage() {
+        return bHasMorePage;
+    }
+
+    public void setBHasMorePage(boolean hasMorePage) {
+        bHasMorePage = hasMorePage;
+    }
+
+    public void setPageIndex(int pageIndex) {
+        this.pageIndex = pageIndex;
+    }
+
+    public void setModifiedDocuments(ModifiedDocumentDescriptor[] modifiedDocuments) {
+        this.modifiedDocuments = modifiedDocuments;
     }
 
 }
