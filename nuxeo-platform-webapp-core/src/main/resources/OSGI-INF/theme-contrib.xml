@@ -28,7 +28,7 @@
     <theme>
       <src>themes/theme-galaxy.xml</src>
     </theme>
-    
+
 
   </extension>
 
@@ -84,7 +84,6 @@
       <resource>waitdlg.js</resource>
       <!-- include JS used for D&D and tableSelection -->
       <resource>utils.js</resource>
-      <resource>tableSelections.js</resource>
       <!-- include JS for contextual menu -->
       <resource>jquery.js</resource>
       <resource>contextmenu.js</resource>
@@ -380,7 +379,7 @@
       src="themes/palettes/nxbackgrounds.properties" category="background" />
     <palette name="Nuxeo default borders"
       src="themes/palettes/nxborders.properties" category="border" />
-    
+
     <palette name="Courrier default fonts"
       src="themes/palettes/courrier_fonts.properties" category="font" />
     <palette name="Courrier default backgrounds"
