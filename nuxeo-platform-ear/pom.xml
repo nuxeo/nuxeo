@@ -20,6 +20,7 @@
     <nuxeo.dm.version>5.2-SNAPSHOT</nuxeo.dm.version>
     <nuxeo.ear.assembly>nuxeo</nuxeo.ear.assembly>
     <nuxeo.ear>${nuxeo.ear.assembly}.ear</nuxeo.ear>
+    <prop>test</prop>
   </properties>
 
   <dependencyManagement>
@@ -656,6 +657,11 @@
     <dependency>
       <groupId>org.nuxeo.ecm.webengine</groupId>
       <artifactId>nuxeo-theme-webengine</artifactId>
+      <version>${nuxeo.webengine.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.webengine</groupId>
+      <artifactId>nuxeo-webengine-management</artifactId>
       <version>${nuxeo.webengine.version}</version>
     </dependency>
 
