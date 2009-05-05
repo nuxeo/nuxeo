@@ -35,6 +35,8 @@ import org.nuxeo.runtime.api.Framework;
 
 public class NuxeoExceptionFilter implements Filter {
 
+    public static final String ORG_NUXEO_ECM_PLATFORM_WEB_COMMON_EXCEPTIONHANDLING_NUXEO_EXCEPTION_FILTER = "org.nuxeo.ecm.platform.web.common.exceptionhandling.NuxeoExceptionFilter";
+
     private NuxeoExceptionHandler exceptionHandler;
 
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -58,13 +60,11 @@ public class NuxeoExceptionFilter implements Filter {
         try {
             chain.doFilter(request, response);
         } catch (Throwable t) {
-            try {
+            if (request.getAttribute(ORG_NUXEO_ECM_PLATFORM_WEB_COMMON_EXCEPTIONHANDLING_NUXEO_EXCEPTION_FILTER) == null) {
                 handleException((HttpServletRequest) request,
                         (HttpServletResponse) response, t);
-            } catch (Throwable throwable) {
-                // error while handling the exception, we give up
-                throw new ServletException(throwable);
             }
+            throw new ServletException(t);
         }
     }
 
