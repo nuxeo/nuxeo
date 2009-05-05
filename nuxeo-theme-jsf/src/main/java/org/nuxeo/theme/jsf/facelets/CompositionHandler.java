@@ -42,6 +42,7 @@ import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletHandler;
 import com.sun.facelets.TemplateClient;
 import com.sun.facelets.el.VariableMapperWrapper;
+import com.sun.facelets.tag.TagAttribute;
 import com.sun.facelets.tag.TagConfig;
 import com.sun.facelets.tag.TagHandler;
 import com.sun.facelets.tag.ui.DefineHandler;
@@ -57,6 +58,8 @@ public final class CompositionHandler extends TagHandler implements
     protected final Map<String, DefineHandler> handlers;
 
     protected final ParamHandler[] params;
+
+    protected final TagAttribute strategyAttribute;
 
     static {
         Manager.initializeProtocols();
@@ -92,6 +95,7 @@ public final class CompositionHandler extends TagHandler implements
             params = null;
         }
 
+        strategyAttribute = getAttribute("strategy");
     }
 
     public void apply(FaceletContext ctx, UIComponent parent)
@@ -127,6 +131,10 @@ public final class CompositionHandler extends TagHandler implements
                             negotiation.getDefaultPerspective());
                     strategy = negotiation.getStrategy();
                 }
+            }
+            // override startegy if defined
+            if (strategyAttribute != null) {
+                strategy = strategyAttribute.getValue(ctx);
             }
 
             if (strategy == null) {

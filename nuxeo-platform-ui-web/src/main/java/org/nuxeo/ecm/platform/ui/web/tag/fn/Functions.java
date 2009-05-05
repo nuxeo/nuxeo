@@ -326,4 +326,9 @@ public final class Functions {
         return "" + size + " " + suffix[ex] + "B";
     }
 
+
+    public static Integer integerDivision(Integer x, Integer y) {
+        return x / y;
+    }
+
 }

@@ -196,6 +196,12 @@ public interface NavigationContext extends ResultsProviderFarm {
     String getActionResult(DocumentModel doc, UserAction action)
             throws ClientException;
 
+    /**
+     * go to the root server, the root document or to the dashboard if the latest
+     * document are not accessible.
+     *
+     * @return
+     */
     String goHome();
 
     String goBack() throws ClientException;

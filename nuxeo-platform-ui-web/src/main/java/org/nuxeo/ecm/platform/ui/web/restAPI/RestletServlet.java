@@ -86,6 +86,7 @@ public class RestletServlet extends HttpServlet {
 
                 restletToAdd = seamFilter;
             } else {
+
                 if (plugin.isSingleton()) {
                     restletToAdd = service.getContributedRestletByName(restletName);
                 } else {

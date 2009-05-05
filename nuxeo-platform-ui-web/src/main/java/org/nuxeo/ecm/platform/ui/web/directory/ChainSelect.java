@@ -344,7 +344,9 @@ public class ChainSelect extends UIInput {
     }
 
     public void setSelections(Selection[] sels) {
-        selections = sels;
+        if (displayValueOnly == null || !displayValueOnly) {
+            selections = sels;
+        }
     }
 
     public Integer getSize() {
