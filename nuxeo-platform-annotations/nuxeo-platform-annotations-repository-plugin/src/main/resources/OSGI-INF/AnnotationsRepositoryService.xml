@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.annotations.AnnotationsRepositoryService">
+  <implementation class="org.nuxeo.ecm.platform.annotations.repository.service.AnnotationsRepositoryComponent"/>
+  <service>
+    <provide interface="org.nuxeo.ecm.platform.annotations.repository.service.AnnotationsRepositoryService"/>
+    <provide interface="org.nuxeo.ecm.platform.annotations.repository.service.AnnotationsRepositoryConfigurationService"/>
+  </service>
+  <extension-point name="documentAnnotability">
+    <object class="org.nuxeo.ecm.platform.annotations.repository.descriptor.DocumentAnnotabilityDescriptor"/>
+  </extension-point>
+  <extension-point name="documentEventListener">
+    <object class="org.nuxeo.ecm.platform.annotations.repository.descriptor.DocumentEventListenerDescriptor"/>
+  </extension-point>
+  <extension-point name="jcrLifecycleEventId">
+    <object class="org.nuxeo.ecm.platform.annotations.repository.descriptor.EventIdDescriptor"/>
+  </extension-point>
+  <extension-point name="graphManagerEventListener">
+    <object class="org.nuxeo.ecm.platform.annotations.repository.descriptor.GraphManagerEventListenerDescriptor"/>
+  </extension-point>
+  <extension-point name="securityManager">
+    <object class="org.nuxeo.ecm.platform.annotations.repository.descriptor.SecurityManagerDescriptor"/>
+  </extension-point>
+</component>

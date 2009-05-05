@@ -28,8 +28,8 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.webengine.ui.tree.document.DocumentContentProvider;
-import org.nuxeo.webengine.utils.SiteConstants;
-import org.nuxeo.webengine.utils.SiteUtils;
+import org.nuxeo.webengine.sites.utils.SiteConstants;
+import org.nuxeo.webengine.sites.utils.SiteUtils;
 
 /**
  * Implementation of provider for the tree.

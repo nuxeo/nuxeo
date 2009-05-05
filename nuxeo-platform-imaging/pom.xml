@@ -1,0 +1,129 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <artifactId>nuxeo-features-parent</artifactId>
+    <groupId>org.nuxeo.ecm.platform</groupId>
+    <version>5.2-SNAPSHOT</version>
+  </parent>
+
+  <groupId>org.nuxeo.ecm.platform</groupId>
+  <artifactId>nuxeo-platform-imaging-parent</artifactId>
+  <name>Nuxeo Platform Imaging parent</name>
+  <packaging>pom</packaging>
+  <description>Nuxeo Platform Imaging provides picture managment
+               to Nuxeo Web Platform and RCP. It offers minor picture transformation
+               like rotation or resizing.</description>
+
+  <modules>
+    <module>nuxeo-platform-imaging-api</module>
+    <module>nuxeo-platform-imaging-core</module>
+    <module>nuxeo-platform-imaging-convert</module>
+    <module>nuxeo-platform-imaging-facade</module>
+    <module>nuxeo-platform-imaging-web</module>
+    <module>nuxeo-platform-imaging-preview</module>
+  </modules>
+
+  <dependencyManagement>
+    <dependencies>
+      <!-- Nuxeo platform imaging -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-imaging-api</artifactId>
+        <version>${pom.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-imaging-convert</artifactId>
+        <version>${pom.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-imaging-core</artifactId>
+        <version>${pom.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-imaging-facade</artifactId>
+        <version>${pom.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-imaging-preview</artifactId>
+        <version>${pom.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-imaging-web</artifactId>
+        <version>${pom.version}</version>
+      </dependency>
+      <!-- ImageJ --> 
+      <dependency>
+        <groupId>imagej</groupId>
+        <artifactId>imagej</artifactId>
+        <version>1.4.1.e</version>
+      </dependency>
+      <!-- Mistral -->
+      <dependency>
+        <groupId>net.java.dev.mistral</groupId>
+        <artifactId>EditableImage</artifactId>
+        <version>0.9.5</version>
+      </dependency>
+      <dependency>
+        <groupId>net.java.dev.mistral</groupId>
+        <artifactId>JAI-Adapter</artifactId>
+        <version>0.9.5</version>
+      </dependency>
+      <dependency>
+        <groupId>net.java.dev.mistral</groupId>
+        <artifactId>Operations</artifactId>
+        <version>0.9.5</version>
+      </dependency>
+      <dependency>
+        <groupId>net.java.dev.mistral</groupId>
+        <artifactId>metadata-extractor</artifactId>
+        <version>2.3.1</version>
+      </dependency>
+      <!-- JAI -->
+      <dependency>
+        <groupId>javax.media</groupId>
+        <artifactId>jai_core</artifactId>
+        <version>1.1.2_01</version>
+      </dependency>
+      <dependency>
+        <groupId>com.sun.media</groupId>
+        <artifactId>jai_codec</artifactId>
+        <version>1.1.2_01</version>
+      </dependency>
+      <dependency>
+        <groupId>com.sun.media</groupId>
+        <artifactId>mlib_jai</artifactId>
+        <version>1.1.2_01</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <developers>
+    <developer>
+      <name>Laurent Doguin</name>
+      <email>ldoguin@nuxeo.com</email>
+      <organization>Nuxeo SAS</organization>
+    </developer>
+    <developer>
+      <name>Bogdan Stefanescu</name>
+      <email>bs@nuxeo.com</email>
+      <organization>Nuxeo SAS</organization>
+    </developer>
+    <developer>
+      <name>Max Stepanov</name>
+      <email>mstepanov@nuxeo.com</email>
+      <organization>Nuxeo SAS</organization>
+    </developer>
+  </developers>
+
+<scm>
+  <connection>scm:hg:http://hg.nuxeo.org/addons/nuxeo-platform-imaging</connection>
+  <developerConnection>scm:hg:https://hg.nuxeo.org/addons/nuxeo-platform-imaging</developerConnection>
+  <url>http://trac.nuxeo.org/nuxeo/browser/nuxeo_platform-imaging</url>
+</scm>
+
+</project>

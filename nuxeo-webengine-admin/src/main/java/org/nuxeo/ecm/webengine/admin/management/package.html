@@ -1,0 +1,61 @@
+<body>
+<p>This module provides a REST API for runtime managament.</p>
+
+<p>The module defines an ATOMPUB service that expose collections to introspect and
+manage Nuxeo bundles, components, contributions and files resources deployed on
+a running server.</p>
+
+<p>Clients can introspect the service document to detect the service collections
+in order to navigate, to get and post data.</p>
+
+<p>Feeds that expose information like available extension points or contributions
+in a component, or available components in a bundle, can be retrieved by clients
+by reading custom atom link tags on the feed entries.</p>
+
+<p>Apart the REST API there is also a HTML interface to browse runtime components.</p>
+
+<p>The REST API is useful for client tools like Eclipse IDE plugins to browse
+Nuxeo components, to hot deploy new contributions or other resources.</p>
+
+<p>The HTML interface is useful to browse bundles, components, contributions and
+extension points deployed on the server.</p>
+
+<p>For now only resources (configuration files, schemas) can be posted using the
+API. In future it will be possible to deploy new extensions and to reload
+components or bundles too.</p>
+
+<p>The application is designed as a pure JAX-RS application (without using
+WebEngine object model) but make use of freemarker templates to build response
+to clients.</p>
+
+<p>In the future this application may be moved outside nuxeo-webengine-admin in a
+dedicated project.</p>
+
+<p>The ATOMPUB service document is available under the /server path of the HTTP
+server. Ex: at http://localhost:8080/server</p>
+
+<p>The HTML interface is available at /server/html.</p>
+
+<p>Here are all the paths exposed:</p>
+
+<ul>
+<li>http://host:port/server - the ATOMPUB service document</li>
+<li>http://host:port/server/html - the entry point of the Web interface (not REST)</li>
+<li>http://host:port/server/bundles - the bundles collection</li>
+<li>http://host:port/server/components - the components collection</li>
+<li>http://host:port/server/resources - the resources collection</li>
+<li>http://host:port/server/bundles/{symbolicName} - the bundle entry</li>
+<li>http://host:port/server/bundles/{componentName} - the component entry</li>
+<li>http://host:port/server/bundles/{componentName}/xpoints - the xpoints provided by a bundle</li>
+<li>http://host:port/server/bundles/{componentName}/xpoints - the contributions provided by a bundle</li>
+<li>http://host:port/server/bundles/{componentName}/{xpoint} - the feed of all extensions contributed to the {xpoint} extension point</li>
+<li>http://host:port/server/system_properties - the system properties</li>
+<li>http://host:port/server/runtime_properties - the runtime properties</li>
+<li>POST http://host:port/server/system_properties - define a new system property</li>
+<li>POST http://host:port/server/runtime_properties - define a new runtime property</li>
+<li>POST http://host:port/server/resources - post a new resource</li>
+<li>POST http://host:port/server/bundles - deploy a new bundle</li>
+<li>POST http://host:port/server/components - deploy a new component that contain extensions</li>
+<li>PUT can be used to reload bundles and components</li>
+</ul>
+</body>

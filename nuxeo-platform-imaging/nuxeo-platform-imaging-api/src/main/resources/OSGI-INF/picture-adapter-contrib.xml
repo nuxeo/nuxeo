@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.picture.MultiviewPicture">
+  <documentation>
+    N/A
+  </documentation>
+
+  <!-- MultiviewPicture Document Adapter -->
+  <extension target="org.nuxeo.ecm.core.api.DocumentAdapterService" point="adapters">
+       <adapter
+           class="org.nuxeo.ecm.platform.picture.api.adapters.MultiviewPicture"
+           factory="org.nuxeo.ecm.platform.picture.api.adapters.MultiviewPictureAdapterFactory"/>
+
+          <adapter class="org.nuxeo.ecm.platform.picture.api.adapters.PictureResourceAdapter"
+      factory="org.nuxeo.ecm.platform.picture.api.adapters.PictureResourceAdapterFactory" />
+  </extension>
+
+</component>

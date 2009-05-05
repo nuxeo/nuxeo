@@ -62,6 +62,10 @@
         controlledBy="editor perspectives,perspective selector"
         visibleInPerspectives="edit canvas,edit padding" />
 
+      <div id="nxthemesEditorInfo">
+        JSF
+      </div>
+      
       <div id="nxthemesWaitAnimation" style="display:none">
         <img src="/nuxeo/site/skin/nxthemes-editor/img/loader.gif" alt="" width="16" height="16" /> loading ...
       </div>

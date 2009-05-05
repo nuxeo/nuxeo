@@ -15,6 +15,8 @@
 
 <h1 class="nxthemesEditor">Element editor</h1>
 
+<a onclick="NXThemesEditor.editCanvas()" class="nxthemesBack">Back to canvas</a>
+
 <#if selected_element>
 
 <@nxthemes_tabs identifier="element editor tabs" styleClass="nxthemesEditTabs">
@@ -58,7 +60,10 @@
   visibleInPerspectives="set description" />
 
 <#else>
-    <p class="nxthemesEditor">No element is selected.</p>
+  <p class="nxthemesEditor"><em>No element is selected.</em></p>
+  <p>
+    <button onclick="NXThemesEditor.switchToCanvas()">Switch back to the editor</button>
+  </p>
 </#if>
 
 </div>

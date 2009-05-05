@@ -1,0 +1,191 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.nuxeo.ecm.platform</groupId>
+    <artifactId>nuxeo-platform-imaging-parent</artifactId>
+    <version>5.2-SNAPSHOT</version>
+  </parent>
+  
+  <groupId>org.nuxeo.ecm.platform</groupId>
+  <artifactId>nuxeo-platform-imaging-core</artifactId>
+  <name>Nuxeo Platform Imaging Core</name>
+  <description>
+    Nuxeo Platform Imaging provides picture management to Nuxeo Web Platform
+    and RCP. It offers minor picture transformation like rotation or resizing.
+    Core module wich provides services for common picture processing operation,
+    metadata extraction and mime-type detection. With this addon one can
+    choose the picture processing library to use through the library selector
+    service. Right now available library are Mistral and ImageJ.
+  </description>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-installed</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>imagej</groupId>
+                  <artifactId>imagej</artifactId>
+                  <destFileName>ij.jar</destFileName>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>net.java.dev.mistral</groupId>
+                  <artifactId>EditableImage</artifactId>
+                  <destFileName>EditableImage.jar</destFileName>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>net.java.dev.mistral</groupId>
+                  <artifactId>Operations</artifactId>
+                  <destFileName>Operations.jar</destFileName>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>net.java.dev.mistral</groupId>
+                  <artifactId>metadata-extractor</artifactId>
+                  <destFileName>metadata-extractor.jar</destFileName>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>net.java.dev.mistral</groupId>
+                  <artifactId>JAI-Adapter</artifactId>
+                  <destFileName>JAI-Adapter.jar</destFileName>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>javax.media</groupId>
+                  <artifactId>jai_core</artifactId>
+                  <destFileName>jai_core.jar</destFileName>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>com.sun.media</groupId>
+                  <artifactId>jai_codec</artifactId>
+                  <destFileName>jai_codec.jar</destFileName>
+                </artifactItem>
+              </artifactItems>
+              <outputDirectory>
+                ${project.build.outputDirectory}/lib
+              </outputDirectory>
+            </configuration>
+          </execution>
+          <execution>
+            <id>unpack-installed</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>com.sun.media</groupId>
+                  <artifactId>mlib_jai</artifactId>
+                  <version>1.1.2_01</version>
+                </artifactItem>
+              </artifactItems>
+              <outputDirectory>
+                ${project.build.outputDirectory}/lib
+              </outputDirectory>
+              <overWrite>true</overWrite>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>process-classes</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <tasks>
+                <move todir="${project.build.outputDirectory}/os/win32/x86">
+                  <fileset dir="${project.build.outputDirectory}/lib">
+                    <include name="**/*.dll" />
+                    <include name="**/*.so" />
+                  </fileset>
+                </move>
+              </tasks>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-convert</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-convert-api</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-jcr-connector-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-facade</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-imaging-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <!-- ImageJ -->
+    <dependency>
+      <groupId>imagej</groupId>
+      <artifactId>imagej</artifactId>
+    </dependency>
+    <!-- Mistral -->
+    <dependency>
+      <groupId>net.java.dev.mistral</groupId>
+      <artifactId>EditableImage</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>net.java.dev.mistral</groupId>
+      <artifactId>JAI-Adapter</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>net.java.dev.mistral</groupId>
+      <artifactId>Operations</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>net.java.dev.mistral</groupId>
+      <artifactId>metadata-extractor</artifactId>
+    </dependency>
+    <!-- JAI -->
+    <dependency>
+      <groupId>javax.media</groupId>
+      <artifactId>jai_core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.media</groupId>
+      <artifactId>jai_codec</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.media</groupId>
+      <artifactId>mlib_jai</artifactId>
+    </dependency>
+  </dependencies>
+</project>

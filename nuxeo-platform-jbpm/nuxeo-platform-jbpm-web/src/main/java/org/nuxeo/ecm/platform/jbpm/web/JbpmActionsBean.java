@@ -41,6 +41,7 @@ import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.core.Contexts;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
 import org.jbpm.JbpmContext;
@@ -53,6 +54,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -523,7 +525,7 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
             Events.instance().raiseEvent(JbpmEventNames.WORKFLOW_TASK_COMPLETED);
             resetCurrentData();
         }
-        return null;
+        return returnToCurrentDocOrHome();
     }
 
     public String rejectTask(final TaskInstance taskInstance, String transition)
@@ -561,7 +563,20 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
             Events.instance().raiseEvent(JbpmEventNames.WORKFLOW_TASK_REJECTED);
             resetCurrentData();
         }
-        return null;
+        return returnToCurrentDocOrHome();
+    }
+
+    private String returnToCurrentDocOrHome() throws ClientException {
+        DocumentModel currentDocument;
+        try {
+            // re-fetch the document, it might have change during the process
+            currentDocument = navigationContext.getCurrentDocument();
+            currentDocument = documentManager.getDocument(currentDocument.getRef());
+            return navigationContext.navigateToDocument(currentDocument);
+        } catch (DocumentSecurityException e) {
+            navigationContext.setCurrentDocument(null);
+            return navigationContext.goHome();
+        }
     }
 
     private Map<String, Serializable> getTransientVariables() {

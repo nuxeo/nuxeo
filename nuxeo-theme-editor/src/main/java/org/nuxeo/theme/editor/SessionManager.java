@@ -34,6 +34,8 @@ public class SessionManager extends AbstractComponent {
     private static final String PRESET_GROUP = "org.nuxeo.theme.editor.preset_group";
     private static final String CLIPBOARD_ELEMENT_ID = "org.nuxeo.theme.editor.clipboard_element";
     private static final String CLIPBOARD_PRESET_ID = "org.nuxeo.theme.editor.clipboard_preset";
+    private static final String SELECTED_FRAGMENT_TYPE = "org.nuxeo.theme.editor.fragment_type";
+    private static final String SELECTED_FRAGMENT_VIEW = "org.nuxeo.theme.editor.fragment_view";
 
     private static UserSession getUserSession() {
         return WebEngine.getActiveContext().getUserSession();
@@ -110,7 +112,7 @@ public class SessionManager extends AbstractComponent {
     public static synchronized void setPresetManagerMode(String mode) {
         getUserSession().put(PRESET_MANAGER_MODE, mode);
     }
-
+    
     public static synchronized String getPresetGroup() {
         return (String) getUserSession().get(PRESET_GROUP);
     }
@@ -133,6 +135,22 @@ public class SessionManager extends AbstractComponent {
 
     public static synchronized String getClipboardPresetId() {
         return (String) getUserSession().get(CLIPBOARD_PRESET_ID);
+    }
+    
+    public static synchronized void setFragmentType(String type) {
+        getUserSession().put(SELECTED_FRAGMENT_TYPE, type);
+    }
+
+    public static synchronized String getFragmentType() {
+        return (String) getUserSession().get(SELECTED_FRAGMENT_TYPE);
+    }
+    
+    public static synchronized void setFragmentView(String view) {
+        getUserSession().put(SELECTED_FRAGMENT_VIEW, view);
+    }
+
+    public static synchronized String getFragmentView() {
+        return (String) getUserSession().get(SELECTED_FRAGMENT_VIEW);
     }
 
 }

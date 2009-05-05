@@ -1,0 +1,21 @@
+<div class=""searchResultpageBlock"">
+  <#if (!nxthemesInfo.model.items.empty)>
+    <h4>${Context.getMessage("title.search.results")}</h4>
+  </#if>      
+  <#list nxthemesInfo.model.items as item>
+    <div class="searchResultBlock">
+      <div class="searchName">
+        <a href="${item.path}"> ${item.name}</a>
+      </div>    
+      <div class="searchDetail">
+        <p><span>${item.author}</span>&nbsp;|&nbsp;<span>${item.description}</span></p>
+      </div>      
+      
+      <div class="searchResultDates">
+        <span>${Context.getMessage("label.webpage.creation.date")}: ${item.created}</span>
+        <span class="modificationDate">${Context.getMessage("label.webpage.modification.date")}: ${item.modified}</span>
+      </div>      
+
+    </div>
+  </#list>
+</div>

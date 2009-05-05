@@ -27,6 +27,7 @@ import java.util.Map;
 import javax.transaction.xa.XAResource;
 
 import org.nuxeo.ecm.core.api.DocumentException;
+import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.model.Session;
@@ -127,6 +128,17 @@ public class FakeSession implements Session {
     }
 
     public void save() throws DocumentException {
+    }
+
+    public Document importDocument(String uuid, Document parent, String name,
+            String typeName, Map<String, Serializable> props)
+            throws DocumentException {
+        throw new UnsupportedOperationException();
+    }
+
+    public Document getVersion(String versionableId, VersionModel versionModel)
+            throws DocumentException {
+        throw new UnsupportedOperationException();
     }
 
 }

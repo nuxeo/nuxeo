@@ -6,6 +6,8 @@
 
 <h1 class="nxthemesEditor">Themes</h1>
 
+<a onclick="NXThemesEditor.editCanvas()" class="nxthemesBack">Back to canvas</a>
+
 <table cellpadding="0" cellspacing="0" style="width: 100%"><tr>
 <td style="vertical-align: top; width: 200px; padding-right: 5px;">
 

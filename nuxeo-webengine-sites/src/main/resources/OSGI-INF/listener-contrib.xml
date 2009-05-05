@@ -3,7 +3,7 @@
 
   <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
     <listener name="siteCreationListener" async="false" postCommit="false"
-      class="org.nuxeo.webengine.listeners.SiteActionListener" priority="140"/>
+      class="org.nuxeo.webengine.sites.listeners.SiteActionListener" priority="140"/>
     <documentation>
       site creation listener: set URL with name value
       @author Rux

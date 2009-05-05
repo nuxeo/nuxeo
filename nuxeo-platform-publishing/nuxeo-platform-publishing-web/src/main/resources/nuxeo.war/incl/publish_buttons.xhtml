@@ -7,12 +7,6 @@
   xmlns:c="http://java.sun.com/jstl/core"
   class="clipboard">
 
-<script type="text/javascript">
-function confirmDeleteDocuments() {
-    return confirm("#{messages['label.documents.confirmDeleteDocuments']}");
-}
-</script>
-
   <f:subview rendered="#{nxd:hasPermission(currentDocument, 'Write')}">
     <table class="dataInput" border="0">
       <tr>

@@ -1,0 +1,24 @@
+<rdf:RDF
+    xmlns:dcterms="http://purl.org/dc/terms/"
+    xmlns:uid="http://www.ecm.org/uid/"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:j.0="http://www.w3c.org/1999/02/22-rdf-syntax-nx#"
+    xmlns:j.1="http://rdf.nuxeo.org/nxdoc#"
+    xmlns:metadata="http://www.ecm.org/metadata/" > 
+  <rdf:Description rdf:about="http://localhost/nxdoc/demo/ac50902a-d3d5-4e2b-a1e3-38c6f38b2b38">
+    <j.1:proxies rdf:nodeID="A0"/>
+    <j.1:versions rdf:nodeID="A1"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A0">
+    <j.0:_3 rdf:resource="http://localhost/nxdoc/demo/203ccf65-517d-4e10-99bd-80d892a8ae41"/>
+    <j.0:_2 rdf:resource="http://localhost/nxdoc/demo/2df10ae5-f40c-4240-b9c7-57d912050165"/>
+    <j.0:_1 rdf:resource="http://localhost/nxdoc/demo/98b60fbd-1fb1-4270-9b17-6e36587f74ff"/>
+    <j.0:type rdf:resource="http://www.w3c.org/1999/02/22-rdf-syntax-nx#Bag"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A1">
+    <j.0:_3 rdf:resource="http://localhost/nxdoc/demo/5fe3cc61-617e-41af-964b-3851bd1aac7a"/>
+    <j.0:_2 rdf:resource="http://localhost/nxdoc/demo/69c285e4-eed5-4c4b-a138-553588f3a59e"/>
+    <j.0:_1 rdf:resource="http://localhost/nxdoc/demo/ffc11431-0353-46b5-b92d-550e4d62cef9"/>
+    <j.0:type rdf:resource="http://www.w3c.org/1999/02/22-rdf-syntax-nx#Bag"/>
+  </rdf:Description>
+</rdf:RDF>

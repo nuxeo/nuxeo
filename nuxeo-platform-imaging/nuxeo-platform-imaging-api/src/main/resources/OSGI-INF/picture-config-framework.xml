@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.picture.config.PictureConfigurationService">
+  <implementation
+      class="org.nuxeo.ecm.platform.picture.config.PictureConfigurationService"/>
+
+  <documentation>
+  </documentation>
+
+  <extension-point name="PictureAdapter">
+    <documentation>
+      @author Thierry Delprat (td@nuxeo.com)
+      This extension point lets you contribute Resource Adapters.
+      <code>
+        <picAdapter name="MyAdapter" enabled="true/false">
+          <typeName>TypeName you want to adapt</typeName>
+          <class>Implementation Class, must implement PictureResourceAdapter interface</class>
+        </picAdapter>
+      </code>
+    </documentation>
+
+    <object
+        class="org.nuxeo.ecm.platform.picture.config.PictureAdapterDescriptor"/>
+  </extension-point>
+
+</component>

@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.userworkspace.facade">
+
+    <documentation>
+      Defines the user workspace manager service binding
+    </documentation>
+
+    <extension target="org.nuxeo.runtime.api.ServiceManagement"
+      point="services">
+
+        <service class="org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService" group="platform">
+            <locator>%UserWorkspaceManagerBean</locator>
+        </service>
+
+    </extension>
+
+</component>
