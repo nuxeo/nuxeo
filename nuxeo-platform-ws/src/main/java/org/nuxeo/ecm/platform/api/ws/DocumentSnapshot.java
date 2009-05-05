@@ -37,7 +37,7 @@ public class DocumentSnapshot implements Serializable {
 
     private String pathAsString;
 
-    private ACE[] acl ;
+    private WsACE[] acl ;
 
 
     public DocumentSnapshot()
@@ -45,7 +45,7 @@ public class DocumentSnapshot implements Serializable {
 
     }
 
-    public DocumentSnapshot(DocumentProperty[] noBlobProperties,  DocumentBlob[] blobProperties, String pathAsString, ACE[] acl)
+    public DocumentSnapshot(DocumentProperty[] noBlobProperties,  DocumentBlob[] blobProperties, String pathAsString, WsACE[] acl)
     {
      this.acl=acl;
      this.noBlobProperties=noBlobProperties;
@@ -89,13 +89,13 @@ public class DocumentSnapshot implements Serializable {
 
 
 
-    public ACE[] getAcl() {
+    public WsACE[] getAcl() {
         return acl;
     }
 
 
 
-    public void setAcl(ACE[] acl) {
+    public void setAcl(WsACE[] acl) {
         this.acl = acl;
     }
 

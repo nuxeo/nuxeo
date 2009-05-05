@@ -59,6 +59,7 @@ import org.nuxeo.ecm.platform.api.ws.DocumentDescriptor;
 import org.nuxeo.ecm.platform.api.ws.DocumentProperty;
 import org.nuxeo.ecm.platform.api.ws.DocumentSnapshot;
 import org.nuxeo.ecm.platform.api.ws.NuxeoRemoting;
+import org.nuxeo.ecm.platform.api.ws.WsACE;
 import org.nuxeo.ecm.platform.api.ws.session.WSRemotingSession;
 import org.nuxeo.ecm.platform.mimetype.MimetypeDetectionException;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
@@ -90,12 +91,12 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
     }
 
     @WebMethod
-    public ACE[] getDocumentACL(@WebParam(name = "sessionId") String sid, @WebParam(name = "uuid") String uuid) throws ClientException {
+    public WsACE[] getDocumentACL(@WebParam(name = "sessionId") String sid, @WebParam(name = "uuid") String uuid) throws ClientException {
         WSRemotingSession rs = initSession(sid);
         ACP acp = rs.getDocumentManager().getACP(new IdRef(uuid));
         if (acp != null) {
             ACL acl = acp.getMergedACLs("MergedACL");
-            return acl.toArray(new ACE[acl.size()]);
+            return WsACE.wrap(acl.toArray(new ACE[acl.size()]));
         } else {
             return null;
         }
@@ -123,12 +124,12 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
             resACP = acl.toArray(new ACE[acl.size()]);
         }
         DocumentSnapshot ds = new DocumentSnapshot(props, blobs,
-                doc.getPathAsString(), resACP);
+                doc.getPathAsString(), WsACE.wrap(resACP));
         return ds;
     }
 
     @WebMethod
-    public ACE[] getDocumentLocalACL(@WebParam(name = "sessionId") String sid, @WebParam(name = "uuid") String uuid)
+    public WsACE[] getDocumentLocalACL(@WebParam(name = "sessionId") String sid, @WebParam(name = "uuid") String uuid)
             throws ClientException {
         WSRemotingSession rs = initSession(sid);
         ACP acp = rs.getDocumentManager().getACP(new IdRef(uuid));
@@ -139,7 +140,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
                     mergedAcl.addAll(acl);
                 }
             }
-            return mergedAcl.toArray(new ACE[mergedAcl.size()]);
+            return WsACE.wrap(mergedAcl.toArray(new ACE[mergedAcl.size()]));
         } else {
             return null;
         }
