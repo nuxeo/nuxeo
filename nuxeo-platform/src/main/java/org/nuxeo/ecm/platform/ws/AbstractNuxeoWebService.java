@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.ws;
 
 import javax.annotation.security.PermitAll;
 import javax.jws.WebMethod;
+import javax.jws.WebParam;
 import javax.security.auth.login.LoginContext;
 
 import org.nuxeo.ecm.core.api.ClientException;
@@ -76,7 +77,7 @@ public abstract class AbstractNuxeoWebService implements BaseNuxeoWebService {
 
     @PermitAll
     @WebMethod
-    public String connectOnRepository(String username, String password, String repositoryName) throws ClientException
+    public String connectOnRepository(@WebParam(name = "userName") String username, @WebParam(name = "password") String password, @WebParam(name = "repositoryName") String repositoryName) throws ClientException
     {
         String sid = null;
         try {
@@ -102,7 +103,7 @@ public abstract class AbstractNuxeoWebService implements BaseNuxeoWebService {
 
     @PermitAll
     @WebMethod
-    public String connect(String username, String password)
+    public String connect(@WebParam(name = "userName") String username, @WebParam(name = "password")String password)
             throws ClientException {
         return connectOnRepository(username, password, null);
     }
@@ -144,7 +145,7 @@ public abstract class AbstractNuxeoWebService implements BaseNuxeoWebService {
     }
 
     @WebMethod
-    public void disconnect(String sid) throws ClientException {
+    public void disconnect(@WebParam(name = "sessionId") String sid) throws ClientException {
         WSRemotingSession rs = initSession(sid);
         CoreInstance.getInstance().close(rs.getDocumentManager());
     }
