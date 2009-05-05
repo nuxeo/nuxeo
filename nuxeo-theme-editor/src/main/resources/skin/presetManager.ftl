@@ -9,10 +9,10 @@
 
 <div class="nxthemesButtonSelector" style="float: right; padding: 11px 5px 12px 0;">
   <#if preset_manager_mode == 'by theme'>            
-      <a href="javascript:void(0)" onclick="NXThemesPresetManager.setEditMode('palettes')">Palettes</a>
+      <a href="javascript:void(0)" onclick="NXThemesPresetManager.setEditMode('palettes')">By palette</a>
       <a href="javascript:void(0)" class="selected">By theme</a>
   <#else>
-      <a href="javascript:void(0)" class="selected">Palettes</a>
+      <a href="javascript:void(0)" class="selected">By palette</a>
       <a href="javascript:void(0)" onclick="NXThemesPresetManager.setEditMode('by theme')">By theme</a>
   </#if>
 </div>

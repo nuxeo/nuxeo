@@ -8,12 +8,12 @@
 <div id="nxthemesStyleManager">
 
 <div class="nxthemesButtonSelector" style="float: right; padding: 11px 5px 12px 0;">
-  <#if style_manager_mode == 'named styles'>            
-      <a href="javascript:void(0)" onclick="NXThemesStyleManager.setEditMode('unused styles')">Unused styles</a>
-      <a href="javascript:void(0)" class="selected">Named styles</a>
+  <#if style_manager_mode == 'unused styles'>            
+     <a href="javascript:void(0)" class="selected">Unused styles</a>
+     <a href="javascript:void(0)" onclick="NXThemesStyleManager.setEditMode('named styles')">Named styles</a>
   <#else>
-      <a href="javascript:void(0)" class="selected">Unused styles</a>
-      <a href="javascript:void(0)" onclick="NXThemesStyleManager.setEditMode('named styles')">Named styles</a>
+     <a href="javascript:void(0)" onclick="NXThemesStyleManager.setEditMode('unused styles')">Unused styles</a>
+     <a href="javascript:void(0)" class="selected">Named styles</a>
   </#if>
 </div>
 

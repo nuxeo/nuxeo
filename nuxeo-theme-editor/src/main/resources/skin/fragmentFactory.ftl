@@ -41,6 +41,7 @@
   
   <td style="vertical-align: top">
     <#if selected_fragment_type & selected_fragment_view>
+    <div>${fragment.getDescription()}</div>
     <div>
       <button onclick="NXThemesEditor.addFragment('${selected_fragment_type}/${selected_fragment_view}', '${selected_element_id}'); return false;">ADD</button>
     </div>
@@ -52,10 +53,7 @@
 <#else>
 
 <p class="nxthemesEditor">
-  <em>No container is selected.</em>
-</p>
-<p>
-  <button onclick="NXThemesEditor.switchToCanvas()">Switch back to the editor</button>
+  <em>Cannot find the container to insert a fragment into.</em>
 </p>
 </#if>
 

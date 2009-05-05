@@ -61,9 +61,6 @@
 
 <#else>
   <p class="nxthemesEditor"><em>No element is selected.</em></p>
-  <p>
-    <button onclick="NXThemesEditor.switchToCanvas()">Switch back to the editor</button>
-  </p>
 </#if>
 
 </div>
