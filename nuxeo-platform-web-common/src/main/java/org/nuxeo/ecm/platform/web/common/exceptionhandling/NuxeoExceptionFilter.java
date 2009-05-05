@@ -58,8 +58,13 @@ public class NuxeoExceptionFilter implements Filter {
         try {
             chain.doFilter(request, response);
         } catch (Throwable t) {
-            handleException((HttpServletRequest) request,
-                    (HttpServletResponse) response, t);
+            try {
+                handleException((HttpServletRequest) request,
+                        (HttpServletResponse) response, t);
+            } catch (Throwable throwable) {
+                // error while handling the exception, we give up
+                throw new ServletException(throwable);
+            }
         }
     }
 
