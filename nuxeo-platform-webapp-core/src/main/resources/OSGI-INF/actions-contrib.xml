@@ -130,8 +130,13 @@
     </action>
 
     <!-- tabs are handled by a specific template so links should be paths to
-      template to include in the tab content -->
-
+      template to include in the tab content
+-->
+    <action id="TAB_MANAGE" link="/incl/tabs/document_manage.xhtml" enabled="true" order="240" label="action.view.manage" icon="/icons/file.gif">
+      <category>VIEW_ACTION_LIST</category>
+      <filter-id>manage</filter-id>
+    </action>
+    
     <action id="TAB_VIEW" link="/incl/tabs/document_view.xhtml" enabled="true"
       order="0" label="action.view.summary" icon="/icons/file.gif">
       <category>VIEW_ACTION_LIST</category>
@@ -154,14 +159,17 @@
     </action>
 
     <action id="TAB_TRASH_CONTENT"
-      link="/incl/tabs/document_trash_content.xhtml" order="100" enabled="true"
+      link="/incl/tabs/document_trash_content.xhtml" order="200" enabled="true"
       label="action.view.trash.content" icon="/icons/file.gif">
-      <category>VIEW_ACTION_LIST</category>
+      <category>TAB_MANAGE_sub_tab</category>
       <filter id="viewTrash">
         <rule grant="true">
           <permission>Manage everything</permission>
           <facet>Folderish</facet>
           <condition>#{deleteActions.trashManagementEnabled}</condition>
+        </rule>
+        <rule grant="false">
+          <filter-id>inSection</filter-id>
         </rule>
       </filter>
     </action>
@@ -172,40 +180,25 @@
       <filter-id>not_folder</filter-id>
     </action>
 
-    <action id="TAB_EDIT" link="/incl/tabs/document_edit.xhtml" enabled="true"
-      order="20" label="action.view.edit" icon="/icons/file.gif">
+    <action id="TAB_EDIT" link="/incl/tabs/edit_document_and_metadata.xhtml" enabled="true"
+      order="20" label="action.view.modification" icon="/icons/file.gif">
       <category>VIEW_ACTION_LIST</category>
       <filter-id>edit</filter-id>
       <filter-id>mutable_document</filter-id>
     </action>
 
-    <action id="TAB_WORKSPACE_EDIT" link="/incl/tabs/document_edit.xhtml"
-      enabled="true" order="22" label="action.view.edit"
+    <action id="TAB_WORKSPACE_EDIT" link="/incl/tabs/edit_document_and_metadata.xhtml"
+      enabled="true" order="22" label="action.view.modification"
       icon="/icons/file.gif">
       <category>VIEW_ACTION_LIST</category>
       <filter-id>workspace_edit</filter-id>
       <filter-id>mutable_document</filter-id>
     </action>
 
-    <action id="TAB_METADATA_VIEW"
-      link="/incl/tabs/document_metadata_view.xhtml" enabled="true" order="30"
-      label="action.view.metadata" icon="/icons/file.gif">
-      <category>VIEW_ACTION_LIST</category>
-      <filter-id>cannotEdit</filter-id>
-    </action>
-
-    <action id="TAB_METADATA_EDIT" order="40"
-      link="/incl/tabs/document_metadata_edit.xhtml" enabled="true"
-      label="action.view.metadata" icon="/icons/file.gif">
-      <category>VIEW_ACTION_LIST</category>
-      <filter-id>metadata_edit</filter-id>
-      <filter-id>mutable_document</filter-id>
-    </action>
-
     <action id="TAB_FILES_VIEW" link="/incl/tabs/document_files_view.xhtml"
-      order="42" label="action.view.files">
+      order="42" label="action.view.files" enabled="false">
       <category>VIEW_ACTION_LIST</category>
-      <filter-id>cannotEdit</filter-id>
+      <filter-id>edit</filter-id>
       <filter-id>hasAttachedFiles</filter-id>
     </action>
 
@@ -219,7 +212,7 @@
 
     <action id="TAB_RIGHTS" link="/incl/tabs/document_rights.xhtml" order="50"
       enabled="true" label="action.view.rights" icon="/icons/file.gif">
-      <category>VIEW_ACTION_LIST</category>
+      <category>TAB_MANAGE_sub_tab</category>
       <filter-id>rights</filter-id>
     </action>
 
@@ -232,15 +225,17 @@
     
     <action id="TAB_ADMIN_PUBLICATION_TREES" link="/incl/tabs/admin_publication_trees.xhtml" order="110"
       enabled="true" label="action.admin.publication.tree" icon="/icons/file.gif">
-      <category>VIEW_ACTION_LIST</category>
+      <category>TAB_MANAGE_sub_tab</category>
       <filter-id>admin_publication_trees_filter</filter-id>
     </action>
 
     <action id="TAB_THEME" link="/incl/tabs/document_theme.xhtml" enabled="true"
       order="60" label="action.view.theme" icon="/icons/file.gif">
-      <category>VIEW_ACTION_LIST</category>
+      <category>TAB_MANAGE_sub_tab</category>
       <filter-id>canChangeTheme</filter-id>
     </action>
+    
+    <!-- Manage the sub tabs -->
 
     <!--  Actions on WorkLists  -->
 
@@ -749,6 +744,12 @@
         <schema>publishing</schema>
       </rule>
     </filter>
+    
+    <filter id="manage">
+      <rule grant="true">
+        <permission>Manage everything</permission>
+      </rule>
+    </filter>
 
     <filter id="not_review_documents">
       <rule grant="false">
@@ -788,6 +789,12 @@
 
     <filter id="not_folder">
       <rule grant="false">
+        <facet>Folderish</facet>
+      </rule>
+    </filter>
+    
+    <filter id="folder">
+      <rule grant="true">
         <facet>Folderish</facet>
       </rule>
     </filter>

@@ -606,6 +606,18 @@
         <border>none</border>
       </selector>
       <!-- end of rich faces tree -->
+      <!-- Rich Faces fileUpload-->
+      <selector path=".rich-fileupload-list-decor">
+        <margin>10px 0px</margin>
+      </selector>
+      <selector path=".rich-fileupload-button">
+        <padding>2px</padding>
+        <margin-right>5px</margin-right>
+      </selector>
+      <selector path=".rich-fileupload-button-content">
+        <padding>2px 6px 2px 19px</padding>
+      </selector>
+      <!-- End of Rich Faces fileUpload-->
       <selector path=".rightsAddSelect">
         <border>1px normal #666</border>
         <margin-top>0px</margin-top>
@@ -1097,6 +1109,67 @@
       <selector path="table.dataInput td.fieldColumn label">
         <vertical-align>top</vertical-align>
       </selector>
+        <!-- Style for Resume Tab --> 
+      <selector path="h3.resumeTitle">
+        <color>#4a4a4a</color>
+        <font preset="title3 (Galaxy fonts)"/>
+        <margin>0px 0px 10px 0px</margin>
+        <padding>25px 0px 3px 0px</padding>
+        <border-bottom>1px solid #a9a9a9</border-bottom>
+      </selector>
+      <selector path=".description_block">
+        <float>left</float>
+        <width>65%</width>
+      </selector>
+      <selector path=".description_block h3.resumeTitle">
+        <padding-top>15px</padding-top>
+      </selector>
+      <selector path=".resum table.floatingLeftTable">
+        <float>left</float>
+        <margin-right>100px</margin-right>
+      </selector>
+      <selector path=".labelColumnLeftAlign">
+        <padding-right>30px</padding-right>
+      </selector>
+      <selector path=".boldLabel">
+        <font-weight>bold</font-weight>
+      </selector>
+      <selector path=".rank_block, .publication_block, .contributor_block, .attachments">
+        <margin-top>15px</margin-top>
+      </selector>
+      <selector path=".content_block">
+        <float>left</float>
+        <width>45%</width>
+        <padding>0px 30px 0px 0px</padding>
+      </selector>
+      <selector path=".content_block img">
+        <padding>0px 5px</padding>
+      </selector>
+      <selector path=".relation_block">
+        <float>left</float>
+        <width>50%</width>
+      </selector>
+      <selector path=".lockFile_block">
+        <float>right</float>
+        <background-color>white</background-color>
+        <border>1px solid black</border>
+        <margin>15px 0 10px 0px</margin>
+        <padding>10px</padding>
+        <width>30%</width>
+      </selector>
+      <selector path=".resum_locked">
+        <font-weight>bold</font-weight>
+        <color>#f56200</color>
+      </selector>
+      <selector path=".lockDetail, .DetailList, .contributors_table">
+        <padding-top>5px</padding-top>
+      </selector>
+      <selector path=".comments_block .commentBlock">
+        <border>none</border>
+      </selector>
+      <selector path=".comments_block .commentQuote">
+        <margin>5px 0 5px 24px</margin>
+      </selector>
     </style>
     <style name="common style 2">
       <selector path="h1,h2,h3,h4">
@@ -1420,7 +1493,7 @@
     <style
       element="page[1]/section[3]/cell[1]/fragment[1]|page[3]/section[4]/cell[1]/fragment[1]" inherit="default buttons">
       <selector path="form, p" view="Nuxeo EP footer (Galaxy Theme)">
-        <margin>0</margin>
+        <margin>5px 0px 0px 0px</margin>
         <padding>0</padding>
       </selector>
       <selector path="" view="Nuxeo EP footer (Galaxy Theme)">
