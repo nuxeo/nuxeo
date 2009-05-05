@@ -159,7 +159,7 @@ public class BundleImpl implements Bundle {
     }
 
     public String getSymbolicName() {
-        return headers.get(Constants.BUNDLE_SYMBOLICNAME);
+        return symbolicName;
     }
 
     public boolean hasPermission(Object permission) {
