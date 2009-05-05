@@ -51,30 +51,20 @@
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>//input[@value="Lock"]</td>
+	<td>link=Lock</td>
 	<td></td>
 </tr>
 <tr>
 	<td>verifyTextPresent</td>
-	<td>Locker</td>
+	<td>This document is locked</td>
 	<td></td>
 </tr>
-<tr>
-	<td>verifyTextPresent</td>
-	<td>Lock time</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyValue</td>
-	<td>//div[@id="lock_unlock_button"]//input</td>
-	<td>Unlock</td>
-</tr>
-<!--Vérification que les autres actions sont toujours dispo-->
 <tr>
 	<td>verifyElementPresent</td>
-	<td>//div[@id="lock_unlock_button"]//input</td>
+	<td>link=Unlock</td>
 	<td></td>
 </tr>
+<!--Vérification que les autres actions sont toujours dispo-->
 <tr>
 	<td>clickAndWait</td>
 	<td>link=Workflow</td>
@@ -148,29 +138,24 @@
 	<td></td>
 </tr>
 <tr>
-	<td>verifyValue</td>
-	<td>//div[@id="lock_unlock_button"]//input</td>
-	<td>Unlock</td>
+        <td>verifyElementPresent</td>
+        <td>link=Unlock</td>
+        <td></td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>//input[@value="Unlock"]</td>
+	<td>link=Unlock</td>
 	<td></td>
 </tr>
 <tr>
 	<td>verifyTextNotPresent</td>
-	<td>Locker</td>
+	<td>This document is locked</td>
 	<td></td>
 </tr>
 <tr>
-	<td>verifyTextNotPresent</td>
-	<td>Lock time</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyValue</td>
-	<td>//div[@id="lock_unlock_button"]//input</td>
-	<td>Lock</td>
+        <td>verifyElementPresent</td>
+        <td>link=Lock</td>
+        <td></td>
 </tr>
 <!--Vérrification que les autres actions sont toujours dispo-->
 <tr>
@@ -179,9 +164,9 @@
 	<td></td>
 </tr>
 <tr>
-	<td>verifyElementPresent</td>
-	<td>//div[@id="lock_unlock_button"]//input</td>
-	<td></td>
+        <td>verifyElementPresent</td>
+        <td>link=Lock</td>
+        <td></td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
@@ -257,27 +242,17 @@
 </tr>
 <tr>
 	<td>verifyElementPresent</td>
-	<td>link=Modify</td>
+	<td>link=Modification</td>
 	<td></td>
 </tr>
 <tr>
-	<td>verifyElementPresent</td>
-	<td>//div[@id="lock_unlock_button"]//input</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyValue</td>
-	<td>//div[@id="lock_unlock_button"]//input</td>
-	<td>Lock</td>
+        <td>verifyElementPresent</td>
+        <td>link=Lock</td>
+        <td></td>
 </tr>
 <tr>
 	<td>verifyTextNotPresent</td>
-	<td>Locker</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyTextNotPresent</td>
-	<td>Lock time</td>
+	<td>This document is locked</td>
 	<td></td>
 </tr>
 <tr>
@@ -352,18 +327,13 @@
 	<td></td>
 </tr>
 <tr>
-	<td>verifyElementPresent</td>
-	<td>//div[@id="lock_unlock_button"]//input</td>
-	<td></td>
+        <td>verifyElementPresent</td>
+        <td>link=Lock</td>
+        <td></td>
 </tr>
 <tr>
 	<td>verifyTextNotPresent</td>
-	<td>Locker</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyTextNotPresent</td>
-	<td>Lock time</td>
+	<td>This document is locked</td>
 	<td></td>
 </tr>
 <tr>
@@ -373,8 +343,8 @@
 </tr>
 <tr>
 	<td>verifyTextPresent</td>
-	<td>Start a workflow</td>
-	<td></td>
+	<td>Start a workflow</td>	
+        <td></td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
@@ -439,22 +409,17 @@
 </tr>
 <tr>
 	<td>verifyElementNotPresent</td>
-	<td>link=Modify</td>
+	<td>link=Modification</td>
 	<td></td>
 </tr>
 <tr>
-	<td>verifyElementNotPresent</td>
-	<td>//div[@id="lock_unlock_button"]//input</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyTextNotPresent</td>
-	<td>Locker</td>
-	<td></td>
+        <td>verifyElementPresent</td>
+        <td>link=Unlock</td>
+        <td></td>
 </tr>
 <tr>
 	<td>verifyTextNotPresent</td>
-	<td>Lock time</td>
+	<td>This document is locked</td>
 	<td></td>
 </tr>
 <tr>

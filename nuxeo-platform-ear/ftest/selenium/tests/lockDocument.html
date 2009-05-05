@@ -52,28 +52,28 @@
 <!--Verouillage du document-->
 <tr>
 	<td>clickAndWait</td>
-	<td>//input[@value="Lock"]</td>
+	<td>link=Lock</td>
 	<td></td>
 </tr>
 <tr>
 	<td>verifyTextPresent</td>
-	<td>Locker</td>
+	<td>locked</td>
 	<td></td>
 </tr>
 <tr>
 	<td>verifyTextPresent</td>
-	<td>Lock time</td>
+	<td>the</td>
 	<td></td>
 </tr>
 <tr>
-	<td>verifyValue</td>
-	<td>//div[@id="lock_unlock_button"]//input</td>
-	<td>Unlock</td>
+	<td>verifyElementPresent</td>
+	<td>link=Unlock</td>
+	<td></td>
 </tr>
 <!--Véfication que les autres actions sont toujours dispo-->
 <tr>
 	<td>verifyElementPresent</td>
-	<td>//div[@id="lock_unlock_button"]//input</td>
+	<td>//div[@id="lock_unlock_button"]</td>
 	<td></td>
 </tr>
 <tr>
@@ -150,23 +150,23 @@
 </tr>
 <tr>
 	<td>verifyTextPresent</td>
-	<td>Locker</td>
+	<td>locked</td>
 	<td></td>
 </tr>
 <tr>
 	<td>verifyTextPresent</td>
-	<td>Lock time</td>
+	<td>the</td>
 	<td></td>
 </tr>
 <tr>
 	<td>verifyElementPresent</td>
-	<td>//div[@id="lock_unlock_button"]//input</td>
+	<td>//div[@id="lock_unlock_button"]</td>
 	<td></td>
 </tr>
 <tr>
-	<td>verifyValue</td>
-	<td>//div[@id="lock_unlock_button"]//input</td>
-	<td>Unlock</td>
+	<td>verifyElementPresent</td>
+	<td>link=Unlock</td>
+	<td></td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
@@ -240,8 +240,8 @@
 	<td></td>
 </tr>
 <tr>
-	<td>verifyElementNotPresent</td>
-	<td>//div[@id="lock_unlock_button"]//input</td>
+	<td>verifyElementPresent</td>
+	<td>//div[@id="lock_unlock_button"]</td>
 	<td></td>
 </tr>
 <tr>
@@ -316,8 +316,8 @@
 	<td></td>
 </tr>
 <tr>
-	<td>verifyElementNotPresent</td>
-	<td>//div[@id="lock_unlock_button"]//input</td>
+	<td>verifyElementPresent</td>
+	<td>//div[@id="lock_unlock_button"]</td>
 	<td></td>
 </tr>
 <tr>

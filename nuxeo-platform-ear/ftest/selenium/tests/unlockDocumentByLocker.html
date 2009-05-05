@@ -51,29 +51,19 @@
 </tr>
 <!--Déverrouillage du document-->
 <tr>
-	<td>verifyValue</td>
-	<td>//div[@id="lock_unlock_button"]//input</td>
-	<td>Unlock</td>
+	<td>verifyElementPresent</td>
+	<td>link=Unlock</td>
+	<td></td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>//input[@value="Unlock"]</td>
+	<td>link=Unlock</td>
 	<td></td>
 </tr>
 <tr>
-	<td>verifyTextNotPresent</td>
-	<td>Locker</td>
+	<td>verifyElementPresent</td>
+	<td>link=Lock</td>
 	<td></td>
-</tr>
-<tr>
-	<td>verifyTextNotPresent</td>
-	<td>Lock time</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyValue</td>
-	<td>//div[@id="lock_unlock_button"]//input</td>
-	<td>Lock</td>
 </tr>
 <!--Vérrification que les autres actions sont toujours dispo-->
 <tr>
@@ -83,7 +73,7 @@
 </tr>
 <tr>
 	<td>verifyElementPresent</td>
-	<td>//div[@id="lock_unlock_button"]//input</td>
+	<td>//div[@id="lock_unlock_button"]</td>
 	<td></td>
 </tr>
 <tr>
@@ -160,22 +150,17 @@
 </tr>
 <tr>
 	<td>verifyElementPresent</td>
-	<td>//div[@id="lock_unlock_button"]//input</td>
+	<td>//div[@id="lock_unlock_button"]</td>
 	<td></td>
 </tr>
 <tr>
-	<td>verifyValue</td>
-	<td>//div[@id="lock_unlock_button"]//input</td>
-	<td>Lock</td>
-</tr>
-<tr>
-	<td>verifyTextNotPresent</td>
-	<td>Locker</td>
+	<td>verifyElementPresent</td>
+	<td>link=Lock</td>
 	<td></td>
 </tr>
 <tr>
 	<td>verifyTextNotPresent</td>
-	<td>Lock time</td>
+	<td>This document is locked</td>
 	<td></td>
 </tr>
 <tr>
@@ -251,17 +236,12 @@
 </tr>
 <tr>
 	<td>verifyElementPresent</td>
-	<td>//div[@id="lock_unlock_button"]//input</td>
+	<td>//div[@id="lock_unlock_button"]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>verifyTextNotPresent</td>
-	<td>Locker</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyTextNotPresent</td>
-	<td>Lock time</td>
+	<td>This document is locked</td>
 	<td></td>
 </tr>
 <tr>
@@ -336,18 +316,13 @@
 	<td></td>
 </tr>
 <tr>
-	<td>verifyElementNotPresent</td>
-	<td>//div[@id="lock_unlock_button"]//input</td>
+	<td>verifyElementPresent</td>
+	<td>//div[@id="lock_unlock_button"]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>verifyTextNotPresent</td>
-	<td>Locker</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyTextNotPresent</td>
-	<td>Lock time</td>
+	<td>This document is locked</td>
 	<td></td>
 </tr>
 <tr>
