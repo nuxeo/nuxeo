@@ -19,32 +19,20 @@
 
 package org.nuxeo.ecm.webapp.filemanager;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import javax.ejb.Remove;
 import javax.faces.application.FacesMessage;
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
-import javax.faces.event.ActionEvent;
-import javax.xml.transform.stream.StreamSource;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.annotations.remoting.WebRemote;
 import org.jboss.seam.core.Events;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -58,7 +46,6 @@ import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.platform.filemanager.api.FileManagerPermissionException;
 import org.nuxeo.ecm.platform.types.TypeManager;
-import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.UserAction;
 import org.nuxeo.ecm.platform.ui.web.util.files.FileUtils;
 import org.nuxeo.ecm.webapp.base.InputController;
@@ -66,20 +53,17 @@ import org.nuxeo.ecm.webapp.clipboard.ClipboardActions;
 import org.nuxeo.ecm.webapp.helpers.EventManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;
-import org.richfaces.event.UploadEvent;
-import org.richfaces.model.UploadItem;
 
 import sun.misc.BASE64Decoder;
 
 /**
  * @author <a href="mailto:andreas.kalogeropoulos@nuxeo.com">Andreas
  *         Kalogeropoulos</a>
- * 
+ *
  */
 @Name("FileManageActions")
-@Scope(ScopeType.PAGE)
-public class FileManageActionsBean extends InputController implements
-        FileManageActionsLocal {
+@Scope(ScopeType.EVENT)
+public class FileManageActionsBean extends InputController implements FileManageActions {
 
     private static final Log log = LogFactory.getLog(FileManageActionsBean.class);
 
@@ -99,23 +83,16 @@ public class FileManageActionsBean extends InputController implements
 
     protected InputStream fileUpload;
 
-    protected File tempFile;
-
     protected String fileName;
-
-    protected Collection<UploadItem> uploadedFiles = new ArrayList<UploadItem>();
 
     @In(create = true, required = false)
     protected CoreSession documentManager;
 
-    @In(create = true)
+    @In(create=true)
     protected TypeManager typeManager;
 
     @In(create = true)
     protected ClipboardActions clipboardActions;
-
-    // @In(create = true)
-    // protected PublishActions publishActions;
 
     protected FileManager fileManager;
 
@@ -132,7 +109,6 @@ public class FileManageActionsBean extends InputController implements
         return fileManager;
     }
 
-    @Remove
     public void destroy() {
         log.debug("Removing SEAM action listener...");
     }
@@ -142,11 +118,6 @@ public class FileManageActionsBean extends InputController implements
     }
 
     public String addFile() throws ClientException {
-        return addFile(fileUpload, fileName);
-    }
-
-    public String addFile(InputStream fileUpload, String fileName)
-            throws ClientException {
         try {
             if (fileUpload == null || fileName == null) {
                 facesMessages.add(FacesMessage.SEVERITY_ERROR,
@@ -194,30 +165,7 @@ public class FileManageActionsBean extends InputController implements
                         "message.operation.fails.generic"));
     }
 
-    /**
-     * @deprecated use addBinaryFileFromPlugin with a Blob argument API to avoid
-     *             loading the content in memory
-     */
-    @Deprecated
-    public String addFileFromPlugin(String content, String mimetype,
-            String fullName, String morePath, Boolean UseBase64)
-            throws ClientException {
-        try {
-            byte[] bcontent;
-            if (UseBase64.booleanValue()) {
-                BASE64Decoder decoder = new BASE64Decoder();
-                bcontent = decoder.decodeBuffer(content);
-            } else {
-                bcontent = content.getBytes();
-            }
-            return addBinaryFileFromPlugin(bcontent, mimetype, fullName,
-                    morePath);
-        } catch (Throwable t) {
-            log.error(t, t);
-            return getErrorMessage(TRANSF_ERROR, fullName);
-        }
-    }
-
+    @WebRemote
     public String addBinaryFileFromPlugin(Blob blob, String fullName,
             String morePath) throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
@@ -227,6 +175,7 @@ public class FileManageActionsBean extends InputController implements
         return createDocumentFromBlob(blob, fullName, path);
     }
 
+    @WebRemote
     public String addBinaryFileFromPlugin(Blob blob, String fullName,
             DocumentModel targetContainer) throws ClientException {
         return createDocumentFromBlob(blob, fullName,
@@ -276,6 +225,7 @@ public class FileManageActionsBean extends InputController implements
         return addBinaryFileFromPlugin(blob, fullName, morePath);
     }
 
+    @WebRemote
     public String addFolderFromPlugin(String fullName, String morePath)
             throws ClientException {
         try {
@@ -311,26 +261,8 @@ public class FileManageActionsBean extends InputController implements
         }
     }
 
-    // TODO: this method is weird! What is it doing?
-    public String delCopyWithId(String docId) {
-        try {
-            String debug = "deleting copyId " + docId;
-            if (docId.startsWith("pasteRef_")) {
-                docId = docId.split("pasteRef_")[1];
-            }
-            // XXX - TD : fix that, is it used ????
-            // DocumentModel srcDoc = documentManager.getDocument(new
-            // IdRef(docId));
-            // removeDocumentFromList(clipboard.getClipboardDocuments(),
-            // srcDoc);
-            log.debug(debug);
-            return debug;
-        } catch (Throwable t) {
-            log.error(t, t);
-            return getErrorMessage(COPY_ERROR, docId);
-        }
-    }
 
+    @WebRemote
     protected String checkMoveAllowed(DocumentRef docRef,
             DocumentRef containerRef) throws ClientException {
 
@@ -415,6 +347,7 @@ public class FileManageActionsBean extends InputController implements
         return MOVE_OK;
     }
 
+    @WebRemote
     public String moveWithId(String docId, String containerId)
             throws ClientException {
         try {
@@ -468,6 +401,7 @@ public class FileManageActionsBean extends InputController implements
         }
     }
 
+    @WebRemote
     public String copyWithId(String docId) throws ClientException {
         try {
             String debug = "copying " + docId;
@@ -490,6 +424,7 @@ public class FileManageActionsBean extends InputController implements
         }
     }
 
+    @WebRemote
     public String pasteWithId(String docId) throws ClientException {
         try {
             String debug = "pasting " + docId;
@@ -516,72 +451,6 @@ public class FileManageActionsBean extends InputController implements
         log.info("Initializing...");
     }
 
-    public void processUpload(UploadEvent uploadEvent) {
-        try {
-            tempFile = uploadEvent.getUploadItem().getFile();
-            fileName = uploadEvent.getUploadItem().getFileName();
-        } catch (Exception e) {
-            log.error(e);
-            return;
-        }
-    }
-
-    public void validateMultiplesUpload() throws ClientException,
-            FileNotFoundException {
-        DocumentModel current = navigationContext.getCurrentDocument();
-        if (!current.hasSchema("files"))
-            return;
-        Collection files = (Collection) current.getProperty("files", "files");
-        for (UploadItem file : uploadedFiles) {
-            String filename = FileUtils.getCleanFileName(file.getFileName());
-            Blob blob = FileUtils.createSerializableBlob(new FileInputStream(
-                    file.getFile()), filename, null);
-
-            HashMap<String, Object> fileMap = new HashMap<String, Object>(2);
-            fileMap.put("file", blob);
-            fileMap.put("filename", filename);
-            if (!files.contains(fileMap))
-                files.add(fileMap);
-        }
-        current.setProperty("files", "files", files);
-        documentManager.saveDocument(current);
-        documentManager.save();
-    }
-
-    public void performAction(ActionEvent event) {
-        FacesContext context = FacesContext.getCurrentInstance();
-        ExternalContext eContext = context.getExternalContext();
-        String index = eContext.getRequestParameterMap().get("index");
-
-        try {
-            DocumentModel current = navigationContext.getCurrentDocument();
-            if (!current.hasSchema("files"))
-                return;
-            Collection files = (Collection) current.getProperty("files",
-                    "files");
-            Object file = CollectionUtils.get(files, new Integer(index));
-            files.remove(file);
-            current.setProperty("files", "files", files);
-            documentManager.saveDocument(current);
-            documentManager.save();
-        } catch (Exception e) {
-            log.error(e);
-        }
-    }
-
-    public String validate() throws ClientException {
-        InputStream stream = null;
-        try {
-            stream = new FileInputStream(tempFile);
-            return addFile(stream, fileName);
-        } catch (Exception e) {
-            throw new ClientException(e);
-        } finally {
-            if (stream != null)
-                IOUtils.closeQuietly(stream);
-        }
-    }
-
     public InputStream getFileUpload() {
         return fileUpload;
     }
@@ -604,14 +473,6 @@ public class FileManageActionsBean extends InputController implements
 
     public void setChangeableDocument(DocumentModel changeableDocument) {
         navigationContext.setChangeableDocument(changeableDocument);
-    }
-
-    public Collection<UploadItem> getUploadedFiles() {
-        return uploadedFiles;
-    }
-
-    public void setUploadedFiles(Collection<UploadItem> uploadedFiles) {
-        this.uploadedFiles = uploadedFiles;
     }
 
 }

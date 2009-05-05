@@ -149,13 +149,6 @@
       <filter-id>view_content</filter-id>
       <filter-id>outSection</filter-id>
     </action>
-    
-    <action id="TAB_DESCRIPTION" link="/incl/tabs/document_description.xhtml" order="10"
-      enabled="true" label="action.view.content" icon="/icons/file.gif">
-      <category>VIEW_ACTION_LIST</category>
-      <filter-id>view_content</filter-id>
-      <filter-id>view</filter-id>
-    </action>
 
     <action id="TAB_SECTION_CONTENT" link="/incl/tabs/section_content.xhtml"
       order="10" enabled="true" label="action.view.content"
@@ -187,34 +180,18 @@
       <filter-id>not_folder</filter-id>
     </action>
 
-    <action id="TAB_EDIT" link="/incl/tabs/document_edit.xhtml" enabled="false"
-      order="20" label="action.view.edit" icon="/icons/file.gif">
+    <action id="TAB_EDIT" link="/incl/tabs/edit_document_and_metadata.xhtml" enabled="true"
+      order="20" label="action.view.modification" icon="/icons/file.gif">
       <category>VIEW_ACTION_LIST</category>
       <filter-id>edit</filter-id>
       <filter-id>mutable_document</filter-id>
-      <filter-id>folder</filter-id>
     </action>
 
-    <action id="TAB_WORKSPACE_EDIT" link="/incl/tabs/document_edit.xhtml"
-      enabled="true" order="22" label="action.view.edit"
+    <action id="TAB_WORKSPACE_EDIT" link="/incl/tabs/edit_document_and_metadata.xhtml"
+      enabled="true" order="22" label="action.view.modification"
       icon="/icons/file.gif">
       <category>VIEW_ACTION_LIST</category>
       <filter-id>workspace_edit</filter-id>
-      <filter-id>mutable_document</filter-id>
-    </action>
-
-    <action id="TAB_METADATA_VIEW"
-      link="/incl/tabs/document_metadata_view.xhtml" enabled="false" order="30"
-      label="action.view.metadata" icon="/icons/file.gif">
-      <category>VIEW_ACTION_LIST</category>
-      <filter-id>cannotEdit</filter-id>
-    </action>
-
-    <action id="TAB_METADATA_EDIT" order="40"
-      link="/incl/tabs/edit_document_and_metadata.xhtml" enabled="true"
-      label="action.view.modification" icon="/icons/file.gif">
-      <category>VIEW_ACTION_LIST</category>
-      <filter-id>metadata_edit</filter-id>
       <filter-id>mutable_document</filter-id>
     </action>
 
@@ -690,8 +667,6 @@
         <type>Domain</type>
         <type>WorkspaceRoot</type>
         <type>Workspace</type>
-        <type>SectionRoot</type>
-        <type>TemplateRoot</type>
       </rule>
       <rule grant="true">
         <permission>Write</permission>
@@ -773,12 +748,6 @@
     <filter id="manage">
       <rule grant="true">
         <permission>Manage everything</permission>
-      </rule>
-      <rule grant="false">
-        <type>Root</type>
-        <type>Domain</type>
-        <type>WorkspaceRoot</type>
-        <type>SectionRoot</type>
       </rule>
     </filter>
 

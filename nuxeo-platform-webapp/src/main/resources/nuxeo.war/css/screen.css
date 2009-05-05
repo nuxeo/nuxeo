@@ -464,6 +464,17 @@ div.schedule-compact-default td.inactive-day td.header, div.schedule-compact-def
       border-bottom: 1px solid #4e9ae1;
       background-color: #4e9ae1;
 }
+
+.ctxMenuItemStyle a {
+      text-decoration:none;
+      color: #e7e7e7;
+}
+
+.ctxMenuItemHoverStyle a {
+      text-decoration:none;
+      color: #fff;
+}
+
 .ctxMenuImg {
       vertical-align:middle;
       padding:1px;
@@ -508,3 +519,20 @@ h3.documentTypes {
 .documentType span {
   color:#454545;
 }
+
+input.button {
+ font:11px 'Lucida Grande', Verdana, Arial, sans-serif;
+ color:#333333;
+ border:1px solid #bfc5cb;
+ background:#cecfd1 url(/nuxeo/img/theme_galaxy/buttons.png) top left repeat-x;
+ margin:5px 10px 10px 0px;
+ padding:2px 5px 2px 5px;
+ cursor:pointer;
+}
+
+input.button:hover {
+color:#000;
+border-color:#92999e;
+}
+
+

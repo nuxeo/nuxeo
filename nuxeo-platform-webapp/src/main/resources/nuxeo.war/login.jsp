@@ -262,6 +262,7 @@ nxthemes css is not used in login.jsp */
               </td>
             </tr>
             <tr>
+              <td></td>
               <td>
           <c:if test="${param.loginFailed}">
             <div class="errorMessage">

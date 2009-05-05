@@ -338,6 +338,7 @@
         <border-bottom preset="breadcrumb (Galaxy borders)"/>
         <background preset="breadcrumb (Galaxy backgrounds)"/>
         <padding>3px 7px</padding>
+        <height>25px</height>
       </selector>
       <selector path="div">
         <font preset="small (Galaxy fonts)"/>
@@ -383,6 +384,7 @@
         <font-size>9px</font-size>
         <padding>5px 4px 0px 0px</padding>
         <float>left</float>
+        <height>20px</height>
       </selector>
     </style>
     <style inherit="default buttons" name="default tabs">
@@ -1246,6 +1248,9 @@
         <margin>0</margin>
         <padding>0</padding>
       </selector>
+      <selector path="img, a" view="Nuxeo EP logo (Galaxy Theme)">
+        <outline>none</outline>
+      </selector>
     </style>
     <!-- user services -->
     <style
@@ -1516,8 +1521,11 @@
         <color preset="link (Nuxeo psd colors)"/>
         <text-decoration>underline</text-decoration>
       </selector>
-      <selector path="input.langSelect" view="Nuxeo EP footer (Galaxy Theme)">
+      <selector path="select.langSelect" view="Nuxeo EP footer (Galaxy Theme)">
         <margin>9px 5px 0px 5px</margin>
+      </selector>
+      <selector path="input.button" view="Nuxeo EP footer (Galaxy Theme)">
+        <margin>5px 0px 5px 10px</margin>
       </selector>
     </style>
     <!-- main fragment for default page & popup -->

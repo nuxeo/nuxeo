@@ -60,7 +60,41 @@
   <div class="contributors_table">
   <h:outputText value="#{nxu:joinArrayWithFinalDelimiter(currentDocument.dc.contributors,', ',andLabel)}"/>
   </div></div>
-    <ui:include src="/incl/resum/rank.xhtml"/>
+    <ui:include src="/incl/resum/rank.xhtml"/><h3><h:outputText
+  value="#{messages['label.workflow.lifeCycleInformation']}" /></h3>
+
+<h:panelGrid columns="2" styleClass="dataInput"
+  columnClasses="labelColumn, fieldColumn">
+  <h:outputText value="#{messages['label.workflow.lifeCyclePolicy']}" />
+  <h:outputText value="${messages[currentDocument.lifeCyclePolicy]}" />
+  <h:outputText
+    value="#{messages['label.workflow.currentLifeCycleState']}" />
+  <h:outputText value="${messages[currentDocument.currentLifeCycleState]}" />
+  <c:if test="#{deleteActions.trashManagementEnabled}">
+    <h:outputText/>
+    <h:commandButton type="submit" value="#{messages['command.undeleteDocs']}"
+      styleClass="button" action="#{deleteActions.restoreCurrentDocument}"
+      rendered="#{deleteActions.canRestoreCurrentDoc}" />
+  </c:if>
+</h:panelGrid>
+
+<nxu:methodResult name="versionable" value="#{currentDocument.hasFacet('Versionable')}">
+<h3><h:outputText
+  value="#{messages['label.versioning.documentVersioning']}"
+  rendered="#{versionable}"/></h3>
+<h:panelGrid columns="2" styleClass="dataInput"
+  columnClasses="labelColumn, fieldColumn"
+  rendered="#{versionable}">
+  <h:outputText value="#{messages['label.versioning.currentVersion']}"
+    rendered="#{currentDocumentVersionInfo.available}"/>
+  <h:panelGroup>
+    <nxh:outputText value="#{currentDocumentVersionInfo.versionLabel}" />
+  </h:panelGroup>
+</h:panelGrid>
+</nxu:methodResult>
+    
+    
+    
     <c:set var="selectedSections" value="#{publishActions.getPublishingInfo().toArray()}" scope="page" />
     <h:panelGroup rendered="#{!empty selectedSections}">
     	<ui:include src="/incl/resum/publication.xhtml"/>

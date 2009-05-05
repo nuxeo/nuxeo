@@ -1,4 +1,4 @@
-<div class="lockFile_block"
+<div class="lockFile_block" id='lock_unlock_button'
   xmlns="http://www.w3.org/1999/xhtml"
   xmlns:nxthemes="http://nuxeo.org/nxthemes"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
@@ -8,7 +8,6 @@
   xmlns:c="http://java.sun.com/jstl/core"
   >
   <f:subview>
-    <h:form>
     <h:panelGroup rendered="${!empty lockActions.currentDocLockDetails}">
       <h:outputText value="#{messages['label.resum.locked.intro']}"/> 
       <h:outputText class="resum_locked" value="#{messages['label.resum.locked']} "/>
@@ -31,6 +30,5 @@
           action="#{lockActions.lockCurrentDocument}"/>
       </h:panelGroup>
     </h:panelGroup>
-    </h:form>
   </f:subview>
 </div>

@@ -4,11 +4,10 @@
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:nxdir="http://nuxeo.org/nxdirectory">
-  <h:form>
     <h3 class="resumeTitle">
       <h:outputText value="#{messages['label.resum.links.title']}" />
     </h3>
-    <h:outputText value="      Ce document ..." />
+    <h:outputText value="#{messages['label.resum.relations.header']}" />
     <nxu:dataTable value="#{relationActions.outgoingStatementsInfo}" var="statement" styleClass="dataOutput">
       <nxu:column>
         <nxdir:directoryEntryOutput
@@ -37,5 +36,4 @@
       </ui:include>  
       </nxu:column>
     </nxu:dataTable>
-  </h:form>
 </div>

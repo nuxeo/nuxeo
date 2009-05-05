@@ -11,7 +11,7 @@
   xmlns:nxh="http://nuxeo.org/nxweb/html"
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxu="http://nuxeo.org/nxweb/util">
-  
+  <h:form>
   <div>
   <ui:include src="/incl/resum/locked.xhtml" />
   <h:panelGroup rendered="#{!empty currentDocument.dc.description}">
@@ -34,5 +34,5 @@
       <ui:include src="/incl/resum/comments.xhtml" />
     </h:panelGroup>
   </nxu:methodResult>
-
+</h:form>
 </div>
