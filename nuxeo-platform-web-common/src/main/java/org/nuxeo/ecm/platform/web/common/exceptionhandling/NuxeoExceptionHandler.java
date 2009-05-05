@@ -97,7 +97,7 @@ public class NuxeoExceptionHandler {
             HttpServletResponse response, Throwable t) throws IOException,
             ServletException {
         request.setAttribute(
-                NuxeoExceptionFilter.ORG_NUXEO_ECM_PLATFORM_WEB_COMMON_EXCEPTIONHANDLING_NUXEO_EXCEPTION_FILTER,
+                NuxeoExceptionFilter.EXCEPTION_FILTER_ATTRIBUTE,
                 true);
         ErrorHandler handler = getHandler(t);
         listener.startHandling(t, request, response);
