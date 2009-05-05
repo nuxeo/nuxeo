@@ -56,6 +56,24 @@
     </function-signature>
   </function>
   <function>
+    <function-name>joinCollectionWithFinalDelimiter</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.Functions
+    </function-class>
+    <function-signature>
+      java.lang.String joinCollectionWithFinalDelimiter(java.util.Collection, java.lang.String, java.lang.String)
+    </function-signature>
+  </function>
+  <function>
+    <function-name>joinArrayWithFinalDelimiter</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.Functions
+    </function-class>
+    <function-signature>
+      java.lang.String joinArrayWithFinalDelimiter(java.lang.Object[], java.lang.String, java.lang.String)
+    </function-signature>
+  </function>
+  <function>
     <function-name>concat</function-name>
     <function-class>
       org.nuxeo.ecm.platform.ui.web.tag.fn.Functions
@@ -97,6 +115,16 @@
   </function>
 
   <function>
+    <function-name>formatDateUsingBasicFormatter</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.Functions
+    </function-class>
+    <function-signature>
+      java.lang.String formatDateUsingBasicFormatter(java.util.Date)
+    </function-signature>
+  </function>
+  
+  <function>
     <function-name>dateAndTimeFormater</function-name>
     <function-class>
       org.nuxeo.ecm.platform.ui.web.tag.fn.Functions
@@ -115,7 +143,15 @@
       java.lang.String basicDateAndTimeFormater()
     </function-signature>
   </function>
-
+  <function>
+    <function-name>integerDivision</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.Functions
+    </function-class>
+    <function-signature>
+      java.lang.Integer integerDivision(java.lang.Integer, java.lang.Integer)
+    </function-signature>
+  </function>
 
   <function>
     <function-name>userIsMemberOf</function-name>

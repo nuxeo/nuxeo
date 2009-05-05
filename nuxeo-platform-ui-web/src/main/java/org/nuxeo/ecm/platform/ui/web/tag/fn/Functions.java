@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.ui.web.tag.fn;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -37,9 +38,9 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Util functions.
- *
+ * 
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
+ * 
  */
 public final class Functions {
 
@@ -112,11 +113,55 @@ public final class Functions {
         return StringUtils.join(list, separator);
     }
 
-    public static String joinCollection(Collection<Object> collection, String separator) {
+    public static String joinCollection(Collection<Object> collection,
+            String separator) {
         if (collection == null) {
             return null;
         }
         return StringUtils.join(collection.iterator(), separator);
+    }
+
+    /**
+     * Can be used in order to produce something like that
+     * "Julien, Alain , Thierry et Marc-Aur?le" where ' , ' and ' et ' is the
+     * final one.
+     * 
+     * @param collection
+     * @param separator
+     * @param finalDelimiter
+     * @return
+     */
+    public static String joinCollectionWithFinalDelimiter(
+            Collection<Object> collection, String separator,
+            String finalSeparator) {
+        return joinArrayWithFinalDelimiter(collection.toArray(), separator,
+                finalSeparator);
+    }
+
+    public static String joinArrayWithFinalDelimiter(Object[] collection,
+            String separator, String finalSeparator) {
+        if (collection == null) {
+            return null;
+        }
+        StringBuffer result = new StringBuffer();
+        int i = 0;
+        for (Object object : collection) {
+            result.append(object);
+            if (++i == collection.length - 1)
+                separator = finalSeparator;
+            if (i != collection.length)
+                result.append(separator);
+        }
+
+        return result.toString();
+    }
+
+    public static String formatDateUsingBasicFormatter(Date date) {
+        return formatDate(date, basicDateFormater());
+    }
+
+    public static String formatDate(Date date, String format) {
+        return new SimpleDateFormat(format).format(date);
     }
 
     public static String concat(String s1, String s2) {
@@ -151,7 +196,7 @@ public final class Functions {
 
     /**
      * Returns the full name of a user.
-     *
+     * 
      * @param username the user id, or null or empty for the current user.
      * @return the full user name.
      */
@@ -279,6 +324,11 @@ public final class Functions {
             size /= base;
         }
         return "" + size + " " + suffix[ex] + "B";
+    }
+
+
+    public static Integer integerDivision(Integer x, Integer y) {
+        return x / y;
     }
 
 }
