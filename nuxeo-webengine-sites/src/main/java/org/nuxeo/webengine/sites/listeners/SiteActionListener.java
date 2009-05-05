@@ -17,7 +17,6 @@
  */
 package org.nuxeo.webengine.sites.listeners;
 
-import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
@@ -40,7 +39,7 @@ public class SiteActionListener implements EventListener {
     public void handleEvent(Event event) throws ClientException {
         String eventId = event.getName();
 
-        if (!eventId.equals(DocumentEventTypes.DOCUMENT_CREATED)) {
+        if (!(DocumentEventTypes.ABOUT_TO_CREATE.equals(eventId) || DocumentEventTypes.BEFORE_DOC_UPDATE.equals(eventId))) {
             return;
         }
 
@@ -56,20 +55,21 @@ public class SiteActionListener implements EventListener {
             return;
         }
 
-        doc.setPropertyValue(SiteConstants.WEBCONTAINER_URL, doc.getName());
-        if (StringUtils.isEmpty((String) doc.getPropertyValue(SiteConstants.WEBCONTAINER_NAME))) {
-            doc.setPropertyValue(SiteConstants.WEBCONTAINER_NAME,
-                    doc.getTitle());
+        if (DocumentEventTypes.ABOUT_TO_CREATE.equals(eventId)) {
+            doc.setPropertyValue(SiteConstants.WEBCONTAINER_URL, doc.getName());
+
+            if (SiteConstants.WEBSITE.equals(documentType)) {
+                // Is WebSite
+                // CB: Because, at least for a while, Workspaces need to work
+                // together with WebSites, "isWebContainer" flag needs to be
+                // kept and set to "true" for all new created WebSites.
+                doc.setPropertyValue(SiteConstants.WEBCONTAINER_ISWEBCONTAINER,
+                        Boolean.TRUE);
+            }
         }
 
-        if (SiteConstants.WEBSITE.equals(documentType)) {
-            // Is WebSite
-            // CB: Because, at least for a while, Workspaces need to work
-            // together with WebSites, "isWebContainer" flag needs to be kept
-            // and set to "true" for all new created WebSites.
-            doc.setPropertyValue(SiteConstants.WEBCONTAINER_ISWEBCONTAINER,
-                    Boolean.TRUE);
-        }
+        // Set WebSite title
+        doc.setPropertyValue(SiteConstants.WEBCONTAINER_NAME, doc.getTitle());
     }
 
 }

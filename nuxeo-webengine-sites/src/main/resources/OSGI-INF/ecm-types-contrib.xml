@@ -28,7 +28,6 @@
         <type>ContextualLink</type>
       </subtypes>
       <layouts mode="any">
-        <layout>heading</layout>
         <layout>webcontainer</layout>
       </layouts>
     </type>

@@ -42,9 +42,10 @@
       <widget name="name" type="text">
         <translated>true</translated>
         <fields>
-          <field>webc:name</field>
+          <field>dc:title</field>
         </fields>
         <properties widgetMode="edit">
+          <property name="required">true</property>
           <property name="styleClass">dataInputText</property>
         </properties>
       </widget>
