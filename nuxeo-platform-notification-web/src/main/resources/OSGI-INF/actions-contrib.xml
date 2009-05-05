@@ -23,7 +23,7 @@
 
     <action id="TAB_MANAGE_SUBSCRIPTIONS" link="/incl/tabs/document_group_subscriptions.xhtml"
         order="80" enabled="true" label="action.groups.subscriptions.tab" icon="/icons/file.gif">
-      <category>VIEW_ACTION_LIST</category>
+      <category>TAB_MANAGE_sub_tab</category>
       <filter-id>general_documents</filter-id>
       <filter-id>manage_subscriptions</filter-id>
     </action>
