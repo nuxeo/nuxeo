@@ -190,7 +190,7 @@ public interface NuxeoRemoting extends BaseNuxeoWebService {
      * @return the ordered list of ACLs
      * @throws ClientException
      */
-    ACE[] getDocumentACL(String sid, String uuid) throws ClientException;
+    WsACE[] getDocumentACL(String sid, String uuid) throws ClientException;
 
     /**
      * Returns the merged ACL of the document (contains all ACEs defined on the
@@ -202,7 +202,7 @@ public interface NuxeoRemoting extends BaseNuxeoWebService {
      * @return the ordered list of ACLs
      * @throws ClientException
      */
-    ACE[] getDocumentLocalACL(String sid, String uuid) throws ClientException;
+     WsACE[] getDocumentLocalACL(String sid, String uuid) throws ClientException;
     /**
      * Checks the given permission for the current user on the given document.
      *
