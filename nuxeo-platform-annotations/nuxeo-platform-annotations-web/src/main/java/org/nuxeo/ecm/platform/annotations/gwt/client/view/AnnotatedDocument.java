@@ -46,7 +46,6 @@ import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.ImageElement;
-import com.google.gwt.dom.client.Node;
 import com.google.gwt.dom.client.NodeList;
 
 /**
@@ -187,7 +186,8 @@ public class AnnotatedDocument implements AnnotationChangeListener {
             for (int x = 0; x < spans.getLength(); x++) {
                 Element element = spans.getItem(x);
                 if (processElement(annotation, element)) {
-                    int[] absTopLeft = Utils.getAbsoluteTopLeft(element, Document.get());
+                    int[] absTopLeft = Utils.getAbsoluteTopLeft(element,
+                            Document.get());
                     if (absTopLeft[0] < scrollTop) {
                         scrollTop = absTopLeft[0];
                     }
@@ -199,7 +199,8 @@ public class AnnotatedDocument implements AnnotationChangeListener {
             for (int x = 0; x < as.getLength(); x++) {
                 Element element = as.getItem(x);
                 if (processElement(annotation, element)) {
-                    int[] absTopLeft = Utils.getAbsoluteTopLeft(element, Document.get());
+                    int[] absTopLeft = Utils.getAbsoluteTopLeft(element,
+                            Document.get());
                     if (absTopLeft[0] < scrollTop) {
                         scrollTop = absTopLeft[0];
                     }
@@ -215,8 +216,7 @@ public class AnnotatedDocument implements AnnotationChangeListener {
         }
     }
 
-    private boolean processElement(Annotation annotation,
-            Element element) {
+    private boolean processElement(Annotation annotation, Element element) {
         CSSClassManager manager = new CSSClassManager(element);
         // remove old
         manager.removeClass(AnnotationConstant.SELECTED_CLASS_NAME);
@@ -314,8 +314,7 @@ public class AnnotatedDocument implements AnnotationChangeListener {
         BodyElement bodyElement = Document.get().getBody();
         NodeList<Element> as = bodyElement.getElementsByTagName("div");
         removeAnchorAreas(as, className);
-        NodeList<Element> spans = bodyElement.getElementsByTagName("span");
-        removeSpanAreas(spans, className);
+        removeSpanAreas(className);
     }
 
     private void removeAnchorAreas(NodeList<Element> nodes, String className) {
@@ -325,7 +324,8 @@ public class AnnotatedDocument implements AnnotationChangeListener {
         }
     }
 
-    private List<Element> getElementsToRemove(NodeList<Element> nodes, String className) {
+    private List<Element> getElementsToRemove(NodeList<Element> nodes,
+            String className) {
         List<Element> elementsToRemove = new ArrayList<Element>();
         for (int i = 0; i < nodes.getLength(); ++i) {
             Element element = nodes.getItem(i);
@@ -337,16 +337,22 @@ public class AnnotatedDocument implements AnnotationChangeListener {
         return elementsToRemove;
     }
 
-    private void removeSpanAreas(NodeList<Element> nodes, String className) {
-        List<Element> elements = getElementsToRemove(nodes, className);
-        for (Element element : elements) {
+    private void removeSpanAreas(String className) {
+        NodeList<Element> spans = Document.get().getBody().getElementsByTagName(
+                "span");
+        List<Element> elements = getElementsToRemove(spans, className);
+        while (!elements.isEmpty()) {
+            Element element = elements.get(0);
+            String elementHtml = element.getInnerHTML();
             Element parent = element.getParentElement();
-            NodeList<Node> childNodes = element.getChildNodes();
-            for (int i = 0; i < childNodes.getLength(); ++i) {
-                Node node = childNodes.getItem(i);
-                parent.insertBefore(node, element);
-            }
-            parent.removeChild(element);
+            String parentHtml = parent.getInnerHTML();
+            parentHtml = parentHtml.replaceFirst("<(span|SPAN) class=(\")?"
+                    + element.getClassName() + "(\")?.*>" + elementHtml
+                    + "</(span|SPAN)>", elementHtml);
+            parent.setInnerHTML(parentHtml);
+
+            spans = Document.get().getBody().getElementsByTagName("span");
+            elements = getElementsToRemove(spans, className);
         }
     }
 
@@ -358,11 +364,8 @@ public class AnnotatedDocument implements AnnotationChangeListener {
     }
 
     public void removeSelectedTextDecoration(Annotation annotation) {
-        BodyElement bodyElement = Document.get().getBody();
-        NodeList<Element> spans = bodyElement.getElementsByTagName("span");
-
         String className = AnnotationConstant.SELECTED_TEXT_CLASS_NAME;
-        removeSpanAreas(spans, className);
+        removeSpanAreas(className);
     }
 
 }

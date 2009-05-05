@@ -19,8 +19,13 @@
 
 package org.nuxeo.ecm.platform.annotations.gwt.client.util;
 
+import org.nuxeo.ecm.platform.annotations.gwt.client.AnnotationConstant;
+import org.w3c.dom.css.CSSMediaRule;
+
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Node;
+import com.google.gwt.user.client.Window;
 
 /**
  * @author Alexandre Russel
@@ -68,15 +73,29 @@ public class Utils {
         return null;
     }-*/;
 
-    public static String removeWhitespaces(String text) {
+    public static String removeWhitespaces(String text, Node node) {
+        return removeWhitespaces(text, node, false);
+    }
+
+    public static String removeWhitespaces(String text, Node node, boolean forceIfOnlyWhitespaces) {
         if (text == null) {
             return "";
         }
-        if (text.matches("^\\s+$")) {
-            return text;
+        if (!forceIfOnlyWhitespaces) {
+            if (text.matches("^\\s+$")) {
+                return text;
+            }
         }
-        String processedText = text.replaceAll("^\\s+", "");
+        //Window.alert("Before removeWS: " + text);
+        Element prevSibling = (Element)node.getPreviousSibling();
+
+        String processedText = text;;
+        if (prevSibling == null || !(new CSSClassManager(prevSibling).isClassPresent(AnnotationConstant.IGNORED_ELEMENT))) {
+            processedText = processedText.replaceAll("^\\s+", "");
+        }
+        //Window.alert("in progress removeWS: " + processedText);
         processedText = processedText.replaceAll("\\s+", " ");
+        //Window.alert("after removeWS: " + processedText);
         return processedText;
     }
 }

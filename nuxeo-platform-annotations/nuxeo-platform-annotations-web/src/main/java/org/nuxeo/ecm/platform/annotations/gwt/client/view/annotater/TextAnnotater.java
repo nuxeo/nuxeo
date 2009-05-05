@@ -31,6 +31,7 @@ import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Node;
+import com.google.gwt.dom.client.Text;
 import com.google.gwt.user.client.Event;
 
 /**
@@ -76,8 +77,32 @@ public class TextAnnotater extends AbstractAnnotater {
     private Container getStartContainer(Range range) {
         Node startNode = range.getStartContainer();
         int startOffset = range.getStartOffset();
+        //Window.alert("startOffset: " + startOffset);
         startOffset = computeNewOffset(startNode, startOffset);
+        //Window.alert("startOffset after compute: " + startOffset);
+
+        if (startNode.getNodeType() == Node.TEXT_NODE) {
+            return getCustomContainer(startNode, startOffset);
+        }
         return new Container(xpathUtil.getXPath(startNode), startOffset);
+    }
+
+    private Container getCustomContainer(Node node, int currentOffset) {
+        int offset = 0;
+        Node n = node.getPreviousSibling();
+        while (n != null) {
+            if (n.getNodeType() == Node.TEXT_NODE) {
+                Text text = (Text) n;
+                offset += text.getLength();
+            } else if (n.getNodeType() == Node.ELEMENT_NODE) {
+                Element ele = (Element) n;
+                offset += ele.getInnerText().length();
+            }
+            n = n.getPreviousSibling();
+        }
+        node = node.getParentNode();
+        currentOffset += offset;
+        return new Container(xpathUtil.getXPath(node), currentOffset);
     }
 
     private int computeNewOffset(Node node, int currentOffset) {
@@ -88,7 +113,7 @@ public class TextAnnotater extends AbstractAnnotater {
         String text = node.getNodeValue();
         if (text != null) {
             text = text.substring(0, currentOffset);
-            String processedText = Utils.removeWhitespaces(text);
+            String processedText = Utils.removeWhitespaces(text, node, true);
             difference = text.length() - processedText.length();
         }
         return currentOffset - difference;
@@ -98,6 +123,11 @@ public class TextAnnotater extends AbstractAnnotater {
         Node endNode = range.getEndContainer();
         int endOffset = range.getEndOffset();
         endOffset = computeNewOffset(endNode, endOffset);
+
+        if (endNode.getNodeType() == Node.TEXT_NODE) {
+            return getCustomContainer(endNode, endOffset);
+        }
+
         return new Container(xpathUtil.getXPath(endNode), endOffset);
     }
 

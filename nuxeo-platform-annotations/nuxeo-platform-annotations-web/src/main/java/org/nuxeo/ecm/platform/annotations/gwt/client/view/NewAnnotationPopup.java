@@ -262,9 +262,6 @@ public class NewAnnotationPopup extends PopupPanel {
 
             controller.removeSelectedTextDecoration();
             controller.submitNewAnnotation();
-            // if (element != null) {
-            // element.getParentNode().removeChild(element);
-            // }
             hide();
         }
     }

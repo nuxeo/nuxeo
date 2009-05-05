@@ -50,20 +50,20 @@ public class NuxeoDecoratorVisitor implements DecoratorVisitor {
     protected Node currentNode;
 
     public NuxeoDecoratorVisitor(Annotation annotation,
-            AnnotationController controller) {
+        AnnotationController controller) {
         this.annotation = annotation;
         this.controller = controller;
         XPathUtil xpathUtil = new XPathUtil();
         Document document = Document.get();
         startNode = xpathUtil.getNode(
-                annotation.getStartContainer().getXpath(), document).get(
-                0);
+            annotation.getStartContainer().getXpath(), document).get(
+            0);
         startOffset = annotation.getStartContainer().getOffset();
         endNode = xpathUtil.getNode(annotation.getEndContainer().getXpath(),
-                document).get(0);
+            document).get(0);
         endOffset = annotation.getEndContainer().getOffset();
-        Log.debug("Decorator -- start node: " + startNode + ";text: " + startNode.getNodeValue() + ";parent html: " + ((Element)startNode.getParentNode()).getInnerHTML());
-        Log.debug("Decorator -- end node: " + endNode + ";text: " + endNode.getNodeValue() + ";parent html: " + ((Element)endNode.getParentNode()).getInnerHTML());
+        Log.debug("Decorator -- start node: " + startNode + ";text: " + ((com.google.gwt.dom.client.Element)startNode).getInnerHTML() + ";parent html: " + ((Element) startNode.getParentNode()).getInnerHTML());
+        Log.debug("Decorator -- end node: " + endNode + ";text: " + ((com.google.gwt.dom.client.Element)endNode).getInnerHTML() + ";parent html: " + ((Element) endNode.getParentNode()).getInnerHTML());
         Log.debug("Decorator -- start offset: " + startOffset + "; end offset: " + endOffset);
     }
 
@@ -75,7 +75,11 @@ public class NuxeoDecoratorVisitor implements DecoratorVisitor {
     }
 
     protected void checkEndNodeBeforeStartNode() {
+        if (started || startNode.equals(endNode)) {
+            return; // start node already found
+        }
         if (currentNode.equals(endNode)) {
+            Log.debug("Decorator -- EndNodeBeforeStartNode found.");
             endNodeBeforeStartNode = true;
         }
     }
@@ -83,8 +87,11 @@ public class NuxeoDecoratorVisitor implements DecoratorVisitor {
     protected void shouldStartProcess() {
         if (currentNode.equals(startNode) && !started) {
             Log.debug("Decorator -- start node found: " + currentNode + ";text: " + currentNode.getNodeValue());
-            Log.debug("Decorator -- parent html: " + ((Element)currentNode.getParentNode()).getInnerHTML()) ;
+            Log.debug("Decorator -- parent html: " + ((Element) currentNode.getParentNode()).getInnerHTML());
             started = true;
+            if (startNode.equals(endNode)) {
+                endNodeFound = true;
+            }
         }
     }
 
@@ -110,10 +117,13 @@ public class NuxeoDecoratorVisitor implements DecoratorVisitor {
         Text text = (Text) currentNode;
         String data = text.getData();
         Log.debug("Decorator -- text data before: " + data);
-        data = Utils.removeWhitespaces(data);
+        data = Utils.removeWhitespaces(data, currentNode);
         Log.debug("Decorator -- text data after: " + data);
         if (data.length() < startOffset) {
             startOffset -= data.length();
+            if (startNode.equals(endNode)) {
+                endOffset -= data.length();
+            }
             return;
         }
         decorating = true;
@@ -130,7 +140,7 @@ public class NuxeoDecoratorVisitor implements DecoratorVisitor {
         Log.debug("Decorator -- afterText: " + afterText);
         if (afterText.length() > 0) {
             textToDecorate = textToDecorate.substring(0,
-                    textToDecorate.length() - afterText.length());
+                textToDecorate.length() - afterText.length());
         }
 
         if (currentNode.getParentNode().getNodeName().equalsIgnoreCase("tr")) {
@@ -144,16 +154,16 @@ public class NuxeoDecoratorVisitor implements DecoratorVisitor {
                 Document document = currentNode.getOwnerDocument();
                 Node parent = currentNode.getParentNode();
                 insertBefore(parent, currentNode,
-                        document.createTextNode(afterText));
+                    document.createTextNode(afterText));
             }
         } else {
-        Log.debug("Decorator -- span element: " + spanElement.getInnerHTML());
-        if (afterText.length() > 0) {
-            Document document = currentNode.getOwnerDocument();
-            Node parent = currentNode.getParentNode();
-            insertBefore(parent, spanElement.getNextSibling(),
+            Log.debug("Decorator -- span element: " + spanElement.getInnerHTML());
+            if (afterText.length() > 0) {
+                Document document = currentNode.getOwnerDocument();
+                Node parent = currentNode.getParentNode();
+                insertBefore(parent, spanElement.getNextSibling(),
                     document.createTextNode(afterText));
-        }
+            }
         }
     }
 
@@ -164,7 +174,7 @@ public class NuxeoDecoratorVisitor implements DecoratorVisitor {
         if (currentNode.equals(endNode)) {
             endNodeFound = true;
             Log.debug("Decorator -- end node found: " + currentNode + ";text: " + currentNode.getNodeValue());
-            Log.debug("Decorator -- parent html: " + ((Element)currentNode.getParentNode()).getInnerHTML()) ;
+            Log.debug("Decorator -- parent html: " + ((Element) currentNode.getParentNode()).getInnerHTML());
         }
     }
 
@@ -172,7 +182,7 @@ public class NuxeoDecoratorVisitor implements DecoratorVisitor {
         Text text = (Text) currentNode;
         String data = text.getData();
         Log.debug("Decorator -- text data before: " + data);
-        data = Utils.removeWhitespaces(data);
+        data = Utils.removeWhitespaces(data, currentNode);
         Log.debug("Decorator -- text data after: " + data);
 
         String afterText = "";
@@ -196,15 +206,11 @@ public class NuxeoDecoratorVisitor implements DecoratorVisitor {
         SpanElement spanElement = getSpanElement(document);
         spanElement.setInnerText(data);
         Node parent = currentNode.getParentNode();
-        String className = AnnotationConstant.IGNORED_ELEMENT + " "
-                + controller.getDecorateClassName() + " "
-                + AnnotationConstant.DECORATE_CLASS_NAME + annotation.getId();
+        String className = AnnotationConstant.IGNORED_ELEMENT + " " + controller.getDecorateClassName() + " " + AnnotationConstant.DECORATE_CLASS_NAME + annotation.getId();
         if (parent.getNodeName().equalsIgnoreCase("span")) {
             String parentClassName = ((SpanElement) parent.cast()).getClassName();
             if (parentClassName.indexOf(controller.getDecorateClassName()) != -1) {
-                className = parentClassName + " "
-                        + AnnotationConstant.DECORATE_CLASS_NAME
-                        + annotation.getId();
+                className = parentClassName + " " + AnnotationConstant.DECORATE_CLASS_NAME + annotation.getId();
             }
         }
         spanElement.setClassName(className);
@@ -213,7 +219,7 @@ public class NuxeoDecoratorVisitor implements DecoratorVisitor {
     }
 
     protected void decorateNode() {
-        if (endNodeBeforeStartNode && endNode.equals(currentNode.getPreviousSibling())) {
+        if (endNodeBeforeStartNode && (endNode.equals(currentNode.getPreviousSibling()) || endNode.equals(currentNode.getParentNode()))) {
             endNodeFound = true;
             endOffset = 0;
             return;
@@ -222,23 +228,24 @@ public class NuxeoDecoratorVisitor implements DecoratorVisitor {
             if (endNode.equals(currentNode.getPreviousSibling())) {
                 endNodeFound = true;
                 endOffset = 0;
+            } else if (endNode.equals(currentNode)) {
+                endNodeFound = true;
             }
             return;
         }
         Text text = (Text) currentNode;
         String data = text.getData();
-        data = Utils.removeWhitespaces(data);
+        data = Utils.removeWhitespaces(data, currentNode);
         decorateText(data);
         currentNode.getParentNode().removeChild(currentNode);
     }
 
     protected SpanElement getSpanElement(Document document) {
         SpanElement spanElement = document.createSpanElement();
-        DOM.sinkEvents((Element) spanElement.cast(), Event.ONMOUSEOVER
-                | Event.ONMOUSEOUT);
+        DOM.sinkEvents((Element) spanElement.cast(), Event.ONMOUSEOVER | Event.ONMOUSEOUT);
         DOM.setEventListener((Element) spanElement.cast(),
-                AnnotationPopupEventListener.getAnnotationPopupEventListener(
-                        annotation, controller));
+            AnnotationPopupEventListener.getAnnotationPopupEventListener(
+            annotation, controller));
         return spanElement;
     }
 
