@@ -19,9 +19,9 @@
 package org.nuxeo.ecm.webapp.action;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
-
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,6 +55,8 @@ public class PopupHelper implements Serializable {
     private static final Log log = LogFactory.getLog(PopupHelper.class);
 
     public static final String POPUP_CATEGORY = "POPUP";
+    
+    public static final String DELETED_LIFECYCLE_STATE = "deleted";
 
     @In(required = true, create = true)
     protected transient ActionContextProvider actionContextProvider;
@@ -72,6 +74,8 @@ public class PopupHelper implements Serializable {
     protected transient LockActions lockActions;
 
     protected DocumentModel currentContainer;
+    
+    protected DocumentModel currentParent;
 
     protected DocumentModel currentPopupDocument;
 
@@ -215,8 +219,24 @@ public class PopupHelper implements Serializable {
     }
 
     @WebRemote
+    public String getCurrentURLAfterDelete() {
+        Map<String, String> params = new HashMap<String, String>();
+        String tabId = webActions.getCurrentTabId();
+        if (tabId != null) {
+            params.put("tabId", tabId);
+        }
+        if (isDocumentDeleted(currentContainer) == false) {
+            currentParent = currentContainer;
+        }
+        return DocumentModelFunctions.documentUrl(null, currentParent, null,
+                params, false);
+    }
+
+    
+    @WebRemote
     public String deleteDocument(String docId) throws ClientException {
         DocumentModel doc = documentManager.getDocument(new IdRef(docId));
+        currentParent = getFirstParentAfterDelete(doc);
         List<DocumentModel> docsToDelete = new ArrayList<DocumentModel>(1);
         docsToDelete.add(doc);
         return deleteActions.deleteSelection(docsToDelete);
@@ -282,6 +302,37 @@ public class PopupHelper implements Serializable {
                 "send_notification_email", null, false);
     }
     
+    private DocumentModel getFirstParentAfterDelete(DocumentModel doc)
+            throws ClientException {
+        List<DocumentModel> parents = documentManager.getParentDocuments(doc.getRef());
+        parents.remove(doc);
+        Collections.reverse(parents);
+        for (DocumentModel currentParent : parents) {
+            try {
+                documentManager.getDocument(currentParent.getRef());
+                return currentParent;
+            } catch (ClientException e) {
+                continue;
+            }
+        }
+        return null;
+    }
     
-    
+    private boolean isDocumentDeleted(DocumentModel doc) {
+        try {
+            // test if the document still exists in the repository
+            doc = documentManager.getDocument(doc.getRef());
+        } catch (ClientException e) {
+            return true;
+        }
+        try {
+            // test if the document still exists in the repository
+            if (doc.getCurrentLifeCycleState().equals(DELETED_LIFECYCLE_STATE) == true) {
+                return true;
+            }
+        } catch (ClientException ex) {
+            log.error(ex);
+        }
+        return false;
+    }
 }

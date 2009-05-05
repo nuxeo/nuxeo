@@ -30,6 +30,10 @@ function refreshPage()
 	Seam.Component.getInstance("popupHelper").getCurrentURL(navigationCB);
 }
 
+function refreshPageAfterDelete()
+{
+  Seam.Component.getInstance("popupHelper").getCurrentURLAfterDelete(navigationCB);
+}
 
 // menu actions callbacks
 function doCopy(docid)
@@ -49,8 +53,8 @@ function doMove(docid)
 
 function doDelete(docid)
 {
-	if (confirmDeleteDocuments()) {
-		Seam.Component.getInstance("popupHelper").deleteDocument(docid,refreshPage);
+  if (confirmDeleteDocuments()) {
+    Seam.Component.getInstance("popupHelper").deleteDocument(docid,refreshPageAfterDelete);
 	}
 }
 
