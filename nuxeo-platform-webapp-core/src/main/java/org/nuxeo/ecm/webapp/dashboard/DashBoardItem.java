@@ -19,92 +19,17 @@
 
 package org.nuxeo.ecm.webapp.dashboard;
 
-import java.io.Serializable;
-import java.util.Date;
-
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentRef;
 
 /**
  * Dashboard item.
  *
+ *
+ * @deprecated use {@link org.nuxeo.ecm.platform.syndication.workflow.DashBoardItem}
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
+ *
  */
-public interface DashBoardItem extends Serializable {
+@Deprecated
+public interface DashBoardItem extends org.nuxeo.ecm.platform.syndication.workflow.DashBoardItem {
 
-    /**
-     * Returns the identifier of the dash board item.
-     * <p>
-     * Workflow task instance right now.
-     *
-     * @since 5.2.M4 uses the long identifier instead of String equivalent
-     * @return the identifier of the dash board item.
-     */
-    Long getId();
-
-    /**
-     * Returns the name of the DashBoardItem.
-     *
-     * @return the name of the DashBoardItem
-     */
-    String getName();
-
-    /**
-     * Returns the document reference on which the item is bound.
-     *
-     * @see org.nuxeo.ecm.platform.workflow.document.api.relation.WorkflowDocumentRelationManager
-     *
-     * @return a document reference instance
-     */
-    DocumentRef getDocRef();
-
-    /**
-     * Returns the description of the item.
-     *
-     * @return the description of the item
-     */
-    String getDescription();
-
-    /**
-     * Returns the associated item comment.
-     *
-     * @return the associated item comment
-     */
-    String getComment();
-
-    /**
-     * Returns the date when the task has been started.
-     *
-     * @return the date when the task has been started
-     */
-    Date getStartDate();
-
-    /**
-     * Returns the date when the task needs to be closed.
-     *
-     * @return the date when the task needes to be closed
-     */
-    Date getDueDate();
-
-    /**
-     * Returns the item associated directive.
-     *
-     * @return the item associated directive
-     */
-    String getDirective();
-
-    /**
-     * Returns the icon path for the doc ref.
-     *
-     * @return the icon path for the doc ref
-     */
-    DocumentModel getDocument();
-
-    /**
-     * Does the user reach the deadline?
-     *
-     * @return the expired flag.
-     */
-    boolean isExpired();
 
 }

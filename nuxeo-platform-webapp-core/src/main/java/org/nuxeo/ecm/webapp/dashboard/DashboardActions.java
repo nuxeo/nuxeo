@@ -32,6 +32,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.ui.web.api.ResultsProviderFarm;
+import org.nuxeo.ecm.platform.syndication.workflow.DashBoardItem;
+
 
 /**
  * Dashboard actions listener.

@@ -45,6 +45,8 @@ import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.jbpm.JbpmEventNames;
 import org.nuxeo.ecm.platform.jbpm.JbpmService;
+import org.nuxeo.ecm.platform.syndication.workflow.DashBoardItem;
+import org.nuxeo.ecm.platform.syndication.workflow.DashBoardItemImpl;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.ui.web.pagination.ResultsProviderFarmUserException;

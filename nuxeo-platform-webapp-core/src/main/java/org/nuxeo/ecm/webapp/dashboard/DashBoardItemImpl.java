@@ -19,103 +19,27 @@
 
 package org.nuxeo.ecm.webapp.dashboard;
 
-import java.util.Date;
-import java.util.List;
-
-import org.jbpm.graph.exe.Comment;
 import org.jbpm.taskmgmt.exe.TaskInstance;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.platform.jbpm.JbpmService.TaskVariableName;
 
 /**
  * Dashboard item implementation.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
+ *
+ * @deprecated use {@link org.nuxeo.ecm.platform.syndication.workflow.DashBoardItemImpl}
+ *
  */
-public class DashBoardItemImpl implements DashBoardItem {
+@Deprecated
+public class DashBoardItemImpl extends org.nuxeo.ecm.platform.syndication.workflow.DashBoardItemImpl {
 
-    private static final long serialVersionUID = 919752175741886376L;
-
-    private final Long id;
-
-    private final String name;
-
-    private final String description;
-
-    private final Date startDate;
-
-    private final Date dueDate;
-
-    private final boolean expired;
-
-    private final String directive;
-
-    private final String comment;
-
-    private final DocumentModel document;
-
-    @SuppressWarnings("unchecked")
     public DashBoardItemImpl(TaskInstance task, DocumentModel document) {
-        this.document = document;
-        id = task.getId();
-        name = task.getName();
-        description = task.getDescription();
-        dueDate = task.getDueDate();
-        startDate = task.getCreate();
-        directive = (String) task.getVariableLocally(TaskVariableName.directive.name());
-        List<Comment> comments = task.getComments();
-        if (comments != null && !comments.isEmpty()) {
-            comment = comments.get(comments.size() - 1).getMessage();
-        } else {
-            comment = null;
-        }
-        if (dueDate != null) {
-            Date today = new Date();
-            expired = dueDate.before(today);
-        } else {
-            expired = false;
-        }
+        super(task, document);
     }
 
-    public String getComment() {
-        return comment;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public DocumentRef getDocRef() {
-        return document.getRef();
-    }
-
-    public Date getDueDate() {
-        return dueDate;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public Date getStartDate() {
-        return startDate;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getDirective() {
-        return directive;
-    }
-
-    public DocumentModel getDocument() {
-        return document;
-    }
-
-    public boolean isExpired() {
-        return expired;
-    }
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
 
 }
