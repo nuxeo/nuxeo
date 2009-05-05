@@ -782,6 +782,9 @@
       <selector path=".allWebPagesBlock">
         <margin>60px 0px 30px</margin>
       </selector>
+      <selector path=".allWebPagesBlock ul, .contextualLinks ul">
+        <padding>0px</padding>
+      </selector>
       <selector path=".LastPublishedPages">
         <vertical-align>top</vertical-align>
       </selector>
