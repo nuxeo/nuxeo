@@ -425,6 +425,23 @@
         <color>#ffffff</color>
         <background preset="tabiselected (Galaxy backgrounds)"/>
       </selector>
+      <selector path=".subtabsBar">
+        <font>normal 11px 'Lucida Grande', Verdana, sans-serif !important</font>
+        <border-bottom preset="subtabsbar (Galaxy borders)"/>
+      </selector>
+      <selector path=".subtabsBar a, .subtabsBar a:hover, .subtabsBar a:visited">
+        <color>#0066CC</color>
+        <border preset="subtabisnotselected (Galaxy borders)"/>
+      </selector>
+      <selector path=".subtabsBar li a:hover">
+        <color>#5f6265</color>
+        <background preset="subtabiselected (Galaxy backgrounds)"/>
+      </selector>
+      <selector path=".subtabsBar li.selected a, .subtabsBar li.selected a:hover, .subtabsBar li.selected a:visited">
+        <color>#5f6265</color>
+        <border preset="subtabiselected (Galaxy borders)"/>
+        <background preset="subtabiselected (Galaxy backgrounds)"/>
+      </selector>
     </style>
     <style inherit="default tabs" name="common style 1">
       <selector path="h1, h2, h3, h4, h5, h6, form, p">
@@ -610,9 +627,11 @@
       <selector path=".rich-fileupload-list-decor">
         <margin>10px 0px</margin>
       </selector>
-      <selector path=".rich-fileupload-button">
+      <selector path=".rich-fileupload-button, .rich-fileupload-button-border">
         <padding>2px</padding>
-        <margin-right>5px</margin-right>
+      </selector>
+      <selector path=".rich-fileupload-button-light, .rich-fileupload-button-press">
+        <padding>1px</padding>
       </selector>
       <selector path=".rich-fileupload-button-content">
         <padding>2px 6px 2px 19px</padding>
@@ -1042,10 +1061,9 @@
         <margin>2px 10px 2px 0px !important</margin>
       </selector>
       <selector path=".commentBlock">
-        <border>1px solid #666</border>
         <margin-bottom>8px</margin-bottom>
         <margin-top>7px</margin-top>
-        <padding>2px 10px</padding>
+        <padding>2px 10px 2px 0px</padding>
       </selector>
       <selector path="h1">
         <color>#4a4a4a</color>
@@ -1057,9 +1075,6 @@
       </selector>
       <selector path=".relationCommentColumn">
         <vertical-align>top</vertical-align>
-      </selector>
-      <selector path=".subtabsBar">
-        <font>normal 11px 'Lucida Grande', Verdana, sans-serif !important</font>
       </selector>
       <selector path=".taskAssign">
         <border>1px solid #0066cc</border>
@@ -1110,7 +1125,7 @@
         <vertical-align>top</vertical-align>
       </selector>
         <!-- Style for Resume Tab --> 
-      <selector path="h3.resumeTitle">
+      <selector path="h3.summaryTitle">
         <color>#4a4a4a</color>
         <font preset="title3 (Galaxy fonts)"/>
         <margin>0px 0px 10px 0px</margin>
@@ -1121,7 +1136,7 @@
         <float>left</float>
         <width>65%</width>
       </selector>
-      <selector path=".description_block h3.resumeTitle">
+      <selector path=".description_block h3.summaryTitle">
         <padding-top>15px</padding-top>
       </selector>
       <selector path=".resum table.floatingLeftTable">
