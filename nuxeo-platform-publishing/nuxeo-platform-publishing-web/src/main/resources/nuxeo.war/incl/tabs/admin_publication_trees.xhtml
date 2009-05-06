@@ -11,8 +11,8 @@
   <a4j:region renderRegionOnly="true">
   <a4j:outputPanel ajaxRendered="true">
   <a4j:form ajaxSubmit="true">
-  
-  <h:panelGroup rendered="#{!empty publishActions.sectionRoots}">
+
+  <h:panelGroup rendered="#{!empty defaultPublishingRoots}">
     <h:panelGrid class="dataInput" columnClasses="labelColumn, fieldColumn" columns="2">
       <h:panelGroup>
         <h:outputText value="#{messages['label.publish.sections']}" />
@@ -20,7 +20,7 @@
       <h:panelGroup>
         <h:selectOneListbox class="dataInputText" size="1"
           value="#{publishActions.currentSectionRootId}">
-          <nxu:selectItems value="#{publishActions.sectionRoots}"
+          <nxu:selectItems value="#{defaultPublishingRoots}"
             var="root"
             itemValue="#{root.id}"
             itemLabel="#{root.dublincore.title}" />
@@ -28,7 +28,7 @@
         </h:selectOneListbox>
       </h:panelGroup>
     </h:panelGrid>
-    
+
     <dl>
     <dd class="menuForm">
       <h:panelGroup id="sectionTree">
@@ -65,15 +65,15 @@
   </h:panelGroup>
 
   <h:panelGroup id="sectionList">
-    <h:panelGroup rendered="#{!empty publishActions.selectedSections}">
-      
+    <h:panelGroup rendered="#{!empty workspaceConfiguredPublishingRoots}">
+
       <h:outputText value="#{messages['label.publish.selected.sections']}" />
-      
-      <nxu:dataTable value="#{publishActions.selectedSections}" var="section"
+
+      <nxu:dataTable value="#{workspaceConfiguredPublishingRoots}" var="section"
         preserveSort="true" preserveDataModel="false"
         rowClasses="dataRowEven,dataRowOdd" sortable="false"
         styleClass="dataList">
-  
+
         <!-- Remove -->
         <nxu:column styleClass="iconColumn">
           <a4j:commandLink immediate="true"
@@ -83,7 +83,7 @@
             <h:graphicImage value="/icons/action_delete.gif" />
           </a4j:commandLink>
         </nxu:column>
-        
+
         <!-- Name -->
         <nxu:column>
           <f:facet name="header">
@@ -96,19 +96,19 @@
           </nxu:methodResult>
         </nxu:column>
       </nxu:dataTable>
-  
-      
+
+
     </h:panelGroup>
-    
-    <h:panelGroup rendered="#{empty publishActions.selectedSections}">
-      
+
+    <h:panelGroup rendered="#{empty workspaceConfiguredPublishingRoots}">
+
       <h:outputText value="#{messages['label.publish.selected.sections.empty']}" />
-      
+
     </h:panelGroup>
-    
+
   </h:panelGroup>
-  
+
   </a4j:form>
-  </a4j:outputPanel>  
+  </a4j:outputPanel>
   </a4j:region>
 </div>
