@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -45,16 +46,16 @@ import org.osgi.framework.Bundle;
 public class BundleResource {
 
     protected Bundle bundle;
-    
+
     public BundleResource(Bundle bundle) {
         this.bundle = bundle;
     }
-    
-    @GET    
+
+    @GET
     @Produces("application/xml+atom")
     public Object getDefinition() {
         OSGiRuntimeService runtime = (OSGiRuntimeService)Framework.getRuntime();
-        ArrayList<RegistrationInfo> comps = new ArrayList<RegistrationInfo>();
+        List<RegistrationInfo> comps = new ArrayList<RegistrationInfo>();
         for (RegistrationInfo ri :runtime.getComponentManager().getRegistrations()) {
             if (ri.getContext().getBundle().getSymbolicName().equals(bundle.getSymbolicName())) {
                 comps.add(ri);
@@ -66,16 +67,12 @@ public class BundleResource {
 
     @GET
     @Path("file")
-    @Produces("application/octet-stream")    
+    @Produces("application/octet-stream")
     public File getBundleFile() {
-        File file = ((OSGiRuntimeService)Framework.getRuntime()).getBundleFile(bundle);
+        File file = Framework.getRuntime().getBundleFile(bundle);
         return file;
     }
-    
-    /**
-     * Reload bundle
-     * @return
-     */
+
     @PUT
     public Response reloadBundle() {
         return Response.ok().build();
@@ -85,16 +82,18 @@ public class BundleResource {
     public Response uninstallBundle(@PathParam("symbolicName") String name) {
         return null;
     }
-    
+
     @GET
     @Path("manifest")
     @Produces("text/plain")
-    public Object getManifest() {        
+    public Object getManifest() {
         URL url = bundle.getEntry("META-INF/MANIFEST.MF");
-        if (url == null) return "";
+        if (url == null) {
+            return "";
+        }
         InputStream in = null;
         try {
-            ByteArrayOutputStream out = new ByteArrayOutputStream(); 
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
             in = url.openStream();
             FileUtils.copy(in, out);
             return new String(out.toByteArray());
@@ -104,5 +103,5 @@ public class BundleResource {
             try { if (in != null) in.close();} catch (Exception e) {}
         }
     }
-    
+
 }

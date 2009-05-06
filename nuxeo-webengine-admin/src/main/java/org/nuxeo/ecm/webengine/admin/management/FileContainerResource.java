@@ -37,24 +37,24 @@ import org.nuxeo.ecm.webengine.model.view.TemplateView;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class FileContainerResource {
 
     protected File root;
-    
+
     public FileContainerResource(File root) {
         this.root = root;
     }
-    
+
     public File getRoot() {
         return root;
     }
-    
+
     @GET
     @Produces("application/atom+xml")
     public Object listFiles() {
-        return new TemplateView(this, "resources.ftl").arg("root", root.getName()).arg("resources", root.listFiles());
+        return new TemplateView(this, "resources.ftl")
+                .arg("root", root.getName()).arg("resources", root.listFiles());
     }
 
     @POST
@@ -62,7 +62,7 @@ public class FileContainerResource {
         File file = new File(root, name);
         HttpServletRequest req = WebEngine.getActiveContext().getRequest();
         try {
-            FileUtils.copyToFile(req.getInputStream(), file);        
+            FileUtils.copyToFile(req.getInputStream(), file);
             return Response.ok().build();
         } catch (Exception e) {
             throw WebException.wrap(e);
@@ -74,14 +74,14 @@ public class FileContainerResource {
     public Object getFile(@PathParam("name") String name) {
         File file = new File(root, name);
         if (!file.isFile()) {
-            return Response.ok(404).build();     
+            return Response.ok(404).build();
         }
         int p = name.lastIndexOf('.');
         if (p > -1) {
-            String mime = WebEngine.getActiveContext().getEngine().getMimeType(name.substring(p+1));
+            String mime = WebEngine.getActiveContext().getEngine().getMimeType(name.substring(p + 1));
             return Response.ok(file).type(mime).build();
         }
-        
+
         return file;
     }
 
@@ -90,11 +90,11 @@ public class FileContainerResource {
     public Response updateFile(@PathParam("name") String name) {
         File file = new File(root, name);
         if (!file.isFile()) {
-            return Response.ok(404).build(); //TODO send correct code    
+            return Response.ok(404).build(); //TODO send correct code
         }
         HttpServletRequest req = WebEngine.getActiveContext().getRequest();
         try {
-            FileUtils.copyToFile(req.getInputStream(), file);        
+            FileUtils.copyToFile(req.getInputStream(), file);
             return Response.ok().build();
         } catch (Exception e) {
             throw WebException.wrap(e);
@@ -109,7 +109,7 @@ public class FileContainerResource {
     }
 
     public static File getContainerRoot(String type) {
-        Environment env = Environment.getDefault(); 
+        Environment env = Environment.getDefault();
         if (env.getConfig().getName().equals(type)) {
             return env.getConfig();
         } else if ("schemas".equals(type)) {
@@ -117,8 +117,8 @@ public class FileContainerResource {
         } else if ("extensions".equals(type)) {
             return new File(env.getHome(), "extensions");
         } else {
-            return new File(env.getHome(), "resources/"+type);
+            return new File(env.getHome(), "resources/" + type);
         }
     }
-    
+
 }

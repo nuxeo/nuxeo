@@ -11,8 +11,8 @@
   <a4j:region renderRegionOnly="true">
   <a4j:outputPanel ajaxRendered="true">
   <a4j:form ajaxSubmit="true" id="publishTreeForm">
-  
-  <h:panelGroup rendered="#{!empty publishActions.sectionRootsForPublishing}">
+
+  <h:panelGroup rendered="#{!empty availablePublishingRoots}">
     <h:panelGrid class="dataInput" columnClasses="labelColumn, fieldColumn" columns="2">
       <h:panelGroup>
         <h:outputText value="#{messages['label.publish.sections']}" />
@@ -20,7 +20,7 @@
       <h:panelGroup>
         <h:selectOneListbox class="dataInputText" size="1"
           value="#{publishActions.currentSectionRootIdForPublishing}">
-          <nxu:selectItems value="#{publishActions.sectionRootsForPublishing}"
+          <nxu:selectItems value="#{availablePublishingRoots}"
             var="root"
             itemValue="#{root.id}"
             itemLabel="#{root.title}" />
@@ -28,7 +28,7 @@
         </h:selectOneListbox>
       </h:panelGroup>
     </h:panelGrid>
-    
+
     <dl>
     <dd class="menuForm">
       <h:panelGroup id="sectionTree">
@@ -70,12 +70,12 @@
 
   <h:panelGroup id="publishingInfoList">
     <h:panelGroup rendered="#{!empty publishActions.publishingInfo}">
-      
+
       <nxu:dataTable value="#{publishActions.publishingInfo}" var="info"
         preserveSort="true" preserveDataModel="false"
         rowClasses="dataRowEven,dataRowOdd" sortable="false"
         styleClass="dataList">
-        
+
         <!-- Name -->
         <nxu:column>
           <f:facet name="header">
@@ -87,7 +87,7 @@
             </nxd:restDocumentLink>
           </nxu:methodResult>
         </nxu:column>
-        
+
         <!--  Version of the published document -->
         <h:column>
           <f:facet name="header">
@@ -96,13 +96,13 @@
           </f:facet>
           <h:outputText value="#{info.proxyVersion}" />
         </h:column>
-      
+
         <!--  Actions for the published document  -->
         <h:column >
           <f:facet name="header">
             <h:outputText value="Action" />
           </f:facet>
-          
+
           <nxu:methodResult name="canPublishToSection" value="#{publishActions.getCanPublishToSection(info.section)}">
             <a4j:commandLink immediate="true"
               value="#{messages['command.document.unpublish']}"
@@ -114,13 +114,13 @@
           </nxu:methodResult>
         </h:column>
       </nxu:dataTable>
-  
-      
+
+
     </h:panelGroup>
-    
+
   </h:panelGroup>
-  
+
   </a4j:form>
-  </a4j:outputPanel>  
+  </a4j:outputPanel>
   </a4j:region>
 </div>

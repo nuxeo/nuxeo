@@ -36,7 +36,7 @@ public class SiteTreeSerializer extends JSonTreeSerializer {
         DocumentModel d = (DocumentModel) ctx.getUserSession().get(
                 JsonAdapter.ROOT_DOCUMENT);
         if (d != null) {
-            sb.append("/").append(SiteUtils.getString(d, 
+            sb.append("/").append(SiteUtils.getString(d,
                     SiteConstants.WEBCONTAINER_URL, ""));
         }
         sb.append(item.getPath().toString());

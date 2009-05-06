@@ -84,4 +84,3 @@ public final class SiteConstants {
     public static final String SITES_THEME_PAGE = "sites/default";
 
 }
-
