@@ -4,7 +4,6 @@
   
   <div class="tabsBar subtabsBar">
     <h:form id="document_manage">
-      <div id="tabs">
         <nxu:dataList layout="unorderedList" var="subTab"
         value="#{subTabsActionsList}"
         itemStyleClass="#{nxu:test(webActions.currentSubTabAction == subTab, 'selected', '')}">
@@ -13,7 +12,6 @@
           <h:outputText value="#{messages[subTab.label]}" />
         </nxd:restDocumentLink>
         </nxu:dataList> 
-      </div>
     </h:form>
   </div>
   <div style="clear: both"></div>
