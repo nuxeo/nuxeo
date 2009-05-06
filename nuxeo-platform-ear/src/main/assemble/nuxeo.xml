@@ -193,7 +193,6 @@
       <artifact group="pdfbox" name="pdfbox" />
       <artifact group="org.fontbox" name="fontbox" />
       <artifact group="org.jempbox" name="jempbox" />
-
     </artifacts>
   </artifactSet>
 
