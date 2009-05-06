@@ -43,6 +43,7 @@
           <h:commandLink class="documentTypeLink" action="#{documentActions.createDocument(type.id)}">
             <h:outputText value="#{messages[type.label]}" />
           </h:commandLink>
+          <div style="clear: both;"></div>
         </div>
 
        </nxu:dataList>
@@ -53,7 +54,6 @@
 </table>
       </div>
 </td>
-      <div style="clear:both;"></div>
     </nxu:dataList>
 </table>
   </rich:modalPanel>
