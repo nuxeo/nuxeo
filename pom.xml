@@ -853,12 +853,12 @@
 
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-virtualnavigation-core</artifactId>
+      <artifactId>nuxeo-platform-virtualnavigation-core-contrib</artifactId>
       <version>${nuxeo.features.version}</version>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-virtualnavigation-core-contrib</artifactId>
+      <artifactId>nuxeo-platform-virtualnavigation-web</artifactId>
       <version>${nuxeo.features.version}</version>
     </dependency>
 
