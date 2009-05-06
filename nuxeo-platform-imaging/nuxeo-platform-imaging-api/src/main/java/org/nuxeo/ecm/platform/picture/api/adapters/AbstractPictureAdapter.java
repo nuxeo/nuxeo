@@ -183,7 +183,11 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
             }
         } else {
             // Default properties When PictureBook doesn't exist
-            createPictureimpl(description, "", "Original", null, filename,
+            createPictureimpl("Medium Size", "medium", "Medium", MEDIUM_SIZE, filename,
+                    width, height, fileContent);
+            createPictureimpl(description, "original", "Original", null, filename,
+                    width, height, fileContent);
+            createPictureimpl("Thumbnail Size", "thumb", "Thumbnail", THUMB_SIZE, filename,
                     width, height, fileContent);
         }
     }
