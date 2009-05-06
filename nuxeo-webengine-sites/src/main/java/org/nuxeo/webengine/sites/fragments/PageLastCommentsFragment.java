@@ -34,9 +34,9 @@ import org.nuxeo.webengine.sites.utils.SiteUtils;
 /**
  * Action fragment for initializing the fragment related to retrieving the
  * comments that are bounded to a <b>WebPage</b>
- * 
+ *
  * @author rux
- * 
+ *
  */
 public class PageLastCommentsFragment extends AbstractFragment {
 

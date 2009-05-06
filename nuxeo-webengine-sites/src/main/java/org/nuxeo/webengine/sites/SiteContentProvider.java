@@ -37,9 +37,9 @@ import org.nuxeo.webengine.sites.utils.SiteUtils;
 public class SiteContentProvider extends DocumentContentProvider {
 
     private static final long serialVersionUID = 1L;
-    
+
     private static final Log log = LogFactory.getLog(SiteContentProvider.class);
-    
+
     public SiteContentProvider(CoreSession session) {
         super(session);
     }

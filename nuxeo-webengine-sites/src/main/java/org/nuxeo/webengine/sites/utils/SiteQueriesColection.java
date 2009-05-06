@@ -29,7 +29,7 @@ import org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants;
  *
  */
 public class SiteQueriesColection {
-    
+
     /**
      * Queries sites by URL. It should be exactly one returned.
      * @param session
@@ -37,9 +37,9 @@ public class SiteQueriesColection {
      * @return
      * @throws ClientException
      */
-    public static DocumentModelList querySitesByUrl(CoreSession session, 
+    public static DocumentModelList querySitesByUrl(CoreSession session,
             String url) throws ClientException {
-        String queryString = String.format("SELECT * FROM Document WHERE " + 
+        String queryString = String.format("SELECT * FROM Document WHERE " +
                 "ecm:mixinType = 'WebView' AND webc:url = \"%s\" AND " +
                 "ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0 " +
                 "AND ecm:currentLifeCycleState != 'deleted' " +
@@ -53,9 +53,9 @@ public class SiteQueriesColection {
      * @return
      * @throws ClientException
      */
-    public static DocumentModelList queryAllSites(CoreSession session) 
+    public static DocumentModelList queryAllSites(CoreSession session)
             throws ClientException {
-        String queryString = "SELECT * FROM Document WHERE " + 
+        String queryString = "SELECT * FROM Document WHERE " +
                 "ecm:mixinType = 'WebView' AND " +
                 "ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0 " +
                 "AND ecm:currentLifeCycleState != 'deleted' " +
@@ -80,7 +80,7 @@ public class SiteQueriesColection {
             "ORDER BY dc:modified DESC", parent);
         return session.query(queryString, null, numberLimit, 0, true);
     }
-    
+
     /**
      * Queries the added comments within a limit. Query differs if moderated or not.
      * @param session
@@ -108,7 +108,7 @@ public class SiteQueriesColection {
         }
         return session.query(queryString, null, numberLimit, 0, true);
     }
-    
+
     /**
      * Queries the pages based on a search string.
      * @param session

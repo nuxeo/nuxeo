@@ -32,9 +32,9 @@ import org.nuxeo.webengine.sites.utils.SiteUtils;
 /**
  * Action fragment for initializing the fragment related to the <b>WebPage</b>-s
  * that are direct children of the received document
- * 
+ *
  * @author rux
- * 
+ *
  */
 public class AllWebpageFragment extends AbstractFragment {
 
