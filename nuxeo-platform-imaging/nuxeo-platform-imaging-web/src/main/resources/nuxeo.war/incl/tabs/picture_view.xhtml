@@ -10,10 +10,10 @@
   <script src="#{baseURL}cropper/lib/scriptaculous.js?load=builder" type="text/javascript"></script>
 
   <script type="text/javascript" charset="utf-8">
-		// setup the callback function
-		function onEndCrop( coords, dimensions ) {
-		    document.getElementById( 'cropperCoords' ).value = 'x:' + coords.x1 + ';y:' + coords.y1 + ';width:'+ dimensions.width + ';height:' + dimensions.height + ';' ;
-		}
+    // setup the callback function
+    function onEndCrop( coords, dimensions ) {
+        document.getElementById( 'cropperCoords' ).value = 'x:' + coords.x1 + ';y:' + coords.y1 + ';width:'+ dimensions.width + ';height:' + dimensions.height + ';' ;
+    }
   </script>
   
   <a4j:region>
@@ -21,8 +21,6 @@
       <c:set var="url" value="#{currentDocument.picture.views[pictureManager.index].title}:content"/>
         
       <ui:include src="/incl/imaging_actions.xhtml" />
-
-      <t:inputHidden forceId="true"  id="cropperCoords" value="#{pictureManager.cropCoords}" />
 
       <div class="pictureItemSize">
         <h:selectOneRadio value="#{pictureManager.index}">
@@ -34,19 +32,18 @@
       </div>
 
       <br /> 
+    <ui:fragment rendered="#{(currentDocument.picture.views[pictureManager.index].height gt 550) or (currentDocument.picture.views[pictureManager.index].width gt 550)}">
+      <iframe src="#{previewActions.previewURL}" frameborder="1" height="500px" width="100%" scrolling="auto" id="preview-frame" onload="loadGwtModule();">
+      </iframe>
+    </ui:fragment>
+    <ui:fragment rendered="#{(currentDocument.picture.views[pictureManager.index].height le 550) and (currentDocument.picture.views[pictureManager.index].width le 550)}">
       <div style="width: #{currentDocument.picture.views[pictureManager.index].width}px;height: #{currentDocument.picture.views[pictureManager.index].height}px;" >
         <div id="apear-div" style="display: none;" >
-          <img onload="new Effect.Appear('apear-div');
-            if (#{currentDocument.picture.views[pictureManager.index].title eq 'Original'})
-            new Cropper.Img(
-            document.getElementById('apear-div').childNodes[0],
-            {
-            onEndCrop: onEndCrop
-            }
-            );"
+          <img onload="new Effect.Appear('apear-div');"
             src="#{nxd:fileUrl('downloadPicture', currentDocument, url, currentDocument.dublincore.modified)}" />
         </div>
       </div>
+    </ui:fragment>
       <br />
     </h:form>
   </a4j:region>
