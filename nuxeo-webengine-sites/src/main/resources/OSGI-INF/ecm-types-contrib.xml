@@ -75,6 +75,9 @@
         <layout>contextualLink</layout>
         <layout>dublincore</layout>
       </layouts>
+      <layouts mode="view">
+        <layout>contextualLink</layout>
+      </layouts>
     </type>
 
     <type id="Workspace" coretype="Workspace">
