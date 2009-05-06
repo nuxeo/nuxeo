@@ -3,7 +3,6 @@
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:nxdir="http://nuxeo.org/nxdirectory">
-<<<<<<< /home/anahide/workspaces/nuxeo/nuxeo-dm/nuxeo-platform-webapp/src/main/resources/nuxeo.war/incl/summary/relation.xhtml
 
   <h3 class="summaryTitle">
     <h:outputText value="#{messages['label.summary.relations.title']}" />
@@ -43,38 +42,4 @@
     </nxu:column>
   </nxu:dataTable>
 
-=======
-    <h3 class="summaryTitle">
-      <h:outputText value="#{messages['label.summary.links.title']}" />
-    </h3>
-    <h:outputText value="#{messages['label.summary.relations.header']}" />
-    <nxu:dataTable value="#{currentDocumentOutgoingRelations}" var="statement" styleClass="dataOutput">
-      <nxu:column>
-        <nxdir:directoryEntryOutput
-        value="#{statement.predicate.uri}"
-        directoryName="predicates"
-        localize="true" />
-      </nxu:column>
-      <nxu:column>
-      <ui:include src="/relation_node_template.xhtml">
-        <ui:param name="statement" value="#{statement}" />
-        <ui:param name="node" value="#{statement.objectInfo}" />
-      </ui:include>
-      </nxu:column>
-    </nxu:dataTable>
-    <nxu:dataTable value="#{currentDocumentIncomingRelations}" var="statement" styleClass="dataOutput">
-      <nxu:column>
-        <nxdir:directoryEntryOutput
-        value="#{statement.predicate.uri}"
-        directoryName="predicates"
-        localize="true" />
-      </nxu:column>
-      <nxu:column>
-      <ui:include src="/relation_node_template.xhtml">
-        <ui:param name="statement" value="#{statement}" />
-        <ui:param name="node" value="#{statement.objectInfo}" />
-      </ui:include>
-      </nxu:column>
-    </nxu:dataTable>
->>>>>>> /tmp/relation.xhtml~other.qBCmsp
 </div>
