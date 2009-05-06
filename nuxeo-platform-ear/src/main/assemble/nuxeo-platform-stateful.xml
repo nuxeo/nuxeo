@@ -75,16 +75,17 @@
       <artifact group="org.nuxeo.common" />
       <artifact name="nuxeo-runtime-jboss-extensions" />
 
-      <artifact name="nuxeo-platform-webapp" />
-      <artifact name="nuxeo-platform-webapp-core" />
+<!--      <artifact name="nuxeo-platform-webapp" />-->
+<!--      <artifact name="nuxeo-platform-webapp-core" />-->
 
       <artifact name="nuxeo-platform-audit-facade" />
       <artifact name="nuxeo-platform-placeful-facade" />
       <artifact name="nuxeo-platform-ear" />
+      <artifact name="nuxeo-apt-extensions" />
       
       <!-- because of dependency of nuxeo-webengine-core on nuxeo-core -->
-      <artifact name="nuxeo-webengine-*" />
-      <artifact name="nuxeo-platform-rendering" />
+<!--      <artifact name="nuxeo-webengine-*" />-->
+<!--      <artifact name="nuxeo-platform-rendering" />-->
     </excludes>
   </artifactSet>
 
