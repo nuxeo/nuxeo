@@ -9,17 +9,17 @@
   xmlns:nxh="http://nuxeo.org/nxweb/html"
   xmlns:nxl="http://nuxeo.org/nxforms/layout">
   <f:subview>
-    <h3 class="resumeTitle"><h:outputText value="#{messages['action.view.content']}" /></h3>
+    <h3 class="summaryTitle"><h:outputText value="#{messages['action.view.content']}" /></h3>
    
 
 <h:panelGrid columns="2">
 <h:panelGroup>
-<h:outputText class="boldLabel" value=" #{messages['label.resum.download.file']}"/>      <br/>
+<h:outputText class="boldLabel" value=" #{messages['label.summary.download.file']}"/>      <br/>
 <nxh:outputLink class="boldLabel" value="#{nxd:fileUrl('downloadFile', currentDocument, 'file:content', currentDocument.file.filename)}"><h:outputText value="#{currentDocument.file.filename}"/><nxh:graphicImage value="/icons/download.png" title="#{row.data.file.filename}"/></nxh:outputLink>
     <c:if test="#{conversionActions.pdfConverterAvailability.available}">
       <nxu:methodResult name="hasPDFCapabilities" value="#{conversionActions.isFileExportableToPDF(field.fullName)}">
         <h:panelGroup rendered="#{hasPDFCapabilities}">
-          <h:outputText value=" #{messages['label.resum.download.other']} "/>
+          <h:outputText value=" #{messages['label.summary.download.other']} "/>
           <h:commandLink action="#{conversionActions.generatePdfFile}">
             <f:param name="fileFieldFullName" value="#{field.fullName}" />
             <f:param name="filename" value="#{currentDocument.file.filename}" />
@@ -35,7 +35,7 @@
     <h:panelGroup rendered="#{currentDocument.hasSchema('files')  and (!empty currentDocument.files.files)}">
       <br/><br/>
       <div class="attachments">
-        <h:outputText class="boldLabel" value=" #{messages['label.resum.download.attachments']}"/>
+        <h:outputText class="boldLabel" value=" #{messages['label.summary.download.attachments']}"/>
 
         <nxu:inputList value="#{currentDocument.files.files}"  id="files_input" model="model">
           <div class="DetailList">

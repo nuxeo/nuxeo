@@ -9,12 +9,12 @@
   xmlns:nxh="http://nuxeo.org/nxweb/html"
   xmlns:nxl="http://nuxeo.org/nxforms/layout">
   <f:subview>
-    <h3 class="resumeTitle">
-      <h:outputFormat value="#{messages['label.resum.comments']}" >
+    <h3 class="summaryTitle">
+      <h:outputFormat value="#{messages['label.summary.comments']}" >
         <f:param value="#{documentThreadedComments.size}"/>
       </h:outputFormat>
     </h3>
-    <h:outputText class="boldLabel" value="#{messages['label.resum.lastComments']}" />
+    <h:outputText class="boldLabel" value="#{messages['label.summary.lastComments']}" />
     <nxu:dataList var="threadEntry" value="#{documentThreadedComments}"
       styleClass="commentsOutput" rowIndexVar="rowIndex" rows="5" first="0">
       <h:panelGroup layout="block"

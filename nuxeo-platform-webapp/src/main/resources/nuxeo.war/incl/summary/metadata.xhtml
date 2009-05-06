@@ -9,7 +9,7 @@
   xmlns:nxh="http://nuxeo.org/nxweb/html"
   xmlns:nxd="http://nuxeo.org/nxweb/document">
   <f:subview>
-    <h3 class="resumeTitle">
+    <h3 class="summaryTitle">
       <h:outputText value="#{messages['action.view.metadata']}" />
     </h3>
     <c:set var="andLabel" value=" #{messages['label.and']} " scope="page" />
@@ -28,7 +28,7 @@
       <td><h:outputText value="#{currentDocumentVersionInfo.versionLabel}"/></td>
     </tr>
     <tr>
-      <td class="labelColumnLeftAlign"><h:outputText  class="boldLabel" value="#{messages['label.resum.lastModified']}"/></td>
+      <td class="labelColumnLeftAlign"><h:outputText  class="boldLabel" value="#{messages['label.summary.lastModified']}"/></td>
       <td><h:outputText value="#{nxu:formatDateUsingBasicFormatter(currentDocument.dublincore.modified)}"/></td>
     </tr>
     <tr>
@@ -60,7 +60,7 @@
   <div class="contributors_table">
   <h:outputText value="#{nxu:joinArrayWithFinalDelimiter(currentDocument.dc.contributors,', ',andLabel)}"/>
   </div></div>
-    <ui:include src="/incl/resum/rank.xhtml"/><h3><h:outputText
+    <ui:include src="/incl/summary/rank.xhtml"/><h3><h:outputText
   value="#{messages['label.workflow.lifeCycleInformation']}" /></h3>
 
 <h:panelGrid columns="2" styleClass="dataInput"
@@ -97,7 +97,7 @@
     
     <c:set var="selectedSections" value="#{publishActions.getPublishingInfo().toArray()}" scope="page" />
     <h:panelGroup rendered="#{!empty selectedSections}">
-    	<ui:include src="/incl/resum/publication.xhtml"/>
+    	<ui:include src="/incl/summary/publication.xhtml"/>
     </h:panelGroup>
   </f:subview>
 </div>

@@ -64,7 +64,7 @@
   <c:set var="selectedSections"
     value="#{publishActions.getPublishingInfo().toArray()}" scope="page" />
   <h:outputText class="boldLabel"
-    value="#{messages['label.resum.publication']}" />
+    value="#{messages['label.summary.publication']}" />
   <nxu:dataTable id="dataTable" value="#{selectedSections}" var="proxy"
     styleClass="dataOutput">
     <!-- id and selection -->

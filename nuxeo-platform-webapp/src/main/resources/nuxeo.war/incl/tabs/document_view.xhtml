@@ -1,4 +1,4 @@
-<div class="resum"
+<div class="summary"
   xmlns="http://www.w3.org/1999/xhtml"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:f="http://java.sun.com/jsf/core"
@@ -11,28 +11,36 @@
   xmlns:nxh="http://nuxeo.org/nxweb/html"
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxu="http://nuxeo.org/nxweb/util">
+
   <h:form>
+
   <div>
-  <ui:include src="/incl/resum/locked.xhtml" />
-  <h:panelGroup rendered="#{!empty currentDocument.dc.description}">
-    <ui:include src="/incl/resum/description.xhtml" />
-  </h:panelGroup>
-  <div style="clear:both;"></div>
+    <ui:include src="/incl/summary/locked.xhtml" />
+    <h:panelGroup rendered="#{!empty currentDocument.dc.description}">
+      <ui:include src="/incl/summary/description.xhtml" />
+    </h:panelGroup>
+
+    <div style="clear:both;"></div>
   </div>
+
   <div>
-  <h:panelGroup rendered="#{currentDocument.hasSchema('file')}">
-    <ui:include src="/incl/resum/content.xhtml" />
-  </h:panelGroup> 
-  <h:panelGroup rendered="#{(!empty relationActions.outgoingStatementsInfo) || (!empty relationActions.incomingStatementsInfo)}">
-    <ui:include src="/incl/resum/relation.xhtml" />
-  </h:panelGroup>
-  <div style="clear:both;"></div>
+    <h:panelGroup rendered="#{currentDocument.hasSchema('file')}">
+      <ui:include src="/incl/summary/content.xhtml" />
+    </h:panelGroup> 
+    <h:panelGroup rendered="#{(!empty relationActions.outgoingStatementsInfo) || (!empty relationActions.incomingStatementsInfo)}">
+      <ui:include src="/incl/summary/relation.xhtml" />
+    </h:panelGroup>
+    <div style="clear:both;"></div>
   </div>
-  <ui:include src="/incl/resum/metadata.xhtml" />
+
+  <ui:include src="/incl/summary/metadata.xhtml" />
+
   <nxu:methodResult name="commentable" value="#{currentDocument.hasFacet('Commentable')}">
     <h:panelGroup rendered="#{commentable and (documentThreadedComments.size > 0)}">
-      <ui:include src="/incl/resum/comments.xhtml" />
+      <ui:include src="/incl/summary/comments.xhtml" />
     </h:panelGroup>
   </nxu:methodResult>
-</h:form>
+  
+  </h:form>
+
 </div>

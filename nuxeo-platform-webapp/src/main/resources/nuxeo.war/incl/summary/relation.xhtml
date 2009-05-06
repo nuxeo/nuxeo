@@ -4,10 +4,10 @@
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:nxdir="http://nuxeo.org/nxdirectory">
-    <h3 class="resumeTitle">
-      <h:outputText value="#{messages['label.resum.links.title']}" />
+    <h3 class="summaryTitle">
+      <h:outputText value="#{messages['label.summary.links.title']}" />
     </h3>
-    <h:outputText value="#{messages['label.resum.relations.header']}" />
+    <h:outputText value="#{messages['label.summary.relations.header']}" />
     <nxu:dataTable value="#{relationActions.outgoingStatementsInfo}" var="statement" styleClass="dataOutput">
       <nxu:column>
         <nxdir:directoryEntryOutput
