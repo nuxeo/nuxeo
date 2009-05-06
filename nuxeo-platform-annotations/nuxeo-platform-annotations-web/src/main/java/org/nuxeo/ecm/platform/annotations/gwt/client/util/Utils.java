@@ -20,12 +20,10 @@
 package org.nuxeo.ecm.platform.annotations.gwt.client.util;
 
 import org.nuxeo.ecm.platform.annotations.gwt.client.AnnotationConstant;
-import org.w3c.dom.css.CSSMediaRule;
 
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Node;
-import com.google.gwt.user.client.Window;
 
 /**
  * @author Alexandre Russel

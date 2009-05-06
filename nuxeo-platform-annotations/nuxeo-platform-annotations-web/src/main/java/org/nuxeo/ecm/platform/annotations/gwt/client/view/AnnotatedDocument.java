@@ -346,8 +346,12 @@ public class AnnotatedDocument implements AnnotationChangeListener {
             String elementHtml = element.getInnerHTML();
             Element parent = element.getParentElement();
             String parentHtml = parent.getInnerHTML();
+
+            String escapedClassName = element.getClassName().replaceAll("([/\\\\\\.\\*\\+\\?\\|\\(\\)\\[\\]\\{\\}$^])", "\\\\$1");
+            String escapedElementHtml = elementHtml.replaceAll("([/\\\\\\.\\*\\+\\?\\|\\(\\)\\[\\]\\{\\}$^])", "\\\\$1");
+
             parentHtml = parentHtml.replaceFirst("<(span|SPAN) class=(\")?"
-                    + element.getClassName() + "(\")?.*>" + elementHtml
+                    + escapedClassName + "(\")?.*>" + escapedElementHtml
                     + "</(span|SPAN)>", elementHtml);
             parent.setInnerHTML(parentHtml);
 
