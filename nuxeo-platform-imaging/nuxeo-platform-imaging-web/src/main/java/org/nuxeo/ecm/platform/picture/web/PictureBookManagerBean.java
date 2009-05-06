@@ -367,6 +367,9 @@ public class PictureBookManagerBean extends InputController implements
     }
 
     public Integer getTimeinterval() {
+        if (timeinterval == null){
+            timeinterval = 5;
+        }
         return timeinterval;
     }
 
