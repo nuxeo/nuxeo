@@ -28,6 +28,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.Map.Entry;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -56,16 +58,30 @@ public class TypesTool implements Serializable {
     private static final long serialVersionUID = -5037578301250616973L;
 
     private static final Log log = LogFactory.getLog(TypesTool.class);
+    
+    private static final int COLUMN_SIZE = 2;
+    
+    private static final int COLUMN_WIDTH = 340;
+
+    private static final int COLUMN_HEIGHT = 60;
+
+    private static final int COLUMN_WIDTH_OVERHEAD = 20;
+
+    private static final int COLUMN_HEIGHT_OVERHEAD = 200;
 
     private static String DEFAULT_CATEGORY = "misc";
 
     @In
     private transient TypeManager typeManager;
 
-    private Map<String,List<Type>> typesMap;
+    private Map<String,List<List<Type>>> typesMap;
 
     private Type selectedType;
-
+    
+    private Integer height;
+    
+    private Integer width;
+    
     @In(create = true)
     private transient NavigationContext navigationContext;
 
@@ -89,25 +105,70 @@ public class TypesTool implements Serializable {
             Type docType = typeManager.getType(model.getType());
             if (docType != null) {
                 String key;
-                typesMap = new HashMap<String, List<Type>>();
-                for (String typeName : docType.getAllowedSubTypes()) {
+                typesMap = new HashMap<String, List<List<Type>>>();
+                String[] allowedSubTypes = docType.getAllowedSubTypes();
+                for (String typeName : allowedSubTypes) {
                     Type subType = typeManager.getType(typeName);
                     if (subType != null) {
                         key = subType.getCategory();
                         if (key == null) key = DEFAULT_CATEGORY;
                         if (!typesMap.containsKey(key)){
-                            typesMap.put(key, new ArrayList<Type>());
+                            typesMap.put(key, new ArrayList<List<Type>>());
+                            typesMap.get(key).add(new ArrayList<Type>());
                         }
-                        typesMap.get(key).add(subType);
+                        typesMap.get(key).get(0).add(subType);
                     }
                 }
+                typesMap = organizeType();
                 set = true;
             }
         }
         if (!set) {
             // set an empty list
-            typesMap = new HashMap<String, List<Type>>();
+            typesMap = new HashMap<String, List<List<Type>>>();
         }
+    }
+
+    private Map<String, List<List<Type>>> organizeType(){
+        Map<String, List<List<Type>>> newTypesMap = new HashMap<String, List<List<Type>>>();
+        Set<Entry<String,List<List<Type>>>> typeEntrySet = typesMap.entrySet();
+        List<List<Type>> typeList;
+        int columnCount = 0;
+        int lineCount = 0;
+        for (Entry<String,List<List<Type>>> set : typeEntrySet){
+            columnCount = columnCount++;
+            typeList = set.getValue();
+            List<List<Type>> newListe = new ArrayList<List<Type>>();
+            int index = 0;
+            newListe.add(index, new ArrayList<Type>());
+            List<Type> currentList;
+            for (Type type : typeList.get(0)) {
+                currentList = newListe.get(index);
+                if (currentList == null) {
+                    newListe.add(index,new ArrayList<Type>());
+                }
+                currentList.add(type);
+                if (lineCount < 5)lineCount = lineCount++;
+                if ((currentList.size() % COLUMN_SIZE) == 0) {
+                    columnCount = columnCount++;
+                    index = index++;
+                    newListe.add(index, new ArrayList<Type>());
+                    height = computeHeight(COLUMN_SIZE);
+                }
+            }
+            newTypesMap.put(set.getKey(), newListe);
+        }
+        width = computeWidth(columnCount);
+        height = computeHeight(lineCount);
+        return newTypesMap;
+    }
+    
+    private Integer computeHeight(int columnSize) {
+        return columnSize * COLUMN_HEIGHT + COLUMN_HEIGHT_OVERHEAD;
+    }
+    
+    private Integer computeWidth(int columnCount) {
+        return columnCount * COLUMN_WIDTH + COLUMN_WIDTH_OVERHEAD;
     }
 
     /**
@@ -146,7 +207,7 @@ public class TypesTool implements Serializable {
     }
 
     @Factory(value = "typesMap", scope = EVENT)
-    public Map<String,List<Type>>  getTypesList() {
+    public Map<String,List<List<Type>>>  getTypesList() {
         // XXX : should cache per currentDocument type
         if (typesMap == null) {
             // cache the list of allowed subtypes
@@ -156,7 +217,7 @@ public class TypesTool implements Serializable {
         return typesMap;
     }
 
-    public void setTypesList(Map<String,List<Type>>  typesList) {
+    public void setTypesList(Map<String,List<List<Type>>>  typesList) {
         this.typesMap = typesList;
     }
 
