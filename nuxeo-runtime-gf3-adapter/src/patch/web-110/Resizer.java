@@ -164,7 +164,7 @@ public class Resizer extends TimerTask {
 
         //iterate through all thre active resources to find idle-time lapsed ones.
         ResourceHandle h;
-		Set<ResourceHandle> activeHandles = new HashSet<ResourceHandle>();
+        Set<ResourceHandle> activeHandles = new HashSet<ResourceHandle>();
         while ((h = ds.getResource()) != null ) {
             state = h.getResourceState();
             //remove all idle-time lapsed resources.
@@ -179,7 +179,7 @@ public class Resizer extends TimerTask {
 
         //remove invalid resources from the free (active) resources list.
         //Since the whole pool is not locked, it may happen that some of these resources may be
-        //given to applications.        
+        //given to applications.
         removeInvalidResources(activeHandles);
 
         //These statistic computations will work fine as long as resizer locks the pool throughout its operations.
@@ -190,7 +190,7 @@ public class Resizer extends TimerTask {
         noOfResourcesRemoved = poolSizeBeforeRemoval - ds.getResourcesSize();
         return noOfResourcesRemoved;
     }
-	
+
     /**
      * Removes invalid resource handles in the pool while resizing the pool.
      * Uses the Connector 1.5 spec 6.5.3.4 optional RA feature to obtain
@@ -205,8 +205,8 @@ public class Resizer extends TimerTask {
             int invalidConnectionsCount = 0;
             Set<ResourceHandle> validResources = new HashSet<ResourceHandle>();
             try {
-			    for (ResourceHandle handle : freeConnectionsToValidate) {
-					Set connectionsToTest = new HashSet();
+                for (ResourceHandle handle : freeConnectionsToValidate) {
+                    Set connectionsToTest = new HashSet();
                     connectionsToTest.add(handle.getResource());
                     Set invalidConnections = handler.getInvalidConnections(connectionsToTest);
                     if (invalidConnections != null && invalidConnections.size() > 0) {
@@ -223,9 +223,9 @@ public class Resizer extends TimerTask {
                     } else {
                        //valid resource, return to pool
                        validResources.add(handle);
-					}
-			    }
-		    } finally {
+                    }
+                }
+            } finally {
                 for(ResourceHandle resourceHandle : validResources){
                     ds.returnResource(resourceHandle);
                 }

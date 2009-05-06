@@ -30,17 +30,17 @@ import org.nuxeo.runtime.api.Framework;
 public class ServerLocatorDescriptor {
 
     private static final Log log = LogFactory.getLog(ServerLocatorDescriptor.class);
-    
+
     @XNode("@default")
     protected boolean isDefault = true;
 
     protected boolean isExisting = true;
-    
+
     protected int rmiPort = 1099;
-    
+
     @XNode("@domain")
     protected String domainName;
-    
+
     public ServerLocatorDescriptor() {
         this.domainName = "";
     }
@@ -59,7 +59,7 @@ public class ServerLocatorDescriptor {
         }
         isExisting = Boolean.parseBoolean(expandedValue);
     }
-   
+
     @XNode("@rmiPort")
     public void setRmiPort(String value) {
         String expandedValue = Framework.expandVars(value);

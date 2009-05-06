@@ -373,7 +373,7 @@ public final class Framework {
         if (dev == null) {
             dev = System.getProperty("org.nuxeo.dev");
         }
-        return dev != null && !dev.equals("false");  
+        return dev != null && !dev.equals("false");
     }
 
     /**
@@ -385,7 +385,7 @@ public final class Framework {
      *  <li> Component with an unknown implementation class (the implementation entry exists in the XML descriptor but cannot be resolved to a class).
      *  <li> Uncatched exception on extension registration / unregistration (either in framework or user component code)
      *  <li> Uncatched exception on component activation / decativation (either in framework or user component code)
-     *  <li> Broken Nuxeo-Component MANIFEST entry. (i.e. the entry cannot be resolved to a resource) 
+     *  <li> Broken Nuxeo-Component MANIFEST entry. (i.e. the entry cannot be resolved to a resource)
      *  </ul>
      * @param t the exception or null if none
      */
@@ -395,7 +395,7 @@ public final class Framework {
             System.exit(1);
         }
     }
-    
+
     public static void main(String[] args) {
     }
 

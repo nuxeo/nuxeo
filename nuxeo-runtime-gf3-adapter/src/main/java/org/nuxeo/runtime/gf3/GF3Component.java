@@ -47,9 +47,9 @@ import com.sun.enterprise.config.serverbeans.ConnectorModule;
 public class GF3Component extends DefaultComponent {
 
     private static final Log log = LogFactory.getLog(GF3Component.class);
-    
+
     public static final ComponentName NAME = new ComponentName("org.nuxeo.runtime.server");
-    
+
     public static final String XP_WEB_APP = "webapp";
     public static final String XP_DATA_SOURCE = "datasource";
 
@@ -69,18 +69,18 @@ public class GF3Component extends DefaultComponent {
 //        System.setProperty(SystemPropertyConstants.INSTANCE_ROOT_PROPERTY, gf3Root);
         File file = new File(env.getConfig(), "domain.xml");
         if (file.exists()) {
-        	log.info("Starting GF3 server:"+file.toURI().toURL());
+            log.info("Starting GF3 server:"+file.toURI().toURL());
             server = new GlassFishServer(file.toURI().toURL());
         } else {
-        	log.info("activate : Starting GF3 server with no domain.xml");
+            log.info("activate : Starting GF3 server with no domain.xml");
             server = new GlassFishServer(8080);
         }
         file = new File(env.getConfig(), "default-web.xml");
         if (file.exists()) {
-        	log.info("activate : GF3 server using default-web.xml:"+file.toURI().toURL());
+            log.info("activate : GF3 server using default-web.xml:"+file.toURI().toURL());
             server.setDefaultWebXml(file.toURI().toURL());
         }
-        
+
         // register RARs - this is a costly operation - do it in a new thread
         log.info("Async. Deploying RARs");
         Thread deployerThread = new Thread(new RarDeployer(), "Deployer");
@@ -90,8 +90,8 @@ public class GF3Component extends DefaultComponent {
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
-    	log.warn("deactivate : Stopping glassfish server");
-    	server.stop();
+        log.warn("deactivate : Stopping glassfish server");
+        server.stop();
         server = null;
     }
 
@@ -101,12 +101,12 @@ public class GF3Component extends DefaultComponent {
             throws Exception {
         if (XP_WEB_APP.equals(extensionPoint)) {
             WebApplication app = (WebApplication)contribution;
-        	log.info("Async. Deploying WAR:  "+ app.getName()+"; context path:  "+app.getContextPath()+" webRoot: "+app.getWebRoot());        	
+            log.info("Async. Deploying WAR:  "+ app.getName()+"; context path:  "+app.getContextPath()+" webRoot: "+app.getWebRoot());
             Thread deployerThread = new Thread(new WarDeployer(app), "Deployer");
             deployerThread.setPriority(Thread.MAX_PRIORITY);
             deployerThread.start();
         } else if (XP_DATA_SOURCE.equals(extensionPoint)) {
-        	log.debug("GF3 ignoring extension point "+ XP_DATA_SOURCE);
+            log.debug("GF3 ignoring extension point "+ XP_DATA_SOURCE);
         }
     }
 
@@ -128,8 +128,8 @@ public class GF3Component extends DefaultComponent {
         }
         return null;
     }
-    
-    
+
+
     class WarDeployer implements Runnable {
         WebApplication app;
         public WarDeployer(WebApplication app) {
@@ -164,10 +164,10 @@ public class GF3Component extends DefaultComponent {
             }
         }
     }
-    
+
     class RarDeployer implements Runnable {
         public void run() {
-            ConnectorsClassLoaderUtil ccu = server.getHabitat().getByType(ConnectorsClassLoaderUtil.class);        
+            ConnectorsClassLoaderUtil ccu = server.getHabitat().getByType(ConnectorsClassLoaderUtil.class);
             ConnectorRuntime connSvc = server.getHabitat().getByContract(ConnectorRuntime.class);
             Applications apps = server.getHabitat().getComponent(Applications.class);
             for (ConnectorModule cm : apps.getModules(ConnectorModule.class)) {
@@ -178,9 +178,9 @@ public class GF3Component extends DefaultComponent {
                 } catch (Exception e) {
                     log.error("Failed to deploy RAR: "+cm.getName(), e);
                 }
-            }            
+            }
         }
     }
-    
+
 
 }

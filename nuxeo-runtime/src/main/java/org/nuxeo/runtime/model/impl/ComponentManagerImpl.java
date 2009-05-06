@@ -299,7 +299,7 @@ public class ComponentManagerImpl implements ComponentManager {
                 return ri.getComponent();
             }
         } catch (Exception e) {
-            log.error("Failed to get service: " + serviceClass);            
+            log.error("Failed to get service: " + serviceClass);
         }
         return null;
     }

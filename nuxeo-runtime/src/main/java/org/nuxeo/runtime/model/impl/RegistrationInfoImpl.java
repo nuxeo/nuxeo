@@ -110,7 +110,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
     public Set<RegistrationInfoImpl> getDependsOnMe() {
         return dependsOnMe;
     }
-    
+
     public Set<ComponentName> getWaitsFor() {
         return waitsFor;
     }

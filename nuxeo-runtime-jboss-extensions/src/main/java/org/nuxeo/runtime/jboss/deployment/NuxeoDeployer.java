@@ -211,7 +211,7 @@ public class NuxeoDeployer extends EARDeployer implements NuxeoDeployerMBean {
 
                 // handle Seam HotReload here
                 if (seamHRP.isSeamHotReloadEnabled()) {
-                	seamHRP.doProcess(subDeployments);
+                    seamHRP.doProcess(subDeployments);
                 }
 
                 Collections.sort(subDeployments, sorter);
