@@ -9,7 +9,7 @@
     <type id="Root">
       <label>Server Root</label>
       <icon>/icons/folder.gif</icon>
-      <bigIcon>/icons/folder_100.gif</bigIcon>
+      <bigIcon>/icons/folder_100.png</bigIcon>
       <description>serverRoot.description</description>
       <category>SuperDocument</category>
       <default-view>view_domains</default-view>
@@ -53,7 +53,7 @@
     <type id="WorkspaceRoot">
       <label>WorkspaceRoot</label>
       <icon>/icons/workspace.gif</icon>
-      <bigIcon>/icons/workspace_100.gif</bigIcon>
+      <bigIcon>/icons/workspace_100.png</bigIcon>
       <category>SuperDocument</category>
       <description>WorkspaceRoot.description</description>
       <icon-expanded>/icons/workspace_open.gif</icon-expanded>
@@ -73,7 +73,7 @@
     <type id="TemplateRoot">
       <label>TemplateRoot</label>
       <icon>/icons/folder_template.gif</icon>
-      <bigIcon>/icons/folder_template_100.gif</bigIcon>
+      <bigIcon>/icons/template_100.png</bigIcon>
       <icon-expanded>/icons/folder_template_open.gif</icon-expanded>
       <category>SuperDocument</category>
       <description>TemplateRoot.description</description>
@@ -93,7 +93,7 @@
     <type id="Workspace">
       <label>Workspace</label>
       <icon>/icons/workspace.gif</icon>
-      <bigIcon>/icons/workspace_100.gif</bigIcon>
+      <bigIcon>/icons/workspace_100.png</bigIcon>
       <icon-expanded>/icons/workspace_open.gif</icon-expanded>
       <category>Collaborative</category>
       <description>Workspace.description</description>
@@ -119,7 +119,7 @@
     <type id="SectionRoot">
       <label>SectionRoot</label>
       <icon>/icons/folder.gif</icon>
-      <bigIcon>/icons/folder_100.gif</bigIcon>
+      <bigIcon>/icons/folder_100.png</bigIcon>
       <icon-expanded>/icons/folder_open.gif</icon-expanded>
       <category>SuperDocument</category>
       <description>SectionRoot.description</description>
@@ -139,7 +139,7 @@
     <type id="Section">
       <label>Section</label>
       <icon>/icons/folder.gif</icon>
-      <bigIcon>/icons/folder_100.gif</bigIcon>
+      <bigIcon>/icons/folder_100.png</bigIcon>
       <icon-expanded>/icons/folder_open.gif</icon-expanded>
       <category>Collaborative</category>
       <description>Section.description</description>
@@ -159,7 +159,7 @@
     <type id="Folder">
       <label>Folder</label>
       <icon>/icons/folder.gif</icon>
-      <bigIcon>/icons/folder_100.gif</bigIcon>
+      <bigIcon>/icons/folder_100.png</bigIcon>
       <icon-expanded>/icons/folder_open.gif</icon-expanded>
       <category>Collaborative</category>
       <description>Folder.description</description>
@@ -181,7 +181,7 @@
     <type id="File">
       <label>File</label>
       <icon>/icons/file.gif</icon>
-      <bigIcon>/icons/file_100.gif</bigIcon>
+      <bigIcon>/icons/file_100.png</bigIcon>
       <category>SimpleDocument</category>
       <description>File.description</description>
       <default-view>view_documents</default-view>
@@ -201,7 +201,7 @@
     <type id="Note">
       <label>Note</label>
       <icon>/icons/note.gif</icon>
-      <bigIcon>/icons/note_100.gif</bigIcon>
+      <bigIcon>/icons/note_100.png</bigIcon>
       <category>SimpleDocument</category>
       <description>Note.description</description>
       <default-view>view_documents</default-view>
@@ -222,7 +222,7 @@
     <type id="AdvancedSearch">
       <label>Advanced Search</label>
       <icon>/icons/folder.gif</icon>
-      <bigIcon>/icons/folder_100.gif</bigIcon>
+      <bigIcon>/icons/folder_100.png</bigIcon>
       <default-view>view_user</default-view>
     </type>
 
