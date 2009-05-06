@@ -19,6 +19,10 @@
       <layouts mode="any">
         <layout>heading</layout>
       </layouts>
+      <layouts mode="edit">
+        <layout>heading</layout>
+        <layout>dublincore</layout>
+      </layouts>
     </type>
 
     <type id="Domain">
@@ -40,6 +44,10 @@
       <layouts mode="any">
         <layout>heading</layout>
       </layouts>
+      <layouts mode="edit">
+        <layout>heading</layout>
+        <layout>dublincore</layout>
+      </layouts>
     </type>
 
     <type id="WorkspaceRoot">
@@ -56,6 +64,10 @@
       <layouts mode="any">
         <layout>heading</layout>
       </layouts>
+      <layouts mode="edit">
+        <layout>heading</layout>
+        <layout>dublincore</layout>
+      </layouts>
     </type>
 
     <type id="TemplateRoot">
@@ -71,6 +83,10 @@
       </subtypes>
       <layouts mode="any">
         <layout>heading</layout>
+      </layouts>
+      <layouts mode="edit">
+        <layout>heading</layout>
+        <layout>dublincore</layout>
       </layouts>
     </type>
 
@@ -93,6 +109,11 @@
         <layout>heading</layout>
         <layout>file</layout>
       </layouts>
+      <layouts mode="edit">
+        <layout>heading</layout>
+        <layout>file</layout>
+        <layout>dublincore</layout>
+      </layouts>
     </type>
 
     <type id="SectionRoot">
@@ -109,6 +130,10 @@
       <layouts mode="any">
         <layout>heading</layout>
       </layouts>
+      <layouts mode="edit">
+        <layout>heading</layout>
+        <layout>dublincore</layout>
+      </layouts>
     </type>
 
     <type id="Section">
@@ -124,6 +149,10 @@
       </subtypes>
       <layouts mode="any">
         <layout>heading</layout>
+      </layouts>
+      <layouts mode="edit">
+        <layout>heading</layout>
+        <layout>dublincore</layout>
       </layouts>
     </type>
 
@@ -143,6 +172,10 @@
       <layouts mode="any">
         <layout>heading</layout>
       </layouts>
+      <layouts mode="edit">
+        <layout>heading</layout>
+        <layout>dublincore</layout>
+      </layouts>
     </type>
 
     <type id="File">
@@ -156,6 +189,11 @@
         <layout>heading</layout>
         <layout>file</layout>
       </layouts>
+      <layouts mode="edit">
+        <layout>heading</layout>
+        <layout>file</layout>
+        <layout>dublincore</layout>
+      </layouts>
     </type>
 
     <type id="Note">
@@ -168,6 +206,11 @@
       <layouts mode="any">
         <layout>heading</layout>
         <layout>note</layout>
+      </layouts>
+      <layouts mode="edit">
+        <layout>heading</layout>
+        <layout>note</layout>
+        <layout>dublincore</layout>
       </layouts>
     </type>
 

@@ -3,7 +3,6 @@
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="actions">
 
-
     <!-- server actions -->
 
     <action id="user_dashboard" link="user_dashboard"
@@ -17,8 +16,7 @@
     </action>
 
     <!--
-      <action id="logout" link="logout"  label="command.logout"
-      order="200">
+      <action id="logout" link="logout" label="command.logout" order="200">
       <category>USER_SERVICES_BOTTOM</category>
       </action>
     -->
@@ -181,16 +179,15 @@
       <filter-id>not_folder</filter-id>
     </action>
 
-    <action id="TAB_EDIT" link="/incl/tabs/edit_document_and_metadata.xhtml"
-      order="20" label="action.view.modification" icon="/icons/file.gif">
+    <action id="TAB_EDIT" link="/incl/tabs/document_edit.xhtml" order="20"
+      label="action.view.modification" icon="/icons/file.gif">
       <category>VIEW_ACTION_LIST</category>
       <filter-id>edit</filter-id>
       <filter-id>mutable_document</filter-id>
     </action>
 
-    <action id="TAB_WORKSPACE_EDIT"
-      link="/incl/tabs/edit_document_and_metadata.xhtml" order="22"
-      label="action.view.modification" icon="/icons/file.gif">
+    <action id="TAB_WORKSPACE_EDIT" link="/incl/tabs/document_edit.xhtml"
+      order="22" label="action.view.modification" icon="/icons/file.gif">
       <category>VIEW_ACTION_LIST</category>
       <filter-id>workspace_edit</filter-id>
       <filter-id>mutable_document</filter-id>
@@ -530,7 +527,7 @@
       label="command.lock" icon="/icons/lock.gif">
       <category>POPUP</category>
       <filter-id>mutable_document</filter-id>
-      <filter id="can_lock_doc">
+      <filter id="popup_can_lock_doc">
         <rule grant="true">
           <permission>Write</permission>
           <condition>#{lockActions.getCanLockDoc(document)}</condition>
