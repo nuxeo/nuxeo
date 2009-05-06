@@ -30,12 +30,11 @@
     </h:selectManyCheckbox>
 
 
-    <div class="action_bar"
-      onclick="Richfaces.hideModalPanel('imagingPanel')">
-      <nxh:commandLink action="#{pictureBookManager.downloadSelectedBook}">
+    <div onclick="Richfaces.hideModalPanel('imagingPanel')">
+      <nxh:commandLink class="imagingPanelDownloadLink" action="#{pictureBookManager.downloadSelectedBook}">
         <h:outputText value="#{messages['action.picture.dlSelected']}" />
       </nxh:commandLink>
-      <nxh:commandLink action="#{pictureBookManager.downloadAll}">
+      <nxh:commandLink class="imagingPanelDownloadLink" action="#{pictureBookManager.downloadAll}">
         <h:outputText value="#{messages['action.picture.dlAll']}" />
       </nxh:commandLink>
     </div>

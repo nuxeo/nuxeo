@@ -16,7 +16,7 @@
       <icon>/icons/picturebook.gif</icon>
       <bigIcon>/icons/picturebook_100.gif</bigIcon>
       <description>PictureBook.description</description>
-      <category>Media</category>
+      <category>Collaborative</category>
       <default-view>view_documents</default-view>
       <create-view>create_picturebook</create-view>
       <layout>
@@ -33,7 +33,7 @@
       <create-view>create_picture</create-view>
       <icon>/icons/image.gif</icon>
       <bigIcon>/icons/image_100.gif</bigIcon>
-      <category>Media</category>
+      <category>SimpleDocument</category>
       <description>Picture.description</description>
       <layout>
         <widget jsfcomponent="h:inputText" schemaname="dublincore"

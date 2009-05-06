@@ -6,6 +6,7 @@
     <type id="MailMessage" coretype="MailMessage">
       <label>MailMessage</label>
       <icon>/icons/file.gif</icon>
+      <category>SimpleDocument</category>
       <default-view>view_documents</default-view>
       <layouts mode="any">
         <layout>mailMessage</layout>
@@ -16,6 +17,7 @@
     <type id="MailFolder" coretype="MailFolder">
       <label>MailFolder</label>
       <icon>/icons/folder.gif</icon>
+      <category>Collaborative</category>
       <default-view>view_documents</default-view>
       <layouts mode="any">
         <layout>mail_folder</layout>

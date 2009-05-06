@@ -11,7 +11,7 @@
       <label>label.document.post</label>
       <bigIcon>/icons/forum_100.gif</bigIcon>
       <description>Comment.description</description>
-      <category>WebObject</category>
+      <category>SimpleDocument</category>
     </type>
 
     <type id="WebSite">
@@ -19,7 +19,7 @@
       <icon>/icons/folder.gif</icon>
       <bigIcon>/icons/folder_100.gif</bigIcon>
       <icon-expanded>/icons/folder_open.gif</icon-expanded>
-      <category>WebObject</category>
+      <category>Collaborative</category>
       <description>WebSite.description</description>
       <default-view>view_documents</default-view>
       <subtypes>
@@ -40,7 +40,7 @@
       <icon>/icons/page_white_world.png</icon>
       <bigIcon>/icons/folder_100.gif</bigIcon>
       <icon-expanded>/icons/web_folder.png</icon-expanded>
-      <category>WebObject</category>
+      <category>SimpleDocument</category>
       <description>WebPage.description</description>
       <default-view>view_documents</default-view>
       <subtypes>
@@ -64,7 +64,7 @@
       <icon>/icons/file.gif</icon>
       <bigIcon>/icons/file_100.gif</bigIcon>
       <description>ContextualLink.description</description>
-      <category>WebObject</category>
+      <category>SimpleDocument</category>
       <default-view>view_documents</default-view>
       <layouts mode="any">
         <layout>heading</layout>

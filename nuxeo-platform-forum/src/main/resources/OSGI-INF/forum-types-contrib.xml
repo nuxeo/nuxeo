@@ -34,7 +34,7 @@
       <icon>/icons/forum_thread.gif</icon>
       <bigIcon>/icons/forum_thread.gif</bigIcon>
       <description>Thread.description</description>
-      <category>Collaborative</category>
+      <category>SimpleDocument</category>
       <default-view>view_documents</default-view>
       <create-view>thread_create</create-view>
       <layout>
