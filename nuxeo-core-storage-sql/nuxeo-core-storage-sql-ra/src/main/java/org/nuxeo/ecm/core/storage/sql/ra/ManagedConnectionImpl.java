@@ -18,7 +18,8 @@
 package org.nuxeo.ecm.core.storage.sql.ra;
 
 import java.io.PrintWriter;
-import java.util.LinkedList;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.resource.ResourceException;
 import javax.resource.cci.Connection;
@@ -67,7 +68,7 @@ public class ManagedConnectionImpl implements ManagedConnection,
      * All the {@link Connection} handles for this managed connection. There is
      * usually only one, unless sharing is in effect.
      */
-    private final LinkedList<ConnectionImpl> connections;
+    private final Set<ConnectionImpl> connections;
 
     /**
      * The low-level session managed by this connection.
@@ -98,7 +99,7 @@ public class ManagedConnectionImpl implements ManagedConnection,
         out = managedConnectionFactory.getLogWriter();
         this.managedConnectionFactory = managedConnectionFactory;
         this.connectionSpec = connectionRequestInfo.connectionSpec;
-        connections = new LinkedList<ConnectionImpl>();
+        connections = new HashSet<ConnectionImpl>();
         listeners = new ListenerList();
         // create the underlying session
         session = managedConnectionFactory.getConnection(connectionSpec);
@@ -159,8 +160,8 @@ public class ManagedConnectionImpl implements ManagedConnection,
      */
     public void associateConnection(Object object) throws ResourceException {
         ConnectionImpl connection = (ConnectionImpl) object;
-        log.debug("associateConnection: " + this + ", connection: " +
-                connection);
+        log.debug("associateConnection: " + this + ", connection: "
+                + connection);
         ManagedConnectionImpl other = connection.getManagedConnection();
         if (other != this) {
             log.debug("associateConnection other: " + other);
@@ -237,17 +238,12 @@ public class ManagedConnectionImpl implements ManagedConnection,
      */
 
     /**
-     * Sets a connection as the new current one for this managed connection.
+     * Adds a connection to those using this managed connection.
      */
     private void addConnection(ConnectionImpl connection) {
         synchronized (connections) {
             log.debug("addConnection: " + connection);
-            ConnectionImpl previous = connections.peek();
-            if (previous != null) {
-                log.debug("addConnection: disassociate previous: " + previous);
-                previous.disassociate();
-            }
-            connections.addFirst(connection);
+            connections.add(connection);
             connection.associate(session);
         }
     }
@@ -260,10 +256,6 @@ public class ManagedConnectionImpl implements ManagedConnection,
             log.debug("removeConnection: " + connection);
             connection.disassociate();
             connections.remove(connection);
-            ConnectionImpl first = connections.peek();
-            if (first != null) {
-                first.associate(session);
-            }
         }
     }
 

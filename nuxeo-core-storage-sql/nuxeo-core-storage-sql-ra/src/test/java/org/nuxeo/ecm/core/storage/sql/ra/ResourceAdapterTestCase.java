@@ -74,6 +74,7 @@ public class ResourceAdapterTestCase extends BaseTestCase {
         super.setUp();
         runtimeTestCase.setUp();
         runtimeTestCase.deployBundle("org.nuxeo.ecm.core.schema");
+        runtimeTestCase.deployBundle("org.nuxeo.ecm.core.event");
         runtimeTestCase.deployContrib(
                 "org.nuxeo.ecm.core.storage.sql.ra.tests",
                 "OSGI-INF/test-core-types-contrib.xml");
@@ -116,8 +117,11 @@ public class ResourceAdapterTestCase extends BaseTestCase {
         // let commit do an implicit save
         tm.commit();
 
-        // second transaction
-        tm.begin();
+        // do stuff outside a transaction, because due to the
+        // track-connection-by-tx parameter in the datasource, if there is a
+        // connection then all calls to getConnection will return a connection
+        // tied to the same underlying ManagedConnection
+        //
         // we can't know what the JCA pool does, test two sessions to be sure,
         // at least one of them will be different than the initial one above if
         // the implicit save failed
@@ -126,6 +130,33 @@ public class ResourceAdapterTestCase extends BaseTestCase {
         Node foo1 = session1.getNodeByPath("/foo", null);
         Node foo2 = session2.getNodeByPath("/foo", null);
         assertNotNull(foo1);
+        assertNotNull(foo2);
+    }
+
+    /**
+     * Test that connection sharing allows use of several connections at the
+     * same time. Previously, while one connection was in use, the other ones
+     * were deassociated and could not be used.
+     */
+    public void testConnectionSharing() throws Exception {
+        InitialContext context = new InitialContext();
+        TransactionManager tm = (TransactionManager) context.lookup("java:/TransactionManager");
+        Repository repository = (Repository) context.lookup("java:NuxeoRepository/test");
+        assertNotNull(repository);
+
+        tm.begin();
+        Session session1 = repository.getConnection();
+        Session session2 = repository.getConnection();
+        // the following access fails if sharing closes other connections
+        // (Cannot use closed connection handle)
+        Node root1 = session1.getRootNode();
+        Node root2 = session2.getRootNode();
+        assertNotNull(root1);
+        assertNotNull(root2);
+        session1.addChildNode(root1, "foo", null, "TestDoc", false);
+        // check that this is immediately seen from other connection (underlying
+        // ManagedConnection is the same)
+        Node foo2 = session2.getNodeByPath("/foo", null);
         assertNotNull(foo2);
         tm.commit();
     }

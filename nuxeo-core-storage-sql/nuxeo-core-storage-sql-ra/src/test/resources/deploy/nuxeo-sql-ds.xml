@@ -6,6 +6,7 @@
   <tx-connection-factory>
     <jndi-name>NuxeoRepository/test</jndi-name>
     <xa-transaction />
+    <track-connection-by-tx/>
     <rar-name>nuxeo-sql.rar</rar-name>
     <connection-definition>org.nuxeo.ecm.core.storage.sql.Repository</connection-definition>
     <config-property name="name" type="java.lang.String">test</config-property>
