@@ -1,4 +1,5 @@
 package org.nuxeo.ecm.core.storage.sql.db;
+
 /*
  * (C) Copyright 2008-2009 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
@@ -37,17 +38,16 @@ import org.nuxeo.ecm.core.storage.sql.db.Table;
 
 /**
  * PostgreSQL-specific dialect.
- *
+ * 
  * @author Florent Guillaume
  */
 public class DialectPostgreSQL extends Dialect {
 
-
     public DialectPostgreSQL(DatabaseMetaData metadata,
             RepositoryDescriptor repositoryDescriptor) throws StorageException {
         super(new PostgreSQLDialect(), metadata);
-    }
 
+    }
 
     @Override
     public boolean supportsUpdateFrom() {
@@ -63,7 +63,6 @@ public class DialectPostgreSQL extends Dialect {
     public String getSecurityCheckSql(String idColumnName) {
         return String.format("NX_ACCESS_ALLOWED(%s, ?, ?)", idColumnName);
     }
-
 
     @Override
     public boolean supportsArrays() {
@@ -202,11 +201,72 @@ public class DialectPostgreSQL extends Dialect {
             throw new AssertionError(model.idGenPolicy);
         }
 
-
         List<ConditionalStatement> statements = new LinkedList<ConditionalStatement>();
 
+        statements.add(new ConditionalStatement(
+                true, // early
+                Boolean.FALSE, // no drop needed
+                null, //
+                null, //
+                String.format(
+                        "CREATE OR REPLACE FUNCTION NX_IN_TREE(id %s, baseid %<s) " //
+                                + "RETURNS boolean " //
+                                + "AS $$ " //
+                                + "DECLARE" //
+                                + "  curid %<s := id; " //
+                                + "BEGIN" //
+                                + "  IF baseid IS NULL OR id IS NULL OR baseid = id THEN" //
+                                + "    RETURN false;" //
+                                + "  END IF;" //
+                                + "  LOOP" //
+                                + "    SELECT parentid INTO curid FROM hierarchy WHERE hierarchy.id = curid;" //
+                                + "    IF curid IS NULL THEN" //
+                                + "      RETURN false; " //
+                                + "    ELSEIF curid = baseid THEN" //
+                                + "      RETURN true;" //
+                                + "    END IF;" //
+                                + "  END LOOP;" //
+                                + "END " //
+                                + "$$ " //
+                                + "LANGUAGE plpgsql " //
+                                + "STABLE " //
+                        , idType)));
 
-
+        statements.add(new ConditionalStatement(
+                true, // early
+                Boolean.FALSE, // no drop needed
+                null, //
+                null, //
+                String.format(
+                        "CREATE OR REPLACE FUNCTION NX_ACCESS_ALLOWED" //
+                                + "(id %s, users varchar[], permissions varchar[]) " //
+                                + "RETURNS boolean " //
+                                + "AS $$ " //
+                                + "DECLARE" //
+                                + "  curid %<s := id;" //
+                                + "  newid %<s;" //
+                                + "  r record;" //
+                                + "  first boolean := true;" //
+                                + "BEGIN" //
+                                + "  WHILE curid IS NOT NULL LOOP" //
+                                + "    FOR r in SELECT acls.grant, acls.permission, acls.user FROM acls WHERE acls.id = curid ORDER BY acls.pos LOOP"
+                                + "      IF r.permission = ANY(permissions) AND r.user = ANY(users) THEN" //
+                                + "        RETURN r.grant;" //
+                                + "      END IF;" //
+                                + "    END LOOP;" //
+                                + "    SELECT parentid INTO newid FROM hierarchy WHERE hierarchy.id = curid;" //
+                                + "    IF first AND newid IS NULL THEN" //
+                                + "      SELECT versionableid INTO newid FROM versions WHERE versions.id = curid;" //
+                                + "    END IF;" //
+                                + "    first := false;" //
+                                + "    curid := newid;" //
+                                + "  END LOOP;" //
+                                + "  RETURN false; " //
+                                + "END " //
+                                + "$$ " //
+                                + "LANGUAGE plpgsql " //
+                                + "STABLE " //
+                        , idType)));
 
         statements.add(new ConditionalStatement(
                 true, // early
@@ -249,9 +309,6 @@ public class DialectPostgreSQL extends Dialect {
                         + "$$ " //
                         + "LANGUAGE plpgsql" //
         ));
-
-
-
 
         return statements;
     }
