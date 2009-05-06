@@ -59,15 +59,7 @@ public class TypesTool implements Serializable {
 
     private static final Log log = LogFactory.getLog(TypesTool.class);
     
-    private static final int COLUMN_SIZE = 2;
-    
-    private static final int COLUMN_WIDTH = 340;
-
-    private static final int COLUMN_HEIGHT = 60;
-
-    private static final int COLUMN_WIDTH_OVERHEAD = 20;
-
-    private static final int COLUMN_HEIGHT_OVERHEAD = 200;
+    private static final int COLUMN_SIZE = 4;
 
     private static String DEFAULT_CATEGORY = "misc";
 
@@ -77,11 +69,7 @@ public class TypesTool implements Serializable {
     private Map<String,List<List<Type>>> typesMap;
 
     private Type selectedType;
-    
-    private Integer height;
-    
-    private Integer width;
-    
+
     @In(create = true)
     private transient NavigationContext navigationContext;
 
@@ -133,10 +121,7 @@ public class TypesTool implements Serializable {
         Map<String, List<List<Type>>> newTypesMap = new HashMap<String, List<List<Type>>>();
         Set<Entry<String,List<List<Type>>>> typeEntrySet = typesMap.entrySet();
         List<List<Type>> typeList;
-        int columnCount = 0;
-        int lineCount = 0;
         for (Entry<String,List<List<Type>>> set : typeEntrySet){
-            columnCount = columnCount++;
             typeList = set.getValue();
             List<List<Type>> newListe = new ArrayList<List<Type>>();
             int index = 0;
@@ -148,29 +133,16 @@ public class TypesTool implements Serializable {
                     newListe.add(index,new ArrayList<Type>());
                 }
                 currentList.add(type);
-                if (lineCount < 5)lineCount = lineCount++;
                 if ((currentList.size() % COLUMN_SIZE) == 0) {
-                    columnCount = columnCount++;
                     index = index++;
                     newListe.add(index, new ArrayList<Type>());
-                    height = computeHeight(COLUMN_SIZE);
                 }
             }
             newTypesMap.put(set.getKey(), newListe);
         }
-        width = computeWidth(columnCount);
-        height = computeHeight(lineCount);
         return newTypesMap;
     }
     
-    private Integer computeHeight(int columnSize) {
-        return columnSize * COLUMN_HEIGHT + COLUMN_HEIGHT_OVERHEAD;
-    }
-    
-    private Integer computeWidth(int columnCount) {
-        return columnCount * COLUMN_WIDTH + COLUMN_WIDTH_OVERHEAD;
-    }
-
     /**
      * Retrieves the list of allowed sub types given a current type.
      *
