@@ -200,6 +200,41 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         checkVersions(file, "1", "2");
     }
 
+    public void testSnapshotting() throws Exception {
+        DocumentModel file = new DocumentModelImpl("/", "file", "File");
+        file.setProperty("file", "filename", "A");
+        file = session.createDocument(file);
+        session.save();
+        // no version yet
+        checkVersions(file);
+
+        // create snapshot of A state before saving
+        file.setProperty("file", "filename", "B");
+        file.putContextData(ScopeType.REQUEST,
+                VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, Boolean.TRUE);
+        file = session.saveDocument(file);
+        checkVersions(file, "1");
+
+        // create a snapshot of the last change (B)
+        file.putContextData(ScopeType.REQUEST,
+                VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, Boolean.TRUE);
+        file = session.saveDocument(file);
+        checkVersions(file, "1", "2");
+
+        // another snapshot on save won't do anything, doc is not dirty
+        file.setProperty("file", "filename", "C");
+        file.putContextData(ScopeType.REQUEST,
+                VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, Boolean.TRUE);
+        file = session.saveDocument(file);
+        checkVersions(file, "1", "2"); // still only one version
+
+        // but last change (C) now has to be saved on snapshot
+        file.putContextData(ScopeType.REQUEST,
+                VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, Boolean.TRUE);
+        file = session.saveDocument(file);
+        checkVersions(file, "1", "2", "3");
+    }
+
     private void createTrioVersions(DocumentModel file) throws Exception {
         // create a first version
         file.setProperty("file", "filename", "A");

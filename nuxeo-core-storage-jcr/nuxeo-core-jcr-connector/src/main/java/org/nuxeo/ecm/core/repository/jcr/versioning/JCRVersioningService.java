@@ -52,6 +52,7 @@ public class JCRVersioningService implements VersioningService {
         JCRDocument jdoc = (JCRDocument) doc;
         Node node = jdoc.getNode();
         try {
+            node.save();
             Version version = node.checkin();
             if (label != null) {
                 node.getVersionHistory().addVersionLabel(version.getName(),

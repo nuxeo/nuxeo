@@ -37,6 +37,12 @@ public interface VersioningDocument {
     String CREATE_SNAPSHOT_ON_SAVE_KEY = "CREATE_SNAPSHOT_ON_SAVE";
 
     /**
+     * Key passed in options to event to inform it that the document was just
+     * snapshotted. Used to avoid incrementing versions twice.
+     */
+    String DOCUMENT_WAS_SNAPSHOTTED = "DOCUMENT_WAS_SNAPSHOTTED";
+
+    /**
      * Key used in options map to send current versions to versioning listener
      * so it will know what version the document had before restoring.
      */

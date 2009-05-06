@@ -453,38 +453,6 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
-    /**
-     * Writes the model as modified by the used in the corresponding document.
-     *
-     * @param doc the document where to write the changes
-     * @param docModel the model containing the changes
-     * @returns the newly read document model.
-     * @throws DocumentException
-     */
-    protected DocumentModel writeModel_OLD(Document doc, DocumentModel docModel)
-            throws DocumentException, ClientException {
-        // get loaded data models
-        boolean changed = false;
-        Collection<DataModel> dataModels = docModel.getDataModelsCollection();
-        for (DataModel dataModel : dataModels) {
-            if (dataModel.isDirty()) {
-                Collection<String> fields = dataModel.getDirtyFields();
-                for (String field : fields) {
-                    Object data = dataModel.getData(field);
-                    doc.setPropertyValue(field, data);
-                    changed = true;
-                }
-            }
-        }
-
-        if (changed) {
-            doc.setDirty(true);
-        }
-        DocumentModel newModel = readModel(doc, null);
-        newModel.copyContextData(docModel);
-        return newModel;
-    }
-
     protected DocumentModel writeModel(Document doc, DocumentModel docModel)
             throws DocumentException, ClientException {
         // get loaded data models
@@ -1702,20 +1670,32 @@ public abstract class AbstractSession implements CoreSession,
                     ScopeType.REQUEST,
                     VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY);
             DocumentModel oldDoc = null;
-            if (createSnapshot != null && createSnapshot) {
-                // FIXME: remove this - pass the flag as an arg or create
-                // another method!!!
-                save();
-                // creating versions fails if documents involved are not saved
-                oldDoc = createDocumentSnapshot(docModel);
-                // ok, now it is consumed
+            if (createSnapshot == Boolean.TRUE) {
+                oldDoc = createDocumentSnapshot(docModel, doc, options, true);
                 ctxData.putScopedValue(ScopeType.REQUEST,
                         VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, null);
+                if (oldDoc != null) {
+                    // pass that info to future events to avoid incrementing
+                    // versions twice
+                    options.put(VersioningDocument.DOCUMENT_WAS_SNAPSHOTTED,
+                            Boolean.TRUE);
+                }
             }
 
+            // version incrementing listeners mustn't dirty the doc,
+            // so use an alternate DocumentModel for the event
+            DocumentModel tmpDocModel = readModel(doc, null);
+            notifyEvent(DocumentEventTypes.INCREMENT_BEFORE_UPDATE,
+                    tmpDocModel, options, null, null, true);
+            // write potential number changes, reset dirty flags
+            writeModel(doc, tmpDocModel);
+            doc.setDirty(false);
+
+            // regular event, last chance to modify docModel
             notifyEvent(DocumentEventTypes.BEFORE_DOC_UPDATE, docModel,
                     options, null, null, true);
 
+            // actual save
             docModel = writeModel(doc, docModel);
 
             notifyEvent(DocumentEventTypes.DOCUMENT_UPDATED, docModel, options,
@@ -1743,35 +1723,31 @@ public abstract class AbstractSession implements CoreSession,
 
     /**
      * Creates a snapshot (version) for the given DocumentModel.
+     * <p>
+     * Passed options are propagated to the checked out event.
      *
-     * @param doc
      * @return the last version (that was just created)
-     * @throws ClientException
      */
-    private DocumentModel createDocumentSnapshot(DocumentModel doc)
+    private DocumentModel createDocumentSnapshot(DocumentModel docModel,
+            Document doc, Map<String, Serializable> options, boolean pendingSave)
             throws ClientException {
-        if (!isDirty(doc.getRef())) {
+        if (!isDirty(docModel.getRef())) {
             log.debug("Document not dirty -> avoid creating a new version");
             return null;
         }
 
         // Do a checkin / checkout of the edited version
-        DocumentRef docRef = doc.getRef();
+        DocumentRef docRef = docModel.getRef();
         VersionModel newVersion = new VersionModelImpl();
         String vlabel = generateVersionLabelFor(docRef);
         newVersion.setLabel(vlabel);
 
         checkIn(docRef, newVersion);
-        log.debug("doc checked in " + doc.getTitle());
-        checkOut(docRef);
-        log.debug("doc checked out " + doc.getTitle());
+        log.debug("doc checked in " + docModel.getTitle());
+        checkOut(docModel, doc, options, pendingSave);
+        log.debug("doc checked out " + docModel.getTitle());
 
-        // TODO we need to make it clearer that this event is
-        // about new version snapshot and not about versioning fields change
-        // (i.e. major, minor version increment)
-        DocumentModel oldDoc = getDocumentWithVersion(docRef, newVersion);
-
-        return oldDoc;
+        return getDocumentWithVersion(docRef, newVersion);
     }
 
     public void saveDocuments(DocumentModel[] docModels) throws ClientException {
@@ -1935,7 +1911,7 @@ public abstract class AbstractSession implements CoreSession,
             DocumentModel docModel = readModel(doc, null);
 
             // we're about to overwrite the document, make sure it's archived
-            createDocumentSnapshot(docModel);
+            createDocumentSnapshot(docModel, doc, null, false);
 
             final Map<String, Serializable> options = new HashMap<String, Serializable>();
 
@@ -1982,9 +1958,6 @@ public abstract class AbstractSession implements CoreSession,
 
     public void checkIn(DocumentRef docRef, VersionModel version)
             throws ClientException {
-        assert docRef != null;
-        assert version != null;
-
         try {
             Document doc = resolveReference(docRef);
             // TODO: add a new permission names CHECKIN and use it instead of
@@ -2015,29 +1988,48 @@ public abstract class AbstractSession implements CoreSession,
     }
 
     public void checkOut(DocumentRef docRef) throws ClientException {
-        assert docRef != null;
+        Document doc;
         try {
-            Document doc = resolveReference(docRef);
+            doc = resolveReference(docRef);
             // TODO: add a new permission names CHECKOUT and use it instead of
             // WRITE_PROPERTIES
             checkPermission(doc, WRITE_PROPERTIES);
-            DocumentModel docModel = readModel(doc, null);
-            Map<String, Serializable> options = new HashMap<String, Serializable>();
-            notifyEvent(DocumentEventTypes.ABOUT_TO_CHECKOUT, docModel,
-                    options, null, null, true);
-
-            // checkout
-            doc.checkOut();
-            // doc was just checked out -> reset the dirty flag
-            doc.setDirty(false);
-
-            // re-read doc model
-            docModel = readModel(doc, null);
-            notifyEvent(DocumentEventTypes.DOCUMENT_CHECKEDOUT, docModel,
-                    options, null, null, true);
         } catch (DocumentException e) {
             throw new ClientException("Failed to check out document " + docRef,
                     e);
+        }
+        checkOut(readModel(doc, null), doc, null, false);
+    }
+
+    protected void checkOut(DocumentModel docModel, Document doc,
+            Map<String, Serializable> options, boolean pendingSave)
+            throws ClientException {
+        try {
+            if (doc == null) {
+                doc = resolveReference(docModel.getRef());
+            }
+            notifyEvent(DocumentEventTypes.ABOUT_TO_CHECKOUT, docModel,
+                    options, null, null, true);
+            doc.checkOut();
+
+            // notify listeners to increment the version number;
+            DocumentModel eventDocModel;
+            if (pendingSave) {
+                // save is pending and will want an untouched DocumentModel. so
+                // use a pristined DocumentModel to avoid interfering with it
+                eventDocModel = readModel(doc, null);
+            } else {
+                eventDocModel = docModel;
+            }
+            notifyEvent(DocumentEventTypes.DOCUMENT_CHECKEDOUT, eventDocModel,
+                    options, null, null, true);
+            // write version number changes
+            writeModel(doc, eventDocModel);
+            // and reset the dirty flag
+            doc.setDirty(false);
+        } catch (DocumentException e) {
+            throw new ClientException("Failed to check out document "
+                    + docModel.getRef(), e);
         }
     }
 
@@ -2571,11 +2563,8 @@ public abstract class AbstractSession implements CoreSession,
                 throw new ClientException(e);
             }
         } else {
-            // prepare document for creating snapshot
-            docToPublish.putContextData(
-                    VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, true);
             // snapshot the document
-            createDocumentSnapshot(docToPublish);
+            createDocumentSnapshot(docToPublish, null, null, false);
             VersionModel version = getLastVersion(docRef);
             DocumentModel newProxy = createProxy(sectionRef, docRef, version,
                     overwriteExistingProxy);
