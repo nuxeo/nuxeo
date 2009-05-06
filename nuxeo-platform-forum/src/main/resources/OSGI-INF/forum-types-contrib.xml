@@ -15,7 +15,7 @@
       <label>Forum</label>
       <icon>/icons/forum.gif</icon>
       <default-view>view_documents</default-view>
-      <bigIcon>/icons/forum_100.gif</bigIcon>
+      <bigIcon>/icons/forum_100.png</bigIcon>
       <description>Forum.description</description>
       <category>Collaborative</category>
       <subtypes>

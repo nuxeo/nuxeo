@@ -14,7 +14,7 @@
     <type id="PictureBook" coretype="PictureBook">
       <label>PictureBook</label>
       <icon>/icons/picturebook.gif</icon>
-      <bigIcon>/icons/picturebook_100.gif</bigIcon>
+      <bigIcon>/icons/picturebook_100.png</bigIcon>
       <description>PictureBook.description</description>
       <category>Collaborative</category>
       <default-view>view_documents</default-view>
@@ -32,7 +32,7 @@
       <default-view>view_documents</default-view>
       <create-view>create_picture</create-view>
       <icon>/icons/image.gif</icon>
-      <bigIcon>/icons/image_100.gif</bigIcon>
+      <bigIcon>/icons/image_100.png</bigIcon>
       <category>SimpleDocument</category>
       <description>Picture.description</description>
       <layout>

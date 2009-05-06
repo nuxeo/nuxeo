@@ -19,6 +19,7 @@
     <type id="UserDataRoot" coretype="UserDataRoot">
       <label>UserDataRoot</label>
       <icon>/icons/folder.gif</icon>
+      <bigIcon>/icons/folder_100.png</bigIcon>
       <default-view>view_documents</default-view>
       <subtypes>
         <type>Folder</type>

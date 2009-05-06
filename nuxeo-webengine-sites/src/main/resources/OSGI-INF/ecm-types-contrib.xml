@@ -9,7 +9,7 @@
     <type id="Comment" coretype="Comment">
       <icon>/icons/forum_post.gif</icon>
       <label>label.document.post</label>
-      <bigIcon>/icons/forum_100.gif</bigIcon>
+      <bigIcon>/icons/forum_100.png</bigIcon>
       <description>Comment.description</description>
       <category>SimpleDocument</category>
     </type>
@@ -17,7 +17,7 @@
     <type id="WebSite">
       <label>WebSite</label>
       <icon>/icons/folder.gif</icon>
-      <bigIcon>/icons/folder_100.gif</bigIcon>
+      <bigIcon>/icons/website_100.png</bigIcon>
       <icon-expanded>/icons/folder_open.gif</icon-expanded>
       <category>Collaborative</category>
       <description>WebSite.description</description>
@@ -38,7 +38,7 @@
     <type id="WebPage" coretype="WebPage">
       <label>Web Page</label>
       <icon>/icons/page_white_world.png</icon>
-      <bigIcon>/icons/folder_100.gif</bigIcon>
+      <bigIcon>/icons/webpage_100.png</bigIcon>
       <icon-expanded>/icons/web_folder.png</icon-expanded>
       <category>SimpleDocument</category>
       <description>WebPage.description</description>
@@ -62,7 +62,7 @@
     <type id="ContextualLink" coretype="ContextualLink">
       <label>Contextual Link</label>
       <icon>/icons/file.gif</icon>
-      <bigIcon>/icons/file_100.gif</bigIcon>
+      <bigIcon>/icons/contextuallink_100.png</bigIcon>
       <description>ContextualLink.description</description>
       <category>SimpleDocument</category>
       <default-view>view_documents</default-view>
