@@ -4,8 +4,7 @@
 
   <require>org.nuxeo.ecm.platform.types.TypeService</require>
 
-  <extension target="org.nuxeo.ecm.platform.types.TypeService"
-    point="types">
+  <extension target="org.nuxeo.ecm.platform.types.TypeService" point="types">
 
     <type id="Comment" coretype="Comment">
       <icon>/icons/forum_post.gif</icon>
@@ -14,7 +13,7 @@
       <description>Comment.description</description>
       <category>WebObject</category>
     </type>
-    
+
     <type id="WebSite">
       <label>WebSite</label>
       <icon>/icons/folder.gif</icon>
@@ -30,8 +29,12 @@
       <layouts mode="any">
         <layout>webcontainer</layout>
       </layouts>
+      <layouts mode="edit">
+        <layout>webcontainer</layout>
+        <layout>dublincore</layout>
+      </layouts>
     </type>
-    
+
     <type id="WebPage" coretype="WebPage">
       <label>Web Page</label>
       <icon>/icons/page_white_world.png</icon>
@@ -44,14 +47,18 @@
         <type>WebPage</type>
         <type>ContextualLink</type>
       </subtypes>
-      <!-- new layout config -->
       <layouts mode="any">
         <layout>heading</layout>
         <layout>webpage</layout>
       </layouts>
+      <layouts mode="edit">
+        <layout>heading</layout>
+        <layout>webpage</layout>
+        <layout>dublincore</layout>
+      </layouts>
     </type>
 
-    <!-- ContextualLink doc type definition  -->    
+    <!-- ContextualLink doc type definition  -->
     <type id="ContextualLink" coretype="ContextualLink">
       <label>Contextual Link</label>
       <icon>/icons/file.gif</icon>
@@ -59,12 +66,16 @@
       <description>ContextualLink.description</description>
       <category>WebObject</category>
       <default-view>view_documents</default-view>
-      <!-- new layout config -->
       <layouts mode="any">
         <layout>heading</layout>
         <layout>contextualLink</layout>
       </layouts>
-    </type>    
+      <layouts mode="edit">
+        <layout>heading</layout>
+        <layout>contextualLink</layout>
+        <layout>dublincore</layout>
+      </layouts>
+    </type>
 
     <type id="Workspace" coretype="Workspace">
       <subtypes>
@@ -87,4 +98,5 @@
       <type name="ContextualLink">default</type>
     </types>
   </extension>
+
 </component>
