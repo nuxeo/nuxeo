@@ -3,6 +3,7 @@
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="actions">
 
+
     <!-- server actions -->
 
     <action id="user_dashboard" link="user_dashboard" enabled="true"
@@ -16,8 +17,8 @@
     </action>
 
     <!--
-      <action id="logout" link="logout" enabled="true"
-      label="command.logout" order="200">
+      <action id="logout" link="logout" enabled="true" label="command.logout"
+      order="200">
       <category>USER_SERVICES_BOTTOM</category>
       </action>
     -->
@@ -109,13 +110,15 @@
 
     <!-- generic actions -->
 
-    <action id="newDocument" link="javascript:Richfaces.showModalPanel('selectDocTypePanel');" enabled="true"
-      label="action.new.document" icon="/icons/action_add.gif">
+    <action id="newDocument"
+      link="javascript:Richfaces.showModalPanel('selectDocTypePanel');"
+      enabled="true" label="action.new.document" icon="/icons/action_add.gif">
       <category>SUBVIEW_UPPER_LIST_HREF</category>
       <filter-id>create</filter-id>
     </action>
 
-    <action id="newFile" link="javascript:Richfaces.showModalPanel('importFile');" enabled="true"
+    <action id="newFile"
+      link="javascript:Richfaces.showModalPanel('importFile');" enabled="true"
       label="action.new.file" icon="/icons/action_add_file.gif">
       <category>SUBVIEW_UPPER_LIST_HREF</category>
       <filter-id>importFile</filter-id>
@@ -129,14 +132,17 @@
       <filter-id>delete_content</filter-id>
     </action>
 
-    <!-- tabs are handled by a specific template so links should be paths to
+    <!--
+      tabs are handled by a specific template so links should be paths to
       template to include in the tab content
--->
-    <action id="TAB_MANAGE" link="/incl/tabs/document_manage.xhtml" enabled="true" order="240" label="action.view.manage" icon="/icons/file.gif">
+    -->
+    <action id="TAB_MANAGE" link="/incl/tabs/document_manage.xhtml"
+      enabled="true" order="240" label="action.view.manage"
+      icon="/icons/file.gif">
       <category>VIEW_ACTION_LIST</category>
       <filter-id>manage</filter-id>
     </action>
-    
+
     <action id="TAB_VIEW" link="/incl/tabs/document_view.xhtml" enabled="true"
       order="0" label="action.view.summary" icon="/icons/file.gif">
       <category>VIEW_ACTION_LIST</category>
@@ -180,16 +186,17 @@
       <filter-id>not_folder</filter-id>
     </action>
 
-    <action id="TAB_EDIT" link="/incl/tabs/edit_document_and_metadata.xhtml" enabled="true"
-      order="20" label="action.view.modification" icon="/icons/file.gif">
+    <action id="TAB_EDIT" link="/incl/tabs/edit_document_and_metadata.xhtml"
+      enabled="true" order="20" label="action.view.modification"
+      icon="/icons/file.gif">
       <category>VIEW_ACTION_LIST</category>
       <filter-id>edit</filter-id>
       <filter-id>mutable_document</filter-id>
     </action>
 
-    <action id="TAB_WORKSPACE_EDIT" link="/incl/tabs/edit_document_and_metadata.xhtml"
-      enabled="true" order="22" label="action.view.modification"
-      icon="/icons/file.gif">
+    <action id="TAB_WORKSPACE_EDIT"
+      link="/incl/tabs/edit_document_and_metadata.xhtml" enabled="true"
+      order="22" label="action.view.modification" icon="/icons/file.gif">
       <category>VIEW_ACTION_LIST</category>
       <filter-id>workspace_edit</filter-id>
       <filter-id>mutable_document</filter-id>
@@ -222,9 +229,10 @@
       <filter-id>publish_document</filter-id>
       <filter-id>mutable_document</filter-id>
     </action>
-    
-    <action id="TAB_ADMIN_PUBLICATION_TREES" link="/incl/tabs/admin_publication_trees.xhtml" order="110"
-      enabled="true" label="action.admin.publication.tree" icon="/icons/file.gif">
+
+    <action id="TAB_ADMIN_PUBLICATION_TREES"
+      link="/incl/tabs/admin_publication_trees.xhtml" order="110" enabled="true"
+      label="action.admin.publication.tree" icon="/icons/file.gif">
       <category>TAB_MANAGE_sub_tab</category>
       <filter-id>admin_publication_trees_filter</filter-id>
     </action>
@@ -234,7 +242,7 @@
       <category>TAB_MANAGE_sub_tab</category>
       <filter-id>canChangeTheme</filter-id>
     </action>
-    
+
     <!-- Manage the sub tabs -->
 
     <!--  Actions on WorkLists  -->
@@ -466,10 +474,9 @@
         </rule>
       </filter>
     </action>
-    
-   <action id="POPUP_MOVE" link="javascript:doMove"
-      enabled="true" label="command.clipboard.moveAll"
-      icon="/icons/action_move_all.gif">
+
+    <action id="POPUP_MOVE" link="javascript:doMove" enabled="true"
+      label="command.clipboard.moveAll" icon="/icons/action_move_all.gif">
       <category>POPUP</category>
       <filter id="canPastePopup">
         <rule grant="true">
@@ -500,32 +507,34 @@
         </rule>
       </filter>
     </action>
-    
-   <action id="POPUP_RIGHTS" link="javascript:doAccessRights" order="10"
+
+    <action id="POPUP_RIGHTS" link="javascript:doAccessRights" order="10"
       enabled="true" label="action.view.rights" icon="/icons/group.gif">
       <category>POPUP</category>
       <filter-id>rights</filter-id>
     </action>
-    
+
     <action id="POPUP_DOWNLOAD" link="javascript:doDownload" order="70"
-      enabled="true" label="command.download" icon="/icons/icone_download.gif">
+      enabled="true" label="command.download"
+      icon="/icons/icone_download.gif">
       <category>POPUP</category>
-        <filter id="hasContent">
-          <rule grant="true">
-            <schema>file</schema>
-          </rule>
-        </filter>
-        <filter id="documentHasBlobAttached">
-          <rule grant="true">
+      <filter id="hasContent">
+        <rule grant="true">
+          <schema>file</schema>
+        </rule>
+      </filter>
+      <filter id="documentHasBlobAttached">
+        <rule grant="true">
           <condition>
-           #{popupHelper.isDocumentHasBlobAttached(document)}
+            #{popupHelper.isDocumentHasBlobAttached(document)}
           </condition>
-      </rule>
-    </filter>
+        </rule>
+      </filter>
     </action>
-    
+
     <action id="POPUP_WORKFLOW" link="javascript:doWorkflow" order="90"
-      enabled="true" label="action.view.review" icon="/icons/start_workflow.png">
+      enabled="true" label="action.view.review"
+      icon="/icons/start_workflow.png">
       <category>POPUP</category>
       <filter id="jbpm-process">
         <rule grant="true">
@@ -536,43 +545,43 @@
       </filter>
       <filter-id>mutable_document</filter-id>
     </action>
-    
+
     <action id="POPUP_DOCUMENT_LOCK" link="javascript:doLock" order="110"
       enabled="true" label="command.lock" icon="/icons/lock.gif">
       <category>POPUP</category>
       <filter-id>mutable_document</filter-id>
       <filter id="can_lock_doc">
-      <rule grant="true">
-        <permission>Write</permission>
-        <condition>#{lockActions.getCanLockDoc(document)}</condition>
-      </rule>
-      <rule grant="false">
-        <facet>Folderish</facet>
-      </rule>
-    </filter>
+        <rule grant="true">
+          <permission>Write</permission>
+          <condition>#{lockActions.getCanLockDoc(document)}</condition>
+        </rule>
+        <rule grant="false">
+          <facet>Folderish</facet>
+        </rule>
+      </filter>
     </action>
 
     <action id="POPUP_DOCUMENT_UNLOCK" link="javascript:doUnlock" order="130"
       enabled="true" label="command.unlock" icon="/icons/lock.gif">
       <category>POPUP</category>
       <filter-id>mutable_document</filter-id>
-      <filter id="can_unlock_doc">
-      <rule grant="true">
-        <permission>Write</permission>
-        <condition>#{lockActions.getCanUnlockDoc(document)}</condition>
-      </rule>
-      <rule grant="false">
-        <facet>Folderish</facet>
-      </rule>
+      <filter id="popup_can_unlock_doc">
+        <rule grant="true">
+          <permission>Write</permission>
+          <condition>#{lockActions.getCanUnlockDoc(document)}</condition>
+        </rule>
+        <rule grant="false">
+          <facet>Folderish</facet>
+        </rule>
       </filter>
     </action>
-    
-    <action id="POPUP_sendEmail" link="javascript:doSendEmail" enabled="true" order="150"
-      label="action.email.document" icon="/icons/mail.gif">
+
+    <action id="POPUP_sendEmail" link="javascript:doSendEmail" enabled="true"
+      order="150" label="action.email.document" icon="/icons/mail.gif">
       <category>POPUP</category>
       <filter-id>not_folder</filter-id>
     </action>
-    
+
     <!--  Actions for the document lock/unlock -->
 
     <action id="DOCUMENT_LOCK" link="#{lockActions.lockCurrentDocument}"
@@ -591,9 +600,11 @@
 
     <!-- live edit new document creation links -->
 
-    <!-- WARNING: the following declaration are not yet used by incl/liveedit_create_actions.xhtml
-      since nxh:outputLink is not able to perform nested JSF-EL for the link/value attribute
-      as this case for the action attribute of nxh:commandLink
+    <!--
+      WARNING: the following declaration are not yet used by
+      incl/liveedit_create_actions.xhtml since nxh:outputLink is not able to
+      perform nested JSF-EL for the link/value attribute as this case for the
+      action attribute of nxh:commandLink
     -->
 
     <action id="le_create_msword"
@@ -744,7 +755,7 @@
         <schema>publishing</schema>
       </rule>
     </filter>
-    
+
     <filter id="manage">
       <rule grant="true">
         <permission>Manage everything</permission>
@@ -792,7 +803,7 @@
         <facet>Folderish</facet>
       </rule>
     </filter>
-    
+
     <filter id="folder">
       <rule grant="true">
         <facet>Folderish</facet>
@@ -823,7 +834,6 @@
       </rule>
     </filter>
 
-    <!--  Filters for the document lock/unlock actions edit.lock-->
     <filter id="can_lock">
       <rule grant="true">
         <permission>Write</permission>
