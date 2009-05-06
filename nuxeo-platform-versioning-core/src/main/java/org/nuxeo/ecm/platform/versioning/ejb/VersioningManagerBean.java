@@ -34,14 +34,12 @@ import javax.persistence.Transient;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.versioning.api.DocVersion;
 import org.nuxeo.ecm.platform.versioning.api.SnapshotOptions;
 import org.nuxeo.ecm.platform.versioning.api.VersionIncEditOptions;
-import org.nuxeo.ecm.platform.versioning.api.VersioningException;
 import org.nuxeo.ecm.platform.versioning.api.VersioningManager;
 import org.nuxeo.ecm.platform.versioning.service.ServiceHelper;
 import org.nuxeo.ecm.platform.versioning.service.VersioningService;
@@ -98,7 +96,7 @@ public class VersioningManagerBean implements VersioningManager {
     }
 
     public VersionIncEditOptions getVersionIncEditOptions(DocumentModel docModel)
-            throws VersioningException, ClientException, DocumentException {
+            throws ClientException {
         return service.getVersionIncEditOptions(docModel);
     }
 
@@ -122,10 +120,6 @@ public class VersioningManagerBean implements VersioningManager {
 
     public String getVersionLabel(DocumentModel doc) throws ClientException {
         return service.getVersionLabel(doc);
-    }
-
-    public DocVersion getNextVersion(DocumentModel doc) throws ClientException {
-        return service.getNextVersion(doc);
     }
 
     public SnapshotOptions getCreateSnapshotOption(DocumentModel document)

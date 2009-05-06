@@ -9,13 +9,8 @@
   </parent>
 
   <artifactId>nuxeo-platform-versioning-core</artifactId>
-  <name>Nuxeo Versioning Service - Core</name>
-  <description>Nuxeo Enterprise Platform: Versioning Service. This
-    service (core-level) offers a flexible and configurable versioning system.
-    It is extendable and configurable through extension points (ex:
-    define the numbering scheme, when the versioning is automatic / manual,
-    how the major and minor version number are used, etc.).
-    </description>
+  <name>Nuxeo EP Versioning Service Core</name>
+  <description>Nuxeo EP: Versioning Service Core</description>
 
   <dependencies>
     <dependency>
@@ -63,13 +58,8 @@
     </dependency>
 
     <dependency>
-      <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime-osgi</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-jcr-connector-test</artifactId>
+      <artifactId>nuxeo-core-storage-sql-test</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

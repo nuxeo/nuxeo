@@ -45,16 +45,8 @@
           <option value="inc_major" lifecycleTransition="transition-name"/>
         </versioningRuleEdit>
 
-		<createSnapshot name="sampleSR" optional="true" default="true">
-		  <lifecycleState>project</lifecycleState>
-		  or specify an implementation of org.nuxeo.ecm.platform.versioning.api.Evaluator
-		  <evaluator>com.abc.versioning.SnapshotOptionEvaluator"</evaluator>
-		</createSnapshot>
       </code>
       
-      Conditions defined by evaluators in createSnapshot are checked if there is a match for
-      specified lifecycle states. 
-
       The &lt;versioningRuleAuto&gt; is applied in the following situations:
       <li>
         When a document is being restored - so the version will be automatically

@@ -19,15 +19,11 @@
 
 package org.nuxeo.ecm.platform.versioning.service;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.ecm.platform.versioning.api.Evaluator;
 import org.nuxeo.ecm.platform.versioning.api.SnapshotOptions;
 
 /**
@@ -57,11 +53,6 @@ public class CreateSnapshotDescriptor {
 
     @XNodeList(value = "lifecycleState", type = String[].class, componentType = String.class)
     private String[] lifecycleStates;
-
-    @XNodeList(value = "evaluator", type = String[].class, componentType = String.class)
-    private String[] evaluatorClassNames;
-
-    private List<Evaluator> evaluators;
 
     /**
      * Default constructor - used normally when created as an XObject.
@@ -108,27 +99,6 @@ public class CreateSnapshotDescriptor {
         } else {
             return SnapshotOptions.NOT_DISPLAYED;
         }
-    }
-
-    public List<Evaluator> getEvaluators() {
-        if (null == evaluators) {
-            // initializing...
-            evaluators = new ArrayList<Evaluator>();
-            for (String evaluatorClassName : evaluatorClassNames) {
-                try {
-                    Class evalClass = Class.forName(evaluatorClassName);
-                    Evaluator evaluator = (Evaluator) evalClass.newInstance();
-                    evaluators.add(evaluator);
-                } catch (ClassNotFoundException e) {
-                    log.error("Cannot load evaluator class: " + evaluatorClassName, e);
-                } catch (InstantiationException e) {
-                    log.error("Cannot instantiate evaluator: " + evaluatorClassName, e);
-                } catch (IllegalAccessException e) {
-                    log.error("Cannot instantiate evaluator: " + evaluatorClassName, e);
-                }
-            }
-        }
-        return evaluators;
     }
 
     @Override

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,86 +12,56 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
+ *     Dragos Mihalache
+ *     Florent Guillaume
  */
 
 package org.nuxeo.ecm.platform.versioning;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreInstance;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 
 /**
- * Tests VersioningDocument adapter. The adapter is retrieved from a DocumentModel
- * object using VersioningAdapterFactory
- *
- * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
+ * Tests VersioningDocument adapter. The adapter is retrieved from a
+ * DocumentModel object using VersioningAdapterFactory
  */
 public class TestVersioningAdapter extends VersioningBaseTestCase {
 
-    private CoreSession coreSession;
-
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-        deployContrib("org.nuxeo.ecm.platform.versioning.tests",
-                "DocumentAdapterService.xml");
-        openCoreSession();
-    }
-
-    @Override
-    protected void openCoreSession() throws ClientException {
-        Map<String, Serializable> context = new HashMap<String, Serializable>();
-        context.put("username", "Administrator");
-        coreSession = CoreInstance.getInstance().open("demo", context);
-        assertNotNull(coreSession);
-    }
-
-    public void testNothing() {
-    }
-
+    @SuppressWarnings("boxing")
     public void testVersionDocEditLockedState() throws DocumentException,
             ClientException {
-        DocumentModel rootDM = coreSession.getRootDocument();
-        DocumentModel childFile = coreSession.createDocumentModel(
+        DocumentModel rootDM = session.getRootDocument();
+        DocumentModel childFile = session.createDocumentModel(
                 rootDM.getPathAsString(), "testfile1", "VerFile");
         // should fill datamodel
-        childFile = coreSession.createDocument(childFile);
-        DocumentModel doc = childFile;
-        final VersioningDocument vdoc = doc.getAdapter(VersioningDocument.class);
-        assertNotNull("Fail to get VersioningDocument adapter for document: "
-                + doc.getTitle(), vdoc);
+        DocumentModel doc = session.createDocument(childFile);
+        VersioningDocument vdoc = doc.getAdapter(VersioningDocument.class);
+        assertNotNull(vdoc);
         checkVersion(doc, 1L, 0L);
 
         vdoc.incrementMinor();
         checkVersion(doc, 1L, 1L);
 
-        coreSession.saveDocument(doc);
-        coreSession.save();
+        session.saveDocument(doc);
+        session.save();
         checkVersion(doc, 1L, 1L);
 
         vdoc.incrementMajor();
-        coreSession.save();
+        session.save();
         checkVersion(doc, 2L, 0L);
     }
 
+    @SuppressWarnings("boxing")
     public void testDefinedRules() throws ClientException {
-        DocumentModel rootDM = coreSession.getRootDocument();
-        DocumentModel childFile = coreSession.createDocumentModel(
+        DocumentModel rootDM = session.getRootDocument();
+        DocumentModel childFile = session.createDocumentModel(
                 rootDM.getPathAsString(), "testfile1", "VerFile");
 
         // should fill datamodel
-        childFile = coreSession.createDocument(childFile);
+        childFile = session.createDocument(childFile);
         DocumentModel doc = childFile;
 
         final VersioningDocument vdoc = doc.getAdapter(VersioningDocument.class);
@@ -100,7 +70,7 @@ public class TestVersioningAdapter extends VersioningBaseTestCase {
         checkVersion(doc, 1L, 0L);
 
         DocumentRef docRef = doc.getRef();
-        assertEquals("project", coreSession.getCurrentLifeCycleState(docRef));
+        assertEquals("project", session.getCurrentLifeCycleState(docRef));
 
         vdoc.incrementVersions();
 

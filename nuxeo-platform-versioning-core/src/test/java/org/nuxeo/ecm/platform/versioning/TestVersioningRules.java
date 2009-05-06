@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
+ *     Dragos Mihalache
+ *     Florent Guillaume
  */
 
 package org.nuxeo.ecm.platform.versioning;
@@ -22,130 +21,99 @@ package org.nuxeo.ecm.platform.versioning;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
+import org.nuxeo.ecm.core.lifecycle.LifeCycleConstants;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
-import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.utils.DocumentModelUtils;
 import org.nuxeo.ecm.platform.versioning.VersionChangeRequest.RequestSource;
 import org.nuxeo.ecm.platform.versioning.api.VersioningActions;
-import org.nuxeo.ecm.platform.versioning.service.VersioningService;
 
 /**
  * Test cases for versioning component. Tests the versions are incremented
  * accordingly to defined rules.
- * <p>
- * Document (JCRDocument) objects are used in this test (at the core level).
  *
- * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
+ * @author Dragos Mihalache
+ * @author Florent Guillaume
  */
 public class TestVersioningRules extends VersioningBaseTestCase {
 
-    private long getMajorVersion(DocumentModel doc) throws Exception {
-        VersioningService service = getVersioningService();
-        String propertyName = service.getMajorVersionPropertyName(doc.getType());
-        return (Long) doc.getProperty(
-                DocumentModelUtils.getSchemaName(propertyName),
-                DocumentModelUtils.getFieldName(propertyName));
-    }
-
-    private long getMinorVersion(DocumentModel doc) throws Exception {
-        VersioningService service = getVersioningService();
-        String propertyName = service.getMinorVersionPropertyName(doc.getType());
-        return (Long) doc.getProperty(
-                DocumentModelUtils.getSchemaName(propertyName),
-                DocumentModelUtils.getFieldName(propertyName));
-    }
-
     private void setMajorVersion(DocumentModel doc, Long version)
             throws Exception {
-        VersioningService service = getVersioningService();
-        String propertyName = service.getMajorVersionPropertyName(doc.getType());
+        String propertyName = versioningService.getMajorVersionPropertyName(doc.getType());
         doc.setProperty(DocumentModelUtils.getSchemaName(propertyName),
                 DocumentModelUtils.getFieldName(propertyName), version);
     }
 
     private void setMinorVersion(DocumentModel doc, Long version)
             throws Exception {
-        VersioningService service = getVersioningService();
-        String propertyName = service.getMinorVersionPropertyName(doc.getType());
+        String propertyName = versioningService.getMinorVersionPropertyName(doc.getType());
         doc.setProperty(DocumentModelUtils.getSchemaName(propertyName),
                 DocumentModelUtils.getFieldName(propertyName), version);
     }
 
+    @SuppressWarnings("boxing")
     public void testVersionEditRequest() throws Exception {
-        Document folder1 = root.addChild("testfolder1", "VerFile");
+        DocumentModel doc = new DocumentModelImpl("/", "testfolder1", "VerFile");
+        doc = session.createDocument(doc);
         session.save();
-        DocumentRef docRef = new IdRef(folder1.getUUID());
-        DocumentModel doc = coreSession.getDocument(docRef);
+        checkVersion(doc, 1, 0);
 
         setMajorVersion(doc, 9L);
         setMinorVersion(doc, 92L);
+        session.saveDocument(doc);
 
         // request a doc version change
-        final VersionChangeRequest req = new BasicImplVersionChangeRequest(
+        VersionChangeRequest req = new BasicImplVersionChangeRequest(
                 VersionChangeRequest.RequestSource.EDIT, doc,
                 VersioningActions.ACTION_INCREMENT_MAJOR);
+        versioningService.incrementVersions(req);
 
-        final VersioningService service = getVersioningService();
-
-        service.incrementVersions(req);
-
-        assertEquals(10L, getMajorVersion(doc));
-        assertEquals(0L, getMinorVersion(doc));
+        checkVersion(doc, 10, 0);
     }
 
     public void testVersionAutoRequest() throws Exception {
-        Document verfile = root.addChild("testfile1", "VerFile");
+        DocumentModel doc = new DocumentModelImpl("/", "testfile1", "VerFile");
+        doc = session.createDocument(doc);
         session.save();
-        DocumentRef docRef = new IdRef(verfile.getUUID());
-        DocumentModel doc = coreSession.getDocument(docRef);
+        checkVersion(doc, 1, 0);
 
         // request a doc version change
-        final VersionChangeRequest req = new BasicImplVersionChangeRequest(
+        VersionChangeRequest req = new BasicImplVersionChangeRequest(
                 VersionChangeRequest.RequestSource.AUTO, doc,
                 VersioningActions.ACTION_INCREMENT_MINOR);
+        versioningService.incrementVersions(req);
 
-        final VersioningService service = getVersioningService();
-
-        service.incrementVersions(req);
-
-        assertEquals(0L, getMajorVersion(doc));
-        assertEquals(1L, getMinorVersion(doc));
+        checkVersion(doc, 1, 1);
     }
 
     public void testDefinedRuleAuto() throws DocumentException,
             LifeCycleException, ClientException {
-        Document verfile = root.addChild("testfile", "VerFile");
-        String stateName = "project";
-        verfile.setCurrentLifeCycleState(stateName);
+        DocumentModel doc = new DocumentModelImpl("/", "testfile", "VerFile");
+        doc.putContextData(
+                LifeCycleConstants.INITIAL_LIFECYCLE_STATE_OPTION_NAME,
+                "project");
+        doc = session.createDocument(doc);
         session.save();
-
-        DocumentRef docRef = new IdRef(verfile.getUUID());
-        DocumentModel doc = coreSession.getDocument(docRef);
+        checkVersion(doc, 1, 0);
 
         // request a doc version change
-        final VersionChangeRequest req = new NoDefaultVersioningActionRequest(
+        VersionChangeRequest req = new NoDefaultVersioningActionRequest(
                 VersionChangeRequest.RequestSource.AUTO, doc);
 
-        final VersioningService service = getVersioningService();
-        checkVersion(doc, null, null);
+        versioningService.incrementVersions(req);
+        checkVersion(doc, 1, 1);
 
-        service.incrementVersions(req);
-        checkVersion(doc, 0L, 1L);
+        doc.followTransition("approve"); // test_auto_approved rule
+        versioningService.incrementVersions(req);
+        checkVersion(doc, 2, 0);
 
-        doc.followTransition("review");
-        service.incrementVersions(req);
-        checkVersion(doc, 0L, 2L);
+        doc.followTransition("backToProject");
+        versioningService.incrementVersions(req);
+        checkVersion(doc, 2, 1);
 
-        doc.followTransition("back_to_project");
-        service.incrementVersions(req);
-        checkVersion(doc, 0L, 3L);
-
-        doc.followTransition("review");
         doc.followTransition("approve");
-        service.incrementVersions(req);
-        checkVersion(doc, 1L, 0L);
+        versioningService.incrementVersions(req);
+        checkVersion(doc, 3, 0);
     }
 
     /**
@@ -154,29 +122,26 @@ public class TestVersioningRules extends VersioningBaseTestCase {
      */
     public void testEditOptionWithTransition() throws DocumentException,
             ClientException, LifeCycleException {
-        Document verfile = root.addChild("testfile", "VerFile");
-        // init the doc lifecycle state
-        String stateName = "project";
-        verfile.setCurrentLifeCycleState(stateName);
+        DocumentModel doc = new DocumentModelImpl("/", "testfile", "VerFile");
+        doc.putContextData(
+                LifeCycleConstants.INITIAL_LIFECYCLE_STATE_OPTION_NAME,
+                "project");
+        doc = session.createDocument(doc);
         session.save();
-
-        DocumentRef docRef = new IdRef(verfile.getUUID());
-        DocumentModel doc = coreSession.getDocument(docRef);
-        assertEquals("project", doc.getCurrentLifeCycleState());
-
-        doc.followTransition("review");
-        assertEquals("review", doc.getCurrentLifeCycleState());
+        checkVersion(doc, 1, 0);
 
         doc.followTransition("approve");
         assertEquals("approved", doc.getCurrentLifeCycleState());
+        checkVersion(doc, 1, 0);
 
         VersionChangeRequest req = new BasicImplVersionChangeRequest(
                 RequestSource.EDIT, doc,
                 VersioningActions.ACTION_INCREMENT_MAJOR);
-
-        final VersioningService service = getVersioningService();
-        service.incrementVersions(req);
+        versioningService.incrementVersions(req);
+        // test_edit_approved_major rule applies
+        // backToProject followed automatically
         assertEquals("project", doc.getCurrentLifeCycleState());
+        checkVersion(doc, 2, 0);
     }
 
 }

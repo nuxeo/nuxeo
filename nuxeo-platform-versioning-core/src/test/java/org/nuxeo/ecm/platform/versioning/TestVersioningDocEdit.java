@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,87 +12,45 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
+ *     Dragos Mihalache
+ *     Florent Guillaume
  */
 
 package org.nuxeo.ecm.platform.versioning;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+
 import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.platform.versioning.api.VersioningActions;
-import org.nuxeo.ecm.platform.versioning.service.VersioningService;
 
 /**
- * DocumentModel objects (from the core API level) are used in these tests.
- *
- * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
+ * @author Dragos Mihalache
+ * @author Florent Guillaume
  */
 public class TestVersioningDocEdit extends VersioningBaseTestCase {
 
-    private static final Log log = LogFactory.getLog(TestVersioningDocEdit.class);
+    public void testVersionIncUsingService() throws ClientException {
+        DocumentModel doc = session.createDocumentModel("/", "testfile1",
+                "VerFile");
+        doc = session.createDocument(doc);
+        checkVersion(doc, 1, 0);
 
-    public void testVersionDocEditLockedState() throws ClientException {
-        DocumentModel rootDM = coreSession.getRootDocument();
+        versioningService.incrementMinor(doc);
+        checkVersion(doc, 1, 1);
 
-        DocumentModel childFile = coreSession.createDocumentModel(
-                rootDM.getPathAsString(), "testfile1", "VerFile");
+        session.saveDocument(doc);
+        session.save();
+        checkVersion(doc, 1, 1);
 
-        // should fill datamodel
-        childFile = coreSession.createDocument(childFile);
-
-        DocumentModel doc = childFile;
-
-        // -- sanity check
-        // assertEquals(, arg1)
-        DataModel dm = doc.getDataModel(VERSIONING_SCHEMA_NAME);
-        assertNotNull(dm);
-
-        log.info("DataModel fields: " + dm.getMap().keySet());
-
-        assertNotNull(dm.getData("major_version"));
-        assertNotNull(dm.getData("minor_version"));
-        assertEquals(1L, dm.getData("major_version"));
-        assertEquals(0L, dm.getData("minor_version"));
-
-        dm = coreSession.getDataModel(doc.getRef(), VERSIONING_SCHEMA_NAME);
-        assertNotNull(dm);
-        assertNotNull(dm.getData("major_version"));
-        assertNotNull(dm.getData("minor_version"));
-        assertEquals(1L, dm.getData("major_version"));
-        assertEquals(0L, dm.getData("minor_version"));
-
-        assertEquals(1L, doc.getProperty(VERSIONING_SCHEMA_NAME,
-                "major_version"));
-        assertEquals(0L, doc.getProperty(VERSIONING_SCHEMA_NAME,
-                "minor_version"));
-        // ------
-
-        // -- set state prop
-
-        // req.setWfStateInitial("assigned");
-        // req.setWfStateFinal("inprogress");
-
-        final VersioningService service = getVersioningService();
-        checkVersion(doc, 1L, 0L);
-
-        service.incrementMinor(doc);
-        checkVersion(doc, 1L, 1L);
-
-        coreSession.saveDocument(doc);
-        coreSession.save();
-        checkVersion(doc, 1L, 1L);
-
-        service.incrementMajor(doc);
-        coreSession.save();
-        checkVersion(doc, 2L, 0L);
+        versioningService.incrementMajor(doc);
+        session.save();
+        checkVersion(doc, 2, 0);
     }
 
     /**
@@ -100,96 +58,137 @@ public class TestVersioningDocEdit extends VersioningBaseTestCase {
      * context is added with inc option.
      */
     public void testDocumentSaveWithIncOption() throws ClientException {
-        DocumentModel rootDM = coreSession.getRootDocument();
+        DocumentModel doc = session.createDocumentModel("/", "testfile1",
+                "VerFile");
+        doc = session.createDocument(doc);
+        checkVersion(doc, 1, 0);
 
-        DocumentModel docModel = coreSession.createDocumentModel(
-                rootDM.getPathAsString(), "testfile1", "VerFile");
-        // should fill datamodel
-        docModel = coreSession.createDocument(docModel);
+        doc.putContextData(VersioningActions.KEY_FOR_INC_OPTION,
+                VersioningActions.ACTION_INCREMENT_MINOR);
+        doc = session.saveDocument(doc);
+        checkVersion(doc, 1, 1);
 
-        VersioningActions selectedOption = VersioningActions.ACTION_INCREMENT_MINOR;
-        docModel.putContextData(VersioningActions.KEY_FOR_INC_OPTION,
-                selectedOption);
-        checkVersion(docModel, 1L, 0L);
-
-        docModel = coreSession.saveDocument(docModel);
-        checkVersion(docModel, 1L, 1L);
-
-        selectedOption = VersioningActions.ACTION_INCREMENT_MAJOR;
-        docModel.putContextData(VersioningActions.KEY_FOR_INC_OPTION,
-                selectedOption);
-        checkVersion(docModel, 1L, 1L);
-
-        docModel = coreSession.saveDocument(docModel);
-        checkVersion(docModel, 2L, 0L);
+        doc.putContextData(VersioningActions.KEY_FOR_INC_OPTION,
+                VersioningActions.ACTION_INCREMENT_MAJOR);
+        doc = session.saveDocument(doc);
+        checkVersion(doc, 2, 0);
     }
 
     /**
      * Will test if the version is incremented in case the DocumentModel env
      * context is added with inc option.
      */
-    public void testVersioningChangeListener() throws ClientException {
-        DocumentModel rootDM = coreSession.getRootDocument();
+    public void testVersioningBySnapshotting() throws ClientException {
+        DocumentModel doc = session.createDocumentModel("/", "testfile1",
+                "VerFile");
+        doc = session.createDocument(doc);
+        checkVersion(doc, 1, 0);
 
-        DocumentModel docModel = coreSession.createDocumentModel(
-                rootDM.getPathAsString(), "testfile1", "VerFile");
-        // should fill datamodel
-        docModel = coreSession.createDocument(docModel);
+        doc.putContextData(VersioningActions.KEY_FOR_INC_OPTION,
+                VersioningActions.ACTION_INCREMENT_MINOR);
+        doc = session.saveDocument(doc);
+        checkVersion(doc, 1, 1);
 
-        VersioningActions selectedOption = VersioningActions.ACTION_INCREMENT_MINOR;
-        docModel.putContextData(VersioningActions.KEY_FOR_INC_OPTION,
-                selectedOption);
-        checkVersion(docModel, 1L, 0L);
-
-        docModel = coreSession.saveDocument(docModel);
-        DocumentModel readDocModel = coreSession.getDocument(docModel.getRef());
-        checkVersion(readDocModel, 1L, 1L);
-        checkVersion(docModel, 1L, 1L);
-
-        selectedOption = VersioningActions.ACTION_INCREMENT_MAJOR;
-        docModel.putContextData(VersioningActions.KEY_FOR_INC_OPTION,
-                selectedOption);
-        docModel.putContextData(ScopeType.REQUEST,
-                VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, true);
-        checkVersion(docModel, 1L, 1L);
-
-        coreSession.save();
-        VersioningChangeListenerForTesting.setVersionsToCheck(1L, 1L, 2L, 0L);
-        docModel = coreSession.saveDocument(docModel);
-        DocumentModel docVersion = coreSession.getVersions(docModel.getRef()).get(
-                0);
-        checkVersion(docVersion, 1L, 1L);
-        checkVersion(docModel, 2L, 0L);
-
-        VersioningChangeListenerForTesting vcListener = VersioningChangeListenerForTesting.instance;
-        assertNotNull(vcListener);
-
-        checkVersion(vcListener.oldDoc, 1L, 1L);
-        checkVersion(vcListener.newDoc, 2L, 0L);
+        doc.putContextData(VersioningActions.KEY_FOR_INC_OPTION,
+                VersioningActions.ACTION_INCREMENT_MAJOR);
+        doc.putContextData(ScopeType.REQUEST,
+                VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, Boolean.TRUE);
+        doc = session.saveDocument(doc);
+        checkVersion(doc, 2, 0);
     }
 
-    // FIXME
-    public void XXXtestDefinedRules() throws ClientException {
-        DocumentModel rootDM = coreSession.getRootDocument();
+    /**
+     * Test that edit after snapshotting will create a new version number.
+     */
+    public void testVersioningMultipleSnapshotting() throws ClientException {
+        DocumentModel doc = session.createDocumentModel("/", "testfile1",
+                "VerFile");
+        doc = session.createDocument(doc);
+        doc.setProperty("dublincore", "title", "A");
+        session.saveDocument(doc);
+        checkVersion(doc, 1, 0);
 
-        DocumentModel childFile = coreSession.createDocumentModel(
-                rootDM.getPathAsString(), "testfile1", "VerFile");
+        // snapshot A=1.0 and save B
+        doc.setProperty("dublincore", "title", "B");
+        doc.putContextData(ScopeType.REQUEST,
+                VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, Boolean.TRUE);
+        doc = session.saveDocument(doc);
+        checkVersion(doc, 1, 1);
 
-        // should fill datamodel
-        childFile = coreSession.createDocument(childFile);
-        DocumentModel doc = childFile;
-        checkVersion(doc, 1L, 0L);
+        // another snapshot for B=1.1, using major inc
+        doc.putContextData(ScopeType.REQUEST,
+                VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, Boolean.TRUE);
+        doc.putContextData(VersioningActions.KEY_FOR_INC_OPTION,
+                VersioningActions.ACTION_INCREMENT_MAJOR);
+        doc = session.saveDocument(doc);
+        checkVersion(doc, 2, 0);
 
-        DocumentRef docRef = doc.getRef();
-        assertEquals("project", coreSession.getCurrentLifeCycleState(docRef));
+        // another snapshot doesn't change anything, doc is clean
+        doc.putContextData(ScopeType.REQUEST,
+                VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, Boolean.TRUE);
+        // must clear option, otherwise it is kept (listener cannot clear it
+        // because a copy is passed)
+        doc.putContextData(VersioningActions.KEY_FOR_INC_OPTION, null);
+        doc = session.saveDocument(doc);
+        checkVersion(doc, 2, 0);
 
-        coreSession.followTransition(docRef, "review");
-        assertEquals("review", coreSession.getCurrentLifeCycleState(docRef));
+        // now snapshot+inc
+        doc.putContextData(ScopeType.REQUEST,
+                VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, Boolean.TRUE);
+        doc.putContextData(VersioningActions.KEY_FOR_INC_OPTION,
+                VersioningActions.ACTION_INCREMENT_MINOR);
+        doc = session.saveDocument(doc);
+        checkVersion(doc, 2, 1);
 
-        // doc = coreSession.saveDocument(doc);
-        // reload document...
-        doc = coreSession.getDocument(docRef);
-        checkVersion(doc, 1L, 1L);
+        // another save+inc, no snapshot
+        doc.setProperty("dublincore", "title", "C");
+        doc.putContextData(VersioningActions.KEY_FOR_INC_OPTION,
+                VersioningActions.ACTION_INCREMENT_MAJOR);
+        doc = session.saveDocument(doc);
+        session.getLastVersion(doc.getRef());
+        checkVersion(doc, 3, 0);
+    }
+
+    private void checkVersions(DocumentModel doc, String... labels)
+            throws ClientException {
+        List<String> actual = new LinkedList<String>();
+        for (DocumentModel ver : session.getVersions(doc.getRef())) {
+            assertTrue(ver.isVersion());
+            actual.add(ver.getVersionLabel());
+        }
+        assertEquals(Arrays.asList(labels), actual);
+        List<DocumentRef> versionsRefs = session.getVersionsRefs(doc.getRef());
+        assertEquals(labels.length, versionsRefs.size());
+    }
+
+    public void testPublishVersioning() throws ClientException {
+        DocumentModel folder = session.createDocumentModel("/", "folder",
+                "Folder");
+        folder = session.createDocument(folder);
+        DocumentModel doc = session.createDocumentModel("/", "file", "VerFile");
+        doc = session.createDocument(doc);
+        checkVersion(doc, 1, 0);
+        checkVersions(doc);
+
+        // publish
+        DocumentModel proxy = session.publishDocument(doc, folder);
+        checkVersion(proxy, 1, 0);
+        checkVersion(doc, 1, 1);
+        checkVersions(doc, "1");
+
+        // republish, no new version
+        proxy = session.publishDocument(doc, folder);
+        checkVersion(proxy, 1, 0);
+        checkVersion(doc, 1, 1);
+        checkVersions(doc, "1");
+
+        // do a change, and republish
+        doc.setProperty("dublincore", "title", "A");
+        session.saveDocument(doc);
+        proxy = session.publishDocument(doc, folder);
+        checkVersion(proxy, 1, 1);
+        checkVersion(doc, 1, 2);
+        checkVersions(doc, "1", "2");
     }
 
 }

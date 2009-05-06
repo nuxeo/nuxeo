@@ -23,7 +23,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.ecm.platform.versioning.api.Evaluator;
 
 /**
  * Rule option descriptor.
@@ -52,9 +51,6 @@ public class RuleOptionDescriptor {
     @XNode("@default")
     private boolean isDefault;
 
-    @XNode("@availableEval")
-    private String evaluatorClassNames;
-
     /**
      * Default constructor - used normally when created as an XObject.
      */
@@ -72,32 +68,6 @@ public class RuleOptionDescriptor {
 
     public boolean isDefault() {
         return isDefault;
-    }
-
-    public String getEvaluatorClassNames() {
-        return evaluatorClassNames;
-    }
-
-    /**
-     * Instantiate an Evaluator object if the 'availableEval' attribute
-     * in descriptor is specified.
-     * @return <code>null</code> if no evaluator is specified
-     */
-    public Evaluator getEvaluator() {
-        Evaluator evaluator = null;
-        if(evaluatorClassNames != null&&evaluatorClassNames.length()!=0) {
-            try {
-                Class evalClass = Class.forName(evaluatorClassNames);
-                evaluator = (Evaluator) evalClass.newInstance();
-            } catch (ClassNotFoundException e) {
-                log.error("Cannot load evaluator class: " + evaluatorClassNames);
-            } catch (InstantiationException e) {
-                log.error("Cannot instantiate evaluator: " + evaluatorClassNames, e);
-            } catch (IllegalAccessException e) {
-                log.error("Cannot instantiate evaluator: " + evaluatorClassNames, e);
-            }
-        }
-        return evaluator;
     }
 
     @Override

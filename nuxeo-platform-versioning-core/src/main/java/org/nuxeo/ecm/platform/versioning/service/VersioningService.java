@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,14 +12,12 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
+ *     Dragos Mihalache
+ *     Florent Guillaume
  */
 
 package org.nuxeo.ecm.platform.versioning.service;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -30,19 +28,15 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.utils.DocumentModelUtils;
 import org.nuxeo.ecm.platform.versioning.VersionChangeRequest;
-import org.nuxeo.ecm.platform.versioning.api.DocVersion;
-import org.nuxeo.ecm.platform.versioning.api.Evaluator;
 import org.nuxeo.ecm.platform.versioning.api.PropertiesDef;
 import org.nuxeo.ecm.platform.versioning.api.SnapshotOptions;
 import org.nuxeo.ecm.platform.versioning.api.VersionIncEditOptions;
 import org.nuxeo.ecm.platform.versioning.api.VersioningActions;
-import org.nuxeo.ecm.platform.versioning.api.VersioningException;
 import org.nuxeo.ecm.platform.versioning.api.VersioningManager;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -52,7 +46,8 @@ import org.nuxeo.runtime.model.Property;
 /**
  * Versions management component implementation.
  *
- * @author : <a href="dm@nuxeo.com">Dragos Mihalache</a>
+ * @author Dragos Mihalache
+ * @author Florent Guillaume
  */
 public class VersioningService extends DefaultComponent implements
         VersioningManager {
@@ -78,12 +73,10 @@ public class VersioningService extends DefaultComponent implements
     private final Map<String, CreateSnapshotDescriptor> snapshotDescriptors = new HashMap<String, CreateSnapshotDescriptor>();
 
     public VersioningService() {
-        log.debug("<init>");
     }
 
     @Override
     public void activate(ComponentContext context) throws Exception {
-        log.debug("<activate>");
         super.activate(context);
 
         minorVersionProperty = getPropertyFallback(context,
@@ -107,9 +100,7 @@ public class VersioningService extends DefaultComponent implements
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
-        log.debug("<deactivate>");
         super.deactivate(context);
-
         editRuleDescriptors.clear();
         autoRuleDescriptors.clear();
         propertiesDescriptors.clear();
@@ -173,153 +164,82 @@ public class VersioningService extends DefaultComponent implements
         // TODO
     }
 
-    public VersionIncEditOptions getVersionIncEditOptions(DocumentModel docModel)
-            throws VersioningException, ClientException, DocumentException {
-        if (null == docModel.getSessionId()) {
+    public VersionIncEditOptions getVersionIncEditOptions(DocumentModel doc)
+            throws ClientException {
+        // check Versionable facet
+        DocumentType type = doc.getDocumentType();
+        if (!type.getFacets().contains(FacetNames.VERSIONABLE)) {
+            VersionIncEditOptions vincOpt = new VersionIncEditOptions();
+            vincOpt.setVersioningAction(VersioningActions.NO_VERSIONING);
+            vincOpt.addInfo("Type doesn't have the Versionable facet: "
+                    + type.getName());
+            return vincOpt;
+        }
+
+        // we cannot rely on cached document lifecycle state, so refetch it
+        // directly from the core
+        if (null == doc.getSessionId()) {
             throw new IllegalArgumentException(
                     "document model is not bound to a core session (null sessionId)");
         }
-
-        final CoreSession coreSession = CoreInstance.getInstance().getSession(
-                docModel.getSessionId());
-        if (null == coreSession) {
-            throw new ClientException("cannot get core session for doc: "
-                    + docModel);
+        CoreSession coreSession = CoreInstance.getInstance().getSession(
+                doc.getSessionId());
+        if (coreSession == null) {
+            throw new ClientException("cannot get core session for doc: " + doc);
         }
-        String lifecycleState = coreSession.getCurrentLifeCycleState(docModel.getRef());
-
-        DocumentType type = docModel.getDocumentType();
-
-        // check if we have versionable facet for the given doc type
-        if (!type.getFacets().contains(FacetNames.VERSIONABLE)) {
-            final VersionIncEditOptions vincOpt = new VersionIncEditOptions();
-            vincOpt.setVersioningAction(VersioningActions.NO_VERSIONING);
-            vincOpt.addInfo("no versioning for doc type '" + type.getName()
-                    + "'");
-            return vincOpt;
-        }
+        String lifecycleState = coreSession.getCurrentLifeCycleState(doc.getRef());
 
         if (lifecycleState == null) {
-            final VersionIncEditOptions vincOpt = new VersionIncEditOptions();
-            vincOpt.addInfo("document doesn't have a lifecycle state, cannot determine v inc options");
+            VersionIncEditOptions vincOpt = new VersionIncEditOptions();
+            // action is undefined
+            vincOpt.addInfo("Document doesn't have a lifecycle state");
             return vincOpt;
         }
 
-        VersionIncEditOptions versIncOpts = getVersionIncOptions(
-                lifecycleState, type.getName(), docModel);
-
-        return versIncOpts;
+        return getVersionIncOptions(lifecycleState, doc);
     }
 
-    /**
-     * Edit: an increment option is asked to a user who edits a document in
-     * various lifecycle states.
-     *
-     * @param lifecycleState
-     * @return
-     *
-     * @deprecated parameters are insufficient for a full evaluation. Will be
-     *             removed. Use getVersionIncEditOptions(...)
-     */
-    @Deprecated
-    public VersionIncEditOptions getVersionIncOptions(String lifecycleState,
-            String docType) {
-
-        try {
-            return getVersionIncOptions(lifecycleState, docType, null);
-        } catch (ClientException e) {
-            log.error(
-                    "Cannot get version increment options for lifecycleState: "
-                            + lifecycleState + " and docType: " + docType, e);
-            return null;
-        }
-    }
-
-    /**
-     * Needed to keep API compatibility (will be deprecated)
-     *
-     * @param lifecycleState
-     * @param docType - redundant when docModel is not null
-     * @param docModel
-     * @return
-     * @throws ClientException
-     */
     // FIXME : there is no order on rules, which makes it hard to define which
     // rule will be used first ; use LinkedHashMap for now to use the rule
     // registration order
-    private VersionIncEditOptions getVersionIncOptions(String lifecycleState,
-            String docType, DocumentModel docModel) throws ClientException {
-
-        final String logPrefix = "<getVersionIncOptions> ";
+    public VersionIncEditOptions getVersionIncOptions(String lifecycleState,
+            DocumentModel docModel) throws ClientException {
 
         if (null == lifecycleState) {
             throw new IllegalArgumentException("null lifecycleState ");
         }
-        if (null == docType) {
-            throw new IllegalArgumentException("null docType ");
-        }
 
-        log.debug(logPrefix + "lifecycle state : " + lifecycleState);
-        log.debug(logPrefix + "docType         : " + docType);
-        log.debug(logPrefix + "edit descriptors: " + editRuleDescriptors);
-
-        final VersionIncEditOptions editOptions = new VersionIncEditOptions();
+        VersionIncEditOptions editOptions = new VersionIncEditOptions();
 
         for (EditBasedRuleDescriptor descriptor : editRuleDescriptors.values()) {
             if (!descriptor.isEnabled()) {
                 continue;
             }
-            if (!descriptor.isDocTypeAccounted(docType)) {
-                log.debug(logPrefix + "rule descriptor excluded for doc type: "
-                        + docType);
+            if (!descriptor.isDocTypeAccounted(docModel.getType())) {
                 continue;
             }
 
-            final String descriptorLifecycleState = descriptor.getLifecycleState();
+            String descriptorLifecycleState = descriptor.getLifecycleState();
 
             if (!descriptorLifecycleState.equals("*")
                     && !descriptorLifecycleState.equals(lifecycleState)) {
-                log.debug(logPrefix
-                        + "rule descriptor excluded for lifecycle: "
-                        + lifecycleState);
                 continue;
             }
 
             // identified the rule
-            log.debug(logPrefix + "rule descriptor to apply: " + descriptor);
             editOptions.addInfo("Matching rule descriptor: " + descriptor);
 
-            final String action = descriptor.getAction();
-            final VersioningActions descriptorAction = VersioningActions.getByActionName(action);
+            String action = descriptor.getAction();
+            VersioningActions descriptorAction = VersioningActions.getByActionName(action);
 
-            final String info = "edit descriptor action: " + action + " => "
-                    + descriptorAction;
-            log.debug(logPrefix + info);
-            editOptions.addInfo(info);
+            editOptions.addInfo("edit descriptor action: " + action + " => "
+                    + descriptorAction);
 
             // will add options (these are to be displayed to user) only if
             // action is ask_user
             if (VersioningActions.ACTION_CASE_DEPENDENT == descriptorAction) {
-                log.debug(logPrefix + "adding options ");
-                final RuleOptionDescriptor[] descOptions = descriptor.getOptions();
+                RuleOptionDescriptor[] descOptions = descriptor.getOptions();
                 for (RuleOptionDescriptor opt : descOptions) {
-
-                    // check if there is a specified evaluator to display or not
-                    // this option
-                    Evaluator evaluator = opt.getEvaluator();
-                    if (evaluator != null) {
-                        if (docModel != null) {
-                            if (!evaluator.evaluate(docModel)) {
-                                log.debug("option not added (evaluated to false) "
-                                        + opt);
-                                continue;
-                            }
-                        } else {
-                            log.warn("Cannot invoke evaluator with null document for option: "
-                                    + opt);
-                        }
-                    }
-
                     VersioningActions vAction = VersioningActions.getByActionName(opt.getValue());
                     if (vAction != null) {
                         if (opt.isDefault()) {
@@ -330,10 +250,6 @@ public class VersioningService extends DefaultComponent implements
                         log.warn("Invalid action name: " + opt);
                     }
                 }
-            } else {
-                log.debug(logPrefix + "descriptorAction = " + descriptorAction
-                        + "; no option for user specified by rule.");
-
             }
             editOptions.setVersioningAction(descriptorAction);
             editOptions.addInfo("descriptorAction = " + descriptorAction);
@@ -342,15 +258,13 @@ public class VersioningService extends DefaultComponent implements
             break;
         }
 
-        log.debug(logPrefix + "computed options: " + editOptions);
+        log.debug("computed options: " + editOptions);
 
         return editOptions;
     }
 
     public void incrementVersions(VersionChangeRequest req)
             throws ClientException {
-        final String logPrefix = "<incrementVersions> ";
-
         if (req.getSource() == VersionChangeRequest.RequestSource.EDIT) {
             for (EditBasedRuleDescriptor descriptor : editRuleDescriptors.values()) {
                 if (!descriptor.isEnabled()) {
@@ -360,13 +274,8 @@ public class VersioningService extends DefaultComponent implements
                 // check document type
                 String docType = req.getDocument().getType();
                 if (!descriptor.isDocTypeAccounted(docType)) {
-                    log.debug(logPrefix
-                            + "rule descriptor excluded for doc type: "
-                            + docType);
                     continue;
                 }
-                log.debug(logPrefix + "rule descriptor matching doc type: "
-                        + docType);
 
                 // FIXME: match with a specific rule
                 boolean handled = performRuleAction(descriptor, req);
@@ -376,36 +285,27 @@ public class VersioningService extends DefaultComponent implements
             }
 
         } else if (req.getSource() == VersionChangeRequest.RequestSource.AUTO) {
-            log.debug(logPrefix + "autoRuleDescriptors #: "
-                    + autoRuleDescriptors.size());
-
             String lifecycleState;
             try {
                 lifecycleState = req.getDocument().getCurrentLifeCycleState();
             } catch (ClientException e) {
                 log.error(e);
-                log.warn(logPrefix
-                        + "Cannot get CurrentLifeCycleState for document "
+                log.warn("Cannot get CurrentLifeCycleState for document "
                         + req.getDocument());
                 // XXX what rule should apply?
                 lifecycleState = "";
             }
 
-            log.debug(logPrefix + "CurrentLifeCycleState : " + lifecycleState);
             boolean handled = false;
             for (AutoBasedRuleDescriptor descriptor : autoRuleDescriptors.values()) {
                 if (!descriptor.isEnabled()) {
                     continue;
                 }
 
-                log.debug(logPrefix + "applying autoRuleDescriptors #: "
-                        + descriptor);
-
                 final String descriptorLifecycleState = descriptor.getLifecycleState();
 
-                if (null == descriptorLifecycleState) {
-                    log.warn(logPrefix
-                            + "descriptorLifecycleState is null, rule skipped");
+                if (descriptorLifecycleState == null) {
+                    log.warn("descriptorLifecycleState is null, rule skipped");
                     continue;
                 }
 
@@ -421,8 +321,6 @@ public class VersioningService extends DefaultComponent implements
             // no versioning rule that can be applied
             if (!handled) {
                 final VersioningActions action = req.getVersioningAction();
-                log.debug("No (AUTO) rule matched. Perform action specified by the caller: "
-                        + action);
                 if (action == null) {
                     log.warn("versioning action is null, inc version aborted.");
                     return;
@@ -430,7 +328,7 @@ public class VersioningService extends DefaultComponent implements
                 performRuleAction(action, req.getDocument());
             }
         } else {
-            log.warn(logPrefix + "<incrementVersions> not handled: " + req);
+            log.warn("Not handled: " + req);
         }
     }
 
@@ -505,8 +403,6 @@ public class VersioningService extends DefaultComponent implements
                     // apply eventually specified lifecycle transition
                     String lsTrans = option.getLifecycleTransition();
                     if (lsTrans != null) {
-                        log.debug("followTransition: " + lsTrans);
-
                         try {
                             doc.followTransition(lsTrans);
                         } catch (ClientException e) {
@@ -541,67 +437,52 @@ public class VersioningService extends DefaultComponent implements
 
     private static long getValidVersionNumber(DocumentModel doc, String propName)
             throws ClientException {
-        final Object propVal = doc.getProperty(
+        Object propVal = doc.getProperty(
                 DocumentModelUtils.getSchemaName(propName),
                 DocumentModelUtils.getFieldName(propName));
-
         long ver = 0;
-        if (null == propVal) {
-            // versions not initialized
-        } else {
+        if (propVal != null) {
             try {
-                ver = (Long) propVal;
+                ver = ((Long) propVal).longValue();
             } catch (ClassCastException e) {
                 throw new ClientException("Property " + propName
                         + " should be of type Long");
             }
         }
-
         return ver;
     }
 
     public DocumentModel incrementMajor(DocumentModel doc)
             throws ClientException {
-        String documentType = doc.getType();
-        String majorPropName = getMajorVersionPropertyName(documentType);
-        String minorPropName = getMinorVersionPropertyName(documentType);
+        String docType = doc.getType();
+        String majorPropName = getMajorVersionPropertyName(docType);
+        String minorPropName = getMinorVersionPropertyName(docType);
 
-        long major = getValidVersionNumber(doc, majorPropName);
-        long minor = getValidVersionNumber(doc, minorPropName);
-
-        major++;
-        minor = 0;
-
+        long major = getValidVersionNumber(doc, majorPropName) + 1;
+        long minor = 0;
         doc.setProperty(DocumentModelUtils.getSchemaName(majorPropName),
-                DocumentModelUtils.getFieldName(majorPropName), major);
+                DocumentModelUtils.getFieldName(majorPropName),
+                Long.valueOf(major));
         doc.setProperty(DocumentModelUtils.getSchemaName(minorPropName),
-                DocumentModelUtils.getFieldName(minorPropName), minor);
-
-        log.debug("<incrementMajor> DocumentModel (major=" + major + ", minor="
-                + minor + ")");
-
+                DocumentModelUtils.getFieldName(minorPropName),
+                Long.valueOf(minor));
         return doc;
     }
 
     public DocumentModel incrementMinor(DocumentModel doc)
             throws ClientException {
-        String documentType = doc.getType();
-        String majorPropName = getMajorVersionPropertyName(documentType);
-        String minorPropName = getMinorVersionPropertyName(documentType);
+        String docType = doc.getType();
+        String majorPropName = getMajorVersionPropertyName(docType);
+        String minorPropName = getMinorVersionPropertyName(docType);
 
         long major = getValidVersionNumber(doc, majorPropName);
-        long minor = getValidVersionNumber(doc, minorPropName);
-
-        minor++;
-
+        long minor = getValidVersionNumber(doc, minorPropName) + 1;
         doc.setProperty(DocumentModelUtils.getSchemaName(majorPropName),
-                DocumentModelUtils.getFieldName(majorPropName), major);
+                DocumentModelUtils.getFieldName(majorPropName),
+                Long.valueOf(major));
         doc.setProperty(DocumentModelUtils.getSchemaName(minorPropName),
-                DocumentModelUtils.getFieldName(minorPropName), minor);
-
-        log.debug("<incrementMinor> DocumentModel (major=" + major + ", minor="
-                + minor + ")");
-
+                DocumentModelUtils.getFieldName(minorPropName),
+                Long.valueOf(minor));
         return doc;
     }
 
@@ -612,7 +493,6 @@ public class VersioningService extends DefaultComponent implements
 
         long major = getValidVersionNumber(doc, majorPropName);
         long minor = getValidVersionNumber(doc, minorPropName);
-
         return major + "." + minor;
     }
 
@@ -662,64 +542,30 @@ public class VersioningService extends DefaultComponent implements
         return minorVersionProperty;
     }
 
-    // TODO: this is obviously not implemented.
-    public DocVersion getNextVersion(DocumentModel documentModel)
-            throws ClientException {
-        throw new UnsupportedOperationException("not implemented");
-    }
-
-    public SnapshotOptions getCreateSnapshotOption(DocumentModel document)
+    public SnapshotOptions getCreateSnapshotOption(DocumentModel doc)
             throws ClientException {
         // we cannot rely on cached document lifecycle state, so refetch it
         // directly from the core
-        if (null == document.getSessionId()) {
+        if (null == doc.getSessionId()) {
             throw new IllegalArgumentException(
                     "document model is not bound to a core session (null sessionId)");
         }
-
-        final CoreSession coreSession = CoreInstance.getInstance().getSession(
-                document.getSessionId());
-        if (null == coreSession) {
-            throw new ClientException("cannot get core session for doc: "
-                    + document);
+        CoreSession coreSession = CoreInstance.getInstance().getSession(
+                doc.getSessionId());
+        if (coreSession == null) {
+            throw new ClientException("cannot get core session for doc: " + doc);
         }
-        String lifecycleState = coreSession.getCurrentLifeCycleState(document.getRef());
-
-        if (null == lifecycleState) {
-            log.error("Cannot get lifecycle state for doc " + document);
+        String lifecycleState = coreSession.getCurrentLifeCycleState(doc.getRef());
+        if (lifecycleState == null) {
+            log.error("Cannot get lifecycle state for doc " + doc);
             return SnapshotOptions.UNDEFINED;
         }
 
-        Collection<CreateSnapshotDescriptor> descriptorsIt = snapshotDescriptors.values();
-        for (CreateSnapshotDescriptor createSnapshotDescriptor : descriptorsIt) {
-            if (createSnapshotDescriptor.applyForLifecycleState(lifecycleState)) {
-
-                // check special conditions if any
-                boolean skip = false;
-                for (Evaluator evaluator : createSnapshotDescriptor.getEvaluators()) {
-
-                    if (!evaluator.evaluate(document)) {
-                        log.debug("snapshot descriptor "
-                                + createSnapshotDescriptor.getName()
-                                + " skipped because of negative evaluation of "
-                                + evaluator.getClass());
-
-                        skip = true;
-                        break;
-                    }
-                }
-                if (skip) {
-                    break;
-                }
-
-                log.debug("found snapshot descriptor: "
-                        + createSnapshotDescriptor.getName());
-                return createSnapshotDescriptor.getSnapshotOption();
+        for (CreateSnapshotDescriptor desc : snapshotDescriptors.values()) {
+            if (desc.applyForLifecycleState(lifecycleState)) {
+                return desc.getSnapshotOption();
             }
         }
-        log.debug("couldn't find a matching snapshot descriptor for doc "
-                + document.getTitle() + " with lifecycle state: "
-                + lifecycleState);
         return SnapshotOptions.UNDEFINED;
     }
 

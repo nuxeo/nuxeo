@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.platform.versioning.api;
 
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
@@ -38,12 +37,10 @@ public interface VersioningManager {
      * @return a list of version incrementation options available for the given
      *         document ref
      *
-     * @throws VersioningException
      * @throws ClientException
-     * @throws DocumentException
      */
     VersionIncEditOptions getVersionIncEditOptions(DocumentModel docModel)
-            throws VersioningException, ClientException, DocumentException;
+            throws ClientException;
 
     /**
      * Gets the label for the current version of a document, for the UI.
@@ -73,9 +70,6 @@ public interface VersioningManager {
             throws ClientException;
 
     DocumentModel incrementMajor(DocumentModel docModel)
-            throws ClientException;
-
-    DocVersion getNextVersion(DocumentModel docModel)
             throws ClientException;
 
 }

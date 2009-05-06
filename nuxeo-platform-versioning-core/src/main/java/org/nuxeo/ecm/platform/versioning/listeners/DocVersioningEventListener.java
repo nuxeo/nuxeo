@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,14 +12,11 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
+ *     Dragos Mihalache
+ *     Florent Guillaume
  */
 
 package org.nuxeo.ecm.platform.versioning.listeners;
-
-import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_UPDATE;
-import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -36,13 +33,11 @@ import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
-import org.nuxeo.ecm.core.lifecycle.LifeCycleEventTypes;
 import org.nuxeo.ecm.core.utils.DocumentModelUtils;
 import org.nuxeo.ecm.platform.versioning.BasicVersionChangeRequest;
 import org.nuxeo.ecm.platform.versioning.VersionChangeRequest;
 import org.nuxeo.ecm.platform.versioning.api.VersionIncEditOptions;
 import org.nuxeo.ecm.platform.versioning.api.VersioningActions;
-import org.nuxeo.ecm.platform.versioning.api.VersioningException;
 import org.nuxeo.ecm.platform.versioning.service.ServiceHelper;
 import org.nuxeo.ecm.platform.versioning.service.VersioningService;
 
@@ -50,182 +45,150 @@ import org.nuxeo.ecm.platform.versioning.service.VersioningService;
  * Core event listener performing version increment based on rules and/or user
  * selected option. The selected option comes in options hash map.
  *
- * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
+ * @author Dragos Mihalache
+ * @author Florent Guillaume
  */
 public class DocVersioningEventListener implements EventListener {
 
-    private static final Log log = LogFactory
-            .getLog(DocVersioningEventListener.class);
+    private static final Log log = LogFactory.getLog(DocVersioningEventListener.class);
 
     public void handleEvent(Event event) throws ClientException {
-
         EventContext ctx = event.getContext();
         if (ctx instanceof DocumentEventContext) {
-            DocumentEventContext docCtx = (DocumentEventContext) ctx;
-            doProcess(event.getName(),docCtx);
+            doProcess(event.getName(), (DocumentEventContext) ctx);
         }
     }
 
-    protected void doProcess(String eventId, DocumentEventContext docCtx) {
-        DocumentModel doc = docCtx.getSourceDocument();
-        Map<String, Serializable> options = docCtx.getProperties();
+    protected void doProcess(String eventId, DocumentEventContext ctx)
+            throws ClientException {
+        DocumentModel doc = ctx.getSourceDocument();
 
-        Object ctxSkipVersioning = doc.getContextData(ScopeType.REQUEST,
-                VersioningActions.SKIP_VERSIONING);
-        boolean skipVersioningFlag;
-        if (ctxSkipVersioning == null) {
-            // not set, will return default
-            skipVersioningFlag = false;
-        } else {
-            skipVersioningFlag = (Boolean) ctxSkipVersioning;
+        // TODO SKIP_VERSIONING seems unused
+        if (doc.getContextData(ScopeType.REQUEST,
+                VersioningActions.SKIP_VERSIONING) == Boolean.TRUE) {
+            return;
+        }
+        // XXX: check if the document has versioning schema (?)
+
+        VersioningService versioningService = ServiceHelper.getVersioningService();
+        if (versioningService == null) {
+            log.debug("No versioning service");
+            return;
         }
 
-        if (!skipVersioningFlag) {
-            VersioningService service;
+        String docType = doc.getType();
+        String majorPropName = versioningService.getMajorVersionPropertyName(docType);
+        String minorPropName = versioningService.getMinorVersionPropertyName(docType);
+
+        Map<String, Serializable> options = ctx.getProperties();
+
+        VersionChangeRequest req;
+
+        if (eventId.equals(DocumentEventTypes.DOCUMENT_CREATED)
+                && !doc.isProxy()) {
+            // set version to 1.0
             try {
-                service = getVerService();
-            } catch (VersioningException e) {
-                return;
-            }
-
-            String docType = doc.getType();
-            String majorPropName = service.getMajorVersionPropertyName(docType);
-            String minorPropName = service.getMinorVersionPropertyName(docType);
-
-            // XXX: check if the document has versioning schema (?)
-            VersionChangeRequest req;
-
-            if (LifeCycleEventTypes.LIFECYCLE_TRANSITION_EVENT.equals(eventId)) {
-                // XXX Used to check the workflow rules, do we need
-                // version changes on lifecycle change?
-                return;
-            } else if (eventId.equals(DOCUMENT_CREATED) && !doc.isProxy()) {
-                // set major version at 1
-                try {
-                    doc.setProperty(DocumentModelUtils
-                            .getSchemaName(majorPropName), DocumentModelUtils
-                            .getFieldName(majorPropName), 1L);
-                    doc.setProperty(DocumentModelUtils
-                            .getSchemaName(minorPropName), DocumentModelUtils
-                            .getFieldName(minorPropName), 0L);
-                } catch (ClientException e) {
-                    throw new ClientRuntimeException(e);
-                }
-                return;
-            } else if (eventId.equals(BEFORE_DOC_UPDATE)) {
-                try {
-                    if (!isIncOptionUserSelected(doc)) {
-                        req = createAutoChangeRequest(doc);
-                        return;
-                    }
-                    // the user has selected incrementation option
-                    log.debug("Skip document versions auto-incrementation. "
-                            + "Should be incremented by user selection.");
-                } catch (VersioningException e) {
-                    log.error(e);
-                }
-
-                if (options == null) {
-                    log.error("options is null. cannot increment versions");
-                    return;
-                }
-
-                // has to be string
-                final VersioningActions incOption = (VersioningActions) options
-                        .get(VersioningActions.KEY_FOR_INC_OPTION);
-                if (incOption == null) {
-                    log.debug("version increment option not available");
-                    return;
-                }
-
-                req = createEditChangeRequest(doc, incOption);
-            } else if (eventId.equals(DocumentEventTypes.DOCUMENT_RESTORED)) {
-                if (options == null) {
-                    log.warn("options is null. versions not available");
-                    return;
-                }
-
-                // regain current versions
-                final Long majorVer = (Long) options
-                        .get(VersioningDocument.CURRENT_DOCUMENT_MAJOR_VERSION_KEY);
-                final Long minorVer = (Long) options
-                        .get(VersioningDocument.CURRENT_DOCUMENT_MINOR_VERSION_KEY);
-
-                try {
-                    doc.setProperty(DocumentModelUtils
-                            .getSchemaName(majorPropName), DocumentModelUtils
-                            .getFieldName(majorPropName), majorVer);
-                    doc.setProperty(DocumentModelUtils
-                            .getSchemaName(minorPropName), DocumentModelUtils
-                            .getFieldName(minorPropName), minorVer);
-                } catch (ClientException e) {
-                    throw new ClientRuntimeException(e);
-                }
-
-                req = createAutoChangeRequest(doc);
-            } else {
-                // event not interesting
-                return;
-            }
-
-            log.debug("<notifyEvent> req: " + req);
-
-            try {
-                service.incrementVersions(req);
+                doc.setProperty(
+                        DocumentModelUtils.getSchemaName(majorPropName),
+                        DocumentModelUtils.getFieldName(majorPropName),
+                        Long.valueOf(1));
+                doc.setProperty(
+                        DocumentModelUtils.getSchemaName(minorPropName),
+                        DocumentModelUtils.getFieldName(minorPropName),
+                        Long.valueOf(0));
             } catch (ClientException e) {
-                log.error("Error incrementing versions for: " + doc, e);
+                throw new ClientRuntimeException(e);
             }
+            return;
+        } else if (eventId.equals(DocumentEventTypes.DOCUMENT_CHECKEDOUT)) {
+            req = getVersionChangeRequest(doc, options);
+            if (req == null) {
+                req = createAutoChangeRequest(doc);
+            }
+        } else if (eventId.equals(DocumentEventTypes.INCREMENT_BEFORE_UPDATE)) {
+            if (options.get(VersioningDocument.DOCUMENT_WAS_SNAPSHOTTED) == Boolean.TRUE) {
+                // document was just snapshotted, don't increment versions again
+                return;
+            }
+            req = getVersionChangeRequest(doc, options);
+        } else if (eventId.equals(DocumentEventTypes.DOCUMENT_RESTORED)) {
+            if (options == null) {
+                log.warn("options is null. versions not available");
+                return;
+            }
+            // first, restore version number from before restore
+            try {
+                doc.setProperty(
+                        DocumentModelUtils.getSchemaName(majorPropName),
+                        DocumentModelUtils.getFieldName(majorPropName),
+                        options.get(VersioningDocument.CURRENT_DOCUMENT_MAJOR_VERSION_KEY));
+                doc.setProperty(
+                        DocumentModelUtils.getSchemaName(minorPropName),
+                        DocumentModelUtils.getFieldName(minorPropName),
+                        options.get(VersioningDocument.CURRENT_DOCUMENT_MINOR_VERSION_KEY));
+            } catch (ClientException e) {
+                throw new ClientRuntimeException(e);
+            }
+            req = createAutoChangeRequest(doc);
+        } else {
+            // event not interesting
+            return;
+        }
+
+        log.debug("req: " + req);
+
+        if (req == null) {
+            return; // missing info
+        }
+        try {
+            versioningService.incrementVersions(req);
+        } catch (ClientException e) {
+            log.error("Error incrementing versions for: " + doc, e);
         }
     }
 
     /**
-     * Doesn't return null. If the service is not available, an exception is
-     * thrown so the caller code won't need to check.
-     *
-     * @return the versioning service
-     * @throws VersioningException
-     *             if the versioning service was not found
+     * Depending on the options and the type of choice for the document, get a
+     * change request.
      */
-    private static VersioningService getVerService() throws VersioningException {
-        VersioningService service = ServiceHelper.getVersioningService();
-        if (service == null) {
-            throw new VersioningException("VersioningService service not found");
+    protected static VersionChangeRequest getVersionChangeRequest(
+            DocumentModel doc, Map<String, Serializable> options)
+            throws ClientException {
+        if (isIncOptionUserSelected(doc)) {
+            // user had a choice
+            if (options == null) {
+                return null;
+            }
+            VersioningActions incOption = (VersioningActions) options.get(VersioningActions.KEY_FOR_INC_OPTION);
+            if (incOption == null) {
+                return null;
+            }
+            return createEditChangeRequest(doc, incOption);
+        } else {
+            // user didn't have a choice
+            return createAutoChangeRequest(doc);
         }
-        return service;
     }
 
-    private static VersionChangeRequest createAutoChangeRequest(
+    protected static VersionChangeRequest createAutoChangeRequest(
             DocumentModel doc) {
-
-        log.debug("<createAutoChangeRequest> ");
-
-        final VersionChangeRequest req = new BasicVersionChangeRequest(
+        return new BasicVersionChangeRequest(
                 VersionChangeRequest.RequestSource.AUTO, doc) {
-
             public VersioningActions getVersioningAction() {
                 log.warn("Rule for AUTO not correctly defined");
                 return null;
             }
-
         };
-
-        return req;
     }
 
-    private static VersionChangeRequest createEditChangeRequest(
+    protected static VersionChangeRequest createEditChangeRequest(
             DocumentModel doc, final VersioningActions incOption) {
-
-        log.debug("<createEditChangeRequest> ");
-
-        final VersionChangeRequest req = new BasicVersionChangeRequest(
+        return new BasicVersionChangeRequest(
                 VersionChangeRequest.RequestSource.EDIT, doc) {
-
             public VersioningActions getVersioningAction() {
                 return incOption;
             }
         };
-
-        return req;
     }
 
     /**
@@ -233,38 +196,16 @@ public class DocVersioningEventListener implements EventListener {
      * user will select one in this case and the automatic increment shouldn't
      * be performed.
      */
-    private static boolean isIncOptionUserSelected(DocumentModel doc)
-            throws VersioningException {
-
-        final String logPrefix = "<isIncOptionUserSelected> ";
-
-        String currentLifeCycleState;
-        try {
-            currentLifeCycleState = doc.getCurrentLifeCycleState();
-        } catch (ClientException e) {
-            log.error(e);
+    protected static boolean isIncOptionUserSelected(DocumentModel doc)
+            throws ClientException {
+        VersioningService versioningService = ServiceHelper.getVersioningService();
+        VersionIncEditOptions options = versioningService.getVersionIncEditOptions(doc);
+        if (options.getVersioningAction() == VersioningActions.ACTION_CASE_DEPENDENT) {
+            // so there are valid options to select from and versions will
+            // be altered directly not through listener
+            log.debug("available options: " + options);
             return true;
         }
-        final String documentType = doc.getType();
-
-        log.debug(logPrefix + "currentLifeCycleState: " + currentLifeCycleState);
-
-        if (currentLifeCycleState != null) {
-            log.debug(logPrefix
-                    + "checking versioning policy in component extensions");
-            VersionIncEditOptions options = getVerService()
-                    .getVersionIncOptions(currentLifeCycleState, documentType);
-
-            if (options.getVersioningAction() == VersioningActions.ACTION_CASE_DEPENDENT) {
-                // so there are valid options to select from and versions will
-                // be altered directly not through listener
-                log.debug(logPrefix + "available options: " + options);
-                return true;
-            }
-        } else {
-            log.warn(logPrefix + "document lifecycle not initialized.");
-        }
-
         return false;
     }
 
