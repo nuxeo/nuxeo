@@ -7,8 +7,7 @@
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:nxthemes="http://nuxeo.org/nxthemes">
 
-<h:form>
-  <rich:modalPanel id="selectDocTypePanel" autosized="true"
+<h:form>  <rich:modalPanel id="selectDocTypePanel"  autosized="true"
     onmaskclick="Richfaces.hideModalPanel('selectDocTypePanel')">
 
 
@@ -26,26 +25,36 @@
     </f:facet>
 
     <h:outputText value="#{messages['help.chooseDocumentType']}" />
-
+<table cellspacing="2">
     <nxu:dataList value="#{typesMap.entrySet}" var="typesList">
+<td style="vertical-align : top;width : 300px;">
       <div>
       <h3 class="documentTypes"><h:outputText value="#{messages[typesList.key]}" /></h3>
-      <nxu:dataList value="#{typesList.value}" var="type">
+<table>
+<tr>
+      <nxu:dataList value="#{typesList.value}" var="typeColumn">
+<td>
+      <nxu:dataList value="#{typeColumn}" var="type">
+
         <div class="documentType">
           <h:commandLink action="#{documentActions.createDocument(type.id)}">
             <h:graphicImage height="32" width="32" value="#{type.bigIcon}" />
           </h:commandLink>
-          <h:commandLink action="#{documentActions.createDocument(type.id)}">
+          <h:commandLink class="documentTypeLink" action="#{documentActions.createDocument(type.id)}">
             <h:outputText value="#{messages[type.label]}" />
           </h:commandLink>
-          <br />
-          <span>
-            <h:outputText value="#{messages[type.description]}" />
-          </span>
         </div>
+
        </nxu:dataList>
+</td>
+
+       </nxu:dataList>
+</tr>
+</table>
       </div>
+</td>
       <div style="clear:both;"></div>
     </nxu:dataList>
+</table>
   </rich:modalPanel>
 </h:form></div>

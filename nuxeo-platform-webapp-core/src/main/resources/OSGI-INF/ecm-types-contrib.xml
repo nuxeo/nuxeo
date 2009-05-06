@@ -95,7 +95,7 @@
       <icon>/icons/workspace.gif</icon>
       <bigIcon>/icons/workspace_100.gif</bigIcon>
       <icon-expanded>/icons/workspace_open.gif</icon-expanded>
-      <category>SimpleDocument</category>
+      <category>Collaborative</category>
       <description>Workspace.description</description>
       <default-view>view_documents</default-view>
       <create-view>create_workspace</create-view>
@@ -141,7 +141,7 @@
       <icon>/icons/folder.gif</icon>
       <bigIcon>/icons/folder_100.gif</bigIcon>
       <icon-expanded>/icons/folder_open.gif</icon-expanded>
-      <category>SimpleDocument</category>
+      <category>Collaborative</category>
       <description>Section.description</description>
       <default-view>view_documents</default-view>
       <subtypes>
@@ -161,7 +161,7 @@
       <icon>/icons/folder.gif</icon>
       <bigIcon>/icons/folder_100.gif</bigIcon>
       <icon-expanded>/icons/folder_open.gif</icon-expanded>
-      <category>SimpleDocument</category>
+      <category>Collaborative</category>
       <description>Folder.description</description>
       <default-view>view_documents</default-view>
       <subtypes>
