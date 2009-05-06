@@ -41,10 +41,14 @@ import javax.faces.event.ActionEvent;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Destroy;
+import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.contexts.Context;
+import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -212,6 +216,15 @@ public class RelationActionsBean extends DocumentContextBoundActionBean
         return infoList;
     }
 
+
+    protected void resetEventContext() {
+        Context evtCtx = Contexts.getEventContext();
+        if (evtCtx!=null) {
+            evtCtx.remove("currentDocumentIncomingRelations");
+            evtCtx.remove("currentDocumentOutgoingRelations");
+        }
+    }
+    @Factory(value="currentDocumentIncomingRelations", scope=ScopeType.EVENT)
     public List<StatementInfo> getIncomingStatementsInfo()
             throws ClientException {
         if (incomingStatementsInfo != null) {
@@ -239,6 +252,7 @@ public class RelationActionsBean extends DocumentContextBoundActionBean
         return incomingStatementsInfo;
     }
 
+    @Factory(value="currentDocumentOutgoingRelations", scope=ScopeType.EVENT)
     public List<StatementInfo> getOutgoingStatementsInfo()
             throws ClientException {
         if (outgoingStatementsInfo != null) {
@@ -356,6 +370,7 @@ public class RelationActionsBean extends DocumentContextBoundActionBean
     }
 
     public String addStatement() throws ClientException {
+        resetEventContext();
         DocumentModel currentDoc = getCurrentDocument();
         Resource documentResource = getDocumentResource(currentDoc);
         if (documentResource == null) {
@@ -479,6 +494,7 @@ public class RelationActionsBean extends DocumentContextBoundActionBean
 
     public String deleteStatement(StatementInfo stmtInfo)
             throws ClientException {
+        resetEventContext();
         if (stmtInfo != null && outgoingStatementsInfo != null
                 && outgoingStatementsInfo.contains(stmtInfo)) {
             Statement stmt = stmtInfo.getStatement();

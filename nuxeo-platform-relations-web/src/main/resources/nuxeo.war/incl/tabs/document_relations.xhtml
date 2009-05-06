@@ -8,8 +8,8 @@
   xmlns:nxu="http://nuxeo.org/nxweb/util">
 
   <h:outputText value="#{messages['label.relation.noRelation']}"
-      rendered="#{(empty relationActions.outgoingStatementsInfo)
-      and (empty relationActions.incomingStatementsInfo)}"/>
+      rendered="#{(empty currentDocumentIncomingRelations)
+      and (empty currentDocumentOutgoingRelations)}"/>
 
   <c:if test="#{nxd:hasPermission(currentDocument, 'Write')}">
     <ui:include src="/create_relation.xhtml" />
@@ -26,12 +26,12 @@
   }
 </script>
 
-<h:form rendered="#{not empty relationActions.outgoingStatementsInfo}">
+<h:form rendered="#{not empty currentDocumentOutgoingRelations}">
 
   <h3><h:outputText value="#{messages['title.relation.outgoing']}" /></h3>
 
   <h:dataTable var="statement"
-    value="#{relationActions.outgoingStatementsInfo}"
+    value="#{currentDocumentOutgoingRelations}"
     styleClass="dataOutput"
     rowClasses="dataRowEven, dataRowOdd"
     columnClasses="relationPredicateColumn, relationObjectColumn, relationCommentColumn, relationCommentColumn, relationCommentColumn, relationActionsColumn">
@@ -98,12 +98,12 @@
   </h:dataTable>
 </h:form>
 
-<h:form rendered="#{not empty relationActions.incomingStatementsInfo}">
+<h:form rendered="#{not empty currentDocumentIncomingRelations}">
 
   <h3><h:outputText value="#{messages['title.relation.incoming']}" /></h3>
 
   <h:dataTable var="statement"
-    value="#{relationActions.incomingStatementsInfo}"
+    value="#{currentDocumentIncomingRelations}"
     styleClass="dataOutput"
     rowClasses="dataRowEven, dataRowOdd"
     columnClasses="relationPredicateColumn, relationObjectColumn, relationCommentColumn, relationCommentColumn, relationCommentColumn">
