@@ -75,16 +75,17 @@
       <artifact group="org.nuxeo.common" />
       <artifact name="nuxeo-runtime-jboss-extensions" />
 
-      <artifact name="nuxeo-platform-webapp" />
-      <artifact name="nuxeo-platform-webapp-core" />
+<!--      <artifact name="nuxeo-platform-webapp" />-->
+<!--      <artifact name="nuxeo-platform-webapp-core" />-->
 
       <artifact name="nuxeo-platform-audit-facade" />
       <artifact name="nuxeo-platform-placeful-facade" />
       <artifact name="nuxeo-platform-ear" />
+      <artifact name="nuxeo-apt-extensions" />
       
       <!-- because of dependency of nuxeo-webengine-core on nuxeo-core -->
-      <artifact name="nuxeo-webengine-*" />
-      <artifact name="nuxeo-platform-rendering" />
+<!--      <artifact name="nuxeo-webengine-*" />-->
+<!--      <artifact name="nuxeo-platform-rendering" />-->
     </excludes>
   </artifactSet>
 
@@ -128,8 +129,12 @@
       <artifact group="org.jboss.seam" name="jboss-seam-ui" />
       <artifact group="org.jboss.seam" name="jboss-seam-mail" />
       <artifact group="org.jboss.seam" name="jboss-seam-debug" />
+      <artifact group="javax.el" name="el-ri" />
+      <artifact group="org.jboss.el" name="jboss-el" />
       <artifact group="org.jbpm.jbpm3" name="jbpm-jpdl" />
       <artifact group="jboss" name="jgroups" />
+      <artifact group="bouncycastle" name="bcmail-jdk14" />
+      <artifact group="bouncycastle" name="bcprov-jdk14" />
       <!--
         version required because maven-nuxeo-plugin don't manage classifier here
       -->
@@ -146,6 +151,21 @@
       <artifact group="org.apache.directory.shared" name="shared-ldap" />
       <artifact group="com.sun.facelets" name="jsf-facelets" />
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-jbossws-wrapper" />
+      <!-- Nuxeo-WebEngine fixed libs -->
+      <artifact group="org.codehaus.groovy" name="groovy-all" />
+      <artifact group="org.jboss.resteasy" name="resteasy-jaxrs" />
+      <artifact group="org.jboss.resteasy" name="jaxrs-api" />
+      <artifact group="javax.script" name="script-api" />
+      <!-- JOD / OOo libs and other converters deps-->
+      <artifact group="com.artofsolving" name="jodconverter" />
+      <artifact group="org.openoffice" name="ridl" />
+      <artifact group="org.openoffice" name="juh" />
+      <artifact group="org.openoffice" name="unoil" />
+      <artifact group="org.openoffice" name="jurt" />
+      <artifact group="com.thoughtworks.xstream" name="xstream" />
+      <artifact group="pdfbox" name="pdfbox" />
+      <artifact group="org.fontbox" name="fontbox" />
+      <artifact group="org.jempbox" name="jempbox" />
     </artifacts>
   </artifactSet>
 

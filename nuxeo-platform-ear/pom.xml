@@ -20,6 +20,7 @@
     <nuxeo.dm.version>5.2-SNAPSHOT</nuxeo.dm.version>
     <nuxeo.ear.assembly>nuxeo</nuxeo.ear.assembly>
     <nuxeo.ear>${nuxeo.ear.assembly}.ear</nuxeo.ear>
+    <prop>test</prop>
   </properties>
 
   <dependencyManagement>
