@@ -605,18 +605,19 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
     // helper inner class to do the unrestricted abandon
     protected class UnrestrictedAbandon extends UnrestrictedSessionRunner {
 
-        private final DocumentModel doc;
+        private final DocumentRef ref;
 
         private final Long processId;
 
-        protected UnrestrictedAbandon(DocumentModel doc, Long processId) {
+        protected UnrestrictedAbandon(DocumentRef ref, Long processId) {
             super(documentManager);
-            this.doc = doc;
+            this.ref = ref;
             this.processId = processId;
         }
 
         @Override
         public void run() throws ClientException {
+            DocumentModel doc = session.getDocument(ref);
             ACP acp = doc.getACP();
             acp.removeACL(AbstractJbpmHandlerHelper.getProcessACLName(processId));
             session.setACP(doc.getRef(), acp, true);
@@ -633,7 +634,7 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
             DocumentModel currentDoc = navigationContext.getCurrentDocument();
             if (currentDoc != null) {
                 UnrestrictedAbandon runner = new UnrestrictedAbandon(
-                        currentDoc, pid);
+                        currentDoc.getRef(), pid);
                 runner.runUnrestricted();
             }
 
