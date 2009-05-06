@@ -41,7 +41,6 @@
   
   <td style="vertical-align: top">
     <#if selected_fragment_type & selected_fragment_view>
-    <div>${fragment.getDescription()}</div>
     <div>
       <button onclick="NXThemesEditor.addFragment('${selected_fragment_type}/${selected_fragment_view}', '${selected_element_id}'); return false;">ADD</button>
     </div>
