@@ -27,13 +27,13 @@
     <h:outputText value="#{messages['help.chooseDocumentType']}" />
 <table cellspacing="2">
     <nxu:dataList value="#{typesMap.entrySet}" var="typesList">
-<td style="vertical-align : top;width : 300px;">
+<td style="vertical-align : top;width : 300px; padding:0px 20px 0px 0px;">
       <div>
       <h3 class="documentTypes"><h:outputText value="#{messages[typesList.key]}" /></h3>
 <table>
 <tr>
       <nxu:dataList value="#{typesList.value}" var="typeColumn">
-<td>
+<td valign="top">
       <nxu:dataList value="#{typeColumn}" var="type">
 
         <div class="documentType">
