@@ -66,8 +66,8 @@ public class RequestControllerService extends DefaultComponent implements
     }
 
     public void registerFilterConfig(String name, String pattern, boolean grant, boolean tx, boolean sync) {
-    	FilterConfigDescriptor desc = new FilterConfigDescriptor(name,pattern,grant,tx,sync);
-    	registerFilterConfig(desc);
+        FilterConfigDescriptor desc = new FilterConfigDescriptor(name,pattern,grant,tx,sync);
+        registerFilterConfig(desc);
     }
 
     public void registerFilterConfig(FilterConfigDescriptor desc) {

@@ -126,10 +126,10 @@ public class MimetypeIconUpdater implements EventListener {
     public static void updateBlobProperty(DocumentModel doc,
             MimetypeRegistry mimetypeService, Property dirtyProperty)
             throws Exception {
-    	String fieldPath = dirtyProperty.getPath();
-    	//cas shema without prefix : we need to add shema name as prefix
-    	if(!fieldPath.contains(":"))
-    		fieldPath = "/"+dirtyProperty.getSchema().getName()+":"+fieldPath.substring(1);
+        String fieldPath = dirtyProperty.getPath();
+        //cas shema without prefix : we need to add shema name as prefix
+        if(!fieldPath.contains(":"))
+            fieldPath = "/"+dirtyProperty.getSchema().getName()+":"+fieldPath.substring(1);
 
 
         Blob blob = dirtyProperty.getValue(Blob.class);

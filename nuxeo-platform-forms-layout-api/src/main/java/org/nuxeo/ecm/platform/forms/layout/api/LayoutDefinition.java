@@ -59,7 +59,7 @@ public interface LayoutDefinition extends Serializable {
      * Returns the maximum number of columns.
      */
     int getColumns();
-    
+
     /**
      * Returns a map of properties to use in a given mode.
      */

@@ -136,15 +136,15 @@ public class OOoDaemonManagerComponent extends DefaultComponent implements
             return -1;
         }
         if (!isRunning()) {
-	        log.debug("Starting new Thread that will handle the Daemon");
-	        runner = new Thread(new NXOOoServerRunner(getOrBuildConfig()));
-	        runner.setDaemon(true);
-	        runner.setUncaughtExceptionHandler(new ThreadExceptionHandler());
-	        runner.start();
-	        log.debug("Daemon thread started");
+            log.debug("Starting new Thread that will handle the Daemon");
+            runner = new Thread(new NXOOoServerRunner(getOrBuildConfig()));
+            runner.setDaemon(true);
+            runner.setUncaughtExceptionHandler(new ThreadExceptionHandler());
+            runner.start();
+            log.debug("Daemon thread started");
         }
         else {
-        	log.debug("Daemon is already running");
+            log.debug("Daemon is already running");
         }
         //runner.run();
         return 0;

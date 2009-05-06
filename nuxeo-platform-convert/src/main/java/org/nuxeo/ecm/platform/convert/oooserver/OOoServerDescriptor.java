@@ -142,8 +142,8 @@ public class OOoServerDescriptor implements Serializable {
         this.autoStart = autoStart;
     }
 
-	public int getOooServerStartTimeout() {
-		return oooServerStartTimeout;
-	}
+    public int getOooServerStartTimeout() {
+        return oooServerStartTimeout;
+    }
 
 }
