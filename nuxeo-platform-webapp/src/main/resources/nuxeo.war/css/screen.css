@@ -492,28 +492,37 @@ div.schedule-compact-default td.inactive-day td.header, div.schedule-compact-def
   opacity:0.1;
 }
 
-
 h3.documentTypes {
  padding:0;
  margin:0;
  margin-top:15px;
  margin-bottom:5px;
  color:#333;
-   
+ border-bottom:1px solid #C2C2C2;
 }
+
 .documentType {
+ margin-top:10px;
  margin-bottom:10px; 
 }
+
 .documentType img {
  float:left;
  margin-right:5px
 }
 
-.documentType a:link, .documentType a:visted, .documentType a:hover {
+.documentType a, a:link, .documentType a:visted, .documentType a:hover {
  font-weight:bold;
  color:#0066CC;
  text-decoration:none;
- 
+}
+
+a.documentTypeLink {
+ color:#063C9F;
+ font-family:Lucida Grande,Verdana,sans-serif;
+ font-size:12px;
+ font-weight:bold;
+ text-decoration:none;
 }
 
 .documentType span {
@@ -535,4 +544,11 @@ color:#000;
 border-color:#92999e;
 }
 
-
+.imagingPanelDownloadLink {
+color:#0066CC;
+display:block;
+font-family:Lucida Grande,Verdana,sans-serif;
+font-size:12px;
+font-weight:bold;
+padding:5px 0px 2px 0px;
+}
