@@ -4,6 +4,7 @@ Bundle-Name: Nuxeo Picture Imaging Web
 Bundle-SymbolicName: org.nuxeo.ecm.platform.picture.web
 Bundle-Version: 1.0.0
 Bundle-Vendor: Nuxeo
+Bundle-Category: stateless
 Nuxeo-Component: OSGI-INF/actions-contrib.xml, 
  OSGI-INF/imaging-various-contrib.xml,
  OSGI-INF/picturebook-search-contrib.xml,
