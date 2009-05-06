@@ -19,13 +19,23 @@
 
 package org.nuxeo.ecm.webapp.filemanager;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Collection;
+import java.util.HashMap;
 
 import javax.faces.application.FacesMessage;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
+import javax.faces.event.ActionEvent;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
@@ -53,8 +63,8 @@ import org.nuxeo.ecm.webapp.clipboard.ClipboardActions;
 import org.nuxeo.ecm.webapp.helpers.EventManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;
-
-import sun.misc.BASE64Decoder;
+import org.richfaces.event.UploadEvent;
+import org.richfaces.model.UploadItem;
 
 /**
  * @author <a href="mailto:andreas.kalogeropoulos@nuxeo.com">Andreas
@@ -62,10 +72,12 @@ import sun.misc.BASE64Decoder;
  *
  */
 @Name("FileManageActions")
-@Scope(ScopeType.EVENT)
-public class FileManageActionsBean extends InputController implements FileManageActions {
+@Scope(ScopeType.PAGE)
+public class FileManageActionsBean extends InputController implements
+        FileManageActions {
 
-    private static final Log log = LogFactory.getLog(FileManageActionsBean.class);
+    private static final Log log = LogFactory
+            .getLog(FileManageActionsBean.class);
 
     public static final String TRANSF_ERROR = "TRANSF_ERROR";
 
@@ -81,6 +93,8 @@ public class FileManageActionsBean extends InputController implements FileManage
 
     public static final String MOVE_OK = "MOVE_OK";
 
+    protected File tempFile;
+
     protected InputStream fileUpload;
 
     protected String fileName;
@@ -88,11 +102,13 @@ public class FileManageActionsBean extends InputController implements FileManage
     @In(create = true, required = false)
     protected CoreSession documentManager;
 
-    @In(create=true)
+    @In(create = true)
     protected TypeManager typeManager;
 
     @In(create = true)
     protected ClipboardActions clipboardActions;
+
+    protected Collection<UploadItem> uploadedFiles = new ArrayList<UploadItem>();
 
     protected FileManager fileManager;
 
@@ -118,28 +134,34 @@ public class FileManageActionsBean extends InputController implements FileManage
     }
 
     public String addFile() throws ClientException {
+        return addFile(fileUpload, fileName);
+    }
+
+    public String addFile(InputStream fileUpload, String fileName)
+            throws ClientException {
         try {
             if (fileUpload == null || fileName == null) {
                 facesMessages.add(FacesMessage.SEVERITY_ERROR,
                         resourcesAccessor.getMessages().get(
                                 "fileImporter.error.nullUploadedFile"));
-                return navigationContext.getActionResult(
-                        navigationContext.getCurrentDocument(),
-                        UserAction.AFTER_CREATE);
+                return navigationContext.getActionResult(navigationContext
+                        .getCurrentDocument(), UserAction.AFTER_CREATE);
             }
             fileName = FileUtils.getCleanFileName(fileName);
-            DocumentModel currentDocument = navigationContext.getCurrentDocument();
+            DocumentModel currentDocument = navigationContext
+                    .getCurrentDocument();
             String path = currentDocument.getPathAsString();
             Blob blob = FileUtils.createSerializableBlob(fileUpload, fileName,
                     null);
 
-            DocumentModel createdDoc = getFileManagerService().createDocumentFromBlob(
-                    documentManager, blob, path, true, fileName);
+            DocumentModel createdDoc = getFileManagerService()
+                    .createDocumentFromBlob(documentManager, blob, path, true,
+                            fileName);
             eventManager.raiseEventsOnDocumentSelected(createdDoc);
 
-            facesMessages.add(FacesMessage.SEVERITY_INFO,
-                    resourcesAccessor.getMessages().get("document_saved"),
-                    resourcesAccessor.getMessages().get(createdDoc.getType()));
+            facesMessages.add(FacesMessage.SEVERITY_INFO, resourcesAccessor
+                    .getMessages().get("document_saved"), resourcesAccessor
+                    .getMessages().get(createdDoc.getType()));
             return navigationContext.getActionResult(createdDoc,
                     UserAction.AFTER_CREATE);
 
@@ -178,8 +200,8 @@ public class FileManageActionsBean extends InputController implements FileManage
     @WebRemote
     public String addBinaryFileFromPlugin(Blob blob, String fullName,
             DocumentModel targetContainer) throws ClientException {
-        return createDocumentFromBlob(blob, fullName,
-                targetContainer.getPathAsString());
+        return createDocumentFromBlob(blob, fullName, targetContainer
+                .getPathAsString());
     }
 
     protected String createDocumentFromBlob(Blob blob, String fullName,
@@ -229,7 +251,8 @@ public class FileManageActionsBean extends InputController implements FileManage
     public String addFolderFromPlugin(String fullName, String morePath)
             throws ClientException {
         try {
-            DocumentModel currentDocument = navigationContext.getCurrentDocument();
+            DocumentModel currentDocument = navigationContext
+                    .getCurrentDocument();
 
             String curPath = currentDocument.getPathAsString();
             if (!currentDocument.isFolder()) {
@@ -261,7 +284,6 @@ public class FileManageActionsBean extends InputController implements FileManage
         }
     }
 
-
     @WebRemote
     protected String checkMoveAllowed(DocumentRef docRef,
             DocumentRef containerRef) throws ClientException {
@@ -270,10 +292,11 @@ public class FileManageActionsBean extends InputController implements FileManage
         DocumentModel container = documentManager.getDocument(containerRef);
 
         // check that we are not trying to move a folder inside itself
-        if ((container.getPathAsString() + "/").startsWith(doc.getPathAsString()
+        if ((container.getPathAsString() + "/").startsWith(doc
+                .getPathAsString()
                 + "/")) {
-            facesMessages.add(FacesMessage.SEVERITY_WARN,
-                    resourcesAccessor.getMessages().get("move_impossible"));
+            facesMessages.add(FacesMessage.SEVERITY_WARN, resourcesAccessor
+                    .getMessages().get("move_impossible"));
             return MOVE_IMPOSSIBLE;
         }
 
@@ -286,9 +309,8 @@ public class FileManageActionsBean extends InputController implements FileManage
                     SecurityConstants.BROWSE)) {
                 // This should never append since user can only drop in visible
                 // sections
-                facesMessages.add(FacesMessage.SEVERITY_WARN,
-                        resourcesAccessor.getMessages().get(
-                                "move_insuffisant_rights"));
+                facesMessages.add(FacesMessage.SEVERITY_WARN, resourcesAccessor
+                        .getMessages().get("move_insuffisant_rights"));
                 // TODO: this should be PUBLISH_IMPOSSIBLE
                 return MOVE_IMPOSSIBLE;
             }
@@ -296,9 +318,8 @@ public class FileManageActionsBean extends InputController implements FileManage
             if (doc.hasFacet(FacetNames.PUBLISHABLE)) {
                 return MOVE_PUBLISH;
             } else {
-                facesMessages.add(FacesMessage.SEVERITY_WARN,
-                        resourcesAccessor.getMessages().get(
-                                "publish_impossible"));
+                facesMessages.add(FacesMessage.SEVERITY_WARN, resourcesAccessor
+                        .getMessages().get("publish_impossible"));
                 // TODO: this should be PUBLISH_IMPOSSIBLE
                 return MOVE_IMPOSSIBLE;
             }
@@ -310,17 +331,16 @@ public class FileManageActionsBean extends InputController implements FileManage
                 SecurityConstants.REMOVE_CHILDREN)
                 || !documentManager.hasPermission(doc.getRef(),
                         SecurityConstants.REMOVE)) {
-            facesMessages.add(FacesMessage.SEVERITY_WARN,
-                    resourcesAccessor.getMessages().get("move_impossible"));
+            facesMessages.add(FacesMessage.SEVERITY_WARN, resourcesAccessor
+                    .getMessages().get("move_impossible"));
             return MOVE_IMPOSSIBLE;
         }
 
         // check that we have the right to create the copy in the target
         if (!documentManager.hasPermission(containerRef,
                 SecurityConstants.ADD_CHILDREN)) {
-            facesMessages.add(FacesMessage.SEVERITY_WARN,
-                    resourcesAccessor.getMessages().get(
-                            "move_insuffisant_rights"));
+            facesMessages.add(FacesMessage.SEVERITY_WARN, resourcesAccessor
+                    .getMessages().get("move_insuffisant_rights"));
             return MOVE_IMPOSSIBLE;
         }
 
@@ -329,8 +349,8 @@ public class FileManageActionsBean extends InputController implements FileManage
                 // do not allow to move a published document back in a workspace
                 // TODO: use a PUBLICATION_TARGET facet instead of hardcoding
                 // the Section type name
-                facesMessages.add(FacesMessage.SEVERITY_WARN,
-                        resourcesAccessor.getMessages().get("move_impossible"));
+                facesMessages.add(FacesMessage.SEVERITY_WARN, resourcesAccessor
+                        .getMessages().get("move_impossible"));
                 return MOVE_IMPOSSIBLE;
             }
         } else {
@@ -338,8 +358,8 @@ public class FileManageActionsBean extends InputController implements FileManage
             List<String> allowedTypes = Arrays.asList(typeManager.getType(
                     container.getType()).getAllowedSubTypes());
             if (!allowedTypes.contains(doc.getType())) {
-                facesMessages.add(FacesMessage.SEVERITY_WARN,
-                        resourcesAccessor.getMessages().get("move_impossible"));
+                facesMessages.add(FacesMessage.SEVERITY_WARN, resourcesAccessor
+                        .getMessages().get("move_impossible"));
                 return MOVE_IMPOSSIBLE;
             }
         }
@@ -378,7 +398,8 @@ public class FileManageActionsBean extends InputController implements FileManage
             documentManager.move(srcRef, dstRef, null);
             // delCopyWithId(docId);
             documentManager.save();
-            DocumentModel currentDocument = navigationContext.getCurrentDocument();
+            DocumentModel currentDocument = navigationContext
+                    .getCurrentDocument();
             eventManager.raiseEventsOnDocumentChildrenChange(currentDocument);
 
             // notify current container
@@ -389,9 +410,9 @@ public class FileManageActionsBean extends InputController implements FileManage
             Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
                     otherContainer);
 
-            facesMessages.add(FacesMessage.SEVERITY_INFO,
-                    resourcesAccessor.getMessages().get("document_moved"),
-                    resourcesAccessor.getMessages().get(
+            facesMessages.add(FacesMessage.SEVERITY_INFO, resourcesAccessor
+                    .getMessages().get("document_moved"), resourcesAccessor
+                    .getMessages().get(
                             documentManager.getDocument(srcRef).getType()));
 
             return debug;
@@ -451,6 +472,72 @@ public class FileManageActionsBean extends InputController implements FileManage
         log.info("Initializing...");
     }
 
+    public void processUpload(UploadEvent uploadEvent) {
+        try {
+            tempFile = uploadEvent.getUploadItem().getFile();
+            fileName = uploadEvent.getUploadItem().getFileName();
+        } catch (Exception e) {
+            log.error(e);
+            return;
+        }
+    }
+
+    public void validateMultiplesUpload() throws ClientException,
+            FileNotFoundException {
+        DocumentModel current = navigationContext.getCurrentDocument();
+        if (!current.hasSchema("files"))
+            return;
+        Collection files = (Collection) current.getProperty("files", "files");
+        for (UploadItem file : uploadedFiles) {
+            String filename = FileUtils.getCleanFileName(file.getFileName());
+            Blob blob = FileUtils.createSerializableBlob(new FileInputStream(
+                    file.getFile()), filename, null);
+
+            HashMap<String, Object> fileMap = new HashMap<String, Object>(2);
+            fileMap.put("file", blob);
+            fileMap.put("filename", filename);
+            if (!files.contains(fileMap))
+                files.add(fileMap);
+        }
+        current.setProperty("files", "files", files);
+        documentManager.saveDocument(current);
+        documentManager.save();
+    }
+
+    public void performAction(ActionEvent event) {
+        FacesContext context = FacesContext.getCurrentInstance();
+        ExternalContext eContext = context.getExternalContext();
+        String index = eContext.getRequestParameterMap().get("index");
+
+        try {
+            DocumentModel current = navigationContext.getCurrentDocument();
+            if (!current.hasSchema("files"))
+                return;
+            Collection files = (Collection) current.getProperty("files",
+                    "files");
+            Object file = CollectionUtils.get(files, new Integer(index));
+            files.remove(file);
+            current.setProperty("files", "files", files);
+            documentManager.saveDocument(current);
+            documentManager.save();
+        } catch (Exception e) {
+            log.error(e);
+        }
+    }
+
+    public String validate() throws ClientException {
+        InputStream stream = null;
+        try {
+            stream = new FileInputStream(tempFile);
+            return addFile(stream, fileName);
+        } catch (Exception e) {
+            throw new ClientException(e);
+        } finally {
+            if (stream != null)
+                IOUtils.closeQuietly(stream);
+        }
+    }
+
     public InputStream getFileUpload() {
         return fileUpload;
     }
@@ -473,6 +560,14 @@ public class FileManageActionsBean extends InputController implements FileManage
 
     public void setChangeableDocument(DocumentModel changeableDocument) {
         navigationContext.setChangeableDocument(changeableDocument);
+    }
+
+    public Collection<UploadItem> getUploadedFiles() {
+        return uploadedFiles;
+    }
+
+    public void setUploadedFiles(Collection<UploadItem> uploadedFiles) {
+        this.uploadedFiles = uploadedFiles;
     }
 
 }
