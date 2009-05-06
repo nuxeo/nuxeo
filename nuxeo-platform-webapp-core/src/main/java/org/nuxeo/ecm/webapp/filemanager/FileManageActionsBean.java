@@ -72,7 +72,7 @@ import org.richfaces.model.UploadItem;
  *
  */
 @Name("FileManageActions")
-@Scope(ScopeType.PAGE)
+@Scope(ScopeType.EVENT)
 public class FileManageActionsBean extends InputController implements
         FileManageActions {
 
@@ -93,12 +93,6 @@ public class FileManageActionsBean extends InputController implements
 
     public static final String MOVE_OK = "MOVE_OK";
 
-    protected File tempFile;
-
-    protected InputStream fileUpload;
-
-    protected String fileName;
-
     @In(create = true, required = false)
     protected CoreSession documentManager;
 
@@ -108,7 +102,8 @@ public class FileManageActionsBean extends InputController implements
     @In(create = true)
     protected ClipboardActions clipboardActions;
 
-    protected Collection<UploadItem> uploadedFiles = new ArrayList<UploadItem>();
+    @In(create = true, required=false)
+    protected UploadItemHolder fileUploadHolder;
 
     protected FileManager fileManager;
 
@@ -134,7 +129,7 @@ public class FileManageActionsBean extends InputController implements
     }
 
     public String addFile() throws ClientException {
-        return addFile(fileUpload, fileName);
+        return addFile(getFileUpload(), getFileName());
     }
 
     public String addFile(InputStream fileUpload, String fileName)
@@ -474,8 +469,13 @@ public class FileManageActionsBean extends InputController implements
 
     public void processUpload(UploadEvent uploadEvent) {
         try {
-            tempFile = uploadEvent.getUploadItem().getFile();
-            fileName = uploadEvent.getUploadItem().getFileName();
+            if (fileUploadHolder!=null) {
+                fileUploadHolder.setTempFile(uploadEvent.getUploadItem().getFile());
+                fileUploadHolder.setFileName(uploadEvent.getUploadItem().getFileName());
+            }
+            else {
+                log.error("Unable to reach fileUploadHolder");
+            }
         } catch (Exception e) {
             log.error(e);
             return;
@@ -488,7 +488,7 @@ public class FileManageActionsBean extends InputController implements
         if (!current.hasSchema("files"))
             return;
         Collection files = (Collection) current.getProperty("files", "files");
-        for (UploadItem file : uploadedFiles) {
+        for (UploadItem file : getUploadedFiles()) {
             String filename = FileUtils.getCleanFileName(file.getFileName());
             Blob blob = FileUtils.createSerializableBlob(new FileInputStream(
                     file.getFile()), filename, null);
@@ -527,31 +527,48 @@ public class FileManageActionsBean extends InputController implements
 
     public String validate() throws ClientException {
         InputStream stream = null;
-        try {
-            stream = new FileInputStream(tempFile);
-            return addFile(stream, fileName);
-        } catch (Exception e) {
-            throw new ClientException(e);
-        } finally {
-            if (stream != null)
-                IOUtils.closeQuietly(stream);
+        if (fileUploadHolder!=null) {
+            try {
+                stream = new FileInputStream(fileUploadHolder.getTempFile());
+                return addFile(stream, getFileName());
+            } catch (Exception e) {
+                throw new ClientException(e);
+            } finally {
+                if (stream != null)
+                    IOUtils.closeQuietly(stream);
+            }
+        }
+        else {
+            return null;
         }
     }
 
     public InputStream getFileUpload() {
-        return fileUpload;
+        if (fileUploadHolder!=null) {
+            return fileUploadHolder.getFileUpload();
+        }
+        else {
+            return null;
+        }
     }
 
     public void setFileUpload(InputStream fileUpload) {
-        this.fileUpload = fileUpload;
+        if (fileUploadHolder!=null) {
+            fileUploadHolder.setFileUpload(fileUpload);
+        }
     }
 
     public String getFileName() {
-        return fileName;
+        if (fileUploadHolder!=null) {
+            return fileUploadHolder.getFileName();
+        }
+        return null;
     }
 
     public void setFileName(String fileName) {
-        this.fileName = fileName;
+        if (fileUploadHolder!=null) {
+            fileUploadHolder.setFileName(fileName);
+        }
     }
 
     public DocumentModel getChangeableDocument() {
@@ -563,11 +580,18 @@ public class FileManageActionsBean extends InputController implements
     }
 
     public Collection<UploadItem> getUploadedFiles() {
-        return uploadedFiles;
+        if (fileUploadHolder!=null) {
+            return fileUploadHolder.getUploadedFiles();
+        }
+        else {
+            return null;
+        }
     }
 
     public void setUploadedFiles(Collection<UploadItem> uploadedFiles) {
-        this.uploadedFiles = uploadedFiles;
+        if (fileUploadHolder!=null) {
+            fileUploadHolder.setUploadedFiles(uploadedFiles);
+        }
     }
 
 }
