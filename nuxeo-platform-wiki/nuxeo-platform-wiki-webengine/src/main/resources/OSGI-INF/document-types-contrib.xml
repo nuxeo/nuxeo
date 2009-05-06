@@ -7,6 +7,7 @@
   <extension target="org.nuxeo.ecm.platform.types.TypeService"
              point="types">
 
+<!--
     <type id="Blog" coretype="Blog">
       <label>BlogSite</label>
       <icon>/icons/folder.gif</icon>
@@ -19,7 +20,6 @@
         <type>BlogPost</type>
         <type>File</type>
       </subtypes>
-      <!-- new layout config -->
       <layouts mode="any">
         <layout>heading</layout>
       </layouts>
@@ -31,15 +31,13 @@
       <bigIcon>/icons/file_100.gif</bigIcon>
       <category>WebObject</category>
       <description>BlogPost.description</description>
-      <!-- dummy default infos as an example -->
       <default-view>view_documents</default-view>
-      <!-- new layout config -->
       <layouts mode="any">
         <layout>heading</layout>
         <layout>files</layout>
       </layouts>
     </type>
-
+-->
     <type id="Wiki" coretype="Wiki">
       <label>Wiki Site</label>
       <icon>/icons/folder.gif</icon>
