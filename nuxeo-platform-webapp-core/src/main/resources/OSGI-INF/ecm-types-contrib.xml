@@ -194,6 +194,8 @@
         <layout>file</layout>
         <layout>dublincore</layout>
       </layouts>
+      <!-- all content already on summary page -->
+      <layouts mode="view" />
     </type>
 
     <type id="Note">
@@ -211,6 +213,9 @@
         <layout>heading</layout>
         <layout>note</layout>
         <layout>dublincore</layout>
+      </layouts>
+      <layouts mode="view">
+        <layout>note</layout>
       </layouts>
     </type>
 

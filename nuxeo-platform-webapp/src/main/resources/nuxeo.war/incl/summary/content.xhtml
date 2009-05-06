@@ -7,9 +7,11 @@
   xmlns:nxh="http://nuxeo.org/nxweb/html"
   xmlns:nxl="http://nuxeo.org/nxforms/layout">
 
-  <h3 class="summaryTitle">
-    <h:outputText value="#{messages['action.view.content']}" />
-  </h3>
+  <c:if test="#{currentDocument.hasSchema('file') || currentDocument.hasSchema('files')}">
+    <h3 class="summaryTitle">
+      <h:outputText value="#{messages['action.view.content']}" />
+    </h3>
+  </c:if>
 
   <h:panelGrid columns="2">
 
