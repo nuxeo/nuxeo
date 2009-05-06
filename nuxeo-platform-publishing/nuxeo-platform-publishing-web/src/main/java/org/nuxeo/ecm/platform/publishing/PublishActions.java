@@ -95,8 +95,4 @@ public interface PublishActions extends SelectDataModelListener {
 
     boolean isPublished();
 
-    // XXX annotations shouldn't be there but this interface used as Local
-    // interface because of Seam remoting bug.
-    @Destroy
-    void destroy();
 }

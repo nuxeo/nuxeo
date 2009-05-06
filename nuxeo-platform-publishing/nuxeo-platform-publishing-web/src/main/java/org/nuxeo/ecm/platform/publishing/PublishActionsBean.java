@@ -34,7 +34,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Create;
-import org.jboss.seam.annotations.Destroy;
+import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
@@ -50,7 +50,6 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.Sorter;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
-import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventProducer;
@@ -69,8 +68,6 @@ import org.nuxeo.ecm.platform.versioning.api.VersioningManager;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.ecm.webapp.helpers.EventManager;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
-import org.nuxeo.ecm.webapp.querymodel.QueryModelActions;
-import org.nuxeo.ecm.webapp.security.PrincipalListManager;
 import org.nuxeo.ecm.webapp.tree.DocumentTreeNode;
 import org.nuxeo.ecm.webapp.tree.DocumentTreeNodeImpl;
 import org.nuxeo.ecm.webapp.tree.TreeActions;
@@ -84,6 +81,7 @@ import org.nuxeo.runtime.api.Framework;
  * @author Florent Guillaume
  * @author Thierry Martins
  * @author <a href="mailto:cbaican@nuxeo.com">Catalin Baican</a>
+ * @author Thierry Delprat
  */
 @Name("publishActions")
 @Scope(ScopeType.CONVERSATION)
@@ -120,12 +118,6 @@ public class PublishActionsBean implements PublishActions, Serializable {
     @In(create = true)
     protected transient DocumentsListsManager documentsListsManager;
 
-    @In(create = true)
-    protected transient PrincipalListManager principalListManager;
-
-    @In(create = true)
-    protected transient QueryModelActions queryModelActions;
-
     @In(create = true, required = false)
     protected transient FacesMessages facesMessages;
 
@@ -142,7 +134,7 @@ public class PublishActionsBean implements PublishActions, Serializable {
 
     protected DocumentModelList sectionRoots;
 
-    protected DocumentModelList sectionRootsForPublishing;
+    protected transient RootSectionsFinder rootFinder;
 
     protected DocumentTreeNode sectionsTree;
 
@@ -202,8 +194,8 @@ public class PublishActionsBean implements PublishActions, Serializable {
             return null;
         }
 
-        Set<String> publishRoots = schemaService.getTypeManager().getDocumentTypeNamesForFacet(
-                facetName);
+        Set<String> publishRoots = schemaService.getTypeManager()
+                .getDocumentTypeNamesForFacet(facetName);
         if (publishRoots == null || publishRoots.isEmpty()) {
             return null;
         }
@@ -274,7 +266,8 @@ public class PublishActionsBean implements PublishActions, Serializable {
 
     public String publishDocumentList(String listName) throws ClientException {
 
-        List<DocumentModel> docs2Publish = documentsListsManager.getWorkingList(listName);
+        List<DocumentModel> docs2Publish = documentsListsManager
+                .getWorkingList(listName);
         DocumentModel target = navigationContext.getCurrentDocument();
 
         if (!getSectionTypes().contains(target.getType())) {
@@ -290,8 +283,8 @@ public class PublishActionsBean implements PublishActions, Serializable {
 
             if (doc.isProxy()) {
                 // TODO copy also copies security. just recreate a proxy.
-                documentManager.copy(doc.getRef(), target.getRef(),
-                        doc.getName());
+                documentManager.copy(doc.getRef(), target.getRef(), doc
+                        .getName());
                 nbPublishedDocs++;
             } else {
                 if (doc.hasFacet(FacetNames.PUBLISHABLE)) {
@@ -310,12 +303,13 @@ public class PublishActionsBean implements PublishActions, Serializable {
                 params);
 
         if (nbPublishedDocs < docs2Publish.size()) {
-            facesMessages.add(FacesMessage.SEVERITY_WARN,
-                    resourcesAccessor.getMessages().get(
+            facesMessages.add(FacesMessage.SEVERITY_WARN, resourcesAccessor
+                    .getMessages().get(
                             "selection_contains_non_publishable_docs"));
         }
 
-        EventManager.raiseEventsOnDocumentChildrenChange(navigationContext.getCurrentDocument());
+        EventManager.raiseEventsOnDocumentChildrenChange(navigationContext
+                .getCurrentDocument());
         return null;
     }
 
@@ -349,10 +343,6 @@ public class PublishActionsBean implements PublishActions, Serializable {
         return documentManager.getDocument(documentPublisher.proxyRef);
     }
 
-    @Destroy
-    public void destroy() {
-    }
-
     public void notifyEvent(String eventId,
             Map<String, Serializable> properties, String comment,
             String category, DocumentModel dm) throws ClientException {
@@ -366,12 +356,12 @@ public class PublishActionsBean implements PublishActions, Serializable {
             properties = new HashMap<String, Serializable>();
         }
 
-        properties.put(CoreEventConstants.REPOSITORY_NAME,
-                documentManager.getRepositoryName());
-        properties.put(CoreEventConstants.SESSION_ID,
-                documentManager.getSessionId());
-        properties.put(CoreEventConstants.DOC_LIFE_CYCLE,
-                dm.getCurrentLifeCycleState());
+        properties.put(CoreEventConstants.REPOSITORY_NAME, documentManager
+                .getRepositoryName());
+        properties.put(CoreEventConstants.SESSION_ID, documentManager
+                .getSessionId());
+        properties.put(CoreEventConstants.DOC_LIFE_CYCLE, dm
+                .getCurrentLifeCycleState());
 
         DocumentEventContext ctx = new DocumentEventContext(documentManager,
                 documentManager.getPrincipal(), dm);
@@ -410,21 +400,24 @@ public class PublishActionsBean implements PublishActions, Serializable {
         publishingService.unpublish(documentsList, currentUser);
         Object[] params = { documentsList.size() };
         // remove from the current selection list
-        documentsListsManager.resetWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION);
+        documentsListsManager
+                .resetWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION);
 
-        facesMessages.add(FacesMessage.SEVERITY_INFO,
-                resourcesAccessor.getMessages().get("n_unpublished_docs"),
-                params);
+        facesMessages.add(FacesMessage.SEVERITY_INFO, resourcesAccessor
+                .getMessages().get("n_unpublished_docs"), params);
     }
 
     /*
      * Called by action CURRENT_SELECTION_UNPUBLISH.
      */
     public void unPublishDocumentsFromCurrentSelection() throws ClientException {
-        if (!documentsListsManager.isWorkingListEmpty(DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION)) {
-            unPublishDocuments(documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION));
+        if (!documentsListsManager
+                .isWorkingListEmpty(DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION)) {
+            unPublishDocuments(documentsListsManager
+                    .getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION));
         } else {
-            log.debug("No selectable Documents in context to process unpublish on...");
+            log
+                    .debug("No selectable Documents in context to process unpublish on...");
         }
         log.debug("Unpublish the selected document(s) ...");
     }
@@ -433,8 +426,9 @@ public class PublishActionsBean implements PublishActions, Serializable {
      * Called by section_clipboard.xhtml
      */
     public List<Action> getActionsForSectionSelection() {
-        return webActions.getUnfiltredActionsList(DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION
-                + "_LIST");
+        return webActions
+                .getUnfiltredActionsList(DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION
+                        + "_LIST");
     }
 
     /*
@@ -456,8 +450,8 @@ public class PublishActionsBean implements PublishActions, Serializable {
 
     public boolean hasValidationTask() {
         try {
-            return publishingService.hasValidationTask(
-                    navigationContext.getCurrentDocument(), currentUser);
+            return publishingService.hasValidationTask(navigationContext
+                    .getCurrentDocument(), currentUser);
         } catch (PublishingException e) {
             throw new IllegalStateException(
                     "Publishing service not deployed properly.", e);
@@ -466,7 +460,8 @@ public class PublishActionsBean implements PublishActions, Serializable {
 
     public boolean isPublished() {
         try {
-            return publishingService.isPublished(navigationContext.getCurrentDocument());
+            return publishingService.isPublished(navigationContext
+                    .getCurrentDocument());
         } catch (PublishingException e) {
             throw new IllegalStateException(
                     "Publishing service not deployed properly.", e);
@@ -485,47 +480,24 @@ public class PublishActionsBean implements PublishActions, Serializable {
         return treeManager;
     }
 
+    @Factory(value = "defaultPublishingRoots", scope = ScopeType.EVENT)
     public DocumentModelList getSectionRoots() throws ClientException {
-        sectionRoots = new DocumentModelListImpl();
-        DocumentModelList domains = documentManager.getChildren(
-                documentManager.getRootDocument().getRef(), "Domain");
-        for (DocumentModel domain : domains) {
-            for (String sectionRootNameType : getSectionRootTypes()) {
-                DocumentModelList children = documentManager.getChildren(
-                        domain.getRef(), sectionRootNameType);
-                sectionRoots.addAll(children);
-            }
-        }
-
-        return sectionRoots;
+        return getRootFinder().getDefaultSectionRoots(true);
     }
 
+    protected RootSectionsFinder getRootFinder() {
+        if (rootFinder == null) {
+            rootFinder = new RootSectionsFinder(documentManager,
+                    getSectionRootTypes(), getSectionTypes());
+        }
+        return rootFinder;
+    }
+
+    @Factory(value = "availablePublishingRoots", scope = ScopeType.EVENT)
     public DocumentModelList getSectionRootsForPublishing()
             throws ClientException {
-        sectionRootsForPublishing = new DocumentModelListImpl();
-        DocumentModel currentDocument = navigationContext.getCurrentDocument();
-
-        /*
-         * Get the first parent having "publishing" schema.
-         * In order to void infinite loop, if the parent is 'Root' type just break (NXP-3359).
-         */
-        DocumentModel parentDocumentModel = documentManager.getDocument(currentDocument.getParentRef());
-        while (!parentDocumentModel.hasSchema(SCHEMA_PUBLISHING)) {
-            if ("Root".equals(parentDocumentModel.getType())) {
-                break;
-            }
-            parentDocumentModel = documentManager.getDocument(parentDocumentModel.getParentRef());
-        }
-
-        sectionRootsForPublishing = getSectionDocumentModelList(parentDocumentModel);
-        // CB: NXP-3052 - When no special tree node is selected on
-        // administration tab of the workspace, there should be the default one
-        // that starts from SectionRoot.
-        if (sectionRootsForPublishing.isEmpty()) {
-            sectionRootsForPublishing = getSectionRoots();
-        }
-
-        return sectionRootsForPublishing;
+        return getRootFinder().getAccessibleSectionRoots(
+                navigationContext.getCurrentDocument());
     }
 
     public DocumentTreeNode getCurrentSectionsTree() throws ClientException {
@@ -550,10 +522,11 @@ public class PublishActionsBean implements PublishActions, Serializable {
             throws ClientException {
         DocumentModel sectionsRoot = null;
 
-        sectionRootsForPublishing = getSectionRootsForPublishing();
+        DocumentModelList sectionRootsForPublishing = getSectionRootsForPublishing();
         if (currentSectionRootIdForPublishing == null
                 && sectionRootsForPublishing.size() > 0) {
-            currentSectionRootIdForPublishing = sectionRootsForPublishing.get(0).getId();
+            currentSectionRootIdForPublishing = sectionRootsForPublishing
+                    .get(0).getId();
         }
 
         if (currentSectionRootIdForPublishing != null) {
@@ -577,9 +550,10 @@ public class PublishActionsBean implements PublishActions, Serializable {
                 sorter = getTreeManager().getSorter(
                         TreeActions.DEFAULT_TREE_PLUGIN_NAME);
             } catch (Exception e) {
-                log.error(
-                        "Could not fetch filter, sorter or node type for tree ",
-                        e);
+                log
+                        .error(
+                                "Could not fetch filter, sorter or node type for tree ",
+                                e);
             }
 
             documentTreeNode = new DocumentTreeNodeImpl(documentModel, filter,
@@ -619,7 +593,8 @@ public class PublishActionsBean implements PublishActions, Serializable {
 
         DocumentModel parentDocument = null;
         try {
-            parentDocument = documentManager.getDocument(documentModel.getParentRef());
+            parentDocument = documentManager.getDocument(documentModel
+                    .getParentRef());
         } catch (Exception e) {
             log.error("Error building path", e);
             return;
@@ -631,7 +606,8 @@ public class PublishActionsBean implements PublishActions, Serializable {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
 
         if (sectionId != null && currentDocument.hasSchema(SCHEMA_PUBLISHING)) {
-            String[] sectionIdsArray = (String[]) currentDocument.getPropertyValue(SECTIONS_PROPERTY_NAME);
+            String[] sectionIdsArray = (String[]) currentDocument
+                    .getPropertyValue(SECTIONS_PROPERTY_NAME);
 
             List<String> sectionIdsList = new ArrayList<String>();
 
@@ -649,6 +625,8 @@ public class PublishActionsBean implements PublishActions, Serializable {
                     sectionIdsListIn);
             documentManager.saveDocument(currentDocument);
             documentManager.save();
+
+            getRootFinder().reset();
         }
 
         return null;
@@ -658,7 +636,8 @@ public class PublishActionsBean implements PublishActions, Serializable {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
 
         if (sectionId != null && currentDocument.hasSchema(SCHEMA_PUBLISHING)) {
-            String[] sectionIdsArray = (String[]) currentDocument.getPropertyValue(SECTIONS_PROPERTY_NAME);
+            String[] sectionIdsArray = (String[]) currentDocument
+                    .getPropertyValue(SECTIONS_PROPERTY_NAME);
 
             List<String> sectionIdsList = new ArrayList<String>();
 
@@ -701,17 +680,15 @@ public class PublishActionsBean implements PublishActions, Serializable {
 
         if (isPublished) {
             comment = null;
-            facesMessages.add(FacesMessage.SEVERITY_INFO,
-                    resourcesAccessor.getMessages().get("document_published"),
-                    resourcesAccessor.getMessages().get(
-                            currentDocument.getType()));
+            facesMessages.add(FacesMessage.SEVERITY_INFO, resourcesAccessor
+                    .getMessages().get("document_published"), resourcesAccessor
+                    .getMessages().get(currentDocument.getType()));
         }
 
         if (isWaiting) {
             comment = null;
-            facesMessages.add(FacesMessage.SEVERITY_INFO,
-                    resourcesAccessor.getMessages().get(
-                            "document_submitted_for_publication"),
+            facesMessages.add(FacesMessage.SEVERITY_INFO, resourcesAccessor
+                    .getMessages().get("document_submitted_for_publication"),
                     resourcesAccessor.getMessages().get(
                             currentDocument.getType()));
         }
@@ -719,41 +696,10 @@ public class PublishActionsBean implements PublishActions, Serializable {
         return null;
     }
 
-    private DocumentModelList getSectionDocumentModelList(
-            DocumentModel documentModel) throws ClientException {
-        DocumentModelList selectedSections = new DocumentModelListImpl();
-
-        if (documentModel.hasSchema(SCHEMA_PUBLISHING)) {
-            String[] sectionIdsArray = (String[]) documentModel.getPropertyValue(SECTIONS_PROPERTY_NAME);
-
-            List<String> sectionIdsList = new ArrayList<String>();
-
-            if (sectionIdsArray != null && sectionIdsArray.length > 0) {
-                sectionIdsList = Arrays.asList(sectionIdsArray);
-            }
-
-            if (sectionIdsList != null) {
-                for (String currentSectionId : sectionIdsList) {
-                    try {
-                        DocumentModel sectionToAdd = documentManager.getDocument(new IdRef(
-                                currentSectionId));
-                        selectedSections.add(sectionToAdd);
-                    } catch (ClientException e) {
-                        log.warn("Section with ID=" + currentSectionId
-                                + " not found for document with ID="
-                                + documentModel.getId());
-                    }
-                }
-            }
-        }
-
-        return selectedSections;
-    }
-
+    @Factory(value = "workspaceConfiguredPublishingRoots", scope = ScopeType.EVENT)
     public DocumentModelList getSelectedSections() throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
-
-        return getSectionDocumentModelList(currentDocument);
+        return getRootFinder().getSectionRootsForWorkspace(currentDocument);
     }
 
     public List<PublishPojo> getPublishingInfo() throws ClientException {
@@ -763,7 +709,8 @@ public class PublishActionsBean implements PublishActions, Serializable {
                 currentDocument.getRef(), null);
         List<PublishPojo> publishingInfo = new ArrayList<PublishPojo>();
         for (DocumentModel currentPublishedProxy : publishedProxies) {
-            DocumentModel currentPublishedProxyParent = documentManager.getDocument(currentPublishedProxy.getParentRef());
+            DocumentModel currentPublishedProxyParent = documentManager
+                    .getDocument(currentPublishedProxy.getParentRef());
             publishingInfo.add(new PublishPojo(currentPublishedProxyParent,
                     versioningManager.getVersionLabel(currentPublishedProxy)));
         }
@@ -776,7 +723,8 @@ public class PublishActionsBean implements PublishActions, Serializable {
         String sectionId = section.getId();
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (currentDocument.hasSchema(SCHEMA_PUBLISHING)) {
-            String[] sectionIdsArray = (String[]) currentDocument.getPropertyValue(SECTIONS_PROPERTY_NAME);
+            String[] sectionIdsArray = (String[]) currentDocument
+                    .getPropertyValue(SECTIONS_PROPERTY_NAME);
 
             List<String> sectionIdsList = new ArrayList<String>();
 
@@ -808,7 +756,8 @@ public class PublishActionsBean implements PublishActions, Serializable {
         String sectionId = section.getId();
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (currentDocument.hasSchema(SCHEMA_PUBLISHING)) {
-            String[] sectionIdsArray = (String[]) currentDocument.getPropertyValue(SECTIONS_PROPERTY_NAME);
+            String[] sectionIdsArray = (String[]) currentDocument
+                    .getPropertyValue(SECTIONS_PROPERTY_NAME);
 
             List<String> sectionIdsList = new ArrayList<String>();
 
@@ -826,13 +775,13 @@ public class PublishActionsBean implements PublishActions, Serializable {
 
     public String unPublishFromSection(DocumentModel section)
             throws ClientException {
-        for (DocumentModel doc : getProxies(navigationContext.getCurrentDocument())) {
+        for (DocumentModel doc : getProxies(navigationContext
+                .getCurrentDocument())) {
 
             if (doc.getParentRef().equals(section.getRef())) {
                 unPublishDocument(doc);
             }
         }
-
         return null;
     }
 
