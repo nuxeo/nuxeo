@@ -24,6 +24,8 @@
 
   <h:form>
 
+    <h:outputText value="#{messages['label.picture.download.header']}" />
+    
     <h:selectManyCheckbox layout="pageDirection"
       value="#{pictureBookManager.selectedViews}">
       <f:selectItems value="#{pictureBookManager.selectItems}" />
