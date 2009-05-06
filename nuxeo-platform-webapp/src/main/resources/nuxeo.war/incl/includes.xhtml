@@ -310,7 +310,9 @@ function LogInBrowser(text)
   }
   catch(e)
   {
-     alert("Error : " + e.name + "\n"+ e.message);
+     if (TestingMode) {
+       alert("Error : " + e.name + "\n"+ e.message);
+     }
   }
 }
 
