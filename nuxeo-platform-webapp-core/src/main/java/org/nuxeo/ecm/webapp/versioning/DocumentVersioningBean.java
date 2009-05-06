@@ -301,11 +301,7 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
         VersionIncEditOptions options = null;
         try {
             options = versioningManager.getVersionIncEditOptions(documentModel);
-        } catch (VersioningException e) {
-            log.error("Error retrieving versioning options ", e);
         } catch (ClientException e) {
-            log.error("Error retrieving versioning options ", e);
-        } catch (DocumentException e) {
             log.error("Error retrieving versioning options ", e);
         }
 
