@@ -6,7 +6,7 @@
 
     <!-- server actions -->
 
-    <action id="user_dashboard" link="user_dashboard" enabled="true"
+    <action id="user_dashboard" link="user_dashboard"
       label="command.user_dashboard" order="10">
       <category>USER_SERVICES</category>
       <filter id="user_dashboard_enabled">
@@ -17,26 +17,26 @@
     </action>
 
     <!--
-      <action id="logout" link="logout" enabled="true" label="command.logout"
+      <action id="logout" link="logout"  label="command.logout"
       order="200">
       <category>USER_SERVICES_BOTTOM</category>
       </action>
     -->
 
     <action id="non_anonymous_logout" link="#{loginLogoutAction.logout}"
-      enabled="true" label="command.logout">
+      label="command.logout">
       <category>USER_SERVICES_BOTTOM</category>
       <filter-id>not_anonymous</filter-id>
     </action>
 
-    <action id="login" link="#{anonymousLoginManager.login}" enabled="true"
+    <action id="login" link="#{anonymousLoginManager.login}"
       label="command.login">
       <category>USER_SERVICES_BOTTOM</category>
       <filter-id>anonymous</filter-id>
     </action>
 
     <action id="user_manager" link="#{userManagerActions.viewUsers}"
-      enabled="true" label="command.manageMembers" order="20">
+      label="command.manageMembers" order="20">
       <category>USER_SERVICES</category>
       <filter id="user_manager">
         <rule grant="true">
@@ -46,21 +46,20 @@
     </action>
 
     <action id="vocabularies_manager"
-      link="#{vocabularyActions.viewAllVocabularies}" enabled="true"
-      label="title.vocabularies" order="30">
+      link="#{vocabularyActions.viewAllVocabularies}" label="title.vocabularies"
+      order="30">
       <category>USER_SERVICES</category>
       <filter-id>only_for_manager</filter-id>
     </action>
 
     <action id="themes_manager" link="#{themeEditorAction.startEditor}"
-      enabled="true" label="command.manageThemes" order="40">
+      label="command.manageThemes" order="40">
       <category>USER_SERVICES</category>
       <filter-id>only_for_manager</filter-id>
     </action>
 
     <action id="newDomain" link="#{documentActions.createDocument('Domain')}"
-      enabled="true" label="command.create.domain"
-      icon="/icons/action_add.gif">
+      label="command.create.domain" icon="/icons/action_add.gif">
       <category>SUBVIEW_UPPER_LIST</category>
       <filter id="newDomain">
         <rule grant="true">
@@ -73,7 +72,7 @@
     <!-- domain and roots actions -->
 
     <action id="newWorkspace"
-      link="#{documentActions.createDocument('Workspace')}" enabled="true"
+      link="#{documentActions.createDocument('Workspace')}"
       label="command.create.workspace" icon="/icons/action_add.gif">
       <category>SUBVIEW_UPPER_LIST</category>
       <filter id="newWorkspace">
@@ -97,8 +96,7 @@
     </action>
 
     <action id="newSection" link="#{documentActions.createDocument('Section')}"
-      enabled="true" label="command.create.section"
-      icon="/icons/action_add.gif">
+      label="command.create.section" icon="/icons/action_add.gif">
       <category>SUBVIEW_UPPER_LIST</category>
       <filter id="newSection">
         <rule grant="true">
@@ -112,13 +110,13 @@
 
     <action id="newDocument"
       link="javascript:Richfaces.showModalPanel('selectDocTypePanel');"
-      enabled="true" label="action.new.document" icon="/icons/action_add.gif">
+      label="action.new.document" icon="/icons/action_add.gif">
       <category>SUBVIEW_UPPER_LIST_HREF</category>
       <filter-id>create</filter-id>
     </action>
 
     <action id="newFile"
-      link="javascript:Richfaces.showModalPanel('importFile');" enabled="true"
+      link="javascript:Richfaces.showModalPanel('importFile');"
       label="action.new.file" icon="/icons/action_add_file.gif">
       <category>SUBVIEW_UPPER_LIST_HREF</category>
       <filter-id>importFile</filter-id>
@@ -126,8 +124,7 @@
 
     <!-- XXX AT: is it really used? -->
     <action id="deleteChildDocuments" link="deletable.deleteChildDocuments"
-      enabled="true" label="command.deleteDocs"
-      icon="/icons/action_delete.gif">
+      label="command.deleteDocs" icon="/icons/action_delete.gif">
       <category>SUBVIEW_LOWER_LIST</category>
       <filter-id>delete_content</filter-id>
     </action>
@@ -136,36 +133,34 @@
       tabs are handled by a specific template so links should be paths to
       template to include in the tab content
     -->
-    <action id="TAB_MANAGE" link="/incl/tabs/document_manage.xhtml"
-      enabled="true" order="240" label="action.view.manage"
-      icon="/icons/file.gif">
+    <action id="TAB_MANAGE" link="/incl/tabs/document_manage.xhtml" order="240"
+      label="action.view.manage" icon="/icons/file.gif">
       <category>VIEW_ACTION_LIST</category>
       <filter-id>manage</filter-id>
     </action>
 
-    <action id="TAB_VIEW" link="/incl/tabs/document_view.xhtml" enabled="true"
-      order="0" label="action.view.summary" icon="/icons/file.gif">
+    <action id="TAB_VIEW" link="/incl/tabs/document_view.xhtml" order="0"
+      label="action.view.summary" icon="/icons/file.gif">
       <category>VIEW_ACTION_LIST</category>
       <filter-id>view</filter-id>
     </action>
 
     <action id="TAB_CONTENT" link="/incl/tabs/document_content.xhtml" order="10"
-      enabled="true" label="action.view.content" icon="/icons/file.gif">
+      label="action.view.content" icon="/icons/file.gif">
       <category>VIEW_ACTION_LIST</category>
       <filter-id>view_content</filter-id>
       <filter-id>outSection</filter-id>
     </action>
 
     <action id="TAB_SECTION_CONTENT" link="/incl/tabs/section_content.xhtml"
-      order="10" enabled="true" label="action.view.content"
-      icon="/icons/file.gif">
+      order="10" label="action.view.content" icon="/icons/file.gif">
       <category>VIEW_ACTION_LIST</category>
       <filter-id>view_content</filter-id>
       <filter-id>inSection</filter-id>
     </action>
 
     <action id="TAB_TRASH_CONTENT"
-      link="/incl/tabs/document_trash_content.xhtml" order="200" enabled="true"
+      link="/incl/tabs/document_trash_content.xhtml" order="200"
       label="action.view.trash.content" icon="/icons/file.gif">
       <category>TAB_MANAGE_sub_tab</category>
       <filter id="viewTrash">
@@ -180,33 +175,25 @@
       </filter>
     </action>
 
-    <action id="sendEmail" link="send_email" enabled="true" order="17"
+    <action id="sendEmail" link="send_email" order="17"
       label="action.email.document" icon="/icons/mail.gif">
       <category>DOCUMENT_UPPER_ACTION</category>
       <filter-id>not_folder</filter-id>
     </action>
 
     <action id="TAB_EDIT" link="/incl/tabs/edit_document_and_metadata.xhtml"
-      enabled="true" order="20" label="action.view.modification"
-      icon="/icons/file.gif">
+      order="20" label="action.view.modification" icon="/icons/file.gif">
       <category>VIEW_ACTION_LIST</category>
       <filter-id>edit</filter-id>
       <filter-id>mutable_document</filter-id>
     </action>
 
     <action id="TAB_WORKSPACE_EDIT"
-      link="/incl/tabs/edit_document_and_metadata.xhtml" enabled="true"
-      order="22" label="action.view.modification" icon="/icons/file.gif">
+      link="/incl/tabs/edit_document_and_metadata.xhtml" order="22"
+      label="action.view.modification" icon="/icons/file.gif">
       <category>VIEW_ACTION_LIST</category>
       <filter-id>workspace_edit</filter-id>
       <filter-id>mutable_document</filter-id>
-    </action>
-
-    <action id="TAB_FILES_VIEW" link="/incl/tabs/document_files_view.xhtml"
-      order="42" label="action.view.files" enabled="false">
-      <category>VIEW_ACTION_LIST</category>
-      <filter-id>edit</filter-id>
-      <filter-id>hasAttachedFiles</filter-id>
     </action>
 
     <action id="TAB_FILES_EDIT" link="/incl/tabs/document_files_edit.xhtml"
@@ -218,27 +205,27 @@
     </action>
 
     <action id="TAB_RIGHTS" link="/incl/tabs/document_rights.xhtml" order="50"
-      enabled="true" label="action.view.rights" icon="/icons/file.gif">
+      label="action.view.rights" icon="/icons/file.gif">
       <category>TAB_MANAGE_sub_tab</category>
       <filter-id>rights</filter-id>
     </action>
 
     <action id="TAB_PUBLISH" link="/incl/tabs/document_publish.xhtml" order="53"
-      enabled="true" label="action.publish.content" icon="/icons/file.gif">
+      label="action.publish.content" icon="/icons/file.gif">
       <category>VIEW_ACTION_LIST</category>
       <filter-id>publish_document</filter-id>
       <filter-id>mutable_document</filter-id>
     </action>
 
     <action id="TAB_ADMIN_PUBLICATION_TREES"
-      link="/incl/tabs/admin_publication_trees.xhtml" order="110" enabled="true"
+      link="/incl/tabs/admin_publication_trees.xhtml" order="110"
       label="action.admin.publication.tree" icon="/icons/file.gif">
       <category>TAB_MANAGE_sub_tab</category>
       <filter-id>admin_publication_trees_filter</filter-id>
     </action>
 
-    <action id="TAB_THEME" link="/incl/tabs/document_theme.xhtml" enabled="true"
-      order="60" label="action.view.theme" icon="/icons/file.gif">
+    <action id="TAB_THEME" link="/incl/tabs/document_theme.xhtml" order="60"
+      label="action.view.theme" icon="/icons/file.gif">
       <category>TAB_MANAGE_sub_tab</category>
       <filter-id>canChangeTheme</filter-id>
     </action>
@@ -248,23 +235,21 @@
     <!--  Actions on WorkLists  -->
 
     <action id="WORKLIST_PASTE" link="#{clipboardActions.pasteWorkingList}"
-      enabled="true" label="command.clipboard.pasteAll"
-      icon="/icons/action_paste_all.gif">
+      label="command.clipboard.pasteAll" icon="/icons/action_paste_all.gif">
       <category>DEFAULT_LIST</category>
       <category>CLIPBOARD_LIST</category>
       <filter-id>canPasteCurrentWorkList</filter-id>
     </action>
 
     <action id="WORKLIST_MOVE" link="#{clipboardActions.moveWorkingList}"
-      enabled="true" label="command.clipboard.moveAll"
-      icon="/icons/action_move_all.gif">
+      label="command.clipboard.moveAll" icon="/icons/action_move_all.gif">
       <category>DEFAULT_LIST</category>
       <category>CLIPBOARD_LIST</category>
       <filter-id>canMoveWorkingList</filter-id>
     </action>
 
     <action id="WORKLIST_EXPORT"
-      link="#{clipboardActions.exportWorklistAsZip()}" enabled="true"
+      link="#{clipboardActions.exportWorklistAsZip()}"
       label="command.clipboard.zipExport" icon="/icons/action_export_zip.gif">
       <category>DEFAULT_LIST</category>
       <filter id="currentWorkListIsNotEmpty2">
@@ -275,8 +260,7 @@
     </action>
 
     <action id="WORKLIST_PUBLISH" link="#{publishActions.publishWorkList()}"
-      enabled="true" label="command.clipboard.publish"
-      icon="/icons/action_publish.gif">
+      label="command.clipboard.publish" icon="/icons/action_publish.gif">
       <category>DEFAULT_LIST</category>
       <filter id="canPublishWorkList">
         <rule grant="false">
@@ -289,7 +273,7 @@
     </action>
 
     <action id="WORKLIST_CLEAN" link="#{clipboardActions.clearWorkingList()}"
-      enabled="true" label="command.clipboard.delAll"
+      label="command.clipboard.delAll"
       icon="/icons/action_clipboard_deleteall.gif">
       <category>DEFAULT_LIST</category>
       <category>CLIPBOARD_LIST</category>
@@ -303,7 +287,7 @@
     <!--  Actions for the sections selection - for publishing purposes -->
 
     <action id="DOCUMENT_PUBLISH" link="#{publishActions.publishDocument}"
-      enabled="true" label="command.document.publish" icon="">
+      label="command.document.publish" icon="">
       <category>PUBLISH_DOCUMENT</category>
       <filter-id>not_review_documents</filter-id>
       <filter-id>edit</filter-id>
@@ -317,7 +301,7 @@
     <!--  Actions for the document selection  -->
 
     <action id="CLIPBOARD_PASTE" link="#{clipboardActions.pasteClipboard}"
-      enabled="true" label="command.clipboard.paste" icon="">
+      label="command.clipboard.paste" icon="">
       <category>CURRENT_SELECTION_LIST</category>
       <filter id="canPastFromClipboard">
         <rule grant="true">
@@ -327,8 +311,7 @@
     </action>
 
     <action id="CURRENT_SELECTION_DELETE" link="#{deleteActions.purgeSelection}"
-      enabled="true" label="command.deleteDocs" icon=""
-      help="comand.deleteDocs.help"
+      label="command.deleteDocs" icon="" help="comand.deleteDocs.help"
       confirm="if( !confirmDeleteDocumentsForever() ) return false;">
       <category>CURRENT_SELECTION_TRASH_LIST</category>
       <filter id="canPurge">
@@ -339,8 +322,8 @@
     </action>
 
     <action id="CURRENT_SELECTION_UNDELETE"
-      link="#{deleteActions.undeleteSelection}" enabled="true"
-      label="command.undeleteDocs" icon="" help="comand.undeleteDocs.help"
+      link="#{deleteActions.undeleteSelection}" label="command.undeleteDocs"
+      icon="" help="comand.undeleteDocs.help"
       confirm="if( !confirmUndeleteDocuments() ) return false;">
       <category>CURRENT_SELECTION_TRASH_LIST</category>
       <filter id="canPurge">
@@ -351,8 +334,7 @@
     </action>
 
     <action id="CURRENT_SELECTION_TRASH" link="#{deleteActions.deleteSelection}"
-      enabled="true" label="command.trashDocs" icon=""
-      help="comand.trashDocs.help"
+      label="command.trashDocs" icon="" help="comand.trashDocs.help"
       confirm="if( !confirmDeleteDocuments() ) return false;">
       <category>CURRENT_SELECTION_LIST</category>
       <filter id="canDelete">
@@ -363,14 +345,14 @@
     </action>
 
     <action id="CURRENT_SELECTION_COPY"
-      link="#{clipboardActions.putSelectionInClipboard}" enabled="true"
+      link="#{clipboardActions.putSelectionInClipboard}"
       label="command.clipboard.copy" icon="">
       <category>CURRENT_SELECTION_LIST</category>
       <filter-id>canCopyFromCurrentSelection</filter-id>
     </action>
 
     <action id="CURRENT_SELECTION_ADDTOLIST"
-      link="#{clipboardActions.putSelectionInDefaultWorkList}" enabled="true"
+      link="#{clipboardActions.putSelectionInDefaultWorkList}"
       label="help.command.clipboard.addworklist" icon="">
       <category>CURRENT_SELECTION_LIST</category>
       <filter-id>canCopyFromCurrentSelection</filter-id>
@@ -401,7 +383,7 @@
 
     <action id="CURRENT_SELECTION_UNPUBLISH"
       link="#{publishActions.unPublishDocumentsFromCurrentSelection}"
-      enabled="true" label="command.document.unpublish" icon="">
+      label="command.document.unpublish" icon="">
       <category>CURRENT_SELECTION_SECTIONS_LIST</category>
       <filter id="can_unpublish">
         <rule grant="true">
@@ -414,8 +396,8 @@
     </action>
 
     <action id="CURRENT_SELECTION_SECTIONS_TRASH"
-      link="#{deleteActions.deleteSelectionSections}" enabled="true"
-      label="command.trashDocs" icon="" help="comand.trashDocs.help"
+      link="#{deleteActions.deleteSelectionSections}" label="command.trashDocs"
+      icon="" help="comand.trashDocs.help"
       confirm="if( !confirmDeleteDocuments() ) return false;">
       <category>CURRENT_SELECTION_SECTIONS_LIST</category>
       <filter id="canDeleteSection">
@@ -447,23 +429,23 @@
       </filter>
     </action>
 
-    <action id="POPUP_VIEW" link="javascript:doView" enabled="true"
-      label="command.view" icon="/icons/view_doc.png">
+    <action id="POPUP_VIEW" link="javascript:doView" label="command.view"
+      icon="/icons/view_doc.png">
       <category>POPUP</category>
     </action>
 
-    <action id="POPUP_EDIT" link="javascript:doEdit" enabled="true"
-      label="action.view.edit" icon="/icons/application_form_edit.png">
+    <action id="POPUP_EDIT" link="javascript:doEdit" label="action.view.edit"
+      icon="/icons/application_form_edit.png">
       <category>POPUP</category>
       <filter-id>edit</filter-id>
     </action>
 
-    <action id="POPUP_COPY" link="javascript:doCopy" enabled="true"
+    <action id="POPUP_COPY" link="javascript:doCopy"
       label="command.clipboard.copy" icon="/icons/action_clipboard_copy.gif">
       <category>POPUP</category>
     </action>
 
-    <action id="POPUP_PASTE" link="javascript:doPaste" enabled="true"
+    <action id="POPUP_PASTE" link="javascript:doPaste"
       label="command.clipboard.paste" icon="/icons/action_paste_all.gif">
       <category>POPUP</category>
       <filter id="canPastePopup">
@@ -475,7 +457,7 @@
       </filter>
     </action>
 
-    <action id="POPUP_MOVE" link="javascript:doMove" enabled="true"
+    <action id="POPUP_MOVE" link="javascript:doMove"
       label="command.clipboard.moveAll" icon="/icons/action_move_all.gif">
       <category>POPUP</category>
       <filter id="canPastePopup">
@@ -487,8 +469,8 @@
       </filter>
     </action>
 
-    <action id="POPUP_RENAME" link="javascript:doRename" enabled="true"
-      label="command.rename" icon="/icons/rename.png">
+    <action id="POPUP_RENAME" link="javascript:doRename" label="command.rename"
+      icon="/icons/rename.png">
       <category>POPUP</category>
       <filter-id>edit</filter-id>
       <filter id="canRenamePopup">
@@ -498,8 +480,8 @@
       </filter>
     </action>
 
-    <action id="POPUP_DEL" link="javascript:doDelete" enabled="true"
-      label="command.trashDocs" icon="/icons/action_delete_mini.gif">
+    <action id="POPUP_DEL" link="javascript:doDelete" label="command.trashDocs"
+      icon="/icons/action_delete_mini.gif">
       <category>POPUP</category>
       <filter id="canDeletePopup">
         <rule grant="true">
@@ -509,14 +491,13 @@
     </action>
 
     <action id="POPUP_RIGHTS" link="javascript:doAccessRights" order="10"
-      enabled="true" label="action.view.rights" icon="/icons/group.gif">
+      label="action.view.rights" icon="/icons/group.gif">
       <category>POPUP</category>
       <filter-id>rights</filter-id>
     </action>
 
     <action id="POPUP_DOWNLOAD" link="javascript:doDownload" order="70"
-      enabled="true" label="command.download"
-      icon="/icons/icone_download.gif">
+      label="command.download" icon="/icons/icone_download.gif">
       <category>POPUP</category>
       <filter id="hasContent">
         <rule grant="true">
@@ -533,8 +514,7 @@
     </action>
 
     <action id="POPUP_WORKFLOW" link="javascript:doWorkflow" order="90"
-      enabled="true" label="action.view.review"
-      icon="/icons/start_workflow.png">
+      label="action.view.review" icon="/icons/start_workflow.png">
       <category>POPUP</category>
       <filter id="jbpm-process">
         <rule grant="true">
@@ -547,7 +527,7 @@
     </action>
 
     <action id="POPUP_DOCUMENT_LOCK" link="javascript:doLock" order="110"
-      enabled="true" label="command.lock" icon="/icons/lock.gif">
+      label="command.lock" icon="/icons/lock.gif">
       <category>POPUP</category>
       <filter-id>mutable_document</filter-id>
       <filter id="can_lock_doc">
@@ -562,7 +542,7 @@
     </action>
 
     <action id="POPUP_DOCUMENT_UNLOCK" link="javascript:doUnlock" order="130"
-      enabled="true" label="command.unlock" icon="/icons/lock.gif">
+      label="command.unlock" icon="/icons/lock.gif">
       <category>POPUP</category>
       <filter-id>mutable_document</filter-id>
       <filter id="popup_can_unlock_doc">
@@ -576,8 +556,8 @@
       </filter>
     </action>
 
-    <action id="POPUP_sendEmail" link="javascript:doSendEmail" enabled="true"
-      order="150" label="action.email.document" icon="/icons/mail.gif">
+    <action id="POPUP_sendEmail" link="javascript:doSendEmail" order="150"
+      label="action.email.document" icon="/icons/mail.gif">
       <category>POPUP</category>
       <filter-id>not_folder</filter-id>
     </action>
@@ -585,14 +565,14 @@
     <!--  Actions for the document lock/unlock -->
 
     <action id="DOCUMENT_LOCK" link="#{lockActions.lockCurrentDocument}"
-      enabled="true" label="command.lock" icon="">
+      label="command.lock" icon="">
       <category>EDIT_ACTIONS</category>
       <filter-id>mutable_document</filter-id>
       <filter-id>can_lock</filter-id>
     </action>
 
     <action id="DOCUMENT_UNLOCK" link="#{lockActions.unlockCurrentDocument}"
-      enabled="true" label="command.unlock" icon="">
+      label="command.unlock" icon="">
       <category>EDIT_ACTIONS</category>
       <filter-id>mutable_document</filter-id>
       <filter-id>can_unlock</filter-id>
@@ -608,25 +588,20 @@
     -->
 
     <action id="le_create_msword"
-      link="#{nxd:liveCreateUrl('application/msword',
-     'File', 'file', 'content', 'filename')}"
-      enabled="true" order="40" label="action.liveedit.create.msword"
-      icon="/icons/doc.png">
+      link="#{nxd:liveCreateUrl('application/msword', 'File', 'file', 'content', 'filename')}"
+      order="40" label="action.liveedit.create.msword" icon="/icons/doc.png">
       <category>LIVEEDIT_CREATE_ACTIONS</category>
     </action>
 
     <action id="le_create_msexcel"
-      link="#{nxd:liveCreateUrl('application/vnd.ms-excel',
-     'File', 'file', 'content', 'filename')}"
-      enabled="true" order="50" label="action.liveedit.create.msexcel"
-      icon="/icons/xls.png">
+      link="#{nxd:liveCreateUrl('application/vnd.ms-excel', 'File', 'file', 'content', 'filename')}"
+      order="50" label="action.liveedit.create.msexcel" icon="/icons/xls.png">
       <category>LIVEEDIT_CREATE_ACTIONS</category>
     </action>
 
     <action id="le_create_mspowerpoint"
-      link="#{nxd:liveCreateUrl('application/vnd.ms-powerpoint',
-     'File', 'file', 'content', 'filename')}"
-      enabled="true" order="60" label="action.liveedit.create.mspowerpoint"
+      link="#{nxd:liveCreateUrl('application/vnd.ms-powerpoint', 'File', 'file', 'content', 'filename')}"
+      order="60" label="action.liveedit.create.mspowerpoint"
       icon="/icons/ppt.png">
       <category>LIVEEDIT_CREATE_ACTIONS</category>
     </action>
