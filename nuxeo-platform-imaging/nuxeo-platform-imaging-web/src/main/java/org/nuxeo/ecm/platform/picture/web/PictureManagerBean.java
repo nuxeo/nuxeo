@@ -241,6 +241,8 @@ public class PictureManagerBean extends InputController implements
         filename = "";
         fileContent = null;
         selectItems = null;
+        index = 0;
+        cropCoords = null;
     }
 
     @WebRemote
