@@ -1,6 +1,4 @@
 <div class="content_block"
-  xmlns="http://www.w3.org/1999/xhtml"
-  xmlns:nxthemes="http://nuxeo.org/nxthemes"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:f="http://java.sun.com/jsf/core"
@@ -8,59 +6,68 @@
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:nxh="http://nuxeo.org/nxweb/html"
   xmlns:nxl="http://nuxeo.org/nxforms/layout">
-  <f:subview>
-    <h3 class="summaryTitle"><h:outputText value="#{messages['action.view.content']}" /></h3>
-   
 
-<h:panelGrid columns="2">
-<h:panelGroup>
-<h:outputText class="boldLabel" value=" #{messages['label.summary.download.file']}"/>      <br/>
-<nxh:outputLink class="boldLabel" value="#{nxd:fileUrl('downloadFile', currentDocument, 'file:content', currentDocument.file.filename)}"><h:outputText value="#{currentDocument.file.filename}"/><nxh:graphicImage value="/icons/download.png" title="#{row.data.file.filename}"/></nxh:outputLink>
-    <c:if test="#{conversionActions.pdfConverterAvailability.available}">
-      <nxu:methodResult name="hasPDFCapabilities" value="#{conversionActions.isFileExportableToPDF(field.fullName)}">
-        <h:panelGroup rendered="#{hasPDFCapabilities}">
-          <h:outputText value=" #{messages['label.summary.download.other']} "/>
-          <h:commandLink action="#{conversionActions.generatePdfFile}">
-            <f:param name="fileFieldFullName" value="#{field.fullName}" />
-            <f:param name="filename" value="#{currentDocument.file.filename}" />
-            <h:outputText value="#{currentDocument.file.filename}"/>
-            <nxh:graphicImage value="/icons/pdf.png" title="#{row.data.file.filename}" rendered="#{! empty row.data.file.filename}" />
-          </h:commandLink>
-        </h:panelGroup>
-      </nxu:methodResult>
-    </c:if>
- </h:panelGroup>
+  <h3 class="summaryTitle">
+    <h:outputText value="#{messages['action.view.content']}" />
+  </h3>
 
+  <h:panelGrid columns="2">
+
+    <h:panelGroup rendered="#{currentDocument.hasSchema('file') and !empty currentDocument.file.content}">
+      <h:outputText class="boldLabel" value="#{messages['label.summary.download.file']}" />
+      <br/>
+      <nxh:outputLink class="boldLabel"
+        value="#{nxd:fileUrl('downloadFile', currentDocument, 'file:content', currentDocument.file.filename)}">
+        <h:outputText value="#{currentDocument.file.filename}"/>
+        <nxh:graphicImage value="/icons/download.png" title="#{row.data.file.filename}"/>
+      </nxh:outputLink>
+      <c:if test="#{conversionActions.pdfConverterAvailability.available}">
+        <nxu:methodResult name="hasPDFCapabilities" value="#{conversionActions.isFileExportableToPDF('file:content')}">
+          <h:panelGroup rendered="#{hasPDFCapabilities}">
+            <h:outputText value=" #{messages['label.summary.download.other']} "/>
+            <h:commandLink action="#{conversionActions.generatePdfFile}">
+              <f:param name="fileFieldFullName" value="file:content" />
+              <f:param name="filename" value="#{currentDocument.file.filename}" />
+              <h:outputText value="#{currentDocument.file.filename}"/>
+              <nxh:graphicImage value="/icons/pdf.png" title="#{currentDocument.file.filename}" />
+            </h:commandLink>
+          </h:panelGroup>
+        </nxu:methodResult>
+      </c:if>
+    </h:panelGroup>
 
     <h:panelGroup rendered="#{currentDocument.hasSchema('files')  and (!empty currentDocument.files.files)}">
-      <br/><br/>
+      <h:outputText class="boldLabel" value=" #{messages['label.summary.download.attachments']}"/>
+      <br/>
+
       <div class="attachments">
-        <h:outputText class="boldLabel" value=" #{messages['label.summary.download.attachments']}"/>
-
         <nxu:inputList value="#{currentDocument.files.files}"  id="files_input" model="model">
-          <div class="DetailList">
-            <nxh:outputLink value="#{nxd:complexFileUrl('downloadFile', currentDocument, 'files:files', model.rowIndex, 'file', currentDocument.files.files[model.rowIndex].filename)}">
-      <nxh:graphicImage value="#{nxd:fileIconPath(currentDocument.files.files[model.rowIndex].file)}"
-        rendered="#{! empty nxd:fileIconPath(currentDocument.files.files[model.rowIndex].file)}" />
-      <nxh:outputText value="#{currentDocument.files.files[model.rowIndex].filename}" />
-    </nxh:outputLink>
+          <div class="detailList">
 
-    <nxu:methodResult name="hasPDFCapabilities"
-      value="#{conversionActions.isExportableToPDF(currentDocument.files.files[model.rowIndex].file)}">
-      <h:panelGroup rendered="#{hasPDFCapabilities}">
-        <h:outputText value=" | " />
-        <h:commandLink action="#{conversionActions.generatePdfFile}">
-          <f:param name="fileFieldFullName"
-            value="#{nxd:propertyPath('files:files', model.rowIndex, 'file')}" />
-          <f:param name="filename" value="#{currentDocument.files.files[model.rowIndex].filename}" />
-          <h:outputText value="#{messages['label.document.generatePdf']}" />
-        </h:commandLink>
-      </h:panelGroup>
-    </nxu:methodResult>
-    </div>
+            <nxh:outputLink value="#{nxd:complexFileUrl('downloadFile', currentDocument, 'files:files', model.rowIndex, 'file', currentDocument.files.files[model.rowIndex].filename)}">
+              <nxh:graphicImage value="#{nxd:fileIconPath(currentDocument.files.files[model.rowIndex].file)}"
+                rendered="#{! empty nxd:fileIconPath(currentDocument.files.files[model.rowIndex].file)}" />
+              <nxh:outputText value="#{currentDocument.files.files[model.rowIndex].filename}" />
+            </nxh:outputLink>
+  
+            <nxu:methodResult name="hasPDFCapabilities"
+              value="#{conversionActions.isExportableToPDF(currentDocument.files.files[model.rowIndex].file)}">
+              <h:panelGroup rendered="#{hasPDFCapabilities}">
+                <h:outputText value=" | " />
+                <h:commandLink action="#{conversionActions.generatePdfFile}">
+                  <f:param name="fileFieldFullName"
+                    value="#{nxd:propertyPath('files:files', model.rowIndex, 'file')}" />
+                  <f:param name="filename" value="#{currentDocument.files.files[model.rowIndex].filename}" />
+                  <h:outputText value="#{messages['label.document.generatePdf']}" />
+                </h:commandLink>
+              </h:panelGroup>
+            </nxu:methodResult>
+
+          </div>
         </nxu:inputList>
       </div>
+
     </h:panelGroup>
-</h:panelGrid> 
- </f:subview>
+  </h:panelGrid>
+
 </div>

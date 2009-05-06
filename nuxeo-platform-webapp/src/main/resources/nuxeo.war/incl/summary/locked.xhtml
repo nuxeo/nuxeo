@@ -1,36 +1,29 @@
 <div class="lockFile_block" id='lock_unlock_button'
-  xmlns="http://www.w3.org/1999/xhtml"
-  xmlns:nxthemes="http://nuxeo.org/nxthemes"
-  xmlns:nxu="http://nuxeo.org/nxweb/util"
-  xmlns:ui="http://java.sun.com/jsf/facelets"
-  xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:c="http://java.sun.com/jstl/core"
-  >
-  <f:subview>
-    <h:panelGroup rendered="${!empty currentDocumentLockDetails}">
-      <h:outputText value="#{messages['label.summary.locked.intro']}"/>
-      <h:outputText class="summary_locked" value="#{messages['label.summary.locked']} "/>
-      <h:panelGroup rendered="#{currentDocumentCanBeUnlocked}" >
-        <h:outputText value=" | " />
-        <h:commandLink value="#{messages['command.unlock']}"
-          action="#{lockActions.unlockCurrentDocument}"/>
-      </h:panelGroup>
-      <div class="lockDetail">
+  xmlns:c="http://java.sun.com/jstl/core">
 
-        <h:outputText value="#{messages['label.summary.by']} "/><h:outputText value="${currentDocumentLockDetails['document.locker']}, "/>
-        <h:outputText value="#{messages['label.summary.the']} "/><h:outputText value="${currentDocumentLockDetails['document.lock.time']}"/>
-      </div>
-    </h:panelGroup>
-    <h:panelGroup rendered="${empty currentDocumentLockDetails}">
-      <h:outputText value="#{messages['label.summary.locked.intro']}"/>
-      <h:outputText value="#{messages['label.summary.unlocked']} "/>
-      <h:panelGroup rendered="#{currentDocumentCanBeLocked}" >
-        <h:outputText value=" | " />
+  <c:if test="#{!empty currentDocumentLockDetails}">
+    <h:outputText value="#{messages['label.summary.locked.intro']}"/> 
+    <h:outputText class="summary_locked" value="#{messages['label.summary.locked']} "/>
+    <c:if test="#{currentDocumentCanBeUnlocked}">
+      <h:outputText value=" | " />
+      <h:commandLink value="#{messages['command.unlock']}"
+        action="#{lockActions.unlockCurrentDocument}"/>
+    </c:if>
+    <div class="lockDetail">
+      <h:outputText value="#{messages['label.summary.by']} #{currentDocumentLockDetails['document.locker']}, "/>
+      <h:outputText value="#{messages['label.summary.the']} #{currentDocumentLockDetails['document.lock.time']}"/>
+    </div>
+  </c:if>
 
-        <h:commandLink value="#{messages['command.lock']}"
-          action="#{lockActions.lockCurrentDocument}"/>
-      </h:panelGroup>
-    </h:panelGroup>
-  </f:subview>
+  <c:if test="#{empty currentDocumentLockDetails}">
+    <h:outputText value="#{messages['label.summary.locked.intro']}"/> 
+    <h:outputText value="#{messages['label.summary.unlocked']} "/>
+    <c:if test="#{currentDocumentCanBeLocked}" >
+      <h:outputText value=" | " />
+      <h:commandLink value="#{messages['command.lock']}"
+        action="#{lockActions.lockCurrentDocument}"/>
+    </c:if>
+  </c:if>
+
 </div>

@@ -167,10 +167,8 @@
           <facet>Folderish</facet>
           <condition>#{deleteActions.trashManagementEnabled}</condition>
         </rule>
-        <rule grant="false">
-          <filter-id>inSection</filter-id>
-        </rule>
       </filter>
+      <filter-id>outSection</filter-id>
     </action>
 
     <action id="sendEmail" link="send_email" order="17"

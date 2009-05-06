@@ -1,15 +1,12 @@
 <div class="description_block"
-  xmlns="http://www.w3.org/1999/xhtml"
-  xmlns:nxthemes="http://nuxeo.org/nxthemes"
-  xmlns:nxu="http://nuxeo.org/nxweb/util"
-  xmlns:ui="http://java.sun.com/jsf/facelets"
-  xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:c="http://java.sun.com/jstl/core">
-  <f:subview>
+
+  <c:if test="#{!empty currentDocument.dc.description}">
     <h3 class="summaryTitle">
       <h:outputText value="#{messages['label.description']}" />
     </h3>
     <h:outputText value="#{currentDocument.dc.description}" />
-  </f:subview>
+  </c:if>
+
 </div>

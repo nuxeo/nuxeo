@@ -1,15 +1,16 @@
 <div class="rank_block"
-  xmlns="http://www.w3.org/1999/xhtml"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:nxdir="http://nuxeo.org/nxdirectory">
-<f:subview>
-  <c:set var="andLabel" value=" #{messages['label.and']} " scope="page" />
+
   <h:outputText class="boldLabel" value="#{messages['label.summary.rank.title']}"/>
+
   <table id="rank_table">
     <tr>
-      <td class="labelColumnLeftAlign"><h:outputText  class="boldLabel" value="#{messages['label.dublincore.subjects']}"/></td>
+      <td class="labelColumnLeftAlign">
+        <h:outputText class="boldLabel" value="#{messages['label.dublincore.subject']}"/>
+      </td>
       <td>
         <nxdir:chainSelect size="2" value="#{currentDocument.dc.subjects}"
           displayValueOnly="true" multiSelect="true">
@@ -22,7 +23,9 @@
       </td>
     </tr>
     <tr>
-      <td class="labelColumnLeftAlign"><h:outputText  class="boldLabel" value="#{messages['label.dublincore.coverage']}"/></td>
+      <td class="labelColumnLeftAlign">
+        <h:outputText class="boldLabel" value="#{messages['label.dublincore.coverage']}"/>
+      </td>
       <td>
         <nxdir:chainSelect size="2" value="#{currentDocument.dc.coverage}"
           displayValueOnly="true">
@@ -35,5 +38,5 @@
       </td>
     </tr>
   </table>
-  </f:subview>
+
 </div>

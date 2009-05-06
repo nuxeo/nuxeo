@@ -1,103 +1,24 @@
 <div class="metadata_block"
-  xmlns="http://www.w3.org/1999/xhtml"
-  xmlns:nxthemes="http://nuxeo.org/nxthemes"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxd="http://nuxeo.org/nxweb/document">
-  <f:subview>
-    <h3 class="summaryTitle">
-      <h:outputText value="#{messages['action.view.metadata']}" />
-    </h3>
-    <c:set var="andLabel" value=" #{messages['label.and']} " scope="page" />
-    
-  <table class="floatingLeftTable">
-    <tr>
-      <td class="labelColumnLeftAlign"><h:outputText  class="boldLabel" value="#{messages['label.dublincore.creator']}"/></td>
-      <td><h:outputText value="#{currentDocument.dc.creator}"/></td>
-    </tr>
-    <tr>
-      <td class="labelColumnLeftAlign"><h:outputText  class="boldLabel" value="#{messages['label.content.header.currentLifecycleState']}"/></td>
-      <td><h:outputText value="#{currentDocument.currentLifeCycleState}"/></td>
-    </tr>
-    <tr>
-      <td class="labelColumnLeftAlign"><h:outputText  class="boldLabel" value="#{messages['label.version']}"/></td>
-      <td><h:outputText value="#{currentDocumentVersionInfo.versionLabel}"/></td>
-    </tr>
-    <tr>
-      <td class="labelColumnLeftAlign"><h:outputText  class="boldLabel" value="#{messages['label.summary.lastModified']}"/></td>
-      <td><h:outputText value="#{nxu:formatDateUsingBasicFormatter(currentDocument.dublincore.modified)}"/></td>
-    </tr>
-    <tr>
-      <td class="labelColumnLeftAlign"><h:outputText  class="boldLabel" value="#{messages['label.dublincore.expired']}"/></td>
-      <td><h:outputText value="#{nxu:formatDateUsingBasicFormatter(currentDocument.dc.expired)}" rendered="#{!empty currentDocument.dc.expired}"/></td>
-    </tr>
-  </table>
-  <table class="floatingLeftTable">
-    <tr>
-      <td class="labelColumnLeftAlign"><h:outputText  class="boldLabel" value="#{messages['label.dublincore.format']}"/></td>
-      <td><h:outputText value="#{currentDocument.dc.format}"/></td>
-    </tr>
-    <tr>
-      <td class="labelColumnLeftAlign"><h:outputText  class="boldLabel" value="#{messages['label.dublincore.language']}"/></td>
-      <td><h:outputText value="#{currentDocument.dc.language}"/></td>
-    </tr>
-    <tr>
-      <td class="labelColumnLeftAlign"><h:outputText  class="boldLabel" value="#{messages['label.dublincore.source']}"/></td>
-      <td><h:outputText value="#{currentDocument.dc.source}"/></td>
-    </tr>
-    <tr>
-      <td class="labelColumnLeftAlign"><h:outputText  class="boldLabel" value="#{messages['label.dublincore.rights']}"/></td>
-      <td><h:outputText value="#{currentDocument.dc.rights}"/></td>
-    </tr>
-  </table>
-  <div style="clear:both;"></div>
-  <div class="contributor_block">
-  <h:outputText class="boldLabel" value="#{messages['label.dublincore.contributors']}"/>
-  <div class="contributors_table">
-  <h:outputText value="#{nxu:joinArrayWithFinalDelimiter(currentDocument.dc.contributors,', ',andLabel)}"/>
-  </div></div>
-    <ui:include src="/incl/summary/rank.xhtml"/><h3><h:outputText
-  value="#{messages['label.workflow.lifeCycleInformation']}" /></h3>
 
-<h:panelGrid columns="2" styleClass="dataInput"
-  columnClasses="labelColumn, fieldColumn">
-  <h:outputText value="#{messages['label.workflow.lifeCyclePolicy']}" />
-  <h:outputText value="${messages[currentDocument.lifeCyclePolicy]}" />
-  <h:outputText
-    value="#{messages['label.workflow.currentLifeCycleState']}" />
-  <h:outputText value="${messages[currentDocument.currentLifeCycleState]}" />
-  <c:if test="#{deleteActions.trashManagementEnabled}">
-    <h:outputText/>
-    <h:commandButton type="submit" value="#{messages['command.undeleteDocs']}"
-      styleClass="button" action="#{deleteActions.restoreCurrentDocument}"
-      rendered="#{deleteActions.canRestoreCurrentDoc}" />
+  <h3 class="summaryTitle">
+    <h:outputText value="#{messages['action.view.metadata']}" />
+  </h3>
+
+  <c:if test="#{currentDocument.hasSchema('dublincore')}">
+    <ui:include src="/incl/summary/dublincore.xhtml"/>
+    <ui:include src="/incl/summary/rank.xhtml"/>
   </c:if>
-</h:panelGrid>
+  
+  <div class="summaryLayout">
+    <nxl:documentLayout value="#{currentDocument}" mode="view" />
+  </div>
 
-<nxu:methodResult name="versionable" value="#{currentDocument.hasFacet('Versionable')}">
-<h3><h:outputText
-  value="#{messages['label.versioning.documentVersioning']}"
-  rendered="#{versionable}"/></h3>
-<h:panelGrid columns="2" styleClass="dataInput"
-  columnClasses="labelColumn, fieldColumn"
-  rendered="#{versionable}">
-  <h:outputText value="#{messages['label.versioning.currentVersion']}"
-    rendered="#{currentDocumentVersionInfo.available}"/>
-  <h:panelGroup>
-    <nxh:outputText value="#{currentDocumentVersionInfo.versionLabel}" />
-  </h:panelGroup>
-</h:panelGrid>
-</nxu:methodResult>
-    
-    
-    
-    <c:set var="selectedSections" value="#{publishActions.getPublishingInfo().toArray()}" scope="page" />
-    <h:panelGroup rendered="#{!empty selectedSections}">
-    	<ui:include src="/incl/summary/publication.xhtml"/>
-    </h:panelGroup>
-  </f:subview>
 </div>

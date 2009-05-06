@@ -3,15 +3,14 @@
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxdir="http://nuxeo.org/nxdirectory"
+  xmlns:c="http://java.sun.com/jstl/core"
   id="#{widget.id}">
 
-  <nxu:dataList id="#{widget.id}_list" var="listItem" value="#{field_0}"
-    layout="simple" styleClass="standardList">
-    <h:graphicImage value="/icons/html.png" />
-    <h:commandLink value="#{nxu:userFullName(listItem)}"
-      action="#{userManagerActions.viewUser(listItem)}"
-      id="#{widget.id}_user" immediate="true" />
-    <br />
-  </nxu:dataList>
+  <div class="contributor_block">
+    <div class="contributors_table">  
+      <c:set var="andLabel" value=" #{messages['label.and']} " scope="page" />
+      <h:outputText value="#{nxu:joinArrayWithFinalDelimiter(field_0, ', ', andLabel)}"/>
+    </div>
+  </div>
 
 </f:subview>
