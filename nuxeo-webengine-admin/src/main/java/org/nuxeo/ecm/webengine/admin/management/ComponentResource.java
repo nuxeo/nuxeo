@@ -35,12 +35,11 @@ import org.nuxeo.runtime.model.impl.DefaultRuntimeContext;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class ComponentResource {
-    
+
     protected RegistrationInfo ri;
-    
+
     public ComponentResource(RegistrationInfo ri) {
         this.ri = ri;
     }
@@ -56,17 +55,17 @@ public class ComponentResource {
     @Produces("application/xml")
     public URL doGet() {
         try {
-            DefaultRuntimeContext rc = (DefaultRuntimeContext)ri.getContext();
+            DefaultRuntimeContext rc = (DefaultRuntimeContext) ri.getContext();
             Map<String, ComponentName> deployedFiles = rc.getDeployedFiles();
             String name = ri.getName().getName();
             if (deployedFiles != null) {
-            for (Map.Entry<String, ComponentName> entry : deployedFiles.entrySet()) {
-                if (name.equals(entry.getValue().getName())) {
-                    return new URL(entry.getKey());
+                for (Map.Entry<String, ComponentName> entry : deployedFiles.entrySet()) {
+                    if (name.equals(entry.getValue().getName())) {
+                        return new URL(entry.getKey());
+                    }
                 }
             }
-            }
-            throw new WebResourceNotFoundException("Component definition not found for "+ri.getName().getName());
+            throw new WebResourceNotFoundException("Component definition not found for " + ri.getName().getName());
         } catch (Exception e) {
             throw WebException.wrap(e);
         }
@@ -81,29 +80,28 @@ public class ComponentResource {
 
     @GET
     @Path("contribs")
-    @Produces("application/atomsvc+xml")    
+    @Produces("application/atomsvc+xml")
     public Object getContribs() {
         return new TemplateView(this, "contribs.ftl").arg("contribs", ri.getExtensions()).arg("ri", ri);
     }
-    
+
     @Path("xpoints/{xpoint}")
     public Object getExtensionPoint(@PathParam("xpoint") String xpoint) {
         for (ExtensionPoint xp : ri.getExtensionPoints()) {
             if (xp.getName().equals(xpoint)) {
-                return new ExtensionPointResource(ri, xp);        
+                return new ExtensionPointResource(ri, xp);
             }
         }
-        throw new WebResourceNotFoundException("No such extension point: "+xpoint);
+        throw new WebResourceNotFoundException("No such extension point: " + xpoint);
     }
 
-    
     @DELETE
     public Object deleteComponent(@PathParam("name") String name) {
         return null;
     }
 
-
     public String getSummary() throws Exception {
         return ri.getDocumentation();
     }
+
 }

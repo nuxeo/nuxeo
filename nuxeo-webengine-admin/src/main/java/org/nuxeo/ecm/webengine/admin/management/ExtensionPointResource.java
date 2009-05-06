@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.webengine.admin.management;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -35,22 +36,21 @@ import org.nuxeo.runtime.model.impl.RegistrationInfoImpl;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class ExtensionPointResource {
-    
+
     protected ExtensionPoint xp;
     protected RegistrationInfoImpl ri;
-    
+
     public ExtensionPointResource(RegistrationInfo ri, ExtensionPoint xp) {
         this.xp = xp;
-        this.ri = (RegistrationInfoImpl)ri;
+        this.ri = (RegistrationInfoImpl) ri;
     }
 
     @GET
     @Produces("application/atomsvc+xml")
     public Object getContributions() {
-        ArrayList<Extension> xts = new ArrayList<Extension>();
+        List<Extension> xts = new ArrayList<Extension>();
         for (RegistrationInfo dep : ri.getDependsOnMe()) {
             for (Extension xt : dep.getExtensions()) {
                 if (xt.getTargetComponent().getName().equals(ri.getName().getName())) {
@@ -84,5 +84,4 @@ public class ExtensionPointResource {
         return null;
     }
 
-    
 }
