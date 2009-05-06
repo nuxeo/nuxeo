@@ -8,7 +8,7 @@
       <h:outputText value="#{messages['label.summary.links.title']}" />
     </h3>
     <h:outputText value="#{messages['label.summary.relations.header']}" />
-    <nxu:dataTable value="#{relationActions.outgoingStatementsInfo}" var="statement" styleClass="dataOutput">
+    <nxu:dataTable value="#{currentDocumentOutgoingRelations}" var="statement" styleClass="dataOutput">
       <nxu:column>
         <nxdir:directoryEntryOutput
         value="#{statement.predicate.uri}"
@@ -19,10 +19,10 @@
       <ui:include src="/relation_node_template.xhtml">
         <ui:param name="statement" value="#{statement}" />
         <ui:param name="node" value="#{statement.objectInfo}" />
-      </ui:include>  
+      </ui:include>
       </nxu:column>
     </nxu:dataTable>
-    <nxu:dataTable value="#{relationActions.incomingStatementsInfo}" var="statement" styleClass="dataOutput">
+    <nxu:dataTable value="#{currentDocumentIncomingRelations}" var="statement" styleClass="dataOutput">
       <nxu:column>
         <nxdir:directoryEntryOutput
         value="#{statement.predicate.uri}"
@@ -33,7 +33,7 @@
       <ui:include src="/relation_node_template.xhtml">
         <ui:param name="statement" value="#{statement}" />
         <ui:param name="node" value="#{statement.objectInfo}" />
-      </ui:include>  
+      </ui:include>
       </nxu:column>
     </nxu:dataTable>
 </div>

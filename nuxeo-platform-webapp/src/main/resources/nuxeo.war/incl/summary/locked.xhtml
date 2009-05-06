@@ -8,24 +8,24 @@
   xmlns:c="http://java.sun.com/jstl/core"
   >
   <f:subview>
-    <h:panelGroup rendered="${!empty lockActions.currentDocLockDetails}">
-      <h:outputText value="#{messages['label.summary.locked.intro']}"/> 
+    <h:panelGroup rendered="${!empty currentDocumentLockDetails}">
+      <h:outputText value="#{messages['label.summary.locked.intro']}"/>
       <h:outputText class="summary_locked" value="#{messages['label.summary.locked']} "/>
-      <h:panelGroup rendered="#{lockActions.canUnlockCurrentDoc}" >
+      <h:panelGroup rendered="#{currentDocumentCanBeUnlocked}" >
         <h:outputText value=" | " />
         <h:commandLink value="#{messages['command.unlock']}"
           action="#{lockActions.unlockCurrentDocument}"/>
       </h:panelGroup>
       <div class="lockDetail">
 
-        <h:outputText value="#{messages['label.summary.by']} "/><h:outputText value="${lockActions.currentDocLockDetails['document.locker']}, "/>
-        <h:outputText value="#{messages['label.summary.the']} "/><h:outputText value="${lockActions.currentDocLockDetails['document.lock.time']}"/>
+        <h:outputText value="#{messages['label.summary.by']} "/><h:outputText value="${currentDocumentLockDetails['document.locker']}, "/>
+        <h:outputText value="#{messages['label.summary.the']} "/><h:outputText value="${currentDocumentLockDetails['document.lock.time']}"/>
       </div>
     </h:panelGroup>
-    <h:panelGroup rendered="${empty lockActions.currentDocLockDetails}">
-      <h:outputText value="#{messages['label.summary.locked.intro']}"/> 
+    <h:panelGroup rendered="${empty currentDocumentLockDetails}">
+      <h:outputText value="#{messages['label.summary.locked.intro']}"/>
       <h:outputText value="#{messages['label.summary.unlocked']} "/>
-      <h:panelGroup rendered="#{lockActions.canLockCurrentDoc}" >
+      <h:panelGroup rendered="#{currentDocumentCanBeLocked}" >
         <h:outputText value=" | " />
 
         <h:commandLink value="#{messages['command.lock']}"

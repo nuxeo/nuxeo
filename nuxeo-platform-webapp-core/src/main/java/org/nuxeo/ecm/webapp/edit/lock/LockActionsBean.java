@@ -32,9 +32,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Destroy;
+import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.contexts.Context;
+import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -93,7 +96,7 @@ public class LockActionsBean implements LockActions {
 
     private Boolean isLiveEditable;
 
-    
+
     public Boolean getCanLockDoc(DocumentModel document) {
         if (canLock == null) {
             if (document == null) {
@@ -120,10 +123,21 @@ public class LockActionsBean implements LockActions {
         }
         return canLock;
     }
-    
+
+    @Factory(value="currentDocumentCanBeLocked", scope= ScopeType.EVENT)
     public Boolean getCanLockCurrentDoc() {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         return getCanLockDoc(currentDocument);
+    }
+
+
+    protected void resetEventContext() {
+        Context evtCtx = Contexts.getEventContext();
+        if (evtCtx!=null) {
+            evtCtx.remove("currentDocumentCanBeLocked");
+            evtCtx.remove("currentDocumentLockDetails");
+            evtCtx.remove("currentDocumentCanBeUnlocked");
+        }
     }
 
     public Boolean getCanUnlockDoc(DocumentModel document) {
@@ -156,8 +170,8 @@ public class LockActionsBean implements LockActions {
         }
         return canUnlock;
     }
-    
-    
+
+    @Factory(value="currentDocumentCanBeUnlocked", scope= ScopeType.EVENT)
     public Boolean getCanUnlockCurrentDoc() {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         return getCanUnlockDoc(currentDocument);
@@ -169,6 +183,7 @@ public class LockActionsBean implements LockActions {
 
     public String lockDocument(DocumentModel document) throws ClientException {
         log.debug("Lock a document ...");
+        resetEventContext();
         String message = "document.lock.failed";
         DocumentRef ref = document.getRef();
         if (documentManager.hasPermission(ref, SecurityConstants.WRITE_PROPERTIES)
@@ -211,6 +226,7 @@ public class LockActionsBean implements LockActions {
 
     public String unlockDocument(DocumentModel document) throws ClientException {
         log.debug("Unlock a document ...");
+        resetEventContext();
         String message;
         Map<String, String> lockDetails = getLockDetails(document);
         if (lockDetails == null) {
@@ -270,6 +286,7 @@ public class LockActionsBean implements LockActions {
         return lockOrUnlockAction;
     }
 
+    @Factory(value="currentDocumentLockDetails", scope = ScopeType.EVENT)
     public Map<String, String> getCurrentDocLockDetails()
             throws ClientException {
         Map<String, String> details = null;
