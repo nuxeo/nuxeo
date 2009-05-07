@@ -403,7 +403,7 @@ public class ChainSelectListboxComponent extends UIInput {
         if (chain.getDisplayValueOnly()) {
             return;
         }
-        
+
         index = getIndex();
 
         chain.setCompAtIndex(index, this);

@@ -132,9 +132,9 @@ public class DirectoryTreeDescriptor {
     }
 
     public boolean isMultiselect() {
-    	if (multiselect==null) {
-    		return false;
-    	}
+        if (multiselect==null) {
+            return false;
+        }
         return multiselect;
     }
 
@@ -150,35 +150,35 @@ public class DirectoryTreeDescriptor {
         return schemaName;
     }
 
-	public Boolean getEnabled() {
-		return enabled;
-	}
+    public Boolean getEnabled() {
+        return enabled;
+    }
 
 
-	public void merge (DirectoryTreeDescriptor other) {
+    public void merge (DirectoryTreeDescriptor other) {
 
-		if (other.schemaName!=null) {
-			this.schemaName=other.schemaName;
-		}
-		if (other.querymodel!=null) {
-			this.querymodel=other.querymodel;
-		}
-		if (other.outcome!=null) {
-			this.outcome=other.outcome;
-		}
-		if (other.multiselect!=null) {
-			this.multiselect=other.multiselect;
-		}
-		if (other.label!=null) {
-			this.label=other.label;
-		}
-		if (other.directories!=null) {
-			this.directories=other.directories;
-		}
-		if (other.fieldName!=null) {
-			this.fieldName=other.fieldName;
-		}
-		this.enabled=other.enabled;
-	}
+        if (other.schemaName!=null) {
+            this.schemaName=other.schemaName;
+        }
+        if (other.querymodel!=null) {
+            this.querymodel=other.querymodel;
+        }
+        if (other.outcome!=null) {
+            this.outcome=other.outcome;
+        }
+        if (other.multiselect!=null) {
+            this.multiselect=other.multiselect;
+        }
+        if (other.label!=null) {
+            this.label=other.label;
+        }
+        if (other.directories!=null) {
+            this.directories=other.directories;
+        }
+        if (other.fieldName!=null) {
+            this.fieldName=other.fieldName;
+        }
+        this.enabled=other.enabled;
+    }
 
 }

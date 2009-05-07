@@ -48,47 +48,47 @@ import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 @Install(precedence = FRAMEWORK)
 public class NuxeoSeamHotReloader implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@In(create = true, required = false)
-	protected FacesMessages facesMessages;
+    @In(create = true, required = false)
+    protected FacesMessages facesMessages;
 
-	private static final Log log = LogFactory
-			.getLog(NuxeoSeamHotReloader.class);
-
-
+    private static final Log log = LogFactory
+            .getLog(NuxeoSeamHotReloader.class);
 
 
-	@Factory(value="seamHotReloadIsEnabled", scope=ScopeType.APPLICATION)
-	public boolean isHotReloadEnabled() {
-		return SeamHotReloadHelper.isHotReloadEnabled();
-	}
 
-	public String doReload() {
 
-		final FacesContext facesContext = FacesContext.getCurrentInstance();
-		if (facesContext == null) {
-			return null;
-		}
+    @Factory(value="seamHotReloadIsEnabled", scope=ScopeType.APPLICATION)
+    public boolean isHotReloadEnabled() {
+        return SeamHotReloadHelper.isHotReloadEnabled();
+    }
 
-		HttpServletResponse response = (HttpServletResponse) facesContext
-				.getExternalContext().getResponse();
-		HttpServletRequest request = (HttpServletRequest) facesContext
-				.getExternalContext().getRequest();
+    public String doReload() {
 
-		String bigDownloadURL = BaseURL.getBaseURL(request);
-		bigDownloadURL += "restAPI/seamReload";
+        final FacesContext facesContext = FacesContext.getCurrentInstance();
+        if (facesContext == null) {
+            return null;
+        }
 
-		try {
-			response.resetBuffer();
-			response.sendRedirect(bigDownloadURL);
-			response.flushBuffer();
-			request.setAttribute(URLPolicyService.DISABLE_REDIRECT_REQUEST_KEY, true);
-			facesContext.responseComplete();
-		} catch (Exception e) {
-			log.error("Error during redirect", e);
-		}
-		return null;
-	}
+        HttpServletResponse response = (HttpServletResponse) facesContext
+                .getExternalContext().getResponse();
+        HttpServletRequest request = (HttpServletRequest) facesContext
+                .getExternalContext().getRequest();
+
+        String bigDownloadURL = BaseURL.getBaseURL(request);
+        bigDownloadURL += "restAPI/seamReload";
+
+        try {
+            response.resetBuffer();
+            response.sendRedirect(bigDownloadURL);
+            response.flushBuffer();
+            request.setAttribute(URLPolicyService.DISABLE_REDIRECT_REQUEST_KEY, true);
+            facesContext.responseComplete();
+        } catch (Exception e) {
+            log.error("Error during redirect", e);
+        }
+        return null;
+    }
 
 }

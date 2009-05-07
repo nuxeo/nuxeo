@@ -52,7 +52,7 @@ public class ThreadSafeRestletFilter extends Filter {
     @Override
     protected void doHandle(Request request, Response response) {
         if (getNext() != null) {
-        	boolean started=false;
+            boolean started=false;
             try {
                 //get a new instance of the restlet each time it is called.
                 Restlet next = getNext().getClass().newInstance();
@@ -67,10 +67,10 @@ public class ThreadSafeRestletFilter extends Filter {
                                 + e.getMessage(), MediaType.TEXT_PLAIN);
             }
             finally {
-            	if (started) {
-            		// commit Tx
-            		SimpleTxManager.commitOrRollBackUserTransaction();
-            	}
+                if (started) {
+                    // commit Tx
+                    SimpleTxManager.commitOrRollBackUserTransaction();
+                }
             }
         } else {
             response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);

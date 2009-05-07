@@ -38,9 +38,9 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Util functions.
- * 
+ *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- * 
+ *
  */
 public final class Functions {
 
@@ -125,7 +125,7 @@ public final class Functions {
      * Can be used in order to produce something like that
      * "Julien, Alain , Thierry et Marc-Aur?le" where ' , ' and ' et ' is the
      * final one.
-     * 
+     *
      * @param collection
      * @param separator
      * @param finalDelimiter
@@ -196,7 +196,7 @@ public final class Functions {
 
     /**
      * Returns the full name of a user.
-     * 
+     *
      * @param username the user id, or null or empty for the current user.
      * @return the full user name.
      */

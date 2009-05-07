@@ -46,13 +46,13 @@ public class DirectoryTreeService extends DefaultComponent {
 
     public DirectoryTreeDescriptor getDirectoryTreeDescriptor(String treeName) {
 
-    	DirectoryTreeDescriptor desc = registry.get(treeName);
-    	if (desc.getEnabled()) {
-    		return desc;
-    	}
-    	else {
-    		return null;
-    	}
+        DirectoryTreeDescriptor desc = registry.get(treeName);
+        if (desc.getEnabled()) {
+            return desc;
+        }
+        else {
+            return null;
+        }
     }
 
     @Override
@@ -72,13 +72,13 @@ public class DirectoryTreeService extends DefaultComponent {
         DirectoryTreeDescriptor descriptor = (DirectoryTreeDescriptor) contribution;
 
         if (registry.containsKey(descriptor.getName())) {
-        	DirectoryTreeDescriptor existing_descriptor =registry.get(descriptor.getName());
-        	existing_descriptor.merge(descriptor);
-        	log.debug("merged DirectoryTreeDescriptor: " + descriptor.getName());
+            DirectoryTreeDescriptor existing_descriptor =registry.get(descriptor.getName());
+            existing_descriptor.merge(descriptor);
+            log.debug("merged DirectoryTreeDescriptor: " + descriptor.getName());
         }
         else {
-        	registry.put(descriptor.getName(), descriptor);
-        	log.debug("registered DirectoryTreeDescriptor: " + descriptor.getName());
+            registry.put(descriptor.getName(), descriptor);
+            log.debug("registered DirectoryTreeDescriptor: " + descriptor.getName());
         }
     }
 
@@ -95,9 +95,9 @@ public class DirectoryTreeService extends DefaultComponent {
     public List<String> getDirectoryTrees() {
         List<String> directoryTrees = new ArrayList<String>();
         for (DirectoryTreeDescriptor desc : registry.values()) {
-        	if (desc.getEnabled()) {
-        		directoryTrees.add(desc.getName());
-        	}
+            if (desc.getEnabled()) {
+                directoryTrees.add(desc.getName());
+            }
         }
         Collections.sort(directoryTrees);
         return directoryTrees;

@@ -45,66 +45,66 @@ import org.jboss.seam.navigation.Pages;
 
 public class SeamHotReloadHelper {
 
-	private static final Log log = LogFactory.getLog(SeamHotReloadHelper.class);
+    private static final Log log = LogFactory.getLog(SeamHotReloadHelper.class);
 
-	public static final String SEAM_HOT_RELOAD_SYSTEM_PROP = "org.nuxeo.seam.debug";
+    public static final String SEAM_HOT_RELOAD_SYSTEM_PROP = "org.nuxeo.seam.debug";
 
 
-	public static boolean isHotReloadEnabled() {
-		String sysProp = System.getProperty(SEAM_HOT_RELOAD_SYSTEM_PROP, "false");
-		return "true".equalsIgnoreCase(sysProp);
-	}
+    public static boolean isHotReloadEnabled() {
+        String sysProp = System.getProperty(SEAM_HOT_RELOAD_SYSTEM_PROP, "false");
+        return "true".equalsIgnoreCase(sysProp);
+    }
 
-	public static Set<String> reloadSeamComponents(HttpServletRequest httpRequest) {
+    public static Set<String> reloadSeamComponents(HttpServletRequest httpRequest) {
 
-		ServletContext servletContext = httpRequest.getSession().getServletContext();
+        ServletContext servletContext = httpRequest.getSession().getServletContext();
 
-		boolean reloadDone = false;
+        boolean reloadDone = false;
 
-		Init init = (Init) servletContext.getAttribute(Seam.getComponentName(Init.class));
-		if (init != null && init.hasHotDeployableComponents()) {
-			for (File file : init.getHotDeployPaths()) {
-				if (scan(init, file)) {
-					Seam.clearComponentNameCache();
-					new Initialization(servletContext).redeploy(httpRequest);
-					reloadDone=true;
-					break;
-				}
-			}
-		}
+        Init init = (Init) servletContext.getAttribute(Seam.getComponentName(Init.class));
+        if (init != null && init.hasHotDeployableComponents()) {
+            for (File file : init.getHotDeployPaths()) {
+                if (scan(init, file)) {
+                    Seam.clearComponentNameCache();
+                    new Initialization(servletContext).redeploy(httpRequest);
+                    reloadDone=true;
+                    break;
+                }
+            }
+        }
 
-		servletContext.removeAttribute(Seam.getComponentName(Pages.class));
-		servletContext.removeAttribute(Seam.getComponentName(Exceptions.class));
+        servletContext.removeAttribute(Seam.getComponentName(Pages.class));
+        servletContext.removeAttribute(Seam.getComponentName(Exceptions.class));
 
-		if (reloadDone)
-			return init.getHotDeployableComponents();
-		else
-			return null;
-	}
+        if (reloadDone)
+            return init.getHotDeployableComponents();
+        else
+            return null;
+    }
 
-	public static Set<String> getHotDeployableComponents(HttpServletRequest httpRequest) {
+    public static Set<String> getHotDeployableComponents(HttpServletRequest httpRequest) {
 
-		ServletContext servletContext = httpRequest.getSession().getServletContext();
-		Init init = (Init) servletContext.getAttribute(Seam.getComponentName(Init.class));
-		return init.getHotDeployableComponents();
+        ServletContext servletContext = httpRequest.getSession().getServletContext();
+        Init init = (Init) servletContext.getAttribute(Seam.getComponentName(Init.class));
+        return init.getHotDeployableComponents();
 
-	}
+    }
 
-	protected static boolean scan(Init init, File file) {
-		if (file.isFile()) {
-			if (!file.exists() || (file.lastModified() > init.getTimestamp())) {
-				if (log.isDebugEnabled()) {
-					log.debug("file updated: " + file.getName());
-				}
-				return true;
-			}
-		} else if (file.isDirectory()) {
-			for (File f : file.listFiles()) {
-				if (scan(init, f)) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
+    protected static boolean scan(Init init, File file) {
+        if (file.isFile()) {
+            if (!file.exists() || (file.lastModified() > init.getTimestamp())) {
+                if (log.isDebugEnabled()) {
+                    log.debug("file updated: " + file.getName());
+                }
+                return true;
+            }
+        } else if (file.isDirectory()) {
+            for (File f : file.listFiles()) {
+                if (scan(init, f)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }

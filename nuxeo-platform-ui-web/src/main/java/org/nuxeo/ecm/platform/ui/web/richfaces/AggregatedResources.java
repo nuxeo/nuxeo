@@ -1,3 +1,22 @@
+/*
+ * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nuxeo - initial API and implementation
+ *
+ * $Id$
+ */
+
 package org.nuxeo.ecm.platform.ui.web.richfaces;
 
 import java.io.ByteArrayInputStream;
@@ -17,29 +36,29 @@ import org.ajax4jsf.resource.ResourceContext;
  */
 public class AggregatedResources extends JarResource {
 
-	protected StringBuffer sb = new StringBuffer();
+    protected StringBuffer sb = new StringBuffer();
 
-	public AggregatedResources() {
-		super();
-	}
+    public AggregatedResources() {
+        super();
+    }
 
-	public AggregatedResources(StringBuffer sb, String key) {
-		super();
-		this.sb=sb;
-		this.setKey(key);
-	}
+    public AggregatedResources(StringBuffer sb, String key) {
+        super();
+        this.sb=sb;
+        this.setKey(key);
+    }
 
-	public AggregatedResources(String key) {
-		super();
-		this.setKey(key);
-	}
+    public AggregatedResources(String key) {
+        super();
+        this.setKey(key);
+    }
 
-	@Override
-	public InputStream getResourceAsStream(ResourceContext context) {
-		try {
-			return new ByteArrayInputStream(sb.toString().getBytes("UTF-8"));
-		} catch (UnsupportedEncodingException e) {
-			return null;
-		}
-	}
+    @Override
+    public InputStream getResourceAsStream(ResourceContext context) {
+        try {
+            return new ByteArrayInputStream(sb.toString().getBytes("UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            return null;
+        }
+    }
 }

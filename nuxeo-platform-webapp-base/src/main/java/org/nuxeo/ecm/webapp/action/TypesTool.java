@@ -58,7 +58,7 @@ public class TypesTool implements Serializable {
     private static final long serialVersionUID = -5037578301250616973L;
 
     private static final Log log = LogFactory.getLog(TypesTool.class);
-    
+
     private static final int COLUMN_SIZE = 4;
 
     private static String DEFAULT_CATEGORY = "misc";
@@ -142,7 +142,7 @@ public class TypesTool implements Serializable {
         }
         return newTypesMap;
     }
-    
+
     /**
      * Retrieves the list of allowed sub types given a current type.
      *

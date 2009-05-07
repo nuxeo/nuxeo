@@ -52,7 +52,7 @@ public class SelectOneListboxRenderer extends Renderer {
         if (comp.getDisplayValueOnly()) {
             return;
         }
-       
+
         String id = comp.getClientId(facesContext);
 
         Map<String, String> requestMap = facesContext.getExternalContext().getRequestParameterMap();
