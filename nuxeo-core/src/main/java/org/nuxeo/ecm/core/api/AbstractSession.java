@@ -1684,12 +1684,13 @@ public abstract class AbstractSession implements CoreSession,
 
             // version incrementing listeners mustn't dirty the doc,
             // so use an alternate DocumentModel for the event
+            boolean dirty = doc.isDirty();
             DocumentModel tmpDocModel = readModel(doc, null);
             notifyEvent(DocumentEventTypes.INCREMENT_BEFORE_UPDATE,
                     tmpDocModel, options, null, null, true);
-            // write potential number changes, reset dirty flags
+            // write potential number changes, reset old dirty flags
             writeModel(doc, tmpDocModel);
-            doc.setDirty(false);
+            doc.setDirty(dirty);
 
             // regular event, last chance to modify docModel
             notifyEvent(DocumentEventTypes.BEFORE_DOC_UPDATE, docModel,

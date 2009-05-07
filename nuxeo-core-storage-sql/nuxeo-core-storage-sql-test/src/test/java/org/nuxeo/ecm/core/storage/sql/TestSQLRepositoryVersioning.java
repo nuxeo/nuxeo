@@ -200,6 +200,24 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         checkVersions(file, "1", "2");
     }
 
+    public void testSnapshottingCreateDocument() throws Exception {
+        DocumentModel file = new DocumentModelImpl("/", "file", "File");
+        file.setProperty("file", "filename", "A");
+        file = session.createDocument(file);
+        // no version yet
+        checkVersions(file);
+
+        // do another save, doc should still be dirty
+        file = session.saveDocument(file);
+        checkVersions(file);
+
+        // create snapshot of B state when saving
+        file.putContextData(ScopeType.REQUEST,
+                VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, Boolean.TRUE);
+        file = session.saveDocument(file);
+        checkVersions(file, "1");
+    }
+
     public void testSnapshotting() throws Exception {
         DocumentModel file = new DocumentModelImpl("/", "file", "File");
         file.setProperty("file", "filename", "A");
@@ -226,13 +244,23 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         file.putContextData(ScopeType.REQUEST,
                 VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, Boolean.TRUE);
         file = session.saveDocument(file);
-        checkVersions(file, "1", "2"); // still only one version
+        checkVersions(file, "1", "2");
 
         // but last change (C) now has to be saved on snapshot
         file.putContextData(ScopeType.REQUEST,
                 VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, Boolean.TRUE);
         file = session.saveDocument(file);
         checkVersions(file, "1", "2", "3");
+
+        // simple save of a prop, makes the doc diry again
+        file.setProperty("file", "filename", "D");
+        file = session.saveDocument(file);
+        checkVersions(file, "1", "2", "3");
+        // then snapshot
+        file.putContextData(ScopeType.REQUEST,
+                VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, Boolean.TRUE);
+        file = session.saveDocument(file);
+        checkVersions(file, "1", "2", "3", "4");
     }
 
     private void createTrioVersions(DocumentModel file) throws Exception {
