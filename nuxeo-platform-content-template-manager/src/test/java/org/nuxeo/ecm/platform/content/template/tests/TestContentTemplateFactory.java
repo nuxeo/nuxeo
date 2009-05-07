@@ -59,8 +59,6 @@ public class TestContentTemplateFactory extends RepositoryTestCase {
         deployContrib("org.nuxeo.ecm.platform.content.template.tests",
                 "LifeCycleService.xml");
         deployContrib("org.nuxeo.ecm.platform.content.template.tests",
-                "CoreEventListenerService.xml");
-        deployContrib("org.nuxeo.ecm.platform.content.template.tests",
                 "DefaultPlatform.xml");
 
         deployContrib("org.nuxeo.ecm.platform.content.template.tests",
