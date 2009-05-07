@@ -35,6 +35,7 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Transactional;
 import org.jboss.seam.annotations.remoting.WebRemote;
 import org.jboss.seam.annotations.web.RequestParameter;
+import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -57,7 +58,8 @@ import org.nuxeo.runtime.api.Framework;
 @Transactional
 public class ConversionActionBean implements ConversionAction {
 
-    private static final Log log = LogFactory.getLog(ConversionActionBean.class);
+    private static final Log log = LogFactory
+            .getLog(ConversionActionBean.class);
 
     protected static ConverterCheckResult any2PDFAvailability;
 
@@ -78,8 +80,8 @@ public class ConversionActionBean implements ConversionAction {
     @RequestParameter
     private String filename;
 
-    protected static final ThreadSafeCacheHolder<Boolean> exportableToPDFCache
-            = new ThreadSafeCacheHolder<Boolean>(20);
+    protected static final ThreadSafeCacheHolder<Boolean> exportableToPDFCache = new ThreadSafeCacheHolder<Boolean>(
+            20);
 
     @Remove
     public void destroy() {
@@ -116,6 +118,18 @@ public class ConversionActionBean implements ConversionAction {
                     PDF_PREVIEW_CONVERTER, true);
         }
         return any2PDFAvailability;
+    }
+
+    public boolean isExportableToPDF(BlobHolder bh) throws ClientException {
+        if (bh == null) {
+            return false;
+        }
+        Blob blob = bh.getBlob();
+        if (blob == null) {
+            return false;
+        } else {
+            return isExportableToPDF(blob);
+        }
     }
 
     public boolean isExportableToPDF(Blob blob) {
@@ -161,31 +175,29 @@ public class ConversionActionBean implements ConversionAction {
             }
             return isSupported;
         } catch (Exception e) {
-            log.error("Error while trying to check PDF conversion against a filename",
-                    e);
+            log
+                    .error(
+                            "Error while trying to check PDF conversion against a filename",
+                            e);
             return false;
         }
     }
 
-    @WebRemote
-    public String generatePdfFile() {
+    public String generatePdfFileFromBlobHolder(BlobHolder bh) {
         try {
-            if (fileFieldFullName == null) {
-                return null;
-            }
             ConversionService cs = Framework
                     .getService(ConversionService.class);
             BlobHolder result = cs.convert(PDF_PREVIEW_CONVERTER,
-                    new DocumentBlobHolder(getDocument(), fileFieldFullName),
+                    bh,
                     null);
 
+            String fname = new Path(bh.getFilePath()).lastSegment();
             String name;
-            if (filename == null || filename.equals("")) {
+            if (fname == null || fname.equals("")) {
                 name = "file";
             } else {
-                name = filename;
+                name = fname;
             }
-
             // add pdf extension
             int pos = name.lastIndexOf('.');
             if (pos <= 0) {
@@ -217,6 +229,18 @@ public class ConversionActionBean implements ConversionAction {
                     "application/pdf", array);
 
             return null;
+        } catch (Exception e) {
+            log.error("PDF generation error for file " + filename, e);
+        }
+        return "pdf_generation_error";
+
+    }
+
+    @WebRemote
+    public String generatePdfFile() {
+        try {
+            BlobHolder bh = new DocumentBlobHolder(getDocument(), fileFieldFullName);
+            return generatePdfFileFromBlobHolder(bh);
         } catch (Exception e) {
             log.error("PDF generation error for file " + filename, e);
         }

@@ -20,15 +20,15 @@
       </c:if>
       <div style="clear:both;"></div>
     </div>
-  
+
     <div>
       <ui:include src="/incl/summary/content.xhtml" />
-      <c:if test="#{(!empty relationActions.outgoingStatementsInfo) || (!empty relationActions.incomingStatementsInfo)}">
+      <c:if test="#{(!empty currentDocumentIncomingRelations) || (!empty currentDocumentOutgoingRelations)}">
         <ui:include src="/incl/summary/relation.xhtml" />
       </c:if>
       <div style="clear:both;"></div>
     </div>
-  
+
     <ui:include src="/incl/summary/metadata.xhtml" />
 
     <c:if test="#{deleteActions.trashManagementEnabled and deleteActions.canRestoreCurrentDoc}">
@@ -43,7 +43,7 @@
     <c:if test="#{!empty selectedSections}">
       <ui:include src="/incl/summary/publication.xhtml"/>
     </c:if>
-  
+
     <c:if test="#{currentDocument.hasFacet('Commentable') and (documentThreadedComments.size > 0)}">
       <ui:include src="/incl/summary/comments.xhtml" />
     </c:if>
