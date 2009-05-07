@@ -9,6 +9,7 @@
     </title>
     
     <nxthemes:head />
+
     <nxthemes:resources />
 
   </head>
@@ -17,6 +18,8 @@
   <f:view>
 
     <nxthemes:accesskeys />
+
+    <nxthemes:view resource="style-css.json"/>
 
     <div id="nxthemesHeader">
 

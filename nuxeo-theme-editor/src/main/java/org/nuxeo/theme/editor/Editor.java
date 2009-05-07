@@ -31,6 +31,8 @@ import org.nuxeo.theme.elements.ElementFormatter;
 import org.nuxeo.theme.elements.PageElement;
 import org.nuxeo.theme.elements.SectionElement;
 import org.nuxeo.theme.elements.ThemeElement;
+import org.nuxeo.theme.events.EventContext;
+import org.nuxeo.theme.events.EventManager;
 import org.nuxeo.theme.formats.Format;
 import org.nuxeo.theme.formats.FormatType;
 import org.nuxeo.theme.formats.layouts.Layout;
@@ -63,9 +65,9 @@ public class Editor {
         }
         widget.setName(viewName);
         ElementFormatter.setFormat(element, widget);
-
-        final String themeName = ThemeManager.getThemeOf(element).getName();
-        Manager.getThemeManager().themeModified(themeName);
+        EventManager eventManager = Manager.getEventManager();
+        eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(
+                element, null));
     }
 
     public static void updateElementLayout(Element element,
@@ -80,10 +82,9 @@ public class Editor {
             for (Object key : propertyMap.keySet()) {
                 layout.setProperty((String) key, propertyMap.get(key));
             }
-
-            final String themeName = ThemeManager.getThemeOf(element).getName();
-            Manager.getThemeManager().themeModified(themeName);
-
+            EventManager eventManager = Manager.getEventManager();
+            eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(
+                    element, null));
         }
     }
 
@@ -101,10 +102,9 @@ public class Editor {
                         perspectives);
             }
         }
-
-        final String themeName = ThemeManager.getThemeOf(element).getName();
-        Manager.getThemeManager().themeModified(themeName);
-
+        EventManager eventManager = Manager.getEventManager();
+        eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(
+                element, null));
     }
 
     public static void updateElementStyle(Element element, Style style,
@@ -122,10 +122,9 @@ public class Editor {
             viewName = "*";
         }
         style.setPropertiesFor(viewName, path, properties);
-
-        final String themeName = ThemeManager.getThemeOf(element).getName();
-        Manager.getThemeManager().stylesModified(themeName);
-
+        EventManager eventManager = Manager.getEventManager();
+        eventManager.notify(Events.STYLES_MODIFIED_EVENT, new EventContext(
+                element, null));
     }
 
     public static void splitElement(Element element) throws NodeException {
@@ -156,10 +155,9 @@ public class Editor {
         ElementFormatter.setFormat(newCell, cellLayout);
         ElementFormatter.setFormat(newCell, cellStyle);
         newCell.insertAfter(element);
-
-        final String themeName = ThemeManager.getThemeOf(element).getName();
-        Manager.getThemeManager().themeModified(themeName);
-
+        EventManager eventManager = Manager.getEventManager();
+        eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(
+                element, null));
     }
 
     public static void updateElementStyleCss(Element element, Style style,
@@ -173,9 +171,9 @@ public class Editor {
             viewName = "*";
         }
         org.nuxeo.theme.html.Utils.loadCss(style, cssSource, viewName);
-
-        final String themeName = ThemeManager.getThemeOf(element).getName();
-        Manager.getThemeManager().stylesModified(themeName);
+        EventManager eventManager = Manager.getEventManager();
+        eventManager.notify(Events.STYLES_MODIFIED_EVENT, new EventContext(
+                element, null));
     }
 
     public static void updateNamedStyleCss(Style style, String cssSource)
@@ -185,15 +183,16 @@ public class Editor {
         }
         final String viewName = "*";
         org.nuxeo.theme.html.Utils.loadCss(style, cssSource, viewName);
-        final String themeName = ThemeManager.getThemeOfFormat(style).getName();
-        Manager.getThemeManager().stylesModified(themeName);
+        EventManager eventManager = Manager.getEventManager();
+        eventManager.notify(Events.STYLES_MODIFIED_EVENT, new EventContext(
+                style, null));
     }
 
     public static void updateElementWidth(Format layout, String width) {
         layout.setProperty("width", width);
-        final String themeName = ThemeManager.getThemeOfFormat(layout).getName();
-        Manager.getThemeManager().themeModified(themeName);
-
+        EventManager eventManager = Manager.getEventManager();
+        eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(
+                layout, null));
     }
 
     public static void updateElementProperties(Element element,
@@ -203,19 +202,17 @@ public class Editor {
             properties.put(key, propertyMap.get(key));
         }
         FieldIO.updateFieldsFromProperties(element, properties);
-
-        final String themeName = ThemeManager.getThemeOf(element).getName();
-        Manager.getThemeManager().themeModified(themeName);
-
+        EventManager eventManager = Manager.getEventManager();
+        eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(
+                element, null));
     }
 
     public static void updateElementDescription(Element element,
             String description) {
         element.setDescription(description);
-
-        final String themeName = ThemeManager.getThemeOf(element).getName();
-        Manager.getThemeManager().themeModified(themeName);
-
+        EventManager eventManager = Manager.getEventManager();
+        eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(
+                element, null));
     }
 
     public static void repairTheme(String src) throws ThemeIOException,
@@ -225,12 +222,11 @@ public class Editor {
             throw new ThemeIOException("Unknown theme: " + src);
         }
         ThemeManager.repairTheme(theme);
-
-        final String themeName = theme.getName();
-        Manager.getThemeManager().themeModified(themeName);
-
-        Manager.getThemeManager().stylesModified(themeName);
-
+        EventManager eventManager = Manager.getEventManager();
+        eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(
+                theme, null));
+        eventManager.notify(Events.STYLES_MODIFIED_EVENT, new EventContext(
+                theme, null));
     }
 
     public static void saveTheme(String src, int indent)
@@ -246,9 +242,9 @@ public class Editor {
 
     public static void saveChanges() throws ThemeIOException, ThemeException {
         ThemeManager themeManager = Manager.getThemeManager();
+        Long lastModified = themeManager.getLastModified();
         boolean ok = false;
         for (ThemeDescriptor themeDef : ThemeManager.getThemeDescriptors()) {
-            Long lastModified = themeManager.getLastModified(themeDef.getName());
             if (themeDef.isSaveable()) {
                 ok = true;
             } else {
@@ -323,21 +319,19 @@ public class Editor {
             destElement.addChild(Manager.getThemeManager().duplicateElement(
                     element, true));
         }
-
-        final String themeName = ThemeManager.getThemeOf(element).getName();
-        Manager.getThemeManager().themeModified(themeName);
-
-        Manager.getThemeManager().stylesModified(themeName);
-
+        EventManager eventManager = Manager.getEventManager();
+        eventManager.notify(Events.STYLES_MODIFIED_EVENT, new EventContext(
+                null, null));
+        eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(null,
+                destElement));
     }
 
     public static void moveElement(Element srcElement, Element destElement,
             int order) throws NodeException {
         srcElement.moveTo(destElement, order);
-
-        final String themeName = ThemeManager.getThemeOf(srcElement).getName();
-        Manager.getThemeManager().themeModified(themeName);
-
+        EventManager eventManager = Manager.getEventManager();
+        eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(
+                srcElement, destElement));
     }
 
     public static void makeElementUseNamedStyle(Element element,
@@ -359,11 +353,11 @@ public class Editor {
                 themeManager.makeFormatInherit(style, inheritedStyle);
             }
         }
-
-        Manager.getThemeManager().themeModified(themeName);
-
-        Manager.getThemeManager().stylesModified(themeName);
-
+        EventManager eventManager = Manager.getEventManager();
+        eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(
+                element, null));
+        eventManager.notify(Events.STYLES_MODIFIED_EVENT, new EventContext(
+                element, null));
     }
 
     public static String addPage(String path) throws ThemeException,
@@ -456,12 +450,11 @@ public class Editor {
             properties.setProperty(propertyName, value);
         }
         style.setPropertiesFor(viewName, "", properties);
-
-        final String themeName = ThemeManager.getThemeOf(element).getName();
-        Manager.getThemeManager().themeModified(themeName);
-
-        Manager.getThemeManager().stylesModified(themeName);
-
+        EventManager eventManager = Manager.getEventManager();
+        eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(
+                element, null));
+        eventManager.notify(Events.STYLES_MODIFIED_EVENT, new EventContext(
+                style, null));
     }
 
     public static void alignElement(Element element, String position) {
@@ -492,17 +485,15 @@ public class Editor {
                 layout.setProperty("text-align", "right");
             }
         }
-
-        final String themeName = ThemeManager.getThemeOf(element).getName();
-        Manager.getThemeManager().themeModified(themeName);
-
+        EventManager eventManager = Manager.getEventManager();
+        eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(
+                element, null));
     }
 
     public static void deleteElement(Element element) throws ThemeException,
             NodeException {
         Element parent = (Element) element.getParent();
         ThemeManager themeManager = Manager.getThemeManager();
-        ThemeElement theme = ThemeManager.getThemeOf(element);
         if (element instanceof ThemeElement || element instanceof PageElement) {
             themeManager.destroyElement(element);
         } else if (element instanceof CellElement) {
@@ -539,25 +530,23 @@ public class Editor {
         } else if (element instanceof Fragment) {
             themeManager.destroyElement(element);
         }
-
-        final String themeName = theme.getName();
-        Manager.getThemeManager().themeModified(themeName);
+        EventManager eventManager = Manager.getEventManager();
+        eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(null,
+                null));
     }
 
     public static int duplicateElement(Element element) throws ThemeException,
             NodeException {
-        Element duplicate = Manager.getThemeManager().duplicateElement(element,
-                true);
+        Element duplicate = Manager.getThemeManager().duplicateElement(element, true);
 
         // insert the duplicated element
         element.getParent().addChild(duplicate);
         duplicate.moveTo(element.getParent(), element.getOrder() + 1);
-
-        final String themeName = ThemeManager.getThemeOf(element).getName();
-        Manager.getThemeManager().themeModified(themeName);
-
-        Manager.getThemeManager().stylesModified(themeName);
-
+        EventManager eventManager = Manager.getEventManager();
+        eventManager.notify(Events.STYLES_MODIFIED_EVENT, new EventContext(
+                null, null));
+        eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(null,
+                element));
         return duplicate.getUid();
     }
 
@@ -565,10 +554,9 @@ public class Editor {
         ThemeManager themeManager = Manager.getThemeManager();
         final Format style = themeManager.createStyle();
         ElementFormatter.setFormat(element, style);
-
-        final String themeName = ThemeManager.getThemeOf(element).getName();
-        Manager.getThemeManager().themeModified(themeName);
-
+        EventManager eventManager = Manager.getEventManager();
+        eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(
+                element, null));
     }
 
     public static void createNamedStyle(Element element, String styleName,
@@ -585,11 +573,11 @@ public class Editor {
         themeManager.setNamedObject(themeName, "style", style);
 
         themeManager.makeElementUseNamedStyle(element, styleName, themeName);
-
-        Manager.getThemeManager().themeModified(themeName);
-
-        Manager.getThemeManager().stylesModified(themeName);
-
+        EventManager eventManager = Manager.getEventManager();
+        eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(
+                style, null));
+        eventManager.notify(Events.STYLES_MODIFIED_EVENT, new EventContext(
+                style, null));
     }
 
     public static void deleteNamedStyle(Element element, String styleName,
@@ -604,8 +592,9 @@ public class Editor {
 
     public static void deleteStyleView(Style style, String viewName) {
         style.clearPropertiesFor(viewName);
-        final String themeName = ThemeManager.getThemeOfFormat(style).getName();
-        Manager.getThemeManager().stylesModified(themeName);
+        EventManager eventManager = Manager.getEventManager();
+        eventManager.notify(Events.STYLES_MODIFIED_EVENT, new EventContext(
+                style, null));
     }
 
     public static List<String> getHardcodedColors(final String themeName) {
@@ -659,17 +648,17 @@ public class Editor {
     public static void editPreset(String themeName, String presetName,
             String value) {
         PresetManager.editPreset(themeName, presetName, value);
-
-        Manager.getThemeManager().stylesModified(themeName);
-
+        EventManager eventManager = Manager.getEventManager();
+        eventManager.notify(Events.STYLES_MODIFIED_EVENT, new EventContext(
+                null, null));
     }
 
     public static void setPresetCategory(String themeName, String presetName,
             String category) {
         PresetManager.setPresetCategory(themeName, presetName, category);
-
-        Manager.getThemeManager().stylesModified(themeName);
-
+        EventManager eventManager = Manager.getEventManager();
+        eventManager.notify(Events.STYLES_MODIFIED_EVENT, new EventContext(
+                null, null));
     }
 
     public static void renamePreset(String themeName, String oldName,
@@ -698,7 +687,9 @@ public class Editor {
             }
         }
 
-        Manager.getThemeManager().stylesModified(themeName);
+        EventManager eventManager = Manager.getEventManager();
+        eventManager.notify(Events.STYLES_MODIFIED_EVENT, new EventContext(
+                null, null));
     }
 
     public static void deletePreset(String themeName, String presetName)
@@ -742,14 +733,24 @@ public class Editor {
                 }
             }
         }
+        EventManager eventManager = Manager.getEventManager();
+        eventManager.notify(Events.STYLES_MODIFIED_EVENT, new EventContext(
+                null, null));
+    }
 
-        Manager.getThemeManager().stylesModified(themeName);
+    public static void expireThemes() {
+        Manager.getEventManager().notify(Events.THEME_MODIFIED_EVENT,
+                new EventContext(null, null));
     }
 
     public static void loadTheme(String src) throws ThemeIOException,
             ThemeException {
-        ThemeManager themeManager = Manager.getThemeManager();
-        themeManager.loadTheme(src);
+        Manager.getThemeManager().loadTheme(src);
+        EventManager eventManager = Manager.getEventManager();
+        eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(null,
+                null));
+        eventManager.notify(Events.STYLES_MODIFIED_EVENT, new EventContext(
+                null, null));
     }
 
     public static void insertFragment(Element destElement, String typeName)
@@ -775,10 +776,9 @@ public class Editor {
         destContainer.addChild(fragment);
         // set the fragment order
         fragment.moveTo(destContainer, order);
-
-        final String themeName = ThemeManager.getThemeOf(destElement).getName();
-        Manager.getThemeManager().themeModified(themeName);
-
+        EventManager eventManager = Manager.getEventManager();
+        eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(
+                fragment, destContainer));
     }
 
     public static void insertSectionAfter(Element element) throws NodeException {
@@ -810,9 +810,9 @@ public class Editor {
         } else if (elementTypeName.equals("page")) {
             element.addChild(newSection);
         }
-
-        final String themeName = ThemeManager.getThemeOf(element).getName();
-        themeManager.themeModified(themeName);
+        EventManager eventManager = Manager.getEventManager();
+        eventManager.notify(Events.THEME_MODIFIED_EVENT, new EventContext(
+                newSection, null));
     }
 
     public static byte[] getViewIconContent(final String viewTypeName) {

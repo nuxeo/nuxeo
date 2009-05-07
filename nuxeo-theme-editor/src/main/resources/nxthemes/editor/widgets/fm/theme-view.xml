@@ -5,6 +5,7 @@
     </title>
 
     <@nxthemes_head />
+    
     <@nxthemes_resources />
 
   </head>
@@ -12,6 +13,8 @@
 <body style="padding: 0; margin: 0">
 
     <@nxthemes_accesskeys />
+
+    <@nxthemes_view resource="style-css.json"/>
 
     <div id="nxthemesHeader">
 
