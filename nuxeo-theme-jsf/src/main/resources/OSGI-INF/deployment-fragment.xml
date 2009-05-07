@@ -78,13 +78,7 @@
         org.nuxeo.theme.jsf.component.UIHead
       </component-class>
     </component>
-    
-    <component>
-      <component-type>nxthemes.themestyles</component-type>
-      <component-class>
-        org.nuxeo.theme.jsf.component.UIThemeStyles
-      </component-class>
-    </component>
+
   </extension>
 
 
