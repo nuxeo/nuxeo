@@ -5,6 +5,7 @@ Bundle-SymbolicName: org.nuxeo.ecm.platform.mail.web;singleton:=true
 Bundle-Version: 1.0.0
 Bundle-Localization: plugin
 Bundle-Vendor: Nuxeo
+Bundle-Category: stateless
 Eclipse-LazyStart: false
 Nuxeo-RequiredBy: org.nuxeo.ecm.war
 Require-Bundle:  org.nuxeo.ecm.core.api,
