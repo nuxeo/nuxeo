@@ -77,9 +77,9 @@
             <span id="title_#{row.data.ref}">
               <nxh:outputText value="#{nxd:titleOrId(row.data)}"
                 title="#{row.data.dc.description}"
-                rendered="#{!empty row.data.dc}"/>
+                rendered="#{!empty row.data.dc.description}"/>
               <nxh:outputText value="#{nxd:titleOrId(row.data)}"
-                rendered="#{empty row.data.dc}"/>
+                rendered="#{empty row.data.dc.description}"/>
             </span>
           </nxd:restDocumentLink>
           <!-- Open in a new window -->
@@ -89,16 +89,11 @@
               title="#{messages['permalink.newTab']}"/>
           </nxd:restDocumentLink>
           <!-- Download Link -->
-          <nxu:methodResult name="hasFileFacet" value="#{row.data.hasSchema('file')}">
-            <h:panelGroup rendered="#{hasFileFacet}">
-              <nxh:outputLink rendered="#{!empty row.data.file}"
-                value="#{nxd:fileUrl('downloadFile', row.data, 'file:content', row.data.file.filename)}">
-                <nxh:graphicImage value="/icons/download.png" title="#{row.data.file.filename}"
-                  style="vertical-align:middle"
-                  rendered="#{! empty row.data.file.filename}" />
-              </nxh:outputLink>
-            </h:panelGroup>
-          </nxu:methodResult>
+          <nxh:outputLink rendered="#{row.data.hasSchema('file') and !empty row.data.file.content}"
+            value="#{nxd:fileUrl('downloadFile', row.data, 'file:content', row.data.file.filename)}">
+            <nxh:graphicImage value="/icons/download.png" style="vertical-align:middle"
+              title="#{row.data.file.filename}" />
+          </nxh:outputLink>
         </div>
 
       </nxu:column>
