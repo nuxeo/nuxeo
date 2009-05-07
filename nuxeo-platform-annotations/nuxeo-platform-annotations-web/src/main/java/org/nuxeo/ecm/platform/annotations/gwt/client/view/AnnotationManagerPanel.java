@@ -298,7 +298,9 @@ public class AnnotationManagerPanel extends VerticalPanel implements
     }
 
     private native void updateSelectedAnnotation(int index) /*-{
-        top['updateSelectedAnnotation'](index);
+        if (typeof top['updateSelectedAnnotation'] != "undefined") {
+            top['updateSelectedAnnotation'](index);
+        }
     }-*/;
 
     private void selectAnnotation(HorizontalPanel hp, int index) {

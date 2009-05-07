@@ -61,11 +61,15 @@ public class HideShowAnnotationsButton extends Composite {
     }
 
     private native void showAnnotations() /*-{
-        top['showAnnotations']();
+        if (typeof top['showAnnotations'] != "undefined") {
+            top['showAnnotations']();
+        }
     }-*/;
 
     private native void hideAnnotations() /*-{
-        top['hideAnnotations']();
+        if (typeof top['hideAnnotations'] != "undefined") {
+            top['hideAnnotations']();
+        }
     }-*/;
 
 }
