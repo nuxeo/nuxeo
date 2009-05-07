@@ -94,12 +94,12 @@ public class DownloadServlet extends HttpServlet {
                 // Hack for Flash Url wich doesn't support ':' char
                 fieldPath = fieldPath.replace(';', ':');
                 // BlobHolder urls
-                if (fieldPath.startsWith("blobholder")) {
+                if (fieldPath.startsWith("/blobholder")) {
                     BlobHolder bh = doc.getAdapter(BlobHolder.class);
                     if (bh==null) {
                         return;
                     }
-                    String bhPath = fieldPath.replace("blobholder:", "");
+                    String bhPath = fieldPath.replace("/blobholder:", "");
                     if ("".equals(bhPath) || "0".equals(bhPath)) {
                         blob= bh.getBlob();
                     } else {
