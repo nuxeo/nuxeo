@@ -25,9 +25,6 @@
 
 	<rendering-extension name="nxthemes_head"
 	  class="org.nuxeo.theme.webengine.fm.extensions.NXThemesHeadDirective"/>
-    
-    <rendering-extension name="nxthemes_themestyles"
-      class="org.nuxeo.theme.webengine.fm.extensions.NXThemesThemeStylesDirective"/>
 
     <rendering-extension name="nxthemes_resources"
       class="org.nuxeo.theme.webengine.fm.extensions.NXThemesResourcesDirective"/>
