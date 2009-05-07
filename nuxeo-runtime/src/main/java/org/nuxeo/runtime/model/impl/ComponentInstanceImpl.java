@@ -158,8 +158,11 @@ public class ComponentInstanceImpl implements ComponentInstance {
                 return;
             }
         } else {
-            log.error("Warning: TARGET EXTENSION POINT IS UNKNOWN. Check your extension in "
-                    +extension.getComponent().getName());
+            log.error("Warning: target extension point '"
+                    + extension.getExtensionPoint() + "' of '"
+                    + extension.getTargetComponent().getName()
+                    + "' is unknown. Check your extension in component "
+                    + extension.getComponent().getName());
             // fatal error if development mode - exit
             Framework.handleDevError(null);
         }
