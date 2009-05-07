@@ -645,19 +645,9 @@ Object.extend(NXThemes.Canvas, {
   },
 
   updateStyleSheet: function(id, src) {
-	if (this._styles.get(id) !== undefined) {
-	  return;
-	}
-    var style = document.getElementById("nxthemes-style-" + id);
-    if (style !== null) {
+    if (this._styles.get(id) !== undefined) {
+      var style = document.getElementById("nxthemes-style-" + id);
       style.href = src;
-    }
-  },
-  
-  getStyleSheetUrl: function(id) {
-	var style = document.getElementById("nxthemes-style-" + id);
-    if (style !== null) {
-	  return style.href;
     }
   },
 

@@ -55,8 +55,6 @@ public final class Styles extends HttpServlet implements Serializable {
         // headers
         response.addHeader("content-type", "text/css");
 
-        final String themeName = request.getParameter("theme");
-        
         // cache control
         final String applicationPath = request.getParameter("path");
         if (applicationPath != null) {
@@ -77,21 +75,16 @@ public final class Styles extends HttpServlet implements Serializable {
         }
 
         final ThemeManager themeManager = Manager.getThemeManager();
-        String rendered = themeManager.getCachedStyles(themeName);
+        String rendered = themeManager.getCachedStyles();
         if (rendered == null) {
             final StringBuilder sb = new StringBuilder();
-            for (Style style : themeManager.getNamedStyles(themeName)) {
-                sb.append(Utils.styleToCss(style, style.getSelectorViewNames(),
-                        RESOLVE_PRESETS, IGNORE_VIEW_NAME, IGNORE_CLASSNAME,
-                        INDENT));
-            }
-            for (Style style : themeManager.getStyles(themeName)) {
+            for (Style style : themeManager.getStyles()) {
                 sb.append(Utils.styleToCss(style, style.getSelectorViewNames(),
                         RESOLVE_PRESETS, IGNORE_VIEW_NAME, IGNORE_CLASSNAME,
                         INDENT));
             }
             rendered = sb.toString();
-            themeManager.setCachedStyles(themeName, rendered);
+            themeManager.setCachedStyles(rendered);
         }
 
         os.write(rendered.getBytes());

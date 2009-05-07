@@ -12,8 +12,25 @@
  * $Id$
  */
 
-package org.nuxeo.theme.types;
+package org.nuxeo.theme.events;
 
-public enum TypeFamily {
-    THEME, ELEMENT, FORMAT, MODEL, VIEW, FILTER, NODE, RELATION, ENGINE, RENDERER, FRAGMENT, RESOURCE, NEGOTIATION, PROVIDER, EVENT, REGISTRY, PERSPECTIVE, APPLICATION, SHORTCUT, PRESET, PALETTE, NAME, VOCABULARY, TEMPLATE_ENGINE
+import org.nuxeo.theme.types.Type;
+import org.nuxeo.theme.types.TypeFamily;
+
+public class EventType implements Type {
+
+    private final String name;
+
+    public EventType(String name) {
+        this.name = name;
+    }
+
+    public TypeFamily getTypeFamily() {
+        return TypeFamily.EVENT;
+    }
+
+    public String getTypeName() {
+        return name;
+    }
+
 }

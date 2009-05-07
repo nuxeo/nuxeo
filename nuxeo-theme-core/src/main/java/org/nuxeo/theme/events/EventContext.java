@@ -12,8 +12,24 @@
  * $Id$
  */
 
-package org.nuxeo.theme.types;
+package org.nuxeo.theme.events;
 
-public enum TypeFamily {
-    THEME, ELEMENT, FORMAT, MODEL, VIEW, FILTER, NODE, RELATION, ENGINE, RENDERER, FRAGMENT, RESOURCE, NEGOTIATION, PROVIDER, EVENT, REGISTRY, PERSPECTIVE, APPLICATION, SHORTCUT, PRESET, PALETTE, NAME, VOCABULARY, TEMPLATE_ENGINE
+public class EventContext {
+
+    private final Object source;
+
+    private final Object target;
+
+    public EventContext(Object source, Object target) {
+        this.source = source;
+        this.target = target;
+    }
+
+    public Object getSource() {
+        return source;
+    }
+
+    public Object getTarget() {
+        return target;
+    }
 }

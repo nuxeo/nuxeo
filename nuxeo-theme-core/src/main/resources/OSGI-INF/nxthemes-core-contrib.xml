@@ -29,6 +29,10 @@
       <class>org.nuxeo.theme.models.InfoPool</class>
     </registry>
 
+    <registry name="events">
+      <class>org.nuxeo.theme.events.EventManager</class>
+    </registry>
+
     <registry name="resources">
       <class>org.nuxeo.theme.resources.ResourceManager</class>
     </registry>
