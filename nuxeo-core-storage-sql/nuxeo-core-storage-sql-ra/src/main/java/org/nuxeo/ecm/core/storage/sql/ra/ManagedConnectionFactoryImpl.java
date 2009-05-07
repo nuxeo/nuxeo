@@ -218,6 +218,12 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
         return repository.clearCaches();
     }
 
+    public void processClusterInvalidationsNext() {
+        if (repository != null) {
+            repository.processClusterInvalidationsNext();
+        }
+    }
+
     /*
      * ----- -----
      */

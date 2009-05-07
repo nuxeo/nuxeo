@@ -282,4 +282,8 @@ public class ConnectionFactoryImpl implements Repository,
     public int clearCaches() {
         return managedConnectionFactory.clearCaches();
     }
+
+    public void processClusterInvalidationsNext() {
+        managedConnectionFactory.processClusterInvalidationsNext();
+    }
 }
