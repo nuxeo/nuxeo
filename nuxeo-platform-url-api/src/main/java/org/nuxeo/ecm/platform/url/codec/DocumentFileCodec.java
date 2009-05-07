@@ -28,6 +28,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.core.api.Blob;
@@ -35,11 +37,14 @@ import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.core.utils.DocumentModelUtils;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.platform.url.service.AbstractDocumentViewCodec;
+
+import sun.util.logging.resources.logging;
 
 public class DocumentFileCodec extends AbstractDocumentViewCodec {
 
@@ -55,6 +60,8 @@ public class DocumentFileCodec extends AbstractDocumentViewCodec {
     public static final String FILENAME_PROPERTY_PATH_KEY = "FILENAME_PROPERTY_PATH";
 
     public static final String FILENAME_KEY = "FILENAME";
+
+    private static final Log log = LogFactory.getLog(DocumentFileCodec.class);
 
     // nxdoc/server/docId/property_path/filename/?requestParams
     public static final String URLPattern = "/(\\w+)/([a-zA-Z_0-9\\-]+)(/([a-zA-Z_0-9/:\\-\\.\\]\\[]*))+(/([^\\?]*))+(\\?)?(.*)?";
@@ -158,10 +165,37 @@ public class DocumentFileCodec extends AbstractDocumentViewCodec {
         Blob blob = null;
         String propertyName = getBlobPropertyName(docView);
         if (propertyName != null) {
-            blob = (Blob) DocumentModelUtils.getPropertyValue(doc, propertyName);
+            if (propertyName.startsWith("blobholder")) {
+                blob = getBlobViaBlobHolder(doc, propertyName);
+            }
+            else {
+                blob = (Blob) DocumentModelUtils.getPropertyValue(doc, propertyName);
+            }
         }
         return blob;
     }
+
+    public static Blob getBlobViaBlobHolder(DocumentModel doc, String bhPath) {
+
+        BlobHolder bh = doc.getAdapter(BlobHolder.class);
+        if (bh==null) {
+            return null;
+        }
+        bhPath = bhPath.replace("blobholder:", "");
+        try {
+            if ("".equals(bhPath) || "0".equals(bhPath)) {
+                return bh.getBlob();
+            } else {
+                int idx = Integer.parseInt(bhPath);
+                return bh.getBlobs().get(idx);
+            }
+        }
+        catch (Exception e) {
+            log.error("Error whild using BlobHolder to retrieve Blob", e);
+        }
+        return null;
+    }
+
 
     public static String getFilenamePropertyName(DocumentView docView) {
         String propertyPath = docView.getParameter(FILENAME_PROPERTY_PATH_KEY);
