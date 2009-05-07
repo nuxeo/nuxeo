@@ -23,11 +23,9 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import javax.annotation.Resource;
 import javax.servlet.ServletRequest;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -55,27 +53,40 @@ public class Main extends ModuleRoot {
     private static final Log log = LogFactory.getLog(Main.class);
 
     @GET
-    @Path("/{path:.+}")
-    public Object get(@PathParam("path") String path) throws ClientException, IOException {
+    @Path("/toto/{path:.+}")
+    public Response get1(@PathParam("path") String path) throws ClientException, IOException {
+        return Response.ok("OK").build();
+    }
+
+    @GET
+    @Path("/titi/{path:.+}")
+    public Response get(@PathParam("path") String path) throws ClientException, IOException {
         log.debug("get called for " + path);
         CoreSession session = ctx.getCoreSession();
         DocumentRef ref = new PathRef(path);
         DocumentModel doc = session.getDocument(ref);
         Blob content = (Blob) doc.getPropertyValue("file:content");
         if (content == null) {
-            return "";
+            return Response.ok("").build();
         } else {
-            return content.getStream();
+            //System.out.println(content.getString());
+            return Response.ok(content.getString()).type(content.getMimeType()).build();
         }
     }
 
     @DELETE
     @Path("/{path:.+}")
-    public Object delete(@PathParam("path") String path) throws ClientException, IOException {
+    public Response delete(@PathParam("path") String path) throws ClientException, IOException {
         log.debug("delete called for " + path);
         CoreSession session = ctx.getCoreSession();
+
         DocumentRef ref = new PathRef(path);
+        if (!session.exists(ref)) {
+            return Response.status(404).build();
+        }
+
         session.removeDocument(ref);
+        session.save();
         return Response.ok().build();
     }
 
@@ -86,9 +97,20 @@ public class Main extends ModuleRoot {
 
         CoreSession session = ctx.getCoreSession();
 
+        DocumentRef ref = new PathRef(path);
+        if (session.exists(ref)) {
+            return Response.status(405).build();
+        }
+
         org.nuxeo.common.utils.Path p = new org.nuxeo.common.utils.Path(path);
         String parentPath = p.removeLastSegments(1).toString();
         String folderName = p.lastSegment().toString();
+
+        DocumentRef parentRef = new PathRef("/" + parentPath);
+
+        if (!session.exists(parentRef)) {
+            return Response.status(409).build();
+        }
 
         DocumentModel folder = new DocumentModelImpl(parentPath, folderName, "Folder");
         folder = session.createDocument(folder);
@@ -108,6 +130,11 @@ public class Main extends ModuleRoot {
         org.nuxeo.common.utils.Path p = new org.nuxeo.common.utils.Path(path);
         String parentPath = p.removeLastSegments(1).toString();
         String filename = p.lastSegment().toString();
+
+        DocumentRef parentRef = new PathRef(parentPath);
+        if (!session.exists(parentRef)) {
+            return Response.status(409).build();
+        }
 
         Blob content = new StreamingBlob(new InputStreamSource(request.getInputStream()));
         content.setMimeType(request.getContentType());
