@@ -55,7 +55,7 @@ public class PopupHelper implements Serializable {
     private static final Log log = LogFactory.getLog(PopupHelper.class);
 
     public static final String POPUP_CATEGORY = "POPUP";
-    
+
     public static final String DELETED_LIFECYCLE_STATE = "deleted";
 
     @In(required = true, create = true)
@@ -69,12 +69,12 @@ public class PopupHelper implements Serializable {
 
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
-    
+
     @In(create = true)
     protected transient LockActions lockActions;
 
     protected DocumentModel currentContainer;
-    
+
     protected DocumentModel currentParent;
 
     protected DocumentModel currentPopupDocument;
@@ -232,7 +232,7 @@ public class PopupHelper implements Serializable {
                 params, false);
     }
 
-    
+
     @WebRemote
     public String deleteDocument(String docId) throws ClientException {
         DocumentModel doc = documentManager.getDocument(new IdRef(docId));
@@ -260,7 +260,7 @@ public class PopupHelper implements Serializable {
         }
         return false;
     }
-    
+
     public boolean isDocumentHasBlobAttached(DocumentModel documentModel)
             throws ClientException {
         Blob blob = (Blob) documentModel.getPropertyValue("file:content");
@@ -270,7 +270,7 @@ public class PopupHelper implements Serializable {
             return false;
         }
     }
-    
+
     @WebRemote
     public String downloadDocument(String docId, String blobPropertyName,
             String filenamePropertyName) throws ClientException {
@@ -287,21 +287,21 @@ public class PopupHelper implements Serializable {
                 docId));
         return lockActions.lockDocument(documentModel);
     }
-    
+
     @WebRemote
     public String unlockDocument(String docId) throws ClientException {
         DocumentModel documentModel = documentManager.getDocument(new IdRef(
                 docId));
         return lockActions.unlockDocument(documentModel);
     }
-    
+
     @WebRemote
     public String sendEmail(String docId) throws ClientException {
         DocumentModel doc = documentManager.getDocument(new IdRef(docId));
         return DocumentModelFunctions.documentUrl(null, doc,
                 "send_notification_email", null, false);
     }
-    
+
     private DocumentModel getFirstParentAfterDelete(DocumentModel doc)
             throws ClientException {
         List<DocumentModel> parents = documentManager.getParentDocuments(doc.getRef());
@@ -317,7 +317,7 @@ public class PopupHelper implements Serializable {
         }
         return null;
     }
-    
+
     private boolean isDocumentDeleted(DocumentModel doc) {
         try {
             // test if the document still exists in the repository

@@ -98,7 +98,7 @@ public interface LockActions extends Serializable {
      * @return true if the user has this right, false otherwise
      */
     Boolean getCanLockDoc(DocumentModel document);
-    
+
     /**
      * Tests if the user can get the lock of the current document.
      *
@@ -112,7 +112,7 @@ public interface LockActions extends Serializable {
      * @return true if the user has this right, false otherwise
      */
     Boolean getCanUnlockDoc(DocumentModel document);
-    
+
     /**
      * Tests if the user can unlock the current document.
      *
