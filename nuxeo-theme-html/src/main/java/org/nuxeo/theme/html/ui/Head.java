@@ -38,7 +38,7 @@ public class Head {
                 "widget");
 
         if (widget == null) {
-            log.warn("Theme " + themeName + " has no widget format.");
+            log.warn("Theme " + themeName + " has no widget.");
         } else {
             final Properties properties = widget.getProperties();
 
@@ -57,12 +57,6 @@ public class Head {
                     "<link rel=\"shortcut icon\" href=\"%s\" type=\"image/x-icon\"/>",
                     icon));
         }
-
-        // Styles
-        String path = params.get("path");
-        sb.append(String.format(
-                "<link rel=\"stylesheet\" type=\"text/css\" media=\"all\" href=\"/nuxeo/nxthemes-css/?path=%s\"/>",
-                path));
 
         // Base URL
         final String baseUrl = params.get("baseUrl");

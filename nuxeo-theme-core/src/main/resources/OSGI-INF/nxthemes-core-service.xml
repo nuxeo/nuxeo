@@ -101,26 +101,6 @@
     <object class="org.nuxeo.theme.rendering.StandaloneFilterType"/>
   </extension-point>
 
-  <extension-point name="event-listeners">
-    <documentation>
-      Extension Point for registering Event Listeners.
-
-      The XML syntax is:
-
-      <code>
-        <event-listener>
-          <event>event name</event>
-          <handler>org.nuxeo.theme.EventHandler</handler>
-        </event-listener>
-      </code>
-
-      where:
-      - 'event' is the name of the Event
-      - 'handler' is the Event Handler implementing org.nuxeo.theme.events.EventListener
-    </documentation>
-    <object class="org.nuxeo.theme.events.EventListenerType"/>
-  </extension-point>
-
   <extension-point name="resources">
     <documentation>
       Extension Point for registering Resources.

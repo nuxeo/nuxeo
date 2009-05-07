@@ -51,7 +51,7 @@ public final class Connection extends URLConnection {
     public long getLastModified() {
         // cache themes until they are modified
         if (host.equals("theme")) {
-            return Manager.getThemeManager().getLastModified();
+            return Manager.getThemeManager().getLastModified(url);
         }
         // do not cache elements
         else if (host.equals("element")) {
