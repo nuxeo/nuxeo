@@ -34,7 +34,7 @@ public interface FileManageActions extends SimpleFileManager {
 
     /**
      * Adds a new File.
-     *
+     * 
      * @return the page that displays the documents
      * @throws ClientException
      */
@@ -51,6 +51,10 @@ public interface FileManageActions extends SimpleFileManager {
     @WebRemote
     String addFolderFromPlugin(String fullName, String morePath)
             throws ClientException;
+
+    @WebRemote
+    String addFileFromPlugin(String content, String mimetype, String fullName,
+            String morePath, Boolean UseBase64) throws ClientException;
 
     @WebRemote
     boolean canWrite() throws ClientException;

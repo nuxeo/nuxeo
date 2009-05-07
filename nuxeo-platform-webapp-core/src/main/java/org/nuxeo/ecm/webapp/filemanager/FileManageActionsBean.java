@@ -66,10 +66,12 @@ import org.nuxeo.runtime.api.Framework;
 import org.richfaces.event.UploadEvent;
 import org.richfaces.model.UploadItem;
 
+import sun.misc.BASE64Decoder;
+
 /**
  * @author <a href="mailto:andreas.kalogeropoulos@nuxeo.com">Andreas
  *         Kalogeropoulos</a>
- *
+ * 
  */
 @Name("FileManageActions")
 @Scope(ScopeType.EVENT)
@@ -168,6 +170,7 @@ public class FileManageActionsBean extends InputController implements
     @Deprecated
     // TODO: update the Seam remoting-based desktop plugins to stop calling this
     // method
+    @WebRemote
     public boolean canWrite() throws ClientException {
         // let the FolderImporter and FileImporter plugin handle the security
         // checks to avoid hardcoded behavior
@@ -180,6 +183,31 @@ public class FileManageActionsBean extends InputController implements
         return String.format("%s |(%s)| %s", errorType, errorInfo,
                 resourcesAccessor.getMessages().get(
                         "message.operation.fails.generic"));
+    }
+
+    /**
+     * @deprecated use addBinaryFileFromPlugin with a Blob argument API to avoid
+     *             loading the content in memory
+     */
+    @Deprecated
+    @WebRemote
+    public String addFileFromPlugin(String content, String mimetype,
+            String fullName, String morePath, Boolean UseBase64)
+            throws ClientException {
+        try {
+            byte[] bcontent;
+            if (UseBase64.booleanValue()) {
+                BASE64Decoder decoder = new BASE64Decoder();
+                bcontent = decoder.decodeBuffer(content);
+            } else {
+                bcontent = content.getBytes();
+            }
+            return addBinaryFileFromPlugin(bcontent, mimetype, fullName,
+                    morePath);
+        } catch (Throwable t) {
+            log.error(t, t);
+            return getErrorMessage(TRANSF_ERROR, fullName);
+        }
     }
 
     @WebRemote
