@@ -97,6 +97,7 @@
   <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
     point="types">
     <types>
+      <type name="WebSite">default</type>
       <type name="WebPage">default</type>
       <type name="ContextualLink">default</type>
     </types>
