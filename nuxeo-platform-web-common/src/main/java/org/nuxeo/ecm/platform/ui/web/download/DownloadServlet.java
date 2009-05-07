@@ -35,6 +35,7 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.utils.DocumentModelUtils;
@@ -92,13 +93,28 @@ public class DownloadServlet extends HttpServlet {
             if (fieldPath != null) {
                 // Hack for Flash Url wich doesn't support ':' char
                 fieldPath = fieldPath.replace(';', ':');
-
-                blob = (Blob) DocumentModelUtils.getPropertyValue(doc,
-                        DocumentModelUtils.decodePropertyName(fieldPath));
-                if (blob == null) {
-                    // maybe it's a complex property
-                    blob = (Blob) DocumentModelUtils.getComplexPropertyValue(
-                            doc, fieldPath);
+                // BlobHolder urls
+                if (fieldPath.startsWith("blobholder")) {
+                    BlobHolder bh = doc.getAdapter(BlobHolder.class);
+                    if (bh==null) {
+                        return;
+                    }
+                    String bhPath = fieldPath.replace("blobholder:", "");
+                    if ("".equals(bhPath) || "0".equals(bhPath)) {
+                        blob= bh.getBlob();
+                    } else {
+                        int idxbh = Integer.parseInt(bhPath);
+                        blob = bh.getBlobs().get(idxbh);
+                    }
+                }
+                else {
+                    blob = (Blob) DocumentModelUtils.getPropertyValue(doc,
+                            DocumentModelUtils.decodePropertyName(fieldPath));
+                    if (blob == null) {
+                        // maybe it's a complex property
+                        blob = (Blob) DocumentModelUtils.getComplexPropertyValue(
+                                doc, fieldPath);
+                    }
                 }
             } else {
                 return;
