@@ -97,7 +97,6 @@ class Nuxeo(NuxeoTestCase):
                  .sort(random.choice(['title', 'author', 'date', 'lifecycle']))
                  .viewRandomDocument(pattern=self.tag.capitalize()))
             p = (p.edit()
-                 .metadata()
                  .files()
                  .publish()
                  .relations()
@@ -107,9 +106,10 @@ class Nuxeo(NuxeoTestCase):
                  .history())
 
         p.dashboard()
-
         p.getRootWorkspaces()
+        p.personalWorkspace()
         if self.search:
+            p.getRootWorkspaces()
             p = (p.search('scrum', 'Search with empty results')
                  .search('"' + self.dir_title + '"', 'Search one document')
                  .search('cephalus', 'Search few documents')

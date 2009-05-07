@@ -93,10 +93,9 @@ class BasePage:
         fl.assert_('LoginFailed=true' not in fl.getLastUrl(),
                    'Login failed for %s:%s' % (user, password))
         fl.post(fl.server_url + "/view_documents.faces", params=[
-            ['j_id405', 'j_id405'],
-            ['j_id405:j_id407', 'en_US'],
-            ['j_id405:j_id409', 'Change'],
-            ['j_id403', 'j_id403'],
+            ['j_id429', 'j_id429'],
+            ['j_id429:j_id431', 'en_US'],
+            ['j_id429:j_id433', 'Change'],
             ['javax.faces.ViewState', fl.getLastJsfState()]],
             description="Change locale to en_US")
         fl.assert_(fl.listHref(content_pattern="Log out"),
@@ -132,12 +131,16 @@ class BasePage:
             return None
         return self
 
-    def viewDocumentUid(self, uid, tab='', description=None):
+    def viewDocumentUid(self, uid, tab='', subtab='', description=None):
         fl = self.fl
         if not description:
-            description = "View document uid:" + uid + tab and ' ' + tab or ''
-        fl.get(fl.server_url + '/nxdoc/default/' + uid +
-               '/view_documents?tabId=' + tab + '=&conversationId=0NXMAIN1',
+            description = "View document uid:" + uid + ' ' + tab + subtab
+
+        url = '/nxdoc/default/' + uid + '/view_documents?tabId=' + tab
+        if subtab:
+            url += "&subTabId=" + subtab
+        url += '=&conversationId=0NXMAIN1'
+        fl.get(fl.server_url + url,
                description=description)
         return self
 
@@ -159,15 +162,15 @@ class BasePage:
                    lastname='', company='', groups=''):
         """This method does not raise exception if user already exists"""
         fl = self.fl
-        fl.assert_('j_id178' in fl.getBody())
+        fl.assert_('j_id191' in fl.getBody())
         fl.post(fl.server_url + "/view_users.faces", params=[
-            ['j_id178', 'j_id178'],
+            ['j_id191', 'j_id191'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['j_id178:j_id180', 'j_id178:j_id180']],
+            ['j_id191:j_id193', 'j_id191:j_id193']],
                 description="View create user form")
 
         fl.post(fl.server_url + '/create_user.faces', params=[
-            ['AJAXREQUEST', 'createUser:nxl_user:j_id254'],
+            ['AJAXREQUEST', 'createUser:nxl_user:j_id267'],
             ['createUser', 'createUser'],
             ['createUser:nxl_user:nxw_username', username],
             ['createUser:nxl_user:nxw_firstname', firstname],
@@ -181,7 +184,7 @@ class BasePage:
             ['createUser:nxl_user:nxw_groups_suggestionBox_selection', '0'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
             ['suggestionInputSelectorId', 'nxw_groups_suggest'],
-            ['createUser:nxl_user:nxw_groups_suggestionBox:j_id262', 'createUser:nxl_user:nxw_groups_suggestionBox:j_id262'],
+            ['createUser:nxl_user:nxw_groups_suggestionBox:j_id275', 'createUser:nxl_user:nxw_groups_suggestionBox:j_id275'],
             ['suggestionSelectionListId', 'nxw_groups_list']],
                   description="Create user select group")
 
@@ -197,7 +200,7 @@ class BasePage:
             ['createUser:nxl_user:nxw_passwordMatcher', 'needed'],
             ['createUser:nxl_user:nxw_groups_suggest', groups],
             ['createUser:nxl_user:nxw_groups_suggestionBox_selection', ''],
-            ['createUser:j_id296', 'Save'],
+            ['createUser:j_id309', 'Save'],
             ['javax.faces.ViewState', fl.getLastJsfState()]],
                 description="Submit user form")
         if not ('already exists' in fl.getBody()):
@@ -219,12 +222,25 @@ class BasePage:
     def dashboard(self):
         fl = self.fl
         fl.post(fl.server_url + "/view_documents.faces", params=[
+                        ['j_id16', 'j_id16'],
+            ['j_id16:j_id18', ''],
+            ['j_id16:j_id19', 'KEYWORDS'],
+            ['javax.faces.ViewState', fl.getLastJsfState()],
+            ['j_id16:j_id30:0:j_id32', 'j_id16:j_id30:0:j_id32']],
+                description="View dashboard")
+        fl.assert_('My workspaces' in fl.getBody(),
+                   'Not a dashboard page')
+        return self
+
+    def personalWorkspace(self):
+        fl = self.fl
+        fl.post(fl.server_url + "/view_documents.faces", params=[
             ['j_id16', 'j_id16'],
             ['j_id16:j_id18', ''],
             ['j_id16:j_id19', 'KEYWORDS'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['j_id16:j_id26:0:j_id28', 'j_id16:j_id26:0:j_id28']],
-                description="View dashboard")
+            ['j_id16:j_id30:1:j_id32', 'j_id16:j_id30:1:j_id32']],
+                description="View personal workspace")
         return self
 
     def search(self, query, description=None):
@@ -260,23 +276,23 @@ class BasePage:
         self.fl.assert_('document_edit' in self.fl.getBody())
         return ret
 
-    def metadata(self):
-        ret = self.viewDocumentUid(self.getDocUid(), tab='TAB_METADATA_EDIT',
-                                   description="View metadata tab")
-        self.fl.assert_('metadata_edit' in self.fl.getBody())
+    def files(self):
+        ret = self.viewDocumentUid(self.getDocUid(), tab='TAB_FILES_EDIT',
+                                   description="View files tab")
+        self.fl.assert_('Upload your file' in self.fl.getBody())
         return ret
 
-    def files(self):
-        return self.viewDocumentUid(self.getDocUid(), tab='TAB_FILES_EDIT',
-                                    description="View files tab")
-
     def publish(self):
-        return self.viewDocumentUid(self.getDocUid(), tab='TAB_PUBLISH',
-                                    description="View publish tab")
+        ret = self.viewDocumentUid(self.getDocUid(), tab='TAB_PUBLISH',
+                                   description="View publish tab")
+        self.fl.assert_('Sections' in self.fl.getBody())
+        return ret
 
     def relations(self):
-        return self.viewDocumentUid(self.getDocUid(), tab='TAB_RELATIONS',
-                                    description="View relations tab")
+        ret = self.viewDocumentUid(self.getDocUid(), tab='TAB_RELATIONS',
+                                   description="View relations tab")
+        self.fl.assert_('Add a new relation' in self.fl.getBody())
+        return ret
 
     def workflow(self):
         ret = self.viewDocumentUid(self.getDocUid(), tab='TAB_CONTENT_JBPM',
@@ -302,12 +318,22 @@ class BasePage:
     def comments(self):
         ret = self.viewDocumentUid(self.getDocUid(), tab='view_comments',
                                    description="View comments tab")
+        self.fl.assert_('Add a comment' in self.fl.getBody())
         return ret
 
     def history(self):
-        return self.viewDocumentUid(self.getDocUid(),
-                                    tab='TAB_CONTENT_HISTORY',
-                                    description="View history tab")
+        ret = self.viewDocumentUid(self.getDocUid(),
+                                   tab='TAB_CONTENT_HISTORY',
+                                   description="View history tab")
+        self.fl.assert_('Event log' in self.fl.getBody())
+        return ret
+
+    def manage(self):
+        ret = self.viewDocumentUid(self.getDocUid(),
+                                   tab='TAB_MANAGE',
+                                   description="View manage tab")
+        return ret
+
 
 
 class LoginPage(BasePage):
@@ -327,10 +353,10 @@ class FolderPage(BasePage):
         fl = self.fl
 
         fl.post(fl.server_url + "/view_documents.faces", params=[
-            ['j_id233', 'j_id233'],
+            ['j_id250', 'j_id250'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['j_id233:j_id234:j_id236:0:j_id237',
-             'j_id233:j_id234:j_id236:0:j_id237']],
+            ['j_id250:j_id251:j_id253:0:j_id254',
+             'j_id250:j_id251:j_id253:0:j_id254']],
             description="Create workspace form")
         fl.assert_('nxw_title' in fl.getBody(),
                    "Workspace creation form not found.")
@@ -339,30 +365,20 @@ class FolderPage(BasePage):
             ['document_create', 'document_create'],
             ['document_create:nxl_heading:nxw_title', title],
             ['document_create:nxl_heading:nxw_description', description],
-            ['document_create:nxl_file:nxw_file:nxw_file_file:choice', 'none'],
-            ['document_create:nxl_file:nxw_file:nxw_file_file:upload', Upload("")],
-            ['document_create:nxl_webcontainer:nxw_name', ''],
-            ['document_create:nxl_webcontainer:nxw_email', ''],
-            ['document_create:nxl_webcontainer:nxw_logo:choice', 'none'],
-            ['document_create:nxl_webcontainer:nxw_logo:upload', Upload("")],
-            ['document_create:nxl_webcontainer:nxw_welcomeText', ''],
-            ['document_create:nxl_webcontainer:nxw_welcomeMedia:choice', 'none'],
-            ['document_create:nxl_webcontainer:nxw_welcomeMedia:upload', Upload("")],
-            ['document_create:nxl_webcontainer:nxw_moderationType:nxw_moderationType_field0', 'aposteriori'],
-            ['document_create:j_id282', 'Create'],
+            ['document_create:j_id210', 'Create'],
             ['javax.faces.ViewState', fl.getLastJsfState()]],
-            description="Create workspace submit")
+                description="Create workspace submit")
         fl.assert_('Workspace saved' in fl.getBody())
         return self
 
     def createFolder(self, title, description):
         fl = self.fl
         fl.post(fl.server_url + "/view_documents.faces", params=[
-            ['j_id199', 'j_id199'],
-            ['j_id199:selectDocTypePanelOpenedState', ''],
+            ['j_id212', 'j_id212'],
+            ['j_id212:selectDocTypePanelOpenedState', ''],
             ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['j_id199:j_id204:3:j_id208:1:j_id212',
-             'j_id199:j_id204:3:j_id208:1:j_id212']],
+            ['j_id212:j_id218:0:j_id222:1:j_id224:2:j_id228',
+             'j_id212:j_id218:0:j_id222:1:j_id224:2:j_id228']],
             description="Create folder: New Folder")
         fl.assert_('document_create' in fl.getBody(),
                    "Folder form not found")
@@ -380,11 +396,10 @@ class FolderPage(BasePage):
     def createFile(self, title, description, file_path=None):
         fl = self.fl
         fl.post(fl.server_url + "/view_documents.faces", params=[
-            ['j_id199', 'j_id199'],
-            ['j_id199:selectDocTypePanelOpenedState', ''],
+            ['j_id212', 'j_id212'],
+            ['j_id212:selectDocTypePanelOpenedState', ''],
             ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['j_id199:j_id204:0:j_id208:1:j_id212',
-             'j_id199:j_id204:0:j_id208:1:j_id212']],
+            ['j_id212:j_id218:1:j_id222:0:j_id224:0:j_id226', 'j_id212:j_id218:1:j_id222:0:j_id224:0:j_id226']],
             description="Create file: New document")
         fl.assert_('document_create' in fl.getBody(),
                    "File form not found")
@@ -431,8 +446,8 @@ class FolderPage(BasePage):
         self.selectItem(title)
         fl.post(fl.server_url + "/view_documents.faces", params=[
             ['CHILDREN_DOCUMENT_LIST', 'CHILDREN_DOCUMENT_LIST'],
-            ['CHILDREN_DOCUMENT_LIST:dataTable:0:j_id271', 'on'],
-            ['CHILDREN_DOCUMENT_LIST:j_id353:1:j_id355', 'Delete'],
+            ['CHILDREN_DOCUMENT_LIST:dataTable:0:j_id288', 'on'],
+            ['CHILDREN_DOCUMENT_LIST:j_id376:1:j_id378', 'Delete'],
             ['javax.faces.ViewState', state]],
             description='Delete document "%s"' % title)
         fl.assert_('Document(s) deleted' in fl.getBody())
@@ -445,7 +460,7 @@ class FolderPage(BasePage):
 
     def rights(self):
         """Go to rights tab."""
-        self.viewDocumentUid(self.getDocUid(), "TAB_RIGHTS")
+        self.viewDocumentUid(self.getDocUid(), "TAB_MANAGE", "TAB_RIGHTS")
         self.fl.assert_('Local rights' in self.fl.getBody())
         return self
 
@@ -457,23 +472,21 @@ class FolderPage(BasePage):
         server_url = fl.server_url
         params = [
             ['AJAXREQUEST',
-             'add_rights_form:nxl_user_group_suggestion:j_id265'],
+             'add_rights_form:nxl_user_group_suggestion:j_id283'],
             ['add_rights_form', 'add_rights_form'],
-            ['add_rights_form:nxl_user_group_suggestion:nxw_selection_suggest',
-             user[:3]],
-            ['add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox_selection', ''],
-            ['add_rights_form:j_id310', 'Grant'],
-            ['add_rights_form:j_id315', 'Read'],
+            ['add_rights_form:nxl_user_group_suggestion:nxw_selection_suggest', user],
+            ['add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox_selection', '0'],
+            ['add_rights_form:j_id328', 'Grant'],
+            ['add_rights_form:j_id333', 'Read'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['userSuggestionSearchType', ''],
-            ['add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox', 'add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox'],
-            ['ajaxSingle', 'add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox'],
-            ['userSuggestionMaxSearchResults', '20'],
-            ['inputvalue', user[:3]]]
+            ['suggestionInputSelectorId', 'nxw_selection_suggest'],
+            ['add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox:j_id291', 'add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox:j_id291'],
+            ['suggestionSelectionListId', 'nxw_selection_list']]
         fl.post(server_url + "/view_documents.faces", params,
                   description="Grant perm search user.")
         fl.assert_(user in fl.getBody(), "User not found")
 
+        state = fl.getLastJsfState()
         params = [
             ['AJAXREQUEST',
              'add_rights_form:nxl_user_group_suggestion:j_id265'],
@@ -483,7 +496,7 @@ class FolderPage(BasePage):
             ['add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox_selection', '0'],
             ['add_rights_form:j_id310', 'Grant'],
             ['add_rights_form:j_id315', 'Read'],
-            ['javax.faces.ViewState', fl.getLastJsfState()],
+            ['javax.faces.ViewState', state],
             ['add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox:j_id273', 'add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox:j_id273'],
             ['suggestionInputSelectorId', 'nxw_selection_suggest'],
             ['suggestionSelectionListId', 'nxw_selection_list']]
@@ -494,18 +507,18 @@ class FolderPage(BasePage):
             ['add_rights_form', 'add_rights_form'],
             ['add_rights_form:nxl_user_group_suggestion:nxw_selection_suggest', ''],
             ['add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox_selection', ''],
-            ['add_rights_form:j_id310', 'Grant'],
-            ['add_rights_form:j_id315', permission],
-            ['add_rights_form:j_id318', 'Add permission'],
-            ['javax.faces.ViewState', fl.getLastJsfState()]]
+            ['add_rights_form:j_id328', 'Grant'],
+            ['add_rights_form:j_id333', permission],
+            ['add_rights_form:j_id336', 'Add permission'],
+            ['javax.faces.ViewState', state]]
         fl.post(server_url + "/view_documents.faces", params,
                   description="Grant perm %s to %s" % (permission, user))
         fl.assert_('Save local rights' in fl.getBody())
 
         params = [
-            ['javax.faces.ViewState', fl.getLastJsfState()],
             ['validate_rights', 'validate_rights'],
-            ['validate_rights:j_id249', 'Save local rights']]
+            ['validate_rights:j_id267', 'Save local rights'],
+            ['javax.faces.ViewState', fl.getLastJsfState()]]
         fl.post(server_url + "/view_documents.faces", params,
                   description="Grant perm apply")
         fl.assert_('Rights updated' in fl.getBody())
@@ -516,17 +529,17 @@ class FolderPage(BasePage):
         server_url = fl.server_url
         fl.assert_('CHILDREN_DOCUMENT_LIST' in fl.getBody(),
                    'Not a folder listing page.')
-        options = {'date': [['CHILDREN_DOCUMENT_LIST:dataTable:j_id261',
-                             'CHILDREN_DOCUMENT_LIST:dataTable:j_id261'],
+        options = {'date': [['CHILDREN_DOCUMENT_LIST:dataTable:j_id329',
+                             'CHILDREN_DOCUMENT_LIST:dataTable:j_id329'],
                             ['sortColumn', 'dc:modified']],
-                   'author': [['CHILDREN_DOCUMENT_LIST:dataTable:j_id273',
-                               'CHILDREN_DOCUMENT_LIST:dataTable:j_id273'],
+                   'author': [['CHILDREN_DOCUMENT_LIST:dataTable:j_id341',
+                               'CHILDREN_DOCUMENT_LIST:dataTable:j_id341'],
                               ['sortColumn', 'dc:creator']],
-                   'lifecycle':[['CHILDREN_DOCUMENT_LIST:dataTable:j_id285',
-                                 'CHILDREN_DOCUMENT_LIST:dataTable:j_id285'],
+                   'lifecycle':[['CHILDREN_DOCUMENT_LIST:dataTable:j_id353',
+                                 'CHILDREN_DOCUMENT_LIST:dataTable:j_id353'],
                                 ['sortColumn', 'ecm:currentLifeCycleState']],
-                   'title': [['CHILDREN_DOCUMENT_LIST:dataTable:j_id241',
-                              'CHILDREN_DOCUMENT_LIST:dataTable:j_id241'],
+                   'title': [['CHILDREN_DOCUMENT_LIST:dataTable:j_id300',
+                              'CHILDREN_DOCUMENT_LIST:dataTable:j_id300'],
                              ['sortColumn', 'dc:title']]
                    }
         fl.assert_(column in options.keys(), 'Invalid sort column')
