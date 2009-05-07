@@ -107,11 +107,11 @@
       </subtypes>
       <layouts mode="any">
         <layout>heading</layout>
-        <layout>file</layout>
+        <!--<layout>file</layout>-->
       </layouts>
       <layouts mode="edit">
         <layout>heading</layout>
-        <layout>file</layout>
+        <!--<layout>file</layout>-->
         <layout>dublincore</layout>
       </layouts>
     </type>
