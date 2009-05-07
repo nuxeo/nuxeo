@@ -46,6 +46,8 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
 
     private static final String TITLE_PROPERTY = "title";
 
+    private static final String FILENAME_PROPERTY = "filename";
+
     public Boolean createPicture(Blob fileContent, String filename, String title,
             ArrayList<Map<String, Object>> pictureTemplates)
             throws IOException, ClientException {
@@ -100,8 +102,9 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
         Collection<Property> views = doc.getProperty(VIEWS_PROPERTY).getChildren();
         for (Property property : views) {
             if (property.getValue(TITLE_PROPERTY).equals(title)) {
-                return (Blob) property.getValue(
-                        "content");
+                Blob blob = (Blob) property.getValue("content");
+                blob.setFilename((String)property.getValue(FILENAME_PROPERTY));
+                return blob;
             }
         }
         return null;
