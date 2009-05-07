@@ -342,6 +342,8 @@ public class DocumentActionsBean extends InputController implements
             changeableDocument = documentManager.saveDocument(changeableDocument);
             throwUpdateComments(changeableDocument);
             documentManager.save();
+            // some changes (versioning) happened server-side, fetch new one
+            navigationContext.invalidateCurrentDocument();
             facesMessages.add(FacesMessage.SEVERITY_INFO,
                     resourcesAccessor.getMessages().get("document_modified"),
                     resourcesAccessor.getMessages().get(
