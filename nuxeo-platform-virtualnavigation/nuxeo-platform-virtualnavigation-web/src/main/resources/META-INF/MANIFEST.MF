@@ -10,7 +10,7 @@ Require-Bundle: org.nuxeo.runtime,
  org.nuxeo.ecm.webapp.core,
  org.nuxeo.ecm.webapp.ui,
  org.nuxeo.ecm.default.config
-Bundle-Category: web, stateless
+Bundle-Category: web,stateless
 Nuxeo-RequiredBy: org.nuxeo.ecm.war
 Nuxeo-Component: OSGI-INF/theme-contrib.xml,
   OSGI-INF/directorytreemanager-contrib.xml,
