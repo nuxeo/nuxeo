@@ -11,7 +11,7 @@
   <packaging>rar</packaging>
   <name>Nuxeo Core SQL Storage Resource Adapter</name>
   <description>Nuxeo Core: SQL Storage Resource Adapter.</description>
-  <version>1.4.3.1-SNAPSHOT</version>
+  <version>1.4.3.1-20090507</version>
 
   <!--repositories>
     <repository>

@@ -10,7 +10,7 @@
   <artifactId>nuxeo-core-query</artifactId>
   <name>Nuxeo Core Query</name>
   <description>Nuxeo Core: Query.</description>
-  <version>1.4.3.1-SNAPSHOT</version>
+  <version>1.4.3.1-20090507</version>
 
   <dependencies>
     <dependency>

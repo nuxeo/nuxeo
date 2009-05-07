@@ -10,7 +10,7 @@
   <artifactId>nuxeo-core-query-test</artifactId>
   <name>Nuxeo Core Query Tests</name>
   <description>Nuxeo Core: Query Tests.</description>
-  <version>1.4.3.1-SNAPSHOT</version>
+  <version>1.4.3.1-20090507</version>
 
   <dependencies>
     <dependency>
