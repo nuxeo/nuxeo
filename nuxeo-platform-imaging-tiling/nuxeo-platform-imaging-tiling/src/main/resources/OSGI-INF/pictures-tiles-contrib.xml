@@ -40,7 +40,7 @@
   <extension target="org.nuxeo.ecm.platform.pictures.tiles.service.PictureTilingComponent"
     point="blobProperties">
     <blobProperties>
-      <blobProperty docType="Picture" >picture:views/item[0]/content</blobProperty>
+      <blobProperty docType="Picture" >picture:views/item[1]/content</blobProperty>
     </blobProperties>
   </extension>
 
