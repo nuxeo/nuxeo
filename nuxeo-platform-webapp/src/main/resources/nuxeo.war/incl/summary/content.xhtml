@@ -7,15 +7,15 @@
   xmlns:nxh="http://nuxeo.org/nxweb/html"
   xmlns:nxl="http://nuxeo.org/nxforms/layout">
 
-  <c:if test="#{!empty currentDocumentAsBlobHolder || (currentDocument.hasSchema('files') and (!empty currentDocument.files.files))}">
+  <c:if test="#{!empty currentDocumentAsBlobHolder.blob || (currentDocument.hasSchema('files') and (!empty currentDocument.files.files))}">
     <h3 class="summaryTitle">
       <h:outputText value="#{messages['action.view.content']}" />
     </h3>
   </c:if>
 
-  <h:panelGrid columns="2">
+  <h:panelGrid>
 
-    <h:panelGroup rendered="#{!empty currentDocumentAsBlobHolder}">
+    <h:panelGroup rendered="#{!empty currentDocumentAsBlobHolder.blob}">
       <h:outputText class="boldLabel" value="#{messages['label.summary.download.file']}" />
       <br/>
       <nxh:outputLink class="boldLabel"
