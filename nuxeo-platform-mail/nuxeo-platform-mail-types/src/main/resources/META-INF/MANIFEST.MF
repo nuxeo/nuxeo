@@ -5,6 +5,7 @@ Bundle-SymbolicName: org.nuxeo.ecm.platform.mail.types;singleton:=true
 Bundle-Vendor: Nuxeo
 Require-Bundle: org.nuxeo.ecm.core.api,
  org.nuxeo.ecm.core
+Bundle-Category: core
 Eclipse-LazyStart: false
 Nuxeo-Component: OSGI-INF/nxmail-core-types-contrib.xml,
  OSGI-INF/nxmail-lifecycle-contrib.xml
