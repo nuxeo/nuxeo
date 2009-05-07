@@ -42,7 +42,6 @@ import org.nuxeo.ecm.platform.comment.service.CommentServiceHelper;
 @Stateless
 @Remote(CommentManager.class)
 @Local(CommentManagerLocal.class)
-// XXX AT: this bean is never called...
 public class CommentManagerBean implements CommentManager {
 
     @Resource

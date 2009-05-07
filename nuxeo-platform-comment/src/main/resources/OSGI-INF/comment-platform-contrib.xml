@@ -10,6 +10,10 @@
     <service class="org.nuxeo.ecm.platform.comment.api.CommentManager" group="platform/comments">
       <locator>%CommentManagerBean</locator>
     </service>
+
+    <service class="org.nuxeo.ecm.platform.comment.workflow.services.CommentsModerationService" group="platform/comments">
+      <locator>%CommentsModerationBean</locator>
+    </service>
   </extension>
 
 </component>
