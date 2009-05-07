@@ -6,8 +6,8 @@ Bundle-Version: 1.0.0
 Bundle-Vendor: Nuxeo
 Bundle-Localization: bundle
 Eclipse-LazyStart: true
-Nuxeo-Component: OSGI-INF/command-line-service.xml,
- OSGI-INF/commands.xml
+Nuxeo-Component: OSGI-INF/shell-commandline-service.xml,
+ OSGI-INF/shell-commands-contrib.xml
 Require-Bundle: org.nuxeo.ecm.core.api,
  org.nuxeo.ecm.core.schema,
  org.nuxeo.ecm.core.query,

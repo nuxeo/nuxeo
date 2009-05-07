@@ -213,15 +213,6 @@
       <help>TODO</help>
     </command>
 
-    <command name="auditsync" class="org.nuxeo.ecm.shell.commands.repository.AuditSync">
-      <description>Sync audit logs with repository</description>
-      <params>
-        <param index="0" type="doc" />
-      </params>
-      <help>Re create audit creation logs for all document in a given path
-        (usefull after a mass import with desactivated JMS)</help>
-    </command>
-
     <!--
       <command name="indexOverload"
       class="org.nuxeo.ecm.shell.commands.repository.IndexOverloadCommand">
