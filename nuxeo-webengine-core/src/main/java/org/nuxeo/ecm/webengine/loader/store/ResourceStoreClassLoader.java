@@ -43,7 +43,7 @@ public class ResourceStoreClassLoader extends ClassLoader {
     public ResourceStore[] getStores() {
         return stores;
     }
-    
+
     protected Class<?> fastFindClass(final String name) {
         if (stores != null) {
             for (final ResourceStore store : stores) {
@@ -59,7 +59,7 @@ public class ResourceStoreClassLoader extends ClassLoader {
         }
         return null;
     }
-    
+
     /**
      * Without this method getPackage() returns null
      * @param name
@@ -174,15 +174,12 @@ public class ResourceStoreClassLoader extends ClassLoader {
         return url;
     }
 
-    //TODO implement this method if you want packages to be supported by this loader 
+    //TODO implement this method if you want packages to be supported by this loader
     @Override
     protected Package getPackage(String name) {
         return super.getPackage(name);
     }
-    
-    /* (non-Javadoc)
-     * @see java.lang.ClassLoader#getPackages()
-     */
+
     @Override
     protected Package[] getPackages() {
         return super.getPackages();

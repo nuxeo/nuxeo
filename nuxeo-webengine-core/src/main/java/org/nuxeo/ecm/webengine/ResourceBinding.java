@@ -52,9 +52,9 @@ public class ResourceBinding {
      */
     @XNode("@class")
     public String className;
-    
+
     public Class<?> clazz;
-    
+
     /**
      * Must be called before using this binding
      * @param engine
@@ -75,7 +75,7 @@ public class ResourceBinding {
             }
         }
     }
-    
+
     public void reload(WebEngine engine) throws ClassNotFoundException {
         clazz = null;
         resolve(engine);
@@ -144,5 +144,5 @@ public class ResourceBinding {
     public String toString() {
         return path+" -> "+clazz;
     }
-    
+
 }

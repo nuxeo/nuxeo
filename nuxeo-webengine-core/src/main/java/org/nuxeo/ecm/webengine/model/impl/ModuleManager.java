@@ -183,18 +183,18 @@ public class ModuleManager {
             throw WebException.wrap("Faile to load module configuration: " + file, e);
         }
     }
-    
+
     public void loadModuleRootResources(ModuleConfiguration mc) {
         if (mc.resources != null) {
             for (ResourceBinding rb : mc.resources) {
                 try {
-                    rb.resolve(engine);                    
+                    rb.resolve(engine);
                     engine.addResourceBinding(rb);
                 } catch (Exception e) {
                     throw WebException.wrap("Faile to load module root resource: " + rb, e);
                 }
             }
-        }    
+        }
     }
 
     protected Context createXMapContext() {

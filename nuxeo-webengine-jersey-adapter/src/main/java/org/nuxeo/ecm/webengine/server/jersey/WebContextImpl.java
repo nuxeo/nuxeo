@@ -45,11 +45,10 @@ public class WebContextImpl extends AbstractWebContext {
     protected UriInfo uri;
 
     public WebContextImpl(WebApplication app, ContainerRequest creq, HttpServletRequest request) {
-        super (request);
+        super(request);
         this.ctx = (WebApplicationContext)app.getThreadLocalHttpContext();
         this.req = creq;
     }
-
 
     public UriInfo getUriInfo() {
         if (uri == null) {

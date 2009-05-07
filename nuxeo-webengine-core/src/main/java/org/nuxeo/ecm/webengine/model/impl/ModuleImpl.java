@@ -295,20 +295,20 @@ public class ModuleImpl implements Module {
             typeReg = null; // type registry will be recreated on first access
         }
     }
-    
+
     public void flushRootResourcesCache() {
         if (configuration.resources != null) { //reregister resources
             for (ResourceBinding rb : configuration.resources) {
                 try {
                     System.out.println("Reloading JAX-RS resource: "+rb);
                     engine.removeResourceBinding(rb);
-                    rb.reload(engine);                    
+                    rb.reload(engine);
                     engine.addResourceBinding(rb);
                 } catch (Exception e) {
                     log.error("Failed to reload resource", e);
                 }
             }
-        }        
+        }
     }
 
     public void flushCache() {

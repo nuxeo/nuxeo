@@ -31,7 +31,7 @@ import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 
 /**
  * A view to be used by regular JAX-RS resources to be able to use freemarker templates.
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
@@ -41,27 +41,27 @@ public class TemplateView {
     protected WebContext ctx;
     protected Object target;
     protected Map<String,Object> bindings;
-     
+
     public TemplateView(Object owner, String name) {
         this (WebEngine.getActiveContext(), owner, name);
     }
-    
+
     public TemplateView(WebContext ctx, Object owner, String name) {
         if (ctx == null) {
             throw new WebException("Not in WebEngine context");
         }
         this.ctx = ctx;
-        url = owner.getClass().getResource(name);       
+        url = owner.getClass().getResource(name);
         if (url == null) {
             throw new WebResourceNotFoundException("View not found: "+name+" for object "+owner);
-        }        
+        }
         this.target = owner;
         bindings = new HashMap<String, Object>();
         bindings.put("This", target);
         bindings.put("Context", ctx);
-        bindings.put("Engine", ctx.getEngine());        
+        bindings.put("Engine", ctx.getEngine());
     }
-    
+
     public TemplateView arg(String key, Object value) {
         bindings.put(key, value);
         return this;
@@ -77,7 +77,7 @@ public class TemplateView {
             ctx.getEngine().getRendering().render(url.toExternalForm(), bindings, writer);
         } catch (Exception e) {
             throw WebException.wrap(e);
-        }        
+        }
     }
 
     public void render(OutputStream out) {
@@ -89,7 +89,7 @@ public class TemplateView {
         }
     }
 
-    
+
     public String getString() {
         StringWriter writer = new StringWriter();
         render(writer);

@@ -86,14 +86,14 @@ public abstract class ModuleTracker implements Runnable {
             }
         }
     }
-    
+
     public static void flushRootResourcesCache(ModuleImpl module) {
         ModuleConfiguration[] modules = module.getEngine().getModuleManager().getModules();
         for (ModuleConfiguration mc : modules) {
             if (mc.isLoaded() && mc.resources != null) {
                 ((ModuleImpl)mc.get()).flushRootResourcesCache();
             }
-        }        
+        }
     }
 
     /**

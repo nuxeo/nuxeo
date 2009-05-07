@@ -34,12 +34,8 @@ import com.sun.jersey.api.core.DefaultResourceConfig;
  */
 public class WebEngineResourceConfig extends DefaultResourceConfig {
 
-
-    /**
-     *
-     */
     public WebEngineResourceConfig() {
-        super ();
+        super();
     }
 
     @Override
@@ -55,7 +51,5 @@ public class WebEngineResourceConfig extends DefaultResourceConfig {
         }
         return result;
     }
-
-
 
 }
