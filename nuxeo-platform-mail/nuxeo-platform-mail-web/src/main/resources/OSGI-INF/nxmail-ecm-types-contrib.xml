@@ -13,6 +13,15 @@
         <layout>mailMessage</layout>
         <layout>noLabelFiles</layout>
       </layouts>
+      <layouts mode="edit">
+        <layout>mailMessage</layout>
+        <layout>noLabelFiles</layout>
+        <layout>dublincore</layout>
+      </layouts>
+      <!-- files content already on summary page -->
+      <layouts mode="view">
+        <layout>mailMessage</layout>
+      </layouts>
     </type>
 
     <type id="MailFolder" coretype="MailFolder">
@@ -35,7 +44,7 @@
         <type>MailFolder</type>
       </subtypes>
     </type>
-    
+
   </extension>
 
 </component>
