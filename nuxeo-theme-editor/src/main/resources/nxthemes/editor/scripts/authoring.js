@@ -556,8 +556,6 @@ NXThemesEditor.duplicateElement = function(info) {
          },
          onSuccess: function(r) {
         	 NXThemesEditor.highlightSaveButton();
-             NXThemes.getViewById("style css").hide();
-             NXThemes.getViewById("style css").show();
              NXThemesEditor.refreshCanvas();
          },
          onFailure: function(r) {
@@ -577,8 +575,6 @@ NXThemesEditor.pasteElement = function(info) {
          },
          onSuccess: function(r) {
         	 NXThemesEditor.highlightSaveButton();
-             NXThemes.getViewById("style css").hide();
-             NXThemes.getViewById("style css").show();
              NXThemesEditor.refreshCanvas();
              NXThemesEditor.writeMessage("Element pasted.");
          },
@@ -876,8 +872,6 @@ NXThemesEditor.updateAreaStyle = function(value) {
          }, 
          onSuccess: function(r) {
         	 NXThemesEditor.highlightSaveButton();
-             NXThemes.getViewById("style css").hide();
-             NXThemes.getViewById("style css").show();
              NXThemesEditor.refreshCanvas();
          },
          onFailure: function(r) {
@@ -1049,31 +1043,6 @@ NXThemesEditor.refreshCanvas = function() {
     NXThemes.getViewById("canvas area").refresh();
 };
 
-
-NXThemesEditor.StyleCss = Class.create();
-NXThemesEditor.StyleCss.prototype = Object.extend(new NXThemes.View(), {
-
-  show: function() {
-    NXThemes.Canvas.addStyleSheet('nxthemes-css', '/nuxeo/nxthemes-css/?timestamp=' + new Date().getTime());
-  },
-
-  hide: function() {
-    NXThemes.Canvas.removeStyleSheet('nxthemes-css');
-  }
-
-});
-
-// widgets
-NXThemes.registerWidgets({
-
-  stylecss: function(def) {
-    var widget = NXThemes.Canvas.createNode({
-      tag: 'div'
-    });
-    return new NXThemesEditor.StyleCss(widget, def);
-  }
-
-});
 
 // Initialization
 

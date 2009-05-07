@@ -141,12 +141,6 @@
       </path>
     </resource>
 
-    <resource name="style-css.json">
-      <path>
-        nxthemes/editor/views/style-css.json
-      </path>
-    </resource>
-
     <resource name="canvas-mode-selector.json">
       <path>
         nxthemes/editor/controllers/canvas-mode-selector.json
