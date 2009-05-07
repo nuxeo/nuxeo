@@ -123,10 +123,10 @@ public abstract class UnrestrictedSessionRunner {
                 }
             } finally {
                 try {
-                	// loginContext may be null in tests
-                	if (loginContext!=null) {
-                		loginContext.logout();
-                	}
+                    // loginContext may be null in tests
+                    if (loginContext!=null) {
+                        loginContext.logout();
+                    }
                 } catch (LoginException e) {
                     throw new ClientException(e);
                 }

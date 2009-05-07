@@ -91,9 +91,9 @@ public class EventListenerDescriptor {
     protected PostCommitEventListener postCommitEventListener = null;
 
     public int getPriority() {
-    	if (priority==null) {
-    		return 0;
-    	}
+        if (priority==null) {
+            return 0;
+        }
         return priority;
     }
 
@@ -124,26 +124,26 @@ public class EventListenerDescriptor {
 
     public void initListener() throws Exception {
 
-    	if (clazz != null) {
+        if (clazz != null) {
             if (EventListener.class.isAssignableFrom(clazz)) {
-            	inLineListener = (EventListener) clazz.newInstance();
-               	isPostCommit=false;
+                inLineListener = (EventListener) clazz.newInstance();
+                   isPostCommit=false;
             }
             else if (PostCommitEventListener.class.isAssignableFrom(clazz)) {
-            	postCommitEventListener =  (PostCommitEventListener) clazz.newInstance();
-            	isPostCommit=true;
+                postCommitEventListener =  (PostCommitEventListener) clazz.newInstance();
+                isPostCommit=true;
             }
-    	}
-    	else if (script != null) {
-    		if (isPostCommit) {
-    	        postCommitEventListener =  new ScriptingPostCommitEventListener(getScript());
-    		}
-    		else {
-    			inLineListener =  new ScriptingEventListener(getScript());
-    		}
-    	} else {
-    		throw new IllegalArgumentException("Listener extension must define either a class or a script");
-    	}
+        }
+        else if (script != null) {
+            if (isPostCommit) {
+                postCommitEventListener =  new ScriptingPostCommitEventListener(getScript());
+            }
+            else {
+                inLineListener =  new ScriptingEventListener(getScript());
+            }
+        } else {
+            throw new IllegalArgumentException("Listener extension must define either a class or a script");
+        }
     }
 
     public EventListener asEventListener(){
@@ -151,7 +151,7 @@ public class EventListenerDescriptor {
     }
 
     public PostCommitEventListener asPostCommitListener() {
-   		return postCommitEventListener;
+           return postCommitEventListener;
     }
 
     public Script getScript() throws Exception {
@@ -189,32 +189,32 @@ public class EventListenerDescriptor {
 
     public void merge(EventListenerDescriptor other) {
 
-    	this.isEnabled=other.isEnabled;
+        this.isEnabled=other.isEnabled;
 
-    	if (other.clazz!=null) {
-    		this.clazz=other.clazz;
-    		this.rc=other.rc;
-    	}else if (other.script!=null) {
-    		this.script=other.script;
-    		this.clazz=null;
-    		this.rc=other.rc;
-    	}
+        if (other.clazz!=null) {
+            this.clazz=other.clazz;
+            this.rc=other.rc;
+        }else if (other.script!=null) {
+            this.script=other.script;
+            this.clazz=null;
+            this.rc=other.rc;
+        }
 
-    	if (other.isAsync!=null) {
-    		this.isAsync=other.isAsync;
-    	}
+        if (other.isAsync!=null) {
+            this.isAsync=other.isAsync;
+        }
 
-    	if (other.events!=null) {
-    		this.events=other.events;
-    	}
+        if (other.events!=null) {
+            this.events=other.events;
+        }
 
-    	if (other.transactionTimeOut!=null) {
-    		this.transactionTimeOut=other.transactionTimeOut;
-    	}
+        if (other.transactionTimeOut!=null) {
+            this.transactionTimeOut=other.transactionTimeOut;
+        }
 
-    	if (other.priority!=null) {
-    		other.priority=this.priority;
-    	}
+        if (other.priority!=null) {
+            other.priority=this.priority;
+        }
 
     }
 
@@ -222,9 +222,9 @@ public class EventListenerDescriptor {
         return events == null || events.contains(eventName);
     }
 
-	public void setIsAsync(Boolean isAsync) {
-		this.isAsync = isAsync;
-	}
+    public void setIsAsync(Boolean isAsync) {
+        this.isAsync = isAsync;
+    }
 
 
 

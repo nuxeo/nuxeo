@@ -26,7 +26,7 @@ public interface RepositoryStatusMBean {
      * Lists the opened sessions.
      */
     String listActiveSessions();
-    
+
     /**
      * Return the opened sessions count
      * @return

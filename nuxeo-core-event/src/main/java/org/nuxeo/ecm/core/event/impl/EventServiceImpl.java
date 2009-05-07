@@ -82,7 +82,7 @@ public class EventServiceImpl implements EventService {
 
     public void addEventListener(EventListenerDescriptor listener) {
         try {
-        	listenerDescriptors.add(listener);
+            listenerDescriptors.add(listener);
 
         } catch (Exception e) {
             log.error("Failed to register event listener", e);
@@ -91,7 +91,7 @@ public class EventServiceImpl implements EventService {
 
     public void removeEventListener(EventListenerDescriptor listener) {
         try {
-        	listenerDescriptors.removeDescriptor(listener);
+            listenerDescriptors.removeDescriptor(listener);
         } catch (Exception e) {
             log.error("Failed to register event listener", e);
         }
@@ -120,7 +120,7 @@ public class EventServiceImpl implements EventService {
         for (EventListenerDescriptor desc : listenerDescriptors.getInlineListenersDescriptors()) {
             if (desc.acceptEvent(ename)) {
                 try {
-                	desc.asEventListener().handleEvent(event);
+                    desc.asEventListener().handleEvent(event);
                 } catch (Throwable t) {
                     log.error("Error during sync listener execution", t);
                 } finally {
@@ -169,17 +169,17 @@ public class EventServiceImpl implements EventService {
     @SuppressWarnings("unchecked")
     public void fireEventBundleSync(EventBundle event) throws ClientException {
 
-    	for (EventListenerDescriptor desc : listenerDescriptors.getSyncPostCommitListenersDescriptors()) {
-    		desc.asPostCommitListener().handleEvent(event);
-    	}
-    	for (EventListenerDescriptor desc : listenerDescriptors.getAsyncPostCommitListenersDescriptors()) {
-    		desc.asPostCommitListener().handleEvent(event);
-    	}
+        for (EventListenerDescriptor desc : listenerDescriptors.getSyncPostCommitListenersDescriptors()) {
+            desc.asPostCommitListener().handleEvent(event);
+        }
+        for (EventListenerDescriptor desc : listenerDescriptors.getAsyncPostCommitListenersDescriptors()) {
+            desc.asPostCommitListener().handleEvent(event);
+        }
     }
 
     @SuppressWarnings("unchecked")
     public List<EventListener> getEventListeners() {
-    	 return listenerDescriptors.getInLineListeners();
+         return listenerDescriptors.getInLineListeners();
     }
 
     @SuppressWarnings("unchecked")
@@ -214,7 +214,7 @@ public class EventServiceImpl implements EventService {
 
 
     public EventListenerList getEventListenerList() {
-    	return listenerDescriptors;
+        return listenerDescriptors;
     }
 
 }

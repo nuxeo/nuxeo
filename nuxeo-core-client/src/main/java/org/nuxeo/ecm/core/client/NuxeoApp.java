@@ -71,16 +71,16 @@ public class NuxeoApp {
     public ClassLoader getLoader() {
         return loader;
     }
-    
+
     public Environment getEnvironment() {
         return this.env;
     }
 
-    public void deployBundles(String bundlePath) throws BundleException, IOException {        
+    public void deployBundles(String bundlePath) throws BundleException, IOException {
         deployBundles(NuxeoApp.getBundleFiles(new File("."), bundlePath, ":"));
     }
 
-    public void deployBundles(File baseDir, String bundlePath) throws BundleException, IOException {        
+    public void deployBundles(File baseDir, String bundlePath) throws BundleException, IOException {
         deployBundles(NuxeoApp.getBundleFiles(baseDir, bundlePath, ":"));
     }
 
@@ -98,8 +98,8 @@ public class NuxeoApp {
             throw new IllegalStateException("Framework not started");
         }
         BundleFile bf = file.isDirectory() ? new DirectoryBundleFile(file) : new JarBundleFile(file);
-        BundleImpl bundle = null;        
-        try { 
+        BundleImpl bundle = null;
+        try {
             bundle = new BundleImpl(osgi, bf, loader);
             if (bundle.getSymbolicName() != null) {
                 osgi.install(bundle);
@@ -146,7 +146,7 @@ public class NuxeoApp {
         }
         return result;
     }
-    
+
     public static File makeFile(File baseDir, String path) {
         if (path.startsWith("/")) {
             return new File(path);

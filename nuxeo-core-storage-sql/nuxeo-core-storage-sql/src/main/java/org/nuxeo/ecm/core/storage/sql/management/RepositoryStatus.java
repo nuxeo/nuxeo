@@ -38,7 +38,7 @@ import org.nuxeo.ecm.core.storage.sql.RepositoryManagement;
 public class RepositoryStatus implements RepositoryStatusMBean {
 
     private static final Log log = LogFactory.getLog(RepositoryStatus.class);
-    
+
     protected List<RepositoryManagement> getRepositories()
             throws NamingException {
         LinkedList<RepositoryManagement> list = new LinkedList<RepositoryManagement>();
@@ -99,7 +99,7 @@ public class RepositoryStatus implements RepositoryStatusMBean {
         }
         return count;
     }
-    
+
     public String clearCaches() {
         List<RepositoryManagement> repositories;
         try {
