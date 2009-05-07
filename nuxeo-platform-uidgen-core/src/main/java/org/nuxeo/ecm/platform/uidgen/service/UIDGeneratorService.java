@@ -170,11 +170,11 @@ public class UIDGeneratorService extends DefaultComponent {
         for (String docType : docTypes) {
             final UIDGenerator previous = generators.put(docType, generator);
             if (previous != null) {
-                log.warn("Replaced already registered generator '"
-                        + previous.getClass() + "' for docType: '" + docType);
+                log.info("Overwriting generator: " + previous.getClass()
+                        + " for docType: " + docType);
             }
-            log.warn("Generator '" + generator.getClass()
-                    + "' registered for docType: '" + docType);
+            log.info("Registered generator: " + generator.getClass()
+                    + " for docType: " + docType);
         }
     }
 
