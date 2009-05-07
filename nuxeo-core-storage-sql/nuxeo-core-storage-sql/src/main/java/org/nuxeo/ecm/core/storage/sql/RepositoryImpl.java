@@ -70,6 +70,9 @@ public class RepositoryImpl implements Repository {
 
     private Mapper clusterMapper; // used synchronized
 
+    // modified only under clusterMapper synchronization
+    private long clusterLastInvalidationTimeMillis;
+
     public RepositoryImpl(RepositoryDescriptor repositoryDescriptor,
             SchemaManager schemaManager) throws StorageException {
         this.repositoryDescriptor = repositoryDescriptor;
@@ -135,6 +138,7 @@ public class RepositoryImpl implements Repository {
                 // use the mapper that created the database as cluster mapper
                 clusterMapper = mapper;
                 clusterMapper.createClusterNode();
+                processClusterInvalidationsNext();
                 mapper = new Mapper(model, sqlInfo, xadatasource);
             }
             initialized = true;
@@ -212,6 +216,11 @@ public class RepositoryImpl implements Repository {
             n += session.clearCaches();
         }
         return n;
+    }
+
+    public void processClusterInvalidationsNext() {
+        clusterLastInvalidationTimeMillis = System.currentTimeMillis()
+                - repositoryDescriptor.clusteringDelay - 1;
     }
 
     /*
@@ -330,7 +339,16 @@ public class RepositoryImpl implements Repository {
         if (clusterMapper != null) {
             Invalidations invalidations;
             synchronized (clusterMapper) {
+                if (clusterLastInvalidationTimeMillis
+                        + repositoryDescriptor.clusteringDelay > System.currentTimeMillis()) {
+                    // delay hasn't expired
+                    return;
+                }
                 invalidations = clusterMapper.getClusterInvalidations();
+                clusterLastInvalidationTimeMillis = System.currentTimeMillis();
+            }
+            if (invalidations.isEmpty()) {
+                return;
             }
             for (SessionImpl session : sessions) {
                 session.invalidate(invalidations);

@@ -482,11 +482,17 @@ public class TestSQLBackend extends SQLBackendTestCase {
     public void testClustering() throws Exception {
         repository.close();
         // get two clustered repositories
-        repository = newRepository(true);
-        repository2 = newRepository(true);
+        long DELAY = 500; // ms
+        repository = newRepository(DELAY);
+        repository2 = newRepository(DELAY);
+
+        Session session1 = repository.getConnection();
+        // session1 creates root node and does a save
+        // which resets invalidation timeout
+        Session session2 = repository2.getConnection();
+        session2.save(); // save resets invalidations timeout
 
         // in session1, create base folder
-        Session session1 = repository.getConnection();
         Node root1 = session1.getRootNode();
         Node folder1 = session1.addChildNode(root1, "foo", null, "TestDoc",
                 false);
@@ -494,7 +500,6 @@ public class TestSQLBackend extends SQLBackendTestCase {
         session1.save();
 
         // in session2, retrieve folder and check children
-        Session session2 = repository2.getConnection();
         Node root2 = session2.getRootNode();
         Node folder2 = session2.getChildNode(root2, "foo", false);
         SimpleProperty title2 = folder2.getSimpleProperty("tst:title");
@@ -505,8 +510,13 @@ public class TestSQLBackend extends SQLBackendTestCase {
         session1.save();
 
         // in session2, try to get document
-        session2.save(); // process invalidations (non-transactional)
+        // immediate check, invalidation delay means not done yet
+        session2.save();
         Node doc2 = session2.getChildNode(folder2, "gee", false);
+        assertNull(doc2);
+        Thread.sleep(DELAY + 1); // wait invalidation delay
+        session2.save(); // process invalidations (non-transactional)
+        doc2 = session2.getChildNode(folder2, "gee", false);
         assertNotNull(doc2);
 
         // in session1 change title
@@ -516,6 +526,10 @@ public class TestSQLBackend extends SQLBackendTestCase {
         session1.save();
         // session2 has not saved (committed) yet, so still unmodified
         assertNull(title2.getString());
+        // immediate check, invalidation delay means not done yet
+        session2.save();
+        assertNull(title2.getString());
+        Thread.sleep(DELAY + 1); // wait invalidation delay
         session2.save();
         // after commit, invalidations have been processed
         assertEquals("yo", title2.getString());
@@ -529,6 +543,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         session2.save(); // and notifies invalidations
         // in non-transaction mode, session1 has not processed
         // its invalidations yet, call save() to process them artificially
+        Thread.sleep(DELAY + 1); // wait invalidation delay
         session1.save();
         // session2 save wins
         assertEquals("glop", title1.getString());

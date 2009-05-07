@@ -39,4 +39,9 @@ public interface RepositoryManagement {
      */
     int clearCaches();
 
+    /**
+     * Makes sure that the next transaction will process cluster invalidations.
+     */
+    void processClusterInvalidationsNext();
+
 }

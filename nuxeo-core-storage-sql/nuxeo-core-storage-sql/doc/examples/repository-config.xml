@@ -6,7 +6,8 @@
       factory="org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryFactory">
       <repository name="default">
         <!-- uncomment this to enable clustering
-        <clustering enabled="true"/>
+             delay is in milliseconds, default is 0 (no delay before processing invalidations)
+        <clustering enabled="true" delay="1000" />
         -->
         <indexing>
           <!-- example configuration for H2

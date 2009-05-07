@@ -34,6 +34,10 @@ public class Invalidations {
 
     public final Map<String, Set<Serializable>> deleted = new HashMap<String, Set<Serializable>>();
 
+    public boolean isEmpty() {
+        return modified.isEmpty() && deleted.isEmpty();
+    }
+
     public Map<String, Set<Serializable>> getKindMap(int kind) {
         if (kind == 1) {
             return modified;

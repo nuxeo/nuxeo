@@ -42,6 +42,9 @@ public class RepositoryDescriptor {
     @XNode("clustering@enabled")
     public boolean clusteringEnabled;
 
+    @XNode("clustering@delay")
+    public long clusteringDelay;
+
     @XNode("indexing/fulltext@analyzer")
     public String fulltextAnalyzer;
 
