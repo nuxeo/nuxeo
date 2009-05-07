@@ -17,6 +17,7 @@
   <description>Mail module to connect to mail server, send and process mail.</description>
 
   <modules>
+    <module>nuxeo-platform-mail-types</module>
     <module>nuxeo-platform-mail-core</module>
     <module>nuxeo-platform-mail-web</module>
     <module>nuxeo-platform-mail-test</module>
@@ -37,6 +38,11 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-mail-test</artifactId>
+        <version>${pom.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-mail-types</artifactId>
         <version>${pom.version}</version>
       </dependency>
 
