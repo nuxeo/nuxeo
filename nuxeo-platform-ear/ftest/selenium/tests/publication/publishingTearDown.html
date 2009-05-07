@@ -4,12 +4,12 @@
 <head profile="http://selenium-ide.openqa.org/profiles/test-case">
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <link rel="selenium.base" href="" />
-<title>Tear down test</title>
+<title>publishingTearDown</title>
 </head>
 <body>
 <table cellpadding="1" cellspacing="1" border="1">
 <thead>
-<tr><td rowspan="1" colspan="3">Tear down test</td></tr>
+<tr><td rowspan="1" colspan="3">publishingTearDown</td></tr>
 </thead><tbody>
 <!--Identification-->
 <tr>
@@ -63,23 +63,18 @@
 	<td></td>
 </tr>
 <tr>
-  <td>watchA4jRequests</td>
-  <td></td>
-  <td></td>
-</tr>
-<tr>
 	<td>click</td>
 	<td>//table[@id=&quot;CHILDREN_DOCUMENT_LIST:dataTable&quot;]/thead/tr/th/input</td>
 	<td></td>
 </tr>
 <tr>
-  <td>waitForA4jRequest</td>
-  <td>10000</td>
-  <td></td>
+	<td>pause</td>
+	<td>10000</td>
+	<td></td>
 </tr>
 <tr>
-	<td>click</td>
-	<td>//input[@value="Delete"]</td>
+	<td>clickAndWait</td>
+	<td>//input[@value=&quot;Delete&quot;]</td>
 	<td></td>
 </tr>
 <tr>
