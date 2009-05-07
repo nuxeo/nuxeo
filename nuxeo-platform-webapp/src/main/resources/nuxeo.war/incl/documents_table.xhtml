@@ -25,7 +25,8 @@
       <nxu:column styleClass="iconColumn" rendered="#{showCheckboxes or false}">
         <f:facet name="header">
           <h:selectBooleanCheckbox rendered="true"
-              onclick="selectDataTablePageForDocument('#{documents.name}', '#{providerName}', this.checked, '#{listName}', '#{currentDocument.ref}')" title="#{messages['tooltip.content.select.all']}">
+              onclick="selectDataTablePageForDocument('#{documents.name}', '#{providerName}', this.checked, '#{listName}', '#{currentDocument.ref}')"
+              title="#{messages['tooltip.content.select.all']}">
           </h:selectBooleanCheckbox>
         </f:facet>
         <h:selectBooleanCheckbox
@@ -36,11 +37,12 @@
       <!-- Icon + Type -->
       <nxu:column styleClass="iconColumn">
         <div id="docRefTarget:#{row.data.ref}">
-        <div id="docRef:#{row.data.ref}" class="cell popupTarget" docRef="#{row.data.ref}">
-        <nxu:graphicImage
-          value="#{nxd:iconPath(row.data)}" alt="#{row.data.type}"
-          title="#{nxd:fileDescription(row.data, 'file:content', 'file:filename')}"  />
-        </div></div>
+          <div id="docRef:#{row.data.ref}" class="cell popupTarget" docRef="#{row.data.ref}">
+            <nxu:graphicImage
+              value="#{nxd:iconPath(row.data)}" alt="#{row.data.type}"
+              title="#{nxd:fileDescription(row.data, 'file:content', 'file:filename')}"  />
+          </div>
+        </div>
         <script type="text/javascript">
           <h:outputText
             value="new Draggable('docRef:#{row.data.ref}', {revert:true});"/>
@@ -70,31 +72,34 @@
           </h:panelGroup>
         </f:facet>
         <div class="popupTarget" docRef="#{row.data.ref}">
-        <!-- Title -->
-        <nxd:documentLink title="#{nxd:titleOrId(row.data)}"
-          document="#{row.data}" rendered="false" />
-      <nxd:restDocumentLink document="#{row.data}">
-      <span id="title_#{row.data.ref}">
-       <nxh:outputText value="#{nxd:titleOrId(row.data)}" title="#{row.data.dc.description}" rendered="#{!empty row.data.dc}"/>
-       <nxh:outputText value="#{nxd:titleOrId(row.data)}" rendered="#{empty row.data.dc}"/>
-       </span>
-      </nxd:restDocumentLink>
-      <!-- Open in a new window -->
-      <nxd:restDocumentLink document="#{row.data}" newConversation="true" target="_tab">
-        <img src="img/external.gif" style="vertical-align:middle"
-            alt="#{messages['permalink.newTab']}"
-               title="#{messages['permalink.newTab']}"/>
-      </nxd:restDocumentLink>
-       <!-- Download Link -->
-      <nxu:methodResult name="hasFileFacet" value="#{currentDocument.hasSchema('file')}">
-        <h:panelGroup rendered="#{hasFileFacet}">
-          <nxh:outputLink rendered="#{!empty row.data.file}"  value="#{nxd:fileUrl('downloadFile', row.data, 'file:content',
-            row.data.file.filename)}">
-            <nxh:graphicImage value="/icons/download.png" title="#{row.data.file.filename}" style="vertical-align:middle" rendered="#{! empty row.data.file.filename}" />
-          </nxh:outputLink>
-        </h:panelGroup>
-      </nxu:methodResult>
-       </div>
+          <!-- Title -->
+          <nxd:restDocumentLink document="#{row.data}">
+            <span id="title_#{row.data.ref}">
+              <nxh:outputText value="#{nxd:titleOrId(row.data)}"
+                title="#{row.data.dc.description}"
+                rendered="#{!empty row.data.dc}"/>
+              <nxh:outputText value="#{nxd:titleOrId(row.data)}"
+                rendered="#{empty row.data.dc}"/>
+            </span>
+          </nxd:restDocumentLink>
+          <!-- Open in a new window -->
+          <nxd:restDocumentLink document="#{row.data}" newConversation="true" target="_tab">
+            <img src="img/external.gif" style="vertical-align:middle"
+              alt="#{messages['permalink.newTab']}"
+              title="#{messages['permalink.newTab']}"/>
+          </nxd:restDocumentLink>
+          <!-- Download Link -->
+          <nxu:methodResult name="hasFileFacet" value="#{row.data.hasSchema('file')}">
+            <h:panelGroup rendered="#{hasFileFacet}">
+              <nxh:outputLink rendered="#{!empty row.data.file}"
+                value="#{nxd:fileUrl('downloadFile', row.data, 'file:content', row.data.file.filename)}">
+                <nxh:graphicImage value="/icons/download.png" title="#{row.data.file.filename}"
+                  style="vertical-align:middle"
+                  rendered="#{! empty row.data.file.filename}" />
+              </nxh:outputLink>
+            </h:panelGroup>
+          </nxu:methodResult>
+        </div>
 
       </nxu:column>
       
@@ -173,6 +178,7 @@
             rendered="#{!provider.sortable}" />
           </h:panelGroup>
         </f:facet>
+
         <h:outputText value="#{messages[row.data.currentLifeCycleState]}" />
       </h:column>
 
