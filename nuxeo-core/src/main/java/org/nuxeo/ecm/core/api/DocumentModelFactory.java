@@ -65,24 +65,14 @@ public class DocumentModelFactory {
 
     public static DocumentModel newDocument(DocumentModel parent, String type) {
         DocumentType docType;
-        try {
-            docType = ((DocumentModelImpl) parent).getClient().getDocumentType(
-                    type);
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
-        }
+        docType = parent.getCoreSession().getDocumentType(type);
         return newDocument(parent, docType);
     }
 
     public static DocumentModel newDocument(DocumentModel parent, String name,
             String type) {
         DocumentType docType;
-        try {
-            docType = ((DocumentModelImpl) parent).getClient().getDocumentType(
-                    type);
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
-        }
+        docType = parent.getCoreSession().getDocumentType(type);
         return newDocument(parent, name, docType);
     }
 

@@ -360,6 +360,15 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         return parentRef;
     }
 
+    public CoreSession getCoreSession() {
+        if (sid == null) {
+            return null;
+        }
+        return CoreInstance.getInstance().getSession(sid);
+    }
+
+    /** @deprecated use {@link #getCoreSession} instead. */
+    @Deprecated
     public final CoreSession getClient() throws ClientException {
         if (sid == null) {
             throw new UnsupportedOperationException(
@@ -421,10 +430,10 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
                 dataModels.put(schema, dataModel);
                 return dataModel;
             }
-            CoreSession client = getClient();
+            CoreSession session = getCoreSession();
             DataModel dataModel = null;
-            if (client != null && ref != null) {
-                dataModel = client.getDataModel(ref, schema);
+            if (session != null && ref != null) {
+                dataModel = session.getDataModel(ref, schema);
                 dataModels.put(schema, dataModel);
             }
             return dataModel;
@@ -520,26 +529,26 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     }
 
     public void setLock(String key) throws ClientException {
-        getClient().setLock(ref, key);
+        getCoreSession().setLock(ref, key);
         lock = key;
     }
 
     public void unlock() throws ClientException {
-        if (getClient().unlock(ref) != null) {
+        if (getCoreSession().unlock(ref) != null) {
             lock = null;
         }
     }
 
     public ACP getACP() throws ClientException {
         if (!isACPLoaded) { // lazy load
-            acp = getClient().getACP(ref);
+            acp = getCoreSession().getACP(ref);
             isACPLoaded = true;
         }
         return acp;
     }
 
     public void setACP(ACP acp, boolean overwrite) throws ClientException {
-        getClient().setACP(ref, acp, overwrite);
+        getCoreSession().setACP(ref, acp, overwrite);
         isACPLoaded = false;
     }
 
@@ -683,85 +692,61 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     }
 
     public boolean followTransition(String transition) throws ClientException {
-
-        // :FIXME: need to open a new session against the core.
-        CoreSession client = getClient();
-
+        CoreSession session = getCoreSession();
         boolean res = false;
-        if (client != null) {
-            res = client.followTransition(ref, transition);
+        if (session != null) {
+            res = session.followTransition(ref, transition);
         } else {
             log.error("Cannot find bound core session....");
         }
-
         // Invalidate the prefetched value in this case.
         if (res) {
             currentLifeCycleState = null;
         }
-
         return res;
     }
 
     public Collection<String> getAllowedStateTransitions()
             throws ClientException {
-
-        // :FIXME: need to open a new session against the core.
         Collection<String> allowedStateTransitions = new ArrayList<String>();
-
-        CoreSession client = getClient();
-
-        if (client != null) {
-            allowedStateTransitions = getClient().getAllowedStateTransitions(
-                    ref);
+        CoreSession session = getCoreSession();
+        if (session != null) {
+            allowedStateTransitions = session.getAllowedStateTransitions(ref);
         } else {
             log.error("Cannot found bound core session....");
         }
-
         return allowedStateTransitions;
     }
 
     public String getCurrentLifeCycleState() throws ClientException {
-
         if (currentLifeCycleState != null) {
             return currentLifeCycleState;
         }
-
         // document was just created => not life cycle yet
         if (sid == null) {
             return null;
         }
-
         // String currentLifeCycleState = null;
-        CoreSession client = getClient();
-
-        if (client != null) {
-            currentLifeCycleState = getClient().getCurrentLifeCycleState(ref);
-
+        CoreSession session = getCoreSession();
+        if (session != null) {
+            currentLifeCycleState = getCoreSession().getCurrentLifeCycleState(ref);
         } else {
             log.error("Cannot found bound core session....");
         }
-
         return currentLifeCycleState;
     }
 
     public String getLifeCyclePolicy() throws ClientException {
-
         if (lifeCyclePolicy != null) {
             return lifeCyclePolicy;
         }
-
-        // :FIXME: need to open a new session against the core.
-
         // String lifeCyclePolicy = null;
-
-        CoreSession client = getClient();
-
-        if (client != null) {
-            lifeCyclePolicy = getClient().getLifeCyclePolicy(ref);
+        CoreSession session = getCoreSession();
+        if (session != null) {
+            lifeCyclePolicy = session.getLifeCyclePolicy(ref);
         } else {
             log.error("Cannot found bound core session....");
         }
-
         return lifeCyclePolicy;
     }
 
@@ -1045,8 +1030,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     public <T extends Serializable> T getSystemProp(String systemProperty,
             Class<T> type) throws ClientException, DocumentException {
-        CoreSession client = getClient();
-        return client.getDocumentSystemProp(ref, systemProperty, type);
+        return getCoreSession().getDocumentSystemProp(ref, systemProperty, type);
     }
 
     public boolean isLifeCycleLoaded() {
@@ -1217,7 +1201,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
             schemas = keys.toArray(new String[keys.size()]);
         }
 
-        Object[] result = getClient().refreshDocument(ref, refreshFlags,
+        Object[] result = getCoreSession().refreshDocument(ref, refreshFlags,
                 schemas);
 
         if ((refreshFlags & REFRESH_PREFETCH) != 0) {

@@ -97,6 +97,9 @@ public interface DocumentModel extends Serializable {
     /**
      * Retrieves the session id corresponding to this object.
      * <p>
+     * This method should rarely be used, use {@link #getCoreSession} directly
+     * instead.
+     * <p>
      * Using the session id you can retrieve the core session that created the
      * object.
      * <p>
@@ -107,6 +110,15 @@ public interface DocumentModel extends Serializable {
      *         or null for client side models (used for data transportation)
      */
     String getSessionId();
+
+    /**
+     * Gets the core session to which this document is tied.
+     * <p>
+     * This may be null if the document has been detached from a session.
+     *
+     * @return the core session
+     */
+    CoreSession getCoreSession();
 
     /**
      * Gets a reference to the core document that can be used either remotely or
