@@ -33,7 +33,7 @@
 
       <br /> 
     <ui:fragment rendered="#{(currentDocument.picture.views[pictureManager.index].height gt 550) or (currentDocument.picture.views[pictureManager.index].width gt 550)}">
-      <iframe src="#{previewActions.previewURL}" frameborder="1" height="500px" width="100%" scrolling="auto" id="preview-frame" onload="loadGwtModule();">
+      <iframe src="#{previewActions.previewURL}" frameborder="1" height="500px" width="100%" scrolling="auto" id="preview-frame">
       </iframe>
     </ui:fragment>
     <ui:fragment rendered="#{(currentDocument.picture.views[pictureManager.index].height le 550) and (currentDocument.picture.views[pictureManager.index].width le 550)}">
