@@ -66,7 +66,6 @@
       <artifactId>nuxeo-theme-core</artifactId>
     </dependency>
     
-
     <dependency>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>jaxrs-api</artifactId>
@@ -97,13 +96,7 @@
     <dependency>
       <groupId>javax.faces</groupId>
       <artifactId>jsf-api</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core</artifactId>
-    </dependency>
-    
+    </dependency>    
     <dependency>
       <groupId>javax.ejb</groupId>
       <artifactId>ejb-api</artifactId>
@@ -154,8 +147,6 @@
       <artifactId>nuxeo-platform-relations-jena-plugin</artifactId>
       <scope>test</scope>
     </dependency>
-
-
   </dependencies>
 
 </project>
