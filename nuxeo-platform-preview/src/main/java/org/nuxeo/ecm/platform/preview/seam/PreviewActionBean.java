@@ -26,6 +26,8 @@ import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.annotations.web.RequestParameter;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.preview.helper.PreviewHelper;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
@@ -37,13 +39,18 @@ import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
  * @author tiry
  */
 @Name("previewActions")
-@Scope(ScopeType.STATELESS)
+@Scope(ScopeType.CONVERSATION)
 public class PreviewActionBean implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @In(create = true, required = false)
     transient NavigationContext navigationContext;
+
+    @RequestParameter
+    private String fieldXPath;
+
+    private String fieldXPathValue;
 
     public boolean getHasPreview() {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
@@ -56,18 +63,33 @@ public class PreviewActionBean implements Serializable {
         }
         return PreviewHelper.typeSupportsPreview(document);
     }
-    
+
     public String getPreviewURL() {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (currentDocument == null) {
             return null;
         }
-        return PreviewHelper.getPreviewURL(currentDocument);
+        return PreviewHelper.getPreviewURL(currentDocument, fieldXPathValue);
     }
+
     public String getPreviewWithBlobPostProcessingURL() {
         String url = getPreviewURL();
         url += "?blobPostProcessing=true";
         return url;
+    }
+
+    public String viewPreview() throws ClientException {
+        fieldXPathValue = null;
+
+        return "view_preview";
+    }
+
+    public String doSetFieldXPath() throws ClientException {
+        if (fieldXPath != null) {
+            fieldXPathValue = fieldXPath.replace("/", "-");
+        }
+
+        return null;
     }
 
 }

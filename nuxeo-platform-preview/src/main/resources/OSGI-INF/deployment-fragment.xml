@@ -9,6 +9,16 @@
     </module>
 
   </extension>
+  
+  <extension target="faces-config#NAVIGATION">
+
+    <navigation-case>
+      <from-outcome>view_preview</from-outcome>
+      <to-view-id>/incl/tabs/preview.xhtml</to-view-id>
+      <redirect/>
+    </navigation-case>
+    
+  </extension>
 
 <install>
 

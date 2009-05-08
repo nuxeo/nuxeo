@@ -3,8 +3,8 @@
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="actions">
 
-    <action id="TAB_PREVIEW" link="/incl/tabs/preview.xhtml"
-      enabled="true" order="200" label="label.document.preview"
+    <action id="TAB_PREVIEW" link="#{previewActions.viewPreview}"
+      enabled="true" order="200" label="label.document.preview.cucu"
       icon="/icons/file.gif">
       <category>VIEW_ACTION_LIST</category>
       <filter id="view_preview">
