@@ -1074,14 +1074,10 @@ public final class ThemeManager implements Registrable {
     public static List<ViewType> getViewTypesForFragmentType(
             final FragmentType fragmentType) {
         final List<ViewType> viewTypes = new ArrayList<ViewType>();
-        final List<String> viewNames = new ArrayList<String>();
 
         for (Type v : Manager.getTypeRegistry().getTypes(TypeFamily.VIEW)) {
             final ViewType viewType = (ViewType) v;
             final String viewName = viewType.getViewName();
-            if (viewNames.contains(viewName)) {
-                continue;
-            }
             
             if ("*".equals(viewName)) {
                 continue;
@@ -1105,7 +1101,6 @@ public final class ThemeManager implements Registrable {
                 continue;
             }
             viewTypes.add(viewType);
-            viewNames.add(viewName);
         }
         return viewTypes;
     }
