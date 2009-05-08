@@ -29,12 +29,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.WebContext;
-import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.themes.ThemeException;
 import org.nuxeo.theme.themes.ThemeManager;
 
 import freemarker.core.Environment;
-import freemarker.ext.beans.BeansWrapper;
 import freemarker.template.Template;
 import freemarker.template.TemplateDirectiveBody;
 import freemarker.template.TemplateDirectiveModel;
@@ -44,7 +42,7 @@ import freemarker.template.TemplateModelException;
 
 /**
  * @author <a href="mailto:jmo@chalmers.se">Jean-Marc Orliaguet</a>
- *
+ * 
  */
 public class NXThemesFragmentDirective implements TemplateDirectiveModel {
 
@@ -74,18 +72,22 @@ public class NXThemesFragmentDirective implements TemplateDirectiveModel {
                 "nxtheme://element/%s/%s/%s/%s", attributes.get("engine"),
                 attributes.get("mode"), templateEngine, attributes.get("uid")));
 
-        StringReader sr;
+        String rendered = "";
         try {
-            sr = new StringReader(
-                    ThemeManager.renderElement(elementUrl));
+            rendered = ThemeManager.renderElement(elementUrl);
         } catch (ThemeException e) {
             log.error("Element rendering failed: " + e.getMessage());
             return;
         }
+        StringReader sr = new StringReader(rendered);
         BufferedReader reader = new BufferedReader(sr);
         Template tpl = new Template(elementUrl.toString(), reader,
                 env.getConfiguration(), env.getTemplate().getEncoding());
+
         env.include(tpl);
+
+        reader.close();
+        sr.close();
     }
 
 }

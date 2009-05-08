@@ -84,7 +84,7 @@ public class ThemeDirective implements TemplateDirectiveModel {
 
         env.setGlobalVariable("nxthemesInfo",
                 BeansWrapper.getDefaultInstance().wrap(Manager.getInfoPool()));
-
+        
         String strategy = null;
         SimpleScalar strategyModel = (SimpleScalar) params.get("strategy");
         if (strategyModel != null) {
@@ -115,6 +115,8 @@ public class ThemeDirective implements TemplateDirectiveModel {
         Template tpl = new Template(themeUrl.toString(), reader,
                 env.getConfiguration(), env.getTemplate().getEncoding());
         env.include(tpl);
+        
+        reader.close();
     }
 
     public String renderTheme(URL themeUrl) throws ThemeException {
