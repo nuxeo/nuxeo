@@ -100,7 +100,7 @@ public class Main extends ModuleRoot {
             "selected_fragment_type", fragmentType).arg(
             "selected_fragment_view", fragmentVIew).arg(
             "fragments", getFragments(path)).arg(
-            "views", getViews(fragmentType)).arg(
+            "views", getViews(fragmentType, path)).arg(
             "selected_element_id", getSelectedElementId())
   }
 
@@ -952,15 +952,22 @@ public class Main extends ModuleRoot {
       return fragments
   }
   
-  public static List<ViewType> getViews(fragmentTypeName) {
+  public static List<ViewType> getViews(fragmentTypeName, applicationPath) {
+      String templateEngine = getTemplateEngine(applicationPath)
+      def views = []
       if (fragmentTypeName == null) {
-          return []
+          return views
       }
       FragmentType fragmentType = Manager.getTypeRegistry().lookup(TypeFamily.FRAGMENT, fragmentTypeName)
       if (fragmentType == null) {
-          return []
+          return views
       }
-      return ThemeManager.getViewTypesForFragmentType(fragmentType)
+      for (ViewType viewType : ThemeManager.getViewTypesForFragmentType(fragmentType)) {
+          if (templateEngine.equals(viewType.getTemplateEngine())) {
+              views.add(viewType)
+          }
+      }
+      return views
   }
   
   public static String getSelectedElementId() {
