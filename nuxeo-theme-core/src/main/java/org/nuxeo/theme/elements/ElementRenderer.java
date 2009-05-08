@@ -49,8 +49,7 @@ public final class ElementRenderer {
         return render(info, true);
     }
 
-    public static RenderingInfo render(final RenderingInfo info,
-            final boolean cache) {
+    public static RenderingInfo render(RenderingInfo info, final boolean cache) {
         final StringWriter rendered = new StringWriter();
 
         final URL themeUrl = info.getThemeUrl();
@@ -61,33 +60,32 @@ public final class ElementRenderer {
         final EngineType engine = info.getEngine();
         final Element element = info.getElement();
 
-        RenderingInfo copy = info.createCopy();
-
         String markup = "";
         if (element.isLeaf()) {
             if (!(element instanceof Fragment)) {
                 log.error(String.format(
                         "Leaf nodes must be fragments, ignoring element: %s",
                         element.getElementType().getTypeName()));
-                return copy;
+                return info;
             }
             final Fragment fragment = (Fragment) element;
             try {
-                copy.setModel(fragment.getModel());
+                info.setModel(fragment.getModel());
             } catch (ModelException e) {
                 final String fragmentName = fragment.getFragmentType().getTypeName();
                 log.error("Rendering of fragment '" + fragmentName
                         + "' failed:");
                 e.printStackTrace();
-                return copy;
+                return info;
             }
             if (fragment.isDynamic()) {
-                copy.setDirty(true);
+                info.setDirty(true);
             }
         } else {
             for (Node child : element.getChildrenInContext(themeUrl)) {
                 final RenderingInfo childInfo = new RenderingInfo(
                         (Element) child, themeUrl);
+                Manager.getInfoPool().register(childInfo);
                 final RenderingInfo renderedChild = render(childInfo);
                 if (renderedChild == null) {
                     continue;
@@ -97,13 +95,13 @@ public final class ElementRenderer {
             markup = rendered.toString();
         }
 
-        copy.setMarkup(markup);
+        info.setMarkup(markup);
 
         final RendererType renderer = engine.getRenderers().get(
                 element.getElementType().getTypeName());
 
         if (renderer == null) {
-            return copy;
+            return info;
         }
 
         final String templateEngineName = info.getTemplateEngine().getName();
@@ -144,21 +142,21 @@ public final class ElementRenderer {
                             + element.getElementType().getTypeName());
                     continue;
                 }
-                copy.setFormat(format);
+                info.setFormat(format);
             } else if (filterTypeFamily == FilterTypeFamily.STANDALONE) {
                 // Do nothing
             } else {
                 log.warn("Unsupported filter type: " + filterName);
             }
 
-            copy = filter.process(copy, cache);
+            info = filter.process(info, cache);
 
             // Abort the rendering if the filter returns null
-            if (copy == null) {
+            if (info == null) {
                 break;
             }
         }
-        return copy;
+        return info;
     }
 
     private static FilterType getFilterFor(final String engineName,
