@@ -87,12 +87,11 @@ public class NXThemesFragmentDirective implements TemplateDirectiveModel {
         // XXX catch rendering exceptions, see NXP-3484
         try {
             env.include(tpl);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } finally {
+            reader.close();
+            sr.close();
         }
 
-        reader.close();
-        sr.close();
     }
 
 }
