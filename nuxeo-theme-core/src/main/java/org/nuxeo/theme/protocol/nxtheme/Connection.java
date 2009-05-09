@@ -89,6 +89,7 @@ public final class Connection extends URLConnection {
         }
 
         final RenderingInfo info = new RenderingInfo(rendered, url);
+        Manager.getInfoPool().register(info);
         final String content = ElementRenderer.render(info, cache).getMarkup();
         if (host.equals("theme")) {
             if (log.isTraceEnabled()) {
