@@ -52,6 +52,7 @@ public final class ElementRenderer {
     public static RenderingInfo render(RenderingInfo info, final boolean cache) {
         final StringWriter rendered = new StringWriter();
 
+        Manager.getInfoPool().register(info);
         final URL themeUrl = info.getThemeUrl();
         if (themeUrl == null) {
             log.warn("Theme URL not set for the element: " + info.getElement());
@@ -85,7 +86,6 @@ public final class ElementRenderer {
             for (Node child : element.getChildrenInContext(themeUrl)) {
                 final RenderingInfo childInfo = new RenderingInfo(
                         (Element) child, themeUrl);
-                Manager.getInfoPool().register(childInfo);
                 final RenderingInfo renderedChild = render(childInfo);
                 if (renderedChild == null) {
                     continue;
