@@ -84,7 +84,12 @@ public class NXThemesFragmentDirective implements TemplateDirectiveModel {
         Template tpl = new Template(elementUrl.toString(), reader,
                 env.getConfiguration(), env.getTemplate().getEncoding());
 
-        env.include(tpl);
+        // XXX catch rendering exceptions, see NXP-3484
+        try {
+            env.include(tpl);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         reader.close();
         sr.close();
