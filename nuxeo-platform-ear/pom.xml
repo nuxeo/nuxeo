@@ -629,11 +629,6 @@
       <version>${nuxeo.webengine.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-wiki-webengine</artifactId>
-      <version>${nuxeo.webengine.version}</version>
-    </dependency>
-    <dependency>
       <groupId>org.nuxeo.ecm.webengine</groupId>
       <artifactId>nuxeo-webengine-sites</artifactId>
       <version>${nuxeo.webengine.version}</version>
