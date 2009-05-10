@@ -59,6 +59,7 @@ import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.service.CommentServiceConfig;
 import org.nuxeo.ecm.platform.relations.api.RelationManager;
 import org.nuxeo.ecm.platform.relations.api.Resource;
+import org.nuxeo.ecm.platform.relations.api.ResourceAdapter;
 import org.nuxeo.ecm.platform.relations.api.Statement;
 import org.nuxeo.ecm.platform.relations.api.impl.QNameResourceImpl;
 import org.nuxeo.ecm.platform.relations.api.impl.ResourceImpl;
@@ -146,13 +147,15 @@ public class CommentManagerImpl implements CommentManager {
                 oldPattern));
 
         List<DocumentModel> commentList = new ArrayList<DocumentModel>();
+        Map<String, Serializable> ctxMap = new HashMap<String, Serializable>();
+        ctxMap.put(ResourceAdapter.CORE_SESSION_ID_CONTEXT_KEY, docModel.getSessionId());
         for (Statement stmt : statementList) {
             QNameResourceImpl subject = (QNameResourceImpl) stmt.getSubject();
 
             DocumentModel commentDocModel = null;
             try {
                 commentDocModel = (DocumentModel) relationManager.getResourceRepresentation(
-                        config.commentNamespace, subject, null);
+                        config.commentNamespace, subject, ctxMap);
             } catch (Exception e) {
                 log.error("failed to retrieve commentDocModel from relations");
             }
