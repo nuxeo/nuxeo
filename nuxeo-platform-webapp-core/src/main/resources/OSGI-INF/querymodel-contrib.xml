@@ -90,7 +90,7 @@
         defaultSortAscending="true" />
       <max>5</max>
     </queryModel>
-    
+
     <queryModel name="USER_SITES">
       <pattern>
         SELECT * FROM Document WHERE ecm:mixinType =
@@ -144,7 +144,7 @@
     </queryModel>
 
     <!-- This query model may be used to list children in the tree navigation
-    
+
     Note the "ecm:isProxy = 0" predicate optimization that is required to
     simplify greatly the request performed by the tree manager when
     browsing on folders with a lot of files when using the Visible SQL Storage.
@@ -221,6 +221,10 @@
 
         <predicate parameter="dc:coverage" operator="IN">
           <field schema="advanced_search" name="coverage" />
+        </predicate>
+
+        <predicate parameter="dc:subjects" operator="IN">
+          <field schema="advanced_search" name="subjects" />
         </predicate>
 
         <predicate parameter="dc:created" operator="BETWEEN">

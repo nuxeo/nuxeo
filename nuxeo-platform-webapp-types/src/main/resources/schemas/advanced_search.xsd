@@ -11,6 +11,7 @@
   <xs:element name="rights" type="xs:string"/>
   <xs:element name="source" type="xs:string"/>
   <xs:element name="coverage" type="nxs:stringList"/>
+  <xs:element name="subjects" type="nxs:stringList"/>
   <xs:element name="created_min" type="xs:date" />
   <xs:element name="created_max" type="xs:date" />
   <xs:element name="modified_min" type="xs:date"/>
