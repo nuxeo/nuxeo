@@ -19,6 +19,9 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.theme.elements.Element;
+import org.nuxeo.theme.fragments.Fragment;
+import org.nuxeo.theme.fragments.FragmentType;
 import org.nuxeo.theme.rendering.RenderingInfo;
 import org.nuxeo.theme.views.TemplateView;
 import org.nuxeo.theme.views.ViewType;
@@ -60,7 +63,20 @@ public class HTMLView extends TemplateView {
         }
 
         // replace model expressions
-        result = replaceModelExpressions(info, result);
+        final Element element = info.getElement();
+        if (element instanceof Fragment) {
+            final Fragment fragment = (Fragment) element;
+            if (!info.isDirty() && hasModelExpressions(result)) {
+                final FragmentType fragmentType = fragment.getFragmentType();
+                String fragmentTypeName = fragmentType.getTypeName();
+                log.warn(String.format(
+                        "Cannot render \"%s\" with the view \"%s\" because the view's template contains a 'nxthemesInfo' variable and the fragment type is not declared as dynamic. Try to add <dynamic>true</dynamic> in the <fragment name=\"%s\"> definition.",
+                        fragmentTypeName, getViewType().getViewName(),
+                        fragmentTypeName));
+                return "";
+            }
+            result = replaceModelExpressions(info, result);
+        }
 
         // replace [nxthemes markup] strings with the actual markup
         result = result.replace("[nxthemes markup]", info.getMarkup());
@@ -68,13 +84,14 @@ public class HTMLView extends TemplateView {
         return result;
     }
 
-    public String replaceModelExpressions(@SuppressWarnings("unused") final RenderingInfo info,
+    public String replaceModelExpressions(
+            @SuppressWarnings("unused") final RenderingInfo info,
             final String html) {
         return html;
     }
 
-    public String getFragmentInsertionMarkup(@SuppressWarnings("unused") final RenderingInfo info) {
-        return "";
+    public boolean hasModelExpressions(final String html) {
+        return html.contains("nxthemesInfo");
     }
 
 }
