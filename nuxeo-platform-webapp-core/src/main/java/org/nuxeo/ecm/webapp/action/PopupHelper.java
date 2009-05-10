@@ -263,10 +263,15 @@ public class PopupHelper implements Serializable {
 
     public boolean isDocumentHasBlobAttached(DocumentModel documentModel)
             throws ClientException {
-        Blob blob = (Blob) documentModel.getPropertyValue("file:content");
-        if (blob != null) {
-            return true;
-        } else {
+        if (documentModel.hasSchema("file")) {
+            Blob blob = (Blob) documentModel.getProperty("file", "content");
+            if (blob != null) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        else {
             return false;
         }
     }
