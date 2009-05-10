@@ -18,7 +18,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
-import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.elements.Element;
 import org.nuxeo.theme.elements.ElementFactory;
 import org.nuxeo.theme.models.InfoPool;
@@ -71,15 +70,11 @@ public class TestRenderingInfo extends NXRuntimeTestCase {
     public void testInfoPool() {
         Element page = ElementFactory.create("page");
         RenderingInfo info = new RenderingInfo(page, null);
-        InfoPool infoPool = Manager.getInfoPool();
-
+      
         String infoId = InfoPool.computeInfoId(info);
-        infoPool.register(info);
-        assertSame(info, infoPool.get(infoId));
-        assertTrue(infoPool.getInfoMap().containsValue(info));
-
-        infoPool.clear();
-        assertFalse(infoPool.getInfoMap().containsValue(info));
+        InfoPool.register(info);
+        assertSame(info, InfoPool.get(infoId));
+        assertTrue(InfoPool.getInfoMap().containsValue(info));
     }
 
 }
