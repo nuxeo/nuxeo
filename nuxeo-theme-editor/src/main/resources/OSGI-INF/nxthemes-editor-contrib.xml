@@ -483,6 +483,7 @@
       <renderer element="fragment">
         <filter>add widget</filter>
         <filter>set style</filter>
+        <filter>write fragment tag</filter>
         <filter>control fragment visibility</filter>
         <filter>make draggable</filter>
         <filter>set element id</filter>
@@ -509,7 +510,7 @@
       <renderer element="fragment">
         <filter>add widget</filter>
         <filter>add identifiable container</filter>
-        <!--  filter>write fragment tag</filter -->
+        <filter>write fragment tag</filter>
       </renderer>
 
     </engine>
