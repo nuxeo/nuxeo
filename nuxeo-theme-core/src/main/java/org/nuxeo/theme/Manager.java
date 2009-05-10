@@ -74,10 +74,6 @@ public final class Manager {
         return (TypeRegistry) getRegistry("types");
     }
 
-    public static InfoPool getInfoPool() {
-        return (InfoPool) getRegistry("info");
-    }
-
     public static EventManager getEventManager() {
         return (EventManager) getRegistry("events");
     }

@@ -34,7 +34,7 @@ public final class FragmentType implements Type {
     public String modelName;
 
     @XNode("dynamic")
-    public boolean dynamic = false;
+    public boolean dynamic = true;
 
     public FragmentType() {
     }

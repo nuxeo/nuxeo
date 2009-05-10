@@ -17,33 +17,29 @@ package org.nuxeo.theme.models;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.nuxeo.theme.Registrable;
 import org.nuxeo.theme.rendering.RenderingInfo;
 
-public final class InfoPool implements Registrable {
+public final class InfoPool {
 
     private static final String INFOID_PREFIX = "i";
 
-    private Map<String, Info> infoMap = new HashMap<String, Info>();
+    protected static final ThreadLocal<HashMap<String, Info>> threadInstance = new ThreadLocal<HashMap<String, Info>>() {
+        @Override
+        protected HashMap<String, Info> initialValue() {
+            return new HashMap<String, Info>();
+        }
+    };
 
-    public void register(RenderingInfo info) {
-        infoMap.put(computeInfoId(info), info);
+    public static Map<String, Info> getInfoMap() {
+        return threadInstance.get();
+    }
+    
+    public static void register(RenderingInfo info) {
+        getInfoMap().put(computeInfoId(info), info);
     }
 
-    public Info get(String key) {
-        return infoMap.get(key);
-    }
-
-    public Map<String, Info> getInfoMap() {
-        return infoMap;
-    }
-
-    public void setInfoMap(Map<String, Info> map) {
-        infoMap = map;
-    }
-
-    public void clear() {
-        infoMap.clear();
+    public static Info get(String key) {
+        return getInfoMap().get(key);
     }
 
     public static String computeInfoId(RenderingInfo info) {

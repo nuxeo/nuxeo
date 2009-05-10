@@ -16,13 +16,13 @@ package org.nuxeo.theme.html;
 
 import java.util.Map;
 
-import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.models.Info;
+import org.nuxeo.theme.models.InfoPool;
 
 public class InfoBean {
 
     public Map<String, Info> getMap() {
-        return Manager.getInfoPool().getInfoMap();
+        return InfoPool.getInfoMap();
     }
 
 }

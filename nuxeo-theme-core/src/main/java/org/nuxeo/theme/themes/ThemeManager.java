@@ -60,6 +60,7 @@ import org.nuxeo.theme.formats.widgets.Widget;
 import org.nuxeo.theme.fragments.Fragment;
 import org.nuxeo.theme.fragments.FragmentFactory;
 import org.nuxeo.theme.fragments.FragmentType;
+import org.nuxeo.theme.models.Info;
 import org.nuxeo.theme.models.ModelType;
 import org.nuxeo.theme.nodes.Node;
 import org.nuxeo.theme.nodes.NodeException;
@@ -79,6 +80,7 @@ import org.nuxeo.theme.uids.Identifiable;
 import org.nuxeo.theme.uids.UidManager;
 import org.nuxeo.theme.views.ViewType;
 
+
 public final class ThemeManager implements Registrable {
 
     private static final Log log = LogFactory.getLog(ThemeManager.class);
@@ -96,6 +98,8 @@ public final class ThemeManager implements Registrable {
     private final Map<String, Map<String, Integer>> namedObjectsByTheme = new HashMap<String, Map<String, Integer>>();
 
     private final Map<Integer, String> themeOfNamedObjects = new HashMap<Integer, String>();
+    
+    private final Map<String, Info> infoMap = new HashMap<String, Info>();
 
     private static final Predicate PREDICATE_FORMAT_INHERIT = new DefaultPredicate(
             "_ inherits from _");
@@ -123,6 +127,10 @@ public final class ThemeManager implements Registrable {
         themeOfNamedObjects.clear();
     }
 
+    public Map<String, Info> getGlobalInfoMap() {
+        return infoMap;
+    }
+    
     public static boolean validateThemeName(String themeName) {
         return (themeName.matches("^([a-z]|[a-z][a-z0-9_\\-]*?[a-z0-9])$"));
     }
@@ -1231,5 +1239,6 @@ public final class ThemeManager implements Registrable {
     public ModelType getModelByClassname(String className) {
         return modelsByClassname.get(className);
     }
+
 
 }

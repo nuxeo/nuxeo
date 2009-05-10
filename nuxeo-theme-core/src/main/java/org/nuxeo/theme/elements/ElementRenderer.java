@@ -25,6 +25,7 @@ import org.nuxeo.theme.formats.Format;
 import org.nuxeo.theme.formats.FormatFilter;
 import org.nuxeo.theme.formats.FormatType;
 import org.nuxeo.theme.fragments.Fragment;
+import org.nuxeo.theme.models.InfoPool;
 import org.nuxeo.theme.models.ModelException;
 import org.nuxeo.theme.nodes.Node;
 import org.nuxeo.theme.rendering.Filter;
@@ -50,9 +51,9 @@ public final class ElementRenderer {
     }
 
     public static RenderingInfo render(RenderingInfo info, final boolean cache) {
+        InfoPool.register(info);
+        
         final StringWriter rendered = new StringWriter();
-
-        Manager.getInfoPool().register(info);
         final URL themeUrl = info.getThemeUrl();
         if (themeUrl == null) {
             log.warn("Theme URL not set for the element: " + info.getElement());
