@@ -7,7 +7,7 @@
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:c="http://java.sun.com/jstl/core">
 
-  <ui:define name="page title">Nuxeo 5 EP - #{messages['label.groupManager.groups']}</ui:define>
+  <ui:define name="page title"><h:outputText value="#{nuxeoApplicationName}"/> - #{messages['label.groupManager.groups']}</ui:define>
 
   <ui:define name="body">
 
@@ -33,7 +33,7 @@
           </ul>
         </div>
       </h:form>
-      
+
       <ui:include src="/incl/message_banner.xhtml"/>
 
       <div style="clear:both" />
@@ -50,20 +50,20 @@
           value="#{messages['command.clearSearch']}"
           action="#{groupManagerActions.clearSearch}" styleClass="button" />
       </h:form>
-      
+
       <div>
-      
+
         <h:outputText
           value="#{messages['label.groupManager.emptyGroupList']}"
           rendered="#{groupList.rowCount == 0 and groupManagerActions.searchOverflow == false and !empty groupManagerActions.searchString}" />
-        
+
         <h:outputText
           value="#{messages['label.security.searchOverFlow']}"
           class="infoFeedback"
           rendered="#{groupManagerActions.searchOverflow}" />
-      
+
         <h:form rendered="#{groupList.rowCount > 0}">
-        
+
           <h:dataTable var="group" value="#{groupList}"
             styleClass="dataOutput">
             <h:column>

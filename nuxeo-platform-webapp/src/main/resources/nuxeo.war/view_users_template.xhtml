@@ -9,7 +9,7 @@
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxl="http://nuxeo.org/nxforms/layout">
 
-  <ui:define name="page title">Nuxeo 5 EP - #{messages['label.userManager.users']}</ui:define>
+  <ui:define name="page title"><h:outputText value="#{nuxeoApplicationName}"/> - #{messages['label.userManager.users']}</ui:define>
 
   <ui:define name="body">
 
@@ -35,7 +35,7 @@
           </ul>
         </div>
       </h:form>
-      
+
       <ui:include src="/incl/message_banner.xhtml"/>
 
       <div style="clear:both" />
@@ -56,16 +56,16 @@
       <ui:insert name="letters" />
 
       <div class="#{userListStyleClass}">
-  
+
         <h:outputText value="#{messages['label.userManager.emptyUserList']}"
           rendered="#{userList.rowCount == 0 and userManagerActions.searchOverflow == false and !empty userManagerActions.searchString}" />
-          
+
         <h:outputText value="#{messages['label.security.searchOverFlow']}"
           class="infoFeedback"
           rendered="#{userManagerActions.searchOverflow}" />
-        
+
         <h:form rendered="#{userList.rowCount > 0}">
-      
+
           <h:dataTable var="userModel" value="#{userList}"
             styleClass="dataOutput">
             <h:column>

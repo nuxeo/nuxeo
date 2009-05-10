@@ -10,7 +10,7 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxdir="http://nuxeo.org/nxdirectory">
 
-  <ui:define name="page title">Nuxeo 5 EP - #{messages['label.userManager.users']}</ui:define>
+  <ui:define name="page title"><h:outputText value="#{nuxeoApplicationName}"/> - #{messages['label.userManager.users']}</ui:define>
 
   <ui:define name="body">
 
@@ -65,14 +65,14 @@
       <div class="tabsBar subtabsBar">
         <h:form>
           <ul>
-          
+
             <li class="#{nxu:test(currentUserSubTab == 'view', 'selected', '')}">
               <h:commandLink action="#{userManagerActions.viewUser}"
                 immediate="true">
                 <h:outputText value="#{messages['label.userManager.viewUser']}" />
               </h:commandLink>
             </li>
-          
+
             <f:subview rendered="#{userManagerActions.allowEditUser}">
               <li class="#{nxu:test(currentUserSubTab == 'edit', 'selected', '')}">
                 <h:commandLink
@@ -81,7 +81,7 @@
                 </h:commandLink>
               </li>
             </f:subview>
-          
+
             <f:subview rendered="#{userManagerActions.allowChangePassword}">
               <li class="#{nxu:test(currentUserSubTab == 'editPassword', 'selected', '')}">
                 <h:commandLink action="edit_user_password" immediate="true">
@@ -89,7 +89,7 @@
                 </h:commandLink>
               </li>
             </f:subview>
-          
+
           </ul>
         </h:form>
       </div>

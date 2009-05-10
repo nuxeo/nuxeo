@@ -10,7 +10,7 @@
   xmlns:nxd="http://nuxeo.org/nxweb/document">
 
   <ui:define name="page title">
-    Nuxeo 5 EP: <h:outputText value="#{nxd:titleOrId(currentDocument)}"/>
+    <h:outputText value="#{nuxeoApplicationName}"/> - <h:outputText value="#{nxd:titleOrId(currentDocument)}"/>
   </ui:define>
 
   <ui:define name="bookmark">

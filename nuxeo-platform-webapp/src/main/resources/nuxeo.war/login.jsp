@@ -5,12 +5,16 @@
 <%@ page import="org.nuxeo.runtime.api.Framework"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%
+String productName = Framework.getProperty("org.nuxeo.ecm.product.name");
+String productVersion = Framework.getProperty("org.nuxeo.ecm.product.version");
+%>
 <html>
 
 <fmt:setBundle basename="messages" var="messages"/>
 
 <head>
-<title>Nuxeo Enterprise Platform 5.2</title>
+<title><%=productName%></title>
 <link rel="icon" type="image/png" href="/nuxeo/icons/favicon.png" />
 <style type="text/css">
 <!--
@@ -68,7 +72,7 @@ H2 {
 .login {
   background:#fff;
   opacity:0.8;
-  filter : alpha(opacity=80); 
+  filter : alpha(opacity=80);
   border: 1px solid #4E9AE1;
   padding:20px 75px 5px 70px;
   width:250px;
@@ -169,7 +173,7 @@ nxthemes css is not used in login.jsp */
   overflow:auto;
   background-color:#ffffff;
   opacity:0.8;
-  filter : alpha(opacity=80); 
+  filter : alpha(opacity=80);
   }
 
 .errorMessage {
@@ -291,10 +295,7 @@ nxthemes css is not used in login.jsp */
         </td>
         <td align="right" class="version" valign="bottom">
         <div class="loginLegal">
-         <%
-         String productName = Framework.getProperty("org.nuxeo.ecm.product.name");
-         String productVersion = Framework.getProperty("org.nuxeo.ecm.product.version");
-         %>
+
 
          <%=productName%>
          &nbsp;

@@ -10,7 +10,7 @@
   >
 
   <ui:define name="page title">
-    <h:outputText value="#{messages['title.create.document']}"/>
+    <h:outputText value="#{nuxeoApplicationName}"/> - <h:outputText value="#{messages['title.create.document']}"/>
   </ui:define>
 
   <ui:define name="body">
@@ -21,9 +21,9 @@
 
     <ui:include src="/incl/message_banner.xhtml" />
 
-	<h:panelGroup id="wizard">
-	  <a4j:include viewId="/wizards/createWorkspace/create_workspace.xhtml"/>
-  	</h:panelGroup>
+    <h:panelGroup id="wizard">
+      <a4j:include viewId="/wizards/createWorkspace/create_workspace.xhtml"/>
+      </h:panelGroup>
 
   </ui:define>
 

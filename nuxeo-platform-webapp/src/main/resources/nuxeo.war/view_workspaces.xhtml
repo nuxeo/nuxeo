@@ -8,7 +8,7 @@
   xmlns:nxthemes="http://nuxeo.org/nxthemes">
 
   <ui:define name="page title">
-    Nuxeo 5 EP: <h:outputText value="#{currentDomain.dublincore.title}"/>
+    <h:outputText value="#{nuxeoApplicationName}"/> - <h:outputText value="#{currentDomain.dublincore.title}"/>
   </ui:define>
 
   <ui:define name="body">

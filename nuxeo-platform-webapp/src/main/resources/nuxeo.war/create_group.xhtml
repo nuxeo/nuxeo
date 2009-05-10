@@ -7,7 +7,7 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:h="http://java.sun.com/jsf/html">
 
-  <ui:define name="page title">Nuxeo 5 EP</ui:define>
+  <ui:define name="page title"><h:outputText value="#{nuxeoApplicationName}"/></ui:define>
 
   <ui:define name="body">
     <ui:include src="/incl/message_banner.xhtml" />
@@ -24,7 +24,7 @@
       <h3>
         <h:outputText value="#{messages['title.createGroup']}" />
       </h3>
-  
+
       <h:form id="createGroup" rendered="#{groupManagerActions.allowCreateGroup}">
         <nxl:layout name="group" mode="create"
           value="#{groupManagerActions.newGroup}" />
