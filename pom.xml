@@ -70,7 +70,7 @@
     <module>nuxeo-platform-io-client</module>
     <module>nuxeo-platform-audit-io</module>
     <module>nuxeo-platform-relations-io</module>
-    <module>nuxeo-platform-wiki</module>
+    <!--<module>nuxeo-platform-wiki</module>-->
     <module>nuxeo-webengine-base</module>
     <module>nuxeo-webengine-sites</module>
     <module>nuxeo-webengine-admin</module>

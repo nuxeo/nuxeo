@@ -5,7 +5,6 @@ Bundle-SymbolicName: org.nuxeo.ecm.platform.webengine.sites
 Bundle-Vendor: Nuxeo
 Provide-Package: org.nuxeo.ecm.platform.webengine.jsf
 Nuxeo-Component: OSGI-INF/webengine-layouts-contrib.xml,
- OSGI-INF/webengine-types-contrib.xml,
  OSGI-INF/webengine-actions-contrib.xml,
  OSGI-INF/ecm-types-contrib.xml,
  OSGI-INF/core-types-contrib.xml,
