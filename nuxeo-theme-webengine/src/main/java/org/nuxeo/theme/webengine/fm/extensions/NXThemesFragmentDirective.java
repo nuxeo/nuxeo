@@ -29,10 +29,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.WebContext;
+import org.nuxeo.theme.models.InfoPool;
 import org.nuxeo.theme.themes.ThemeException;
 import org.nuxeo.theme.themes.ThemeManager;
 
 import freemarker.core.Environment;
+import freemarker.ext.beans.BeansWrapper;
 import freemarker.template.Template;
 import freemarker.template.TemplateDirectiveBody;
 import freemarker.template.TemplateDirectiveModel;
@@ -67,6 +69,9 @@ public class NXThemesFragmentDirective implements TemplateDirectiveModel {
             throw new IllegalStateException("Not In a Web Context");
         }
 
+        env.setVariable("nxthemesInfo",
+                BeansWrapper.getDefaultInstance().wrap(InfoPool.getInfoMap()));
+      
         Map<String, String> attributes = Utils.getTemplateDirectiveParameters(params);
         final URL elementUrl = new URL(String.format(
                 "nxtheme://element/%s/%s/%s/%s", attributes.get("engine"),
@@ -84,7 +89,6 @@ public class NXThemesFragmentDirective implements TemplateDirectiveModel {
         Template tpl = new Template(elementUrl.toString(), reader,
                 env.getConfiguration(), env.getTemplate().getEncoding());
 
-        // XXX catch rendering exceptions, see NXP-3484
         try {
             env.include(tpl);
         } finally {

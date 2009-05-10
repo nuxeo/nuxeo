@@ -37,6 +37,7 @@ import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.theme.ApplicationType;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.NegotiationDef;
+import org.nuxeo.theme.models.InfoPool;
 import org.nuxeo.theme.negotiation.NegotiationException;
 import org.nuxeo.theme.themes.ThemeException;
 import org.nuxeo.theme.themes.ThemeManager;
@@ -55,7 +56,7 @@ import freemarker.template.TemplateModelException;
 
 /**
  * @author <a href="mailto:jmo@chalmers.se">Jean-Marc Orliaguet</a>
- *
+ * 
  */
 public class ThemeDirective implements TemplateDirectiveModel {
 
@@ -82,9 +83,6 @@ public class ThemeDirective implements TemplateDirectiveModel {
             throw new IllegalStateException("Not In a Web Context");
         }
 
-        env.setGlobalVariable("nxthemesInfo",
-                BeansWrapper.getDefaultInstance().wrap(Manager.getInfoPool()));
-        
         String strategy = null;
         SimpleScalar strategyModel = (SimpleScalar) params.get("strategy");
         if (strategyModel != null) {
@@ -95,7 +93,7 @@ public class ThemeDirective implements TemplateDirectiveModel {
         if (themeUrl == null) {
             return;
         }
-
+        
         String rendered = "";
         try {
             rendered = renderTheme(themeUrl);
@@ -115,7 +113,7 @@ public class ThemeDirective implements TemplateDirectiveModel {
         Template tpl = new Template(themeUrl.toString(), reader,
                 env.getConfiguration(), env.getTemplate().getEncoding());
         env.include(tpl);
-        
+
         reader.close();
     }
 
