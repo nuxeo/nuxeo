@@ -6,7 +6,7 @@
         point="services">
 
       <service class="org.nuxeo.ecm.platform.annotations.api.AnnotationsService" group="platform/annotations">
-        <locator>%AnnotationsServiceBean</locator>
+        <locator>%AnnotationServiceBean</locator>
       </service>
 
     </extension>

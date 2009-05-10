@@ -45,7 +45,7 @@ public class AnnotationServiceBean implements AnnotationsService {
     @PostConstruct
     public void initialise() {
         try {
-            service = Framework.getService(AnnotationsService.class);
+            service = Framework.getLocalService(AnnotationsService.class);
         } catch (Exception e) {
             log.error(e);
         }
@@ -74,7 +74,7 @@ public class AnnotationServiceBean implements AnnotationsService {
     public List<Annotation> queryAnnotations(URI uri,
             Map<String, String> filters, NuxeoPrincipal user)
             throws AnnotationException {
-        return queryAnnotations(uri, filters, user);
+        return service.queryAnnotations(uri, filters, user);
     }
 
     public Annotation updateAnnotation(Annotation annotation,
