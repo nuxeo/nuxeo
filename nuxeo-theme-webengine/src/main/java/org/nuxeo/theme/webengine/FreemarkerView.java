@@ -24,8 +24,8 @@ public class FreemarkerView extends HTMLView {
     public String replaceModelExpressions(final RenderingInfo info,
             final String html) {
         final String infoId = InfoPool.computeInfoId(info);
-        return html.replaceAll("nxthemesInfo\\.", String.format(
-                "nxthemesInfo\\.%s.", infoId));
+        return html.replaceAll("nxthemesInfo", String.format(
+                "nxthemesInfo\\.%s", infoId));
     }
 
 }
