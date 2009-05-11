@@ -34,6 +34,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.model.Session;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.api.login.LoginComponent;
 
 /**
@@ -100,6 +101,7 @@ public class LocalSession extends AbstractSession {
         }
     }
 
+
     /**
      * This method is for compatibility with < 1.5 core
      * In older core this class were used only for testing - but now it is used by webengine
@@ -108,7 +110,7 @@ public class LocalSession extends AbstractSession {
      * @return
      */
     public boolean isTestingContext() { // neither in jboss neither in nuxeo launcher
-        return Environment.getDefault() == null;
+        return Framework.isTestModeSet();
     }
 
     @Override
