@@ -2,6 +2,8 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 	<id>urn:nuxeo:resources</id>
 	<title>${root!"Resources"}</title>
+	<link rel="schemas" href="${Context.URL}/@schemas" />
+	<link rel="components" href="${Context.URL}/@components" />
 <#list resources as rs>
 	<entry>
 		<id>urn:nuxeo:resources:${rs.name}</id>

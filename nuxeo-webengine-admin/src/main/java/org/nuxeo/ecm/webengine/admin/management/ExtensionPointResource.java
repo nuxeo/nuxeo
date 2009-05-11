@@ -18,15 +18,12 @@ package org.nuxeo.ecm.webengine.admin.management;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
-import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Response;
 
 import org.nuxeo.ecm.webengine.model.view.TemplateView;
 import org.nuxeo.runtime.model.Extension;
@@ -51,37 +48,25 @@ public class ExtensionPointResource {
     @Produces("application/atomsvc+xml")
     public Object getContributions() {
         List<Extension> xts = new ArrayList<Extension>();
-        for (RegistrationInfo dep : ri.getDependsOnMe()) {
-            for (Extension xt : dep.getExtensions()) {
-                if (xt.getTargetComponent().getName().equals(ri.getName().getName())) {
-                    xts.add(xt);
+        Set<RegistrationInfoImpl> depsOnMe = ri.getDependsOnMe();
+        if (depsOnMe!= null) {
+            for (RegistrationInfo dep : depsOnMe) {
+                for (Extension xt : dep.getExtensions()) {
+                    if (xt.getTargetComponent().getName().equals(ri.getName().getName())) {
+                        xts.add(xt);
+                    }
                 }
             }
         }
         return new TemplateView(this, "xp-contribs.ftl").arg("xp", xp).arg("contribs", xts).arg("ri", ri);
     }
 
-    @POST
-    public Response createContribution() {
-        return null;
-    }
 
     @GET
     @Path("{id}")
     public Object getContribution(@PathParam("id") String id) {
         return null;
     }
-
-    @PUT
-    @Path("{id}")
-    public Response updateContribution(@PathParam("id") String id) {
-        return null;
-    }
-
-    @DELETE
-    @Path("{id}")
-    public Response deleteContribution(@PathParam("id") String id) {
-        return null;
-    }
-
+    
+    
 }

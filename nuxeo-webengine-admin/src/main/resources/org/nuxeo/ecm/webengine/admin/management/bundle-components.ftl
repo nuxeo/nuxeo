@@ -10,7 +10,9 @@
 		<link rel="self" href="${Context.URL}/../../components/${comp.name.name}" />
 		<link rel="alternate" href="${Context.URL}/../../components/${comp.name.name}/html" />
 		<link rel="xpoints" href="${Context.URL}/../../components/${comp.name.name}/xpoints" />
-		<link rel="contribs" href="${Context.URL}/../../components/${comp.name.name}/contribs" />		
+		<link rel="contribs" href="${Context.URL}/../../components/${comp.name.name}/contribs" />
+		<nx:state>${comp.state}</nx:state>
+		<nx:persisted>${comp.persistent?string}</nx:persisted>		
 		<summary>
 			${comp.documentation}
 		</summary>
