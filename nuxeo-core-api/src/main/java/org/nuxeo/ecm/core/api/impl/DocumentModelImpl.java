@@ -439,8 +439,10 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
                 }
             }
         }
-        // fetch ACP too
-        getACP();
+        // fetch ACP too if possible
+        if (ref!=null) {
+            getACP();
+        }
         sid = null;
     }
 
