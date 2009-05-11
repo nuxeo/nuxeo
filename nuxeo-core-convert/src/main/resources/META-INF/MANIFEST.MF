@@ -9,5 +9,5 @@ Bundle-Vendor: Nuxeo
 Export-package: org.nuxeo.ecm.core.convert.cache,
  org.nuxeo.ecm.core.convert.extension,
  org.nuxeo.ecm.core.convert.service
-Bundle-Category: search,web,stateful,stateless
+Bundle-Category: runtime
 Nuxeo-Component: OSGI-INF/convert-service-framework.xml
