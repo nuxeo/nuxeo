@@ -121,13 +121,15 @@ public class CommentManagerImpl implements CommentManager {
     public List<DocumentModel> getComments(DocumentModel docModel)
             throws ClientException {
         RelationManager relationManager;
+        Map<String, Serializable> ctxMap = new HashMap<String, Serializable>();
+        ctxMap.put(ResourceAdapter.CORE_SESSION_ID_CONTEXT_KEY, docModel.getSessionId());
         try {
             relationManager = getRelationManager();
         } catch (Exception e) {
             throw new ClientException(e);
         }
         Resource docResource = relationManager.getResource(
-                config.documentNamespace, docModel, null);
+                config.documentNamespace, docModel, ctxMap);
         if (docResource == null) {
             throw new ClientException(
                     "Could not adapt document model to relation resource ; "
@@ -147,8 +149,6 @@ public class CommentManagerImpl implements CommentManager {
                 oldPattern));
 
         List<DocumentModel> commentList = new ArrayList<DocumentModel>();
-        Map<String, Serializable> ctxMap = new HashMap<String, Serializable>();
-        ctxMap.put(ResourceAdapter.CORE_SESSION_ID_CONTEXT_KEY, docModel.getSessionId());
         for (Statement stmt : statementList) {
             QNameResourceImpl subject = (QNameResourceImpl) stmt.getSubject();
 
@@ -542,31 +542,28 @@ public class CommentManagerImpl implements CommentManager {
 
     public List<DocumentModel> getComments(DocumentModel docModel,
             DocumentModel parent) throws ClientException {
-        LoginContext loginContext = null;
-        CoreSession session = null;
         try {
-            loginContext = Framework.login();
-            session = openCoreSession(docModel.getRepositoryName());
-            DocumentModel parentDocModel = session.getDocument(parent.getRef());
-            return getComments(parentDocModel);
+            //loginContext = Framework.login();
+            //session = openCoreSession(docModel.getRepositoryName());
+            //DocumentModel parentDocModel = session.getDocument(parent.getRef());
+            return getComments(parent);
         } catch (Exception e) {
             throw new ClientException(e);
-        } finally {
-            closeCoreSession(loginContext, session);
         }
-
     }
 
     public List<DocumentModel> getDocumentsForComment(DocumentModel comment)
             throws ClientException {
         RelationManager relationManager;
+        Map<String, Serializable> ctxMap = new HashMap<String, Serializable>();
+        ctxMap.put(ResourceAdapter.CORE_SESSION_ID_CONTEXT_KEY, comment.getSessionId());
         try {
             relationManager = getRelationManager();
         } catch (Exception e) {
             throw new ClientException(e);
         }
         Resource commentResource = relationManager.getResource(
-                config.commentNamespace, comment, null);
+                config.commentNamespace, comment, ctxMap);
         if (commentResource == null) {
             throw new ClientException(
                     "Could not adapt document model to relation resource ; "
@@ -591,7 +588,7 @@ public class CommentManagerImpl implements CommentManager {
             DocumentModel docModel = null;
             try {
                 docModel = (DocumentModel) relationManager.getResourceRepresentation(
-                        config.documentNamespace, subject, null);
+                        config.documentNamespace, subject, ctxMap);
             } catch (Exception e) {
                 log.error("failed to retrieve documents from relations");
             }
