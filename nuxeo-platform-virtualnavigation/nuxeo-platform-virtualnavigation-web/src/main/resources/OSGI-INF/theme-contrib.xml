@@ -8,13 +8,11 @@
 
     <view name="nuxeo5 tree explorer" template-engine="jsf-facelets">
       <format-type>widget</format-type>
-      <class>org.nuxeo.theme.jsf.views.JSFView</class>
       <template>incl/tree_explorer_with_virtual_nav.xhtml</template>
     </view>
 
     <view name="nuxeo5 breadcrumbs" template-engine="jsf-facelets">
       <format-type>widget</format-type>
-      <class>org.nuxeo.theme.jsf.views.JSFView</class>
       <template>incl/breadcrumb_vn.xhtml</template>
     </view>
 

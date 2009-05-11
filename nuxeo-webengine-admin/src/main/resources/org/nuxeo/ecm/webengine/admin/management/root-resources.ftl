@@ -2,6 +2,8 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xmlns:nx="http://www.nuxeo.org/server_management">
 	<id>urn:nuxeo:resources</id>
 	<title>${root!"Resources"}</title>
+	<link rel="schemas" href="${Context.URL}/@schemas" />
+	<link rel="components" href="${Context.URL}/@components" />
 <#list resources as rs>
 	<entry>
 		<nx:type>${rs.isFile()?string("file","directory")}</nx:type>

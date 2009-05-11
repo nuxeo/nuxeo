@@ -4,7 +4,7 @@ Bundle-Name: Nuxeo ECM Annotations Client
 Bundle-SymbolicName: org.nuxeo.ecm.annotations.client;singleton:=true
 Bundle-ClassPath: lib/gwt-servlet-1.5.3.jar
 Bundle-Vendor: Nuxeo
-Bundle-Category: web,stateful
+Bundle-Category: web,stateless
 Require-Bundle: org.nuxeo.ecm.webapp.ui,
   org.nuxeo.ecm.platform.preview,
   org.nuxeo.theme.jsf

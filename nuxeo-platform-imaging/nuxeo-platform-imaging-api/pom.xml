@@ -41,9 +41,5 @@
       <artifactId>nuxeo-core-jcr-connector-test</artifactId>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-facade</artifactId>
-    </dependency>
   </dependencies>
 </project>

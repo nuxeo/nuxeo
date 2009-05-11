@@ -17,11 +17,9 @@
 package org.nuxeo.ecm.webengine.admin.management;
 
 import java.io.File;
-import java.util.ArrayList;
+import java.io.InputStream;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
-import java.util.Arrays;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -32,6 +30,9 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
 import org.nuxeo.common.Environment;
+import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.ecm.webengine.WebEngine;
+import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.view.TemplateView;
 import org.nuxeo.runtime.RuntimeService;
@@ -47,6 +48,12 @@ import org.osgi.framework.Bundle;
 @Path("server")
 public class ServerManagement {
 
+    public final static String ACTIVATION_PROPERTY = "org.nuxeo.runtime.rest.management";
+    
+    public ServerManagement() {
+        checkActivation();
+    }
+    
     @GET
     @Produces("application/atomsvc+xml")
     public Object getServiceDocument() {
@@ -125,6 +132,15 @@ public class ServerManagement {
     @POST
     @Path("components")
     public Response postComponent() {
+        try {
+            //TODO use only JAX-RS primitives - avoid using WebEngine to get the HttpRequest
+            InputStream in = WebEngine.getActiveContext().getRequest().getInputStream(); 
+            byte[] bytes = FileUtils.readBytes(in);
+            System.out.println("Deploying component:\n-----------------------------\n"+new String(bytes)+"\n------------------------------");
+            ((OSGiRuntimeService)Framework.getRuntime()).getComponentPersistence().createComponent(bytes);
+        } catch (Exception e) {
+            throw WebException.wrap("Failed to create component", e);
+        }
         return null;
     }
 
@@ -151,40 +167,13 @@ public class ServerManagement {
         throw new WebResourceNotFoundException("No such bundle: " + name);
     }
 
-    @GET
-    @Produces("application/atom+xml")
     @Path("resources")
-    public Object getResourceTypes() {
-        Environment env = Environment.getDefault();
-        List<File> files = new ArrayList<File>();
-        files.add(env.getConfig());
-        files.add(new File(env.getHome(), "schemas"));
-        files.add(new File(env.getHome(), "extensions"));
-        File root = new File(env.getHome(), "resources");
-        if (root.isDirectory()) {
-            files.addAll(Arrays.asList(root.listFiles()));
-        }
-        return new TemplateView(this, "resources.ftl").arg("resources", files);
+    public Object getResources() {
+        Environment env = Environment.getDefault(); 
+        return new RootContainerResource(new File(env.getData(), "resources"));
     }
 
-    @Path("resources/{type}")
-    public FileContainerResource getResourceContainer(@PathParam("type") String type) {
-        File root = FileContainerResource.getContainerRoot(type);
-        if (!root.isDirectory()) {
-            throw new WebResourceNotFoundException("No such resource cotnainer was found: " + type);
-        }
-        return new FileContainerResource(root);
-    }
-
-    @POST
-    @Path("resources")
-    public Response createResourceContainer(@QueryParam("type") String type) {
-        Environment env = Environment.getDefault();
-        File rs = new File(env.getHome(), "resources");
-        new File(rs, type).mkdirs();
-        return Response.ok().build();
-    }
-
+    
     public RuntimeService getRuntime() {
         return Framework.getRuntime();
     }
@@ -240,4 +229,10 @@ public class ServerManagement {
         return buf.toString();
     }
 
+    
+    protected void checkActivation() {
+        if (!"true".equals(Framework.getProperty(ACTIVATION_PROPERTY, "false"))) {
+            throw new WebException(403);
+        }
+    }
 }

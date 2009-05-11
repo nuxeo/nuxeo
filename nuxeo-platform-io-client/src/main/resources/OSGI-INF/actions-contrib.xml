@@ -10,7 +10,7 @@
     point="actions">
 
     <action id="xmlExport" link="#{importExportAction.doExportDocument()}" enabled="true"
-      order="17" label="action.xml.export" icon="/icons/xml.png">
+      order="17" label="action.xml.export" icon="/icons/zip.png">
       <category>DOCUMENT_UPPER_ACTION</category>
       <filter-id>not_folder</filter-id>
     </action>

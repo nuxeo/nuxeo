@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<feed xmlns="http://www.w3.org/2005/Atom">
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:nx="http://www.nuxeo.org/server_management">
 	<id>urn:nuxeo:bundles</id>
 	<title>Bundles</title>
 <#list bundles as bundle>
@@ -12,6 +12,7 @@
 		<link rel="alternate" href="${Context.URL}/${bundle.symbolicName}" />
 		<link rel="file" href="${Context.URL}/${bundle.symbolicName}/file" />
 		<link rel="manifest" href="${Context.URL}/${bundle.symbolicName}/manifest" />
+		<nx:state>${bundle.state}</nx:state>
 		<summary type="html">
 		<#assign text>
 		Name: ${This.getBundleHeader(bundle, "Bundle-Name")}
