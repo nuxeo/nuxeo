@@ -81,6 +81,8 @@ import org.nuxeo.runtime.api.Framework;
 @SuppressWarnings( { "SuppressionAnnotation" })
 public class DocumentModelImpl implements DocumentModel, Cloneable {
 
+    public static final String STRICT_LAZY_LOADING_POLICY_KEY = "org.nuxeo.ecm.core.strictlazyloading";
+
     public static final long F_STORED = 1L;
 
     public static final long F_DETACHED = 2L;
@@ -152,6 +154,8 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     private String currentLifeCycleState;
 
     private String lifeCyclePolicy;
+
+    protected static Boolean strictSessionManagement=null;
 
     protected DocumentModelImpl() {
     }
@@ -367,6 +371,30 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         return CoreInstance.getInstance().getSession(sid);
     }
 
+    protected boolean useStrictSessionManagement() {
+        if (strictSessionManagement==null) {
+            strictSessionManagement = Boolean.parseBoolean(Framework.getProperty(STRICT_LAZY_LOADING_POLICY_KEY, "false"));
+        }
+        return strictSessionManagement;
+    }
+
+    protected CoreSession getTempCoreSession() throws ClientException {
+        CoreSession tempSession = null;
+        if (sid!=null) { // detached docs need a tmp session anyway
+             if (useStrictSessionManagement()) {
+                 throw new ClientException("Document " + id + " is bound to a closed CoreSession, can not reconnect");
+             }
+        }
+        try {
+            RepositoryManager mgr = Framework.getService(RepositoryManager.class);
+            Repository repo = mgr.getRepository(repositoryName);
+            tempSession = repo.open();
+        } catch (Exception e) {
+            throw new ClientException(e);
+        }
+        return tempSession;
+    }
+
     /** @deprecated use {@link #getCoreSession} instead. */
     @Deprecated
     public final CoreSession getClient() throws ClientException {
@@ -411,8 +439,11 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
                 }
             }
         }
+        // fetch ACP too
+        getACP();
         sid = null;
     }
+
 
     /**
      * Lazily loads the given data model.
@@ -431,9 +462,28 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
                 return dataModel;
             }
             CoreSession session = getCoreSession();
+
             DataModel dataModel = null;
-            if (session != null && ref != null) {
-                dataModel = session.getDataModel(ref, schema);
+            if (ref!=null) {
+                if (session!=null) {
+                    dataModel = session.getDataModel(ref, schema);
+                }
+                else {
+                    if (useStrictSessionManagement()) {
+                        log.warn("DocumentModel " + id + " is bound to a null or closed session : lazy loading is not available");
+                    }
+                    else {
+                        CoreSession tmpSession = getTempCoreSession();
+                        try {
+                            dataModel = tmpSession.getDataModel(ref, schema);
+                        }
+                        finally {
+                            if (tmpSession!=null) {
+                                CoreInstance.getInstance().close(tmpSession);
+                            }
+                        }
+                    }
+                }
                 dataModels.put(schema, dataModel);
             }
             return dataModel;
@@ -529,26 +579,99 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     }
 
     public void setLock(String key) throws ClientException {
-        getCoreSession().setLock(ref, key);
+        CoreSession session = getCoreSession();
+
+        if (session!=null) {
+            session.setLock(ref, key);
+        }
+        else {
+             CoreSession tmpSession = getTempCoreSession();
+             try {
+                 tmpSession.setLock(ref, key);
+             }
+             finally {
+                 if (tmpSession!=null) {
+                     try {
+                         tmpSession.save();
+                     }
+                     finally {
+                         CoreInstance.getInstance().close(tmpSession);
+                     }
+                 }
+             }
+        }
         lock = key;
     }
 
     public void unlock() throws ClientException {
-        if (getCoreSession().unlock(ref) != null) {
-            lock = null;
+        CoreSession session = getCoreSession();
+        if (session!=null) {
+            if (session.unlock(ref) != null) {
+                lock = null;
+            }
+        }
+        else {
+             CoreSession tmpSession = getTempCoreSession();
+             try {
+                 if (tmpSession.unlock(ref) != null) {
+                     lock = null;
+                 }
+             }
+             finally {
+                 if (tmpSession!=null) {
+                     try {
+                         tmpSession.save();
+                     }
+                     finally {
+                         CoreInstance.getInstance().close(tmpSession);
+                     }
+                 }
+             }
         }
     }
 
     public ACP getACP() throws ClientException {
         if (!isACPLoaded) { // lazy load
-            acp = getCoreSession().getACP(ref);
+            CoreSession session = getCoreSession();
+            if (session!=null) {
+                acp = session.getACP(ref);
+            }
+            else {
+                CoreSession tmpSession = getTempCoreSession();
+                try {
+                    acp = tmpSession.getACP(ref);
+                }
+                finally {
+                    if (tmpSession!=null) {
+                        CoreInstance.getInstance().close(tmpSession);
+                    }
+                }
+            }
             isACPLoaded = true;
         }
         return acp;
     }
 
     public void setACP(ACP acp, boolean overwrite) throws ClientException {
-        getCoreSession().setACP(ref, acp, overwrite);
+        CoreSession session = getCoreSession();
+        if (session!=null) {
+            session.setACP(ref, acp, overwrite);
+        } else {
+            CoreSession tmpSession = getTempCoreSession();
+            try {
+                tmpSession.setACP(ref, acp, overwrite);
+            }
+            finally {
+                if (tmpSession!=null) {
+                    try {
+                        tmpSession.save();
+                    }
+                    finally {
+                        CoreInstance.getInstance().close(tmpSession);
+                    }
+                }
+            }
+        }
         isACPLoaded = false;
     }
 
@@ -697,7 +820,20 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         if (session != null) {
             res = session.followTransition(ref, transition);
         } else {
-            log.error("Cannot find bound core session....");
+            CoreSession tmpSession = getTempCoreSession();
+            try {
+                res = tmpSession.followTransition(ref, transition);
+            }
+            finally {
+                if (tmpSession!=null) {
+                    try {
+                        tmpSession.save();
+                    }
+                    finally {
+                        CoreInstance.getInstance().close(tmpSession);
+                    }
+                }
+            }
         }
         // Invalidate the prefetched value in this case.
         if (res) {
@@ -713,7 +849,15 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         if (session != null) {
             allowedStateTransitions = session.getAllowedStateTransitions(ref);
         } else {
-            log.error("Cannot found bound core session....");
+            CoreSession tmpSession = getTempCoreSession();
+            try {
+                allowedStateTransitions = tmpSession.getAllowedStateTransitions(ref);
+            }
+            finally {
+                if (tmpSession!=null) {
+                    CoreInstance.getInstance().close(tmpSession);
+                }
+            }
         }
         return allowedStateTransitions;
     }
@@ -729,9 +873,17 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         // String currentLifeCycleState = null;
         CoreSession session = getCoreSession();
         if (session != null) {
-            currentLifeCycleState = getCoreSession().getCurrentLifeCycleState(ref);
+            currentLifeCycleState = session.getCurrentLifeCycleState(ref);
         } else {
-            log.error("Cannot found bound core session....");
+            CoreSession tmpSession = getTempCoreSession();
+            try {
+                currentLifeCycleState = tmpSession.getCurrentLifeCycleState(ref);
+            }
+            finally {
+                if (tmpSession!=null) {
+                    CoreInstance.getInstance().close(tmpSession);
+                }
+            }
         }
         return currentLifeCycleState;
     }
@@ -745,7 +897,15 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         if (session != null) {
             lifeCyclePolicy = session.getLifeCyclePolicy(ref);
         } else {
-            log.error("Cannot found bound core session....");
+            CoreSession tmpSession = getTempCoreSession();
+            try {
+                lifeCyclePolicy = tmpSession.getLifeCyclePolicy(ref);
+            }
+            finally {
+                if (tmpSession!=null) {
+                    CoreInstance.getInstance().close(tmpSession);
+                }
+            }
         }
         return lifeCyclePolicy;
     }
@@ -1030,7 +1190,22 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     public <T extends Serializable> T getSystemProp(String systemProperty,
             Class<T> type) throws ClientException, DocumentException {
-        return getCoreSession().getDocumentSystemProp(ref, systemProperty, type);
+
+        CoreSession session = getCoreSession();
+
+        if (session!=null) {
+            return session.getDocumentSystemProp(ref, systemProperty, type);
+        } else {
+            CoreSession tmpSession = getTempCoreSession();
+            try {
+                return tmpSession.getDocumentSystemProp(ref, systemProperty, type);
+            }
+            finally {
+                if (tmpSession!=null) {
+                    CoreInstance.getInstance().close(tmpSession);
+                }
+            }
+        }
     }
 
     public boolean isLifeCycleLoaded() {
