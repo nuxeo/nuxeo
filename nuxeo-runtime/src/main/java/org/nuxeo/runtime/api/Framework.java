@@ -69,12 +69,12 @@ public final class Framework {
      * A class loader used to share resources between all bundles.
      * This is useful to put resources outside any bundle (in a directory on the file system)
      * and then refer them from XML contributions.
-     * The resource directory used by this loader is ${nuxeo_data_dir}/resources whee 
-     * ${nuxeo_data_dir} is usually ${nuxeo_home}/data 
+     * The resource directory used by this loader is ${nuxeo_data_dir}/resources whee
+     * ${nuxeo_data_dir} is usually ${nuxeo_home}/data
      */
     protected static URLClassLoader resourceLoader = null;
 
-    
+
 
     // Utility class.
     private Framework() { }
@@ -90,12 +90,12 @@ public final class Framework {
         initServiceManager();
         runtime.start();
     }
-    
+
     public static void reloadResourceLoader() throws Exception {
         File rs = new File(Environment.getDefault().getData(), "resources");
         rs.mkdirs();
         resourceLoader = new SharedResourceLoader(new URL[] {
-                rs.toURI().toURL() }, Framework.class.getClassLoader());        
+                rs.toURI().toURL() }, Framework.class.getClassLoader());
     }
 
     public static void shutdown() throws Exception {
@@ -117,7 +117,7 @@ public final class Framework {
     public static ClassLoader getResourceLoader() {
         return resourceLoader;
     }
-    
+
     private static void initServiceManager() {
         String sm = getProperty("org.nuxeo.runtime.ServiceManager");
         if (sm == null) { // compatibility mode
@@ -401,6 +401,15 @@ public final class Framework {
             dev = System.getProperty("org.nuxeo.dev");
         }
         return dev != null && !dev.equals("false");
+    }
+
+
+    public static boolean isTestModeSet() {
+        String test = getProperty("org.nuxeo.runtime.testing");
+        if (test == null) {
+            test = System.getProperty("org.nuxeo.runtime.testing");
+        }
+        return test != null && !test.equals("false");
     }
 
     /**

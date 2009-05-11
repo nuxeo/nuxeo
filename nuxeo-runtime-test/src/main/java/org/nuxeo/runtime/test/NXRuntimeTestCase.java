@@ -96,6 +96,7 @@ public class NXRuntimeTestCase extends MockObjectTestCase {
 
     @Override
     public void setUp() throws Exception {
+        System.setProperty("org.nuxeo.runtime.testing", "true");
         super.setUp();
         wipeRuntime();
         initUrls();
