@@ -156,6 +156,15 @@ public class LogEntryProvider {
         return doPublish(query.getResultList());
     }
 
+    public List<?> nativeQuery(String queryString, int pageNb, int pageSize) {
+        Query query = em.createQuery(queryString);
+        if (pageNb > 1) {
+            query.setFirstResult((pageNb - 1) * pageSize);
+        }
+        query.setMaxResults(pageSize);
+        return query.getResultList();
+    }
+
     @SuppressWarnings("unchecked")
     public List<LogEntry> queryLogs(String[] eventIds, String dateRange) {
         Date limit;
@@ -287,5 +296,7 @@ public class LogEntryProvider {
         Query query = em.createNamedQuery("LogEntry.findEventIds");
         return (List<String>)query.getResultList();
     }
+
+
 
 }
