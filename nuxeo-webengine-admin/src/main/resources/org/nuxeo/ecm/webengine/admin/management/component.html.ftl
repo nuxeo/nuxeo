@@ -8,6 +8,13 @@
 	${component.documentation}
 	</blockquote>
 
+<p>
+<b>State:</b> ${component.state}
+<br> 
+<b>Persistent:</b> ${component.persistent?string}	
+<br>
+</p>
+
 <b><a href="xpoints">Extension Points</a></b>
 <ul>
 <#list component.extensionPoints as xp>
