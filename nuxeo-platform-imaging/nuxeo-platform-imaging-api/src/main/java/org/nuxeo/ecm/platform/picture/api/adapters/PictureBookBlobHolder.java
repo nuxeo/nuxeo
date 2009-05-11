@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -13,7 +14,7 @@ import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.runtime.api.Framework;
 
 public class PictureBookBlobHolder extends DocumentBlobHolder {
-    
+
     private CoreSession session;
 
     public PictureBookBlobHolder(DocumentModel doc, String xPath) {
@@ -26,13 +27,13 @@ public class PictureBookBlobHolder extends DocumentBlobHolder {
         PictureResourceAdapter picture = documentModel.getAdapter(PictureResourceAdapter.class);
         return picture.getPictureFromTitle("Original");
     }
-    
+
     @Override
     public List<Blob> getBlobs() throws ClientException {
         return getBlobs("Original");
     }
 
-    
+
     public List<Blob> getBlobs(String title) throws ClientException {
         DocumentModelList docList = getSession().getChildren(doc.getRef(), "Picture");
         List<Blob> blobList = new  ArrayList<Blob>(docList.size());
@@ -57,6 +58,9 @@ public class PictureBookBlobHolder extends DocumentBlobHolder {
     }
 
     private CoreSession getSession() throws ClientException {
+        if (session == null){
+            session = CoreInstance.getInstance().getSession(doc.getSessionId());
+        }
         if (session == null){
         try {
             RepositoryManager rm = Framework.getService(RepositoryManager.class);
