@@ -120,9 +120,8 @@ public abstract class Script {
 
     public CompiledScript getCompiledScript() throws ScriptException {
         try {
-            Reader reader = getReaderIfModified();
-            if (reader != null) { // script == null cannot happens since
-                                  // lastModified is -1 the first time.
+            Reader reader = script == null ? getReader() : getReaderIfModified(); 
+            if (reader != null) { 
                 script = compile(reader);
             }
             return script;
