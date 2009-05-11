@@ -279,8 +279,10 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
         for (VersioningActions option : options.getOptions()) {
             final String optionResName = "label.versioning.option."
                     + option.toString();
-            final String label = resourcesAccessor.getMessages().get(
-                    optionResName);
+            String label = optionResName;
+            if (resourcesAccessor!=null) {
+                label = resourcesAccessor.getMessages().get(optionResName);
+            }
             versioningOptionsMap.put(option.name(), label);
         }
 
