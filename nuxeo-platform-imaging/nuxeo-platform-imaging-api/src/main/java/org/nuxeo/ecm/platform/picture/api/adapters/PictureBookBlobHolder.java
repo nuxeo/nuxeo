@@ -58,13 +58,22 @@ public class PictureBookBlobHolder extends DocumentBlobHolder {
     }
 
     private CoreSession getSession() throws ClientException {
-        if (session == null){
+        if (session == null && doc!=null && doc.getSessionId()!=null){
             session = CoreInstance.getInstance().getSession(doc.getSessionId());
         }
         if (session == null){
         try {
             RepositoryManager rm = Framework.getService(RepositoryManager.class);
-            return rm.getDefaultRepository().open();
+            String repoName =null;
+            if (doc!=null) {
+                repoName = doc.getRepositoryName();
+            }
+            if (repoName!=null) {
+                return rm.getRepository(repoName).open();
+            }
+            else {
+                return rm.getDefaultRepository().open();
+            }
         } catch (Exception e) {
             throw new ClientException("Cannot get default repository ", e);
         }
