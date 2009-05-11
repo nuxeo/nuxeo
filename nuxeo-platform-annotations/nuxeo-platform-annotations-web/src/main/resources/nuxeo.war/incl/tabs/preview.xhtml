@@ -26,6 +26,10 @@
   <script type="text/javascript"
     src='/nuxeo/org.nuxeo.ecm.platform.annotations.gwt.AnnotationModule/org.nuxeo.ecm.platform.annotations.gwt.AnnotationModule.nocache.js'></script>
     
+  <f:subview rendered="#{currentDocument.hasSchema('file')}"
+    id="document_file_view">
+    <nxl:layout name="file" mode="preview" value="#{currentDocument}" />  
+  </f:subview>
   <f:subview rendered="#{currentDocument.hasSchema('files')}"
     id="document_files_view">
     <nxl:layout name="files" mode="preview" value="#{currentDocument}" />  

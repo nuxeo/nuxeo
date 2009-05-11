@@ -25,12 +25,14 @@ import java.io.Serializable;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
+import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.web.RequestParameter;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.preview.helper.PreviewHelper;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
+import org.nuxeo.ecm.webapp.helpers.EventNames;
 
 /**
  * Seam Action bean to handle the preview tabs and associated actions
@@ -78,10 +80,10 @@ public class PreviewActionBean implements Serializable {
         return url;
     }
 
-    public String viewPreview() throws ClientException {
+    @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED,
+            EventNames.DOCUMENT_CHANGED }, create = false, inject = false)
+    public void resetFields() {
         fieldXPathValue = null;
-
-        return "view_preview";
     }
 
     public String doSetFieldXPath() throws ClientException {
