@@ -92,7 +92,7 @@ public class LogsBean implements Logs {
 
     public List<?> nativeQuery(String query,
             int pageNb, int pageSize) {
-        List<LogEntry> entries = service().nativeQuery(em,query, pageNb, pageSize);
+        List<?> entries = service().nativeQuery(em,query, pageNb, pageSize);
         return entries;
     }
 
