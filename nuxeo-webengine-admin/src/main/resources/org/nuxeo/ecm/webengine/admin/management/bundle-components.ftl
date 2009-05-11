@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<feed xmlns="http://www.w3.org/2005/Atom">
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:nx="http://www.nuxeo.org/server_management">
 	<id>urn:nuxeo:${bundle.symbolicName}:components</id>
 	<title>Components for bundle ${bundle.symbolicName}</title>
 <#list components as comp>
