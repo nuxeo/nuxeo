@@ -41,6 +41,14 @@
         </h:outputLink> 
       </h:panelGroup>
     </nxu:methodResult>
+    
+    <c:if test="#{widget.mode == 'view'}">
+      <h:commandLink action="#{previewActions.doSetFieldXPath}">
+        <f:param name="fieldXPath"
+          value="#{widget.fieldDefinitions[0].propertyName}" />
+        <h:outputText value=" | #{messages['command.preview.file']}" />
+      </h:commandLink>
+    </c:if>
 
   </c:if>
 

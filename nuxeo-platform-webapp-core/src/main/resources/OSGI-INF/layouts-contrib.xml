@@ -249,6 +249,12 @@
           <field>file:content</field>
           <field>file:filename</field>
         </fields>
+        <widgetModes>
+          <mode value="full_edit">edit</mode>
+          <mode value="edit">edit</mode>
+          <mode value="view">view</mode>
+          <mode value="view">preview</mode>
+        </widgetModes>
         <properties mode="any">
           <property name="template">
             /widgets/extended_file_widget.xhtml
@@ -289,7 +295,7 @@
       </rows>
       <widget name="files" type="template">
         <labels>
-          <label mode="any"></label>
+          <label mode="any">label.files.files</label>
         </labels>
         <translated>true</translated>
         <fields>
@@ -304,12 +310,10 @@
           <property name="diff">true</property>
         </properties>
         <widgetModes>
-          <widgetModes>
           <mode value="full_edit">edit</mode>
           <mode value="edit">edit</mode>
           <mode value="view">view</mode>
           <mode value="view">preview</mode>
-        </widgetModes>
         </widgetModes>
         <subWidgets>
           <widget name="file" type="template">
