@@ -47,6 +47,8 @@
       <artifact name="nuxeo-platform-webapp-core" />
       <artifact name="nuxeo-platform-ear" />
       <artifact name="nuxeo-apt-extensions" />
+      <!-- excluding nuxeo-theme-webwidgets not ready for two parts deployment -->
+      <artifact name="nuxeo-theme-webwidgets*" />
     </excludes>
   </artifactSet>
 
