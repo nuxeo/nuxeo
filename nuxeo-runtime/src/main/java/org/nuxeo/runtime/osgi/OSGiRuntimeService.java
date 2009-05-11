@@ -103,11 +103,15 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
         }
         String homeDir = getProperty(PROP_HOME_DIR);
         componentDebugLog.info("Home directory: " + homeDir);
-
         if (homeDir != null) {
             workingDir = new File(homeDir);
         } else {
             workingDir = bundleContext.getDataFile("/");
+        }
+        // environment may not be set by some bootstrappers (like tests) - we create it now if not yet created
+        Environment env = Environment.getDefault(); 
+        if (env == null) {
+            Environment.setDefault(new Environment(workingDir));
         }
         workingDir.mkdirs();
         persistence = new ComponentPersistence(this);
