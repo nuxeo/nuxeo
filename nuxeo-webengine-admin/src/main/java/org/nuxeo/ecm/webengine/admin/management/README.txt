@@ -17,23 +17,39 @@ The HTML interface is available at /server/html.
 
 Here are all the paths exposed:
 
-http://host:port/server - the ATOMPUB service document
-http://host:port/server/html - the entry point of the Web interface (not REST)
-http://host:port/server/bundles - the bundles collection
-http://host:port/server/components - the components collection
-http://host:port/server/resources - the resources collection
-http://host:port/server/bundles/{symbolicName} - the bundle entry
-http://host:port/server/bundles/{componentName} - the component entry
-http://host:port/server/bundles/{componentName}/xpoints - the xpoints provided by a bundle
-http://host:port/server/bundles/{componentName}/xpoints - the contributions provided by a bundle
-http://host:port/server/bundles/{componentName}/{xpoint} - the feed of all extensions contributed to the {xpoint} extension point
-http://host:port/server/system_properties - the system properties
-http://host:port/server/runtime_properties - the runtime properties
+GET http://host:port/server - the ATOMPUB service document
+GET http://host:port/server/html - the entry point of the Web interface (not REST)
+GET http://host:port/server/bundles - the bundles collection
+GET http://host:port/server/components - the components collection
+GET http://host:port/server/resources - the resources collection
+GET http://host:port/server/resources/@schemas - the document schema files (read only)
+GET http://host:port/server/resources/@components - the persisted components contributed by the user (read only)
+GET http://host:port/server/resources/@reload - reload the resource class loader.
+GET http://host:port/server/bundles/{symbolicName} - the bundle entry
+GET http://host:port/server/components/{componentName} - the component entry
+GET http://host:port/server/components/{componentName}/xpoints - the xpoints provided by a bundle
+GET http://host:port/server/components/{componentName}/xpoints - the contributions provided by a bundle
+GET http://host:port/server/components/{componentName}/{xpoint} - the feed of all extensions contributed to the {xpoint} extension point
+GET http://host:port/server/system_properties - the system properties
+GET http://host:port/server/runtime_properties - the runtime properties
 POST http://host:port/server/system_properties - define a new system property
 POST http://host:port/server/runtime_properties - define a new runtime property
 POST http://host:port/server/resources - post a new resource
-POST http://host:port/server/bundles - deploy a new bundle
-POST http://host:port/server/components - deploy a new component that contain extensions
-PUT can be used to reload bundles and components
-  
-        
+
+POST http://host:port/server/components - upload and deploy a new component
+DELETE http://host:port/server/components/{name} - remove a persisted component. 
+	Only components persisted explicitly by the user (using POST or being added in the ${nxserver.home}/data/extensions directory by hand) can be removed
+PUT http://host:port/server/components/{name} - switch the state of the component (activate/deactivate)
+	When activating a component all of its extension points becomes available, 
+	and all of its extensions are contributed to the target components. 
+	When deactivating it, its extension points are disabled and and any contribution made by the component is removed.  
+
+
+Not yet implemented:
+
+POST http://host:port/server/bundles - upload and install a new bundle
+PUT http://host:port/server/bundles/{symbolicName} - switch the state of the bundle (install/uninstall)
+DELETE http://host:port/server/bundles/{symbolicName} - completely remove from he server the given bundle 
+
+HTTP return codes are not yet defined. All method will usually return 200 or 500 if an exception is thrown by the server   
+
