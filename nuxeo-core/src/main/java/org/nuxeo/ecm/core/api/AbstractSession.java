@@ -23,7 +23,6 @@ import java.io.Serializable;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -66,6 +65,7 @@ import org.nuxeo.ecm.core.api.security.impl.UserEntryImpl;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleConstants;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleEventTypes;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
@@ -2734,15 +2734,45 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    /**
+     * This method is for compatibility reasons to notify an operation start. 
+     * Operations must be reworked to use the new event model. In order for operation notification to work 
+     * the event compatibility bundle must be deployed.
+     * @see org.nuxeo.ecm.core.event.compat.CompatibilityListener in nuxeo-core-event-compat
+     */
     public void startOperation(Operation<?> operation) {
-        // TODO rework operations
+        EventContextImpl ctx = new EventContextImpl(this,
+                getPrincipal(), operation);  
+        Event event = ctx.newEvent("!OPERATION_START!");
+        event.setInline(true); // avoid recording the event in bundle events
+        try {
+            fireEvent(event);
+        } catch (ClientException e) {
+            log.error("Failed to notify operation start for: "+operation, e);
+        }
+        // old code was:
         // CoreEventListenerService service =
         // NXCore.getCoreEventListenerService();
         // service.fireOperationStarted(operation);
     }
 
+    /**
+     * This method is for compatibility reasons to notify an operation end. 
+     * Operations must be reworked to use the new event model. In order for operation notification to work 
+     * the event compatibility bundle must be deployed.
+     * @see org.nuxeo.ecm.core.event.compat.CompatibilityListener in nuxeo-core-event-compat
+     */
     public void endOperation(Operation<?> operation) {
-        // TODO rework operations
+        EventContextImpl ctx = new EventContextImpl(this,
+                getPrincipal(), operation);  
+        Event event = ctx.newEvent("!OPERATION_END!");
+        event.setInline(true); // avoid recording the event in bundle events
+        try {
+            fireEvent(event);
+        } catch (ClientException e) {
+            log.error("Failed to notify operation end for: "+operation, e);
+        }
+        // old code was:
         // CoreEventListenerService service =
         // NXCore.getCoreEventListenerService();
         // service.fireOperationTerminated(operation);

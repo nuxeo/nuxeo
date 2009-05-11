@@ -19,6 +19,7 @@ package org.nuxeo.ecm.core.event.compat;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.event.CoreEvent;
 import org.nuxeo.ecm.core.api.event.impl.CoreEventImpl;
+import org.nuxeo.ecm.core.api.operation.Operation;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
@@ -49,7 +50,19 @@ public class CompatibilityListener implements EventListener {
     }
 
     public void handleEvent(Event event) throws ClientException {
-        getEventService().notifyEventListeners(toCoreEvent(event));
+        String eventId = event.getName(); 
+        if (eventId.startsWith("!OPERATION_")) {
+            Object[] args = event.getContext().getArguments();
+            if (args.length == 1 && args[0] instanceof Operation) {
+                if (eventId.equals("!OPERATION_START!")) {
+                    getEventService().fireOperationStarted((Operation<?>)args[0]);
+                } else if (eventId.equals("!OPERATION_END!")) {
+                    getEventService().fireOperationTerminated((Operation<?>)args[0]);
+                }
+            }
+        } else {
+            getEventService().notifyEventListeners(toCoreEvent(event));
+        }
     }
 
 
