@@ -113,4 +113,8 @@ public class ThreadAdapterImpl implements ThreadAdapter, Serializable {
         return allSubPosts;
     }
 
+    public DocumentModel getThreadDoc() {
+        return threadDoc;
+    }
+
 }

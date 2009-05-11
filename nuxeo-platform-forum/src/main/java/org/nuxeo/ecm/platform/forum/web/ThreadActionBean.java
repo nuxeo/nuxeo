@@ -53,7 +53,6 @@ import org.nuxeo.ecm.platform.forum.web.api.ThreadAction;
 import org.nuxeo.ecm.platform.forum.web.api.ThreadAdapter;
 import org.nuxeo.ecm.platform.forum.workflow.ForumConstants;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
-//import org.nuxeo.ecm.webapp.contentbrowser.DocumentActions;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 
@@ -236,8 +235,24 @@ public class ThreadActionBean implements ThreadAction {
         return basicCommentList;
     }
 
+    protected ThreadAdapter adapter;
+
     public ThreadAdapter getAdapter(DocumentModel thread) {
-        return thread.getAdapter(ThreadAdapter.class);
+        if (thread==null) {
+            return null;
+        }
+        if (adapter!=null && adapter.getThreadDoc().getRef().equals(thread.getRef())) {
+            return adapter;
+        }
+        if (thread.getSessionId()==null) {
+            try {
+                thread = documentManager.getDocument(thread.getRef());
+            } catch (ClientException e) {
+                log.error("Unable to reconnect doc !,", e);
+            }
+        }
+        adapter =thread.getAdapter(ThreadAdapter.class);
+        return adapter;
     }
 
     public List<DocumentModel> getAllPosts(DocumentModel thread, String state)

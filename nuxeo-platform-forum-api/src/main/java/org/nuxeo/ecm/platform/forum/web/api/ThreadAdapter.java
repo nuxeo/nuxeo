@@ -34,4 +34,6 @@ public interface ThreadAdapter {
 
     DocumentModel getLastPublishedPost() throws ClientException;
 
+    DocumentModel getThreadDoc();
+
 }
