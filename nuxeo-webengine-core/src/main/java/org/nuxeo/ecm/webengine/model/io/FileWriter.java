@@ -35,10 +35,13 @@ import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.webengine.WebException;
 
 /**
+ * text/plain is needed otherwise resteasy will use its default text plain (@see DefaultTextPlain) writer
+ * to write text/plain objects and the file is not written correctly. 
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@Produces("*/*")
+@Produces({"*/*", "text/plain"})
 public class FileWriter implements MessageBodyWriter<File> {
 
     public void writeTo(File t, Class<?> type, Type genericType,
