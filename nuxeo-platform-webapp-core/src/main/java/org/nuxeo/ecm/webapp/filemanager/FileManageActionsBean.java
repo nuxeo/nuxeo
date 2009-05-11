@@ -71,7 +71,7 @@ import sun.misc.BASE64Decoder;
 /**
  * @author <a href="mailto:andreas.kalogeropoulos@nuxeo.com">Andreas
  *         Kalogeropoulos</a>
- * 
+ *
  */
 @Name("FileManageActions")
 @Scope(ScopeType.EVENT)
@@ -555,7 +555,7 @@ public class FileManageActionsBean extends InputController implements
 
     public String validate() throws ClientException {
         InputStream stream = null;
-        if (fileUploadHolder!=null) {
+        if (fileUploadHolder!=null && fileUploadHolder.getTempFile()!=null) {
             try {
                 stream = new FileInputStream(fileUploadHolder.getTempFile());
                 return addFile(stream, getFileName());
@@ -567,6 +567,9 @@ public class FileManageActionsBean extends InputController implements
             }
         }
         else {
+            facesMessages.add(FacesMessage.SEVERITY_ERROR,
+                    resourcesAccessor.getMessages().get(
+                            "fileImporter.error.nullUploadedFile"));
             return null;
         }
     }
