@@ -5,6 +5,6 @@ Bundle-SymbolicName: org.nuxeo.ecm.platform.commandline.executor
 Bundle-Version: 1.0.0
 Bundle-Localization: plugin
 Bundle-Vendor: Nuxeo
-Bundle-Category: search,web,stateful,stateless
+Bundle-Category: runtime
 Nuxeo-Component: OSGI-INF/commandline-framework.xml,
  OSGI-INF/commandline-default-contrib.xml
