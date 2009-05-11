@@ -53,9 +53,9 @@ public class Test {
         //postBinary("http://localhost:8080/server/resources?file=org/nuxeo/runtime/MyListener.class", new FileInputStream(cfile));
         //postXml("http://localhost:8080/server/components", FileUtils.readFile(file));
         
-        deleteData("http://localhost:8080/nuxeo/site/server/components/test-listener");
-        postBinary("http://localhost:8080/nuxeo/site/server/resources?file=script/listener.groovy", new FileInputStream(new File("/Users/bstefanescu/listener.groovy")));
-        postXml("http://localhost:8080/nuxeo/site/server/components", FileUtils.readFile(new File("/Users/bstefanescu/test-listeners.xml")));
+        deleteData("http://localhost:8080/server/components/test-listener");
+        postBinary("http://localhost:8080/server/resources?file=script/listener.groovy", new FileInputStream(new File("/Users/bstefanescu/listener.groovy")));
+        postXml("http://localhost:8080/server/components", FileUtils.readFile(new File("/Users/bstefanescu/test-listeners.xml")));
     }
     
     

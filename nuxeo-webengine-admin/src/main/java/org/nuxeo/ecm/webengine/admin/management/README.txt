@@ -1,4 +1,10 @@
-This module provides a REST API for runtime managament.
+This module provides a REST API for runtime managament. 
+
+This service is available only if the runtime property 
+org.nuxeo.runtime.rest.management is defined and equals to "true".
+To define this property add this line in your nuxeo.properties file:
+org.nuxeo.runtime.rest.management=true
+
 The module defines an ATOMPUB service that expose collections to introspect and manage Nuxeo bundles, components, contributions and files resources deployed on a running server.
 Clients can introspect the service document to detect the service collections in order to navigate, to get and post data.
 Feeds that expose informations like available extension points or contributions in a component, or available components in a bundle can be retrieved by clients by reading custom atom link tags on the feed entries.  

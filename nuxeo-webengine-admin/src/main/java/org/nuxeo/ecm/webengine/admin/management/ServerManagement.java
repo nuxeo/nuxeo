@@ -48,6 +48,12 @@ import org.osgi.framework.Bundle;
 @Path("server")
 public class ServerManagement {
 
+    public final static String ACTIVATION_PROPERTY = "org.nuxeo.runtime.rest.management";
+    
+    public ServerManagement() {
+        checkActivation();
+    }
+    
     @GET
     @Produces("application/atomsvc+xml")
     public Object getServiceDocument() {
@@ -223,4 +229,10 @@ public class ServerManagement {
         return buf.toString();
     }
 
+    
+    protected void checkActivation() {
+        if (!"true".equals(Framework.getProperty(ACTIVATION_PROPERTY, "false"))) {
+            throw new WebException(403);
+        }
+    }
 }
