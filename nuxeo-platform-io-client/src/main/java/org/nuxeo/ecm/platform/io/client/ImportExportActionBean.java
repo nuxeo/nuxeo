@@ -139,7 +139,7 @@ public class ImportExportActionBean implements Serializable {
     public String getDocumentExportURL() {
         StringBuffer urlb = getRestletBaseURL(
                 navigationContext.getCurrentDocument());
-        urlb.append("export?format=XML");
+        urlb.append("exportTree?format=XML");
         return urlb.toString();
     }
 
