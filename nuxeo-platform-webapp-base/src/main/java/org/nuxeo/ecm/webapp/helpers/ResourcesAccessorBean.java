@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.webapp.helpers;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -53,7 +54,13 @@ public class ResourcesAccessorBean implements ResourcesAccessor {
     private Map<String, String> messages;
 
     public Map<String, String> getMessages() {
-        return messages;
+        if (messages==null) {
+            log.warn("Unable to get message map");
+            return new HashMap<String, String>();
+        }
+        else {
+            return messages;
+        }
     }
 
 }
