@@ -28,11 +28,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.Create;
 import org.jboss.seam.annotations.Destroy;
+import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.webapp.base.InputController;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 
@@ -43,14 +46,17 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
 
 @Name("slideShowManager")
 @Scope(CONVERSATION)
-public class SlideShowManagerBean extends InputController implements
+public class SlideShowManagerBean implements
         SlideShowManager {
 
     private static final Log log = LogFactory.getLog(PictureBookManagerBean.class);
 
     Integer index;
 
-    Integer childrenSize;
+    Integer childrenSize=null;
+
+    @In(create = true)
+    protected NavigationContext navigationContext;
 
     DocumentModel child;
 
@@ -58,7 +64,7 @@ public class SlideShowManagerBean extends InputController implements
     public void initialize() throws Exception {
         log.debug("Initializing...");
         index = 1;
-        childrenSize = navigationContext.getCurrentDocumentChildren().size();
+        childrenSize = null;
     }
 
     public void firstPic() {
@@ -100,15 +106,16 @@ public class SlideShowManagerBean extends InputController implements
     }
 
     @Observer({ EventNames.DOCUMENT_SELECTION_CHANGED })
+    @BypassInterceptors
     public void resetIndex() throws ClientException {
         index = 1;
         child = null;
-        childrenSize = navigationContext.getCurrentDocumentChildren().size();
+        childrenSize = null;
     }
 
     public void inputValidation(ActionEvent arg0) {
-        if (childrenSize < index) {
-            index = childrenSize;
+        if (getChildrenSize() < index) {
+            index = getChildrenSize();
         }
         if (index <= 0) {
              index = 1;
@@ -116,6 +123,14 @@ public class SlideShowManagerBean extends InputController implements
     }
 
     public Integer getChildrenSize() {
+        if (childrenSize==null) {
+            try {
+                childrenSize = navigationContext.getCurrentDocumentChildren().size();
+            } catch (ClientException e) {
+                log.error("Error while calculating size of picturebook", e);
+                childrenSize=0;
+            }
+        }
         return childrenSize;
     }
 

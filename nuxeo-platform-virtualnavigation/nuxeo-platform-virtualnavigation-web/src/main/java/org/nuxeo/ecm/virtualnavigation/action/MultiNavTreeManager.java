@@ -30,6 +30,7 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.nuxeo.ecm.webapp.directory.DirectoryTreeManager;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 
@@ -87,6 +88,7 @@ public class MultiNavTreeManager implements Serializable {
     }
 
     @Observer(value = { "PATH_PROCESSED" }, create = false)
+    @BypassInterceptors
     public void setThePath(String myPath) {
         thePath = myPath;
     }

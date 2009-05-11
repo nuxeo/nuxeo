@@ -58,12 +58,13 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.annotations.intercept.BypassInterceptors;
 
 /**
  * Provide Picture Book related Actions.
- * 
+ *
  * @author <a href="mailto:ldoguin@nuxeo.com">Laurent Doguin</a>
- * 
+ *
  */
 
 @Name("pictureBookManager")
@@ -185,6 +186,7 @@ public class PictureBookManagerBean extends InputController implements
     }
 
     @Observer( { EventNames.DOCUMENT_SELECTION_CHANGED })
+    @BypassInterceptors
     public void reset() throws ClientException {
         title = null;
         timeinterval = null;
