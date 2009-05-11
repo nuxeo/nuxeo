@@ -8,7 +8,8 @@ Bundle-Category: core, stateful
 Provide-Package: org.nuxeo.platform.virtualnavigation
 Require-Bundle: org.nuxeo.runtime,
  org.nuxeo.ecm.core.api,
- org.nuxeo.ecm.core
+ org.nuxeo.ecm.core,
+ org.nuxeo.ecm.default.config
 Nuxeo-Component: OSGI-INF/core-type-contrib.xml
 
 

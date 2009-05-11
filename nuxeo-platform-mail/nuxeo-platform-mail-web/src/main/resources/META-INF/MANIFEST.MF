@@ -9,7 +9,6 @@ Bundle-Category: stateless
 Eclipse-LazyStart: false
 Nuxeo-RequiredBy: org.nuxeo.ecm.war
 Require-Bundle:  org.nuxeo.ecm.core.api,
- org.nuxeo.ecm.core, 
  org.nuxeo.ecm.webapp.core,
  org.nuxeo.ecm.platform.mail
 Nuxeo-Component: OSGI-INF/nxmail-actions-contrib.xml,
