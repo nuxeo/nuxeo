@@ -76,11 +76,12 @@ public class SQLContentProperty extends SQLComplexProperty {
     @Override
     public void setValue(Object value) throws DocumentException {
         checkWritable();
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map;
         if (value == null) {
-            // nothing, use empty map
-            // XXX AT: set null value insted of HashMap, waiting for NXP-912
+            // nothing, use null
+            map = null;
         } else if (value instanceof Blob) {
+            map = new HashMap<String, Object>();
             Blob blob = (Blob) value;
             Binary binary;
             if (blob instanceof SQLBlob) {

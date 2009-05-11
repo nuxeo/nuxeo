@@ -123,6 +123,14 @@ public class TestSQLRepositoryDirectBlob extends SQLRepositoryTestCase {
         assertEquals("text/plain", blob.getMimeType());
         assertEquals(expected, blob.getString());
 
+        /*
+         * remove attached file
+         */
+       file.setProperty("file", "content", null);
+       file = session.saveDocument(file);
+       session.save();
+       assertNull(file.getProperty("file", "content"));
+
     }
 
     public void testBinarySerialization() throws Exception {
