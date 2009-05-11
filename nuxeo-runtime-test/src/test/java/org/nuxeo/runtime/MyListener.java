@@ -27,12 +27,16 @@ import org.nuxeo.runtime.services.event.EventListener;
  */
 public class MyListener implements EventListener {
 
+    public MyListener() {
+        //System.out.println("created listener");
+    }
+    
     public boolean aboutToHandleEvent(Event event) {
         return false;
     }
 
     public void handleEvent(Event event) {
-        //System.out.println(event);
+        //System.out.println("test listener :" + event);
     }
 
 }

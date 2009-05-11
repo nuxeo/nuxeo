@@ -31,6 +31,7 @@ import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.model.ComponentName;
+import org.nuxeo.runtime.model.RegistrationInfo;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.osgi.framework.Bundle;
 
@@ -77,19 +78,20 @@ public class DefaultRuntimeContext implements RuntimeContext {
         return Thread.currentThread().getContextClassLoader().getResource(name);
     }
 
-    public Class loadClass(String className) throws ClassNotFoundException {
+    public Class<?> loadClass(String className) throws ClassNotFoundException {
         return Thread.currentThread().getContextClassLoader().loadClass(className);
     }
 
-    public void deploy(URL url) throws Exception {
+    public RegistrationInfo deploy(URL url) throws Exception {
         if (deployedFiles.containsKey(url.toString())) {
-            return;
+            return null;
         }
         log.debug("Deploying bundle from url " + url);
         RegistrationInfoImpl ri = createRegistrationInfo(url);
         ri.context = this;
         runtime.getComponentManager().register(ri);
         deployedFiles.put(url.toString(), ri.getName());
+        return ri;
     }
 
     public void undeploy(URL url) throws Exception {
@@ -103,13 +105,14 @@ public class DefaultRuntimeContext implements RuntimeContext {
         return deployedFiles.containsKey(url.toString());
     }
 
-    public void deploy(String location) throws Exception {
+    public RegistrationInfo deploy(String location) throws Exception {
         URL url = getLocalResource(location);
         if (url != null) {
-            deploy(url);
+            return deploy(url);
         } else {
             log.warn("No local resources was found with this name: " + location);
         }
+        return null;
     }
 
     public void undeploy(String location) throws Exception {
@@ -145,15 +148,19 @@ public class DefaultRuntimeContext implements RuntimeContext {
         return null;
     }
 
-    protected RegistrationInfoImpl createRegistrationInfo(URL url) throws Exception {
+    public RegistrationInfoImpl createRegistrationInfo(URL url) throws Exception {
         InputStream in = url.openStream();
         try {
-            return reader.read(this, in);
+            return createRegistrationInfo(in);
         } finally {
             if (in != null) {
                 in.close();
             }
-        }
+        }        
+    }
+    
+    public RegistrationInfoImpl createRegistrationInfo(InputStream in) throws Exception {
+        return reader.read(this, in);
     }
 
 }

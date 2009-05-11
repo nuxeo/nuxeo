@@ -61,26 +61,42 @@ public class OSGiRuntimeContext extends DefaultRuntimeContext {
 
     @Override
     public URL getResource(String name) {
+        URL url = null;
         if (hostBundleId != null) {
-            return getHostBundle().getResource(name);
+            url = getHostBundle().getResource(name);
+        } else {
+            url = bundle.getResource(name);
         }
-        return bundle.getResource(name);
+        if (url == null) {
+            url = Framework.getResourceLoader().getResource(name); 
+        }
+        return url;
     }
 
     @Override
     public URL getLocalResource(String name) {
+        URL url = null;
         if (hostBundleId != null) {
-            return getHostBundle().getEntry(name);
+            url = getHostBundle().getEntry(name);
+        } else {
+            url = bundle.getEntry(name);
         }
-        return bundle.getEntry(name);
+        if (url == null) {
+            url = Framework.getResourceLoader().getResource(name); 
+        }
+        return url;
     }
 
     @Override
     public Class<?> loadClass(String className) throws ClassNotFoundException {
-        if (hostBundleId != null) { // hack to handle fragment bundles that doesn't have class loaders
-            return getHostBundle().loadClass(className);
+        try {
+            if (hostBundleId != null) { // hack to handle fragment bundles that doesn't have class loaders
+                return getHostBundle().loadClass(className);
+            }
+            return bundle.loadClass(className);
+        } catch (ClassNotFoundException e) {
+            return Framework.getResourceLoader().loadClass(className);
         }
-        return bundle.loadClass(className);
     }
 
     public Bundle getHostBundle() {

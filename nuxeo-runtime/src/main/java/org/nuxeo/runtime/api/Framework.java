@@ -19,12 +19,16 @@
 
 package org.nuxeo.runtime.api;
 
+import java.io.File;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.Properties;
 
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
+import org.nuxeo.common.Environment;
 import org.nuxeo.common.collections.ListenerList;
 import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.RuntimeServiceEvent;
@@ -61,6 +65,17 @@ public final class Framework {
 
     private static final ListenerList listeners = new ListenerList();
 
+    /**
+     * A class loader used to share resources between all bundles.
+     * This is useful to put resources outside any bundle (in a directory on the file system)
+     * and then refer them from XML contributions.
+     * The resource directory used by this loader is ${nuxeo_data_dir}/resources whee 
+     * ${nuxeo_data_dir} is usually ${nuxeo_home}/data 
+     */
+    protected static URLClassLoader resourceLoader = null;
+
+    
+
     // Utility class.
     private Framework() { }
 
@@ -71,8 +86,16 @@ public final class Framework {
             throw new Exception("Nuxeo Framework was already initialized");
         }
         runtime = runtimeService;
+        reloadResourceLoader();
         initServiceManager();
         runtime.start();
+    }
+    
+    public static void reloadResourceLoader() throws Exception {
+        File rs = new File(Environment.getDefault().getData(), "resources");
+        rs.mkdirs();
+        resourceLoader = new SharedResourceLoader(new URL[] {
+                rs.toURI().toURL() }, Framework.class.getClassLoader());        
     }
 
     public static void shutdown() throws Exception {
@@ -91,6 +114,10 @@ public final class Framework {
         return runtime != null;
     }
 
+    public static ClassLoader getResourceLoader() {
+        return resourceLoader;
+    }
+    
     private static void initServiceManager() {
         String sm = getProperty("org.nuxeo.runtime.ServiceManager");
         if (sm == null) { // compatibility mode

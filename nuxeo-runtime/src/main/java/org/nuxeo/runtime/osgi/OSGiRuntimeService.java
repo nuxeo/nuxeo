@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Collection;
+import java.util.Hashtable;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -41,6 +42,7 @@ import org.nuxeo.runtime.Version;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.RuntimeContext;
+import org.nuxeo.runtime.model.impl.ComponentPersistence;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
@@ -82,9 +84,18 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
 
     private final Map<String, RuntimeContext> contexts;
 
+    /**
+     * OSGi doesn't provide a method to lookup bundles by symbolic name.
+     * This table is used to map symbolic names to bundles  
+     */
+    Map<String, Bundle> bundles;
+    
+    ComponentPersistence persistence;
+    
     public OSGiRuntimeService(BundleContext context) {
         super(new OSGiRuntimeContext(context.getBundle()));
         bundleContext = context;
+        bundles = new Hashtable<String, Bundle>(); 
         contexts = new ConcurrentHashMap<String, RuntimeContext>();
         String bindAddress = context.getProperty(PROP_NUXEO_BIND_ADDRESS);
         if (bindAddress != null) {
@@ -99,6 +110,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
             workingDir = bundleContext.getDataFile("/");
         }
         workingDir.mkdirs();
+        persistence = new ComponentPersistence(this);
         componentDebugLog.info("Working directory: " + workingDir);
     }
 
@@ -113,12 +125,22 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
     public BundleContext getBundleContext() {
         return bundleContext;
     }
+    
+    public Bundle getBundle(String symbolicName) {
+        return bundles.get(symbolicName);
+    }
 
+    public Map<String,Bundle> getBundlesMap() {
+        return bundles;
+    }
+    
+    public ComponentPersistence getComponentPersistence() {
+        return persistence;
+    }
+    
     public synchronized RuntimeContext createContext(Bundle bundle)
             throws Exception {
-        // FIXME: can't work, bundle is a Bundle, context is a Map<String,
-        // RuntimeContext>
-        RuntimeContext ctx = contexts.get(bundle);
+        RuntimeContext ctx = contexts.get(bundle.getSymbolicName());
         if (ctx == null) {
             // hack to handle fragment bundles
             ctx = new OSGiRuntimeContext(bundle);
@@ -129,18 +151,18 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
     }
 
     public synchronized void destroyContext(Bundle bundle) {
-        // FIXME: can't work, bundle is a Bundle, context is a Map<String,
-        // RuntimeContext>
-        RuntimeContext ctx = contexts.remove(bundle);
+        RuntimeContext ctx = contexts.remove(bundle.getSymbolicName());
         if (ctx != null) {
             ctx.destroy();
         }
     }
 
     public synchronized RuntimeContext getContext(Bundle bundle) {
-        // FIXME: can't work, bundle is a Bundle, context is a Map<String,
-        // RuntimeContext>
-        return contexts.get(bundle);
+        return contexts.get(bundle.getSymbolicName());
+    }
+
+    public synchronized RuntimeContext getContext(String symbolicName) {
+        return contexts.get(symbolicName);
     }
 
     @Override
@@ -342,6 +364,11 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
 
     public void frameworkEvent(FrameworkEvent event) {
         if (event.getType() == FrameworkEvent.STARTED) {
+            try {
+                persistence.loadPersistedComponents();
+            } catch (Exception e) {
+                log.error("Failed to load persisted components", e);
+            }
             printStatusMessage();
         }
     }

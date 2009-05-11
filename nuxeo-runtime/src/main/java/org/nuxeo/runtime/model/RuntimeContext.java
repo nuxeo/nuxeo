@@ -58,7 +58,7 @@ public interface RuntimeContext {
      * @throws ClassNotFoundException if no such class were found
      * @see ClassLoader#loadClass(String)
      */
-    Class loadClass(String className) throws ClassNotFoundException;
+    Class<?> loadClass(String className) throws ClassNotFoundException;
 
     /**
      * Finds a resource having the given name.
@@ -84,11 +84,14 @@ public interface RuntimeContext {
      * Deploys a component XML descriptor given its URL.
      * <p>
      * Do nothing if component is already deployed.
+     * <p>
+     * Returns the registration info of the new deployed component or null if the component was not deployed.
      *
      * @param url the url of the XML descriptor
+     * @return the component registration info or null if registration failed for some reason
      * @throws Exception if any error occurs
      */
-    void deploy(URL url) throws Exception;
+    RegistrationInfo deploy(URL url) throws Exception;
 
     /**
      * Undeploys a component XML descriptor given its URL.
@@ -116,11 +119,14 @@ public interface RuntimeContext {
      * The location is interpreted as a relative path inside the bundle (jar)
      * containing the component - and will be loaded using
      * {@link RuntimeContext#getLocalResource(String)}.
+     * <p>
+     * Returns the registration info of the new deployed component or null if the component was not deployed.
      *
      * @param location the location
+     * @return the component registration info or null if registration failed for some reason 
      * @throws Exception
      */
-    void deploy(String location) throws Exception;
+    RegistrationInfo deploy(String location) throws Exception;
 
     /**
      * Undeploys the component at the given location if any was deployed.

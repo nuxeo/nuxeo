@@ -24,6 +24,7 @@ import java.net.URL;
 import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentName;
+import org.nuxeo.runtime.model.RegistrationInfo;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.osgi.framework.Bundle;
 
@@ -56,7 +57,7 @@ public class RemoteContext implements RuntimeContext {
         return cl.getResource(name);
     }
 
-    public Class loadClass(String className) throws ClassNotFoundException {
+    public Class<?> loadClass(String className) throws ClassNotFoundException {
         return cl.loadClass(className);
     }
 
@@ -80,11 +81,11 @@ public class RemoteContext implements RuntimeContext {
         throw new UnsupportedOperationException("Not yet Implemented");
     }
 
-    public void deploy(URL url) throws Exception {
+    public RegistrationInfo deploy(URL url) throws Exception {
         throw new UnsupportedOperationException("Not yet Implemented");
     }
 
-    public void deploy(String location) throws Exception {
+    public RegistrationInfo deploy(String location) throws Exception {
         throw new UnsupportedOperationException("Not yet Implemented");
     }
 

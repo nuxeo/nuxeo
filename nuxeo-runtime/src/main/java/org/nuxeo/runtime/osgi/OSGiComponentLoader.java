@@ -56,6 +56,7 @@ public class OSGiComponentLoader implements SynchronousBundleListener {
         int mask = Bundle.RESOLVED | Bundle.STARTING | Bundle.ACTIVE;
         for (Bundle bundle : bundles) {
             String name = bundle.getSymbolicName();
+            runtime.bundles.put(name, bundle);
             int state = bundle.getState();
             bundleDebug("Install bundle: %s " + bundleStateAsString(state),
                     name);
@@ -93,7 +94,12 @@ public class OSGiComponentLoader implements SynchronousBundleListener {
             Bundle bundle = event.getBundle();
             String componentsList = OSGiRuntimeService.getComponentsList(bundle);
             switch (type) {
-            case BundleEvent.RESOLVED:
+            case BundleEvent.INSTALLED:
+                runtime.bundles.put(bundle.getSymbolicName(), bundle);
+                break;
+            case BundleEvent.UNINSTALLED:
+                runtime.bundles.remove(bundle.getSymbolicName());
+            case BundleEvent.RESOLVED:                
                 if (componentsList != null) {
                     bundleDebug(
                             "Bundle changed: %s RESOLVED with components: " +

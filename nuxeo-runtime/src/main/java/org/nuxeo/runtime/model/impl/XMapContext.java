@@ -39,7 +39,7 @@ public class XMapContext extends Context {
     }
 
     @Override
-    public Class loadClass(String className) throws ClassNotFoundException {
+    public Class<?> loadClass(String className) throws ClassNotFoundException {
         return ctx.loadClass(className);
     }
 
