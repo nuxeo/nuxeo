@@ -70,6 +70,8 @@ public class TypesTool implements Serializable {
 
     private Type selectedType;
 
+    private Boolean showContent;
+
     @In(create = true)
     private transient NavigationContext navigationContext;
 
@@ -78,6 +80,7 @@ public class TypesTool implements Serializable {
     @BypassInterceptors
     public void resetTypesList() {
         typesMap = null;
+        showContent = false;
     }
 
     /**
@@ -203,6 +206,19 @@ public class TypesTool implements Serializable {
 
     protected DocumentModel getCurrentItem() {
         return navigationContext.getCurrentDocument();
+    }
+    
+    public void toggleShowContent(){
+        if (!showContent) {
+            showContent = true;
+        }
+    }
+    
+    public Boolean isShowContent() {
+        if (showContent == null) {
+            showContent = false;
+        }
+        return showContent;
     }
 
 }
