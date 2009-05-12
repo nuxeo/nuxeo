@@ -76,8 +76,8 @@
                 </ant>
                 <copy file="${basedir}/src/main/resources/jboss/bin/run.sh"
                   todir="${project.build.directory}/jboss/bin" />
-                <chmod dir="${basedir}/src/main/resources/jboss/bin/"
-                  perm="ug+rx" includes="**/*.sh" />
+                <chmod dir="${project.build.directory}/jboss/bin"
+                  perm="750" includes="*.sh" />
               </tasks>
             </configuration>
             <goals>

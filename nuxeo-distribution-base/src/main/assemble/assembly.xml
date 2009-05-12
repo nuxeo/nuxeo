@@ -2,6 +2,7 @@
 
   <fileSet id="template">
     <directory>src/main/resources</directory>
+    <fileMode>550</fileMode>
   </fileSet>
 
   <artifactSet id="launcher-lib">
