@@ -44,6 +44,8 @@ public interface WebActions {
 
     List<Action> getUnfiltredActionsList(String category);
 
+    List<Action> getAllActions(String category);
+
     @Deprecated
     List<Action> getSubViewActionsList();
 
