@@ -155,7 +155,7 @@ To pass extra options to the funkload test runner using EXT:
   running Firefox (See fl-run-test -h for more information).
 
 Note that log files are located in the target/ftest/funkload of the
-nuxeo-platform-ear.
+nuxeo-distribution-dm.
 
 Benching
 ---------

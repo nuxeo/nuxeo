@@ -13,7 +13,7 @@
     <outputFile>server/default/deploy/nuxeo.ear</outputFile>
   </assemble>
   <zipEntrySet id="nuxeo-ear">
-    <artifact>org.nuxeo.ecm.platform:nuxeo-platform-ear:${project.version}:zip</artifact>
+    <artifact>org.nuxeo.ecm.platform:nuxeo-distribution-dm:${project.version}:zip</artifact>
   </zipEntrySet>
 
 </assembly>

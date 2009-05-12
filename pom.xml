@@ -18,17 +18,24 @@
   <profiles>
     <profile>
       <id>nuxeo-ep</id>
+      <modules>
+        <module>nuxeo-platform-ear</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>nuxeo-dm</id>
       <activation>
         <activeByDefault>true</activeByDefault>
       </activation>
       <modules>
-        <module>nuxeo-platform-ear</module>
+        <module>nuxeo-distribution-dm</module>
       </modules>
     </profile>
     <profile>
       <id>nuxeo-ep-jboss</id>
       <modules>
         <module>nuxeo-platform-ear</module>
+        <module>nuxeo-distribution-dm</module>
         <module>nuxeo-distribution-jboss</module>
       </modules>
     </profile>
@@ -75,6 +82,7 @@
       <id>all-distributions</id>
       <modules>
         <module>nuxeo-platform-ear</module>
+        <module>nuxeo-distribution-dm</module>
         <module>nuxeo-distribution-jboss</module>
         <module>nuxeo-distribution-base</module>
         <module>nuxeo-distribution-shell</module>

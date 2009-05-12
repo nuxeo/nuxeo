@@ -7,7 +7,7 @@
   </assemble>
   <zipEntrySet id="resources">
     <artifact>
-      org.nuxeo.ecm.platform:nuxeo-platform-ear:${project.version}:zip:resources-platform-stateful
+      org.nuxeo.ecm.platform:nuxeo-platform-ear:${project.version}:zip:resources-mono
     </artifact>
   </zipEntrySet>
   <assemble>
@@ -55,8 +55,39 @@
       org.nuxeo.ecm.platform:nuxeo-platform-ear:${project.version}:zip:resources-h2
     </artifact>
   </zipEntrySet>
+  <assemble>
+    <set>resources-jcr</set>
+    <outputFile>/</outputFile>
+  </assemble>
+  <zipEntrySet id="resources-jcr" profile="jcr-profile">
+    <artifact>
+      org.nuxeo.ecm.platform:nuxeo-platform-ear:${project.version}:zip:resources-jcr
+    </artifact>
+  </zipEntrySet>
+  <assemble>
+    <set>resources-jcr-postgresql</set>
+    <outputFile>/</outputFile>
+  </assemble>
+  <zipEntrySet id="resources-jcr-postgresql" profile="jcr-postgresql">
+    <artifact>
+      org.nuxeo.ecm.platform:nuxeo-platform-ear:${project.version}:zip:resources-jcr-postgresql
+    </artifact>
+  </zipEntrySet>
 
   <!-- ARTIFACTS -->
+  <assemble>
+    <outputFile>/</outputFile>
+    <set>root-artifacts</set>
+  </assemble>
+  <artifactSet id="root-artifacts">
+    <import>**</import>
+    <includeDependencies>false</includeDependencies>
+    <includes>
+      <artifact name="nuxeo-platform-webapp" />
+      <artifact name="nuxeo-platform-webapp-core" />
+    </includes>
+  </artifactSet>
+
   <assemble>
     <outputFile>system</outputFile>
     <set>system</set>
@@ -67,17 +98,21 @@
     <includes>
       <artifact group="org.nuxeo.*" category="runtime,jboss4"
         includeDependsOnCategory="false" />
-      <artifact group="org.nuxeo.*" category="core,stateful" />
-      <!-- add here core and stateful nuxeo-addons -->
+      <artifact group="org.nuxeo.*" category="core,search,web,stateful,stateless" />
+      <!-- add here nuxeo-addons -->
     </includes>
     <excludes>
       <artifact group="!org.nuxeo*" />
       <artifact group="org.nuxeo.common" />
       <artifact name="nuxeo-runtime-jboss-extensions" />
 
+      <artifact name="nuxeo-platform-webapp" />
+      <artifact name="nuxeo-platform-webapp-core" />
+
       <artifact name="nuxeo-platform-audit-facade" />
       <artifact name="nuxeo-platform-placeful-facade" />
       <artifact name="nuxeo-platform-ear" />
+      <artifact name="nuxeo-distribution-dm" />
       <artifact name="nuxeo-apt-extensions" />
     </excludes>
   </artifactSet>
@@ -174,18 +209,16 @@
 
   <!-- CUSTOM RESOURCES -->
   <!--
-    <assemble> <outputFile>/</outputFile> <set>custom-resources-stateful</set>
-    </assemble> <fileSet id="custom-resources-stateful">
-    <directory>src/main/resources_custom_stateful</directory> </fileSet>
+    <assemble> <outputFile>/</outputFile> <set>custom-resources</set>
+    </assemble> <fileSet id="custom-resources">
+    <directory>src/main/resources_custom</directory> </fileSet>
   -->
 
   <!-- CUSTOM ARTIFACTS -->
   <!--
-    <assemble> <outputFile>plugins</outputFile>
-    <set>custom-plugins-stateful</set> </assemble> <artifactSet
-    id="custom-plugins-stateful"> <import>**</import>
+    <assemble> <outputFile>plugins</outputFile> <set>custom-plugins</set>
+    </assemble> <artifactSet id="custom-plugins"> <import>**</import>
     <includeDependencies>false</includeDependencies> <includes> <artifact
-    group="com.custom.sample" category="core,stateful" /> </includes>
-    </artifactSet>
+    group="com.custom.sample" /> </includes> </artifactSet>
   -->
 </assembly>

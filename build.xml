@@ -5,7 +5,7 @@
   <property name="mvn.opts" value="" />
   <property name="jboss.config" value="default" />
   <property name="jboss.dir" value="/opt/jboss" />
-  <property name="nuxeo.ear.root" value="${basedir}/nuxeo-platform-ear/" />
+  <property name="nuxeo.ear.root" value="${basedir}/nuxeo-distribution-dm/" />
   <!--the default pom file to use for jboss-patch  -->
   <property name="pom.file" value="${basedir}/nuxeo-distribution-jboss/jboss-patch/pom.xml" />
 

@@ -14,8 +14,7 @@ Using this project you can build the following applications:
 Previously built by nuxeo-platform/nuxeo-platform-ear/, Nuxeo EP EAR is now
 built here.
 
-- From this directory, use the following commands: "mvn install" or 
-  "mvn install -Pnuxeo-jboss"
+- From this directory, use the following command: "mvn install -Pnuxeo-ep"
 
 - From nuxeo-platform-ear, run "mvn install" or see in package.sh for available
   packages.
@@ -23,7 +22,13 @@ built here.
   Built EAR is in nuxeo-platform-ear/target/ and its name depends on chosen
   package: default is nuxeo.ear
 
-2. Nuxeo Shell 
+2. Nuxeo Document Management
+
+- From this directory, run "mvn install" or "mvn install -Pnuxeo-dm"
+
+  Built EAR is in nuxeo-distribution-dm/target.
+
+3. Nuxeo Shell 
 
 A command-line client application suitable to connect to remote nuxeo servers.
 
@@ -32,7 +37,7 @@ browsing or administration purposes.
 
 To build, run: "mvn install -Pshell"
     
-3. Nuxeo Core Server 
+4. Nuxeo Core Server 
 
 A minimal server application. An embedded repository will be started. No other
 platform services are available.
@@ -44,7 +49,7 @@ Remoting will be also available in the future via Nuxeo Runtime.
   
 To build, run: "mvn install -Pcore"
     
-4. Nuxeo Jetty Server
+5. Nuxeo Jetty Server
   
 A Nuxeo server application embedding a Jetty server. 
   
@@ -54,7 +59,7 @@ This is also known as Nuxeo WebEngine (based on Jetty).
 
 To build, run: "mvn install -Pjetty"
    
-5. Nuxeo GF3 Server
+6. Nuxeo GF3 Server
   
 A Nuxeo server application embedding a GlassFish v3 server. 
   

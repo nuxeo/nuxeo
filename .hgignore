@@ -11,8 +11,8 @@ target
 *.iml
 *.ipr
 *.iws
-nuxeo-platform-ear/ftest/funkload/log/*
-nuxeo-platform-ear/ftest/selenium/result-*.html
-nuxeo-platform-ear/ftest/selenium/run.conf
-nuxeo-platform-ear/ftest/selenium/user-extensions.js
-nuxeo-platform-ear/ftest/selenium/ffprofile/prefs.js
+nuxeo-distribution-dm/ftest/funkload/log/*
+nuxeo-distribution-dm/ftest/selenium/result-*.html
+nuxeo-distribution-dm/ftest/selenium/run.conf
+nuxeo-distribution-dm/ftest/selenium/user-extensions.js
+nuxeo-distribution-dm/ftest/selenium/ffprofile/prefs.js
