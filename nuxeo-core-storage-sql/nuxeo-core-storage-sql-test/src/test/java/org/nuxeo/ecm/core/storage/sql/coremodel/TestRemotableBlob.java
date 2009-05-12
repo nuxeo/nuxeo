@@ -19,47 +19,19 @@ package org.nuxeo.ecm.core.storage.sql.coremodel;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import junit.framework.TestCase;
-
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.storage.sql.Binary;
-import org.nuxeo.runtime.api.DefaultServiceProvider;
-import org.nuxeo.runtime.services.streaming.StreamManager;
-import org.nuxeo.runtime.services.streaming.StreamSource;
+import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class TestRemotableBlob extends TestCase {
+public class TestRemotableBlob extends NXRuntimeTestCase {
 
-    @Override
-    protected void setUp() throws Exception {
-        // hack runtime to register a fake streaming service to avoid exceptions later
-        DefaultServiceProvider sp = new DefaultServiceProvider();
-            sp.registerService(StreamManager.class, new StreamManager() {
-                public String addStream(StreamSource src) throws IOException {
-                    return null;
-                }
-                public StreamSource getStream(String uri) throws IOException {
-                    return null;
-                }
-                public boolean hasStream(String uri) {
-                    return false;
-                }
-                public void removeStream(String uri) {
-                }
-                public void start() throws Exception {
-                }
-                public void stop() throws Exception {
-                }
-            });
-        DefaultServiceProvider.setProvider(sp);
-    }
     
     protected SQLBlob createSQLBlob() throws Exception {
         File file = File.createTempFile("nuxeo-test-", ".blob");
