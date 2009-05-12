@@ -1,3 +1,11 @@
+var panels = new Object();
+function toggleModalPanel(id){
+	if (!panels[id]) {
+		panels[id]=true;		
+		eval(id+'()');
+	}
+	Richfaces.showModalPanel(id);
+}
 
 function disableCheckBoxesIn(name) {
   var table = document.getElementById(name);

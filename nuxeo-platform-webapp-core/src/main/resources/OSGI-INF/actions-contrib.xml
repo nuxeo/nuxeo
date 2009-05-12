@@ -107,7 +107,7 @@
     <!-- generic actions -->
 
     <action id="newDocument"
-      link="javascript:Richfaces.showModalPanel('selectDocTypePanel');"
+      link="javascript:toggleModalPanel('selectDocTypePanel');"
       label="action.new.document" icon="/icons/action_add.gif">
       <category>SUBVIEW_UPPER_LIST_HREF</category>
       <filter-id>create</filter-id>

@@ -4,12 +4,16 @@
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:rich="http://richfaces.org/rich"
   xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:nxthemes="http://nuxeo.org/nxthemes">
 
-<h:form>  <rich:modalPanel id="selectDocTypePanel"  autosized="true"
-    onmaskclick="Richfaces.hideModalPanel('selectDocTypePanel')">
 
+<h:form> 
+
+<a4j:jsFunction name="selectDocTypePanel" action="#{typesTool.toggleShowContent}" reRender="contentSelectDocumentDiv"/>
+ <rich:modalPanel id="selectDocTypePanel"  autosized="true"
+    onmaskclick="Richfaces.hideModalPanel('selectDocTypePanel')">
 
     <f:facet name="header">
       <h:outputText value="#{messages['title.availableDocumentTypes']}" />
@@ -23,6 +27,8 @@
           attachTo="hideDocTypePanel" operation="hide" event="onclick" />
       </h:panelGroup>
     </f:facet>
+<a4j:outputPanel id="contentSelectDocumentDiv" >
+<a4j:outputPanel rendered="#{typesTool.isShowContent()}">
 
     <h:outputText value="#{messages['help.chooseDocumentType']}" />
 <table cellspacing="2">
@@ -56,5 +62,8 @@
 </td>
     </nxu:dataList>
 </table>
+
+</a4j:outputPanel>
+</a4j:outputPanel>
   </rich:modalPanel>
 </h:form></div>
