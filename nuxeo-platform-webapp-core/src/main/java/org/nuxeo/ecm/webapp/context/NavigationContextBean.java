@@ -764,6 +764,7 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
 
     public String goBack() throws ClientException {
         if (currentDocument != null) {
+            setChangeableDocument(null);
             return navigateToDocument(currentDocument);
         } else {
             // XXX AT: should return to currentServer page if set
