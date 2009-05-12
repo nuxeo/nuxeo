@@ -39,6 +39,8 @@ public class BulkLifeCycleChangeListener implements PostCommitEventListener {
     protected static final String OPTION_NAME_FROM = "from";
     protected static final String OPTION_NAME_TO = "to";
     protected static final String OPTION_NAME_TRANSITION = "transition";
+ 
+    public static final String DELETED_LIFECYCLE_STATE = "deleted";
 
     public void handleEvent(EventBundle events) throws ClientException {
         if (!events.containsEventName(LIFECYCLE_TRANSITION_EVENT)) {
@@ -84,18 +86,22 @@ public class BulkLifeCycleChangeListener implements PostCommitEventListener {
         for (DocumentModel docMod : docModelList) {
             boolean removed = false;
             if (docMod.getCurrentLifeCycleState() == null) {
-                log.debug("Doc has no lifecycle, deleting ...");
-                documentManager.removeDocument(docMod.getRef());
-                removed = true;
+                if (DELETED_LIFECYCLE_STATE.equals(targetState)) {
+                    log.debug("Doc has no lifecycle, deleting ...");
+                    documentManager.removeDocument(docMod.getRef());
+                    removed = true;
+                }
             } else if (docMod.getAllowedStateTransitions().contains(transition)) {
                 docMod.followTransition(transition);
             } else {
                 if (targetState.equals(docMod.getCurrentLifeCycleState())) {
                     log.debug("Document" + docMod.getRef() + " is already in the target LifeCycle state");
-                } else {
+                } else if (DELETED_LIFECYCLE_STATE.equals(targetState)) {
                     log.debug("Impossible to change state of " + docMod.getRef() + " :removing");
                     documentManager.removeDocument(docMod.getRef());
                     removed = true;
+                } else {
+                    log.debug("Document" + docMod.getRef() + " has no transition to the target LifeCycle state");
                 }
             }
             if (docMod.isFolder() && !removed) {
