@@ -67,10 +67,6 @@
       group="search">
       <locator>%SearchServiceBean</locator>
     </service>
-    <service class="org.nuxeo.ecm.platform.events.api.DocumentMessageProducer"
-      group="core">
-      <locator>%JMSDocumentMessageProducerBean</locator>
-    </service>
     <service class="org.nuxeo.ecm.platform.io.api.IOManager"
       group="platform/io">
       <locator>%IOManagerBean</locator>
@@ -94,11 +90,6 @@
     <service class="org.nuxeo.ecm.platform.versioning.api.VersioningManager"
       group="core">
       <locator>%VersioningManagerBean</locator>
-    </service>
-    <service
-      class="org.nuxeo.ecm.platform.transform.interfaces.TransformServiceCommon"
-      group="platform/transform">
-      <locator>%NXTransformBean</locator>
     </service>
     <service class="org.nuxeo.ecm.core.api.security.PermissionProvider"
       group="core">
