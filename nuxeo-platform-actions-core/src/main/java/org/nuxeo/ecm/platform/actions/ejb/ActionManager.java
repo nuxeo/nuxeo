@@ -41,14 +41,41 @@ public interface ActionManager extends Serializable {
 
     boolean isRegistered(String actionId);
 
+    /**
+     * Get actions for a category
+     * Only actions available in the give context are returned
+     * (Filters are evaluated)
+     * @param category
+     * @param context
+     * @return
+     */
     List<Action> getActions(String category, ActionContext context);
 
+    /**
+     * Get actions for a category
+     * If hideUnavailableActions, all actions of the category are returned
+     * but actions are flaged with a enable flag depending on filters evaluation
+     * (Filters are evaluated)
+     *
+     * @param category
+     * @param context
+     * @param hideUnavailableActions
+     * @return
+     */
     List<Action> getActions(String category, ActionContext context,
             boolean hideUnavailableActions);
 
     Action getAction(String actionId);
 
     ActionFilter[] getFilters(String actionId);
+
+    /**
+     * Get all actions in a category
+     * (Filters are NOT evaluated)
+     * @param category
+     * @return
+     */
+    List<Action> getAllActions(String category);
 
     /**
      * Initializes the bean with the associated nx runtime component.

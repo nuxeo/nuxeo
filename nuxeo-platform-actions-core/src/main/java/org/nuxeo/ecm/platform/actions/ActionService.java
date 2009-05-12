@@ -93,6 +93,10 @@ public class ActionService extends DefaultComponent implements ActionManager {
         return getActions(category, context, true);
     }
 
+    public List<Action> getAllActions(String category) {
+        return actionReg.getActions(category);
+    }
+
     public List<Action> getActions(String category, ActionContext context,
             boolean hideUnavailableActions) {
         List<Action> actions = actionReg.getActions(category);
