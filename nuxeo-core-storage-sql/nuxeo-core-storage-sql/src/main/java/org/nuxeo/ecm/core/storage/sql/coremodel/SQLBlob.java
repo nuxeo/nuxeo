@@ -19,21 +19,35 @@ package org.nuxeo.ecm.core.storage.sql.coremodel;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectStreamException;
 import java.io.Serializable;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.DefaultStreamBlob;
+import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.storage.sql.Binary;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.streaming.StreamSource;
 
 /**
  * A {@link Blob} wrapping a {@link Binary} value.
  *
  * @author Florent Guillaume
+ * @author Bogdan Stefanescu
  */
 public class SQLBlob extends DefaultStreamBlob implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * By default the SQLBlob is remotable through Nuxeo streaming service.
+     * You can disable this by defining the following runtime (or system) property:
+     * <code>org.nuxeo.ecm.core.storage.sql.blob_streaming = false</code>
+     * This way the blob will use the default serialization (file serialization) that is optimized for
+     * servers that are using a shared file system (and not nuxeo streaming)  
+     */
+    public final static boolean IS_STREAMING_ENABLED = Boolean.valueOf(Framework.getProperty("org.nuxeo.ecm.core.storage.sql.blob_streaming", "true"));
+    
     protected final Binary binary;
 
     public SQLBlob(Binary binary, String filename, String mimeType,
@@ -60,6 +74,23 @@ public class SQLBlob extends DefaultStreamBlob implements Serializable {
 
     public Blob persist() {
         return this;
+    }
+
+    /**
+     * Replace this object with a {@link StreamingBlob} when serialized.
+     * The StreamingBlob object can be sent to remote machines through nuxeo streaming mechanism.
+     * If IS_STREAMING_ENABLED is false then no replace takes place. 
+     * @return a streaming blob that points to the same content as this one
+     * 
+     * @throws ObjectStreamException
+     */
+    public Object writeReplace() throws ObjectStreamException {
+        if (IS_STREAMING_ENABLED) {
+            StreamSource src = binary.getStreamSource();
+            return new StreamingBlob(src, getMimeType(), getEncoding(), getFilename(), getDigest());
+        } else {
+            return this;
+        }
     }
 
 }

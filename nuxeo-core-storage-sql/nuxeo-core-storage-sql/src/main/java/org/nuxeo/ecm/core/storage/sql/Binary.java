@@ -21,19 +21,19 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.ObjectInputStream;
 import java.io.Serializable;
+
+import org.nuxeo.runtime.services.streaming.FileSource;
+import org.nuxeo.runtime.services.streaming.StreamSource;
 
 /**
  * A binary object that can be read, and has a length and a digest.
  *
  *
  * @author Florent Guillaume
+ * @author Bogdan Stefanescu
  *
  */
-// TODO: make it possible to use reference to binary content stored on a remote
-// Core server in multimachine setup e.g. by leveraging:
-// org.nuxeo.runtime.services.streaming.StreamManager
 public class Binary implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -44,12 +44,8 @@ public class Binary implements Serializable {
 
     private final long length;
 
-    // only used for serialization
-    private final String filepath;
-
     public Binary(File file, String digest) {
         this.file = file;
-        filepath = file.getPath();
         this.digest = digest;
         length = file.length();
     }
@@ -87,13 +83,8 @@ public class Binary implements Serializable {
         return getClass().getSimpleName() + '(' + digest + ')';
     }
 
-    /**
-     * Reinitialize transient file field from stored file path
-     */
-    private void readObject(ObjectInputStream in)
-            throws ClassNotFoundException, IOException {
-        in.defaultReadObject();
-        file = new File(filepath);
+    public StreamSource getStreamSource() {
+        return new FileSource(file);
     }
-
+    
 }
