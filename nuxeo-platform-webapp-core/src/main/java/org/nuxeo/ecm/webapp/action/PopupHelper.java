@@ -82,7 +82,8 @@ public class PopupHelper implements Serializable {
     protected List<Action> unfiltredActions;
 
     protected void computeUnfiltredPopupActions() {
-        unfiltredActions = webActions.getUnfiltredActionsList(POPUP_CATEGORY);
+        unfiltredActions = webActions.getAllActions(POPUP_CATEGORY);
+        //unfiltredActions = webActions.getUnfiltredActionsList(POPUP_CATEGORY);
     }
 
     /**

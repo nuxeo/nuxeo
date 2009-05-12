@@ -140,6 +140,10 @@ public class WebActionsBean implements WebActionsLocal, Serializable {
         return getUnfiltredActionsList(category, createActionContext());
     }
 
+    public List<Action> getAllActions(String category) {
+        return actionManager.getAllActions(category);
+    }
+
     protected ActionContext createActionContext() {
         // XXX: recreate it because context map holds cache for filters => they
         // are not evaluated again.
