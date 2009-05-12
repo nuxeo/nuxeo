@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 1
 Bundle-Name: Nuxeo ECM Annotations
 Bundle-SymbolicName: org.nuxeo.ecm.annotations;singleton:=true
 Bundle-Vendor: Nuxeo
-Bundle-Category: web,stateful
+Bundle-Category: web,stateless
 Provide-Package: org.nuxeo.ecm.annotations
 Require-Bundle: org.nuxeo.ecm.platform.annotations.api
 Nuxeo-Component: OSGI-INF/nxannotations.xml,

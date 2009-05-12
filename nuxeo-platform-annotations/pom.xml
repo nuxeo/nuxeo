@@ -16,6 +16,7 @@
   <modules>
     <module>nuxeo-platform-annotations-api</module>
     <module>nuxeo-platform-annotations-core</module>
+    <module>nuxeo-platform-annotations-core-contrib</module>
     <module>nuxeo-platform-annotations-facade</module>
     <module>nuxeo-platform-annotations-web</module>
     <module>nuxeo-platform-annotations-http</module>
@@ -35,6 +36,11 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-annotations-core</artifactId>
+        <version>${nuxeo.platform.annotations.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-annotations-core-contrib</artifactId>
         <version>${nuxeo.platform.annotations.version}</version>
       </dependency>
       <dependency>
