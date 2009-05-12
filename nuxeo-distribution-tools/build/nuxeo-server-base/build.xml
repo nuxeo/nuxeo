@@ -65,7 +65,6 @@ xmlns:artifact="urn:nuxeo-artifact" xmlns:nx="urn:nuxeo-build">
         <artifact:file key="org.nuxeo.ecm.webengine:nuxeo-webengine-resteasy-adapter" />
         <artifact:file key="org.nuxeo.ecm.webengine:nuxeo-webengine-admin" />
         <artifact:file key="org.nuxeo.ecm.webengine:nuxeo-webengine-ui" />
-        <artifact:file key="org.nuxeo.ecm.platform:nuxeo-platform-wiki-webengine" />
         <artifact:file key="org.nuxeo.ecm.webengine:nuxeo-webengine-base" />
         <artifact:file key="org.nuxeo.ecm.webengine:nuxeo-webengine-sites" />
         <artifact:file key="org.nuxeo.ecm.platform:nuxeo-platform-rendering" />
