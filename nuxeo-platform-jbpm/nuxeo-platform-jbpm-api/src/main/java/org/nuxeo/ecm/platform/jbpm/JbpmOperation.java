@@ -28,7 +28,7 @@ import org.jbpm.JbpmContext;
  * @author arussel
  *
  */
-public interface JbpmOperation {
+public interface JbpmOperation extends Serializable {
 
     Serializable run(JbpmContext context) throws NuxeoJbpmException;
 }

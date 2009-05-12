@@ -70,6 +70,7 @@ import org.nuxeo.ecm.platform.jbpm.NuxeoJbpmException;
 import org.nuxeo.ecm.platform.jbpm.TaskCreateDateComparator;
 import org.nuxeo.ecm.platform.jbpm.TaskListFilter;
 import org.nuxeo.ecm.platform.jbpm.VirtualTaskInstance;
+import org.nuxeo.ecm.platform.jbpm.operations.AddCommentOperation;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.invalidations.AutomaticDocumentBasedInvalidation;
 import org.nuxeo.ecm.platform.ui.web.invalidations.DocumentContextBoundActionBean;
@@ -498,16 +499,10 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
             String transition) throws ClientException {
         if (taskInstance != null) {
             if (userComment != null && !"".equals(userComment)) {
-                final Comment comment = new Comment(NuxeoPrincipal.PREFIX
-                        + currentUser.getName(), userComment);
-                jbpmService.executeJbpmOperation(new JbpmOperation() {
-                    public Serializable run(JbpmContext context)
-                            throws NuxeoJbpmException {
-                        TaskInstance ti = context.getTaskInstanceForUpdate(taskInstance.getId());
-                        ti.addComment(comment);
-                        return null;
-                    }
-                });
+                AddCommentOperation addCommentOperation = new AddCommentOperation(
+                        taskInstance.getId(), NuxeoPrincipal.PREFIX
+                                + currentUser.getName(), userComment);
+                jbpmService.executeJbpmOperation(addCommentOperation);
             }
             // add marker that task was validated
             Map<String, Serializable> taskVariables = new HashMap<String, Serializable>();
@@ -532,16 +527,10 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
             throws ClientException {
         if (taskInstance != null) {
             if (userComment != null && !"".equals(userComment)) {
-                final Comment comment = new Comment(NuxeoPrincipal.PREFIX
-                        + currentUser.getName(), userComment);
-                jbpmService.executeJbpmOperation(new JbpmOperation() {
-                    public Serializable run(JbpmContext context)
-                            throws NuxeoJbpmException {
-                        TaskInstance ti = context.getTaskInstanceForUpdate(taskInstance.getId());
-                        ti.addComment(comment);
-                        return null;
-                    }
-                });
+                AddCommentOperation addCommentOperation = new AddCommentOperation(
+                        taskInstance.getId(), NuxeoPrincipal.PREFIX
+                                + currentUser.getName(), userComment);
+                jbpmService.executeJbpmOperation(addCommentOperation);
             } else {
                 facesMessages.add(FacesMessage.SEVERITY_ERROR,
                         resourcesAccessor.getMessages().get(
