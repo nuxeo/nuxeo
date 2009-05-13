@@ -44,7 +44,7 @@ public class TestWebengineSiteUtils extends RepositoryOSGITestCase {
         deployBundle("org.nuxeo.ecm.platform.webengine.sites.tests");
         deployBundle("org.nuxeo.ecm.webengine.base");
 
-        deployContrib(bundleFile, "OSGI-INF/core-types-contrib.xml");
+        deployBundle("org.nuxeo.ecm.platform.webengine.sites.core.contrib");
         deployContrib(bundleFile, "OSGI-INF/webengine-types-contrib.xml");
         deployContrib(bundleFile, "OSGI-INF/ecm-types-contrib.xml");
 
