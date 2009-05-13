@@ -143,7 +143,7 @@ public class TestService extends NXRuntimeTestCase {
         assertFalse(tiles.getZoomfactor() == 0);
     }
 
-    public void testTilingBench() throws Exception {
+    /*public void testTilingBench() throws Exception {
 
         PictureTilingService pts = Framework.getLocalService(PictureTilingService.class);
         assertNotNull(pts);
@@ -151,7 +151,7 @@ public class TestService extends NXRuntimeTestCase {
         benchTiler(pts, new GimpTiler());
         benchTiler(pts, new MagickTiler());
 
-    }
+    }*/
 
     public void testMagick() throws Exception {
         PictureTilingService pts = Framework.getLocalService(PictureTilingService.class);
