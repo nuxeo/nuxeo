@@ -23,6 +23,7 @@ import static org.jboss.seam.ScopeType.CONVERSATION;
 
 import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -70,7 +71,9 @@ import org.jboss.seam.annotations.intercept.BypassInterceptors;
 @Name("pictureBookManager")
 @Scope(CONVERSATION)
 public class PictureBookManagerBean extends InputController implements
-        PictureBookManager {
+        PictureBookManager, Serializable {
+
+    private static final long serialVersionUID = -1593206839472821743L;
 
     private static final Log log = LogFactory.getLog(PictureBookManagerBean.class);
 
@@ -96,7 +99,7 @@ public class PictureBookManagerBean extends InputController implements
     String[] selectedViews = { "Original" };
 
     @In(create = true)
-    private NavigationContext navigationContext;
+    private transient NavigationContext navigationContext;
 
     @In(create = true)
     protected transient DocumentsListsManager documentsListsManager;

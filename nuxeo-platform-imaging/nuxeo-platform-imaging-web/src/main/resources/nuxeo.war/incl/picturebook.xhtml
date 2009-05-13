@@ -18,7 +18,7 @@
       <div class="foldableBox">
         <h3 class="nofold">
           <h:outputText value="#{messages['title.picturebook']}" />
-          <h:graphicImage value="icons/download.png" style="horizontal-align: right" id="dlIcon"
+          <h:graphicImage value="icons/download.png" style="horizontal-align: right;cursor:pointer;" id="dlIcon"
                     title="#{messages['label.outputFile.download']}" >
             <rich:componentControl for="imagingPanel" attachTo="dlIcon" operation="show" event="onclick"/>
           </h:graphicImage>
