@@ -220,7 +220,7 @@
   <xsl:template match="appender[@name='FILE']">
     <appender name="FILE" class="org.jboss.logging.appender.DailyRollingFileAppender">
        <errorHandler class="org.jboss.logging.util.OnlyOnceErrorHandler"/>
-       <param name="File" value="${jboss.server.log.dir}/server.log"/>
+       <param name="File" value="${{jboss.server.log.dir}}/server.log"/>
        <param name="Append" value="false"/>
        <param name="DatePattern" value="'.'yyyy-MM-dd"/>
        <param name="Threshold" value="INFO"/>
