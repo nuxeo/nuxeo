@@ -178,7 +178,6 @@
       <artifact group="org.apache.directory.server" name="apacheds-protocol-shared" />
       <artifact group="org.apache.directory.shared" name="shared-ldap" />
       <artifact group="com.sun.facelets" name="jsf-facelets" />
-      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-jbossws-wrapper" />
       <!-- Nuxeo-WebEngine fixed libs -->
       <artifact group="org.codehaus.groovy" name="groovy-all" />
       <artifact group="org.jboss.resteasy" name="resteasy-jaxrs" />
