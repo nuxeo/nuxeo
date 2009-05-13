@@ -7,3 +7,5 @@ Bundle-Category: core,stateful
 Nuxeo-Component: OSGI-INF/annotations-relations-contrib.xml,
   OSGI-INF/annotations-audit-contrib.xml,
   OSGI-INF/annotation-repository-jena-contrib.xml
+Require-Bundle: org.nuxeo.ecm.relations
+Nuxeo-RequiredBy: org.nuxeo.ecm.annotations

@@ -8,9 +8,6 @@
 			interface="org.nuxeo.ecm.platform.annotations.api.AnnotationsService" />
 		<provide interface="org.nuxeo.ecm.platform.annotations.service.AnnotationConfigurationService"/>
 	</service>
-	<require>
-		org.nuxeo.ecm.platform.relations.services.RelationService
-	</require>
 	<extension-point name="uriResolver">
 		<documentation>
 			Contribute uriResolver. A uriResolver maps from URI send to
