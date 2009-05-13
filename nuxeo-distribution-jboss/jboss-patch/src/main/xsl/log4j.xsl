@@ -219,14 +219,19 @@
 
   <xsl:template match="appender[@name='FILE']">
     <appender name="FILE" class="org.jboss.logging.appender.DailyRollingFileAppender">
-      <xsl:text>
-      </xsl:text>
-      <xsl:copy-of select="*"/>
-      <xsl:text>
-      </xsl:text>
-      <param name="Threshold" value="INFO"/>
-      <xsl:text>
-      </xsl:text>
+       <errorHandler class="org.jboss.logging.util.OnlyOnceErrorHandler"/>
+       <param name="File" value="${jboss.server.log.dir}/server.log"/>
+       <param name="Append" value="false"/>
+       <param name="DatePattern" value="'.'yyyy-MM-dd"/>
+       <param name="Threshold" value="INFO"/>
+       <layout class="org.apache.log4j.PatternLayout">
+          <!-- The default pattern: Date Priority [Category] Message\n -->
+          <param name="ConversionPattern" value="%d %-5p [%c] %m%n"/>
+
+          <!-- The full pattern: Date MS Priority [Category] (Thread:NDC) Message\n
+          <param name="ConversionPattern" value="%d %-5r %-5p [%c] (%t:%x) %m%n"/>
+           -->
+       </layout>
     </appender>
   </xsl:template>
 
