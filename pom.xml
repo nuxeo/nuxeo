@@ -73,6 +73,7 @@
     <!--<module>nuxeo-platform-wiki</module>-->
     <module>nuxeo-webengine-base</module>
     <module>nuxeo-webengine-sites</module>
+    <module>nuxeo-webengine-sites-core-contrib</module>
     <module>nuxeo-webengine-admin</module>
     <module>nuxeo-theme-editor</module>
     <module>nuxeo-platform-webwidgets</module>
@@ -928,6 +929,11 @@
       <dependency>
         <groupId>org.nuxeo.ecm.webengine</groupId>
         <artifactId>nuxeo-webengine-sites</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.webengine</groupId>
+        <artifactId>nuxeo-webengine-sites-core-contrib</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
       <dependency>
