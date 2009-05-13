@@ -104,7 +104,7 @@
 
   <target name="web" description="Copy web files to a live JBoss">
     <copy todir="${deploy.dir}/nuxeo.ear/nuxeo.war">
-      <fileset dir="${basedir}/nuxeo-dam-web/src/main/resources/nuxeo.war/" />
+      <fileset dir="${basedir}/nuxeo-dam-webapp/src/main/resources/nuxeo.war/" />
     </copy>
   </target>
 
