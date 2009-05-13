@@ -6,7 +6,6 @@
 
   <require>org.nuxeo.ecm.platform.types.TypeService</require>
   <require>org.nuxeo.ecm.platform.types</require>
-  <require>org.nuxeo.ecm.platform.picture.web.coreTypes</require>
 
   <extension target="org.nuxeo.ecm.platform.types.TypeService"
              point="types">

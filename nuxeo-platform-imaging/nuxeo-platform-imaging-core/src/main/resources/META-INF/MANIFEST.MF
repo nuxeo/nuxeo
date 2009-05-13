@@ -6,7 +6,6 @@ Bundle-Vendor: Nuxeo
 Nuxeo-Component: OSGI-INF/ImagingComponent.xml,
  OSGI-INF/picture-schemas-contrib.xml,
  OSGI-INF/picture-life-cycle-contrib.xml,
- OSGI-INF/picturebook-types-contrib.xml,
  OSGI-INF/picturebook-schemas-contrib.xml,
  OSGI-INF/picturebook-life-cycle-contrib.xml,
  OSGI-INF/libraryselector-config-framework.xml
@@ -23,4 +22,4 @@ Bundle-ClassPath: .,
  lib/jai_codec.jar,
  lib/mlibwrapper_jai.jar,
  lib/ij.jar
-
+Nuxeo-RequiredBy: org.nuxeo.ecm.platform.picture.web
