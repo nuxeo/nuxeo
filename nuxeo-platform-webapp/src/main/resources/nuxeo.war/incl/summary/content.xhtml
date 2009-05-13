@@ -27,9 +27,10 @@
           <nxh:graphicImage value="#{nxd:fileIconPath(currentDocumentAsBlobHolder.blob)}"
             rendered="#{! empty nxd:fileIconPath(currentDocumentAsBlobHolder.blob)}" />
           <h:outputText value="#{currentDocumentAsBlobHolder.blob.filename}"/>
+          <h:outputText value=" (#{nxu:printFileSize(currentDocumentAsBlobHolder.blob.length)})"/>
           <nxh:graphicImage value="/icons/download.png" title="#{currentDocumentAsBlobHolder.blob.filename}"/>
         </nxh:outputLink>
-  
+
         <c:if test="#{conversionActions.pdfConverterAvailability.available}">
           <nxu:methodResult name="hasPDFCapabilities" value="#{conversionActions.isExportableToPDF(currentDocumentAsBlobHolder)}">
             <h:panelGroup rendered="#{hasPDFCapabilities}">
@@ -39,7 +40,7 @@
             </h:panelGroup>
           </nxu:methodResult>
         </c:if>
-  
+
         <nxu:methodResult name="editable"
           value="#{liveEditHelper.isDocumentLiveEditable(currentDocument, 'file', 'content')}">
           <h:outputLink value="#{nxd:liveEditUrl(currentDocument, 'file', 'content', 'filename')}"
@@ -49,7 +50,7 @@
               title="#{messages['label.document.directEdit']}"/>
           </h:outputLink>
         </nxu:methodResult>
-  
+
       </h:panelGroup>
     </c:if>
 
@@ -57,18 +58,19 @@
       <h:panelGroup>
         <h:outputText class="boldLabel" value=" #{messages['label.summary.download.attachments']}"/>
         <br/>
-  
+
         <div class="attachments">
           <nxu:inputList value="#{currentDocument.files.files}"  id="files_input" model="model">
             <div class="detailList">
-  
+
               <nxh:outputLink value="#{nxd:complexFileUrl('downloadFile', currentDocument, 'files:files', model.rowIndex, 'file', currentDocument.files.files[model.rowIndex].filename)}">
                 <nxh:graphicImage value="#{nxd:fileIconPath(currentDocument.files.files[model.rowIndex].file)}"
                   rendered="#{! empty nxd:fileIconPath(currentDocument.files.files[model.rowIndex].file)}" />
                 <nxh:outputText value="#{currentDocument.files.files[model.rowIndex].filename}" />
+                <h:outputText value=" (#{nxu:printFileSize(currentDocument.files.files[model.rowIndex].file.length)})"/>
                 <nxh:graphicImage value="/icons/download.png" title="#{currentDocument.files.files[model.rowIndex].filename}"/>
               </nxh:outputLink>
-  
+
               <nxu:methodResult name="hasPDFCapabilities"
                 value="#{conversionActions.isExportableToPDF(currentDocument.files.files[model.rowIndex].file)}">
                 <h:panelGroup rendered="#{hasPDFCapabilities}">
@@ -80,11 +82,11 @@
                   </h:commandLink>
                 </h:panelGroup>
               </nxu:methodResult>
-  
+
             </div>
           </nxu:inputList>
         </div>
-  
+
       </h:panelGroup>
     </c:if>
 
