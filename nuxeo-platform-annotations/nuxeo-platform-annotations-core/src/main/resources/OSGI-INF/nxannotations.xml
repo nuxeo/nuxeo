@@ -13,7 +13,7 @@
 			Contribute uriResolver. A uriResolver maps from URI send to
 			the annotea server and maps them to the URI stored in the
 			graph. The aim is to be able to treat as the same document,
-			2 differents URL. An exemple could be annotation on a
+			2 different URL. An example could be annotation on a
 			javadoc class. You want to be able to annotates it, wherever
 			is the server showing the javadoc.
 
