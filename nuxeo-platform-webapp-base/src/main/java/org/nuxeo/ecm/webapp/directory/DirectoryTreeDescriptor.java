@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.webapp.directory;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -29,8 +31,7 @@ import org.nuxeo.ecm.platform.ui.web.directory.DirectoryHelper;
 @XObject(value = "directoryTree")
 public class DirectoryTreeDescriptor {
 
-    // private static final Log log =
-    // LogFactory.getLog(DirectoryTreeDescriptor.class);
+    private static final Log log = LogFactory.getLog(DirectoryTreeDescriptor.class);
 
     public static final String VOCABULARY_SCHEMA = "vocabulary";
 
@@ -38,7 +39,6 @@ public class DirectoryTreeDescriptor {
 
     @XNode("@name")
     protected String name;
-
 
     @XNode("@enabled")
     protected Boolean enabled = true;
@@ -90,27 +90,31 @@ public class DirectoryTreeDescriptor {
         // check that each required directory exists and has the xvocabulary
         // schema
         DirectoryService directoryService = DirectoryHelper.getDirectoryService();
-        boolean isFirst = true;
-        for (String directoryName : directories) {
-            Directory directory = directoryService.getDirectory(directoryName);
-            if (directory == null) {
-                throw new DirectoryException(directoryName
-                        + " is not a registered directory");
-            }
-            if (isFirst) {
-                if (!directory.getSchema().equals(VOCABULARY_SCHEMA)) {
+        if (directoryService==null) {
+            log.warn("DirectoryService not ready, cannot check directories; skip validation");
+        } else {
+            boolean isFirst = true;
+            for (String directoryName : directories) {
+                Directory directory = directoryService.getDirectory(directoryName);
+                if (directory == null) {
                     throw new DirectoryException(directoryName
-                            + "does not have the required schema:"
-                            + VOCABULARY_SCHEMA);
+                            + " is not a registered directory");
                 }
-            } else {
-                if (!directory.getSchema().equals(XVOCABULARY_SCHEMA)) {
-                    throw new DirectoryException(directoryName
-                            + "does not have the required schema:"
-                            + XVOCABULARY_SCHEMA);
+                if (isFirst) {
+                    if (!directory.getSchema().equals(VOCABULARY_SCHEMA)) {
+                        throw new DirectoryException(directoryName
+                                + "does not have the required schema:"
+                                + VOCABULARY_SCHEMA);
+                    }
+                } else {
+                    if (!directory.getSchema().equals(XVOCABULARY_SCHEMA)) {
+                        throw new DirectoryException(directoryName
+                                + "does not have the required schema:"
+                                + XVOCABULARY_SCHEMA);
+                    }
                 }
+                isFirst = false;
             }
-            isFirst = false;
         }
         this.directories = directories;
     }
@@ -132,7 +136,7 @@ public class DirectoryTreeDescriptor {
     }
 
     public boolean isMultiselect() {
-        if (multiselect==null) {
+        if (multiselect == null) {
             return false;
         }
         return multiselect;
@@ -154,31 +158,30 @@ public class DirectoryTreeDescriptor {
         return enabled;
     }
 
+    public void merge(DirectoryTreeDescriptor other) {
 
-    public void merge (DirectoryTreeDescriptor other) {
-
-        if (other.schemaName!=null) {
-            this.schemaName=other.schemaName;
+        if (other.schemaName != null) {
+            this.schemaName = other.schemaName;
         }
-        if (other.querymodel!=null) {
-            this.querymodel=other.querymodel;
+        if (other.querymodel != null) {
+            this.querymodel = other.querymodel;
         }
-        if (other.outcome!=null) {
-            this.outcome=other.outcome;
+        if (other.outcome != null) {
+            this.outcome = other.outcome;
         }
-        if (other.multiselect!=null) {
-            this.multiselect=other.multiselect;
+        if (other.multiselect != null) {
+            this.multiselect = other.multiselect;
         }
-        if (other.label!=null) {
-            this.label=other.label;
+        if (other.label != null) {
+            this.label = other.label;
         }
-        if (other.directories!=null) {
-            this.directories=other.directories;
+        if (other.directories != null) {
+            this.directories = other.directories;
         }
-        if (other.fieldName!=null) {
-            this.fieldName=other.fieldName;
+        if (other.fieldName != null) {
+            this.fieldName = other.fieldName;
         }
-        this.enabled=other.enabled;
+        this.enabled = other.enabled;
     }
 
 }
