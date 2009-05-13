@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.webengine.ui.tree.directory;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -47,7 +48,7 @@ public class DirectoryContentProvider implements ContentProvider {
         return session;
     }
 
-    protected void createQuery(DocumentModel parent, Map<String,Object> query) {
+    protected void createQuery(DocumentModel parent, Map<String,Serializable> query) {
         String id = parent == null ? null : parent.getId();
         query.put("parent", id);
     }
@@ -64,7 +65,7 @@ public class DirectoryContentProvider implements ContentProvider {
         try {
             if (obj == null || obj instanceof DocumentModel) {
                 DocumentModel parent = (DocumentModel)obj;
-                Map<String, Object> args = new HashMap<String, Object>();
+                Map<String, Serializable> args = new HashMap<String, Serializable>();
                 createQuery(parent, args);
                 DocumentModelList list = session.query(args);
                 return list.toArray(new DocumentModel[list.size()]);
