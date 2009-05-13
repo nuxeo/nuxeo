@@ -22,6 +22,7 @@ package org.nuxeo.ecm.webapp.security;
 import static org.jboss.seam.ScopeType.CONVERSATION;
 import static org.jboss.seam.annotations.Install.FRAMEWORK;
 
+import java.io.Serializable;
 import java.security.Principal;
 import java.util.Collections;
 import java.util.HashMap;
@@ -110,9 +111,9 @@ public class GroupManagerActionsBean implements GroupManagerActions {
                 String groupListingMode = getGroupListingMode();
                 if (ALL.equals(groupListingMode) || "*".equals(searchString)) {
                     groups = userManager.searchGroups(
-                            Collections.<String, Object> emptyMap(), null);
+                            Collections.<String, Serializable> emptyMap(), null);
                 } else if (!StringUtils.isEmpty(searchString)) {
-                    Map<String, Object> filter = new HashMap<String, Object>();
+                    Map<String, Serializable> filter = new HashMap<String, Serializable>();
                     // XXX: search only on id, better conf should be set in user
                     // manager interface
                     filter.put(userManager.getGroupIdField(), searchString);

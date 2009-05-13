@@ -194,7 +194,7 @@ public class VocabularyActionsBean implements VocabularyActions {
                 }
 
                 // check that the entry does not already exist
-                Map<String, Object> filter = new HashMap<String, Object>();
+                Map<String, Serializable> filter = new HashMap<String, Serializable>();
                 filter.put(VocabularyConstants.VOCABULARY_ID,
                         selectedVocabularyEntry.getId());
                 if (isHierarchical()) {
@@ -488,7 +488,7 @@ public class VocabularyActionsBean implements VocabularyActions {
             vocabulary = getCurrentVocabulary();
             if (vocabulary != null) {
                 selectedVocabularyEntries = new ArrayList<VocabularyEntry>();
-                Map<String, Object> filter = new HashMap<String, Object>();
+                Map<String, Serializable> filter = new HashMap<String, Serializable>();
                 Map<String, String> orderBy = new LinkedHashMap<String, String>();
                 Set<String> fulltext = new HashSet<String>();
                 if (!"".equals(searchCriteria.getId())) {

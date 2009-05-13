@@ -22,6 +22,7 @@ package org.nuxeo.ecm.webapp.security;
 import static org.jboss.seam.ScopeType.CONVERSATION;
 import static org.jboss.seam.annotations.Install.FRAMEWORK;
 
+import java.io.Serializable;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -441,7 +442,7 @@ public class UserManagerActionsBean implements UserManagerActions {
         try {
             // XXX hack, directory entries have only one model
             org.nuxeo.ecm.core.api.DataModel dm = searchUserModel.getDataModels().values().iterator().next();
-            Map<String, Object> filter = dm.getMap();
+            Map<String, Serializable> filter = mkSerializableMap(dm.getMap());
             // create a new set because a HashMap.KeySet is not serializable
             users = userManager.searchUsers(filter, new HashSet<String>(
                     filter.keySet()));
@@ -459,4 +460,14 @@ public class UserManagerActionsBean implements UserManagerActions {
         return viewUsers();
     }
 
+    protected static Map<String, Serializable> mkSerializableMap(Map<String, Object> map) {
+        Map<String, Serializable> serializableMap = null;
+        if (map !=null) {
+            serializableMap = new HashMap<String, Serializable>();
+            for (String key : map.keySet()) {
+                serializableMap.put(key, (Serializable) map.get(key));
+            }
+        }
+        return serializableMap;
+   }
 }

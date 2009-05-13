@@ -113,7 +113,7 @@ public class UserSuggestionActionsBean implements Serializable {
         try {
             String pattern = (String) input;
             // XXX: this doesn't fetch group members (references)
-            Map<String, Object> filter = new HashMap<String, Object>();
+            Map<String, Serializable> filter = new HashMap<String, Serializable>();
             if (pattern != null && pattern != "") {
                 filter.put(userManager.getGroupIdField(), pattern);
             }
