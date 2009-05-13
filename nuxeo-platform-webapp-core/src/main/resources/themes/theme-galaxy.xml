@@ -753,6 +753,15 @@
       <selector path=".pictureBookItemTitle a, .pictureBookItemTitle a:hover, .pictureBookItemTitle a:visited">
         <color>#001986</color>
       </selector>
+      <selector path=".slideshowContent">
+        <padding>10px 0px 5px 0px</padding>
+      </selector>
+      <selector path=".slideshowContent h3">
+        <padding>8px 0px 5px 70px</padding>
+      </selector>
+      <selector path=".slideShowControl">
+        <margin>0px 0px 10px</margin>
+      </selector>
       <selector path=".slideShowControl input">
         <margin>0px 3px</margin>
         <padding>0px</padding>
@@ -765,11 +774,11 @@
       <selector path=".slideShowControl .indexPicture">
         <margin>0px 3px 4px 0px</margin>
       </selector>
-      <selector path=".slideshowContent">
-        <padding>10px 0px 5px 50px</padding>
-      </selector>
-      <selector path=".slideshowContent h3">
-        <padding>8px 0px 5px 70px</padding>
+      <selector path=".slideShowControl span">
+        <color>#666666</color>
+        <font-weight>bold</font-weight>
+        <font-size>13px</font-size>
+        <padding-right>10px</padding-right>
       </selector>
       <selector path=".rightsAdd">
         <margin>10px 0 10px 0</margin>
