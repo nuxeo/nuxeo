@@ -195,15 +195,24 @@ public class PopupHelper implements Serializable {
 
     @WebRemote
     public String getNavigationURLOnPopupdoc(String tabId) {
+        return getNavigationURLOnPopupdoc2(tabId, null);
+    }
+
+    @WebRemote
+    public String getNavigationURLOnPopupdoc2(String tabId, String subTabId) {
         Map<String, String> params = new HashMap<String, String>();
 
         if (tabId != null) {
             params.put("tabId", tabId);
         }
+        if (subTabId != null) {
+            params.put("subTabId", subTabId);
+        }
 
         return DocumentModelFunctions.documentUrl(null, currentPopupDocument,
                 null, params, false);
     }
+
 
     @WebRemote
     public String getCurrentURL() {

@@ -10,24 +10,29 @@ function trim (myString)
  return myString.replace(/^\s+/g,'').replace(/\s+$/g,'')
 }
 
+function navigateOnPopupDoc2(tabId, subTabId)
+{
+   Seam.Component.getInstance("popupHelper").getNavigationURLOnPopupdoc2(tabId,subTabId,navigationCB);
+}
+
 function navigateOnPopupDoc(tabId)
 {
-	Seam.Component.getInstance("popupHelper").getNavigationURLOnPopupdoc(tabId,navigationCB);
+    Seam.Component.getInstance("popupHelper").getNavigationURLOnPopupdoc(tabId,navigationCB);
 }
 
 function navigateOnContainerDoc(tabId)
 {
-	Seam.Component.getInstance("popupHelper").getNavigationURLOnContainer(tabId,navigationCB);
+    Seam.Component.getInstance("popupHelper").getNavigationURLOnContainer(tabId,navigationCB);
 }
 
 function navigateOnDoc(docId, tabId)
 {
-	Seam.Component.getInstance("popupHelper").getNavigationURL(docId,tabId,navigationCB);
+    Seam.Component.getInstance("popupHelper").getNavigationURL(docId,tabId,navigationCB);
 }
 
 function refreshPage()
 {
-	Seam.Component.getInstance("popupHelper").getCurrentURL(navigationCB);
+    Seam.Component.getInstance("popupHelper").getCurrentURL(navigationCB);
 }
 
 function refreshPageAfterDelete()
@@ -43,19 +48,19 @@ function doCopy(docid)
 
 function doPaste(docid)
 {
-	Seam.Component.getInstance("clipboardActions").pasteClipboardInside(docid,refreshPage);
+    Seam.Component.getInstance("clipboardActions").pasteClipboardInside(docid,refreshPage);
 }
 
 function doMove(docid)
 {
-	Seam.Component.getInstance("clipboardActions").moveClipboardInside(docid,refreshPage);
+    Seam.Component.getInstance("clipboardActions").moveClipboardInside(docid,refreshPage);
 }
 
 function doDelete(docid)
 {
   if (confirmDeleteDocuments()) {
     Seam.Component.getInstance("popupHelper").deleteDocument(docid,refreshPageAfterDelete);
-	}
+    }
 }
 
 function doView(docid)
@@ -74,22 +79,22 @@ function doRename(docid)
  span=document.getElementById('title_'+docid);
  input = document.createElement('input');
  if (span.id != '')
-	input.id = span.id;
+    input.id = span.id;
  input.className = span.className;
  span.parentNode.replaceChild(input,span);
  input.value = trim(span.innerHTML);
  input.onkeydown = function (event) {
-		onEditKeyPress(event);
+        onEditKeyPress(event);
  };
  input.focus();
 }
 
 function doAccessRights(docid) {
-  navigateOnPopupDoc('TAB_RIGHTS');
+  navigateOnPopupDoc2('TAB_MANAGE','TAB_RIGHTS');
 }
 
 function doPreview(docid) {
-	  navigateOnPopupDoc('TAB_PREVIEW');
+      navigateOnPopupDoc('TAB_PREVIEW');
 }
 
 function doDownload(docid) {
@@ -133,7 +138,7 @@ function saveRename(event)
  span.innerHTML = input.value;
  span.className = input.className;
  if (input.id != '')
-	span.id = input.id;
+    span.id = input.id;
 
  docid = span.id.replace('title_','');
  Seam.Component.getInstance("popupHelper").editTitle(docid,input.value,saveRenameCallback);
