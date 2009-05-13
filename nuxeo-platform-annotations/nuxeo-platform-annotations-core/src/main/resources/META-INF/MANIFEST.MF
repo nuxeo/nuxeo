@@ -7,5 +7,4 @@ Bundle-Category: web,stateless
 Provide-Package: org.nuxeo.ecm.annotations
 Require-Bundle: org.nuxeo.ecm.platform.annotations.api
 Nuxeo-Component: OSGI-INF/nxannotations.xml,
-  OSGI-INF/annotations-relations-contrib.xml,
   OSGI-INF/annotations-default-contrib.xml
