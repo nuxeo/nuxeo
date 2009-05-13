@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.webapp.directory;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -206,7 +207,7 @@ public class DirectoryTreeNode {
             if (level == 0) {
                 childrenEntries = session.getEntries();
             } else {
-                Map<String, Object> filter = new HashMap<String, Object>();
+                Map<String, Serializable> filter = new HashMap<String, Serializable>();
                 filter.put(PARENT_FIELD_ID, path);
                 childrenEntries = session.query(filter);
             }

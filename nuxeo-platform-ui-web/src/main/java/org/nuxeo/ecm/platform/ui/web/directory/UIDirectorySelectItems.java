@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.ui.web.directory;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -301,7 +302,7 @@ public class UIDirectorySelectItems extends UISelectItems {
         Session directorySession = getDirectorySession();
         if (directorySession != null) {
             try {
-                Map<String, Object> filter = new HashMap<String, Object>();
+                Map<String, Serializable> filter = new HashMap<String, Serializable>();
                 if (!getDisplayObsoleteEntries()) {
                     filter.put("obsolete", 0);
                 }

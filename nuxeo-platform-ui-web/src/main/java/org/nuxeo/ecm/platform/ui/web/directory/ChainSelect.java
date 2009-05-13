@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.ui.web.directory;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -588,7 +589,7 @@ public class ChainSelect extends UIInput {
                         "displayObsoleteEntries", false);
             }
 
-            Map<String, Object> filter = new HashMap<String, Object>();
+            Map<String, Serializable> filter = new HashMap<String, Serializable>();
             filter.put("id", id);
 
             if (i == 0) {

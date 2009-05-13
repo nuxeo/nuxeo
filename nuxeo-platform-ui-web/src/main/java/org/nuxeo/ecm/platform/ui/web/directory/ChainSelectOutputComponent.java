@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.ui.web.directory;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -268,7 +269,7 @@ public class ChainSelectOutputComponent extends UIOutput {
 
             String directoryName = directoryNames[i];
 
-            Map<String, Object> filter = new HashMap<String, Object>();
+            Map<String, Serializable> filter = new HashMap<String, Serializable>();
             filter.put("id", id);
 
             if (i == 0) {

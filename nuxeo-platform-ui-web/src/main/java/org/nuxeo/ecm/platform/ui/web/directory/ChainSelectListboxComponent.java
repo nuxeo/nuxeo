@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.ui.web.directory;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -313,7 +314,7 @@ public class ChainSelectListboxComponent extends UIInput {
 
         index = getIndex();
 
-        Map<String, Object> filter = new HashMap<String, Object>();
+        Map<String, Serializable> filter = new HashMap<String, Serializable>();
         if (!displayObsoleteEntries) {
             filter.put("obsolete", 0);
         }

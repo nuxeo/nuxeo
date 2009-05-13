@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.ui.web.directory;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -89,7 +90,7 @@ public final class DirectoryHelper {
         }
     }
 
-    public DirectorySelectItem getSelectItem(String directoryName, Map<String, Object> filter) {
+    public DirectorySelectItem getSelectItem(String directoryName, Map<String, Serializable> filter) {
         List<DirectorySelectItem> items = getSelectItems(directoryName, filter);
         if (items.size() > 1) {
             throw new IllegalStateException("More than one entry found in directory " + directoryName);
@@ -100,7 +101,7 @@ public final class DirectoryHelper {
     }
 
     public List<DirectorySelectItem> getSelectItems(String directoryName,
-            Map<String, Object> filter) {
+            Map<String, Serializable> filter) {
 
         List<DirectorySelectItem> list = new LinkedList<DirectorySelectItem>();
 
@@ -158,7 +159,7 @@ public final class DirectoryHelper {
     }
 
     public static List<DirectorySelectItem> getSelectItems(
-            VocabularyEntryList directoryValues, Map<String, Object> filter) {
+            VocabularyEntryList directoryValues, Map<String, Serializable> filter) {
         List<DirectorySelectItem> list = new ArrayList<DirectorySelectItem>();
 
         for (VocabularyEntry entry : directoryValues.getEntries()) {

@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.ui.web.directory;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -259,7 +260,7 @@ public abstract class ChainSelectBase extends UIInput implements
         try {
             String schema = service.getDirectorySchema(directoryName);
             session = service.open(directoryName);
-            Map<String, Object> filter = new HashMap<String, Object>();
+            Map<String, Serializable> filter = new HashMap<String, Serializable>();
 
             if (level == 0) {
                 if (schema.equals(XVOCABULARY_SCHEMA)) {
@@ -325,7 +326,7 @@ public abstract class ChainSelectBase extends UIInput implements
                 String directoryName = getDirectory(level);
                 String schema = service.getDirectorySchema(directoryName);
                 session = service.open(directoryName);
-                Map<String, Object> filter = new HashMap<String, Object>();
+                Map<String, Serializable> filter = new HashMap<String, Serializable>();
 
                 if (level == 0) {
                     if (schema.equals(XVOCABULARY_SCHEMA)) {

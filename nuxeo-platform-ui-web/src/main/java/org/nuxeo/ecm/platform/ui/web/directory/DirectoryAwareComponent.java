@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.ui.web.directory;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -163,7 +164,7 @@ public abstract class DirectoryAwareComponent extends UIInput {
             // cannot be both null");
         }
 
-        Map<String, Object> filter = new HashMap<String, Object>();
+        Map<String, Serializable> filter = new HashMap<String, Serializable>();
         String parentFilter = getFilter();
         if (parentFilter != null) {
             filter.put("parent", parentFilter);

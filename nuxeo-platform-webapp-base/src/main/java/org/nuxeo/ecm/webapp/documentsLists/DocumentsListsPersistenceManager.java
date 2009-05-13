@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.webapp.documentsLists;
 
+import java.io.Serializable;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -190,7 +191,7 @@ public class DocumentsListsPersistenceManager {
             return docList;
         }
 
-        Map<String, Object> filter = new HashMap<String, Object>();
+        Map<String, Serializable> filter = new HashMap<String, Serializable>();
         filter.put(DIR_COL_LISTID, listName);
         filter.put(DIR_COL_USERID, userName);
 
@@ -322,7 +323,7 @@ public class DocumentsListsPersistenceManager {
             return false;
         }
 
-        Map<String, Object> filter = new HashMap<String, Object>();
+        Map<String, Serializable> filter = new HashMap<String, Serializable>();
         filter.put(DIR_COL_LISTID, listName);
         filter.put(DIR_COL_USERID, userName);
 

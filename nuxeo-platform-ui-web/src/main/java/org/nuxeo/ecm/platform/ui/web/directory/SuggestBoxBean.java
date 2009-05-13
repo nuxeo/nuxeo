@@ -65,7 +65,7 @@ public class SuggestBoxBean implements Serializable {
             throws Exception {
         Session directory = null;
         try {
-            Map<String, Object> filter = new LinkedHashMap<String, Object>();
+            Map<String, Serializable> filter = new LinkedHashMap<String, Serializable>();
             Set<String> fulltext = new HashSet<String>();
             fulltext.add("label");
             filter.put("label", input);
