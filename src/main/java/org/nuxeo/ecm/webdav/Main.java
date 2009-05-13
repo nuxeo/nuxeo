@@ -53,23 +53,24 @@ public class Main extends ModuleRoot {
     private static final Log log = LogFactory.getLog(Main.class);
 
     @GET
-    @Path("/toto/{path:.+}")
-    public Response get1(@PathParam("path") String path) throws ClientException, IOException {
-        return Response.ok("OK").build();
-    }
-
-    @GET
-    @Path("/titi/{path:.+}")
-    public Response get(@PathParam("path") String path) throws ClientException, IOException {
+    @Path("/{path:.+}")
+    public Response get(@PathParam("path") String path) throws ClientException,
+            IOException {
         log.debug("get called for " + path);
         CoreSession session = ctx.getCoreSession();
         DocumentRef ref = new PathRef(path);
+        if (!session.exists(ref)) {
+            return Response.status(404).build();
+        }
         DocumentModel doc = session.getDocument(ref);
+        if (doc.getDeclaredFacets().contains("Folderish")) {
+            return Response.ok("Not a file").build();
+        }
         Blob content = (Blob) doc.getPropertyValue("file:content");
         if (content == null) {
             return Response.ok("").build();
         } else {
-            //System.out.println(content.getString());
+            // System.out.println(content.getString());
             return Response.ok(content.getString()).type(content.getMimeType()).build();
         }
     }
