@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.usermanager;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -140,7 +141,7 @@ public class TestUserManager extends NXRuntimeTestCase {
         assertEquals("Coward", principal.getProperty("user", "lastName"));
 
         // search by map
-        Map<String, Object> filter = new HashMap<String, Object>();
+        Map<String, Serializable> filter = new HashMap<String, Serializable>();
         filter.put("lastName", "Cow");
         users = userManager.searchUsers(filter, filter.keySet());
         assertEquals(1, users.size());

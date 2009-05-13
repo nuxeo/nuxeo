@@ -469,7 +469,7 @@ public class UserManagerImpl implements UserManager {
             groupDir = dirService.open(groupDirectoryName);
             // XXX retrieve all entries with references, can be costly.
             DocumentModelList groups = groupDir.query(
-                    Collections.<String, Object> emptyMap(), null, null, true);
+                    Collections.<String, Serializable> emptyMap(), null, null, true);
             for (DocumentModel group : groups) {
                 List<String> parents = (List<String>) group.getProperty(
                         groupSchemaName, groupParentGroupsField);
@@ -495,7 +495,7 @@ public class UserManagerImpl implements UserManager {
         return getGroup(groupId).getMemberUsers();
     }
 
-    protected boolean isAnonymousMatching(Map<String, Object> filter,
+    protected boolean isAnonymousMatching(Map<String, Serializable> filter,
             Set<String> fulltext) {
         String anonymousUserId = getAnonymousUserId();
         if (anonymousUserId == null) {
@@ -506,7 +506,7 @@ public class UserManagerImpl implements UserManager {
         }
         Map<String, Serializable> anonymousUserMap = anonymousUser.getProperties();
         anonymousUserMap.put(userIdField, anonymousUserId);
-        for (Entry<String, Object> e : filter.entrySet()) {
+        for (Entry<String, Serializable> e : filter.entrySet()) {
             String fieldName = e.getKey();
             Object expected = e.getValue();
             Object value = anonymousUserMap.get(fieldName);
@@ -545,7 +545,7 @@ public class UserManagerImpl implements UserManager {
         Session groupDir = null;
         try {
             groupDir = dirService.open(groupDirectoryName);
-            Map<String, Object> filter = new HashMap<String, Object>();
+            Map<String, Serializable> filter = new HashMap<String, Serializable>();
             if (pattern != null && pattern != "") {
                 filter.put(groupDir.getIdField(), pattern);
             }
@@ -757,7 +757,7 @@ public class UserManagerImpl implements UserManager {
         try {
             groupDir = dirService.open(groupDirectoryName);
             List<String> groupIds = groupDir.getProjection(
-                    Collections.<String, Object> emptyMap(),
+                    Collections.<String, Serializable> emptyMap(),
                     groupDir.getIdField());
             Collections.sort(groupIds);
             return groupIds;
@@ -773,7 +773,7 @@ public class UserManagerImpl implements UserManager {
         try {
             userDir = dirService.open(userDirectoryName);
             List<String> userIds = userDir.getProjection(
-                    Collections.<String, Object> emptyMap(),
+                    Collections.<String, Serializable> emptyMap(),
                     userDir.getIdField());
             Collections.sort(userIds);
             return userIds;
@@ -784,7 +784,7 @@ public class UserManagerImpl implements UserManager {
         }
     }
 
-    public DocumentModelList searchGroups(Map<String, Object> filter,
+    public DocumentModelList searchGroups(Map<String, Serializable> filter,
             Set<String> fulltext) throws ClientException {
         Session groupDir = null;
         try {
@@ -806,7 +806,7 @@ public class UserManagerImpl implements UserManager {
         }
     }
 
-    protected DocumentModelList searchUsers(Map<String, Object> filter,
+    protected DocumentModelList searchUsers(Map<String, Serializable> filter,
             Set<String> fulltext, Map<String, String> orderBy)
             throws ClientException {
         Session userDir = null;
@@ -840,12 +840,12 @@ public class UserManagerImpl implements UserManager {
     public DocumentModelList searchUsers(String pattern) throws ClientException {
         DocumentModelList entries = new DocumentModelListImpl();
         if (pattern == null || pattern.equals("")) {
-            entries = searchUsers(Collections.<String, Object> emptyMap(), null);
+            entries = searchUsers(Collections.<String, Serializable> emptyMap(), null);
         } else {
             Map<String, DocumentModel> uniqueEntries = new HashMap<String, DocumentModel>();
 
             for (Entry<String, MatchType> fieldEntry : userSearchFields.entrySet()) {
-                Map<String, Object> filter = new HashMap<String, Object>();
+                Map<String, Serializable> filter = new HashMap<String, Serializable>();
                 filter.put(fieldEntry.getKey(), pattern);
                 DocumentModelList fetchedEntries;
                 if (fieldEntry.getValue() == MatchType.SUBSTRING) {
@@ -868,7 +868,7 @@ public class UserManagerImpl implements UserManager {
         return entries;
     }
 
-    public DocumentModelList searchUsers(Map<String, Object> filter,
+    public DocumentModelList searchUsers(Map<String, Serializable> filter,
             Set<String> fulltext) throws ClientException {
         return searchUsers(filter, fulltext, getUserSortMap());
     }
@@ -943,7 +943,7 @@ public class UserManagerImpl implements UserManager {
 
     public List<NuxeoGroup> getAvailableGroups() throws ClientException {
         DocumentModelList groupModels = searchGroups(
-                Collections.<String, Object> emptyMap(), null);
+                Collections.<String, Serializable> emptyMap(), null);
         List<NuxeoGroup> groups = new ArrayList<NuxeoGroup>(groupModels.size());
         for (DocumentModel groupModel : groupModels) {
             groups.add(makeGroup(groupModel));
@@ -953,7 +953,7 @@ public class UserManagerImpl implements UserManager {
 
     public List<NuxeoPrincipal> getAvailablePrincipals() throws ClientException {
         DocumentModelList userModels = searchUsers(
-                Collections.<String, Object> emptyMap(), null);
+                Collections.<String, Serializable> emptyMap(), null);
         List<NuxeoPrincipal> users = new ArrayList<NuxeoPrincipal>(
                 userModels.size());
         for (DocumentModel userModel : userModels) {
@@ -966,7 +966,7 @@ public class UserManagerImpl implements UserManager {
         return getUserModel(name);
     }
 
-    public List<NuxeoPrincipal> searchByMap(Map<String, Object> filter,
+    public List<NuxeoPrincipal> searchByMap(Map<String, Serializable> filter,
             Set<String> pattern) throws ClientException {
         Session userDir = null;
         try {

@@ -19,7 +19,9 @@
 
 package org.nuxeo.ecm.directory;
 
+import java.io.Serializable;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.DataModel;
@@ -60,4 +62,29 @@ public abstract class BaseSession implements Session {
         entry.addDataModel(dataModel);
         return entry;
     }
+
+
+    protected static Map<String, Serializable> mkSerializableMap(Map<String, Object> map) {
+         Map<String, Serializable> serializableMap = null;
+         if (map !=null) {
+             serializableMap = new HashMap<String, Serializable>();
+             for (String key : map.keySet()) {
+                 serializableMap.put(key, (Serializable) map.get(key));
+             }
+         }
+         return serializableMap;
+    }
+
+    protected static Map<String, Object> mkObjectMap(Map<String, Serializable> map) {
+        Map<String, Object> objectMap = null;
+        if (map !=null) {
+            objectMap = new HashMap<String, Object>();
+            for (String key : map.keySet()) {
+                objectMap.put(key, map.get(key));
+            }
+        }
+        return objectMap;
+   }
+
+
 }

@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.usermanager;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -319,12 +320,12 @@ public class FakeUserManagerImpl implements UserManager {
         throw new UnsupportedOperationException();
     }
 
-    public DocumentModelList searchGroups(Map<String, Object> filter,
+    public DocumentModelList searchGroups(Map<String, Serializable> filter,
             Set<String> fulltext) throws ClientException {
         throw new UnsupportedOperationException();
     }
 
-    public DocumentModelList searchUsers(Map<String, Object> filter,
+    public DocumentModelList searchUsers(Map<String, Serializable> filter,
             Set<String> fulltext) throws ClientException {
         throw new UnsupportedOperationException();
     }
@@ -395,7 +396,7 @@ public class FakeUserManagerImpl implements UserManager {
         throw new UnsupportedOperationException();
     }
 
-    public List<NuxeoPrincipal> searchByMap(Map<String, Object> filter,
+    public List<NuxeoPrincipal> searchByMap(Map<String, Serializable> filter,
             Set<String> pattern) throws ClientException {
         throw new UnsupportedOperationException();
     }

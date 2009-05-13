@@ -647,25 +647,25 @@ public class MultiDirectorySession extends BaseSession {
         }
     }
 
-    public DocumentModelList query(Map<String, Object> filter)
+    public DocumentModelList query(Map<String, Serializable> filter)
             throws ClientException {
         return query(filter, Collections.<String> emptySet());
     }
 
-    public DocumentModelList query(Map<String, Object> filter,
+    public DocumentModelList query(Map<String, Serializable> filter,
             Set<String> fulltext) throws ClientException {
         return query(filter, fulltext, Collections.<String, String> emptyMap());
     }
 
     @SuppressWarnings("boxing")
-    public DocumentModelList query(Map<String, Object> filter,
+    public DocumentModelList query(Map<String, Serializable> filter,
             Set<String> fulltext, Map<String, String> orderBy)
             throws ClientException {
         return query(filter, fulltext, orderBy, false);
     }
 
     @SuppressWarnings("boxing")
-    public DocumentModelList query(Map<String, Object> filter,
+    public DocumentModelList query(Map<String, Serializable> filter,
             Set<String> fulltext, Map<String, String> orderBy,
             boolean fetchReferences) throws ClientException {
         init();
@@ -684,8 +684,8 @@ public class MultiDirectorySession extends BaseSession {
             List<SubDirectoryInfo> optionalDirsMatching = new ArrayList<SubDirectoryInfo>();
             for (SubDirectoryInfo dirInfo : sourceInfo.subDirectoryInfos) {
                 // compute filter
-                final Map<String, Object> dirFilter = new HashMap<String, Object>();
-                for (Entry<String, Object> e : filter.entrySet()) {
+                final Map<String, Serializable> dirFilter = new HashMap<String, Serializable>();
+                for (Entry<String, Serializable> e : filter.entrySet()) {
                     final String fieldName = dirInfo.fromSource.get(e.getKey());
                     if (fieldName == null) {
                         continue;
@@ -695,7 +695,7 @@ public class MultiDirectorySession extends BaseSession {
                 if (dirInfo.isOptional) {
                     // check if filter matches directory default values
                     boolean matches = true;
-                    for (Map.Entry<String, Object> dirFilterEntry : dirFilter.entrySet()) {
+                    for (Map.Entry<String, Serializable> dirFilterEntry : dirFilter.entrySet()) {
                         Object defaultValue = dirInfo.defaultEntry.get(dirFilterEntry.getKey());
                         Object filterValue = dirFilterEntry.getValue();
                         if (defaultValue == null && filterValue != null) {
@@ -741,7 +741,7 @@ public class MultiDirectorySession extends BaseSession {
                 // add entry for every data found in other dirs
                 Set<String> existingIds = new HashSet<String>(
                         dirInfo.getSession().getProjection(
-                                Collections.<String, Object> emptyMap(),
+                                Collections.<String, Serializable> emptyMap(),
                                 dirInfo.idField));
                 for (Entry<String, Map<String, Object>> result : maps.entrySet()) {
                     final String id = result.getKey();
@@ -791,13 +791,13 @@ public class MultiDirectorySession extends BaseSession {
         return results;
     }
 
-    public List<String> getProjection(Map<String, Object> filter,
+    public List<String> getProjection(Map<String, Serializable> filter,
             String columnName) throws ClientException {
         return getProjection(filter, Collections.<String> emptySet(),
                 columnName);
     }
 
-    public List<String> getProjection(Map<String, Object> filter,
+    public List<String> getProjection(Map<String, Serializable> filter,
             Set<String> fulltext, String columnName) throws ClientException {
 
         // There's no way to do an efficient getProjection to a source with

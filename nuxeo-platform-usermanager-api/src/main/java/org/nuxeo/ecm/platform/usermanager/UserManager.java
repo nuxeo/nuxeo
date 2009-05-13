@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.usermanager;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -162,7 +163,7 @@ public interface UserManager {
      * @since 5.2M4
      * @throws ClientException
      */
-    DocumentModelList searchUsers(Map<String, Object> filter,
+    DocumentModelList searchUsers(Map<String, Serializable> filter,
             Set<String> fulltext) throws ClientException;
 
     String getUserListingMode() throws ClientException;
@@ -187,7 +188,7 @@ public interface UserManager {
      * @since 5.2M4
      * @throws ClientException
      */
-    DocumentModelList searchGroups(Map<String, Object> filter,
+    DocumentModelList searchGroups(Map<String, Serializable> filter,
             Set<String> fulltext) throws ClientException;
 
     /**
@@ -433,7 +434,7 @@ public interface UserManager {
      * @deprecated use {@link #searchUsers(Map, Set)}
      */
     @Deprecated
-    List<NuxeoPrincipal> searchByMap(Map<String, Object> filter,
+    List<NuxeoPrincipal> searchByMap(Map<String, Serializable> filter,
             Set<String> pattern) throws ClientException;
 
     /**

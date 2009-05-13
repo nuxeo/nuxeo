@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.directory.sql;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -416,7 +417,7 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
     public void testQuery1() throws Exception {
         Session session = getSession();
         try {
-            Map<String, Object> filter = new HashMap<String, Object>();
+            Map<String, Serializable> filter = new HashMap<String, Serializable>();
             filter.put("username", "user_1");
             filter.put("password", "pass_1");
             DocumentModelList list = session.query(filter);
@@ -453,7 +454,7 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
     public void testQuerySubAny() throws Exception {
         Session session = getSession();
         try {
-            Map<String, Object> filter = new HashMap<String, Object>();
+            Map<String, Serializable> filter = new HashMap<String, Serializable>();
             filter.put("username", "er_");
             Set<String> set = new HashSet<String>();
             set.add("username");
@@ -470,7 +471,7 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
     public void testQuery2() throws Exception {
         Session session = getSession();
         try {
-            Map<String, Object> filter = new HashMap<String, Object>();
+            Map<String, Serializable> filter = new HashMap<String, Serializable>();
             filter.put("username", "user_1");
             filter.put("password", "pass_x"); // no such password
             DocumentModelList list = session.query(filter);
@@ -483,7 +484,7 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
     public void testQueryCaseInsensitive() throws Exception {
         Session session = getSession();
         try {
-            Map<String, Object> filter = new HashMap<String, Object>();
+            Map<String, Serializable> filter = new HashMap<String, Serializable>();
             // case insensitive substring search
             filter.put("username", "admini");
             DocumentModelList list = session.query(filter, filter.keySet());
@@ -498,7 +499,7 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
     public void testGetProjection() throws Exception {
         Session session = getSession();
         try {
-            Map<String, Object> filter = new HashMap<String, Object>();
+            Map<String, Serializable> filter = new HashMap<String, Serializable>();
             filter.put("username", "user_1");
             List<String> list = session.getProjection(filter, "password");
             assertEquals(1, list.size());
@@ -511,7 +512,7 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
     public void testSearch() throws Exception {
         Session session = getSession();
         try {
-            Map<String, Object> filter = new HashMap<String, Object>();
+            Map<String, Serializable> filter = new HashMap<String, Serializable>();
 
             // exact match
             filter.put("username", "u");

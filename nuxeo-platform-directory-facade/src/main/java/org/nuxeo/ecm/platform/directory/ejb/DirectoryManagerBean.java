@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.directory.ejb;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -193,7 +194,7 @@ public class DirectoryManagerBean implements DirectoryManager {
     }
 
     public List<String> getProjection(long sessionId,
-            Map<String, Object> filter, String columnName)
+            Map<String, Serializable> filter, String columnName)
             throws DirectoryException {
         try {
             return getSession(sessionId).getProjection(filter, columnName);
@@ -203,7 +204,7 @@ public class DirectoryManagerBean implements DirectoryManager {
     }
 
     public List<String> getProjection(long sessionId,
-            Map<String, Object> filter, Set<String> fulltext, String columnName)
+            Map<String, Serializable> filter, Set<String> fulltext, String columnName)
             throws DirectoryException {
         try {
             return getSession(sessionId).getProjection(filter, fulltext,
@@ -229,7 +230,7 @@ public class DirectoryManagerBean implements DirectoryManager {
         }
     }
 
-    public DocumentModelList query(long sessionId, Map<String, Object> filter)
+    public DocumentModelList query(long sessionId, Map<String, Serializable> filter)
             throws DirectoryException {
         try {
             return getSession(sessionId).query(filter);
@@ -238,7 +239,7 @@ public class DirectoryManagerBean implements DirectoryManager {
         }
     }
 
-    public DocumentModelList query(long sessionId, Map<String, Object> filter,
+    public DocumentModelList query(long sessionId, Map<String, Serializable> filter,
             Set<String> fulltext) throws DirectoryException {
         try {
             return getSession(sessionId).query(filter, fulltext);
@@ -247,7 +248,7 @@ public class DirectoryManagerBean implements DirectoryManager {
         }
     }
 
-    public DocumentModelList query(long sessionId, Map<String, Object> filter,
+    public DocumentModelList query(long sessionId, Map<String, Serializable> filter,
             Set<String> fulltext, Map<String, String> orderBy)
             throws DirectoryException {
         try {
@@ -257,7 +258,7 @@ public class DirectoryManagerBean implements DirectoryManager {
         }
     }
 
-    public DocumentModelList query(long sessionId, Map<String, Object> filter,
+    public DocumentModelList query(long sessionId, Map<String, Serializable> filter,
             Set<String> fulltext, Map<String, String> orderBy,
             boolean fetchReferences) throws DirectoryException {
         try {

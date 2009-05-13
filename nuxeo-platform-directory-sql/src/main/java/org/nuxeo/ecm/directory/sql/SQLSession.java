@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.directory.sql;
 
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -273,7 +274,7 @@ public class SQLSession extends BaseSession implements EntrySource {
     }
 
     public DocumentModelList getEntries() throws ClientException {
-        Map<String, Object> emptyMap = Collections.emptyMap();
+        Map<String, Serializable> emptyMap = Collections.emptyMap();
         return query(emptyMap);
     }
 
@@ -429,14 +430,14 @@ public class SQLSession extends BaseSession implements EntrySource {
         directory.invalidateCaches();
     }
 
-    public DocumentModelList query(Map<String, Object> filter,
+    public DocumentModelList query(Map<String, Serializable> filter,
             Set<String> fulltext, Map<String, String> orderBy)
             throws ClientException {
         // XXX not fetch references by default: breaks current behavior
         return query(filter, fulltext, orderBy, false);
     }
 
-    public DocumentModelList query(Map<String, Object> filter,
+    public DocumentModelList query(Map<String, Serializable> filter,
             Set<String> fulltext, Map<String, String> orderBy,
             boolean fetchReferences) throws ClientException {
         acquireConnection();
@@ -605,7 +606,7 @@ public class SQLSession extends BaseSession implements EntrySource {
         }
     }
 
-    public DocumentModelList query(Map<String, Object> filter)
+    public DocumentModelList query(Map<String, Serializable> filter)
             throws ClientException {
         return query(filter, emptySet);
     }
@@ -720,7 +721,7 @@ public class SQLSession extends BaseSession implements EntrySource {
         }
     }
 
-    public List<String> getProjection(Map<String, Object> filter,
+    public List<String> getProjection(Map<String, Serializable> filter,
             Set<String> fulltext, String columnName) throws ClientException {
         DocumentModelList docList = query(filter, fulltext);
         List<String> result = new ArrayList<String>();
@@ -737,7 +738,7 @@ public class SQLSession extends BaseSession implements EntrySource {
         return result;
     }
 
-    public List<String> getProjection(Map<String, Object> filter,
+    public List<String> getProjection(Map<String, Serializable> filter,
             String columnName) throws ClientException {
         return getProjection(filter, emptySet, columnName);
     }
@@ -769,7 +770,7 @@ public class SQLSession extends BaseSession implements EntrySource {
         return Boolean.TRUE.equals(directory.getConfig().getReadOnly());
     }
 
-    public DocumentModelList query(Map<String, Object> filter,
+    public DocumentModelList query(Map<String, Serializable> filter,
             Set<String> fulltext) throws ClientException {
         return query(filter, fulltext, new HashMap<String, String>());
     }

@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.directory.ldap;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -688,7 +689,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
     public void testQuery1() throws ClientException {
         Session session = getLDAPDirectory("userDirectory").getSession();
         try {
-            Map<String, Object> filter = new HashMap<String, Object>();
+            Map<String, Serializable> filter = new HashMap<String, Serializable>();
             DocumentModelList entries;
 
             // empty filter means everything (like getEntries)
@@ -745,7 +746,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
         }
         Session session = getLDAPDirectory("userDirectory").getSession();
         try {
-            Map<String, Object> filter = new HashMap<String, Object>();
+            Map<String, Serializable> filter = new HashMap<String, Serializable>();
             Set<String> fulltext = new HashSet<String>();
 
             // empty filter means everything (like getEntries)
@@ -801,7 +802,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
     public void testQueryWithNullFilter() throws ClientException {
         Session session = getLDAPDirectory("userDirectory").getSession();
         try {
-            Map<String, Object> filter = new HashMap<String, Object>();
+            Map<String, Serializable> filter = new HashMap<String, Serializable>();
             DocumentModelList entries;
 
             // negative filter
@@ -824,7 +825,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
     public void testQueryOrderBy() throws ClientException {
         Session session = getLDAPDirectory("userDirectory").getSession();
         try {
-            Map<String, Object> filter = new HashMap<String, Object>();
+            Map<String, Serializable> filter = new HashMap<String, Serializable>();
             Map<String, String> orderBy = new HashMap<String, String>();
             DocumentModelList entries;
 

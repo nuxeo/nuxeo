@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.directory.impl;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -122,13 +123,13 @@ public class DirectoryClientImpl extends BaseSession implements DirectoryClient 
         return getDirectoryManager().getPasswordField(sessionId);
     }
 
-    public List<String> getProjection(Map<String, Object> filter,
+    public List<String> getProjection(Map<String, Serializable> filter,
             String columnName) throws DirectoryException {
         return getDirectoryManager().getProjection(sessionId, filter,
                 columnName);
     }
 
-    public List<String> getProjection(Map<String, Object> filter,
+    public List<String> getProjection(Map<String, Serializable> filter,
             Set<String> fulltext, String columnName) throws DirectoryException {
         return getDirectoryManager().getProjection(sessionId, filter,
                 columnName);
@@ -142,23 +143,23 @@ public class DirectoryClientImpl extends BaseSession implements DirectoryClient 
         return getDirectoryManager().isReadOnly(sessionId);
     }
 
-    public DocumentModelList query(Map<String, Object> filter)
+    public DocumentModelList query(Map<String, Serializable> filter)
             throws DirectoryException {
         return getDirectoryManager().query(sessionId, filter);
     }
 
-    public DocumentModelList query(Map<String, Object> filter,
+    public DocumentModelList query(Map<String, Serializable> filter,
             Set<String> fulltext) throws DirectoryException {
         return getDirectoryManager().query(sessionId, filter, fulltext);
     }
 
-    public DocumentModelList query(Map<String, Object> filter,
+    public DocumentModelList query(Map<String, Serializable> filter,
             Set<String> fulltext, Map<String, String> orderBy)
             throws DirectoryException {
         return getDirectoryManager().query(sessionId, filter, fulltext, orderBy);
     }
 
-    public DocumentModelList query(Map<String, Object> filter,
+    public DocumentModelList query(Map<String, Serializable> filter,
             Set<String> fulltext, Map<String, String> orderBy,
             boolean fetchReferences) throws DirectoryException {
         return getDirectoryManager().query(sessionId, filter, fulltext,

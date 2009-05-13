@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.directory.multi;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -331,7 +332,7 @@ public class TestMultiDirectoryOptional extends NXRuntimeTestCase {
     }
 
     public void testQuery() throws Exception {
-        Map<String, Object> filter = new HashMap<String, Object>();
+        Map<String, Serializable> filter = new HashMap<String, Serializable>();
         DocumentModelList entries;
         DocumentModel e;
 
@@ -397,7 +398,7 @@ public class TestMultiDirectoryOptional extends NXRuntimeTestCase {
     }
 
     public void testGetProjection() throws Exception {
-        Map<String, Object> filter = new HashMap<String, Object>();
+        Map<String, Serializable> filter = new HashMap<String, Serializable>();
         List<String> list;
 
         // empty filter means everything (like getEntries)

@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.directory.api;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -152,7 +153,7 @@ public interface DirectoryManager extends DirectoryService {
      * @throws SizeLimitExceededException if the number of results is larger
      *             than the limit configured for the directory
      */
-    DocumentModelList query(long sessionId, Map<String, Object> filter)
+    DocumentModelList query(long sessionId, Map<String, Serializable> filter)
             throws DirectoryException;
 
     /**
@@ -169,7 +170,7 @@ public interface DirectoryManager extends DirectoryService {
      * @throws SizeLimitExceededException if the number of results is larger
      *             than the limit configured for the directory
      */
-    DocumentModelList query(long sessionId, Map<String, Object> filter,
+    DocumentModelList query(long sessionId, Map<String, Serializable> filter,
             Set<String> fulltext) throws DirectoryException;
 
     /**
@@ -191,11 +192,11 @@ public interface DirectoryManager extends DirectoryService {
      * @throws SizeLimitExceededException if the number of results is larger
      *             than the limit configured for the directory
      */
-    DocumentModelList query(long sessionId, Map<String, Object> filter,
+    DocumentModelList query(long sessionId, Map<String, Serializable> filter,
             Set<String> fulltext, Map<String, String> orderBy)
             throws DirectoryException;
 
-    DocumentModelList query(long sessionId, Map<String, Object> filter,
+    DocumentModelList query(long sessionId, Map<String, Serializable> filter,
             Set<String> fulltext, Map<String, String> orderBy,
             boolean fetchReferences) throws DirectoryException;
 
@@ -249,10 +250,10 @@ public interface DirectoryManager extends DirectoryService {
      * @throws SizeLimitExceededException if the number of results is larger
      *             than the limit configured for the directory
      */
-    List<String> getProjection(long sessionId, Map<String, Object> filter,
+    List<String> getProjection(long sessionId, Map<String, Serializable> filter,
             String columnName) throws DirectoryException;
 
-    List<String> getProjection(long sessionId, Map<String, Object> filter,
+    List<String> getProjection(long sessionId, Map<String, Serializable> filter,
             Set<String> fulltext, String columnName) throws DirectoryException;
 
     /**

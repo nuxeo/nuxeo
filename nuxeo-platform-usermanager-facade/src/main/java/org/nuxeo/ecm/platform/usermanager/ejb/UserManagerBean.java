@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.usermanager.ejb;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -329,7 +330,7 @@ public class UserManagerBean implements UserManager {
         }
     }
 
-    public DocumentModelList searchGroups(Map<String, Object> filter,
+    public DocumentModelList searchGroups(Map<String, Serializable> filter,
             Set<String> fulltext) throws ClientException {
         try {
             return getUserManager().searchGroups(filter, fulltext);
@@ -338,7 +339,7 @@ public class UserManagerBean implements UserManager {
         }
     }
 
-    public DocumentModelList searchUsers(Map<String, Object> filter,
+    public DocumentModelList searchUsers(Map<String, Serializable> filter,
             Set<String> fulltext) throws ClientException {
         try {
             return getUserManager().searchUsers(filter, fulltext);
@@ -493,7 +494,7 @@ public class UserManagerBean implements UserManager {
         }
     }
 
-    public List<NuxeoPrincipal> searchByMap(Map<String, Object> filter,
+    public List<NuxeoPrincipal> searchByMap(Map<String, Serializable> filter,
             Set<String> pattern) throws ClientException {
         try {
             return getUserManager().searchByMap(filter, pattern);
