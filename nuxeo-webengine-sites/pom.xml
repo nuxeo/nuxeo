@@ -147,6 +147,13 @@
       <artifactId>nuxeo-platform-relations-jena-plugin</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.webengine</groupId>
+      <artifactId>nuxeo-webengine-sites-core-contrib</artifactId>
+      <scope>test</scope>
+    </dependency>
+    
+    
   </dependencies>
 
 </project>

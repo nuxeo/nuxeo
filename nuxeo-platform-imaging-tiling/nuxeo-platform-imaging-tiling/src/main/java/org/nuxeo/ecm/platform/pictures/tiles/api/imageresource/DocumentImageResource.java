@@ -70,6 +70,9 @@ public class DocumentImageResource implements ImageResource {
         if (hash == null) {
             hash = doc.getRepositoryName() + "_" + doc.getId() + "_"
                     + getEscapedxPath(xPath);
+            if (modified != null) {
+                hash = hash + "_" + modified.getTimeInMillis();
+            }
         }
     }
 
