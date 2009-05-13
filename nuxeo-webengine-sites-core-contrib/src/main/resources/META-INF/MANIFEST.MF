@@ -6,4 +6,5 @@ Bundle-Vendor: Nuxeo
 Nuxeo-Component: OSGI-INF/core-types-contrib.xml,
  OSGI-INF/permissions-contrib.xml,
  OSGI-INF/webengine-nxsearch-contrib.xml
+Require-Bundle: org.nuxeo.ecm.core
 Nuxeo-RequiredBy: org.nuxeo.ecm.platform.webengine.sites
