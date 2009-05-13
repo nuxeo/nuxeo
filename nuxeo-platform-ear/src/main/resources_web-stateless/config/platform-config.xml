@@ -26,8 +26,8 @@
     point="servers">
     <documentation>The default platform layout</documentation>
     <server name="default" host="${org.nuxeo.ecm.instance.host}" port="1099">
-      <service class="org.nuxeo.ecm.core.api.CoreSession"
-        jndiName="${org.nuxeo.ecm.platform.coresession.facade}" private="true" />
+      <service class="org.nuxeo.ecm.core.api.CoreSession" jndiName="${org.nuxeo.ecm.platform.coresession.facade}"
+        private="true" />
       <service class="org.nuxeo.ecm.platform.types.TypeManager"
         jndiName="%TypeManagerBean" />
       <repository name="default" class="org.nuxeo.ecm.core.api.CoreSession"
@@ -44,6 +44,8 @@
   <extension target="org.nuxeo.runtime.api.ServiceManagement" point="servers">
     <server class="org.nuxeo.runtime.api.JBossServiceLocator">
       <group>*</group>
+      <group>platform</group>
+      <group>core</group>
       <property name="suffix">/remote</property>
       <property name="java.naming.factory.initial">
         org.jnp.interfaces.NamingContextFactory
@@ -57,8 +59,7 @@
     </server>
   </extension>
 
-  <extension target="org.nuxeo.runtime.api.ServiceManagement"
-    point="services">
+  <extension target="org.nuxeo.runtime.api.ServiceManagement" point="services">
     <service class="org.nuxeo.ecm.core.api.CoreSession" name="default"
       group="core">
       <locator>%DocumentManagerBean</locator>
@@ -67,15 +68,17 @@
       group="search">
       <locator>%SearchServiceBean</locator>
     </service>
-    <service class="org.nuxeo.ecm.platform.io.api.IOManager"
-      group="platform/io">
+    <service class="org.nuxeo.ecm.platform.io.api.IOManager" group="platform/io">
       <locator>%IOManagerBean</locator>
     </service>
     <service class="org.nuxeo.ecm.platform.publishing.api.PublishingService"
       group="platform">
       <locator>%PublishingServiceBean</locator>
     </service>
-    <!-- the remote type provider used to import types : see below the provider extension -->
+    <!--
+      the remote type provider used to import types : see below the provider
+      extension
+    -->
     <service class="org.nuxeo.ecm.core.schema.TypeProvider" group="core">
       <locator>%TypeProviderBean</locator>
     </service>
@@ -99,20 +102,17 @@
       group="platform/relations">
       <locator>%RelationManagerBean</locator>
     </service>
-    <service class="org.nuxeo.ecm.platform.audit.api.Logs"
-      group="platform/audit">
+    <service class="org.nuxeo.ecm.platform.audit.api.Logs" group="platform/audit">
       <locator>%LogsBean</locator>
     </service>
     <service class="org.nuxeo.ecm.platform.comment.api.CommentManager"
       group="platform/comments">
       <locator>%CommentManagerBean</locator>
     </service>
-    <service class="org.nuxeo.ecm.directory.api.DirectoryService"
-      group="platform/directory">
+    <service class="org.nuxeo.ecm.directory.api.DirectoryService" group="platform/directory">
       <locator>%DirectoryManagerBean</locator>
     </service>
-    <service class="org.nuxeo.ecm.platform.jbpm.JbpmService"
-        group="platform">
+    <service class="org.nuxeo.ecm.platform.jbpm.JbpmService" group="platform">
       <locator>%JbpmServiceBean</locator>
     </service>
     <service class="org.nuxeo.ecm.platform.notification.api.NotificationManager"
@@ -121,6 +121,10 @@
     </service>
     <service
       class="org.nuxeo.ecm.platform.ec.placeful.ejb.interfaces.EJBPlacefulService"
+      group="platform">
+      <locator>%PlacefulServiceBean</locator>
+    </service>
+    <service class="org.nuxeo.ecm.platform.ec.placeful.interfaces.PlacefulService"
       group="platform">
       <locator>%PlacefulServiceBean</locator>
     </service>
