@@ -1,3 +1,9 @@
+About
+=====
+
+This addon is a prototype WebDAV implementation on top of WebEngine, using
+JAX-RS and de webdav-jaxrs extension.
+
 Setup and tests
 ===============
 
