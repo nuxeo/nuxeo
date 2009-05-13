@@ -3,9 +3,10 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.nuxeo.ecm.platform</groupId>
-    <artifactId>nuxeo-features-parent</artifactId>
+    <groupId>org.nuxeo.ecm.distribution</groupId>
+    <artifactId>nuxeo-distribution</artifactId>
     <version>5.2-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
   </parent>
 
   <artifactId>nuxeo-platform-ear</artifactId>
@@ -16,27 +17,9 @@
   </description>
 
   <properties>
-    <nuxeo.webengine.version>${nuxeo.features.version}</nuxeo.webengine.version>
-    <nuxeo.dm.version>5.2-SNAPSHOT</nuxeo.dm.version>
     <nuxeo.ear.assembly>nuxeo</nuxeo.ear.assembly>
     <nuxeo.ear>${nuxeo.ear.assembly}.ear</nuxeo.ear>
-    <prop>test</prop>
   </properties>
-
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-webapp</artifactId>
-        <version>${nuxeo.dm.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-webapp-core</artifactId>
-        <version>${nuxeo.dm.version}</version>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
 
   <dependencies>
     <dependency>
