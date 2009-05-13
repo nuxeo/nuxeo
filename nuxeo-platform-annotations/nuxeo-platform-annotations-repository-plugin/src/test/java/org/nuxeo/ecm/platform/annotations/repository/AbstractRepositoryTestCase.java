@@ -76,6 +76,7 @@ public abstract class AbstractRepositoryTestCase extends RepositoryOSGITestCase 
                 "org.nuxeo.ecm.sql.jena.databaseTransactionEnabled", "false");
         deployBundle("org.nuxeo.ecm.core");
         deployBundle("org.nuxeo.ecm.relations");
+        deployBundle("org.nuxeo.ecm.annotations.contrib");
         deployBundle("org.nuxeo.ecm.annotations");
         deployBundle("org.nuxeo.ecm.annotations.repository");
         deployBundle("org.nuxeo.ecm.platform.url.core");
