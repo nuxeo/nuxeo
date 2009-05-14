@@ -22,28 +22,30 @@ package org.nuxeo.ecm.platform.forms.layout.facelets;
 import java.io.IOException;
 
 import javax.el.ELException;
+import javax.el.ValueExpression;
 import javax.el.VariableMapper;
 import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.platform.forms.layout.api.LayoutRow;
+import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletException;
 import com.sun.facelets.el.VariableMapperWrapper;
+import com.sun.facelets.tag.TagAttribute;
 import com.sun.facelets.tag.TagConfig;
 import com.sun.facelets.tag.TagHandler;
 
 /**
  * Layout widget recursion tag handler.
  * <p>
- * Uses facelet template features to iterate over a layout row widgets and apply
- * next handlers as many times as needed.
+ * Iterates over a layout row widgets and apply next handlers as many times as
+ * needed.
  * <p>
  * Only works when used inside a tag using the {@link LayoutRowTagHandler}.
- *
- * @see LayoutTagHandler#apply(FaceletContext, UIComponent, String)
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
@@ -52,28 +54,78 @@ public class LayoutRowWidgetTagHandler extends TagHandler {
     @SuppressWarnings("unused")
     private static final Log log = LogFactory.getLog(LayoutRowWidgetTagHandler.class);
 
-    int widgetCounter = 0;
+    protected final TagConfig config;
 
     public LayoutRowWidgetTagHandler(TagConfig config) {
         super(config);
+        this.config = config;
     }
 
-    // XXX same handler is used in different threads => synchronize it since
-    // some member fields are not supposed to be shared
-    public synchronized void apply(FaceletContext ctx, UIComponent parent)
+    /**
+     * For each widget in current row, exposes widget variables and applies next
+     * handler.
+     * <p>
+     * Needs row to be exposed in context, so works in conjunction with
+     * {@link LayoutRowTagHandler}.
+     * <p>
+     * Widget variables exposed: {@link RenderVariables.widgetVariables#widget},
+     * same variable suffixed with "_n" where n is the widget level, and
+     * {@link RenderVariables.widgetVariables#widgetIndex}.
+     */
+    public void apply(FaceletContext ctx, UIComponent parent)
             throws IOException, FacesException, FaceletException, ELException {
-        // XXX same handler is used in different threads => reset counter
-        // before use
+
+        // resolve widgets from row in context
+        LayoutRow row = null;
+        String rowVariableName = RenderVariables.rowVariables.layoutRow.name();
+        FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
+        TagAttribute rowAttribute = helper.createAttribute(rowVariableName,
+                String.format("#{%s}", rowVariableName));
+        if (rowAttribute != null) {
+            row = (LayoutRow) rowAttribute.getObject(ctx, LayoutRow.class);
+        }
+        if (row == null) {
+            log.error("Could not resolve layout row " + rowAttribute);
+            return;
+        }
+
+        Widget[] widgets = row.getWidgets();
+        if (widgets == null || widgets.length == 0) {
+            return;
+        }
 
         VariableMapper orig = ctx.getVariableMapper();
         ctx.setVariableMapper(new VariableMapperWrapper(orig));
         try {
-            widgetCounter = 0;
-            while (ctx.includeDefinition(parent,
-                    TemplateClientHelper.generateWidgetNumber(widgetCounter))) {
+            int widgetCounter = 0;
+            for (Widget widget : widgets) {
+                // expose widget variables
+                VariableMapper vm = ctx.getVariableMapper();
+                ValueExpression widgetVe = ctx.getExpressionFactory().createValueExpression(
+                        widget, Widget.class);
+                vm.setVariable(RenderVariables.widgetVariables.widget.name(),
+                        widgetVe);
+                Integer level = null;
+                if (widget != null) {
+                    level = widget.getLevel();
+                }
+                vm.setVariable(String.format("%s_%s",
+                        RenderVariables.widgetVariables.widget.name(), level),
+                        widgetVe);
+                ValueExpression widgetIndexVe = ctx.getExpressionFactory().createValueExpression(
+                        widgetCounter, Integer.class);
+                vm.setVariable(
+                        RenderVariables.widgetVariables.widgetIndex.name(),
+                        widgetIndexVe);
+                vm.setVariable(String.format("%s_%s",
+                        RenderVariables.widgetVariables.widgetIndex.name(),
+                        level), widgetIndexVe);
+
+                // apply
                 nextHandler.apply(ctx, parent);
                 widgetCounter++;
             }
+
         } finally {
             ctx.setVariableMapper(orig);
         }

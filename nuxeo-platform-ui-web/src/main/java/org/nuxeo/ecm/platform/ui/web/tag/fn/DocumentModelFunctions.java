@@ -42,6 +42,7 @@ import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Schema;
@@ -196,7 +197,8 @@ public final class DocumentModelFunctions implements LiveEditConstants {
         String iconPath = "";
         if (document != null) {
             try {
-                iconPath = (String) document.getProperty("common", "icon-expanded");
+                iconPath = (String) document.getProperty("common",
+                        "icon-expanded");
             } catch (ClientException e) {
                 iconPath = null;
             }
@@ -263,7 +265,8 @@ public final class DocumentModelFunctions implements LiveEditConstants {
             return false;
         }
 
-        CoreSession session = (CoreSession) Component.getInstance("documentManager", ScopeType.CONVERSATION);
+        CoreSession session = (CoreSession) Component.getInstance(
+                "documentManager", ScopeType.CONVERSATION);
 
         boolean sessionOpened = false;
         if (session == null) {
@@ -342,6 +345,19 @@ public final class DocumentModelFunctions implements LiveEditConstants {
         return value;
     }
 
+    protected static Field getField(Field parent, String subFieldName) {
+        if (parent != null) {
+            Type type = parent.getType();
+            Type itemType = ((ListType) type).getFieldType();
+            if (itemType.isComplexType()) {
+                ComplexType complexType = (ComplexType) itemType;
+                Field subField = complexType.getField(subFieldName);
+                return subField;
+            }
+        }
+        return null;
+    }
+
     /**
      * Returns the default value for given property name.
      *
@@ -352,7 +368,24 @@ public final class DocumentModelFunctions implements LiveEditConstants {
     public static Object defaultValue(String propertyName) throws Exception {
         Object value = null;
         SchemaManager tm = Framework.getService(SchemaManager.class);
-        Field field = tm.getField(propertyName);
+        Field field = null;
+        if (propertyName != null && propertyName.contains("/")) {
+            // need to resolve subfields
+            String[] properties = propertyName.split("/");
+            Field resolvedField = tm.getField(properties[0]);
+            for (int x = 1; x < properties.length; x++) {
+                if (resolvedField == null) {
+                    break;
+                }
+                resolvedField = getField(resolvedField, properties[x]);
+            }
+            if (resolvedField != null) {
+                field = resolvedField;
+            }
+        } else {
+            field = tm.getField(propertyName);
+        }
+
         if (field != null) {
             Type type = field.getType();
             if (type.isListType()) {
@@ -496,7 +529,8 @@ public final class DocumentModelFunctions implements LiveEditConstants {
     public static String documentUrl(String patternName, DocumentModel doc,
             String viewId, Map<String, String> parameters,
             boolean newConversation) {
-        return documentUrl(patternName, doc, viewId, parameters, newConversation, null);
+        return documentUrl(patternName, doc, viewId, parameters,
+                newConversation, null);
     }
 
     public static String documentUrl(String patternName, DocumentModel doc,
@@ -516,11 +550,10 @@ public final class DocumentModelFunctions implements LiveEditConstants {
                 patternName = service.getDefaultPatternName();
             }
 
-            String baseURL =null;
-            if (req==null) {
+            String baseURL = null;
+            if (req == null) {
                 baseURL = BaseURL.getBaseURL();
-            }
-            else {
+            } else {
                 baseURL = BaseURL.getBaseURL(req);
             }
 

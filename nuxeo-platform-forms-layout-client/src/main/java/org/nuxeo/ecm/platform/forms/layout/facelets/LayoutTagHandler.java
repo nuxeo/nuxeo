@@ -39,7 +39,6 @@ import org.nuxeo.runtime.api.Framework;
 
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletException;
-import com.sun.facelets.TemplateClient;
 import com.sun.facelets.el.VariableMapperWrapper;
 import com.sun.facelets.tag.TagAttribute;
 import com.sun.facelets.tag.TagConfig;
@@ -56,22 +55,17 @@ import com.sun.facelets.tag.TagHandler;
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
-public class LayoutTagHandler extends TagHandler implements TemplateClient {
+public class LayoutTagHandler extends TagHandler {
 
     private static final Log log = LogFactory.getLog(LayoutTagHandler.class);
 
     protected final TagConfig config;
+
     protected final TagAttribute name;
+
     protected final TagAttribute mode;
+
     protected final TagAttribute value;
-
-    // composition attributes
-
-    protected Layout layout = null;
-
-    int rowCounter = 0;
-
-    int widgetCounter = 0;
 
     public LayoutTagHandler(TagConfig config) {
         super(config);
@@ -81,18 +75,12 @@ public class LayoutTagHandler extends TagHandler implements TemplateClient {
         value = getRequiredAttribute("value");
     }
 
-    private void resetCounters() {
-        rowCounter = 0;
-        widgetCounter = 0;
-    }
-
     /**
      * If resolved layout has a template, apply it, else apply widget type
      * handlers for widgets, ignoring rows.
      */
-    // XXX same handler is used in different threads => synchronize it since
-    // some member fields are not supposed to be shared
-    public synchronized void apply(FaceletContext ctx, UIComponent parent)
+    // TODO: add javadoc about variables exposed
+    public void apply(FaceletContext ctx, UIComponent parent)
             throws IOException, FacesException, FaceletException, ELException {
         WebLayoutManager layoutService;
         try {
@@ -127,7 +115,7 @@ public class LayoutTagHandler extends TagHandler implements TemplateClient {
         // mode as alias to layoutMode
         vm.setVariable(RenderVariables.globalVariables.mode.name(), modeVe);
 
-        layout = layoutService.getLayout(ctx, layoutName, modeValue, valueName);
+        Layout layout = layoutService.getLayout(ctx, layoutName, modeValue, valueName);
         if (layout == null) {
             log.error(String.format("Layout %s not found", layoutName));
             return;
@@ -142,98 +130,23 @@ public class LayoutTagHandler extends TagHandler implements TemplateClient {
         FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
         layout.setId(helper.generateLayoutId(layout.getName()));
         String template = layout.getTemplate();
-        if (template != null) {
-            // XXX same handler is used in different threads => reset counters
-            // before use
-            resetCounters();
-            ctx.pushClient(this);
-            try {
+        try {
+            if (template != null) {
                 ctx.includeFacelet(parent, template);
-            } finally {
-                ctx.popClient(this);
-                ctx.setVariableMapper(orig);
-            }
-        } else {
-
-            for (LayoutRow row : layout.getRows()) {
-                for (Widget widget : row.getWidgets()) {
-                    WidgetTagHandler.applyWidgetHandler(ctx, parent, config,
-                            widget, value, false);
+            } else {
+                log.error("Missing template property for layout " + layoutName
+                        + " => applying basic template");
+                for (LayoutRow row : layout.getRows()) {
+                    for (Widget widget : row.getWidgets()) {
+                        WidgetTagHandler.applyWidgetHandler(ctx, parent,
+                                config, widget, value, false);
+                    }
                 }
             }
+        } finally {
             ctx.setVariableMapper(orig);
         }
+
     }
 
-    /**
-     * Exposes row and widget variables resolved from given name.
-     * <p>
-     * Works in conjunction with {@link LayoutRowTagHandler} and
-     * {@link LayoutRowWidgetTagHandler}.
-     * <p>
-     * Row variables exposed: {@link RenderVariables.rowVariables#row} and
-     * {@link RenderVariables.rowVariables#rowIndex}. Widget variables exposed:
-     * {@link RenderVariables.widgetVariables#widget} and
-     * {@link RenderVariables.widgetVariables#widgetIndex}.
-     */
-    public boolean apply(FaceletContext ctx, UIComponent parent, String name)
-            throws IOException, FacesException, FaceletException, ELException {
-        if (layout == null) {
-            return false;
-        }
-        Integer rowNumber = TemplateClientHelper.getRowNumber(name);
-        if (rowNumber != null) {
-            LayoutRow[] rows = layout.getRows();
-            if (rows == null || rowNumber > rows.length - 1) {
-                return false;
-            }
-            LayoutRow row = rows[rowNumber];
-            // expose row variables
-            VariableMapper vm = ctx.getVariableMapper();
-            ValueExpression rowVe = ctx.getExpressionFactory().createValueExpression(
-                    row, LayoutRow.class);
-            vm.setVariable(RenderVariables.rowVariables.layoutRow.name(), rowVe);
-            ValueExpression rowIndexVe = ctx.getExpressionFactory().createValueExpression(
-                    rowNumber, Integer.class);
-            vm.setVariable(RenderVariables.rowVariables.layoutRowIndex.name(),
-                    rowIndexVe);
-            rowCounter = rowNumber;
-            return true;
-        }
-        Integer widgetNumber = TemplateClientHelper.getWidgetNumber(name);
-        if (widgetNumber != null) {
-            LayoutRow[] rows = layout.getRows();
-            if (rows == null || rowCounter > rows.length - 1) {
-                return false;
-            }
-            Widget[] widgets = rows[rowCounter].getWidgets();
-            if (widgets == null || widgetNumber > widgets.length - 1) {
-                return false;
-            }
-            Widget widget = widgets[widgetNumber];
-            // expose widget variables
-            VariableMapper vm = ctx.getVariableMapper();
-            ValueExpression widgetVe = ctx.getExpressionFactory().createValueExpression(
-                    widget, Widget.class);
-            vm.setVariable(RenderVariables.widgetVariables.widget.name(),
-                    widgetVe);
-            Integer level = null;
-            if (widget != null) {
-                level = widget.getLevel();
-            }
-            vm.setVariable(String.format("%s_%s",
-                    RenderVariables.widgetVariables.widget.name(), level),
-                    widgetVe);
-            ValueExpression widgetIndexVe = ctx.getExpressionFactory().createValueExpression(
-                    widgetNumber, Integer.class);
-            vm.setVariable(RenderVariables.widgetVariables.widgetIndex.name(),
-                    widgetIndexVe);
-            vm.setVariable(String.format("%s_%s",
-                    RenderVariables.widgetVariables.widgetIndex.name(), level),
-                    widgetIndexVe);
-            widgetCounter = widgetNumber;
-            return true;
-        }
-        return false;
-    }
 }

@@ -36,7 +36,6 @@ import org.nuxeo.runtime.api.Framework;
 
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletHandler;
-import com.sun.facelets.TemplateClient;
 import com.sun.facelets.el.VariableMapperWrapper;
 import com.sun.facelets.tag.MetaTagHandler;
 import com.sun.facelets.tag.TagAttribute;
@@ -51,7 +50,7 @@ import com.sun.facelets.tag.TagConfig;
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  *
  */
-public class WidgetTagHandler extends MetaTagHandler implements TemplateClient {
+public class WidgetTagHandler extends MetaTagHandler {
 
     @SuppressWarnings("unused")
     private static final Log log = LogFactory.getLog(WidgetTagHandler.class);
@@ -64,12 +63,6 @@ public class WidgetTagHandler extends MetaTagHandler implements TemplateClient {
 
     protected final TagAttribute value;
 
-    // composition attribute
-
-    // XXX AT: maybe not keeping this value as a tag instance would avoid the
-    // apply method to be synchronized
-    protected Widget widgetInstance = null;
-
     public WidgetTagHandler(TagConfig config) {
         super(config);
         this.config = config;
@@ -78,12 +71,18 @@ public class WidgetTagHandler extends MetaTagHandler implements TemplateClient {
         value = getRequiredAttribute("value");
     }
 
-    // XXX same handler is used in different threads => synchronize it since
-    // some member fields are not supposed to be shared
-    public synchronized void apply(FaceletContext ctx, UIComponent parent)
+    /**
+     * Renders given widget resolving its {@link FaceletHandler} from
+     * {@link WebLayoutManager} configuration.
+     * <p>
+     * Variables exposed: {@link RenderVariables.globalVariables#value}, same
+     * variable suffixed with "_n" where n is the widget level, and
+     * {@link RenderVariables.globalVariables#document}.
+     */
+    public void apply(FaceletContext ctx, UIComponent parent)
             throws IOException, FacesException, ELException {
         // build handler
-        widgetInstance = (Widget) widget.getObject(ctx, Widget.class);
+        Widget widgetInstance = (Widget) widget.getObject(ctx, Widget.class);
         if (widgetInstance != null) {
             // set value name on widget instance in case it's changed from first
             // computation
@@ -92,9 +91,7 @@ public class WidgetTagHandler extends MetaTagHandler implements TemplateClient {
                 valueName = valueName.substring(2, valueName.length() - 1);
             }
             widgetInstance.setValueName(valueName);
-            ctx.pushClient(this);
             applyWidgetHandler(ctx, parent, config, widgetInstance, value, true);
-            ctx.popClient(this);
         }
     }
 
@@ -129,9 +126,6 @@ public class WidgetTagHandler extends MetaTagHandler implements TemplateClient {
         FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
         generateWidgetIdsRecursive(helper, widget);
 
-        // log.debug("thread=" + String.valueOf(Thread.currentThread().getId())
-        // + ", handler=" + tHandler.hashCode() + ", w=" + widget.getId());
-
         FaceletHandler handler = layoutService.getFaceletHandler(ctx, config,
                 widget);
         if (handler == null) {
@@ -142,61 +136,26 @@ public class WidgetTagHandler extends MetaTagHandler implements TemplateClient {
             VariableMapper orig = ctx.getVariableMapper();
             VariableMapper vm = new VariableMapperWrapper(orig);
             ctx.setVariableMapper(vm);
-            ValueExpression valueExpr = value.getValueExpression(ctx,
-                    Object.class);
-            vm.setVariable(RenderVariables.globalVariables.value.name(),
-                    valueExpr);
-            vm.setVariable(String.format("%s_%s",
-                    RenderVariables.globalVariables.value.name(),
-                    widget.getLevel()), valueExpr);
-            // document as alias to value
-            vm.setVariable(RenderVariables.globalVariables.document.name(),
-                    valueExpr);
-            // apply
-            handler.apply(ctx, parent);
-            ctx.setVariableMapper(orig);
+            try {
+                ValueExpression valueExpr = value.getValueExpression(ctx,
+                        Object.class);
+                vm.setVariable(RenderVariables.globalVariables.value.name(),
+                        valueExpr);
+                vm.setVariable(String.format("%s_%s",
+                        RenderVariables.globalVariables.value.name(),
+                        widget.getLevel()), valueExpr);
+                // document as alias to value
+                vm.setVariable(RenderVariables.globalVariables.document.name(),
+                        valueExpr);
+                // apply
+                handler.apply(ctx, parent);
+            } finally {
+                ctx.setVariableMapper(orig);
+            }
         } else {
             // just apply
             handler.apply(ctx, parent);
         }
     }
 
-    public boolean apply(FaceletContext ctx, UIComponent parent, String name)
-            throws IOException, FacesException, ELException {
-        if (widgetInstance == null) {
-            return false;
-        }
-        Integer subWidgetNumber = TemplateClientHelper.getSubWidgetNumber(name);
-        if (subWidgetNumber != null) {
-            Widget[] subWidgets = widgetInstance.getSubWidgets();
-            if (subWidgets == null || subWidgetNumber > subWidgets.length - 1) {
-                return false;
-            }
-            Widget subWidget = subWidgets[subWidgetNumber];
-            // expose widget variables
-            VariableMapper vm = ctx.getVariableMapper();
-            ValueExpression subWidgetVe = ctx.getExpressionFactory().createValueExpression(
-                    subWidget, Widget.class);
-            vm.setVariable(RenderVariables.widgetVariables.widget.name(),
-                    subWidgetVe);
-            vm.setVariable(String.format("%s_%s",
-                    RenderVariables.widgetVariables.widget.name(),
-                    subWidget.getLevel()), subWidgetVe);
-            vm.setVariable(RenderVariables.subWidgetVariables.subWidget.name(),
-                    subWidgetVe);
-            ValueExpression subWidgetIndexVe = ctx.getExpressionFactory().createValueExpression(
-                    subWidgetNumber, Integer.class);
-            vm.setVariable(RenderVariables.widgetVariables.widgetIndex.name(),
-                    subWidgetIndexVe);
-            vm.setVariable(String.format("%s_%s",
-                    RenderVariables.widgetVariables.widgetIndex.name(),
-                    subWidget.getLevel()), subWidgetIndexVe);
-            // BBB
-            vm.setVariable(
-                    RenderVariables.subWidgetVariables.subWidgetIndex.name(),
-                    subWidgetIndexVe);
-            return true;
-        }
-        return false;
-    }
 }

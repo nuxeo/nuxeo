@@ -95,15 +95,14 @@ public class DocumentLayoutTagHandler extends TagHandler {
         List<FaceletHandler> handlers = new ArrayList<FaceletHandler>();
         FaceletHandler leaf = new LeafFaceletHandler();
         for (String layoutName : layoutNames) {
-            TagAttributes attributes = helper.getTagAttributes(
-                    helper.createAttribute("name", layoutName), modeAttr,
-                    value);
+            TagAttributes attributes = FaceletHandlerHelper.getTagAttributes(
+                    helper.createAttribute("name", layoutName), modeAttr, value);
             TagConfig tagConfig = TagConfigFactory.createTagConfig(config,
                     attributes, leaf);
             handlers.add(new LayoutTagHandler(tagConfig));
         }
         CompositeFaceletHandler composite = new CompositeFaceletHandler(
-                handlers.toArray(new FaceletHandler[]{}));
+                handlers.toArray(new FaceletHandler[] {}));
         composite.apply(ctx, parent);
     }
 }

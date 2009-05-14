@@ -22,28 +22,28 @@ package org.nuxeo.ecm.platform.forms.layout.facelets;
 import java.io.IOException;
 
 import javax.el.ELException;
+import javax.el.ValueExpression;
 import javax.el.VariableMapper;
 import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.el.VariableMapperWrapper;
+import com.sun.facelets.tag.TagAttribute;
 import com.sun.facelets.tag.TagConfig;
 import com.sun.facelets.tag.TagHandler;
 
 /**
  * SubWidget tag handler.
  * <p>
- * <p>
- * Uses facelet template features to iterate over a widget subwidgets and apply
- * next handlers as many times as needed.
+ * Iterates over a widget subwidgets and apply next handlers as many times as
+ * needed.
  * <p>
  * Only works when used inside a tag using the {@link WidgetTagHandler}.
- *
- * @see WidgetTagHandler#apply(FaceletContext, UIComponent, String)
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  *
@@ -53,25 +53,67 @@ public class SubWidgetTagHandler extends TagHandler {
     @SuppressWarnings("unused")
     private static final Log log = LogFactory.getLog(SubWidgetTagHandler.class);
 
-    int subWidgetCounter = 0;
+    protected final TagConfig config;
 
     public SubWidgetTagHandler(TagConfig config) {
         super(config);
+        this.config = config;
     }
 
-    // XXX same handler is used in different threads => synchronize it since
-    // some member fields are not supposed to be shared
-    public synchronized void apply(FaceletContext ctx, UIComponent parent)
+    /**
+     * For each subwidget in current widget, exposes widget variables and
+     * applies next handler.
+     * <p>
+     * Needs widget to be exposed in context, so works in conjunction with
+     * {@link WidgetTagHandler}.
+     * <p>
+     * Widget variables exposed: {@link RenderVariables.widgetVariables#widget},
+     * same variable suffixed with "_n" where n is the widget level, and
+     * {@link RenderVariables.widgetVariables#widgetIndex}.
+     */
+    public void apply(FaceletContext ctx, UIComponent parent)
             throws IOException, FacesException, ELException {
-        // XXX same handler is used in different threads => reset counter
-        // before use
-        subWidgetCounter = 0;
+        // resolve subwidgets from widget in context
+        Widget widget = null;
+        String widgetVariableName = RenderVariables.widgetVariables.widget.name();
+        FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
+        TagAttribute widgetAttribute = helper.createAttribute(
+                widgetVariableName, String.format("#{%s}", widgetVariableName));
+        if (widgetAttribute != null) {
+            widget = (Widget) widgetAttribute.getObject(ctx, Widget.class);
+        }
+        if (widget == null) {
+            log.error("Could not resolve widget " + widgetAttribute);
+            return;
+        }
+
+        Widget[] subWidgets = widget.getSubWidgets();
+        if (subWidgets == null || subWidgets.length == 0) {
+            return;
+        }
+
         VariableMapper orig = ctx.getVariableMapper();
         ctx.setVariableMapper(new VariableMapperWrapper(orig));
         try {
-            while (ctx.includeDefinition(
-                    parent,
-                    TemplateClientHelper.generateSubWidgetNumber(subWidgetCounter))) {
+            int subWidgetCounter = 0;
+            for (Widget subWidget : subWidgets) {
+                // expose widget variables
+                VariableMapper vm = ctx.getVariableMapper();
+                ValueExpression subWidgetVe = ctx.getExpressionFactory().createValueExpression(
+                        subWidget, Widget.class);
+                vm.setVariable(RenderVariables.widgetVariables.widget.name(),
+                        subWidgetVe);
+                vm.setVariable(String.format("%s_%s",
+                        RenderVariables.widgetVariables.widget.name(),
+                        subWidget.getLevel()), subWidgetVe);
+                ValueExpression subWidgetIndexVe = ctx.getExpressionFactory().createValueExpression(
+                        subWidgetCounter, Integer.class);
+                vm.setVariable(
+                        RenderVariables.widgetVariables.widgetIndex.name(),
+                        subWidgetIndexVe);
+                vm.setVariable(String.format("%s_%s",
+                        RenderVariables.widgetVariables.widgetIndex.name(),
+                        subWidget.getLevel()), subWidgetIndexVe);
                 nextHandler.apply(ctx, parent);
                 subWidgetCounter++;
             }

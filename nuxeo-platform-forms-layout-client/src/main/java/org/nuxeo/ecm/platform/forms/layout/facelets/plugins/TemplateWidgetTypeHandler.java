@@ -22,6 +22,8 @@ package org.nuxeo.ecm.platform.forms.layout.facelets.plugins;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.api.exceptions.WidgetException;
@@ -47,6 +49,8 @@ import com.sun.facelets.tag.ui.ParamHandler;
  */
 public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
 
+    private static final Log log = LogFactory.getLog(TemplateWidgetTypeHandler.class);
+
     private static final long serialVersionUID = 6886289896957398368L;
 
     public static final String TEMPLATE_PROPERTY_NAME = "template";
@@ -58,6 +62,8 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
         String template = getTemplateValue(widget);
         FaceletHandler leaf = new LeafFaceletHandler();
         if (template == null) {
+            log.error("Missing template property for widget "
+                    + widget.getName() + " in layout " + widget.getLayoutName());
             return leaf;
         }
         FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, tagConfig);
@@ -65,7 +71,8 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
         TagAttributes attributes = helper.getTagAttributes(widgetId, widget);
         TagAttribute templateAttr = getTemplateAttribute(helper);
         if (templateAttr != null) {
-            attributes = helper.addTagAttribute(attributes, templateAttr);
+            attributes = FaceletHandlerHelper.addTagAttribute(attributes,
+                    templateAttr);
         }
         TagConfig config = TagConfigFactory.createTagConfig(tagConfig,
                 attributes, getNextHandler(ctx, tagConfig, helper, widget));
@@ -95,11 +102,11 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
                     widget.getValueName(), fieldDefs[i]);
             TagAttribute value = helper.createAttribute("value", computedValue);
             TagConfig config = TagConfigFactory.createTagConfig(tagConfig,
-                    helper.getTagAttributes(name, value), leaf);
+                    FaceletHandlerHelper.getTagAttributes(name, value), leaf);
             paramHandlers.add(new ParamHandler(config));
         }
         return new CompositeFaceletHandler(
-                paramHandlers.toArray(new ParamHandler[]{}));
+                paramHandlers.toArray(new ParamHandler[] {}));
     }
 
     /**

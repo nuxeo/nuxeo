@@ -46,13 +46,4 @@ public class RenderVariables {
         widget, widgetIndex, field,
     }
 
-    /**
-     * @deprecated use widget_0, widget_1, number being the widget level in
-     *             hierarchy.
-     */
-    @Deprecated
-    public enum subWidgetVariables {
-        subWidget, subWidgetIndex,
-    }
-
 }

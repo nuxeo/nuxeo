@@ -3,9 +3,10 @@
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxdir="http://nuxeo.org/nxdirectory"
+  xmlns:c="http://java.sun.com/jstl/core"
   xmlns:nxl="http://nuxeo.org/nxforms/layout" id="#{widget.id}">
 
-  <f:subview rendered="#{widget.mode != 'create' and widget.mode != 'edit'}">
+  <c:if test="#{widget.mode != 'create' and widget.mode != 'edit'}">
 
     <table>
       <tbody>
@@ -19,9 +20,9 @@
         </nxl:subWidget>
       </tbody>
     </table>
-  </f:subview>
+  </c:if>
 
-  <f:subview rendered="#{widget.mode == 'create' or widget.mode == 'edit'}">
+  <c:if test="#{widget.mode == 'create' or widget.mode == 'edit'}">
 
     <table>
       <tbody>
@@ -36,6 +37,6 @@
       </tbody>
     </table>
 
-  </f:subview>
+  </c:if>
 
 </f:subview>
