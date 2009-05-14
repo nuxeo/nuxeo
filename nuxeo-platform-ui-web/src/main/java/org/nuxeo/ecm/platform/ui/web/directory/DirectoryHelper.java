@@ -57,18 +57,9 @@ public final class DirectoryHelper {
 
     private static DirectoryHelper instance;
 
-    private final DirectoryService service;
+    private static DirectoryService service;
 
     private DirectoryHelper() {
-        DirectoryService dirService = Framework.getLocalService(DirectoryService.class);
-        if (dirService==null) {
-            try {
-                dirService= Framework.getService(DirectoryService.class);
-            } catch (Exception e) {
-                log.error("Can't find Directory Service",e);
-            }
-        }
-        service = dirService;
     }
 
     public static DirectoryHelper instance() {
@@ -80,7 +71,7 @@ public final class DirectoryHelper {
 
     public boolean hasParentColumn(String directoryName) {
         try {
-            return XVOCABULARY_TYPE.equals(service
+            return XVOCABULARY_TYPE.equals(getService()
                     .getDirectorySchema(directoryName));
         } catch (DirectoryException e) {
             // GR: our callers can't throw anything. Better to catch here, then
@@ -112,8 +103,8 @@ public final class DirectoryHelper {
         // an extended schema also has parent field
         Session session = null;
         try {
-            String schema = service.getDirectorySchema(directoryName);
-            session = service.open(directoryName);
+            String schema = getService().getDirectorySchema(directoryName);
+            session = getService().open(directoryName);
             if (session == null) {
                 throw new ClientException("could not open session on directory: "
                         + directoryName);
@@ -155,7 +146,7 @@ public final class DirectoryHelper {
     }
 
     public static DirectoryService getDirectoryService() {
-        return instance().service;
+        return instance().getService();
     }
 
     public static List<DirectorySelectItem> getSelectItems(
@@ -251,6 +242,21 @@ public final class DirectoryHelper {
                     directoryName, entryId), e);
             return null;
         }
+    }
+
+    protected DirectoryService getService() {
+        if (service == null) {
+            DirectoryService dirService = Framework.getLocalService(DirectoryService.class);
+            if (dirService==null) {
+                try {
+                    dirService= Framework.getService(DirectoryService.class);
+                } catch (Exception e) {
+                    log.error("Can't find Directory Service",e);
+                }
+            }
+            service = dirService;
+        }
+        return service;
     }
 
 }
