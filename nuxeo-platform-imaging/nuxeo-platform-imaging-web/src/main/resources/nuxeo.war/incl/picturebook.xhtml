@@ -18,7 +18,7 @@
       <div class="foldableBox">
         <h3 class="nofold">
           <h:outputText value="#{messages['title.picturebook']}" />
-          <h:graphicImage value="icons/download.png" style="horizontal-align: right;cursor:pointer;" id="dlIcon"
+          <h:graphicImage value="icons/icone_download.gif" style="horizontal-align: right;cursor:pointer;" id="dlIcon"
                     title="#{messages['label.outputFile.download']}" >
             <rich:componentControl for="imagingPanel" attachTo="dlIcon" operation="show" event="onclick"/>
           </h:graphicImage>
@@ -88,7 +88,7 @@
                 </nxd:restDocumentLink>
                 <!-- download-->
         <f:subview rendered="#{row.data.type eq 'Picture'}">
-                  <img id="#{row.data.ref}_imgref" class="#{row.data.ref}_popupTarget" src="icons/download.png" style="vertical-align: middle; cursor:pointer;"
+                  <img id="#{row.data.ref}_imgref" class="#{row.data.ref}_popupTarget" src="icons/icone_download.gif" style="vertical-align: middle; cursor:pointer;"
                     alt="#{messages['label.outputFile.download']} #{row.data.dublincore.title}"
                     title="#{messages['label.outputFile.download']} #{row.data.dublincore.title}"  />
                   <ui:include  src="/incl/picturebookPopupMenu.xhtml"/>
