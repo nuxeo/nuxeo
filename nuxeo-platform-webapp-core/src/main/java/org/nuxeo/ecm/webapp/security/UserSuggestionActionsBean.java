@@ -118,6 +118,7 @@ public class UserSuggestionActionsBean implements Serializable {
             if (pattern != null && pattern != "") {
                 filter.put(userManager.getGroupIdField(), pattern);
             }
+            // parameters must be serializable so copy keySet to HashSet
             return userManager.searchGroups(filter, new HashSet<String>(
                     filter.keySet()));
         } catch (SizeLimitExceededException e) {

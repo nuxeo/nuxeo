@@ -118,6 +118,7 @@ public class GroupManagerActionsBean implements GroupManagerActions {
                     // XXX: search only on id, better conf should be set in user
                     // manager interface
                     filter.put(userManager.getGroupIdField(), searchString);
+                    // parameters must be serializable so copy keySet to HashSet
                     groups = userManager.searchGroups(filter,
                             new HashSet<String>(filter.keySet()));
                 }
