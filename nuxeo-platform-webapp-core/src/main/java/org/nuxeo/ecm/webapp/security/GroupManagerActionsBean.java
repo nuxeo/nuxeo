@@ -26,6 +26,7 @@ import java.io.Serializable;
 import java.security.Principal;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 import javax.faces.application.FacesMessage;
@@ -117,7 +118,8 @@ public class GroupManagerActionsBean implements GroupManagerActions {
                     // XXX: search only on id, better conf should be set in user
                     // manager interface
                     filter.put(userManager.getGroupIdField(), searchString);
-                    groups = userManager.searchGroups(filter, filter.keySet());
+                    groups = userManager.searchGroups(filter,
+                            (HashSet<String>) filter.keySet());
                 }
             } catch (SizeLimitExceededException e) {
                 searchOverflow = true;
