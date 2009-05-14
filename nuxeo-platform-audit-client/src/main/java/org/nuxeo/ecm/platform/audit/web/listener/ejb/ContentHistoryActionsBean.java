@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.audit.web.listener.ejb;
 import static org.jboss.seam.ScopeType.EVENT;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -94,7 +95,7 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
 
     protected SortInfo sortInfo;
 
-    protected Map<String, FilterMapEntry> filterMap;
+    protected Map<String, FilterMapEntry> filterMap =  Collections.emptyMap();
 
     protected Comparator<LogEntry> comparator;
 
