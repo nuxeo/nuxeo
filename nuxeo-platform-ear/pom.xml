@@ -2,12 +2,19 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
+  <!--  <parent>-->
+  <!--    <groupId>org.nuxeo.ecm.distribution</groupId>-->
+  <!--    <artifactId>nuxeo-distribution</artifactId>-->
+  <!--    <version>5.2-SNAPSHOT</version>-->
+  <!--    <relativePath>../pom.xml</relativePath>-->
+  <!--  </parent>-->
   <parent>
-    <groupId>org.nuxeo.ecm.distribution</groupId>
-    <artifactId>nuxeo-distribution</artifactId>
+    <groupId>org.nuxeo.ecm.platform</groupId>
+    <artifactId>nuxeo-features-parent</artifactId>
     <version>5.2-SNAPSHOT</version>
-    <relativePath>../pom.xml</relativePath>
   </parent>
+
+
   <artifactId>nuxeo-platform-ear</artifactId>
   <packaging>pom</packaging>
   <name>Nuxeo EP EAR</name>
@@ -16,9 +23,33 @@
   </description>
 
   <properties>
+    <nuxeo.common.version>1.5-SNAPSHOT</nuxeo.common.version>
+    <nuxeo.runtime.version>1.5-SNAPSHOT</nuxeo.runtime.version>
+    <nuxeo.core.version>1.5-SNAPSHOT</nuxeo.core.version>
+    <nuxeo.theme.version>5.2-SNAPSHOT</nuxeo.theme.version>
+    <nuxeo.features.version>5.2-SNAPSHOT</nuxeo.features.version>
+    <nuxeo.webengine.version>5.2-SNAPSHOT</nuxeo.webengine.version>
+    <nuxeo.services.version>5.2-SNAPSHOT</nuxeo.services.version>
+    <nuxeo.jsf.version>5.2-SNAPSHOT</nuxeo.jsf.version>
+    <nuxeo.dm.version>5.2-SNAPSHOT</nuxeo.dm.version>
     <nuxeo.ear.assembly>nuxeo</nuxeo.ear.assembly>
     <nuxeo.ear>${nuxeo.ear.assembly}.ear</nuxeo.ear>
   </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-webapp</artifactId>
+        <version>${nuxeo.dm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-webapp-core</artifactId>
+        <version>${nuxeo.dm.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
   <dependencies>
     <dependency>
