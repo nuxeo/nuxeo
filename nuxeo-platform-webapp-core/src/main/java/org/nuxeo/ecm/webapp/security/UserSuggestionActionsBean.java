@@ -23,6 +23,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -117,7 +118,7 @@ public class UserSuggestionActionsBean implements Serializable {
             if (pattern != null && pattern != "") {
                 filter.put(userManager.getGroupIdField(), pattern);
             }
-            return userManager.searchGroups(filter, filter.keySet());
+            return userManager.searchGroups(filter, (HashSet<String>) filter.keySet());
         } catch (SizeLimitExceededException e) {
             addSearchOverflowMessage();
             return Collections.emptyList();
