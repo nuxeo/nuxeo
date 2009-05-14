@@ -253,6 +253,8 @@ public final class DirectoryHelper {
                 } catch (Exception e) {
                     log.error("Can't find Directory Service",e);
                 }
+            } else {
+                return dirService; // don't cache local service pointer
             }
             service = dirService;
         }
