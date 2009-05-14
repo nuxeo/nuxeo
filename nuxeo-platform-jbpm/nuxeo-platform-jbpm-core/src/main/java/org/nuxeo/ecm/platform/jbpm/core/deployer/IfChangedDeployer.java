@@ -41,9 +41,9 @@ public class IfChangedDeployer extends AbstractProcessDefinitionDeployer impleme
 
     private static final long serialVersionUID = 1L;
 
-    private final MD5Hasher hasher;
+    private transient MD5Hasher hasher;
 
-    private final HashPersistence persistence;
+    private transient HashPersistence persistence;
 
     private final Map<URL, String> hashes = new HashMap<URL, String>();
 
@@ -55,16 +55,30 @@ public class IfChangedDeployer extends AbstractProcessDefinitionDeployer impleme
 
     @Override
     public boolean isDeployable(URL url) throws NoSuchAlgorithmException,
-            SAXException, IOException, TransformerException {
-        String hash = hasher.getMD5FromURL(url);
+            SAXException, IOException, TransformerException, ParserConfigurationException {
+        String hash = getHasher().getMD5FromURL(url);
         hashes.put(url, hash);
-        return persistence.exists(hash);
+        return getPersistence().exists(hash);
     }
 
     @Override
     public void deploy(URL url) throws Exception {
         super.deploy(url);
-        persistence.persist(hashes.get(url));
+        getPersistence().persist(hashes.get(url));
+    }
+
+    public MD5Hasher getHasher() throws TransformerConfigurationException, ParserConfigurationException {
+        if (hasher==null) {
+            hasher = new MD5Hasher();
+        }
+        return hasher;
+    }
+
+    public HashPersistence getPersistence() {
+        if (persistence==null) {
+            persistence = new HashPersistence();
+        }
+        return persistence;
     }
 
 }

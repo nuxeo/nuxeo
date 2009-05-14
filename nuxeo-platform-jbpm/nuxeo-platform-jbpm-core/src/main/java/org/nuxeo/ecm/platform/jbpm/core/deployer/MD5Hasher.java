@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.jbpm.core.deployer;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -49,7 +50,9 @@ import org.xml.sax.SAXException;
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
  *
  */
-public class MD5Hasher {
+public class MD5Hasher implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private final DocumentBuilder builder;
 

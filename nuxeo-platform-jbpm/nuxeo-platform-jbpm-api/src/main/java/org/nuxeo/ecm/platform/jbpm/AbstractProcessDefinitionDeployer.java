@@ -38,6 +38,8 @@ public abstract class AbstractProcessDefinitionDeployer implements
     public void deploy(final URL url) throws Exception {
         JbpmService service = Framework.getService(JbpmService.class);
         service.executeJbpmOperation(new JbpmOperation() {
+            private static final long serialVersionUID = 1L;
+
             public Serializable run(JbpmContext context)
                     throws NuxeoJbpmException {
                 InputStream is;
