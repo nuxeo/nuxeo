@@ -61,6 +61,8 @@ import org.nuxeo.runtime.services.event.EventService;
  */
 public class UserManagerImpl implements UserManager {
 
+    private static final long serialVersionUID = 1L;
+
     public static final String USERMANAGER_TOPIC = "usermanager";
 
     public static final String USERCHANGED_EVENT_ID = "user_changed";
@@ -555,7 +557,7 @@ public class UserManagerImpl implements UserManager {
                 filter.put(groupDir.getIdField(), pattern);
             }
             DocumentModelList groupEntries = searchGroups(filter,
-                    (HashSet<String>) filter.keySet());
+                    new HashSet<String>(filter.keySet()));
 
             List<NuxeoGroup> groups = new ArrayList<NuxeoGroup>(
                     groupEntries.size());

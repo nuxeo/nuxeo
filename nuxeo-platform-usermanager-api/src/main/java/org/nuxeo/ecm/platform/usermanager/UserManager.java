@@ -38,7 +38,7 @@ import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
  * @author Anahide Tchertchian
  * 
  */
-public interface UserManager {
+public interface UserManager extends Serializable {
 
     enum MatchType {
         EXACT, SUBSTRING

@@ -48,7 +48,9 @@ import org.nuxeo.runtime.api.Framework;
 @Local(UserManagerLocal.class)
 public class UserManagerBean implements UserManager {
 
-    private UserManager userManager;
+    private static final long serialVersionUID = 1L;
+
+    private transient UserManager userManager;
 
     @PostConstruct
     public void initialize() {
