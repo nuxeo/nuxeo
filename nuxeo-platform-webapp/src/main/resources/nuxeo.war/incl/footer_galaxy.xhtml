@@ -19,16 +19,14 @@
   
   
   <!-- to move to login page -->
-  <h:form id="langSelectForm">
-    <h:outputText value="#{messages['label.selectLocale']}" />
-    <h:selectOneMenu value="#{localeSelector.localeString}" styleClass="langSelect"
-      id="langSelectMenu">
+  <h:form>
+   <h:outputText value="#{messages['label.selectLocale']}" />
+    <h:selectOneMenu value="#{localeSelector.localeString}" styleClass="langSelect">
       <f:selectItems value="#{localeSelector.supportedLocales}"/>
     </h:selectOneMenu>
     <h:commandButton action="#{localeSelector.select}"
                      value="#{messages['command.changeLocale']}"
-                     class="langSubmit"
-                     id="langSelectSubmitButton" />
+                     class="langSubmit" />
   </h:form>
 </ui:insert>
 </div>
