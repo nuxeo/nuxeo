@@ -93,9 +93,9 @@ class BasePage:
         fl.assert_('LoginFailed=true' not in fl.getLastUrl(),
                    'Login failed for %s:%s' % (user, password))
         fl.post(fl.server_url + "/view_documents.faces", params=[
-            ['j_id428', 'j_id428'],
-            ['j_id428:j_id430', 'en_GB'],
-            ['j_id428:j_id432', 'Changer'],
+            ['j_id427', 'j_id427'],
+            ['j_id427:j_id429', 'en_GB'],
+            ['j_id427:j_id431', 'Change'],
             ['javax.faces.ViewState', fl.getLastJsfState()]],
             description="Change locale to en_US")
         fl.assert_(fl.listHref(content_pattern="Log out"),
