@@ -110,6 +110,16 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
+        <groupId>org.nuxeo.common</groupId>
+        <artifactId>nuxeo-common</artifactId>
+        <version>${nuxeo.common.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.runtime</groupId>
+        <artifactId>nuxeo-runtime</artifactId>
+        <version>${nuxeo.runtime.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core-api</artifactId>
         <version>${nuxeo.core.version}</version>
