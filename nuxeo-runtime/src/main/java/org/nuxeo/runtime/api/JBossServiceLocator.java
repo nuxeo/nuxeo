@@ -69,6 +69,7 @@ public class JBossServiceLocator extends JndiServiceLocator {
     }
 
     public static String getDefaultSuffix() {
+        if (Framework.getProperty("nuxeo.client.on.jboss") != null) return "/remote";
         return System.getProperty("jboss.home.dir") == null ? "/remote" : "/local"; // if not in jboss return "/remote"
     }
 
