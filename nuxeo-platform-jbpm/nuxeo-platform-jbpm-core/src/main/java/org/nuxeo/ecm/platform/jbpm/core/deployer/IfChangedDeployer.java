@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.jbpm.core.deployer;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.URL;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
@@ -36,7 +37,9 @@ import org.xml.sax.SAXException;
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
  *
  */
-public class IfChangedDeployer extends AbstractProcessDefinitionDeployer {
+public class IfChangedDeployer extends AbstractProcessDefinitionDeployer implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private final MD5Hasher hasher;
 
