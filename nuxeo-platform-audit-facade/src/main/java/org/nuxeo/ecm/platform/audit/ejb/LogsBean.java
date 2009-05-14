@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.audit.ejb;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,12 +32,10 @@ import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.platform.audit.api.AuditException;
+import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.FilterMapEntry;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.api.Logs;
@@ -74,51 +73,50 @@ public class LogsBean implements Logs {
 
     public List<LogEntry> getLogEntriesFor(String uuid) {
         List<LogEntry> entries = service().getLogEntriesFor(em, uuid);
-        return entries;
+        return mkSerializable(entries);
     }
 
     public List<LogEntry> getLogEntriesFor(String uuid,
             Map<String, FilterMapEntry> filterMap, boolean doDefaultSort) {
-        List<LogEntry> entries = service().getLogEntriesFor(em,
-                uuid, filterMap, doDefaultSort);
-        return entries;
+        List<LogEntry> entries = service().getLogEntriesFor(em, uuid,
+                filterMap, doDefaultSort);
+        return mkSerializable(entries);
     }
 
-    public List<LogEntry> nativeQueryLogs(String whereClause,
-            int pageNb, int pageSize) {
-        List<LogEntry> entries = service().nativeQueryLogs(em,whereClause, pageNb, pageSize);
-        return entries;
-    }
-
-    public List<?> nativeQuery(String query,
-            int pageNb, int pageSize) {
-        List<?> entries = service().nativeQuery(em,query, pageNb, pageSize);
-        return entries;
-    }
-
-    public List<LogEntry> queryLogsByPage(String[] eventIds,
-            Date limit, String category, String path, int pageNb, int pageSize) {
-        List<LogEntry> entries = service().queryLogsByPage(em,eventIds,limit,category,path,pageNb,pageSize);
-        return entries;
-    }
-
-    public List<LogEntry> queryLogsByPage(String[] eventIds,
-            String dateRange, String category, String path, int pageNb,
+    public List<LogEntry> nativeQueryLogs(String whereClause, int pageNb,
             int pageSize) {
-        List<LogEntry> entries =
-            service().queryLogsByPage(em, eventIds, dateRange, category, path, pageNb, pageSize);
+        List<LogEntry> entries = service().nativeQueryLogs(em, whereClause,
+                pageNb, pageSize);
+        return mkSerializable(entries);
+    }
+
+    public List<?> nativeQuery(String query, int pageNb, int pageSize) {
+        List<?> entries = service().nativeQuery(em, query, pageNb, pageSize);
         return entries;
+    }
+
+    public List<LogEntry> queryLogsByPage(String[] eventIds, Date limit,
+            String category, String path, int pageNb, int pageSize) {
+        List<LogEntry> entries = service().queryLogsByPage(em, eventIds, limit,
+                category, path, pageNb, pageSize);
+        return mkSerializable(entries);
+    }
+
+    public List<LogEntry> queryLogsByPage(String[] eventIds, String dateRange,
+            String category, String path, int pageNb, int pageSize) {
+        List<LogEntry> entries = service().queryLogsByPage(em, eventIds,
+                dateRange, category, path, pageNb, pageSize);
+        return mkSerializable(entries);
     }
 
     public List<LogEntry> queryLogs(String[] eventIds, String dateRange) {
-        List<LogEntry> entries =
-            service().queryLogs(em, eventIds, dateRange);
-        return entries;
+        List<LogEntry> entries = service().queryLogs(em, eventIds, dateRange);
+        return mkSerializable(entries);
     }
 
     public LogEntry getLogEntryByID(long id) {
         LogEntry entry = service().getLogEntryByID(em, id);
-        return entry;
+        return mkSerializable(entry);
     }
 
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
@@ -135,4 +133,26 @@ public class LogsBean implements Logs {
         service().logEvents(em, eventBundle);
     }
 
- }
+    protected List<LogEntry> mkSerializable(List<LogEntry> entries) {
+        for (LogEntry entry : entries) {
+            Map<String, ExtendedInfo> ext = entry.getExtendedInfos();
+            if (ext == null || ext.isEmpty()) {
+                entry.setExtendedInfos(null);
+            } else {
+                entry.setExtendedInfos(new HashMap<String, ExtendedInfo>(ext));
+            }
+        }
+        return entries;
+    }
+
+    protected LogEntry mkSerializable(LogEntry entry) {
+        Map<String, ExtendedInfo> ext = entry.getExtendedInfos();
+        if (ext == null || ext.isEmpty()) {
+            entry.setExtendedInfos(null);
+        } else {
+            entry.setExtendedInfos(new HashMap<String, ExtendedInfo>(ext));
+        }
+        return entry;
+    }
+
+}
