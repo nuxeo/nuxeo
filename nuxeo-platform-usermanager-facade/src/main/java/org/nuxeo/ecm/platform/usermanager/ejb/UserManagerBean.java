@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.usermanager.ejb;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -331,7 +332,7 @@ public class UserManagerBean implements UserManager {
     }
 
     public DocumentModelList searchGroups(Map<String, Serializable> filter,
-            Set<String> fulltext) throws ClientException {
+            HashSet<String> fulltext) throws ClientException {
         try {
             return getUserManager().searchGroups(filter, fulltext);
         } catch (Throwable e) {

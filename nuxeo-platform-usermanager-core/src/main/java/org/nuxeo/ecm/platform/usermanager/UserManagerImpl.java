@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -61,8 +62,11 @@ import org.nuxeo.runtime.services.event.EventService;
 public class UserManagerImpl implements UserManager {
 
     public static final String USERMANAGER_TOPIC = "usermanager";
+
     public static final String USERCHANGED_EVENT_ID = "user_changed";
+
     public static final String GROUPCHANGED_EVENT_ID = "group_changed";
+
     public static final String DEFAULT_ANONYMOUS_USER_ID = "Anonymous";
 
     private static final Log log = LogFactory.getLog(UserManagerImpl.class);
@@ -469,7 +473,8 @@ public class UserManagerImpl implements UserManager {
             groupDir = dirService.open(groupDirectoryName);
             // XXX retrieve all entries with references, can be costly.
             DocumentModelList groups = groupDir.query(
-                    Collections.<String, Serializable> emptyMap(), null, null, true);
+                    Collections.<String, Serializable> emptyMap(), null, null,
+                    true);
             for (DocumentModel group : groups) {
                 List<String> parents = (List<String>) group.getProperty(
                         groupSchemaName, groupParentGroupsField);
@@ -550,7 +555,7 @@ public class UserManagerImpl implements UserManager {
                 filter.put(groupDir.getIdField(), pattern);
             }
             DocumentModelList groupEntries = searchGroups(filter,
-                    filter.keySet());
+                    (HashSet<String>) filter.keySet());
 
             List<NuxeoGroup> groups = new ArrayList<NuxeoGroup>(
                     groupEntries.size());
@@ -785,7 +790,7 @@ public class UserManagerImpl implements UserManager {
     }
 
     public DocumentModelList searchGroups(Map<String, Serializable> filter,
-            Set<String> fulltext) throws ClientException {
+            HashSet<String> fulltext) throws ClientException {
         Session groupDir = null;
         try {
             groupDir = dirService.open(groupDirectoryName);
@@ -840,7 +845,8 @@ public class UserManagerImpl implements UserManager {
     public DocumentModelList searchUsers(String pattern) throws ClientException {
         DocumentModelList entries = new DocumentModelListImpl();
         if (pattern == null || pattern.equals("")) {
-            entries = searchUsers(Collections.<String, Serializable> emptyMap(), null);
+            entries = searchUsers(
+                    Collections.<String, Serializable> emptyMap(), null);
         } else {
             Map<String, DocumentModel> uniqueEntries = new HashMap<String, DocumentModel>();
 
