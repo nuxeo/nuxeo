@@ -16,7 +16,7 @@
       <nxu:dataList var="core" value="#{availableCoreRepositories}">
         <div class="serverChoice">
           <h:commandLink action="#{serverActions.selectRepository(core.name)}">
-            <h:graphicImage value="/img/core_servers.gif" border="0" alt="server" />
+            <h:graphicImage value="/img/core_servers.gif" alt="server" />
             <br/>
             <h:outputText value="#{core.label}" />
             ( <h:outputText value="#{core.name}" /> )

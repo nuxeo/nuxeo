@@ -86,6 +86,12 @@ public class BreadcrumbActionsBean implements BreadcrumbActions {
 
     private static final String BREADCRUMB_PREFIX = "breadcrumb";
 
+    // minimum path segments that must be displayed without shrinking
+    protected static int MIN_PATH_SEGMENTS_LEN = 4;
+
+    // maximum length path that can be displayed without shrinking
+    protected static int MAX_PATH_CHAR_LEN = 80;
+
 
     public String navigateToParent() throws ClientException {
         List<PathElement> documentsFormingPath = getBackendPath();
@@ -158,11 +164,8 @@ public class BreadcrumbActionsBean implements BreadcrumbActions {
      * too early in case of processing that involves changing the current
      * document. Multiple invocation of this method is anyway very cheap.
      *
-     * The Out annotation ensures backwards compatibility
-     *
      * @return
      */
-    //@Out(value = "backendPath", scope = EVENT)
     @Factory(value = "backendPath", scope = EVENT)
     public List<PathElement> getBackendPath() throws ClientException {
         String viewId = FacesContext.getCurrentInstance().getViewRoot().getViewId();
@@ -170,8 +173,40 @@ public class BreadcrumbActionsBean implements BreadcrumbActions {
         if (viewIdLabel != null && viewIdLabel.startsWith(BREADCRUMB_PREFIX)) {
             return makeBackendPathFromLabel(viewIdLabel.substring(BREADCRUMB_PREFIX.length() + 1));
         } else {
-            return navigationContext.getCurrentPathList();
+            return shrinkPathIfNeeded(navigationContext.getCurrentPathList());
         }
+    }
+
+    protected List<PathElement> shrinkPathIfNeeded(List<PathElement> paths) {
+
+        if (paths==null || paths.size()<= MIN_PATH_SEGMENTS_LEN) {
+            return paths;
+        }
+
+        StringBuffer sb = new StringBuffer();
+        for (PathElement pe : paths) {
+            sb.append(pe.getName());
+        }
+        String completePath = sb.toString();
+
+        if (completePath.length()<=MAX_PATH_CHAR_LEN) {
+            return paths;
+        }
+
+        // shrink path
+        sb = new StringBuffer();
+        List<PathElement> shrinkedPath = new ArrayList<PathElement>();
+        for (int i = paths.size()-1; i>=0; i--) {
+            PathElement pe = paths.get(i);
+            sb.append(pe.getName());
+            if (sb.length() < MAX_PATH_CHAR_LEN) {
+                shrinkedPath.add(0, pe);
+            } else {
+                break;
+            }
+        }
+        shrinkedPath.add(0,new TextPathElement("...."));
+        return shrinkedPath;
     }
 
     private List<PathElement> makeBackendPathFromLabel(String label) {
