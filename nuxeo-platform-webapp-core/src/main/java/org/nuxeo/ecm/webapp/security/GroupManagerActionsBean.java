@@ -119,7 +119,7 @@ public class GroupManagerActionsBean implements GroupManagerActions {
                     // manager interface
                     filter.put(userManager.getGroupIdField(), searchString);
                     groups = userManager.searchGroups(filter,
-                            (HashSet<String>) filter.keySet());
+                            new HashSet<String>(filter.keySet()));
                 }
             } catch (SizeLimitExceededException e) {
                 searchOverflow = true;

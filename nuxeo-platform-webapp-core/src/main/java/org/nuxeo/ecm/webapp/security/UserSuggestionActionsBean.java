@@ -48,9 +48,9 @@ import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 
 /**
  * Methods to get user/groups suggestions from searches
- *
+ * 
  * @author Anahide Tchertchian
- *
+ * 
  */
 @Name("userSuggestionActions")
 @SerializedConcurrentAccess
@@ -118,7 +118,8 @@ public class UserSuggestionActionsBean implements Serializable {
             if (pattern != null && pattern != "") {
                 filter.put(userManager.getGroupIdField(), pattern);
             }
-            return userManager.searchGroups(filter, (HashSet<String>) filter.keySet());
+            return userManager.searchGroups(filter, new HashSet<String>(
+                    filter.keySet()));
         } catch (SizeLimitExceededException e) {
             addSearchOverflowMessage();
             return Collections.emptyList();
