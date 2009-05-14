@@ -179,6 +179,9 @@ final class StampState implements Externalizable {
             innerSelfState[2] = fileUpload.getLocalFileName();
             innerSelfState[3] = fileUpload.getLocalFileSize();
             innerSelfState[4] = fileUpload.getLocalInputStream();
+        } else if (stamp instanceof UIEditableList) {
+            // TODO: don't save the whole state, it may be costly
+            innerSelfState[0] = stamp.saveState(context);
         }
         selfState[0] = innerSelfState;
 
@@ -270,6 +273,8 @@ final class StampState implements Externalizable {
             fileUpload.setLocalFileName((String) innerSelfState[2]);
             fileUpload.setLocalFileSize((Integer) innerSelfState[3]);
             fileUpload.setLocalInputStream((InputStream) innerSelfState[4]);
+        } else if (stamp instanceof UIEditableList) {
+            stamp.restoreState(context, innerSelfState[0]);
         }
 
         // editable value holder standard values saving
