@@ -6,7 +6,9 @@
     <outputFile>/</outputFile>
   </assemble>
   <zipEntrySet id="resources">
-    <artifact>org.nuxeo.ecm.platform:nuxeo-platform-ear:${nuxeo.platform.version}:zip:resources-mono</artifact>
+    <artifact>
+      org.nuxeo.ecm.platform:nuxeo-platform-ear:${nuxeo.platform.version}:zip:resources-mono
+    </artifact>
   </zipEntrySet>
 
   <!-- ARTIFACTS -->
@@ -40,6 +42,17 @@
 
       <artifact name="nuxeo-platform-webapp" />
       <artifact name="nuxeo-platform-webapp-core" />
+
+      <!-- Dependencies on nuxeo-platform-ui-web-* -->
+      <artifact name="nuxeo-platform-imaging*" />
+      <artifact name="nuxeo-platform-annotation*" />
+      <artifact name="nuxeo-platform-virtualnavigation-web" />
+      <artifact name="nuxeo-platform-ui-web-compat" />
+      <artifact name="nuxeo-platform-forum" />
+      <artifact name="nuxeo-platform-syndication" />
+      <artifact name="nuxeo-platform-syndication" />
+      <artifact name="nuxeo-platform-publishing-web" />
+      <!-- End dependencies on nuxeo-platform-ui-web-* -->
 
       <artifact name="nuxeo-platform-audit-facade" />
       <artifact name="nuxeo-platform-placeful-facade" />
@@ -94,7 +107,10 @@
       <artifact group="org.jboss.el" name="jboss-el" />
       <artifact group="org.jbpm.jbpm3" name="jbpm-jpdl" />
       <artifact group="jboss" name="jgroups" />
-      <!-- version is needed because of assembly plugin don't manage classifier here -->
+      <!--
+        version is needed because of assembly plugin don't manage
+        classifier here
+      -->
       <artifact group="net.sf.json-lib" name="json-lib" classifier="jdk15" version="2.2.1" />
       <artifact group="org.apache.lucene" name="lucene-core" />
       <artifact group="net.sf.opencsv" name="opencsv" />
@@ -130,7 +146,8 @@
     <set>dam-common-resources</set>
   </assemble>
   <fileSet id="dam-common-resources">
-    <directory>src/main/resources_dam_common</directory>
+    <directory>src/main/resources_dam_common
+    </directory>
   </fileSet>
 
   <assemble>
@@ -138,7 +155,8 @@
     <set>dam-dev-resources</set>
   </assemble>
   <fileSet id="dam-dev-resources">
-    <directory>src/main/resources_dam_dev</directory>
+    <directory>src/main/resources_dam_dev
+    </directory>
   </fileSet>
 
 </assembly>

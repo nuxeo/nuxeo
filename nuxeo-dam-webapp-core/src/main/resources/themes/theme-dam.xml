@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<theme name="dam" template-engines="jsf-facelets">
+  <layout>
+    <page name="default">
+      <section>
+        <cell>
+          <!-- dam logo -->
+          <fragment type="generic fragment"/>
+        </cell>
+        <cell>
+          <!-- dam banner -->
+          <fragment type="generic fragment"/>
+        </cell>
+      </section>
+      <section>
+        <cell>
+          <!-- dam search filters-->
+          <fragment type="generic fragment"/>
+        </cell>
+        <cell>
+          <!-- dam selection preview -->
+          <fragment type="generic fragment"/>
+        </cell>
+        <cell>
+          <!-- main area -->
+          <fragment type="region fragment"/>
+        </cell>
+      </section>
+    </page>
+  </layout>
+  
+  <!-- PROPERTIES -->
+  <properties element="page[1]/section[2]/cell[3]/fragment[1]">
+    <name>body</name>
+    <defaultBody/>
+    <defaultSrc/>
+  </properties>
+  
+  
+  <formats>
+    <!-- LAYOUT -->
+    <layout element="page[1]">
+      <margin>0</margin>
+      <padding>0</padding>
+    </layout>
+    <layout element="page[1]/section[1]">
+      <width>100%</width>
+    </layout>
+    <layout element="page[1]/section[1]/cell[1]">
+      <width>18%</width>
+      <text-align>center</text-align>
+    </layout>
+    <layout element="page[1]/section[1]/cell[2]">
+      <width>82%</width>
+    </layout>
+    <layout element="page[1]/section[2]">
+      <height>100%</height>
+      <width>100%</width>
+    </layout>
+    <layout element="page[1]/section[2]/cell[1]">
+      <width>33%</width>
+    </layout>
+    <layout element="page[1]/section[2]/cell[2]">
+      <width>33%</width>
+    </layout>
+    <layout element="page[1]/section[2]/cell[3]">
+      <width>33%</width>
+    </layout>
+    
+    <!-- WIDGET AFFECTATON -->
+    <widget element="page[1]">
+      <view>page frame</view>
+    </widget>
+    <widget element="page[1]/section[1]|page[1]/section[2]">
+      <view>section frame</view>
+    </widget>
+    <widget element="page[1]/section[1]/cell[1]|page[1]/section[1]/cell[2]|page[1]/section[2]/cell[1]|page[1]/section[2]/cell[2]|page[1]/section[2]/cell[3]">
+      <view>cell frame</view>
+    </widget>
+    
+
+    <widget element="page[1]/section[1]/cell[1]/fragment[1]">
+      <view>dam logo</view>
+    </widget>
+    <widget element="page[1]/section[1]/cell[2]/fragment[1]">
+      <view>dam banner</view>
+    </widget>
+    <widget element="page[1]/section[2]/cell[1]/fragment[1]">
+      <view>dam search filters</view>
+    </widget>
+    <widget element="page[1]/section[2]/cell[2]/fragment[1]">
+      <view>dam selection preview</view>
+    </widget>
+    <widget element="page[1]/section[2]/cell[3]/fragment[1]">
+      <view>facelet region</view>
+    </widget>
+
+  </formats>
+</theme>

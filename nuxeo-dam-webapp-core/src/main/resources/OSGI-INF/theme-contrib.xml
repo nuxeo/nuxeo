@@ -1,0 +1,121 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.theme.nuxeo.default">
+
+  <require>org.nuxeo.theme.jsf</require>
+
+  <!--  themes -->
+  <extension target="org.nuxeo.theme.services.ThemeService" point="themes">
+
+    <theme>
+      <src>themes/theme-dam.xml</src>
+    </theme>
+
+  </extension>
+
+  <!-- fragments -->
+  <extension target="org.nuxeo.theme.services.ThemeService" point="fragments">
+
+    <!-- see http://jira.nuxeo.org/browse/NXP-982 -->
+    <!-- fragment name="nuxeo5 actions fragment">
+      <class>org.nuxeo.ecm.webapp.theme.fragment.ActionFragment</class>
+      <model-type>menu item</model-type>
+      <dynamic>true</dynamic>
+      </fragment-->
+
+  </extension>
+
+  <!-- views -->
+  <extension target="org.nuxeo.theme.services.ThemeService" point="views">
+
+    <view name="dam logo" template-engine="jsf-facelets">
+      <format-type>widget</format-type>
+      <template>incl/logo.xhtml</template>
+    </view>
+
+    <view name="dam banner" template-engine="jsf-facelets">
+      <format-type>widget</format-type>
+      <template>incl/banner.xhtml</template>
+    </view>
+
+    <view name="dam search filters" template-engine="jsf-facelets">
+      <format-type>widget</format-type>
+      <template>incl/search_filter.xhtml</template>
+    </view>
+
+    <view name="dam selection preview" template-engine="jsf-facelets">
+      <format-type>widget</format-type>
+      <template>incl/selection_preview.xhtml</template>
+    </view>
+
+  </extension>
+
+
+
+  <!-- application settings -->
+  <extension target="org.nuxeo.theme.services.ThemeService"
+    point="applications">
+
+    <application root="/nuxeo" template-engine="jsf-facelets">
+
+      <negotiation>
+        <strategy>dam</strategy>
+        <default-engine>default</default-engine>
+        <default-theme>dam/default</default-theme>
+        <default-perspective>default</default-perspective>
+      </negotiation>
+
+      <!-- Cache control for theme resources (/nxthemes-lib/) -->
+      <resource-caching>
+        <lifetime>36000</lifetime>
+      </resource-caching>
+
+      <!-- Cache control for theme styles (/nxthemes-css/) -->
+      <style-caching>
+        <lifetime>900</lifetime>
+      </style-caching>
+
+    </application>
+  </extension>
+
+
+  <!-- negotiation strategy for nuxeo5-->
+  <extension target="org.nuxeo.theme.services.ThemeService"
+    point="negotiations">
+
+    <negotiation object="engine" strategy="dam">
+      <scheme>org.nuxeo.theme.jsf.negotiation.engine.RequestParameter</scheme>
+      <scheme>org.nuxeo.theme.jsf.negotiation.engine.CookieValue</scheme>
+      <scheme>org.nuxeo.theme.jsf.negotiation.engine.ViewId</scheme>
+      <scheme>org.nuxeo.theme.jsf.negotiation.engine.DefaultEngine</scheme>
+    </negotiation>
+
+    <negotiation object="mode" strategy="dam">
+      <scheme>org.nuxeo.theme.jsf.negotiation.mode.CookieValue</scheme>
+      <scheme>org.nuxeo.theme.jsf.negotiation.mode.ViewId</scheme>
+      <scheme>org.nuxeo.theme.jsf.negotiation.mode.UnspecifiedMode</scheme>
+    </negotiation>
+
+    <negotiation object="theme" strategy="dam">
+      <scheme>org.nuxeo.theme.jsf.negotiation.theme.RequestParameter</scheme>
+      <scheme>org.nuxeo.theme.jsf.negotiation.theme.CookieValue</scheme>
+      <scheme>org.nuxeo.theme.jsf.negotiation.theme.ViewId</scheme>
+      <scheme>org.nuxeo.theme.jsf.negotiation.theme.DefaultTheme</scheme>
+    </negotiation>
+
+    <negotiation object="perspective" strategy="dam">
+      <scheme>
+        org.nuxeo.theme.jsf.negotiation.perspective.RequestParameter
+      </scheme>
+      <scheme>org.nuxeo.theme.jsf.negotiation.perspective.CookieValue</scheme>
+      <scheme>org.nuxeo.theme.jsf.negotiation.perspective.ViewId</scheme>
+      <scheme>
+        org.nuxeo.theme.jsf.negotiation.perspective.DefaultPerspective
+      </scheme>
+    </negotiation>
+
+  </extension>
+
+
+
+</component>
