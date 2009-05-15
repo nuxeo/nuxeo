@@ -113,7 +113,14 @@
       <format-type>widget</format-type>
       <model-type>tag</model-type>
       <template>widgets/sites/tags.xml</template>
-    </view>     
+    </view> 
+    
+    <view name="Tags Cloud" template-engine="freemarker">
+      <element-type>fragment</element-type> 
+      <format-type>widget</format-type>
+      <model-type>tag cloud</model-type>
+      <template>widgets/sites/tags_cloud.xml</template>
+    </view>        
     
   </extension>
 
@@ -206,6 +213,14 @@
     <model name="tag item">
       <class>org.nuxeo.webengine.sites.models.TagModel</class>
     </model>    
+    
+    <model name="tag cloud">
+      <class>org.nuxeo.webengine.sites.models.TagCloudListModel</class>
+      <contains>tag cloud item</contains>
+    </model>
+    <model name="tag cloud item">
+      <class>org.nuxeo.webengine.sites.models.TagCloudModel</class>
+    </model>    
   </extension>
 
   <extension target="org.nuxeo.theme.services.ThemeService"
@@ -250,6 +265,11 @@
     <model-type>tag</model-type>
     <dynamic>true</dynamic>
   </fragment>
+  <fragment name="tags cloud fragment">
+    <class>org.nuxeo.webengine.sites.fragments.TagCloudFragment</class>
+    <model-type>tag cloud</model-type>
+    <dynamic>true</dynamic>
+  </fragment>  
   </extension> 
      
   <!-- themes -->
