@@ -14,9 +14,12 @@
  */
 package org.nuxeo.webengine.sites.fragments;
 
+import java.util.List;
+
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.platform.tag.service.api.SimpleTag;
 import org.nuxeo.ecm.platform.tag.service.api.TagService;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.WebContext;
@@ -52,16 +55,20 @@ public class TagFragment extends AbstractFragment {
             if (tagService != null && WebEngine.getActiveContext() != null) {
                 WebContext ctx = WebEngine.getActiveContext();
                 CoreSession session = ctx.getCoreSession();
+                DocumentModel documentModel = ctx.getTargetObject().getAdapter(
+                        DocumentModel.class);
+
                 if (tagService != null) {
 
                     TagModel tagModel = null;
                     String label = null;
                     Boolean isPrivate = null;
-                    DocumentModelList tags = tagService.listTagsInGroup(
-                            tagService.getRootTag("default"),
+                    List<SimpleTag> tags = tagService.listTagsForDocument(documentModel, 
                             session.getPrincipal().getName());
                     if (tags != null && !tags.isEmpty()) {
-                        for (DocumentModel document : tags) {
+                        for (SimpleTag tag : tags) {
+                            DocumentModel document = session.getDocument(new IdRef(
+                                    tag.getDocRef()));
                             if (!document.getCurrentLifeCycleState().equals(
                                     SiteConstants.DELETED)) {
 
