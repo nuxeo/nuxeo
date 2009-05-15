@@ -41,10 +41,12 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.rest.DocumentObject;
+import org.nuxeo.ecm.platform.tag.service.api.TagService;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.WebObject;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.webengine.sites.utils.SiteQueriesColection;
 import org.nuxeo.webengine.sites.utils.SiteUtils;
 
@@ -167,6 +169,31 @@ public class Site extends DocumentObject {
             DocumentModel createdDocument = SiteUtils.createWebPageDocument(
                     ctx.getRequest(), session, doc.getPathAsString());
             String path = SiteUtils.getPagePath(doc, createdDocument);
+            return redirect(path);
+        } catch (Exception e) {
+            throw WebException.wrap(e);
+        }
+    }
+    
+    @POST
+    @Path("addTag")
+    public Object addTag() {
+        try {
+            CoreSession session = ctx.getCoreSession();
+            // tag label
+            String tagLabel = ctx.getRequest().getParameter("tagLabel");
+            // create tag document type
+            TagService tagService = Framework.getService(TagService.class);
+
+            if (tagService != null) {
+                DocumentModel tagDocument = tagService.getOrCreateTag(
+                        tagService.getRootTag("default"), tagLabel, false,
+                        session.getPrincipal().getName());
+                tagService.addTagging(doc, tagDocument,
+                        session.getPrincipal().getName(), false);
+            }
+            String path = SiteUtils.getPagePath(
+                    SiteUtils.getFirstWebSiteParent(session, doc), doc);
             return redirect(path);
         } catch (Exception e) {
             throw WebException.wrap(e);
