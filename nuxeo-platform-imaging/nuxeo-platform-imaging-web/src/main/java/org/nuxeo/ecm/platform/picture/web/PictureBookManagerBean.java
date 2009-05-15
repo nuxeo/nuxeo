@@ -42,7 +42,9 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.platform.picture.api.adapters.AbstractPictureAdapter;
 import org.nuxeo.ecm.platform.picture.api.adapters.PictureBlobHolder;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
@@ -60,6 +62,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
+import org.jboss.seam.core.Events;
 
 /**
  * Provide Picture Book related Actions.
@@ -173,7 +176,10 @@ public class PictureBookManagerBean extends InputController implements
         doc.setProperty("picturebook", "timeinterval", timeinterval);
         doc.setProperty("picturebook", "picturetemplates", views);
 
+        Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
+                documentManager.getDocument(new PathRef(parentPath)));
         doc = documentManager.createDocument(doc);
+        documentManager.saveDocument(doc);
         documentManager.save();
 
         return navigationContext.getActionResult(doc, UserAction.AFTER_CREATE);
