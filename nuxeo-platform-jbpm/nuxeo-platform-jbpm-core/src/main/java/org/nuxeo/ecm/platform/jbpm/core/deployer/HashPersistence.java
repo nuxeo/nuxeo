@@ -19,11 +19,13 @@
 
 package org.nuxeo.ecm.platform.jbpm.core.deployer;
 
+import java.io.Serializable;
+
 /**
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
  *
  */
-public class HashPersistence {
+public class HashPersistence implements Serializable {
 
     public void persist(String string) {
         // TODO Auto-generated method stub
