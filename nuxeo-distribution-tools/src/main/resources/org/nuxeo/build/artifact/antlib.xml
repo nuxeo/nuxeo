@@ -5,4 +5,5 @@
   <taskdef name="graph" classname="org.nuxeo.build.ant.artifact.GraphTask" />
   <taskdef name="export" classname="org.nuxeo.build.ant.artifact.GraphExportTask" />
   <typedef name="attach" classname="org.nuxeo.build.ant.artifact.AttachArtifactTask" />
+  <typedef name="foreach" classname="org.nuxeo.build.ant.artifact.ArtifactForeach" />
 </antlib>
