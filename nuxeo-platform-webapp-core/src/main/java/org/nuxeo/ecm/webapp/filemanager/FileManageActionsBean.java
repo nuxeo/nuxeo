@@ -560,7 +560,12 @@ public class FileManageActionsBean extends InputController implements
                 stream = new FileInputStream(fileUploadHolder.getTempFile());
                 return addFile(stream, getFileName());
             } catch (Exception e) {
-                throw new ClientException(e);
+                //NXP-3570 : temporary solution before real fix
+                log.error(e);
+                facesMessages.add(FacesMessage.SEVERITY_ERROR,
+                        resourcesAccessor.getMessages().get(
+                                "fileImporter.error.unsupporte"));
+                return null;
             } finally {
                 if (stream != null)
                     IOUtils.closeQuietly(stream);
