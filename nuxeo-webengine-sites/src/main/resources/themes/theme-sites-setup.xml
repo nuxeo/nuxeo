@@ -15,6 +15,7 @@
         </cell>
         <cell>
           <fragment type="generic fragment" />
+          <fragment type="generic fragment" />
         </cell>
       </section>
       <section>
@@ -50,6 +51,7 @@
         </cell>
         <cell>
           <fragment type="generic fragment" />
+          <fragment type="generic fragment" />
         </cell>
       </section>
       <section>
@@ -78,6 +80,7 @@
           <fragment type="generic fragment" />
         </cell>
         <cell>
+          <fragment type="generic fragment" />
           <fragment type="generic fragment" />
         </cell>
       </section>
@@ -294,6 +297,9 @@
     <widget element="page[2]/section[1]/cell[2]/fragment[1]">
       <view>Minisite Search</view>
     </widget>
+    <widget element="page[2]/section[1]/cell[2]/fragment[2]">
+      <view>Minisite Email</view>
+    </widget>
     <widget element="page[2]/section[2]">
       <view>section frame</view>
     </widget>
@@ -363,6 +369,9 @@
     <widget element="page[3]/section[1]/cell[2]/fragment[1]">
       <view>Minisite Search</view>
     </widget>
+    <widget element="page[3]/section[1]/cell[2]/fragment[2]">
+      <view>Minisite Email</view>
+    </widget>
     <widget element="page[3]/section[2]">
       <view>section frame</view>
     </widget>
@@ -425,6 +434,9 @@
     </widget>
     <widget element="page[4]/section[1]/cell[2]/fragment[1]">
       <view>Minisite Search</view>
+    </widget>
+    <widget element="page[4]/section[1]/cell[2]/fragment[2]">
+      <view>Minisite Email</view>
     </widget>
     <widget element="page[4]/section[2]">
       <view>section frame</view>

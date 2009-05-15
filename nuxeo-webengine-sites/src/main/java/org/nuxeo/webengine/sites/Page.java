@@ -110,6 +110,7 @@ public class Page extends DocumentObject {
             throw WebException.wrap(e);
         }
     }
+    
 
     @POST
     @Path("createWebPage")
@@ -202,6 +203,10 @@ public class Page extends DocumentObject {
                 SiteUtils.getString(ws, WEBCONTAINER_NAME, null));
         root.put(SITE_DESCRIPTION, SiteUtils.getString(ws,
                 WEBCONTAINER_BASELINE, null));
+        root.put(EMAIL,
+                "mailto:"
+                        + SiteUtils.getUserEmail(ws.getPropertyValue(
+                                "dc:creator").toString()));
         MimetypeRegistry mimetypeService = Framework.getService(MimetypeRegistry.class);
         root.put("mimetypeService", mimetypeService);
         return root;

@@ -103,6 +103,10 @@
       <format-type>widget</format-type>
       <template>widgets/buttons.ftl</template>
     </view>
+    <view name="Minisite Email" template-engine="freemarker">
+      <format-type>widget</format-type>
+      <template>widgets/email.ftl</template>
+    </view>
     
     <view name="Tags" template-engine="freemarker">
       <element-type>fragment</element-type> 
