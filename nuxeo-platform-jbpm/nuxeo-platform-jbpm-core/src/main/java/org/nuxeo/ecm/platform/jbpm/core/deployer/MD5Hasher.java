@@ -37,6 +37,7 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
@@ -54,16 +55,17 @@ public class MD5Hasher implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private final DocumentBuilder builder;
+    public DocumentBuilder getDocumentBuider()
+            throws ParserConfigurationException {
+        return DocumentBuilderFactory.newInstance().newDocumentBuilder();
+    }
 
-    private final Transformer transformer;
-
-    public MD5Hasher() throws ParserConfigurationException,
-            TransformerConfigurationException {
-        builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-        transformer = TransformerFactory.newInstance().newTransformer();
+    public Transformer getTransformer()
+            throws TransformerConfigurationException,
+            TransformerFactoryConfigurationError {
+        Transformer transformer = TransformerFactory.newInstance().newTransformer();
         transformer.setOutputProperty(OutputKeys.METHOD, "xml");
-
+        return transformer;
     }
 
     public String getMD5FromURL(URL url) throws SAXException, IOException,
@@ -89,7 +91,7 @@ public class MD5Hasher implements Serializable {
         File file = File.createTempFile("nuxeo", "ifChangedDeployer.xml");
         Source source = new DOMSource(document);
         Result result = new StreamResult(file);
-        transformer.transform(source, result);
+        getTransformer().transform(source, result);
         FileInputStream stream = new FileInputStream(file);
         byte[] bytes = new byte[(int) file.length()];
         stream.read(bytes);
@@ -99,7 +101,11 @@ public class MD5Hasher implements Serializable {
     public Document getDomDocument(URL url) throws SAXException, IOException {
         assert url != null;
         File file = new File(url.getPath());
-        return builder.parse(file);
+        try {
+            return getDocumentBuider().parse(file);
+        } catch (ParserConfigurationException e) {
+            throw new IOException(e.getMessage());
+        }
     }
 
     public Document trimDocument(Document document) {
