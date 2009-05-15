@@ -102,4 +102,8 @@ public class ActionManagerBean implements ActionManager {
         remove();
     }
 
+    public List<Action> getAllActions(String category) {
+        return actionService.getAllActions(category);
+    }
+
 }

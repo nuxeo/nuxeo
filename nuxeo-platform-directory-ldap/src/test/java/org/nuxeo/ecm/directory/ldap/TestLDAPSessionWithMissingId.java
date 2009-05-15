@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.directory.ldap;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -234,7 +235,7 @@ public class TestLDAPSessionWithMissingId extends LDAPDirectoryTestCase {
     public void testQuery1() throws ClientException {
         Session session = getLDAPDirectory("userDirectory").getSession();
         try {
-            Map<String, Object> filter = new HashMap<String, Object>();
+            Map<String, Serializable> filter = new HashMap<String, Serializable>();
             filter.put("username", "user");
             Set<String> fulltext = new HashSet<String>();
             fulltext.add("username");

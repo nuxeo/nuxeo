@@ -53,6 +53,7 @@ public class FilterRule {
 
     String[] conditions;
 
+    protected String cacheKey = null;
 
     public FilterRule() {
     }
@@ -103,6 +104,72 @@ public class FilterRule {
                 }
             }
         }
+    }
+
+    public String getCacheKey() {
+        if (cacheKey==null) {
+            StringBuffer sb = new StringBuffer();
+            sb.append("grant:");
+            sb.append(grant);
+            if (permissions!=null && permissions.length>0) {
+                sb.append(":permissions:");
+                for (String perm : permissions){
+                    sb.append(perm);
+                    sb.append(",");
+                }
+            }
+            if (facets!=null && facets.length>0 ) {
+                sb.append(":facets:");
+                for (String facet : facets){
+                    sb.append(facet);
+                    sb.append(",");
+                }
+            }
+            if (conditions!=null && conditions.length>0) {
+                sb.append(":conditions:");
+                for (String cond : conditions){
+                    sb.append(cond);
+                    sb.append(",");
+                }
+            }
+            if (types!=null && types.length>0) {
+                sb.append(":types:");
+                for (String typ : types){
+                    sb.append(typ);
+                    sb.append(",");
+                }
+            }
+            if (schemas!=null && schemas.length>0) {
+                sb.append(":schemas:");
+                for (String schem : schemas){
+                    sb.append(schem);
+                    sb.append(",");
+                }
+            }
+            cacheKey = sb.toString();
+        }
+        return cacheKey;
+    }
+
+    @Override
+    public String toString() {
+        return getCacheKey();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof FilterRule)) {
+            return false;
+        }
+        return getCacheKey().equals(((FilterRule) obj).getCacheKey());
+    }
+
+    @Override
+    public int hashCode() {
+        return getCacheKey().hashCode();
     }
 
 }

@@ -4,7 +4,7 @@
   <documentation>
     The type service provides extension points for pluggable document types.
 
-    Document types here can be seen as entities defining the behaviour of a
+    Document types here can be seen as entities defining the behavior of a
     document within the ECM: they hold information about the way they will be
     managed and rendered.
 

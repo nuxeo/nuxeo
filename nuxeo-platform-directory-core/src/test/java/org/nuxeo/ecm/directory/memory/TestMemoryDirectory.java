@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.directory.memory;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -199,7 +200,7 @@ public class TestMemoryDirectory extends NXRuntimeTestCase {
         e2.put("b", "BCD");
         dir.createEntry(e2);
 
-        Map<String, Object> filter = new HashMap<String, Object>();
+        Map<String, Serializable> filter = new HashMap<String, Serializable>();
         DocumentModelList entries;
         DocumentModel e;
 
@@ -255,7 +256,7 @@ public class TestMemoryDirectory extends NXRuntimeTestCase {
     }
 
     public void testQueryFts() throws Exception {
-        Map<String, Object> filter = new HashMap<String, Object>();
+        Map<String, Serializable> filter = new HashMap<String, Serializable>();
         Set<String> fulltext = new HashSet<String>();
 
         // trying to cheat
@@ -295,7 +296,7 @@ public class TestMemoryDirectory extends NXRuntimeTestCase {
 
     public void testGetProjection() throws Exception {
         List<String> list;
-        Map<String, Object> filter = new HashMap<String, Object>();
+        Map<String, Serializable> filter = new HashMap<String, Serializable>();
         Map<String, Object> e2 = new HashMap<String, Object>();
         e2.put("i", "2");
         e2.put("pw", "guess");
@@ -352,7 +353,7 @@ public class TestMemoryDirectory extends NXRuntimeTestCase {
         e2.put("b", "AAA");
         dir.createEntry(e2);
 
-        Map<String, Object> filter = Collections.emptyMap();
+        Map<String, Serializable> filter = Collections.emptyMap();
         Set<String> fulltext = Collections.emptySet();
         Map<String, String> orderBy = new LinkedHashMap<String, String>();
         DocumentModelList entries;

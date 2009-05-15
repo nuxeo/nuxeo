@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.directory.memory;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -38,7 +39,6 @@ import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.DirectoryException;
-import org.nuxeo.ecm.directory.Session;
 
 /**
  * Trivial in-memory implementation of a Directory to use in unit tests.
@@ -199,29 +199,29 @@ public class MemoryDirectorySession extends BaseSession {
         return false;
     }
 
-    public DocumentModelList query(Map<String, Object> filter)
+    public DocumentModelList query(Map<String, Serializable> filter)
             throws DirectoryException {
         return query(filter, Collections.<String> emptySet());
     }
 
-    public DocumentModelList query(Map<String, Object> filter,
+    public DocumentModelList query(Map<String, Serializable> filter,
             Set<String> fulltext) throws DirectoryException {
         return query(filter, fulltext, Collections.<String, String> emptyMap());
     }
 
-    public DocumentModelList query(Map<String, Object> filter,
+    public DocumentModelList query(Map<String, Serializable> filter,
             Set<String> fulltext, Map<String, String> orderBy)
             throws DirectoryException {
         return query(filter, fulltext, orderBy, true);
     }
 
-    public DocumentModelList query(Map<String, Object> filter,
+    public DocumentModelList query(Map<String, Serializable> filter,
             Set<String> fulltext, Map<String, String> orderBy,
             boolean fetchReferences) throws DirectoryException {
         DocumentModelList results = new DocumentModelListImpl();
         // canonicalize filter
         Map<String, Object> filt = new HashMap<String, Object>();
-        for (Entry<String, Object> e : filter.entrySet()) {
+        for (Entry<String, Serializable> e : filter.entrySet()) {
             String fieldName = e.getKey();
             if (!directory.schemaSet.contains(fieldName)) {
                 continue;
@@ -263,13 +263,13 @@ public class MemoryDirectorySession extends BaseSession {
         return results;
     }
 
-    public List<String> getProjection(Map<String, Object> filter,
+    public List<String> getProjection(Map<String, Serializable> filter,
             String columnName) throws DirectoryException {
         return getProjection(filter, Collections.<String> emptySet(),
                 columnName);
     }
 
-    public List<String> getProjection(Map<String, Object> filter,
+    public List<String> getProjection(Map<String, Serializable> filter,
             Set<String> fulltext, String columnName) throws DirectoryException {
         DocumentModelList l = query(filter, fulltext);
         List<String> results = new ArrayList<String>(l.size());

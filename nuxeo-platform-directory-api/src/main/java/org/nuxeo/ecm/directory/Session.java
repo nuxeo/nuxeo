@@ -18,6 +18,7 @@
 
 package org.nuxeo.ecm.directory;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -86,6 +87,7 @@ public interface Session {
      */
     DocumentModel createEntry(Map<String, Object> fieldMap)
             throws ClientException, DirectoryException;
+
 
     /**
      * Updates a directory entry.
@@ -157,7 +159,7 @@ public interface Session {
      * @throws SizeLimitExceededException if the number of results is larger
      *             than the limit configured for the directory
      */
-    DocumentModelList query(Map<String, Object> filter) throws ClientException,
+    DocumentModelList query(Map<String, Serializable> filter) throws ClientException,
             DirectoryException;
 
     /**
@@ -176,7 +178,7 @@ public interface Session {
      * @throws SizeLimitExceededException if the number of results is larger
      *             than the limit configured for the directory
      */
-    DocumentModelList query(Map<String, Object> filter, Set<String> fulltext)
+    DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext)
             throws ClientException, DirectoryException;
 
     /**
@@ -200,7 +202,7 @@ public interface Session {
      * @throws SizeLimitExceededException if the number of results is larger
      *             than the limit configured for the directory
      */
-    DocumentModelList query(Map<String, Object> filter, Set<String> fulltext,
+    DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext,
             Map<String, String> orderBy) throws ClientException,
             DirectoryException;
 
@@ -209,7 +211,7 @@ public interface Session {
      *
      * @see #query(Map, Set, Map)
      */
-    DocumentModelList query(Map<String, Object> filter, Set<String> fulltext,
+    DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext,
             Map<String, String> orderBy, boolean fetchReferences)
             throws ClientException, DirectoryException;
 
@@ -263,10 +265,10 @@ public interface Session {
      * @throws SizeLimitExceededException if the number of results is larger
      *             than the limit configured for the directory
      */
-    List<String> getProjection(Map<String, Object> filter, String columnName)
+    List<String> getProjection(Map<String, Serializable> filter, String columnName)
             throws ClientException, DirectoryException;
 
-    List<String> getProjection(Map<String, Object> filter,
+    List<String> getProjection(Map<String, Serializable> filter,
             Set<String> fulltext, String columnName) throws ClientException,
             DirectoryException;
 

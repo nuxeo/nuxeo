@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.directory.ldap;
 
+import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -414,7 +415,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
         deleteEntry(id);
     }
 
-    public DocumentModelList query(Map<String, Object> filter,
+    public DocumentModelList query(Map<String, Serializable> filter,
             Set<String> fulltext, boolean fetchReferences,
             Map<String, String> orderBy) throws DirectoryException {
         try {
@@ -502,25 +503,25 @@ public class LDAPSession extends BaseSession implements EntrySource {
         }
     }
 
-    public DocumentModelList query(Map<String, Object> filter)
+    public DocumentModelList query(Map<String, Serializable> filter)
             throws DirectoryException {
         // by default, do not fetch references of result entries
         return query(filter, emptySet, new HashMap<String, String>());
     }
 
-    public DocumentModelList query(Map<String, Object> filter,
+    public DocumentModelList query(Map<String, Serializable> filter,
             Set<String> fulltext, Map<String, String> orderBy)
             throws DirectoryException {
         return query(filter, fulltext, false, orderBy);
     }
 
-    public DocumentModelList query(Map<String, Object> filter,
+    public DocumentModelList query(Map<String, Serializable> filter,
             Set<String> fulltext, Map<String, String> orderBy,
             boolean fetchReferences) throws DirectoryException {
         return query(filter, fulltext, fetchReferences, orderBy);
     }
 
-    public DocumentModelList query(Map<String, Object> filter,
+    public DocumentModelList query(Map<String, Serializable> filter,
             Set<String> fulltext) throws DirectoryException {
         // by default, do not fetch references of result entries
         return query(filter, fulltext, new HashMap<String, String>());
@@ -543,12 +544,12 @@ public class LDAPSession extends BaseSession implements EntrySource {
         }
     }
 
-    public List<String> getProjection(Map<String, Object> filter,
+    public List<String> getProjection(Map<String, Serializable> filter,
             String columnName) throws DirectoryException {
         return getProjection(filter, emptySet, columnName);
     }
 
-    public List<String> getProjection(Map<String, Object> filter,
+    public List<String> getProjection(Map<String, Serializable> filter,
             Set<String> fulltext, String columnName) throws DirectoryException {
         // XXX: this suboptimal code should be either optimized for LDAP or
         // moved to an abstract class

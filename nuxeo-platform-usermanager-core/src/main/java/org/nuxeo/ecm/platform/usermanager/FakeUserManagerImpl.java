@@ -19,8 +19,10 @@
 
 package org.nuxeo.ecm.platform.usermanager;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,11 +38,12 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
 /**
  * @author Florent Guillaume
- *
+ * 
  */
 public class FakeUserManagerImpl implements UserManager {
 
     String userListingMode;
+
     String groupListingMode;
 
     String rootLogin;
@@ -48,6 +51,7 @@ public class FakeUserManagerImpl implements UserManager {
     String defaultGroup;
 
     String userSortField;
+
     String groupSortField;
 
     String userDirectoryName;
@@ -205,9 +209,9 @@ public class FakeUserManagerImpl implements UserManager {
     }
 
     public NuxeoPrincipal getPrincipal(String username) throws ClientException {
-        //throw new UnsupportedOperationException();
+        // throw new UnsupportedOperationException();
         NuxeoPrincipalImpl principal = new NuxeoPrincipalImpl("Administrator");
-        principal.setGroups(Arrays.asList(new String[]{"Administrators"}));
+        principal.setGroups(Arrays.asList(new String[] { "Administrators" }));
         return principal;
     }
 
@@ -319,12 +323,12 @@ public class FakeUserManagerImpl implements UserManager {
         throw new UnsupportedOperationException();
     }
 
-    public DocumentModelList searchGroups(Map<String, Object> filter,
-            Set<String> fulltext) throws ClientException {
+    public DocumentModelList searchGroups(Map<String, Serializable> filter,
+            HashSet<String> fulltext) throws ClientException {
         throw new UnsupportedOperationException();
     }
 
-    public DocumentModelList searchUsers(Map<String, Object> filter,
+    public DocumentModelList searchUsers(Map<String, Serializable> filter,
             Set<String> fulltext) throws ClientException {
         throw new UnsupportedOperationException();
     }
@@ -395,7 +399,7 @@ public class FakeUserManagerImpl implements UserManager {
         throw new UnsupportedOperationException();
     }
 
-    public List<NuxeoPrincipal> searchByMap(Map<String, Object> filter,
+    public List<NuxeoPrincipal> searchByMap(Map<String, Serializable> filter,
             Set<String> pattern) throws ClientException {
         throw new UnsupportedOperationException();
     }
