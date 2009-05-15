@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.platform.jbpm;
 
-import java.io.Serializable;
 import java.net.URL;
 
 /**
