@@ -29,8 +29,8 @@ public class EventContextImpl extends AbstractEventContext {
 
     private static final long serialVersionUID = 1L;
 
-    protected transient CoreSession session;
-    protected transient Principal principal;
+    protected CoreSession session;
+    protected Principal principal;
 
     /**
      * Constructor to be used by derived classes
