@@ -1,0 +1,66 @@
+/*
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nuxeo - initial API and implementation
+ *
+ * $Id$
+ */
+
+package org.nuxeo.webengine.sites.listeners;
+
+import static org.nuxeo.webengine.sites.utils.SiteConstants.*;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.*;
+
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.EventListener;
+import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.webengine.sites.utils.SitesRelationsWikiHelper;
+
+/**
+ * @author <a href="mailto:cbaican@nuxeo.com">Catalin Baican</a>
+ *
+ */
+public class SitesWikiListener  implements EventListener {
+
+    protected DocumentModel doExtractWebPage(Event event) {
+
+         if (!(DOCUMENT_UPDATED.equals(event.getName()) || DOCUMENT_CREATED.equals(event.getName()))) {
+             return null;
+         }
+
+         final Object context = event.getContext();
+         if (!(context instanceof DocumentEventContext)) {
+             return null;
+         }
+
+         final DocumentModel doc = ((DocumentEventContext)context).getSourceDocument();
+         if (!WEBPAGE.equals(doc.getType())) {
+             return null;
+         }
+
+         return doc;
+    }
+
+    public void handleEvent(Event event) {
+        DocumentModel webPage = doExtractWebPage(event);
+
+        if (webPage == null) {
+            return;
+        }
+
+        SitesRelationsWikiHelper.updateRelations(webPage);
+    }
+
+}

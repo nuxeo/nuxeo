@@ -27,20 +27,25 @@ import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.rest.DocumentObject;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebObject;
+import org.nuxeo.ecm.webengine.model.Resource;
+import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.webengine.sites.utils.SiteUtils;
+import org.nuxeo.webengine.sites.utils.SitesRelationsWikiHelper;
 
 /**
  * Web object implementation corresponding to WebPage. It is resolved from site.
@@ -54,9 +59,25 @@ public class Page extends DocumentObject {
 
     private static final Log log = LogFactory.getLog(Page.class);
 
+    String pathSegment;
+
+    @Override
+    public void initialize(Object... args) {
+        assert args != null && args.length == 1;
+        Object arg = args[0];
+        if (arg instanceof String) {
+            pathSegment = (String) arg;
+        } else {
+            doc = (DocumentModel) arg;
+        }
+    }
+
     @Override
     @GET
     public Object doGet() {
+        if (doc == null) {
+            return getTemplate("error_create_page.ftl").arg("pageName", pathSegment);
+        }
         ctx.getRequest().setAttribute(THEME_BUNDLE, PAGE_THEME_PAGE);
         String currentPerspective = (String) ctx.getRequest().getAttribute(
                 THEME_PERSPECTIVE);
@@ -66,6 +87,7 @@ public class Page extends DocumentObject {
                     VIEW_PERSPECTIVE);
         }
         try {
+            SitesRelationsWikiHelper.getLinks(ctx);
             return getTemplate("template_default.ftl").args(getPageArguments());
         } catch (Exception e) {
             throw WebException.wrap(e);
@@ -76,6 +98,33 @@ public class Page extends DocumentObject {
     @POST
     public Response doPost() {
         return null;
+    }
+
+    @Override
+    @Path(value = "{path}")
+    public Resource traverse(@PathParam("path") String path) {
+        try {
+            return newDocument(path);
+        } catch (Exception e) {
+            if (e instanceof WebResourceNotFoundException) {
+                CoreSession session = ctx.getCoreSession();
+                try {
+                    if (session.hasPermission(doc.getRef(), PERMISSION_ADD_CHILDREN)) {
+                        DocumentObject parent = (DocumentObject) ctx.getTargetObject();
+                        ctx.getRequest().setAttribute(THEME_PERSPECTIVE, "create");
+                        ctx.getRequest().setAttribute(PAGE_NAME_ATTRIBUTE, path);
+                        return parent;
+                    } else {
+                        return newObject("WebPage", path);
+                    }
+                } catch (ClientException ce) {
+                    throw WebException.wrap(ce);
+                }
+
+            } else {
+                throw WebException.wrap(e);
+            }
+        }
     }
 
     @GET

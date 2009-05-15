@@ -8,6 +8,13 @@
       site creation listener: set URL with name value
       @author Rux
     </documentation>
+    
+    <listener name="sitesWikiListener" async="false"
+      postCommit="false" class="org.nuxeo.webengine.sites.listeners.SitesWikiListener" />
+    <documentation>
+      Sites wiki listener
+      @author Catalin Baican (cbaican@nuxeo.com)
+    </documentation>
   </extension>
 
 </component>
