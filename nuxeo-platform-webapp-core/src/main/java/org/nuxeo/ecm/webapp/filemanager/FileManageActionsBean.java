@@ -564,7 +564,7 @@ public class FileManageActionsBean extends InputController implements
                 log.error(e);
                 facesMessages.add(FacesMessage.SEVERITY_ERROR,
                         resourcesAccessor.getMessages().get(
-                                "fileImporter.error.unsupporte"));
+                                "fileImporter.error.unsupportedFile"));
                 return null;
             } finally {
                 if (stream != null)
