@@ -448,7 +448,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
                     if (fulltext.contains(fieldName)) {
                         currentFilter.append(backendFieldName + "=*");
                     } else {
-                        currentFilter.append(backendFieldName + "=");
+                        currentFilter.append("!(" + backendFieldName + "=*)");
                     }
                 } else {
                     currentFilter.append(backendFieldName + "=");

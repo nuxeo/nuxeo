@@ -178,5 +178,14 @@ public abstract class LDAPDirectoryTestCase extends NXRuntimeTestCase {
                 LDAPDirectoryFactory.NAME);
         return ((LDAPDirectoryProxy) factory.getDirectory(name)).getDirectory();
     }
+    
+    protected NamingEnumeration<SearchResult> doSearchNative(String filter, Object[] args) throws NamingException {
+        DirContext context = SERVER.getContext();
+        SearchControls controls = new SearchControls();
+        controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+        controls.setReturningAttributes(null);
+        NamingEnumeration<SearchResult> results = context.search("ou=people", filter, args, controls);
+        return results;
+    }
 
 }
