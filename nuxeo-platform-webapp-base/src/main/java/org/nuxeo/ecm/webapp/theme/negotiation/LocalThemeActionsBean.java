@@ -85,7 +85,7 @@ public class LocalThemeActionsBean implements LocalThemeActions, Serializable {
 
     public List<SelectItem> getAvailableThemes() {
         List<SelectItem> themes = new ArrayList<SelectItem>();
-        for (String theme : Manager.getThemeManager().getThemeNames()) {
+        for (String theme : Manager.getThemeManager().getThemeNames("jsf-facelets")) {
             themes.add(new SelectItem(theme, theme));
         }
         return themes;
