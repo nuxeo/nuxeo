@@ -302,6 +302,9 @@ public class PictureManagerBean extends InputController implements
                         }
                     }
                 }
+                if (view==null) {
+                    return;
+                }
                 Blob blob = (Blob) view.getValue(field);
                 String filename = (String) view.getValue("filename");
                 // download
