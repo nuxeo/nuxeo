@@ -19,9 +19,14 @@
 
 package org.nuxeo.webengine.sites.listeners;
 
-import static org.nuxeo.webengine.sites.utils.SiteConstants.*;
-import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.*;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_UPDATED;
+import static org.nuxeo.webengine.sites.utils.SiteConstants.WEBPAGE;
+import static org.nuxeo.webengine.sites.utils.SiteConstants.WEBPAGE_EDITOR;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventListener;
@@ -33,6 +38,8 @@ import org.nuxeo.webengine.sites.utils.SitesRelationsWikiHelper;
  *
  */
 public class SitesWikiListener  implements EventListener {
+
+    private static final Log log = LogFactory.getLog(SitesWikiListener.class);
 
     protected DocumentModel doExtractWebPage(Event event) {
 
@@ -57,6 +64,15 @@ public class SitesWikiListener  implements EventListener {
         DocumentModel webPage = doExtractWebPage(event);
 
         if (webPage == null) {
+            return;
+        }
+        Boolean isRichText = Boolean.TRUE;
+        try {
+            isRichText = (Boolean) webPage.getPropertyValue(WEBPAGE_EDITOR);
+        } catch (ClientException e) {
+            log.error("SitesWikiListener error...", e);
+        }
+        if (isRichText) {
             return;
         }
 
