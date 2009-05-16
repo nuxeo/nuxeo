@@ -67,6 +67,7 @@ import org.nuxeo.ecm.platform.jbpm.TaskCreateDateComparator;
 import org.nuxeo.ecm.platform.jbpm.TaskListFilter;
 import org.nuxeo.ecm.platform.jbpm.VirtualTaskInstance;
 import org.nuxeo.ecm.platform.jbpm.operations.AddCommentOperation;
+import org.nuxeo.ecm.platform.jbpm.operations.GetRecipientsForTaskOperation;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.invalidations.AutomaticDocumentBasedInvalidation;
 import org.nuxeo.ecm.platform.ui.web.invalidations.DocumentContextBoundActionBean;
@@ -76,7 +77,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author Anahide Tchertchian
- *
+ * 
  */
 @Name("jbpmActions")
 @Scope(ScopeType.CONVERSATION)
@@ -576,15 +577,10 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
     @SuppressWarnings("unchecked")
     private Set<String> getRecipientsFromTask(final TaskInstance taskInstance)
             throws NuxeoJbpmException {
-        Set<String> recipients = new HashSet<String>();
-        ProcessInstance pi = jbpmService.getProcessInstance(taskInstance.getProcessInstance().getId());
-        SwimlaneInstance swimlane = pi.getTaskMgmtInstance().getSwimlaneInstance(
-                JbpmService.VariableName.initiator.name());
-        recipients.add(swimlane.getActorId());
-        for (PooledActor pa : (Set<PooledActor>) swimlane.getPooledActors()) {
-            recipients.add(pa.getActorId());
-        }
-        return recipients;
+        GetRecipientsForTaskOperation operation = new GetRecipientsForTaskOperation(
+                taskInstance.getId());
+        return (Set<String>) jbpmService.executeJbpmOperation(operation);
+
     }
 
     // helper inner class to do the unrestricted abandon
