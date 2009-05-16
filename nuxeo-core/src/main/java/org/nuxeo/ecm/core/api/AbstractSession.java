@@ -1670,7 +1670,7 @@ public abstract class AbstractSession implements CoreSession,
                     ScopeType.REQUEST,
                     VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY);
             DocumentModel oldDoc = null;
-            if (createSnapshot.booleanValue()) {
+            if (Boolean.TRUE.equals(createSnapshot)) {
                 oldDoc = createDocumentSnapshot(docModel, doc, options, true);
                 ctxData.putScopedValue(ScopeType.REQUEST,
                         VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, null);
