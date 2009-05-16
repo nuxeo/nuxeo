@@ -31,10 +31,13 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Context;
+import org.jboss.seam.contexts.Contexts;
+import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.platform.publishing.api.Publisher;
 import org.nuxeo.ecm.platform.publishing.api.PublishingException;
 import org.nuxeo.ecm.platform.publishing.api.PublishingService;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
@@ -97,6 +100,7 @@ public class PublishingActionsListenerBean extends InputController implements
     public String publishDocument() throws PublishingException {
         publishingService.validatorPublishDocument(
                 navigationContext.getCurrentDocument(), currentUser);
+        Events.instance().raiseEvent(Publisher.PublishingEvent.documentPublished.name());
         return null;
     }
 
@@ -112,6 +116,7 @@ public class PublishingActionsListenerBean extends InputController implements
 
         publishingService.validatorRejectPublication(getCurrentDocument(),
                 currentUser, rejectPublishingComment);
+        Events.instance().raiseEvent(Publisher.PublishingEvent.documentPublicationRejected.name());
         try {
             return navigationContext.navigateToRef(getCurrentDocument().getParentRef());
         } catch (ClientException e) {

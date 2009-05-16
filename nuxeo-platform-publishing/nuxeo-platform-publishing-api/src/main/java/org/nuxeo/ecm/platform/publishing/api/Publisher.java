@@ -27,6 +27,11 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
  */
 public interface Publisher {
 
+    public enum PublishingEvent {
+        documentPublished, documentSubmittedForPublication, documentPublicationRejected,
+        documentPublicationApproved, documentWaitingPublication, documentUnpublished
+    }
+
     void unpublish(DocumentModel document, NuxeoPrincipal principal)
             throws PublishingException;
 
