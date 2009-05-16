@@ -58,6 +58,7 @@ import org.nuxeo.ecm.platform.comment.web.CommentManagerActions;
 import org.nuxeo.ecm.platform.forum.web.api.PostAction;
 import org.nuxeo.ecm.platform.forum.web.api.ThreadAction;
 import org.nuxeo.ecm.platform.forum.workflow.ForumConstants;
+import org.nuxeo.ecm.platform.forum.workflow.GetModerationTaskOperation;
 import org.nuxeo.ecm.platform.jbpm.JbpmEventNames;
 import org.nuxeo.ecm.platform.jbpm.JbpmService;
 import org.nuxeo.ecm.platform.jbpm.JbpmService.VariableName;
@@ -338,18 +339,8 @@ public class PostActionBean implements PostAction {
     protected TaskInstance getModerationTask(DocumentModel thread, String postId)
             throws ClientException {
         ProcessInstance process = getModerationProcess(thread, postId);
-        if (process != null) {
-            Collection tasks = process.getTaskMgmtInstance().getTaskInstances();
-            if (tasks != null && !tasks.isEmpty()) {
-                if (tasks.size() > 1) {
-                    log.error("There are several moderation tasks, "
-                            + "taking only first found");
-                }
-                TaskInstance task = (TaskInstance) tasks.iterator().next();
-                return task;
-            }
-        }
-        return null;
+        GetModerationTaskOperation operation = new GetModerationTaskOperation(process.getId());
+        return (TaskInstance) jbpmService.executeJbpmOperation(operation);
     }
 
     protected void cleanContextVariables() {
