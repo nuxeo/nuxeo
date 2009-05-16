@@ -78,7 +78,7 @@ public class JbpmServiceImpl implements JbpmService {
     // and close it on the session complete of hibernate.
     protected JbpmContext getContext() {
         JbpmContext context = contexts.get();
-        if (context == null) {
+        if (context == null || !context.getSession().isConnected()) {
             context = configuration.createJbpmContext();
             contexts.set(context);
             context.getSession().getTransaction().registerSynchronization(
@@ -495,7 +495,7 @@ public class JbpmServiceImpl implements JbpmService {
                     context.setActorId(NuxeoPrincipal.PREFIX
                             + principal.getName());
                 }
-                TaskInstance ti = context.getTaskInstanceForUpdate(taskInstanceId);
+                TaskInstance ti = context.getTaskInstance(taskInstanceId);
                 if (taskVariables != null) {
                     for (String k : taskVariables.keySet()) {
                         ti.setVariableLocally(k, taskVariables.get(k));
@@ -583,7 +583,7 @@ public class JbpmServiceImpl implements JbpmService {
                     context.setActorId(NuxeoPrincipal.PREFIX
                             + principal.getName());
                 }
-                Collection<TaskInstance> tis = context.getProcessInstanceForUpdate(
+                Collection<TaskInstance> tis = context.getProcessInstance(
                         processInstanceId).getTaskMgmtInstance().getTaskInstances();
                 ArrayList<TaskInstance> result = new ArrayList<TaskInstance>();
                 for (TaskInstance ti : tis) {
@@ -645,18 +645,27 @@ public class JbpmServiceImpl implements JbpmService {
         });
     }
 
-    public Boolean getPermission(ProcessInstance pi,
-            JbpmSecurityPolicy.Action action, DocumentModel dm,
-            NuxeoPrincipal principal) {
-        String pdName = pi.getProcessDefinition().getName();
-        if (securityPolicies.containsKey(pdName)) {
-            JbpmSecurityPolicy pm = securityPolicies.get(pdName);
-            Boolean perm = pm.checkPermission(pi, action, dm, principal);
-            if (perm != null) {
-                return perm;
+    public Boolean getPermission(final ProcessInstance pi,
+            final JbpmSecurityPolicy.Action action, final DocumentModel dm,
+            final NuxeoPrincipal principal) throws NuxeoJbpmException {
+        return (Boolean) executeJbpmOperation(new JbpmOperation() {
+            private static final long serialVersionUID = 1L;
+
+            public Serializable run(JbpmContext context) {
+                ProcessInstance process = context.getProcessInstance(pi.getId());
+                String pdName = process.getProcessDefinition().getName();
+                if (securityPolicies.containsKey(pdName)) {
+                    JbpmSecurityPolicy pm = securityPolicies.get(pdName);
+                    Boolean perm = pm.checkPermission(process, action, dm,
+                            principal);
+                    if (perm != null) {
+                        return perm;
+                    }
+                }
+                return Boolean.TRUE;
             }
-        }
-        return Boolean.TRUE;
+        });
+
     }
 
     @SuppressWarnings("unchecked")
