@@ -15,20 +15,43 @@
 
 package org.nuxeo.webengine.sites.models;
 
+import org.nuxeo.theme.models.AbstractModel;
+
 /**
- * Model related to the details about the tag cloud that have been created under
- * a webpage, in the fragment initialization mechanism.
+ * Model related to the details about the tag cloud.
  * 
  * @author rux
  * 
  */
-public class TagCloudModel extends TagModel {
+public class TagCloudModel extends AbstractModel {
 
+    private String label;
+    
+    private String href;
+    
     private int weight;
 
-    public TagCloudModel(String label, Boolean isPrivate, int weight) {
-        super(label, isPrivate);
+    public TagCloudModel(String label, String href, int weight) {
+        super();
+        this.label = label;
+        this.href = href;
         this.weight = weight;
+    }
+
+    public String getHref() {
+        return href;
+    }
+
+    public void setHref(String href) {
+        this.href = href;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
     }
 
     public int getWeight() {

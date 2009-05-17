@@ -18,8 +18,7 @@ package org.nuxeo.webengine.sites.models;
 import org.nuxeo.theme.models.AbstractModel;
 
 /**
- * Model related to the details about the tag cloud that have been created under
- * a webpage, in the fragment initialization mechanism.
+ * Model related to the details about the tag cloud.
  * 
  * @author rux
  * 
