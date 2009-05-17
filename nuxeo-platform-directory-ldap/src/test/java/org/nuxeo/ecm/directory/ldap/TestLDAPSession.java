@@ -985,14 +985,14 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
     
     public void testQueryEmptyString() throws Exception {
         Session session = getLDAPDirectory("userDirectory").getSession();
-        Map<String, Object> filter = new HashMap<String, Object>();
+        Map<String, Serializable> filter = new HashMap<String, Serializable>();
         filter.put("cn","");
         List<DocumentModel> docs = session.query(filter);
         assertNotNull(docs);
     }
     
     public void testBackendEmptyString() throws NamingException {
-        doSearchNative("(!(cn=*))",new Object[] { });
+        doSearchNative("(!(cn=*))",new Serializable[] { });
     }
 
 }
