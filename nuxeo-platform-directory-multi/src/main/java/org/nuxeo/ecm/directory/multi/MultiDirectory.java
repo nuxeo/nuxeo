@@ -26,6 +26,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.directory.AbstractDirectory;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.IdGenerator;
+import org.nuxeo.ecm.directory.Reference;
 import org.nuxeo.ecm.directory.Session;
 
 /**
@@ -94,6 +95,12 @@ public class MultiDirectory extends AbstractDirectory {
         } catch (ClientException e) {
             throw new DirectoryException(e);
         }
+    }
+    
+    
+    @Override
+    public Reference getReference(String referenceFieldName)  {
+        return new MultiReference(this, referenceFieldName);
     }
 
 }
