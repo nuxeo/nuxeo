@@ -30,6 +30,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.naming.NamingEnumeration;
+import javax.naming.NamingException;
+import javax.naming.directory.DirContext;
+import javax.naming.directory.SearchControls;
+import javax.naming.directory.SearchResult;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -974,6 +980,19 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
         } finally {
             dir.close();
         }
+    }
+    
+    
+    public void testQueryEmptyString() throws Exception {
+        Session session = getLDAPDirectory("userDirectory").getSession();
+        Map<String, Object> filter = new HashMap<String, Object>();
+        filter.put("cn","");
+        List<DocumentModel> docs = session.query(filter);
+        assertNotNull(docs);
+    }
+    
+    public void testBackendEmptyString() throws NamingException {
+        doSearchNative("(!(cn=*))",new Object[] { });
     }
 
 }
