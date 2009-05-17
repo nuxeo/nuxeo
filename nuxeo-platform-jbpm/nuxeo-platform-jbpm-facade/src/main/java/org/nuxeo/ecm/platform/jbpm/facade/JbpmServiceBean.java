@@ -29,6 +29,8 @@ import org.jbpm.JbpmConfiguration;
 import org.jbpm.graph.def.ProcessDefinition;
 import org.jbpm.graph.exe.ProcessInstance;
 import org.jbpm.taskmgmt.exe.TaskInstance;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.jbpm.JbpmActorsListFilter;
@@ -76,8 +78,8 @@ public class JbpmServiceBean implements JbpmService {
     public void endTask(Long taskInstanceId, String transition,
             Map<String, Serializable> taskVariables,
             Map<String, Serializable> variables,
-            Map<String, Serializable> transientVariables, NuxeoPrincipal principal)
-            throws NuxeoJbpmException {
+            Map<String, Serializable> transientVariables,
+            NuxeoPrincipal principal) throws NuxeoJbpmException {
         service.endTask(taskInstanceId, transition, taskVariables, variables,
                 transientVariables, principal);
     }
@@ -196,6 +198,13 @@ public class JbpmServiceBean implements JbpmService {
             List<String> actors, JbpmActorsListFilter filter)
             throws NuxeoJbpmException {
         return service.getTaskInstances(dm, actors, filter);
+    }
+
+    public void notifyEventListeners(String name, String comment,
+            String[] recipients, CoreSession session, NuxeoPrincipal principal,
+            DocumentModel doc) throws ClientException {
+        service.notifyEventListeners(name, comment, recipients, session,
+                principal, doc);
     }
 
 }

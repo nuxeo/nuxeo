@@ -40,6 +40,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.event.EventProducer;
+import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.jbpm.JbpmActorsListFilter;
 import org.nuxeo.ecm.platform.jbpm.JbpmListFilter;
 import org.nuxeo.ecm.platform.jbpm.JbpmOperation;
@@ -52,13 +54,15 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author arussel
- * 
+ *
  */
 public class JbpmServiceImpl implements JbpmService {
 
     private static final String FROM_ORG_JBPM_TASKMGMT_EXE_TASK_INSTANCE_TI_WHERE_TI_END_IS_NULL = "from org.jbpm.taskmgmt.exe.TaskInstance ti where ti.end is null";
 
     protected Map<String, List<String>> typeFilters;
+
+    private EventProducer eventProducer;
 
     private JbpmConfiguration configuration;
 
@@ -820,5 +824,26 @@ public class JbpmServiceImpl implements JbpmService {
             }
 
         });
+    }
+
+    protected EventProducer getEventProducer() throws Exception {
+        if (eventProducer == null) {
+            eventProducer = Framework.getService(EventProducer.class);
+        }
+        return eventProducer;
+    }
+
+    public void notifyEventListeners(String name, String comment,
+            String[] recipients, CoreSession session, NuxeoPrincipal principal,
+            DocumentModel doc) throws ClientException {
+        DocumentEventContext ctx = new DocumentEventContext(session, principal,
+                doc);
+        ctx.setProperty("recipients", recipients);
+        ctx.getProperties().put("comment", comment);
+        try {
+            getEventProducer().fireEvent(ctx.newEvent(name));
+        } catch (Exception e) {
+            throw new ClientException(e);
+        }
     }
 }

@@ -45,7 +45,6 @@ import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
 import org.jbpm.graph.exe.ProcessInstance;
 import org.jbpm.taskmgmt.exe.PooledActor;
-import org.jbpm.taskmgmt.exe.SwimlaneInstance;
 import org.jbpm.taskmgmt.exe.TaskInstance;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -56,8 +55,6 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.event.EventProducer;
-import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.jbpm.AbstractJbpmHandlerHelper;
 import org.nuxeo.ecm.platform.jbpm.JbpmEventNames;
 import org.nuxeo.ecm.platform.jbpm.JbpmSecurityPolicy;
@@ -73,11 +70,10 @@ import org.nuxeo.ecm.platform.ui.web.invalidations.AutomaticDocumentBasedInvalid
 import org.nuxeo.ecm.platform.ui.web.invalidations.DocumentContextBoundActionBean;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author Anahide Tchertchian
- * 
+ *
  */
 @Name("jbpmActions")
 @Scope(ScopeType.CONVERSATION)
@@ -678,16 +674,7 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
 
     public void notifyEventListeners(String name, String comment,
             String[] recipients) throws ClientException {
-        EventProducer eventProducer;
-        try {
-            eventProducer = Framework.getService(EventProducer.class);
-        } catch (Exception e) {
-            throw new ClientException(e);
-        }
-        DocumentEventContext ctx = new DocumentEventContext(documentManager,
-                currentUser, getCurrentDocument());
-        ctx.setProperty(RECIPIENTS, recipients);
-        ctx.getProperties().put(COMMENT, comment);
-        eventProducer.fireEvent(ctx.newEvent(name));
+        jbpmService.notifyEventListeners(name, comment, recipients,
+                documentManager, currentUser, getCurrentDocument());
     }
 }
