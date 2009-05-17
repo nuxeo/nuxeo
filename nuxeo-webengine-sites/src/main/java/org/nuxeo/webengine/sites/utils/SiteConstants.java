@@ -57,6 +57,7 @@ public final class SiteConstants {
     public static final String PAGE_NAME = "name";
     public static final String SITE_DESCRIPTION = "siteDescription";
     public static final String SEARCH_PARAM = "searchParam";
+    public static final String EMAIL = "siteCreatorEmail";
 
     /**
      * LifeCycle

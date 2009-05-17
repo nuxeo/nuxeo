@@ -15,6 +15,7 @@
         </cell>
         <cell>
           <fragment type="generic fragment" />
+          <fragment type="generic fragment" />
         </cell>
       </section>
       <section>
@@ -27,6 +28,7 @@
           <fragment type="all webpages fragment" />
         </cell>
         <cell>
+          <fragment type="tags fragment" /> 
           <fragment type="contextual links fragment" />
           <fragment type="generic fragment" />
         </cell>
@@ -49,6 +51,7 @@
         </cell>
         <cell>
           <fragment type="generic fragment" />
+          <fragment type="generic fragment" />
         </cell>
       </section>
       <section>
@@ -65,8 +68,9 @@
           <fragment type="page last comments fragment" />
         </cell>
         <cell>
+          <fragment type="tags fragment"/> 
           <fragment type="contextual links fragment" />
-          <fragment type="generic fragment" />
+          <fragment type="generic fragment" />          
         </cell>
       </section>
     </page>
@@ -76,6 +80,7 @@
           <fragment type="generic fragment" />
         </cell>
         <cell>
+          <fragment type="generic fragment" />
           <fragment type="generic fragment" />
         </cell>
       </section>
@@ -292,6 +297,9 @@
     <widget element="page[2]/section[1]/cell[2]/fragment[1]">
       <view>Minisite Search</view>
     </widget>
+    <widget element="page[2]/section[1]/cell[2]/fragment[2]">
+      <view>Minisite Email</view>
+    </widget>
     <widget element="page[2]/section[2]">
       <view>section frame</view>
     </widget>
@@ -361,6 +369,9 @@
     <widget element="page[3]/section[1]/cell[2]/fragment[1]">
       <view>Minisite Search</view>
     </widget>
+    <widget element="page[3]/section[1]/cell[2]/fragment[2]">
+      <view>Minisite Email</view>
+    </widget>
     <widget element="page[3]/section[2]">
       <view>section frame</view>
     </widget>
@@ -397,10 +408,10 @@
     <widget element="page[3]/section[2]/cell[3]">
       <view>cell frame</view>
     </widget>
-    <widget element="page[3]/section[2]/cell[3]/fragment[1]">
+    <widget element="page[3]/section[2]/cell[3]/fragment[2]">
       <view>Minisite Contextual</view>
     </widget>
-    <widget element="page[3]/section[2]/cell[3]/fragment[2]">
+    <widget element="page[3]/section[2]/cell[3]/fragment[3]">
       <view>Minisite Buttons</view>
     </widget>
     <widget element="page[4]">
@@ -424,6 +435,9 @@
     <widget element="page[4]/section[1]/cell[2]/fragment[1]">
       <view>Minisite Search</view>
     </widget>
+    <widget element="page[4]/section[1]/cell[2]/fragment[2]">
+      <view>Minisite Email</view>
+    </widget>
     <widget element="page[4]/section[2]">
       <view>section frame</view>
     </widget>
@@ -442,6 +456,14 @@
     <widget element="page[4]/section[2]/cell[2]/fragment[1]">
       <view>Search Results</view>
     </widget>
+    
+    <widget element="page[2]/section[2]/cell[3]/fragment[1]">
+      <view>Tags</view>
+    </widget>    
+    <widget element="page[3]/section[2]/cell[3]/fragment[1]">
+      <view>Tags</view>
+    </widget>    
+    
     <!-- buttons -->
     <style name="site buttons">
       <selector path="input.button">

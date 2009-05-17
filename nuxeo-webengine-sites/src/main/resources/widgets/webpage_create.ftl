@@ -68,19 +68,21 @@
 <table class="createWebPage">
   <tbody>
     <tr>
-      <td width="30%"></td>
-      <td width="70%"></td>
+      <td>${Context.getMessage("label.page.title")}</td>
     </tr>
     <tr>
-      <td>${Context.getMessage("label.page.title")}</td>
       <td><input type="text" id="titleInput" name="title" value="" /></td>
     </tr>
     <tr>
       <td>${Context.getMessage("label.page.description")}</td>
+    </tr>
+    <tr>
       <td><textarea name="description"></textarea></td>
     </tr>
     <tr>
       <td>${Context.getMessage("label.page.format")}</td>
+    </tr>
+    <tr>
       <td><input type="radio" onclick="onSelectRadio(this);"
         name="isRichtext" id="wikitext" value="false" checked="true" />${Context.getMessage("label.page.format.wikitext")}
       <input type="radio" onclick="onSelectRadio(this);" name="isRichtext"
@@ -98,6 +100,9 @@
     </tr>
     <tr>
       <td>${Context.getMessage("label.page.push")}</td>
+    </tr>
+    
+    <tr>
       <td><input type="radio" name="pushToMenu" value="true"
         checked="true" />${Context.getMessage("label.page.push.yes")} <input
         type="radio" name="pushToMenu" value="false" />${Context.getMessage("label.page.push.no")}

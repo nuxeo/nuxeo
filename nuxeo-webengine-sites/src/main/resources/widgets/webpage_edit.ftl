@@ -14,19 +14,21 @@
   <table class="modifyWebPage">
     <tbody>
       <tr>
-        <td width="30%"></td>
-        <td width="70%"></td>
+        <td>${Context.getMessage("label.page.title")}</td>
       </tr>
       <tr>
-        <td>${Context.getMessage("label.page.title")}</td>
         <td><input type="text" name="title" value="${Document.title}"/></td>
       </tr>
       <tr>
         <td>${Context.getMessage("label.page.description")}</td>
+      </tr>
+      <tr>
         <td><textarea name="description">${Document.dublincore.description}</textarea></td>
       </tr>
       <tr>
         <td>${Context.getMessage("label.page.content")}</td>
+      </tr>
+      <tr>
         <td>
           <#if (Document.webpage.isRichtext == true)> 
             <textarea name="richtextEditorEdit" style="width: 300px;height: 400px" cols="60" rows="20" id="richtextEditorEdit">${Document.webpage.content}</textarea>
@@ -37,6 +39,8 @@
       </tr>
       <tr>
         <td>${Context.getMessage("label.page.push")}</td>
+      </tr>
+      <tr>
         <td>
           <input type="radio" id="pushToMenuYes" name="pushToMenu" value="true" />${Context.getMessage("label.page.push.yes")}
           <input type="radio" id="pushToMenuNo" name="pushToMenu" value="false" />${Context.getMessage("label.page.push.no")}

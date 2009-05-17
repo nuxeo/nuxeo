@@ -37,6 +37,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.rest.DocumentObject;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
+import org.nuxeo.ecm.platform.tag.service.api.TagService;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.runtime.api.Framework;
@@ -109,6 +110,7 @@ public class Page extends DocumentObject {
             throw WebException.wrap(e);
         }
     }
+    
 
     @POST
     @Path("createWebPage")
@@ -160,6 +162,31 @@ public class Page extends DocumentObject {
             throw WebException.wrap(e);
         }
     }
+    
+    @POST
+    @Path("addTag")
+    public Object addTag() {
+        try {
+            CoreSession session = ctx.getCoreSession();
+            // tag label
+            String tagLabel = ctx.getRequest().getParameter("tagLabel");
+            // create tag document type
+            TagService tagService = Framework.getService(TagService.class);
+
+            if (tagService != null) {
+                DocumentModel tagDocument = tagService.getOrCreateTag(
+                        tagService.getRootTag("default"), tagLabel, false,
+                        session.getPrincipal().getName());
+                tagService.addTagging(doc, tagDocument,
+                        session.getPrincipal().getName(), false);
+            }
+            String path = SiteUtils.getPagePath(
+                    SiteUtils.getFirstWebSiteParent(session, doc), doc);
+            return redirect(path);
+        } catch (Exception e) {
+            throw WebException.wrap(e);
+        }
+    }
 
     /**
      * Computes the arguments for a page. It is needed because in page some of
@@ -176,6 +203,10 @@ public class Page extends DocumentObject {
                 SiteUtils.getString(ws, WEBCONTAINER_NAME, null));
         root.put(SITE_DESCRIPTION, SiteUtils.getString(ws,
                 WEBCONTAINER_BASELINE, null));
+        root.put(EMAIL,
+                "mailto:"
+                        + SiteUtils.getUserEmail(ws.getPropertyValue(
+                                "dc:creator").toString()));
         MimetypeRegistry mimetypeService = Framework.getService(MimetypeRegistry.class);
         root.put("mimetypeService", mimetypeService);
         return root;
