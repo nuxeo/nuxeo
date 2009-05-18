@@ -1,17 +1,16 @@
+<#assign tagsNumber=nxthemesInfo.model.items.size() - 1/>
 <script type="text/javascript" src="${skinPath}/script/tagCloud.js"></script>
 
 <script type="text/javascript">
 	
 	function createCloud() {
     	var tagCloud = new TagCloud();
-    	var index = 0;
+    	<#assign index=0 />
       	tagCloud.setValues([
       	<#list nxthemesInfo.model.items as item>
       		{val:${item.weight},tag:${item.label},href:${item.href}}
-      		if(index < nxthemesInfo.model.items.size - 1) { 
-      			,
-      		}                         
-      		index++;
+      		<#if index < tagsNumber>,</#if>      	                  
+      		<#assign index=index+1 />
         </#list>]);                  
       	tagCloud.create('tagsCloud');      	
 	}	
