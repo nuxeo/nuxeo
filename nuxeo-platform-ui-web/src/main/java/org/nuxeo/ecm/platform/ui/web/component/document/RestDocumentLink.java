@@ -83,7 +83,7 @@ public class RestDocumentLink extends HtmlOutputLink {
                 params.put("subTabId", subTabValue);
             }
         } else {
-            // reset tab info, resettting the tab will reset the sub tab
+            // reset tab info, resetting the tab will reset the sub tab
             params.put("tabId", WebActions.NULL_TAB_ID);
         }
 
