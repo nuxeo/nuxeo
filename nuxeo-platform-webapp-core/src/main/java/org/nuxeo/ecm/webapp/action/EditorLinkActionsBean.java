@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.webapp.action;
 
+import static org.jboss.seam.ScopeType.CONVERSATION;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +32,7 @@ import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
+import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -40,6 +43,7 @@ import org.nuxeo.ecm.webapp.base.InputController;
  *
  */
 @Name("editorLinkActions")
+@Scope(CONVERSATION)
 public class EditorLinkActionsBean extends InputController implements EditorLinkActions {
 
     private static final Log log = LogFactory.getLog(EditorLinkActionsBean.class);
