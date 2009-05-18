@@ -3,6 +3,7 @@
 <component name="org.nuxeo.ecm.directory.ldap.storage.users">
   <implementation class="org.nuxeo.ecm.directory.ldap.LDAPDirectoryDescriptor" />
   <implementation class="org.nuxeo.ecm.directory.ldap.LDAPServerDescriptor" />
+  <require>org.nuxeo.ecm.directory.ldap.LDAPDirectoryFactory</require>
 
   <require>org.nuxeo.ecm.platform.usermanager.UserManagerImpl</require>
 
@@ -11,10 +12,10 @@
      point="userManager">
      <userManager>
       <users>
-        <directory>ldapUserDirectory</directory>
+        <directory>userLdapDirectory</directory>
       </users>
       <groups>
-        <directory>multiGroupDirectory</directory>
+        <directory>groupMultiDirectory</directory>
       </groups>
     </userManager>
   </extension>
@@ -25,21 +26,19 @@
     target="org.nuxeo.ecm.directory.multi.MultiDirectoryFactory"
     point="directories">
 
-   <directory name="multiGroupDirectory">
+   <directory name="groupMultiDirectory">
       <schema>group</schema>
       <idField>groupname</idField>
 
       <source name="ldap" creation="false">
-        <subDirectory name="ldapGroupDirectory"/>
+        <subDirectory name="groupLdapDirectory"/>
       </source>
 
       <source name="sql" creation="true">
         <subDirectory name="groupDirectory"/>
       </source>
     </directory>
-
   </extension>
-  <require>org.nuxeo.ecm.directory.ldap.LDAPDirectoryFactory</require>
 
   <!-- the groups SQL directories are required to make this bundle work -->
   <require>org.nuxeo.ecm.directory.sql.storage</require>
@@ -56,7 +55,7 @@
     -->
     <server name="default">
 
-      <ldapUrl>ldap://localhost:10389</ldapUrl>
+      <ldapUrl>ldap://127.0.0.1:10389</ldapUrl>
       <!-- Optional servers from the same cluster for failover
         and load balancing:
 
@@ -72,24 +71,23 @@
         Only the authentication of users (bind) use the credentials entered
         through the login form if any.
       -->
-      <bindDn>uid=admin,OU=system</bindDn>
+      <bindDn>uid=admin,ou=system</bindDn>
       <bindPassword>admin</bindPassword>
 
     </server>
 
   </extension>
 
-
   <extension target="org.nuxeo.ecm.directory.ldap.LDAPDirectoryFactory"
     point="directories">
 
-    <directory name="ldapUserDirectory">
+    <directory name="userLdapDirectory">
       <server>default</server>
       <schema>user</schema>
       <idField>username</idField>
       <passwordField>password</passwordField>
 
-      <searchBaseDn>ou=system</searchBaseDn>
+      <searchBaseDn>ou=people,dc=example,dc=com</searchBaseDn>
       <searchClass>person</searchClass>
       <!-- To additionally restricte entries you can add an
         arbitrary search filter such as the following:
@@ -105,10 +103,8 @@
       <readOnly>true</readOnly>
 
       <!-- uncomment to enable cache -->
-      <!--
-      <cacheTimeout>3600</cacheTimeout>
+      <cacheTimeout>10</cacheTimeout>
       <cacheMaxSize>1000</cacheMaxSize>
-      -->
 
       <creationBaseDn>ou=people,dc=example,dc=com</creationBaseDn>
       <creationClass>top</creationClass>
@@ -131,31 +127,29 @@
 
       <references>
 
-        <inverseReference field="groups" directory="multiGroupDirectory"
+        <inverseReference field="groups" directory="groupMultiDirectory"
           dualReferenceField="members" />
 
       </references>
 
     </directory>
 
-   <directory name="ldapGroupDirectory">
+   <directory name="groupLdapDirectory">
 
       <server>default</server>
 
       <schema>group</schema>
       <idField>groupname</idField>
 
-      <searchBaseDn>ou=system</searchBaseDn>
+      <searchBaseDn>ou=groups,dc=example,dc=com</searchBaseDn>
       <searchFilter>(objectClass=groupOfUniqueNames)</searchFilter>
       <searchScope>subtree</searchScope>
 
       <readOnly>true</readOnly>
 
       <!-- comment <cache* /> tags to disable the cache -->
-      <!--
-      <cacheTimeout>3600</cacheTimeout>
+      <cacheTimeout>10</cacheTimeout>
       <cacheMaxSize>1000</cacheMaxSize>
-        -->
 
       <!-- Maximum number of entries returned by the search -->
       <querySizeLimit>200</querySizeLimit>
@@ -168,16 +162,16 @@
 
       <references>
 
-        <ldapReference field="members" directory="ldapUserDirectory"
+        <ldapReference field="members" directory="userLdapDirectory"
           forceDnConsistencyCheck="false"
           staticAttributeId="uniqueMember" />
 
-        <ldapReference field="subGroups" directory="ldapGroupDirectory"
+        <ldapReference field="subGroups" directory="groupLdapDirectory"
           forceDnConsistencyCheck="false"
           staticAttributeId="uniqueMember" />
 
         <inverseReference field="parentGroups"
-          directory="ldapGroupDirectory" dualReferenceField="subGroups" />
+          directory="groupLdapDirectory" dualReferenceField="subGroups" />
 
       </references>
 
