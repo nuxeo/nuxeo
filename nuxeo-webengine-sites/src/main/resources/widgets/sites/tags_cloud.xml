@@ -7,18 +7,17 @@
     	var index = 0;
       	tagCloud.setValues([
       	<#list nxthemesInfo.model.items as item>
-      		{val:#{item.weight},tag:#{item.label},href:#{item.href}}
+      		{val:${item.weight},tag:${item.label},href:${item.href}}
       		if(index < nxthemesInfo.model.items.size - 1) { 
-      			,;
+      			,
       		}                         
       		index++;
         </#list>]);                  
-      	tagCloud.create('tagsCloud');
-      	${item.label}
+      	tagCloud.create('tagsCloud');      	
 	}	
 </script>
 
-<div id="tagsCloud">
+<div id="tagsCloud" onload="createCloud();">
   <#if (!nxthemesInfo.model.items.empty)>
     <h4>${Context.getMessage("title.tags.cloud.pages")}</h4>
   </#if>  
