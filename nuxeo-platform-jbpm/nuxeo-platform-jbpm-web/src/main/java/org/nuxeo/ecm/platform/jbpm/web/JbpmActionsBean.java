@@ -45,7 +45,6 @@ import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
 import org.jbpm.graph.exe.ProcessInstance;
 import org.jbpm.taskmgmt.exe.PooledActor;
-import org.jbpm.taskmgmt.exe.SwimlaneInstance;
 import org.jbpm.taskmgmt.exe.TaskInstance;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -56,8 +55,6 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.event.EventProducer;
-import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.jbpm.AbstractJbpmHandlerHelper;
 import org.nuxeo.ecm.platform.jbpm.JbpmEventNames;
 import org.nuxeo.ecm.platform.jbpm.JbpmSecurityPolicy;
@@ -67,12 +64,12 @@ import org.nuxeo.ecm.platform.jbpm.TaskCreateDateComparator;
 import org.nuxeo.ecm.platform.jbpm.TaskListFilter;
 import org.nuxeo.ecm.platform.jbpm.VirtualTaskInstance;
 import org.nuxeo.ecm.platform.jbpm.operations.AddCommentOperation;
+import org.nuxeo.ecm.platform.jbpm.operations.GetRecipientsForTaskOperation;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.invalidations.AutomaticDocumentBasedInvalidation;
 import org.nuxeo.ecm.platform.ui.web.invalidations.DocumentContextBoundActionBean;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author Anahide Tchertchian
@@ -576,15 +573,10 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
     @SuppressWarnings("unchecked")
     private Set<String> getRecipientsFromTask(final TaskInstance taskInstance)
             throws NuxeoJbpmException {
-        Set<String> recipients = new HashSet<String>();
-        ProcessInstance pi = jbpmService.getProcessInstance(taskInstance.getProcessInstance().getId());
-        SwimlaneInstance swimlane = pi.getTaskMgmtInstance().getSwimlaneInstance(
-                JbpmService.VariableName.initiator.name());
-        recipients.add(swimlane.getActorId());
-        for (PooledActor pa : (Set<PooledActor>) swimlane.getPooledActors()) {
-            recipients.add(pa.getActorId());
-        }
-        return recipients;
+        GetRecipientsForTaskOperation operation = new GetRecipientsForTaskOperation(
+                taskInstance.getId());
+        return (Set<String>) jbpmService.executeJbpmOperation(operation);
+
     }
 
     // helper inner class to do the unrestricted abandon
@@ -682,16 +674,7 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
 
     public void notifyEventListeners(String name, String comment,
             String[] recipients) throws ClientException {
-        EventProducer eventProducer;
-        try {
-            eventProducer = Framework.getService(EventProducer.class);
-        } catch (Exception e) {
-            throw new ClientException(e);
-        }
-        DocumentEventContext ctx = new DocumentEventContext(documentManager,
-                currentUser, getCurrentDocument());
-        ctx.setProperty(RECIPIENTS, recipients);
-        ctx.getProperties().put(COMMENT, comment);
-        eventProducer.fireEvent(ctx.newEvent(name));
+        jbpmService.notifyEventListeners(name, comment, recipients,
+                documentManager, currentUser, getCurrentDocument());
     }
 }

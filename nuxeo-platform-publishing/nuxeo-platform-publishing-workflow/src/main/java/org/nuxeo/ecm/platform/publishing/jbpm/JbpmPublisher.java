@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.jboss.seam.core.Events;
 import org.jbpm.taskmgmt.exe.TaskInstance;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
@@ -55,11 +54,6 @@ public class JbpmPublisher extends AbstractPublisher implements Publisher {
 
     public static final String TASK_NAME = "org.nuxeo.ecm.platform.publishing.jbpm.JbpmPublisher";
     public static final String ACL_NAME = "org.nuxeo.ecm.platform.publishing.jbpm.JbpmPublisher";
-
-    public enum PublishingEvent {
-        documentPublished, documentSubmittedForPublication, documentPublicationRejected,
-        documentPublicationApproved, documentWaitingPublication, documentUnpublished
-    }
 
     private JbpmService jbpmService;
 
@@ -200,10 +194,11 @@ public class JbpmPublisher extends AbstractPublisher implements Publisher {
         try {
             getEventProducer().fireEvent(
                     ctx.newEvent(JbpmEventNames.WORKFLOW_TASK_ASSIGNED));
+            getEventProducer().fireEvent(ctx.newEvent(JbpmEventNames.WORKFLOW_TASK_START));
         } catch (ClientException e) {
             throw new PublishingException(e);
         }
-        Events.instance().raiseEvent(JbpmEventNames.WORKFLOW_TASK_START);
+        
     }
 
     public EventProducer getEventProducer() throws ClientException {
@@ -283,8 +278,6 @@ public class JbpmPublisher extends AbstractPublisher implements Publisher {
                 if (ti.getName().equals(TASK_NAME)) {
                     ti.end();
                     jbpmService.saveTaskInstances(Collections.singletonList(ti));
-                    Events.instance().raiseEvent(
-                            JbpmEventNames.WORKFLOW_TASK_COMPLETED);
                     return;
                 }
             }
@@ -340,6 +333,7 @@ public class JbpmPublisher extends AbstractPublisher implements Publisher {
             notifyEvent(PublishingEvent.documentUnpublished, doc, coreSession);
             removeProxy(doc, coreSession);
             endTask(doc, principal);// does nothing if none
+            notifyEvent(JbpmEventNames.WORKFLOW_TASK_COMPLETED, null, null, null, doc, coreSession);
         } catch (ClientException e) {
             throw new PublishingException(e);
         } finally {

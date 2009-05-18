@@ -27,6 +27,8 @@ import org.jbpm.JbpmConfiguration;
 import org.jbpm.graph.def.ProcessDefinition;
 import org.jbpm.graph.exe.ProcessInstance;
 import org.jbpm.taskmgmt.exe.TaskInstance;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
@@ -84,8 +86,7 @@ public interface JbpmService {
      * @author arussel
      */
     enum HibernateQueries {
-        NuxeoHibernateQueries_getProcessInstancesForDoc,
-        NuxeoHibernateQueries_getTaskInstancesForDoc
+        NuxeoHibernateQueries_getProcessInstancesForDoc, NuxeoHibernateQueries_getTaskInstancesForDoc
     }
 
     /**
@@ -124,8 +125,8 @@ public interface JbpmService {
             throws NuxeoJbpmException;
 
     /**
-     * Returns a list of task instances assigned to one of the actors in the list
-     * or to its pool.
+     * Returns a list of task instances assigned to one of the actors in the
+     * list or to its pool.
      *
      * @param actors a list used as actorId to retrieve the tasks.
      * @param filter
@@ -255,8 +256,8 @@ public interface JbpmService {
 
     /**
      * Returns a list of available Process Definition Name available for this
-     * document and user. All process definition if dm is <code>null</code>.
-     * The returned process definition is always the latest.
+     * document and user. All process definition if dm is <code>null</code>. The
+     * returned process definition is always the latest.
      *
      * @param user the caller.
      * @param dm the document concerned by the process
@@ -326,8 +327,8 @@ public interface JbpmService {
             throws NuxeoJbpmException;
 
     /**
-     * Returns the list of task instances associated with this document for which
-     * the user is the actor or belongs to the pooled actor list.
+     * Returns the list of task instances associated with this document for
+     * which the user is the actor or belongs to the pooled actor list.
      * <p>
      * If the user is null, then it returns all task instances for the document.
      *
@@ -366,16 +367,16 @@ public interface JbpmService {
             throws NuxeoJbpmException;
 
     /**
-     * Returns a map, whose key is the type of document, and value is a list of process
-     * definitions.
+     * Returns a map, whose key is the type of document, and value is a list of
+     * process definitions.
      *
      * @return
      */
     Map<String, List<String>> getTypeFilterConfiguration();
 
     /**
-     * Returns true if this user has this permission for this process instance and
-     * document.
+     * Returns true if this user has this permission for this process instance
+     * and document.
      *
      * @param pi
      * @param action
@@ -388,5 +389,17 @@ public interface JbpmService {
     Boolean getPermission(ProcessInstance pi, JbpmSecurityPolicy.Action action,
             DocumentModel dm, NuxeoPrincipal principal)
             throws NuxeoJbpmException;
+
+    /**
+     * Notify the event producer on the machine the jbpm service is.
+     *
+     * @param name the name of the event
+     * @param comment the comment
+     * @param recipients thre recipients property of the event context
+     * @throws ClientException
+     */
+    void notifyEventListeners(String name, String comment, String[] recipients,
+            CoreSession session, NuxeoPrincipal principal, DocumentModel doc)
+            throws ClientException;
 
 }

@@ -40,6 +40,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.event.EventProducer;
+import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.jbpm.JbpmActorsListFilter;
 import org.nuxeo.ecm.platform.jbpm.JbpmListFilter;
 import org.nuxeo.ecm.platform.jbpm.JbpmOperation;
@@ -52,13 +54,15 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author arussel
- * 
+ *
  */
 public class JbpmServiceImpl implements JbpmService {
 
     private static final String FROM_ORG_JBPM_TASKMGMT_EXE_TASK_INSTANCE_TI_WHERE_TI_END_IS_NULL = "from org.jbpm.taskmgmt.exe.TaskInstance ti where ti.end is null";
 
     protected Map<String, List<String>> typeFilters;
+
+    private EventProducer eventProducer;
 
     private JbpmConfiguration configuration;
 
@@ -78,7 +82,7 @@ public class JbpmServiceImpl implements JbpmService {
     // and close it on the session complete of hibernate.
     protected JbpmContext getContext() {
         JbpmContext context = contexts.get();
-        if (context == null) {
+        if (context == null || !context.getSession().isConnected()) {
             context = configuration.createJbpmContext();
             contexts.set(context);
             context.getSession().getTransaction().registerSynchronization(
@@ -495,7 +499,7 @@ public class JbpmServiceImpl implements JbpmService {
                     context.setActorId(NuxeoPrincipal.PREFIX
                             + principal.getName());
                 }
-                TaskInstance ti = context.getTaskInstanceForUpdate(taskInstanceId);
+                TaskInstance ti = context.getTaskInstance(taskInstanceId);
                 if (taskVariables != null) {
                     for (String k : taskVariables.keySet()) {
                         ti.setVariableLocally(k, taskVariables.get(k));
@@ -583,7 +587,7 @@ public class JbpmServiceImpl implements JbpmService {
                     context.setActorId(NuxeoPrincipal.PREFIX
                             + principal.getName());
                 }
-                Collection<TaskInstance> tis = context.getProcessInstanceForUpdate(
+                Collection<TaskInstance> tis = context.getProcessInstance(
                         processInstanceId).getTaskMgmtInstance().getTaskInstances();
                 ArrayList<TaskInstance> result = new ArrayList<TaskInstance>();
                 for (TaskInstance ti : tis) {
@@ -645,18 +649,27 @@ public class JbpmServiceImpl implements JbpmService {
         });
     }
 
-    public Boolean getPermission(ProcessInstance pi,
-            JbpmSecurityPolicy.Action action, DocumentModel dm,
-            NuxeoPrincipal principal) {
-        String pdName = pi.getProcessDefinition().getName();
-        if (securityPolicies.containsKey(pdName)) {
-            JbpmSecurityPolicy pm = securityPolicies.get(pdName);
-            Boolean perm = pm.checkPermission(pi, action, dm, principal);
-            if (perm != null) {
-                return perm;
+    public Boolean getPermission(final ProcessInstance pi,
+            final JbpmSecurityPolicy.Action action, final DocumentModel dm,
+            final NuxeoPrincipal principal) throws NuxeoJbpmException {
+        return (Boolean) executeJbpmOperation(new JbpmOperation() {
+            private static final long serialVersionUID = 1L;
+
+            public Serializable run(JbpmContext context) {
+                ProcessInstance process = context.getProcessInstance(pi.getId());
+                String pdName = process.getProcessDefinition().getName();
+                if (securityPolicies.containsKey(pdName)) {
+                    JbpmSecurityPolicy pm = securityPolicies.get(pdName);
+                    Boolean perm = pm.checkPermission(process, action, dm,
+                            principal);
+                    if (perm != null) {
+                        return perm;
+                    }
+                }
+                return Boolean.TRUE;
             }
-        }
-        return Boolean.TRUE;
+        });
+
     }
 
     @SuppressWarnings("unchecked")
@@ -811,5 +824,26 @@ public class JbpmServiceImpl implements JbpmService {
             }
 
         });
+    }
+
+    protected EventProducer getEventProducer() throws Exception {
+        if (eventProducer == null) {
+            eventProducer = Framework.getService(EventProducer.class);
+        }
+        return eventProducer;
+    }
+
+    public void notifyEventListeners(String name, String comment,
+            String[] recipients, CoreSession session, NuxeoPrincipal principal,
+            DocumentModel doc) throws ClientException {
+        DocumentEventContext ctx = new DocumentEventContext(session, principal,
+                doc);
+        ctx.setProperty("recipients", recipients);
+        ctx.getProperties().put("comment", comment);
+        try {
+            getEventProducer().fireEvent(ctx.newEvent(name));
+        } catch (Exception e) {
+            throw new ClientException(e);
+        }
     }
 }
