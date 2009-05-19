@@ -17,9 +17,9 @@ package org.nuxeo.webengine.sites.fragments;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.tag.service.api.TagCloud;
-import org.nuxeo.ecm.platform.tag.service.api.TagService;
-import org.nuxeo.ecm.platform.tag.service.api.WeightedTag;
+import org.nuxeo.ecm.platform.tag.api.TagCloud;
+import org.nuxeo.ecm.platform.tag.api.TagService;
+import org.nuxeo.ecm.platform.tag.api.WeightedTag;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.runtime.api.Framework;
@@ -55,15 +55,17 @@ public class TagCloudFragment extends AbstractFragment {
                 DocumentModel documentModel = ctx.getTargetObject().getAdapter(
                         DocumentModel.class);
 
-                DocumentModel siteDocument = 
-                    SiteUtils.getFirstWebSiteParent(session, documentModel);
+                DocumentModel siteDocument = SiteUtils.getFirstWebSiteParent(
+                        session, documentModel);
                 TagCloudModel tagCloudModel = null;
                 TagCloud tagCloud = tagService.getPopularCloud(siteDocument,
-                    session.getPrincipal().getName());
+                        session.getPrincipal().getName());
                 if (tagCloud != null && !tagCloud.getListTags().isEmpty()) {
                     for (WeightedTag weightedTag : tagCloud.getListTags()) {
-                        tagCloudModel = new TagCloudModel(weightedTag.getTagLabel(), 
-                                weightedTag.getDocRef(), weightedTag.getWeight());
+                        tagCloudModel = new TagCloudModel(
+                                weightedTag.getTagLabel(),
+                                weightedTag.getDocRef(),
+                                weightedTag.getWeight());
                         model.addItem(tagCloudModel);
                     }
                 }
