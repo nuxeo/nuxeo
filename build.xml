@@ -158,4 +158,12 @@
     <get dest="./seam_hotdeploy_result.html" src="http://127.0.0.1:8080/nuxeo/restAPI/seamReload" username="Administrator" password="Administrator"/>
   </target>
 
+  <target name="clean-seam-hotdeploy-dir">
+    <delete>
+      <fileset dir="${seam.hotdeploy.dir}">
+        <include name="*"/>
+      </fileset>
+    </delete>
+  </target>
+
 </project>
