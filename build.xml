@@ -86,25 +86,34 @@
       <arg value="${mvn.opts}" />
     </exec>
   </target>
-  <target name="install" depends="install-unix,install-windows" description="Run mvn install" />
-  <target name="install-unix" if="osfamily-unix">
+
+
+  <target name="install" description="Run mvn install">
+    <antcall target="maven">
+      <param name="mvn.lifecycle" value="install"/>
+    </antcall>
+  </target>
+
+  <target name="maven" depends="maven-unix,maven-windows" description="Run mvn ${mvn.lifecycle}" />
+  <target name="maven-unix" if="osfamily-unix">
     <exec executable="mvn" failonerror="true">
       <arg value="clean" />
-      <arg value="install" />
+      <arg value="${mvn.lifecycle}" />
       <arg value="-Dmaven.test.skip=true" />
       <arg value="${mvn.opts}" />
     </exec>
   </target>
-  <target name="install-windows" if="osfamily-windows">
+  <target name="maven-windows" if="osfamily-windows">
     <exec executable="cmd" failonerror="true">
       <arg value="/c" />
       <arg value="mvn.bat" />
       <arg value="clean" />
-      <arg value="install" />
+      <arg value="${mvn.lifecycle}" />
       <arg value="-Dmaven.test.skip=true" />
       <arg value="${mvn.opts}" />
     </exec>
   </target>
+
 
   <target name="web" description="Copy web files to a live JBoss">
     <copy todir="${nuxeo.war.dir}">
@@ -148,7 +157,10 @@
     </copy>
   </target>
 
-  <target name="seam" depends="install">
+  <target name="seam" depends="clean-seam-hotdeploy-dir">
+    <antcall target="maven">
+      <param name="mvn.lifecycle" value="compile"/>
+    </antcall>
     <echo message="Deploy Seam components in ${seam.hotdeploy.dir}"/>
     <copy todir="${seam.hotdeploy.dir}" flatten="true">
       <fileset dir="./">
