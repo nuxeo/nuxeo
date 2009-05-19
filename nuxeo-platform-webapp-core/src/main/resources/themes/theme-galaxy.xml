@@ -11,7 +11,7 @@
           <!-- user services -->
           <fragment type="generic fragment"/>
         </cell>
-        <cell>
+        <cell>ù
           <!-- Include -->
           <fragment type="generic fragment"/>
         </cell>
@@ -1296,6 +1296,7 @@
       </selector>
       <selector path=".searchService" view="User services (Galaxy theme)">
         <float>right</float>
+        <vertical-align>middle</vertical-align>
       </selector>
       <selector path=".userActions" view="User services (Galaxy theme)">
         <padding-top>11px</padding-top>
@@ -1434,7 +1435,7 @@
       <selector path="div" view="nuxeo5 tree explorer">
         <font preset="default (Galaxy fonts)"/>
       </selector>
-      <selector path="td.dr-tree-h-text a.treeLink" view="nuxeo5 tree explorer">
+      <selector path="td.dr-tree-h-text, td.dr-tree-h-text span, td.dr-tree-h-text a.treeLink" view="nuxeo5 tree explorer">
         <white-space>normal</white-space>
       </selector>
     </style>
