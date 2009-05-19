@@ -74,6 +74,10 @@
                 <ant antfile="build.xml" target="copy-lib">
                   <property name="jboss.dir" value="${project.build.directory}/jboss" />
                 </ant>
+                <copy file="${basedir}/src/main/resources/jboss/readme.html"
+                  todir="${project.build.directory}/jboss" />
+                <copy file="${basedir}/src/main/resources/jboss/readme-jboss.html"
+                  todir="${project.build.directory}/jboss" />
                 <copy file="${basedir}/src/main/resources/jboss/bin/run.sh"
                   todir="${project.build.directory}/jboss/bin" />
                 <chmod dir="${project.build.directory}/jboss/bin"
