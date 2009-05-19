@@ -11,7 +11,7 @@
           <!-- user services -->
           <fragment type="generic fragment"/>
         </cell>
-        <cell>ù
+        <cell>
           <!-- Include -->
           <fragment type="generic fragment"/>
         </cell>
@@ -184,7 +184,9 @@
       <padding>0</padding>
     </layout>
     <layout element="page[3]/section[1]">
+      <height>36px</height>
       <width>100%</width>
+      <overflow>auto</overflow>
     </layout>
     <layout element="page[3]/section[1]/cell[1]">
       <width>18%</width>
@@ -1275,7 +1277,7 @@
       </selector>
     </style>
     <!-- Logo -->
-    <style element="page[1]/section[1]/cell[1]/fragment[1]">
+    <style element="page[1]/section[1]/cell[1]/fragment[1]|page[3]/section[1]/cell[1]/fragment[1]">
       <selector path="form" view="Nuxeo EP logo (Galaxy Theme)">
         <margin>0</margin>
         <padding>0</padding>
