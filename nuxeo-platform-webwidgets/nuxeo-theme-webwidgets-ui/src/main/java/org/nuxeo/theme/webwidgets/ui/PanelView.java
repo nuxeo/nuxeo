@@ -37,6 +37,7 @@ public final class PanelView extends AbstractView {
         final String decorationName = region.decoration;
         final String engineName = info.getEngine().getName();
         final String viewMode = info.getViewMode();
+        final int areaUid = info.getElement().getUid();
         final String displayedRegionName = regionName.equals("") ? "&lt;Please set the region name&gt;"
                 : regionName;
 
@@ -81,9 +82,8 @@ public final class PanelView extends AbstractView {
                 final String identifier = String.format("web widget panel %s",
                         info.getUid());
                 final String model = String.format(
-                        "{\"data\":{\"region\":\"%s\",\"provider\":\"%s\",\"decoration\":\"%s\",\"mode\":\"%s\"},\"id\":\"%s\"}",
-                        regionName, providerName, decorationName, viewMode,
-                        identifier);
+                        "{\"data\":{\"area\":\"%s\",\"provider\":\"%s\",\"decoration\":\"%s\",\"mode\":\"%s\"},\"id\":\"%s\"}",
+                        areaUid, providerName, decorationName, viewMode, identifier);
                 final String view = String.format(
                         "{\"controllers\":[\"web widget perspectives\",\"web widget inserter\",\"web widget mover\"],\"widget\":{\"type\":\"web widget panel\"},\"model\":\"%s\",\"perspectives\":[\"default\"],\"id\":\"%s\"}",
                         identifier, identifier);
@@ -97,9 +97,7 @@ public final class PanelView extends AbstractView {
         /* Default rendering mode */
         else if (!regionName.equals("")) {
             final Map<String, Object> data = new HashMap<String, Object>();
-            data.put("provider", providerName);
-            data.put("region", regionName);
-            data.put("decoration", decorationName);
+            data.put("area", areaUid);
             data.put("mode", viewMode);
             final String content = String.format(
                     "<ins style=\"display: none\" class=\"nxthemesWebWidgetPanel\">%s</ins>",

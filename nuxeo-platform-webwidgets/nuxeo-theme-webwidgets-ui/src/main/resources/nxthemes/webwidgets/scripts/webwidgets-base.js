@@ -93,7 +93,7 @@ NXThemesWebWidgets.WebWidget.prototype = {
     var widget_decoration = widget.getDecoration(decoration);
     if (widget_decoration) {
       var template = widget_decoration[widget_mode];
-      if (template == null) {
+      if (template === null) {
         var default_state_mode = widget_mode.split('/')[0] + '/*';
         template = widget_decoration[default_state_mode];
       }
@@ -104,8 +104,8 @@ NXThemesWebWidgets.WebWidget.prototype = {
       var options = {
         method: 'get',
         asynchronous: false,
-        onSuccess: function(req) {
-          var widget_decoration = req.responseText.evalJSON(true);
+        onSuccess: function(r) {
+          var widget_decoration = r.responseText.evalJSON(true);
           widget.setDecoration(decoration, widget_decoration)
           var template = widget_decoration[widget_mode];
           if (template === null) {
@@ -116,7 +116,8 @@ NXThemesWebWidgets.WebWidget.prototype = {
           widget.draw();
         },
         onFailure: function(r) {
-        // TODO
+          var text = r.responseText;
+          window.alert(text);
         }
       };
       new Ajax.Request(url, options);
@@ -173,10 +174,12 @@ NXThemesWebWidgets.getWidgetDataUrl = function(url) {
 
 Object.extend(NXThemesWebWidgets.WebWidget.prototype, UWA.Widget.prototype);
 
-NXThemesWebWidgets.renderPanel = function(provider, decoration, panel, data) {
+NXThemesWebWidgets.renderPanel = function(panel, data) {
   var mode = data.mode;
+  var provider = data.provider;
+  var decoration = data.decoration;
   var widget_types = data.widget_types;
-
+  
   $A(data.widget_items).each(function(item) {
     var uid = item.uid;
     var name = item.name;
@@ -188,7 +191,7 @@ NXThemesWebWidgets.renderPanel = function(provider, decoration, panel, data) {
     widget._name = name;
     widget._provider = provider;
     widget._decoration = decoration;
-
+    
     // Inline styles
     var styles = widget_type.styles;
     var styles_id = "webwidget_style_" + name.toLowerCase().replace(/ /g, '_');
@@ -210,13 +213,13 @@ NXThemesWebWidgets.renderPanel = function(provider, decoration, panel, data) {
           widget.log(e);
         }
     }
-
+    
     // metadata
     widget.metas = widget_type.metas;
-
+    
     // Set preference schema
     widget.preferences = widget_type.preferences;
-
+    
     // Set preference data
     var preference_data = item.preferences;
     if (preference_data !== null) {
@@ -231,7 +234,7 @@ NXThemesWebWidgets.renderPanel = function(provider, decoration, panel, data) {
 
     // Set icon
     widget._icon = widget_type.icon || nxthemesBasePath + "/nxthemes-webwidgets/render_widget_icon?name=" + widget_type.name;
-
+    
     // Set body
     widget._body = widget_type.body;
 

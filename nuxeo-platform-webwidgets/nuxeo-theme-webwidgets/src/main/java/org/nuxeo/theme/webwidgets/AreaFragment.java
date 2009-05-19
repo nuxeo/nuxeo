@@ -29,13 +29,18 @@ public final class AreaFragment extends AbstractFragment {
     @FieldInfo(type = "selection", label = "decoration", source = "web widget decorations", description = "The panel and widget decoration.", required = true)
     public String decoration = "default";
 
+    @FieldInfo(type = "string", label = "maximum number of widgets", description = "The maximum number of widgets allowed in this area.")
+    public String maxItems = "";
+
     public AreaFragment() {
     }
 
-    public AreaFragment(String name, String provider, String decoration) {
+    public AreaFragment(String name, String provider, String decoration,
+            String maxItems) {
         this.name = name;
         this.provider = provider;
         this.decoration = decoration;
+        this.maxItems = maxItems;
     }
 
     @Override
@@ -43,4 +48,19 @@ public final class AreaFragment extends AbstractFragment {
         return new RegionModel(name, provider, decoration);
     }
 
+    public String getProviderName() {
+        return provider;
+    }
+
+    public String getRegionName() {
+        return name;
+    }
+
+    public String getDecoration() {
+        return decoration;
+    }
+
+    public String getMaxItems() {
+        return maxItems;
+    }
 }

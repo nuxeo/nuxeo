@@ -57,11 +57,10 @@ public class Main extends ModuleRoot {
 
     @GET
     @Path("get_panel_data")
-    public String getPanelData(@QueryParam("provider") String providerName,
-            @QueryParam("region") String regionName,
+    public String getPanelData(@QueryParam("area") int area,
             @QueryParam("mode") String mode) {
         try {
-            return Manager.getPanelData(providerName, regionName, mode);
+            return Manager.getPanelData(area, mode);
         } catch (Exception e) {
             throw new WidgetEditorException(e.getMessage(), e);
         }
@@ -71,25 +70,21 @@ public class Main extends ModuleRoot {
     @Path("add_widget")
     public void addWidget() {
         FormData form = ctx.getForm();
-        String providerName = form.getString("provider");
+        int area = Integer.valueOf(form.getString("area"));
         String widgetName = form.getString("widget_name");
-        String regionName = form.getString("region");
         int order = Integer.valueOf(form.getString("order"));
-        Editor.addWidget(providerName, widgetName, regionName, order);
+        Editor.addWidget(area, widgetName, order);
     }
 
     @POST
     @Path("move_widget")
     public String moveWidget() {
         FormData form = ctx.getForm();
-        String srcProviderName = form.getString("src_provider");
-        String destProviderName = form.getString("dest_provider");
-        String srcUid = form.getString("src_uid");
-        String srcRegionName = form.getString("src_region");
-        String destRegionName = form.getString("dest_region");
+        int srcArea =  Integer.valueOf(form.getString("src_area"));
+        String srcUid =  form.getString("src_uid");
+        int destArea =  Integer.valueOf(form.getString("dest_area"));
         int destOrder = Integer.valueOf(form.getString("dest_order"));
-        return Editor.moveWidget(srcProviderName, destProviderName, srcUid,
-                srcRegionName, destRegionName, destOrder);
+        return Editor.moveWidget(srcArea,srcUid, destArea, destOrder);
     }
 
     @POST
