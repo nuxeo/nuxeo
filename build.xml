@@ -15,6 +15,9 @@
 
   <property name="build.dir" value="${basedir}/target" />
   <property name="deploy.dir" value="${jboss.dir}/server/${jboss.config}/deploy" />
+  <property name="nuxeo.war.dir" value="${deploy.dir}/nuxeo.ear/nuxeo.war" />
+  <property name="seam.hotdeploy.dir" value="${nuxeo.war.dir}/WEB-INF/dev" />
+
   <property name="dam.ear.root" value="nuxeo-dam-ear" />
   <property name="nuxeo.ear" value="nuxeo.ear" />
   <property name="deploy.lib.dir" value="${jboss.dir}/server/${jboss.config}/lib" />
@@ -42,6 +45,7 @@
     <echo message="ant package         => Package Nuxeo DAM to ${build.dir}/${nuxeo.ear}" />
     <echo message="ant deploy          => Package Nuxeo DAM and copy to ${deploy.dir}" />
     <echo message="ant web             => Copy web files to a live JBoss (${deploy.dir})" />
+    <echo message="ant seam            => Copy local Seam Components describes in seam.properties to the live JBoss (${deploy.dir}) and call restApi to reload these components" />
   </target>
 
   <condition property="osfamily-unix">
@@ -103,7 +107,7 @@
   </target>
 
   <target name="web" description="Copy web files to a live JBoss">
-    <copy todir="${deploy.dir}/nuxeo.ear/nuxeo.war">
+    <copy todir="${nuxeo.war.dir}">
       <fileset dir="${basedir}/nuxeo-dam-webapp/src/main/resources/nuxeo.war/" />
     </copy>
   </target>
@@ -142,6 +146,16 @@
         <exclude name="*/target/*-sources.jar" />
       </fileset>
     </copy>
+  </target>
+
+  <target name="seam" depends="install">
+    <echo message="Deploy Seam components in ${seam.hotdeploy.dir}"/>
+    <copy todir="${seam.hotdeploy.dir}" flatten="true">
+      <fileset dir="./">
+        <include name="**/target/**/*.class"/>
+      </fileset>
+    </copy>
+    <get dest="./seam_hotdeploy_result.html" src="http://127.0.0.1:8080/nuxeo/restAPI/seamReload" username="Administrator" password="Administrator"/>
   </target>
 
 </project>
