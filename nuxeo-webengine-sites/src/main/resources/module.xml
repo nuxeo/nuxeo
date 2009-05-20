@@ -8,7 +8,7 @@
     </link>
     <link id="action_webpage_create" path="create">
       <category>SITE_ACTIONS</category>
-      <guard>Write</guard>
+      <guard>AddChildren</guard>
     </link>
   </links>
 </module>

@@ -29,8 +29,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang.StringUtils;
-
-import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -170,6 +168,7 @@ public class SiteUtils {
             HttpServletRequest request, CoreSession session, String parentPath)
             throws Exception {
         String title = request.getParameter("title");
+        String pageName = request.getParameter(SiteConstants.PAGE_NAME_ATTRIBUTE);
         String description = request.getParameter("description");
         Boolean isRichtext = Boolean.parseBoolean(request.getParameter("isRichtext"));
         String wikitextEditor = request.getParameter("wikitextEditor");
@@ -177,7 +176,7 @@ public class SiteUtils {
         String pushToMenu = request.getParameter("pushToMenu");
 
         DocumentModel documentModel = session.createDocumentModel(parentPath,
-                IdUtils.generateId(title + System.currentTimeMillis()),
+                StringUtils.isEmpty(pageName) ? title : pageName,
                 SiteConstants.WEBPAGE);
         documentModel.setPropertyValue("dc:title", title);
         documentModel.setPropertyValue("dc:description", description);

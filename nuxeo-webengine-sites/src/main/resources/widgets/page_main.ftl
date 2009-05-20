@@ -3,6 +3,6 @@
   <#if isRichtext == true>
     ${Document.webpage.content}
   <#else>
-    <@wiki>${Document.webpage.content}</@wiki> 
+    <@nxsiteswiki>${Document.webpage.content}</@nxsiteswiki> 
   </#if>
 </div>
