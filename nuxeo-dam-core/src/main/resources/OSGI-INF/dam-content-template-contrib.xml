@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.dam.platform.content.template.contribution">
+
+  <extension
+    target="org.nuxeo.ecm.platform.content.template.service.ContentTemplateService"
+    point="factoryBinding">
+
+    <factoryBinding name="DomainFactory"
+      factoryName="SimpleTemplateFactory" targetType="Domain">
+      <template>
+        <templateItem typeName="ImportSetRoot" id="import-sets" title="Import Sets" description="Import Sets"/>
+      </template>
+    </factoryBinding>
+
+  </extension>
+
+</component>

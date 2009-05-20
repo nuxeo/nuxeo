@@ -49,6 +49,29 @@
       <redirect />
     </navigation-case>
 
+    <from-view-id>/incl/new_import_set_error.xhtml</from-view-id>
+    <navigation-case>
+         <from-outcome>next</from-outcome>
+         <to-view-id>/incl/new_import_set.xhtml</to-view-id>
+    </navigation-case>
+
+
+    <from-view-id>/incl/new_import_set.xhtml</from-view-id>
+    <navigation-case>
+       <from-outcome>next</from-outcome>
+       <to-view-id>/incl/new_import_set.xhtml</to-view-id>
+    </navigation-case>
+
+</navigation-rule>
+
+  </extension>
+
+  <extension target="pages#PAGES">
+
+    <!-- Post login and 'home' view handler -->
+    <page view-id="/nxstartup.xhtml"
+      action="#{startupHelper.initDomainAndFindStartupPage('Default domain', 'view')}"/>
+
   </extension>
 
 </fragment>

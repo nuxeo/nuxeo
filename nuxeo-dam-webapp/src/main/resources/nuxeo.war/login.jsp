@@ -24,7 +24,7 @@
   <tbody>
     <tr>
       <td align="center">
-      <form method="post" action="view_documents.faces">
+      <form method="post" action="nxstartup.faces">
       <!-- To prevent caching -->
       <%
           response.setHeader("Cache-Control", "no-cache"); // HTTP 1.1

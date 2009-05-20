@@ -6,4 +6,9 @@ Bundle-Localization: plugin
 Bundle-Version: 1.0.0
 Bundle-Vendor: Nuxeo
 Bundle-Category: web
-Require-Bundle: org.nuxeo.dam.api
+Require-Bundle: org.nuxeo.dam.api,
+  org.nuxeo.ecm.platform.content.template,
+  org.nuxeo.ecm.platform.types.core
+Nuxeo-component: OSGI-INF/dam-content-template-contrib.xml,
+  OSGI-INF/dam-nxtypes-contribution.xml,
+  OSGI-INF/dam-schemas-contrib.xml
