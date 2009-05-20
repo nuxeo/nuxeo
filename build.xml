@@ -159,6 +159,9 @@
 
   <target name="seam" depends="clean-seam-hotdeploy-dir">
     <antcall target="maven">
+      <param name="mvn.lifecycle" value="clean"/>
+    </antcall>
+    <antcall target="maven">
       <param name="mvn.lifecycle" value="compile"/>
     </antcall>
     <echo message="Deploy Seam components in ${seam.hotdeploy.dir}"/>
