@@ -31,8 +31,9 @@ NXThemesWebWidgets.init = function() {
          onSuccess: function(r) {
              var text = r.responseText;
              var panel_data = text.evalJSON(true);
-             NXThemesWebWidgets.renderPanel(panel, panel_data);
-             panel.parentNode.removeChild(panel);
+             var container = panel.parentNode;
+             NXThemesWebWidgets.renderPanel(container, panel_data);
+             container.removeChild(panel); 
          },
          onFailure: function(r) {
              var text = r.responseText;
