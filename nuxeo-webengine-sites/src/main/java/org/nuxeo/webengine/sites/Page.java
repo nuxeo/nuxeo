@@ -45,7 +45,6 @@ import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.webengine.sites.utils.SiteUtils;
-import org.nuxeo.webengine.sites.utils.SitesRelationsWikiHelper;
 
 /**
  * Web object implementation corresponding to WebPage. It is resolved from site.
@@ -87,7 +86,6 @@ public class Page extends DocumentObject {
                     VIEW_PERSPECTIVE);
         }
         try {
-            SitesRelationsWikiHelper.getLinks(ctx);
             return getTemplate("template_default.ftl").args(getPageArguments());
         } catch (Exception e) {
             throw WebException.wrap(e);

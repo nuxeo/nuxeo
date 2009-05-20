@@ -19,23 +19,18 @@
 
 package org.nuxeo.webengine.sites.utils;
 
+import static org.nuxeo.webengine.sites.utils.SiteConstants.WEBPAGE_CONTENT;
 import static org.nuxeo.webengine.sites.wiki.rendering.WikiSitesPageLinkResolver.PAGE_LINK_PATTERN;
-import static org.nuxeo.webengine.sites.utils.SiteConstants.*;
 
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 
-import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
-import org.nuxeo.ecm.core.rest.DocumentObject;
 import org.nuxeo.ecm.platform.relations.api.QNameResource;
 import org.nuxeo.ecm.platform.relations.api.RelationManager;
 import org.nuxeo.ecm.platform.relations.api.Resource;
@@ -45,6 +40,7 @@ import org.nuxeo.ecm.platform.relations.api.impl.ResourceImpl;
 import org.nuxeo.ecm.platform.relations.api.impl.StatementImpl;
 import org.nuxeo.ecm.platform.relations.api.util.RelationConstants;
 import org.nuxeo.ecm.platform.relations.api.util.RelationHelper;
+import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.wikimodel.wem.WikiParserException;
 import org.wikimodel.wem.common.CommonWikiParser;
@@ -60,6 +56,48 @@ public class SitesRelationsWikiHelper {
 
     // Utility class.
     private SitesRelationsWikiHelper() {
+    }
+
+    public static void updateRelations(DocumentModel doc, List<String> linksList) throws ClientException {
+        List<String> list = getWordLinks(doc);
+
+        List<Statement> stmts = RelationHelper.getStatements(doc, HAS_LINK_TO);
+
+        // remove old links
+        RelationManager rm = RelationHelper.getRelationManager();
+        if (stmts != null) {
+            rm.remove(RelationConstants.GRAPH_NAME, stmts);
+            stmts.clear();
+        } else {
+            stmts = new ArrayList<Statement>();
+        }
+
+        QNameResource docResource = RelationHelper.getDocumentResource(doc);
+        WebContext ctx = WebEngine.getActiveContext();
+        String basePath = ctx.getModulePath();
+        org.nuxeo.ecm.webengine.model.Resource resource = ctx.getTargetObject();
+        for (String word : list) {
+            if (word.startsWith(".")) {
+                org.nuxeo.ecm.webengine.model.Resource parentResource = resource.getPrevious();
+                while (!parentResource.isInstanceOf("site")) {
+                    parentResource = parentResource.getPrevious();
+                }
+                word = basePath + "/" + parentResource.getName() + word.replace(".", "/");
+            } else {
+                word = resource.getPath() + "/" + word;
+            }
+            Statement stmt = new StatementImpl(docResource,
+                    HAS_LINK_TO, new LiteralImpl(word));
+            stmts.add(stmt);
+        }
+
+        // Add additional links
+        for (String word : linksList) {
+            Statement stmt = new StatementImpl(docResource,
+                    HAS_LINK_TO, new LiteralImpl(word));
+            stmts.add(stmt);
+        }
+        rm.add(RelationConstants.GRAPH_NAME, stmts);
     }
 
     public static List<String> getWordLinks(DocumentModel doc) {
@@ -81,38 +119,7 @@ public class SitesRelationsWikiHelper {
         } catch (ClientException e) {
             e.printStackTrace();
         }
-        return null;
-    }
-
-    public static void updateRelations(DocumentModel doc) {
-        List<String> list = getWordLinks(doc);
-        List<Statement> stmts = RelationHelper.getStatements(doc, HAS_LINK_TO);
-        try {
-            // remove old links
-            RelationManager rm = RelationHelper.getRelationManager();
-            if (stmts != null) {
-                rm.remove(RelationConstants.GRAPH_NAME, stmts);
-                stmts.clear();
-            } else {
-                stmts = new ArrayList<Statement>();
-            }
-
-            // add new links
-            if (list != null) {
-                QNameResource docResource = RelationHelper.getDocumentResource(doc);
-                for (String word : list) {
-                    if (!word.startsWith(".")) {
-                        word = getAbsolutePageLink(doc, word);
-                    }
-                    Statement stmt = new StatementImpl(docResource,
-                            HAS_LINK_TO, new LiteralImpl(word));
-                    stmts.add(stmt);
-                }
-                rm.add(RelationConstants.GRAPH_NAME, stmts);
-            }
-        } catch (ClientException e) {
-            e.printStackTrace();
-        }
+        return new ArrayList<String>();
     }
 
     public static List<String> getWordLinks(String text) {
@@ -125,52 +132,6 @@ public class SitesRelationsWikiHelper {
             }
         }
         return wordLinks;
-    }
-
-    public static String getAbsolutePageLink(DocumentModel doc,
-            String relativeLink) {
-        if (relativeLink.startsWith(".")) {
-            return relativeLink;
-        }
-        Path path = doc.getPath().removeFirstSegments(3);
-        path = path.removeLastSegments(1);
-        return "." + path.toString().replace("/", ".") + "." + relativeLink;
-    }
-
-    public static List<Map<String, String>> getLinks(WebContext ctx) {
-        List<Map<String, String>> list = new ArrayList<Map<String, String>>();
-        DocumentModel doc = null;
-        org.nuxeo.ecm.webengine.model.Resource resource = ctx.getTargetObject();
-        if (resource instanceof DocumentObject) {
-            DocumentObject docObj = (DocumentObject) resource;
-            doc = docObj.getDocument();
-        }
-        if (doc == null) {
-            return list;
-        }
-
-        DocumentModelList l = RelationHelper.getSubjectDocuments(HAS_LINK_TO,
-                getPageAbsoluteLink(doc), doc.getSessionId());
-
-        String prefix = ctx.getModulePath();
-
-        for (DocumentModel d : l) {
-            Map<String, String> map = new HashMap<String, String>();
-            try {
-                map.put("title", d.getTitle());
-                map.put("href", prefix + "/"
-                        + d.getPath().removeFirstSegments(3).toString());
-                list.add(map);
-            } catch (ClientException e) {
-                e.printStackTrace();
-            }
-        }
-        return list;
-    }
-
-    public static String getPageAbsoluteLink(DocumentModel doc) {
-        String s = doc.getPath().removeFirstSegments(3).toString();
-        return "." + s.replace("/", ".");
     }
 
 }
