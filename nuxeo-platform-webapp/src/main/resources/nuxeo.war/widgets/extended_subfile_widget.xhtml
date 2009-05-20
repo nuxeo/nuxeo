@@ -31,6 +31,14 @@
       </h:panelGroup>
     </nxu:methodResult>
 
+    <c:if test="#{widget.mode == 'view'}">
+      <h:commandLink action="#{previewActions.doSetFieldXPath}">
+        <f:param name="fieldXPath"
+          value="#{nxd:propertyPath(widget_0.fieldDefinitions[0].propertyName, model.rowIndex, widget.fieldDefinitions[0].propertyName)}" />
+        <h:outputText value=" | #{messages['command.preview.file']}" />
+      </h:commandLink>
+    </c:if>
+        
     <f:subview rendered="false">
       FIXME AT: re-enable when NXP-2306 is fixed
     <nxu:methodResult name="isLiveEditable"
