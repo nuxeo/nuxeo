@@ -83,5 +83,10 @@ public final class SiteConstants {
     public static final String PAGE_THEME_PAGE = "sites/page";
     public static final String SEARCH_THEME_PAGE = "sites/search";
     public static final String SITES_THEME_PAGE = "sites/default";
+    
+    /**
+     * Tags&Tag Clouds
+     */
+    public static final String TAG_DOCUMENT="tag_document";
 
 }

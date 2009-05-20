@@ -16,17 +16,23 @@
  */
 package org.nuxeo.webengine.sites.fragments;
 
-import static org.nuxeo.webengine.sites.utils.SiteConstants.*;
+import static org.nuxeo.webengine.sites.utils.SiteConstants.SEARCH_PARAM;
+import static org.nuxeo.webengine.sites.utils.SiteConstants.TAG_DOCUMENT;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.GregorianCalendar;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.WebContext;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.theme.fragments.AbstractFragment;
 import org.nuxeo.theme.models.Model;
 import org.nuxeo.theme.models.ModelException;
@@ -34,14 +40,18 @@ import org.nuxeo.webengine.sites.models.SearchListModel;
 import org.nuxeo.webengine.sites.models.SearchModel;
 import org.nuxeo.webengine.sites.utils.SiteQueriesColection;
 import org.nuxeo.webengine.sites.utils.SiteUtils;
+import org.nuxeo.ecm.platform.tag.api.TagService;
 
 /**
- * Action fragment for initializing the fragment related to searching a certain
- * webPage between all the pages under a <b>WebSite</b> that contains in
- * title, description , main content or attached files the given searchParam.
- *
+ * Action fragment for initializing the fragment :
+ *    related to searching a certain
+ *    webPage between all the pages under a <b>WebSite</b> that contains in title,
+ *    description , main content or attached files the given searchParam,
+ * or
+ *     related to searching all the documents for a certain tag    
+ * 
  * @author rux
- *
+ * 
  */
 public class SearchResultsFragment extends AbstractFragment {
 
@@ -51,69 +61,81 @@ public class SearchResultsFragment extends AbstractFragment {
      * Searches a certain webPage between all the pages under a <b>WebSite</b>
      * that contains in title, description , main content or attached files the
      * given searchParam.
-     *
+     * 
      */
     @Override
     public Model getModel() throws ModelException {
         SearchListModel model = new SearchListModel();
-        if (WebEngine.getActiveContext() != null) {
-            WebContext ctx = WebEngine.getActiveContext();
-            CoreSession session = ctx.getCoreSession();
-            DocumentModel documentModel = ctx.getTargetObject().getAdapter(
-                    DocumentModel.class);
+        try {
+            if (WebEngine.getActiveContext() != null) {
+                WebContext ctx = WebEngine.getActiveContext();
+                CoreSession session = ctx.getCoreSession();
+                DocumentModel documentModel = ctx.getTargetObject().getAdapter(
+                        DocumentModel.class);
 
-            String searchParam = (String) ctx.getProperty(SEARCH_PARAM);
-            SearchModel searchModel = null;
-            GregorianCalendar date = null;
-            SimpleDateFormat simpleDateFormat = null;
-            String created = null;
-            String modified = null;
-            String author = null;
-            String path = null;
-            String name = null;
-            String description = null;
+                String searchParam = (String) ctx.getProperty(SEARCH_PARAM);
+                String tagDocumentId = (String) ctx.getProperty(TAG_DOCUMENT);
+                TagService tagService = Framework.getService(TagService.class);
+                SearchModel searchModel = null;
+                GregorianCalendar date = null;
+                SimpleDateFormat simpleDateFormat = null;
+                String created = null;
+                String modified = null;
+                String author = null;
+                String path = null;
+                String name = null;
+                String description = null;
 
-            try {
                 // get first workspace parent
                 DocumentModel ws = SiteUtils.getFirstWebSiteParent(session,
                         documentModel);
-                if (!StringUtils.isEmpty(searchParam) && ws != null) {
+                DocumentModelList results = new DocumentModelListImpl(
+                        new ArrayList<DocumentModel>());
+                if (!StringUtils.isEmpty(searchParam) && ws != null
+                        && StringUtils.isEmpty(tagDocumentId)) {
 
-                    DocumentModelList results = SiteQueriesColection.querySearchPages(
-                            session, searchParam, ws.getPathAsString());
+                    results = SiteQueriesColection.querySearchPages(session,
+                            searchParam, ws.getPathAsString());
+                }
 
-                    for (DocumentModel document : results) {
-
-                        date = SiteUtils.getGregorianCalendar(document,
-                                "dc:created");
-                        simpleDateFormat = new SimpleDateFormat("dd MMMM yyyy",
-                                WebEngine.getActiveContext().getLocale());
-                        created = simpleDateFormat.format(date.getTime());
-
-                        date = SiteUtils.getGregorianCalendar(document,
-                                "dc:modified");
-                        modified = simpleDateFormat.format(date.getTime());
-
-                        author = SiteUtils.getUserDetails(SiteUtils.getString(
-                                document, "dc:creator"));
-                        path = SiteUtils.getPagePath(ws, document);
-                        name = SiteUtils.getString(document, "dc:title");
-                        description = SiteUtils.getFistNWordsFromString(
-                                SiteUtils.getString(document, "dc:description"),
-                                nrWordsFromDescription);
-
-                        searchModel = new SearchModel(name, description, path,
-                                author, created, modified);
-                        model.addItem(searchModel);
-
+                if (StringUtils.isEmpty(searchParam)
+                        && StringUtils.isNotEmpty(tagDocumentId)) {
+                    Map<String, String> docsForTag = tagService.listDocumentsForTag(
+                            tagDocumentId, session.getPrincipal().getName());
+                    for (String docForTagId : docsForTag.keySet()) {
+                        results.add(session.getDocument(new IdRef(docForTagId)));
                     }
+                }
+                for (DocumentModel document : results) {
+
+                    date = SiteUtils.getGregorianCalendar(document,
+                            "dc:created");
+                    simpleDateFormat = new SimpleDateFormat("dd MMMM yyyy",
+                            WebEngine.getActiveContext().getLocale());
+                    created = simpleDateFormat.format(date.getTime());
+
+                    date = SiteUtils.getGregorianCalendar(document,
+                            "dc:modified");
+                    modified = simpleDateFormat.format(date.getTime());
+
+                    author = SiteUtils.getUserDetails(SiteUtils.getString(
+                            document, "dc:creator"));
+                    path = SiteUtils.getPagePath(ws, document);
+                    name = SiteUtils.getString(document, "dc:title");
+                    description = SiteUtils.getFistNWordsFromString(
+                            SiteUtils.getString(document, "dc:description"),
+                            nrWordsFromDescription);
+
+                    searchModel = new SearchModel(name, description, path,
+                            author, created, modified);
+                    model.addItem(searchModel);
 
                 }
-            } catch (Exception e) {
-                throw new ModelException(e);
-            }
-        }
 
+            }
+        } catch (Exception e) {
+            throw new ModelException(e);
+        }
         return model;
     }
 }
