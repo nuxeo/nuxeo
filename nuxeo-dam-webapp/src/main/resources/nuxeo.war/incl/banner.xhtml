@@ -19,6 +19,7 @@
     </a4j:form>
 
     <a4j:commandLink action="${documentActions.createChangeableDocument()}" oncomplete="Richfaces.showModalPanel('lot_creation')">
+      <h:outputText value="#{messages['action.createNewImportSet']}"/>
     </a4j:commandLink>
 
 

@@ -49,20 +49,21 @@
       <redirect />
     </navigation-case>
 
+  <navigation-rule>
     <from-view-id>/incl/new_import_set_error.xhtml</from-view-id>
     <navigation-case>
          <from-outcome>next</from-outcome>
          <to-view-id>/incl/new_import_set.xhtml</to-view-id>
     </navigation-case>
+  </navigation-rule>
 
-
+  <navigation-rule>
     <from-view-id>/incl/new_import_set.xhtml</from-view-id>
     <navigation-case>
        <from-outcome>next</from-outcome>
        <to-view-id>/incl/new_import_set.xhtml</to-view-id>
     </navigation-case>
-
-</navigation-rule>
+  </navigation-rule>
 
   </extension>
 
