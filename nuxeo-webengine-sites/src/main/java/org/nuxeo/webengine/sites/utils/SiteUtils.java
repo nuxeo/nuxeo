@@ -175,9 +175,12 @@ public class SiteUtils {
         String richtextEditor = request.getParameter("richtextEditor");
         String pushToMenu = request.getParameter("pushToMenu");
 
+        // Trim and replace problematic chars with -
+        String theName = (StringUtils.isEmpty(pageName) ? title : pageName).trim();
+        theName = theName.replaceAll("[ | \\t|/\\@|\\?|\\&]+", "-");
+
         DocumentModel documentModel = session.createDocumentModel(parentPath,
-                StringUtils.isEmpty(pageName) ? title : pageName,
-                SiteConstants.WEBPAGE);
+                theName, SiteConstants.WEBPAGE);
         documentModel.setPropertyValue("dc:title", title);
         documentModel.setPropertyValue("dc:description", description);
         documentModel.setPropertyValue(SiteConstants.WEBPAGE_EDITOR, isRichtext);
