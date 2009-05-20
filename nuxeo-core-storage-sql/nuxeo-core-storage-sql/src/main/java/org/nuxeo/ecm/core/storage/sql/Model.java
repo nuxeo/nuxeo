@@ -783,6 +783,11 @@ public class Model {
             String typeName = documentType.getName();
             addTypeSimpleFragment(typeName, null); // create entry
             for (Schema schema : documentType.getSchemas()) {
+                if (schema == null) {
+                    // happens when a type refers to a nonexistent schema
+                    // TODO log and avoid nulls earlier
+                    continue;
+                }
                 String fragmentName = initTypeModel(schema);
                 addTypeSimpleFragment(typeName, fragmentName); // may be null
                 // collection fragments too for this schema
