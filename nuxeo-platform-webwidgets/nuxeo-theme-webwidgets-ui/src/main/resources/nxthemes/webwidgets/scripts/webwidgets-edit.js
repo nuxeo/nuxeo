@@ -50,6 +50,7 @@ NXThemesWebWidgets.moveWidget = function(info) {
            NXThemesWebWidgets.changeWidgetId(srcProvider, destProvider, srcUid, destUid);               
            var widget = NXThemesWebWidgets.getWidget(destProvider, destUid);
            widget._decoration = destDecoration;
+           widget._provider = destProvider;
            widget.setHtml();
          },
          onFailure: function(r) {
@@ -500,7 +501,6 @@ NXThemesWebWidgets.WebWidgetPanel.prototype = Object.extend(new NXThemes.View(),
          onSuccess: function(r) {
              var text = r.responseText;
              var panel_data = text.evalJSON(true);
-             panel.innerHTML = "";
              NXThemesWebWidgets.renderPanel(panel, panel_data);
          },
          onFailure: function(r) {
