@@ -135,6 +135,9 @@ public class RepositoryImpl implements Repository {
             // first connection, initialize the database
             mapper.createDatabase();
             if (repositoryDescriptor.clusteringEnabled) {
+                log.info("Clustering enabled with "
+                        + repositoryDescriptor.clusteringDelay
+                        + " ms delay for repository: " + getName());
                 // use the mapper that created the database as cluster mapper
                 clusterMapper = mapper;
                 clusterMapper.createClusterNode();

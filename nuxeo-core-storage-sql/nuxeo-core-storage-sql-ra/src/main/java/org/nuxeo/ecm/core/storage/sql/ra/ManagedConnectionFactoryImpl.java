@@ -17,6 +17,7 @@
 
 package org.nuxeo.ecm.core.storage.sql.ra;
 
+import java.io.FileInputStream;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,6 +37,8 @@ import javax.security.auth.Subject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.xmap.XMap;
+import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.ConnectionSpecImpl;
@@ -238,9 +241,28 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
                 } catch (Exception e) {
                     throw new StorageException(e);
                 }
+                repositoryDescriptor.mergeFrom(getRepositoryDescriptor(repositoryDescriptor.name));
                 repository = new RepositoryImpl(repositoryDescriptor,
                         schemaManager);
             }
+        }
+    }
+
+    /**
+     * Gets the repository descriptor provided by the repository extension
+     * point. It's where clustering, indexing, etc. are configured.
+     */
+    protected static RepositoryDescriptor getRepositoryDescriptor(String name)
+            throws StorageException {
+        org.nuxeo.ecm.core.repository.RepositoryDescriptor d = NXCore.getRepositoryService().getRepositoryManager().getDescriptor(
+                name);
+        try {
+            XMap xmap = new XMap();
+            xmap.register(RepositoryDescriptor.class);
+            return (RepositoryDescriptor) xmap.load(new FileInputStream(
+                    d.getConfigurationFile()));
+        } catch (Exception e) {
+            throw new StorageException(e);
         }
     }
 

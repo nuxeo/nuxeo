@@ -51,6 +51,14 @@ public class RepositoryDescriptor {
     @XNode("indexing/fulltext@catalog")
     public String fulltextCatalog;
 
+    /** Merges only non-JCA properties. */
+    public void mergeFrom(RepositoryDescriptor other) {
+        clusteringEnabled = other.clusteringEnabled;
+        clusteringDelay = other.clusteringDelay;
+        fulltextAnalyzer = other.fulltextAnalyzer;
+        fulltextCatalog = other.fulltextCatalog;
+    }
+
     @XNode("xa-datasource")
     public String xaDataSourceName;
 
