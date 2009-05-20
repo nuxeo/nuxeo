@@ -20,13 +20,13 @@
 package org.nuxeo.ecm.platform.jbpm.core.deployer;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.URL;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 
 import org.nuxeo.ecm.platform.jbpm.AbstractProcessDefinitionDeployer;
@@ -36,32 +36,47 @@ import org.xml.sax.SAXException;
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
  *
  */
-public class IfChangedDeployer extends AbstractProcessDefinitionDeployer {
+public class IfChangedDeployer extends AbstractProcessDefinitionDeployer implements Serializable {
 
-    private final MD5Hasher hasher;
+    private static final long serialVersionUID = 1L;
 
-    private final HashPersistence persistence;
+    private transient MD5Hasher hasher;
+
+    private transient HashPersistence persistence;
 
     private final Map<URL, String> hashes = new HashMap<URL, String>();
 
-    public IfChangedDeployer() throws TransformerConfigurationException,
-            ParserConfigurationException {
+    public IfChangedDeployer() {
         hasher = new MD5Hasher();
         persistence = new HashPersistence();
     }
 
     @Override
     public boolean isDeployable(URL url) throws NoSuchAlgorithmException,
-            SAXException, IOException, TransformerException {
-        String hash = hasher.getMD5FromURL(url);
+            SAXException, IOException, TransformerException, ParserConfigurationException {
+        String hash = getHasher().getMD5FromURL(url);
         hashes.put(url, hash);
-        return persistence.exists(hash);
+        return getPersistence().exists(hash);
     }
 
     @Override
     public void deploy(URL url) throws Exception {
         super.deploy(url);
-        persistence.persist(hashes.get(url));
+        getPersistence().persist(hashes.get(url));
+    }
+
+    public MD5Hasher getHasher() {
+        if (hasher==null) {
+            hasher = new MD5Hasher();
+        }
+        return hasher;
+    }
+
+    public HashPersistence getPersistence() {
+        if (persistence==null) {
+            persistence = new HashPersistence();
+        }
+        return persistence;
     }
 
 }

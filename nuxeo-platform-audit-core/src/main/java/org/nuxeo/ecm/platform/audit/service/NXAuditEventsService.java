@@ -372,6 +372,22 @@ public class NXAuditEventsService extends DefaultComponent implements NXAuditEve
                 pageNb, pageSize);
     }
 
+    public List<?> nativeQuery(final String query, final int pageNb, final int pageSize) {
+        return persistenceProvider.run(false,
+                new RunCallback<List<?>>() {
+                    public List<?> runWith(EntityManager em) {
+                        return nativeQuery(em, query, pageNb,
+                                pageSize);
+                    }
+                });
+    }
+
+    public List<?> nativeQuery(EntityManager em, String query,
+            int pageNb, int pageSize) {
+        return LogEntryProvider.createProvider(em).nativeQuery(query,
+                pageNb, pageSize);
+    }
+
     public List<LogEntry> queryLogs(final String[] eventIds,
             final String dateRange) {
         return persistenceProvider.run(false,
@@ -627,5 +643,7 @@ public class NXAuditEventsService extends DefaultComponent implements NXAuditEve
 
         addLogEntry(em, entry);
     }
+
+
 
 }

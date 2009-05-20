@@ -23,6 +23,7 @@ import static org.jboss.seam.ScopeType.CONVERSATION;
 
 import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,7 +42,9 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.platform.picture.api.adapters.AbstractPictureAdapter;
 import org.nuxeo.ecm.platform.picture.api.adapters.PictureBlobHolder;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
@@ -58,18 +61,22 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.annotations.intercept.BypassInterceptors;
+import org.jboss.seam.core.Events;
 
 /**
  * Provide Picture Book related Actions.
- * 
+ *
  * @author <a href="mailto:ldoguin@nuxeo.com">Laurent Doguin</a>
- * 
+ *
  */
 
 @Name("pictureBookManager")
 @Scope(CONVERSATION)
 public class PictureBookManagerBean extends InputController implements
-        PictureBookManager {
+        PictureBookManager, Serializable {
+
+    private static final long serialVersionUID = -1593206839472821743L;
 
     private static final Log log = LogFactory.getLog(PictureBookManagerBean.class);
 
@@ -95,7 +102,7 @@ public class PictureBookManagerBean extends InputController implements
     String[] selectedViews = { "Original" };
 
     @In(create = true)
-    private NavigationContext navigationContext;
+    private transient NavigationContext navigationContext;
 
     @In(create = true)
     protected transient DocumentsListsManager documentsListsManager;
@@ -169,7 +176,10 @@ public class PictureBookManagerBean extends InputController implements
         doc.setProperty("picturebook", "timeinterval", timeinterval);
         doc.setProperty("picturebook", "picturetemplates", views);
 
+        Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
+                documentManager.getDocument(new PathRef(parentPath)));
         doc = documentManager.createDocument(doc);
+        documentManager.saveDocument(doc);
         documentManager.save();
 
         return navigationContext.getActionResult(doc, UserAction.AFTER_CREATE);
@@ -185,6 +195,7 @@ public class PictureBookManagerBean extends InputController implements
     }
 
     @Observer( { EventNames.DOCUMENT_SELECTION_CHANGED })
+    @BypassInterceptors
     public void reset() throws ClientException {
         title = null;
         timeinterval = null;

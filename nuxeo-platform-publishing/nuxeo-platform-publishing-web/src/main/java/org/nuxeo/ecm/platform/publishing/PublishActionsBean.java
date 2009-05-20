@@ -86,6 +86,7 @@ import org.nuxeo.runtime.api.Framework;
 @Name("publishActions")
 @Scope(ScopeType.CONVERSATION)
 public class PublishActionsBean implements PublishActions, Serializable {
+
     private PublishingService publishingService;
 
     private static final long serialVersionUID = 1L;

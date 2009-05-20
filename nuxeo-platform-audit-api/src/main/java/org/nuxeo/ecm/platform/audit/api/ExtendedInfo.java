@@ -45,7 +45,12 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Table(name = "NXP_LOGS_EXTINFO")
 @DiscriminatorColumn(name = "DISCRIMINATOR")
-public class ExtendedInfo {
+public class ExtendedInfo implements Serializable {
+
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
 
     private ExtendedInfo() {
     }
@@ -101,6 +106,8 @@ public class ExtendedInfo {
     @DiscriminatorValue(value = "LONG")
     public static class LongInfo extends ExtendedInfo {
 
+        private static final long serialVersionUID = 1L;
+
         private LongInfo() {
         }
 
@@ -130,6 +137,8 @@ public class ExtendedInfo {
     @Entity
     @DiscriminatorValue(value = "DATE")
     public static class DateInfo extends ExtendedInfo {
+
+        private static final long serialVersionUID = 1L;
 
         private DateInfo() {
         }
@@ -162,6 +171,8 @@ public class ExtendedInfo {
     @DiscriminatorValue(value = "STRING")
     public static class StringInfo extends ExtendedInfo {
 
+        private static final long serialVersionUID = 1L;
+
         private StringInfo() {
         }
 
@@ -191,6 +202,8 @@ public class ExtendedInfo {
     @Entity
     @DiscriminatorValue(value = "DOUBLE")
     public static class DoubleInfo extends ExtendedInfo {
+
+        private static final long serialVersionUID = 1L;
 
         private DoubleInfo() {
         }
@@ -222,6 +235,8 @@ public class ExtendedInfo {
     @DiscriminatorValue(value = "BOOLEAN")
     public static class BooleanInfo extends ExtendedInfo {
 
+        private static final long serialVersionUID = 1L;
+
         private BooleanInfo() {
         }
 
@@ -251,6 +266,11 @@ public class ExtendedInfo {
     @Entity
     @DiscriminatorValue(value = "BLOB")
     public static class BlobInfo extends ExtendedInfo {
+
+        /**
+         *
+         */
+        private static final long serialVersionUID = 1L;
 
         private BlobInfo() {
         }

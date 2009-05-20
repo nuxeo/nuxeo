@@ -31,7 +31,7 @@ public class FilterMapEntry implements Serializable {
 
     private String columnName;
 
-    private Object object;
+    private transient Object object;
 
     public Object getObject() {
         return object;

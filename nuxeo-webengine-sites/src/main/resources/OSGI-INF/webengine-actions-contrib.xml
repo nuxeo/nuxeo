@@ -13,9 +13,12 @@
         <rule grant="true">
           <facet>WebView</facet>
         </rule>
+        <rule grant="false">
+          <type>Workspace</type>
+        </rule>
       </filter>
     </action>
-    
+
     <action id="newFile">
       <filter id="no_file_in_WebPage">
         <rule grant="false">

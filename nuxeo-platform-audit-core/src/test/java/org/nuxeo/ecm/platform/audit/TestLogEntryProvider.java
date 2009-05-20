@@ -219,6 +219,26 @@ public class TestLogEntryProvider extends TestCase {
         assertEquals(new Long(1), count);
     }
 
+    public void testQuery() {
+        LogEntry one = doCreateEntryAndPersist("one");
+        Date limit = new Date();
+        LogEntry two = doCreateEntryAndPersist("two");
+        LogEntry three = doCreateEntryAndPersist("three");
+        one.setCategory("nuch");
+        three.setCategory("nuch");
+        List<?> entries = providerUnderTest.nativeQuery(
+                "select log.eventId, count(*) from LogEntry log where log.eventId = 'TestLogEntryProvider' group by log.eventId",
+                 1, 1);
+        assertNotNull(entries);
+        int entryCount = entries.size();
+        assertEquals(1, entryCount);
+        Object[] entry = (Object[])entries.get(0);
+        String name = (String)entry[0];
+        Long count = (Long)entry[1];
+        assertEquals("TestLogEntryProvider", name);
+        assertEquals(new Long(3L),count);
+    }
+
     public void XXXtestEventIds() {
         String eventId = eventId();
         LogEntry one = doCreateEntryAndPersist("one");

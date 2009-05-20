@@ -39,7 +39,12 @@ public class Server {
     }
 
     public static void shutdown() {
-        Mail.shutdown();
+        try {
+            Mail.shutdown();
+        }
+        catch (Throwable t) {
+            // TODO: handle exception
+        }
     }
 
 }

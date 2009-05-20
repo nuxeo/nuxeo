@@ -21,6 +21,7 @@ import java.util.Map;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -28,10 +29,13 @@ import javax.ws.rs.Produces;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.view.TemplateView;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.ExtensionPoint;
 import org.nuxeo.runtime.model.RegistrationInfo;
 import org.nuxeo.runtime.model.impl.DefaultRuntimeContext;
+import org.nuxeo.runtime.model.impl.RegistrationInfoImpl;
+import org.nuxeo.runtime.osgi.OSGiRuntimeService;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -96,10 +100,32 @@ public class ComponentResource {
     }
 
     @DELETE
-    public Object deleteComponent(@PathParam("name") String name) {
+    public Object removeComponent() {
+        if (ri.isPersistent()) {
+            try {
+                ((OSGiRuntimeService)Framework.getRuntime()).getComponentPersistence().removeComponent(ri.getName().getName());
+            } catch (Exception e) {
+                throw WebException.wrap("Failed to create component", e);
+            }
+        }
         return null;
     }
 
+    @PUT
+    public Object switchComponentState() {
+        RegistrationInfoImpl rii = (RegistrationInfoImpl)ri;
+        try {
+            if (rii.isActivated()) {
+                rii.deactivate();
+            } else {
+                rii.activate();
+            }
+        } catch (Exception e) {
+            throw WebException.wrap(e);
+        }
+        return null;        
+    }
+    
     public String getSummary() throws Exception {
         return ri.getDocumentation();
     }

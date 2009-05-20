@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<theme description="" name="sites">
+<theme description="" name="sites" template-engines="freemarker">
   <layout>
     <page name="default">
       <section>

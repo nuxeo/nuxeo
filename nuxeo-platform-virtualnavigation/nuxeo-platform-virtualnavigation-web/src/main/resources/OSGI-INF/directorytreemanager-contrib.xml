@@ -4,7 +4,6 @@
   name="org.nuxeo.ecm.virtualnavigation.directory.DirectoryTreeService.contrib">
 
   <require>org.nuxeo.ecm.webapp.directory.DirectoryTreeService</require>
-  <require>org.nuxeo.ecm.directories</require>
 
   <extension target="org.nuxeo.ecm.webapp.directory.DirectoryTreeService"
     point="trees">

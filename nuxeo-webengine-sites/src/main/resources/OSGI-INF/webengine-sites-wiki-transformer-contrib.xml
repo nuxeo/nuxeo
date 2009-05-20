@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.webengine.sites.rendering.wiki">
+  <require>org.nuxeo.ecm.webengine.WebEngineComponent</require>
+
+  <extension-point name="rendering-extension"
+	    target="org.nuxeo.ecm.webengine.WebEngineComponent">
+    <object class="org.nuxeo.webengine.sites.wiki.rendering.WikiSitesTransformerDescriptor" />
+  </extension-point>
+
+  <extension target="org.nuxeo.ecm.webengine.sites.rendering.wiki" point="rendering-extension">
+    <rendering-extension name="nxsiteswiki" serializer="org.nuxeo.ecm.platform.rendering.wiki.WikiSerializer">
+      <!-- 
+        <filter pattern="[A-Z]+[a-z]+[A-Z][A-Za-z]*" replacement="&lt;a href='./$0'&gt;$0&lt;/a&gt;"/>
+       
+      <filter pattern="NXP-[0-9]+" replacement="&lt;a href='http://jira.nuxeo.org/browse/$0'&gt;$0&lt;/a&gt;"/>
+      -->
+      <filter class="org.nuxeo.webengine.sites.wiki.rendering.WikiSitesPageLinkResolver"/>
+    </rendering-extension>
+  </extension>
+  
+</component>

@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.virtualnavigation.action;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
+import static org.jboss.seam.annotations.Install.FRAMEWORK;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -26,10 +27,14 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.seam.ScopeType;
+import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
+import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.nuxeo.ecm.webapp.directory.DirectoryTreeManager;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 
@@ -38,6 +43,7 @@ import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
  */
 @Name("multiNavTreeManager")
 @Scope(CONVERSATION)
+@Install(precedence=FRAMEWORK)
 public class MultiNavTreeManager implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -74,6 +80,7 @@ public class MultiNavTreeManager implements Serializable {
         return availableNavigationTrees;
     }
 
+    @Factory(value="selectedNavigationTree", scope=ScopeType.EVENT)
     public String getSelectedNavigationTree() {
         if (selectedNavigationTree == null) {
             setSelectedNavigationTree(STD_NAV_TREE);
@@ -87,6 +94,7 @@ public class MultiNavTreeManager implements Serializable {
     }
 
     @Observer(value = { "PATH_PROCESSED" }, create = false)
+    @BypassInterceptors
     public void setThePath(String myPath) {
         thePath = myPath;
     }

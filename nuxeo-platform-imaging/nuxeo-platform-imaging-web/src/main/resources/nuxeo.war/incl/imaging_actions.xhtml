@@ -20,7 +20,7 @@
       <li>
         <c:set var="filename" value="#{currentDocument.dublincore.title} - #{currentDocument.picture.views[pictureManager.index].title}"/>
         <nxh:outputLink value="#{nxd:fileUrl('downloadPicture', currentDocument , url, filename)}">
-          <img src="icons/download.png" style="vertical-align: right"
+          <img src="icons/icone_download.gif" style="vertical-align: right"
             alt="#{messages['label.outputFile.download']}"
             title="#{messages['label.outputFile.download']}" />
           <h:outputText value="#{messages['label.outputFile.download']}" />

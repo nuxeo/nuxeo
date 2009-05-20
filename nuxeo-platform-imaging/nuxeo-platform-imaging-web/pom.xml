@@ -4,16 +4,15 @@
   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
     <artifactId>nuxeo-platform-imaging-parent</artifactId>
-    <version>5.2-SNAPSHOT</version>
+    <version>5.2.1-SNAPSHOT</version>
   </parent>
 
   <description>
-    Nuxeo Platform Imaging provides picture managment to Nuxeo Web Platform and
+    Nuxeo Platform Imaging provides picture management to Nuxeo Web Platform and
     RCP. It offers minor picture transformation like rotation or resizing.
     Imaging-web offers Picture and PictureBook document types as well as Drag'n
     drop plugin, slideshows or thumbnails.
   </description>
-
   <groupId>org.nuxeo.ecm.platform</groupId>
   <artifactId>nuxeo-platform-imaging-web</artifactId>
   <name>Nuxeo Platform Imaging Web</name>
@@ -26,10 +25,6 @@
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-imaging-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-imaging-core</artifactId>
     </dependency>
 
     <dependency>

@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.mail.action;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -71,7 +72,7 @@ public class CheckSenderAction implements MessageAction {
         try {
             DirectoryService directoryService = Framework.getService(DirectoryService.class);
             session = directoryService.open("userDirectory");
-            Map<String, Object> map = new HashMap<String, Object>();
+            Map<String, Serializable> map = new HashMap<String, Serializable>();
             map.put("email", address);
             DocumentModelList list = session.query(map);
             if (list == null || list.isEmpty()) {

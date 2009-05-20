@@ -64,6 +64,7 @@ public abstract class AbstractAnnotationTest extends RepositoryOSGITestCase {
                 "org.nuxeo.ecm.sql.jena.databaseTransactionEnabled", "false");
         deployBundle("org.nuxeo.ecm.relations");
         deployBundle("org.nuxeo.ecm.annotations.test");
+        deployBundle("org.nuxeo.ecm.annotations.contrib");
         deployBundle("org.nuxeo.ecm.annotations");
         deployBundle("org.nuxeo.ecm.relations.jena");
         deployBundle("org.nuxeo.ecm.platform.usermanager");

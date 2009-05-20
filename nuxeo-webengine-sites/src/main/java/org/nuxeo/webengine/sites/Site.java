@@ -45,6 +45,8 @@ import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.WebObject;
+import org.nuxeo.ecm.webengine.model.Resource;
+import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.webengine.sites.utils.SiteQueriesColection;
 import org.nuxeo.webengine.sites.utils.SiteUtils;
 
@@ -77,7 +79,8 @@ public class Site extends DocumentObject {
         }
         // getting theme config from document.
         String theme = SiteUtils.getString(doc, WEBPAGE_THEME, "sites");
-        String themePage = SiteUtils.getString(doc, WEBPAGE_THEMEPAGE, "workspace");
+        String themePage = SiteUtils.getString(doc, WEBPAGE_THEMEPAGE,
+                "workspace");
         ctx.getRequest().setAttribute(THEME_BUNDLE, theme + "/" + themePage);
 
         String currentPerspective = (String) ctx.getRequest().getAttribute(
@@ -101,7 +104,8 @@ public class Site extends DocumentObject {
                     page);
             // getting theme config from document.
             String theme = SiteUtils.getString(doc, WEBPAGE_THEME, "sites");
-            String themePage = SiteUtils.getString(doc, WEBPAGE_THEMEPAGE, "page");
+            String themePage = SiteUtils.getString(doc, WEBPAGE_THEMEPAGE,
+                    "page");
             ctx.getRequest().setAttribute(THEME_BUNDLE, theme + "/" + themePage);
             return ctx.newObject(pageDoc.getType(), pageDoc);
         } catch (Exception e) {
@@ -118,10 +122,10 @@ public class Site extends DocumentObject {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        //return a default image, maybe you want to change this in future
+        // return a default image, maybe you want to change this in future
         if (resp == null) {
-            resp = redirect(getContext().getModule().getSkinPathPrefix() +
-                    "/images/logo.gif");
+            resp = redirect(getContext().getModule().getSkinPathPrefix()
+                    + "/images/logo.gif");
         }
         return resp;
     }
@@ -136,12 +140,12 @@ public class Site extends DocumentObject {
                 resp = Response.ok().entity(blob).type(blob.getMimeType()).build();
             }
         } catch (Exception e) {
-            log.error("Error while trying to display the website. " , e);
+            log.error("Error while trying to display the website. ", e);
         }
-        //return a default image, maybe you want to change this in future
+        // return a default image, maybe you want to change this in future
         if (resp == null) {
-            resp = redirect(getContext().getModule().getSkinPathPrefix() +
-                    "/images/logo.gif");
+            resp = redirect(getContext().getModule().getSkinPathPrefix()
+                    + "/images/logo.gif");
         }
         return resp;
     }
@@ -156,6 +160,35 @@ public class Site extends DocumentObject {
             return getTemplate("template_default.ftl").args(getSiteArguments());
         } catch (Exception e) {
             throw WebException.wrap(e);
+        }
+    }
+
+    @Override
+    @Path(value = "{path}")
+    public Resource traverse(@PathParam("path") String path) {
+        try {
+            return newDocument(path);
+        } catch (Exception e) {
+            if (e instanceof WebResourceNotFoundException) {
+                CoreSession session = ctx.getCoreSession();
+                try {
+                    if (session.hasPermission(doc.getRef(),
+                            PERMISSION_ADD_CHILDREN)) {
+                        DocumentObject parent = (DocumentObject) ctx.getTargetObject();
+                        ctx.getRequest().setAttribute(THEME_PERSPECTIVE,
+                                "create");
+                        ctx.getRequest().setAttribute(PAGE_NAME_ATTRIBUTE, path);
+                        return parent;
+                    } else {
+                        return newObject("WebPage", path);
+                    }
+                } catch (ClientException ce) {
+                    throw WebException.wrap(ce);
+                }
+
+            } else {
+                throw WebException.wrap(e);
+            }
         }
     }
 
@@ -176,13 +209,15 @@ public class Site extends DocumentObject {
     /**
      * Computes the arguments for a page. It is needed because in page some of
      * the site properties need be displayed.
+     *
      * @return
      * @throws Exception
      */
     protected Map<String, Object> getSiteArguments() throws Exception {
         Map<String, Object> root = new HashMap<String, Object>();
         root.put(PAGE_NAME, SiteUtils.getString(doc, WEBCONTAINER_NAME, null));
-        root.put(SITE_DESCRIPTION, SiteUtils.getString(doc, WEBCONTAINER_BASELINE, null));
+        root.put(SITE_DESCRIPTION, SiteUtils.getString(doc,
+                WEBCONTAINER_BASELINE, null));
         return root;
     }
 
@@ -190,8 +225,8 @@ public class Site extends DocumentObject {
         WebContext context = WebEngine.getActiveContext();
         CoreSession session = context.getCoreSession();
         try {
-            DocumentModelList list =
-                SiteQueriesColection.querySitesByUrl(session, url);
+            DocumentModelList list = SiteQueriesColection.querySitesByUrl(
+                    session, url);
             if (list.size() != 0) {
                 return list.get(0);
             }
