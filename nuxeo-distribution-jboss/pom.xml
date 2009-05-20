@@ -76,6 +76,8 @@
                 </ant>
                 <copy file="${basedir}/src/main/resources/jboss/readme.html"
                   todir="${project.build.directory}/jboss" />
+                <copy file="${basedir}/src/main/resources/jboss/readme-java6.html"
+                  todir="${project.build.directory}/jboss" />
                 <copy file="${basedir}/src/main/resources/jboss/readme-jboss.html"
                   todir="${project.build.directory}/jboss" />
                 <copy file="${basedir}/src/main/resources/jboss/bin/run.sh"

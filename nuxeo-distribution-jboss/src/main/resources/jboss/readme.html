@@ -2,33 +2,39 @@
 <body>
   <h1>Nuxeo Document Management 5.2.0 Release Notes</h1>
 
-  <p>Welcome to Nuxeo Document Management  (DM) 5.2.0.</p>
+  <p>Welcome to Nuxeo Document Management  (DM) 5.2.0.<br>Download  latest release of Nuxeo DM from <a href="http://www.nuxeo.com/downloads/">http://www.nuxeo.com/downloads/</a></p>
 
-  <h2>Note: Nuxeo DM 5.2 needs Java 1.5 (see <a href="http://hg.nuxeo.org/nuxeo/raw-file/5.2/README-java6.txt">Notes about Java 6</a>)</h2>
-
-  <p>It won't currently work with  any previous release of Java (e.g. Java 1.4).<br/>Please set up <a href="http://java.sun.com/products/archive/j2se/5.0_17/index.html">JRE 1.5</a> if it's not already installed on your computer.</p>
+  <h2>Requirements</h2>
+  
+  <p>Nuxeo DM 5.2 needs Java. <br>Please set up  recommended <a href="http://java.sun.com/products/archive/j2se/5.0_17/index.html">Sun Java Runtime Environment  (JRE) 1.5</a> if it's not already installed on your computer.<br>It won't work with  any previous release of Java (e.g. Java 1.4). It can work with Java 6 (see  specific <a href="readme-java6.html">notes about Java 6</a>).</p>
 
   <h2>Getting Started</h2>
 
-  <p>After you have installed Nuxeo:</p>
+  <p>After you have installed Nuxeo DM:</p>
 
   <ol>
     <li>Go to your installation directory</li>
 
-    <li>Start the application using the appropriate "run" command in the "bin" directory (ex: "sh ./bin/run.sh" under Unix/Linux/MacOS, or "bin\run.bat" under Windows). Under Unix/Linux/MacOS, there is also a convenient command "jbossctl".</li>
+    <li>Start the application
+      <ul><li>under Linux/Unix/MacOS,  run &quot;bin/run.sh&quot; or use convenient command &quot;bin/jbossctl start/stop/restart&quot;.</li>
+      <li>under Windows if you installed Nuxeo  from the .zip file, run &quot;bin/run.bat&quot;.</li>
+      <li>under Windows if you installed Nuxeo from the .exe file, either use "bin/run.bat" or start/stop using Windows services.</li>
+      </ul>
+    </li>
 
     <li>Point your browser to http://localhost:8080/nuxeo/</li>
 
-    <li>Log in using the "Administrator" login and the "Administrator" password (no quotes, of course, but capital &quot;A&quot;)</li>
+    <li>Log in using the "Administrator" login and the "Administrator" password (no quotes, of course, but capital &quot;A&quot;).</li>
 
   </ol>
 
   <h2>Complementary features</h2>
+  <p>The following features depend on the environment where you installed Nuxeo DM.</p>
   <ul>
-    <li>PDF transformation: complete the installation by following the instructions <a href="http://doc.nuxeo.org/5.2/books/nuxeo-book/html/admin-openoffice.html">here</a>.</li>
-    <li>Image tiling<b>: </b>requires install of  &quot;Image Magick&quot; (third-party), see <a href="http://hg.nuxeo.org/nuxeo/nuxeo-features/raw-file/5.2/nuxeo-platform-imaging-tiling/nuxeo-platform-imaging-tiling/README.txt">readme.txt</a>.</li>
-    <li>Annotations: requires install of &quot;pdftohtml&quot; and &quot;pdftoimage&quot; (third-party).</li>
-    <li>Drag and drop plugins: <a href="https://download.nuxeo.com/browser/firefox/nuxeo-dragdrop-ff-extension.xpi">Firefox</a>, <a href="http://download.nuxeo.org/desktop-integration/drag-drop/msie/">Internet Explorer</a>.</li>
+    <li>PDF transformation:  this feature requires OpenOffice started as server, complete the installation by following the instructions <a href="http://doc.nuxeo.org/5.2/books/nuxeo-book/html/admin-openoffice.html">here</a>.</li>
+    <li>Image tiling<b>: </b>requires install of third-party software &quot;Image Magick&quot;, see <a href="http://hg.nuxeo.org/nuxeo/nuxeo-features/raw-file/5.2/nuxeo-platform-imaging-tiling/nuxeo-platform-imaging-tiling/README.txt">readme.txt</a>.</li>
+    <li>Annotations: requires install of third-party softwares&quot;pdftohtml&quot; and &quot;pdftoimage&quot;.</li>
+    <li>Drag and drop plugins:  <a href="https://download.nuxeo.com/browser/firefox/nuxeo-dragdrop-ff-extension.xpi">Firefox</a>, <a href="http://download.nuxeo.org/desktop-integration/drag-drop/msie/">Internet Explorer</a>.</li>
     <li>Desktop integration thanks to LiveEdit: see <a href="http://doc.nuxeo.org/xwiki/bin/view/Main/Downloads">downloads wiki page</a>.</li>
   </ul>
 
@@ -65,7 +71,7 @@
   <p>More specifically :</p>
 
   <ul>
-    <li>The <a href="http://doc.nuxeo.org/current/reference/html-single/user-book.html">Nuxeo 5.1 user guide</a> (5.2 not yet released)</li>
+    <li>The <a href="http://doc.nuxeo.org/current/reference/html-single/user-book.html">Nuxeo 5.1 user guide</a> (5.2 user guide is not yet released)</li>
     
     <li>How to develop with Nuxeo - <a href="http://www.nuxeo.org/static/book-draft/">The Tutorial (draft)</a></li>
 
