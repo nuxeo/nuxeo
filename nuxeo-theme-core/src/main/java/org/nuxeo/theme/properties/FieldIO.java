@@ -47,7 +47,9 @@ public class FieldIO {
             } catch (SecurityException e) {
                 throw new ThemeIOException(e);
             } catch (NoSuchFieldException e) {
-                throw new ThemeIOException(e);
+                log.warn("Failed to set field '" + name + "' on "
+                        + c.getCanonicalName());
+                continue;
             }
             Class<?> fieldType = field.getType();
             Type fieldGenericType = field.getGenericType();
@@ -80,7 +82,8 @@ public class FieldIO {
 
             // generics
             if (fieldGenericType instanceof ParameterizedType) {
-                if (fieldType.equals(ArrayList.class) || fieldType.equals(List.class)
+                if (fieldType.equals(ArrayList.class)
+                        || fieldType.equals(List.class)
                         || fieldType.equals(Collection.class)) {
 
                     Type[] actualTypes = ((ParameterizedType) fieldGenericType).getActualTypeArguments();
