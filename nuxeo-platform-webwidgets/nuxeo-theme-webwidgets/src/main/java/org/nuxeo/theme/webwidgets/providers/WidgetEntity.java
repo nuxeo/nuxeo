@@ -19,6 +19,7 @@ import java.util.Map;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -93,7 +94,7 @@ public class WidgetEntity implements Widget {
         return state;
     }
 
-    @CollectionOfElements
+    @CollectionOfElements(fetch = FetchType.EAGER)
     @Column(name = "WIDGET_PREFERENCES")
     public Map<String, String> getPreferences() {
         return new HashMap<String, String>(preferences);
