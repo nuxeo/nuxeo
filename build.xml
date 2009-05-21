@@ -152,10 +152,17 @@
   </target>
   <target name="copy-lib" depends="clean-lib,copy-lib-unix,copy-lib-windows" description="Copy Nuxeo libs in jboss" />
   <target name="clean-lib" depends="setproperties">
+    <echo message="Cleaning Nuxeo libs in ${jboss.lib}" />
     <delete>
       <fileset dir="${jboss.lib}">
+        <!-- sync this list with the ${nuxeo.ear.root} POM dependencies -->
         <include name="nuxeo-runtime-jboss-extensions-*.jar" />
         <include name="nuxeo-common-*.jar" />
+        <include name="nuxeo-core-storage-sql-extensions-*.jar" />
+        <include name="derby-*.jar" />
+        <include name="h2-*.jar" />
+        <include name="lucene-core-*.jar" />
+        <include name="lucene-analyzers-*.jar" />
       </fileset>
     </delete>
   </target>

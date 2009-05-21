@@ -339,6 +339,10 @@
               <groupId>org.apache.lucene</groupId>
               <artifactId>lucene-core</artifactId>
             </artifactItem>
+            <artifactItem>
+              <groupId>org.apache.lucene</groupId>
+              <artifactId>lucene-analyzers</artifactId>
+            </artifactItem>
           </artifactItems>
         </configuration>
         <executions>
