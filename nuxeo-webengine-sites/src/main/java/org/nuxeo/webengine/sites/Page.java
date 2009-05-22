@@ -110,7 +110,7 @@ public class Page extends DocumentObject {
             throw WebException.wrap(e);
         }
     }
-    
+
 
     @POST
     @Path("createWebPage")
@@ -162,7 +162,7 @@ public class Page extends DocumentObject {
             throw WebException.wrap(e);
         }
     }
-    
+
     @POST
     @Path("addTag")
     public Object addTag() {
@@ -174,12 +174,21 @@ public class Page extends DocumentObject {
             TagService tagService = Framework.getService(TagService.class);
 
             if (tagService != null) {
-                DocumentModel tagDocument = tagService.getOrCreateTag(
-                        tagService.getRootTag("default"), tagLabel, false,
-                        session.getPrincipal().getName());
-                tagService.addTagging(doc, tagDocument,
-                        session.getPrincipal().getName(), false);
+                // Insert multiple tags if separated by commas
+                String[] tagLabelArray = tagLabel.split(",");
+
+                for (int i = 0; i < tagLabelArray.length; i ++) {
+                    String currentTagLabel = tagLabelArray[i].trim();
+                    if (currentTagLabel.length() > 0) {
+                        DocumentModel tagDocument = tagService.getOrCreateTag(
+                                tagService.getRootTag("default"), currentTagLabel, false,
+                                session.getPrincipal().getName());
+                        tagService.addTagging(doc, tagDocument,
+                                session.getPrincipal().getName(), false);
+                    }
+                }
             }
+
             String path = SiteUtils.getPagePath(
                     SiteUtils.getFirstWebSiteParent(session, doc), doc);
             return redirect(path);
