@@ -29,14 +29,14 @@ public final class AreaFragment extends AbstractFragment {
     @FieldInfo(type = "selection", label = "decoration", source = "web widget decorations", description = "The panel and widget decoration.", required = true)
     public String decoration = "default";
 
-    @FieldInfo(type = "string", label = "maximum number of widgets", description = "The maximum number of widgets allowed in this area.")
-    public String maxItems = "";
+    @FieldInfo(type = "integer", label = "maximum number of widgets", description = "The maximum number of widgets allowed in this area.")
+    public Integer maxItems;
 
     public AreaFragment() {
     }
 
     public AreaFragment(String name, String provider, String decoration,
-            String maxItems) {
+            Integer maxItems) {
         this.name = name;
         this.provider = provider;
         this.decoration = decoration;
@@ -60,7 +60,7 @@ public final class AreaFragment extends AbstractFragment {
         return decoration;
     }
 
-    public String getMaxItems() {
+    public Integer getMaxItems() {
         return maxItems;
     }
 }

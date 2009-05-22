@@ -133,8 +133,8 @@ public class Manager {
                     + providerName);
         }
 
-        String maxItems = areaFragment.getMaxItems();
-        if (!"".equals(maxItems)) {
+        Integer maxItems = areaFragment.getMaxItems();
+        if (maxItems != null) {
             if (provider.getWidgets(areaFragment.getRegionName()).size() >= Integer.valueOf(maxItems)) {
                 throw new WidgetException(String.format(
                         "Max %s item(s) are allowed.", maxItems));
@@ -164,8 +164,8 @@ public class Manager {
                     "Source or destination region is undefined.");
         }
         
-        String maxItems = destAreaFragment.getMaxItems();
-        if (!"".equals(maxItems)) {
+        Integer maxItems = destAreaFragment.getMaxItems();
+        if (maxItems != null) {
             if (destProvider.getWidgets(destAreaFragment.getRegionName()).size() >= Integer.valueOf(maxItems)) {
                 throw new WidgetException(String.format(
                         "Max %s item(s) are allowed.", maxItems));
