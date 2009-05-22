@@ -22,7 +22,6 @@
     <module>nuxeo-dam-api</module>
     <module>nuxeo-dam-core</module>
     <module>nuxeo-dam-facade</module>
-    <module>nuxeo-dam-test</module>
     <module>nuxeo-dam-webapp-core</module>
     <module>nuxeo-dam-webapp</module>
     <module>nuxeo-dam-ear</module>
