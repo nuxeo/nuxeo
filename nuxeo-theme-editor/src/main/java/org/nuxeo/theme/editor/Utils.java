@@ -19,19 +19,16 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.theme.elements.Element;
 import org.nuxeo.theme.properties.FieldIO;
 import org.nuxeo.theme.properties.FieldInfo;
+import org.nuxeo.theme.themes.ThemeIOException;
 
 public class Utils {
 
-    private static FieldInfo getFieldInfo(Class<?> c, String name) {
-        try {
-            return c.getField(name).getAnnotation(FieldInfo.class);
-        } catch (Exception e) {
-        }
-        return null;
-    }
+    private static final Log log = LogFactory.getLog(Utils.class);
 
     public static List<FieldProperty> getPropertiesOf(final Element element) {
         List<FieldProperty> fieldProperties = new ArrayList<FieldProperty>();
@@ -41,19 +38,24 @@ public class Utils {
         Properties properties = new Properties();
         try {
             properties = FieldIO.dumpFieldsToProperties(element);
-        } catch (Exception e) {
+        } catch (ThemeIOException e) {
+            log.error("Failed to obtain properties of element: "
+                    + element.computeXPath(), e);
             return fieldProperties;
         }
         if (properties == null) {
             return fieldProperties;
         }
         Class<? extends Element> c = element.getClass();
-       Enumeration<?> names = properties.propertyNames();
+        Enumeration<?> names = properties.propertyNames();
         while (names.hasMoreElements()) {
             String name = (String) names.nextElement();
             String value = properties.getProperty(name);
-            fieldProperties.add(new FieldProperty(name, value.trim(),
-                    getFieldInfo(c, name)));
+            FieldInfo fieldInfo = FieldIO.getFieldInfo(c, name);
+            if (fieldInfo == null) {
+                continue;
+            }
+            fieldProperties.add(new FieldProperty(name, value.trim(), fieldInfo));
         }
         return fieldProperties;
     }

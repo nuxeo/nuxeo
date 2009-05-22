@@ -16,11 +16,15 @@ package org.nuxeo.theme.editor;
 
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.properties.FieldInfo;
 import org.nuxeo.theme.vocabularies.VocabularyItem;
 
 public class FieldProperty {
+    private static final Log log = LogFactory.getLog(FieldProperty.class);
+
     private final String name;
 
     private final String value;
@@ -45,11 +49,11 @@ public class FieldProperty {
         final StringBuilder rendered = new StringBuilder();
 
         // label
-        final String label = info == null ? name : info.label();
+        final String label = info.label();
         rendered.append("<label>").append(label);
 
         // description
-        final String description = info == null ? "" : info.description();
+        final String description = info.description();
         if (!"".equals(description)) {
             rendered.append(String.format(
                     "<span class=\"description\">%s</span>", description));
@@ -57,16 +61,27 @@ public class FieldProperty {
         rendered.append("</label>");
 
         // widget
-        final String type = info == null ? "" : info.type();
+        final String type = info.type();
         if ("text area".equals(type)) {
             rendered.append(String.format(
                     "<textarea name=\"%s\" class=\"fieldInput\">%s</textarea>",
                     name, value));
 
-        } else if ("string".equals(type)) {
+        } else if ("string".equals(type) || "integer".equals(type)) {
             rendered.append(String.format(
                     "<input type=\"text\" class=\"textInput fieldInput\" name=\"%s\" value=\"%s\" />",
                     name, value));
+
+        } else if ("boolean".equals(type)) {
+            if (Boolean.parseBoolean(value)) {
+                rendered.append(String.format(
+                        "<input type=\"checkbox\" class=\"fieldInput\" name=\"%s\" checked=\"checked\" />",
+                        name));
+            } else {
+                rendered.append(String.format(
+                        "<input type=\"checkbox\" class=\"fieldInput\" name=\"%s\" />",
+                        name));
+            }
 
         } else if ("selection".equals(type)) {
             String source = info.source();
@@ -97,6 +112,8 @@ public class FieldProperty {
                     rendered.append("</select>");
                 }
             }
+        } else {
+            log.error("Unknown field type: " + type);
         }
 
         if (info.required() && value.equals("")) {
