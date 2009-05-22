@@ -60,6 +60,7 @@ public class Launcher implements Runnable {
         File home = File.createTempFile("nuxeo-", ".tmp");
         home.delete();
         home.mkdirs();
+        home.deleteOnExit();
         return home;
     }
 
