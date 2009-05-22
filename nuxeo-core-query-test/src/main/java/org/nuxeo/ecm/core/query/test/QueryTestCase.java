@@ -53,6 +53,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 /**
  * @author Dragos Mihalache
  * @author Florent Guillaume
+ * @author Benjamin Jalon
  */
 public abstract class QueryTestCase extends NXRuntimeTestCase {
 
@@ -127,7 +128,7 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
 
     /**
      * Creates the following structure of documents:
-     *
+     * 
      * <pre>
      *  root (UUID_1)
      *  |- testfolder1 (UUID_2)
@@ -1138,6 +1139,32 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
 
         dml = session.query(query);
         assertIdSet(dml, file1.getId(), copy.getId());
+    }
+
+    public void testOrderByAndDistinct() throws Exception {
+        createDocs();
+
+        String query;
+        DocumentModelList dml;
+
+        DocumentModel file1 = session.getDocument(new PathRef(
+                "/testfolder1/testfile1"));
+        file1.setProperty("dublincore", "title", "hello world 1");
+
+        session.saveDocument(file1);
+        session.save();
+
+        sleepForFulltext();
+
+        query = "SELECT * FROM File Where dc:title = 'hello world 1' ORDER BY ecm:currentLifeCycleState";
+
+        dml = session.query(query);
+
+        assertIdSet(dml, file1.getId());
+        query = "SELECT * FROM File Where dc:title = 'hello world 1' ORDER BY ecm:versionLabel";
+
+        dml = session.query(query);
+        assertIdSet(dml, file1.getId());
     }
 
 }
