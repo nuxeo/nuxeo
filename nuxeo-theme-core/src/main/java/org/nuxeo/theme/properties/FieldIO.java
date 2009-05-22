@@ -32,6 +32,16 @@ public class FieldIO {
 
     private static final Log log = LogFactory.getLog(FieldIO.class);
 
+    public static FieldInfo getFieldInfo(Class<?> c, String name) {
+        try {
+            return c.getField(name).getAnnotation(FieldInfo.class);
+        } catch (SecurityException e) {
+            return null;
+        } catch (NoSuchFieldException e) {
+            return null;
+        }
+    }
+
     public static void updateFieldsFromProperties(Object object,
             Properties properties) throws ThemeIOException {
         Enumeration<?> names = properties.propertyNames();
@@ -41,6 +51,12 @@ public class FieldIO {
             String value = properties.getProperty(name);
 
             Class<?> c = object.getClass();
+
+            FieldInfo fieldInfo = getFieldInfo(c, name);
+            if (fieldInfo == null) {
+                continue;
+            }
+
             Field field;
             try {
                 field = c.getField(name);
@@ -51,6 +67,7 @@ public class FieldIO {
                         + c.getCanonicalName());
                 continue;
             }
+
             Class<?> fieldType = field.getType();
             Type fieldGenericType = field.getGenericType();
 
@@ -58,30 +75,45 @@ public class FieldIO {
             if (fieldType.equals(boolean.class)
                     || fieldType.equals(Boolean.class)) {
                 try {
-                    field.setBoolean(object, Boolean.parseBoolean(value));
+                    field.set(object, Boolean.parseBoolean(value));
                 } catch (IllegalArgumentException e) {
                     throw new ThemeIOException(e);
                 } catch (IllegalAccessException e) {
                     throw new ThemeIOException(e);
                 }
-                continue;
             }
 
             // string fields
-            if (fieldType.equals(String.class)) {
+            else if (fieldType.equals(String.class)) {
                 try {
                     field.set(object, value);
                 } catch (IllegalArgumentException e) {
-                    // TODO Auto-generated catch block
                     throw new ThemeIOException(e);
                 } catch (IllegalAccessException e) {
                     throw new ThemeIOException(e);
                 }
-                continue;
+            }
+
+            // integer fields
+            else if (fieldType.equals(int.class)
+                    || fieldType.equals(Integer.class)) {
+                try {
+                    if ("".equals(value)) {
+                        field.set(object, null);
+                    } else {
+                        field.set(object, Integer.valueOf(value));
+                    }
+                } catch (NumberFormatException e) {
+                    log.warn("Failed to parse integer value: '" + value + "'");
+                } catch (IllegalArgumentException e) {
+                    throw new ThemeIOException(e);
+                } catch (IllegalAccessException e) {
+                    throw new ThemeIOException(e);
+                }
             }
 
             // generics
-            if (fieldGenericType instanceof ParameterizedType) {
+            else if (fieldGenericType instanceof ParameterizedType) {
                 if (fieldType.equals(ArrayList.class)
                         || fieldType.equals(List.class)
                         || fieldType.equals(Collection.class)) {
@@ -107,16 +139,16 @@ public class FieldIO {
                         continue;
                     }
                 }
+            } else {
+                log.warn("Field type '" + name + "' of " + c.getCanonicalName()
+                        + " is not supported: " + fieldType.getCanonicalName());
             }
-
-            log.warn("Field type not supported: "
-                    + fieldType.getCanonicalName());
         }
 
     }
 
     public static Properties dumpFieldsToProperties(Object object)
-            throws Exception {
+            throws ThemeIOException {
 
         Properties properties = new Properties();
 
@@ -125,20 +157,43 @@ public class FieldIO {
             Class<?> fieldType = field.getType();
             String fieldName = field.getName();
 
-            // boolean fields
-            if (fieldType.equals(boolean.class)
-                    || fieldType.equals(Boolean.class)) {
-                String value = field.getBoolean(object) ? "true" : "false";
-                properties.setProperty(fieldName, value);
+            FieldInfo fieldInfo = getFieldInfo(c, fieldName);
+            if (fieldInfo == null) {
                 continue;
             }
 
+            String value;
+            String property = "";
+            try {
+                Object v = field.get(object);
+                value = v == null ? "" : v.toString();
+            } catch (IllegalAccessException e) {
+                throw new ThemeIOException(e);
+            } catch (IllegalArgumentException e) {
+                throw new ThemeIOException(e);
+            }
+            // boolean fields
+            if (fieldType.equals(boolean.class)
+                    || fieldType.equals(Boolean.class)) {
+                property = Boolean.parseBoolean(value.toString()) ? "true"
+                        : "false";
+            }
             // string fields
-            if (fieldType.equals(String.class)) {
-                Object value = field.get(object);
-                properties.setProperty(fieldName, (String) value);
+            else if (fieldType.equals(String.class)) {
+                property = value;
+            }
+            // integer fields
+            else if (fieldType.equals(int.class)
+                    || fieldType.equals(Integer.class)) {
+                property = value;
+            } else {
+                log.warn("Field type '" + fieldName + "' of "
+                        + c.getCanonicalName() + " is not supported: "
+                        + fieldType.getCanonicalName());
                 continue;
             }
+
+            properties.setProperty(fieldName, property);
 
         }
         return properties;

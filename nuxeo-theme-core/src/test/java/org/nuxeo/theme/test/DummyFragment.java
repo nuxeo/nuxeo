@@ -17,11 +17,14 @@ package org.nuxeo.theme.test;
 import org.nuxeo.theme.fragments.AbstractFragment;
 import org.nuxeo.theme.models.Model;
 import org.nuxeo.theme.models.ModelException;
+import org.nuxeo.theme.properties.FieldInfo;
 
 public final class DummyFragment extends AbstractFragment {
 
+    @FieldInfo
     public String field1 = "";
 
+    @FieldInfo
     public String field2 = "";
 
     @Override

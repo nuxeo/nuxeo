@@ -47,6 +47,35 @@ public class TestFieldIO extends TestCase {
         properties.setProperty("selected", "false");
         FieldIO.updateFieldsFromProperties(object, properties);
         assertFalse(object.selected);
+        
+        properties.setProperty("booleanClass", "true");
+        FieldIO.updateFieldsFromProperties(object, properties);
+        assertTrue(object.booleanClass);
+
+        properties.setProperty("booleanClass", "false");
+        FieldIO.updateFieldsFromProperties(object, properties);
+        assertFalse(object.booleanClass);
+    }
+    
+    public void testUpdateIntegerFieldsFromProperties() throws Exception {
+        Properties properties = new Properties();
+        properties.setProperty("maxItems", "2");
+
+        DummyObject object = new DummyObject();
+        FieldIO.updateFieldsFromProperties(object, properties);
+        assertTrue(object.maxItems == 2);
+
+        properties.setProperty("maxItems", "3");
+        FieldIO.updateFieldsFromProperties(object, properties);
+        assertTrue(object.maxItems == 3);
+        
+        properties.setProperty("integerClass", "2");
+        FieldIO.updateFieldsFromProperties(object, properties);
+        assertTrue(object.integerClass == 2);
+
+        properties.setProperty("integerClass", "3");
+        FieldIO.updateFieldsFromProperties(object, properties);
+        assertTrue(object.integerClass == 3);
     }
 
     public void testUpdateListFieldsFromProperties() throws Exception {

@@ -17,14 +17,29 @@ package org.nuxeo.theme.test;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.nuxeo.theme.properties.FieldInfo;
+
 public class DummyObject {
 
+    @FieldInfo
     public String width = "";
 
+    @FieldInfo
     public String height = "";
 
+    @FieldInfo
     public boolean selected = false;
 
+    @FieldInfo
+    public Boolean booleanClass = false;
+    
+    @FieldInfo
+    public int maxItems;
+    
+    @FieldInfo
+    public Integer integerClass;
+    
+    @FieldInfo
     public List<String> stringSequence = new ArrayList<String>();
 
 }
