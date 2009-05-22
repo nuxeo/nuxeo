@@ -12,3 +12,8 @@ target
 .DS_Store
 *.gpd.*
 *cpJar*
+build.properties
+nuxeo-dam-selenium/result-*.html
+nuxeo-dam-selenium/run.conf
+nuxeo-dam-selenium/user-extensions.js
+nuxeo-dam-selenium/ffprofile/prefs.js
