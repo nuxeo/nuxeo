@@ -133,11 +133,23 @@ public class Manager {
                     + providerName);
         }
 
+        List<Widget> widgets = provider.getWidgets(areaFragment.getRegionName());
+
         Integer maxItems = areaFragment.getMaxItems();
-        if (maxItems != null) {
-            if (provider.getWidgets(areaFragment.getRegionName()).size() >= Integer.valueOf(maxItems)) {
+        if (maxItems != null && maxItems > 0) {
+            if (widgets.size() >= maxItems) {
                 throw new WidgetException(String.format(
-                        "Max %s item(s) are allowed.", maxItems));
+                        "At most %s widget(s) are allowed.", maxItems));
+            }
+        }
+
+        Boolean disallowDuplicates = areaFragment.getDisallowDuplicates();
+        if (disallowDuplicates) {
+            for (Widget w : widgets) {
+                if (widgetTypeName.equals(w.getName())) {
+                    throw new WidgetException(String.format(
+                            "Only one '%s' widget is allowed.", widgetTypeName));
+                }
             }
         }
 
@@ -163,16 +175,31 @@ public class Manager {
             throw new WidgetException(
                     "Source or destination region is undefined.");
         }
-        
-        Integer maxItems = destAreaFragment.getMaxItems();
-        if (maxItems != null) {
-            if (destProvider.getWidgets(destAreaFragment.getRegionName()).size() >= Integer.valueOf(maxItems)) {
-                throw new WidgetException(String.format(
-                        "Max %s item(s) are allowed.", maxItems));
+
+        Widget srcWidget = srcProvider.getWidgetByUid(srcUid);
+
+        if (!destRegionName.equals(srcRegionName)) {
+            List<Widget> widgets = destProvider.getWidgets(destAreaFragment.getRegionName());
+            Integer maxItems = destAreaFragment.getMaxItems();
+            if (maxItems != null) {
+                if (widgets.size() >= maxItems) {
+                    throw new WidgetException(String.format(
+                            "Max %s item(s) are allowed.", maxItems));
+                }
+            }
+            Boolean disallowDuplicates = destAreaFragment.getDisallowDuplicates();
+            if (disallowDuplicates) {
+                String widgetTypeName = srcWidget.getName();
+                for (Widget w : widgets) {
+                    if (widgetTypeName.equals(w.getName())) {
+                        throw new WidgetException(String.format(
+                                "Only one '%s' widget is allowed.",
+                                widgetTypeName));
+                    }
+                }
             }
         }
 
-        Widget srcWidget = srcProvider.getWidgetByUid(srcUid);
         String newId = srcWidget.getUid();
 
         // The destination provider is the same as the source provider

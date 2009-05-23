@@ -32,15 +32,19 @@ public final class AreaFragment extends AbstractFragment {
     @FieldInfo(type = "integer", label = "maximum number of widgets", description = "The maximum number of widgets allowed in this area.")
     public Integer maxItems;
 
+    @FieldInfo(type = "boolean", label = "Disallow duplicates", description = "Do not allow more than one widget of the same type in this area.")
+    public Boolean disallowDuplicates;
+
     public AreaFragment() {
     }
 
     public AreaFragment(String name, String provider, String decoration,
-            Integer maxItems) {
+            Integer maxItems, Boolean disallowDuplicates) {
         this.name = name;
         this.provider = provider;
         this.decoration = decoration;
         this.maxItems = maxItems;
+        this.disallowDuplicates = disallowDuplicates;
     }
 
     @Override
@@ -48,6 +52,7 @@ public final class AreaFragment extends AbstractFragment {
         return new RegionModel(name, provider, decoration);
     }
 
+    // Model
     public String getProviderName() {
         return provider;
     }
@@ -60,7 +65,12 @@ public final class AreaFragment extends AbstractFragment {
         return decoration;
     }
 
+    // Extra options
     public Integer getMaxItems() {
         return maxItems;
+    }
+    
+    public Boolean getDisallowDuplicates() {
+        return disallowDuplicates;
     }
 }
