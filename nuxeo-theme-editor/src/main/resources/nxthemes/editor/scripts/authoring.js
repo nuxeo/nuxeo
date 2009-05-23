@@ -212,7 +212,10 @@ NXThemesEditor.updateElementProperties = function(info) {
         if (name == "id") {
           id = value;
         } else {
-          propertyMap.set(i.name, value);
+            if (i.type == 'checkbox') {
+                value = value == 'on' ? "true" : "false";
+            }
+        	propertyMap.set(i.name, value);
         }
     });
     var url = nxthemesBasePath + "/nxthemes-editor/update_element_properties"; 
