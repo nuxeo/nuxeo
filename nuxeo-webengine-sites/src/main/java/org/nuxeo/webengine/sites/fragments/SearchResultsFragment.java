@@ -22,6 +22,7 @@ import static org.nuxeo.webengine.sites.utils.SiteConstants.TAG_DOCUMENT;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
@@ -40,7 +41,7 @@ import org.nuxeo.webengine.sites.models.SearchListModel;
 import org.nuxeo.webengine.sites.models.SearchModel;
 import org.nuxeo.webengine.sites.utils.SiteQueriesColection;
 import org.nuxeo.webengine.sites.utils.SiteUtils;
-import org.nuxeo.ecm.platform.tag.api.TagService;
+import org.nuxeo.ecm.platform.tag.TagService;
 
 /**
  * Action fragment for initializing the fragment :
@@ -100,9 +101,9 @@ public class SearchResultsFragment extends AbstractFragment {
 
                 if (StringUtils.isEmpty(searchParam)
                         && StringUtils.isNotEmpty(tagDocumentId)) {
-                    Map<String, String> docsForTag = tagService.listDocumentsForTag(
+                    List<String> docsForTag = tagService.listDocumentsForTag(
                             tagDocumentId, session.getPrincipal().getName());
-                    for (String docForTagId : docsForTag.keySet()) {
+                    for (String docForTagId : docsForTag) {
                         results.add(session.getDocument(new IdRef(docForTagId)));
                     }
                 }

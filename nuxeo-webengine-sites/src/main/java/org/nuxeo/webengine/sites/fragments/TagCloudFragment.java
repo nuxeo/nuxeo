@@ -15,11 +15,12 @@
 
 package org.nuxeo.webengine.sites.fragments;
 
+import java.util.List;
+
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.tag.api.TagCloud;
-import org.nuxeo.ecm.platform.tag.api.TagService;
-import org.nuxeo.ecm.platform.tag.api.WeightedTag;
+import org.nuxeo.ecm.platform.tag.TagService;
+import org.nuxeo.ecm.platform.tag.WeightedTag;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.runtime.api.Framework;
@@ -58,14 +59,13 @@ public class TagCloudFragment extends AbstractFragment {
                 DocumentModel siteDocument = SiteUtils.getFirstWebSiteParent(
                         session, documentModel);
                 TagCloudModel tagCloudModel = null;
-                TagCloud tagCloud = tagService.getPopularCloud(siteDocument,
-                        session.getPrincipal().getName());
-                if (tagCloud != null && !tagCloud.getListTags().isEmpty()) {
-                    for (WeightedTag weightedTag : tagCloud.getListTags()) {
+                List<WeightedTag>tagCloud = tagService.getPopularCloud(siteDocument);
+                if (tagCloud != null && !tagCloud.isEmpty()) {
+                    for (WeightedTag weightedTag : tagCloud) {
                         tagCloudModel = new TagCloudModel(
-                                weightedTag.getTagLabel(),
-                                weightedTag.getDocRef(),
-                                weightedTag.getWeight());
+                                weightedTag.tagLabel,
+                                weightedTag.tagId,
+                                weightedTag.weight);
                         model.addItem(tagCloudModel);
                     }
                 }

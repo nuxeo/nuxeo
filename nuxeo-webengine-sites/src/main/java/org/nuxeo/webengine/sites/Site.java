@@ -41,7 +41,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.rest.DocumentObject;
-import org.nuxeo.ecm.platform.tag.api.TagService;
+import org.nuxeo.ecm.platform.tag.TagService;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebContext;
@@ -194,10 +194,8 @@ public class Site extends DocumentObject {
                     String currentTagLabel = tagLabelArray[i].trim();
                     if (currentTagLabel.length() > 0) {
                         DocumentModel tagDocument = tagService.getOrCreateTag(
-                                tagService.getRootTag("default"), currentTagLabel, false,
-                                session.getPrincipal().getName());
-                        tagService.addTagging(doc, tagDocument,
-                                session.getPrincipal().getName(), false);
+                                tagService.getRootTag(session), currentTagLabel, false);
+                        tagService.tagDocument(doc, tagDocument.getId(), false);
                     }
                 }
             }
