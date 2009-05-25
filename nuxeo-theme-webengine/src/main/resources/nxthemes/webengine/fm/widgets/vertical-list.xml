@@ -1,6 +1,8 @@
 <div>
+<#assign items=nxthemesInfo.model.items>
+<#if items>
 <ul>
-  <#list nxthemesInfo.model.items as item>
+  <#list items as item>
     <li>
       <#if item.selected>
         <a class="selected" href="${item.url}">${item.title}</a>
@@ -10,4 +12,5 @@
     </li>
   </#list>
 </ul>
+</#if>
 </div>

@@ -1,6 +1,8 @@
 <div>
+<#assign items=nxthemesInfo.model.items>
+<#if items>
 <ul>
-  <#list nxthemesInfo.model.items as item>
+  <#list items as item>
     <li>
       <#if item.icon>
         <img src="${item.icon}" />
@@ -13,4 +15,5 @@
     </li>
   </#list>
 </ul>
+</#if>
 </div>
