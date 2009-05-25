@@ -108,6 +108,13 @@
           </cell>
         </cell>
       </section>
+      <section>
+        <cell/>
+        <cell/>
+        <cell>
+          <fragment type="generic fragment"/>
+        </cell>
+      </section>
     </page>
   </layout>
   <properties element="page[1]/section[1]/cell[1]/fragment[1]">
@@ -285,6 +292,21 @@
       <padding>10px 20px</padding>
     </layout>
     <layout element="page[4]/section[2]/cell[3]">
+      <width>18%</width>
+      <padding>10px</padding>
+    </layout>
+    <layout element="page[4]/section[3]">
+      <width>100%</width>
+    </layout>
+    <layout element="page[4]/section[3]/cell[1]">
+      <width>18%</width>
+      <padding>8px</padding>
+    </layout>
+    <layout element="page[4]/section[3]/cell[2]">
+      <width>64%</width>
+      <padding>10px 20px</padding>
+    </layout>
+    <layout element="page[4]/section[3]/cell[3]">
       <width>18%</width>
       <padding>10px</padding>
     </layout>
@@ -489,6 +511,21 @@
     </widget>
     <widget element="page[4]/section[2]/cell[2]/fragment[1]">
       <view>Search Results</view>
+    </widget>
+    <widget element="page[4]/section[3]">
+      <view>section frame</view>
+    </widget>
+    <widget element="page[4]/section[3]/cell[1]">
+      <view>cell frame</view>
+    </widget>
+    <widget element="page[4]/section[3]/cell[2]">
+      <view>cell frame</view>
+    </widget>
+    <widget element="page[4]/section[3]/cell[3]">
+      <view>cell frame</view>
+    </widget>
+    <widget element="page[4]/section[3]/cell[3]/fragment[1]">
+      <view>Minisite Email</view>
     </widget>
     <widget element="page[2]/section[2]/cell[3]/fragment[1]">
       <view>Tags</view>
@@ -1118,5 +1155,27 @@
       </selector>
     </style>
     <style element="page[4]/section[2]/cell[3]" inherit="common site style"/>
+    <style element="page[4]/section[3]" inherit="common site style">
+      <selector path="" view="section frame">
+        <background-color>#fff</background-color>
+        <border-color>#fff</border-color>
+        <border-width>2px 5px 5px 5px</border-width>
+        <border-style>solid</border-style>
+      </selector>
+    </style>
+    <style element="page[4]/section[3]/cell[1]" inherit="common site style">
+      <selector path="" view="cell frame">
+        <background-color>#ffeab9</background-color>
+      </selector>
+      <selector path="h4" view="cell frame">
+        <background-color>#FFD573</background-color>
+      </selector>
+    </style>
+    <style element="page[4]/section[3]/cell[2]" inherit="common site style">
+      <selector path="" view="cell frame">
+        <border-right>2px solid #e7e7e7</border-right>
+      </selector>
+    </style>
+    <style element="page[4]/section[3]/cell[3]" inherit="common site style"/>
   </formats>
 </theme>
