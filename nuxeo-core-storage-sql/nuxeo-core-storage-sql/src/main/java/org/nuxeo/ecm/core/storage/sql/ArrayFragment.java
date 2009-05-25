@@ -22,7 +22,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.nuxeo.ecm.core.storage.StorageException;
@@ -79,8 +78,33 @@ public class ArrayFragment extends CollectionFragment {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + '(' + getTableName() + ", id=" +
-                getId() + ", " + Arrays.asList(array) + ')';
+        StringBuilder buf = new StringBuilder();
+        buf.append(getClass().getSimpleName());
+        buf.append('(');
+        buf.append(getTableName());
+        buf.append(", id=");
+        buf.append(getId());
+        buf.append(", state=");
+        buf.append(getState());
+        buf.append(", ");
+        buf.append('[');
+        for (int i=0; i < array.length; i++) {
+            if (i > 0) {
+                buf.append(", ");
+            }
+            Serializable value = array[i];
+            boolean truncated = false;
+            if (value instanceof String && ((String) value).length() > 100) {
+                value = ((String) value).substring(0, 100);
+                truncated = true;
+            }
+            buf.append(value);
+            if (truncated) {
+                buf.append("...");
+            }
+        }
+        buf.append("])");
+        return buf.toString();
     }
 
     protected static final CollectionMaker MAKER = new CollectionMaker() {
