@@ -30,7 +30,6 @@
         <cell>
           <fragment type="tags fragment"/>
           <fragment type="contextual links fragment"/>
-          <fragment type="generic fragment"/>
         </cell>
       </section>
       <section>
@@ -43,7 +42,9 @@
         <cell>
           <fragment type="minisite last comments fragment"/>
         </cell>
-        <cell/>
+        <cell>
+          <fragment type="generic fragment"/>
+        </cell>
       </section>
     </page>
     <page name="page">
@@ -73,6 +74,13 @@
         <cell>
           <fragment type="tags fragment"/>
           <fragment type="contextual links fragment"/>
+        </cell>
+      </section>
+      <section>
+        <cell/>
+        <cell/>
+        <cell/>
+        <cell>
           <fragment type="generic fragment"/>
         </cell>
       </section>
@@ -228,6 +236,26 @@
       <width>18%</width>
       <padding>10px</padding>
     </layout>
+    <layout element="page[3]/section[3]">
+      <width>100%</width>
+    </layout>
+    <layout element="page[3]/section[3]/cell[1]">
+      <width>18%</width>
+      <padding>8px</padding>
+    </layout>
+    <layout element="page[3]/section[3]/cell[2]">
+      <width>32%</width>
+      <padding>20px 20px 10px</padding>
+    </layout>
+    <layout element="page[3]/section[3]/cell[3]">
+      <width>32%</width>
+      <padding>20px 20px 10px</padding>
+    </layout>
+    <layout element="page[3]/section[3]/cell[4]">
+      <width>18%</width>
+      <padding>10px</padding>
+    </layout>
+    
     <layout element="page[4]">
       <width>970px</width>
       <margin>25px auto</margin>
@@ -294,9 +322,6 @@
     <widget element="page[2]/section[1]/cell[2]/fragment[1]">
       <view>Minisite Search</view>
     </widget>
-    <widget element="page[2]/section[1]/cell[2]/fragment[2]">
-      <view>Minisite Email</view>
-    </widget>
     <widget element="page[2]/section[2]">
       <view>section frame</view>
     </widget>
@@ -345,6 +370,9 @@
     <widget element="page[2]/section[3]/cell[4]">
       <view>cell frame</view>
     </widget>
+    <widget element="page[2]/section[3]/cell[4]/fragment[1]">
+      <view>Minisite Email</view>
+    </widget>
     <widget element="page[3]">
       <view>page frame</view>
     </widget>
@@ -362,9 +390,6 @@
     </widget>
     <widget element="page[3]/section[1]/cell[2]/fragment[1]">
       <view>Minisite Search</view>
-    </widget>
-    <widget element="page[3]/section[1]/cell[2]/fragment[2]">
-      <view>Minisite Email</view>
     </widget>
     <widget element="page[3]/section[2]">
       <view>section frame</view>
@@ -408,6 +433,24 @@
     <widget element="page[3]/section[2]/cell[3]/fragment[3]">
       <view>Minisite Buttons</view>
     </widget>
+    <widget element="page[3]/section[3]">
+      <view>section frame</view>
+    </widget>
+    <widget element="page[3]/section[3]/cell[1]">
+      <view>cell frame</view>
+    </widget>
+    <widget element="page[3]/section[3]/cell[2]">
+      <view>cell frame</view>
+    </widget>
+    <widget element="page[3]/section[3]/cell[3]">
+      <view>cell frame</view>
+    </widget>
+    <widget element="page[3]/section[3]/cell[4]">
+      <view>cell frame</view>
+    </widget>
+    <widget element="page[3]/section[3]/cell[4]/fragment[1]">
+      <view>Minisite Email</view>
+    </widget>
     <widget element="page[4]">
       <view>page frame</view>
     </widget>
@@ -428,9 +471,6 @@
     </widget>
     <widget element="page[4]/section[1]/cell[2]/fragment[1]">
       <view>Minisite Search</view>
-    </widget>
-    <widget element="page[4]/section[1]/cell[2]/fragment[2]">
-      <view>Minisite Email</view>
     </widget>
     <widget element="page[4]/section[2]">
       <view>section frame</view>
@@ -1025,6 +1065,22 @@
       </selector>
     </style>
     <style element="page[3]/section[2]/cell[3]" inherit="common site style"/>
+    <style element="page[3]/section[3]" inherit="common site style">
+        <selector path="" view="section frame">
+        <background-color>#fff</background-color>
+        <border-color>#fff</border-color>
+        <border-width>2px 5px 0px 5px</border-width>
+        <border-style>solid</border-style>
+      </selector>
+    </style>
+    <style element="page[3]/section[3]/cell[1]" inherit="common site style">
+      <selector path="" view="cell frame">
+        <background-color>#ffeab9</background-color>
+      </selector>
+    </style>
+    <style element="page[3]/section[3]/cell[2]" inherit="common site style"/>
+    <style element="page[3]/section[3]/cell[3]" inherit="common site style"/>
+    <style element="page[3]/section[3]/cell[4]" inherit="common site style"/>
     <style element="page[4]" inherit="common site style">
       <selector path="" view="page frame">
         <background>#3c84af url(/nuxeo/img/minisite_background.gif) top left repeat-x</background>
