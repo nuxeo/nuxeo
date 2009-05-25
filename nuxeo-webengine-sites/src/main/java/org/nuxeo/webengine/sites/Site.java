@@ -218,8 +218,8 @@ public class Site extends DocumentObject {
         Map<String, Object> root = new HashMap<String, Object>();
         root.put(PAGE_NAME, SiteUtils.getString(doc, WEBCONTAINER_NAME, null));
         root.put(SITE_DESCRIPTION, SiteUtils.getString(doc, WEBCONTAINER_BASELINE, null));
-        root.put(EMAIL, "mailto:"+SiteUtils.getUserEmail(doc.getPropertyValue(
-                "dc:creator").toString()));
+        root.put(EMAIL, "mailto:"+doc.getPropertyValue(
+                WEBCONTAINER_EMAIL).toString());
         return root;
     }
 

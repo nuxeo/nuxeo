@@ -212,8 +212,8 @@ public class Page extends DocumentObject {
                 WEBCONTAINER_BASELINE, null));
         root.put(EMAIL,
                 "mailto:"
-                        + SiteUtils.getUserEmail(ws.getPropertyValue(
-                                "dc:creator").toString()));
+                        +ws.getPropertyValue(
+                                WEBCONTAINER_EMAIL).toString());
         MimetypeRegistry mimetypeService = Framework.getService(MimetypeRegistry.class);
         root.put("mimetypeService", mimetypeService);
         return root;

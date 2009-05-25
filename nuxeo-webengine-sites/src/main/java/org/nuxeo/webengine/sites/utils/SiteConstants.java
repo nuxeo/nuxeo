@@ -45,11 +45,13 @@ public final class SiteConstants {
     public static final String WEBCONTAINER_LOGO = "webc:logo";
     public static final String WEBCONTAINER_MODERATION = "webcontainer:moderationType";
     public static final String WEBCONTAINER_BASELINE = "webcontainer:baseline";
+    public static final String WEBCONTAINER_EMAIL = "webc:email";
     public static final String WEBPAGE_THEME = "webp:theme";
     public static final String WEBPAGE_THEMEPAGE = "webp:themePage";
     public static final String WEBPAGE_EDITOR = "webp:isRichtext";
     public static final String WEBPAGE_PUSHTOMENU = "webp:pushtomenu";
     public static final String WEBPAGE_CONTENT = "webp:content";
+    
 
     /**
      * Arguments in FreeMarker
