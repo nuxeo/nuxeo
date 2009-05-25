@@ -53,6 +53,14 @@
       </modules>
     </profile>
     <profile>
+      <id>nuxeo-dm-jboss</id>
+      <modules>
+        <module>nuxeo-platform-ear</module>
+        <module>nuxeo-distribution-dm</module>
+        <module>nuxeo-distribution-jboss</module>
+      </modules>
+    </profile>
+    <profile>
       <id>shell</id>
       <modules>
         <module>nuxeo-distribution-base</module>

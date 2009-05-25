@@ -19,6 +19,18 @@
     <application.version>${version}</application.version>
   </properties>
 
+  <profiles>
+    <profile>
+      <id>nuxeo-dm-jboss</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+    </profile>
+    <profile>
+      <id>nuxeo-ep-jboss</id>
+    </profile>
+  </profiles>
+
   <dependencyManagement>
     <dependencies>
       <dependency>
@@ -82,8 +94,8 @@
                   todir="${project.build.directory}/jboss" />
                 <copy file="${basedir}/src/main/resources/jboss/bin/run.sh"
                   todir="${project.build.directory}/jboss/bin" />
-                <chmod dir="${project.build.directory}/jboss/bin"
-                  perm="750" includes="*.sh" />
+                <chmod dir="${project.build.directory}/jboss/bin" perm="750"
+                  includes="*.sh" />
               </tasks>
             </configuration>
             <goals>

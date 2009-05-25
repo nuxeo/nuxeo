@@ -191,6 +191,49 @@
     </exec>
   </target>
 
+  <target name="choose-distrib" unless="distrib">
+    <antcall target="list-available-distributions" />
+    <input message="Which distribution do you want to build?" 
+      validargs="nuxeo-ep,nuxeo-ep-jboss,nuxeo-dm,nuxeo-dm-jboss,shell,jetty,gf3,tomcat,core,all-distributions" 
+      addproperty="distrib" />
+  </target>
+  <target name="list-available-distributions">
+    <echo message="Available distributions are:" />
+    <echo message="nuxeo-ep             - build nuxeo-ep EAR" />
+    <echo message="nuxeo-ep-jboss       - package a JBoss containing nuxeo-ep EAR" />
+    <echo message="nuxeo-dm             - build nuxeo-dm EAR" />
+    <echo message="nuxeo-dm-jboss       - package a JBoss containing nuxeo-dm EAR" />
+    <echo message="shell                - build nuxeo-shell" />
+    <echo message="jetty                - build Jetty distribution" />
+    <echo message="gf3                  - build GlassFish distribution" />
+    <echo message="tomcat               - build Tomcat distribution" />
+    <echo message="core                 - build core server" />
+    <echo message="all-distributions    - build all available distributions" />
+  </target>
+  <target name="distrib" depends="choose-distrib,distrib-unix,distrib-windows" description="Build a distribution" />
+  <target name="distrib-unix" if="osfamily-unix">
+    <exec executable="mvn" failonerror="true">
+      <arg value="install" />
+      <arg value="package" />
+      <arg value="-Dmaven.test.skip=true" />
+      <arg value="-P" />
+      <arg value="${distrib}" />
+      <arg value="${mvn.opts}" />
+    </exec>
+  </target>
+  <target name="distrib-windows" if="osfamily-windows">
+    <exec executable="cmd" failonerror="true">
+      <arg value="/c" />
+      <arg value="mvn.bat" />
+      <arg value="install" />
+      <arg value="package" />
+      <arg value="-Dmaven.test.skip=true" />
+      <arg value="-P" />
+      <arg value="${distrib}" />
+      <arg value="${mvn.opts}" />
+    </exec>
+  </target>
+
   <!-- Deprecated. TODO: JC. Removed when NXBT-57 is resolved -->
   <target name="copy-postgresql" depends="setproperties" description="Deprecated. Deploy default postresql config">
     <property name="postgresql.config" value="${nuxeo.ear.root}/postgresql-setup" />

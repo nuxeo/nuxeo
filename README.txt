@@ -14,7 +14,9 @@ Using this project you can build the following applications:
 Previously built by nuxeo-platform/nuxeo-platform-ear/, Nuxeo EP EAR is now
 built here.
 
-- From this directory, use the following command: "mvn install -Pnuxeo-ep"
+- From this directory, use one of the following commands: 
+  "mvn install -Pnuxeo-ep"
+  "ant makedistrib"
 
 - From nuxeo-platform-ear, run "mvn install" or see in package.sh for available
   packages.
