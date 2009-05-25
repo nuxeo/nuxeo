@@ -95,7 +95,7 @@ public class PreviewAdapterManagerComponent extends DefaultComponent implements
             return true;
         }
 
-        return doc.hasSchema("file");
+        return doc.hasSchema("file") || doc.hasSchema("files");
     }
 
     public HtmlPreviewAdapter getAdapter(DocumentModel doc) {
@@ -116,7 +116,7 @@ public class PreviewAdapterManagerComponent extends DefaultComponent implements
             return factoryRegistry.get(docType).getAdapter(doc);
         }
 
-        if (doc.hasSchema("file")) {
+        if (doc.hasSchema("file") || doc.hasSchema("files")) {
             log.debug("using default file based HtmlPreviewAdapter factory");
             PreviewAdapterFactory factory = new FileBasedPreviewAdapterFactory();
             return factory.getAdapter(doc);

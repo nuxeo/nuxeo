@@ -28,7 +28,7 @@ import org.nuxeo.webengine.sites.utils.SiteConstants;
 
 /**
  *
- * Adapter used to changes theme perspectives.
+ * Adapter used to change theme perspectives.
  *
  * @author <a href="mailto:cbaican@nuxeo.com">Catalin Baican</a>
  */

@@ -64,12 +64,14 @@ public final class SiteConstants {
     public static final String DELETED = "deleted";
 
     /**
-     * Constants used for Comments
+     * Permission constants used for Comments
      */
     public static final String PERMISSION_COMMENT = "Comment";
     public static final String PERMISSION_MODERATE = "Moderate";
     public static final String MODERATION_APRIORI = "apriori";
     public static final String MODERATION_APOSTERIORI = "aposteriori";
+
+    public static final String PERMISSION_ADD_CHILDREN = "AddChildren";
 
     /**
      * Themes&Perspectives
@@ -83,4 +85,8 @@ public final class SiteConstants {
     public static final String SEARCH_THEME_PAGE = "sites/search";
     public static final String SITES_THEME_PAGE = "sites/default";
 
+    /**
+     * Themes&Perspectives
+     */
+    public static final String PAGE_NAME_ATTRIBUTE = "pageName";
 }

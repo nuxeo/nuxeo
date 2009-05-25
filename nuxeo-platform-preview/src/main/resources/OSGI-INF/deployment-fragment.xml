@@ -10,8 +10,7 @@
 
   </extension>
 
-<install>
-
+  <install>
     <!--  Unzip the war template -->
     <unzip from="${bundle.fileName}" to="/">
       <include>nuxeo.war/**</include>
