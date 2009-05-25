@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<component name="org.nuxeo.theme.nuxeo.default">
+<component name="org.nuxeo.dam.theme.default">
 
   <require>org.nuxeo.theme.jsf</require>
 
@@ -48,6 +48,11 @@
       <template>incl/selection_preview.xhtml</template>
     </view>
 
+    <view name="dam selection view" template-engine="jsf-facelets">
+      <format-type>widget</format-type>
+      <template>incl/selection_view.xhtml</template>
+    </view>
+
   </extension>
 
 
@@ -74,6 +79,10 @@
       <style-caching>
         <lifetime>900</lifetime>
       </style-caching>
+
+      <view id="/view_documents.xhtml">
+        <theme>dam/default</theme>
+      </view>
 
     </application>
   </extension>

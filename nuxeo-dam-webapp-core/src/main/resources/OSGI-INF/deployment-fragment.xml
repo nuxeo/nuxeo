@@ -43,6 +43,7 @@
 
   <extension target="faces-config#NAVIGATION">
 
+
     <navigation-case>
       <from-outcome>view_documents</from-outcome>
       <to-view-id>/view_documents.xhtml</to-view-id>

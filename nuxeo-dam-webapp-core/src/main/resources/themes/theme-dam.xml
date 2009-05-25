@@ -23,19 +23,12 @@
         </cell>
         <cell>
           <!-- main area -->
-          <fragment type="region fragment"/>
+          <fragment type="generic fragment"/>
         </cell>
       </section>
     </page>
   </layout>
-  
-  <!-- PROPERTIES -->
-  <properties element="page[1]/section[2]/cell[3]/fragment[1]">
-    <name>body</name>
-    <defaultBody/>
-    <defaultSrc/>
-  </properties>
-  
+
   
   <formats>
     <!-- LAYOUT -->
@@ -92,7 +85,7 @@
       <view>dam selection preview</view>
     </widget>
     <widget element="page[1]/section[2]/cell[3]/fragment[1]">
-      <view>facelet region</view>
+      <view>dam selection view</view>
     </widget>
 
   </formats>

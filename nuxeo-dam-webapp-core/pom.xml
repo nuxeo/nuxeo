@@ -10,7 +10,6 @@
   </parent>
 
   <artifactId>nuxeo-dam-webapp-core</artifactId>
-  <packaging>ejb</packaging>
   <name>Nuxeo DAM WebApp Core</name>
   <description>Nuxeo DAM WebApp Core</description>
 
