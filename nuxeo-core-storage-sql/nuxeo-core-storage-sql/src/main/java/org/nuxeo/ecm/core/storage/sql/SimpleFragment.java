@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.storage.sql;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -165,8 +166,37 @@ public class SimpleFragment extends Fragment {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + '(' + getTableName() + ", id=" +
-                getId() + ", " + map + ')';
+        StringBuilder buf = new StringBuilder();
+        buf.append(getClass().getSimpleName());
+        buf.append('(');
+        buf.append(getTableName());
+        buf.append(", id=");
+        buf.append(getId());
+        buf.append(", state=");
+        buf.append(getState());
+        buf.append(", ");
+        buf.append('{');
+        Iterator<Entry<String, Serializable>> it = map.entrySet().iterator();
+        while (it.hasNext()) {
+            Entry<String, Serializable> e = it.next();
+            buf.append(e.getKey());
+            buf.append('=');
+            Serializable value = e.getValue();
+            boolean truncated = false;
+            if (value instanceof String && ((String) value).length() > 100) {
+                value = ((String) value).substring(0, 100);
+                truncated = true;
+            }
+            buf.append(value);
+            if (truncated) {
+                buf.append("...");
+            }
+            if (it.hasNext()) {
+                buf.append(", ");
+            }
+        }
+        buf.append("})");
+        return buf.toString();
     }
 
 }
