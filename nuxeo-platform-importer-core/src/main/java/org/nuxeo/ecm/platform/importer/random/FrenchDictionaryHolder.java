@@ -48,7 +48,7 @@ public class FrenchDictionaryHolder implements DictionaryHolder {
                     String word = line.substring(0, idx);
                     words.add(word + " ");
                 } else {
-                    words.add(line);
+                    words.add(line + " ");
                 }
             }
         } finally {
