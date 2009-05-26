@@ -1,12 +1,13 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 1
 Bundle-Name: Nuxeo DAM WebApp Core
-Bundle-SymbolicName: org.nuxeo.ecm.webapp.core;singleton=true
+Bundle-SymbolicName: org.nuxeo.dam.webapp.core;singleton=true
 Bundle-Version: 1.0.0
 Bundle-Localization: plugin
 Bundle-Vendor: Nuxeo
 Bundle-Category: web
-Nuxeo-Component: OSGI-INF/theme-contrib.xml
+Nuxeo-Component: OSGI-INF/theme-contrib.xml,
+ OSGI-INF/nxfilemanager-plugins-contrib.xml
 Require-Bundle: org.nuxeo.ecm.platform.ui,
  org.nuxeo.ecm.webapp.base,
  org.nuxeo.ecm.core

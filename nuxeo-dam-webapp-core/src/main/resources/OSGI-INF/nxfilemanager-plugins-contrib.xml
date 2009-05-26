@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.dam.fileimporters">
+
+  <extension
+    target="org.nuxeo.ecm.platform.filemanager.service.FileManagerService"
+    point="plugins">
+
+    <plugin name="AssetsArchivePlugin"
+      class="org.nuxeo.dam.webapp.fileimporter.ArchiveImporter"
+      order="20">
+      <filter>application/zip</filter>
+    </plugin>
+
+  </extension>
+
+</component>
