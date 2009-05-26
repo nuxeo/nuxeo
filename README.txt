@@ -1,96 +1,110 @@
 About
 -----
 
-This module builds the Nuxeo products: Nuxeo EP, Nuxeo WebEngine, Nuxeo Shell,
-etc.
+See http://doc.nuxeo.org/ for full documentation.
+
+This module builds the Nuxeo products: Nuxeo EP, Nuxeo WebEngine, Nuxeo DM, Nuxeo Shell, ...
+There are various build ways. Easiest is from root with Ant but you can also build from any
+sub-module with Maven. Ant build will call a Maven build with default values.
+
+Modules listing:
+- nuxeo-platform-ear to build Nuxeo Enterprise Platform EAR
+- nuxeo-distribution-dm to build a Nuxeo Document Management EAR
+- nuxeo-distribution-jboss to package a JBoss containing Nuxeo EP or DM EAR
+- nuxeo-distribution-shell to build Nuxeo Shell
+- nuxeo-distribution-gf3 to build GlassFish distribution
+- nuxeo-distribution-jetty to build Jetty distribution
+- nuxeo-distribution-tomcat to build Tomcat distribution
+
+- nuxeo-distribution-base, nuxeo-distribution-server are used by other modules.
+- nuxeo-distribution-izpack is obsolete. Was used to build an IzPack installer from a Nuxeo EP zip archive.
+- nuxeo-distribution-tools is a prototype. Future distribution tools.
 
 Building predefined applications
 --------------------------------
 
-Using this project you can build the following applications:
+With Ant and user input:
+  - from nuxeo-distribution root, run "ant distrib" and choose the distribution you want to build.
+With Ant, no user input:
+  - run "ant distrib -Ddistrib=PROFILE"
+  - run "ant distrib -Ddistrib=PROFILE,BACKEND"
+With Maven, no user input: 
+  - run "mvn clean install package -PPROFILE -Dmaven.test.skip=true"
+
+Available values for "PROFILE" are:
+  nuxeo-ep,nuxeo-ep-jboss,nuxeo-dm,nuxeo-dm-jboss,shell,jetty,gf3,tomcat,core,all-distributions
+It can be followed by ",BACKEND"; available values depends on PROFILE used.
+
+Nuxeo EP and DM have those backend configurations available: derby, mysql, postgresql, oracle and h2.
+For example:
+  - "ant distrib -Ddistrib=nuxeo-dm,postgresql"
+  - "ant distrib -Ddistrib=nuxeo-ep,mysql"
+  
+Default repository is VCS but it is also possible to set JCR+Derby or JCR+PostgreSQL, for example:
+  - "ant distrib -Ddistrib=nuxeo-dm,postgresql -Dmvn.opts=-Djcr"
+Note this configuration requires some manual changes into $JBOSS/server/default/conf/login-config.xml
+
+Glassfish have those available configurations (vcs, vcs+ra, jcr+ra):
+  - "ant distrib -Ddistrib=gf3,vcs"
+  - "ant distrib -Ddistrib=gf3,vcs,ra"
+  - "ant distrib -Ddistrib=gf3,jcr,ra"
 
 1. Nuxeo EP
-
-Previously built by nuxeo-platform/nuxeo-platform-ear/, Nuxeo EP EAR is now
-built here.
-
-- From this directory, use one of the following commands: 
-  "mvn install -Pnuxeo-ep"
-  "ant makedistrib"
-
-- From nuxeo-platform-ear, run "mvn install" or see in package.sh for available
-  packages.
-
   Built EAR is in nuxeo-platform-ear/target/ and its name depends on chosen
   package: default is nuxeo.ear
 
 2. Nuxeo Document Management
-
-- From this directory, run "mvn install" or "mvn install -Pnuxeo-dm"
-
-  Built EAR is in nuxeo-distribution-dm/target.
+  Built EAR is in nuxeo-distribution-dm/target/
 
 3. Nuxeo Shell 
+  A command-line client application suitable to connect to remote nuxeo servers.
+  This application can be used to connect to remote nuxeo servers for debugging,
+  browsing or administration purposes.
 
-A command-line client application suitable to connect to remote nuxeo servers.
-
-This application can be used to connect to remote nuxeo servers for debugging,
-browsing or administration purposes.
-
-To build, run: "mvn install -Pshell"
+  Built application is in nuxeo-distribution-shell/target/
     
 4. Nuxeo Core Server 
-
-A minimal server application. An embedded repository will be started. No other
-platform services are available.
+  A minimal server application. An embedded repository will be started. No other
+  platform services are available.
   
-This application can be used to debug, test or develop nuxeo components that
-need a repository connection.
+  This application can be used to debug, test or develop nuxeo components that
+  need a repository connection.
   
-Remoting will be also available in the future via Nuxeo Runtime.
+  Remoting will be also available in the future via Nuxeo Runtime.
   
-To build, run: "mvn install -Pcore"
+  Built application is in nuxeo-distribution-server/target/
     
 5. Nuxeo Jetty Server
-  
-A Nuxeo server application embedding a Jetty server. 
-  
-This application can be used to browse repository content via WEB.
-  
-This is also known as Nuxeo WebEngine (based on Jetty).
+  A Nuxeo server application embedding a Jetty server. 
+  This application can be used to browse repository content via WEB.
+  This is also known as Nuxeo WebEngine (based on Jetty).
 
-To build, run: "mvn install -Pjetty"
+  Built application is in nuxeo-distribution-jetty/target/
    
 6. Nuxeo GF3 Server
-  
-A Nuxeo server application embedding a GlassFish v3 server. 
-  
-This application can be used to browse a repository content via the web.
-  
-This is also known as Nuxeo WebEngine (based on GF3).
-   
-In the future, this application will provide a full installation of Nuxeo
-(including EJBs, JMS, etc).
+  A Nuxeo server application embedding a GlassFish v3 server.
+  This application can be used to browse a repository content via the web.
+  This is also known as Nuxeo WebEngine (based on GF3).
+  In the future, this application will provide a full installation of Nuxeo
+  (including EJBs, JMS, etc).
 
-To build, run: "mvn install -Pgf3"
+  Built application is in nuxeo-distribution-gf3/target/
 
-By default the build will generate a server based on jcr repository backendand without RA enabled.
-You can customize your builds using profiles as following:
+  By default the build will generate a server based on JCR repository backend without RA enabled.
+  You can customize your builds using profiles as following:
     - "mvn install -Pgf3,vcs" - a server using VCS repository backend
-    - "mvn install -Pgf3,vcs,ra" - a server using VCS repository bacend + RA support (this e,ans repository will take part of tx)
+    - "mvn install -Pgf3,vcs,ra" - a server using VCS repository backend + RA support
     - "mvn install -Pgf3,jcr,ra" - a server using JCR based repository backend + RA support
     
 6. Nuxeo Tomcat WebApp
-  
-A Nuxeo Server packaged as an exploded WAR for Tomcat v6.
+  A Nuxeo Server packaged as an exploded WAR for Tomcat v6.
+  This build will generate a zip containing a 'tomcat' directory. You need to
+  copy the content of this directory to your installed Tomcat. Then restart Tomcat.
 
-This build will generate a zip containing a 'tomcat' directory. You need to
-copy the content of this directory to your installed Tomcat. Then restart
-Tomcat.
+  Nuxeo WebEngine will be available at htpp://localhost:8080/nuxeo
 
-Nuxeo WebEngine will be available at htpp://localhost:8080/nuxeo
+  Built application is in nuxeo-distribution-tomcat/target/
 
-To build, run: "mvn install -Ptomcat"
 
 Extending
 ---------

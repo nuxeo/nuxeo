@@ -48,7 +48,6 @@
       <id>nuxeo-ep-jboss</id>
       <modules>
         <module>nuxeo-platform-ear</module>
-        <module>nuxeo-distribution-dm</module>
         <module>nuxeo-distribution-jboss</module>
       </modules>
     </profile>
@@ -176,6 +175,17 @@
         <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core-storage-sql-ra</artifactId>
         <type>rar</type>
+        <version>${nuxeo.core.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-core-jca</artifactId>
+        <version>${nuxeo.core.version}</version>
+        <type>rar</type>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-core-jcr-connector</artifactId>
         <version>${nuxeo.core.version}</version>
       </dependency>
       <dependency>
