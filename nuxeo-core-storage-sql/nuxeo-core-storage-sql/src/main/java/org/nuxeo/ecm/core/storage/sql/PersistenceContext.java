@@ -189,6 +189,11 @@ public class PersistenceContext {
 
         // update simpletext on documents with dirty strings
         for (Serializable docId : dirtyStrings) {
+            if (docId == null) {
+                // cannot happen, but has been observed :(
+                log.error("Got null doc id in fulltext update, cannot happen");
+                continue;
+            }
             Node document = session.getNodeById(docId);
             if (document == null) {
                 // cannot happen

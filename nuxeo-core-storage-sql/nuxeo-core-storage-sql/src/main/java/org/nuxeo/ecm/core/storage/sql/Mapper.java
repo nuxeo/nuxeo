@@ -97,7 +97,7 @@ public class Mapper {
     private static final AtomicLong instanceCounter = new AtomicLong(0);
 
     // for debug
-    private final long instanceNumber = instanceCounter.incrementAndGet();
+    protected final long instanceNumber = instanceCounter.incrementAndGet();
 
     private static final int DEBUG_MAX_ARRAY = 10;
 

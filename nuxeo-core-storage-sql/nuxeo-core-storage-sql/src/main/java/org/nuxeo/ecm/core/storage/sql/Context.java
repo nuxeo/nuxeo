@@ -26,6 +26,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections.map.ReferenceMap;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Fragment.State;
 
@@ -50,6 +52,8 @@ import org.nuxeo.ecm.core.storage.sql.Fragment.State;
  * @author Florent Guillaume
  */
 public class Context {
+
+    private static final Log log = LogFactory.getLog(Context.class);
 
     private final String tableName;
 
@@ -392,6 +396,10 @@ public class Context {
                 fragment.setDetached();
                 // modified map cleared at end of loop
                 deletedInTransaction.add(id);
+                break;
+            case PRISTINE:
+                // cannot happen, but has been observed :(
+                log.error("Found PRISTINE fragment in modified map: " + fragment);
                 break;
             default:
                 throw new AssertionError(fragment);
