@@ -193,12 +193,21 @@
 
   <target name="choose-distrib" unless="distrib">
     <antcall target="list-available-distributions" />
-    <input message="Which distribution do you want to build?" 
-      validargs="nuxeo-ep,nuxeo-ep-jboss,nuxeo-dm,nuxeo-dm-jboss,shell,jetty,gf3,tomcat,core,all-distributions" 
-      addproperty="profile" />
-    <input message="Which backend do you want to use? Simply press Enter to use default one." 
-      validargs="derby,mysql,postgresql,oracle,h2" 
-      addproperty="backend" defaultvalue="default" />
+    <input message="Which distribution do you want to build?" validargs="nuxeo-ep,nuxeo-ep-jboss,nuxeo-dm,nuxeo-dm-jboss,shell,jetty,gf3,tomcat,core,all-distributions" addproperty="profile" />
+    <condition property="backend-choosable">
+      <or>
+        <equals arg1="${profile}" arg2="nuxeo-ep" />
+        <equals arg1="${profile}" arg2="nuxeo-ep-jboss" />
+        <equals arg1="${profile}" arg2="nuxeo-dm" />
+        <equals arg1="${profile}" arg2="nuxeo-dm-jboss" />
+        <equals arg1="${profile}" arg2="all-distributions" />
+      </or>
+    </condition>
+    <antcall target="choose-backend" />
+    <property name="distrib" value="${profile}" />
+  </target>
+  <target name="choose-backend" if="backend-choosable">
+    <input message="Which backend do you want to use? Simply press Enter to use default one." validargs="derby,mysql,postgresql,oracle,h2" addproperty="backend" defaultvalue="default" />
     <property name="distrib" value="${profile},${backend}" />
   </target>
   <target name="list-available-distributions">
