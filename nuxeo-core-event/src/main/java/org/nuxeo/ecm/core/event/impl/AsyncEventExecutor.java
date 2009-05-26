@@ -29,8 +29,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.event.EventBundle;
-import org.nuxeo.ecm.core.event.PostCommitEventListener;
 import org.nuxeo.ecm.core.event.ReconnectedEventBundle;
+import org.nuxeo.ecm.core.event.jmx.EventStatsHolder;
 import org.nuxeo.ecm.core.event.tx.EventBundleTransactionHandler;
 import org.nuxeo.runtime.api.Framework;
 
@@ -51,13 +51,17 @@ public class AsyncEventExecutor {
 
     protected final BlockingQueue<Runnable> queue;
 
+    protected final ThreadPoolExecutor mono_executor;
+
+    protected final BlockingQueue<Runnable> mono_queue;
+
     public static AsyncEventExecutor create() {
         String val = Framework.getProperty("org.nuxeo.ecm.core.event.async.poolSize");
         int poolSize = val == null ? 4 : Integer.parseInt(val);
         val = Framework.getProperty("org.nuxeo.ecm.core.event.async.maxPoolSize");
         int maxPoolSize = val == null ? 16 : Integer.parseInt(val);
         val = Framework.getProperty("org.nuxeo.ecm.core.event.async.keepAliveTime");
-        int keepAliveTime = val == null ? 4 : Integer.parseInt(val);
+        int keepAliveTime = val == null ? 0 : Integer.parseInt(val);
         val = Framework.getProperty("org.nuxeo.ecm.core.event.async.queueSize");
         int queueSize = val == null ? QUEUE_SIZE : Integer.parseInt(val);
         return new AsyncEventExecutor(poolSize, maxPoolSize, keepAliveTime,
@@ -67,9 +71,12 @@ public class AsyncEventExecutor {
     public AsyncEventExecutor(int poolSize, int maxPoolSize, int keepAliveTime,
             int queueSize) {
         queue = new LinkedBlockingQueue<Runnable>(queueSize);
+        mono_queue = new LinkedBlockingQueue<Runnable>(queueSize);
         NamedThreadFactory threadFactory = new NamedThreadFactory("Nuxeo Async Events");
         executor = new ThreadPoolExecutor(poolSize, maxPoolSize, keepAliveTime,
                 TimeUnit.SECONDS, queue, threadFactory);
+        mono_executor = new ThreadPoolExecutor(1, 1, keepAliveTime,
+                TimeUnit.SECONDS, mono_queue, threadFactory);
     }
 
     public void run(List<EventListenerDescriptor> listeners, EventBundle event) {
@@ -78,13 +85,35 @@ public class AsyncEventExecutor {
         // isn't accounted for anywhere (getActiveCount doesn't return it).
         executor.prestartAllCoreThreads();
         for (EventListenerDescriptor listener : listeners) {
-            executor.execute(new Job(listener, event));
+            if (listener.isSingleThreaded()) {
+                mono_executor.execute(new Job(listener, event));
+            }
+            else {
+                executor.execute(new Job(listener, event));
+            }
         }
     }
 
     public int getUnfinishedCount() {
-        return executor.getQueue().size() + executor.getActiveCount();
+        return executor.getQueue().size() + executor.getActiveCount() + mono_executor.getQueue().size() + mono_executor.getActiveCount();
     }
+
+    public int getActiveCount() {
+        return executor.getActiveCount() + mono_executor.getActiveCount();
+    }
+
+    public int getMaxPoolSize() {
+        return executor.getMaximumPoolSize();
+    }
+
+    public void setMaxPoolSize(int maxSize) {
+        int coreSize = executor.getCorePoolSize();
+        if (coreSize>maxSize) {
+
+        }
+        executor.getMaximumPoolSize();
+    }
+
 
     protected static class Job implements Runnable {
 
@@ -105,10 +134,12 @@ public class AsyncEventExecutor {
         public void run() {
             EventBundleTransactionHandler txh = new EventBundleTransactionHandler();
             try {
+                long t0 = System.currentTimeMillis();
                 txh.beginNewTransaction(listener.getTransactionTimeout());
                 listener.asPostCommitListener().handleEvent(bundle);
                 txh.commitOrRollbackTransaction();
-                log.debug("Async listener executed, commiting tx");
+                EventStatsHolder.logAsyncExec(listener, System.currentTimeMillis()-t0);
+                log.debug("Async listener executed, commited tx");
             } catch (Throwable t) {
                 log.error("Failed to execute async event " + bundle.getName()
                         + " on listener " + listener.getName(), t);
@@ -116,6 +147,8 @@ public class AsyncEventExecutor {
             } finally {
                 bundle.disconnect();
             }
+
+            //Thread.currentThread().interrupt();
         }
     }
 

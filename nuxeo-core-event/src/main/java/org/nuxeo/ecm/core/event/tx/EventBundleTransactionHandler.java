@@ -25,6 +25,7 @@ import static javax.transaction.Status.STATUS_ROLLEDBACK;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import javax.transaction.Status;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
@@ -83,6 +84,9 @@ public class EventBundleTransactionHandler {
     }
 
     protected UserTransaction createUT(Integer transactionTimeout) {
+        return createUT(transactionTimeout, false);
+    }
+    protected UserTransaction createUT(Integer transactionTimeout, boolean retry) {
         InitialContext context = null;
         try {
             context = new InitialContext();
@@ -100,6 +104,25 @@ public class EventBundleTransactionHandler {
             } catch (NamingException ne2) {
                 disabled = true;
             }
+        }
+
+        try {
+            int txStatus = ut.getStatus();
+            if (txStatus != Status.STATUS_NO_TRANSACTION && !retry) {
+                // if previous tx in this thread aborted in TimeOut
+                // Ajuna may have failed to dissociate tx from thread context
+                // => force rollback to avoid reusing a dead tx
+                log.warn("Transaction was not properly cleanup up from thread context, rolling back before getting a new tx");
+                try {
+                    ut.rollback();
+                }
+                catch (Throwable t) {
+                    log.warn("error during tx rollback", t);
+                }
+                return createUT(transactionTimeout, true);
+            }
+        } catch (Exception se) {
+            log.warn("Error while getting TX status", se);
         }
 
         if (transactionTimeout!=null) {

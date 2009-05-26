@@ -51,7 +51,7 @@ public class EventListenerDescriptor {
     @XNode("@class")
     protected Class<?> clazz;
 
-    /**
+     /**
      * A script reference: URL, file path, or bundle entry.
      * Runtime variable are expanded. To specify a bundle entry use the URL schema "bundle:"
      */
@@ -81,6 +81,9 @@ public class EventListenerDescriptor {
 
     @XNode("@enabled")
     protected boolean isEnabled = true;
+
+    @XNode("@singlethread")
+    protected boolean singleThreaded = false;
 
     protected Set<String> events;
 
@@ -227,6 +230,13 @@ public class EventListenerDescriptor {
     }
 
 
+    public boolean getIsAsync(){
+        return isAsync;
+    }
+
+    public boolean isSingleThreaded() {
+        return singleThreaded;
+    }
 
 
 }

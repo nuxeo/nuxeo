@@ -30,9 +30,11 @@ import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.event.EventServiceAdmin;
 import org.nuxeo.ecm.core.event.PostCommitEventListener;
 import org.nuxeo.ecm.core.event.ReconnectedEventBundle;
 import org.nuxeo.ecm.core.event.jms.AsyncProcessorConfig;
+import org.nuxeo.ecm.core.event.jmx.EventStatsHolder;
 import org.nuxeo.ecm.core.event.tx.PostCommitSynchronousRunner;
 
 /**
@@ -40,7 +42,7 @@ import org.nuxeo.ecm.core.event.tx.PostCommitSynchronousRunner;
  * @author Thierry Delprat
  * @author Florent Guillaume
  */
-public class EventServiceImpl implements EventService {
+public class EventServiceImpl implements EventService, EventServiceAdmin{
 
     public static final VMID VMID = new VMID();
 
@@ -56,6 +58,12 @@ public class EventServiceImpl implements EventService {
     protected final EventListenerList listenerDescriptors;
 
     protected final AsyncEventExecutor asyncExec;
+
+    protected boolean blockAsyncProcessing = false;
+
+    protected boolean blockSyncPostCommitProcessing = false;
+
+    protected boolean bulkModeEnabled = false;
 
     public EventServiceImpl() {
         listenerDescriptors = new EventListenerList();
@@ -104,6 +112,7 @@ public class EventServiceImpl implements EventService {
 
     @SuppressWarnings("unchecked")
     public void fireEvent(Event event) throws ClientException {
+
         if (!event.isInline()) { // record the event
             EventBundleImpl b = bundle.get();
             b.push(event);
@@ -117,10 +126,12 @@ public class EventServiceImpl implements EventService {
             fireEventBundle(b);
         }
         String ename = event.getName();
-        for (EventListenerDescriptor desc : listenerDescriptors.getInlineListenersDescriptors()) {
+        for (EventListenerDescriptor desc : listenerDescriptors.getEnabledInlineListenersDescriptors()) {
             if (desc.acceptEvent(ename)) {
                 try {
+                    long t0 = System.currentTimeMillis();
                     desc.asEventListener().handleEvent(event);
+                    EventStatsHolder.logSyncExec(desc, System.currentTimeMillis()-t0);
                 } catch (Throwable t) {
                     log.error("Error during sync listener execution", t);
                 } finally {
@@ -147,32 +158,43 @@ public class EventServiceImpl implements EventService {
         }
 
         // run sync listeners
-        if (comesFromJMS) {
+        if (blockSyncPostCommitProcessing) {
+            log.debug("Dropping PostCommit handler execution");
+        }
+        else if (comesFromJMS) {
             // when called from JMS we must skip sync listeners
             // - postComit listerers should be on the core
             // - there is no transaction started by JMS listener
             log.debug("Desactivating sync post-commit listener since we are called from JMS");
         } else {
-            PostCommitSynchronousRunner syncRunner = new PostCommitSynchronousRunner(
-                    listenerDescriptors.getSyncPostCommitListenersDescriptors(), event);
-            syncRunner.run();
+            List<EventListenerDescriptor> syncPCDescs = listenerDescriptors.getEnabledSyncPostCommitListenersDescriptors();
+            if (syncPCDescs!=null && syncPCDescs.size()>0) {
+                PostCommitSynchronousRunner syncRunner = new PostCommitSynchronousRunner(
+                        syncPCDescs, event);
+                syncRunner.run();
+            }
+        }
+
+        if (blockAsyncProcessing) {
+            log.debug("Dopping bundle");
+            return;
         }
 
         // fire async listeners
         if (AsyncProcessorConfig.forceJMSUsage() && !comesFromJMS) {
             log.debug("Skipping async exec, this will be triggered via JMS");
-        } else {
-            asyncExec.run(listenerDescriptors.getAsyncPostCommitListenersDescriptors(), event);
+        }else {
+            asyncExec.run(listenerDescriptors.getEnabledAsyncPostCommitListenersDescriptors(), event);
         }
     }
 
     @SuppressWarnings("unchecked")
     public void fireEventBundleSync(EventBundle event) throws ClientException {
 
-        for (EventListenerDescriptor desc : listenerDescriptors.getSyncPostCommitListenersDescriptors()) {
+        for (EventListenerDescriptor desc : listenerDescriptors.getEnabledSyncPostCommitListenersDescriptors()) {
             desc.asPostCommitListener().handleEvent(event);
         }
-        for (EventListenerDescriptor desc : listenerDescriptors.getAsyncPostCommitListenersDescriptors()) {
+        for (EventListenerDescriptor desc : listenerDescriptors.getEnabledAsyncPostCommitListenersDescriptors()) {
             desc.asPostCommitListener().handleEvent(event);
         }
     }
@@ -215,6 +237,79 @@ public class EventServiceImpl implements EventService {
 
     public EventListenerList getEventListenerList() {
         return listenerDescriptors;
+    }
+
+
+    // methods for monitoring
+
+
+    public EventListenerList getListenerList() {
+        return listenerDescriptors;
+    }
+
+    public void setListenerEnabledFlag(String listenerName, boolean enabled) {
+
+        if (!listenerDescriptors.getListenerNames().contains(listenerName)) {
+            return;
+        }
+
+        for (EventListenerDescriptor desc : listenerDescriptors.getAsyncPostCommitListenersDescriptors()) {
+            if (desc.getName().equals(listenerName)) {
+                desc.setEnabled(enabled);
+                listenerDescriptors.recomputeEnabledListeners();
+                return;
+            }
+        }
+
+        for (EventListenerDescriptor desc : listenerDescriptors.getSyncPostCommitListenersDescriptors()) {
+            if (desc.getName().equals(listenerName)) {
+                desc.setEnabled(enabled);
+                listenerDescriptors.recomputeEnabledListeners();
+                return;
+            }
+        }
+
+        for (EventListenerDescriptor desc : listenerDescriptors.getInlineListenersDescriptors()) {
+            if (desc.getName().equals(listenerName)) {
+                desc.setEnabled(enabled);
+                listenerDescriptors.recomputeEnabledListeners();
+                return;
+            }
+        }
+
+    }
+
+    public int getActiveThreadsCount() {
+        return asyncExec.getActiveCount();
+    }
+
+    public int getEventsInQueueCount() {
+        return asyncExec.getUnfinishedCount();
+    }
+
+    public boolean isBlockAsyncHandlers() {
+        return blockAsyncProcessing;
+    }
+
+    public boolean isBlockSyncPostCommitHandlers() {
+        return blockSyncPostCommitProcessing;
+    }
+
+    public void setBlockAsyncHandlers(boolean blockAsyncHandlers) {
+        blockAsyncProcessing = blockAsyncHandlers;
+
+    }
+
+    public void setBlockSyncPostCommitHandlers(boolean blockSyncPostComitHandlers) {
+        blockSyncPostCommitProcessing = blockSyncPostComitHandlers;
+    }
+
+    public boolean isBulkModeEnabled() {
+        return bulkModeEnabled;
+    }
+
+    public void setBulkModeEnabled(boolean bulkModeEnabled) {
+        this.bulkModeEnabled = bulkModeEnabled;
     }
 
 }

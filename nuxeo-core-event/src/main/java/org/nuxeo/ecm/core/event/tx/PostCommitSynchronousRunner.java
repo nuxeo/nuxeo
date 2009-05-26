@@ -25,13 +25,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.impl.EventListenerDescriptor;
+import org.nuxeo.ecm.core.event.jmx.EventStatsHolder;
 
 /**
  *
  * Runs synchronous Listeners in a separated thread in order to enable TX
  * management
  *
- * @author tiry
+ * @author Thierry Delprat
  *
  */
 public class PostCommitSynchronousRunner {
@@ -91,6 +92,7 @@ public class PostCommitSynchronousRunner {
                     txh.beginNewTransaction();
                     listener.asPostCommitListener().handleEvent(event);
                     txh.commitOrRollbackTransaction();
+                    EventStatsHolder.logAsyncExec(listener, System.currentTimeMillis()-t1);
                     log.debug("End of post commit sync execution for listener " + listener.getName() + " " +
                             + (System.currentTimeMillis() - t1) + "ms");
                 } catch (Throwable t) {
