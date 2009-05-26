@@ -50,7 +50,7 @@ import org.nuxeo.runtime.api.Framework;
  * <p>
  * This class mostly delegates all its work to per-fragment {@link Context}s. It
  * also deals with maintaining information about generated ids.
- * 
+ *
  * @author Florent Guillaume
  */
 public class PersistenceContext {
@@ -337,7 +337,7 @@ public class PersistenceContext {
 
     /**
      * Creates a new row in the context, for a new id (not yet saved).
-     * 
+     *
      * @param tableName the table name
      * @param id the new id
      * @param map the fragments map, or {@code null}
@@ -355,7 +355,7 @@ public class PersistenceContext {
      * <p>
      * If the fragment is not in the context, fetch it from the mapper. If it's
      * not in the database, returns {@code null} or an absent fragment.
-     * 
+     *
      * @param tableName the fragment table name
      * @param id the fragment id
      * @param allowAbsent {@code true} to return an absent fragment as an object
@@ -372,7 +372,7 @@ public class PersistenceContext {
     /**
      * Finds a row in the hierarchy table given its parent id and name. If the
      * row is not in the context, fetch it from the mapper.
-     * 
+     *
      * @param parentId the parent id
      * @param name the name
      * @param complexProp whether to get complex properties or real children
@@ -386,7 +386,7 @@ public class PersistenceContext {
 
     /**
      * Finds all the children given a parent id.
-     * 
+     *
      * @param parentId the parent id
      * @param name the name of the children, or {@code null} for all
      * @param complexProp whether to get complex properties or real children
@@ -400,7 +400,7 @@ public class PersistenceContext {
 
     /**
      * Move a hierarchy fragment to a new parent with a new name.
-     * 
+     *
      * @param source the source
      * @param parentId the destination parent id
      * @param name the new name
@@ -413,7 +413,7 @@ public class PersistenceContext {
 
     /**
      * Copy a hierarchy (and its children) to a new parent with a new name.
-     * 
+     *
      * @param source the source of the copy
      * @param parentId the destination parent id
      * @param name the new name
@@ -427,7 +427,7 @@ public class PersistenceContext {
 
     /**
      * Removes a row.
-     * 
+     *
      * @param row
      * @throws StorageException
      */
@@ -443,7 +443,7 @@ public class PersistenceContext {
 
     /**
      * Checks in a node.
-     * 
+     *
      * @param node the node to check in
      * @param label the version label
      * @param description the version description
@@ -489,7 +489,7 @@ public class PersistenceContext {
 
     /**
      * Checks out a node.
-     * 
+     *
      * @param node the node to check out
      * @throws StorageException
      */
@@ -508,7 +508,7 @@ public class PersistenceContext {
      * Restores a node by label.
      * <p>
      * The restored node is checked in.
-     * 
+     *
      * @param node the node
      * @param label the version label to restore
      * @throws StorageException
@@ -560,7 +560,7 @@ public class PersistenceContext {
 
     /**
      * Gets a version id given a versionable id and a version label.
-     * 
+     *
      * @param versionableId the versionable id
      * @param label the version label
      * @return the version id, or {@code null} if not found
@@ -574,7 +574,7 @@ public class PersistenceContext {
 
     /**
      * Gets the the last version id given a versionable id.
-     * 
+     *
      * @param versionableId the versionabel id
      * @return the version id, or {@code null} if not found
      * @throws StorageException
@@ -590,7 +590,7 @@ public class PersistenceContext {
 
     /**
      * Gets all the versions given a versionable id.
-     * 
+     *
      * @param versionableId the versionable id
      * @return the list of version fragments
      * @throws StorageException
@@ -610,7 +610,7 @@ public class PersistenceContext {
      * <p>
      * If the document is a proxy, then all similar proxies (pointing to any
      * version of the same versionable) are retrieved.
-     * 
+     *
      * @param document the document
      * @param parent the parent, or {@code null}
      * @return the list of proxies fragments
@@ -647,7 +647,7 @@ public class PersistenceContext {
 
     /**
      * Finds the id of the enclosing non-complex-property node.
-     * 
+     *
      * @param id the id
      * @return the id of the containing document, or {@code null} if there is no
      *         parent or the parent has been deleted.
