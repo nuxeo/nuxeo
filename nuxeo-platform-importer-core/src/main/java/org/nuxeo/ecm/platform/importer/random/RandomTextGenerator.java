@@ -20,14 +20,28 @@ public class RandomTextGenerator {
     protected static final int BLOC_CACHE_HIT = 20;
     protected static final int BLOC_SIZE = 10 * 1024;
 
+    protected static final int NB_WORDS_PER_LINE = 20;
+    protected static final int NB_LINES_PER_PARAGRAPH = 40;
+    protected static final int NB_PARAGRAPH_PER_PAGE = 8;
+    protected static final int NB_PAGE_PER_BLOC = 3;
+
     protected Random generator;
+
 
     public RandomTextGenerator() throws Exception {
         generator = new Random(System.currentTimeMillis());
     }
 
+    protected int getTargetPageMaxSizeB() {
+        return (int) (1.2 * (BLOC_SIZE / NB_PAGE_PER_BLOC));
+    }
+
+    protected int getTargetParagraphMaxSizeB() {
+        return (int) (1.2 * (getTargetPageMaxSizeB() / NB_PARAGRAPH_PER_PAGE));
+    }
+
     public String getRandomLine() {
-        int nbW = 10 + generator.nextInt(20);
+        int nbW = 10 + generator.nextInt(NB_WORDS_PER_LINE);
         StringBuffer sb = new StringBuffer();
 
         for (int i = 0; i < nbW; i++) {
@@ -38,11 +52,16 @@ public class RandomTextGenerator {
     }
 
     public String generateParagraph() {
-        int nbL = 10 + generator.nextInt(40);
+        int nbL = 10 + generator.nextInt(NB_LINES_PER_PARAGRAPH);
         StringBuffer sb = new StringBuffer();
+
+        int maxSize = getTargetParagraphMaxSizeB();
 
         for (int i = 0; i < nbL; i++) {
             sb.append(getRandomLine());
+            if (sb.length()>maxSize) {
+                break;
+            }
         }
         sb.append("\n\n");
         return sb.toString();
@@ -83,11 +102,15 @@ public class RandomTextGenerator {
     }
 
     public String generatePage() {
-        int nbL = generator.nextInt(8) + 1;
+        int nbL = generator.nextInt(NB_PARAGRAPH_PER_PAGE) + 1;
         StringBuffer sb = new StringBuffer();
 
+        int maxTargetPageSize = getTargetPageMaxSizeB();
         for (int i = 0; i < nbL; i++) {
             sb.append(getRandomParagraph());
+            if (sb.length()> maxTargetPageSize) {
+                break;
+            }
         }
         sb.append("\n\n");
         return sb.toString();
