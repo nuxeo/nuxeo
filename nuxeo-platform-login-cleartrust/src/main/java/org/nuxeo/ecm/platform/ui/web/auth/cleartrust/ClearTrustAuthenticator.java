@@ -32,10 +32,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
-import org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPluginLogoutExtension;
-import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 
 /**
  * @author M.-A. Darche
@@ -96,10 +94,6 @@ public class ClearTrustAuthenticator implements NuxeoAuthenticationPlugin,
             redirectToClearTrustLoginPage = true;
         }
 
-        // The username, sent in the CT_REMOTE_USER header, is only sent by
-        // ClearTrust in the first request. This happens only once and thus
-        // should not be missed, and the username should be stored in a local
-        // variable, here a cookie
         String ctUid = request.getHeader(CLEARTRUST_HEADER_UID);
         log.debug("ctUid = [" + ctUid + "]");
         if (ctUid == null) {
@@ -114,39 +108,12 @@ public class ClearTrustAuthenticator implements NuxeoAuthenticationPlugin,
                     // + NuxeoAuthenticationFilter.DEFAULT_START_PAGE;
                     loginUrl = baseURL + "login.jsp";
                 }
-
-                // This is to avoid infinite redirections
-                // String completeURI = request.getRequestURI();
-                // log.debug("completeURI = " + completeURI);
-                // String context = request.getContextPath() + '/';
-                // log.debug("context = " + context);
-                // String requestPage = completeURI.substring(context.length());
-                // log.debug("requestPage = " + requestPage);
-                log.debug("requestURL = " + request.getRequestURL());
-                Object redirectUrlAttr = request.getSession().getAttribute(
-                        "CLEARTRUST_AUTHENTICATOR_REDIRECT_TO_URL");
-                if (redirectUrlAttr != null) {
-                    String redirectUrl = (String) redirectUrlAttr;
-                    log.debug("redirectUrl = " + redirectUrl);
-                    if (redirectUrl.trim().equals(
-                            request.getRequestURL().toString().trim())) {
-                        log.debug("Stopping infinite redirect to URL : "
-                                + redirectUrl);
-                        return false;
-                    } else {
-                        log.debug("We will do a redirect");
-                    }
-                }
-
                 log.debug("Redirecting to loginUrl: " + loginUrl);
-                request.getSession().setAttribute(
-                        "CLEARTRUST_AUTHENTICATOR_REDIRECT_TO_URL",
-                        request.getRequestURL().toString());
                 response.sendRedirect(loginUrl);
                 return true;
             } catch (IOException ex) {
-                log.error("Unable to redirect to ClearTrust login screen to "
-                        + loginUrl, ex);
+                log.error("Unable to redirect to ClearTrust login URL ["
+                        + loginUrl + "]:", ex);
                 return false;
             }
         }
@@ -194,13 +161,14 @@ public class ClearTrustAuthenticator implements NuxeoAuthenticationPlugin,
         }
 
         try {
-            log.debug("Redirecting to logoutUrl = [" + cleartrustLogoutUrl + "] ...");
+            log.debug("Redirecting to logoutUrl = [" + cleartrustLogoutUrl
+                    + "] ...");
             response.sendRedirect(cleartrustLogoutUrl);
             log.debug("handleLogout DONE!");
             return true;
         } catch (IOException e) {
-            log.error("Unable to redirect to the logout URL " + cleartrustLogoutUrl
-                    + " :", e);
+            log.error("Unable to redirect to the logout URL ["
+                    + cleartrustLogoutUrl + "] :", e);
             return false;
         }
     }
@@ -223,7 +191,6 @@ public class ClearTrustAuthenticator implements NuxeoAuthenticationPlugin,
         cookie.setMaxAge(0);
         cookie.setPath("/");
         response.addCookie(cookie);
-        log.debug("expiring cookie DONE");
     }
 
     protected void displayCookieInformation(List<Cookie> cookies) {
