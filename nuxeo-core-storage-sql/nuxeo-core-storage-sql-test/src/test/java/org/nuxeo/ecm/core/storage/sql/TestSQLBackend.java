@@ -360,6 +360,52 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals("glop", title2.getString());
     }
 
+    public void testConcurrentNameCreation() throws Exception {
+        // two docs with same name (possible at this low level)
+        Session session1 = repository.getConnection();
+        Node root1 = session1.getRootNode();
+        session1.addChildNode(root1, "foo", null, "TestDoc", false);
+        session1.save();
+        Session session2 = repository.getConnection();
+        Node root2 = session2.getRootNode();
+        session2.addChildNode(root2, "foo", null, "TestDoc", false);
+        session2.save();
+        Session session3 = repository.getConnection();
+        Node root3 = session3.getRootNode();
+        try {
+            session3.getChildNode(root3, "foo", false);
+            fail();
+        } catch (StorageException e) {
+            // is failing for now... TODO
+        }
+    }
+
+    public void TODOtestConcurrentUpdate() throws Exception {
+        Session session1 = repository.getConnection();
+        Node root1 = session1.getRootNode();
+        Node node1 = session1.addChildNode(root1, "foo", null, "TestDoc", false);
+        SimpleProperty title1 = node1.getSimpleProperty("tst:title");
+        session1.save();
+
+        Session session2 = repository.getConnection();
+        Node root2 = session2.getRootNode();
+        Node node2 = session2.getChildNode(root2, "foo", false);
+        SimpleProperty title2 = node2.getSimpleProperty("tst:title");
+
+        title1.setValue("mama");
+        title2.setValue("glop");
+        session1.save();
+        assertEquals("mama", title1.getString());
+        assertEquals("glop", title2.getString());
+        session2.save(); // and notifies invalidations
+        // in non-transaction mode, session1 has not processed its invalidations
+        // yet, call save() to process them artificially
+        session1.save();
+        // session2 save wins
+        assertEquals("glop", title1.getString());
+        assertEquals("glop", title2.getString());
+    }
+
     public void testCrossSessionChildrenInvalidationAdd() throws Exception {
         // in first session, create base folder
         Session session1 = repository.getConnection();
