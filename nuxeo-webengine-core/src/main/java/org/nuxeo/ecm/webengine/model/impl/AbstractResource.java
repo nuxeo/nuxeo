@@ -168,7 +168,7 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
 
     public String getNextSegment() {
         String p = getTrailingPath();
-        if (p != "/") {
+        if (p != null && !"/".equals(p)) {
             int s = p.startsWith("/") ? 1 : 0;
             int k = p.indexOf('/', s);
             if (k == -1) {
