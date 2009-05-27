@@ -35,6 +35,8 @@ import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.session.UserSession;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.theme.elements.Element;
+import org.nuxeo.theme.themes.ThemeManager;
 
 public class Manager {
 
@@ -71,6 +73,15 @@ public class Manager {
         } catch (Exception e) {
             throw new WidgetException("Provider cannot be created: " + name, e);
         }
+    }
+
+    public static AreaFragment getAreaById(int area) throws WidgetException {
+        org.nuxeo.theme.Manager.getThemeManager();
+        Element element = ThemeManager.getElementById(area);
+        if (!(element instanceof AreaFragment)) {
+            throw new WidgetException("Could not find area fragment");
+        }
+        return (AreaFragment) element;
     }
 
     public static ProviderType getProviderType(String name) {
@@ -111,31 +122,84 @@ public class Manager {
         return html.trim();
     }
 
-    public static void addWidget(String providerName, String widgetTypeName,
-            String region, int order) throws WidgetException, ProviderException {
+    public static void addWidget(int area, String widgetTypeName, int order)
+            throws WidgetException, ProviderException {
+        AreaFragment areaFragment = getAreaById(area);
+
+        String providerName = areaFragment.getProviderName();
         Provider provider = getProvider(providerName);
         if (!provider.canWrite()) {
             throw new WidgetException("No permission to add widget into: "
                     + providerName);
         }
+
+        List<Widget> widgets = provider.getWidgets(areaFragment.getRegionName());
+
+        Integer maxItems = areaFragment.getMaxItems();
+        if (maxItems != null && maxItems > 0) {
+            if (widgets.size() >= maxItems) {
+                throw new WidgetException(String.format(
+                        "At most %s widget(s) are allowed.", maxItems));
+            }
+        }
+
+        Boolean disallowDuplicates = areaFragment.getDisallowDuplicates();
+        if (Boolean.TRUE.equals(disallowDuplicates)) {
+            for (Widget w : widgets) {
+                if (widgetTypeName.equals(w.getName())) {
+                    throw new WidgetException(String.format(
+                            "Only one '%s' widget is allowed.", widgetTypeName));
+                }
+            }
+        }
+
         Widget widget = provider.createWidget(widgetTypeName);
-        provider.addWidget(widget, region, order);
+        provider.addWidget(widget, areaFragment.getRegionName(), order);
     }
 
-    public static String moveWidget(String srcProviderName,
-            String destProviderName, String srcUid, String srcRegionName,
-            String destRegionName, int destOrder) throws WidgetException,
-            ProviderException {
+    public static String moveWidget(int srcArea, String srcUid, int destArea,
+            int destOrder) throws WidgetException, ProviderException {
+        AreaFragment srcAreaFragment = getAreaById(srcArea);
+        AreaFragment destAreaFragment = getAreaById(destArea);
+        String srcProviderName = srcAreaFragment.getProviderName();
+        String destProviderName = destAreaFragment.getProviderName();
+        String srcRegionName = srcAreaFragment.getRegionName();
+        String destRegionName = destAreaFragment.getRegionName();
+
         Provider srcProvider = getProvider(srcProviderName);
         Provider destProvider = getProvider(destProviderName);
         if (!srcProvider.canWrite() || !destProvider.canWrite()) {
             throw new WidgetException("No permission to move widget.");
         }
         if (srcRegionName == null || destRegionName == null) {
-            throw new WidgetException("Source or destination region is undefined.");
+            throw new WidgetException(
+                    "Source or destination region is undefined.");
         }
 
         Widget srcWidget = srcProvider.getWidgetByUid(srcUid);
+
+        if (!destRegionName.equals(srcRegionName)) {
+            List<Widget> widgets = destProvider.getWidgets(destAreaFragment.getRegionName());
+            Integer maxItems = destAreaFragment.getMaxItems();
+            if (maxItems != null) {
+                if (widgets.size() >= maxItems) {
+                    throw new WidgetException(String.format(
+                            "Max %s item(s) are allowed.", maxItems));
+                }
+            }
+            Boolean disallowDuplicates = destAreaFragment.getDisallowDuplicates();
+            if (disallowDuplicates) {
+                String widgetTypeName = srcWidget.getName();
+                for (Widget w : widgets) {
+                    if (widgetTypeName.equals(w.getName())) {
+                        throw new WidgetException(String.format(
+                                "Only one '%s' widget is allowed.",
+                                widgetTypeName));
+                    }
+                }
+            }
+        }
+
         String newId = srcWidget.getUid();
 
         // The destination provider is the same as the source provider
@@ -387,9 +451,13 @@ public class Manager {
     /*
      * UI
      */
-    public static String getPanelData(String providerName, String regionName,
-            String mode) throws WidgetException, ProviderException {
+    public static String getPanelData(int area, String mode)
+            throws WidgetException, ProviderException {
+        final AreaFragment areaFragment = getAreaById(area);
+        final String providerName = areaFragment.getProviderName();
+        final String regionName = areaFragment.getRegionName();
         final Provider provider = getProvider(providerName);
+        final String decoration = areaFragment.getDecoration();
         final Map<String, Object> data = new HashMap<String, Object>();
         final List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
         final Map<String, Map<String, Object>> types = new HashMap<String, Map<String, Object>>();
@@ -429,6 +497,9 @@ public class Manager {
             mode = "*";
         }
         data.put("mode", mode);
+        data.put("provider", providerName);
+        data.put("region", regionName);
+        data.put("decoration", decoration);
         data.put("widget_types", types);
         data.put("widget_items", items);
         return org.nuxeo.theme.html.Utils.toJson(data);

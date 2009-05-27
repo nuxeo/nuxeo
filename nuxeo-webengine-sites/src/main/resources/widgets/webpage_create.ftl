@@ -65,13 +65,19 @@
 
 <form name="pageCreate" method="POST" onsubmit="return isTitleSet();"
   action="${This.path}/createWebPage" accept-charset="utf-8">
+<input type="hidden" name="pageName" value="${Context.request.getAttribute('pageName')}" />
 <table class="createWebPage">
   <tbody>
     <tr>
       <td>${Context.getMessage("label.page.title")}</td>
     </tr>
     <tr>
+<<<<<<< local
+      <td>${Context.getMessage("label.page.title")}</td>
+      <td><input type="text" id="titleInput" name="title" value="${Context.request.getAttribute('pageName')}" /></td>
+=======
       <td><input type="text" id="titleInput" name="title" value="" /></td>
+>>>>>>> other
     </tr>
     <tr>
       <td>${Context.getMessage("label.page.description")}</td>

@@ -18,28 +18,26 @@ NXThemesWebWidgets.init = function() {
   panels.each(function(panel) {
     var text = panel.innerHTML;
     var model = text.evalJSON(true);
-    var provider = model.provider;
-    var region = model.region;
-    var decoration = model.decoration;
+    var area = model.area;
     var mode = model.mode;
 
     var url = nxthemesBasePath + "/nxthemes-webwidgets/get_panel_data";
     new Ajax.Request(url, {
          method: 'get',
          parameters: {
-             'provider': provider,
-             'region': region,
+             'area': area,
              'mode': mode
          },
          onSuccess: function(r) {
              var text = r.responseText;
              var panel_data = text.evalJSON(true);
              var container = panel.parentNode;
-             NXThemesWebWidgets.renderPanel(provider, decoration, container, panel_data);
-             container.removeChild(panel);
+             NXThemesWebWidgets.renderPanel(container, panel_data);
+             container.removeChild(panel); 
          },
          onFailure: function(r) {
-        	 // FIXME
+             var text = r.responseText;
+             window.alert(text);
          }
     });
 

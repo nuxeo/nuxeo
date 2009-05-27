@@ -22,21 +22,19 @@ import org.nuxeo.theme.webwidgets.Manager;
 public class Editor {
 
     /* Widget actions */
-    public static void addWidget(String providerName, String widgetTypeName,
-            String region, int order) throws WidgetEditorException {
+    public static void addWidget(int areaUid, String widgetTypeName, int order)
+            throws WidgetEditorException {
         try {
-            Manager.addWidget(providerName, widgetTypeName, region, order);
+            Manager.addWidget(areaUid, widgetTypeName, order);
         } catch (Exception e) {
             throw new WidgetEditorException(e.getMessage(), e);
         }
     }
 
-    public static String moveWidget(String srcProviderName,
-            String destProviderName, String srcUid, String srcRegionName,
-            String destRegionName, int destOrder) throws WidgetEditorException {
+    public static String moveWidget(int srcArea, String srcUid, int destArea, int destOrder)
+            throws WidgetEditorException {
         try {
-            return Manager.moveWidget(srcProviderName, destProviderName,
-                    srcUid, srcRegionName, destRegionName, destOrder);
+            return Manager.moveWidget(srcArea, srcUid, destArea, destOrder);
         } catch (Exception e) {
             throw new WidgetEditorException(e.getMessage(), e);
         }

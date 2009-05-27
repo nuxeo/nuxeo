@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.picture.commandline.imagemagick">
+
+  <extension target="org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent"
+    point="command">
+    <!--  Only purpose of this extension is to verify ImageMagick availability -->
+    <command name="identify" enabled="true">
+      <commandLine>identify</commandLine>
+      <parameterString> -ping -format '%m %w %h' #{filePath}</parameterString>
+      <winParameterString> -ping -format "%m %w %h" #{filePath}</winParameterString>
+      <installationDirective>You need to install ImageMagic.</installationDirective>
+    </command>
+
+  </extension>
+
+</component>

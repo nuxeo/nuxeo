@@ -29,11 +29,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang.StringUtils;
-import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.model.Property;
@@ -130,23 +128,6 @@ public class SiteUtils {
     }
     
     /**
-     * Retrieves user email for a certain username.
-     * 
-     * @param username
-     * @return user email
-     * @throws Exception
-     */
-    public static String getUserEmail(String username) throws Exception {
-        UserManager userManager = getUserManager();
-        NuxeoPrincipal principal = userManager.getPrincipal(username);
-        if (principal == null) {
-            return StringUtils.EMPTY;
-        }
-        DataModel model = principal.getModel().getDataModels().values().iterator().next();
-        return (String) model.getData("email");
-    }
-
-    /**
      * Returns the path to all the existing web containers.
      *
      * @return the path to all the existing web containers
@@ -187,15 +168,19 @@ public class SiteUtils {
             HttpServletRequest request, CoreSession session, String parentPath)
             throws Exception {
         String title = request.getParameter("title");
+        String pageName = request.getParameter(SiteConstants.PAGE_NAME_ATTRIBUTE);
         String description = request.getParameter("description");
         Boolean isRichtext = Boolean.parseBoolean(request.getParameter("isRichtext"));
         String wikitextEditor = request.getParameter("wikitextEditor");
         String richtextEditor = request.getParameter("richtextEditor");
         String pushToMenu = request.getParameter("pushToMenu");
 
+        // Trim and replace problematic chars with -
+        String theName = (StringUtils.isEmpty(pageName) ? title : pageName).trim();
+        theName = theName.replaceAll("[ | \\t|/\\@|\\?|\\&]+", "-");
+
         DocumentModel documentModel = session.createDocumentModel(parentPath,
-                IdUtils.generateId(title + System.currentTimeMillis()),
-                SiteConstants.WEBPAGE);
+                theName, SiteConstants.WEBPAGE);
         documentModel.setPropertyValue("dc:title", title);
         documentModel.setPropertyValue("dc:description", description);
         documentModel.setPropertyValue(SiteConstants.WEBPAGE_EDITOR, isRichtext);

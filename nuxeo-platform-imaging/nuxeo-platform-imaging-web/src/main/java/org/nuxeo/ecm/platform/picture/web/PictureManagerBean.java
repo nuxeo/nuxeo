@@ -52,6 +52,8 @@ import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.model.Property;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandAvailability;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
 import org.nuxeo.ecm.platform.picture.api.adapters.PictureResourceAdapter;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.UserAction;
@@ -63,6 +65,7 @@ import org.nuxeo.ecm.platform.url.codec.DocumentFileCodec;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.nuxeo.ecm.webapp.base.InputController;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:ldoguin@nuxeo.com">Laurent Doguin</a>
@@ -77,6 +80,8 @@ public class PictureManagerBean extends InputController implements
     private static final long serialVersionUID = -7323791279190937921L;
 
     private static final Log log = LogFactory.getLog(PictureManagerBean.class);
+
+    private static Boolean imageMagickAvailable;
 
     @In(create = true, required = false)
     private transient CoreSession documentManager;
@@ -356,5 +361,14 @@ public class PictureManagerBean extends InputController implements
 
     public void setCropCoords(String cropCoords) {
         this.cropCoords = cropCoords;
+    }
+    
+    public Boolean isImageMagickAvailable() throws Exception{
+        if (imageMagickAvailable == null) {
+            CommandLineExecutorService cles = Framework.getService(CommandLineExecutorService.class);
+            CommandAvailability ca = cles.getCommandAvailability("identify");
+            imageMagickAvailable = ca.isAvailable();
+        }
+        return imageMagickAvailable;
     }
 }

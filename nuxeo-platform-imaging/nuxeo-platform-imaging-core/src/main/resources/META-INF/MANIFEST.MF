@@ -8,7 +8,8 @@ Nuxeo-Component: OSGI-INF/ImagingComponent.xml,
  OSGI-INF/picture-life-cycle-contrib.xml,
  OSGI-INF/picturebook-schemas-contrib.xml,
  OSGI-INF/picturebook-life-cycle-contrib.xml,
- OSGI-INF/libraryselector-config-framework.xml
+ OSGI-INF/libraryselector-config-framework.xml,
+ OSGI-INF/commandline-imagemagick-contrib.xml
 Eclipse-LazyStart: true
 Bundle-Category: core,stateful
 Require-Bundle: org.nuxeo.ecm.platform.types.api, org.nuxeo.ecm.core.api, org.nuxeo.ecm.platform.picture.api

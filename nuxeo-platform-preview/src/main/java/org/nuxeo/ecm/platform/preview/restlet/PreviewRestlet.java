@@ -68,6 +68,7 @@ public class PreviewRestlet extends BaseStatelessNuxeoRestlet {
         String repo = (String) req.getAttributes().get("repo");
         String docid = (String) req.getAttributes().get("docid");
         String xpath = (String) req.getAttributes().get("fieldPath");
+        xpath = xpath.replace("-", "/");
         String subPath = (String) req.getAttributes().get("subPath");
         String blobPostProcessingParameter = getQueryParamValue(req, "blobPostProcessing", "false");
         boolean blobPostProcessing = Boolean.parseBoolean(blobPostProcessingParameter);

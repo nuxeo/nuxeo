@@ -2,9 +2,8 @@
 NXThemesWebWidgets.uploaders = new Hash();
 
 NXThemesWebWidgets.addWidget = function(info) {
-    var provider = info.target.getAttribute('provider');
-    var region = info.target.getAttribute('region');
-    if (!provider || !region) {
+    var area = info.target.getAttribute('area');
+    if (!area) {
     	return;
     }
     var widgetName = info.source.getAttribute('typename');
@@ -13,9 +12,8 @@ NXThemesWebWidgets.addWidget = function(info) {
     new Ajax.Request(url, {
          method: 'post',
          parameters: {
-             'provider': provider,
+    	     'area': area,
              'widget_name': widgetName,
-             'region': region,
              'order': order
          },
          onSuccess: function(r) {
@@ -29,29 +27,30 @@ NXThemesWebWidgets.addWidget = function(info) {
 };
 
 NXThemesWebWidgets.moveWidget = function(info) {
-    var srcContainer = info.sourceContainer;
-    var srcProvider = srcContainer.getAttribute('provider');    
-    var srcUid = info.source.getAttribute('id').replace("webwidget_" + srcProvider + "_", "");
-    var srcRegionName = srcContainer.getAttribute('region');
-    var destProvider = info.target.getAttribute('provider');
-    var destRegionName = info.target.getAttribute('region');
+	var srcContainer = info.sourceContainer;
+    var srcArea = srcContainer.getAttribute('area');
+    var srcUid = info.source.getAttribute('id').split('_')[2];
+    var destArea = info.target.getAttribute('area');
     var destOrder = info.order;
+    var srcProvider = srcContainer.getAttribute('provider');
+    var destProvider = info.target.getAttribute('provider');
+    var destDecoration = info.target.getAttribute('decoration');
     
     var url = nxthemesBasePath + "/nxthemes-webwidgets/move_widget";
     new Ajax.Request(url, {
          method: 'post',
          parameters: {
-             'src_provider': srcProvider,
-             'dest_provider': destProvider,
+             'src_area': srcArea,
              'src_uid': srcUid,
-             'src_region': srcRegionName,
-             'dest_region': destRegionName,
+             'dest_area': destArea,
              'dest_order': destOrder
          },
          onSuccess: function(r) {
            var destUid = r.responseText;
            NXThemesWebWidgets.changeWidgetId(srcProvider, destProvider, srcUid, destUid);               
            var widget = NXThemesWebWidgets.getWidget(destProvider, destUid);
+           widget._decoration = destDecoration;
+           widget._provider = destProvider;
            widget.setHtml();
          },
          onFailure: function(r) {
@@ -485,26 +484,24 @@ NXThemesWebWidgets.WebWidgetPanel.prototype = Object.extend(new NXThemes.View(),
 
   render: function(data) {
     var panel = this.widget;
+    var area = data.get('area');
+    var mode = data.get('mode');
     var provider = data.get('provider');
     var decoration = data.get('decoration');
-    var region = data.get('region');
-    var mode = data.get('mode');
+    panel.setAttribute('area', area);
     panel.setAttribute('provider', provider);
-    panel.setAttribute('region', region);
-
+    panel.setAttribute('decoration', decoration);
     var url = nxthemesBasePath + "/nxthemes-webwidgets/get_panel_data";
     new Ajax.Request(url, {
          method: 'get',
          parameters: {
-             'provider': provider,
-             'region': region,
+             'area': area,
              'mode': mode
          },
          onSuccess: function(r) {
              var text = r.responseText;
              var panel_data = text.evalJSON(true);
-             panel.innerHTML = "";
-             NXThemesWebWidgets.renderPanel(provider, decoration, panel, panel_data);
+             NXThemesWebWidgets.renderPanel(panel, panel_data);
          },
          onFailure: function(r) {
              // FIXME
