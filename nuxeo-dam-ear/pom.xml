@@ -57,6 +57,10 @@
       <groupId>org.nuxeo.dam</groupId>
       <artifactId>nuxeo-dam-webapp</artifactId>
     </dependency>
+    <dependency>
+      <groupId>truezip</groupId>
+      <artifactId>truezip</artifactId>
+    </dependency>
   </dependencies>
 
   <build>
