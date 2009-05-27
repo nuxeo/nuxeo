@@ -68,7 +68,7 @@ public class LogsBean implements Logs {
     }
 
     public void addLogEntries(List<LogEntry> entries) {
-        service().addLogEntries(null, entries);
+        service().addLogEntries(em, entries);
     }
 
     public List<LogEntry> getLogEntriesFor(String uuid) {
