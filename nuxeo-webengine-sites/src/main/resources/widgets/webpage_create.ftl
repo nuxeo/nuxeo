@@ -68,13 +68,13 @@
 <input type="hidden" name="pageName" value="${Context.request.getAttribute('pageName')}" />
 <table class="createWebPage">
   <tbody>
-    <tr>
-    </tr>
-    <tr>
-      <td>${Context.getMessage("label.page.title")}</td>
-      <td><input type="text" id="titleInput" name="title" value="${Context.request.getAttribute('pageName')}" /></td>
-    </tr>
-    <tr>
+  <tr>
+    <td>${Context.getMessage("label.page.title")}</td>
+  </tr>
+  <tr>
+    <td><input type="text" id="titleInput" name="title" value="" /></td>
+   </tr>
+   <tr>
       <td>${Context.getMessage("label.page.description")}</td>
     </tr>
     <tr>
