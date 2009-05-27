@@ -28,7 +28,7 @@
       <plugins>
         <plugin>BASIC_AUTH</plugin>
         <plugin>ClearTrust_AUTH</plugin>
-	<plugin>FORM_AUTH</plugin>
+        <plugin>FORM_AUTH</plugin>
       </plugins>
     </authenticationChain>
   </extension>
