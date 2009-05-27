@@ -43,28 +43,11 @@
 
   <extension target="faces-config#NAVIGATION">
 
-
     <navigation-case>
       <from-outcome>view_documents</from-outcome>
       <to-view-id>/view_documents.xhtml</to-view-id>
       <redirect />
     </navigation-case>
-
-  <navigation-rule>
-    <from-view-id>/incl/new_import_set_error.xhtml</from-view-id>
-    <navigation-case>
-         <from-outcome>next</from-outcome>
-         <to-view-id>/incl/new_import_set.xhtml</to-view-id>
-    </navigation-case>
-  </navigation-rule>
-
-  <navigation-rule>
-    <from-view-id>/incl/new_import_set.xhtml</from-view-id>
-    <navigation-case>
-       <from-outcome>next</from-outcome>
-       <to-view-id>/incl/new_import_set.xhtml</to-view-id>
-    </navigation-case>
-  </navigation-rule>
 
   </extension>
 
@@ -72,7 +55,7 @@
 
     <!-- Post login and 'home' view handler -->
     <page view-id="/nxstartup.xhtml"
-      action="#{startupHelper.initDomainAndFindStartupPage('Default domain', 'view')}"/>
+      action="#{startupHelper.initDomainAndFindStartupPage()}"/>
 
   </extension>
 

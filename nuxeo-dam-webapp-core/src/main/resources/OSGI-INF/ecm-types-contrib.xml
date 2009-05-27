@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<component name="org.nuxeo.dam.platform.types">
+
+  <require>org.nuxeo.ecm.platform.types.TypeService</require>
+
+  <extension target="org.nuxeo.ecm.platform.types.TypeService" point="types">
+
+    <type id="ImportSet">
+      <label>Import Set</label>
+      <icon>/icons/import_set.gif</icon>
+      <bigIcon>/icons/import_set_100.png</bigIcon>
+      <description>importSet.description</description>
+      <category>SuperDocument</category>
+      <default-view>view_documents</default-view>
+      <layouts mode="any">
+        <layout>heading</layout>
+        <layout>file</layout>
+        <layout>dublincore</layout>
+        <layout>common</layout>
+      </layouts>
+    </type>
+
+  </extension>
+</component>

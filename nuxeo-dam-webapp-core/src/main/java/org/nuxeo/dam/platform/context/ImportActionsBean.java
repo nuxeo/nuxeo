@@ -15,86 +15,70 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
-import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 
-@Name("documentActions")
-public class DocumentActionsBean {
+@Name("importActions")
+public class ImportActionsBean {
 
-    private static final Log log = LogFactory.getLog(DocumentActionsBean.class);
+    private static final Log log = LogFactory.getLog(ImportActionsBean.class);
 
-    public DocumentModel changeableDocument;
+    public DocumentModel newImportSet;
 
-    public DocumentModel getChangeableDocument() throws ClientException {
-        createChangeableDocument();
-
-        return changeableDocument;
-    }
-
-    public static final String BATCH_TYPE_NAME = "Workspace";
+    public static final String BATCH_TYPE_NAME = "ImportSet";
 
     public static final String IMPORTSET_ROOT_PATH = "/domain/import-sets";
 
-    @In
+    @In(create = true, required = false)
     protected transient CoreSession documentManager;
-
-    public CoreSession getDocumentManager() throws ClientException {
-        return documentManager;
-    }
 
     @In(create = true, required = false)
     protected FacesMessages facesMessages;
-
-    @In(create = true, required = false)
-    protected NavigationContext navigationContext;
 
     @In(create = true)
     // won't inject this because of seam problem after activation
     // ::protected Map<String, String> messages;
     protected ResourcesAccessor resourcesAccessor;
 
-    public String createChangeableDocument() throws ClientException {
-        Map<String, Object> context = new HashMap<String, Object>();
-        context.put(CoreEventConstants.PARENT_PATH, IMPORTSET_ROOT_PATH);
-        changeableDocument = getDocumentManager().createDocumentModel(
-                BATCH_TYPE_NAME, context);
+    public DocumentModel getImportSet() throws ClientException {
+        if (newImportSet == null) {
+            Map<String, Object> context = new HashMap<String, Object>();
+            context.put(CoreEventConstants.PARENT_PATH, IMPORTSET_ROOT_PATH);
+            newImportSet = documentManager.createDocumentModel(BATCH_TYPE_NAME,
+                    context);
+        }
 
-        return null;
+        return newImportSet;
     }
 
-    public String createDocument() throws ClientException {
-        String title = (String) changeableDocument.getProperty("dublincore",
-                "title");
+    public String createImportSet() throws ClientException {
+        String title = (String) newImportSet.getProperty("dublincore", "title");
         if (title == null) {
             title = "";
         }
         String name = IdUtils.generateId(title);
         // set parent path and name for document model
-        changeableDocument.setPathInfo(IMPORTSET_ROOT_PATH, name);
+        newImportSet.setPathInfo(IMPORTSET_ROOT_PATH, name);
 
-        changeableDocument = getDocumentManager().createDocument(
-                changeableDocument);
-        getDocumentManager().save();
+        newImportSet = documentManager.createDocument(newImportSet);
+        documentManager.save();
 
-        logDocumentWithTitle("Created the document: ", changeableDocument);
+        logDocumentWithTitle("Created the document: ", newImportSet);
         facesMessages.add(FacesMessage.SEVERITY_INFO,
                 resourcesAccessor.getMessages().get("document_saved"),
-                resourcesAccessor.getMessages().get(
-                        changeableDocument.getType()));
+                resourcesAccessor.getMessages().get(newImportSet.getType()));
 
-        return null;
+        invalidateImportContext();
+        return "nxstartup";
     }
 
-    public boolean newImportSetCreationInProgress() {
-        return (changeableDocument != null);
+    public String cancel() {
+        invalidateImportContext();
+
+        return "nxstartup";
     }
 
-    // **********************
-
-    public String goBack() {
-        changeableDocument = null;
-
-        return null;
+    public void invalidateImportContext() {
+        newImportSet = null;
     }
 
     /**

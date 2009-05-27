@@ -1,27 +1,32 @@
 <div xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:a4j="http://richfaces.org/a4j"
-      xmlns:rich="http://richfaces.org/rich">
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:rich="http://richfaces.org/rich">
+
   <f:subview>
-    <a4j:form>
-    <rich:modalPanel id="lot_creation">
-        <f:facet name="header"><h:outputText value="#{messages['title.createNewImportSet']}"/></f:facet>
-        <f:facet name="controls">
-            <h:panelGroup>
-                <h:graphicImage value="/img/close.png" styleClass="hidelink" id="hidelink"/>
-                <rich:componentControl for="lot_creation" attachTo="hidelink" operation="hide" event="onclick"/>
-            </h:panelGroup>
-        </f:facet>
-        <a4j:include viewId="/incl/new_import_set.xhtml" ajaxRendered="${documentActions.newImportSetCreationInProgress}" src="/incl/new_import_set.xhtml"/>
+    <rich:modalPanel id="panel" width="500" height="350">
+      <f:facet name="header">
+        <h:panelGroup>
+          <h:outputText value="${message[popup.label.creation.importSet]}"/>
+      </h:panelGroup>
+    </f:facet>
+    <f:facet name="controls">
+      <h:panelGroup>
+        <h:graphicImage value="/img/close.png"
+            styleClass="hidelink" id="hidelink" />
+          <rich:componentControl for="panel" attachTo="hidelink"
+            operation="hide" event="onclick" />
+        </h:panelGroup>
+      </f:facet>
+      <ui:include src="/incl/new_import_set.xhtml" />
     </rich:modalPanel>
-    </a4j:form>
-
-    <a4j:commandLink action="${documentActions.createChangeableDocument()}" oncomplete="Richfaces.showModalPanel('lot_creation')">
-      <h:outputText value="#{messages['action.createNewImportSet']}"/>
-    </a4j:commandLink>
-
-
+    <h:outputLink value="#" id="link">
+        Show Modal Panel
+      <rich:componentControl for="panel" attachTo="link"
+      operation="show" event="onclick" />
+    </h:outputLink>
   </f:subview>
+
 </div>

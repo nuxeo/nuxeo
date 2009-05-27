@@ -6,7 +6,9 @@ Bundle-Version: 1.0.0
 Bundle-Localization: plugin
 Bundle-Vendor: Nuxeo
 Bundle-Category: web
-Nuxeo-Component: OSGI-INF/theme-contrib.xml
+Nuxeo-Component: OSGI-INF/theme-contrib.xml,
+ OSGI-INF/layouts-contrib.xml,
+ OSGI-INF/ecm-types-contrib.xml
 Require-Bundle: org.nuxeo.ecm.platform.ui,
  org.nuxeo.ecm.webapp.base,
  org.nuxeo.ecm.core

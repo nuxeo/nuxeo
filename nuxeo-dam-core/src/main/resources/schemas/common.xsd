@@ -10,6 +10,7 @@
   <xs:element name="icon-expanded" type="xs:string"/>
   <xs:element name="size" type="xs:integer"/>
 
+  <xs:element name="author" type="xs:string"/>
+  <xs:element name="creation-date" type="xs:date"/>
+
 </xs:schema>
-
-
