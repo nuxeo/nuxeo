@@ -4,8 +4,8 @@ Optimizations:
 
 - blob storage GC
 
-- hierarchy management, children optimizations
+- table aggregation
 
-- table aggregation and optimization
+- arrays to replace collection tables (PostgreSQL)
 
-- search apis and implementation
+- CONNECT BY / START WITH for NX_IN_TREE implementation (Oracle)
