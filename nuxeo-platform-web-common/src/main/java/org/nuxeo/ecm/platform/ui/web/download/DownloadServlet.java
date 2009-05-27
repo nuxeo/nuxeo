@@ -141,11 +141,12 @@ public class DownloadServlet extends HttpServlet {
                 out.write(buffer, 0, read);
                 out.flush();
             }
-            resp.flushBuffer();
-
         } catch (Exception e) {
             throw new ServletException(e);
         } finally {
+            if (resp != null) {
+                resp.flushBuffer();
+            }
             if (session != null) {
                 CoreInstance.getInstance().close(session);
             }
