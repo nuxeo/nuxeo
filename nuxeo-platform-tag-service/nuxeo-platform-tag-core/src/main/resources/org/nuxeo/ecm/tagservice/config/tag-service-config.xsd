@@ -1,0 +1,26 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  elementFormDefault="qualified" targetNamespace="http://tagservice.nuxeo.org"
+  xmlns="http://tagservice.nuxeo.org">
+
+  <xs:element name="tagservice-config" type="tagservice-config" />
+
+  <xs:complexType name="tagservice-config">
+    <xs:sequence>
+      <xs:element name="properties" type="properties" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="properties">
+    <xs:sequence>
+      <xs:element name="property" type="property" minOccurs="1"
+        maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="property">
+    <xs:attribute name="name" type="xs:string" use="required" />
+    <xs:attribute name="value" type="xs:string" use="required" />
+    <xs:attribute default="true" name="hasSysProps" type="xs:boolean" />
+  </xs:complexType>
+
+</xs:schema>

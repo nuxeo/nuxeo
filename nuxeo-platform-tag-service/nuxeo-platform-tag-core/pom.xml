@@ -1,0 +1,156 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <artifactId>nuxeo-platform-tag-parent</artifactId>
+    <groupId>org.nuxeo.ecm.platform</groupId>
+    <version>5.2.1-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>nuxeo-platform-tag-core</artifactId>
+  <groupId>org.nuxeo.ecm.platform</groupId>
+  <name>Nuxeo Tag Service - Core</name>
+  <packaging>jar</packaging>
+  <description>Nuxeo Enterprise Platform: Tag Service Core.</description>
+
+  <properties>
+    <jboss.dir>/opt/jboss</jboss.dir>
+    <server.configuration>default</server.configuration>
+  </properties>
+
+  <!-- Deps -->
+  <dependencies>
+    <!-- Nuxeo dependencies -->
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-tag-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-comment-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-storage-sql-test</artifactId>
+      <version>${nuxeo.core.version}</version>
+    </dependency>
+
+    <!-- Persistence -->
+    <dependency>
+      <groupId>javax.persistence</groupId>
+      <artifactId>persistence</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-entitymanager</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>c3p0</groupId>
+      <artifactId>c3p0</artifactId>
+      <version>0.9.1</version>
+    </dependency>
+
+    <!-- Testing -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.derby</groupId>
+      <artifactId>derbyclient</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>hsqldb</groupId>
+      <artifactId>hsqldb</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- Config jaxb stuff -->
+    <dependency>
+      <groupId>javax.xml.bind</groupId>
+      <artifactId>jaxb-api</artifactId>
+      <version>2.1</version>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.xml.bind</groupId>
+      <artifactId>jaxb-impl</artifactId>
+      <version>2.1.3</version>
+    </dependency>
+
+  </dependencies>
+
+
+  <!-- Build -->
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.5</source>
+          <target>1.5</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-eclipse-plugin</artifactId>
+        <configuration>
+          <downloadSources>true</downloadSources>
+          <downloadJavadocs>true</downloadJavadocs>
+        </configuration>
+      </plugin>
+      <!--
+        <plugin> <groupId>org.codehaus.mojo</groupId>
+        <artifactId>jaxb2-maven-plugin</artifactId> <executions>
+        <execution> <goals> <goal>xjc</goal> </goals> </execution>
+        </executions> <configuration>
+        <clearOutputDir>false</clearOutputDir>
+        <packageName>org.nuxeo.ecm.platform.tag.config</packageName>
+        <schemaDirectory>${basedir}/src/main/resources/org/nuxeo/ecm/tagservice/config</schemaDirectory>
+        <outputDirectory>${basedir}/src/main/java</outputDirectory>
+        </configuration> </plugin>
+      -->
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>deploy-config-files</id>
+            <phase>install</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <tasks>
+                <copy overwrite="true" verbose="true"
+                  file="src/main/resources/org/nuxeo/ecm/tagservice/config/tag-service-config.xsd"
+                  toDir="${jboss.dir}/server/${server.configuration}/deploy/nuxeo.ear/config" />
+                <copy overwrite="true" verbose="true"
+                  file="src/main/resources/org/nuxeo/ecm/tagservice/config/tagservice.cfg.xml"
+                  toDir="${jboss.dir}/server/${server.configuration}/deploy/nuxeo.ear/config" />
+              </tasks>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+    </plugins>
+  </build>
+</project>

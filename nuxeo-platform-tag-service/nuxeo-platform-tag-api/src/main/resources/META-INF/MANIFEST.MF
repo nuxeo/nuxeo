@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo ECM Tag Service API
+Bundle-SymbolicName: org.nuxeo.ecm.platform.tag.api;singleton:=true		     
+Bundle-Vendor: Nuxeo
+Require-Bundle: org.nuxeo.ecm.platform.types.core
+Export-Package: org.nuxeo.ecm.platform.tag

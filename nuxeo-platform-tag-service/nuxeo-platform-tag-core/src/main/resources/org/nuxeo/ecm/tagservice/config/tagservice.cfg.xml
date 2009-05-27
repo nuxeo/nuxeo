@@ -1,0 +1,15 @@
+<tagservice-config xmlns="http://tagservice.nuxeo.org"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://tagservice.nuxeo.org tag-service-config.xsd">
+
+  <properties>
+    <property name="tagservice.isTagServiceInNuxeo" value="true" />
+    <property name="hibernate.show_sql" value="true" />
+    <property name="hibernate.connection.driver_class" value="org.h2.Driver" />
+    <property name="hibernate.connection.password" value="" />
+    <property name="hibernate.connection.username" value="sa" />
+    <property name="hibernate.connection.url" value="jdbc:h2:${jboss.server.data.dir}/h2/nuxeo" />
+    <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect" />
+  </properties>
+
+</tagservice-config>
