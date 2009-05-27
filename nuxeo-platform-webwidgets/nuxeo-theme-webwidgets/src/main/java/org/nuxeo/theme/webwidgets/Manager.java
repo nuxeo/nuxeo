@@ -144,7 +144,7 @@ public class Manager {
         }
 
         Boolean disallowDuplicates = areaFragment.getDisallowDuplicates();
-        if (disallowDuplicates) {
+        if (Boolean.TRUE.equals(disallowDuplicates)) {
             for (Widget w : widgets) {
                 if (widgetTypeName.equals(w.getName())) {
                     throw new WidgetException(String.format(
