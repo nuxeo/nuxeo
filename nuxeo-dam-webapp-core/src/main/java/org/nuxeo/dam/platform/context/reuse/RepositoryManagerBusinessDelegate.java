@@ -34,6 +34,9 @@ import org.nuxeo.runtime.api.Framework;
 @Scope(SESSION)
 public class RepositoryManagerBusinessDelegate implements Serializable {
 
+
+
+
     private static final long serialVersionUID = -827546565347489728L;
 
     private transient RepositoryManager repositoryManager;

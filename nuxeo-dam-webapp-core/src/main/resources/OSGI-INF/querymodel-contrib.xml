@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.dam.webapp.querymodel.DefaultQueryModels">
+
+  <extension
+    target="org.nuxeo.ecm.core.search.api.client.querymodel.QueryModelService"
+    point="model">
+
+    <queryModel name="FILTERED_DOCUMENTS" docType="FilterQuery">
+      <max>10</max>
+
+      <whereClause>
+
+        <fixedPart>
+        ecm:mixinType != 'HiddenInNavigation'
+        </fixedPart>
+
+      </whereClause>
+
+    </queryModel>
+
+  </extension>
+
+</component>

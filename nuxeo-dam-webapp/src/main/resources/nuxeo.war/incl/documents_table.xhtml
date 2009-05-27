@@ -1,0 +1,118 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxd="http://nuxeo.org/nxweb/document">
+
+<a4j:region rendered="#{documents != null}">
+  <h:form id="#{documents.name}">
+    <h:outputText value="#{messages['label.content.empty.search']}"
+                  rendered="#{documents.rowCount == 0}" />
+
+    <ui:include src="/pagination/pageNavigationControls.xhtml" />
+
+    <nxu:dataTable
+      id="dataTable"
+      value="#{documents.rows}"
+      var="row"
+      rowClasses="dataRowEven,dataRowOdd"
+      styleClass="dataOutput"
+      rendered="#{documents.rowCount > 0}">
+
+      <!-- id and selection -->
+      <nxu:column styleClass="iconColumn">
+        <f:facet name="header">
+          <h:selectBooleanCheckbox rendered="true"
+              onclick="selectDataTablePage('#{documents.name}', '#{providerName}', this.checked)" title="#{messages['tooltip.content.select.all']}">
+          </h:selectBooleanCheckbox>
+        </f:facet>
+         <h:selectBooleanCheckbox
+            value="#{row.selected}"
+            onclick="selectDataTableRow('#{row.data.ref}', '#{providerName}', this)">
+        </h:selectBooleanCheckbox>
+      </nxu:column>
+
+      <!-- Icon + Type -->
+      <!--
+      <nxu:column styleClass="iconColumn">
+         <div id="docRefTarget:#{row.data.ref}">
+          <div id="docRef:#{row.data.ref}" class="cell popupTarget" docRef="#{row.data.ref}">
+            <nxu:graphicImage
+              value="#{nxd:iconPath(row.data)}" alt="#{row.data.type}"  />
+          </div>
+          </div>
+      </nxu:column>
+      -->
+
+        <!--  Title -->
+      <nxu:column>
+        <f:facet name="header">
+          <h:panelGroup>
+          <h:commandLink immediate="true" action="#{sortActions.repeatSearch}"
+              rendered="#{provider.sortable}" >
+            <h:outputText value="#{messages['label.content.header.title']}" />
+            <f:param name="providerName" value="#{providerName}" />
+            <f:param name="sortColumn" value="dc:title" />
+            <h:panelGroup rendered="#{provider.sortInfo.sortColumn == 'dc:title' }" >
+              <h:graphicImage value="/icons/arrow_down.gif"
+                rendered="#{provider.sortInfo.sortAscending}" />
+              <h:graphicImage value="/icons/arrow_up.gif"
+                rendered="#{!provider.sortInfo.sortAscending}" />
+            </h:panelGroup>
+          </h:commandLink>
+          <h:outputText value="#{messages['label.content.header.title']}"
+            rendered="#{!provider.sortable}" />
+          </h:panelGroup>
+        </f:facet>
+        <div class="popupTarget" docRef="#{row.data.ref}">
+          <!-- Title -->
+
+            <span id="title_#{row.data.ref}">
+              <nxh:outputText value="#{nxd:titleOrId(row.data)}"
+                title="#{row.data.dc.description}"
+                rendered="#{!empty row.data.dc.description}"/>
+              <nxh:outputText value="#{nxd:titleOrId(row.data)}"
+                rendered="#{empty row.data.dc.description}"/>
+            </span>
+
+        </div>
+
+      </nxu:column>
+
+      <!--  Author -->
+      <h:column>
+        <f:facet name="header">
+          <h:panelGroup>
+          <h:commandLink immediate="true" action="#{sortActions.repeatSearch}"
+              rendered="#{provider.sortable}" >
+            <h:outputText value="#{messages['label.content.header.author']}" />
+            <f:param name="providerName" value="#{providerName}" />
+            <f:param name="sortColumn" value="dc:creator" />
+            <h:panelGroup rendered="#{provider.sortInfo.sortColumn == 'dc:creator' }" >
+              <h:graphicImage value="/icons/arrow_down.gif"
+                rendered="#{provider.sortInfo.sortAscending}" />
+              <h:graphicImage value="/icons/arrow_up.gif"
+                rendered="#{!provider.sortInfo.sortAscending}" />
+            </h:panelGroup>
+          </h:commandLink>
+          <h:outputText value="#{messages['label.content.header.author']}"
+            rendered="#{!provider.sortable}" />
+          </h:panelGroup>
+        </f:facet>
+        <h:outputText value="#{nxu:userFullName(row.data.dublincore.creator)}" />
+      </h:column>
+
+    </nxu:dataTable>
+
+    <a4j:outputPanel ajaxRendered="true">
+      <ui:insert name="buttons" />
+    </a4j:outputPanel>
+
+  </h:form>
+</a4j:region>
+
+</div>

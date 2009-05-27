@@ -34,12 +34,12 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Context;
 import org.jboss.seam.contexts.Contexts;
-import org.nuxeo.dam.platform.context.reuse.DocumentManagerBusinessDelegate;
 import org.nuxeo.dam.platform.context.reuse.ServerContextBean;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
+import org.nuxeo.ecm.webapp.delegate.DocumentManagerBusinessDelegate;
 
 @Name("startupHelper")
 @Scope(SESSION)

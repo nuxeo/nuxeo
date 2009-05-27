@@ -7,6 +7,9 @@ Bundle-Localization: plugin
 Bundle-Vendor: Nuxeo
 Bundle-Category: web
 Nuxeo-Component: OSGI-INF/theme-contrib.xml,
+ OSGI-INF/querymodel-contrib.xml,
+ OSGI-INF/resultsprovider-contrib.xml,
+ OSGI-INF/nxfilemanager-plugins-contrib.xml,
  OSGI-INF/layouts-contrib.xml,
  OSGI-INF/ecm-types-contrib.xml
 Require-Bundle: org.nuxeo.ecm.platform.ui,
