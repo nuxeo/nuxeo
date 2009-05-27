@@ -22,12 +22,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Map.Entry;
 
+import org.apache.commons.collections.map.ReferenceMap;
 import org.nuxeo.ecm.core.storage.StorageException;
 
 /**
@@ -40,9 +39,13 @@ public class HierarchyContext extends Context {
 
     protected static final String INVAL_PARENT = "__PARENT__";
 
-    protected final Map<Serializable, Children> childrenRegular;
+    protected final Map<Serializable, Children> childrenRegularSoft;
 
-    protected final Map<Serializable, Children> childrenComplexProp;
+    protected final Map<Serializable, Children> childrenRegularHard;
+
+    protected final Map<Serializable, Children> childrenComplexPropSoft;
+
+    protected final Map<Serializable, Children> childrenComplexPropHard;
 
     /**
      * The parents modified in the transaction.
@@ -57,32 +60,23 @@ public class HierarchyContext extends Context {
 
     HierarchyContext(Mapper mapper, PersistenceContext persistenceContext) {
         super(mapper.getModel().hierTableName, mapper, persistenceContext);
-        // these cannot be ReferenceMaps because we can't get rid of Children
-        // when they have not been flushed
-        childrenRegular = new HashMap<Serializable, Children>();
-        childrenComplexProp = new HashMap<Serializable, Children>();
+        childrenRegularSoft = new ReferenceMap(ReferenceMap.HARD,
+                ReferenceMap.SOFT);
+        childrenRegularHard = new HashMap<Serializable, Children>();
+        childrenComplexPropSoft = new ReferenceMap(ReferenceMap.HARD,
+                ReferenceMap.SOFT);
+        childrenComplexPropHard = new HashMap<Serializable, Children>();
         modifiedParentsInTransaction = new HashSet<Serializable>();
         modifiedParentsInvalidations = new HashSet<Serializable>();
     }
 
     @Override
     protected int clearCaches() {
-        int n = super.clearCaches();
         // flush allowable children caches
-        for (Iterator<Children> it = childrenRegular.values().iterator(); it.hasNext();) {
-            Children children = it.next();
-            if (children.isFlushed()) {
-                it.remove();
-                n++;
-            }
-        }
-        for (Iterator<Children> it = childrenComplexProp.values().iterator(); it.hasNext();) {
-            Children children = it.next();
-            if (children.isFlushed()) {
-                it.remove();
-                n++;
-            }
-        }
+        int n = super.clearCaches() + childrenRegularSoft.size()
+                + childrenComplexPropSoft.size();
+        childrenRegularSoft.clear();
+        childrenComplexPropSoft.clear();
         return n;
     }
 
@@ -91,12 +85,22 @@ public class HierarchyContext extends Context {
      */
     protected Children getChildrenCache(Serializable parentId,
             boolean complexProp) {
-        Map<Serializable, Children> childrenCaches = complexProp ? childrenComplexProp
-                : childrenRegular;
-        Children children = childrenCaches.get(parentId);
+        Map<Serializable, Children> softMap;
+        Map<Serializable, Children> hardMap;
+        if (complexProp) {
+            softMap = childrenComplexPropSoft;
+            hardMap = childrenComplexPropHard;
+        } else {
+            softMap = childrenRegularSoft;
+            hardMap = childrenRegularHard;
+        }
+        Children children = softMap.get(parentId);
         if (children == null) {
-            children = new Children(this, model.HIER_CHILD_NAME_KEY, false);
-            childrenCaches.put(parentId, children);
+            children = hardMap.get(parentId);
+            if (children == null) {
+                children = new Children(this, model.HIER_CHILD_NAME_KEY, false,
+                        parentId, softMap, hardMap);
+            }
         }
         return children;
     }
@@ -150,10 +154,10 @@ public class HierarchyContext extends Context {
      * Notes the fact that a new row was created without children.
      */
     protected void addNewParent(Serializable parentId) {
-        childrenRegular.put(parentId, new Children(this,
-                model.HIER_CHILD_NAME_KEY, true));
-        childrenComplexProp.put(parentId, new Children(this,
-                model.HIER_CHILD_NAME_KEY, true));
+        new Children(this, model.HIER_CHILD_NAME_KEY, true, parentId,
+                childrenRegularSoft, childrenRegularHard);
+        new Children(this, model.HIER_CHILD_NAME_KEY, true, parentId,
+                childrenComplexPropSoft, childrenComplexPropHard);
     }
 
     @Override
@@ -410,24 +414,26 @@ public class HierarchyContext extends Context {
             throws StorageException {
         super.save(idMap);
         // map temporary parent ids for created parents
-        for (Entry<Serializable, Serializable> entry : idMap.entrySet()) {
-            Serializable id = entry.getKey();
-            Children children = childrenRegular.remove(id);
-            if (children != null) {
-                childrenRegular.put(entry.getValue(), children);
+        for (Serializable id : idMap.keySet()) {
+            Serializable newId = idMap.get(id);
+            for (Map<Serializable, Children> map : new Map[] {
+                    childrenRegularSoft, childrenRegularHard,
+                    childrenComplexPropSoft, childrenComplexPropHard }) {
+                Children children = map.remove(id);
+                if (children != null) {
+                    map.put(newId, children);
+                }
             }
-            children = childrenComplexProp.remove(id);
-            if (children != null) {
-                childrenComplexProp.put(entry.getValue(), children);
-            }
         }
-        // flush children caches
-        for (Children children : childrenRegular.values()) {
-            children.flush();
+        // flush children caches (moves from hard to soft)
+        for (Children children : childrenRegularHard.values()) {
+            children.flush(); // added to soft map
         }
-        for (Children children : childrenComplexProp.values()) {
-            children.flush();
+        childrenRegularHard.clear();
+        for (Children children : childrenComplexPropHard.values()) {
+            children.flush(); // added to soft map
         }
+        childrenComplexPropHard.clear();
     }
 
     /**
@@ -435,13 +441,13 @@ public class HierarchyContext extends Context {
      * node.
      */
     protected void markChildrenAdded(Serializable parentId) {
-        Children children = childrenRegular.get(parentId);
-        if (children != null) {
-            children.setIncomplete();
-        }
-        children = childrenComplexProp.get(parentId);
-        if (children != null) {
-            children.setIncomplete();
+        for (Map<Serializable, Children> map : new Map[] { childrenRegularSoft,
+                childrenRegularHard, childrenComplexPropSoft,
+                childrenComplexPropHard }) {
+            Children children = map.get(parentId);
+            if (children != null) {
+                children.setIncomplete();
+            }
         }
         modifiedParentsInTransaction.add(parentId);
     }
@@ -458,8 +464,10 @@ public class HierarchyContext extends Context {
         super.processReceivedInvalidations();
         synchronized (modifiedParentsInvalidations) {
             for (Serializable parentId : modifiedParentsInvalidations) {
-                childrenRegular.remove(parentId);
-                childrenComplexProp.remove(parentId);
+                childrenRegularSoft.remove(parentId);
+                childrenRegularHard.remove(parentId);
+                childrenComplexPropSoft.remove(parentId);
+                childrenComplexPropHard.remove(parentId);
             }
             modifiedParentsInvalidations.clear();
         }

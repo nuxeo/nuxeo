@@ -62,6 +62,11 @@ public class TestSQLBackend extends SQLBackendTestCase {
         session.close();
     }
 
+    protected int getChildrenHardSize(Session session) {
+        Context context = ((SessionImpl) session).getContext("hierarchy");
+        return ((HierarchyContext) context).childrenRegularHard.size();
+    }
+
     public void testChildren() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
@@ -81,6 +86,9 @@ public class TestSQLBackend extends SQLBackendTestCase {
         Node nodeabis = session.getChildNode(root, "foo", false);
         assertEquals(nodefoo.getId(), nodeabis.getId());
 
+        // root is in hard because it has a created child
+        assertEquals(1, getChildrenHardSize(session));
+
         // first child /foo/bar
         Node nodeb = session.addChildNode(nodefoo, "bar", null, "TestDoc",
                 false);
@@ -89,7 +97,12 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(nodeb.getId(),
                 session.getNodeByPath("/foo/bar", null).getId());
 
+        // foo is now in hard as well
+        assertEquals(2, getChildrenHardSize(session));
+
         session.save();
+        // everything moved back to soft, therefore GCable
+        assertEquals(0, getChildrenHardSize(session));
         session.close();
 
         /*
@@ -115,8 +128,11 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
         // delete bar
         session.removeNode(nodefoo);
+        // root in hard, has one removed child
+        assertEquals(1, getChildrenHardSize(session));
         session.save();
-
+        // everything moved back to soft
+        assertEquals(0, getChildrenHardSize(session));
     }
 
     public void testChildrenRemoval() throws Exception {

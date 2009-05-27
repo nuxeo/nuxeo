@@ -21,6 +21,7 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
@@ -37,6 +38,10 @@ import org.nuxeo.ecm.core.storage.StorageException;
  * </ul>
  * Information about children in the database may be complete, or just partial
  * if only individual children have been retrieved from the database.
+ * <p>
+ * When this structure holds information all flushed to the database, then it
+ * can safely be GC'ed, so it lives in a memory-sensitive map (softMap),
+ * otherwise it's moved to a normal map (hardMap).
  * <p>
  * This class is not thread-safe and should be used only from a single-threaded
  * session.
@@ -76,17 +81,35 @@ public class Children {
      */
     protected Set<Serializable> deleted;
 
+    /** The key which this has in the map holding it. */
+    private final Serializable mapKey;
+
+    /** The map where this is stored when GCable. */
+    private Map<Serializable, Children> softMap;
+
+    /** The map where this is stored when not GCable. */
+    private Map<Serializable, Children> hardMap;
+
     /**
      * Constructs a Children cache.
+     * <p>
+     * It is automatically put in the soft map.
      *
      * @param context the context from which to fetch fragments
      * @param filterKey the key to use to filter on names
      * @param empty if the new instance is created empty
      */
-    public Children(Context context, String filterKey, boolean empty) {
+    public Children(Context context, String filterKey, boolean empty,
+            Serializable mapKey, Map<Serializable, Children> softMap,
+            Map<Serializable, Children> hardMap) {
         this.context = context;
         this.filterKey = filterKey;
         complete = empty;
+        this.mapKey = mapKey;
+        this.softMap = softMap;
+        this.hardMap = hardMap;
+        // starts its life in the soft map (no created or deleted)
+        softMap.put(mapKey, this);
     }
 
     protected Serializable fragmentValue(SimpleFragment fragment) {
@@ -123,6 +146,9 @@ public class Children {
     public void addCreated(Serializable id) {
         if (created == null) {
             created = new LinkedList<Serializable>();
+            // move to hard map
+            softMap.remove(mapKey);
+            hardMap.put(mapKey, this);
         }
         if ((existing != null && existing.contains(id)) || created.contains(id)) {
             // TODO remove sanity check if ok
@@ -168,12 +194,17 @@ public class Children {
         }
         if (deleted == null) {
             deleted = new HashSet<Serializable>();
+            // move to hard map
+            softMap.remove(mapKey);
+            hardMap.put(mapKey, this);
         }
         deleted.add(id);
     }
 
     /**
      * Flushes to database. Clears created and deleted map.
+     * <p>
+     * Puts this in the soft map. Caller must remove from hard map.
      */
     public void flush() {
         if (created != null) {
@@ -184,6 +215,9 @@ public class Children {
             created = null;
         }
         deleted = null;
+        // move to soft map
+        // caller responsible for removing from hard map
+        softMap.put(mapKey, this);
     }
 
     public boolean isFlushed() {
