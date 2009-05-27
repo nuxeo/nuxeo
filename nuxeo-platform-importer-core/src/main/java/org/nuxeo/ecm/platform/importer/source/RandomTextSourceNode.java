@@ -16,7 +16,14 @@ public class RandomTextSourceNode implements SourceNode {
 
     protected static int maxNode = 10000;
 
+    public static int maxDepth = 8;
+    public static int defaultNbDataNodesPerFolder = 15;
+
+    protected static int minGlobalFolders=0;
+    protected static int minFoldersPerNode = 0;
+
     protected static Integer nbNodes = 1;
+    protected static Integer nbFolders = 0;
 
     protected static Long size;
 
@@ -26,11 +33,18 @@ public class RandomTextSourceNode implements SourceNode {
 
     protected boolean folderish;
 
+    protected int level=0;
+
+    protected int idx=0;
+
     protected static Integer blobSizeInKB;
 
-    public RandomTextSourceNode(boolean folderish) {
+    public RandomTextSourceNode(boolean folderish, int level, int idx) {
         this.folderish = folderish;
         hazard = new Random(System.currentTimeMillis());
+        this.level=level;
+        this.idx=idx;
+
     }
 
     public static RandomTextSourceNode init(int maxSize) throws Exception {
@@ -45,7 +59,9 @@ public class RandomTextSourceNode implements SourceNode {
         nbNodes = 1;
         size = new Long(0);
         RandomTextSourceNode.blobSizeInKB = blobSizeInKB;
-        return new RandomTextSourceNode(true);
+        minGlobalFolders = maxNode / defaultNbDataNodesPerFolder;
+        minFoldersPerNode = 1 + (int) Math.pow(minGlobalFolders, (1.0/maxDepth));
+        return new RandomTextSourceNode(true, 0, 0);
     }
 
     public BlobHolder getBlobHolder() {
@@ -70,6 +86,31 @@ public class RandomTextSourceNode implements SourceNode {
 
     protected List<SourceNode> children = null;
 
+    protected int getMidRandom(int target) {
+        return 1 + (target/2)+ hazard.nextInt(target);
+    }
+
+    protected int getMaxChildren() {
+        if (maxNode < nbNodes) {
+            return 0;
+        }
+        int targetRemainingFolders=minGlobalFolders - nbFolders;
+        if (targetRemainingFolders<=0) {
+            return defaultNbDataNodesPerFolder+1;
+        }
+        int target = ((maxNode - nbNodes) / targetRemainingFolders);
+        if (target <=0) {
+            return 0;
+        }
+        return getMidRandom(target);
+    }
+    protected int getMaxFolderish() {
+        if (maxNode <= nbNodes) {
+            return 0;
+        }
+        return getMidRandom(minFoldersPerNode);
+    }
+
     public List<SourceNode> getChildren() {
 
         if (!folderish) {
@@ -80,30 +121,30 @@ public class RandomTextSourceNode implements SourceNode {
             return children;
         }
 
+        children = new ArrayList<SourceNode>();
+
         if (nbNodes > maxNode) {
-            return null;
+            return children;
         }
 
-        children = new ArrayList<SourceNode>();
-        int nbChildren = 1+hazard.nextInt(20);
+        int nbChildren = getMaxChildren();
 
         synchronized (nbNodes) {
             nbNodes = nbNodes + nbChildren;
         }
-        boolean hasFolderishChildren = false;
-
         for (int i = 0; i< nbChildren; i++) {
-            int rand = hazard.nextInt(100);
-            if (rand % 10==0) {
-                children.add(new RandomTextSourceNode(true));
-                hasFolderishChildren = true;
-            } else {
-                children.add(new RandomTextSourceNode(false));
+            children.add(new RandomTextSourceNode(false,level, i));
+        }
+        if (level < maxDepth) {
+            int nbFolderish = getMaxFolderish();
+            for (int i = 0; i< nbFolderish; i++) {
+                children.add(new RandomTextSourceNode(true, level+1, i));
+            }
+            synchronized (nbFolders) {
+                nbFolders = nbFolders + nbFolderish;
             }
         }
-        if (!hasFolderishChildren) {
-            children.set(hazard.nextInt(nbChildren), new RandomTextSourceNode(true));
-        }
+
         return children;
     }
 
@@ -114,7 +155,12 @@ public class RandomTextSourceNode implements SourceNode {
             } else {
                 name = "file";
             }
-            name = name + "-" + System.currentTimeMillis() + "-" + hazard.nextInt(100);
+            if (level==0 && folderish) {
+                name = name + "-" + (System.currentTimeMillis()%10000) + hazard.nextInt(100);
+            }
+            else {
+                name = name + "-" + level + "-" + idx;
+            }
         }
         return name;
     }
@@ -129,6 +175,10 @@ public class RandomTextSourceNode implements SourceNode {
 
     public static Long getSize() {
         return size;
+    }
+
+    public int getLevel() {
+        return level;
     }
 
 }

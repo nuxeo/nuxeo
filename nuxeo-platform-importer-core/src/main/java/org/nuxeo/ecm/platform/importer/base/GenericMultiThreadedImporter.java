@@ -126,19 +126,29 @@ public class GenericMultiThreadedImporter implements Runnable {
         Thread.sleep(200);
         int activeTasks = importTP.getActiveCount();
         int oldActiveTasks = 0;
+        long lastLogProgressTime = System.currentTimeMillis();
         while (activeTasks > 0) {
-            Thread.sleep(200);
+            Thread.sleep(500);
             activeTasks = importTP.getActiveCount();
+            boolean logProgress = false;
             if (oldActiveTasks != activeTasks) {
                 oldActiveTasks = activeTasks;
                 log
                         .debug("currently " + activeTasks
                                 + " active import Threads");
+                logProgress = true;
+
+            }
+            long ti = System.currentTimeMillis();
+            if (ti-lastLogProgressTime > 5000) {
+                logProgress = true;
+            }
+            if (logProgress) {
                 long inbCreatedDocs = getCreatedDocsCounter();
                 log.info(inbCreatedDocs + " docs created");
-                long ti = System.currentTimeMillis();
                 log.info(1000 * ((float) (inbCreatedDocs) / (ti - t0))
                         + " docs/s");
+                lastLogProgressTime = ti;
             }
         }
         log.info("All Threads terminated");
