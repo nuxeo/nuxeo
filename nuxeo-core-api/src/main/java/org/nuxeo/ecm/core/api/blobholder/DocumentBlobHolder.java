@@ -27,18 +27,34 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
- * {@link BlobHolder} implementation based on a {@link DocumentModel} and a XPath.
+ * {@link BlobHolder} implementation based on a {@link DocumentModel} and a
+ * XPath.
  *
  * @author tiry
  */
 public class DocumentBlobHolder extends AbstractBlobHolder {
 
     protected final DocumentModel doc;
+
     protected final String xPath;
+
+    protected final String xPathFilename;
 
     public DocumentBlobHolder(DocumentModel doc, String xPath) {
         this.doc = doc;
         this.xPath = xPath;
+        this.xPathFilename = null;
+    }
+
+    /**
+     * Constructor with filename property for compatibility (when filename was
+     * not stored on blob object)
+     */
+    public DocumentBlobHolder(DocumentModel doc, String xPath,
+            String xPathFilename) {
+        this.doc = doc;
+        this.xPath = xPath;
+        this.xPathFilename = xPathFilename;
     }
 
     @Override
@@ -48,7 +64,14 @@ public class DocumentBlobHolder extends AbstractBlobHolder {
 
     @Override
     public Blob getBlob() throws ClientException {
-        return (Blob) doc.getProperty(xPath).getValue();
+        Blob blob = (Blob) doc.getPropertyValue(xPath);
+        String filename = blob.getFilename();
+        if (blob != null && xPathFilename != null
+                && (filename == null || "".equals(filename))) {
+            // compatibility when filename was not stored on blob
+            blob.setFilename((String) doc.getPropertyValue(xPathFilename));
+        }
+        return blob;
     }
 
     @Override

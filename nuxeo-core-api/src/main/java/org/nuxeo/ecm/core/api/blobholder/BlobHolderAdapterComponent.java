@@ -21,10 +21,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
-import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -71,7 +69,7 @@ public class BlobHolderAdapterComponent extends DefaultComponent  implements Blo
         }
 
         if (doc.hasSchema("file")) {
-            return new DocumentBlobHolder(doc, "file:content");
+            return new DocumentBlobHolder(doc, "file:content", "file:filename");
         } else if (doc.hasSchema("note")) {
 
             try {
