@@ -15,11 +15,6 @@
   <packaging>jar</packaging>
   <description>Nuxeo Enterprise Platform: Tag Service Core.</description>
 
-  <properties>
-    <jboss.dir>/opt/jboss</jboss.dir>
-    <server.configuration>default</server.configuration>
-  </properties>
-
   <!-- Deps -->
   <dependencies>
     <!-- Nuxeo dependencies -->
@@ -83,74 +78,7 @@
       <scope>test</scope>
     </dependency>
 
-    <!-- Config jaxb stuff -->
-    <dependency>
-      <groupId>javax.xml.bind</groupId>
-      <artifactId>jaxb-api</artifactId>
-      <version>2.1</version>
-    </dependency>
-    <dependency>
-      <groupId>com.sun.xml.bind</groupId>
-      <artifactId>jaxb-impl</artifactId>
-      <version>2.1.3</version>
-    </dependency>
 
   </dependencies>
 
-
-  <!-- Build -->
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>1.5</source>
-          <target>1.5</target>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-eclipse-plugin</artifactId>
-        <configuration>
-          <downloadSources>true</downloadSources>
-          <downloadJavadocs>true</downloadJavadocs>
-        </configuration>
-      </plugin>
-      <!--
-        <plugin> <groupId>org.codehaus.mojo</groupId>
-        <artifactId>jaxb2-maven-plugin</artifactId> <executions>
-        <execution> <goals> <goal>xjc</goal> </goals> </execution>
-        </executions> <configuration>
-        <clearOutputDir>false</clearOutputDir>
-        <packageName>org.nuxeo.ecm.platform.tag.config</packageName>
-        <schemaDirectory>${basedir}/src/main/resources/org/nuxeo/ecm/tagservice/config</schemaDirectory>
-        <outputDirectory>${basedir}/src/main/java</outputDirectory>
-        </configuration> </plugin>
-      -->
-      <plugin>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>deploy-config-files</id>
-            <phase>install</phase>
-            <goals>
-              <goal>run</goal>
-            </goals>
-            <configuration>
-              <tasks>
-                <copy overwrite="true" verbose="true"
-                  file="src/main/resources/org/nuxeo/ecm/tagservice/config/tag-service-config.xsd"
-                  toDir="${jboss.dir}/server/${server.configuration}/deploy/nuxeo.ear/config" />
-                <copy overwrite="true" verbose="true"
-                  file="src/main/resources/org/nuxeo/ecm/tagservice/config/tagservice.cfg.xml"
-                  toDir="${jboss.dir}/server/${server.configuration}/deploy/nuxeo.ear/config" />
-              </tasks>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
-    </plugins>
-  </build>
 </project>

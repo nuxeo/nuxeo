@@ -23,26 +23,17 @@ import static org.nuxeo.ecm.platform.tag.entity.TaggingConstants.TAGGING_TABLE_C
 import static org.nuxeo.ecm.platform.tag.entity.TaggingConstants.TAGGING_TABLE_COLUMN_TAG_ID;
 import static org.nuxeo.ecm.platform.tag.entity.TaggingConstants.TAGGING_TABLE_NAME;
 
-import java.io.File;
 import java.sql.Types;
 import java.util.Properties;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 
 import org.hibernate.HibernateException;
 import org.hibernate.MappingException;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.ejb.Ejb3Configuration;
-import org.nuxeo.common.Environment;
-import org.nuxeo.ecm.platform.tag.config.Property;
-import org.nuxeo.ecm.platform.tag.config.PropertyParser;
-import org.nuxeo.ecm.platform.tag.config.TagserviceConfig;
 import org.nuxeo.ecm.platform.tag.entity.DublincoreEntity;
 import org.nuxeo.ecm.platform.tag.entity.HierarchyEntity;
 import org.nuxeo.ecm.platform.tag.entity.TagEntity;
@@ -57,8 +48,6 @@ import org.nuxeo.ecm.platform.tag.sql.Table;
  * @author cpriceputu
  */
 public class TagPersistenceProvider {
-
-    public static final String FILE_CONFIG = "tagservice.cfg.xml";
 
     private EntityManagerFactory emf;
 
@@ -76,22 +65,18 @@ public class TagPersistenceProvider {
         return _instance;
     }
 
-    private Properties getProperties() throws JAXBException {
-        if (properties == null) {
-            JAXBContext jaxbContext = JAXBContext.newInstance("org.nuxeo.ecm.platform.tag.config");
-            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-            File configXml = new File(Environment.getDefault().getConfig(),
-                    FILE_CONFIG);
-            TagserviceConfig cfg = (TagserviceConfig) ((JAXBElement) unmarshaller.unmarshal(configXml)).getValue();
+    private Properties getProperties() {
+        if (null == properties) {
             properties = new Properties();
-            for (Property p : cfg.getProperties().getProperty()) {
-                if (p.getName().startsWith("hibernate.")) {
-                    String value = p.isHasSysProps() ? PropertyParser.parse(p.getValue())
-                            : p.getValue();
-                    // is a hibernate property
-                    properties.put(p.getName(), value);
-                }
-            }
+            properties.put("tagservice.isTagServiceInNuxeo", "true");
+            properties.put("hibernate.show_sql", "true"); // true to debug
+            properties.put("hibernate.connection.driver_class", "org.h2.Driver");
+            properties.put("hibernate.connection.username", "sa");
+            properties.put("hibernate.connection.password", "");
+            properties.put("hibernate.connection.url",
+                    "jdbc:h2:${jboss.server.data.dir}/h2/nuxeo");
+            properties.put("hibernate.dialect",
+                    "org.hibernate.dialect.H2Dialect");
         }
         return properties;
     }
@@ -140,13 +125,10 @@ public class TagPersistenceProvider {
      */
     public EntityManager getEntityManager(Properties properties) {
         if (emf == null || !emf.isOpen()) {
-            try {
-                if (null == properties) {
-                    properties = getProperties();
-                }
-            } catch (JAXBException jaxbe) {
-                throw new HibernateException(jaxbe);
+            if (null == properties) {
+                properties = getProperties();
             }
+
             this.properties = properties;
             openPersistenceUnit();
         }
