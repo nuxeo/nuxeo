@@ -1134,10 +1134,27 @@ public class Mapper {
                     logResultSet(rs, columns);
                 }
                 // check that we didn't get several rows
-                if (rs.next()) {
-                    throw new StorageException("Row query for " + parentId
-                            + " child " + childName
-                            + " returned several rows: " + sql);
+                while (rs.next()) {
+                    // detected a duplicate name, which means that user code
+                    // wasn't careful enough. We can't go back but at least we
+                    // can make the duplicate available under a different name.
+                    String newName = childName + '.'
+                            + System.currentTimeMillis();
+                    i = 0;
+                    Serializable childId = null;
+                    for (Column column : columns) {
+                        i++;
+                        if (column.getKey().equals(model.MAIN_KEY)) {
+                            childId = column.getFromResultSet(rs, i);
+                        }
+                    }
+                    log.error(String.format(
+                            "Child '%s' appeared twice as child of %s "
+                                    + "(%s and %s), renaming second to '%s'",
+                            childName, parentId, id, childId, newName));
+                    Map<String, Serializable> rename = new HashMap<String, Serializable>();
+                    rename.put(model.HIER_CHILD_NAME_KEY, newName);
+                    updateSingleRowWithValues(model.HIER_TABLE_NAME, childId, rename);
                 }
                 return row;
             } finally {

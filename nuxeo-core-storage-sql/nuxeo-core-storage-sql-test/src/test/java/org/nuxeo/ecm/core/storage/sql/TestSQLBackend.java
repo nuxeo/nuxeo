@@ -380,20 +380,22 @@ public class TestSQLBackend extends SQLBackendTestCase {
         // two docs with same name (possible at this low level)
         Session session1 = repository.getConnection();
         Node root1 = session1.getRootNode();
-        session1.addChildNode(root1, "foo", null, "TestDoc", false);
+        Node foo1 = session1.addChildNode(root1, "foo", null, "TestDoc", false);
         session1.save();
         Session session2 = repository.getConnection();
         Node root2 = session2.getRootNode();
-        session2.addChildNode(root2, "foo", null, "TestDoc", false);
+        Node foo2 = session2.addChildNode(root2, "foo", null, "TestDoc", false);
         session2.save();
+        // on read we get one or the other, but no crash
         Session session3 = repository.getConnection();
         Node root3 = session3.getRootNode();
-        try {
-            session3.getChildNode(root3, "foo", false);
-            fail();
-        } catch (StorageException e) {
-            // is failing for now... TODO
-        }
+        Node foo3 = session3.getChildNode(root3, "foo", false);
+        assertTrue(foo3.getId() == foo1.getId() || foo3.getId() == foo2.getId());
+        // try again, has been fixed (only one error in logs)
+        Session session4 = repository.getConnection();
+        Node root4 = session4.getRootNode();
+        Node foo4 = session4.getChildNode(root4, "foo", false);
+        assertEquals(foo3.getId(), foo4.getId());
     }
 
     public void TODOtestConcurrentUpdate() throws Exception {
