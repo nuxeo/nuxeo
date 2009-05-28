@@ -103,6 +103,7 @@ public class EventBundleTransactionHandler {
                 ut = (UserTransaction) context.lookup(UT_NAME_ALT);
             } catch (NamingException ne2) {
                 disabled = true;
+                return null;
             }
         }
 
