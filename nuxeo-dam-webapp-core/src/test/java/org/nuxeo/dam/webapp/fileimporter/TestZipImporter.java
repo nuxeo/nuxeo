@@ -12,9 +12,9 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     qlamerand
+ *     Quentin Lamerand
  *
- *
+ * $Id$
  */
 
 package org.nuxeo.dam.webapp.fileimporter;
@@ -39,14 +39,21 @@ public class TestZipImporter extends RepositoryOSGITestCase {
     public void setUp() throws Exception {
         super.setUp();
 
+        deployBundle("org.nuxeo.ecm.platform.types.api");
         deployBundle("org.nuxeo.ecm.platform.types.core");
         deployBundle("org.nuxeo.ecm.platform.mimetype.core");
+        deployBundle("org.nuxeo.ecm.platform.picture.api");
+        deployBundle("org.nuxeo.ecm.platform.picture.core");
 
         deployContrib("org.nuxeo.ecm.platform.filemanager.core",
                 "OSGI-INF/nxfilemanager-service.xml");
         deployContrib("org.nuxeo.ecm.platform.filemanager.core",
                 "OSGI-INF/nxfilemanager-plugins-contrib.xml");
-        deployContrib("org.nuxeo.dam.webapp.core",
+        deployContrib("org.nuxeo.ecm.platform.picture.web",
+                "OSGI-INF/picturebook-types-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.picture.web",
+                "OSGI-INF/imaging-various-contrib.xml");
+        deployContrib("org.nuxeo.ecm.webapp.core",
                 "OSGI-INF/nxfilemanager-plugins-contrib.xml");
 
         openRepository();
@@ -59,8 +66,12 @@ public class TestZipImporter extends RepositoryOSGITestCase {
         service = null;
         root = null;
 
-        undeployContrib("org.nuxeo.dam.webapp.core",
+        undeployContrib("org.nuxeo.ecm.webapp.core",
                 "OSGI-INF/nxfilemanager-plugins-contrib.xml");
+        undeployContrib("org.nuxeo.ecm.platform.picture.web",
+                "OSGI-INF/imaging-various-contrib.xml");
+        undeployContrib("org.nuxeo.ecm.platform.picture.web",
+                "OSGI-INF/picturebook-types-contrib.xml");
         undeployContrib("org.nuxeo.ecm.platform.filemanager.core",
                 "OSGI-INF/nxfilemanager-plugins-contrib.xml");
         undeployContrib("org.nuxeo.ecm.platform.filemanager.core",
@@ -82,12 +93,15 @@ public class TestZipImporter extends RepositoryOSGITestCase {
         DocumentModel doc = service.createDocumentFromBlob(coreSession, input,
                 root.getPathAsString(), true, "test-data/test.zip");
 
-        DocumentModel child = coreSession.getChild(doc.getRef(), "egg");
+        DocumentModel child = coreSession.getChild(doc.getRef(), "plain");
         assertNotNull(child);
         assertEquals("Note", child.getType());
-        child = coreSession.getChild(doc.getRef(), "spam");
+        child = coreSession.getChild(doc.getRef(), "image");
         assertNotNull(child);
-        assertEquals("Note", child.getType());
+        assertEquals("Picture", child.getType());
+        child = coreSession.getChild(doc.getRef(), "spreadsheet");
+        assertNotNull(child);
+        assertEquals("File", child.getType());
     }
 
 }

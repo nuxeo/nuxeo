@@ -5,10 +5,30 @@
     target="org.nuxeo.ecm.platform.filemanager.service.FileManagerService"
     point="plugins">
 
-    <plugin name="AssetsArchivePlugin"
+    <plugin name="ArchiveImporter"
       class="org.nuxeo.dam.webapp.fileimporter.ArchiveImporter"
       order="20">
       <filter>application/zip</filter>
+    </plugin>
+
+    <plugin name="OfficeFileImporter"
+      class="org.nuxeo.dam.webapp.fileimporter.OfficeFileImporter"
+      order="10">
+      <filter>application/msword</filter>
+      <filter>application/vnd.ms-excel</filter>
+      <filter>application/vnd.ms-powerpoint</filter>
+      <filter>application/vnd.sun.xml.impress</filter>
+      <filter>application/vnd.sun.xml.impress.template</filter>
+      <filter>application/vnd.oasis.opendocument.presentation</filter>
+      <filter>application/vnd.oasis.opendocument.presentation-template</filter>
+      <filter>application/vnd.sun.xml.calc</filter>
+      <filter>application/vnd.sun.xml.calc.template</filter>
+      <filter>application/vnd.oasis.opendocument.spreadsheet</filter>
+      <filter>application/vnd.oasis.opendocument.spreadsheet-template</filter>
+      <filter>application/vnd.sun.xml.writer</filter>
+      <filter>application/vnd.sun.xml.writer.template</filter>
+      <filter>application/vnd.oasis.opendocument.text</filter>
+      <filter>application/vnd.oasis.opendocument.text-template</filter>
     </plugin>
 
   </extension>
