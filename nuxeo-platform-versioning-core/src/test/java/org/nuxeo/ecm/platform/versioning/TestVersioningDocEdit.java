@@ -23,9 +23,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.nuxeo.common.collections.ScopeType;
+import org.nuxeo.common.collections.ScopedMap;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.platform.versioning.api.VersioningActions;
 
@@ -147,6 +149,40 @@ public class TestVersioningDocEdit extends VersioningBaseTestCase {
         doc = session.saveDocument(doc);
         session.getLastVersion(doc.getRef());
         checkVersion(doc, 3, 0);
+    }
+
+    public void testVersioningOnRestore() throws ClientException {
+        DocumentModel doc = session.createDocumentModel("/", "testfile1",
+                "VerFile");
+        doc.setProperty("dublincore", "title", "A");
+        doc = session.createDocument(doc);
+        DocumentRef docRef = doc.getRef();
+        checkVersion(doc, 1, 0);
+        doc.putContextData(VersioningActions.KEY_FOR_INC_OPTION,
+                VersioningActions.ACTION_INCREMENT_MINOR);
+        doc.putContextData(ScopeType.REQUEST,
+                VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, Boolean.TRUE);
+        doc.setProperty("dublincore", "title", "B");
+        doc = session.saveDocument(doc); // snapshot and save and inc version
+        doc.putContextData(VersioningActions.KEY_FOR_INC_OPTION, null);
+
+        doc = session.saveDocument(doc);
+        assertEquals("B", doc.getPropertyValue("dc:title"));
+        checkVersion(doc, 1, 1);
+        // snapshot done:
+        VersionModel docvm1 = session.getLastVersion(docRef);
+        DocumentModel docv1 = session.getLastDocumentVersion(docRef);
+        checkVersion(docv1, 1, 0);
+        assertEquals("A", docv1.getPropertyValue("dc:title"));
+
+        // now restore v1.0 (-> current 1.2), snapshots 1.1
+        doc = session.restoreToVersion(docRef, docvm1);
+        assertEquals("A", doc.getPropertyValue("dc:title"));
+        checkVersion(doc, 1, 2);
+        // snapshot done:
+        DocumentModel docv2 = session.getLastDocumentVersion(docRef);
+        checkVersion(docv2, 1, 1);
+        assertEquals("B", docv2.getPropertyValue("dc:title"));
     }
 
     private void checkVersions(DocumentModel doc, String... labels)
