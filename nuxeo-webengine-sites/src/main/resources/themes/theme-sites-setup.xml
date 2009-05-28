@@ -29,7 +29,9 @@
         </cell>
         <cell>
           <fragment type="tags fragment"/>
+          <fragment type="generic fragment"/>
           <fragment type="contextual links fragment"/>
+          
         </cell>
       </section>
       <section>
@@ -74,6 +76,7 @@
         <cell>
           <fragment type="tags fragment"/>
           <fragment type="contextual links fragment"/>
+          <fragment type="generic fragment"/>
         </cell>
       </section>
       <section>
@@ -370,6 +373,9 @@
     </widget>
     <widget element="page[2]/section[2]/cell[3]/fragment[2]">
       <view>Minisite Buttons</view>
+    </widget>
+     <widget element="page[2]/section[2]/cell[3]/fragment[3]">
+      <view>Minisite Contextual</view>
     </widget>
     <widget element="page[2]/section[3]">
       <view>section frame</view>
