@@ -23,9 +23,8 @@
       <ui:include src="/incl/new_import_set.xhtml" />
     </rich:modalPanel>
     <h:outputLink value="#" id="link">
-        Show Modal Panel
-      <rich:componentControl for="panel" attachTo="link"
-      operation="show" event="onclick" />
+        TMP <h:outputText value="${message[label.action.creation.importSet]}"/>
+        <rich:componentControl for="panel" attachTo="link" operation="show" event="onclick"/>
     </h:outputLink>
   </f:subview>
 

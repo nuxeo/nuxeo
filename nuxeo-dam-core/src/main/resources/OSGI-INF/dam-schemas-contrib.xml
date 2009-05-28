@@ -16,6 +16,8 @@
     </doctype>
 
     <doctype name="ImportSet" extends="Folder">
+      <schema name="file"/>
+      <schema name="common"/>
       <facet name="Folderish"/>
     </doctype>
 

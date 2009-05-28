@@ -2,12 +2,12 @@
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:nxl="http://nuxeo.org/nxforms/layout">
   <h:form enctype="multipart/form-data" id="document_create">
-    <nxl:documentLayout mode="create" value="#{importActions.importSet}" />
+    <nxl:documentLayout mode="create" value="#{importActions.newImportSet}" />
     <p class="buttonsGadget">
-      <h:commandButton class="button" value="#{messages['command.create']}"
-        action="#{importActions.createImportSet()}" immediate="true"/>
+      <h:commandButton type="submit" class="button" value="#{messages['command.create']}"
+        action="#{importActions.createImportSet}"/>
       <h:commandButton class="button" value="#{messages['command.cancel']}"
-        action="#{importActions.cancel()}" immediate="true" />
+        action="#{importActions.cancel}" immediate="true" />
     </p>
   </h:form>
 </div>

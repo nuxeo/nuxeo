@@ -14,9 +14,6 @@
         <row>
           <widget>author</widget>
         </row>
-        <row>
-          <widget>assetCreationDate</widget>
-        </row>
       </rows>
 
 
@@ -30,21 +27,6 @@
         </fields>
       </widget>
 
-      <widget name="assetCreationDate" type="datetime">
-        <labels>
-          <label mode="any">label.common.creation-date</label>
-        </labels>
-        <translated>true</translated>
-        <fields>
-          <field>common:creation-date</field>
-        </fields>
-        <properties widgetMode="view">
-          <property name="pattern">#{nxu:basicDateFormater()}</property>
-        </properties>
-        <properties widgetMode="edit">
-          <property name="format">#{nxu:basicDateFormater()}</property>
-        </properties>
-      </widget>
     </layout>
 
     <layout name="dublincore">

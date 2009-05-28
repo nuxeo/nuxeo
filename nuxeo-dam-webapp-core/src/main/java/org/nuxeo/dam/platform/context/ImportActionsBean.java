@@ -7,8 +7,12 @@ import javax.faces.application.FacesMessage;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.seam.ScopeType;
+import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
+import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.contexts.Context;
 import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -18,17 +22,18 @@ import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 
 @Name("importActions")
+@Scope(ScopeType.CONVERSATION)
 public class ImportActionsBean {
 
     private static final Log log = LogFactory.getLog(ImportActionsBean.class);
 
-    public DocumentModel newImportSet;
-
     public static final String BATCH_TYPE_NAME = "ImportSet";
 
-    public static final String IMPORTSET_ROOT_PATH = "/domain/import-sets";
+    public static final String IMPORTSET_ROOT_PATH = "/default-domain/import-sets";
 
-    @In(create = true, required = false)
+    protected DocumentModel newImportSet;
+
+    @In(create = true)
     protected transient CoreSession documentManager;
 
     @In(create = true, required = false)
@@ -39,7 +44,10 @@ public class ImportActionsBean {
     // ::protected Map<String, String> messages;
     protected ResourcesAccessor resourcesAccessor;
 
-    public DocumentModel getImportSet() throws ClientException {
+    @In
+    protected transient Context eventContext;
+
+    public DocumentModel getNewImportSet() throws ClientException {
         if (newImportSet == null) {
             Map<String, Object> context = new HashMap<String, Object>();
             context.put(CoreEventConstants.PARENT_PATH, IMPORTSET_ROOT_PATH);
@@ -63,9 +71,9 @@ public class ImportActionsBean {
         documentManager.save();
 
         logDocumentWithTitle("Created the document: ", newImportSet);
-        facesMessages.add(FacesMessage.SEVERITY_INFO,
-                resourcesAccessor.getMessages().get("document_saved"),
-                resourcesAccessor.getMessages().get(newImportSet.getType()));
+        facesMessages.add(FacesMessage.SEVERITY_INFO, resourcesAccessor
+                .getMessages().get("document_saved"), resourcesAccessor
+                .getMessages().get(newImportSet.getType()));
 
         invalidateImportContext();
         return "nxstartup";
@@ -73,7 +81,6 @@ public class ImportActionsBean {
 
     public String cancel() {
         invalidateImportContext();
-
         return "nxstartup";
     }
 
