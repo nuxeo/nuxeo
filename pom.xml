@@ -30,6 +30,10 @@
   <properties>
     <nuxeo.dam.version>${pom.version}</nuxeo.dam.version>
     <nuxeo.platform.version>5.2.1-SNAPSHOT</nuxeo.platform.version>
+    <nuxeo.theme.version>5.2.1-SNAPSHOT</nuxeo.theme.version>
+    <nuxeo.features.version>5.2.1-SNAPSHOT</nuxeo.features.version>
+    <nuxeo.webengine.version>5.2.1-SNAPSHOT</nuxeo.webengine.version>
+    <nuxeo.services.version>5.2.1-SNAPSHOT</nuxeo.services.version>
     <!-- Custom version -->
     <nuxeo.dam.jsf.version>5.2.1-NXP-3610-SNAPSHOT</nuxeo.dam.jsf.version>
     <nuxeo.dam.dm.version>5.2.1-NXP-3610-SNAPSHOT</nuxeo.dam.dm.version>
@@ -73,13 +77,13 @@
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform</artifactId>
         <type>ejb</type>
-        <version>${nuxeo.platform.version}</version>
+        <version>${nuxeo.services.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-actions-core</artifactId>
         <type>ejb</type>
-        <version>${nuxeo.platform.version}</version>
+        <version>${nuxeo.services.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>

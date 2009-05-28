@@ -58,6 +58,8 @@
       <artifact name="nuxeo-platform-ear" />
       <artifact name="nuxeo-apt-extensions" />
 
+      <artifact name="nuxeo-platform-lang" />
+
       <artifact name="nuxeo-dam-webapp" />
       <artifact name="nuxeo-dam-webapp-core" />
     </excludes>
