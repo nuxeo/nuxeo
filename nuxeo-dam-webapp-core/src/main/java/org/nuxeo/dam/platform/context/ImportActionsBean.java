@@ -8,7 +8,6 @@ import javax.faces.application.FacesMessage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
-import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
@@ -33,28 +32,25 @@ public class ImportActionsBean {
 
     protected DocumentModel newImportSet;
 
-    @In(create = true)
-    protected transient CoreSession documentManager;
+    @In(required = false)
+    protected CoreSession documentManager;
 
     @In(create = true, required = false)
     protected FacesMessages facesMessages;
 
     @In(create = true)
-    // won't inject this because of seam problem after activation
-    // ::protected Map<String, String> messages;
     protected ResourcesAccessor resourcesAccessor;
 
-    @In
-    protected transient Context eventContext;
+    @In(create = true)
+    protected Context eventContext;
 
     public DocumentModel getNewImportSet() throws ClientException {
-        if (newImportSet == null) {
+        if (newImportSet == null && documentManager != null) {
             Map<String, Object> context = new HashMap<String, Object>();
             context.put(CoreEventConstants.PARENT_PATH, IMPORTSET_ROOT_PATH);
             newImportSet = documentManager.createDocumentModel(BATCH_TYPE_NAME,
                     context);
         }
-
         return newImportSet;
     }
 
@@ -71,9 +67,9 @@ public class ImportActionsBean {
         documentManager.save();
 
         logDocumentWithTitle("Created the document: ", newImportSet);
-        facesMessages.add(FacesMessage.SEVERITY_INFO, resourcesAccessor
-                .getMessages().get("document_saved"), resourcesAccessor
-                .getMessages().get(newImportSet.getType()));
+        facesMessages.add(FacesMessage.SEVERITY_INFO,
+                resourcesAccessor.getMessages().get("document_saved"),
+                resourcesAccessor.getMessages().get(newImportSet.getType()));
 
         invalidateImportContext();
         return "nxstartup";
