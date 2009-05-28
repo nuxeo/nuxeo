@@ -30,6 +30,9 @@
   <properties>
     <nuxeo.dam.version>${pom.version}</nuxeo.dam.version>
     <nuxeo.platform.version>5.2.1-SNAPSHOT</nuxeo.platform.version>
+    <!-- Custom version -->
+    <nuxeo.dam.jsf.version>5.2.1-NXP-3610-SNAPSHOT</nuxeo.dam.jsf.version>
+    <nuxeo.dam.dm.version>5.2.1-NXP-3610-SNAPSHOT</nuxeo.dam.dm.version>
   </properties>
 
   <dependencyManagement>
@@ -88,6 +91,13 @@
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-jbossws-wrapper</artifactId>
         <version>4.0.5.GA</version>
+      </dependency>
+
+      <!-- Dependencies on our custom branch in Nuxeo -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-webapp-base</artifactId>
+        <version>${nuxeo.dam.jsf.version}</version>
       </dependency>
 
     <dependency>
