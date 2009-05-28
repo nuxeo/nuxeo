@@ -72,7 +72,7 @@
     <td>${Context.getMessage("label.page.title")}</td>
   </tr>
   <tr>
-    <td><input type="text" id="titleInput" name="title" value="" /></td>
+    <td><input type="text" id="titleInput" name="title" value="${Context.request.getAttribute('pageName')}" /></td>
    </tr>
    <tr>
       <td>${Context.getMessage("label.page.description")}</td>
