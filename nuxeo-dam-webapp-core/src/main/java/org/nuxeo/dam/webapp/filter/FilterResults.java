@@ -19,7 +19,7 @@ import org.jboss.seam.ScopeType;
 
 @Name("filterResults")
 @Scope(ScopeType.CONVERSATION)
-public class FilterResultsBean implements SelectDataModelListener {
+public class FilterResults implements SelectDataModelListener {
 
     public static final String SEARCH_DOCUMENT_LIST = "SEARCH_DOCUMENT_LIST";
 
