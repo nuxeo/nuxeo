@@ -55,6 +55,7 @@ import org.nuxeo.runtime.model.Extension;
 /**
  * Backward compatibility implementation of the TransformService
  */
+@SuppressWarnings("deprecation")
 public class TransformService extends DefaultComponent implements
         TransformServiceCommon {
 
@@ -131,7 +132,8 @@ public class TransformService extends DefaultComponent implements
 
         Class<Plugin> pluginClass;
         try {
-            pluginClass = extension.getContext().loadClass(descriptor.getClassName());
+            pluginClass = (Class<Plugin>) extension.getContext().loadClass(
+                    descriptor.getClassName());
         } catch (ClassNotFoundException e) {
             log.error("Error while trying to create Plugin Class", e);
             return;
