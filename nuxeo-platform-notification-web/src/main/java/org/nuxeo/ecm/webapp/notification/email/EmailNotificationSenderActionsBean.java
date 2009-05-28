@@ -46,6 +46,7 @@ import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
 import org.nuxeo.ecm.platform.types.adapter.TypeInfo;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.webapp.base.InputController;
@@ -178,8 +179,11 @@ public class EmailNotificationSenderActionsBean extends InputController implemen
         Map<String, Serializable> options = new HashMap<String, Serializable>();
 
         //options for confirmation email
-        options.put("recipients",
-                (principalListManager.getPrincipalType(user) == PrincipalListManager.USER_TYPE ? "user:" : "group:") + user);
+        String prefix = principalListManager.getPrincipalType(user) == PrincipalListManager.USER_TYPE ? "user:"
+                : "group:";
+        String recipient = prefix + user;
+        options.put(NotificationConstants.RECIPIENTS_KEY,
+                new String[] { recipient });
         options.put("subject", theMailSubject);
         options.put("content", theMailContent);
         options.put("category", DocumentEventCategories.EVENT_CLIENT_NOTIF_CATEGORY);
