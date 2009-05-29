@@ -29,6 +29,20 @@ public abstract class AbstractJaxRSImporterExecutor extends
     }
 
     @GET
+    @Path("logActivate")
+    public String enableLogging() {
+        getLogger().setBufferActive(true);
+        return "Logging activated";
+    }
+
+    @GET
+    @Path("logDesactivate")
+    public String disableLogging() {
+        getLogger().setBufferActive(false);
+        return "Logging desactivated";
+    }
+
+    @GET
     @Path("status")
     public String getStatus() {
         return super.getStatus();
@@ -45,7 +59,6 @@ public abstract class AbstractJaxRSImporterExecutor extends
     public void kill() {
         super.kill();
     }
-
 
     @Override
     protected CoreSession getCoreSession() {

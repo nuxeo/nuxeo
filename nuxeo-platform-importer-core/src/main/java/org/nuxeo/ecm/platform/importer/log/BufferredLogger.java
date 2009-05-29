@@ -33,6 +33,9 @@ public class BufferredLogger extends BasicLogger {
     }
 
     protected void logInStack(String level, String message) {
+        if (!bufferActive) {
+            return;
+        }
         lock.writeLock().lock();
         try {
             logStack.add(level + " : " + message);
@@ -63,39 +66,51 @@ public class BufferredLogger extends BasicLogger {
     @Override
     public void info(String message) {
         super.info(message);
-        logInStack("INFO", message);
+        if (bufferActive) {
+            logInStack("INFO", message);
+        }
     }
 
     @Override
     public void warn(String message) {
         super.warn(message);
-        logInStack("WARN", message);
+        if (bufferActive) {
+            logInStack("WARN", message);
+        }
     }
 
     @Override
     public void debug(String message) {
         super.debug(message);
-        logInStack("DEBUG", message);
+        if (bufferActive) {
+            logInStack("DEBUG", message);
+        }
     }
 
     @Override
     public void debug(String message, Throwable t) {
         super.debug(message, t);
-        logInStack("DEBUG", message);
-        logInStack("=>ERR", t.getClass().getSimpleName() + ":" + t.getMessage());
+        if (bufferActive) {
+            logInStack("DEBUG", message);
+            logInStack("=>ERR", t.getClass().getSimpleName() + ":" + t.getMessage());
+        }
     }
 
     @Override
     public void error(String message) {
         super.error(message);
-        logInStack("ERROR", message);
+        if (bufferActive) {
+            logInStack("ERROR", message);
+        }
     }
 
     @Override
     public void error(String message, Throwable t) {
         super.error(message, t);
-        logInStack("ERROR", message);
-        logInStack("=>ERR", t.getClass().getSimpleName() + ":" + t.getMessage());
+        if (bufferActive) {
+            logInStack("ERROR", message);
+            logInStack("=>ERR", t.getClass().getSimpleName() + ":" + t.getMessage());
+        }
     }
 
 

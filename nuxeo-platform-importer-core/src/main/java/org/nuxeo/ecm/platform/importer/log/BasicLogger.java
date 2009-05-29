@@ -15,6 +15,7 @@ public class BasicLogger implements ImporterLogger {
 
     protected Log javaLogger;
 
+    protected boolean bufferActive = false;
 
     public BasicLogger(Log javaLogger) {
         this.javaLogger = javaLogger;
@@ -49,7 +50,20 @@ public class BasicLogger implements ImporterLogger {
     }
 
     public String getLoggerBuffer() {
-        return getLoggerBuffer("\n");
+        if (bufferActive) {
+            return getLoggerBuffer("\n");
+        }
+        else {
+            return "Buffer is not active";
+        }
+    }
+
+    public boolean isBufferActive() {
+        return bufferActive;
+    }
+
+    public void setBufferActive(boolean active) {
+        bufferActive = active;
     }
 
 }

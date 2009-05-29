@@ -39,6 +39,10 @@ public class RandomTextSourceNode implements SourceNode {
 
     protected static Integer blobSizeInKB;
 
+    protected List<SourceNode> cachedChildren = null;
+
+    public static boolean CACHE_CHILDREN=false;
+
     public RandomTextSourceNode(boolean folderish, int level, int idx) {
         this.folderish = folderish;
         hazard = new Random(System.currentTimeMillis());
@@ -84,7 +88,7 @@ public class RandomTextSourceNode implements SourceNode {
         return new SimpleBlobHolder(blob);
     }
 
-    protected List<SourceNode> children = null;
+
 
     protected int getMidRandom(int target) {
         return 1 + (target/2)+ hazard.nextInt(target);
@@ -117,12 +121,11 @@ public class RandomTextSourceNode implements SourceNode {
             return null;
         }
 
-        if (children!=null) {
-            return children;
+        if (this.cachedChildren!=null) {
+            return this.cachedChildren;
         }
 
-        children = new ArrayList<SourceNode>();
-
+        List<SourceNode> children = new ArrayList<SourceNode>();
         if (nbNodes > maxNode) {
             return children;
         }
@@ -144,7 +147,9 @@ public class RandomTextSourceNode implements SourceNode {
                 nbFolders = nbFolders + nbFolderish;
             }
         }
-
+        if (CACHE_CHILDREN) {
+            this.cachedChildren = children;
+        }
         return children;
     }
 

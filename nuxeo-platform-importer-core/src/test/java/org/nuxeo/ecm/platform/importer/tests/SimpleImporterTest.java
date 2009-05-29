@@ -38,7 +38,7 @@ public class SimpleImporterTest extends SQLRepositoryTestCase {
     public void testRamdomImport() throws Exception {
 
         System.out.println("Starting prefil");
-        SourceNode src = RandomTextSourceNode.init(5000);
+        SourceNode src = RandomTextSourceNode.init(2000);
         System.out.println("prefil done");
         String targetPath = "/default-domain/workspaces/";
 
