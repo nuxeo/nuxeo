@@ -67,7 +67,7 @@ NXThemesEditor.deletePage = function(info) {
          onFailure: function(r) {
              var text = r.responseText;
              window.alert(text);
-         },         
+         }      
     });
 };
 
@@ -258,7 +258,7 @@ NXThemesEditor.updateElementWidget = function(info) {
          method: 'post',
          parameters: {
              'id': id,
-             'view_name': viewName,
+             'view_name': viewName
          },
          onSuccess: function(r) {
         	 NXThemesEditor.highlightSaveButton();
@@ -607,8 +607,7 @@ NXThemesEditor.deleteElement = function(info) {
          onFailure: function(r) {
              var text = r.responseText;
              window.alert(text);
-         },
-         
+         }
     });
 };
 
