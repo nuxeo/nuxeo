@@ -19,13 +19,13 @@ package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.storage.StorageException;
 
 /**
@@ -40,6 +40,8 @@ public class SimpleFragment extends Fragment {
 
     private static final long serialVersionUID = 1L;
 
+    private static final Log log = LogFactory.getLog(SimpleFragment.class);
+
     public static final SimpleFragment UNKNOWN = new SimpleFragment(null,
             State.DETACHED, null, null);
 
@@ -53,11 +55,25 @@ public class SimpleFragment extends Fragment {
      */
     public static final Serializable OPAQUE = OpaqueValue.OPAQUE_VALUE;
 
-    /** The map actually holding the data. */
-    private final Map<String, Serializable> map;
+    /**
+     * The fragment data. The array contains a sequence of:
+     * <ul>
+     * <li>key 1</li>
+     * <li>value 1</li>
+     * <li>old value 1</li>
+     * <li>key 2</li>
+     * <li>value 2</li>
+     * <li>old value 2</li>
+     * <li>...</li>
+     * </ul>
+     * The key is always a String, the values are Serializable.
+     */
+    private Serializable[] data;
 
-    /** The previous values, to be able to find dirty fields. */
-    private Map<String, Serializable> old;
+    /**
+     * The size of the allocated part of {@link #data}.
+     */
+    private int size;
 
     /**
      * Constructs an empty {@link SimpleFragment} of the given table with the
@@ -72,27 +88,63 @@ public class SimpleFragment extends Fragment {
     public SimpleFragment(Serializable id, State state, Context context,
             Map<String, Serializable> map) {
         super(id, state, context);
-        if (map == null) {
-            map = new HashMap<String, Serializable>();
+        data = new Serializable[context == null ? 3
+                : context.getTableSize() * 3];
+        if (map != null) {
+            addMap(map);
         }
-        this.map = map;
-        clearDirty();
+    }
+
+    private void ensureCapacity(int minCapacity) {
+        if (minCapacity > data.length) {
+            // should not happen, initial capacity is designed to fit the table
+            // size
+            log.warn("Had to extend capacity from " + data.length + " to fit "
+                    + minCapacity + " for " + this);
+            Serializable[] old = data;
+            int newCapacity = (data.length * 3) / 2 + 1;
+            if (newCapacity < minCapacity) {
+                newCapacity = minCapacity;
+            }
+            data = new Serializable[newCapacity];
+            System.arraycopy(old, 0, data, 0, size);
+        }
+    }
+
+    private void addMap(Map<String, Serializable> map) {
+        ensureCapacity(3 * map.size());
+        for (Entry<String, Serializable> entry : map.entrySet()) {
+            data[size++] = entry.getKey();
+            Serializable value = entry.getValue();
+            data[size++] = value; // value
+            data[size++] = value; // old value
+        }
     }
 
     @Override
     protected State refetch() throws StorageException {
         Context context = getContext();
-        Map<String, Serializable> newMap = context.mapper.readSingleRowMap(
+        // TODO make readSingleRowMap return something smaller than a HashMap
+        Map<String, Serializable> map = context.mapper.readSingleRowMap(
                 context.getTableName(), getId(), context);
-        map.clear();
         State state;
-        if (newMap == null) {
+        if (map == null) {
+            // clear all data (for GC)
+            for (int i = 0; i < size; i++) {
+                data[i] = null;
+            }
+            size = 0;
             state = State.ABSENT;
         } else {
-            map.putAll(newMap);
+            int oldSize = size;
+            size = 0;
+            addMap(map);
+            // clear rest of data (for GC)
+            for (int i = size; i < oldSize; i++) {
+                data[i] = null;
+            }
             state = State.PRISTINE;
         }
-        clearDirty();
         return state;
     }
 
@@ -105,7 +157,18 @@ public class SimpleFragment extends Fragment {
      */
     public void put(String key, Serializable value) throws StorageException {
         accessed(); // maybe refetch other values
-        map.put(key, value);
+        // linear search but the array is small
+        for (int i = 0; i < size; i += 3) {
+            if (key.equals(data[i])) {
+                data[i + 1] = value;
+                markModified();
+                return;
+            }
+        }
+        ensureCapacity(size + 3);
+        data[size++] = key;
+        data[size++] = value;
+        data[size++] = null; // no old value
         markModified();
     }
 
@@ -116,16 +179,15 @@ public class SimpleFragment extends Fragment {
      */
     public Collection<String> getDirty() {
         List<String> dirty = new LinkedList<String>();
-        for (Entry<String, Serializable> entry : map.entrySet()) {
-            String key = entry.getKey();
-            Serializable value = entry.getValue();
-            Serializable oldValue = old.get(key);
+        for (int i = 0; i < size; i += 3) {
+            Serializable value = data[i + 1];
+            Serializable oldValue = data[i + 2];
             if (value == null) {
                 if (oldValue != null) {
-                    dirty.add(key);
+                    dirty.add((String) data[i]);
                 }
             } else if (!value.equals(oldValue)) {
-                dirty.add(key);
+                dirty.add((String) data[i]);
             }
         }
         return dirty;
@@ -134,9 +196,10 @@ public class SimpleFragment extends Fragment {
     /**
      * Clears the dirty fields.
      */
-    @SuppressWarnings("unchecked")
     public void clearDirty() {
-        old = (HashMap) ((HashMap) map).clone();
+        for (int i = 0; i < size; i += 3) {
+            data[i + 2] = data[i + 1];
+        }
     }
 
     /**
@@ -148,7 +211,13 @@ public class SimpleFragment extends Fragment {
      */
     public Serializable get(String key) throws StorageException {
         accessed();
-        return map.get(key);
+        // linear search but the array is small
+        for (int i = 0; i < size; i += 3) {
+            if (key.equals(data[i])) {
+                return data[i + 1];
+            }
+        }
+        return null;
     }
 
     /**
@@ -160,8 +229,7 @@ public class SimpleFragment extends Fragment {
      * @throws ClassCastException if the value is not a {@code String}
      */
     public String getString(String key) throws StorageException {
-        accessed();
-        return (String) map.get(key);
+        return (String) get(key);
     }
 
     @Override
@@ -176,12 +244,13 @@ public class SimpleFragment extends Fragment {
         buf.append(getState());
         buf.append(", ");
         buf.append('{');
-        Iterator<Entry<String, Serializable>> it = map.entrySet().iterator();
-        while (it.hasNext()) {
-            Entry<String, Serializable> e = it.next();
-            buf.append(e.getKey());
+        for (int i = 0; i < size; i += 3) {
+            if (i != 0) {
+                buf.append(", ");
+            }
+            buf.append(data[i]);
             buf.append('=');
-            Serializable value = e.getValue();
+            Serializable value = data[i + 1];
             boolean truncated = false;
             if (value instanceof String && ((String) value).length() > 100) {
                 value = ((String) value).substring(0, 100);
@@ -190,9 +259,6 @@ public class SimpleFragment extends Fragment {
             buf.append(value);
             if (truncated) {
                 buf.append("...");
-            }
-            if (it.hasNext()) {
-                buf.append(", ");
             }
         }
         buf.append("})");

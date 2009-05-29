@@ -155,6 +155,10 @@ public class Mapper {
         return model;
     }
 
+    protected int getTableSize(String tableName) {
+        return sqlInfo.getDatabase().getTable(tableName).getColumns().size();
+    }
+
     // for debug
     private static boolean isLogEnabled() {
         return log.isTraceEnabled();
@@ -1154,7 +1158,8 @@ public class Mapper {
                             childName, parentId, id, childId, newName));
                     Map<String, Serializable> rename = new HashMap<String, Serializable>();
                     rename.put(model.HIER_CHILD_NAME_KEY, newName);
-                    updateSingleRowWithValues(model.HIER_TABLE_NAME, childId, rename);
+                    updateSingleRowWithValues(model.HIER_TABLE_NAME, childId,
+                            rename);
                 }
                 return row;
             } finally {

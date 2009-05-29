@@ -58,7 +58,7 @@ public class HierarchyContext extends Context {
      */
     private final Set<Serializable> modifiedParentsInvalidations;
 
-    HierarchyContext(Mapper mapper, PersistenceContext persistenceContext) {
+    public HierarchyContext(Mapper mapper, PersistenceContext persistenceContext) {
         super(mapper.getModel().hierTableName, mapper, persistenceContext);
         childrenRegularSoft = new ReferenceMap(ReferenceMap.HARD,
                 ReferenceMap.SOFT);
