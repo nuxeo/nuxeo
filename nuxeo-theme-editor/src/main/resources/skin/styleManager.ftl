@@ -8,12 +8,12 @@
 <div id="nxthemesStyleManager">
 
 <div class="nxthemesButtonSelector" style="float: right; padding: 11px 5px 12px 0;">
-  <#if style_manager_mode == 'unused styles'>            
-     <a href="javascript:void(0)" class="selected">Unused styles</a>
+  <#if style_manager_mode = 'unused styles'>
      <a href="javascript:void(0)" onclick="NXThemesStyleManager.setEditMode('named styles')">Named styles</a>
+     <a href="javascript:void(0)" class="selected">Unused styles</a>
   <#else>
-     <a href="javascript:void(0)" onclick="NXThemesStyleManager.setEditMode('unused styles')">Unused styles</a>
      <a href="javascript:void(0)" class="selected">Named styles</a>
+     <a href="javascript:void(0)" onclick="NXThemesStyleManager.setEditMode('unused styles')">Unused styles</a>
   </#if>
 </div>
 
@@ -48,34 +48,7 @@
 
 <h2 class="nxthemesEditor" style="text-transform: uppercase">${current_theme_name}</h2>
 
-<#if style_manager_mode = 'named styles'>
-
-<#assign found=false>
-
-<ul class="namedStyleSelector">
-<#list named_styles as style>
-  <#if selected_named_style & style.uid = selected_named_style.uid>
-    <#assign found=true>
-  </#if>
-  <li><a <#if style.name = selected_named_style_name>class="selected"</#if> href="javascript:NXThemesStyleManager.selectNamedStyle('#{style.uid}')">${style.name}</a></li>
-</#list>
-</ul>
-
-<#if found>
-<form id="nxthemesNamedStyleCSSEditor" class="nxthemesForm" style="padding: 0"
-      onsubmit="NXThemesStyleManager.updateNamedStyleCSS(this); return false">
-<div>
-  <textarea id="namedStyleCssEditor" name="cssSource" rows="15" cols="72"
- style="border: 1px solid #999; width: 100%; height: 250px; font-size: 11px;">${selected_named_style_css}</textarea>
-  <input type="hidden" name="style_uid" value="#{selected_named_style.uid}" />
-</div>
-<div>
-  <button type="submit">Save</button>
-</div>
-</form>
-</#if>
-
-<#else>
+<#if style_manager_mode = 'unused styles'>
 
 <p class="nxthemesEditor"><em>These styles are associated with non existing views. They can probably be cleaned up.</em><p>
 
@@ -111,6 +84,34 @@
 
 </#if>
 </#list>
+
+<#else>
+
+<#assign found=false>
+
+<ul class="namedStyleSelector">
+<#list named_styles as style>
+  <#if selected_named_style & style.uid = selected_named_style.uid>
+    <#assign found=true>
+  </#if>
+  <li><a <#if style.name = selected_named_style_name>class="selected"</#if> href="javascript:NXThemesStyleManager.selectNamedStyle('#{style.uid}')">${style.name}</a></li>
+</#list>
+</ul>
+
+<#if found>
+<form id="nxthemesNamedStyleCSSEditor" class="nxthemesForm" style="padding: 0"
+      onsubmit="NXThemesStyleManager.updateNamedStyleCSS(this); return false">
+<div>
+  <textarea id="namedStyleCssEditor" name="cssSource" rows="15" cols="72"
+ style="border: 1px solid #999; width: 100%; height: 250px; font-size: 11px;">${selected_named_style_css}</textarea>
+  <input type="hidden" name="style_uid" value="#{selected_named_style.uid}" />
+</div>
+<div>
+  <button type="submit">Save</button>
+</div>
+</form>
+</#if>
+
 
 </#if>
 
