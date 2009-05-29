@@ -50,12 +50,20 @@ public class VersionEventListener implements PostCommitEventListener {
     }
 
     public void handleEvent(EventBundle events) throws ClientException {
-        for (Event event : events) {
-            if (eventNames.contains(event.getName())) {
-                manager.manage(event);
+        boolean processEvents = false;
+        for (String eventName : eventNames) {
+            if (events.containsEventName(eventName)) {
+                processEvents = true;
+            }
+        }
+        
+        if (processEvents) {
+            for (Event event : events) {
+                if (eventNames.contains(event.getName())) {
+                    manager.manage(event);
+                }
             }
         }
     }
-
 
 }
