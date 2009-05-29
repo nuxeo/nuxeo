@@ -57,7 +57,7 @@ public class ShallowEvent extends EventImpl {
                 DocumentRef ref = oldDoc.getRef();
                 if (ref != null) {
                     //newArg = new DocumentModelImpl(null,oldDoc.getType(),oldDoc.getId(),oldDoc.getPath(), oldDoc.getRef(), oldDoc.getParentRef(), oldDoc.getDeclaredSchemas(), oldDoc.getDeclaredFacets());
-                    newArg = new ShallowDocumentModel(oldDoc.getRef(), oldDoc.getRepositoryName());
+                    newArg = new ShallowDocumentModel(oldDoc);
                 } else {
                     newArg = null;
                 }
@@ -83,7 +83,7 @@ public class ShallowEvent extends EventImpl {
             if (propValue instanceof DocumentModel) {
                 DocumentModel oldDoc = (DocumentModel) propValue;
                 //propValue = new DocumentModelImpl(null,oldDoc.getType(),oldDoc.getId(),oldDoc.getPath(), oldDoc.getRef(), oldDoc.getParentRef(), oldDoc.getDeclaredSchemas(), oldDoc.getDeclaredFacets());
-                propValue = new ShallowDocumentModel(oldDoc.getRef(), oldDoc.getRepositoryName());
+                propValue = new ShallowDocumentModel(oldDoc);
             }
             // XXX treat here other cases !!!!
             newProps.put(prop.getKey(), propValue);

@@ -34,6 +34,7 @@ import org.nuxeo.ecm.core.api.DataModelMap;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyException;
@@ -53,21 +54,24 @@ import org.nuxeo.ecm.core.schema.DocumentType;
  */
 public class ShallowDocumentModel implements DocumentModel {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
 
-    private DocumentRef ref;
+    private String id;
+
     private String repoName;
 
-    public ShallowDocumentModel(DocumentRef ref, String repoName) {
-        this.ref=ref;
-        this.repoName = repoName;
+    public ShallowDocumentModel(DocumentModel doc) {
+        this.id = doc.getId();
+        this.repoName = doc.getRepositoryName();
 
     }
+
+    public String getId() {
+        return id;
+    }
+
     public DocumentRef getRef() {
-        return ref;
+        return id == null ? null : new IdRef(id);
     }
 
     public String getRepositoryName() {
@@ -149,10 +153,6 @@ public class ShallowDocumentModel implements DocumentModel {
     }
 
     public long getFlags() {
-        throw new UnsupportedOperationException();
-    }
-
-    public String getId() {
         throw new UnsupportedOperationException();
     }
 
@@ -337,6 +337,7 @@ public class ShallowDocumentModel implements DocumentModel {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public DocumentModel clone() throws CloneNotSupportedException {
         throw new CloneNotSupportedException();
     }
