@@ -188,7 +188,7 @@ public class Manager {
                 }
             }
             Boolean disallowDuplicates = destAreaFragment.getDisallowDuplicates();
-            if (disallowDuplicates) {
+            if (Boolean.TRUE.equals(disallowDuplicates)) {
                 String widgetTypeName = srcWidget.getName();
                 for (Widget w : widgets) {
                     if (widgetTypeName.equals(w.getName())) {
