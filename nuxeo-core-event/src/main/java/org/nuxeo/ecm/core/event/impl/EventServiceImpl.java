@@ -115,7 +115,8 @@ public class EventServiceImpl implements EventService, EventServiceAdmin{
 
         if (!event.isInline()) { // record the event
             EventBundleImpl b = bundle.get();
-            b.push(event);
+            // don't push the complete event, only a shallow copy
+            b.push(ShallowEvent.create(event));
             // check for commit events to flush the event bundle
             if (!b.isTransacted() && event.isCommitEvent()) {
                 transactionCommitted();
