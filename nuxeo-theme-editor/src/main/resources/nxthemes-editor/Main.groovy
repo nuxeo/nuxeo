@@ -76,11 +76,16 @@ public class Main extends ModuleRoot {
   @GET
   @Path("styleManager")
   public Object renderStyleManager(@QueryParam("org.nuxeo.theme.application.path") String path) {
+    def styles = getNamedStyles(path)
+    Style selectedStyle = getSelectedNamedStyle()
+    if (!styles.contains(selectedStyle) && !styles.isEmpty()) {
+        selectedStyle = styles[0];
+    }
     return getTemplate("styleManager.ftl").arg(
             "named_styles", getNamedStyles(path)).arg(
             "style_manager_mode", getStyleManagerMode()).arg(
-            "selected_named_style", getSelectedNamedStyle()).arg(
-            "selected_named_style_css", getRenderedPropertiesForSelectedNamedStyle()).arg(
+            "selected_named_style", selectedStyle).arg(
+            "selected_named_style_css", getRenderedPropertiesForNamedStyle(selectedStyle)).arg(
             "current_theme_name", getCurrentThemeName(path))
   }  
   
@@ -1244,8 +1249,7 @@ public class Main extends ModuleRoot {
       return org.nuxeo.theme.html.Utils.styleToCss(style, viewNames, RESOLVE_PRESETS, IGNORE_VIEW_NAME, IGNORE_CLASSNAME, INDENT)
   }
   
-  public static String getRenderedPropertiesForSelectedNamedStyle() {
-      Style style = getSelectedNamedStyle()
+  public static String getRenderedPropertiesForNamedStyle(Style style) {
       if (style == null) {
           return ""
       }
