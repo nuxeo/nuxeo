@@ -69,6 +69,7 @@ public class RepositoryOSGITestCase extends NXRuntimeTestCase {
 
     @Override
     public void tearDown() throws Exception {
+        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
         releaseCoreSession();
         releaseRepository();
         super.tearDown();
