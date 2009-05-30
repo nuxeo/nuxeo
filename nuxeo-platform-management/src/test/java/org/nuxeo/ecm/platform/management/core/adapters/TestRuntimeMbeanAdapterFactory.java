@@ -38,12 +38,6 @@ public class TestRuntimeMbeanAdapterFactory extends RepositoryOSGITestCase {
                 ResourcePublisherService.NAME);
     }
 
-    @Override
-    public void tearDown() throws Exception {
-        Framework.getRuntime().stop();
-        super.tearDown();
-    }
-
     public void testRegisterFactories() throws Exception {
         doRegisterInventoryFactory();
     }
