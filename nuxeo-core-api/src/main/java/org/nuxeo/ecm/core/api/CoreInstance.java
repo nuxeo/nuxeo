@@ -20,10 +20,9 @@
 package org.nuxeo.ecm.core.api;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -75,18 +74,15 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class CoreInstance implements Serializable {
 
-    private static final long serialVersionUID = 8899971104780659006L;
+    private static final long serialVersionUID = 1L;
+
+    private static final Log log = LogFactory.getLog(CoreInstance.class);
 
     private static final CoreInstance instance = new CoreInstance();
 
     private CoreSessionFactory factory;
 
-    private static final Log log = LogFactory.getLog(CoreInstance.class);
-
-    private final ReentrantReadWriteLock sessionsLock = new ReentrantReadWriteLock();
-
-    //private final Map<String, CoreSession> sessions = new Hashtable<String, CoreSession>();
-    private final Map<String, CoreSession> sessions = new HashMap<String, CoreSession>();
+    private final Map<String, CoreSession> sessions = new ConcurrentHashMap<String, CoreSession>();
 
     private final Map<String, DocumentType> docTypes = new Hashtable<String, DocumentType>();
 
@@ -153,44 +149,20 @@ public class CoreInstance implements Serializable {
         // connect to the server
         client.connect(repositoryName, context);
         // register the client locally
-        sessionsLock.writeLock().lock();
-        try {
-            sessions.put(client.getSessionId(), client);
-        }
-        finally {
-            sessionsLock.writeLock().unlock();
-        }
+        sessions.put(client.getSessionId(), client);
         return client;
     }
 
     public void registerSession(String sid, CoreSession session) {
-        sessionsLock.writeLock().lock();
-        try {
-            sessions.put(sid, session);
-        }
-        finally {
-            sessionsLock.writeLock().unlock();
-        }
+        sessions.put(sid, session);
     }
 
     public CoreSession unregisterSession(String sid) {
-        sessionsLock.writeLock().lock();
-        try {
-            return sessions.remove(sid);
-        }
-        finally {
-            sessionsLock.writeLock().unlock();
-        }
+        return sessions.remove(sid);
     }
 
     public void close(CoreSession client) {
-        sessionsLock.writeLock().lock();
-        try {
-            client = sessions.remove(client.getSessionId());
-        }
-        finally {
-            sessionsLock.writeLock().unlock();
-        }
+        client = sessions.remove(client.getSessionId());
         if (client != null) {
             client.destroy();
         } else {
@@ -199,23 +171,13 @@ public class CoreInstance implements Serializable {
     }
 
     public boolean isSessionStarted(String sid) {
-        sessionsLock.readLock().lock();
-        try {
-            return sessions.containsKey(sid);
-        }
-        finally {
-            sessionsLock.readLock().unlock();
-        }
+        return sessions.containsKey(sid);
     }
 
+    /** @deprecated unused */
+    @Deprecated
     public CoreSession[] getSessions() {
-        sessionsLock.readLock().lock();
-        try {
-            return sessions.values().toArray(new CoreSession[sessions.size()]);
-        }
-        finally {
-            sessionsLock.readLock().unlock();
-        }
+        return (CoreSession[]) sessions.values().toArray();
     }
 
     /**
@@ -225,13 +187,7 @@ public class CoreInstance implements Serializable {
      * @return the client
      */
     public CoreSession getSession(String sid) {
-        sessionsLock.readLock().lock();
-        try {
-            return sessions.get(sid);
-        }
-        finally {
-            sessionsLock.readLock().unlock();
-        }
+        return sessions.get(sid);
     }
 
     public void initialize(CoreSessionFactory factory) {
