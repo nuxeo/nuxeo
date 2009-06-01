@@ -44,7 +44,7 @@ public abstract class AbstractCommentListener {
         }
 
         public void handleEvent(Event event) {
-            if (DocumentEventTypes.ABOUT_TO_REMOVE.equals(event.getName())) {
+            if (DocumentEventTypes.DOCUMENT_REMOVED.equals(event.getName())) {
                 EventContext ctx = event.getContext();
                 if (ctx instanceof DocumentEventContext) {
                     DocumentEventContext docCtx = (DocumentEventContext) ctx;
