@@ -35,6 +35,7 @@ import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyException;
@@ -46,7 +47,7 @@ import org.nuxeo.ecm.core.schema.DocumentType;
 /**
  *
  * Light weight {@link DocumentModel} implementation
- * Only holds {@link DocumentRef} and RepositoryName
+ * Only holds {@link DocumentRef}, RepositoryName, name and path.
  * Used to reduce memory footprint of {@link Event} stacked in {@link EventBundle}
  *
  * @author Thierry Delprat
@@ -60,10 +61,18 @@ public class ShallowDocumentModel implements DocumentModel {
 
     private String repoName;
 
+    private String name;
+
+    private Path path;
+
+    private String type;
+
     public ShallowDocumentModel(DocumentModel doc) {
         this.id = doc.getId();
         this.repoName = doc.getRepositoryName();
-
+        this.name = doc.getName();
+        this.path = doc.getPath();
+        this.type = doc.getType();
     }
 
     public String getId() {
@@ -76,6 +85,32 @@ public class ShallowDocumentModel implements DocumentModel {
 
     public String getRepositoryName() {
         return repoName;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Path getPath() {
+        return path;
+    }
+
+    public String getPathAsString() {
+        if (path!=null) {
+            return path.toString();
+        }
+        return null;
+    }
+
+    public DocumentRef getParentRef() {
+        if (path!=null) {
+            return new PathRef(path.removeLastSegments(1).toString());
+        }
+        return null;
+    }
+
+    public String getType() {
+        return type;
     }
 
     public void copyContent(DocumentModel sourceDoc) throws ClientException {
@@ -164,27 +199,11 @@ public class ShallowDocumentModel implements DocumentModel {
         throw new UnsupportedOperationException();
     }
 
-    public String getName() {
-        throw new UnsupportedOperationException();
-    }
-
-    public DocumentRef getParentRef() {
-        throw new UnsupportedOperationException();
-    }
-
     public DocumentPart getPart(String schema) throws ClientException {
         throw new UnsupportedOperationException();
     }
 
     public DocumentPart[] getParts() throws ClientException {
-        throw new UnsupportedOperationException();
-    }
-
-    public Path getPath() {
-        throw new UnsupportedOperationException();
-    }
-
-    public String getPathAsString() {
         throw new UnsupportedOperationException();
     }
 
@@ -229,9 +248,6 @@ public class ShallowDocumentModel implements DocumentModel {
         throw new UnsupportedOperationException();
     }
 
-    public String getType() {
-        throw new UnsupportedOperationException();
-    }
 
     public String getVersionLabel() {
         throw new UnsupportedOperationException();

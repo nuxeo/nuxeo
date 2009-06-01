@@ -130,7 +130,7 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
                                     newArg = session.getDocument(oldDoc.getRef());
                                 } else {
                                     // probably deleted doc
-                                    newArg = null;
+                                    newArg = oldDoc;
                                 }
                             } catch (ClientException e) {
                                 log.error("Can not refetch Doc with ref "
