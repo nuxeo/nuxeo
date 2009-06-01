@@ -22,7 +22,7 @@
 
     <!-- Prototype 1.6.0.3 -->
     <!-- when changing prototype version, please make
-      sure fix for NXP-2586 is applied -->
+      sure fix for NXP-2586, and for NXP-3600 are applied -->
     <resource name="prototype.js">
       <path>nxthemes/html/scripts/prototype.js</path>
       <shrinkable>false</shrinkable>
