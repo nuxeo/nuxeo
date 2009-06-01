@@ -332,7 +332,7 @@ public abstract class AbstractSession implements CoreSession,
 
     protected void notifyEvent(String eventId, DocumentModel source,
             Map<String, Serializable> options, String category, String comment,
-            boolean withLifeCycle) throws ClientException {
+            boolean withLifeCycle, boolean inline) throws ClientException {
 
         DocumentEventContext ctx = new DocumentEventContext(this,
                 getPrincipal(), source);
@@ -368,11 +368,15 @@ public abstract class AbstractSession implements CoreSession,
         if (DocumentEventTypes.SESSION_SAVED.equals(eventId)) {
             event.setIsCommitEvent(true);
         }
+        if (inline) {
+            event.setInline(true);
+        }
         // compat code: set isLocal on event if JMS is blocked
         if (source != null) {
             Boolean blockJms = (Boolean) source.getContextData("BLOCK_JMS_PRODUCING");
             if (blockJms != null && blockJms) {
                 event.setLocal(true);
+                event.setInline(true);
             }
         }
         fireEvent(event);
@@ -401,7 +405,7 @@ public abstract class AbstractSession implements CoreSession,
         notifyEvent(VersioningChangeNotifier.CORE_EVENT_ID_VERSIONING_CHANGE,
                 newDocument, info,
                 DocumentEventCategories.EVENT_CLIENT_NOTIF_CATEGORY, null,
-                false);
+                false, false);
     }
 
     public boolean hasPermission(DocumentRef docRef, String permission)
@@ -496,7 +500,7 @@ public abstract class AbstractSession implements CoreSession,
 
             DocumentModel srcDocModel = readModel(srcDoc, null);
             notifyEvent(DocumentEventTypes.ABOUT_TO_COPY, srcDocModel, null,
-                    null, null, true);
+                    null, null, true, true);
 
             Document doc = getSession().copy(srcDoc, dstDoc, name);
             if (doc.isLocked()) { // if we copy a locked document - the new
@@ -513,7 +517,7 @@ public abstract class AbstractSession implements CoreSession,
             String comment = srcDoc.getRepository().getName() + ':'
                     + src.toString();
             notifyEvent(DocumentEventTypes.DOCUMENT_CREATED_BY_COPY, docModel,
-                    options, null, comment, true);
+                    options, null, comment, true, false);
             docModel = writeModel(doc, docModel);
 
             // notify document copied
@@ -521,7 +525,7 @@ public abstract class AbstractSession implements CoreSession,
                     + docModel.getRef().toString();
 
             notifyEvent(DocumentEventTypes.DOCUMENT_DUPLICATED, srcDocModel,
-                    options, null, comment, true);
+                    options, null, comment, true, false);
 
             return docModel;
         } catch (DocumentException e) {
@@ -558,7 +562,7 @@ public abstract class AbstractSession implements CoreSession,
                     docName, srcDocModel.getType());
             docModel.copyContent(srcDocModel);
             notifyEvent(DocumentEventTypes.ABOUT_TO_COPY, srcDocModel, null,
-                    null, null, true);
+                    null, null, true, true);
             docModel = createDocument(docModel);
             Document doc = resolveReference(docModel.getRef());
 
@@ -567,13 +571,13 @@ public abstract class AbstractSession implements CoreSession,
             String comment = srcDoc.getRepository().getName() + ':'
                     + src.toString();
             notifyEvent(DocumentEventTypes.DOCUMENT_CREATED_BY_COPY, docModel,
-                    options, null, comment, true);
+                    options, null, comment, true, false);
 
             // notify document copied
             comment = doc.getRepository().getName() + ':'
                     + docModel.getRef().toString();
             notifyEvent(DocumentEventTypes.DOCUMENT_DUPLICATED, srcDocModel,
-                    options, null, comment, true);
+                    options, null, comment, true, false);
 
             return docModel;
         } catch (DocumentException e) {
@@ -604,7 +608,7 @@ public abstract class AbstractSession implements CoreSession,
 
             DocumentModel srcDocModel = readModel(srcDoc, null);
             notifyEvent(DocumentEventTypes.ABOUT_TO_MOVE, srcDocModel, null,
-                    null, null, true);
+                    null, null, true, true);
 
             String comment = srcDoc.getRepository().getName() + ':'
                     + srcDoc.getParent().getUUID();
@@ -621,7 +625,7 @@ public abstract class AbstractSession implements CoreSession,
             options.put(CoreEventConstants.PARENT_PATH,
                     srcDocModel.getParentRef());
             notifyEvent(DocumentEventTypes.DOCUMENT_MOVED, docModel, options,
-                    null, comment, true);
+                    null, comment, true, false);
 
             return docModel;
         } catch (DocumentException e) {
@@ -661,11 +665,11 @@ public abstract class AbstractSession implements CoreSession,
                     (Serializable) newAcp.clone());
 
             notifyEvent(DocumentEventTypes.BEFORE_DOC_SECU_UPDATE, docModel,
-                    options, null, null, true);
+                    options, null, null, true, true);
             getSession().getSecurityManager().setACP(doc, newAcp, overwrite);
             docModel = readModel(doc, null);
             notifyEvent(DocumentEventTypes.DOCUMENT_SECURITY_UPDATED, docModel,
-                    options, null, null, true);
+                    options, null, null, true, false);
         } catch (DocumentException e) {
             throw new ClientException("Failed to set acp", e);
         }
@@ -696,7 +700,7 @@ public abstract class AbstractSession implements CoreSession,
             // do not forward this event on the JMS Bus
             options.put("BLOCK_JMS_PRODUCING", true);
             notifyEvent(DocumentEventTypes.EMPTY_DOCUMENTMODEL_CREATED,
-                    docModel, options, null, null, false);
+                    docModel, options, null, null, false, true);
             return docModel;
         } catch (DocumentException e) {
             throw new ClientException("Failed to create document model", e);
@@ -760,7 +764,7 @@ public abstract class AbstractSession implements CoreSession,
 
             Map<String, Serializable> options = getContextMapEventInfo(docModel);
             notifyEvent(DocumentEventTypes.ABOUT_TO_CREATE, docModel, options,
-                    null, null, false); // no lifecycle yet
+                    null, null, false, true); // no lifecycle yet
             name = generateDocumentName(folder, name);
             Document doc = folder.addChild(name, typeName);
 
@@ -782,7 +786,7 @@ public abstract class AbstractSession implements CoreSession,
 
             // re-read docmodel
             notifyEvent(DocumentEventTypes.DOCUMENT_CREATED, docModel, options,
-                    null, null, true);
+                    null, null, true, false);
             docModel = writeModel(doc, docModel);
 
             return docModel;
@@ -840,7 +844,7 @@ public abstract class AbstractSession implements CoreSession,
 
         // send an event about the import
         notifyEvent(DocumentEventTypes.DOCUMENT_IMPORTED, docModel, null, null,
-                null, true);
+                null, true, false);
     }
 
     /**
@@ -1582,21 +1586,21 @@ public abstract class AbstractSession implements CoreSession,
         // or not
         if (!doc.isVersion()) {
             notifyEvent(DocumentEventTypes.ABOUT_TO_REMOVE, docModel, options,
-                    null, null, true);
+                    null, null, true, true);
             CoreService coreService = Framework.getLocalService(CoreService.class);
             coreService.getVersionRemovalPolicy().removeVersions(getSession(),
                     doc, this);
         } else {
             notifyEvent(DocumentEventTypes.ABOUT_TO_REMOVE_VERSION, docModel,
-                    options, null, null, true);
+                    options, null, null, true, true);
         }
         doc.remove();
         if (!doc.isVersion()) {
             notifyEvent(DocumentEventTypes.DOCUMENT_REMOVED, docModel, options,
-                    null, null, false);
+                    null, null, false, false);
         } else {
             notifyEvent(DocumentEventTypes.VERSION_REMOVED, docModel, options,
-                    null, null, false);
+                    null, null, false, false);
         }
     }
 
@@ -1641,7 +1645,7 @@ public abstract class AbstractSession implements CoreSession,
             final Map<String, Serializable> options = new HashMap<String, Serializable>();
             getSession().save();
             notifyEvent(DocumentEventTypes.SESSION_SAVED, null, options, null,
-                    null, true);
+                    null, true, false);
         } catch (DocumentException e) {
             throw new ClientException("Failed to save session", e);
         }
@@ -1687,20 +1691,20 @@ public abstract class AbstractSession implements CoreSession,
             boolean dirty = doc.isDirty();
             DocumentModel tmpDocModel = readModel(doc, null);
             notifyEvent(DocumentEventTypes.INCREMENT_BEFORE_UPDATE,
-                    tmpDocModel, options, null, null, true);
+                    tmpDocModel, options, null, null, true, true);
             // write potential number changes, reset old dirty flags
             writeModel(doc, tmpDocModel);
             doc.setDirty(dirty);
 
             // regular event, last chance to modify docModel
             notifyEvent(DocumentEventTypes.BEFORE_DOC_UPDATE, docModel,
-                    options, null, null, true);
+                    options, null, null, true, true);
 
             // actual save
             docModel = writeModel(doc, docModel);
 
             notifyEvent(DocumentEventTypes.DOCUMENT_UPDATED, docModel, options,
-                    null, null, true);
+                    null, null, true, false);
 
             if (oldDoc != null) {
                 notifyVersionChange(oldDoc, docModel, options);
@@ -1936,7 +1940,7 @@ public abstract class AbstractSession implements CoreSession,
                     versionUUID);
 
             notifyEvent(DocumentEventTypes.BEFORE_DOC_RESTORE, docModel,
-                    options, null, null, true);
+                    options, null, null, true, true);
             writeModel(doc, docModel);
 
             doc.restore(version.getLabel());
@@ -1946,7 +1950,7 @@ public abstract class AbstractSession implements CoreSession,
             // re-read doc model after restoration
             docModel = readModel(doc, null);
             notifyEvent(DocumentEventTypes.DOCUMENT_RESTORED, docModel,
-                    options, null, null, true);
+                    options, null, null, true, false);
             docModel = writeModel(doc, docModel);
 
             log.debug("Document restored to version:" + version.getLabel());
@@ -1967,7 +1971,7 @@ public abstract class AbstractSession implements CoreSession,
 
             DocumentModel docModel = readModel(doc, null);
             notifyEvent(DocumentEventTypes.ABOUT_TO_CHECKIN, docModel, null,
-                    null, null, true);
+                    null, null, true, true);
             writeModel(doc, docModel);
 
             String description = version.getDescription();
@@ -1980,7 +1984,7 @@ public abstract class AbstractSession implements CoreSession,
             Document versionDocument = doc.getVersion(version.getLabel());
             DocumentModel versionModel = readModel(versionDocument, null);
             notifyEvent(DocumentEventTypes.DOCUMENT_CHECKEDIN, versionModel,
-                    null, null, null, true);
+                    null, null, null, true, false);
             writeModel(versionDocument, versionModel);
         } catch (DocumentException e) {
             throw new ClientException("Failed to check in document " + docRef,
@@ -2010,7 +2014,7 @@ public abstract class AbstractSession implements CoreSession,
                 doc = resolveReference(docModel.getRef());
             }
             notifyEvent(DocumentEventTypes.ABOUT_TO_CHECKOUT, docModel,
-                    options, null, null, true);
+                    options, null, null, true, true);
             doc.checkOut();
 
             // notify listeners to increment the version number;
@@ -2023,7 +2027,7 @@ public abstract class AbstractSession implements CoreSession,
                 eventDocModel = docModel;
             }
             notifyEvent(DocumentEventTypes.DOCUMENT_CHECKEDOUT, eventDocModel,
-                    options, null, null, true);
+                    options, null, null, true, false);
             // write version number changes
             writeModel(doc, eventDocModel);
             // and reset the dirty flag
@@ -2109,15 +2113,15 @@ public abstract class AbstractSession implements CoreSession,
             // notify for reindexing
             DocumentModel proxyModel = readModel(proxy, null);
             notifyEvent(DocumentEventTypes.DOCUMENT_PROXY_PUBLISHED,
-                    proxyModel, options, null, null, true);
+                    proxyModel, options, null, null, true, false);
 
             // notify for document creation (proxy)
             notifyEvent(DocumentEventTypes.DOCUMENT_CREATED, proxyModel,
-                    options, null, null, true);
+                    options, null, null, true, false);
 
             DocumentModel sectionModel = readModel(section, null);
             notifyEvent(DocumentEventTypes.SECTION_CONTENT_PUBLISHED,
-                    sectionModel, options, null, null, true);
+                    sectionModel, options, null, null, true, false);
 
             return proxyModel;
 
@@ -2346,7 +2350,7 @@ public abstract class AbstractSession implements CoreSession,
                 notifyEvent(LifeCycleEventTypes.LIFECYCLE_TRANSITION_EVENT,
                         docModel, options,
                         DocumentEventCategories.EVENT_LIFE_CYCLE_CATEGORY,
-                        null, true);
+                        null, true, false);
             }
         } catch (LifeCycleException e) {
             ClientException ce = new ClientException(
@@ -2451,7 +2455,7 @@ public abstract class AbstractSession implements CoreSession,
             DocumentModel docModel = readModel(doc, null);
             Map<String, Serializable> options = new HashMap<String, Serializable>();
             notifyEvent(DocumentEventTypes.DOCUMENT_LOCKED, docModel, options,
-                    null, null, true);
+                    null, null, true, false);
         } catch (DocumentException e) {
             throw new ClientException("Failed to set lock on " + docRef, e);
         }
@@ -2475,7 +2479,7 @@ public abstract class AbstractSession implements CoreSession,
                 DocumentModel docModel = readModel(doc, null);
                 Map<String, Serializable> options = new HashMap<String, Serializable>();
                 notifyEvent(DocumentEventTypes.DOCUMENT_UNLOCKED, docModel,
-                        options, null, null, true);
+                        options, null, null, true, false);
                 return lockKey;
             }
             throw new ClientException(
@@ -2554,10 +2558,10 @@ public abstract class AbstractSession implements CoreSession,
 
                 Map<String, Serializable> options = new HashMap<String, Serializable>();
                 notifyEvent(DocumentEventTypes.DOCUMENT_PROXY_PUBLISHED,
-                        newDocument, options, null, null, true);
+                        newDocument, options, null, null, true, false);
 
                 notifyEvent(DocumentEventTypes.SECTION_CONTENT_PUBLISHED,
-                        section, options, null, null, true);
+                        section, options, null, null, true, false);
 
                 return newDocument;
             } catch (DocumentException e) {
@@ -2695,7 +2699,7 @@ public abstract class AbstractSession implements CoreSession,
             String comment = src;
             options.put(CoreEventConstants.REORDERED_CHILD, src);
             notifyEvent(DocumentEventTypes.DOCUMENT_CHILDREN_ORDER_CHANGED,
-                    docModel, options, null, comment, true);
+                    docModel, options, null, comment, true, false);
 
         } catch (DocumentException e) {
             throw new ClientException("Failed to resolve documents: " + src
@@ -2735,14 +2739,14 @@ public abstract class AbstractSession implements CoreSession,
     }
 
     /**
-     * This method is for compatibility reasons to notify an operation start. 
-     * Operations must be reworked to use the new event model. In order for operation notification to work 
+     * This method is for compatibility reasons to notify an operation start.
+     * Operations must be reworked to use the new event model. In order for operation notification to work
      * the event compatibility bundle must be deployed.
      * @see org.nuxeo.ecm.core.event.compat.CompatibilityListener in nuxeo-core-event-compat
      */
     public void startOperation(Operation<?> operation) {
         EventContextImpl ctx = new EventContextImpl(this,
-                getPrincipal(), operation);  
+                getPrincipal(), operation);
         Event event = ctx.newEvent("!OPERATION_START!");
         event.setInline(true); // avoid recording the event in bundle events
         try {
@@ -2757,14 +2761,14 @@ public abstract class AbstractSession implements CoreSession,
     }
 
     /**
-     * This method is for compatibility reasons to notify an operation end. 
-     * Operations must be reworked to use the new event model. In order for operation notification to work 
+     * This method is for compatibility reasons to notify an operation end.
+     * Operations must be reworked to use the new event model. In order for operation notification to work
      * the event compatibility bundle must be deployed.
      * @see org.nuxeo.ecm.core.event.compat.CompatibilityListener in nuxeo-core-event-compat
      */
     public void endOperation(Operation<?> operation) {
         EventContextImpl ctx = new EventContextImpl(this,
-                getPrincipal(), operation);  
+                getPrincipal(), operation);
         Event event = ctx.newEvent("!OPERATION_END!");
         event.setInline(true); // avoid recording the event in bundle events
         try {

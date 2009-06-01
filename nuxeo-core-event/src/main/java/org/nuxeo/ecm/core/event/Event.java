@@ -43,6 +43,7 @@ import java.util.Set;
  * bundle will be fired. TYhe COMMIT flag is ignored while in a transaction.
  * </ul>
  *
+ *
  * More flags may be added in the future.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -54,7 +55,8 @@ public interface Event extends Serializable {
         CANCEL, //
         COMMIT, //
         INLINE,
-        ROOLBACK
+        ROOLBACK,
+        IMMEDIATE
     }
 
     /**
@@ -196,5 +198,23 @@ public interface Event extends Serializable {
      * @see #isPublic()
      */
     void setPublic(boolean isPublic);
+
+    /**
+     * Tests if event is Immediate
+     * <p>
+     * Immediate events are sent in bundle without waiting for a commit
+     *
+     * @return
+     */
+    boolean isImmediate();
+
+    /**
+     *
+     * Set the immediate flag
+     *
+     * @param immediate
+     */
+    void setImmediate(boolean immediate);
+
 
 }

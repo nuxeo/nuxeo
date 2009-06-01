@@ -114,17 +114,21 @@ public class EventServiceImpl implements EventService, EventServiceAdmin{
     public void fireEvent(Event event) throws ClientException {
 
         if (!event.isInline()) { // record the event
-            EventBundleImpl b = bundle.get();
-            // don't push the complete event, only a shallow copy
-            b.push(ShallowEvent.create(event));
-            // check for commit events to flush the event bundle
-            if (!b.isTransacted() && event.isCommitEvent()) {
-                transactionCommitted();
+            // don't record the complete event, only a shallow copy
+            ShallowEvent shallowEvent = ShallowEvent.create(event);
+            if (event.isImmediate()) {
+                EventBundleImpl b = new EventBundleImpl();
+                b.push(shallowEvent);
+                fireEventBundle(b);
             }
-        } else {
-            EventBundleImpl b = new EventBundleImpl();
-            b.push(event);
-            fireEventBundle(b);
+            else {
+                EventBundleImpl b = bundle.get();
+                b.push(shallowEvent);
+                // check for commit events to flush the event bundle
+                if (!b.isTransacted() && event.isCommitEvent()) {
+                    transactionCommitted();
+                }
+            }
         }
         String ename = event.getName();
         for (EventListenerDescriptor desc : listenerDescriptors.getEnabledInlineListenersDescriptors()) {

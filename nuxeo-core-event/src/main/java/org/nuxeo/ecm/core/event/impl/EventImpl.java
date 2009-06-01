@@ -135,4 +135,18 @@ public class EventImpl implements Event {
         setLocal(!isPublic);
     }
 
+    public boolean isImmediate() {
+        return flags.contains(Flag.IMMEDIATE);
+    }
+
+    public void setImmediate(boolean immediate) {
+        if (immediate) {
+            flags.add(Flag.IMMEDIATE);
+        } else {
+            flags.remove(Flag.IMMEDIATE);
+        }
+    }
+
+
+
 }
