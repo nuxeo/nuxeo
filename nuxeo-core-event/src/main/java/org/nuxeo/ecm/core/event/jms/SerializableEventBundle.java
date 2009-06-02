@@ -244,7 +244,7 @@ public class SerializableEventBundle implements Serializable {
             }
 
             ctx.setProperties(ctxProperties);
-            Event e = new EventImpl(eventName, ctx, null, time);
+            Event e = new EventImpl(eventName, ctx, Event.FLAG_NONE, time);
             bundle.push(e);
         }
         return bundle;

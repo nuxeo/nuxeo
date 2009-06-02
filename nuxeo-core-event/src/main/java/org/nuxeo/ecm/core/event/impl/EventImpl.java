@@ -16,9 +16,6 @@
  */
 package org.nuxeo.ecm.core.event.impl;
 
-import java.util.EnumSet;
-import java.util.Set;
-
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 
@@ -37,29 +34,26 @@ public class EventImpl implements Event {
 
     protected final EventContext ctx;
 
-    protected final Set<Flag> flags;
+    protected int flags;
 
 
-    public EventImpl(String name, EventContext ctx, Set<Flag> flags, long creationTime) {
+    public EventImpl(String name, EventContext ctx, int flags, long creationTime) {
         this.name = name;
         this.ctx = ctx;
         time = creationTime;
-        if (flags == null) {
-            flags = EnumSet.noneOf(Flag.class);
-        }
         this.flags = flags;
     }
 
-    public EventImpl(String name, EventContext ctx, Set<Flag> flags) {
+    public EventImpl(String name, EventContext ctx, int flags) {
         this(name, ctx, flags, System.currentTimeMillis());
     }
 
     public EventImpl(String name, EventContext ctx) {
-        this(name, ctx, null);
+        this(name, ctx, FLAG_NONE);
     }
 
 
-    public Set<Flag> getFlags() {
+    public int getFlags() {
         return flags;
     }
 
@@ -76,54 +70,54 @@ public class EventImpl implements Event {
     }
 
     public void cancel() {
-        flags.add(Flag.CANCEL);
+        flags |= FLAG_CANCEL;
     }
 
     public void markRollBack() {
-        flags.add(Flag.ROOLBACK);
+        flags |= FLAG_ROLLBACK;
     }
 
     public boolean isMarkedForRollBack() {
-        return flags.contains(Flag.ROOLBACK);
+        return (flags & FLAG_ROLLBACK) != 0;
     }
 
     public boolean isCanceled() {
-        return flags.contains(Flag.CANCEL);
+        return (flags & FLAG_CANCEL) != 0;
     }
 
     public boolean isInline() {
-        return flags.contains(Flag.INLINE);
+        return (flags & FLAG_INLINE) != 0;
     }
 
     public void setInline(boolean isInline) {
         if (isInline) {
-            flags.add(Flag.INLINE);
+            flags |= FLAG_INLINE;
         } else {
-            flags.remove(Flag.INLINE);
+            flags &= ~FLAG_INLINE;
         }
     }
 
     public boolean isCommitEvent() {
-        return flags.contains(Flag.COMMIT);
+        return (flags & FLAG_COMMIT) != 0;
     }
 
     public void setIsCommitEvent(boolean isCommit) {
         if (isCommit) {
-            flags.add(Flag.COMMIT);
+            flags |= FLAG_COMMIT;
         } else {
-            flags.remove(Flag.COMMIT);
+            flags &= ~FLAG_COMMIT;
         }
     }
 
     public boolean isLocal() {
-        return flags.contains(Flag.LOCAL);
+        return (flags & FLAG_LOCAL) != 0;
     }
 
     public void setLocal(boolean isLocal) {
         if (isLocal) {
-            flags.add(Flag.LOCAL);
+            flags |= FLAG_LOCAL;
         } else {
-            flags.remove(Flag.LOCAL);
+            flags &= ~FLAG_LOCAL;
         }
     }
 
@@ -136,17 +130,15 @@ public class EventImpl implements Event {
     }
 
     public boolean isImmediate() {
-        return flags.contains(Flag.IMMEDIATE);
+        return (flags & FLAG_IMMEDIATE) != 0;
     }
 
     public void setImmediate(boolean immediate) {
         if (immediate) {
-            flags.add(Flag.IMMEDIATE);
+            flags |= FLAG_IMMEDIATE;
         } else {
-            flags.remove(Flag.IMMEDIATE);
+            flags &= ~FLAG_IMMEDIATE;
         }
     }
-
-
 
 }

@@ -24,24 +24,35 @@ import java.security.Principal;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.event.Event;
 
 /**
- * @deprecated use UnboundEventContext
+ * Minimal eventContext implementation that can be
+ * used for events that are not bound to a CoreSession
+ *
+ * @author Thierry Delprat
  *
  */
-@Deprecated
-public class InlineEventContext extends UnboundEventContext {
+public class InlineEventContext extends EventContextImpl {
 
     private static final long serialVersionUID = 1L;
 
     protected boolean boundToCoreSession = false;
 
     public InlineEventContext(Principal principal, Map<String, Serializable> properties) {
-        super(principal, properties);
+        this(null, principal, properties);
     }
 
     public InlineEventContext(CoreSession session, Principal principal, Map<String, Serializable> properties) {
-        super(session, principal, properties);
+        super(session, principal);
+        setProperties(properties);
+        boundToCoreSession = session != null;
+    }
+
+    @Override
+    public Event newEvent(String name) {
+        int flags = boundToCoreSession ? Event.FLAG_NONE : Event.FLAG_INLINE;
+        return newEvent(name, flags);
     }
 
 }

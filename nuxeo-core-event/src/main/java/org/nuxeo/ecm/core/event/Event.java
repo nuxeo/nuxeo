@@ -17,7 +17,6 @@
 package org.nuxeo.ecm.core.event;
 
 import java.io.Serializable;
-import java.util.Set;
 
 /**
  * A lightweight object used by core components to notify interested components
@@ -50,14 +49,20 @@ import java.util.Set;
  */
 public interface Event extends Serializable {
 
-    enum Flag {
-        LOCAL, //
-        CANCEL, //
-        COMMIT, //
-        INLINE,
-        ROOLBACK,
-        IMMEDIATE
-    }
+    // we don't use an EnumSet, as they use far too much memory
+    final int FLAG_NONE = 0;
+
+    final int FLAG_CANCEL = 1;
+
+    final int FLAG_ROLLBACK = 2;
+
+    final int FLAG_COMMIT = 4;
+
+    final int FLAG_LOCAL = 8;
+
+    final int FLAG_INLINE = 16;
+
+    final int FLAG_IMMEDIATE = 32;
 
     /**
      * Gets the event name.
@@ -96,7 +101,7 @@ public interface Event extends Serializable {
      *
      * @return the event flags
      */
-    Set<Flag> getFlags();
+    int getFlags();
 
     /**
      * Cancels this event.
@@ -114,12 +119,11 @@ public interface Event extends Serializable {
      */
     boolean isCanceled();
 
-
     /**
      * Marks transaction for RollBack
      * <p>
-     * This will exit the event listeners loop and throw a RuntimeException
-     * In JTA container, this will make the global transaction rollback.
+     * This will exit the event listeners loop and throw a RuntimeException In
+     * JTA container, this will make the global transaction rollback.
      *
      */
     void markRollBack();
@@ -215,6 +219,5 @@ public interface Event extends Serializable {
      * @param immediate
      */
     void setImmediate(boolean immediate);
-
 
 }

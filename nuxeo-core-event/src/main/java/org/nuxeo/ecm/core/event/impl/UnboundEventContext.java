@@ -19,13 +19,10 @@ package org.nuxeo.ecm.core.event.impl;
 
 import java.io.Serializable;
 import java.security.Principal;
-import java.util.EnumSet;
 import java.util.Map;
-import java.util.Set;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.event.Event;
-import org.nuxeo.ecm.core.event.Event.Flag;
 
 /**
  * Minimal eventContext implementation that can be
@@ -52,10 +49,7 @@ public class UnboundEventContext extends EventContextImpl {
 
     @Override
     public Event newEvent(String name) {
-        Set<Flag> flags = EnumSet.noneOf(Flag.class);
-        if (!boundToCoreSession) {
-            flags.add(Flag.IMMEDIATE);
-        }
+        int flags = boundToCoreSession ? Event.FLAG_NONE : Event.FLAG_IMMEDIATE;
         return newEvent(name, flags);
     }
 

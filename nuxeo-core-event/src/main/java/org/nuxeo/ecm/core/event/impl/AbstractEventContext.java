@@ -20,10 +20,8 @@ package org.nuxeo.ecm.core.event.impl;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import org.nuxeo.ecm.core.event.Event;
-import org.nuxeo.ecm.core.event.Event.Flag;
 import org.nuxeo.ecm.core.event.EventContext;
 
 /**
@@ -93,7 +91,7 @@ public abstract class AbstractEventContext implements EventContext {
         return new EventImpl(name, this);
     }
 
-    public Event newEvent(String name, Set<Flag> flags) {
+    public Event newEvent(String name, int flags) {
         return new EventImpl(name, this, flags);
     }
 

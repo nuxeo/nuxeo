@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -93,7 +92,7 @@ public class ShallowEvent extends EventImpl {
                 event.getTime());
     }
 
-    public ShallowEvent(String name, EventContext ctx, Set<Flag> flags,
+    public ShallowEvent(String name, EventContext ctx, int flags,
             long creationTime) {
         super(name, ctx, flags, creationTime);
     }

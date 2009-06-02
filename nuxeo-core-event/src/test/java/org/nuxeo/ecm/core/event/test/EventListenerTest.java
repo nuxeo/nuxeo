@@ -22,12 +22,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.URL;
 import java.rmi.dgc.VMID;
-import java.util.Collections;
-import java.util.EnumSet;
 
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventService;
-import org.nuxeo.ecm.core.event.Event.Flag;
 import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.ecm.core.event.impl.EventImpl;
 import org.nuxeo.ecm.core.event.impl.EventServiceImpl;
@@ -51,19 +48,19 @@ public class EventListenerTest extends NXRuntimeTestCase {
     public void testFlags() {
         EventImpl event = new EventImpl("test", null);
         assertTrue(event.isPublic());
-        assertEquals(Collections.<Flag> emptySet(), event.getFlags());
+        assertEquals(Event.FLAG_NONE, event.getFlags());
         event.setLocal(true);
         event.setInline(true);
-        assertEquals(EnumSet.of(Flag.LOCAL, Flag.INLINE), event.getFlags());
+        assertEquals(Event.FLAG_LOCAL | Event.FLAG_INLINE, event.getFlags());
         assertTrue(event.isInline());
         assertTrue(event.isLocal());
         event.setLocal(false);
-        assertEquals(EnumSet.of(Flag.INLINE), event.getFlags());
+        assertEquals(Event.FLAG_INLINE, event.getFlags());
         assertTrue(event.isInline());
         assertFalse(event.isLocal());
 
         event.setInline(false);
-        assertEquals(Collections.<Flag> emptySet(), event.getFlags());
+        assertEquals(Event.FLAG_NONE, event.getFlags());
         assertTrue(event.isPublic());
         assertFalse(event.isLocal());
 
@@ -115,12 +112,12 @@ public class EventListenerTest extends NXRuntimeTestCase {
         Event event = ctx.newEvent("test");
         assertEquals("test", event.getName());
         assertEquals(ctx, event.getContext());
-        assertEquals(Collections.<Flag> emptySet(), event.getFlags());
+        assertEquals(Event.FLAG_NONE, event.getFlags());
 
-        event = ctx.newEvent("test2", EnumSet.of(Flag.COMMIT, Flag.INLINE));
+        event = ctx.newEvent("test2", Event.FLAG_COMMIT | Event.FLAG_INLINE);
         assertEquals("test2", event.getName());
         assertEquals(ctx, event.getContext());
-        assertEquals(EnumSet.of(Flag.COMMIT, Flag.INLINE), event.getFlags());
+        assertEquals(Event.FLAG_COMMIT | Event.FLAG_INLINE, event.getFlags());
     }
 
     public void testTimestamp() {
