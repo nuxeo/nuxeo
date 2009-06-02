@@ -454,6 +454,10 @@ public class RelationService extends DefaultComponent implements
         return getGraphByName(graphName).write(out, lang, base);
     }
 
+    public List<String> getGraphNames() throws ClientException {
+        return new ArrayList<String>(graphDescriptionRegistry.keySet());
+    }
+
     public void frameworkEvent(FrameworkEvent event) {
 
         if (event.getType() == FrameworkEvent.STARTED) {

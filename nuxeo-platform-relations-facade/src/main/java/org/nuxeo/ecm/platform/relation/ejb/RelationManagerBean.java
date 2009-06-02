@@ -112,6 +112,14 @@ public class RelationManagerBean implements RelationManager {
         }
     }
 
+    public List<String> getGraphNames() throws ClientException {
+        try {
+            return service.getGraphNames();
+        } catch (Throwable t) {
+            throw ClientException.wrap(t);
+        }
+    }
+
     public void add(String graphName, List<Statement> statements)
             throws ClientException {
         try {

@@ -97,6 +97,13 @@ public interface RelationManager extends Serializable {
             Map<String, Serializable> context) throws ClientException;
 
     /**
+     * Gets the list containing the graph names.
+     *
+     * @since 5.2-GA
+     */
+    public List<String> getGraphNames() throws ClientException;
+
+    /**
      * @see org.nuxeo.ecm.platform.relations.api.Graph#add
      */
     void add(String graphName, List<Statement> statements)
