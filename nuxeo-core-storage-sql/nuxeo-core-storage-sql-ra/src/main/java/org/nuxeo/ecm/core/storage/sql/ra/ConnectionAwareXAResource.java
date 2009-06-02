@@ -50,7 +50,13 @@ public class ConnectionAwareXAResource implements XAResource {
         xaresource.start(xid, flags);
     }
 
-    public void end(Xid xid, int flags) throws XAException {
+    // Arjuna, in its ReaperThread, and through
+    // TransactionReaper#check -> AtomicAction#cancel ->
+    // TwoPhaseCoordinator#cancel -> BasicAction#Abort -> BasicAction#doAbort ->
+    // XAResourceRecord#topLevelAbort
+    // is suspected of calling this in parallel in several threads, thus the
+    // synchronized keyword
+    public synchronized void end(Xid xid, int flags) throws XAException {
         try {
             xaresource.end(xid, flags);
         } finally {
