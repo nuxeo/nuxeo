@@ -115,17 +115,6 @@ public class TestZipImporter extends RepositoryOSGITestCase {
         assertEquals("File", child.getType());
     }
 
-    public void testImportZipWithDirectory() throws Exception {
-        File file = getTestFile("test-data/test-dir.zip");
-
-        byte[] content = FileManagerUtils.getBytesFromFile(file);
-        ByteArrayBlob input = new ByteArrayBlob(content, "application/zip");
-
-        DocumentModel doc = service.createDocumentFromBlob(coreSession, input,
-                root.getPathAsString(), true, "test-data/test-dir.zip");
-
-    }
-
     public void testImportSetCreation() throws Exception {
 
         ImportActionsBean importActions = new ImportActionsMock(coreSession,

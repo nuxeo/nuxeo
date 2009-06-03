@@ -80,12 +80,15 @@ public class ImportActionsBean {
 
         Map<String, Object> properties = newImportSet.getProperties("file");
         Blob blob = (Blob) properties.get("content");
-        String filename = (String) properties.get("filename");
 
         newImportSet = documentManager.createDocument(newImportSet);
-        getFileManagerService().createDocumentFromBlob(
+
+        if (blob != null) {
+            String filename = (String) properties.get("filename");
+            getFileManagerService().createDocumentFromBlob(
                 documentManager, blob, newImportSet.getPathAsString(), true,
                 filename);
+        }
 
         documentManager.save();
 
