@@ -11,6 +11,10 @@
           <!-- dam banner -->
           <fragment type="generic fragment"/>
         </cell>
+        <cell>
+          <!-- Include -->
+          <fragment type="generic fragment" />
+        </cell>
       </section>
       <section>
         <cell>
@@ -59,6 +63,12 @@
     <layout element="page[1]/section[2]/cell[3]">
       <width>33%</width>
     </layout>
+
+    <widget element="">
+      <view>theme view</view>
+      <icon>/nuxeo/icons/favicon.png</icon>
+      <charset>utf-8</charset>
+    </widget>
     
     <!-- WIDGET AFFECTATON -->
     <widget element="page[1]">
@@ -70,13 +80,15 @@
     <widget element="page[1]/section[1]/cell[1]|page[1]/section[1]/cell[2]|page[1]/section[2]/cell[1]|page[1]/section[2]/cell[2]|page[1]/section[2]/cell[3]">
       <view>cell frame</view>
     </widget>
-    
 
     <widget element="page[1]/section[1]/cell[1]/fragment[1]">
       <view>dam logo</view>
     </widget>
     <widget element="page[1]/section[1]/cell[2]/fragment[1]">
       <view>dam banner</view>
+    </widget>
+    <widget element="page[1]/section[1]/cell[3]/fragment[1]">
+      <view>dam includes</view>
     </widget>
     <widget element="page[1]/section[2]/cell[1]/fragment[1]">
       <view>dam search filters</view>

@@ -22,51 +22,33 @@
     <view name="dam logo" template-engine="jsf-facelets">
       <format-type>widget</format-type>
       <template>incl/logo.xhtml</template>
-      <resource>calendar-win2k-1.css</resource>
-      <resource>calendar.js</resource>
-      <resource>calendar-setup.js</resource>
-      <resource>calendar-en.js</resource>
-
     </view>
 
     <view name="dam banner" template-engine="jsf-facelets">
       <format-type>widget</format-type>
       <template>incl/banner.xhtml</template>
-
-      <!--
-        include calendar resources so that they're available on all the
-        pages
-      -->
-      <resource>calendar-win2k-1.css</resource>
-      <resource>calendar.js</resource>
-      <resource>calendar-setup.js</resource>
-      <resource>calendar-en.js</resource>
-
     </view>
 
     <view name="dam search filters" template-engine="jsf-facelets">
       <format-type>widget</format-type>
       <template>incl/search_filter.xhtml</template>
-      <resource>calendar-win2k-1.css</resource>
-      <resource>calendar.js</resource>
-      <resource>calendar-setup.js</resource>
-      <resource>calendar-en.js</resource>
     </view>
 
     <view name="dam selection preview" template-engine="jsf-facelets">
       <format-type>widget</format-type>
       <template>incl/selection_preview.xhtml
       </template>
-      <resource>calendar-win2k-1.css</resource>
-      <resource>calendar.js</resource>
-      <resource>calendar-setup.js</resource>
-      <resource>calendar-en.js</resource>
     </view>
 
     <view name="dam selection view" template-engine="jsf-facelets">
       <format-type>widget</format-type>
       <template>incl/selection_view.xhtml
       </template>
+    </view>
+
+    <view name="dam includes" template-engine="jsf-facelets">
+      <format-type>widget</format-type>
+      <template>incl/includes.xhtml</template>
       <resource>calendar-win2k-1.css</resource>
       <resource>calendar.js</resource>
       <resource>calendar-setup.js</resource>
