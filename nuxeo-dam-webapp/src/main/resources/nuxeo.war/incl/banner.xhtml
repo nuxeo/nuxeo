@@ -22,9 +22,8 @@
       </f:facet>
       <ui:include src="/incl/new_import_set.xhtml" />
     </rich:modalPanel>
-    <h:outputLink value="#" id="link">
+    <h:outputLink value="javascript:Richfaces.showModalPanel('panel');" id="link">
         <h:outputText value="${messages['label.action.createImportSet']}"/>
-        <rich:componentControl for="panel" attachTo="link" operation="show" event="onclick"/>
     </h:outputLink>
   </f:subview>
 

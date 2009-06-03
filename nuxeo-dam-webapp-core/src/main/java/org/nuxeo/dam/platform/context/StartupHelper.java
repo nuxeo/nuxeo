@@ -19,8 +19,6 @@
 
 package org.nuxeo.dam.platform.context;
 
-import static org.jboss.seam.ScopeType.SESSION;
-
 import java.io.Serializable;
 import java.security.Principal;
 
@@ -28,18 +26,19 @@ import javax.faces.context.FacesContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import static org.jboss.seam.ScopeType.SESSION;
 import org.jboss.seam.annotations.Begin;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Context;
 import org.jboss.seam.contexts.Contexts;
-import org.nuxeo.dam.platform.context.reuse.ServerContextBean;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.nuxeo.ecm.webapp.delegate.DocumentManagerBusinessDelegate;
+import org.nuxeo.ecm.webapp.context.ServerContextBean;
 
 @Name("startupHelper")
 @Scope(SESSION)

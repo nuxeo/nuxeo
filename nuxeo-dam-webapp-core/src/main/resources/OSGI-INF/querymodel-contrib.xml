@@ -12,7 +12,8 @@
       <whereClause>
 
         <fixedPart>
-        ecm:mixinType != 'HiddenInNavigation'
+        ecm:mixinType != 'HiddenInNavigation' AND ecm:primaryType = 'Picture'
+          AND ecm:primaryType = 'File'
         </fixedPart>
 
       </whereClause>
