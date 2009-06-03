@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.dam.platform.content.template.contribution.test">
+
+  <extension
+    target="org.nuxeo.ecm.platform.content.template.service.ContentTemplateService"
+    point="factoryBinding">
+
+    <factoryBinding name="RootFactory" factoryName="SimpleTemplateFactory" targetType="Root">
+      <acl>
+        <ace principal="Administrator" permission="Everything" granted="true"/>
+        <ace principal="administrators" permission="Everything" granted="true"/>
+        <ace principal="members" permission="Read" granted="true"/>
+        <ace principal="members" permission="Version" granted="true"/>
+      </acl>
+      <template>
+        <templateItem typeName="Domain" id="default-domain" title="Default domain"
+            description="Nuxeo 5 default domain"/>
+      </template>
+    </factoryBinding>
+
+    <factoryBinding name="DomainFactory"
+      factoryName="SimpleTemplateFactory" targetType="Domain">
+      <template>
+        <templateItem typeName="ImportSetRoot" id="import-sets" title="Import Sets" description="Import Sets"/>
+      </template>
+    </factoryBinding>
+
+  </extension>
+
+</component>
