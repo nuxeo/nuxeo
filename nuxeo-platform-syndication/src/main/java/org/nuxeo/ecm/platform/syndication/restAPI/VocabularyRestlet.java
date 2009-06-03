@@ -26,8 +26,10 @@ import org.dom4j.dom.DOMDocument;
 import org.dom4j.dom.DOMDocumentFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.ecm.platform.syndication.vocabularies.HierarchicalVocabulary;
 import org.nuxeo.ecm.platform.syndication.vocabularies.SimpleVocabulary;
 import org.nuxeo.ecm.platform.syndication.vocabularies.Tree;
 import org.nuxeo.ecm.platform.ui.web.restAPI.BaseStatelessNuxeoRestlet;
@@ -39,7 +41,7 @@ import org.w3c.dom.Element;
 
 /**
  * Simple restlet to export vocabularies content.
- *
+ * 
  * @author tiry
  */
 public class VocabularyRestlet extends BaseStatelessNuxeoRestlet {
@@ -49,6 +51,8 @@ public class VocabularyRestlet extends BaseStatelessNuxeoRestlet {
     // XXX TODO : add an API to be able to get one entry ?
     // XXX TODO : add an API to browse hierarchical voc
 
+    HierarchicalVocabulary parentVoca1 = null;
+    
     private String getTranslation(String key, java.util.Locale local) {
         try {
             ResourceBundle bundle = ResourceBundle.getBundle("messages", local,
@@ -117,6 +121,7 @@ public class VocabularyRestlet extends BaseStatelessNuxeoRestlet {
                 }
             } else if (directorySchema.equals("xvocabulary")) {
                 final Tree.Builder treeBuilder = new Tree.Builder();
+            
                 for (final DocumentModel doc : dirSession.getEntries()) {
                     final String id = doc.getId();
                     final String label = (String) doc.getProperty(
@@ -127,8 +132,15 @@ public class VocabularyRestlet extends BaseStatelessNuxeoRestlet {
                             "xvocabulary", "parent");
 
                     final SimpleVocabulary voca = new SimpleVocabulary(id,
-                            label, translatedLabel);
-                    treeBuilder.addElement(parent, voca);
+                            label, translatedLabel, vocName);
+                 
+
+                    try {
+                        parentVoca1 = null;
+                        treeBuilder.addElement(parent,constructHierarhicalParent(vocName, parent), voca);
+                    } catch (Exception e) {
+                        handleError(result, res, "Problems when listing all the entries from vocabulary");
+                    }
                 }
                 final Tree tree = treeBuilder.build();
                 tree.buildXML(result);
@@ -150,6 +162,54 @@ public class VocabularyRestlet extends BaseStatelessNuxeoRestlet {
         }
 
         res.setEntity(result.asXML(), MediaType.TEXT_XML);
+    }
+    
+    /*
+     * constructs the Hierarchical parent for a given parentId going up in the hierarchy until 
+     * the first parent with no parent is found  
+     * */ 
+    private HierarchicalVocabulary constructHierarhicalParent(
+            String vocabularyName, String parentId) throws Exception {
+        DirectoryService directoryService;
+        try {
+            directoryService = Framework.getService(DirectoryService.class);
+            if (directoryService == null) {
+                return null;
+            }
+        } catch (Exception e) {
+            return null;
+        }
+        String parentVocabulary = directoryService.getParentDirectoryName(vocabularyName);
+        while (parentVocabulary != null) {
+            Session parentDirSession = directoryService.open(parentVocabulary);
+            String parentDirectorySchema = directoryService.getDirectorySchema(parentVocabulary);
+            DocumentModel parentEntry = parentDirSession.getEntry(parentId);
+            String parentLabel = (String) parentEntry.getProperty(
+                    parentDirectorySchema, "label");
+            String parentTranslatedLabel = getTranslation(parentLabel,
+                    java.util.Locale.getDefault());
+            String newVocaName = parentVocabulary;
+            parentVocabulary = directoryService.getParentDirectoryName(parentVocabulary);
+            if (parentVocabulary == null) {
+                parentVoca1 = new HierarchicalVocabulary(null,
+                        new SimpleVocabulary(parentEntry.getId(), parentLabel,
+                                parentTranslatedLabel));
+                parentDirSession.close();
+                break;
+            } else {
+                String parentEntryId = (String) parentEntry.getProperty(
+                        parentDirectorySchema, "parent");
+                HierarchicalVocabulary hParent = constructHierarhicalParent(newVocaName,
+                        parentEntryId);
+                parentVoca1 = new HierarchicalVocabulary(hParent, new SimpleVocabulary(parentEntry.getId(), parentLabel,
+                                parentTranslatedLabel));
+                hParent.addChild(parentVoca1);
+                parentDirSession.close();
+                break;
+            }
+            
+        }
+        return parentVoca1;
     }
 
 }
