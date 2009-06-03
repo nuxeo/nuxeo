@@ -13,6 +13,11 @@
       <description>importSet.description</description>
       <category>SuperDocument</category>
       <default-view>view_documents</default-view>
+      <subtypes>
+        <type>File</type>
+        <type>Picture</type>
+        <type>Note</type>
+      </subtypes>
       <layouts mode="any">
         <layout>heading</layout>
         <layout>file</layout>
