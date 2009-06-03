@@ -44,23 +44,34 @@
   </tr>
 
   <tr>
-    <td>verifyTextPresent</td>
-    <td>Title</td>
+    <td>click</td>
+    <td>link=Create import set</td>
     <td></td>
   </tr>
   <tr>
-    <td>verifyTextPresent</td>
-    <td>Author</td>
-    <td></td>
+	  <td>type</td>
+	  <td>j_id4:document_create:nxl_heading:nxw_title</td>
+	  <td>Test import set description</td>
   </tr>
   <tr>
-    <td>verifyTextPresent</td>
-    <td>Import Sets</td>
-    <td></td>
+	  <td>type</td>
+	  <td>j_id4:document_create:nxl_heading:nxw_description</td>
+	  <td>Test import set description</td>
   </tr>
   <tr>
-    <td>verifyTextPresent</td>
-    <td>Default domain</td>
+	  <td>type</td>
+	  <td>//input[@type='file']</td>
+	  <td>${testfolderpath}/data/toImport.zip</td>
+  </tr>
+  <tr>
+	  <td>type</td>
+	  <td>j_id4:document_create:nxl_common:nxw_author</td>
+	  <td>Test author</td>
+  </tr>
+
+  <tr>
+    <td>clickAndWait</td>
+    <td>//input[@value='Create']</td>
     <td></td>
   </tr>
 
