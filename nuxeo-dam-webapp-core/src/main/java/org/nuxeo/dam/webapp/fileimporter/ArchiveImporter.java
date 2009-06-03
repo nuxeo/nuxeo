@@ -43,30 +43,21 @@ public class ArchiveImporter extends AbstractFileImporter {
             String path, boolean overwrite, String filename,
             TypeManager typeService) throws ClientException, IOException {
 
-        String prefix;
+        String extension = null;
         if (filename.contains(".")) {
-            prefix = filename.substring(filename.lastIndexOf("."));
-        } else {
-            prefix = filename;
+            extension = filename.substring(filename.lastIndexOf("."));
         }
 
-        java.io.File tmp = File.createTempFile("import", prefix);
+        java.io.File tmp = File.createTempFile("import", extension);
         File archive = new File(tmp);
         content.transferTo(archive);
 
         if (archive.isArchive()) {
             try {
-                FileManager service = Framework.getService(FileManager.class);
+                FileManager fileManager = Framework.getService(FileManager.class);
 
                 for (java.io.File entry : archive.listFiles()) {
-                    if (!entry.isDirectory()) {
-                        byte[] entryContent = ArchiveImporter
-                                .getBytesFromFile(entry);
-                        ByteArrayBlob input = new ByteArrayBlob(entryContent);
-
-                        service.createDocumentFromBlob(documentManager, input,
-                                path, overwrite, entry.getAbsolutePath());
-                    }
+                    importFileRec(documentManager, entry, path, overwrite, fileManager);
                 }
             } catch (Exception e) {
                 throw new ClientException("Failed to import archive", e);
@@ -76,6 +67,21 @@ public class ArchiveImporter extends AbstractFileImporter {
         tmp.delete();
 
         return documentManager.getDocument(new PathRef(path));
+    }
+
+    private void importFileRec(CoreSession documentManager, java.io.File file,
+            String path, boolean overwrite, FileManager fileManager) throws Exception {
+        if (file.isDirectory()) {
+            for (java.io.File child : file.listFiles()) {
+                importFileRec(documentManager, child, path, overwrite, fileManager);
+            }
+        } else {
+            byte[] entryContent = ArchiveImporter.getBytesFromFile(file);
+            ByteArrayBlob input = new ByteArrayBlob(entryContent);
+    
+            fileManager.createDocumentFromBlob(documentManager, input, path, overwrite,
+                    file.getAbsolutePath());
+        }
     }
 
     public static byte[] getBytesFromFile(java.io.File file) throws IOException {
