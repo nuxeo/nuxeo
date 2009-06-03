@@ -51,7 +51,7 @@ public class VocabularyRestlet extends BaseStatelessNuxeoRestlet {
     // XXX TODO : add an API to be able to get one entry ?
     // XXX TODO : add an API to browse hierarchical voc
 
-    HierarchicalVocabulary parentVoca1 = null;
+   
     
     private String getTranslation(String key, java.util.Locale local) {
         try {
@@ -136,8 +136,7 @@ public class VocabularyRestlet extends BaseStatelessNuxeoRestlet {
                  
 
                     try {
-                        parentVoca1 = null;
-                        treeBuilder.addElement(parent,constructHierarhicalParent(vocName, parent), voca);
+                        treeBuilder.addElement(parent, constructHierarchicalParent(vocName, parent), voca);
                     } catch (Exception e) {
                         handleError(result, res, "Problems when listing all the entries from vocabulary");
                     }
@@ -168,7 +167,7 @@ public class VocabularyRestlet extends BaseStatelessNuxeoRestlet {
      * constructs the Hierarchical parent for a given parentId going up in the hierarchy until 
      * the first parent with no parent is found  
      * */ 
-    private HierarchicalVocabulary constructHierarhicalParent(
+    private HierarchicalVocabulary constructHierarchicalParent(
             String vocabularyName, String parentId) throws Exception {
         DirectoryService directoryService;
         try {
@@ -179,6 +178,8 @@ public class VocabularyRestlet extends BaseStatelessNuxeoRestlet {
         } catch (Exception e) {
             return null;
         }
+        HierarchicalVocabulary parentVoca1 = null;
+        
         String parentVocabulary = directoryService.getParentDirectoryName(vocabularyName);
         while (parentVocabulary != null) {
             Session parentDirSession = directoryService.open(parentVocabulary);
@@ -199,7 +200,7 @@ public class VocabularyRestlet extends BaseStatelessNuxeoRestlet {
             } else {
                 String parentEntryId = (String) parentEntry.getProperty(
                         parentDirectorySchema, "parent");
-                HierarchicalVocabulary hParent = constructHierarhicalParent(newVocaName,
+                HierarchicalVocabulary hParent = constructHierarchicalParent(newVocaName,
                         parentEntryId);
                 parentVoca1 = new HierarchicalVocabulary(hParent, new SimpleVocabulary(parentEntry.getId(), parentLabel,
                                 parentTranslatedLabel));
