@@ -1,4 +1,4 @@
-<f:subview xmlns:f="http://java.sun.com/jsf/core"
+  <f:subview xmlns:f="http://java.sun.com/jsf/core"
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
@@ -38,10 +38,10 @@
         <h:outputLink
           value="#{nxd:liveEditUrl(layoutValue, widget.fieldDefinitions[0].schemaName, widget.fieldDefinitions[0].fieldName, widget.fieldDefinitions[1].fieldName)}">
           <h:outputText value="#{messages['label.document.directEdit']}" />
-        </h:outputLink> 
+        </h:outputLink>
       </h:panelGroup>
     </nxu:methodResult>
-    
+
     <c:if test="#{widget.mode == 'view'}">
       <h:commandLink action="#{previewActions.doSetFieldXPath}">
         <f:param name="fieldXPath"

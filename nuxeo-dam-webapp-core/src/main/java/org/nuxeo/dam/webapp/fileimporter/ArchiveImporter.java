@@ -19,7 +19,6 @@
 
 package org.nuxeo.dam.webapp.fileimporter;
 
-
 import java.io.IOException;
 
 import org.nuxeo.ecm.core.api.Blob;
@@ -44,8 +43,14 @@ public class ArchiveImporter extends AbstractFileImporter {
             String path, boolean overwrite, String filename,
             TypeManager typeService) throws ClientException, IOException {
 
-        java.io.File tmp = File.createTempFile("import",
-                filename.substring(filename.lastIndexOf(".")));
+        String prefix;
+        if (filename.contains(".")) {
+            prefix = filename.substring(filename.lastIndexOf("."));
+        } else {
+            prefix = filename;
+        }
+
+        java.io.File tmp = File.createTempFile("import", prefix);
         File archive = new File(tmp);
         content.transferTo(archive);
 
@@ -54,12 +59,14 @@ public class ArchiveImporter extends AbstractFileImporter {
                 FileManager service = Framework.getService(FileManager.class);
 
                 for (java.io.File entry : archive.listFiles()) {
-                    byte[] entryContent = ArchiveImporter.getBytesFromFile(entry);
-                    ByteArrayBlob input = new ByteArrayBlob(entryContent);
+                    if (!entry.isDirectory()) {
+                        byte[] entryContent = ArchiveImporter
+                                .getBytesFromFile(entry);
+                        ByteArrayBlob input = new ByteArrayBlob(entryContent);
 
-                    service.createDocumentFromBlob(
-                            documentManager, input, path, overwrite,
-                            entry.getAbsolutePath());
+                        service.createDocumentFromBlob(documentManager, input,
+                                path, overwrite, entry.getAbsolutePath());
+                    }
                 }
             } catch (Exception e) {
                 throw new ClientException("Failed to import archive", e);

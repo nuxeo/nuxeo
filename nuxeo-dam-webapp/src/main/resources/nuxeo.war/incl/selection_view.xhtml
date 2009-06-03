@@ -1,1 +1,16 @@
-<div>Selection view</div>
+<div>
+
+<div style="display:none">
+ <span id="js-label.documents.confirmDeleteDocuments"> <h:outputText value="#{messages['label.documents.confirmDeleteDocuments']}" /></span>
+ <span id="js-label.documents.confirmUndeleteDocuments"> <h:outputText value="#{messages['label.documents.confirmUndeleteDocuments']}" /></span>
+ <span id="js-label.documents.confirmDeleteDocumentsForever"> <h:outputText value="#{messages['label.documents.confirmDeleteDocumentsForever']}" /></span>
+ <span id="js-label.review.confirmDeleteTask"> <h:outputText value="#{messages['label.review.confirmDeleteTask']}" /></span>
+</div>
+
+<script type="text/javascript" src="#{baseURL}/js/?scripts=confirmAlerts.js|DragAndDrop.js|tableSelections.js|customSeamRemotingWaiter.js|custom-javascript.js|default-contextmenu-actions.js|custom-contextmenu-actions.js"></script>
+
+<script type="text/javascript">
+  <h:outputText value="var baseURL='#{baseURL}';"/>
+</script>
+
+</div>

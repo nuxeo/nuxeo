@@ -1,5 +1,6 @@
 package org.nuxeo.dam.webapp.filter;
 
+import java.io.Serializable;
 import java.util.List;
 
 import org.nuxeo.ecm.platform.ui.web.model.SelectDataModel;
@@ -19,7 +20,9 @@ import org.jboss.seam.ScopeType;
 
 @Name("filterResults")
 @Scope(ScopeType.CONVERSATION)
-public class FilterResults implements SelectDataModelListener {
+public class FilterResults implements SelectDataModelListener, Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     public static final String SEARCH_DOCUMENT_LIST = "SEARCH_DOCUMENT_LIST";
 
