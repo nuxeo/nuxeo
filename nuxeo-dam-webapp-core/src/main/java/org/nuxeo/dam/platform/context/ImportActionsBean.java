@@ -14,17 +14,20 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Context;
 import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.common.utils.IdUtils;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
+import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
+import org.nuxeo.runtime.api.Framework;
 
 @Name("importActions")
 @Scope(ScopeType.CONVERSATION)
 public class ImportActionsBean {
 
-    private static final Log log = LogFactory.getLog(ImportActionsBean.class);
+    protected static final Log log = LogFactory.getLog(ImportActionsBean.class);
 
     public static final String BATCH_TYPE_NAME = "ImportSet";
 
@@ -32,29 +35,41 @@ public class ImportActionsBean {
 
     protected DocumentModel newImportSet;
 
-    @In(required = false)
+    @In(create = true)
     protected CoreSession documentManager;
 
     @In(create = true, required = false)
     protected FacesMessages facesMessages;
 
     @In(create = true)
+    // won't inject this because of seam problem after activation
+    // ::protected Map<String, String> messages;
     protected ResourcesAccessor resourcesAccessor;
 
     @In(create = true)
     protected Context eventContext;
 
+    protected FileManager fileManagerService;
+
+    protected FileManager getFileManagerService() throws Exception {
+        if (fileManagerService == null) {
+            fileManagerService = Framework.getService(FileManager.class);
+        }
+        return fileManagerService;
+    }
+
     public DocumentModel getNewImportSet() throws ClientException {
-        if (newImportSet == null && documentManager != null) {
+        if (newImportSet == null) {
             Map<String, Object> context = new HashMap<String, Object>();
             context.put(CoreEventConstants.PARENT_PATH, IMPORTSET_ROOT_PATH);
             newImportSet = documentManager.createDocumentModel(BATCH_TYPE_NAME,
                     context);
         }
+
         return newImportSet;
     }
 
-    public String createImportSet() throws ClientException {
+    public String createImportSet() throws Exception {
         String title = (String) newImportSet.getProperty("dublincore", "title");
         if (title == null) {
             title = "";
@@ -63,16 +78,25 @@ public class ImportActionsBean {
         // set parent path and name for document model
         newImportSet.setPathInfo(IMPORTSET_ROOT_PATH, name);
 
+        Map<String, Object> properties = newImportSet.getProperties("file");
+        Blob blob = (Blob) properties.get("content");
+        String filename = (String) properties.get("filename");
+
         newImportSet = documentManager.createDocument(newImportSet);
+        DocumentModel doc = getFileManagerService().createDocumentFromBlob(
+                documentManager, blob, newImportSet.getPathAsString(), true,
+                filename);
+
         documentManager.save();
 
-        logDocumentWithTitle("Created the document: ", newImportSet);
-        facesMessages.add(FacesMessage.SEVERITY_INFO,
-                resourcesAccessor.getMessages().get("document_saved"),
-                resourcesAccessor.getMessages().get(newImportSet.getType()));
+        logDocumentWithTitle("document_saved", "Created the document: ", newImportSet);
 
         invalidateImportContext();
         return "nxstartup";
+    }
+
+    public void createAssetsFromFile(DocumentModel importSet) throws Exception {
+
     }
 
     public String cancel() {
@@ -87,8 +111,13 @@ public class ImportActionsBean {
     /**
      * Logs a {@link DocumentModel} title and the passed string (info).
      */
-    public void logDocumentWithTitle(String someLogString,
+    public void logDocumentWithTitle(String facesMessage, String someLogString,
             DocumentModel document) {
+
+        facesMessages.add(FacesMessage.SEVERITY_INFO, resourcesAccessor
+                .getMessages().get(facesMessage), resourcesAccessor
+                .getMessages().get(newImportSet.getType()));
+
         if (null != document) {
             log.trace('[' + getClass().getSimpleName() + "] " + someLogString
                     + ' ' + document.getId());

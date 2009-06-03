@@ -11,21 +11,9 @@
       </templates>
 
       <rows>
-        <row>
-          <widget>author</widget>
-        </row>
       </rows>
 
 
-      <widget name="author" type="text">
-        <labels>
-          <label mode="any">label.common.author</label>
-        </labels>
-        <translated>true</translated>
-        <fields>
-          <field>common:author</field>
-        </fields>
-      </widget>
 
     </layout>
 
@@ -45,6 +33,9 @@
         </row>
         <row>
           <widget>author</widget>
+        </row>
+        <row>
+          <widget>expired</widget>
         </row>
       </rows>
       <widget name="coverage" type="template">
@@ -103,6 +94,23 @@
           <mode value="any">view</mode>
         </widgetModes>
       </widget>
+
+      <widget name="expired" type="datetime">
+        <labels>
+          <label mode="any">label.dublincore.expired</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>dc:expired</field>
+        </fields>
+        <properties widgetMode="view">
+          <property name="pattern">#{nxu:basicDateFormater()}</property>
+        </properties>
+        <properties widgetMode="edit">
+          <property name="format">#{nxu:basicDateFormater()}</property>
+        </properties>
+      </widget>
+
     </layout>
 
     <layout name="file">

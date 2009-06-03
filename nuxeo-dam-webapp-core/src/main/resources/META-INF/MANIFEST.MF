@@ -11,7 +11,10 @@ Nuxeo-Component: OSGI-INF/theme-contrib.xml,
  OSGI-INF/resultsprovider-contrib.xml,
  OSGI-INF/nxfilemanager-plugins-contrib.xml,
  OSGI-INF/layouts-contrib.xml,
- OSGI-INF/ecm-types-contrib.xml
+ OSGI-INF/ecm-types-contrib.xml,
+ OSGI-INF/dam-urlservice-contrib.xml
 Require-Bundle: org.nuxeo.ecm.platform.ui,
  org.nuxeo.ecm.webapp.base,
- org.nuxeo.ecm.core
+ org.nuxeo.ecm.core,
+ org.nuxeo.ecm.platform.types.api
+Nuxeo-RequiredBy: org.nuxeo.ecm.platform.placeful.theme

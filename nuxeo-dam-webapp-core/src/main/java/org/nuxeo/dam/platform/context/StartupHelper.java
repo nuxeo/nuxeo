@@ -19,6 +19,7 @@
 
 package org.nuxeo.dam.platform.context;
 
+import static org.jboss.seam.annotations.Install.FRAMEWORK;
 import static org.jboss.seam.ScopeType.SESSION;
 
 import java.io.Serializable;
@@ -30,6 +31,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.Begin;
 import org.jboss.seam.annotations.In;
+import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Context;
@@ -43,7 +45,7 @@ import org.nuxeo.ecm.webapp.delegate.DocumentManagerBusinessDelegate;
 
 @Name("startupHelper")
 @Scope(SESSION)
-// TODO @Install(precedence=FRAMEWORK)
+@Install(precedence = FRAMEWORK)
 public class StartupHelper implements Serializable {
 
     private static final long serialVersionUID = 3248972387619873245L;
@@ -73,7 +75,7 @@ public class StartupHelper implements Serializable {
      * domain with title 'domainTitle' and redirect to it on viewId.
      * <p>
      * If several servers are available, let the user choose.
-     * 
+     *
      * @return the view id of the contextually computed startup page
      * @throws ClientException
      */
