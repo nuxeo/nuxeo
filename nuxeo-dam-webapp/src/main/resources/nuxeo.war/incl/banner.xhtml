@@ -5,7 +5,6 @@
   xmlns:a4j="http://richfaces.org/a4j"
   xmlns:rich="http://richfaces.org/rich">
 
-  <f:subview>
     <rich:modalPanel id="panel" width="500" height="350">
       <f:facet name="header">
         <h:panelGroup>
@@ -25,7 +24,6 @@
     <h:outputLink value="javascript:Richfaces.showModalPanel('panel');" id="link">
         <h:outputText value="${messages['label.action.createImportSet']}"/>
     </h:outputLink>
-  </f:subview>
 
   <h:form>
    <h:outputText value="#{messages['label.selectLocale']}" />
