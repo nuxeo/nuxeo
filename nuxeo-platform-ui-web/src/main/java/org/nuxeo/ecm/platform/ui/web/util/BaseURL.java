@@ -61,6 +61,10 @@ public final class BaseURL {
         if (facesContext != null) {
             String baseURL = facesContext.getExternalContext().getRequestContextPath();
 
+            if (baseURL==null) {
+                return "nuxeo";
+            }
+
             baseURL = baseURL.replace("/", "");
             return baseURL;
         } else {
