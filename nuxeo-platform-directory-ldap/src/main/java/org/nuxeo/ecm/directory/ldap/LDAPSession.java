@@ -245,6 +245,10 @@ public class LDAPSession extends BaseSession implements EntrySource {
 
     protected SearchResult getLdapEntry(String id, boolean fetchAllAttributes)
             throws NamingException, DirectoryException {
+    		if (StringUtils.isEmpty(id)) {
+    			log.warn("the application should not queries for entries with empty id");
+    			return null;
+    		}
         String filterExpr;
         if (directory.getBaseFilter().startsWith("(")) {
             filterExpr = String.format("(&(%s={0})%s)", idAttribute,
