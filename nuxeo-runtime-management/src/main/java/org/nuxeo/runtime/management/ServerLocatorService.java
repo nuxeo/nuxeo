@@ -42,10 +42,9 @@ public class ServerLocatorService extends DefaultComponent implements
 
     public static final String LOCATORS_EXT_KEY = "locators";
 
-    @SuppressWarnings("unused")
     private static final Log log = LogFactory.getLog(ServerLocatorService.class);
 
-    protected Map<String, MBeanServer> otherServers = new HashMap<String, MBeanServer>();
+    protected Map<String, MBeanServer> servers = new HashMap<String, MBeanServer>();
 
     protected MBeanServer defaultServer = ManagementFactory.getPlatformMBeanServer();
 
@@ -70,9 +69,9 @@ public class ServerLocatorService extends DefaultComponent implements
     }
 
     protected void doRegisterLocator(ServerLocatorDescriptor descriptor) {
-        MBeanServer server = descriptor.isExisting  ? doFindServer(descriptor)
+        MBeanServer server = descriptor.isExisting  ? doFindServer(descriptor.domainName)
                 : doCreateServer(descriptor);
-        otherServers.put(descriptor.domainName, server);
+        servers.put(descriptor.domainName, server);
         if (descriptor.isDefault) {
             defaultServer = server;
         }
@@ -130,12 +129,12 @@ public class ServerLocatorService extends DefaultComponent implements
             }
         }
         assert connector.isActive();
+        log.info("Started a mbean server : " + url);
         return server;
     }
 
     @SuppressWarnings("unchecked")
-    protected MBeanServer doFindServer(ServerLocatorDescriptor descriptor) {
-        String domainName = descriptor.domainName;
+    protected MBeanServer doFindServer(String domainName) {
         for (MBeanServer server : (List<MBeanServer>) MBeanServerFactory.findMBeanServer(null)) {
             String domain = server.getDefaultDomain();
             if (domain == null || !domain.equals(domainName)) {
@@ -143,12 +142,11 @@ public class ServerLocatorService extends DefaultComponent implements
             }
             return server;
         }
-        throw new ManagementRuntimeException(
-                "cannot locate mbean server containing domain " + domainName);
+        return defaultServer;
     }
 
     protected void doUnregisterLocator(ServerLocatorDescriptor descriptor) {
-        otherServers.remove(descriptor.domainName);
+        servers.remove(descriptor.domainName);
         if (descriptor.isDefault) {
             defaultServer = ManagementFactory.getPlatformMBeanServer();
         }
@@ -173,10 +171,7 @@ public class ServerLocatorService extends DefaultComponent implements
     }
 
     public MBeanServer lookupServer(String domainName) {
-        if (otherServers.containsKey(domainName)) {
-            return otherServers.get(domainName);
-        }
-        return defaultServer;
+       return doFindServer(domainName);
     }
 
     public void registerLocator(String domain, boolean isDefault) {
