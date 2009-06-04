@@ -28,7 +28,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
 import org.apache.commons.logging.Log;
@@ -50,6 +49,7 @@ import org.nuxeo.ecm.directory.sql.repository.Column;
 import org.nuxeo.ecm.directory.sql.repository.ConfigurationException;
 import org.nuxeo.ecm.directory.sql.repository.FieldMapper;
 import org.nuxeo.ecm.directory.sql.repository.Table;
+import org.nuxeo.runtime.api.DataSourceHelper;
 import org.nuxeo.runtime.api.Framework;
 
 public class SQLDirectory extends AbstractDirectory {
@@ -193,8 +193,9 @@ public class SQLDirectory extends AbstractDirectory {
         try {
             if (config.dataSourceName != null) {
                 managedSQLSession = true;
-                InitialContext context = new InitialContext();
-                dataSource = (DataSource) context.lookup(config.dataSourceName);
+                dataSource = DataSourceHelper.getDataSource(config.dataSourceName);
+                //InitialContext context = new InitialContext();
+                //dataSource = (DataSource) context.lookup(config.dataSourceName);
             } else {
                 managedSQLSession = false;
                 dataSource = new SimpleDataSource(config.dbUrl,
