@@ -20,6 +20,7 @@ import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
 import org.nuxeo.ecm.platform.management.adapters.RuntimeInventoryFactory;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.management.ResourceFactoryDescriptor;
+import org.nuxeo.runtime.management.ResourcePublisher;
 import org.nuxeo.runtime.management.ResourcePublisherService;
 
 /**
@@ -33,15 +34,7 @@ public class TestRuntimeMbeanAdapterFactory extends RepositoryOSGITestCase {
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.runtime.management");
-
-        managementService = (ResourcePublisherService) Framework.getRuntime().getComponent(
-                ResourcePublisherService.NAME);
-    }
-
-    @Override
-    public void tearDown() throws Exception {
-        Framework.getRuntime().stop();
-        super.tearDown();
+        managementService = (ResourcePublisherService) Framework.getService(ResourcePublisher.class);
     }
 
     public void testRegisterFactories() throws Exception {
