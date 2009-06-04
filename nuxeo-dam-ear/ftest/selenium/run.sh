@@ -11,9 +11,6 @@ HIDE_FF=${HIDE_FF:-}
 SUITES=${SUITES:-"suite"}
 URL=${URL:-http://localhost:8080/nuxeo/}
 
-# Download selenium-server.jar
-(cd $HERE; mvn dependency:copy)
-
 # Build command line
 CMD="java -jar selenium-server.jar -port 14440 -timeout 7200 \
       -htmlSuite "*chrome" $URL "
@@ -26,6 +23,8 @@ CMD_END="-firefoxProfileTemplate ffprofile -userExtensions user-extensions.js"
 rm -rf $HERE/result-*.html
 
 cd $HERE
+# Download selenium-server.jar
+mvn dependency:copy
 # Update path in user-extensions.js
 sed "s,\(storedVars\['testfolderpath'\]\ \=\).*$,\1\ \"$HERE\";,g" < user-extensions.js.sample > user-extensions.js
 

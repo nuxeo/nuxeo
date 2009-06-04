@@ -77,6 +77,9 @@
       <path>jscalendar/lang/calendar-en.js
       </path>
     </resource>
+    <resource name="tableSelections.js">
+      <path>scripts/tableSelections.js</path>
+    </resource>
 
   </extension>
 
