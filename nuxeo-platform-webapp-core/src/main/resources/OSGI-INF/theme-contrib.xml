@@ -2,6 +2,9 @@
 
 <component name="org.nuxeo.theme.nuxeo.default">
 
+  <require>org.nuxeo.theme.core</require>
+  <require>org.nuxeo.theme.fragments</require>
+  <require>org.nuxeo.theme.html</require>
   <require>org.nuxeo.theme.jsf</require>
 
   <!-- perspectives -->
