@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.platform.ec.placeful;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +26,8 @@ import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.ec.placeful.interfaces.PlacefulService;
 import org.nuxeo.ecm.platform.ec.placeful.service.ContainerManagedHibernateConfiguration;
 import org.nuxeo.ecm.platform.ec.placeful.service.PersistenceProvider;
@@ -42,6 +45,8 @@ public class PlacefulServiceImpl extends DefaultComponent implements
         PlacefulService {
 
     private Map<String, String> registry;
+
+    private static final Log log = LogFactory.getLog(PlacefulServiceImpl.class);
 
     public static final PersistenceProvider persistenceProvider = new PersistenceProvider(
             new ContainerManagedHibernateConfiguration(
@@ -129,6 +134,11 @@ public class PlacefulServiceImpl extends DefaultComponent implements
     public List<Annotation> getAnnotationListByParamMap(EntityManager em,
             Map<String, Object> paramMap, String name) {
         String className = registry.get(name);
+        if (className==null) {
+            // add fail safe
+            log.warn("No placeful configuration registred for " + name);
+            return new ArrayList<Annotation>();
+        }
         String shortClassName = className
                 .substring(className.lastIndexOf('.') + 1);
         StringBuilder queryString = new StringBuilder("FROM " + shortClassName);
