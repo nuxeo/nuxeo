@@ -62,14 +62,21 @@ public class NuxeoRequestControllerFilter implements Filter {
     private static final Log log = LogFactory.getLog(NuxeoRequestControllerFilter.class);
 
     public void init(FilterConfig filterConfig) throws ServletException {
-        rcm = Framework.getLocalService(RequestControllerManager.class);
+        doInitIfNeeded();
+    }
 
-        if (rcm == null) {
-            log.error("Unable to get RequestControlerManager service");
-            throw new ServletException(
-                    "RequestControlerManager can not be found");
+
+    private void doInitIfNeeded()  {
+        if (rcm==null) {
+            rcm = Framework.getLocalService(RequestControllerManager.class);
+
+            if (rcm == null) {
+                log.error("Unable to get RequestControlerManager service");
+                //throw new ServletException(
+                //        "RequestControlerManager can not be found");
+            }
+            log.debug("Staring NuxeoRequestControler filter");
         }
-        log.debug("Staring NuxeoRequestControler filter");
     }
 
     protected String doFormatLogMessage(HttpServletRequest request, String info) {
@@ -92,6 +99,8 @@ public class NuxeoRequestControllerFilter implements Filter {
         if (log.isDebugEnabled()) {
             log.debug(doFormatLogMessage(httpRequest, "Entering NuxeoRequestControler filter"));
         }
+
+        doInitIfNeeded();
 
         RequestFilterConfig config = rcm.getConfigForRequest(httpRequest);
 
@@ -153,7 +162,12 @@ public class NuxeoRequestControllerFilter implements Filter {
      */
     protected boolean startUserTransaction(HttpServletRequest request) {
         try {
-            TransactionsHelper.getUserTransaction().begin();
+            UserTransaction ut = TransactionsHelper.getUserTransaction();
+            if (ut!=null) {
+                ut.begin();
+            } else {
+                return false;
+            }
         } catch (Exception e) {
             log.error(doFormatLogMessage(request,"Unable to start transaction"), e);
             return false;
@@ -166,7 +180,10 @@ public class NuxeoRequestControllerFilter implements Filter {
      */
     protected void markTransactionForRollBack(HttpServletRequest request) {
         try {
-            TransactionsHelper.getUserTransaction().setRollbackOnly();
+            UserTransaction ut = TransactionsHelper.getUserTransaction();
+            if (ut!=null) {
+                ut.setRollbackOnly();
+            }
             if (log.isDebugEnabled()) {
                 log.debug(doFormatLogMessage(request, "NuxeoRequestControler setting transaction to RollBackOnly"));
             }
@@ -181,6 +198,10 @@ public class NuxeoRequestControllerFilter implements Filter {
      */
     protected void commitOrRollBackUserTransaction(HttpServletRequest request) {
         try {
+            UserTransaction ut = TransactionsHelper.getUserTransaction();
+            if (ut==null) {
+                return;
+            }
             if (TransactionsHelper.isTransactionActiveOrMarkedRollback()) {
                 if (TransactionsHelper.isTransactionMarkedRollback()) {
                     if (log.isDebugEnabled()) {
