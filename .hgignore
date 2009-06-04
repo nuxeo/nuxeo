@@ -16,3 +16,4 @@ nuxeo-distribution-dm/ftest/selenium/result-*.html
 nuxeo-distribution-dm/ftest/selenium/run.conf
 nuxeo-distribution-dm/ftest/selenium/user-extensions.js
 nuxeo-distribution-dm/ftest/selenium/ffprofile/prefs.js
+nuxeo-distribution-dm/ftest/selenium/selenium-server.jar

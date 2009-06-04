@@ -80,6 +80,7 @@ class BasePage:
                description="Log out")
         fl.assert_('login' in fl.getLastUrl(),
                      "Not redirected to login page.")
+        fl.current_login = None
         return LoginPage(self.fl)
 
     def login(self, user, password):
@@ -93,13 +94,14 @@ class BasePage:
         fl.assert_('LoginFailed=true' not in fl.getLastUrl(),
                    'Login failed for %s:%s' % (user, password))
         fl.post(fl.server_url + "/view_documents.faces", params=[
-            ['j_id427', 'j_id427'],
-            ['j_id427:j_id429', 'en_GB'],
-            ['j_id427:j_id431', 'Change'],
+            ['langSelectForm', 'langSelectForm'],
+            ['langSelectForm:langSelectMenu', 'en_GB'],
+            ['langSelectForm:langSelectSubmitButton', 'Change'],
             ['javax.faces.ViewState', fl.getLastJsfState()]],
             description="Change locale to en_US")
         fl.assert_(fl.listHref(content_pattern="Log out"),
                    "No log out link found on the welcome page")
+        fl.current_login = user
         return FolderPage(self.fl)
 
     def loginInvalid(self, user, password):
@@ -114,7 +116,8 @@ class BasePage:
                    'Invalid login expected for %s:%s.' %  (user, password))
         return self
 
-    def viewDocumentPath(self, path, description=None, raiseOn404=True):
+    def viewDocumentPath(self, path, description=None, raiseOn404=True,
+                         outcome=None):
         """This method return None when raiseOn404 is False and the document
         does not exist"""
         fl = self.fl
@@ -123,20 +126,25 @@ class BasePage:
         ok_codes = [200, 301, 302, 303, 307]
         if not raiseOn404:
             ok_codes.append(404)
+        if not outcome:
+            outcome = "view_documents"
         resp = fl.get(fl.server_url + "/nxpath/default/default-domain/" +
-               path + "@view_documents",
+               path + "@" + outcome,
                description=description, ok_codes=ok_codes)
         if resp.code == 404:
             fl.logi('Document ' + path + ' does not exists.')
             return None
         return self
 
-    def viewDocumentUid(self, uid, tab='', subtab='', description=None):
+    def viewDocumentUid(self, uid, tab='', subtab='', description=None,
+                        outcome=None):
         fl = self.fl
         if not description:
             description = "View document uid:" + uid + ' ' + tab + subtab
+        if not outcome:
+            outcome = "view_documents"
 
-        url = '/nxdoc/default/' + uid + '/view_documents?tabId=' + tab
+        url = '/nxdoc/default/' + uid + '/' + outcome + '?tabId=' + tab
         if subtab:
             url += "&subTabId=" + subtab
         url += '=&conversationId=0NXMAIN1'
@@ -149,13 +157,8 @@ class BasePage:
 
     def memberManagement(self):
         fl = self.fl
-        fl.get(fl.server_url + "/view_documents.faces", params=[
-            ['j_id17', 'j_id17'],
-            ['j_id17:j_id19', ''],
-            ['j_id17:j_id20', 'KEYWORDS'],
-            ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['j_id17:j_id31:2:j_id33', 'j_id17:j_id31:2:j_id33']],
-               description="View member management")
+        self.viewDocumentUid(self.getDocUid(), outcome='view_users',
+                             description="View member management")
         return self
 
     def createUser(self, username, email, password, firstname='',
@@ -226,13 +229,8 @@ class BasePage:
 
     def dashboard(self):
         fl = self.fl
-        fl.post(fl.server_url + "/view_documents.faces", params=[
-            ['j_id17', 'j_id17'],
-            ['j_id17:j_id19', ''],
-            ['j_id17:j_id20', 'KEYWORDS'],
-            ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['j_id17:j_id31:0:j_id33', 'j_id17:j_id31:0:j_id33']],
-                description="View dashboard")
+        self.viewDocumentUid(self.getDocUid(), outcome='user_dashboard',
+                             description="View dashboard")
         fl.assert_('My workspaces' in fl.getBody(),
                    'Not a dashboard page')
         return self
@@ -246,6 +244,10 @@ class BasePage:
             ['javax.faces.ViewState', fl.getLastJsfState()],
             ['j_id16:j_id30:1:j_id32', 'j_id16:j_id30:1:j_id32']],
                 description="View personal workspace")
+        # XXX: not working: post initializes personal workspace if it does
+        # not exist...
+        #self.viewDocumentPath("UserWorkspaces/" + fl.current_login,
+        #                      description="View personal workspace")
         return self
 
     def search(self, query, description=None):
