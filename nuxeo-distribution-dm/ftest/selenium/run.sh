@@ -12,7 +12,7 @@ SUITES=${SUITES:-"suite1 suite2"}
 URL=${URL:-http://localhost:8080/nuxeo/}
 
 # Download selenium-server.jar
-mvn dependency:copy
+(cd $HERE; mvn dependency:copy) || exit 1
 
 # Build command line
 CMD="java -jar selenium-server.jar -port 14440 -timeout 7200 \
