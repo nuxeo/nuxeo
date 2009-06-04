@@ -51,7 +51,7 @@ public class ConfigBuilderHelper {
 
     protected static List<String> getSystemPaths() {
         String pathStr = System.getenv("PATH");
-        String[] paths = pathStr.split(":");
+        String[] paths = pathStr.split(File.pathSeparator);
         return Arrays.asList(paths);
     }
 

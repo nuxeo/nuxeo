@@ -129,7 +129,7 @@ public class DocVersioningEventListener implements EventListener {
             } catch (ClientException e) {
                 throw new ClientRuntimeException(e);
             }
-            req = createAutoChangeRequest(doc);
+            return;
         } else {
             // event not interesting
             return;

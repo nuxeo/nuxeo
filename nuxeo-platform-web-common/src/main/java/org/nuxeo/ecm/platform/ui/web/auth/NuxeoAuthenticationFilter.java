@@ -49,6 +49,7 @@ import org.nuxeo.ecm.core.api.SimplePrincipal;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.impl.InlineEventContext;
+import org.nuxeo.ecm.core.event.impl.UnboundEventContext;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.LoginResponseHandler;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
@@ -137,14 +138,12 @@ public class NuxeoAuthenticationFilter implements Filter {
             props.put("category", LOGIN_JMS_CATEGORY);
             props.put("comment", comment);
 
-            EventContext ctx = new InlineEventContext(principal, props);
-
+            EventContext ctx = new UnboundEventContext(principal, props);
             try {
                 evtProducer.fireEvent(ctx.newEvent(eventId));
             } catch (ClientException e) {
                 log.error("Unable to send authentication event", e);
             }
-
             return true;
         } finally {
             if (loginContext != null) {
