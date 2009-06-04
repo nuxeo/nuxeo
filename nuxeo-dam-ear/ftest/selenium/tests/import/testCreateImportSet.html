@@ -1,6 +1,7 @@
 <html>
-<head>
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <link rel="selenium.base" href="" />
   <title>login</title>
 </head>
 <body>
@@ -42,6 +43,16 @@
     <td>Submit</td>
     <td></td>
   </tr>
+  <tr>
+    <td>select</td>
+    <td>//select[@class="langSelect"]</td>
+    <td>label=English (United Kingdom)</td>
+  </tr>
+  <tr>
+    <td>clickAndWait</td>
+    <td>//input[@class='langSubmit']</td>
+    <td></td>
+  </tr>
 
   <tr>
     <td>click</td>
@@ -49,24 +60,24 @@
     <td></td>
   </tr>
   <tr>
-	  <td>type</td>
-	  <td>j_id4:document_create:nxl_heading:nxw_title</td>
-	  <td>Test import set description</td>
+    <td>type</td>
+    <td>j_id4:document_create:nxl_heading:nxw_title</td>
+    <td>Test import set description</td>
   </tr>
   <tr>
-	  <td>type</td>
-	  <td>j_id4:document_create:nxl_heading:nxw_description</td>
-	  <td>Test import set description</td>
+    <td>type</td>
+    <td>j_id4:document_create:nxl_heading:nxw_description</td>
+    <td>Test import set description</td>
   </tr>
   <tr>
-	  <td>type</td>
-	  <td>//input[@type='file']</td>
-	  <td>${testfolderpath}/data/toImport.zip</td>
+    <td>type</td>
+    <td>//input[@type='file']</td>
+    <td>${'testfolderpath'}/data/toImport.zip</td>
   </tr>
   <tr>
-	  <td>type</td>
-	  <td>j_id4:document_create:nxl_common:nxw_author</td>
-	  <td>Test author</td>
+    <td>click</td>
+    <td>j_id4:document_create:nxl_file:nxw_file:nxw_file_file:choiceupload</td>
+    <td></td>
   </tr>
 
   <tr>
@@ -74,6 +85,32 @@
     <td>//input[@value='Create']</td>
     <td></td>
   </tr>
+  <tr>
+    <td>open</td>
+    <td>/nuxeo/nxstartup.faces</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>verifyTextPresent</td>
+    <td>hello</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>verifyTextPresent</td>
+    <td>kitten</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>verifyTextPresent</td>
+    <td>PortletSpec_20</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>verifyTextPresent</td>
+    <td>sunset-van_2</td>
+    <td></td>
+  </tr>
+
 
   </tbody>
 </table>
