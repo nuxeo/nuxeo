@@ -4,7 +4,7 @@
 
   <groupId>org.nuxeo.tool</groupId>
   <artifactId>selenium-utility</artifactId>
-  <version>5.2.1-SNAPSHOT</version>
+  <version>1.0</version>
   <packaging>pom</packaging>
   <name>Utility POM for running Selenium tests</name>
   <description>
