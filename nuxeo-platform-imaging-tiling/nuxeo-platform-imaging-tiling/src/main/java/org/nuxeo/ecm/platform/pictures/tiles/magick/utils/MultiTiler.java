@@ -35,10 +35,10 @@ public class MultiTiler extends MagickExecutor {
     public static void tile(String inputFilePath, String outputPath,
             int tileWidth, int tileHeight) throws Exception {
         CmdParameters params = new CmdParameters();
-        params.addNamedParameter("tileWidth", String.valueOf(tileWidth));
-        params.addNamedParameter("tileHeight", String.valueOf(tileHeight));
+        params.addNamedParameter("targetWidth", String.valueOf(tileWidth));
+        params.addNamedParameter("targetHeight", String.valueOf(tileHeight));
         params.addNamedParameter("inputFilePath", formatFilePath(inputFilePath));
         params.addNamedParameter("outputFilePath", formatFilePath(outputPath + "tiles_%02d.jpeg"));
-        execCommand("simplifier", params);
+        execCommand("resizer", params);
     }
 }

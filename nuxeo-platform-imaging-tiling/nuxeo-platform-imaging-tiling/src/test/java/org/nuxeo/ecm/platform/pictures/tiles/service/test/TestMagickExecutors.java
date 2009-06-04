@@ -5,6 +5,7 @@ import java.io.File;
 import junit.framework.TestCase;
 
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
 import org.nuxeo.ecm.platform.pictures.tiles.magick.utils.ImageConverter;
 import org.nuxeo.ecm.platform.pictures.tiles.magick.utils.ImageCropper;
 import org.nuxeo.ecm.platform.pictures.tiles.magick.utils.ImageCropperAndResizer;
@@ -13,8 +14,18 @@ import org.nuxeo.ecm.platform.pictures.tiles.magick.utils.ImageInfo;
 import org.nuxeo.ecm.platform.pictures.tiles.magick.utils.JpegSimplifier;
 import org.nuxeo.ecm.platform.pictures.tiles.magick.utils.MultiTiler;
 
-public class TestMagickExecutors extends TestCase {
+public class TestMagickExecutors extends RepositoryOSGITestCase {
 
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        deployBundle("org.nuxeo.ecm.platform.commandline.executor");
+        deployContrib("org.nuxeo.ecm.platform.pictures.tiles",
+        "OSGI-INF/test-commandline-imagemagick-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.pictures.tiles",
+        "OSGI-INF/commandline-imagemagick-contrib.xml");
+    }
+    
     public void testIdentify() throws Exception {
 
         File file = FileUtils.getResourceFileFromContext("test.jpg");
