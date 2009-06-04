@@ -1014,8 +1014,16 @@
         <artifactId>nuxeo-webengine-ui</artifactId>
         <version>${nuxeo.webengine.version}</version>
       </dependency>
-
-
+      <dependency>
+        <groupId>org.nuxeo.runtime</groupId>
+        <artifactId>nuxeo-runtime-management</artifactId>
+        <version>${nuxeo.runtime.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-management</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
