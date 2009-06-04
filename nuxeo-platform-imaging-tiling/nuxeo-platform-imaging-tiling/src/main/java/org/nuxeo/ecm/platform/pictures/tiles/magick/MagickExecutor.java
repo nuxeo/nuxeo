@@ -19,14 +19,13 @@
  */
 package org.nuxeo.ecm.platform.pictures.tiles.magick;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.platform.pictures.tiles.service.PictureTilingComponent;
+import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
+import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  *
@@ -38,67 +37,12 @@ import org.nuxeo.ecm.platform.pictures.tiles.service.PictureTilingComponent;
 public class MagickExecutor {
 
     private static final Log log = LogFactory.getLog(MagickExecutor.class);
-
-    protected static String convertCmd() {
-        return PictureTilingComponent.getEnvValue("IMConvert", "convert");
+    
+    protected static ExecResult execCommand( String commandName, CmdParameters params) throws CommandNotAvailable{
+        CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
+        return cles.execCommand(commandName, params);
     }
-
-    protected static String identifyCmd() {
-        return PictureTilingComponent.getEnvValue("IMIdentify", "identify");
-    }
-
-    protected static String streamCmd() {
-        return PictureTilingComponent.getEnvValue("IMStream", "stream");
-    }
-
-    protected static boolean isWindows() {
-        String osName = System.getProperty("os.name");
-        return osName.toLowerCase().contains("windows");
-    }
-
-    protected static ExecResult execCmd(String cmdStr) throws Exception {
-
-        // init command script
-        String[] cmd = { "/bin/sh", "-c", cmdStr + " 2>&1" };
-
-        if (isWindows()) {
-            cmd[0] = "cmd";
-            cmd[1] = "/C";
-        }
-
-        log.debug("MagicExecutor command=" + cmd[0]);
-        log.debug("     " + cmd[1]);
-        log.debug("     " + cmd[2]);
-
-        long t0 = System.currentTimeMillis();
-        Process p1 = Runtime.getRuntime().exec(cmd);
-        int exitValue = p1.waitFor();
-
-        List<String> output = new ArrayList<String>();
-
-        if (exitValue == 0) {
-            BufferedReader stdInput = new BufferedReader(new InputStreamReader(
-                    p1.getInputStream()));
-            String strLine;
-
-            while ((strLine = stdInput.readLine()) != null) {
-                output.add(strLine.trim());
-            }
-        } else {
-            log.error("Error during MagicExec");
-            BufferedReader stdInput = new BufferedReader(new InputStreamReader(
-                    p1.getInputStream()));
-            String strLine;
-            while ((strLine = stdInput.readLine()) != null) {
-                log.error("ExecOutput=" + strLine.trim());
-            }
-            throw new Exception("Execution failed on cmd " + cmdStr);
-        }
-
-        long t1 = System.currentTimeMillis();
-        return new ExecResult(output, t1 - t0);
-    }
-
+    
     protected static String formatFilePath(String filePath) {
         return String.format("\"%s\"", filePath);
     }

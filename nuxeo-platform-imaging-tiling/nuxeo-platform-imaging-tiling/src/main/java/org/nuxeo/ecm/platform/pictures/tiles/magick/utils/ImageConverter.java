@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.pictures.tiles.magick.utils;
 
+import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 import org.nuxeo.ecm.platform.pictures.tiles.magick.MagickExecutor;
 
 /**
@@ -29,13 +30,10 @@ public class ImageConverter extends MagickExecutor {
 
     public static void convert(String inputFilePath, String outputFilePath)
             throws Exception {
-        StringBuffer sb = new StringBuffer();
-        sb.append(convertCmd());
-        sb.append(" ");
-        sb.append(formatFilePath(inputFilePath));
-        sb.append(" ");
-        sb.append(formatFilePath(outputFilePath));
-        execCmd(sb.toString());
+        CmdParameters params = new CmdParameters();
+        params.addNamedParameter("inputFilePath", formatFilePath(inputFilePath));
+        params.addNamedParameter("outputFilePath", formatFilePath(outputFilePath));
+        execCommand("converter", params);
     }
 
 }

@@ -21,7 +21,10 @@ package org.nuxeo.ecm.platform.pictures.tiles.magick.utils;
 
 import java.io.File;
 
+import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
 import org.nuxeo.ecm.platform.pictures.tiles.magick.MagickExecutor;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  *
@@ -35,9 +38,13 @@ public class JpegSimplifier extends MagickExecutor {
 
     public static ImageInfo simplify(String inputFile, String outputFile,
             int targetWidth, int targetHeight) throws Exception {
-        execCmd(convertCmd() + " -size " + targetWidth + "x" + targetHeight
-                + " " + formatFilePath(inputFile) + " "
-                + formatFilePath(outputFile));
+        CmdParameters params = new CmdParameters();
+        params.addNamedParameter("targetWidth", String.valueOf(targetWidth));
+        params.addNamedParameter("targetHeight", String.valueOf(targetHeight));
+        params.addNamedParameter("inputFilePath", formatFilePath(inputFile));
+        params.addNamedParameter("outputFilePath", formatFilePath(outputFile));
+        execCommand("resizer", params);
+
         if (new File(outputFile).exists()) {
             return ImageIdentifier.getInfo(outputFile);
         } else

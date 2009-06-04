@@ -366,7 +366,7 @@ public class PictureManagerBean extends InputController implements
     public Boolean isImageMagickAvailable() throws Exception{
         if (imageMagickAvailable == null) {
             CommandLineExecutorService cles = Framework.getService(CommandLineExecutorService.class);
-            CommandAvailability ca = cles.getCommandAvailability("identify");
+            CommandAvailability ca = cles.getCommandAvailability("cropAndResize");
             imageMagickAvailable = ca.isAvailable();
         }
         return imageMagickAvailable;

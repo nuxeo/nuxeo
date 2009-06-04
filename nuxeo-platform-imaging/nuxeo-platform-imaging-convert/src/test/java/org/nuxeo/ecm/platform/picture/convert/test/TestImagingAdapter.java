@@ -41,6 +41,7 @@ public class TestImagingAdapter extends RepositoryOSGITestCase {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.convert.api");
         deployBundle("org.nuxeo.ecm.core.convert");
+        deployBundle("org.nuxeo.ecm.platform.commandline.executor");
         deployBundle("org.nuxeo.ecm.platform.picture.api");
         deployBundle("org.nuxeo.ecm.platform.picture.core");
         deployBundle("org.nuxeo.ecm.platform.picture.convert");

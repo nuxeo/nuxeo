@@ -48,6 +48,7 @@ public class TestImagingConvertPlugin extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.core.api");
         deployBundle("org.nuxeo.ecm.core.convert.api");
         deployBundle("org.nuxeo.ecm.core.convert");
+        deployBundle("org.nuxeo.ecm.platform.commandline.executor");
         deployBundle("org.nuxeo.ecm.platform.picture.core");
         deployBundle("org.nuxeo.ecm.platform.picture.convert");
     }
@@ -70,7 +71,7 @@ public class TestImagingConvertPlugin extends NXRuntimeTestCase {
         String filePath = "test-data/sample.jpeg";
 
         int resizeWidth = 120;
-        int resizeHeight = 120;
+        int resizeHeight = 90;
 
         Map<String, Serializable> options = new HashMap<String, Serializable>();
         options.put(ImagingConvertConstants.OPTION_RESIZE_WIDTH, resizeWidth);
@@ -123,10 +124,10 @@ public class TestImagingConvertPlugin extends NXRuntimeTestCase {
         String filePath = "test-data/sample.jpeg";
 
         Map<String, Serializable> options = new HashMap<String, Serializable>();
-        options.put(ImagingConvertConstants.OPTION_CROP_X, 5);
-        options.put(ImagingConvertConstants.OPTION_CROP_Y, 25);
-        options.put(ImagingConvertConstants.OPTION_RESIZE_HEIGHT, 10);
-        options.put(ImagingConvertConstants.OPTION_RESIZE_WIDTH, 10);
+        options.put(ImagingConvertConstants.OPTION_CROP_X, 100);
+        options.put(ImagingConvertConstants.OPTION_CROP_Y, 100);
+        options.put(ImagingConvertConstants.OPTION_RESIZE_HEIGHT, 200);
+        options.put(ImagingConvertConstants.OPTION_RESIZE_WIDTH, 400);
 
         ConversionService cs = Framework.getLocalService(ConversionService.class);
 

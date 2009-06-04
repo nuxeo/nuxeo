@@ -19,7 +19,8 @@
  */
 package org.nuxeo.ecm.platform.pictures.tiles.magick.utils;
 
-import org.nuxeo.ecm.platform.pictures.tiles.magick.ExecResult;
+import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
+import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
 import org.nuxeo.ecm.platform.pictures.tiles.magick.MagickExecutor;
 
 /**
@@ -32,13 +33,10 @@ import org.nuxeo.ecm.platform.pictures.tiles.magick.MagickExecutor;
 public class ImageIdentifier extends MagickExecutor {
 
     public static ImageInfo getInfo(String inputFilePath) throws Exception {
-        String cmd = " -ping -format '%m %w %h' ";
-        if (isWindows()) {
-            cmd = " -ping -format \"%m %w %h\" ";
-        }
-        ExecResult result = execCmd(identifyCmd() + cmd
-                + formatFilePath(inputFilePath));
-
+        CmdParameters params = new CmdParameters();
+        params.addNamedParameter("inputFilePath", formatFilePath(inputFilePath));
+        ExecResult result = execCommand("identify", params);
+        
         String out = result.getOutput().get(0);
         String res[] = out.split(" ");
 

@@ -21,8 +21,8 @@
              point="LibrarySelector">
     <LibrarySelector>
       <ImageUtils
-          class="org.nuxeo.ecm.platform.picture.core.imagej.ImageJImageUtils"
-          name="ImageJ"/>
+          class="org.nuxeo.ecm.platform.picture.core.im.IMImageUtils"
+          name="ImageMagick"/>
       <MetadataUtils
           class="org.nuxeo.ecm.platform.picture.core.mistral.MistralMetadataUtils"
           name="Mistral"/>

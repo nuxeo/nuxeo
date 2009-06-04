@@ -4,13 +4,6 @@
   <extension target="org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent"
     point="command">
     
-    <command name="identify" enabled="true">
-      <commandLine>identify</commandLine>
-      <parameterString> -ping -format '%m %w %h' #{inputFilePath}</parameterString>
-      <winParameterString> -ping -format "%m %w %h" #{inputFilePath}</winParameterString>
-      <installationDirective>You need to install ImageMagic.</installationDirective>
-    </command>
-    
     <command name="converter" enabled="true">
       <commandLine>convert</commandLine>
       <parameterString>#{inputFilePath} #{outputFilePath}</parameterString>

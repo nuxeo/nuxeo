@@ -19,6 +19,7 @@
  */
 package org.nuxeo.ecm.platform.pictures.tiles.magick.utils;
 
+import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 import org.nuxeo.ecm.platform.pictures.tiles.magick.MagickExecutor;
 
 /**
@@ -32,25 +33,13 @@ public class ImageCropper extends MagickExecutor {
     public static void crop(String inputFilePath, String outputFilePath,
             int tileWidth, int tileHeight, int offsetX, int offsetY)
             throws Exception {
-        StringBuffer sb = new StringBuffer();
-        sb.append(streamCmd());
-        sb.append(" -map rgb -storage-type char -extract ");
-        sb.append(tileWidth);
-        sb.append("x");
-        sb.append(tileHeight);
-        sb.append("+");
-        sb.append(offsetX);
-        sb.append("+");
-        sb.append(offsetY);
-        sb.append(" ");
-        sb.append(formatFilePath(inputFilePath));
-        sb.append(" - | convert -depth 8 -size ");
-        sb.append(tileWidth);
-        sb.append("x");
-        sb.append(tileHeight);
-        sb.append(" rgb:- ");
-        sb.append(formatFilePath(outputFilePath));
-
-        execCmd(sb.toString());
+        CmdParameters params = new CmdParameters();
+        params.addNamedParameter("tileWidth", String.valueOf(tileWidth));
+        params.addNamedParameter("tileHeight", String.valueOf(tileHeight));
+        params.addNamedParameter("offsetX", String.valueOf(offsetX));
+        params.addNamedParameter("offsetY", String.valueOf(offsetY));
+        params.addNamedParameter("inputFilePath", formatFilePath(inputFilePath));
+        params.addNamedParameter("outputFilePath", formatFilePath(outputFilePath));
+        execCommand("crop", params);
     }
 }
