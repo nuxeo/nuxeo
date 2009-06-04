@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.platform.ui.web.rest;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -39,7 +38,8 @@ import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * TODO: document me.
+ * Filter used to decode URLs and wrap requests to enable encoding.
+ * This filter is useful because Nuxeo support pluggable URL patterns
  *
  * @author tiry
  */
@@ -53,13 +53,26 @@ public class FancyURLFilter implements Filter {
 
     public void init(FilterConfig conf) throws ServletException {
         log.debug("Nuxeo5 URLFilter started");
-        try {
-            urlService = Framework.getService(URLPolicyService.class);
-            dummyNavigationHandler = new StaticNavigationHandler(
-                    conf.getServletContext());
-        } catch (Exception e) {
-            log.error("Could not retrieve the URLPolicyService",e);
+        dummyNavigationHandler = new StaticNavigationHandler(conf.getServletContext());
+        getUrlService(true);
+    }
+
+
+    protected URLPolicyService getUrlService() {
+        return getUrlService(false);
+    }
+
+    protected URLPolicyService getUrlService(boolean silent) {
+        if (urlService==null) {
+            try {
+                urlService = Framework.getService(URLPolicyService.class);
+            } catch (Exception e) {
+                if (!silent) {
+                    log.error("Could not retrieve the URLPolicyService",e);
+                }
+            }
         }
+        return urlService;
     }
 
     public void destroy() {
@@ -71,6 +84,8 @@ public class FancyURLFilter implements Filter {
 
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
+
+        getUrlService();
 
         // check if this is an URL that needs to be parsed
         if (urlService.isCandidateForDecoding(httpRequest)) {
