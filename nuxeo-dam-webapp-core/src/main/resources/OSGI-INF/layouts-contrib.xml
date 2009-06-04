@@ -4,19 +4,6 @@
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="layouts">
 
-    <layout name="common">
-
-      <templates>
-        <template mode="any">/layouts/layout_default_template.xhtml</template>
-      </templates>
-
-      <rows>
-      </rows>
-
-
-
-    </layout>
-
     <layout name="dublincore">
       <templates>
         <template mode="any">/layouts/layout_default_template.xhtml</template>
@@ -90,7 +77,6 @@
           <field>dc:contributors/0</field>
         </fields>
         <widgetModes>
-          <mode value="create">hidden</mode>
           <mode value="any">view</mode>
         </widgetModes>
       </widget>

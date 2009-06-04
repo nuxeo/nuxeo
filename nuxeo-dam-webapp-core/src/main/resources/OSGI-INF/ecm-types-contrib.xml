@@ -22,7 +22,6 @@
         <layout>heading</layout>
         <layout>file</layout>
         <layout>dublincore</layout>
-        <layout>common</layout>
       </layouts>
     </type>
 
