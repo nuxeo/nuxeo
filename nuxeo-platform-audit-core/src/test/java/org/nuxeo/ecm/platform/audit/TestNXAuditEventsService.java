@@ -19,16 +19,24 @@
 
 package org.nuxeo.ecm.platform.audit;
 
+import java.lang.management.ManagementFactory;
 import java.util.List;
+import java.util.Set;
+
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
 
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
 import org.nuxeo.ecm.platform.audit.api.AuditException;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.api.NXAuditEvents;
 import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
+import org.nuxeo.ecm.platform.audit.service.management.AuditEventMetricFactory;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.management.ObjectNameFactory;
 
 /**
  * Test the event conf service.
@@ -39,8 +47,8 @@ public class TestNXAuditEventsService extends RepositoryOSGITestCase {
 
     private NXAuditEvents serviceUnderTest;
 
-    // protected final MBeanServer mbeanServer =
-    // ManagementFactory.getPlatformMBeanServer();
+     protected final MBeanServer mbeanServer =
+     ManagementFactory.getPlatformMBeanServer();
 
     @Override
     public void setUp() throws Exception {
@@ -48,8 +56,8 @@ public class TestNXAuditEventsService extends RepositoryOSGITestCase {
 
         deployBundle("org.nuxeo.ecm.platform.usermanager");
         deployBundle("org.nuxeo.ecm.platform.audit");
-        // deployBundle("org.nuxeo.runtime.management");
-        // deployBundle("org.nuxeo.ecm.platform.management");
+         deployBundle("org.nuxeo.runtime.management");
+         deployBundle("org.nuxeo.ecm.platform.management");
 
         NXAuditEventsService.persistenceProvider.setHibernateConfiguration(new TestHibernateConfiguration());
         serviceUnderTest = Framework.getService(NXAuditEvents.class);
@@ -103,25 +111,25 @@ public class TestNXAuditEventsService extends RepositoryOSGITestCase {
         assertEquals("system", entry.getPrincipalName());
     }
 
-    // protected Set<ObjectName> doQuery(String name) {
-    // String qualifiedName = ObjectNameFactory.getQualifiedName(name);
-    // ObjectName objectName = ObjectNameFactory.getObjectName(qualifiedName);
-    // return mbeanServer.queryNames(objectName, null);
-    // }
+     protected Set<ObjectName> doQuery(String name) {
+     String qualifiedName = ObjectNameFactory.getQualifiedName(name);
+     ObjectName objectName = ObjectNameFactory.getObjectName(qualifiedName);
+     return mbeanServer.queryNames(objectName, null);
+     }
 
     public void TODOtestCount() throws Exception {
-        // CoreSession session = getCoreSession();
-        // DocumentModel rootDocument = getCoreSession().getRootDocument();
-        // DocumentModel model = session.createDocumentModel(
-        // rootDocument.getPathAsString(), "youps", "File");
-        // model.setProperty("dublincore", "title", "huum");
-        // session.createDocument(model);
-        // session.save();
-        // waitForEventsDispatched();
-        // ObjectName objectName =
-        // AuditEventMetricFactory.getObjectName("documentCreated");
-        // Long count = (Long) mbeanServer.getAttribute(objectName, "count");
-        // assertEquals(new Long(1L), count);
+         CoreSession session = getCoreSession();
+         DocumentModel rootDocument = getCoreSession().getRootDocument();
+         DocumentModel model = session.createDocumentModel(
+         rootDocument.getPathAsString(), "youps", "File");
+         model.setProperty("dublincore", "title", "huum");
+         session.createDocument(model);
+         session.save();
+         waitForEventsDispatched();
+         ObjectName objectName =
+         AuditEventMetricFactory.getObjectName("documentCreated");
+         Long count = (Long) mbeanServer.getAttribute(objectName, "count");
+         assertEquals(new Long(1L), count);
     }
 
 }
