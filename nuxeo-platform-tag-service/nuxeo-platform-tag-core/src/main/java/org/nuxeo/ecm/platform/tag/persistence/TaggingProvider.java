@@ -102,6 +102,14 @@ public class TaggingProvider {
         return q.getResultList();
     }
 
+    protected List doQuery(String query, Object... params) {
+        Query q = em.createQuery(query);
+        for (int i = 0; i < params.length; i++) {
+            q.setParameter(i + 1, params[i]);
+        }
+        return q.getResultList();
+    }
+
     @SuppressWarnings("unchecked")
     protected List doNamedQuery(String namedQuery, Map<String, Object> params) {
         Query query = em.createNamedQuery(namedQuery);
@@ -111,7 +119,8 @@ public class TaggingProvider {
         return query.getResultList();
     }
 
-    protected Object doNamedQuerySingle(String namedQuery, Map<String, Object> params) {
+    protected Object doNamedQuerySingle(String namedQuery,
+            Map<String, Object> params) {
         Query query = em.createNamedQuery(namedQuery);
         for (String key : params.keySet()) {
             query.setParameter(key, params.get(key));
@@ -162,6 +171,22 @@ public class TaggingProvider {
     }
 
     /**
+     * Returns author of a tagging based on docId and the tagLabel.
+     * 
+     * @param docId
+     * @param tagLabel
+     * @return
+     */
+    public String getAuthor(String docId, String tagLabel, String author) {
+        final String query = "SELECT tg.author FROM Tagging tg JOIN tg.targetDocument doc JOIN tg.tag tag"
+                + " WHERE doc.id = ?1 AND tag.label = ?2 AND tg.author = ?3";
+
+        List<String> authors = doQuery(query, docId, tagLabel, author);
+
+        return authors.size() > 0 ? authors.get(0) : null;
+    }
+
+    /**
      * Lists distinct the public tags (or owned by user) that are applied on
      * document by the user only.
      * 
@@ -170,8 +195,7 @@ public class TaggingProvider {
      * @return tags applied as list of simple tags
      */
     @SuppressWarnings("unchecked")
-    public List<Tag> listTagsForDocumentAndUser(String docId,
-            String userName) {
+    public List<Tag> listTagsForDocumentAndUser(String docId, String userName) {
         if (log.isDebugEnabled()) {
             log.debug("listTagsForDocumentAndUser() with Id " + docId);
         }
@@ -254,9 +278,9 @@ public class TaggingProvider {
 
     /**
      * Retrieves the "popular" tag cloud. More about Vote Tag Cloud
-     * {@link WeightedTag}. The private tags or tagging are not selected, but the
-     * ones owned by the user. It gets the tags and the number of documents they
-     * are applied on the list of documents received as argument.
+     * {@link WeightedTag}. The private tags or tagging are not selected, but
+     * the ones owned by the user. It gets the tags and the number of documents
+     * they are applied on the list of documents received as argument.
      * 
      * @param documents
      * @param userName
@@ -264,7 +288,8 @@ public class TaggingProvider {
      * @throws ClientException
      */
     @SuppressWarnings("unchecked")
-    public List<WeightedTag> getPopularCloud(DocumentModelList documents, String userName) {
+    public List<WeightedTag> getPopularCloud(DocumentModelList documents,
+            String userName) {
         if (log.isDebugEnabled()) {
             log.debug("getPopularTag() for " + documents.size() + " documents");
         }
@@ -318,8 +343,7 @@ public class TaggingProvider {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("userName", userName);
         params.put("tagId", tagId);
-        List<Object> queryResults = doNamedQuery(LIST_DOCUMENTS_FOR_TAG,
-                params);
+        List<Object> queryResults = doNamedQuery(LIST_DOCUMENTS_FOR_TAG, params);
         List<String> ret = new ArrayList<String>();
         for (Object queryResult : queryResults) {
             ret.add(queryResult.toString());

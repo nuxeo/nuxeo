@@ -29,9 +29,12 @@ public class TagModel extends AbstractModel {
 
     private Boolean isPrivate;
 
-    public TagModel(String label, Boolean isPrivate) {
-        this.label = label;
-        this.isPrivate = isPrivate;
+    private Boolean canModify;
+
+    public TagModel(String label, Boolean isPrivate, Boolean canModify) {
+        setLabel(label);
+        setIsPrivate(isPrivate);
+        setCanModify(canModify);
     }
 
     public String getLabel() {
@@ -50,4 +53,11 @@ public class TagModel extends AbstractModel {
         this.isPrivate = isPrivate;
     }
 
+    public void setCanModify(Boolean canModify) {
+        this.canModify = canModify;
+    }
+
+    public Boolean getCanModify() {
+        return canModify;
+    }
 }

@@ -27,7 +27,11 @@
     <#list nxthemesInfo.model.items as item>
       <div class="contextualLinkBlock">
 		<#if (!item.isPrivate)>
-    	  <div class="contextualLinkText">${item.label}</div>
+    	  <div class="contextualLinkText">${item.label}
+            <#if (item.canModify)>
+            [<a href='#'>X</a>]
+            </#if>
+          </div>          
   		</#if>
       </div>
     </#list>

@@ -86,6 +86,16 @@ public interface TagService {
      * @throws ClientException
      */
     List<Tag> listTagsAppliedOnDocument(DocumentModel document) throws ClientException;
+    
+    /**
+     *  
+     * @param docId
+     * @param tagLabel
+     * @param author
+     * @return
+     * @throws ClientException 
+     */
+    String getAuthor(String docId, String tagLabel, String author) throws ClientException ;
     /**
      * Lists tags applied on a document by the current principal.
      * @param document

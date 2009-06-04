@@ -16,9 +16,11 @@ package org.nuxeo.webengine.sites.fragments;
 
 import java.util.List;
 
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.tag.Tag;
 import org.nuxeo.ecm.platform.tag.TagService;
 import org.nuxeo.ecm.webengine.WebEngine;
@@ -63,8 +65,7 @@ public class TagFragment extends AbstractFragment {
                     TagModel tagModel = null;
                     String label = null;
                     Boolean isPrivate = null;
-                    List<Tag> tags = tagService.listTagsAppliedOnDocument(
-                            documentModel);
+                    List<Tag> tags = tagService.listTagsAppliedOnDocument(documentModel);
                     if (tags != null && !tags.isEmpty()) {
                         for (Tag tag : tags) {
                             DocumentModel document = session.getDocument(new IdRef(
@@ -76,7 +77,8 @@ public class TagFragment extends AbstractFragment {
                                         "tag:label");
                                 isPrivate = SiteUtils.getBoolean(document,
                                         "tag:private");
-                                tagModel = new TagModel(label, isPrivate);
+                                tagModel = new TagModel(label, isPrivate,
+                                        canModify(documentModel, label, tagService));
                                 model.addItem(tagModel);
 
                             }
@@ -89,5 +91,14 @@ public class TagFragment extends AbstractFragment {
             throw new ModelException(e);
         }
         return model;
+    }
+
+    private boolean canModify(DocumentModel doc, String label,
+            TagService tagService) throws ClientException {
+        NuxeoPrincipal principal = (NuxeoPrincipal) doc.getCoreSession().getPrincipal();
+        if (principal.isAdministrator()) {
+            return true;
+        }
+        return tagService.getAuthor(doc.getId(), label, principal.getName()) != null;
     }
 }

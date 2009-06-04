@@ -72,16 +72,18 @@ public class TagServiceBean implements TagService {
         return tagService;
     }
 
-    public DocumentModel getOrCreateTag(DocumentModel parent, String label, 
+    public DocumentModel getOrCreateTag(DocumentModel parent, String label,
             boolean privateFlag) throws ClientException {
         return getLocalTagService().getOrCreateTag(parent, label, privateFlag);
     }
 
-    public List<WeightedTag> getPopularCloud(DocumentModel document) throws ClientException {
+    public List<WeightedTag> getPopularCloud(DocumentModel document)
+            throws ClientException {
         return getLocalTagService().getPopularCloud(document);
     }
 
-    public WeightedTag getPopularTag(DocumentModel document, String tagId) throws ClientException {
+    public WeightedTag getPopularTag(DocumentModel document, String tagId)
+            throws ClientException {
         return getLocalTagService().getPopularTag(document, tagId);
     }
 
@@ -89,41 +91,52 @@ public class TagServiceBean implements TagService {
         return getLocalTagService().getRootTag(session);
     }
 
-    public List<WeightedTag> getVoteCloud(DocumentModel document) throws ClientException {
+    public List<WeightedTag> getVoteCloud(DocumentModel document)
+            throws ClientException {
         return getLocalTagService().getVoteCloud(document);
     }
 
-    public WeightedTag getVoteTag(DocumentModel document, String tagId) throws ClientException {
+    public WeightedTag getVoteTag(DocumentModel document, String tagId)
+            throws ClientException {
         return getLocalTagService().getVoteTag(document, tagId);
     }
 
-    public List<Tag> listTagsAppliedOnDocument(DocumentModel document) throws ClientException {
+    public List<Tag> listTagsAppliedOnDocument(DocumentModel document)
+            throws ClientException {
         return getLocalTagService().listTagsAppliedOnDocument(document);
     }
 
-    public List<Tag> listTagsAppliedOnDocumentByUser(DocumentModel document) throws ClientException {
+    public List<Tag> listTagsAppliedOnDocumentByUser(DocumentModel document)
+            throws ClientException {
         return getLocalTagService().listTagsAppliedOnDocumentByUser(document);
     }
 
-    public DocumentModelList listTagsInGroup(DocumentModel tag) throws ClientException {
+    public DocumentModelList listTagsInGroup(DocumentModel tag)
+            throws ClientException {
         return getLocalTagService().listTagsInGroup(tag);
     }
 
-    public void tagDocument(DocumentModel document, String tagId, boolean privateFlag) 
-            throws ClientException {
+    public void tagDocument(DocumentModel document, String tagId,
+            boolean privateFlag) throws ClientException {
         getLocalTagService().tagDocument(document, tagId, privateFlag);
     }
 
-    public void untagDocument(DocumentModel document, String tagId) throws ClientException {
+    public void untagDocument(DocumentModel document, String tagId)
+            throws ClientException {
         getLocalTagService().untagDocument(document, tagId);
     }
 
-    public List<String> listDocumentsForTag(String tagId, String user) throws ClientException {
+    public List<String> listDocumentsForTag(String tagId, String user)
+            throws ClientException {
         return getLocalTagService().listDocumentsForTag(tagId, user);
     }
 
     public void initialize(Properties properties) throws ClientException {
         getLocalTagService().initialize(properties);
-        
+
+    }
+
+    public String getAuthor(String docId, String tagLabel, String author) throws ClientException {
+        return getLocalTagService().getAuthor(docId, tagLabel, author);
     }
 }

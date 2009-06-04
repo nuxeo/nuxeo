@@ -66,8 +66,9 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
         if (log.isDebugEnabled()) {
             log.debug("Going to look for root tag");
         }
-        //use unrestricted session to get / create RootTag
-        UnrestrictedSessionCreateRootTag runner = new UnrestrictedSessionCreateRootTag(session);
+        // use unrestricted session to get / create RootTag
+        UnrestrictedSessionCreateRootTag runner = new UnrestrictedSessionCreateRootTag(
+                session);
         runner.runUnrestricted();
         if (runner.rootTagDocumentId == null) {
             throw new ClientException("Error creating the root tag document");
@@ -75,19 +76,19 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
         return session.getDocument(new IdRef(runner.rootTagDocumentId));
     }
 
-    public void tagDocument(DocumentModel document, String tagId, boolean privateFlag) 
-            throws ClientException {
+    public void tagDocument(DocumentModel document, String tagId,
+            boolean privateFlag) throws ClientException {
         if (null == document) {
             throw new ClientException("Can't tag document null.");
         }
         TaggingProvider provider = getTaggingProvider();
         TagEntity tagEntity = provider.getTagById(tagId);
         if (tagEntity == null) {
-            throw new ClientException("Tag " + tagId + " doesn't exist"); 
+            throw new ClientException("Tag " + tagId + " doesn't exist");
         }
         if (log.isDebugEnabled()) {
-            log.debug("Going to tag document " + document.getTitle() + " with " + 
-                    tagEntity.getLabel());
+            log.debug("Going to tag document " + document.getTitle() + " with "
+                    + tagEntity.getLabel());
         }
         String user = obtainCurrentPrincipalName(document);
         // check if already tag applied
@@ -117,13 +118,14 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
         if (log.isDebugEnabled()) {
             log.debug("Going to look for label " + label);
         }
-        UnrestrictedSessionCreateTag runner = 
-            new UnrestrictedSessionCreateTag(parent, label, privateFlag);
+        UnrestrictedSessionCreateTag runner = new UnrestrictedSessionCreateTag(
+                parent, label, privateFlag);
         runner.runUnrestricted();
         if (runner.tagDocumentId == null) {
             throw new ClientException("Error creating the tag document");
         }
-        return parent.getCoreSession().getDocument(new IdRef(runner.tagDocumentId));
+        return parent.getCoreSession().getDocument(
+                new IdRef(runner.tagDocumentId));
     }
 
     public List<WeightedTag> getPopularCloud(DocumentModel document)
@@ -144,69 +146,75 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
         runner.runUnrestricted();
         // add the current doc also
         runner.result.add(document);
-        return getTaggingProvider().getPopularCloud(runner.result, 
+        return getTaggingProvider().getPopularCloud(runner.result,
                 obtainCurrentPrincipalName(document));
     }
 
     public WeightedTag getPopularTag(DocumentModel document, String tagId)
             throws ClientException {
         if (null == document || null == tagId) {
-            throw new ClientException("Can't get popular for document or tag null.");
+            throw new ClientException(
+                    "Can't get popular for document or tag null.");
         }
         CoreSession session = document.getCoreSession();
         String user = obtainCurrentPrincipalName(document);
-        DocumentModel tag = session.getDocument(new IdRef(tagId)); 
+        DocumentModel tag = session.getDocument(new IdRef(tagId));
         if (log.isDebugEnabled()) {
-            log.debug("Going to look for popularity of " + tag.getTitle() + " for " +
-                    document.getTitle());
+            log.debug("Going to look for popularity of " + tag.getTitle()
+                    + " for " + document.getTitle());
         }
         if (!isTagAllowed(tag, user)) {
             log.warn("Tag " + tag.getTitle() + " not allowed for " + user);
             return new WeightedTag(tag.getId(), tag.getTitle(), 0);
         }
         // TODO int weight =
-        // getTaggingProvider().getPopularTag(document.getId(), tag.getId(), user);
-        return new WeightedTag(tag.getId(), 
+        // getTaggingProvider().getPopularTag(document.getId(), tag.getId(),
+        // user);
+        return new WeightedTag(tag.getId(),
                 (String) tag.getPropertyValue(TagConstants.TAG_LABEL_FIELD), 0);
     }
 
-    public List<WeightedTag> getVoteCloud(DocumentModel document) throws ClientException {
+    public List<WeightedTag> getVoteCloud(DocumentModel document)
+            throws ClientException {
         // TODO
         return null;
     }
 
-    public WeightedTag getVoteTag(DocumentModel document, String tagId) 
+    public WeightedTag getVoteTag(DocumentModel document, String tagId)
             throws ClientException {
         if (null == document) {
-            throw new ClientException("Can't get list of documents from domain null.");
+            throw new ClientException(
+                    "Can't get list of documents from domain null.");
         }
         CoreSession session = document.getCoreSession();
         String user = obtainCurrentPrincipalName(document);
-        DocumentModel tag = session.getDocument(new IdRef(tagId)); 
+        DocumentModel tag = session.getDocument(new IdRef(tagId));
         if (log.isDebugEnabled()) {
-            log.debug("Going to look for votes of " + tag.getTitle() + " for " + 
-                    document.getTitle());
+            log.debug("Going to look for votes of " + tag.getTitle() + " for "
+                    + document.getTitle());
         }
         if (!isTagAllowed(tag, user)) {
             log.warn("Tag " + tag.getTitle() + " not allowed for " + user);
             return new WeightedTag(tag.getId(), tag.getTitle(), 0);
         }
         TaggingProvider taggingProvider = getTaggingProvider();
-        Long result = taggingProvider.getVoteTag(document.getId(), tag.getId(), user);
-        return new WeightedTag(tag.getId(), 
+        Long result = taggingProvider.getVoteTag(document.getId(), tag.getId(),
+                user);
+        return new WeightedTag(tag.getId(),
                 (String) tag.getPropertyValue(TagConstants.TAG_LABEL_FIELD),
                 result.intValue());
     }
 
-    public List<Tag> listTagsAppliedOnDocument(DocumentModel document) 
+    public List<Tag> listTagsAppliedOnDocument(DocumentModel document)
             throws ClientException {
         if (null == document) {
             throw new ClientException("Can't get list of tags from group null.");
         }
         if (log.isDebugEnabled()) {
-            log.debug("Going to look for tags applied on " + document.getTitle());
+            log.debug("Going to look for tags applied on "
+                    + document.getTitle());
         }
-        return getTaggingProvider().listTagsForDocument(document.getId(), 
+        return getTaggingProvider().listTagsForDocument(document.getId(),
                 obtainCurrentPrincipalName(document));
     }
 
@@ -216,13 +224,15 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
             throw new ClientException("Can't get list of tags from group null.");
         }
         if (log.isDebugEnabled()) {
-            log.debug("Going to look only current user tags applied on " + document.getTitle());
+            log.debug("Going to look only current user tags applied on "
+                    + document.getTitle());
         }
-        return getTaggingProvider().listTagsForDocumentAndUser(document.getId(),
-                obtainCurrentPrincipalName(document));
+        return getTaggingProvider().listTagsForDocumentAndUser(
+                document.getId(), obtainCurrentPrincipalName(document));
     }
 
-    public DocumentModelList listTagsInGroup(DocumentModel tag) throws ClientException {
+    public DocumentModelList listTagsInGroup(DocumentModel tag)
+            throws ClientException {
         if (null == tag) {
             throw new ClientException("Can't get list of tags from group null.");
         }
@@ -233,34 +243,37 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
         String query = String.format(
                 TagConstants.TAGS_IN_DOMAIN_QUERY_TEMPLATE,
                 tag.getPathAsString(), user);
-        UnrestrictedSessionRunQuery runner = 
-            new UnrestrictedSessionRunQuery(tag.getCoreSession(), query);
+        UnrestrictedSessionRunQuery runner = new UnrestrictedSessionRunQuery(
+                tag.getCoreSession(), query);
         runner.runUnrestricted();
         return runner.result;
     }
 
-    public void untagDocument(DocumentModel document, String tagId) throws ClientException {
+    public void untagDocument(DocumentModel document, String tagId)
+            throws ClientException {
         if (null == document || tagId == null) {
             throw new ClientException("Can't untag document or tag null.");
         }
         if (log.isDebugEnabled()) {
             log.debug("Going to untag " + tagId + " for " + document.getTitle());
         }
-        getTaggingProvider().removeTagging(document.getId(), tagId, 
+        getTaggingProvider().removeTagging(document.getId(), tagId,
                 obtainCurrentPrincipalName(document));
     }
 
     public List<String> listDocumentsForTag(String tagId, String user)
             throws ClientException {
         if (null == tagId) {
-            throw new ClientException("Can't get list of documents for tag null.");
+            throw new ClientException(
+                    "Can't get list of documents for tag null.");
         }
         return getTaggingProvider().getDocumentsForTag(tagId, user);
     }
 
     protected TaggingProvider getTaggingProvider() {
         if (null == taggingProvider) {
-            EntityManager entityManager = TagPersistenceProvider.getInstance().getEntityManager(null);
+            EntityManager entityManager = TagPersistenceProvider.getInstance().getEntityManager(
+                    null);
             taggingProvider = TaggingProvider.createProvider(entityManager);
         }
         return taggingProvider;
@@ -268,7 +281,8 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
 
     protected TaggingProvider getTaggingProvider(Properties properties) {
         if (null == taggingProvider) {
-            EntityManager entityManager = TagPersistenceProvider.getInstance().getEntityManager(properties);
+            EntityManager entityManager = TagPersistenceProvider.getInstance().getEntityManager(
+                    properties);
             taggingProvider = TaggingProvider.createProvider(entityManager);
         }
         return taggingProvider;
@@ -302,10 +316,12 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
     protected static String obtainCurrentPrincipalName(DocumentModel document) {
         return document.getCoreSession().getPrincipal().getName();
     }
+
     /**
      * The filter on query to run when looking after tags in a folder.
+     * 
      * @author rux
-     *
+     * 
      */
     protected static class TagLabelFilter implements Filter {
 
@@ -332,17 +348,20 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
 
     /**
      * The unrestricted session runner to find / create root tag document.
+     * 
      * @author rux
-     *
+     * 
      */
-    protected static class UnrestrictedSessionCreateRootTag extends UnrestrictedSessionRunner {
+    protected static class UnrestrictedSessionCreateRootTag extends
+            UnrestrictedSessionRunner {
         public UnrestrictedSessionCreateRootTag(CoreSession session) {
             super(session);
             rootTagDocumentId = null;
         }
-        //need to return somehow the result
+
+        // need to return somehow the result
         public String rootTagDocumentId;
-        
+
         @Override
         public void run() throws ClientException {
             DocumentModel documentRoot = session.getRootDocument();
@@ -367,18 +386,20 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
             rootTag = session.createDocument(rootTag);
             rootTag = session.saveDocument(rootTag);
             session.save();
-            //and set ID for retrieval
+            // and set ID for retrieval
             rootTagDocumentId = rootTag.getId();
         }
     }
 
     /**
      * The unrestricted runner to find / create a tag document.
+     * 
      * @author rux
-     *
+     * 
      */
-    protected static class UnrestrictedSessionCreateTag extends UnrestrictedSessionRunner {
-        public UnrestrictedSessionCreateTag(DocumentModel parent, String label, 
+    protected static class UnrestrictedSessionCreateTag extends
+            UnrestrictedSessionRunner {
+        public UnrestrictedSessionCreateTag(DocumentModel parent, String label,
                 boolean privateFlag) {
             super(parent.getCoreSession());
             this.parent = parent;
@@ -387,29 +408,37 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
             user = parent.getCoreSession().getPrincipal().getName();
             this.privateFlag = privateFlag;
         }
-        //need to return somehow the result
+
+        // need to return somehow the result
         public String tagDocumentId;
-        
-        //and to store the arguments
+
+        // and to store the arguments
         private DocumentModel parent;
+
         private String label;
+
         private String user;
+
         private boolean privateFlag;
-        
+
         @Override
         public void run() throws ClientException {
             // label can be in fact a composed label: labels separated by /
             String[] labels = label.split("/");
             DocumentModel relativeParent = parent;
             for (String atomicLabel : labels) {
-                // for each label look for a public or user owned tag. If not, create it
+                // for each label look for a public or user owned tag. If not,
+                // create it
                 Filter filter = new TagLabelFilter(atomicLabel);
-                DocumentModelList tags = session.getChildren(relativeParent.getRef(),
+                DocumentModelList tags = session.getChildren(
+                        relativeParent.getRef(),
                         TagConstants.TAG_DOCUMENT_TYPE, filter, null);
                 DocumentModel foundTag = null;
                 if (tags != null && tags.size() > 0) {
-                    // it should be only one, but it is possible to have more than one tag
-                    // with the specified label in a group. Need to check the flag / user 
+                    // it should be only one, but it is possible to have more
+                    // than one tag
+                    // with the specified label in a group. Need to check the
+                    // flag / user
                     for (DocumentModel aTag : tags) {
                         Boolean isPrivate = (Boolean) aTag.getPropertyValue(TagConstants.TAG_IS_PRIVATE_FIELD);
                         if (isPrivate != null && !isPrivate) {
@@ -429,40 +458,43 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
                     relativeParent = foundTag;
                 } else {
                     // couldn't find the tag, create it
-                    relativeParent = createTagModel(session, relativeParent, atomicLabel, 
-                            user, privateFlag);
+                    relativeParent = createTagModel(session, relativeParent,
+                            atomicLabel, user, privateFlag);
                 }
             }
-            //and set ID for retrieval
+            // and set ID for retrieval
             tagDocumentId = relativeParent.getId();
         }
     }
-    
+
     /**
      * The unrestricted runner for running a query.
+     * 
      * @author rux
-     *
+     * 
      */
-    protected static class UnrestrictedSessionRunQuery extends UnrestrictedSessionRunner {
-        
+    protected static class UnrestrictedSessionRunQuery extends
+            UnrestrictedSessionRunner {
+
         public UnrestrictedSessionRunQuery(CoreSession session, String query) {
             super(session);
             this.query = query;
             result = null;
         }
 
-        //need to have somehow result
+        // need to have somehow result
         public DocumentModelList result;
-        //need to provide somehow the arguments
+
+        // need to provide somehow the arguments
         private String query;
-        
+
         @Override
         public void run() throws ClientException {
             result = session.query(query);
         }
-        
+
     }
-    
+
     protected static DocumentModel createTagModel(CoreSession session,
             DocumentModel parent, String label, String user, boolean privateFlag)
             throws ClientException {
@@ -481,5 +513,8 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
         return tagDocument;
     }
 
+    public String getAuthor(String docId, String tagLabel, String author) {
+        return getTaggingProvider().getAuthor(docId, tagLabel, author);
+    }
 
 }
