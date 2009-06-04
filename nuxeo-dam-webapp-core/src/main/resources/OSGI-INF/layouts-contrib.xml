@@ -48,6 +48,10 @@
         <properties widgetMode="any">
           <property name="pattern">#{nxu:basicDateAndTimeFormater()}</property>
         </properties>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+          <property name="styleClass">dataInputText</property>
+        </properties>
         <widgetModes>
           <mode value="any">view</mode>
         </widgetModes>
@@ -74,11 +78,11 @@
         </labels>
         <translated>true</translated>
         <fields>
-          <field>dc:contributors/0</field>
+          <field>dc:contributors</field>
         </fields>
-        <widgetModes>
-          <mode value="any">view</mode>
-        </widgetModes>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
       </widget>
 
       <widget name="expired" type="datetime">
@@ -144,7 +148,7 @@
       </rows>
       <widget name="title" type="text">
         <labels>
-          <label mode="any">title</label>
+          <label mode="any">label.dublincore.title</label>
         </labels>
         <translated>true</translated>
         <fields>
@@ -157,7 +161,7 @@
       </widget>
       <widget name="description" type="textarea">
         <labels>
-          <label mode="any">description</label>
+          <label mode="any">label.dublincore.description</label>
         </labels>
         <translated>true</translated>
         <fields>
