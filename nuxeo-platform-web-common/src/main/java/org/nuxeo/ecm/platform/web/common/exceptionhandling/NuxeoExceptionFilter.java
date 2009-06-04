@@ -30,6 +30,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService;
 import org.nuxeo.runtime.api.Framework;
 
@@ -39,20 +41,34 @@ public class NuxeoExceptionFilter implements Filter {
 
     private NuxeoExceptionHandler exceptionHandler;
 
+    private static final Log log = LogFactory.getLog(NuxeoExceptionFilter.class);
+
     public void init(FilterConfig filterConfig) throws ServletException {
-        ExceptionHandlingService service;
+
         try {
-            service = Framework.getService(ExceptionHandlingService.class);
-        } catch (Exception e) {
-            throw new ServletException(e);
+            getHandler();
+        } catch (ServletException e) {
+            log.info("NuxeoExceptionHandler will be lazy loaded");
         }
-        exceptionHandler = service.getExceptionHandler();
+    }
+
+    protected NuxeoExceptionHandler getHandler() throws ServletException {
+        if (exceptionHandler==null) {
+            ExceptionHandlingService service;
+            try {
+                service = Framework.getService(ExceptionHandlingService.class);
+            } catch (Exception e) {
+                throw new ServletException(e);
+            }
+            exceptionHandler = service.getExceptionHandler();
+        }
+        return exceptionHandler;
     }
 
     private void handleException(HttpServletRequest request,
             HttpServletResponse response, Throwable t) throws IOException,
             ServletException {
-        exceptionHandler.handleException(request, response, t);
+        getHandler().handleException(request, response, t);
     }
 
     public void doFilter(ServletRequest request, ServletResponse response,
