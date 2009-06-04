@@ -2,11 +2,6 @@
 <component
   name="org.nuxeo.ecm.platform.management.probes.ProbeSchedulerContrib">
 
-  
-  <require>org.nuxeo.ecm.platform.management.probes.ProbeScheduler</require>
-
-  <require>org.nuxeo.ecm.platform.scheduler.core</require>
-  
   <extension 
   	target="org.nuxeo.ecm.platform.scheduler.core.service.SchedulerRegistry"
   	point="schedule">
