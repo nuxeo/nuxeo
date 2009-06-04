@@ -22,11 +22,15 @@ package org.nuxeo.runtime.jetty;
 import java.io.File;
 import java.net.URL;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.mortbay.jetty.Handler;
 import org.mortbay.jetty.NCSARequestLog;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.handler.ContextHandlerCollection;
+import org.mortbay.jetty.handler.HandlerWrapper;
 import org.mortbay.jetty.handler.RequestLogHandler;
+import org.mortbay.jetty.servlet.NuxeoServletHandler;
 import org.mortbay.jetty.webapp.WebAppContext;
 import org.mortbay.xml.XmlConfiguration;
 import org.nuxeo.common.Environment;
@@ -51,6 +55,8 @@ public class JettyComponent extends DefaultComponent {
     protected ContextHandlerCollection contexts = new ContextHandlerCollection();
     protected File config;
     protected File log;
+
+    private static final Log logger = LogFactory.getLog(JettyComponent.class);
 
     public Server getServer() {
         return server;
@@ -133,6 +139,7 @@ public class JettyComponent extends DefaultComponent {
             File home = Environment.getDefault().getHome();
             WebApplication app = (WebApplication)contribution;
             WebAppContext ctx = new WebAppContext();
+            //WebAppContext ctx = new NuxeoWebAppContext();
             ctx.setContextPath(app.getContextPath());
             String root = app.getWebRoot();
             if (root != null) {
@@ -148,8 +155,18 @@ public class JettyComponent extends DefaultComponent {
             if (defWebXml.isFile()) {
               ctx.setDefaultsDescriptor(defWebXml.getAbsolutePath());
             }
+
             contexts.addHandler(ctx);
+            org.mortbay.log.Log.setLog(new Log4JLogger(logger));
             ctx.start();
+            //HandlerWrapper wrapper = (HandlerWrapper)ctx.getHandler();
+            //wrapper = (HandlerWrapper)wrapper.getHandler();
+            //wrapper.setHandler(new NuxeoServletHandler());
+
+            if (ctx.isFailed()) {
+                logger.error("Error in war deployment");
+            }
+
         } else if (XP_DATA_SOURCE.equals(extensionPoint)) {
 
         }
