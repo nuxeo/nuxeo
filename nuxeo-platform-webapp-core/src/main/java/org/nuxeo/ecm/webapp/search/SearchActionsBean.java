@@ -84,7 +84,6 @@ import org.nuxeo.ecm.webapp.querymodel.QueryModelActions;
  */
 @Name("searchActions")
 @Scope(ScopeType.CONVERSATION)
-@Transactional
 public class SearchActionsBean extends InputController implements
         SearchActions, Serializable {
 

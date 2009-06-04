@@ -90,7 +90,6 @@ import org.nuxeo.ecm.webapp.pagination.ResultsProvidersCache;
  */
 @Name("documentActions")
 @Scope(CONVERSATION)
-@Transactional
 public class DocumentActionsBean extends InputController implements
         DocumentActions, Serializable {
 

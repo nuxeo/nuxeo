@@ -72,7 +72,6 @@ import au.com.bytecode.opencsv.CSVWriter;
  */
 @Name("searchResults")
 @Scope(ScopeType.CONVERSATION)
-@Transactional
 public class SearchResultsBean extends InputController implements
         SearchResults, Serializable {
 
