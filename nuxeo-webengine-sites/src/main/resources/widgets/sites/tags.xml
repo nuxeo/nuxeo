@@ -50,9 +50,7 @@
   action="${This.path}/@tag/addTagging" accept-charset="utf-8">
 
   <div id="addTag" class="addWebComment" style="display: none">
-    <input type="text" id="tagLabel" name="tagLabel" value="" />
-    <br/>
-    <input type="submit" name="post_tag" value="${Context.getMessage('label.page.add.tags')}" id="post_tag" class="button">
+    <input type="text" id="tagLabel" name="tagLabel" value="" /><input type="submit" name="post_tag" value="OK" id="post_tag" class="button" />
   </div>
   
 </form>  
