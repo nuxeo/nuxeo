@@ -70,6 +70,7 @@ import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
+import org.nuxeo.ecm.platform.ui.web.cache.SeamCacheHelper;
 import org.nuxeo.ecm.webapp.base.InputController;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListDescriptor;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
@@ -1061,6 +1062,9 @@ public class ClipboardActionsBean extends InputController implements
     }
 
     public boolean isCacheEnabled() {
+        if (!SeamCacheHelper.canUseSeamCache()) {
+            return false;
+        }
         return isWorkListEmpty();
     }
 
@@ -1070,6 +1074,9 @@ public class ClipboardActionsBean extends InputController implements
     }
 
     public boolean isCacheEnabledForSelection() {
+        if (!SeamCacheHelper.canUseSeamCache()) {
+            return false;
+        }
         return documentsListsManager.isWorkingListEmpty(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
     }
 
