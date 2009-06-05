@@ -41,7 +41,7 @@
           value="#{userManagerActions.selectedUser.id}" />
       </h1>
 
-      <h:form id="deleteUserForm" rendered="#{userManagerActions.allowDeleteUser}">
+      <h:form id="deleteUserForm" rendered="#{userManagerActions.allowDeleteUser and documentActions.notReadOnly}">
         <script type="text/javascript">
         function confirmDeleteUser() {
           return confirm("#{messages['label.userManager.confirmDeleteUser']}");
@@ -73,7 +73,7 @@
               </h:commandLink>
             </li>
 
-            <f:subview rendered="#{userManagerActions.allowEditUser}">
+            <f:subview rendered="#{userManagerActions.allowEditUser and documentActions.notReadOnly}">
               <li class="#{nxu:test(currentUserSubTab == 'edit', 'selected', '')}">
                 <h:commandLink
                   action="#{userManagerActions.editUser}" immediate="true">
@@ -82,7 +82,7 @@
               </li>
             </f:subview>
 
-            <f:subview rendered="#{userManagerActions.allowChangePassword}">
+            <f:subview rendered="#{userManagerActions.allowChangePassword and documentActions.notReadOnly}">
               <li class="#{nxu:test(currentUserSubTab == 'editPassword', 'selected', '')}">
                 <h:commandLink action="edit_user_password" immediate="true">
                   <h:outputText value="#{messages['command.change.password']}" />

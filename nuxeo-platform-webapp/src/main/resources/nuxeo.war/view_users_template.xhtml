@@ -22,7 +22,7 @@
 
     <div class="tabsContent">
 
-      <h:form rendered="#{userManagerActions.allowCreateUser}">
+      <h:form rendered="#{userManagerActions.allowCreateUser and documentActions.notReadOnly}">
         <div class="action_bar">
           <ul>
             <li class="selected">

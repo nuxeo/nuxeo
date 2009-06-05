@@ -7,7 +7,7 @@
 
     <ui:define name="mainContent">
 
-      <h:form id="editGroup" rendered="#{groupManagerActions.allowEditGroup}">
+      <h:form id="editGroup" rendered="#{groupManagerActions.allowEditGroup and documentActions.notReadOnly}">
         <nxl:layout name="group" mode="edit" value="#{groupManagerActions.selectedGroup}" />
   
         <table class="dataInput">
