@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<datasources>
+  <!-- UNIFIED DATASOURCE CONFIGURATION -->
+  <!--
+    This is the unified datasource configuration for MySQL. All datasources from
+    nuxeo points to this datasource so it will use only 1 database. If you wish
+    to use a different database for a service, comment out the link in the
+    relevant xxx-ds.xml file and add a datasource configuration.
+  -->
+  <!-- nuxeo datasource -->
+  <local-tx-datasource>
+    <jndi-name>NuxeoDS</jndi-name>
+    <connection-url>jdbc:mysql://localhost/nuxeo?relaxAutoCommit=true</connection-url>
+    <driver-class>com.mysql.jdbc.Driver</driver-class>
+    <user-name>nuxeo</user-name>
+    <password>password</password>
+  </local-tx-datasource>
+</datasources>

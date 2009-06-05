@@ -1,0 +1,26 @@
+<assembly>
+
+  <assemble>
+    <set>jboss</set>
+    <outputFile>/</outputFile>
+  </assemble>
+  <fileSet id="jboss">
+    <directory>target/jboss</directory>
+  </fileSet>
+
+  <assemble>
+    <set>nuxeo-ep-ear</set>
+    <outputFile>server/default/deploy/nuxeo.ear</outputFile>
+  </assemble>
+  <zipEntrySet id="nuxeo-ep-ear" profile="nuxeo-ep-jboss">
+    <artifact>org.nuxeo.ecm.platform:nuxeo-platform-ear:${project.version}:zip</artifact>
+  </zipEntrySet>
+  <assemble>
+    <set>nuxeo-dm-ear</set>
+    <outputFile>server/default/deploy/nuxeo.ear</outputFile>
+  </assemble>
+  <zipEntrySet id="nuxeo-dm-ear" profile="nuxeo-dm-jboss">
+    <artifact>org.nuxeo.ecm.distribution:nuxeo-distribution-dm:${project.version}:zip</artifact>
+  </zipEntrySet>
+
+</assembly>

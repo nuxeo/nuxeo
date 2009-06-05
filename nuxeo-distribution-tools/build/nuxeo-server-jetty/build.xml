@@ -1,0 +1,41 @@
+<project name="nuxeo-server-jetty" default="build"
+xmlns:artifact="urn:nuxeo-artifact" xmlns:nx="urn:nuxeo-build">
+  <property name="jetty.version" value="6.1H.7" />
+  <import file="../config.xml" />
+  <target name="build" depends="configure">
+    <ant dir="../nuxeo-server-base" />
+    <artifact:graph>
+      <resolve pattern="org.mortbay.jetty:jetty:${jetty.version}" />
+      <resolve pattern="org.mortbay.jetty:jetty-plus:${jetty.version}" />
+      <resolve pattern="org.mortbay.jetty:jetty-naming:${jetty.version}" />
+      <resolve pattern="org.mortbay.jetty:jetty-annotations:${jetty.version}" />
+      <resolve pattern="org.mortbay.jetty:jetty-util:${jetty.version}" />
+    </artifact:graph>
+    <copy todir="${stagedir}" overwrite="true">
+      <fileset dir="resources" />
+    </copy>
+    <copy todir="${stagedir}/bundles">
+      <artifact:file key="org.nuxeo.runtime:nuxeo-runtime-jetty-adapter" />
+    </copy>
+    <copy todir="${stagedir}/lib">
+      <artifact:file key="javax.servlet:servlet-api" />
+      <artifact:file key="org.mortbay.jetty:jetty:${jetty.version}" />
+      <artifact:file key="org.mortbay.jetty:jetty-plus:${jetty.version}" />
+      <artifact:file key="org.mortbay.jetty:jetty-naming:${jetty.version}" />
+      <artifact:file key="org.mortbay.jetty:jetty-annotations:${jetty.version}" />
+      <artifact:file key="org.mortbay.jetty:jetty-util:${jetty.version}" />
+      <artifact:file key="jotm:jotm" />
+      <artifact:file key="javax.ejb:ejb-api" />
+      <artifact:file key="javax.transaction:jta" />
+    </copy>
+    <zip destfile="${outdir}/nxserver.zip">
+      <zipfileset dir="${stagedir}" excludes="*.sh"
+      prefix="nxserver" />
+      <zipfileset dir="${stagedir}" includes="*.sh"
+      prefix="nxserver" filemode="777" />
+    </zip>
+    <nx:profile name="ra"></nx:profile>
+    <nx:profile name="vcs"></nx:profile>
+    <nx:profile name="jcr"></nx:profile>
+  </target>
+</project>

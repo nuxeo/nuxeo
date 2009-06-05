@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<datasources>
+  <!-- 
+  Link datasource to point to NuxeoDS.
+  See unified-nuxeo-ds.xml to set a different database
+  -->
+  <mbean code="org.jboss.naming.NamingAlias"
+    name="jboss.jca:name=nxaudit-logs,service=DataSourceBinding">
+    <attribute name="ToName">java:/NuxeoDS</attribute>
+    <attribute name="FromName">java:/nxaudit-logs</attribute>
+  </mbean>
+  <mbean code="org.jboss.naming.NamingAlias"
+    name="jboss.jca:name=nxaudits,service=DataSourceBinding">
+    <attribute name="ToName">java:/NuxeoDS</attribute>
+    <attribute name="FromName">jdbc/nxaudits</attribute>
+  </mbean>
+</datasources>

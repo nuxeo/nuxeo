@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.filemanager.service.FileManagerService.config">
+
+ <extension target="org.nuxeo.ecm.platform.filemanager.service.FileManagerService" point="unicity">
+    <unicitySettings>
+      <enabled>false</enabled>
+      <computeDigest>false</computeDigest>
+    </unicitySettings>
+  </extension>
+
+</component>

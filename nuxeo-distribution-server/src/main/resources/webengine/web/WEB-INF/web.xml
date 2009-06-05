@@ -1,0 +1,68 @@
+<?xml version="1.0" ?>
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
+  version="2.4">
+
+  <filter>
+    <display-name>WebEngine Login Stack Cleaner</display-name>
+    <filter-name>WebEngineLoginStackCleaner</filter-name>
+    <filter-class>org.nuxeo.ecm.webengine.login.LoginStackCleaner</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>WebEngineLoginStackCleaner</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+  
+  <filter>
+    <display-name>WebEngine Authentication Filter</display-name>
+    <filter-name>NuxeoAuthenticationFilter</filter-name>
+    <filter-class>org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter</filter-class>
+    <init-param>
+      <param-name>byPassAuthenticationLog</param-name>
+      <param-value>true</param-value>
+    </init-param>
+    <init-param>
+      <param-name>securityDomain</param-name>
+      <param-value>nuxeo-webengine</param-value>
+    </init-param>
+  </filter>
+
+  <filter-mapping>
+    <filter-name>NuxeoAuthenticationFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+
+  <filter>
+    <display-name>Nuxeo Request Controller Filter</display-name>
+    <filter-name>NuxeoRequestController
+      </filter-name>
+    <filter-class>org.nuxeo.ecm.platform.web.common.requestcontroller.filter.NuxeoRequestControllerFilter</filter-class>
+  </filter>
+
+  <filter-mapping>
+    <filter-name>NuxeoRequestController
+      </filter-name>
+    <url-pattern>/*</url-pattern>
+    <dispatcher>REQUEST</dispatcher>
+</filter-mapping>
+
+  <servlet>
+    <servlet-name>Nuxeo WebEngine Servlet</servlet-name>
+    <servlet-class>org.nuxeo.ecm.webengine.server.resteasy.WebEngineServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Nuxeo WebEngine Servlet</servlet-name>
+    <url-pattern>/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>Nuxeo Resource Servlet</servlet-name>
+    <servlet-class>org.nuxeo.ecm.webengine.servlet.ResourceServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Nuxeo Resource Servlet</servlet-name>
+    <url-pattern>/skin/*</url-pattern>
+  </servlet-mapping>
+
+</web-app>

@@ -1,0 +1,241 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>deleteWorkspace</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">deleteWorkspace</td></tr>
+</thead><tbody>
+<!--Suppression de WS par le responsable de l'espace-->
+<tr>
+	<td>open</td>
+	<td>/nuxeo/logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>jsmith</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>jsmith1</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>You are logged as jsmith</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Workspaces</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=testWorskspace1</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=a WS to be deleted 1</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//tbody[@id="CHILDREN_DOCUMENT_LIST:dataTable:tbody_element"]/tr[1]//input[@type="checkbox"]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForEditable</td>
+	<td>//span[@id="CURRENT_SELECTION_TRASH"]/input</td>
+	<td>12000</td>
+</tr>
+<tr>
+	<td>verifyEditable</td>
+	<td>//span[@id="CURRENT_SELECTION_TRASH"]/input</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyEditable</td>
+	<td>//span[@id="CURRENT_SELECTION_ADDTOLIST"]/input</td>
+	<td></td>
+</tr>
+<!--suppression de WS to be deleted-->
+<tr>
+	<td>clickAndWait</td>
+	<td>link=testWorskspace1</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//tbody[@id="CHILDREN_DOCUMENT_LIST:dataTable:tbody_element"]/tr[1]//input[@type="checkbox"]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForEditable</td>
+	<td>//span[@id="CURRENT_SELECTION_TRASH"]/input</td>
+	<td>12000</td>
+</tr>
+<tr>
+	<td>verifyChecked</td>
+	<td>//tbody[@id="CHILDREN_DOCUMENT_LIST:dataTable:tbody_element"]/tr[1]//input[@type="checkbox"]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Content</td>
+	<td></td>
+</tr>
+<tr>
+	<td>chooseCancelOnNextConfirmation</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//input[@value="Delete"]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertConfirmation</td>
+	<td>Delete selected document(s)?</td>
+	<td></td>
+</tr>
+<!--Validation de la suppression-->
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value="Delete"]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertConfirmation</td>
+	<td>Delete selected document(s)?</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextNotPresent</td>
+	<td>a WS to be deleted 1</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Log out</td>
+	<td></td>
+</tr>
+<!--Identification-->
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>Administrator</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>Administrator</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>You are logged as Administrator</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Workspaces</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//tbody[@id="CHILDREN_DOCUMENT_LIST:dataTable:tbody_element"]/tr[2]//input[@type="checkbox"]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForEditable</td>
+	<td>//span[@id="CURRENT_SELECTION_TRASH"]/input</td>
+	<td>12000</td>
+</tr>
+<tr>
+	<td>verifyEditable</td>
+	<td>//span[@id="CURRENT_SELECTION_TRASH"]/input</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyEditable</td>
+	<td>//span[@id="CURRENT_SELECTION_ADDTOLIST"]/input</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=testWorskspace1</td>
+	<td></td>
+</tr>
+<!--Annulation de la suppression-->
+<tr>
+	<td>click</td>
+	<td>//tbody[@id="CHILDREN_DOCUMENT_LIST:dataTable:tbody_element"]/tr[1]//input[@type="checkbox"]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForEditable</td>
+	<td>//span[@id="CURRENT_SELECTION_TRASH"]/input</td>
+	<td>12000</td>
+</tr>
+<tr>
+	<td>chooseCancelOnNextConfirmation</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//input[@value="Delete"]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertConfirmation</td>
+	<td>Delete selected document(s)?</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=a WS to be deleted 2</td>
+	<td></td>
+</tr>
+<!--Validation de la suppression-->
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value="Delete"]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertConfirmation</td>
+	<td>Delete selected document(s)?</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextNotPresent</td>
+	<td>a WS to be deleted 2</td>
+	<td></td>
+</tr>
+<!--Déconnexion-->
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Log out</td>
+	<td></td>
+</tr>
+
+</tbody></table>
+</body>
+</html>

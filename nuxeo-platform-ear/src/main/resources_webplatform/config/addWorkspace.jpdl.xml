@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pageflow-definition name="createWorkspace">
+  <start-page name="editFields" view-id="/wizards/createWorkspace/create_workspace.xhtml">
+    <transition name="toTemplateDecision" to="useTemplateDecision"></transition>
+    <transition name="cancel" to="cancel">
+          <action expression="#{workspaceActions.exitWizard}" />
+    </transition>
+  </start-page>
+
+  <decision name="useTemplateDecision" expression="#{workspaceActions.useTemplate}">
+    <transition name="true" to="selectTemplate"></transition>
+    <transition name="false" to="manageMembers"></transition>
+  </decision>
+
+  <decision name="backAfterManageMembers" expression="#{workspaceActions.useTemplate}">
+    <transition name="true" to="selectTemplate"></transition>
+    <transition name="false" to="editFields"></transition>
+  </decision>
+
+  <page name="selectTemplate" view-id="/wizards/createWorkspace/select_workspace_template.xhtml">
+    <transition name="cancel" to="cancel">
+          <action expression="#{workspaceActions.exitWizard}" />
+    </transition>
+    <transition name="toManageMembers" to="manageMembers"></transition>
+    <transition name="toEditFields" to="editFields"></transition>
+    <transition name="finish" to="done">
+      <action expression="#{workspaceActions.createWorkspace}" />
+    </transition>
+  </page>
+
+  <page name="manageMembers" view-id="/wizards/createWorkspace/members_management.xhtml">
+    <transition name="cancel" to="cancel">
+          <action expression="#{workspaceActions.exitWizard}" />
+    </transition>
+    <transition name="back" to="backAfterManageMembers"></transition>
+    <transition name="customize" to="customizeGfx"></transition>
+    <transition name="finish" to="done">
+      <action expression="#{workspaceActions.createWorkspace}" />
+    </transition>
+  </page>
+
+  <page name="customizeGfx" view-id="/wizards/createWorkspace/customization.xhtml">
+    <transition name="cancel" to="cancel">
+          <action expression="#{workspaceActions.exitWizard}" />
+    </transition>
+    <transition name="back" to="manageMembers"></transition>
+    <transition name="finish" to="done">
+      <action expression="#{workspaceActions.createWorkspace}" />
+    </transition>
+  </page>
+
+  <page name="done" view-id="/wizards/createWorkspace/endWizard.xhtml">
+    <end-conversation />
+  </page>
+
+  <page name="cancel" view-id="/wizards/closeWizard.xhtml">
+    <end-conversation />
+  </page>
+
+</pageflow-definition>

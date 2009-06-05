@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<datasources>
+  <!-- 
+  Link datasource to point to NuxeoDS.
+  See unified-nuxeo-ds.xml to set a different database
+  -->
+  <mbean code="org.jboss.naming.NamingAlias"
+    name="jboss.jca:name=placeful_service_ds,service=DataSourceBinding">
+    <attribute name="ToName">java:/NuxeoDS</attribute>
+    <attribute name="FromName">java:/placeful_service_ds</attribute>
+  </mbean>
+</datasources>

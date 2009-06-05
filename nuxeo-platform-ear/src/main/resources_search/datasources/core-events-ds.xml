@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<connection-factories>
+
+  <!-- JMS remote topic provider -->
+  <!-- For a HA configuration, use port 1100 instead of 1099 -->
+  <mbean code="org.jboss.jms.jndi.JMSProviderLoader"
+         name="jboss.mq:service=JMSProviderLoader,name=NXCoreEventsProvider,server=ecm_core_server">
+    <attribute name="ProviderName">NXCoreEventsProvider</attribute>
+    <attribute name="ProviderAdapterClass">org.jboss.jms.jndi.JNDIProviderAdapter</attribute>
+    <attribute name="FactoryRef">UIL2XAConnectionFactory</attribute>
+    <!-- The queue connection factory -->
+    <attribute name="QueueFactoryRef">UIL2XAConnectionFactory</attribute>
+    <!-- The topic factory -->
+    <attribute name="TopicFactoryRef">UIL2XAConnectionFactory</attribute>
+    <!-- Connect to JNDI on the host "the-remote-host-name" port 1099-->
+    <attribute name="Properties">
+      java.naming.factory.initial=org.jnp.interfaces.NamingContextFactory
+      java.naming.factory.url.pkgs=org.jnp.interfaces
+      java.naming.provider.url=${jboss.bind.address}:1099
+    </attribute>
+  </mbean>
+
+  <!-- mbean code="org.jboss.jms.jndi.JMSProviderLoader"
+          name="jboss.mq:service=JMSProviderLoader,name=ActiveMQJMSProvider">
+     <attribute name="ProviderName">ActiveMQJMSProvider</attribute>
+     <attribute name="ProviderAdapterClass">
+       org.jboss.jms.jndi.JNDIProviderAdapter
+     </attribute>
+     <attribute name="FactoryRef">ConnectionFactory</attribute>
+     <attribute name="QueueFactoryRef">ConnectionFactory</attribute>
+     <attribute name="TopicFactoryRef">ConnectionFactory</attribute>
+         <attribute name="Properties">
+         java.naming.factory.initial=org.apache.activemq.jndi.ActiveMQInitialContextFactory
+         java.naming.provider.url=tcp://localhost:61616
+         </attribute>
+   </mbean -->
+
+  <!-- JMS Resource adapter, use this to get transacted JMS in beans -->
+  <tx-connection-factory>
+    <jndi-name>JmsNX</jndi-name>
+    <xa-transaction/>
+    <rar-name>jms-ra.rar</rar-name>
+    <connection-definition>org.jboss.resource.adapter.jms.JmsConnectionFactory</connection-definition>
+    <config-property name="SessionDefaultType" type="java.lang.String">javax.jms.Topic</config-property>
+    <config-property name="JmsProviderAdapterJNDI" type="java.lang.String">java:/NXCoreEventsProvider</config-property>
+    <max-pool-size>20</max-pool-size>
+    <security-domain-and-application>JmsNXRealm</security-domain-and-application>
+  </tx-connection-factory>
+
+   <!-- tx-connection-factory>
+      <jndi-name>JmsNX.AMQ</jndi-name>
+      <xa-transaction/>
+      <track-connection-by-tx/>
+      <rar-name>activemq-ra.rar</rar-name>
+      <connection-definition>javax.jms.TopicConnectionFactory</connection-definition>
+      <ServerUrl>vm://localhost</ServerUrl>
+      <min-pool-size>1</min-pool-size>
+      <max-pool-size>20</max-pool-size>
+      <blocking-timeout-millis>30000</blocking-timeout-millis>
+      <idle-timeout-minutes>3</idle-timeout-minutes>
+      <security-domain-and-application>JmsNXRealm</security-domain-and-application>
+   </tx-connection-factory -->
+
+   <!-- mbean code="org.jboss.resource.deployment.AdminObject" name="activemq.topic:name=NXPMessages">
+      <attribute name="JNDIName">activemq/topic/NXPMessages</attribute>
+      <depends optional-attribute-name="RARName">jboss.jca:service=RARDeployment,name='activemq-ra.rar'</depends>
+      <attribute name="Type">javax.jms.Topic</attribute>
+      <attribute name="Properties">PhysicalName=topic.NXPMessages</attribute>
+   </mbean -->
+
+   <mbean code="org.jboss.naming.LinkRefPairService"
+          name="jboss.jms:alias=NXCoreEventsConnectionFactory">
+      <attribute name="JndiName">JmsNX</attribute>
+      <attribute name="RemoteJndiName">ConnectionFactory</attribute>
+      <attribute name="LocalJndiName">java:/JmsNX</attribute>
+      <depends>jboss:service=Naming</depends>
+   </mbean>
+
+   <!-- JMS topic/NXCoreEvents -->
+   <mbean code="org.jboss.mq.server.jmx.Topic" name="jboss.mq.destination:service=Topic,name=NXCoreEvents">
+      <attribute name="JNDIName">topic/NXCoreEvents</attribute>
+      <depends optional-attribute-name="DestinationManager">jboss.mq:service=DestinationManager</depends>
+   </mbean>
+
+</connection-factories>
+
+
