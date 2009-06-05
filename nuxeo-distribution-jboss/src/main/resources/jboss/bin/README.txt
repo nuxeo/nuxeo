@@ -5,26 +5,28 @@ jbossctl script
 Requirements
 ------------
 
-* Copy jbossctl into $JBOSS/bin.
+* depends on $JBOSS/bin/run.sh
 
-* Copy jbossctl.conf.sample to $JBOSS/bin/jbossctl.conf (optional: only
-  needed to change default values, or to use debug mode with startd).
+* to be used from $JBOSS/bin/
 
-* Copy bind.conf into $JBOSS/bin.
-
-* log4j must log messages with category
-  org.nuxeo.runtime.osgi.OSGiRuntimeService at INFO level for the FILE
-  appender (see server/default/conf/log4j.xml).
-
+* log4j must log messages with category org.nuxeo.runtime.osgi.OSGiRuntimeService at INFO level 
+  for the FILE appender (see server/default/conf/log4j.xml).
 
 Settings
 --------
 
-* edit jbossctl.conf if you want to change default values
+* copy jbossctl.conf.sample to jbossctl.conf and edit it if you want to change default values
 
-* edit bind.conf if you want to bind JBoss on a specific IP
+* edit bind.conf if you want to bind JBoss on a specific IP (by default, only localhost is binded; 
+  set BINDHOST=0.0.0.0 to bind all available addresses)
 
 Usage
 -----
 
   jbossctl (start|stop|startd|restart|status|tail|tailf|info|help)
+
+  
+Annexe
+------
+
+* For Solaris sytems, use jbossctl.solaris
