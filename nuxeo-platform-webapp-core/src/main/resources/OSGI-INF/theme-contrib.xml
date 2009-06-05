@@ -21,17 +21,8 @@
   <extension target="org.nuxeo.theme.services.ThemeService" point="themes">
 
     <theme>
-      <src>themes/theme-default.xml</src>
-    </theme>
-
-    <theme>
-      <src>themes/theme-alternative.xml</src>
-    </theme>
-
-    <theme>
       <src>themes/theme-galaxy.xml</src>
     </theme>
-
 
   </extension>
 
@@ -373,23 +364,6 @@
   <!-- Styles presets -->
 
   <extension target="org.nuxeo.theme.services.ThemeService" point="presets">
-
-    <palette name="Nuxeo psd colors" src="themes/palettes/nxcolors.aco"
-      category="color" />
-    <palette name="Nuxeo default fonts" src="themes/palettes/nxfonts.properties"
-      category="font" />
-    <palette name="Nuxeo default backgrounds"
-      src="themes/palettes/nxbackgrounds.properties" category="background" />
-    <palette name="Nuxeo default borders"
-      src="themes/palettes/nxborders.properties" category="border" />
-
-    <palette name="Courrier default fonts"
-      src="themes/palettes/courrier_fonts.properties" category="font" />
-    <palette name="Courrier default backgrounds"
-      src="themes/palettes/courrier_backgrounds.properties"
-      category="background" />
-    <palette name="Courrier default borders"
-      src="themes/palettes/courrier_borders.properties" category="border" />
 
     <palette name="Galaxy borders"
       src="themes/palettes/galaxy-borders.properties" category="border" />
