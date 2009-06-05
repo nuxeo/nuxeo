@@ -18,15 +18,18 @@ package org.nuxeo.ecm.platform.audit.service;
 
 import java.util.Properties;
 
+import org.nuxeo.runtime.api.DataSourceHelper;
+
 
 public class DefaultHibernateConfiguration implements HibernateConfiguration {
 
     public Properties getProperties() {
         Properties properties = new Properties();
+        String dsJNDIName = DataSourceHelper.getDataSourceJNDIName(HibernateConfiguration.AUDIT_DATASOURCE_NAME);
         properties.put("hibernate.connection.autocommit", true);
         properties.put("hibernate.show_sql", false);
         properties.put("hibernate.hbm2ddl.auto", "true");
-        properties.put("hibernate.connection.datasource", "java:/nxaudit-logs");
+        properties.put("hibernate.connection.datasource", dsJNDIName);
         return properties;
     }
 

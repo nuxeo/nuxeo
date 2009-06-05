@@ -18,6 +18,7 @@
     <provide interface="org.nuxeo.ecm.platform.audit.api.NXAuditEvents"/>
     <provide interface="org.nuxeo.ecm.platform.audit.api.AuditReader"/>
     <provide interface="org.nuxeo.ecm.platform.audit.api.AuditLogger"/>
+    <provide interface="org.nuxeo.ecm.platform.audit.api.Logs"/>
   </service>
 
   <extension-point name="event">

@@ -52,6 +52,7 @@ import org.nuxeo.ecm.platform.relations.api.Statement;
 import org.nuxeo.ecm.platform.relations.api.impl.NodeFactory;
 import org.nuxeo.ecm.platform.relations.api.impl.QueryResultImpl;
 import org.nuxeo.ecm.platform.relations.api.impl.StatementImpl;
+import org.nuxeo.runtime.api.DataSourceHelper;
 
 import com.hp.hpl.jena.datatypes.BaseDatatype;
 import com.hp.hpl.jena.db.DBConnection;
@@ -204,10 +205,8 @@ public class JenaGraph implements Graph {
             // create a database connection
             if (datasource != null) {
                 try {
-                    InitialContext context = new InitialContext();
-                    DataSource dataSource = (DataSource) context.lookup(datasource);
+                    DataSource dataSource = DataSourceHelper.getDataSource(datasource);
                     baseConnection = dataSource.getConnection();
-
                     /*
                      * We have to wrap the connection to disallow any commit()
                      * or setAutoCommit() on it. Jena calls these methods
