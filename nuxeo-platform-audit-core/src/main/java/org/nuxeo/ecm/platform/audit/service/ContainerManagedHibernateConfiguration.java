@@ -18,10 +18,12 @@ package org.nuxeo.ecm.platform.audit.service;
 
 import java.util.Properties;
 
+import org.nuxeo.runtime.api.DataSourceHelper;
+
 public class ContainerManagedHibernateConfiguration implements
         HibernateConfiguration {
 
-    String datasource = "jdbc/nxaudits";
+    String datasource = HibernateConfiguration.AUDIT_DATASOURCE_NAME;
 
     public ContainerManagedHibernateConfiguration() {
     }
@@ -31,11 +33,12 @@ public class ContainerManagedHibernateConfiguration implements
     }
 
     public Properties getProperties() {
+        String dsJNDIName = DataSourceHelper.getDataSourceJNDIName(datasource);
         Properties properties = new Properties();
         properties.put("hibernate.connection.autocommit", true);
         properties.put("hibernate.show_sql", false);
         properties.put("hibernate.hbm2ddl.auto", "update");
-        properties.put("hibernate.connection.datasource", datasource);
+        properties.put("hibernate.connection.datasource", dsJNDIName);
         return properties;
     }
 

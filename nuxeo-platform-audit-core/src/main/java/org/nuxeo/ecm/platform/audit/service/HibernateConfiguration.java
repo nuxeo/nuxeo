@@ -20,6 +20,8 @@ import java.util.Properties;
 
 public interface HibernateConfiguration {
 
+    static final String AUDIT_DATASOURCE_NAME = "nxaudit-logs";
+
     Properties getProperties();
 
 }
