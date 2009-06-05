@@ -14,4 +14,5 @@ Nuxeo-Component: OSGI-INF/authentication-contrib.xml,
  OSGI-INF/urlservice-contrib.xml,
  OSGI-INF/htmleditor-framework.xml,
  OSGI-INF/htmleditor-contrib.xml,
- OSGI-INF/request-controler-contrib.xml
+ OSGI-INF/request-controler-contrib.xml,
+ OSGI-INF/seamremotingjsbuilder-framework.xml
