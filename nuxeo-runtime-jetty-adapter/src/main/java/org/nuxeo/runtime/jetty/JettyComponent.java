@@ -30,7 +30,7 @@ import org.mortbay.jetty.Server;
 import org.mortbay.jetty.handler.ContextHandlerCollection;
 import org.mortbay.jetty.handler.HandlerWrapper;
 import org.mortbay.jetty.handler.RequestLogHandler;
-import org.mortbay.jetty.servlet.NuxeoServletHandler;
+//import org.mortbay.jetty.servlet.NuxeoServletHandler;
 import org.mortbay.jetty.webapp.WebAppContext;
 import org.mortbay.xml.XmlConfiguration;
 import org.nuxeo.common.Environment;
