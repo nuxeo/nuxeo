@@ -19,7 +19,23 @@
 
 package org.nuxeo.webengine.sites;
 
-import static org.nuxeo.webengine.sites.utils.SiteConstants.*;
+import static org.nuxeo.webengine.sites.utils.SiteConstants.EMAIL;
+import static org.nuxeo.webengine.sites.utils.SiteConstants.PAGE_NAME;
+import static org.nuxeo.webengine.sites.utils.SiteConstants.PAGE_NAME_ATTRIBUTE;
+import static org.nuxeo.webengine.sites.utils.SiteConstants.PERMISSION_ADD_CHILDREN;
+import static org.nuxeo.webengine.sites.utils.SiteConstants.SEARCH_PARAM;
+import static org.nuxeo.webengine.sites.utils.SiteConstants.SEARCH_THEME_PAGE;
+import static org.nuxeo.webengine.sites.utils.SiteConstants.SITES_THEME_PAGE;
+import static org.nuxeo.webengine.sites.utils.SiteConstants.SITE_DESCRIPTION;
+import static org.nuxeo.webengine.sites.utils.SiteConstants.THEME_BUNDLE;
+import static org.nuxeo.webengine.sites.utils.SiteConstants.THEME_PERSPECTIVE;
+import static org.nuxeo.webengine.sites.utils.SiteConstants.VIEW_PERSPECTIVE;
+import static org.nuxeo.webengine.sites.utils.SiteConstants.WEBCONTAINER_BASELINE;
+import static org.nuxeo.webengine.sites.utils.SiteConstants.WEBCONTAINER_EMAIL;
+import static org.nuxeo.webengine.sites.utils.SiteConstants.WEBCONTAINER_NAME;
+import static org.nuxeo.webengine.sites.utils.SiteConstants.WEBCONTAINER_WELCOMEMEDIA;
+import static org.nuxeo.webengine.sites.utils.SiteConstants.WEBPAGE_THEME;
+import static org.nuxeo.webengine.sites.utils.SiteConstants.WEBPAGE_THEMEPAGE;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -41,14 +57,12 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.rest.DocumentObject;
-import org.nuxeo.ecm.platform.tag.TagService;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.WebObject;
-import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.webengine.sites.utils.SiteQueriesColection;
 import org.nuxeo.webengine.sites.utils.SiteUtils;
 
@@ -206,37 +220,7 @@ public class Site extends DocumentObject {
         }
     }
 
-    @POST
-    @Path("addTag")
-    public Object addTag() {
-        try {
-            CoreSession session = ctx.getCoreSession();
-            // tag label
-            String tagLabel = ctx.getRequest().getParameter("tagLabel");
-            // create tag document type
-            TagService tagService = Framework.getService(TagService.class);
-
-            if (tagService != null) {
-                // Insert multiple tags if separated by commas
-                String[] tagLabelArray = tagLabel.split(",");
-
-                for (int i = 0; i < tagLabelArray.length; i ++) {
-                    String currentTagLabel = tagLabelArray[i].trim();
-                    if (currentTagLabel.length() > 0) {
-                        DocumentModel tagDocument = tagService.getOrCreateTag(
-                                tagService.getRootTag(session), currentTagLabel, false);
-                        tagService.tagDocument(doc, tagDocument.getId(), false);
-                    }
-                }
-            }
-
-            String path = SiteUtils.getPagePath(
-                    SiteUtils.getFirstWebSiteParent(session, doc), doc);
-            return redirect(path);
-        } catch (Exception e) {
-            throw WebException.wrap(e);
-        }
-    }
+   
 
     /**
      * Computes the arguments for a page. It is needed because in page some of

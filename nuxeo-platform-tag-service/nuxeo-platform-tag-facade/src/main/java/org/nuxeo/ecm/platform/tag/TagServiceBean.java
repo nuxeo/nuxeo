@@ -136,7 +136,13 @@ public class TagServiceBean implements TagService {
 
     }
 
-    public String getAuthor(String docId, String tagLabel, String author) throws ClientException {
-        return getLocalTagService().getAuthor(docId, tagLabel, author);
+    public String getTaggingId(String docId, String tagLabel, String author)
+            throws ClientException {
+        return getLocalTagService().getTaggingId(docId, tagLabel, author);
+    }
+
+    public void completeUntagDocument(DocumentModel document, String tagId)
+            throws ClientException {
+        getLocalTagService().completeUntagDocument(document, tagId);
     }
 }

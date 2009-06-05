@@ -266,7 +266,7 @@ public class TestTaggingProvider extends SQLRepositoryTestCase {
     public void testGetAuthor() throws Exception {
         createTaggings();
         TagEntity tagEntity2 = taggingProvider.getTagById(tag2.getId());
-        String author = taggingProvider.getAuthor(file1.getId(),
+        String author = taggingProvider.getTaggingId(file1.getId(),
                 tagEntity2.getLabel(), "hunus");
         assertNotNull(author);
     }

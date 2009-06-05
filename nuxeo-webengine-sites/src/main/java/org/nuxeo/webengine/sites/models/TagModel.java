@@ -31,6 +31,8 @@ public class TagModel extends AbstractModel {
 
     private Boolean canModify;
 
+    private String id;
+
     public TagModel(String label, Boolean isPrivate, Boolean canModify) {
         setLabel(label);
         setIsPrivate(isPrivate);
@@ -59,5 +61,13 @@ public class TagModel extends AbstractModel {
 
     public Boolean getCanModify() {
         return canModify;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getId() {
+        return id;
     }
 }

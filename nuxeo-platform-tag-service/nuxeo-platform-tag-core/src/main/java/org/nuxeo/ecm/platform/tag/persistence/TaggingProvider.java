@@ -177,8 +177,8 @@ public class TaggingProvider {
      * @param tagLabel
      * @return
      */
-    public String getAuthor(String docId, String tagLabel, String author) {
-        final String query = "SELECT tg.author FROM Tagging tg JOIN tg.targetDocument doc JOIN tg.tag tag"
+    public String getTaggingId(String docId, String tagLabel, String author) {
+        final String query = "SELECT tg.id FROM Tagging tg JOIN tg.targetDocument doc JOIN tg.tag tag"
                 + " WHERE doc.id = ?1 AND tag.label = ?2 AND tg.author = ?3";
 
         List<String> authors = doQuery(query, docId, tagLabel, author);
@@ -260,6 +260,38 @@ public class TaggingProvider {
             return result == 1;
         }
         return false;
+    }
+
+    /**
+     * Removes an entry from the 'NXP_TAGGING' table that has the targetId
+     * equals to the <b>docId</b> parameter and the tagId equals to the
+     * <b>tagId</b> parameter.The author of the entry must be the
+     * <b>userName</b> received parameter. The method returns true in case the
+     * deleting was successful or false otherwise.
+     * 
+     * @param docId - the UUID of the tagged document
+     * @param tagId - the UUID of the tag document
+     * @param userName - the user name of the current logged user
+     * @return true in case the deleting was successful or false otherwise.
+     */
+    public void removeAllTagging(String docId, String tagId) {
+        if (log.isDebugEnabled()) {
+            log.debug("removeTagging() with targetId " + docId + " and tagId "
+                    + tagId);
+        }
+        if (!em.getTransaction().isActive()) {
+            em.getTransaction().begin();
+            try {
+                Query query = em.createQuery("DELETE FROM Tagging tagging "
+                        + "WHERE tagging.targetDocument.id=:targetId AND  tagging.tag.id=:tagId");
+                query.setParameter("targetId", docId);
+                query.setParameter("tagId", tagId);
+                query.executeUpdate();
+                tagPersistenceProvider.doCommit(em);
+            } catch (Exception e) {
+                tagPersistenceProvider.doRollback(em);
+            }
+        }
     }
 
     public TagEntity getTagById(String tagId) {

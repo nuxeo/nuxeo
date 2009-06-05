@@ -261,6 +261,17 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
                 obtainCurrentPrincipalName(document));
     }
 
+    public void completeUntagDocument(DocumentModel document, String tagId)
+            throws ClientException {
+        if (null == document || tagId == null) {
+            throw new ClientException("Can't untag document or tag null.");
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("Going to untag " + tagId + " for " + document.getTitle());
+        }
+        getTaggingProvider().removeAllTagging(document.getId(), tagId);
+    }
+
     public List<String> listDocumentsForTag(String tagId, String user)
             throws ClientException {
         if (null == tagId) {
@@ -513,8 +524,8 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
         return tagDocument;
     }
 
-    public String getAuthor(String docId, String tagLabel, String author) {
-        return getTaggingProvider().getAuthor(docId, tagLabel, author);
+    public String getTaggingId(String docId, String tagLabel, String author) {
+        return getTaggingProvider().getTaggingId(docId, tagLabel, author);
     }
 
 }

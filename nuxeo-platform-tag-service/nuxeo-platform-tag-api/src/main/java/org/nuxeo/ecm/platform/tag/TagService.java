@@ -95,7 +95,7 @@ public interface TagService {
      * @return
      * @throws ClientException 
      */
-    String getAuthor(String docId, String tagLabel, String author) throws ClientException ;
+    String getTaggingId(String docId, String tagLabel, String author) throws ClientException ;
     /**
      * Lists tags applied on a document by the current principal.
      * @param document
@@ -169,6 +169,14 @@ public interface TagService {
      * @throws ClientException
      */
     void untagDocument(DocumentModel document, String tagId) throws ClientException;
+    
+    /**
+     * Removes all taggings from a document. 
+     * @param document
+     * @param tagId
+     * @throws ClientException
+     */
+    void completeUntagDocument(DocumentModel document, String tagId) throws ClientException;
     
     /**
      * Retrieves the list of documents tagged with a particular tag visible by

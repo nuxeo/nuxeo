@@ -20,14 +20,21 @@ import static org.nuxeo.webengine.sites.utils.SiteConstants.TAG_DOCUMENT;
 import static org.nuxeo.webengine.sites.utils.SiteConstants.THEME_BUNDLE;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.rest.DocumentObject;
+import org.nuxeo.ecm.platform.tag.TagService;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.webengine.sites.utils.SiteUtils;
 
 /**
  * 
@@ -55,6 +62,74 @@ public class TagAdapter extends DefaultAdapter {
                         ((Page) documentObject).getPageArguments());
             }
             return getTemplate("template_default.ftl");
+        } catch (Exception e) {
+            throw WebException.wrap(e);
+        }
+    }
+
+    @POST
+    @Path("addTagging")
+    public Object addTagging() {
+        try {
+
+            DocumentObject documentObject = (DocumentObject) getTarget();
+            DocumentModel doc = documentObject.getDocument();
+
+            CoreSession session = ctx.getCoreSession();
+            // tag label
+            String tagLabel = ctx.getRequest().getParameter("tagLabel");
+            // create tag document type
+            TagService tagService = Framework.getService(TagService.class);
+
+            if (tagService != null) {
+                // Insert multiple tags if separated by commas
+                String[] tagLabelArray = tagLabel.split(",");
+
+                for (int i = 0; i < tagLabelArray.length; i++) {
+                    String currentTagLabel = tagLabelArray[i].trim();
+                    if (currentTagLabel.length() > 0) {
+                        DocumentModel tagDocument = tagService.getOrCreateTag(
+                                tagService.getRootTag(session),
+                                currentTagLabel, false);
+                        tagService.tagDocument(doc, tagDocument.getId(), false);
+                    }
+                }
+            }
+
+            String path = SiteUtils.getPagePath(
+                    SiteUtils.getFirstWebSiteParent(session, doc), doc);
+
+            return redirect(path);
+        } catch (Exception e) {
+            throw WebException.wrap(e);
+        }
+    }
+
+    @GET
+    @Path("removeTagging")
+    public Object removeTagging() {
+
+        try {
+
+            DocumentObject documentObject = (DocumentObject) getTarget();
+            DocumentModel doc = documentObject.getDocument();
+
+            CoreSession session = ctx.getCoreSession();
+            // tag label
+            String taggingId = ctx.getRequest().getParameter("taggingId");
+            // create tag document type
+            TagService tagService = Framework.getService(TagService.class);
+
+            if (((NuxeoPrincipal) session.getPrincipal()).isAdministrator()) {
+                tagService.completeUntagDocument(doc, taggingId);
+            } else {
+                tagService.untagDocument(doc, taggingId);
+            }
+
+            String path = SiteUtils.getPagePath(
+                    SiteUtils.getFirstWebSiteParent(session, doc), doc);
+
+            return redirect(path);
         } catch (Exception e) {
             throw WebException.wrap(e);
         }

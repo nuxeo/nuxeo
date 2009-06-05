@@ -210,37 +210,7 @@ public class Page extends DocumentObject {
         }
     }
 
-    @POST
-    @Path("addTag")
-    public Object addTag() {
-        try {
-            CoreSession session = ctx.getCoreSession();
-            // tag label
-            String tagLabel = ctx.getRequest().getParameter("tagLabel");
-            // create tag document type
-            TagService tagService = Framework.getService(TagService.class);
-
-            if (tagService != null) {
-                // Insert multiple tags if separated by commas
-                String[] tagLabelArray = tagLabel.split(",");
-
-                for (int i = 0; i < tagLabelArray.length; i ++) {
-                    String currentTagLabel = tagLabelArray[i].trim();
-                    if (currentTagLabel.length() > 0) {
-                        DocumentModel tagDocument = tagService.getOrCreateTag(
-                                tagService.getRootTag(session), currentTagLabel, false);
-                        tagService.tagDocument(doc, tagDocument.getId(), false);
-                    }
-                }
-            }
-
-            String path = SiteUtils.getPagePath(
-                    SiteUtils.getFirstWebSiteParent(session, doc), doc);
-            return redirect(path);
-        } catch (Exception e) {
-            throw WebException.wrap(e);
-        }
-    }
+    
 
     /**
      * Computes the arguments for a page. It is needed because in page some of
