@@ -128,7 +128,7 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
 
     /**
      * Creates the following structure of documents:
-     * 
+     *
      * <pre>
      *  root (UUID_1)
      *  |- testfolder1 (UUID_2)
@@ -1113,6 +1113,14 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         query = "SELECT * FROM File WHERE ecm:fulltext = 'restaurant'";
         dml = session.query(query);
         assertIdSet(dml, file1.getId());
+        // check text extraction with '\0' in it
+        String content = "Text with a \0 in it";
+        ByteArrayBlob blob1 = new ByteArrayBlob(content.getBytes("UTF-8"),
+                "text/plain");
+        file1.setPropertyValue("content", blob1);
+        session.saveDocument(file1);
+        session.save();
+        sleepForFulltext();
     }
 
     public void testFullTextCopy() throws Exception {

@@ -148,7 +148,12 @@ public class BinaryTextListener implements PostCommitEventListener {
                 if (blob == null) {
                     continue;
                 }
-                strings.add(new String(blob.getByteArray(), "UTF-8"));
+                String string = new String(blob.getByteArray(), "UTF-8");
+                // strip '\0 chars from text
+                if (string.indexOf('\0') >= 0) {
+                    string = string.replace("\0", " ");
+                }
+                strings.add(string);
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
                 continue;
