@@ -73,7 +73,6 @@ import org.nuxeo.runtime.api.Framework;
  */
 @Name("pictureManager")
 @Scope(CONVERSATION)
-@Transactional
 public class PictureManagerBean extends InputController implements
         PictureManager, Serializable {
 
@@ -362,7 +361,7 @@ public class PictureManagerBean extends InputController implements
     public void setCropCoords(String cropCoords) {
         this.cropCoords = cropCoords;
     }
-    
+
     public Boolean isImageMagickAvailable() throws Exception{
         if (imageMagickAvailable == null) {
             CommandLineExecutorService cles = Framework.getService(CommandLineExecutorService.class);
