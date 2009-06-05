@@ -33,6 +33,7 @@ import org.nuxeo.ecm.platform.ec.placeful.service.ContainerManagedHibernateConfi
 import org.nuxeo.ecm.platform.ec.placeful.service.PersistenceProvider;
 import org.nuxeo.ecm.platform.ec.placeful.service.PersistenceProvider.RunCallback;
 import org.nuxeo.ecm.platform.ec.placeful.service.PersistenceProvider.RunVoid;
+import org.nuxeo.runtime.api.DataSourceHelper;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.Extension;
@@ -48,9 +49,11 @@ public class PlacefulServiceImpl extends DefaultComponent implements
 
     private static final Log log = LogFactory.getLog(PlacefulServiceImpl.class);
 
+    protected static final String PLACEFUL_DS_NAME = "placeful_service_ds";
+
     public static final PersistenceProvider persistenceProvider = new PersistenceProvider(
             new ContainerManagedHibernateConfiguration(
-                    "jdbc/placeful_service_ds"));
+                    DataSourceHelper.getDataSourceJNDIName(PLACEFUL_DS_NAME)));
 
     @Override
     public void activate(ComponentContext context) {
@@ -224,13 +227,4 @@ public class PlacefulServiceImpl extends DefaultComponent implements
             }
         });
     }
-
-    // protected void doRegisterHibernateOptions(HibernateOptionsDescriptor
-    // desc) {
-    // if (log.isDebugEnabled())
-    // log.debug("Registered hibernate datasource : "
-    // + desc.getDatasource());
-    // hibernateConfiguration.setDescriptor(desc);
-    // }
-
 }
