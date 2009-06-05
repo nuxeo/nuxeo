@@ -20,7 +20,7 @@
 
     <div class="tabsContent">
 
-      <h:form rendered="#{groupManagerActions.allowCreateGroup}">
+      <h:form rendered="#{groupManagerActions.allowCreateGroup and documentActions.notReadOnly}">
         <div class="action_bar">
           <ul>
             <li class="selected">
