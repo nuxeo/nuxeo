@@ -8,9 +8,9 @@
   <h:form enctype="multipart/form-data" id="document_create">
     <nxl:documentLayout mode="create" value="#{importActions.newImportSet}" />
     <p class="buttonsGadget">
-      <a4j:commandButton type="submit" class="button" value="#{messages['command.create']}"
-        action="#{importActions.createImportSet}" reRender="documentsList"/>
-      <a4j:commandButton class="button" value="#{messages['command.cancel']}"
+      <h:commandButton type="submit" class="button" value="#{messages['command.create']}"
+        action="#{importActions.createImportSet}"/>
+      <h:commandButton class="button" value="#{messages['command.cancel']}"
         action="#{importActions.cancel}" immediate="true" />
     </p>
   </h:form>

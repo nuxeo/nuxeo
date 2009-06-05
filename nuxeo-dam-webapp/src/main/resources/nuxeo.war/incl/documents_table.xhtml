@@ -10,8 +10,6 @@
 
 
 <a4j:region rendered="#{documents != null}">
-
-  <h:panelGroup id="documentsList">
   <h:form id="#{documents.name}">
     <h:outputText value="#{messages['label.content.empty.search']}"
                   rendered="#{documents.rowCount == 0}" />
@@ -51,7 +49,7 @@
       </nxu:column>
       -->
 
-      <!--  Title -->
+        <!--  Title -->
       <nxu:column>
         <f:facet name="header">
           <h:panelGroup>
@@ -72,7 +70,8 @@
           </h:panelGroup>
         </f:facet>
         <div class="popupTarget" docRef="#{row.data.ref}">
-            <!-- Title -->
+          <!-- Title -->
+
             <span id="title_#{row.data.ref}">
               <nxh:outputText value="#{nxd:titleOrId(row.data)}"
                 title="#{row.data.dc.description}"
@@ -143,7 +142,6 @@
     </a4j:outputPanel>
 
   </h:form>
-  </h:panelGroup>
 </a4j:region>
 
 </div>
