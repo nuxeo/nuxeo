@@ -9,8 +9,7 @@
   </service>
 
   <require>org.nuxeo.runtime.management.ResourcePublisher</require>
-  <require>org.nuxeo.ecm.platform.scheduler.core.service.SchedulerRegistry</require>
-  <require>org.nuxeo.ecm.core.listener.CoreEventListenerService</require>
+  <require>org.nuxeo.ecm.platform.scheduler.core.service.SchedulerRegistryService</require>
 
   <extension-point name="probes">
     <object class="org.nuxeo.ecm.platform.management.probes.ProbeDescriptor" />
