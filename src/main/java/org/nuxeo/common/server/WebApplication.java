@@ -41,6 +41,8 @@ public class WebApplication {
     @XNode("@path")
     protected String path;
 
+    @XNode("@warPreprocessing")
+    protected boolean warPreprocessing=false;
 
     public String getWebRoot() {
         return root;
@@ -56,6 +58,10 @@ public class WebApplication {
 
     public String getContextPath() {
         return path;
+    }
+
+    public boolean needsWarPreprocessing() {
+        return warPreprocessing;
     }
 
 }
