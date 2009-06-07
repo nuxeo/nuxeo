@@ -42,6 +42,11 @@ public class TemplateView extends AbstractView {
             is = Thread.currentThread().getContextClassLoader().getResourceAsStream(
                     template);
             if (is == null) {
+                String warTemplate="nuxeo.war/" + template;
+                is = Thread.currentThread().getContextClassLoader().getResourceAsStream(
+                        warTemplate);
+            }
+            if (is == null) {
                 log.warn("Template file not found: " + template);
             } else {
                 Reader in = null;

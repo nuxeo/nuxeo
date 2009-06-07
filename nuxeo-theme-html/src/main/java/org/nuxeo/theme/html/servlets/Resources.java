@@ -157,6 +157,12 @@ public final class Resources extends HttpServlet implements Serializable {
             in = Thread.currentThread().getContextClassLoader().getResourceAsStream(
                     resource.getPath());
 
+            if (in==null) {
+                in = Thread.currentThread().getContextClassLoader().getResourceAsStream(
+                        "nuxeo.war/" + resource.getPath());
+
+            }
+
             if (in != null) {
                 byte[] buffer = new byte[1024];
                 int read = in.read(buffer);
