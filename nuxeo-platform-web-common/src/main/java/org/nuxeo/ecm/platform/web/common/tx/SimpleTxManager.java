@@ -37,7 +37,12 @@ public class SimpleTxManager {
      */
     public static boolean startUserTransaction() {
         try {
-            TransactionsHelper.getUserTransaction().begin();
+
+            UserTransaction ut = TransactionsHelper.getUserTransaction();
+            if (ut==null) {
+                return false;
+            }
+            ut.begin();
         } catch (Exception e) {
             log.error("Unable to start transaction", e);
             return false;
@@ -50,7 +55,11 @@ public class SimpleTxManager {
      */
     public static void markTransactionForRollBack() {
         try {
-            TransactionsHelper.getUserTransaction().setRollbackOnly();
+            UserTransaction ut = TransactionsHelper.getUserTransaction();
+            if (ut==null) {
+                return;
+            }
+            ut.setRollbackOnly();
             if (log.isDebugEnabled()) {
                 log.debug("setting transaction to RollBackOnly");
             }
@@ -65,6 +74,10 @@ public class SimpleTxManager {
      */
     public static void commitOrRollBackUserTransaction() {
         try {
+            UserTransaction ut = TransactionsHelper.getUserTransaction();
+            if (ut==null) {
+                return;
+            }
             if (TransactionsHelper.isTransactionActiveOrMarkedRollback()) {
                 if (TransactionsHelper.isTransactionMarkedRollback()) {
                     if (log.isDebugEnabled()) {

@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.platform.ec.placeful;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,11 +26,14 @@ import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.ec.placeful.interfaces.PlacefulService;
 import org.nuxeo.ecm.platform.ec.placeful.service.ContainerManagedHibernateConfiguration;
 import org.nuxeo.ecm.platform.ec.placeful.service.PersistenceProvider;
 import org.nuxeo.ecm.platform.ec.placeful.service.PersistenceProvider.RunCallback;
 import org.nuxeo.ecm.platform.ec.placeful.service.PersistenceProvider.RunVoid;
+import org.nuxeo.runtime.api.DataSourceHelper;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.Extension;
@@ -43,9 +47,13 @@ public class PlacefulServiceImpl extends DefaultComponent implements
 
     private Map<String, String> registry;
 
+    private static final Log log = LogFactory.getLog(PlacefulServiceImpl.class);
+
+    protected static final String PLACEFUL_DS_NAME = "placeful_service_ds";
+
     public static final PersistenceProvider persistenceProvider = new PersistenceProvider(
             new ContainerManagedHibernateConfiguration(
-                    "jdbc/placeful_service_ds"));
+                    DataSourceHelper.getDataSourceJNDIName(PLACEFUL_DS_NAME)));
 
     @Override
     public void activate(ComponentContext context) {
@@ -129,6 +137,11 @@ public class PlacefulServiceImpl extends DefaultComponent implements
     public List<Annotation> getAnnotationListByParamMap(EntityManager em,
             Map<String, Object> paramMap, String name) {
         String className = registry.get(name);
+        if (className==null) {
+            // add fail safe
+            log.warn("No placeful configuration registred for " + name);
+            return new ArrayList<Annotation>();
+        }
         String shortClassName = className
                 .substring(className.lastIndexOf('.') + 1);
         StringBuilder queryString = new StringBuilder("FROM " + shortClassName);
@@ -214,13 +227,4 @@ public class PlacefulServiceImpl extends DefaultComponent implements
             }
         });
     }
-
-    // protected void doRegisterHibernateOptions(HibernateOptionsDescriptor
-    // desc) {
-    // if (log.isDebugEnabled())
-    // log.debug("Registered hibernate datasource : "
-    // + desc.getDatasource());
-    // hibernateConfiguration.setDescriptor(desc);
-    // }
-
 }
