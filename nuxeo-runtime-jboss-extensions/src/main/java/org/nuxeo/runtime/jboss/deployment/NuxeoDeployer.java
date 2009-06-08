@@ -43,10 +43,10 @@ import org.jboss.mx.util.MBeanServerLocator;
 import org.jboss.system.ServiceControllerMBean;
 import org.nuxeo.common.collections.DependencyTree;
 import org.nuxeo.common.logging.JavaUtilLoggingHelper;
-import org.nuxeo.runtime.jboss.deployment.preprocessor.ContainerDescriptor;
-import org.nuxeo.runtime.jboss.deployment.preprocessor.DeploymentPreprocessor;
-import org.nuxeo.runtime.jboss.deployment.preprocessor.FragmentDescriptor;
-import org.nuxeo.runtime.jboss.deployment.preprocessor.FragmentRegistry;
+import org.nuxeo.runtime.deployment.preprocessor.ContainerDescriptor;
+import org.nuxeo.runtime.deployment.preprocessor.DeploymentPreprocessor;
+import org.nuxeo.runtime.deployment.preprocessor.FragmentDescriptor;
+import org.nuxeo.runtime.deployment.preprocessor.FragmentRegistry;
 import org.nuxeo.runtime.jboss.deployment.preprocessor.SeamHotReloadPreprocessor;
 
 /**
