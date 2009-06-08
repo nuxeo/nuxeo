@@ -64,6 +64,10 @@
 # Author: Bogdan Stefanescu <bs@nuxeo.com>
 #
 ################################################
+
+CLASSPATH="/usr/lib/jvm/java-1.5.0-sun/lib/tools.jar"
+export CLASSPATH
+
 if [ -z "$JAVA_HOME" ]; then
     echo 'Missing JAVA_HOME' >&2;
     exit 2
@@ -73,10 +77,11 @@ if [ ! -x $JAVA_HOME/bin/java ]; then
     exit 2
 fi
 
+#JAVA_HOME="/usr/lib/jvm/java-1.5.0-sun-1.5.0.16/bin/"
+
 JAVA_OPTS="-Djava.rmi.server.RMIClassLoaderSpi=org.nuxeo.runtime.launcher.NuxeoRMIClassLoader -Dsun.lang.ClassLoader.allowArraySyntax=true"
 JAVA_OPTS="$JAVA_OPTS -Dderby.system.home=data/derby"
-JAVA_OPTS="$JAVA_OPTS -Xmx512m -XX:MaxPermSize=256m"
-JAVA_OPTS="$JAVA_OPTS -Dorg.nuxeo.launcher.libdirs=lib"
+JAVA_OPTS="$JAVA_OPTS -Xmx768m -XX:MaxPermSize=256m"
 #JAVA_OPTS="$JAVA_OPTS -Dorg.nuxeo.runtime.1.3.3.streaming.port=3233"
 
 CMD_ARGS="$@"

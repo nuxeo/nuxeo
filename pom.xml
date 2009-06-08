@@ -73,6 +73,7 @@
         <module>nuxeo-distribution-base</module>
         <module>nuxeo-distribution-server</module>
         <module>nuxeo-distribution-jetty</module>
+        <module>nuxeo-distribution-jetty-full</module>
       </modules>
     </profile>
     <profile>
