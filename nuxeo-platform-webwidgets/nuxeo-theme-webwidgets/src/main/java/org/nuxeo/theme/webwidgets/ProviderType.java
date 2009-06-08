@@ -28,6 +28,9 @@ public final class ProviderType {
 
     @XNode("class")
     private String className;
+    
+    @XNode("factory")
+    private String factoryClassName;
 
     public String getName() {
         return name;
@@ -39,6 +42,10 @@ public final class ProviderType {
 
     public String getDescription() {
         return description;
+    }
+
+    public String getFactoryClassName() {
+        return factoryClassName;
     }
 
 }

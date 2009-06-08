@@ -31,9 +31,6 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.webengine.WebEngine;
-import org.nuxeo.ecm.webengine.model.WebContext;
-import org.nuxeo.ecm.webengine.session.UserSession;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.theme.elements.Element;
 import org.nuxeo.theme.themes.ThemeManager;
@@ -41,6 +38,10 @@ import org.nuxeo.theme.themes.ThemeManager;
 public class Manager {
 
     private static final Log log = LogFactory.getLog(Manager.class);
+
+    private static Map<String, Provider> providers = new HashMap<String, Provider>();
+
+    private static Map<String, ProviderFactory> providerFactories = new HashMap<String, ProviderFactory>();
 
     public static Service getService() {
         return (Service) Framework.getRuntime().getComponent(Service.ID);
@@ -55,24 +56,62 @@ public class Manager {
         if (providerType == null) {
             throw new WidgetException("Provider unknown: " + name);
         }
+        
         String className = providerType.getClassName();
+        String factoryClassName = providerType.getFactoryClassName();
+        if (className == null && factoryClassName == null) {
+            throw new WidgetException(
+                    "Must specify a provider class or a provider factory class for provider: "
+                            + name);
+        }
 
-        WebContext ctx = WebEngine.getActiveContext();
-        UserSession session = ctx.getUserSession();
-        String session_key = String.format(
-                "org.nuxeo.theme.webwidgets.provider_%s", name);
-        Provider provider = (Provider) session.get(session_key);
-        if (provider != null) {
+        // If the class is specified, instantiate the provider directly.
+        if (className != null) {
+            Provider provider = providers.get(name);
+            if (provider == null) {
+                try {
+                    provider = (Provider) Class.forName(className).newInstance();
+                } catch (InstantiationException e) {
+                    throw new WidgetException("Provider class: " + className
+                            + " for provider: " + name
+                            + " could not be instantiated.");
+                } catch (IllegalAccessException e) {
+                    throw new WidgetException("Provider class: " + className
+                            + " for provider: " + name
+                            + " could not be instantiated.");
+                } catch (ClassNotFoundException e) {
+                    throw new WidgetException("Provider class : " + className
+                            + " for provider: " + name + " not found.");
+                }
+                providers.put(name, provider);
+            }
             return provider;
         }
-        try {
-            provider = (Provider) Class.forName(className).newInstance();
-            log.debug(String.format("Stored provider: %s in user session", name));
-            session.put(session_key, provider);
-            return provider;
-        } catch (Exception e) {
-            throw new WidgetException("Provider cannot be created: " + name, e);
+
+        // Otherwise use the provider factory.
+        else {
+            ProviderFactory factory = providerFactories.get(name);
+            if (factory == null) {
+                try {
+                    factory = (ProviderFactory) Class.forName(factoryClassName).newInstance();
+                } catch (InstantiationException e) {
+                    throw new WidgetException("Provider factory class: "
+                            + factoryClassName + " for provider: " + name
+                            + " could not be instantiated.");
+                } catch (IllegalAccessException e) {
+                    throw new WidgetException("Provider factory name : "
+                            + factoryClassName + " for provider: " + name
+                            + " could not be instantiated.");
+                } catch (ClassNotFoundException e) {
+                    throw new WidgetException("Provider factory class : "
+                            + factoryClassName + " for provider: " + name
+                            + " not found.");
+                }
+                providerFactories.put(name, factory);
+            }
+            return factory.getProvider();
         }
+
     }
 
     public static AreaFragment getAreaById(int area) throws WidgetException {
