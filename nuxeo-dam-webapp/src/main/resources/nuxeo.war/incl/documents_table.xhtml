@@ -10,6 +10,7 @@
 
 
 <a4j:region rendered="#{documents != null}">
+  <a4j:outputPanel id="documentsList">
   <h:form id="#{documents.name}">
     <h:outputText value="#{messages['label.content.empty.search']}"
                   rendered="#{documents.rowCount == 0}" />
@@ -38,18 +39,16 @@
       </nxu:column>
 
       <!-- Icon + Type -->
-      <!--
       <nxu:column styleClass="iconColumn">
          <div id="docRefTarget:#{row.data.ref}">
           <div id="docRef:#{row.data.ref}" class="cell popupTarget" docRef="#{row.data.ref}">
             <nxu:graphicImage
-              value="#{nxd:iconPath(row.data)}" alt="#{row.data.type}"  />
+              value="#{nxd:iconPath(row.data)}" alt="#{row.data.type}" />
           </div>
           </div>
       </nxu:column>
-      -->
 
-        <!--  Title -->
+      <!--  Title -->
       <nxu:column>
         <f:facet name="header">
           <h:panelGroup>
@@ -70,8 +69,7 @@
           </h:panelGroup>
         </f:facet>
         <div class="popupTarget" docRef="#{row.data.ref}">
-          <!-- Title -->
-
+            <!-- Title -->
             <span id="title_#{row.data.ref}">
               <nxh:outputText value="#{nxd:titleOrId(row.data)}"
                 title="#{row.data.dc.description}"
@@ -133,7 +131,17 @@
         </h:outputText>
       </h:column>
 
-
+      <!--  Sie -->
+      <!--
+      <h:column>
+        <f:facet name="header">
+          <h:panelGroup>
+            <h:outputText value="#{messages['label.content.header.size']}" />
+          </h:panelGroup>
+        </f:facet>
+        <h:outputText value="#{filterResults.getSize(row.data)}" />
+      </h:column>
+      -->
 
     </nxu:dataTable>
 
@@ -142,6 +150,7 @@
     </a4j:outputPanel>
 
   </h:form>
+  </a4j:outputPanel>
 </a4j:region>
 
 </div>
