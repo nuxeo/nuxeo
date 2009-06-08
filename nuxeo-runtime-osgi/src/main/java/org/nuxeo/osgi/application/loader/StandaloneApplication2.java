@@ -203,11 +203,11 @@ public class StandaloneApplication2 extends OSGiAdapter {
             try {
                 cpath.restore(cache);
             } catch (BundleException e) { // rebuild cache
-                cpath.scan(classPath, scanForNestedJARs);
+                cpath.scan(classPath, scanForNestedJARs, null);
                 cpath.store(cache);
             }
         } else {
-            cpath.scan(classPath, scanForNestedJARs);
+            cpath.scan(classPath, scanForNestedJARs, null);
             cpath.store(cache);
         }
         installAll(cpath.getBundles());

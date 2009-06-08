@@ -37,14 +37,20 @@ public class ClassPathScanner {
 
     protected boolean scanForNestedJARs = true;
     protected final Callback callback;
+    
+    /**
+     * If set points to a set of path prefixes to be excluded form bundle processing  
+     */
+    protected String[] blackList;
 
     public ClassPathScanner(Callback callback) {
         this.callback = callback;
     }
 
-    public ClassPathScanner(Callback callback, boolean scanForNestedJars) {
+    public ClassPathScanner(Callback callback, boolean scanForNestedJars, String[] blackList) {
         this.callback = callback;
         scanForNestedJARs = scanForNestedJars;
+        this.blackList = blackList;
     }
 
     public void setScanForNestedJARs(boolean scanForNestedJars) {
@@ -67,10 +73,17 @@ public class ClassPathScanner {
     }
 
     public void scan(File file) {
-        String name = file.getName();
-        if (!(name.endsWith(".jar") || name.endsWith(".rar") || name.endsWith(".sar")
-                || name.endsWith("_jar") || name.endsWith("_rar") || name.endsWith("_sar"))) {
+        String path = file.getAbsolutePath();
+        if (!(path.endsWith(".jar") || path.endsWith(".rar") || path.endsWith(".sar")
+                || path.endsWith("_jar") || path.endsWith("_rar") || path.endsWith("_sar"))) {
             return;
+        }
+        if (blackList != null) {
+            for (int i=0; i<blackList.length; i++) {
+                if (path.startsWith(blackList[i])) {
+                    return;
+                }
+            }
         }
         try {
             BundleFile bf;

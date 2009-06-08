@@ -56,6 +56,10 @@ public class StandaloneApplication extends OSGiAdapter {
     protected File home;
     protected List<File> classPath;
     protected boolean scanForNestedJARs = true; // by default true
+    
+    // a list of class path prefixes that contains JARS that should not be treated as bundles.
+    protected String[] libdirs; 
+    
 
     public static StandaloneApplication getInstance() {
         return instance;
@@ -72,7 +76,22 @@ public class StandaloneApplication extends OSGiAdapter {
         String val = options.getOption("scanForNestedJARs");
         if (val != null) {
             StandaloneApplication.instance.scanForNestedJARs = Boolean.parseBoolean(val);
+        }       
+        // hack to avoid deploying all jars in classpath as bundles
+        String javaLibsProp = System.getProperty("org.nuxeo.launcher.libdirs");
+        if (javaLibsProp != null) {
+            String[] ar = StringUtils.split(javaLibsProp, ',', false);
+            if (ar.length > 0) {
+                instance.libdirs = ar;
+                File wd = instance.getWorkingDir();
+                for (int i=0; i<ar.length; i++) {
+                    if (!ar[i].startsWith("/")) {
+                        instance.libdirs[i] = new File(wd, ar[i]).getCanonicalFile().getAbsolutePath();
+                    }
+                }
+            }
         }
+        // end hack
         return instance;
     }
 
@@ -184,11 +203,11 @@ public class StandaloneApplication extends OSGiAdapter {
             try {
                 cpath.restore(cache);
             } catch (BundleException e) { // rebuild cache
-                cpath.scan(classPath, scanForNestedJARs);
+                cpath.scan(classPath, scanForNestedJARs, libdirs);
                 cpath.store(cache);
             }
         } else {
-            cpath.scan(classPath, scanForNestedJARs);
+            cpath.scan(classPath, scanForNestedJARs, libdirs);
             cpath.store(cache);
         }
         installAll(cpath.getBundles());
@@ -285,7 +304,7 @@ public class StandaloneApplication extends OSGiAdapter {
         long startTime = System.currentTimeMillis();
         // parse command line args
         StandaloneApplication.args = args;
-        options = new CommandLineOptions(args);
+        options = new CommandLineOptions(args);        
         // start framework
         StandaloneApplication app = null;
         try {

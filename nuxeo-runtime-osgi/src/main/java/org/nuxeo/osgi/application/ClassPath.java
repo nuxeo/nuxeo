@@ -66,8 +66,8 @@ public class ClassPath implements ClassPathScanner.Callback {
         return nestedJars;
     }
 
-    public void scan(List<File> files, boolean scanForNestedJARs) {
-        new ClassPathScanner(this, scanForNestedJARs).scan(files);
+    public void scan(List<File> files, boolean scanForNestedJARs, String[] blacklist) {
+        new ClassPathScanner(this, scanForNestedJARs, blacklist).scan(files);
     }
 
     public File handleBundle(BundleFile bf) throws IOException {
