@@ -36,6 +36,7 @@ import org.mortbay.xml.XmlConfiguration;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.server.WebApplication;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.deployment.preprocessor.DeploymentPreprocessor;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
@@ -138,8 +139,16 @@ public class JettyComponent extends DefaultComponent {
         if (XP_WEB_APP.equals(extensionPoint)) {
             File home = Environment.getDefault().getHome();
             WebApplication app = (WebApplication)contribution;
+
+            if (app.needsWarPreprocessing()) {
+                logger.info("Starting deployment preprocessing");
+                DeploymentPreprocessor dp = new DeploymentPreprocessor(home);
+                dp.init();
+                dp.predeploy();
+                logger.info("Deployment preprocessing terminated");
+            }
+
             WebAppContext ctx = new WebAppContext();
-            //WebAppContext ctx = new NuxeoWebAppContext();
             ctx.setContextPath(app.getContextPath());
             String root = app.getWebRoot();
             if (root != null) {
