@@ -33,7 +33,7 @@
     </page>
   </layout>
 
-  
+
   <formats>
     <!-- LAYOUT -->
     <layout element="page[1]">
@@ -57,6 +57,7 @@
     <layout element="page[1]/section[2]/cell[1]">
       <width>33%</width>
     </layout>
+
     <layout element="page[1]/section[2]/cell[2]">
       <width>33%</width>
     </layout>
@@ -69,7 +70,7 @@
       <icon>/nuxeo/icons/favicon.png</icon>
       <charset>utf-8</charset>
     </widget>
-    
+
     <!-- WIDGET AFFECTATON -->
     <widget element="page[1]">
       <view>page frame</view>
@@ -99,6 +100,15 @@
     <widget element="page[1]/section[2]/cell[3]/fragment[1]">
       <view>dam selection view</view>
     </widget>
+
+    <style element="page[1]/section[1]/cell[2]/fragment[1]">
+      <selector path="#language" view="dam banner">
+        <margin>10pt</margin>
+      </selector>
+      <selector path="#importsetCreationButton" view="dam banner">
+        <margin>10pt</margin>
+      </selector>
+    </style>
 
   </formats>
 </theme>

@@ -21,11 +21,11 @@
       </f:facet>
       <ui:include src="/incl/new_import_set.xhtml" />
     </rich:modalPanel>
-    <h:outputLink value="javascript:Richfaces.showModalPanel('panel');" id="link">
+    <h:outputLink value="javascript:Richfaces.showModalPanel('panel');" id="importsetCreationButton">
         <h:outputText value="${messages['label.action.createImportSet']}"/>
     </h:outputLink>
 
-  <h:form>
+  <h:form id="language">
    <h:outputText value="#{messages['label.selectLocale']}" />
     <h:selectOneMenu value="#{localeSelector.localeString}" styleClass="langSelect">
       <f:selectItems value="#{localeSelector.supportedLocales}"/>

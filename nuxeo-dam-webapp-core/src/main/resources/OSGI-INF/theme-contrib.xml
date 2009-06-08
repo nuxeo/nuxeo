@@ -11,6 +11,9 @@
     <theme>
       <src>themes/theme-dam.xml</src>
     </theme>
+    <theme>
+      <src>file:///opt/workspace/StarShip/nuxeo-ep/Application/nuxeo-dam/nuxeo-dam-webapp-core/src/main/resources/themes/theme-dam.xml</src>
+    </theme>
 
   </extension>
 
@@ -27,6 +30,7 @@
     <view name="dam banner" template-engine="jsf-facelets">
       <format-type>widget</format-type>
       <template>incl/banner.xhtml</template>
+      <resource>importset-creation.css</resource>
     </view>
 
     <view name="dam search filters" template-engine="jsf-facelets">
@@ -81,6 +85,9 @@
     <resource name="calendar.css">
       <path>css/calendar.css</path>
     </resource>
+    <resource name="importset-creation.css">
+      <path>css/importset_creation.css</path>
+    </resource>
 
   </extension>
 
@@ -127,20 +134,27 @@
     </negotiation>
 
     <negotiation object="mode" strategy="dam">
-      <scheme>org.nuxeo.theme.jsf.negotiation.mode.UnspecifiedMode
-      </scheme>
+      <scheme>org.nuxeo.theme.jsf.negotiation.mode.CookieValue</scheme>
+      <scheme>org.nuxeo.theme.jsf.negotiation.mode.UnspecifiedMode</scheme>
     </negotiation>
 
     <negotiation object="theme" strategy="dam">
+      <scheme>org.nuxeo.theme.jsf.negotiation.theme.RequestParameter</scheme>
+      <scheme>org.nuxeo.theme.jsf.negotiation.theme.CookieValue</scheme>
+      <scheme>org.nuxeo.ecm.webapp.theme.negotiation.LocalTheme</scheme>
       <scheme>org.nuxeo.theme.jsf.negotiation.theme.DefaultTheme</scheme>
     </negotiation>
 
     <negotiation object="perspective" strategy="dam">
       <scheme>
+        org.nuxeo.theme.jsf.negotiation.perspective.RequestParameter
+      </scheme>
+      <scheme>org.nuxeo.theme.jsf.negotiation.perspective.CookieValue</scheme>
+      <scheme>org.nuxeo.ecm.webapp.theme.negotiation.LocalPerspective</scheme>
+      <scheme>
         org.nuxeo.theme.jsf.negotiation.perspective.DefaultPerspective
       </scheme>
     </negotiation>
-
   </extension>
 
 

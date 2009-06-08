@@ -1,0 +1,20 @@
+// Can 't be in theme because javascript creation
+
+.dataInput {
+  height: 100%;
+  width: 100%;
+}
+
+.labelColumn {
+  width: 25%;
+  margin: 10pt;
+}
+
+.fieldColumn {
+  width: 75%;
+  margin: 10pt;
+}
+
+.button {
+  margin: 10pt;
+}
