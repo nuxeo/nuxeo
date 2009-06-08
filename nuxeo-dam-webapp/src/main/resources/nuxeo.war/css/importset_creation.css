@@ -6,12 +6,14 @@
 }
 
 .labelColumn {
-  width: 25%;
+  width: 150px;
   margin: 10pt;
+  vertical-align: top;
+  font-weight: bold;
 }
 
 .fieldColumn {
-  width: 75%;
+  vertical-align: top;
   margin: 10pt;
 }
 
