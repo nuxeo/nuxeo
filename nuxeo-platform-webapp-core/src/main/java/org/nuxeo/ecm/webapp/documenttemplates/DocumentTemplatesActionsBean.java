@@ -23,6 +23,9 @@ import static org.jboss.seam.ScopeType.CONVERSATION;
 import static org.jboss.seam.ScopeType.EVENT;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.faces.application.FacesMessage;
 
@@ -62,6 +65,7 @@ public class DocumentTemplatesActionsBean extends InputController implements
     public static final String TemplateRoot = "TemplateRoot";
 
     private static final Log log = LogFactory.getLog(DocumentTemplatesActionsBean.class);
+
     private static final long serialVersionUID = -4031259222075515590L;
 
     @In(create = true, required = false)
@@ -82,12 +86,9 @@ public class DocumentTemplatesActionsBean extends InputController implements
     // cached list of templates
     private DocumentModelList templates;
 
-    private String targetTypeUsedFromTemplates;
-
     private String selectedTemplateId;
 
     private String targetType = "Workspace";
-
 
     @Destroy
     public void destroy() {
@@ -96,15 +97,10 @@ public class DocumentTemplatesActionsBean extends InputController implements
 
     @Factory(value = "availableTemplates", scope = EVENT)
     public DocumentModelList templatesListFactory() {
-        if (templates == null
-                || templates.isEmpty()
-                || targetTypeUsedFromTemplates != null && !targetTypeUsedFromTemplates.equals(targetType)) {
-            try {
-                templates = getTemplates();
-            } catch (ClientException e) {
-                // TODO: more robust exception handling?
-                log.error(e);
-            }
+        try {
+            templates = getTemplates();
+        } catch (ClientException e) {
+            log.error(e);
         }
         return templates;
     }
@@ -115,17 +111,23 @@ public class DocumentTemplatesActionsBean extends InputController implements
             log.error("Unable to access documentManager");
             return null;
         }
-        if (templates == null || templates.isEmpty()) {
-            DocumentModelList tl = documentManager.getChildren(
-                    navigationContext.getCurrentDomain().getRef(), TemplateRoot);
-            if (tl.isEmpty()) {
-                templates = tl;
-            } else {
-                templates = documentManager.getChildren(tl.get(0).getRef(),
-                        targetTypeName);
+        DocumentModelList tl = documentManager.getChildren(
+                navigationContext.getCurrentDomain().getRef(), TemplateRoot);
+
+        if (tl.isEmpty()) {
+            templates = tl;
+        } else {
+            templates = documentManager.getChildren(tl.get(0).getRef(),
+                    targetTypeName);
+            List<DocumentModel> deleted = new ArrayList<DocumentModel>();
+            for (Iterator<DocumentModel> it = templates.iterator(); it.hasNext();) {
+                DocumentModel current = it.next();
+                if (current.getCurrentLifeCycleState().equals("deleted")) {
+                    deleted.add(current);
+                }
             }
+            templates.removeAll(deleted);
         }
-        targetTypeUsedFromTemplates = targetType;
         return templates;
     }
 
@@ -142,7 +144,8 @@ public class DocumentTemplatesActionsBean extends InputController implements
         return createDocumentFromTemplate(doc);
     }
 
-    public String createDocumentFromTemplate(DocumentModel doc) throws ClientException {
+    public String createDocumentFromTemplate(DocumentModel doc)
+            throws ClientException {
 
         if (documentManager == null) {
             log.error("Unable to access documentManager");
@@ -162,15 +165,16 @@ public class DocumentTemplatesActionsBean extends InputController implements
         }
 
         // Remove this once it is available from the context
-        DocumentRef currentDocRef = navigationContext.getCurrentDocument()
-                .getRef();
+        DocumentRef currentDocRef = navigationContext.getCurrentDocument().getRef();
 
         try {
             String title = (String) doc.getProperty("dublincore", "title");
             String name = IdUtils.generateId(title);
-            documentManager.copy(new IdRef(selectedTemplateId), currentDocRef, name);
+            documentManager.copy(new IdRef(selectedTemplateId), currentDocRef,
+                    name);
 
-            DocumentModel created = documentManager.getChild(currentDocRef, name);
+            DocumentModel created = documentManager.getChild(currentDocRef,
+                    name);
 
             // Update from user input.
             // This part is for now harcoded for Workspace type.
@@ -223,7 +227,7 @@ public class DocumentTemplatesActionsBean extends InputController implements
         this.targetType = targetType;
     }
 
-    @Observer(value={EventNames.DOCUMENT_CHILDREN_CHANGED}, create=false, inject=false)
+    @Observer(value = { EventNames.DOCUMENT_CHILDREN_CHANGED }, create = false, inject = false)
     @BypassInterceptors
     public void documentChildrenChanged(DocumentModel targetDoc) {
         // refresh if a child was added to template root
@@ -233,7 +237,7 @@ public class DocumentTemplatesActionsBean extends InputController implements
         }
     }
 
-    @Observer(value={EventNames.DOMAIN_SELECTION_CHANGED}, create=false, inject=false)
+    @Observer(value = { EventNames.DOMAIN_SELECTION_CHANGED }, create = false, inject = false)
     @BypassInterceptors
     public void domainChanged(DocumentModel targetDoc) {
         if (templates != null) {
