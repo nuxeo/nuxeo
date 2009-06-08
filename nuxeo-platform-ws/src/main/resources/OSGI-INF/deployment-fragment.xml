@@ -31,5 +31,11 @@
     </servlet-mapping>
   </extension>
 
+  <extension target="jaxws#ENDPOINT">
+    <endpoint name="nuxeoremoting"
+      implementation="org.nuxeo.ecm.platform.ws.NuxeoRemotingBean"
+      url-pattern="/webservices/nuxeoremoting" />
+  </extension>
+
 </fragment>
 
