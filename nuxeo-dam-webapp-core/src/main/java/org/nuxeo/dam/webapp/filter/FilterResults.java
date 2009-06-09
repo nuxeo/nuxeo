@@ -12,7 +12,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.ecm.webapp.pagination.ResultsProvidersCache;
-import org.nuxeo.dam.api.adapter.DamDocumentAdapter;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
@@ -80,26 +79,6 @@ public class FilterResults implements SelectDataModelListener, Serializable {
             documentsListsManager.removeFromWorkingList(
                     DocumentsListsManager.CURRENT_DOCUMENT_SELECTION, data);
         }
-    }
-
-    public String getSize(DocumentModel docModel) {
-        DamDocumentAdapter damDocumentAdapter = docModel.getAdapter(DamDocumentAdapter.class);
-        if (damDocumentAdapter == null) {
-            return "N/A";
-        }
-        return String.valueOf(damDocumentAdapter.getSize());
-    }
-
-    public void next() throws ClientException  {
-        getProvider(FILTERED_DOCUMENT_PROVIDER_NAME).next();
-    }
-
-    public void previous() throws ClientException {
-        getProvider(FILTERED_DOCUMENT_PROVIDER_NAME).previous();
-    }
-
-    public String getCurrentPage() throws ClientException {
-        return "" + getProvider(FILTERED_DOCUMENT_PROVIDER_NAME).getCurrentPageIndex();
     }
 
 }
