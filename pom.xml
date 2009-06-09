@@ -158,12 +158,6 @@
       <plugin>
         <groupId>org.apache.myfaces.tobago</groupId>
         <artifactId>maven-apt-plugin</artifactId>
-<!--        <version>1.0.12</version>-->
-<!--        <configuration>-->
-<!--          <generated>/target/generated/</generated>-->
-<!--          <nocompile>true</nocompile>-->
-<!--          <target>1.5</target>-->
-<!--        </configuration>-->
         <executions>
           <execution>
             <id>generate-bindings</id>
