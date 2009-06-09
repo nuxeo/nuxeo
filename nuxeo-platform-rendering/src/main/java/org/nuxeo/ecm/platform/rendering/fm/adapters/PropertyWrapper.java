@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.rendering.fm.adapters;
 
 import java.util.Calendar;
+import java.util.Date;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.model.Property;
@@ -50,7 +51,11 @@ public class PropertyWrapper {
             if (property.isScalar()) {
                 Object value = property.getValue();
                 if (value == null) {
-                    return TemplateModel.NOTHING;
+                		if (property.getType() == DateType.INSTANCE) {
+                			value = Calendar.getInstance();
+                		} else {
+                			return TemplateModel.NOTHING;
+                		}
                 }
                 if (property.getType() == DateType.INSTANCE) {
                     return new SimpleDate(((Calendar) value).getTime(),
