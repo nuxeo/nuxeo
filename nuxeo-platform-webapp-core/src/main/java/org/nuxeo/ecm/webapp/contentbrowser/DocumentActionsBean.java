@@ -666,7 +666,7 @@ public class DocumentActionsBean extends InputController implements
     }
 
     public boolean isNotReadOnly() {
-        return (!"true".equals(Framework.getProperty("readonly.mode", "false")));
+        return (!"true".equals(Framework.getProperty("org.nuxeo.ecm.webapp.readonly.mode", "false")));
     }
 
 }
