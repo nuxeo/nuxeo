@@ -18,6 +18,10 @@
       <groupId>org.nuxeo.common</groupId>
       <artifactId>nuxeo-common</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-deploy</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>jboss</groupId>
