@@ -31,19 +31,15 @@
   </properties>
 
   <dependencies>
+    <!-- needed by APT for annotation processing --> 
+    <dependency>
+      <groupId>org.nuxeo.build</groupId>
+      <artifactId>nuxeo-apt-extensions</artifactId>
+    </dependency>
     <!--this is required to index annotations at build time -->
     <dependency>
       <groupId>org.nuxeo.build</groupId>
       <artifactId>nuxeo-webengine-apt</artifactId>
-      <version>1.2</version>
-      <scope>compile</scope>
-      <!-- workaround for Mac OS X -->
-      <exclusions>
-        <exclusion>
-          <groupId>sun.jdk</groupId>
-          <artifactId>tools</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
   </dependencies>
 
@@ -158,6 +154,26 @@
           <downloadJavadocs>true</downloadJavadocs>
         </configuration>
       </plugin>
+      <!-- APT plugin for annotation preprocessing --> 
+      <plugin>
+        <groupId>org.apache.myfaces.tobago</groupId>
+        <artifactId>maven-apt-plugin</artifactId>
+<!--        <version>1.0.12</version>-->
+<!--        <configuration>-->
+<!--          <generated>/target/generated/</generated>-->
+<!--          <nocompile>true</nocompile>-->
+<!--          <target>1.5</target>-->
+<!--        </configuration>-->
+        <executions>
+          <execution>
+            <id>generate-bindings</id>
+            <goals>
+              <goal>execute</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- end APT plugin -->
     </plugins>
   </build>
 
