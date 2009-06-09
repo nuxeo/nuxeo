@@ -31,7 +31,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
-@WebObject(type = "Admin", guard = "user=Administrator")
+@WebObject(type = "Admin", guard = "group=administrators")
 @Produces("text/html; charset=UTF-8")
 public class Main extends ModuleRoot {
 
