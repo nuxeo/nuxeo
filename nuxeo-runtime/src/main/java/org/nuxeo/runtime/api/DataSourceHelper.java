@@ -22,6 +22,7 @@ public class DataSourceHelper {
 
     private static final String JBOSS_PREFIX = "java:";
     private static final String JETTY_PREFIX = "jdbc";
+    private static final String GLASSFISH_PREFIX = "jdbc";
 
     private static final String DEFAULT_PREFIX = JBOSS_PREFIX;
 
@@ -57,6 +58,15 @@ public class DataSourceHelper {
         }
         catch (Exception e) {
             log.debug("Autodetect : not a jetty host");
+        }
+        
+        try {
+        		Class.forName("com.sun.enterprise.glassfish.bootstrap.AbstractMain");
+        		log.info("Detected GlassFish host");
+        		prefix = GLASSFISH_PREFIX;
+        		return;
+        } catch (Exception e) {
+        		log.debug("Autodetect : not a glassfish host");
         }
     }
 
