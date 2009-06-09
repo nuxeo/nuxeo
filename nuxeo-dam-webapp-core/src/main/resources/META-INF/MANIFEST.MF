@@ -16,5 +16,6 @@ Nuxeo-Component: OSGI-INF/theme-contrib.xml,
 Require-Bundle: org.nuxeo.ecm.platform.ui,
  org.nuxeo.ecm.webapp.base,
  org.nuxeo.ecm.core,
- org.nuxeo.ecm.platform.types.api
+ org.nuxeo.ecm.platform.types.api,
+ org.nuxeo.dam.core
 Nuxeo-RequiredBy: org.nuxeo.ecm.platform.placeful.theme

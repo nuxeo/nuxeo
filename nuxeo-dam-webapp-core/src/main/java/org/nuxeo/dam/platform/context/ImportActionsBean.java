@@ -1,5 +1,6 @@
 package org.nuxeo.dam.platform.context;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,7 +26,7 @@ import org.nuxeo.runtime.api.Framework;
 
 @Name("importActions")
 @Scope(ScopeType.CONVERSATION)
-public class ImportActionsBean {
+public class ImportActionsBean implements Serializable {
 
     protected static final Log log = LogFactory.getLog(ImportActionsBean.class);
 
