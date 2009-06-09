@@ -8,35 +8,42 @@
   xmlns:nxh="http://nuxeo.org/nxweb/html"
   xmlns:s="http://jboss.com/products/seam/taglib">
 
-  <h:panelGroup
-    layout="block" styleClass="pageNavigationControls"
-    rendered="#{provider.nextPageAvailable or provider.previousPageAvailable}">
+  <a4j:form>
+    <h:panelGroup
+      layout="block" styleClass="pageNavigationControls"
+      rendered="#{provider.nextPageAvailable or provider.previousPageAvailable}">
 
-    <h:commandButton action="#{provider.rewind}"
-                     alt="#{messages['command.navigation.rewind']}"
-                     image="/icons/action_page_rewind.gif" >
-      <f:attribute name="disabled" value="#{not provider.previousPageAvailable}"/>
-    </h:commandButton>
-    <h:commandButton action="#{provider.previous}"
-                     alt="#{messages['command.navigation.previous']}"
-                     image="/icons/action_page_previous.gif" >
-      <f:attribute name="disabled" value="#{not provider.previousPageAvailable}"/>
-    </h:commandButton>
+      <a4j:commandButton action="#{provider.rewind}"
+                       alt="#{messages['command.navigation.rewind']}"
+                       image="/icons/action_page_rewind.gif"
+                       reRender="documentsList">
+        <f:attribute name="disabled" value="#{not provider.previousPageAvailable}"/>
+      </a4j:commandButton>
+      <a4j:commandButton action="#{provider.previous}"
+                       alt="#{messages['command.navigation.previous']}"
+                       image="/icons/action_page_previous.gif"
+                       reRender="documentsList">
+        <f:attribute name="disabled" value="#{not provider.previousPageAvailable}"/>
+      </a4j:commandButton>
 
-    <h:panelGroup styleClass="currentPageStatus">
-      <h:outputText value="#{provider.currentPageStatus}"/>
+      <h:panelGroup styleClass="currentPageStatus">
+        <h:outputText value="#{provider.currentPageStatus}"/>
+      </h:panelGroup>
+
+      <a4j:commandButton action="#{provider.next}"
+                       alt="#{messages['command.navigation.next']}"
+                       image="/icons/action_page_next.gif"
+                       reRender="documentsList">
+        <f:attribute name="disabled" value="#{not provider.nextPageAvailable}"/>
+      </a4j:commandButton>
+
+      <a4j:commandButton action="#{provider.last}"
+                       alt="#{messages['command.navigation.fastforward']}"
+                       image="/icons/action_page_fastforward.gif"
+                       reRender="documentsList">
+        <f:attribute name="disabled" value="#{not provider.nextPageAvailable}"/>
+      </a4j:commandButton>
     </h:panelGroup>
+  </a4j:form>
 
-    <h:commandButton action="#{provider.next}"
-                     alt="#{messages['command.navigation.next']}"
-                     image="/icons/action_page_next.gif" >
-      <f:attribute name="disabled" value="#{not provider.nextPageAvailable}"/>
-    </h:commandButton>
-
-    <h:commandButton action="#{provider.last}"
-                     alt="#{messages['command.navigation.fastforward']}"
-                     image="/icons/action_page_fastforward.gif" >
-      <f:attribute name="disabled" value="#{not provider.nextPageAvailable}"/>
-    </h:commandButton>
-  </h:panelGroup>
 </div>

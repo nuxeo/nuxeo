@@ -1,4 +1,15 @@
 <div xmlns:h="http://java.sun.com/jsf/html">
 
+  <script type="text/javascript" src="#{baseURL}seam/resource/remoting/interface.js?documentActions"></script>
 
+  <script type="text/javascript">
+    <h:outputText
+      value="var currentConversationId='#{org.jboss.seam.core.manager.currentConversationId}';"/>
+    <h:outputText
+      value="var currentDocURL='#{currentServerLocation.name}/#{currentDocument.id}';"/>
+      // set the conversation id before doing any call
+      Seam.Remoting.getContext().setConversationId(currentConversationId);
+</script>
+
+  <script type="text/javascript" src="#{baseURL}/js/?scripts=tableSelections.js"></script>
 </div>

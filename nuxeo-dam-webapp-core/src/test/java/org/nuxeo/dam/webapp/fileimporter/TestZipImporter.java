@@ -152,8 +152,6 @@ public class TestZipImporter extends RepositoryOSGITestCase {
         child = coreSession.getChild(importSet.getRef(), "spreadsheet");
         assertNotNull(child);
         assertEquals("File", child.getType());
-
-
     }
 
 }
