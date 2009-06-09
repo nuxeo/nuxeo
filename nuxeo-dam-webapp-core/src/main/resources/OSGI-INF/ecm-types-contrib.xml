@@ -21,6 +21,7 @@
       <layouts mode="any">
         <layout>heading</layout>
         <layout>file</layout>
+        <layout>damc</layout>
         <layout>dublincore</layout>
       </layouts>
     </type>

@@ -6,7 +6,7 @@
 }
 
 .labelColumn {
-  width: 150px;
+  width: 200px;
   margin: 10pt;
   vertical-align: top;
   font-weight: bold;
@@ -24,3 +24,4 @@
 #importset_creation_panel {
   margin: 10pt;
 }
+
