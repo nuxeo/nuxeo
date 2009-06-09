@@ -148,6 +148,8 @@ public class DialectMySQL extends Dialect {
                         "CREATE FUNCTION NX_ACCESS_ALLOWED" //
                                 + "(id %s, users VARCHAR(10000), perms VARCHAR(10000)) " //
                                 + "RETURNS BOOLEAN " //
+                                + "LANGUAGE SQL " //
+                                + "READS SQL DATA " //
                                 + "BEGIN" //
                                 + "  DECLARE allusers VARCHAR(10000) DEFAULT CONCAT('|',users,'|');" //
                                 + "  DECLARE allperms VARCHAR(10000) DEFAULT CONCAT('|',perms,'|');" //
