@@ -41,10 +41,9 @@
   </target>
   <target name="start-jboss">
     <chmod perm="+x"
-      file="${basedir}/nuxeo-distribution/nuxeo-distribution-jboss/target/jboss/bin/run.sh" />
+      file="${basedir}/nuxeo-distribution/nuxeo-distribution-jboss/target/jboss/bin/jbossctl" />
     <exec
-      executable="${basedir}/nuxeo-distribution/nuxeo-distribution-jboss/target/jboss/bin/run.sh"
-      spawn="true">
+      executable="${basedir}/nuxeo-distribution/nuxeo-distribution-jboss/target/jboss/bin/jbossctl">
       <arg value="start" />
     </exec>
     <waitfor>
@@ -56,11 +55,10 @@
   </target>
   <target name="stop-jboss">
     <chmod perm="+x"
-      file="${basedir}/nuxeo-distribution/nuxeo-distribution-jboss/target/jboss/bin/shutdown.sh" />
+      file="${basedir}/nuxeo-distribution/nuxeo-distribution-jboss/target/jboss/bin/jbossctl" />
     <exec
-      executable="${basedir}/nuxeo-distribution/nuxeo-distribution-jboss/target/jboss/bin/shutdown.sh"
-      failonerror="true">
-      <arg value="-S" />
+      executable="${basedir}/nuxeo-distribution/nuxeo-distribution-jboss/target/jboss/bin/jbossctl">
+      <arg value="stop" />
     </exec>
   </target>
 </project>
