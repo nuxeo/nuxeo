@@ -666,11 +666,7 @@ public class DocumentActionsBean extends InputController implements
     }
 
     public boolean isNotReadOnly() {
-        if (!"true".equals(Framework.getProperty("readonly.mode", "false"))) {
-            return true;
-        } else {
-            return false;
-        }
+        return (!"true".equals(Framework.getProperty("readonly.mode", "false")));
     }
 
 }
