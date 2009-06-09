@@ -8,14 +8,12 @@
   xmlns:nxh="http://nuxeo.org/nxweb/html"
   xmlns:nxd="http://nuxeo.org/nxweb/document">
 
+  <ui:include src="/pagination/pageNavigationControls.xhtml" />
 
-<a4j:region rendered="#{documents != null}">
-  <a4j:outputPanel id="documentsList">
-  <h:form id="#{documents.name}">
+  <a4j:form id="#{documents.name}">
+    <a4j:outputPanel id="documentsList">
     <h:outputText value="#{messages['label.content.empty.search']}"
                   rendered="#{documents.rowCount == 0}" />
-
-    <ui:include src="/pagination/pageNavigationControls.xhtml" />
 
     <nxu:dataTable
       id="dataTable"
@@ -131,7 +129,7 @@
         </h:outputText>
       </h:column>
 
-      <!--  Sie -->
+      <!--  Size -->
       <!--
       <h:column>
         <f:facet name="header">
@@ -144,13 +142,8 @@
       -->
 
     </nxu:dataTable>
-
-    <a4j:outputPanel ajaxRendered="true">
-      <ui:insert name="buttons" />
     </a4j:outputPanel>
+  </a4j:form>
 
-  </h:form>
-  </a4j:outputPanel>
-</a4j:region>
 
 </div>
