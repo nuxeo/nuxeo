@@ -5,7 +5,7 @@
     <outputFile>/</outputFile>
   </assemble>
   <fileSet id="jboss">
-    <directory>target/nuxeo-dam-jboss.tmp</directory>
+    <directory>target/nuxeo-dam-jboss</directory>
   </fileSet>
 
 </assembly>

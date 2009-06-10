@@ -1,64 +1,55 @@
 <?xml version="1.0"?>
 <project name="ft" default="usage" basedir=".">
+  
+  <property name="pom.file" value="${basedir}/nuxeo-dam-distribution/pom.xml" />
+  
   <target name="usage">
     <echo message="usage: ant" />
     <echo message="run-ft                 => run all" />
-    <echo
-      message="get-nuxeo-distribution => download from mercurial the nuxeo-distribution project" />
-    <echo
-      message="make-distribution      => create a jboss with nuxeo from nuxeo-distribution" />
-    <echo message="deploy-project         => deploy the project into JBoss" />
+    <echo message="make-distribution      => make Nuxeo DAM distribution" />
     <echo message="start-jboss            => start JBoss server" />
     <echo message="run-selenium           => run the selenium test" />
     <echo message="stop-jboss             => stop the JBoss server" />
   </target>
+  
   <target name="run-ft"
-    depends="make-distribution,deploy-project,start-jboss,run-selenium,stop-jboss"
-    description="Build Jboss, deploy Nuxeo DAM, start JBoss, run functional tests, stop JBoss.">
+    depends="start-jboss,run-selenium,stop-jboss"
+    description="start JBoss, run functional tests, stop JBoss.">
   </target>
-  <target name="get-nuxeo-distribution">
-    <delete dir="nuxeo-distribution" failonerror="false" />
-    <exec executable="hg" failonerror="true">
-      <arg value="clone" />
-      <arg value="http://hg.nuxeo.org/nuxeo/nuxeo-distribution#5.2" />
-    </exec>
-  </target>
-  <target name="make-distribution" depends="get-nuxeo-distribution"
-    description="Build JBoss with Nuxeo EAR">
+
+  <target name="make-distribution">  
     <exec executable="mvn" failonerror="true">
-      <arg value="clean" />
-      <arg value="install" />
-      <arg value="-Pnuxeo-ep-jboss" />
       <arg value="-f" />
-      <arg value="nuxeo-distribution/pom.xml" />
+      <arg value="${pom.file}" />
+      <arg value="clean" />
+      <arg value="package" />
+      <arg value="install" />
     </exec>
   </target>
-  <target name="deploy-project" description="Deploy Nuxeo DAM EAR into JBoss">
-    <ant target="deploy" dir="${basedir}">
-      <property name="jboss.dir"
-        value="${basedir}/nuxeo-distribution/nuxeo-distribution-jboss/target/jboss" />
-    </ant>
-  </target>
+  
   <target name="start-jboss">
     <chmod perm="+x"
-      file="${basedir}/nuxeo-distribution/nuxeo-distribution-jboss/target/jboss/bin/jbossctl" />
+      file="${basedir}/nuxeo-dam-distribution/nuxeo-dam-distribution-jboss/target/nuxeo-dam-jboss/bin/jbossctl" />
     <exec
-      executable="${basedir}/nuxeo-distribution/nuxeo-distribution-jboss/target/jboss/bin/jbossctl">
+      executable="${basedir}/nuxeo-dam-distribution/nuxeo-dam-distribution-jboss/target/nuxeo-dam-jboss/bin/jbossctl">
       <arg value="start" />
     </exec>
     <waitfor>
       <http url="http://localhost:8080/nuxeo/login.jsp" />
     </waitfor>
   </target>
+  
   <target name="run-selenium">
-    <exec executable="./nuxeo-dam-ear/ftest/selenium/run.sh" />
+    <exec executable=".${basedir}/nuxeo-dam-distribution/nuxeo-dam-ear/ftest/selenium/run.sh" />
   </target>
+  
   <target name="stop-jboss">
     <chmod perm="+x"
-      file="${basedir}/nuxeo-distribution/nuxeo-distribution-jboss/target/jboss/bin/jbossctl" />
+      file="${basedir}/nuxeo-dam-distribution/nuxeo-dam-distribution-jboss/target/nuxeo-dam-jboss/bin/jbossctl" />
     <exec
-      executable="${basedir}/nuxeo-distribution/nuxeo-distribution-jboss/target/jboss/bin/jbossctl">
+      executable="${basedir}/nuxeo-dam-distribution/nuxeo-dam-distribution-jboss/target/nuxeo-dam-jboss/bin/jbossctl">
       <arg value="stop" />
     </exec>
   </target>
+  
 </project>

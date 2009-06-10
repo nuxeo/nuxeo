@@ -61,7 +61,7 @@
                 <unzip src="${dam-ear}" dest="${project.build.directory}/${nuxeo.ep.jboss}/server/default/deploy/nuxeo.ear" />
                 <chmod dir="${project.build.directory}/${nuxeo.ep.jboss}/bin" perm="750"
                   includes="*.sh" />
-                <move file="${project.build.directory}/${nuxeo.ep.jboss}" tofile="${project.build.directory}/nuxeo-dam-jboss.tmp"/>
+                <move file="${project.build.directory}/${nuxeo.ep.jboss}" tofile="${project.build.directory}/nuxeo-dam-jboss"/>
               </tasks>
             </configuration>
             <goals>
