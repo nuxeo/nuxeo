@@ -24,7 +24,7 @@
     <module>nuxeo-dam-facade</module>
     <module>nuxeo-dam-webapp-core</module>
     <module>nuxeo-dam-webapp</module>
-    <module>nuxeo-dam-ear</module>
+    <module>nuxeo-dam-distribution</module>
   </modules>
 
   <properties>
