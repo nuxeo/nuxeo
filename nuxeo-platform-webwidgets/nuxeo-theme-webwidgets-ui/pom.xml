@@ -24,7 +24,7 @@
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-theme-webwidgets</artifactId>
-    </dependency>  
+    </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.webengine</groupId>
       <artifactId>nuxeo-webengine-core</artifactId>
@@ -51,7 +51,7 @@
       <artifactId>commons-fileupload</artifactId>
       <version>1.1.1</version>
       <scope>test</scope>
-    </dependency>  
+    </dependency>
   </dependencies>
 
   <build>
@@ -67,6 +67,20 @@
           </archive>
         </configuration>
       </plugin>
+      <!-- APT plugin for annotation preprocessing -->
+      <plugin>
+        <groupId>org.apache.myfaces.tobago</groupId>
+        <artifactId>maven-apt-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>generate-bindings</id>
+            <goals>
+              <goal>execute</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- end APT plugin -->
     </plugins>
   </build>
 </project>
