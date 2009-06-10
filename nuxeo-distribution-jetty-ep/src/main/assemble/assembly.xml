@@ -58,6 +58,15 @@
 
   <artifactSet id="third-party-libs">
     <artifacts>
+      <!-- Synchro Added packages -->
+      <artifact group="javax.activation" name="activation" version="1.1"/>
+      <artifact group="apache-httpclient" name="commons-httpclient" version="3.1"/>
+      <artifact group="commons-codec" name="commons-codec" version="1.3"/>
+      <artifact group="metro.webservices" name="webservices-api" version="1.4"/>
+      <artifact group="metro.webservices" name="webservices-rt" version="1.4"/>
+      <artifact group="metro.webservices" name="webservices-tools" version="1.4"/>
+      <!-- End Synchro Added packages -->
+      
       <artifact group="javax.servlet" name="servlet-api" version="2.5"/>
       <artifact group="org.mortbay.jetty" name="jetty" version="6.1H.7"/>
       <artifact group="org.mortbay.jetty" name="jetty-plus" version="6.1H.7"/>
