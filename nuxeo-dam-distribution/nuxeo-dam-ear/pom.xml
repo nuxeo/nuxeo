@@ -95,7 +95,7 @@
         <extensions>true</extensions>
         <configuration>
           <runPreprocessor>false</runPreprocessor>
-          <format>directory</format>
+          <format>directory,zip</format>
           <outputDirectory>target</outputDirectory>
           <targetFile>${dam.ear.assembly}</targetFile>
           <descriptor>${basedir}/src/main/assemble/${dam.ear.assembly}.xml</descriptor>
@@ -107,6 +107,17 @@
             <goals>
               <goal>assembly</goal>
             </goals>
+          </execution>
+          <execution>
+            <id>attach-app</id>
+            <phase>package</phase>
+            <goals>
+              <goal>attach</goal>
+            </goals>
+            <configuration>
+              <file>${build.directory}/${dam.ear.assembly}.zip</file>
+              <type>zip</type>
+            </configuration>
           </execution>
         </executions>
       </plugin>

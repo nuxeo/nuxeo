@@ -1,0 +1,11 @@
+<assembly>
+  
+  <assemble>
+    <set>jboss</set>
+    <outputFile>/</outputFile>
+  </assemble>
+  <fileSet id="jboss">
+    <directory>target/nuxeo-dam-jboss.tmp</directory>
+  </fileSet>
+
+</assembly>

@@ -1,0 +1,109 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.nuxeo.dam.distribution</groupId>
+    <artifactId>nuxeo-dam-distribution</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+
+  <artifactId>nuxeo-dam-distribution-jboss</artifactId>
+  <packaging>pom</packaging>
+  <name>Nuxeo DAM JBoss Distribution</name>
+  <description>Packages Nuxeo DAM EAR with JBoss</description>
+
+  <properties>
+    <application.name>nuxeo-dam-jboss</application.name>
+    <application.version>${version}</application.version>
+    <nuxeo.ep.jboss>nuxeo-ep-${nuxeo.distribution.version}</nuxeo.ep.jboss>
+  </properties>
+
+  <profiles>
+    <profile>
+      <id>nuxeo-dam-jboss</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+    </profile>
+  </profiles>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.nuxeo.ecm.distribution</groupId>
+      <artifactId>nuxeo-distribution-jboss</artifactId>
+      <type>zip</type>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.dam</groupId>
+      <artifactId>nuxeo-dam-ear</artifactId>
+      <type>zip</type>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
+        <artifactId>maven-antrun-extended-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <configuration>
+              <tasks>
+                <resolveArtifact groupId="org.nuxeo.ecm.distribution" artifactId="nuxeo-distribution-jboss"
+                  type="zip" property="jboss" />
+                <unzip src="${jboss}" dest="${project.build.directory}" />
+                <delete dir="${project.build.directory}/${nuxeo.ep.jboss}/server/default/deploy/nuxeo.ear" />
+                <resolveArtifact groupId="org.nuxeo.dam" artifactId="nuxeo-dam-ear"
+                  type="zip" property="dam-ear" />
+                <unzip src="${dam-ear}" dest="${project.build.directory}/${nuxeo.ep.jboss}/server/default/deploy/nuxeo.ear" />
+                <chmod dir="${project.build.directory}/${nuxeo.ep.jboss}/bin" perm="750"
+                  includes="*.sh" />
+                <move file="${project.build.directory}/${nuxeo.ep.jboss}" tofile="${project.build.directory}/nuxeo-dam-jboss.tmp"/>
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-nuxeo-plugin</artifactId>
+        <extensions>false</extensions>
+        <executions>
+          <execution>
+            <id>assemble-app</id>
+            <phase>package</phase>
+            <goals>
+              <goal>assembly</goal>
+            </goals>
+            <configuration>
+              <runPreprocessor>false</runPreprocessor>
+              <format>zip</format>
+              <zipRoot>${application.name}-${application.version}</zipRoot>
+              <outputDirectory>target</outputDirectory>
+              <targetFile>${application.name}-${application.version}</targetFile>
+              <descriptor>${basedir}/src/main/assemble/assembly.xml</descriptor>
+            </configuration>
+          </execution>
+          <execution>
+            <id>attach-app</id>
+            <phase>package</phase>
+            <goals>
+              <goal>attach</goal>
+            </goals>
+            <configuration>
+              <file>${project.build.directory}/${application.name}-${application.version}.zip</file>
+              <type>zip</type>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>
