@@ -2494,6 +2494,9 @@ public abstract class AbstractSession implements CoreSession,
         if (SecurityConstants.ADMINISTRATOR.equals(principal.getName())) {
             return true;
         }
+        if("system".equals(principal.getName())){
+            return true;
+        }
         if (principal instanceof NuxeoPrincipal) {
             return ((NuxeoPrincipal) principal).isAdministrator();
         }
