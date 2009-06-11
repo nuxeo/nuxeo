@@ -191,7 +191,7 @@ public class PersistentProvider implements Provider {
         commit();
     }
 
-    private synchronized void reorderWidgets(List<Widget> widgets) {
+    protected synchronized void reorderWidgets(List<Widget> widgets) {
         int i = 0;
         begin();
         for (Widget w : widgets) {

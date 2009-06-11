@@ -257,8 +257,8 @@ public class Manager {
                     getWidgetPreferences(srcProvider, srcWidget));
             setWidgetState(destProvider, destWidget, getWidgetState(
                     srcProvider, srcWidget));
-            srcProvider.removeWidget(srcWidget);
             destProvider.addWidget(destWidget, destRegionName, destOrder);
+            srcProvider.removeWidget(srcWidget);
             newId = destWidget.getUid();
         }
         return newId;
