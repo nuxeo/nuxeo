@@ -51,6 +51,7 @@ public final class SiteConstants {
     public static final String WEBPAGE_EDITOR = "webp:isRichtext";
     public static final String WEBPAGE_PUSHTOMENU = "webp:pushtomenu";
     public static final String WEBPAGE_CONTENT = "webp:content";
+    public static final String WEBPAGE_DESCRIPTION = "dc:description";
     
 
     /**
@@ -97,4 +98,9 @@ public final class SiteConstants {
      * Themes&Perspectives
      */
     public static final String PAGE_NAME_ATTRIBUTE = "pageName";
+    
+    /**
+     * MimeType
+     * */
+    public static final String MIME_TYPE_RSS_FEED = "application/rss+xml";
 }

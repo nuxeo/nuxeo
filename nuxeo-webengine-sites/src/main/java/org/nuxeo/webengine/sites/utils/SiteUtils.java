@@ -16,13 +16,22 @@
  */
 package org.nuxeo.webengine.sites.utils;
 
+import static org.nuxeo.webengine.sites.utils.SiteConstants.EMAIL;
+import static org.nuxeo.webengine.sites.utils.SiteConstants.PAGE_NAME;
+import static org.nuxeo.webengine.sites.utils.SiteConstants.SITE_DESCRIPTION;
+import static org.nuxeo.webengine.sites.utils.SiteConstants.WEBCONTAINER_BASELINE;
+import static org.nuxeo.webengine.sites.utils.SiteConstants.WEBCONTAINER_EMAIL;
+import static org.nuxeo.webengine.sites.utils.SiteConstants.WEBCONTAINER_NAME;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -37,6 +46,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants;
+import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.WebContext;
@@ -395,4 +405,18 @@ public class SiteUtils {
         return new String(firstNwords);
     }
 
+    /**
+     * Computes the arguments for rss feed
+     * 
+     * @return
+     * @throws Exception
+     */
+    public static Map<String, Object> getRssFeedArguments(WebContext ctx,
+            String key) throws Exception {
+        Map<String, Object> root = new HashMap<String, Object>();
+        root.put("title", ctx.getMessage(key));
+        root.put("link", " ");
+        root.put("description", " ");
+        return root;
+    }
 }

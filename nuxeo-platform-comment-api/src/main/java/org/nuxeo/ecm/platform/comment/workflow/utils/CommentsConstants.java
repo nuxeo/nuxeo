@@ -47,4 +47,11 @@ public final class CommentsConstants {
     
     public static final String COMMENT_ID = "commentId";
     
+    
+    /**
+     * Schemas and fields.
+     */
+    public static final String COMMENT_CREATION_DATE = "comment:creationDate";
+    public static final String COMMENT_AUTHOR = "comment:author";
+    public static final String COMMENT_TEXT = "comment:text";
 }
