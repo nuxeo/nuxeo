@@ -77,7 +77,7 @@ public class RssAdapter extends DefaultAdapter {
 
             DocumentModel doc = session.getDocument(new IdRef(docId));
             DocumentModelList paged = SiteQueriesColection.queryLastModifiedPages(
-                    session, doc.getPathAsString(), doc.getType(), NO_PAGES);
+                    session, doc.getPathAsString(), WEBPAGE, NO_PAGES);
             for (DocumentModel documentModel : paged) {
                 StringBuilder path = new StringBuilder(baseUrl);
                 String pagePath = null;
