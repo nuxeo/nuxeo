@@ -79,6 +79,10 @@
     <service class="org.nuxeo.ecm.platform.types.TypeManager" group="web">
       <locator>%TypeManagerBean</locator>
     </service>
+    <service class="org.nuxeo.ecm.platform.url.api.DocumentViewCodecManager"
+      group="web">
+      <locator>%DocumentViewCodecManagerBean</locator>
+    </service>
   </extension>
 
 </component>
