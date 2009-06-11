@@ -40,11 +40,12 @@ import org.nuxeo.ecm.platform.tag.entity.TagEntity;
 import org.nuxeo.ecm.platform.tag.entity.TaggingEntity;
 import org.nuxeo.ecm.platform.tag.sql.Column;
 import org.nuxeo.ecm.platform.tag.sql.Table;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * The persistence provider used for getting an <b>EntityManager</b> needed to
  * handle queries on the table that is used for tagging support.
- * 
+ *
  * @author cpriceputu
  */
 public class TagPersistenceProvider {
@@ -68,15 +69,18 @@ public class TagPersistenceProvider {
     private Properties getProperties() {
         if (null == properties) {
             properties = new Properties();
-            properties.put("tagservice.isTagServiceInNuxeo", "true");
-            properties.put("hibernate.show_sql", "true"); // true to debug
-            properties.put("hibernate.connection.driver_class", "org.h2.Driver");
-            properties.put("hibernate.connection.username", "sa");
-            properties.put("hibernate.connection.password", "");
+            properties.put("hibernate.show_sql",
+                    Framework.getProperty("hibernate.show_sql"));
+            properties.put("hibernate.connection.driver_class",
+                    Framework.getProperty("hibernate.connection.driver_class"));
+            properties.put("hibernate.connection.username",
+                    Framework.getProperty("hibernate.connection.username"));
+            properties.put("hibernate.connection.password",
+                    Framework.getProperty("hibernate.connection.password"));
             properties.put("hibernate.connection.url",
-                    "jdbc:h2:${jboss.server.data.dir}/h2/nuxeo");
+                    Framework.getProperty("hibernate.connection.url"));
             properties.put("hibernate.dialect",
-                    "org.hibernate.dialect.H2Dialect");
+                    Framework.getProperty("hibernate.dialect"));
         }
         return properties;
     }
@@ -120,7 +124,7 @@ public class TagPersistenceProvider {
     /**
      * Returns an <b>EntityManager</b> that manage itself the transaction
      * processes.
-     * 
+     *
      * @return
      */
     public EntityManager getEntityManager(Properties properties) {
@@ -138,7 +142,7 @@ public class TagPersistenceProvider {
     /**
      * Commit all the changes that are kept by an <b>EntityManager</b> created
      * with an active transaction.
-     * 
+     *
      * @param em
      */
     public void doCommit(EntityManager em) {
@@ -153,7 +157,7 @@ public class TagPersistenceProvider {
     /**
      * Rolls back all the changes that are kept by an <b>EntityManager</b>
      * created with an active transaction.
-     * 
+     *
      * @param em
      */
     public void doRollback(EntityManager em) {

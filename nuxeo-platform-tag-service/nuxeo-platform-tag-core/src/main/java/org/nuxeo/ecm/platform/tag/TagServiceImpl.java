@@ -29,23 +29,19 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.Filter;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
-import org.nuxeo.ecm.platform.tag.Tag;
-import org.nuxeo.ecm.platform.tag.TagConstants;
-import org.nuxeo.ecm.platform.tag.TagService;
-import org.nuxeo.ecm.platform.tag.WeightedTag;
 import org.nuxeo.ecm.platform.tag.entity.DublincoreEntity;
 import org.nuxeo.ecm.platform.tag.entity.TagEntity;
 import org.nuxeo.ecm.platform.tag.entity.TaggingEntity;
 import org.nuxeo.ecm.platform.tag.persistence.TagPersistenceProvider;
 import org.nuxeo.ecm.platform.tag.persistence.TaggingProvider;
+import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
  * The implementation of tag service. For the API see {@link #TagService()}
- * 
+ *
  * @author rux
  */
 public class TagServiceImpl extends DefaultComponent implements TagService {
@@ -301,7 +297,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
 
     /**
      * Checks if the tag is allowed to be used be the user
-     * 
+     *
      * @param tag
      * @param user
      * @return
@@ -329,39 +325,10 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
     }
 
     /**
-     * The filter on query to run when looking after tags in a folder.
-     * 
-     * @author rux
-     * 
-     */
-    protected static class TagLabelFilter implements Filter {
-
-        private static final long serialVersionUID = 2073274822188666923L;
-
-        private String label;
-
-        public TagLabelFilter(String label) {
-            this.label = label;
-        }
-
-        public boolean accept(DocumentModel docModel) {
-            try {
-                String checkLabel = (String) docModel.getPropertyValue(TagConstants.TAG_LABEL_FIELD);
-                return (label.equals(checkLabel));
-            } catch (Exception e) {
-                log.warn("Couldn't check document " + docModel.getName()
-                        + " as label " + "because", e);
-            }
-            return false;
-        }
-
-    }
-
-    /**
      * The unrestricted session runner to find / create root tag document.
-     * 
+     *
      * @author rux
-     * 
+     *
      */
     protected static class UnrestrictedSessionCreateRootTag extends
             UnrestrictedSessionRunner {
@@ -404,9 +371,9 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
 
     /**
      * The unrestricted runner to find / create a tag document.
-     * 
+     *
      * @author rux
-     * 
+     *
      */
     protected static class UnrestrictedSessionCreateTag extends
             UnrestrictedSessionRunner {
@@ -440,10 +407,11 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
             for (String atomicLabel : labels) {
                 // for each label look for a public or user owned tag. If not,
                 // create it
-                Filter filter = new TagLabelFilter(atomicLabel);
-                DocumentModelList tags = session.getChildren(
-                        relativeParent.getRef(),
-                        TagConstants.TAG_DOCUMENT_TYPE, filter, null);
+                String query = String.format(
+                        "SELECT * FROM Tag WHERE ecm:parentId = '%s' AND tag:label = '%s'",
+                        relativeParent.getId(), atomicLabel);
+                DocumentModelList tags = session.query(query);
+
                 DocumentModel foundTag = null;
                 if (tags != null && tags.size() > 0) {
                     // it should be only one, but it is possible to have more
@@ -480,9 +448,9 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
 
     /**
      * The unrestricted runner for running a query.
-     * 
+     *
      * @author rux
-     * 
+     *
      */
     protected static class UnrestrictedSessionRunQuery extends
             UnrestrictedSessionRunner {
@@ -528,4 +496,8 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
         return getTaggingProvider().getTaggingId(docId, tagLabel, author);
     }
 
+    @Override
+    public void deactivate(ComponentContext context) throws Exception {
+        TagPersistenceProvider.getInstance().closePersistenceUnit();
+    }
 }

@@ -18,14 +18,10 @@
 
 package org.nuxeo.ecm.platform.tag;
 
-import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
-import org.nuxeo.ecm.platform.tag.Tag;
-import org.nuxeo.ecm.platform.tag.TagService;
 import org.nuxeo.ecm.platform.tag.persistence.TagPersistenceProvider;
 import org.nuxeo.runtime.api.Framework;
 
@@ -53,7 +49,7 @@ public class TestTagService extends RepositoryOSGITestCase {
     public TagService getTagService() {
         return Framework.getLocalService(TagService.class);
     }
-    
+
     public void testServiceTagInitialization() {
         TagService tagService = getTagService();
         assertNotNull("Failed to get tag service.", tagService);
@@ -81,26 +77,7 @@ public class TestTagService extends RepositoryOSGITestCase {
                 ((Boolean) tag.getProperty("tag", "private")).booleanValue());
         assertTrue("", tag.getProperty("dublincore", "creator").equals(
                 coreSession.getPrincipal().getName()));
-        
+
     }
 
-    //the entities management tested in TestTaggingProvider
-    public void nottestTaggingCreation() throws Exception {
-        deployContrib("org.nuxeo.ecm.platform.comment.core",
-                "OSGI-INF/comment-schemas-contrib.xml");
-        TagService tagService = getTagService();
-        openRepository();
-        DocumentModel tagRoot = tagService.getRootTag(coreSession);
-        assertNotNull(tagRoot);
-        DocumentModel tag1 = tagService.getOrCreateTag(tagRoot, "tag1", true);
-        DocumentModel documentRoot = coreSession.getRootDocument();
-        tagService.tagDocument(documentRoot, tag1.getId(), false);
-        List<Tag> taggingList = tagService.listTagsAppliedOnDocument(documentRoot);
-        assertNotNull("Failed to get or create tagging", taggingList);
-        assertTrue("Failed to get or create tagging", taggingList.size() == 1);
-        assertTrue("Failed to get or create tagging",
-                taggingList.get(0).tagId.equals(tag1.getId()));
-        assertTrue("Failed to get or create tagging",
-                taggingList.get(0).tagLabel.equals("tag1"));
-    }
 }
