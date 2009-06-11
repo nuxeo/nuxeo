@@ -1,5 +1,7 @@
+<#import "common/util.ftl" as base/>
 <#assign canComment=(Session.hasPermission(Document.ref, 'Comment'))/>
 <#assign canModerate=(Session.hasPermission(Document.ref, 'Moderate'))/>
+
 
 <div class="commentspageBlock">
 <#if (!nxthemesInfo.model.items.empty || base.canWrite)>

@@ -19,6 +19,12 @@
 
 package org.nuxeo.webengine.sites;
 
+import static org.nuxeo.webengine.sites.utils.SiteConstants.SITES_THEME_PAGE;
+import static org.nuxeo.webengine.sites.utils.SiteConstants.THEME_BUNDLE;
+import static org.nuxeo.webengine.sites.utils.SiteConstants.WEBCONTAINER_NAME;
+import static org.nuxeo.webengine.sites.utils.SiteConstants.WEBCONTAINER_URL;
+import static org.nuxeo.webengine.sites.utils.SiteConstants.WEBSITE;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -39,7 +45,6 @@ import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
-import org.nuxeo.webengine.sites.utils.SiteConstants;
 import org.nuxeo.webengine.sites.utils.SiteQueriesColection;
 import org.nuxeo.webengine.sites.utils.SiteUtils;
 
@@ -64,12 +69,11 @@ public class Sites extends DefaultObject {
                 List<Object> sites = getWebContainers();
                 WebContext context = WebEngine.getActiveContext();
                 CoreSession session = context.getCoreSession();
-                ctx.getRequest().setAttribute(SiteConstants.THEME_BUNDLE,
-                        SiteConstants.SITES_THEME_PAGE);
+                ctx.getRequest().setAttribute(THEME_BUNDLE, getThemePage());
                 return getTemplate("list_sites.ftl").arg("sites", sites).arg(
                         "rootDoc", session.getRootDocument());
             } else {
-                return newObject("site", path);
+                return newObject(getWebSiteObjectTypeName(), path);
             }
         } catch (Exception e) {
             throw WebException.wrap(e);
@@ -80,21 +84,48 @@ public class Sites extends DefaultObject {
         WebContext context = WebEngine.getActiveContext();
         CoreSession session = context.getCoreSession();
 
-        DocumentModelList webSites = SiteQueriesColection.queryAllSites(session);
+        DocumentModelList webSites = SiteQueriesColection.queryAllSites(
+                session, getWebSiteDocumentType());
         List<Object> sites = new ArrayList<Object>();
         for (DocumentModel webSite : webSites) {
             try {
                 Map<String, String> site = new HashMap<String, String>();
-                site.put("href", SiteUtils.getString(
-                        webSite, SiteConstants.WEBCONTAINER_URL));
-                site.put("name", SiteUtils.getString(
-                        webSite, SiteConstants.WEBCONTAINER_NAME));
+                site.put("href", SiteUtils.getString(webSite, WEBCONTAINER_URL));
+                site.put("name",
+                        SiteUtils.getString(webSite, WEBCONTAINER_NAME));
                 sites.add(site);
             } catch (Exception e) {
                 log.error("Problem retrieving the existings websites ...", e);
             }
         }
         return sites;
+    }
+
+    /**
+     * Returns the theme name used for Sites document object type.
+     * 
+     * @return
+     */
+    protected String getThemePage() {
+        return SITES_THEME_PAGE;
+    }
+
+    /**
+     * Returns the document type of the web site.
+     * 
+     * @return
+     */
+    protected String getWebSiteDocumentType() {
+        return WEBSITE;
+    }
+
+    /**
+     * Returns the name of the web site document object.
+     * 
+     * @return
+     */
+    protected String getWebSiteObjectTypeName() {
+        return WEBSITE;
     }
 
 }

@@ -17,49 +17,48 @@
 
 package org.nuxeo.webengine.sites;
 
-import static org.nuxeo.webengine.sites.utils.SiteConstants.*;
+import static org.nuxeo.webengine.sites.utils.SiteConstants.DEFAULT_WEBPAGE_THEMEPAGE_VALUE;
+import static org.nuxeo.webengine.sites.utils.SiteConstants.DEFAULT_WEBPAGE_THEME_VALUE;
+import static org.nuxeo.webengine.sites.utils.SiteConstants.SEARCH_THEME_PAGE;
+import static org.nuxeo.webengine.sites.utils.SiteConstants.WEBPAGE;
+import static org.nuxeo.webengine.sites.utils.SiteConstants.WEBPAGE_CONTENT;
+import static org.nuxeo.webengine.sites.utils.SiteConstants.WEBPAGE_EDITOR;
+import static org.nuxeo.webengine.sites.utils.SiteConstants.WEBPAGE_PUSHTOMENU;
+import static org.nuxeo.webengine.sites.utils.SiteConstants.WEBPAGE_SCHEMA_THEME;
+import static org.nuxeo.webengine.sites.utils.SiteConstants.WEBPAGE_THEMEPAGE;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.FormParam;
-import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.rest.DocumentObject;
-import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
-import org.nuxeo.ecm.platform.tag.TagService;
 import org.nuxeo.ecm.webengine.WebException;
-import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.Resource;
-import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.webengine.sites.utils.SiteUtils;
 
 /**
  * Web object implementation corresponding to WebPage. It is resolved from site.
  * It holds the web page fragments back methods.
- *
+ * 
  * @author stan
  */
-@WebObject(type = "WebPage", superType = "Document")
+@WebObject(type = WEBPAGE, superType = "AbstractSiteDocumentObject")
 @Produces("text/html; charset=UTF-8")
-public class Page extends DocumentObject {
+public class Page extends AbstractSiteDocumentObject {
 
     private static final Log log = LogFactory.getLog(Page.class);
 
-    String pathSegment;
+    protected String pathSegment;
 
     @Override
     public void initialize(Object... args) {
@@ -73,27 +72,6 @@ public class Page extends DocumentObject {
     }
 
     @Override
-    @GET
-    public Object doGet() {
-        if (doc == null) {
-            return getTemplate("error_create_page.ftl").arg("pageName", pathSegment);
-        }
-        ctx.getRequest().setAttribute(THEME_BUNDLE, PAGE_THEME_PAGE);
-        String currentPerspective = (String) ctx.getRequest().getAttribute(
-                THEME_PERSPECTIVE);
-        if (StringUtils.isEmpty(currentPerspective)) {
-            // Set view perspective if none present.
-            ctx.getRequest().setAttribute(THEME_PERSPECTIVE,
-                    VIEW_PERSPECTIVE);
-        }
-        try {
-            return getTemplate("template_default.ftl").args(getPageArguments());
-        } catch (Exception e) {
-            throw WebException.wrap(e);
-        }
-    }
-
-    @Override
     @POST
     public Response doPost() {
         return null;
@@ -102,83 +80,18 @@ public class Page extends DocumentObject {
     @Override
     @Path(value = "{path}")
     public Resource traverse(@PathParam("path") String path) {
-        try {
-            return newDocument(path);
-        } catch (Exception e) {
-            if (e instanceof WebResourceNotFoundException) {
-                CoreSession session = ctx.getCoreSession();
-                try {
-                    if (session.hasPermission(doc.getRef(), PERMISSION_ADD_CHILDREN)) {
-                        DocumentObject parent = (DocumentObject) ctx.getTargetObject();
-                        ctx.getRequest().setAttribute(THEME_PERSPECTIVE, "create");
-                        ctx.getRequest().setAttribute(PAGE_NAME_ATTRIBUTE, path);
-                        return parent;
-                    } else {
-                        return newObject("WebPage", path);
-                    }
-                } catch (ClientException ce) {
-                    throw WebException.wrap(ce);
-                }
-
-            } else {
-                throw WebException.wrap(e);
-            }
-        }
+        return super.traverse(path);
     }
 
-    @GET
-    @Path("logo")
-    public Response getLogo() {
-        Response resp = null;
-        try {
-            DocumentModel parentWebSite = SiteUtils.getFirstWebSiteParent(
-                    getCoreSession(), doc);
-            resp = SiteUtils.getLogoResponse(parentWebSite);
-        } catch (Exception e) {
-            log.error("Unable to retrive the workspace parent. ", e);
-        }
-        // return a default image, maybe you want to change this in future
-        if (resp == null) {
-            resp = redirect(getContext().getModule().getSkinPathPrefix()
-                    + "/images/logo.gif");
-        }
-        return resp;
-    }
-
-    @POST
-    @Path("search")
-    public Object getSearchParametres(
-            @FormParam("searchParam") String searchParam) {
-        ctx.getRequest().setAttribute(THEME_BUNDLE, SEARCH_THEME_PAGE);
-        ctx.setProperty(SEARCH_PARAM, searchParam);
-        try {
-            return getTemplate("template_default.ftl").args(getPageArguments());
-        } catch (Exception e) {
-            throw WebException.wrap(e);
-        }
-    }
-
-
-    @POST
-    @Path("createWebPage")
-    public Object createWebPage() {
-        try {
-            CoreSession session = ctx.getCoreSession();
-
-            DocumentModel createdDocument = SiteUtils.createWebPageDocument(
-                    ctx.getRequest(), session, doc.getPathAsString());
-            DocumentModel webContainer = SiteUtils.getFirstWebSiteParent(
-                    session, doc);
-            String path = SiteUtils.getPagePath(webContainer, createdDocument);
-            return redirect(path);
-        } catch (Exception e) {
-            throw WebException.wrap(e);
-        }
-    }
-
+    /**
+     * Updates the current modified web page.
+     * 
+     * @return
+     */
     @POST
     @Path("modifyWebPage")
     public Object modifyWebPage() {
+        log.debug("Modifing web page ...");
         try {
             CoreSession session = ctx.getCoreSession();
             HttpServletRequest request = ctx.getRequest();
@@ -210,30 +123,40 @@ public class Page extends DocumentObject {
         }
     }
 
-    
-
-    /**
-     * Computes the arguments for a page. It is needed because in page some of
-     * the site properties need be displayed.
-     * @return
-     * @throws Exception
-     */
-    protected Map<String, Object> getPageArguments() throws Exception {
-
-        Map<String, Object> root = new HashMap<String, Object>();
-        CoreSession session = getCoreSession();
-        DocumentModel ws = SiteUtils.getFirstWebSiteParent(session, doc);
-        root.put(PAGE_NAME,
-                SiteUtils.getString(ws, WEBCONTAINER_NAME, null));
-        root.put(SITE_DESCRIPTION, SiteUtils.getString(ws,
-                WEBCONTAINER_BASELINE, null));
-        root.put(EMAIL,
-                "mailto:"
-                        +ws.getPropertyValue(
-                                WEBCONTAINER_EMAIL).toString());
-        MimetypeRegistry mimetypeService = Framework.getService(MimetypeRegistry.class);
-        root.put("mimetypeService", mimetypeService);
-        return root;
+    @Override
+    protected String getSchemaFieldThemeName() {
+        return WEBPAGE_SCHEMA_THEME;
     }
 
+    @Override
+    protected String getDefaultSchemaFieldThemeValue() {
+        return DEFAULT_WEBPAGE_THEME_VALUE;
+    }
+
+    @Override
+    protected String getSchemaFieldThemePageName() {
+        return WEBPAGE_THEMEPAGE;
+    }
+
+    @Override
+    protected String getDefaultSchemaFieldThemePageValue() {
+        return DEFAULT_WEBPAGE_THEMEPAGE_VALUE;
+    }
+
+    @Override
+    protected Map<String, Object> getErrorArguments() {
+        Map<String, Object> errorArguments = new HashMap<String, Object>();
+        errorArguments.put("pageName", pathSegment);
+        return errorArguments;
+    }
+
+    @Override
+    protected String getErrorTemplateName() {
+        return "error_create_page.ftl";
+    }
+
+    @Override
+    protected String getSearchThemePage() {
+        return SEARCH_THEME_PAGE;
+    }
 }

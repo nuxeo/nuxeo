@@ -25,46 +25,54 @@ import org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants;
 /**
  * Collection of the queries used in the sites module. It gathers all in one
  * place to ease the reading of the code.
+ * 
  * @author rux
- *
+ * 
  */
 public class SiteQueriesColection {
 
     /**
-     * Queries sites by URL. It should be exactly one returned.
+     * Queries sites by URL and document type. It should be exactly one
+     * returned.
+     * 
      * @param session
      * @param url
+     * @param documentType
      * @return
      * @throws ClientException
      */
-    public static DocumentModelList querySitesByUrl(CoreSession session,
-            String url) throws ClientException {
-        String queryString = String.format("SELECT * FROM Document WHERE " +
-                "ecm:mixinType = 'WebView' AND webc:url = \"%s\" AND " +
-                "ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0 " +
-                "AND ecm:currentLifeCycleState != 'deleted' " +
-                "AND webc:isWebContainer = 1", url);
+    public static DocumentModelList querySitesByUrlAndDocType(
+            CoreSession session, String url, String documentType)
+            throws ClientException {
+        String queryString = String.format("SELECT * FROM %s WHERE "
+                + "ecm:mixinType = 'WebView' AND webc:url = \"%s\" AND "
+                + "ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0 "
+                + "AND ecm:currentLifeCycleState != 'deleted' "
+                + "AND webc:isWebContainer = 1", documentType, url);
         return session.query(queryString);
     }
 
     /**
-     * Queries all sites.
+     * Queries all sites of the given document type.
+     * 
      * @param session
+     * @param documentType
      * @return
      * @throws ClientException
      */
-    public static DocumentModelList queryAllSites(CoreSession session)
-            throws ClientException {
-        String queryString = "SELECT * FROM Document WHERE " +
-                "ecm:mixinType = 'WebView' AND " +
-                "ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0 " +
-                "AND ecm:currentLifeCycleState != 'deleted' " +
-                "AND webc:isWebContainer = 1";
+    public static DocumentModelList queryAllSites(CoreSession session,
+            String documentType) throws ClientException {
+        String queryString = String.format("SELECT * FROM %s WHERE "
+                + "ecm:mixinType = 'WebView' AND "
+                + "ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0 "
+                + "AND ecm:currentLifeCycleState != 'deleted' "
+                + "AND webc:isWebContainer = 1", documentType);
         return session.query(queryString);
     }
 
     /**
      * Queries the modified pages within a limit.
+     * 
      * @param session
      * @param parent
      * @param numberLimit
@@ -72,17 +80,20 @@ public class SiteQueriesColection {
      * @throws ClientException
      */
     public static DocumentModelList queryLastModifiedPages(CoreSession session,
-            String parent, int numberLimit) throws ClientException {
-        String queryString = String.format("SELECT * FROM Document WHERE " +
-            "ecm:primaryType like 'WebPage' AND ecm:path STARTSWITH '%s' " +
-            "AND ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0 " +
-            "AND ecm:currentLifeCycleState != 'deleted' " +
-            "ORDER BY dc:modified DESC", parent);
+            String parent, String documentType, int numberLimit)
+            throws ClientException {
+        String queryString = String.format("SELECT * FROM %s WHERE "
+                + "ecm:path STARTSWITH '%s' "
+                + "AND ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0 "
+                + "AND ecm:currentLifeCycleState != 'deleted' "
+                + "ORDER BY dc:modified DESC", documentType, parent);
         return session.query(queryString, null, numberLimit, 0, true);
     }
 
     /**
-     * Queries the added comments within a limit. Query differs if moderated or not.
+     * Queries the added comments within a limit. Query differs if moderated or
+     * not.
+     * 
      * @param session
      * @param parent
      * @param numberLimit
@@ -91,26 +102,31 @@ public class SiteQueriesColection {
      * @throws ClientException
      */
     public static DocumentModelList queryLastComments(CoreSession session,
-            String parent, int numberLimit, boolean isModerated) throws ClientException {
+            String parent, int numberLimit, boolean isModerated)
+            throws ClientException {
         String queryString;
         if (isModerated) {
-            queryString = String.format("SELECT * FROM Document WHERE " +
-                    "ecm:primaryType like 'Comment' AND ecm:path STARTSWITH '%s' " +
-                    "AND ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0 " +
-                    "AND ecm:currentLifeCycleState = '%s' "+
-                    "ORDER BY dc:modified DESC", parent, CommentsConstants.PUBLISHED_STATE);
+            queryString = String.format(
+                    "SELECT * FROM Document WHERE "
+                            + "ecm:primaryType like 'Comment' AND ecm:path STARTSWITH '%s' "
+                            + "AND ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0 "
+                            + "AND ecm:currentLifeCycleState = '%s' "
+                            + "ORDER BY dc:modified DESC", parent,
+                    CommentsConstants.PUBLISHED_STATE);
         } else {
-            queryString = String.format("SELECT * FROM Document WHERE " +
-                    "ecm:primaryType like 'Comment' AND ecm:path STARTSWITH '%s' " +
-                    "AND ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0 " +
-                    "AND ecm:currentLifeCycleState != 'deleted' "+
-                    "ORDER BY dc:modified DESC", parent);
+            queryString = String.format(
+                    "SELECT * FROM Document WHERE "
+                            + "ecm:primaryType like 'Comment' AND ecm:path STARTSWITH '%s' "
+                            + "AND ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0 "
+                            + "AND ecm:currentLifeCycleState != 'deleted' "
+                            + "ORDER BY dc:modified DESC", parent);
         }
         return session.query(queryString, null, numberLimit, 0, true);
     }
 
     /**
      * Queries the pages based on a search string.
+     * 
      * @param session
      * @param query
      * @param parent
@@ -118,12 +134,23 @@ public class SiteQueriesColection {
      * @throws ClientException
      */
     public static DocumentModelList querySearchPages(CoreSession session,
-            String query, String parent) throws ClientException {
-        String queryString = String.format("SELECT * FROM WebPage WHERE " +
-                "ecm:fulltext LIKE '%s' AND ecm:path STARTSWITH  '%s' AND " +
-                "ecm:mixinType != 'HiddenInNavigation' AND "+
-                "ecm:isCheckedInVersion = 0 AND " +
-                "ecm:currentLifeCycleState != 'deleted'", query, parent);
-        return session.query(queryString);
+            String query, String parent, String documentType, String dateAfter,
+            String dateBefore) throws ClientException {
+        StringBuilder queryString = new StringBuilder(String.format(
+                "SELECT * FROM %s WHERE " + "ecm:path STARTSWITH  '%s' AND "
+                        + "ecm:mixinType != 'HiddenInNavigation' AND "
+                        + "ecm:isCheckedInVersion = 0 AND "
+                        + "ecm:currentLifeCycleState != 'deleted'",
+                documentType, parent));
+        if (query != null) {
+            queryString.append(String.format(" AND ecm:fulltext LIKE '%s' ",
+                    query));
+        }
+        if (dateAfter != null && dateBefore != null) {
+            queryString.append(String.format(
+                    " AND dc:created BETWEEN DATE '%s' AND DATE '%s' ",
+                    dateAfter, dateBefore));
+        }
+        return session.query(queryString.toString());
     }
 }

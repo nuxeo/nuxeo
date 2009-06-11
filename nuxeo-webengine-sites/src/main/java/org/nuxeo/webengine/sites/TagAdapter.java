@@ -53,13 +53,9 @@ public class TagAdapter extends DefaultAdapter {
             DocumentObject documentObject = (DocumentObject) getTarget();
             ctx.getRequest().setAttribute(THEME_BUNDLE, SEARCH_THEME_PAGE);
             ctx.setProperty(TAG_DOCUMENT, tagId);
-            if (documentObject instanceof Site) {
+            if (documentObject instanceof AbstractSiteDocumentObject) {
                 return getTemplate("template_default.ftl").args(
-                        ((Site) documentObject).getSiteArguments());
-            }
-            if (documentObject instanceof Page) {
-                return getTemplate("template_default.ftl").args(
-                        ((Page) documentObject).getPageArguments());
+                        ((AbstractSiteDocumentObject) documentObject).getArguments());
             }
             return getTemplate("template_default.ftl");
         } catch (Exception e) {

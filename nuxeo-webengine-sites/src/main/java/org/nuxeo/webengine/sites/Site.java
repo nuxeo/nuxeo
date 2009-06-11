@@ -19,65 +19,45 @@
 
 package org.nuxeo.webengine.sites;
 
-import static org.nuxeo.webengine.sites.utils.SiteConstants.EMAIL;
-import static org.nuxeo.webengine.sites.utils.SiteConstants.PAGE_NAME;
-import static org.nuxeo.webengine.sites.utils.SiteConstants.PAGE_NAME_ATTRIBUTE;
-import static org.nuxeo.webengine.sites.utils.SiteConstants.PERMISSION_ADD_CHILDREN;
-import static org.nuxeo.webengine.sites.utils.SiteConstants.SEARCH_PARAM;
+import static org.nuxeo.webengine.sites.utils.SiteConstants.DEFAULT_WEBSITE_THEMEPAGE_VALUE;
+import static org.nuxeo.webengine.sites.utils.SiteConstants.DEFAULT_WEBSITE_THEME_VALUE;
 import static org.nuxeo.webengine.sites.utils.SiteConstants.SEARCH_THEME_PAGE;
-import static org.nuxeo.webengine.sites.utils.SiteConstants.SITES_THEME_PAGE;
-import static org.nuxeo.webengine.sites.utils.SiteConstants.SITE_DESCRIPTION;
-import static org.nuxeo.webengine.sites.utils.SiteConstants.THEME_BUNDLE;
-import static org.nuxeo.webengine.sites.utils.SiteConstants.THEME_PERSPECTIVE;
-import static org.nuxeo.webengine.sites.utils.SiteConstants.VIEW_PERSPECTIVE;
-import static org.nuxeo.webengine.sites.utils.SiteConstants.WEBCONTAINER_BASELINE;
-import static org.nuxeo.webengine.sites.utils.SiteConstants.WEBCONTAINER_EMAIL;
-import static org.nuxeo.webengine.sites.utils.SiteConstants.WEBCONTAINER_NAME;
-import static org.nuxeo.webengine.sites.utils.SiteConstants.WEBCONTAINER_WELCOMEMEDIA;
-import static org.nuxeo.webengine.sites.utils.SiteConstants.WEBPAGE_THEME;
-import static org.nuxeo.webengine.sites.utils.SiteConstants.WEBPAGE_THEMEPAGE;
+import static org.nuxeo.webengine.sites.utils.SiteConstants.WEBSITE;
+import static org.nuxeo.webengine.sites.utils.SiteConstants.WEBSITE_SCHEMA_THEME;
+import static org.nuxeo.webengine.sites.utils.SiteConstants.WEBSITE_THEMEPAGE;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.ws.rs.FormParam;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Response;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.rest.DocumentObject;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.WebObject;
-import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.webengine.sites.utils.SiteQueriesColection;
-import org.nuxeo.webengine.sites.utils.SiteUtils;
 
 /**
  * Web object implementation corresponding to Site. It is resolved from module
  * root web object. It holds the site fragments back methods.
  */
 
-@WebObject(type = "site", facets = { "Site" })
+@WebObject(type = WEBSITE, superType = "AbstractSiteDocumentObject", facets = { WEBSITE })
 @Produces("text/html; charset=UTF-8")
-public class Site extends DocumentObject {
+public class Site extends AbstractSiteDocumentObject {
 
     private static final Log log = LogFactory.getLog(Site.class);
 
-    private String url;
+    protected String url;
 
     @Override
     public void initialize(Object... args) {
@@ -86,94 +66,13 @@ public class Site extends DocumentObject {
         doc = getSiteDocumentModelByUrl(url);
     }
 
-    @GET
-    public Object doGet() {
-        ctx.getRequest().setAttribute(THEME_BUNDLE, SITES_THEME_PAGE);
-
-        if (doc == null) {
-            return getTemplate("no_site.ftl").arg("url", url);
-        }
-        // getting theme config from document.
-        String theme = SiteUtils.getString(doc, WEBPAGE_THEME, "sites");
-        String themePage = SiteUtils.getString(doc, WEBPAGE_THEMEPAGE,
-                "workspace");
-        ctx.getRequest().setAttribute(THEME_BUNDLE, theme + "/" + themePage);
-
-        String currentPerspective = (String) ctx.getRequest().getAttribute(
-                THEME_PERSPECTIVE);
-        if (StringUtils.isEmpty(currentPerspective)) {
-            // Set view perspective if none present.
-            ctx.getRequest().setAttribute(THEME_PERSPECTIVE, VIEW_PERSPECTIVE);
-        }
-
-        try {
-            return getTemplate("template_default.ftl").args(getSiteArguments());
-        } catch (Exception e) {
-            throw WebException.wrap(e);
-        }
-    }
-
     @Path("{page}")
     public Object doGet(@PathParam("page") String page) {
         try {
             DocumentModel pageDoc = ctx.getCoreSession().getChild(doc.getRef(),
                     page);
-            // getting theme config from document.
-            String theme = SiteUtils.getString(doc, WEBPAGE_THEME, "sites");
-            String themePage = SiteUtils.getString(doc, WEBPAGE_THEMEPAGE,
-                    "page");
-            ctx.getRequest().setAttribute(THEME_BUNDLE, theme + "/" + themePage);
+            setDoGetParameters();
             return ctx.newObject(pageDoc.getType(), pageDoc);
-        } catch (Exception e) {
-            throw WebException.wrap(e);
-        }
-    }
-
-    @GET
-    @Path("logo")
-    public Response getLogo() {
-        Response resp = null;
-        try {
-            resp = SiteUtils.getLogoResponse(doc);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        // return a default image, maybe you want to change this in future
-        if (resp == null) {
-            resp = redirect(getContext().getModule().getSkinPathPrefix()
-                    + "/images/logo.gif");
-        }
-        return resp;
-    }
-
-    @GET
-    @Path("welcomeMedia")
-    public Response getWelcomeMedia() {
-        Response resp = null;
-        try {
-            Blob blob = SiteUtils.getBlob(doc, WEBCONTAINER_WELCOMEMEDIA);
-            if (blob != null) {
-                resp = Response.ok().entity(blob).type(blob.getMimeType()).build();
-            }
-        } catch (Exception e) {
-            log.error("Error while trying to display the website. ", e);
-        }
-        // return a default image, maybe you want to change this in future
-        if (resp == null) {
-            resp = redirect(getContext().getModule().getSkinPathPrefix()
-                    + "/images/logo.gif");
-        }
-        return resp;
-    }
-
-    @POST
-    @Path("search")
-    public Object getSearchParametres(
-            @FormParam("searchParam") String searchParam) {
-        ctx.getRequest().setAttribute(THEME_BUNDLE, SEARCH_THEME_PAGE);
-        ctx.setProperty(SEARCH_PARAM, searchParam);
-        try {
-            return getTemplate("template_default.ftl").args(getSiteArguments());
         } catch (Exception e) {
             throw WebException.wrap(e);
         }
@@ -182,69 +81,15 @@ public class Site extends DocumentObject {
     @Override
     @Path(value = "{path}")
     public Resource traverse(@PathParam("path") String path) {
-        try {
-            return newDocument(path);
-        } catch (Exception e) {
-            if (e instanceof WebResourceNotFoundException) {
-                CoreSession session = ctx.getCoreSession();
-                try {
-                    if (session.hasPermission(doc.getRef(),
-                            PERMISSION_ADD_CHILDREN)) {
-                        DocumentObject parent = (DocumentObject) ctx.getTargetObject();
-                        ctx.getRequest().setAttribute(THEME_PERSPECTIVE,
-                                "create");
-                        ctx.getRequest().setAttribute(PAGE_NAME_ATTRIBUTE, path);
-                        return parent;
-                    } else {
-                        return newObject("WebPage", path);
-                    }
-                } catch (ClientException ce) {
-                    throw WebException.wrap(ce);
-                }
-            } else {
-                throw WebException.wrap(e);
-            }
-        }
-    }
-    @POST
-    @Path("createWebPage")
-    public Object createWebPage() {
-        try {
-            CoreSession session = ctx.getCoreSession();
-            DocumentModel createdDocument = SiteUtils.createWebPageDocument(
-                    ctx.getRequest(), session, doc.getPathAsString());
-            String path = SiteUtils.getPagePath(doc, createdDocument);
-            return redirect(path);
-        } catch (Exception e) {
-            throw WebException.wrap(e);
-        }
-    }
-
-   
-
-    /**
-     * Computes the arguments for a page. It is needed because in page some of
-     * the site properties need be displayed.
-     *
-     * @return
-     * @throws Exception
-     */
-    protected Map<String, Object> getSiteArguments() throws Exception {
-        Map<String, Object> root = new HashMap<String, Object>();
-        root.put(PAGE_NAME, SiteUtils.getString(doc, WEBCONTAINER_NAME, null));
-        root.put(SITE_DESCRIPTION, SiteUtils.getString(doc,
-                WEBCONTAINER_BASELINE, null));
-        root.put(EMAIL, "mailto:"+doc.getPropertyValue(
-                WEBCONTAINER_EMAIL).toString());
-        return root;
+        return super.traverse(path);
     }
 
     protected DocumentModel getSiteDocumentModelByUrl(String url) {
         WebContext context = WebEngine.getActiveContext();
         CoreSession session = context.getCoreSession();
         try {
-            DocumentModelList list = SiteQueriesColection.querySitesByUrl(
-                    session, url);
+            DocumentModelList list = SiteQueriesColection.querySitesByUrlAndDocType(
+                    session, url, getWebSiteDocumentType());
             if (list.size() != 0) {
                 return list.get(0);
             }
@@ -252,6 +97,43 @@ public class Site extends DocumentObject {
             log.error("Unable to retrive the webcontainer ", e);
         }
         return null;
+    }
+
+    @Override
+    protected String getSchemaFieldThemeName() {
+        return WEBSITE_SCHEMA_THEME;
+    }
+
+    @Override
+    protected String getDefaultSchemaFieldThemeValue() {
+        return DEFAULT_WEBSITE_THEME_VALUE;
+    }
+
+    @Override
+    protected String getSchemaFieldThemePageName() {
+        return WEBSITE_THEMEPAGE;
+    }
+
+    @Override
+    protected String getDefaultSchemaFieldThemePageValue() {
+        return DEFAULT_WEBSITE_THEMEPAGE_VALUE;
+    }
+
+    @Override
+    protected Map<String, Object> getErrorArguments() {
+        Map<String, Object> errorArguments = new HashMap<String, Object>();
+        errorArguments.put("url", url);
+        return errorArguments;
+    }
+
+    @Override
+    protected String getErrorTemplateName() {
+        return "no_site.ftl";
+    }
+
+    @Override
+    protected String getSearchThemePage() {
+        return SEARCH_THEME_PAGE;
     }
 
 }
