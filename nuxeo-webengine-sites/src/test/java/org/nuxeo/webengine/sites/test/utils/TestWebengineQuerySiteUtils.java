@@ -34,9 +34,9 @@ import org.nuxeo.webengine.sites.utils.SiteQueriesColection;
 
 /**
  * Unit tests for the query site utils methods.
- * 
+ *
  * @author mcedica
- * 
+ *
  */
 public class TestWebengineQuerySiteUtils extends SQLRepositoryTestCase {
 
@@ -99,7 +99,7 @@ public class TestWebengineQuerySiteUtils extends SQLRepositoryTestCase {
     protected void createSites() throws Exception {
         String workspaceSiteId = IdUtils.generateId(workspaceSiteTitle);
         workspaceSite = session.createDocumentModel("/", workspaceSiteId,
-                "Workspace");
+                "WebSite");
         assertNotNull(workspaceSite);
         workspaceSite.setPropertyValue("dc:title", workspaceSiteTitle);
         workspaceSite.setPropertyValue("webc:url", workspaceSiteUrl);
