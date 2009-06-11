@@ -1032,7 +1032,7 @@
             <exclude>**/MockContext.java</exclude>
           </excludes>
           <rulesets>
-            <ruleset>pmd.xml</ruleset>
+            <ruleset>http://hg.nuxeo.org/nuxeo/raw-file/5.2/pmd.xml</ruleset>
           </rulesets>
         </configuration>
       </plugin>
