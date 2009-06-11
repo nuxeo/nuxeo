@@ -47,10 +47,10 @@ import org.nuxeo.webengine.sites.utils.SiteQueriesColection;
 import org.nuxeo.webengine.sites.utils.SiteUtils;
 
 /**
- * 
+ *
  * Adapter used as a rss feed.
  * The version of the RSS format is 2.0
- * 
+ *
  * @author mcedica
  */
 @WebAdapter(name = "rss", type = "RssAdapter", targetType = "Document")
@@ -59,7 +59,7 @@ public class RssAdapter extends DefaultAdapter {
 
     public static final int NO_PAGES = 15;
     public static final int NO_COMMENTS = 15;
-    
+
     /**
      * Returns a feed with the last modified webpages
      * @throws ClientException
@@ -77,7 +77,7 @@ public class RssAdapter extends DefaultAdapter {
 
             DocumentModel doc = session.getDocument(new IdRef(docId));
             DocumentModelList paged = SiteQueriesColection.queryLastModifiedPages(
-                    session, doc.getPathAsString(), NO_PAGES);
+                    session, doc.getPathAsString(), doc.getType(), NO_PAGES);
             for (DocumentModel documentModel : paged) {
                 StringBuilder path = new StringBuilder(baseUrl);
                 String pagePath = null;
@@ -103,7 +103,7 @@ public class RssAdapter extends DefaultAdapter {
         }
     }
 
-    
+
     /**
      * Returns a feed with the last published comments
      * @throws ClientException
