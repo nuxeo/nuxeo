@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.url;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,7 +35,9 @@ import org.nuxeo.ecm.platform.url.api.DocumentView;
  *
  * @author tiry
  */
-public class DocumentViewImpl implements DocumentView {
+public class DocumentViewImpl implements DocumentView, Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private DocumentLocation documentLocation;
 
