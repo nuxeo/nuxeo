@@ -8,8 +8,8 @@
     </table>
  <div>
   <div><a id="feedrss_pages"
-          href="@rss/rssOnPage?docId=${Document.id}">Nuxeo RSS Last pages</a></div>
+          href="@rss/rssOnPage?docId=${Document.id}">RSS ${Context.getMessage("label.rss.pages")}</a></div>
   </div>
     <div><a id="feedrss_comments"
-          href="@rss/rssOnComments?docId=${Document.id}">Nuxeo RSS Comments</a></div>
+          href="@rss/rssOnComments?docId=${Document.id}">RSS ${Context.getMessage("label.rss.comments")}</a></div>
   </div>
