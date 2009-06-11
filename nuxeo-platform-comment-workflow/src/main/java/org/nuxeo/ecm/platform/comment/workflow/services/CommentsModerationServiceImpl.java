@@ -60,10 +60,6 @@ public class CommentsModerationServiceImpl implements CommentsModerationService 
         jbpmService.createProcessInstance(
                 (NuxeoPrincipal) session.getPrincipal(),
                 CommentsConstants.MODERATION_PROCESS, doc, vars, null);
-        Map<String, Serializable> eventInfo = new HashMap<String, Serializable>();
-        eventInfo.put("emailDetails", "test");
-        notifyEvent(session, CommentsConstants.MODERATION_PROCESS, eventInfo, "test", null, doc);
-
     }
 
     public ProcessInstance getModerationProcess(JbpmService jbpmService,
@@ -93,6 +89,10 @@ public class CommentsModerationServiceImpl implements CommentsModerationService 
         jbpmService.endTask(moderationTask.getId(),
                 CommentsConstants.TRANSITION_TO_PUBLISHED_STATE, null, null,
                 null, (NuxeoPrincipal) session.getPrincipal());
+
+        Map<String, Serializable> eventInfo = new HashMap<String, Serializable>();
+        eventInfo.put("emailDetails", "test");
+        notifyEvent(session, CommentsConstants.COMMENT_PUBLISHED, null, null, null, doc);
     }
 
     public void rejectComment(CoreSession session, DocumentModel doc,
@@ -133,6 +133,7 @@ public class CommentsModerationServiceImpl implements CommentsModerationService 
         session.followTransition(comment.getRef(),
                 CommentsConstants.TRANSITION_TO_PUBLISHED_STATE);
 
+        notifyEvent(session, CommentsConstants.COMMENT_PUBLISHED, null, null, null, comment);
     }
 
     protected static JbpmService getJbpmService() throws ClientException {
@@ -143,7 +144,7 @@ public class CommentsModerationServiceImpl implements CommentsModerationService 
             throw new ClientException(e);
         }
     }
-    
+
     protected void notifyEvent(CoreSession session, String eventId,
             Map<String, Serializable> properties, String comment,
             String category, DocumentModel dm) throws ClientException {
