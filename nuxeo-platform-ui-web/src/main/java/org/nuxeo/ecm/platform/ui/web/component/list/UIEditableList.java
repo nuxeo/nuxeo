@@ -33,6 +33,7 @@ import java.util.Map;
 import javax.el.ELException;
 import javax.el.ValueExpression;
 import javax.faces.FacesException;
+import javax.faces.component.ContextCallback;
 import javax.faces.component.NamingContainer;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIInput;
@@ -67,6 +68,7 @@ import com.sun.facelets.tag.jsf.ComponentSupport;
 public class UIEditableList extends UIInput implements NamingContainer {
 
     public static final String COMPONENT_TYPE = UIEditableList.class.getName();
+
     public static final String COMPONENT_FAMILY = UIEditableList.class.getName();
 
     private static final Log log = LogFactory.getLog(UIEditableList.class);
@@ -961,6 +963,56 @@ public class UIEditableList extends UIInput implements NamingContainer {
         if (!isValid()) {
             context.renderResponse();
         }
+    }
+
+    @Override
+    public boolean invokeOnComponent(FacesContext context, String clientId,
+            ContextCallback callback) throws FacesException {
+        if (null == context || null == clientId || null == callback) {
+            throw new NullPointerException();
+        }
+
+        // try invoking on list
+        String myId = super.getClientId(context);
+        boolean found = false;
+        if (clientId.equals(myId)) {
+            try {
+                callback.invokeContextCallback(context, this);
+                return true;
+            } catch (Exception e) {
+                throw new FacesException(e);
+            }
+        }
+
+        Exception exception = null;
+        List<UIComponent> stamps = getChildren();
+        int oldIndex = getRowIndex();
+        int end = getRowCount();
+        try {
+            int first = 0;
+            for (int i = first; i < end; i++) {
+                setRowIndex(i);
+                if (isRowAvailable()) {
+                    for (UIComponent stamp : stamps) {
+                        found = stamp.invokeOnComponent(context, clientId,
+                                callback);
+                    }
+                } else {
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            exception = e;
+        } finally {
+            setRowIndex(oldIndex);
+        }
+        if (exception != null) {
+            if (exception instanceof RuntimeException) {
+                throw (RuntimeException) exception;
+            }
+        }
+
+        return found;
     }
 
 }
