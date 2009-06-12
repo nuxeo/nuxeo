@@ -37,14 +37,15 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 import org.nuxeo.ecm.core.api.SortInfo;
+import org.nuxeo.ecm.core.api.impl.EmptyResultsProvider;
 import org.nuxeo.ecm.platform.jbpm.dashboard.DashBoardItem;
 import org.nuxeo.ecm.platform.jbpm.dashboard.DocumentProcessItem;
+import org.nuxeo.ecm.platform.jbpm.dashboard.WorkflowDashBoard;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.ui.web.pagination.ResultsProviderFarmUserException;
 import org.nuxeo.ecm.webapp.pagination.ResultsProvidersCache;
 import org.nuxeo.ecm.webapp.querymodel.QueryModelActions;
-import org.nuxeo.ecm.platform.jbpm.dashboard.WorkflowDashBoard;
 /**
  * Dash board actions.
  * <p>
@@ -155,6 +156,10 @@ public class DashBoardActionsBean implements DashboardActions {
 
         Object[] params;
         String location = navigationContext.getCurrentDomainPath();
+        if (location == null) {
+            return new EmptyResultsProvider();
+        }
+
         String templates = location + "/templates";
         if (BOARD_USER.equals(name)) {
             params = new Object[] { currentUser.getName() };
