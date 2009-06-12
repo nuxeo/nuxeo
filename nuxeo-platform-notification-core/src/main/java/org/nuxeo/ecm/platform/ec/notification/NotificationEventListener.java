@@ -233,6 +233,11 @@ public class NotificationEventListener implements PostCommitEventListener {
         // XXX hack, principals have only one model
         DataModel model = recepient.getModel().getDataModels().values().iterator().next();
         String email = (String) model.getData("email");
+        if (email == null || "".equals(email)) {
+            log.error("No email found for user: " + userDest);
+            return;
+        }
+
         String subjectTemplate = notif.getSubjectTemplate();
         String mailTemplate = notif.getTemplate();
 

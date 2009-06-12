@@ -34,6 +34,8 @@ import javax.mail.internet.MimeMessage;
 import javax.naming.InitialContext;
 import javax.security.auth.login.LoginContext;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationService;
@@ -69,6 +71,8 @@ import freemarker.template.Template;
  */
 public class EmailHelper {
 
+    private static final Log log = LogFactory.getLog(EmailHelper.class);
+
     // used for loading templates from strings
     private final Configuration stringCfg = new Configuration();
 
@@ -79,8 +83,7 @@ public class EmailHelper {
     /**
      * Static Method: sendmail(Map mail).
      *
-     * @param mail
-     *            A map of the settings
+     * @param mail A map of the settings
      */
     public void sendmail(Map<String, Object> mail) throws Exception {
 
@@ -88,8 +91,13 @@ public class EmailHelper {
         // Construct a MimeMessage
         MimeMessage msg = new MimeMessage(session);
         msg.setFrom(new InternetAddress(session.getProperty("mail.from")));
+        Object to = mail.get("mail.to");
+        if (!(to instanceof String)) {
+            log.error("Invalid email recipient: " + to);
+            return;
+        }
         msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(
-                (String) mail.get("mail.to"), false));
+                (String) to, false));
 
         RenderingService rs = Framework.getService(RenderingService.class);
 
@@ -98,11 +106,9 @@ public class EmailHelper {
         context.putAll(mail);
         context.setDocument((DocumentModel) mail.get("document"));
 
-        String customSubjectTemplate = (String) mail
-                .get(NotificationConstants.SUBJECT_TEMPLATE_KEY);
+        String customSubjectTemplate = (String) mail.get(NotificationConstants.SUBJECT_TEMPLATE_KEY);
         if (customSubjectTemplate == null) {
-            String subjTemplate = (String) mail
-                    .get(NotificationConstants.SUBJECT_KEY);
+            String subjTemplate = (String) mail.get(NotificationConstants.SUBJECT_KEY);
             Template templ = new Template("name",
                     new StringReader(subjTemplate), stringCfg);
 
@@ -123,8 +129,7 @@ public class EmailHelper {
             for (RenderingResult result : results) {
                 subjectMail = (String) result.getOutcome();
             }
-            subjectMail = NotificationServiceHelper.getNotificationService()
-                    .getEMailSubjectPrefix()
+            subjectMail = NotificationServiceHelper.getNotificationService().getEMailSubjectPrefix()
                     + subjectMail;
             msg.setSubject(subjectMail, "UTF-8");
 
@@ -133,8 +138,8 @@ public class EmailHelper {
 
         msg.setSentDate(new Date());
 
-        rs.registerEngine(new NotificationsRenderingEngine((String) mail
-                .get(NotificationConstants.TEMPLATE_KEY)));
+        rs.registerEngine(new NotificationsRenderingEngine(
+                (String) mail.get(NotificationConstants.TEMPLATE_KEY)));
 
         LoginContext lc = Framework.login();
 
@@ -162,8 +167,8 @@ public class EmailHelper {
         Session session = null;
         // First, try to get the session from JNDI, as would be done under J2EE.
         try {
-            NotificationService service = (NotificationService) Framework
-                    .getRuntime().getComponent(NotificationService.NAME);
+            NotificationService service = (NotificationService) Framework.getRuntime().getComponent(
+                    NotificationService.NAME);
 
             InitialContext ic = new InitialContext();
             session = (Session) ic.lookup(service.getMailSessionJndiName());
