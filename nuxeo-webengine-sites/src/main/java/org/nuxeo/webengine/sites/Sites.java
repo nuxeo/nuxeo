@@ -23,6 +23,7 @@ import static org.nuxeo.webengine.sites.utils.SiteConstants.SITES_THEME_PAGE;
 import static org.nuxeo.webengine.sites.utils.SiteConstants.THEME_BUNDLE;
 import static org.nuxeo.webengine.sites.utils.SiteConstants.WEBCONTAINER_NAME;
 import static org.nuxeo.webengine.sites.utils.SiteConstants.WEBCONTAINER_URL;
+import static org.nuxeo.webengine.sites.utils.SiteConstants.WEBPAGE;
 import static org.nuxeo.webengine.sites.utils.SiteConstants.WEBSITE;
 
 import java.util.ArrayList;
@@ -103,7 +104,7 @@ public class Sites extends DefaultObject {
 
     /**
      * Returns the theme name used for Sites document object type.
-     * 
+     *
      * @return
      */
     protected String getThemePage() {
@@ -112,20 +113,28 @@ public class Sites extends DefaultObject {
 
     /**
      * Returns the document type of the web site.
-     * 
+     *
      * @return
      */
-    protected String getWebSiteDocumentType() {
+    public String getWebSiteDocumentType() {
         return WEBSITE;
     }
 
     /**
      * Returns the name of the web site document object.
-     * 
+     *
      * @return
      */
-    protected String getWebSiteObjectTypeName() {
+    public String getWebSiteObjectTypeName() {
         return WEBSITE;
     }
 
+    /**
+     * Returns the document type of the child
+     *
+     * @return
+     */
+    public String getWebPageDocumentType() {
+        return WEBPAGE;
+    }
 }

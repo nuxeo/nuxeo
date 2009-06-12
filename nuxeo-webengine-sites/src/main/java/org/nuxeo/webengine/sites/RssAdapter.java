@@ -16,9 +16,8 @@ package org.nuxeo.webengine.sites;
 
 import static org.nuxeo.webengine.sites.utils.SiteConstants.MIME_TYPE_RSS_FEED;
 import static org.nuxeo.webengine.sites.utils.SiteConstants.WEBPAGE_DESCRIPTION;
-import static org.nuxeo.webengine.sites.utils.SiteConstants.WEBPAGE;
-import static org.nuxeo.webengine.sites.utils.SiteConstants.WEBSITE;
 
+import java.lang.reflect.InvocationTargetException;
 import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
 import java.util.LinkedList;
@@ -34,6 +33,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
+import org.nuxeo.ecm.core.rest.DocumentObject;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants;
 import org.nuxeo.ecm.webengine.WebEngine;
@@ -48,8 +48,7 @@ import org.nuxeo.webengine.sites.utils.SiteUtils;
 
 /**
  *
- * Adapter used as a rss feed.
- * The version of the RSS format is 2.0
+ * Adapter used as a rss feed. The version of the RSS format is 2.0
  *
  * @author mcedica
  */
@@ -58,10 +57,12 @@ import org.nuxeo.webengine.sites.utils.SiteUtils;
 public class RssAdapter extends DefaultAdapter {
 
     public static final int NO_PAGES = 15;
+
     public static final int NO_COMMENTS = 15;
 
     /**
      * Returns a feed with the last modified webpages
+     *
      * @throws ClientException
      * */
     @GET
@@ -76,15 +77,17 @@ public class RssAdapter extends DefaultAdapter {
             StringBuilder baseUrl = ctx.getServerURL();
 
             DocumentModel doc = session.getDocument(new IdRef(docId));
+
             DocumentModelList paged = SiteQueriesColection.queryLastModifiedPages(
-                    session, doc.getPathAsString(), WEBPAGE, NO_PAGES);
+                    session, doc.getPathAsString(), getWebPageDocumentType(),
+                    NO_PAGES);
             for (DocumentModel documentModel : paged) {
                 StringBuilder path = new StringBuilder(baseUrl);
                 String pagePath = null;
-                if (doc.getType().equals(WEBSITE)) {
+                if (doc.getType().equals(getWebSiteDocumentType())) {
                     pagePath = new String(path.append(SiteUtils.getPagePath(
                             doc, documentModel)));
-                } else if (doc.getType().equals(WEBPAGE)) {
+                } else if (doc.getType().equals(getWebPageDocumentType())) {
                     pagePath = new String(baseUrl.append(SiteUtils.getPagePath(
                             SiteUtils.getFirstWebSiteParent(session, doc),
                             documentModel)));
@@ -103,9 +106,9 @@ public class RssAdapter extends DefaultAdapter {
         }
     }
 
-
     /**
      * Returns a feed with the last published comments
+     *
      * @throws ClientException
      * */
     @GET
@@ -125,11 +128,12 @@ public class RssAdapter extends DefaultAdapter {
 
             String docId = ctx.getRequest().getParameter("docId");
             DocumentModel doc = session.getDocument(new IdRef(docId));
-            if (doc.getType().equals(WEBSITE)) {
+
+            if (doc.getType().equals(getWebSiteDocumentType())) {
                 comments = SiteQueriesColection.queryLastComments(session,
-                        doc.getPathAsString(), NO_COMMENTS, SiteUtils.isCurrentModerated(
-                                session, doc));
-            } else if (doc.getType().equals(WEBPAGE)) {
+                        doc.getPathAsString(), NO_COMMENTS,
+                        SiteUtils.isCurrentModerated(session, doc));
+            } else if (doc.getType().equals(getWebPageDocumentType())) {
                 CommentManager commentManager = SiteUtils.getCommentManager();
                 comments = new DocumentModelListImpl(
                         commentManager.getComments(doc));
@@ -159,6 +163,24 @@ public class RssAdapter extends DefaultAdapter {
                     entries);
         } catch (Exception e) {
             throw WebException.wrap(e);
+        }
+    }
+
+    private String getWebSiteDocumentType() throws ClientException {
+        try {
+            return (String) getTarget().getClass().getMethod("getWebSiteDocumentType").invoke(
+                    getTarget());
+        } catch (Exception e) {
+            throw new ClientException(e);
+        }
+    }
+
+    private String getWebPageDocumentType() throws ClientException {
+        try {
+            return (String) getTarget().getClass().getMethod("getWebPageDocumentType").invoke(
+                    getTarget());
+        } catch (Exception e) {
+            throw new ClientException(e);
         }
     }
 
