@@ -15,7 +15,6 @@
 
 package org.nuxeo.webengine.sites;
 
-import static org.nuxeo.webengine.sites.utils.SiteConstants.SEARCH_THEME_PAGE;
 import static org.nuxeo.webengine.sites.utils.SiteConstants.TAG_DOCUMENT;
 import static org.nuxeo.webengine.sites.utils.SiteConstants.THEME_BUNDLE;
 
@@ -51,11 +50,14 @@ public class TagAdapter extends DefaultAdapter {
     public Object changePerspective(@PathParam("id") String tagId) {
         try {
             DocumentObject documentObject = (DocumentObject) getTarget();
-            ctx.getRequest().setAttribute(THEME_BUNDLE, SEARCH_THEME_PAGE);
+
             ctx.setProperty(TAG_DOCUMENT, tagId);
             if (documentObject instanceof AbstractSiteDocumentObject) {
+                AbstractSiteDocumentObject abstractSiteDocumentObject = (AbstractSiteDocumentObject) documentObject;
+                ctx.getRequest().setAttribute(THEME_BUNDLE,
+                        abstractSiteDocumentObject.getSearchThemePage());
                 return getTemplate("template_default.ftl").args(
-                        ((AbstractSiteDocumentObject) documentObject).getArguments());
+                        abstractSiteDocumentObject.getArguments());
             }
             return getTemplate("template_default.ftl");
         } catch (Exception e) {

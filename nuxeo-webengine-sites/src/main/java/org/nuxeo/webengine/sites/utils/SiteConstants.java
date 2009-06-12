@@ -98,7 +98,7 @@ public final class SiteConstants {
     public static final String CREATE_PERSPECTIVE = "create";
     public static final String EDIT_PERSPECTIVE = "edit";
     public static final String PAGE_THEME_PAGE = "sites/page";
-    public static final String SEARCH_THEME_PAGE = "sites/search";
+    public static final String SEARCH_THEME_PAGE = "search";
     public static final String SITES_THEME_PAGE = "sites/default";
     
     /**
