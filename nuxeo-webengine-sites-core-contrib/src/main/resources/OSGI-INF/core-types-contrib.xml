@@ -19,7 +19,6 @@
       <schema name="webcontainer"/>
       <!-- the content of webcontainer -->
       <schema name="files" />
-      <facet name="SuperSpace"/>
       <facet name="WebView"/>
     </doctype>
     

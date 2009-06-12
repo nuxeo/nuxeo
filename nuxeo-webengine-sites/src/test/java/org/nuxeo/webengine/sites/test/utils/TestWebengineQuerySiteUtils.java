@@ -18,6 +18,9 @@
 
 package org.nuxeo.webengine.sites.test.utils;
 
+import static org.nuxeo.webengine.sites.utils.SiteConstants.WEBPAGE;
+import static org.nuxeo.webengine.sites.utils.SiteConstants.WEBSITE;
+
 import java.util.List;
 
 import org.nuxeo.common.utils.IdUtils;
@@ -95,7 +98,8 @@ public class TestWebengineQuerySiteUtils extends SQLRepositoryTestCase {
 
     protected void createSites() throws Exception {
         String workspaceSiteId = IdUtils.generateId(workspaceSiteTitle);
-        workspaceSite = session.createDocumentModel("/", workspaceSiteId, "Workspace");
+        workspaceSite = session.createDocumentModel("/", workspaceSiteId,
+                "WebSite");
         assertNotNull(workspaceSite);
         workspaceSite.setPropertyValue("dc:title", workspaceSiteTitle);
         workspaceSite.setPropertyValue("webc:url", workspaceSiteUrl);
@@ -108,8 +112,7 @@ public class TestWebengineQuerySiteUtils extends SQLRepositoryTestCase {
         workspaceSite = session.getDocument(workspaceSite.getRef());
 
         String webSiteId = IdUtils.generateId(webSiteTitle);
-        webSite = session.createDocumentModel("/",
-                webSiteId, "WebSite");
+        webSite = session.createDocumentModel("/", webSiteId, "WebSite");
         assertNotNull(webSite);
         webSite.setPropertyValue("dc:title", webSiteTitle);
         webSite.setPropertyValue("webc:url", webSiteUrl);
@@ -123,9 +126,10 @@ public class TestWebengineQuerySiteUtils extends SQLRepositoryTestCase {
     }
 
     protected void createWebPages() throws Exception {
-        webPageForWorkspaceSite = session.createDocumentModel(workspaceSite.getPathAsString(),
-                IdUtils.generateId(pageForWorkspaceSiteTitle + System.currentTimeMillis()),
-                SiteConstants.WEBPAGE);
+        webPageForWorkspaceSite = session.createDocumentModel(
+                workspaceSite.getPathAsString(),
+                IdUtils.generateId(pageForWorkspaceSiteTitle
+                        + System.currentTimeMillis()), SiteConstants.WEBPAGE);
         assertNotNull(webPageForWorkspaceSite);
         webPageForWorkspaceSite = session.createDocument(webPageForWorkspaceSite);
         webPageForWorkspaceSite = session.saveDocument(webPageForWorkspaceSite);
@@ -133,9 +137,10 @@ public class TestWebengineQuerySiteUtils extends SQLRepositoryTestCase {
         // re-read the document model
         webPageForWorkspaceSite = session.getDocument(webPageForWorkspaceSite.getRef());
 
-        webPageForWebSite = session.createDocumentModel(webSite.getPathAsString(),
-                IdUtils.generateId(pageForWebSiteTitle + System.currentTimeMillis()),
-                SiteConstants.WEBPAGE);
+        webPageForWebSite = session.createDocumentModel(
+                webSite.getPathAsString(),
+                IdUtils.generateId(pageForWebSiteTitle
+                        + System.currentTimeMillis()), SiteConstants.WEBPAGE);
         assertNotNull(webPageForWebSite);
         webPageForWebSite = session.createDocument(webPageForWebSite);
         webPageForWebSite = session.saveDocument(webPageForWebSite);
@@ -149,12 +154,16 @@ public class TestWebengineQuerySiteUtils extends SQLRepositoryTestCase {
 
         webCommentForWorkspaceSite = session.createDocumentModel("Comment");
         assertNotNull(webCommentForWorkspaceSite);
-        webCommentForWorkspaceSite = commentManager.createLocatedComment(webPageForWorkspaceSite, webCommentForWorkspaceSite, workspaceSite.getPathAsString());
+        webCommentForWorkspaceSite = commentManager.createLocatedComment(
+                webPageForWorkspaceSite, webCommentForWorkspaceSite,
+                workspaceSite.getPathAsString());
         session.save();
 
         webCommentForWebSite = session.createDocumentModel("Comment");
         assertNotNull(webCommentForWebSite);
-        webCommentForWebSite = commentManager.createLocatedComment(webPageForWebSite, webCommentForWebSite, webSite.getPathAsString());
+        webCommentForWebSite = commentManager.createLocatedComment(
+                webPageForWebSite, webCommentForWebSite,
+                webSite.getPathAsString());
         session.save();
     }
 
@@ -165,25 +174,26 @@ public class TestWebengineQuerySiteUtils extends SQLRepositoryTestCase {
     }
 
     public void testQueryAllSites() throws Exception {
-        List<DocumentModel> allSites = SiteQueriesColection.queryAllSites(session);
+        List<DocumentModel> allSites = SiteQueriesColection.queryAllSites(
+                session, WEBSITE);
         assertEquals(2, allSites.size());
     }
 
     public void testQueryAllSitesByUrl() throws Exception {
-        List<DocumentModel> allWorkspaceSitesByUrlList = SiteQueriesColection.querySitesByUrl(
-                session, workspaceSiteUrl);
+        List<DocumentModel> allWorkspaceSitesByUrlList = SiteQueriesColection.querySitesByUrlAndDocType(
+                session, workspaceSiteUrl, WEBSITE);
         assertEquals(1, allWorkspaceSitesByUrlList.size());
-        List<DocumentModel> allWebSitesByUrlList = SiteQueriesColection.querySitesByUrl(
-                session, webSiteUrl);
+        List<DocumentModel> allWebSitesByUrlList = SiteQueriesColection.querySitesByUrlAndDocType(
+                session, webSiteUrl, WEBSITE);
         assertEquals(1, allWebSitesByUrlList.size());
     }
 
     public void testQueryLastModifiedWebPages() throws Exception {
         List<DocumentModel> lastWorkspaceSitePages = SiteQueriesColection.queryLastModifiedPages(
-                session, workspaceSite.getPathAsString(), 5);
+                session, workspaceSite.getPathAsString(), WEBPAGE, 5);
         assertEquals(1, lastWorkspaceSitePages.size());
         List<DocumentModel> lastWebSitePages = SiteQueriesColection.queryLastModifiedPages(
-                session, webSite.getPathAsString(), 5);
+                session, webSite.getPathAsString(), WEBPAGE, 5);
         assertEquals(1, lastWebSitePages.size());
     }
 

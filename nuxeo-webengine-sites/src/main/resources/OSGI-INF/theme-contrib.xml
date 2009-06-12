@@ -180,7 +180,7 @@
     </model>
     <model name="webpage item">
       <class>org.nuxeo.webengine.sites.models.WebpageModel</class>
-    </model>search
+    </model>
   
     <model name="webpage-comment">
       <class>org.nuxeo.webengine.sites.models.WebpageCommentListModel</class>

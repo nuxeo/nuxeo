@@ -34,17 +34,26 @@ public final class CommentsConstants {
     public static final String PERMISSION_WRITE = "Write";
 
     public static final String PERMISSION_MANAGE_EVERYTHING = "Everything";
-    
+
     public static final String TRANSITION_TO_PUBLISHED_STATE = "moderation_publish";
-    
+
     public static final String PUBLISHED_STATE = "moderation_published";
 
     public static final String PENDING_STATE = "moderation_pending";
-    
+
     public static final String REJECT_STATE = "moderation_reject";
-    
-    public static final String MODERATION_PROCESS = "comments_moderation"; 
-    
+
+    public static final String MODERATION_PROCESS = "comments_moderation";
+
     public static final String COMMENT_ID = "commentId";
+
+    public static final String COMMENT_PUBLISHED = "commentPublished";
+
     
+    /**
+     * Schemas and fields.
+     */
+    public static final String COMMENT_CREATION_DATE = "comment:creationDate";
+    public static final String COMMENT_AUTHOR = "comment:author";
+    public static final String COMMENT_TEXT = "comment:text";
 }

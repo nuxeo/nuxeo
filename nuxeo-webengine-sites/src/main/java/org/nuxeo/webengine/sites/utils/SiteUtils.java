@@ -21,8 +21,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -45,7 +47,7 @@ import org.nuxeo.webengine.sites.JsonAdapter;
 
 /**
  * Utility class for sites implementation.
- *
+ * 
  * @author rux added web comments related
  */
 public class SiteUtils {
@@ -85,7 +87,7 @@ public class SiteUtils {
     /**
      * Gets the number of comment added on a page (published actually, if the
      * moderation is on).
-     *
+     * 
      * @param session
      * @param page
      * @return
@@ -109,7 +111,7 @@ public class SiteUtils {
 
     /**
      * Retrieves user details for a certain username.
-     *
+     * 
      * @param username
      * @return user first name + user last name
      * @throws Exception
@@ -126,10 +128,10 @@ public class SiteUtils {
         }
         return principal.getFirstName() + " " + principal.getLastName();
     }
-    
+
     /**
      * Returns the path to all the existing web containers.
-     *
+     * 
      * @return the path to all the existing web containers
      */
     public static StringBuilder getWebContainersPath() {
@@ -141,7 +143,7 @@ public class SiteUtils {
 
     /**
      * Returns the path for a webPage from a webSite.
-     *
+     * 
      * @param ws the web site
      * @param documentModel the webPage
      * @return the path
@@ -156,16 +158,17 @@ public class SiteUtils {
     }
 
     /**
-     * Creates a web page as document model.
-     *
+     * Creates a document type that is received as parameter, as document model.
+     * 
      * @param request
      * @param session
      * @param parentPath
+     * @param documentType
      * @return
      * @throws Exception
      */
-    public static DocumentModel createWebPageDocument(
-            HttpServletRequest request, CoreSession session, String parentPath)
+    public static DocumentModel createDocument(HttpServletRequest request,
+            CoreSession session, String parentPath, String documentType)
             throws Exception {
         String title = request.getParameter("title");
         String pageName = request.getParameter(SiteConstants.PAGE_NAME_ATTRIBUTE);
@@ -180,7 +183,7 @@ public class SiteUtils {
         theName = theName.replaceAll("[ | \\t|/\\@|\\?|\\&]+", "-");
 
         DocumentModel documentModel = session.createDocumentModel(parentPath,
-                theName, SiteConstants.WEBPAGE);
+                theName, documentType);
         documentModel.setPropertyValue("dc:title", title);
         documentModel.setPropertyValue("dc:description", description);
         documentModel.setPropertyValue(SiteConstants.WEBPAGE_EDITOR, isRichtext);
@@ -273,7 +276,7 @@ public class SiteUtils {
     /**
      * This method is used to retrieve the <b>WebPage</b> where this
      * <b>WebComment</b> was published
-     *
+     * 
      * @param comment
      * @return the <b>WebPage</b>
      * @throws Exception
@@ -395,4 +398,18 @@ public class SiteUtils {
         return new String(firstNwords);
     }
 
+    /**
+     * Computes the arguments for rss feed
+     * 
+     * @return
+     * @throws Exception
+     */
+    public static Map<String, Object> getRssFeedArguments(WebContext ctx,
+            String key) throws Exception {
+        Map<String, Object> root = new HashMap<String, Object>();
+        root.put("title", ctx.getMessage(key));
+        root.put("link", " ");
+        root.put("description", " ");
+        return root;
+    }
 }

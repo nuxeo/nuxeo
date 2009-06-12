@@ -8,10 +8,9 @@
       target="org.nuxeo.ecm.platform.ec.notification.service.NotificationService"
       point="notifications">
 
-    <notification name="ApproveComment" channel="email" enabled="true" availableIn="Workspace"
+    <notification name="CommentPublication" channel="email" enabled="true" availableIn="Workspace"
       autoSubscribed="false" template="comment" subject="Comment published" label="notifications.name.Comments">
-      <event name="comments_moderation"/>
-
+      <event name="commentPublished"/>
     </notification>
     
   </extension>

@@ -16,14 +16,16 @@
  */
 package org.nuxeo.webengine.sites.fragments;
 
+import static org.nuxeo.webengine.sites.utils.SiteConstants.DATE_AFTER;
+import static org.nuxeo.webengine.sites.utils.SiteConstants.DATE_BEFORE;
 import static org.nuxeo.webengine.sites.utils.SiteConstants.SEARCH_PARAM;
+import static org.nuxeo.webengine.sites.utils.SiteConstants.SEARCH_PARAM_DOC_TYPE;
 import static org.nuxeo.webengine.sites.utils.SiteConstants.TAG_DOCUMENT;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -31,6 +33,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
+import org.nuxeo.ecm.platform.tag.TagService;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.runtime.api.Framework;
@@ -41,15 +44,12 @@ import org.nuxeo.webengine.sites.models.SearchListModel;
 import org.nuxeo.webengine.sites.models.SearchModel;
 import org.nuxeo.webengine.sites.utils.SiteQueriesColection;
 import org.nuxeo.webengine.sites.utils.SiteUtils;
-import org.nuxeo.ecm.platform.tag.TagService;
 
 /**
- * Action fragment for initializing the fragment :
- *    related to searching a certain
- *    webPage between all the pages under a <b>WebSite</b> that contains in title,
- *    description , main content or attached files the given searchParam,
- * or
- *     related to searching all the documents for a certain tag    
+ * Action fragment for initializing the fragment : related to searching a
+ * certain webPage between all the pages under a <b>WebSite</b> that contains in
+ * title, description , main content or attached files the given searchParam, or
+ * related to searching all the documents for a certain tag
  * 
  * @author rux
  * 
@@ -76,6 +76,11 @@ public class SearchResultsFragment extends AbstractFragment {
 
                 String searchParam = (String) ctx.getProperty(SEARCH_PARAM);
                 String tagDocumentId = (String) ctx.getProperty(TAG_DOCUMENT);
+                String documentType = (String) ctx.getProperty(SEARCH_PARAM_DOC_TYPE);
+
+                String dateAfter = (String) ctx.getProperty(DATE_AFTER);
+                String dateBefore = (String) ctx.getProperty(DATE_BEFORE);
+
                 TagService tagService = Framework.getService(TagService.class);
                 SearchModel searchModel = null;
                 GregorianCalendar date = null;
@@ -92,11 +97,12 @@ public class SearchResultsFragment extends AbstractFragment {
                         documentModel);
                 DocumentModelList results = new DocumentModelListImpl(
                         new ArrayList<DocumentModel>());
-                if (!StringUtils.isEmpty(searchParam) && ws != null
-                        && StringUtils.isEmpty(tagDocumentId)) {
+                if ((!StringUtils.isEmpty(searchParam) || (dateAfter != null && dateBefore != null))
+                        && ws != null && StringUtils.isEmpty(tagDocumentId)) {
 
                     results = SiteQueriesColection.querySearchPages(session,
-                            searchParam, ws.getPathAsString());
+                            searchParam, ws.getPathAsString(), documentType,
+                            dateAfter, dateBefore);
                 }
 
                 if (StringUtils.isEmpty(searchParam)
@@ -104,7 +110,14 @@ public class SearchResultsFragment extends AbstractFragment {
                     List<String> docsForTag = tagService.listDocumentsForTag(
                             tagDocumentId, session.getPrincipal().getName());
                     for (String docForTagId : docsForTag) {
-                        results.add(session.getDocument(new IdRef(docForTagId)));
+                        DocumentModel document = session.getDocument(new IdRef(
+                                docForTagId));
+                        DocumentModel webSite = SiteUtils.getFirstWebSiteParent(
+                                session, document);
+                        if (ws.equals(webSite)) {
+                            results.add(session.getDocument(new IdRef(
+                                    docForTagId)));
+                        }
                     }
                 }
                 for (DocumentModel document : results) {
