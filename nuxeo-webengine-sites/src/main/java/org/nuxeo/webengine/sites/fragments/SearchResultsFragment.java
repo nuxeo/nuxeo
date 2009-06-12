@@ -110,7 +110,14 @@ public class SearchResultsFragment extends AbstractFragment {
                     List<String> docsForTag = tagService.listDocumentsForTag(
                             tagDocumentId, session.getPrincipal().getName());
                     for (String docForTagId : docsForTag) {
-                        results.add(session.getDocument(new IdRef(docForTagId)));
+                        DocumentModel document = session.getDocument(new IdRef(
+                                docForTagId));
+                        DocumentModel webSite = SiteUtils.getFirstWebSiteParent(
+                                session, document);
+                        if (ws.equals(webSite)) {
+                            results.add(session.getDocument(new IdRef(
+                                    docForTagId)));
+                        }
                     }
                 }
                 for (DocumentModel document : results) {
