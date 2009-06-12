@@ -6,10 +6,14 @@
         </td>
       </tr>
     </table>
- <div>
-  <div><a id="feedrss_pages"
-          href="@rss/rssOnPage?docId=${Document.id}">RSS ${Context.getMessage("label.rss.pages")}</a></div>
-  </div>
-    <div><a id="feedrss_comments"
-          href="@rss/rssOnComments?docId=${Document.id}">RSS ${Context.getMessage("label.rss.comments")}</a></div>
-  </div>
+ <form action="@rss/rssOnPage" method="get">
+      <input type="image"  alt="" src="${skinPath}/images/feed.png"  value="submit">${Context.getMessage("label.rss.pages")}
+      <input type="hidden" name="docId" value="${Document.id}" />
+ </form>
+ 
+  <form action="@rss/rssOnComments" method="get">
+      <input type="image" alt="" src="${skinPath}/images/feed.png"  value="submit">${Context.getMessage("label.rss.comments")}
+      <input type="hidden" name="docId" value="${Document.id}" />
+ </form>
+ </div>
+ 
