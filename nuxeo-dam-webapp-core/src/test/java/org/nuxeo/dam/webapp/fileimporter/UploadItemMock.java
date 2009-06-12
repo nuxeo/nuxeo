@@ -29,7 +29,6 @@ public class UploadItemMock extends UploadItem {
     public static final UploadEvent getUploadEvent(File file) {
         UploadItem item = new UploadItem(file.getName(), null, file);
         UIComponent component = new UIData();
-
         return new UploadEvent(component, item);
     }
 }

@@ -23,12 +23,12 @@ import java.io.File;
 
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.dam.platform.context.ImportActionsBean;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
+import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
-import org.nuxeo.ecm.platform.filemanager.utils.FileManagerUtils;
 import org.nuxeo.runtime.api.Framework;
 import org.richfaces.event.UploadEvent;
 
@@ -99,8 +99,7 @@ public class TestZipImporter extends RepositoryOSGITestCase {
     public void testImportZip() throws Exception {
         File file = getTestFile("test-data/test.zip");
 
-        byte[] content = FileManagerUtils.getBytesFromFile(file);
-        ByteArrayBlob input = new ByteArrayBlob(content, "application/zip");
+        Blob input = StreamingBlob.createFromFile(file, "application/zip");
 
         DocumentModel doc = service.createDocumentFromBlob(coreSession, input,
                 root.getPathAsString(), true, "test-data/test.zip");
@@ -121,7 +120,6 @@ public class TestZipImporter extends RepositoryOSGITestCase {
         ImportActionsBean importActions = new ImportActionsMock(coreSession,
                 service);
 
-
         DocumentModel importSet = importActions.getNewImportSet();
 
         File file = getTestFile("test-data/test.zip");
@@ -138,10 +136,7 @@ public class TestZipImporter extends RepositoryOSGITestCase {
         assertEquals(title, "myimportset");
         assertEquals(type, "ImportSet");
 
-
-
         DocumentModelList children = coreSession.getChildren(importSet.getRef());
-
         assertNotNull(children);
         assertEquals(3, children.size());
         DocumentModel child = coreSession.getChild(importSet.getRef(), "plain");
