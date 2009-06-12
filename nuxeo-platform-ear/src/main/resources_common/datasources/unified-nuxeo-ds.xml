@@ -22,13 +22,15 @@
 
   <!-- Configuration for Postgres -->
   <!-- 
-    <local-tx-datasource>
+  <xa-datasource>
     <jndi-name>NuxeoDS</jndi-name>
-    <connection-url>jdbc:postgresql://localhost:5432/nuxeo</connection-url>
-    <driver-class>org.postgresql.Driver</driver-class>
-    <user-name>username</user-name>
-    <password>myPr3c1ous</password>
-    <check-valid-connection-sql>;</check-valid-connection-sql>
-    </local-tx-datasource>
+    <xa-datasource-class>org.postgresql.xa.PGXADataSource</xa-datasource-class>
+    <xa-datasource-property name="ServerName">localhost</xa-datasource-property>
+    <xa-datasource-property name="PortNumber">5432</xa-datasource-property>
+    <xa-datasource-property name="DatabaseName">nuxeo</xa-datasource-property>
+    <xa-datasource-property name="User">username</xa-datasource-property>
+    <xa-datasource-property name="Password">myPr3c1ous</xa-datasource-property>
+    <track-connection-by-tx/>
+  </xa-datasource>
   -->
 </datasources>
