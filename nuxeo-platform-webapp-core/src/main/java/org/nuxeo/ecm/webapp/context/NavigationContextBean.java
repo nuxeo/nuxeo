@@ -44,9 +44,9 @@ import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Out;
+import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.annotations.web.RequestParameter;
-import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Context;
 import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.core.Events;
@@ -92,8 +92,9 @@ import org.nuxeo.ecm.webapp.pagination.ResultsProvidersCache;
  */
 @Name("navigationContext")
 @Scope(CONVERSATION)
-@Install(precedence=FRAMEWORK)
-public class NavigationContextBean implements NavigationContextLocal, Serializable {
+@Install(precedence = FRAMEWORK)
+public class NavigationContextBean implements NavigationContextLocal,
+        Serializable {
 
     private static final long serialVersionUID = -3708768859028774906L;
 
@@ -111,7 +112,7 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
     // - simple getters
     // - via the context thanks to @Factory
 
-    @In(create=true, required = false)
+    @In(create = true, required = false)
     private ServerContextBean serverLocator;
 
     private DocumentModel currentDomain;
@@ -128,18 +129,7 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
 
     private List<DocumentModel> currentDocumentParents;
 
-    // private String baseURL="";
-
-    // this is used for documents about to create
-    // which are not yet persisted thus not all their fields are
-    // valid: like Ref
-    // NXGED-1021: we need to re-inject this from the context with the values that might
-    // be set from a create page. If we don't do this the document filled in with form
-    // data will be lost in the context replaced later with an empty one that is de-seriliazed
-    // with this bean.
-    // XXX : injection removed !
-    // @In(required = alse)
-    // @Out(required = false)
+    // document model that is not persisted yet (useful for creation)
     private DocumentModel changeableDocument;
 
     private List<PathElement> parents;
@@ -164,12 +154,11 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
     }
 
     /**
-     * Implementation details: the path to current domain
-     * is deduced from the path of current document
-     * (hardcoded rule that it'd be the first element).
+     * Implementation details: the path to current domain is deduced from the
+     * path of current document (hardcoded rule that it'd be the first element).
      * <p>
-     * If current document is null, then the first document found is
-     * used instead.
+     * If current document is null, then the first document found is used
+     * instead.
      */
     public String getCurrentDomainPath() throws ClientException {
         if (currentDomain != null) {
@@ -180,14 +169,15 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
             path = currentDocument.getPath();
         } else {
             // Find any document, and use its domain.
-            DocumentModelList docs = documentManager.query("SELECT * FROM Document", 1);
+            DocumentModelList docs = documentManager.query(
+                    "SELECT * FROM Document", 1);
             if (docs.size() < 1) {
                 log.error("Could not find a single document readable by current user.");
                 return null;
             }
             path = docs.get(0).getPath();
         }
-        String[] segs = {path.segment(0)};
+        String[] segs = { path.segment(0) };
         return Path.createFromSegments(segs).toString();
     }
 
@@ -205,9 +195,6 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
         if (currentDocument == null) {
             currentDocumentParents = null;
         } else {
-            // failsafe: if the ref is null (because of bugs in other
-            // components)
-            // we might end with the destruction of this bean.
             DocumentRef ref = currentDocument.getRef();
             if (ref == null) {
                 throw new ClientException(
@@ -221,7 +208,6 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
         resetCurrentPath();
         eventContext.remove("currentDocument");
 
-        // raise events
         EventManager.raiseEventsOnDocumentSelected(currentDocument);
     }
 
@@ -257,7 +243,7 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
         return currentSuperSpace;
     }
 
-    @Observer( value={ EventNames.DOCUMENT_CHILDREN_CHANGED }, create=false, inject=false)
+    @Observer(value = { EventNames.DOCUMENT_CHILDREN_CHANGED }, create = false, inject = false)
     @BypassInterceptors
     public void resetCurrentDocumentChildrenCache(DocumentModel targetDoc) {
         if (targetDoc != null && currentDocument != null
@@ -267,8 +253,6 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
         resultsProvider = null;
     }
 
-    // @Observer({ EventNames.CONTENT_ROOT_SELECTION_CHANGED,
-    // EventNames.DOCUMENT_SELECTION_CHANGED })
     public DocumentModelList getCurrentDocumentChildren()
             throws ClientException {
         final String logPrefix = "<getCurrentDocumentChildren> ";
@@ -278,14 +262,11 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
             return new DocumentModelListImpl();
         }
 
-
         FacetFilter facetFilter = new FacetFilter("HiddenInNavigation", false);
         try {
             currentDocumentChildren = documentManager.getChildren(
                     currentDocument.getRef(), null, SecurityConstants.READ,
                     facetFilter, null);
-            // logDocWithTitle(logPrefix + "Retrieved children for: ",
-            // currentDocument);
         } catch (Throwable t) {
             throw ClientException.wrap(t);
         }
@@ -304,7 +285,6 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
         this.resultsProvider = resultsProvider;
     }
 
-    //@Observer( { EventNames.DOCUMENT_CHILDREN_CHANGED })
     public void invalidateChildrenProvider() {
         ResultsProvidersCache resultsProvidersCache = (ResultsProvidersCache) Component.getInstance("resultsProvidersCache");
         resultsProvidersCache.invalidate(DocumentChildrenStdFarm.CHILDREN_BY_COREAPI);
@@ -320,35 +300,16 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
             throws ClientException {
         final String logPrefix = "<getCurrentDocumentChildrenPage> ";
 
-        // if (resultsProvider != null) {
-        // return resultsProvider.getCurrentPage();
-        // }
-
         if (documentManager == null) {
             log.error(logPrefix + "documentManager not initialized");
             return new DocumentModelListImpl();
         }
 
-        // FacetFilter facetFilter = new FacetFilter("HiddenInNavigation",
-        // false);
         try {
-            // DocumentModelIterator resultDocsIt =
-            // documentManager.getChildrenIterator(
-            // currentDocument.getRef(), null, SecurityConstants.READ,
-            // facetFilter);
-
-            //
-            // resultsProvider = new DocumentsPageProvider(resultDocsIt, 10);
-            // resultsProvider =
-            // documentChildrenFarm.getResultsProvider(DocumentChildrenStdFarm.CHILDREN_BY_COREAPI);
-
             ResultsProvidersCache resultsProvidersCache = (ResultsProvidersCache) Component.getInstance("resultsProvidersCache");
             resultsProvider = resultsProvidersCache.get(DocumentChildrenStdFarm.CHILDREN_BY_COREAPI);
 
             currentDocumentChildren = resultsProvider.getCurrentPage();
-
-            // logDocWithTitle(logPrefix + "Retrieved children for: ",
-            // currentDocument);
         } catch (Throwable t) {
             throw ClientException.wrap(t);
         }
@@ -362,13 +323,6 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
 
     public void setCurrentDomain(DocumentModel domainDocModel)
             throws ClientException {
-        /*
-         * if (domainDocModel != currentDocument) { this.currentDomain =
-         * domainDocModel; // XXX AT: domain is a document, having it as
-         * currentDocument is // usefull this.currentDocument = domainDocModel; //
-         * reset everything else this.currentWorkspace = null;
-         * this.currentDocumentChildren = getCurrentDocumentChildren(); }
-         */
         if (!checkIfUpdateNeeded(currentDomain, domainDocModel)) {
             return;
         }
@@ -410,8 +364,8 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
 
     protected boolean checkIfUpdateNeeded(DocumentModel ctxDoc,
             DocumentModel newDoc) {
-        if (ctxDoc == null && newDoc != null
-                || ctxDoc != null && newDoc == null) {
+        if (ctxDoc == null && newDoc != null || ctxDoc != null
+                && newDoc == null) {
             return true;
         }
         if (ctxDoc == null && newDoc == null) {
@@ -445,24 +399,12 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
 
         RepositoryLocation currentRepository = serverLocator.getCurrentServerLocation();
 
-        /*if (currentRepository==null)
-        {
-            log.warn("currentServerLocation is null : is this normal");
-            if (currentDocument!=null)
-            {
-                String repoName = currentDocument.getRepositoryName();
-                log.warn("trying to automatically set currentServerLocation is null");
-                try {
-                    setCurrentServerLocation(new RepositoryLocation(repoName));
-                } catch (ClientException e) {
-                    log.warn("unable to find currentServerLocation");
-                }
-            }
-        }*/
         return currentRepository;
     }
 
-    // XXX: use getCurrentServerLocation() instead
+    /**
+     * @deprecated use getCurrentServerLocation() instead
+     */
     @Deprecated
     public RepositoryLocation getSelectedServerLocation() {
         return serverLocator.getCurrentServerLocation();
@@ -489,7 +431,8 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
         Events.instance().raiseEvent(EventNames.LOCATION_SELECTION_CHANGED);
 
         DocumentModel rootDocument = documentManager.getRootDocument();
-        if (documentManager.hasPermission(rootDocument.getRef(), SecurityConstants.READ)) {
+        if (documentManager.hasPermission(rootDocument.getRef(),
+                SecurityConstants.READ)) {
             currentDocument = rootDocument;
             updateContextVariables();
         }
@@ -504,9 +447,6 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
             return documentManager;
         }
         DocumentManagerBusinessDelegate documentManagerBD = (DocumentManagerBusinessDelegate) Contexts.lookupInStatefulContexts("documentManager");
-        // DocumentManagerBusinessDelegate documentManagerBD =
-        // (DocumentManagerBusinessDelegate) sessionContext
-        // .get("documentManager");
         if (documentManagerBD == null) {
             // this is the first time we select the location, create a
             // DocumentManagerBusinessDelegate instance
@@ -550,7 +490,7 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
         return currentContentRoot;
     }
 
-    //@Factory(value = "currentServerLocation", scope = EVENT)
+    // @Factory(value = "currentServerLocation", scope = EVENT)
     public RepositoryLocation factoryCurrentServerLocation() {
         return getCurrentServerLocation();
     }
@@ -590,8 +530,6 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
             setCurrentDocument(workspaceDocModel);
             return;
         }
-
-        // updateDocumentContext(workspaceDocModel);
     }
 
     public void updateDocumentContext(DocumentModel doc) throws ClientException {
@@ -604,18 +542,9 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
      */
     protected void updateContextVariables() throws ClientException {
 
-        // if (null == currentDocument) {
-        // throw new IllegalArgumentException("null currentDocument");
-        // }
-
         // XXX flush method is not implemented for Event context :)
         eventContext.set("currentDocument", currentDocument);
 
-        // XXX: backward compatibility : to be removed
-        //sessionContext.set("currentItem", currentDocument);
-        //currentItem = currentDocument;
-
-        //sessionContext.set("changeableDocument", currentDocument);
         if (currentDocument != null) {
             changeableDocument = currentDocument;
             eventContext.set("changeableDocument", changeableDocument);
@@ -623,9 +552,6 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
             changeableDocument = currentDocument;
             eventContext.remove("changeableDocument");
         }
-
-        // TODO: OG: what is the use of that variable?
-        //sessionContext.set("selectedDocument", currentDocument);
 
         if (currentDocument == null) {
             return;
@@ -644,13 +570,11 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
                 docType = docModel.getType();
 
                 if (docType != null && docType.equals("Workspace")) {
-                    //sessionContext.set("currentWorkspace", docModel);
                     setCurrentWorkspace(docModel);
                 }
 
                 if (null == docType || docType.equals("WorkspaceRoot")
                         || docType.equals("SectionRoot")) {
-                    //sessionContext.set("contentRootDocument", docModel);
                     setCurrentContentRoot(docModel);
                 }
 
@@ -658,7 +582,6 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
                     if (!docModel.equals(currentDomain)) {
                         // update the currentDomain
                         currentDomain = docModel;
-                        //sessionContext.set("currentDomain", currentDomain);
                         setCurrentDomain(docModel);
                     }
                 }
@@ -680,13 +603,6 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
     }
 
     public void resetCurrentContext() {
-        //sessionContext.set("currentItem", null);
-        //sessionContext.set("currentDocument", null);
-        //sessionContext.set("changeableDocument", null);
-        //sessionContext.set("selectedDocument", null);
-        //sessionContext.set("currentDomain", null);
-        //sessionContext.set("contentRootDocument", null);
-
         // flush event context
         eventContext.remove("currentDocument");
         eventContext.remove("changeableDocument");
@@ -717,15 +633,11 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
             // the given document is a changeable document
             changeableDocument = doc;
             eventContext.set("changeableDocument", doc);
-            //sessionContext.set("changeableDocument", doc);
         } else {
             updateDocumentContext(doc);
         }
 
         final Type type = typesTool.getType(doc.getType());
-
-        // log.debug(logPrefix + "doc: " +
-        // DocumentModelUtils.getInfo(currentDocument));
 
         final String result;
         if (UserAction.VIEW == action) {
@@ -739,7 +651,6 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
             EventManager.raiseEventsOnDocumentChange(currentDocument);
             result = ApplicationControllerHelper.getPageOnEditedDocumentType(type);
         } else if (UserAction.CREATE == action) {
-            // throw new UnsupportedOperationException("for action " + action);
             EventManager.raiseEventsOnDocumentCreate(changeableDocument);
             result = ApplicationControllerHelper.getPageOnCreateDocumentType(type);
         } else if (UserAction.AFTER_CREATE == action) {
@@ -841,12 +752,6 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
         return navigateToDocument(doc, viewId);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.nuxeo.ecm.webapp.context.NavigationContext#navigateToDocument(org.nuxeo.ecm.core.api.DocumentModel,
-     *      org.nuxeo.ecm.core.api.VersionModel)
-     */
     public String navigateToDocument(DocumentModel docModel,
             VersionModel versionModel) throws ClientException {
         DocumentModel docVersion = documentManager.getDocumentWithVersion(
@@ -854,11 +759,6 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
         return navigateToDocument(docVersion);
     }
 
-    // ---------------------------------------------
-    // listeners for seam events
-    // @Observer( { EventNames.LOCATION_SELECTION_CHANGED,
-    // EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED,
-    // EventNames.GO_HOME })
     public void selectionChanged() {
         final String logPrefix = "<selectionChanged> ";
         try {
@@ -915,7 +815,8 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
             return null;
         }
         final DocumentRef docRef = docLoc.getDocRef();
-        RepositoryLocation repLoc = new RepositoryLocation(docLoc.getServerName());
+        RepositoryLocation repLoc = new RepositoryLocation(
+                docLoc.getServerName());
         return navigateTo(repLoc, docRef);
     }
 
@@ -1003,7 +904,6 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
         }
 
         if (currentDocument == null) {
-            // setCurrentWorkspace(null);
             try {
                 setCurrentDocument(null);
             } catch (ClientException e) {
@@ -1015,8 +915,8 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
 
         // if we switched branch then realign currentDocument
         if (currentDocumentParents != null
-                && !DocumentsListsUtils.isDocumentInList(
-                        crDocumentModel, currentDocumentParents)) {
+                && !DocumentsListsUtils.isDocumentInList(crDocumentModel,
+                        currentDocumentParents)) {
             try {
                 setCurrentDocument(crDocumentModel);
             } catch (ClientException e) {
@@ -1028,14 +928,14 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
 
     public PagedDocumentsProvider getResultsProvider(String name)
             throws ClientException, ResultsProviderFarmUserException {
-        // TODO Auto-generated method stub
+        // TODO remove if useless...
         return null;
     }
 
     public PagedDocumentsProvider getResultsProvider(String name,
             SortInfo sortInfo) throws ClientException,
             ResultsProviderFarmUserException {
-        // TODO Auto-generated method stub
+        // TODO remove if useless...
         return null;
     }
 
