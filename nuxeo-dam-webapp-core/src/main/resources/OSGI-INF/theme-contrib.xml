@@ -27,10 +27,16 @@
       <template>incl/logo.xhtml</template>
     </view>
 
+    <view name="dam language" template-engine="jsf-facelets">
+      <format-type>widget</format-type>
+      <template>incl/language.xhtml</template>
+    </view>
+
     <view name="dam banner" template-engine="jsf-facelets">
       <format-type>widget</format-type>
       <template>incl/banner.xhtml</template>
       <resource>importset-creation.css</resource>
+      <resource>importSetForm.js</resource>
     </view>
 
     <view name="dam search filters" template-engine="jsf-facelets">
@@ -96,6 +102,10 @@
     </resource>
     <resource name="importset-creation.css">
       <path>css/importset_creation.css</path>
+    </resource>
+
+    <resource name="importSetForm.js">
+      <path>scripts/importSetForm.js</path>
     </resource>
 
   </extension>

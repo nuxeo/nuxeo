@@ -13,6 +13,8 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Context;
+import org.jboss.seam.core.Events;
+import org.jboss.seam.core.Manager;
 import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.Blob;
@@ -20,13 +22,18 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.runtime.api.Framework;
+import org.richfaces.event.UploadEvent;
+import org.richfaces.model.UploadItem;
 
 @Name("importActions")
 @Scope(ScopeType.CONVERSATION)
 public class ImportActionsBean implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     protected static final Log log = LogFactory.getLog(ImportActionsBean.class);
 
@@ -34,15 +41,17 @@ public class ImportActionsBean implements Serializable {
 
     public static final String IMPORTSET_ROOT_PATH = "/default-domain/import-sets";
 
+    public static final String IMPORTSET_CREATED = "importSetCreated";
+
     protected DocumentModel newImportSet;
 
-    @In(create = true)
+    @In(create = true, required=false)
     protected CoreSession documentManager;
 
     @In(create = true, required = false)
     protected FacesMessages facesMessages;
 
-    @In(create = true)
+    @In(create = true, required=false)
     // won't inject this because of seam problem after activation
     // ::protected Map<String, String> messages;
     protected ResourcesAccessor resourcesAccessor;
@@ -51,6 +60,8 @@ public class ImportActionsBean implements Serializable {
     protected Context eventContext;
 
     protected FileManager fileManagerService;
+
+    protected Blob blob;
 
     protected FileManager getFileManagerService() throws Exception {
         if (fileManagerService == null) {
@@ -79,28 +90,28 @@ public class ImportActionsBean implements Serializable {
         // set parent path and name for document model
         newImportSet.setPathInfo(IMPORTSET_ROOT_PATH, name);
 
-        Map<String, Object> properties = newImportSet.getProperties("file");
-        Blob blob = (Blob) properties.get("content");
-
         newImportSet = documentManager.createDocument(newImportSet);
 
         if (blob != null) {
-            String filename = (String) properties.get("filename");
-            getFileManagerService().createDocumentFromBlob(
-                documentManager, blob, newImportSet.getPathAsString(), true,
-                filename);
+            getFileManagerService().createDocumentFromBlob(documentManager,
+                    blob, newImportSet.getPathAsString(), true, blob.getFilename());
         }
 
         documentManager.save();
 
-        logDocumentWithTitle("document_saved", "Created the document: ", newImportSet);
+        logDocumentWithTitle("document_saved", "Created the document: ",
+                newImportSet);
+
+        Events.instance().raiseEvent(ImportActionsBean.IMPORTSET_CREATED);
 
         invalidateImportContext();
         return "nxstartup";
     }
 
-    public void createAssetsFromFile(DocumentModel importSet) throws Exception {
-
+    public void uploadListener(UploadEvent event) throws Exception {
+        UploadItem item = event.getUploadItem();
+        blob = new FileBlob(item.getFile());
+        blob.setFilename(item.getFileName());
     }
 
     public String cancel() {

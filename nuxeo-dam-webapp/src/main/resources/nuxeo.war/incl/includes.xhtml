@@ -9,7 +9,7 @@
       value="var currentDocURL='#{currentServerLocation.name}/#{currentDocument.id}';"/>
       // set the conversation id before doing any call
       Seam.Remoting.getContext().setConversationId(currentConversationId);
-</script>
+  </script>
 
-  <script type="text/javascript" src="#{baseURL}/js/?scripts=tableSelections.js"></script>
+  <script type="text/javascript" src="#{baseURL}/js/?scripts=tableSelections.js|importSetForm.js"></script>
 </div>

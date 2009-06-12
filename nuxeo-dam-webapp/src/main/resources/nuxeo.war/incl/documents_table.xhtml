@@ -88,8 +88,8 @@
               rendered="#{provider.sortable}" >
             <h:outputText value="#{messages['label.content.header.author']}" />
             <f:param name="providerName" value="#{providerName}" />
-            <f:param name="sortColumn" value="dc:creator" />
-            <h:panelGroup rendered="#{provider.sortInfo.sortColumn == 'dc:creator' }" >
+            <f:param name="sortColumn" value="damc:creator" />
+            <h:panelGroup rendered="#{provider.sortInfo.sortColumn == 'damc:creator' }" >
               <h:graphicImage value="/icons/arrow_down.gif"
                 rendered="#{provider.sortInfo.sortAscending}" />
               <h:graphicImage value="/icons/arrow_up.gif"
@@ -111,8 +111,8 @@
               rendered="#{provider.sortable}" >
             <h:outputText value="#{messages['label.content.header.importDate']}" />
             <f:param name="providerName" value="#{providerName}" />
-            <f:param name="sortColumn" value="dc:created" />
-            <h:panelGroup rendered="#{provider.sortInfo.sortColumn == 'dc:created' }" >
+            <f:param name="sortColumn" value="damc:created" />
+            <h:panelGroup rendered="#{provider.sortInfo.sortColumn == 'damc:created' }" >
               <h:graphicImage value="/icons/arrow_down.gif"
                 rendered="#{provider.sortInfo.sortAscending}" />
               <h:graphicImage value="/icons/arrow_up.gif"
@@ -123,7 +123,7 @@
             rendered="#{!provider.sortable}" />
           </h:panelGroup>
         </f:facet>
-        <h:outputText value="#{row.data.dublincore.created}">
+        <h:outputText value="#{row.data.dam_common.created}">
           <f:convertDateTime pattern="#{nxu:basicDateFormater()}"
             timeZone="#{timeZone}" />
         </h:outputText>

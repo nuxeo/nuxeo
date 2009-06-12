@@ -3,6 +3,7 @@ package org.nuxeo.dam.webapp.filter;
 import java.io.Serializable;
 import java.util.List;
 
+import org.nuxeo.dam.platform.context.ImportActionsBean;
 import org.nuxeo.ecm.platform.ui.web.model.SelectDataModel;
 import org.nuxeo.ecm.platform.ui.web.model.SelectDataModelListener;
 import org.nuxeo.ecm.platform.ui.web.model.impl.SelectDataModelImpl;
@@ -14,6 +15,7 @@ import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.ecm.webapp.pagination.ResultsProvidersCache;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
+import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.ScopeType;
@@ -79,6 +81,13 @@ public class FilterResults implements SelectDataModelListener, Serializable {
             documentsListsManager.removeFromWorkingList(
                     DocumentsListsManager.CURRENT_DOCUMENT_SELECTION, data);
         }
+    }
+
+    @Observer(ImportActionsBean.IMPORTSET_CREATED)
+    public void invalidateFilterResult() {
+        documentsListsManager.resetWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
+        resultsProvidersCache.invalidate(FILTERED_DOCUMENT_PROVIDER_NAME);
+        provider = null;
     }
 
 }

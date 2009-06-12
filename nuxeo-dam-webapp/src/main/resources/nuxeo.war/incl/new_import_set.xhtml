@@ -6,13 +6,42 @@
       xmlns:rich="http://richfaces.org/rich"
       xmlns:nxl="http://nuxeo.org/nxforms/layout">
 
-  <h:form enctype="multipart/form-data" id="importset_create">
+
+  <a4j:region renderRegionOnly="true">
+  <rich:fileUpload id="fileUploadForm" fileUploadListener="#{importActions.uploadListener}"
+    maxFilesQuantity="1" immediateUpload="true"
+    onuploadcomplete="fileUploadComplete();"
+    ajaxSingle="true"
+    addControlLabel="${messages['label.action.importset.creation.select.file']}"
+    clearAllControlLabel="${messages['label.action.importset.creation.clear.all']}"
+    clearControlLabel="${messages['label.action.importset.creation.clear']}"
+    stopEntryControlLabel="${messages['label.action.importset.creation.stop.upload']}"
+    uploadControlLabel="${messages['label.action.importset.creation.start.upload']}"
+    doneLabel="${messages['label.action.importset.creation.done']}"
+    transferErrorLabel="${messages[label.fileupload.message.error]}">
+    <f:facet name="label">
+      <h:outputText value="{_KB}KB from {KB}KB uploaded --- {mm}:{ss}" />
+    </f:facet>
+  </rich:fileUpload>
+  </a4j:region>
+
+  <a4j:form id="importset_form"
+    ajaxSingle="true" enctype="multipart/form-data">
     <nxl:documentLayout mode="create" value="#{importActions.newImportSet}" />
     <p class="buttonsGadget">
-      <h:commandButton type="submit" class="button" value="#{messages['command.create']}"
-        action="#{importActions.createImportSet}"/>
-      <h:commandButton class="button" value="#{messages['command.cancel']}"
-        action="#{importActions.cancel}" immediate="true" />
+
+      <a4j:commandButton id="importSetFormOk" styleClass="button"
+        value="#{messages['command.create']}" action="#{importActions.createImportSet}"
+        onclick="processInProgress()"
+        oncomplete="processFinished()"
+        reRender="filterResultTable, importset_form, fileUploadForm"/>
+
+      <a4j:commandButton styleClass="button"
+        value="#{messages['command.cancel']}" action="#{importActions.cancel}"
+        oncomplete="processFinished()"
+        reRender="importset_form, fileUploadForm"
+        immediate="true"/>
     </p>
-  </h:form>
+  </a4j:form>
+
 </div>

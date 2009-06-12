@@ -11,6 +11,6 @@
   <xs:element name="size" type="xs:integer"/>
 
   <xs:element name="creator" type="xs:string"/>
-  <xs:element name="creation" type="xs:date"/>
+  <xs:element name="created" type="xs:date"/>
 
 </xs:schema>

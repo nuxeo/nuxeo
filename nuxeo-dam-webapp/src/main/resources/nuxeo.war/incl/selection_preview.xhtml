@@ -6,10 +6,12 @@
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:nxu="http://nuxeo.org/nxweb/util">
 
+<a4j:region selfRendered ="true" immediate="true" id="filterResultTable">
   <ui:decorate template="/incl/documents_table.xhtml">
     <ui:param name="provider" value="#{resultsProvidersCache.get('FILTERED_DOCUMENTS')}" />
     <ui:param name="providerName" value="#{resultsProvidersCache.get('FILTERED_DOCUMENTS').name}" />
     <ui:param name="documents" value="#{filterSelectModel}"/>
   </ui:decorate>
+</a4j:region>
 
 </div>

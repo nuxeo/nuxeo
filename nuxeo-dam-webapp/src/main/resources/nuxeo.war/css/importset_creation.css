@@ -7,21 +7,41 @@
 
 .labelColumn {
   width: 200px;
-  margin: 10pt;
+  margin: 10px;
   vertical-align: top;
   font-weight: bold;
 }
 
 .fieldColumn {
   vertical-align: top;
-  margin: 10pt;
+  margin: 10px;
 }
 
 .button {
-  margin: 10pt;
+  margin: 10px;
 }
 
 #importset_creation_panel {
-  margin: 10pt;
+  margin: 10px;
+}
+
+#fileUploadForm {
+  height:98px;
+  width:100%;
+  margin-bottom:30px;
+  margin-left:10px;
+  margin-right:10px;
+  margin-top:10px;
+}
+
+.centered {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 50%;
+  height: 50%;
+  margin: auto;
 }
 

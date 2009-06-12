@@ -21,6 +21,29 @@
       <facet name="Folderish"/>
     </doctype>
 
+    <doctype name="File" extends="Document">
+      <schema name="common" />
+      <schema name="dam_common"/>
+      <schema name="file" />
+      <schema name="dublincore"/>
+      <schema name="uid" />
+      <facet name="Downloadable" />
+      <facet name="Versionable" />
+    </doctype>
+
+    <doctype name="Picture" extends="Document">
+      <schema name="picture"/>
+      <schema name="dam_common"/>
+      <schema name="common"/>
+      <schema name="uid"/>
+      <schema name="dublincore"/>
+      <facet name="MultiviewPicture"/>
+      <facet name="Versionable"/>
+      <facet name="Publishable"/>
+      <facet name="Commentable"/>
+    </doctype>
+
+
     <doctype name="FilterQuery" extends="Document">
       <schema name="filter_query"/>
     </doctype>

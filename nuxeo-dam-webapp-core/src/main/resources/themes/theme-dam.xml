@@ -10,15 +10,15 @@
         <cell>
           <!-- dam banner -->
           <fragment type="generic fragment"/>
-        </cell>
-        <cell>
+          <!-- dam language -->
+          <fragment type="generic fragment"/>
           <!-- Include -->
-          <fragment type="generic fragment" />
+          <fragment type="generic fragment"/>
         </cell>
       </section>
       <section>
         <cell>
-          <!-- dam search filters-->
+          <!-- dam search filters -->
           <fragment type="generic fragment"/>
         </cell>
         <cell>
@@ -32,8 +32,6 @@
       </section>
     </page>
   </layout>
-
-
   <formats>
     <!-- LAYOUT -->
     <layout element="page[1]">
@@ -57,20 +55,17 @@
     <layout element="page[1]/section[2]/cell[1]">
       <width>33%</width>
     </layout>
-
     <layout element="page[1]/section[2]/cell[2]">
       <width>33%</width>
     </layout>
     <layout element="page[1]/section[2]/cell[3]">
       <width>33%</width>
     </layout>
-
     <widget element="">
       <view>theme view</view>
       <icon>/nuxeo/icons/favicon.png</icon>
       <charset>utf-8</charset>
     </widget>
-
     <!-- WIDGET AFFECTATON -->
     <widget element="page[1]">
       <view>page frame</view>
@@ -81,14 +76,16 @@
     <widget element="page[1]/section[1]/cell[1]|page[1]/section[1]/cell[2]|page[1]/section[2]/cell[1]|page[1]/section[2]/cell[2]|page[1]/section[2]/cell[3]">
       <view>cell frame</view>
     </widget>
-
     <widget element="page[1]/section[1]/cell[1]/fragment[1]">
       <view>dam logo</view>
     </widget>
     <widget element="page[1]/section[1]/cell[2]/fragment[1]">
       <view>dam banner</view>
     </widget>
-    <widget element="page[1]/section[1]/cell[3]/fragment[1]">
+    <widget element="page[1]/section[1]/cell[2]/fragment[2]">
+      <view>dam language</view>
+    </widget>
+    <widget element="page[1]/section[1]/cell[2]/fragment[3]">
       <view>dam includes</view>
     </widget>
     <widget element="page[1]/section[2]/cell[1]/fragment[1]">
@@ -100,15 +97,15 @@
     <widget element="page[1]/section[2]/cell[3]/fragment[1]">
       <view>dam selection view</view>
     </widget>
-
     <style element="page[1]/section[1]/cell[2]/fragment[1]">
-      <selector path="#language" view="dam banner">
-        <margin>10pt</margin>
-      </selector>
-      <selector path="#importsetCreationButton" view="dam banner">
-        <margin>10pt</margin>
+      <selector path="#dam_banner" view="dam banner">
+        <margin>10px</margin>
       </selector>
     </style>
-
+    <style element="page[1]/section[1]/cell[2]/fragment[2]">
+      <selector path="#dam_language" view="dam language">
+        <margin>10px</margin>
+      </selector>
+    </style>
   </formats>
 </theme>
