@@ -21,20 +21,23 @@
   </c:if>
 
   <c:if test="#{widget.mode == 'create' or widget.mode == 'edit'}">
-
-    <a4j:region id="#{widget.id}_region">
-      <nxdir:chainSelect size="2" value="#{field_0}"
-        id="#{widget.id}_editselect">
-        <nxdir:chainSelectListbox index="0" size="0" directoryName="continent"
-          localize="true" id="#{widget.id}_continent">
-          <a4j:support event="onchange" reRender="#{widget.id}_country" />
-        </nxdir:chainSelectListbox>
-
-        <nxdir:chainSelectListbox size="0" index="1" directoryName="country"
-          localize="true" id="#{widget.id}_country" />
-      </nxdir:chainSelect>
-      <h:message styleClass="errorMessage" for="#{widget.id}_editselect"
-        id="#{widget.id}_message" />
+    <a4j:region id="#{widget.id}_region" renderRegionOnly="true">
+      <a4j:outputPanel ajaxRendered="true">
+        <nxdir:chainSelect size="2" value="#{field_0}"
+          id="#{widget.id}_editselect">
+          <nxdir:chainSelectListbox index="0" size="0" directoryName="continent"
+            localize="true" id="#{widget.id}_continent">
+            <a4j:support event="onchange" reRender="#{widget.id}_country" />
+          </nxdir:chainSelectListbox>
+  
+          <nxdir:chainSelectListbox size="0" index="1" directoryName="country"
+            localize="true" id="#{widget.id}_country">
+            <a4j:support event="onchange" reRender="#{widget.id}_message" />
+          </nxdir:chainSelectListbox>
+        </nxdir:chainSelect>
+        <h:message styleClass="errorMessage" for="#{widget.id}_editselect"
+          id="#{widget.id}_message" />
+      </a4j:outputPanel>
     </a4j:region>
 
   </c:if>
