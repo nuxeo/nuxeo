@@ -20,13 +20,15 @@
 package org.nuxeo.dam.webapp.fileimporter;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.platform.filemanager.service.extension.AbstractFileImporter;
 import org.nuxeo.ecm.platform.types.TypeManager;
@@ -37,7 +39,7 @@ import de.schlichtherle.io.FileInputStream;
 
 public class ArchiveImporter extends AbstractFileImporter {
 
-    private static final long serialVersionUID = 5516654934499879209L;
+    private static final long serialVersionUID = 1L;
 
     public DocumentModel create(CoreSession documentManager, Blob content,
             String path, boolean overwrite, String filename,
@@ -47,68 +49,48 @@ public class ArchiveImporter extends AbstractFileImporter {
         if (filename.contains(".")) {
             extension = filename.substring(filename.lastIndexOf("."));
         }
-
         java.io.File tmp = File.createTempFile("import", extension);
-        File archive = new File(tmp);
-        content.transferTo(archive);
+        try {
+            File archive = new File(tmp);
+            content.transferTo(archive);
 
-        if (archive.isArchive()) {
-            try {
-                FileManager fileManager = Framework.getService(FileManager.class);
+            if (archive.isArchive()) {
+                try {
+                    FileManager fileManager = Framework.getService(FileManager.class);
 
-                for (java.io.File entry : archive.listFiles()) {
-                    importFileRec(documentManager, entry, path, overwrite, fileManager);
+                    for (java.io.File entry : archive.listFiles()) {
+                        importFileRec(documentManager, entry, path, overwrite,
+                                fileManager);
+                    }
+                } catch (Exception e) {
+                    throw new ClientException("Failed to import archive: "
+                            + e.getMessage(), e);
                 }
-            } catch (Exception e) {
-                throw new ClientException("Failed to import archive", e);
             }
+        } finally {
+            tmp.delete();
         }
-
-        tmp.delete();
-
         return documentManager.getDocument(new PathRef(path));
     }
 
-    private void importFileRec(CoreSession documentManager, java.io.File file,
-            String path, boolean overwrite, FileManager fileManager) throws Exception {
+    protected void importFileRec(CoreSession documentManager,
+            java.io.File file, String path, boolean overwrite,
+            FileManager fileManager) throws Exception {
         if (file.isDirectory()) {
             for (java.io.File child : file.listFiles()) {
-                importFileRec(documentManager, child, path, overwrite, fileManager);
+                // TODO: preserve the sub folder structure here by creating sub
+                // folders accordingly
+                importFileRec(documentManager, child, path, overwrite,
+                        fileManager);
             }
         } else {
-            byte[] entryContent = ArchiveImporter.getBytesFromFile(file);
-            ByteArrayBlob input = new ByteArrayBlob(entryContent);
-    
-            fileManager.createDocumentFromBlob(documentManager, input, path, overwrite,
-                    file.getAbsolutePath());
+            // buidl a streaming blob without loading all the file content in
+            // memory
+            InputStream is = new FileInputStream(file);
+            Blob blob = StreamingBlob.createFromStream(is);
+            blob.setFilename(file.getName());
+            fileManager.createDocumentFromBlob(documentManager, blob, path,
+                    overwrite, file.getAbsolutePath());
         }
     }
-
-    public static byte[] getBytesFromFile(java.io.File file) throws IOException {
-
-        FileInputStream is = new FileInputStream(file);
-
-        long length = file.length();
-        // Create the byte array to hold the data
-        byte[] bytes = new byte[(int) length];
-        try {
-            // Read in the bytes
-            int offset = 0;
-            int numRead = 0;
-            while (offset < bytes.length
-                    && (numRead = is.read(bytes, offset, bytes.length - offset)) >= 0) {
-                offset += numRead;
-            }
-
-            // Ensure all the bytes have been read in
-            if (offset < bytes.length) {
-                throw new IOException("Could not completely read InputStream");
-            }
-        } finally {
-            // Close the input stream and return bytes
-            is.close();
-        }
-        return bytes;
-    }
-
 }
