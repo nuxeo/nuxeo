@@ -546,16 +546,16 @@ public class LDAPReference extends AbstractReference {
                     while (ldapUrls.hasMore()) {
                         LdapURL ldapUrl = new LdapURL(
                                 ldapUrls.next().toString());
-
+                        String candidateDN = pseudoNormalizeDn(ldapUrl.getDN());
                         // check base URL
-                        if (!targetDn.endsWith(ldapUrl.getDN())) {
+                        if (!targetDn.endsWith(candidateDN)) {
                             continue;
                         }
 
                         // check onelevel scope constraints
                         if ("onelevel".equals(ldapUrl.getScope())) {
                             int targetDnSize = targetDn.split(",").length;
-                            int urlDnSize = ldapUrl.getDN().split(",").length;
+                            int urlDnSize = candidateDN.split(",").length;
                             if (targetDnSize - urlDnSize > 1) {
                                 // target is not a direct child of the DN of the
                                 // LDAP URL
