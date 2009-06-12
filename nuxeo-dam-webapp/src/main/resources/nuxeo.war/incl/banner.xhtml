@@ -5,7 +5,9 @@
   xmlns:a4j="http://richfaces.org/a4j"
   xmlns:rich="http://richfaces.org/rich">
 
-    <rich:modalPanel id="panel" width="550" height="450">
+<div id="dam_banner">
+   <rich:modalPanel id="importSetFormPanel" width="550" height="450"
+     onshow="javascript:initImportSetForm();">
       <f:facet name="header">
         <h:panelGroup>
           <h:outputText value="${messages['popup.label.creation.importSet']}"/>
@@ -15,25 +17,18 @@
       <h:panelGroup>
         <h:graphicImage value="/img/close.png"
             styleClass="hidelink" id="hidelink" />
-          <rich:componentControl for="panel" attachTo="hidelink"
+          <rich:componentControl for="importSetFormPanel" attachTo="hidelink"
             operation="hide" event="onclick" />
         </h:panelGroup>
       </f:facet>
       <ui:include src="/incl/new_import_set.xhtml" />
     </rich:modalPanel>
-    <h:outputLink value="javascript:Richfaces.showModalPanel('panel');" id="importset_creation_button">
+
+    <h:outputLink value="javascript:Richfaces.showModalPanel('importSetFormPanel');" id="importset_creation_button">
         <h:outputText value="${messages['label.action.createImportSet']}"/>
     </h:outputLink>
 
-  <h:form id="language">
-   <h:outputText value="#{messages['label.selectLocale']}" />
-    <h:selectOneMenu value="#{localeSelector.localeString}" styleClass="langSelect">
-      <f:selectItems value="#{localeSelector.supportedLocales}"/>
-    </h:selectOneMenu>
-    <h:commandButton action="#{localeSelector.select}"
-                     value="#{messages['command.changeLocale']}"
-                     class="langSubmit" />
-  </h:form>
-
+    <ui:include src="/incl/waiter.xhtml"/>
+</div>
 
 </div>

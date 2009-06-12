@@ -13,7 +13,7 @@
           <widget>creator</widget>
         </row>
         <row>
-          <widget>creation</widget>
+          <widget>created</widget>
         </row>
       </rows>
       <widget name="creator" type="text">
@@ -26,10 +26,10 @@
         </properties>
       </widget>
 
-      <widget name="creation" type="datetime">
+      <widget name="created" type="datetime">
         <translated>true</translated>
         <fields>
-          <field>damc:creation</field>
+          <field>damc:created</field>
         </fields>
         <properties widgetMode="view">
           <property name="pattern">#{nxu:basicDateFormater()}</property>
@@ -82,38 +82,6 @@
         </properties>
       </widget>
 
-    </layout>
-
-    <layout name="file">
-      <templates>
-        <template mode="any">/layouts/layout_default_template.xhtml</template>
-      </templates>
-      <rows>
-        <row>
-          <widget>file</widget>
-        </row>
-      </rows>
-      <widget name="file" type="template">
-        <labels>
-          <label mode="any">label.file.content</label>
-        </labels>
-        <translated>true</translated>
-        <fields>
-          <field>file:content</field>
-          <field>file:filename</field>
-        </fields>
-        <widgetModes>
-          <mode value="full_edit">edit</mode>
-          <mode value="edit">edit</mode>
-          <mode value="view">view</mode>
-          <mode value="view">preview</mode>
-        </widgetModes>
-        <properties mode="any">
-          <property name="template">
-            /widgets/extended_file_widget.xhtml
-          </property>
-        </properties>
-      </widget>
     </layout>
 
     <layout name="heading">

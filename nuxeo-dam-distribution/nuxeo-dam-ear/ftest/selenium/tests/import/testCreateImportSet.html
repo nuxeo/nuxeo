@@ -9,108 +9,129 @@
 <body>
 <table cellpadding="1" cellspacing="1" border="1">
 <thead>
-  <tr>
-    <td rowspan="1" colspan="3">testCreateImportSet</td>
-  </tr>
-</thead>
-<tbody>
-    <tr>
-    <td>setTimeout</td>
-    <td>120000</td>
-    <td></td>
-  </tr>
-  <tr>
-    <td>retrieveTestFolderPath</td>
-    <td></td>
-    <td></td>
-  </tr>
-  <tr>
-    <td>open</td>
-    <td>/nuxeo/logout</td>
-    <td></td>
-  </tr>
-  <tr>
-    <td>open</td>
-    <td>/nuxeo/</td>
-    <td></td>
-  </tr>
-  <tr>
-    <td>type</td>
-    <td>username</td>
-    <td>Administrator</td>
-  </tr>
-  <tr>
-    <td>type</td>
-    <td>password</td>
-    <td>Administrator</td>
-  </tr>
-  <tr>
-    <td>clickAndWait</td>
-    <td>Submit</td>
-    <td></td>
-  </tr>
-  <tr>
-    <td>click</td>
-    <td>link=Create import set</td>
-    <td></td>
-  </tr>
-  <tr>
-    <td>type</td>
-    <td>importset_create:nxl_heading:nxw_title</td>
-    <td>Test import set description</td>
-  </tr>
-  <tr>
-    <td>type</td>
-    <td>importset_create:nxl_heading:nxw_description</td>
-    <td>Test import set description</td>
-  </tr>
-  <tr>
-    <td>type</td>
-    <td>importset_create:nxl_damc:nxw_creator</td>
-    <td>John Do</td>
-  </tr>
-  <tr>
-    <td>type</td>
-    <td>//input[@type='file']</td>
-    <td>${testfolderpath}/data/toImport.zip</td>
-  </tr>
-  <tr>
-    <td>click</td>
-    <td>importset_create:nxl_file:nxw_file:nxw_file_file:choiceupload</td>
-    <td></td>
-  </tr>
-  <tr>
-    <td>clickAndWait</td>
-    <td>//input[@value='Create']</td>
-    <td></td>
-  </tr>
-  <tr>
-    <td>open</td>
-    <td>/nuxeo/nxstartup.faces</td>
-    <td></td>
-  </tr>
-  <tr>
-    <td>verifyTextPresent</td>
-    <td>hello</td>
-    <td></td>
-  </tr>
-  <tr>
-    <td>verifyTextPresent</td>
-    <td>kitten</td>
-    <td></td>
-  </tr>
-  <tr>
-    <td>verifyTextPresent</td>
-    <td>PortletSpec_20</td>
-    <td></td>
-  </tr>
-  <tr>
-    <td>verifyTextPresent</td>
-    <td>sunset-van_2</td>
-    <td></td>
-  </tr>
+<tr><td rowspan="1" colspan="3">testCreateImportSet</td></tr>
+</thead><tbody>
+<tr>
+	<td>setTimeout</td>
+	<td>120000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>retrieveTestFolderPath</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/nuxeo/logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/nuxeo/</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>Administrator</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>Administrator</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Create import set</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>fileUploadForm:file</td>
+	<td>${testfolderpath}/data/toImport.zip</td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Done</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>importset_form:nxl_heading:nxw_title</td>
+	<td>Test import set description</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>importset_form:nxl_heading:nxw_description</td>
+	<td>Test import set description</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>importset_form:nxl_damc:nxw_creator</td>
+	<td>John Do</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>importset_form:nxl_damc:nxw_created</td>
+	<td>06/8/09</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>importset_form:nxl_dublincore:nxw_expired</td>
+	<td>06/8/09</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>importset_form:nxl_dublincore:nxw_coverage:nxw_coverage_continent</td>
+	<td>label=Africa</td>
+</tr>
+<tr>
+	<td>pause</td>
+	<td>1000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>importset_form:nxl_dublincore:nxw_coverage:nxw_coverage_country</td>
+	<td>label=Algeria</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>importset_form:importSetFormOk</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Process in progres</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>hello</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>kitten</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>PortletSpec_20</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>sunset-van_2</td>
+	<td></td>
+</tr>
 
-</tbody>
-</table>
+</tbody></table>
 </body>
 </html>
