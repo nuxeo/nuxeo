@@ -32,6 +32,7 @@ import static org.nuxeo.webengine.sites.utils.SiteConstants.VIEW_PERSPECTIVE;
 import static org.nuxeo.webengine.sites.utils.SiteConstants.WEBCONTAINER_BASELINE;
 import static org.nuxeo.webengine.sites.utils.SiteConstants.WEBCONTAINER_EMAIL;
 import static org.nuxeo.webengine.sites.utils.SiteConstants.WEBCONTAINER_NAME;
+import static org.nuxeo.webengine.sites.utils.SiteConstants.WEBCONTAINER_URL;
 import static org.nuxeo.webengine.sites.utils.SiteConstants.WEBCONTAINER_WELCOMEMEDIA;
 import static org.nuxeo.webengine.sites.utils.SiteConstants.WEBPAGE;
 import static org.nuxeo.webengine.sites.utils.SiteConstants.WEBSITE;
@@ -207,6 +208,25 @@ public abstract class AbstractSiteDocumentObject extends DocumentObject {
             DocumentModel parentWebSite = getParentWebSite(session);
             String path = SiteUtils.getPagePath(parentWebSite, createdDocument);
             return redirect(path);
+        } catch (Exception e) {
+            throw WebException.wrap(e);
+        }
+    }
+
+    /**
+     * Method used to retrieve the path to the current web container.
+     * 
+     * @return the path to the current web container
+     */
+    @GET
+    @Path("homePagePath")
+    public Object getHomePagePath() {
+        try {
+            DocumentModel parentWebSite = getParentWebSite(ctx.getCoreSession());
+            StringBuilder path = new StringBuilder(
+                    SiteUtils.getWebContainersPath()).append("/");
+            path.append(SiteUtils.getString(parentWebSite, WEBCONTAINER_URL));
+            return redirect(path.toString());
         } catch (Exception e) {
             throw WebException.wrap(e);
         }
