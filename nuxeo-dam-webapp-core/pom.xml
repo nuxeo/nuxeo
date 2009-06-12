@@ -210,6 +210,12 @@
       <artifactId>jsr181</artifactId>
     </dependency>
     <dependency>
+      <groupId>javax.el</groupId>
+      <artifactId>el-api</artifactId>
+      <version>1.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>jboss</groupId>
       <artifactId>jboss-common</artifactId>
     </dependency>

@@ -30,6 +30,7 @@ import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.platform.filemanager.utils.FileManagerUtils;
 import org.nuxeo.runtime.api.Framework;
+import org.richfaces.event.UploadEvent;
 
 public class TestZipImporter extends RepositoryOSGITestCase {
 
@@ -120,13 +121,13 @@ public class TestZipImporter extends RepositoryOSGITestCase {
         ImportActionsBean importActions = new ImportActionsMock(coreSession,
                 service);
 
-        File file = getTestFile("test-data/test.zip");
-        byte[] content = FileManagerUtils.getBytesFromFile(file);
-        ByteArrayBlob input = new ByteArrayBlob(content, "application/zip");
+
         DocumentModel importSet = importActions.getNewImportSet();
+
+        File file = getTestFile("test-data/test.zip");
+        UploadEvent event = UploadItemMock.getUploadEvent(file);
+        importActions.uploadListener(event);
         importSet.setProperty("dublincore", "title", "myimportset");
-        importSet.setProperty("file", "filename", "test-file.zip");
-        importSet.setProperty("file", "content", input);
 
         importActions.createImportSet();
 

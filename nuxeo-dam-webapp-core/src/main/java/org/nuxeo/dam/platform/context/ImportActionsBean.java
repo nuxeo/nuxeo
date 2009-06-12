@@ -14,7 +14,6 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Context;
 import org.jboss.seam.core.Events;
-import org.jboss.seam.core.Manager;
 import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.Blob;
@@ -99,13 +98,18 @@ public class ImportActionsBean implements Serializable {
 
         documentManager.save();
 
-        logDocumentWithTitle("document_saved", "Created the document: ",
-                newImportSet);
+        sendImportSetCreationEvent();
 
-        Events.instance().raiseEvent(ImportActionsBean.IMPORTSET_CREATED);
 
         invalidateImportContext();
         return "nxstartup";
+    }
+
+    protected void sendImportSetCreationEvent() {
+        Events.instance().raiseEvent(ImportActionsBean.IMPORTSET_CREATED);
+
+        logDocumentWithTitle("document_saved", "Created the document: ",
+                newImportSet);
     }
 
     public void uploadListener(UploadEvent event) throws Exception {

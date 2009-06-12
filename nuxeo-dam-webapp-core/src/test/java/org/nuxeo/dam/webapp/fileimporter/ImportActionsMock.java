@@ -19,9 +19,14 @@ public class ImportActionsMock extends ImportActionsBean {
     }
 
     // don't need UI messages
+    @Override
     public void logDocumentWithTitle(String facesMessage, String someLogString,
             DocumentModel document) {
 
+    }
+
+    @Override
+    protected void sendImportSetCreationEvent() {
     }
 
 }
