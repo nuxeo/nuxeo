@@ -172,7 +172,7 @@ public class NavigationContextBean implements NavigationContextLocal,
             DocumentModelList docs = documentManager.query(
                     "SELECT * FROM Document", 1);
             if (docs.size() < 1) {
-                log.error("Could not find a single document readable by current user.");
+                log.debug("Could not find a single document readable by current user.");
                 return null;
             }
             path = docs.get(0).getPath();
