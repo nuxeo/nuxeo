@@ -97,10 +97,7 @@ public class ImportActionsBean implements Serializable {
         }
 
         documentManager.save();
-
         sendImportSetCreationEvent();
-
-
         invalidateImportContext();
         return "nxstartup";
     }
