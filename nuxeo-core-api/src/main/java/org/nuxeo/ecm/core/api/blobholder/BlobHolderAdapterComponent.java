@@ -21,27 +21,35 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- * Runtime component to manage the pluggable factory for {@link DocumentAdapterFactory}.
+ * Runtime component to manage the pluggable factory for
+ * {@link DocumentAdapterFactory}.
  * <p>
  * Also provides the service interface {@link BlobHolderAdapterService}
  *
  * @author tiry
  */
-public class BlobHolderAdapterComponent extends DefaultComponent  implements BlobHolderAdapterService{
+public class BlobHolderAdapterComponent extends DefaultComponent implements
+        BlobHolderAdapterService {
+
+    private static final Log log = LogFactory.getLog(BlobHolderAdapterComponent.class);
 
     protected static final Map<String, BlobHolderFactory> factories = new HashMap<String, BlobHolderFactory>();
 
-    public static final String BLOBHOLDERFACTORY_EP ="BlobHolderFactory";
+    public static final String BLOBHOLDERFACTORY_EP = "BlobHolderFactory";
 
     @Override
-    public void registerContribution(Object contribution, String extensionPoint,
-            ComponentInstance contributor) throws Exception {
+    public void registerContribution(Object contribution,
+            String extensionPoint, ComponentInstance contributor)
+            throws Exception {
 
         if (BLOBHOLDERFACTORY_EP.equals(extensionPoint)) {
             BlobHolderFactoryDescriptor desc = (BlobHolderFactoryDescriptor) contribution;
@@ -50,8 +58,9 @@ public class BlobHolderAdapterComponent extends DefaultComponent  implements Blo
     }
 
     @Override
-    public void unregisterContribution(Object contribution, String extensionPoint,
-            ComponentInstance contributor) throws Exception {
+    public void unregisterContribution(Object contribution,
+            String extensionPoint, ComponentInstance contributor)
+            throws Exception {
     }
 
     /* for test */
@@ -71,14 +80,20 @@ public class BlobHolderAdapterComponent extends DefaultComponent  implements Blo
         if (doc.hasSchema("file")) {
             return new DocumentBlobHolder(doc, "file:content", "file:filename");
         } else if (doc.hasSchema("note")) {
-
             try {
-                String mt = (String)doc.getPropertyValue("note:mime_type");
-                return new DocumentStringBlobHolder(doc,"note:note", mt);
+                String noteContent = (String) doc.getPropertyValue("note:note");
+                if (noteContent != null && !"".equals(noteContent)) {
+                    try {
+                        String mt = (String) doc.getPropertyValue("note:mime_type");
+                        return new DocumentStringBlobHolder(doc, "note:note",
+                                mt);
+                    } catch (PropertyException e) {
+                        return new DocumentStringBlobHolder(doc, "note:note");
+                    }
+                }
             } catch (Exception e) {
-                return new DocumentStringBlobHolder(doc,"note:note");
+                log.error(e);
             }
-
         }
         return null;
     }
