@@ -85,7 +85,7 @@ public final class ThemeManager implements Registrable {
 
     private static final Log log = LogFactory.getLog(ThemeManager.class);
 
-    private Long lastModified = 0L;
+    private final Map<String, Long> lastModified = new HashMap<String, Long>();
 
     private final Map<String, ThemeElement> themes = new HashMap<String, ThemeElement>();
 
@@ -104,7 +104,7 @@ public final class ThemeManager implements Registrable {
     private static final Predicate PREDICATE_FORMAT_INHERIT = new DefaultPredicate(
             "_ inherits from _");
 
-    private String cachedStyles;
+    private final Map<String, String> cachedStyles = new HashMap<String, String>();
 
     private final Map<String, String> cachedResources = new HashMap<String, String>();
 
@@ -668,21 +668,41 @@ public final class ThemeManager implements Registrable {
         return styles;
     }
 
+    public List<Style> getNamedStyles(String themeName) {
+        List<Style> styles = new ArrayList<Style>();
+        // Add named styles
+        if (themeName != null) {
+            for (Identifiable object : getNamedObjects(themeName, "style")) {
+                styles.add((Style) object);
+            }
+        }
+        return styles;
+    }
+
     // Cache management
-    public void themeModified() {
-        lastModified = new Date().getTime();
+    public Long getLastModified(String themeName) {
+        final Long date = lastModified.get(themeName);
+        if (date == null) {
+            return 0L;
+        }
+        return date;
     }
 
-    public Long getLastModified() {
-        return lastModified;
+    public void setLastModified(String themeName, Long date) {
+        lastModified.put(themeName, date);
     }
 
-    public void setLastModified(Long lastModified) {
-        this.lastModified = lastModified;
+    public Long getLastModified(final URL url) {
+        final String themeName = getThemeNameByUrl(url);
+        return getLastModified(themeName);
     }
 
-    public void stylesModified() {
-        setCachedStyles(null);
+    public void themeModified(String themeName) {
+        setLastModified(themeName, new Date().getTime());
+    }
+
+    public void stylesModified(String themeName) {
+        setCachedStyles(themeName, null);
     }
 
     // Registration
@@ -748,7 +768,8 @@ public final class ThemeManager implements Registrable {
         themeDescriptor.setName(themeName);
         themeDescriptor.setLoadingFailed(false);
         themeDescriptor.setLastLoaded(new Date());
-        themeModified();
+        themeModified(themeName);
+        stylesModified(themeName);
         updateThemeDescriptors();
         // remove or restore customized themes
         if (!themeName.equals(oldThemeName)) {
@@ -1063,12 +1084,12 @@ public final class ThemeManager implements Registrable {
     }
 
     // Cached styles
-    public String getCachedStyles() {
-        return cachedStyles;
+    public String getCachedStyles(String themeName) {
+        return cachedStyles.get(themeName);
     }
 
-    public synchronized void setCachedStyles(String cachedStyles) {
-        this.cachedStyles = cachedStyles;
+    public synchronized void setCachedStyles(String themeName, String css) {
+        cachedStyles.put(themeName, css);
     }
 
     public String getResource(String name) {

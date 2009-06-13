@@ -25,10 +25,6 @@
       <class>org.nuxeo.theme.themes.ThemeManager</class>
     </registry>
 
-    <registry name="events">
-      <class>org.nuxeo.theme.events.EventManager</class>
-    </registry>
-
     <registry name="resources">
       <class>org.nuxeo.theme.resources.ResourceManager</class>
     </registry>
@@ -119,25 +115,6 @@
     <format-filter name="set layout">
       <format-type>layout</format-type>
     </format-filter>
-
-  </extension>
-
-  <extension target="org.nuxeo.theme.services.ThemeService"
-      point="event-listeners">
-
-    <event-listener>
-      <event>theme modified</event>
-      <handler>
-        org.nuxeo.theme.themes.ThemeModifiedListener
-      </handler>
-    </event-listener>
-
-    <event-listener>
-      <event>styles modified</event>
-      <handler>
-        org.nuxeo.theme.themes.StylesModifiedListener
-      </handler>
-    </event-listener>
 
   </extension>
 

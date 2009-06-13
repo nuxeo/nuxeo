@@ -30,16 +30,11 @@ import org.nuxeo.runtime.model.Extension;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.theme.ApplicationType;
 import org.nuxeo.theme.CachingDef;
-import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.NegotiationDef;
 import org.nuxeo.theme.Registrable;
 import org.nuxeo.theme.RegistryType;
 import org.nuxeo.theme.ViewDef;
 import org.nuxeo.theme.engines.EngineType;
-import org.nuxeo.theme.events.EventListener;
-import org.nuxeo.theme.events.EventListenerType;
-import org.nuxeo.theme.events.EventManager;
-import org.nuxeo.theme.events.EventType;
 import org.nuxeo.theme.models.ModelType;
 import org.nuxeo.theme.perspectives.PerspectiveType;
 import org.nuxeo.theme.presets.PaletteParser;
@@ -128,8 +123,6 @@ public class ThemeService extends DefaultComponent implements FrameworkListener 
             registerEngineExtension(extension);
         } else if (xp.equals("template-engines")) {
             registerTemplateEngineExtension(extension);
-        } else if (xp.equals("event-listeners")) {
-            registerEventListenerExtension(extension);
         } else if (xp.equals("themes")) {
             registerThemeExtension(extension);
         } else if (xp.equals("presets")) {
@@ -157,8 +150,6 @@ public class ThemeService extends DefaultComponent implements FrameworkListener 
                 || xp.equals("vocabularies") || (xp.equals("presets"))
                 || (xp.equals("views")) || (xp.equals("themes"))) {
             unregisterTypeExtension(extension);
-        } else if (xp.equals("event-listeners")) {
-            unregisterEventListenerExtension(extension);
         } else if (xp.equals("views")) {
             unregisterViewExtension(extension);
         } else if (xp.equals("models")) {
@@ -444,44 +435,6 @@ public class ThemeService extends DefaultComponent implements FrameworkListener 
         }
     }
 
-    private void registerEventListenerExtension(Extension extension) {
-        Object[] contribs = extension.getContributions();
-        TypeRegistry typeRegistry = (TypeRegistry) getRegistry("types");
-        EventManager eventManager = (EventManager) getRegistry("events");
-
-        for (Object contrib : contribs) {
-            EventListenerType eventListenerType = (EventListenerType) contrib;
-            EventType eventType = new EventType(
-                    eventListenerType.getEventName());
-            typeRegistry.register(eventType);
-
-            EventListener listener = null;
-            try {
-                listener = (EventListener) Class.forName(
-                        eventListenerType.getHandlerClassName()).newInstance();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            if (listener == null) {
-                log.warn("Event handler not found: "
-                        + eventListenerType.getHandlerClassName());
-                continue;
-            }
-            listener.setEventType(eventType);
-            eventManager.addListener(listener);
-        }
-    }
-
-    private void unregisterEventListenerExtension(Extension extension) {
-        Object[] contribs = extension.getContributions();
-        TypeRegistry typeRegistry = (TypeRegistry) getRegistry("events");
-        if (typeRegistry != null) {
-            for (Object contrib : contribs) {
-                typeRegistry.unregister((Type) contrib);
-            }
-        }
-    }
-
     private void registerViewExtension(Extension extension) {
         Object[] contribs = extension.getContributions();
         TypeRegistry typeRegistry = (TypeRegistry) getRegistry("types");
@@ -517,7 +470,7 @@ public class ThemeService extends DefaultComponent implements FrameworkListener 
     private void registerModelExtension(Extension extension) {
         Object[] contribs = extension.getContributions();
         TypeRegistry typeRegistry = (TypeRegistry) getRegistry("types");
-        ThemeManager themeManager = Manager.getThemeManager();
+        ThemeManager themeManager = (ThemeManager) getRegistry("themes");
         for (Object contrib : contribs) {
             ModelType modelType = (ModelType) contrib;
             final String modelTypeName = modelType.getTypeName();
@@ -544,7 +497,7 @@ public class ThemeService extends DefaultComponent implements FrameworkListener 
     private void unregisterModelExtension(Extension extension) {
         Object[] contribs = extension.getContributions();
         TypeRegistry typeRegistry = (TypeRegistry) getRegistry("types");
-        ThemeManager themeManager = Manager.getThemeManager();
+        ThemeManager themeManager = (ThemeManager) getRegistry("themes");
         if (typeRegistry != null) {
             for (Object contrib : contribs) {
                 ModelType modelType = (ModelType) contrib;
