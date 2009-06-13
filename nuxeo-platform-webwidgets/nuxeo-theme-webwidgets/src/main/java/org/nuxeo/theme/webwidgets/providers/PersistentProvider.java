@@ -266,7 +266,7 @@ public class PersistentProvider implements Provider {
             log.warn("Could not get the current user from the context.");
             return false;
         }
-        return ((NuxeoPrincipal) currentNuxeoPrincipal).isAdministrator();
+        return ((NuxeoPrincipal) currentNuxeoPrincipal).isMemberOf("administrators");
     }
 
     /*
