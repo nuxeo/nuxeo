@@ -7,8 +7,8 @@
     </title>
 
     <nxthemes:head />
-
     <nxthemes:resources />
+    <nxthemes:themestyles cache="true" />
 
   </head>
   [nxthemes markup]

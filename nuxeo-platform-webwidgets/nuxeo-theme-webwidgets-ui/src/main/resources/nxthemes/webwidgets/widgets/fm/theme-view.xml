@@ -5,8 +5,9 @@
     </title>
 
     <@nxthemes_head />
-
     <@nxthemes_resources />
+
+    <@nxthemes_themestyles cache="true" />
 
   </head>
   [nxthemes markup]
