@@ -325,5 +325,12 @@
     <body-content>empty</body-content>
     <description />
   </tag>
+  
+  <tag>
+    <name>themestyles</name>
+    <tag-class>org.nuxeo.theme.jsf.taglib.ThemeStylesTag</tag-class>
+    <body-content>empty</body-content>
+    <description />
+  </tag>
 
 </taglib>

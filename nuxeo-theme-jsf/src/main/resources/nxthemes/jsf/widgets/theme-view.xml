@@ -11,8 +11,8 @@
     <ui:insert name="bookmark"><!-- Bookmark URL --></ui:insert>
 
     <nxthemes:head />
-
     <nxthemes:resources />
+    <nxthemes:themestyles cache="true" />
 
   </head>
   [nxthemes markup]
