@@ -37,6 +37,13 @@ import org.nuxeo.ecm.platform.importer.source.SourceNode;
 import org.nuxeo.ecm.platform.importer.threading.ImporterThreadingPolicy;
 import org.nuxeo.runtime.api.Framework;
 
+/**
+ *
+ * Generic importer task
+ *
+ * @author Thierry Delprat
+ *
+ */
 public class GenericThreadedImportTask implements Runnable {
 
     private static final Log log = LogFactory.getLog(GenericThreadedImportTask.class);
