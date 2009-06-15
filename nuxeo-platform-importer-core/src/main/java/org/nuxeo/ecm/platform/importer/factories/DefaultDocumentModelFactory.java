@@ -1,11 +1,13 @@
 package org.nuxeo.ecm.platform.importer.factories;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
 
 public class DefaultDocumentModelFactory implements ImporterDocumentModelFactory {
@@ -38,13 +40,20 @@ public class DefaultDocumentModelFactory implements ImporterDocumentModelFactory
      */
     public DocumentModel createLeafNode(CoreSession session,
             DocumentModel parent, SourceNode node) throws Exception {
+        String docType = "File";
+        return defaultCreateLeafNode(session, parent, node, docType);
+    }
 
-        String mimeType = node.getBlobHolder().getBlob().getMimeType();
+    protected DocumentModel defaultCreateLeafNode(CoreSession session,
+            DocumentModel parent, SourceNode node, String docType) throws Exception {
+
+        BlobHolder bh = node.getBlobHolder();
+
+        String mimeType = bh.getBlob().getMimeType();
         if (mimeType == null) {
             mimeType = getMimeType(node.getName());
         }
 
-        String docType = "File";
         String name = getValidNameFromFileName(node.getName());
         String fileName = node.getName();
 
@@ -53,8 +62,14 @@ public class DefaultDocumentModelFactory implements ImporterDocumentModelFactory
         doc.setPathInfo(parent.getPathAsString(), name);
         doc.setProperty("dublincore", "title", node.getName());
         doc.setProperty("file", "filename", fileName);
-        doc.setProperty("file", "content", node.getBlobHolder().getBlob());
+        doc.setProperty("file", "content", bh.getBlob());
 
+        Map<String, Serializable> props = bh.getProperties();
+        if (props!=null) {
+            for (String pName : props.keySet()) {
+                doc.setPropertyValue(pName, props.get(pName));
+            }
+        }
         doc = session.createDocument(doc);
         return doc;
     }
