@@ -26,18 +26,17 @@ import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.annotations.web.RequestParameter;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.SortInfo;
-import org.nuxeo.ecm.webapp.base.InputController;
 
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
  */
 @Name("sortActions")
 @Scope(ScopeType.CONVERSATION)
-public class SortActionsBean extends InputController implements SortActions, Serializable {
+public class SortActionsBean implements SortActions, Serializable {
 
     private static final long serialVersionUID = 6824092797019313562L;
     private static final Log log = LogFactory.getLog(SortActionsBean.class);
@@ -51,10 +50,12 @@ public class SortActionsBean extends InputController implements SortActions, Ser
     @RequestParameter("providerName")
     private String providerName;
 
+    @Deprecated
     public void init() {
         log.debug("Initializing...");
     }
 
+    @Deprecated
     public void destroy() {
         log.debug("Destroy...");
     }
