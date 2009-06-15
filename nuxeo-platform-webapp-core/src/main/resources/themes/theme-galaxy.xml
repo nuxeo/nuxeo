@@ -574,7 +574,7 @@
         <background-color>#ddeeff</background-color>
       </selector>
       <selector path="a:visited">
-        <color preset="link.visited (Nuxeo psd colors)"/>
+        <color>#112B8C</color>
       </selector>
       <selector path=".dataInput textarea, .dataInput .dataInputText">
         <width>500px</width>
@@ -710,14 +710,14 @@
         <width>40px</width>
       </selector>
       <selector path="a, a:link">
-        <color preset="link (Nuxeo psd colors)"/>
+        <color>#0066CC</color>
         <text-decoration>none</text-decoration>
       </selector>
       <selector path="a:active">
-        <color preset="link.active (Nuxeo psd colors)"/>
+        <color>#0066CC</color>
       </selector>
       <selector path="a:hover">
-        <color preset="link (Nuxeo psd colors)"/>
+        <color>#0066CC</color>
         <text-decoration>underline</text-decoration>
       </selector>
       <selector path="table">
@@ -792,7 +792,7 @@
       </selector>
       <selector path=".foldableBox h3">
         <border-bottom preset="tabiselected (Galaxy borders)"/>
-        <color preset="white (Nuxeo psd colors)"/>
+        <color>#fff</color>
         <padding>3px 3px 3px 18px</padding>
         <font-size>11px</font-size>
       </selector>
@@ -800,13 +800,13 @@
         <background>url(/nuxeo/img/theme_galaxy/arrow_folded.gif) top left no-repeat</background>
       </selector>
       <selector path=".foldableBox h3 a:link, .foldableBox h3 a:visited, .foldableBox h3 a:hover, .foldableBox h3 a:visited:hover">
-        <color preset="white (Nuxeo psd colors)"/>
+        <color>#fff</color>
       </selector>
       <selector path=".foldableBox h3.unfolded">
         <background>url(/nuxeo/img/theme_galaxy/arrow_unfolded.gif) top left no-repeat</background>
       </selector>
       <selector path=".foldableBox h3 a">
-        <color preset="white (Nuxeo psd colors)"/>
+        <color>#fff</color>
         <display>block</display>
       </selector>
       <selector path=".foldableBox .boxBody">
@@ -1374,13 +1374,13 @@
         <text-decoration>none</text-decoration>
       </selector>
       <selector path="a:visited" view="nuxeo5 tree explorer">
-        <color preset="link.visited (Nuxeo psd colors)"/>
+        <color>#112B8C</color>
       </selector>
       <selector path="a:active" view="nuxeo5 tree explorer">
         <color>#112b8c</color>
       </selector>
       <selector path="a:hover" view="nuxeo5 tree explorer">
-        <color preset="link (Nuxeo psd colors)"/>
+        <color>#0066CC</color>
         <text-decoration>underline</text-decoration>
       </selector>
       <selector path=".dropInto" view="nuxeo5 tree explorer">
@@ -1446,17 +1446,17 @@
         <font preset="small (Galaxy fonts)"/>
       </selector>
       <selector path="a" view="nuxeo5 clip board">
-        <color preset="link (Nuxeo psd colors)"/>
+        <color>#0066CC</color>
         <text-decoration>none</text-decoration>
       </selector>
       <selector path="a:visited" view="nuxeo5 clip board">
-        <color preset="link.visited (Nuxeo psd colors)"/>
+        <color>#112B8C</color>
       </selector>
       <selector path="a:active" view="nuxeo5 clip board">
-        <color preset="link.active (Nuxeo psd colors)"/>
+        <color>#0066CC</color>
       </selector>
       <selector path="a:hover" view="nuxeo5 clip board">
-        <color preset="link (Nuxeo psd colors)"/>
+        <color>#0066CC</color>
         <text-decoration>underline</text-decoration>
       </selector>
       <selector path=".dropInto" view="nuxeo5 clip board">
@@ -1533,7 +1533,7 @@
       </selector>
       <selector path="" view="Nuxeo EP footer (Galaxy Theme)">
         <font preset="small (Galaxy fonts)"/>
-        <color preset="medium (Nuxeo psd colors)"/>
+        <color>#5c5c5c</color>
         <padding>5px 15px 5px 5px</padding>
       </selector>
       <selector path="div" view="Nuxeo EP footer (Galaxy Theme)">
@@ -1543,17 +1543,17 @@
         <font-size preset="small (Galaxy fonts)"/>
       </selector>
       <selector path="a" view="Nuxeo EP footer (Galaxy Theme)">
-        <color preset="link (Nuxeo psd colors)"/>
+        <color>#0066CC</color>
         <text-decoration>none</text-decoration>
       </selector>
       <selector path="a:visited" view="Nuxeo EP footer (Galaxy Theme)">
-        <color preset="link.visited (Nuxeo psd colors)"/>
+        <color>#112B8C</color>
       </selector>
       <selector path="a:active" view="Nuxeo EP footer (Galaxy Theme)">
-        <color preset="link.active (Nuxeo psd colors)"/>
+        <color>#0066CC</color>
       </selector>
       <selector path="a:hover" view="Nuxeo EP footer (Galaxy Theme)">
-        <color preset="link (Nuxeo psd colors)"/>
+        <color>#0066CC</color>
         <text-decoration>underline</text-decoration>
       </selector>
       <selector path="select.langSelect" view="Nuxeo EP footer (Galaxy Theme)">

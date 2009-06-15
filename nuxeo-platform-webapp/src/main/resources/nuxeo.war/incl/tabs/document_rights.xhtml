@@ -185,7 +185,8 @@
       value="#{messages['label.security.save']}"
       class="button rightsAddButton"
       action="#{securityActions.saveSecurityUpdates}"
-      rendered="#{securityActions.securityData.needSave}"/>
+      rendered="#{securityActions.securityData.needSave}"
+      id="document_rights_validate_button" />
 </h:form>
 
 <h3><h:outputText value="#{messages['label.security.addNewRule']}" /></h3>

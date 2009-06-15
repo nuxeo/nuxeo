@@ -11,7 +11,7 @@
     </td>
     <td class="fieldColumn">
       <h:selectOneMenu value="#{permissionActionListManager.selectedGrant}"
-      class="rightsAddSelect">
+      class="rightsAddSelect" id="rights_grant_select">
       <f:selectItems
       value="#{permissionActionListManager.permissionActionItems}" />
       </h:selectOneMenu>
@@ -23,7 +23,7 @@
     </td>
     <td class="fieldColumn">
       <h:selectOneMenu value="#{permissionListManager.selectedPermission}"
-      class="rightsAddSelect">
+      class="rightsAddSelect" id="rights_permission_select">
       <f:selectItems value="#{securityActions.settablePermissions}" />
       </h:selectOneMenu>
     </td>
@@ -35,7 +35,8 @@
       value="#{messages['command.security.addPerm']}"
       class="button rightsAddButton"
       disabled="#{!securityActions.canAddSecurityRules}"
-      action="#{securityActions.addPermissions}" />
+      action="#{securityActions.addPermissions}"
+      id="rights_add_button" />
     </td>
   </tr>
 </tbody>

@@ -7,7 +7,7 @@
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:c="http://java.sun.com/jstl/core">
 
-  <ui:define name="page title"><h:outputText value="#{nuxeoApplicationName}"/> - #{messages['label.groupManager.groups']}</ui:define>
+  <ui:define name="page title"><h:outputText value="#{nuxeoApplicationName} - #{messages['label.groupManager.groups']}" /></ui:define>
 
   <ui:define name="body">
 
@@ -20,7 +20,7 @@
 
     <div class="tabsContent">
 
-      <h:form rendered="#{groupManagerActions.allowCreateGroup}">
+      <h:form rendered="#{groupManagerActions.allowCreateGroup and documentActions.notReadOnly}">
         <div class="action_bar">
           <ul>
             <li class="selected">

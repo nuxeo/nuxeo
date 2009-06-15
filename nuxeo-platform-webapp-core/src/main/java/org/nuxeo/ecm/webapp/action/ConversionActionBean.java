@@ -55,7 +55,6 @@ import org.nuxeo.runtime.api.Framework;
  */
 @Name("conversionActions")
 @Scope(ScopeType.EVENT)
-@Transactional
 public class ConversionActionBean implements ConversionAction {
 
     private static final Log log = LogFactory

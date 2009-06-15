@@ -29,7 +29,7 @@
               title="#{messages['tooltip.content.select.all']}">
           </h:selectBooleanCheckbox>
         </f:facet>
-        <h:selectBooleanCheckbox
+        <h:selectBooleanCheckbox id="document_checkbox_select"
             value="#{row.selected}"
             onclick="selectDataTableRowForDocument('#{row.data.ref}', '#{providerName}', this, '#{listName}', '#{currentDocument.ref}')">
         </h:selectBooleanCheckbox>

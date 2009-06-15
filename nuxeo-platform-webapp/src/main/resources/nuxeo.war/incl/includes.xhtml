@@ -1,6 +1,6 @@
 <div xmlns:h="http://java.sun.com/jsf/html">
 
-<script type="text/javascript" src="#{baseURL}seam/resource/remoting/interface.js?suggestBox&amp;FileManageActions&amp;domainActions&amp;workspaceActions&amp;documentActions&amp;publishActions&amp;searchActions&amp;popupHelper&amp;clipboardActions"></script>
+<script type="text/javascript" src="#{baseURL}seam/resource/remoting/interface.js?#{SeamRemotingBeanNames}"></script>
 
 <script type="text/javascript">
   <h:outputText
@@ -18,7 +18,7 @@
  <span id="js-label.review.confirmDeleteTask"> <h:outputText value="#{messages['label.review.confirmDeleteTask']}" /></span>
 </div>
 
-<script type="text/javascript" src="#{baseURL}/js/?scripts=confirmAlerts.js|DragAndDrop.js|tableSelections.js|customSeamRemotingWaiter.js|custom-javascript.js|default-contextmenu-actions.js|custom-contextmenu-actions.js"></script>
+<script type="text/javascript" src="#{baseURL}js/?scripts=confirmAlerts.js|DragAndDrop.js|tableSelections.js|customSeamRemotingWaiter.js|custom-javascript.js|default-contextmenu-actions.js|custom-contextmenu-actions.js"></script>
 
 <script type="text/javascript">
 <h:outputText

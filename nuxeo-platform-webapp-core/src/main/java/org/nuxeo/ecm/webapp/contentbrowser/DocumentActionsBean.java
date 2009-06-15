@@ -46,7 +46,6 @@ import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
-import org.jboss.seam.annotations.Transactional;
 import org.jboss.seam.annotations.remoting.WebRemote;
 import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.core.Events;
@@ -82,6 +81,7 @@ import org.nuxeo.ecm.webapp.base.InputController;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.pagination.ResultsProvidersCache;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
@@ -90,7 +90,6 @@ import org.nuxeo.ecm.webapp.pagination.ResultsProvidersCache;
  */
 @Name("documentActions")
 @Scope(CONVERSATION)
-@Transactional
 public class DocumentActionsBean extends InputController implements
         DocumentActions, Serializable {
 
@@ -664,6 +663,10 @@ public class DocumentActionsBean extends InputController implements
             return true;
         }
         return false;
+    }
+
+    public boolean isNotReadOnly() {
+        return (!"true".equals(Framework.getProperty("org.nuxeo.ecm.webapp.readonly.mode", "false")));
     }
 
 }

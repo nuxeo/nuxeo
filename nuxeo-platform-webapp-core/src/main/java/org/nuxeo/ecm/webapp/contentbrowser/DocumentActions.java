@@ -149,4 +149,5 @@ public interface DocumentActions extends StatefulBaseLifeCycle,
      */
     boolean getCanUnpublish();
 
+    boolean isNotReadOnly();
 }

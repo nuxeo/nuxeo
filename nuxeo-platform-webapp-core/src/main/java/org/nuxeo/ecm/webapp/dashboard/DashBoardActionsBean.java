@@ -16,7 +16,6 @@ package org.nuxeo.ecm.webapp.dashboard;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import javax.annotation.security.PermitAll;
 import javax.ejb.Remove;
@@ -29,36 +28,29 @@ import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
-import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.contexts.Context;
-import org.jbpm.graph.exe.ProcessInstance;
-import org.jbpm.taskmgmt.exe.TaskInstance;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 import org.nuxeo.ecm.core.api.SortInfo;
-import org.nuxeo.ecm.platform.jbpm.JbpmEventNames;
-import org.nuxeo.ecm.platform.jbpm.JbpmService;
-import org.nuxeo.ecm.platform.syndication.workflow.DashBoardItem;
-import org.nuxeo.ecm.platform.syndication.workflow.DashBoardItemImpl;
+import org.nuxeo.ecm.core.api.impl.EmptyResultsProvider;
+import org.nuxeo.ecm.platform.jbpm.dashboard.DashBoardItem;
+import org.nuxeo.ecm.platform.jbpm.dashboard.DocumentProcessItem;
+import org.nuxeo.ecm.platform.jbpm.dashboard.WorkflowDashBoard;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.ui.web.pagination.ResultsProviderFarmUserException;
 import org.nuxeo.ecm.webapp.pagination.ResultsProvidersCache;
 import org.nuxeo.ecm.webapp.querymodel.QueryModelActions;
-import org.nuxeo.ecm.webapp.helpers.EventNames;
-
 /**
  * Dash board actions.
  * <p>
  * Those actions are related to the current authenticated principal.
- * 
+ *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 @Name("dashboardActions")
@@ -106,119 +98,46 @@ public class DashBoardActionsBean implements DashboardActions {
     @In(create = true)
     protected transient ResultsProvidersCache resultsProvidersCache;
 
-    @In(create = true)
-    protected transient JbpmService jbpmService;
+    @In(create=true, required=false)
+    protected WorkflowDashBoard workflowDashBoardActions;
 
     @RequestParameter("sortColumn")
     protected String newSortColumn;
 
     protected SortInfo sortInfo;
 
-    protected Collection<DocumentProcessItem> currentUserProcesses;
-
-    protected Collection<DashBoardItem> currentUserTasks;
 
     @Factory(value = "currentUserTasks", scope = ScopeType.PAGE)
     public Collection<DashBoardItem> computeDashboardItems()
             throws ClientException {
-        if (currentUserTasks == null) {
-            currentUserTasks = new ArrayList<DashBoardItem>();
-            NuxeoPrincipal pal = (NuxeoPrincipal) currentUser;
-            List<TaskInstance> tasks = jbpmService.getCurrentTaskInstances(pal,
-                    null);
-            if (tasks != null) {
-                for (TaskInstance task : tasks) {
-                    try {
-                        if (task.hasEnded() || task.isCancelled()) {
-                            continue;
-                        }
-                        DocumentModel doc = jbpmService.getDocumentModel(task,
-                                pal);
-                        if (doc != null) {
-                            currentUserTasks.add(new DashBoardItemImpl(task,
-                                    doc));
-                        } else {
-                            log.error(String.format(
-                                    "User '%s' has a task of type '%s' on an "
-                                            + "unexisting or unvisible document",
-                                    currentUser.getName(), task.getName()));
-                        }
-                    } catch (Exception e) {
-                        log.error(e);
-                    }
-                }
-            }
+        if (workflowDashBoardActions==null) {
+            return new ArrayList<DashBoardItem>();
         }
-        return currentUserTasks;
+        return workflowDashBoardActions.computeDashboardItems();
     }
 
     @Factory(value = "currentUserProcesses", scope = ScopeType.PAGE)
     public Collection<DocumentProcessItem> computeDocumentProcessItems()
             throws ClientException {
-        if (currentUserProcesses == null) {
-            currentUserProcesses = new ArrayList<DocumentProcessItem>();
-            NuxeoPrincipal pal = (NuxeoPrincipal) currentUser;
-            List<ProcessInstance> processes = jbpmService.getCurrentProcessInstances(
-                    (NuxeoPrincipal) currentUser, null);
-            if (processes != null) {
-                for (ProcessInstance process : processes) {
-                    try {
-                        if (process.hasEnded()) {
-                            continue;
-                        }
-                        DocumentModel doc = jbpmService.getDocumentModel(
-                                process, pal);
-                        if (doc != null) {
-                            currentUserProcesses.add(new DocumentProcessItemImpl(
-                                    process, doc));
-                        } else {
-                            log.error(String.format(
-                                    "User '%s' has a process of type '%s' on an "
-                                            + "unexisting or unvisible document",
-                                    currentUser.getName(),
-                                    process.getProcessDefinition().getName()));
-                        }
-                    } catch (Exception e) {
-                        log.error(e);
-                    }
-                }
-            }
-        }
-        return currentUserProcesses;
+
+           if (workflowDashBoardActions==null) {
+               return new ArrayList<DocumentProcessItem>();
+           }
+           return workflowDashBoardActions.computeDocumentProcessItems();
     }
 
-    @Observer(value = { JbpmEventNames.WORKFLOW_ENDED,
-            JbpmEventNames.WORKFLOW_NEW_STARTED,
-            JbpmEventNames.WORKFLOW_TASK_STOP,
-            JbpmEventNames.WORKFLOW_TASK_REJECTED,
-            JbpmEventNames.WORKFLOW_USER_ASSIGNMENT_CHANGED,
-            JbpmEventNames.WORKFLOW_TASK_COMPLETED,
-            JbpmEventNames.WORKFLOW_TASK_REMOVED,
-            JbpmEventNames.WORK_ITEMS_LIST_LOADED,
-            JbpmEventNames.WORKFLOW_TASKS_COMPUTED,
-            JbpmEventNames.WORKFLOW_ABANDONED,
-            EventNames.DOMAIN_SELECTION_CHANGED }, create = false, inject = false)
-    @BypassInterceptors
     public void invalidateDocumentProcessItems() {
-        currentUserProcesses = null;
+           if (workflowDashBoardActions==null) {
+               return;
+           }
+           workflowDashBoardActions.invalidateDocumentProcessItems();
     }
 
-    @Observer(value = { JbpmEventNames.WORKFLOW_ENDED,
-            JbpmEventNames.WORKFLOW_NEW_STARTED,
-            JbpmEventNames.WORKFLOW_TASK_START,
-            JbpmEventNames.WORKFLOW_TASK_STOP,
-            JbpmEventNames.WORKFLOW_TASK_REJECTED,
-            JbpmEventNames.WORKFLOW_USER_ASSIGNMENT_CHANGED,
-            JbpmEventNames.WORKFLOW_TASK_COMPLETED,
-            JbpmEventNames.WORKFLOW_TASK_REMOVED,
-            JbpmEventNames.WORK_ITEMS_LIST_LOADED,
-            JbpmEventNames.WORKFLOW_TASKS_COMPUTED,
-            JbpmEventNames.WORKFLOW_ABANDONED,
-            EventNames.DOMAIN_SELECTION_CHANGED, "documentPublicationRejected",
-            "documentPublished" }, create = false, inject = false)
-    @BypassInterceptors
     public void invalidateDashboardItems() {
-        currentUserTasks = null;
+        if (workflowDashBoardActions==null) {
+            return;
+        }
+        workflowDashBoardActions.invalidateDashboardItems();
     }
 
     @Destroy
@@ -237,6 +156,10 @@ public class DashBoardActionsBean implements DashboardActions {
 
         Object[] params;
         String location = navigationContext.getCurrentDomainPath();
+        if (location == null) {
+            return new EmptyResultsProvider();
+        }
+
         String templates = location + "/templates";
         if (BOARD_USER.equals(name)) {
             params = new Object[] { currentUser.getName() };
@@ -298,13 +221,18 @@ public class DashBoardActionsBean implements DashboardActions {
     }
 
     public String refreshDashboardItems() {
-        currentUserTasks = null;
-        return null;
+        if (workflowDashBoardActions==null) {
+            return null;
+        }
+        return workflowDashBoardActions.refreshDashboardItems();
     }
 
     public String refreshDocumentProcessItems() {
-        currentUserProcesses = null;
-        return null;
+        if (workflowDashBoardActions==null) {
+            return null;
+        }
+        return workflowDashBoardActions.refreshDocumentProcessItems();
+
     }
 
     public String refreshProvider(String providerName) {
