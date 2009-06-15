@@ -49,10 +49,10 @@
       rendered="#{searchType =='USER_GROUP_TYPE' or empty searchType}"
       class="rightsAddLabel" />
 
-    <a4j:region renderRegionOnly="true">
+    <a4j:region renderRegionOnly="true" id="#{widget.id}_ajax_region">
       <h:panelGrid id="#{widget.id}_panel" columns="2">
 
-        <h:panelGroup>
+        <h:panelGroup id="#{widget.id}_panelGroup">
           <span id="#{widget.id}_suggestDiv">
             <h:inputText id="#{widget.id}_suggest"
               onkeydown="if (event.keyCode == 13 || event.keyCode == 9) {return false;}" />
@@ -77,20 +77,21 @@
               oncomplete="javascript:blankSuggestionInput($('#{widget.id}_suggestDiv'));"
               focus="#{widget.id}_suggest"
               bypassUpdates="true"
-              reRender="#{widget.id}_listRegion">
+              reRender="#{widget.id}_listRegion"
+              id="#{widget.id}_listRegion_select">
               <f:param name="suggestionInputSelectorId" value="#{widget.id}_suggest" />
               <f:param name="suggestionSelectionListId" value="#{widget.id}_list" />
             </a4j:support>
             <h:column>
-              <f:subview rendered="#{result.type == 'USER_TYPE'}">
+              <f:subview rendered="#{result.type == 'USER_TYPE'}" id="#{widget.id}_user_result">
                 <h:graphicImage value="/icons/user.gif" alt="user.gif" />
                 <h:outputText value="#{nxu:userDisplayName(result.id, result.entry[userSchema].firstName, result.entry[userSchema].lastName)}" />
               </f:subview>
-              <f:subview rendered="#{result.type == 'GROUP_TYPE'}">
+              <f:subview rendered="#{result.type == 'GROUP_TYPE'}" id="#{widget.id}_group_result">
                 <h:graphicImage value="/icons/group.gif" alt="group.gif" />
                 <h:outputText value="#{result.id}" />
               </f:subview>
-              <f:subview rendered="#{empty result.type}">
+              <f:subview rendered="#{empty result.type}" id="#{widget.id}_result">
                 <h:outputText value="#{item}" />
               </f:subview>
             </h:column>
