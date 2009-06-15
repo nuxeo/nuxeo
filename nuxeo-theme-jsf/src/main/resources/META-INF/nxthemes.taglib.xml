@@ -92,4 +92,11 @@
     </component>
   </tag>
 
+  <tag>
+    <tag-name>themestyles</tag-name>
+    <component>
+      <component-type>nxthemes.themestyles</component-type>
+    </component>
+  </tag>
+
 </facelet-taglib>

@@ -23,13 +23,24 @@ import static org.jboss.seam.ScopeType.APPLICATION;
 
 import java.io.Serializable;
 
+import javax.naming.NamingException;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.Create;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Startup;
 import org.jboss.seam.core.Init;
+import org.nuxeo.ecm.platform.web.common.tx.TransactionsHelper;
 
+/**
+ * Update Seam configuration as needed when app starts
+ *
+ * @author Thierry Delprat
+ *
+ */
 @Name("NuxeoSeamConfigurator")
 @Scope(APPLICATION)
 @Startup
@@ -37,12 +48,26 @@ public class SeamConfigurator implements Serializable {
 
     private static final long serialVersionUID = 178687658975L;
 
+    private static final Log log = LogFactory.getLog(SeamConfigurator.class);
+
     @In(value = "org.jboss.seam.core.init")
     transient Init init;
 
     @Create
     public void init() {
         init.setJbpmInstalled(false);
+        try {
+            if (TransactionsHelper.getUserTransaction()==null) {
+                log.info("Desactivate Seam transaction support (no tx manager)");
+                init.setTransactionManagementEnabled(false);
+            } else {
+                log.info("Activate Seam transaction support");
+                init.setTransactionManagementEnabled(true);
+            }
+        } catch (NamingException e) {
+            log.info("Desactivate Seam transaction support  (no tx manager)");
+            init.setTransactionManagementEnabled(false);
+        }
     }
 
 }

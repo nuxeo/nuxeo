@@ -44,7 +44,7 @@ public class StaticNavigationHandler {
     public StaticNavigationHandler(ServletContext context) {
         InputStream stream = null;
         if (context != null) {
-            stream = context.getResourceAsStream("WEB-INF/faces-config.xml");
+            stream = context.getResourceAsStream("/WEB-INF/faces-config.xml");
         }
 
         if (stream == null) {
