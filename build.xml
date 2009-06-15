@@ -18,7 +18,9 @@
   <property name="nuxeo.war.dir" value="${deploy.dir}/nuxeo.ear/nuxeo.war" />
   <property name="seam.hotdeploy.dir" value="${nuxeo.war.dir}/WEB-INF/dev" />
 
-  <property name="dam.ear.root" value="nuxeo-dam-ear" />
+  <property name="dam.distribution.root" value="nuxeo-dam-distribution" />
+  <property name="dam.ear.root" value="${dam.distribution.root}/nuxeo-dam-ear" />
+  <property name="dam.build.dir" value="${dam.distribution.root}/target" />
   <property name="nuxeo.ear" value="nuxeo.ear" />
   <property name="deploy.lib.dir" value="${jboss.dir}/server/${jboss.config}/lib" />
   <property name="build.lib.dir" value="lib" />
@@ -55,7 +57,7 @@
     <os family="windows" />
   </condition>
 
-  <target name="deploy" depends="install,package,copy,copy-lib" description="Build and copy to JBoss">
+  <target name="deploy" depends="install-ear,package,copy,copy-lib" description="Build and copy to JBoss">
     <echo message="Deployed ${ant.project.name} to ${deploy.dir}" />
   </target>
 
@@ -87,6 +89,28 @@
     </exec>
   </target>
 
+  <target name="install-ear" depends="install-ear-unix,install-ear-windows" description="Run mvn install for Nuxeo DAM ear">
+  </target>
+  <target name="install-ear-unix" if="osfamily-unix">
+    <exec executable="mvn" failonerror="true">
+      <arg value="clean" />
+      <arg value="install" />
+      <arg value="-Dmaven.test.skip=true" />
+      <arg value="-Pnuxeo-dam-wo-distribution" />
+      <arg value="${mvn.opts}" />
+    </exec>
+  </target>
+  <target name="install-ear-windows" if="osfamily-windows">
+    <exec executable="cmd" failonerror="true">
+      <arg value="/c" />
+      <arg value="mvn.bat" />
+      <arg value="clean" />
+      <arg value="install" />
+      <arg value="-Dmaven.test.skip=true" />
+      <arg value="-Pnuxeo-dam-wo-distribution" />
+      <arg value="${mvn.opts}" />
+    </exec>
+  </target>
 
   <target name="install" description="Run mvn install">
     <antcall target="maven">
@@ -133,7 +157,7 @@
       </fileset>
     </delete>
     <copy todir="${deploy.lib.dir}/" failonerror="true">
-      <fileset dir="${build.dir}/${build.lib.dir}/" />
+      <fileset dir="${dam.build.dir}/${build.lib.dir}/" />
     </copy>
   </target>
 

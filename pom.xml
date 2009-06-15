@@ -18,14 +18,32 @@
   <packaging>pom</packaging>
   <description>Nuxeo DAM Parent</description>
 
-  <modules>
-    <module>nuxeo-dam-api</module>
-    <module>nuxeo-dam-core</module>
-    <module>nuxeo-dam-facade</module>
-    <module>nuxeo-dam-webapp-core</module>
-    <module>nuxeo-dam-webapp</module>
-    <module>nuxeo-dam-distribution</module>
-  </modules>
+  <profiles>
+    <profile>
+      <id>nuxeo-dam-wo-distribution</id>
+      <modules>
+        <module>nuxeo-dam-api</module>
+        <module>nuxeo-dam-core</module>
+        <module>nuxeo-dam-facade</module>
+        <module>nuxeo-dam-webapp-core</module>
+        <module>nuxeo-dam-webapp</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>nuxeo-dam-all</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+        <module>nuxeo-dam-api</module>
+        <module>nuxeo-dam-core</module>
+        <module>nuxeo-dam-facade</module>
+        <module>nuxeo-dam-webapp-core</module>
+        <module>nuxeo-dam-webapp</module>
+        <module>nuxeo-dam-distribution</module>
+      </modules>
+    </profile>
+  </profiles>
 
   <properties>
     <nuxeo.dam.version>${pom.version}</nuxeo.dam.version>
