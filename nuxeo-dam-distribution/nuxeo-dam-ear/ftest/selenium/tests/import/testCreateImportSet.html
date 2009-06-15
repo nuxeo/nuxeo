@@ -47,6 +47,11 @@
 	<td></td>
 </tr>
 <tr>
+  <td>watchA4jRequests</td>
+  <td></td>
+  <td></td>
+</tr>
+<tr>
 	<td>click</td>
 	<td>link=Create import set</td>
 	<td></td>
@@ -92,9 +97,9 @@
 	<td>label=Africa</td>
 </tr>
 <tr>
-	<td>pause</td>
-	<td>1000</td>
-	<td></td>
+  <td>waitForA4jRequest</td>
+  <td>10000</td>
+  <td></td>
 </tr>
 <tr>
 	<td>select</td>
@@ -110,6 +115,17 @@
 	<td>verifyTextPresent</td>
 	<td>Process in progres</td>
 	<td></td>
+</tr>
+<!-- need to wait for two ajax requests because of the oncomplete system -->
+<tr>
+  <td>waitForA4jRequest</td>
+  <td>10000</td>
+  <td></td>
+</tr>
+<tr>
+  <td>waitForA4jRequest</td>
+  <td>10000</td>
+  <td></td>
 </tr>
 <tr>
 	<td>verifyTextPresent</td>
