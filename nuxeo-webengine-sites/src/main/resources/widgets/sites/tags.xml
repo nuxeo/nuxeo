@@ -31,7 +31,9 @@
     <#list nxthemesInfo.model.items as item>
       <div class="contextualLinkBlock">
 		<#if (!item.isPrivate)>
-    	  <div class="contextualLinkText">${item.label}
+    	  <div class="contextualLinkText">
+            <img src="${skinPath}/images/tag_blue.png" alt="${item.label}" />
+            ${item.label}
             <#if (item.canModify)>
              [<a href='${This.path}/@tag/removeTagging?taggingId=${item.id}' onclick="return rUSureToDelete();">X</a>]
             </#if>
