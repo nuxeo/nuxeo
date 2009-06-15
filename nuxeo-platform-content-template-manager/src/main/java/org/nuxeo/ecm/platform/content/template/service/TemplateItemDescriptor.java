@@ -44,6 +44,9 @@ public class TemplateItemDescriptor  implements Serializable {
     @XNode("@title")
     private String title;
 
+    @XNode("@path")
+    private String path;
+
     @XNode("@description")
     private String description;
 
@@ -53,6 +56,10 @@ public class TemplateItemDescriptor  implements Serializable {
 
     @XNodeList(value = "properties/property", type = ArrayList.class, componentType = PropertyDescriptor.class)
     public List<PropertyDescriptor> properties;
+
+    public String getPath() {
+        return path;
+    }
 
     public String getDescription() {
         return description;

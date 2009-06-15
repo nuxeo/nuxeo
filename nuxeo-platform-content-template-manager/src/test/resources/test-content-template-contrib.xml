@@ -39,6 +39,8 @@
         <templateItem typeName="SectionRoot" id="Sections" title="Sections" description="Sections"/>
         <templateItem typeName="TemplateRoot" id="Templates" title="Templates"
                       description="Root of workspaces templates"/>
+        <templateItem typeName="Section" id="Section" title="Section" path="Sections"
+                      description="Section created in SectionRoot"/>
       </template>
     </factoryBinding>
 

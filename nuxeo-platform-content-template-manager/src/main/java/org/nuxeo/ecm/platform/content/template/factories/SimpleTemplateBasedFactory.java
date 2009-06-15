@@ -50,8 +50,11 @@ public class SimpleTemplateBasedFactory extends BaseContentFactory {
         setAcl(acl, eventDoc.getRef());
 
         for (TemplateItemDescriptor item : template) {
-            DocumentModel newChild = session.createDocumentModel(
-                    eventDoc.getPathAsString(), item.getId(),
+            String itemPath = eventDoc.getPathAsString();
+            if (item.getPath() != null) {
+                itemPath = itemPath + "/" + item.getPath();
+            }
+            DocumentModel newChild = session.createDocumentModel(itemPath, item.getId(),
                     item.getTypeName());
             newChild.setProperty("dublincore", "title", item.getTitle());
             newChild.setProperty("dublincore", "description",

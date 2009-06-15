@@ -96,7 +96,7 @@ public class TestContentTemplateFactory extends RepositoryTestCase {
         assertTrue(factoryBindings.containsKey("Root"));
         assertTrue(factoryBindings.containsKey("Domain"));
 
-        assertEquals(3, factoryBindings.get("Domain").getTemplate().size());
+        assertEquals(4, factoryBindings.get("Domain").getTemplate().size());
         assertEquals("Workspaces",
                 factoryBindings.get("Domain").getTemplate().get(0).getId());
     }
@@ -156,6 +156,15 @@ public class TestContentTemplateFactory extends RepositoryTestCase {
         children = session.getChildren(domain.getRef(), "WorkspaceRoot");
         assertEquals(1, children.size());
         assertEquals("Workspaces", children.get(0).getTitle());
+        
+        // check that Section is created under sectionRoot
+        children = session.getChildren(domain.getRef(), "SectionRoot");
+        assertEquals(1, children.size());
+        DocumentModel sectionRoot = children.get(0);
+        assertEquals("Sections", sectionRoot.getTitle());
+        children = session.getChildren(sectionRoot.getRef(), "Section" );
+        assertEquals(1, children.size());
+        assertEquals("Section", children.get(0).getTitle());
     }
 
     public void testDomainFactory() throws ClientException {
