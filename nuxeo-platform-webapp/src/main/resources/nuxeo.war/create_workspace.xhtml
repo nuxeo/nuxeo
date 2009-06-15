@@ -38,7 +38,8 @@
         </h:selectOneMenu>
       </f:subview>
       <p class="buttonsGadget">
-        <h:commandButton type="submit" class="button" value="#{messages['command.create']}"
+        <h:commandButton type="submit" class="button" id="button_create"
+	  value="#{messages['command.create']}"
           action="#{documentTemplatesActions.createDocumentFromTemplate}" />
         <h:commandButton class="button" value="#{messages['command.cancel']}"
           action="#{navigationContext.goBack()}" immediate="true" />
