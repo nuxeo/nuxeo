@@ -35,10 +35,11 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 
 /**
  * @author Florent Guillaume
- * 
+ *
  */
 public class FakeUserManagerImpl implements UserManager {
 
@@ -209,9 +210,9 @@ public class FakeUserManagerImpl implements UserManager {
     }
 
     public NuxeoPrincipal getPrincipal(String username) throws ClientException {
-        // throw new UnsupportedOperationException();
-        NuxeoPrincipalImpl principal = new NuxeoPrincipalImpl("Administrator");
-        principal.setGroups(Arrays.asList(new String[] { "Administrators" }));
+        NuxeoPrincipalImpl principal = new NuxeoPrincipalImpl(SecurityConstants.ADMINISTRATOR);
+        principal.setGroups(Arrays.asList(new String[] { SecurityConstants.ADMINISTRATORS }));
+        principal.setEmail("admin@example.com");
         return principal;
     }
 
