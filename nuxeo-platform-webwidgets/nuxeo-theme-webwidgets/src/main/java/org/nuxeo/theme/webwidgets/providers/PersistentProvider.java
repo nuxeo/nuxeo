@@ -25,6 +25,7 @@ import javax.persistence.EntityTransaction;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.theme.webwidgets.Provider;
@@ -276,7 +277,7 @@ public class PersistentProvider implements Provider {
             log.warn("Could not get the current user from the context.");
             return false;
         }
-        return ((NuxeoPrincipal) currentNuxeoPrincipal).isMemberOf("administrators");
+        return ((NuxeoPrincipal) currentNuxeoPrincipal).isMemberOf(SecurityConstants.ADMINISTRATORS);
     }
 
     /*
