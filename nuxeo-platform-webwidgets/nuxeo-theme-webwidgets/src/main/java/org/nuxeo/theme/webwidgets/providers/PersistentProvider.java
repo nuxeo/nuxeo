@@ -51,7 +51,8 @@ public class PersistentProvider implements Provider {
         }
     }
 
-    public void addWidget(Widget widget, String regionName, int order) throws ProviderException {
+    public void addWidget(Widget widget, String regionName, int order)
+            throws ProviderException {
         if (widget == null) {
             throw new ProviderException("Widget is undefined");
         }
@@ -64,7 +65,8 @@ public class PersistentProvider implements Provider {
         reorderWidgets(widgets);
     }
 
-    public synchronized Widget createWidget(String widgetTypeName) throws ProviderException {
+    public synchronized Widget createWidget(String widgetTypeName)
+            throws ProviderException {
         if (widgetTypeName == null) {
             throw new ProviderException("Widget type name is undefined");
         }
@@ -89,7 +91,8 @@ public class PersistentProvider implements Provider {
         return ((WidgetEntity) widget).getState();
     }
 
-    public synchronized Widget getWidgetByUid(String uid) throws ProviderException {
+    public synchronized Widget getWidgetByUid(String uid)
+            throws ProviderException {
         Widget widget = em.find(WidgetEntity.class, Integer.valueOf(uid));
         if (widget == null) {
             throw new ProviderException("Widget not found: " + uid);
@@ -98,7 +101,8 @@ public class PersistentProvider implements Provider {
     }
 
     @SuppressWarnings("unchecked")
-    public synchronized List<Widget> getWidgets(String regionName) throws ProviderException {
+    public synchronized List<Widget> getWidgets(String regionName)
+            throws ProviderException {
         if (regionName == null) {
             throw new ProviderException("Region name is undefined.");
         }
@@ -108,7 +112,8 @@ public class PersistentProvider implements Provider {
         return widgets;
     }
 
-    public void moveWidget(Widget widget, String destRegionName, int order) throws ProviderException {
+    public void moveWidget(Widget widget, String destRegionName, int order)
+            throws ProviderException {
         if (widget == null) {
             throw new ProviderException("Widget is undefined");
         }
@@ -132,7 +137,8 @@ public class PersistentProvider implements Provider {
         reorderWidgets(destWidgets);
     }
 
-    public synchronized void removeWidget(Widget widget) throws ProviderException {
+    public synchronized void removeWidget(Widget widget)
+            throws ProviderException {
         if (widget == null) {
             throw new ProviderException("Widget is undefined");
         }
@@ -146,7 +152,8 @@ public class PersistentProvider implements Provider {
         commit();
     }
 
-    public void reorderWidget(Widget widget, int order) throws ProviderException {
+    public void reorderWidget(Widget widget, int order)
+            throws ProviderException {
         if (widget == null) {
             throw new ProviderException("Widget is undefined");
         }
@@ -158,7 +165,8 @@ public class PersistentProvider implements Provider {
         reorderWidgets(widgets);
     }
 
-    public Map<String, String> getWidgetPreferences(Widget widget) throws ProviderException {
+    public Map<String, String> getWidgetPreferences(Widget widget)
+            throws ProviderException {
         if (widget == null) {
             throw new ProviderException("Widget is undefined");
         }
@@ -178,7 +186,8 @@ public class PersistentProvider implements Provider {
         commit();
     }
 
-    public void setWidgetState(Widget widget, WidgetState state) throws ProviderException {
+    public void setWidgetState(Widget widget, WidgetState state)
+            throws ProviderException {
         if (widget == null) {
             throw new ProviderException("Widget is undefined");
         }
@@ -202,7 +211,8 @@ public class PersistentProvider implements Provider {
         commit();
     }
 
-    public synchronized WidgetData getWidgetData(Widget widget, String dataName) throws ProviderException {
+    public synchronized WidgetData getWidgetData(Widget widget, String dataName)
+            throws ProviderException {
         if (widget == null) {
             throw new ProviderException("Widget is undefined");
         }
