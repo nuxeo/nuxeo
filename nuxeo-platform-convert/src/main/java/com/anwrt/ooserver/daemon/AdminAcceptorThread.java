@@ -22,24 +22,26 @@ public class AdminAcceptorThread extends Thread
 	private String 				_acceptString;
 	private XAcceptor			_acceptor;
 	private Timer				_shutdownThread = null;
-	
+
 	/** displayed tag used for logging */
 	public static final String ADMIN_LOGGER_TAG = "#ADMIN# ";
-	
+
+	private static final int MAXIMUM_NUMBER_OF_ATTEMPTS = 50;
+
 	/**
 	 * Creates an acceptor to further accept connections from admin daemon instances
 	 * @param daemon the current daemon
 	 * @param shutdownThread
 	 * @param acceptString the admin acceptor string (usually passed by the configuration file)
 	 */
-	public AdminAcceptorThread(Daemon daemon, Timer shutdownThread, 
+	public AdminAcceptorThread(Daemon daemon, Timer shutdownThread,
 			 String acceptString)
 	{
 		super();
 		_daemon			= daemon;
 		_acceptString	= acceptString;
 		_shutdownThread	= shutdownThread;
-		
+
 		try
 		{
 			Object acceptorObj	= daemon.getInitialContext().getServiceManager()
@@ -59,7 +61,8 @@ public class AdminAcceptorThread extends Thread
 	public void run()
 	{
 		Logger.info(ADMIN_LOGGER_TAG + "started");
-		while (true)
+		int numberOfAttempts = 0;
+		while (numberOfAttempts < MAXIMUM_NUMBER_OF_ATTEMPTS)
 		{
 			try
 			{
@@ -69,10 +72,13 @@ public class AdminAcceptorThread extends Thread
 				Logger.debug(ADMIN_LOGGER_TAG + "Accepted admin connection from "
 				        + Daemon.extractContactInfo(connexion.getDescription()));
 				_daemon.getBridgeFactory().createBridge(
-						"", 
-						"urp", 
-						connexion, 
+						"",
+						"urp",
+						connexion,
 						new AdminInstanceProvider(_daemon, _shutdownThread));
+
+                Thread.sleep(10);
+				numberOfAttempts ++;
 			}
 			catch (AlreadyAcceptingException ex) // TODO this must be taken into account for the admin acceptor to work the best manner
 			{
@@ -99,7 +105,18 @@ public class AdminAcceptorThread extends Thread
 			    Logger.error(ADMIN_LOGGER_TAG + ex);
                 Logger.debug(ex);
 			}
+			catch (InterruptedException ex)
+			{
+			    Logger.error(ADMIN_LOGGER_TAG + ex);
+                Logger.debug(ex);
+            }
 		}
+
+		if (numberOfAttempts == MAXIMUM_NUMBER_OF_ATTEMPTS)
+		{
+		    Logger.warning(ADMIN_LOGGER_TAG + "Could not connect!!!");
+		}
+
 		Logger.info(ADMIN_LOGGER_TAG + "terminating");
 	}
 	/**
