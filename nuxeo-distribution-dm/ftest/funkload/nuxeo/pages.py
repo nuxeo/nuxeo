@@ -167,7 +167,7 @@ class BasePage:
         fl = self.fl
         self.memberManagement()
 
-        # TODO: NXBT-77 action view create user form
+        # TODO: NXBT-77 navigate to create user form
         fl.post(fl.server_url + '/view_users.faces', params=[
             ['j_id192', 'j_id192'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
@@ -243,7 +243,7 @@ class BasePage:
         else:
             action = '/view_documents.faces'
         fl.post(fl.server_url + action, params=[
-            # TODO: NXBT-77 replace j_id
+            # TODO: NXBT-77 action search
             ['j_id16', 'j_id16'],
             ['j_id16:j_id18', query],
             ['j_id16:j_id19', 'KEYWORDS'],
@@ -338,7 +338,7 @@ class FolderPage(BasePage):
         fl = self.fl
 
         fl.post(fl.server_url + "/view_documents.faces", params=[
-            # TODO: NXBT-77 replace j_id
+            # TODO: NXBT-77 navigate to create workspace form
             ['j_id250', 'j_id250'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
             ['j_id250:j_id251:j_id253:0:j_id254', 'j_id250:j_id251:j_id253:0:j_id254']],
@@ -359,7 +359,7 @@ class FolderPage(BasePage):
     def createFolder(self, title, description):
         fl = self.fl
         fl.post(fl.server_url + "/view_documents.faces", params=[
-            # TODO: NXBT-77 replace j_id
+            # TODO: NXBT-77 navigate to create folder form
             ['j_id212', 'j_id212'],
             ['j_id212:selectDocTypePanelOpenedState', ''],
             ['javax.faces.ViewState', fl.getLastJsfState()],
@@ -382,7 +382,7 @@ class FolderPage(BasePage):
     def createFile(self, title, description, file_path=None):
         fl = self.fl
         fl.post(fl.server_url + "/view_documents.faces", params=[
-            # TODO: NXBT-77 replace j_id
+            # TODO: NXBT-77 navigate to create file form
             ['j_id212', 'j_id212'],
             ['j_id212:selectDocTypePanelOpenedState', ''],
             ['javax.faces.ViewState', fl.getLastJsfState()],
