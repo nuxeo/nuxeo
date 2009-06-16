@@ -9,7 +9,7 @@
   <packaging>pom</packaging>
   <name>Nuxeo ECM Projects</name>
   <description>Nuxeo ECM Platform and related components.</description>
-  
+
   <url>http://www.nuxeo.com/en/products/platform</url>
   <organization>
     <name>Nuxeo SAS</name>
@@ -1088,12 +1088,75 @@
           <url>scpexe://gironde.nuxeo.com/home/mavenweb/site/</url>
         </site>
         <repository>
-          <id>nuxeo_release</id>
-          <url>file:///home/archiva/repositories/nuxeo_release</url>
+          <id>nuxeo-release</id>
+          <url>file:///home/nexus/repositories/nuxeo-release</url>
         </repository>
         <snapshotRepository>
-          <id>nuxeo_snapshot</id>
-          <url>file:///home/archiva/repositories/nuxeo_snapshot</url>
+          <id>nuxeo-snapshot</id>
+          <url>file:///home/nexus/repositories/nuxeo-snapshot</url>
+        </snapshotRepository>
+      </distributionManagement>
+    </profile>
+    <!-- For use by Nuxeo internal QA -->
+    <profile>
+      <id>qa</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <repositories>
+        <repository>
+          <id>public</id>
+          <url>http://maven.in.nuxeo.com/public</url>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+        </repository>
+        <repository>
+          <id>public-snapshots</id>
+          <url>http://maven.in.nuxeo.com/public-snapshots</url>
+          <releases>
+            <enabled>false</enabled>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+          </snapshots>
+        </repository>
+      </repositories>
+      <pluginRepositories>
+        <pluginRepository>
+          <id>public</id>
+          <url>http://maven.in.nuxeo.com/public</url>
+          <name>Nuxeo virtual release repository</name>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+        </pluginRepository>
+        <pluginRepository>
+          <id>public-snapshots</id>
+          <url>http://maven.in.nuxeo.com/public-snapshots</url>
+          <name>Nuxeo virtual snapshot repository</name>
+          <releases>
+            <enabled>false</enabled>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+          </snapshots>
+        </pluginRepository>
+      </pluginRepositories>
+      <distributionManagement>
+        <repository>
+          <id>releases</id>
+          <url>scpexe://maven.in.nuxeo.com/home/nexus/repositories/releases</url>
+        </repository>
+        <snapshotRepository>
+          <id>snapshots</id>
+          <url>scpexe://maven.in.nuxeo.com/home/nexus/repositories/snapshots</url>
         </snapshotRepository>
       </distributionManagement>
     </profile>
