@@ -55,7 +55,7 @@
         <f:facet name="header">
           <h:panelGroup>
           <h:commandLink immediate="true" action="#{sortActions.repeatSearch}"
-              rendered="#{provider.sortable}" >
+              rendered="#{provider.sortable}" id="header_title_sort">
             <h:outputText value="#{messages['label.content.header.title']}" />
             <f:param name="providerName" value="#{providerName}" />
             <f:param name="sortColumn" value="dc:title" />
@@ -108,7 +108,7 @@
         <f:facet name="header">
           <h:panelGroup>
           <h:commandLink immediate="true" action="#{sortActions.repeatSearch}"
-              rendered="#{provider.sortable}" >
+              rendered="#{provider.sortable}" id="header_modified_sort">
             <h:outputText value="#{messages['label.content.header.modified']}" />
             <f:param name="providerName" value="#{providerName}" />
             <f:param name="sortColumn" value="dc:modified" />
@@ -134,7 +134,7 @@
         <f:facet name="header">
           <h:panelGroup>
           <h:commandLink immediate="true" action="#{sortActions.repeatSearch}"
-              rendered="#{provider.sortable}" >
+              rendered="#{provider.sortable}" id="header_creator_sort">
             <h:outputText value="#{messages['label.content.header.author']}" />
             <f:param name="providerName" value="#{providerName}" />
             <f:param name="sortColumn" value="dc:creator" />
@@ -157,7 +157,7 @@
         <f:facet name="header">
           <h:panelGroup>
           <h:commandLink immediate="true" action="#{sortActions.repeatSearch}"
-              rendered="#{provider.sortable}" >
+              rendered="#{provider.sortable}" id="header_currentLifeCycleState_sort">
             <h:outputText value="#{messages['label.content.header.currentLifecycleState']}" />
             <f:param name="providerName" value="#{providerName}" />
             <f:param name="sortColumn" value="ecm:currentLifeCycleState" />
