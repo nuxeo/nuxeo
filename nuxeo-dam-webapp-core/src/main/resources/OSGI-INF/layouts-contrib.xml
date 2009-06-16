@@ -10,26 +10,26 @@
       </templates>
       <rows>
         <row>
-          <widget>creator</widget>
+          <widget>author</widget>
         </row>
         <row>
-          <widget>created</widget>
+          <widget>authoringDate</widget>
         </row>
       </rows>
-      <widget name="creator" type="text">
+      <widget name="author" type="text">
         <translated>true</translated>
         <fields>
-          <field>damc:creator</field>
+          <field>damc:author</field>
         </fields>
         <properties widgetMode="edit">
           <property name="styleClass">dataInputText</property>
         </properties>
       </widget>
 
-      <widget name="created" type="datetime">
+      <widget name="authoringDate" type="datetime">
         <translated>true</translated>
         <fields>
-          <field>damc:created</field>
+          <field>damc:authoringDate</field>
         </fields>
         <properties widgetMode="view">
           <property name="pattern">#{nxu:basicDateFormater()}</property>

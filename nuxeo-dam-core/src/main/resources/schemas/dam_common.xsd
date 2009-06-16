@@ -5,7 +5,7 @@
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
   xmlns:nxs="http://www.nuxeo.org/dam/schemas/common/">
 
-  <xs:element name="creator" type="xs:string"/>
-  <xs:element name="created" type="xs:date"/>
+  <xs:element name="author" type="xs:string"/>
+  <xs:element name="authoringDate" type="xs:date"/>
 
 </xs:schema>
