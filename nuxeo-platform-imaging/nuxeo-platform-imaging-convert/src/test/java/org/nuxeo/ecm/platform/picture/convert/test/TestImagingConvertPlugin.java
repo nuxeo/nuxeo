@@ -53,12 +53,6 @@ public class TestImagingConvertPlugin extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.platform.picture.convert");
     }
 
-    private static File getFileFromPath(String path) {
-        File file = FileUtils.getResourceFileFromContext(path);
-        assertTrue(file.length() > 0);
-        return file;
-    }
-
     protected static BlobHolder getBlobFromPath(String path) {
         File file = FileUtils.getResourceFileFromContext(path);
         assertTrue(file.length() > 0);
