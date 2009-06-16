@@ -107,7 +107,7 @@ public class DashBoardActionsBean implements DashboardActions {
     protected SortInfo sortInfo;
 
 
-    @Factory(value = "currentUserTasks", scope = ScopeType.PAGE)
+    @Factory(value = "currentUserTasks", scope = ScopeType.EVENT)
     public Collection<DashBoardItem> computeDashboardItems()
             throws ClientException {
         if (workflowDashBoardActions==null) {
@@ -116,7 +116,7 @@ public class DashBoardActionsBean implements DashboardActions {
         return workflowDashBoardActions.computeDashboardItems();
     }
 
-    @Factory(value = "currentUserProcesses", scope = ScopeType.PAGE)
+    @Factory(value = "currentUserProcesses", scope = ScopeType.EVENT)
     public Collection<DocumentProcessItem> computeDocumentProcessItems()
             throws ClientException {
 
