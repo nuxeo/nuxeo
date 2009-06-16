@@ -1105,8 +1105,8 @@
       </activation>
       <repositories>
         <repository>
-          <id>public</id>
-          <url>http://maven.in.nuxeo.com/public</url>
+          <id>internal</id>
+          <url>http://maven.in.nuxeo.com/internal</url>
           <releases>
             <enabled>true</enabled>
           </releases>
@@ -1115,8 +1115,8 @@
           </snapshots>
         </repository>
         <repository>
-          <id>public-snapshots</id>
-          <url>http://maven.in.nuxeo.com/public-snapshots</url>
+          <id>internal-snapshots</id>
+          <url>http://maven.in.nuxeo.com/internal-snapshots</url>
           <releases>
             <enabled>false</enabled>
           </releases>
@@ -1127,8 +1127,8 @@
       </repositories>
       <pluginRepositories>
         <pluginRepository>
-          <id>public</id>
-          <url>http://maven.in.nuxeo.com/public</url>
+          <id>internal</id>
+          <url>http://maven.in.nuxeo.com/internal</url>
           <name>Nuxeo virtual release repository</name>
           <releases>
             <enabled>true</enabled>
@@ -1138,8 +1138,8 @@
           </snapshots>
         </pluginRepository>
         <pluginRepository>
-          <id>public-snapshots</id>
-          <url>http://maven.in.nuxeo.com/public-snapshots</url>
+          <id>internal-snapshots</id>
+          <url>http://maven.in.nuxeo.com/internal-snapshots</url>
           <name>Nuxeo virtual snapshot repository</name>
           <releases>
             <enabled>false</enabled>
