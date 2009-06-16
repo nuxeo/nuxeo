@@ -36,6 +36,12 @@
       <filter>application/zip</filter>
     </plugin>
 
+    <plugin name="CSVArchivePlugin"
+      class="org.nuxeo.ecm.platform.filemanager.service.extension.CSVZipImporter"
+      order="11">
+      <filter>application/zip</filter>
+    </plugin>
+
     <documentation>
       Use a query model to find the list of all Workspaces the user has the
       right to create new document into.
