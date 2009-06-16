@@ -77,6 +77,9 @@ public class NuxeoExceptionFilter implements Filter {
             chain.doFilter(request, response);
         } catch (Throwable t) {
             if (request.getAttribute(EXCEPTION_FILTER_ATTRIBUTE) == null) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Initial exception", t);
+                }
                 handleException((HttpServletRequest) request,
                         (HttpServletResponse) response, t);
             }
