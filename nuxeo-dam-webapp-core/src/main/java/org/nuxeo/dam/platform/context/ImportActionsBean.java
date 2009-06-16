@@ -16,10 +16,7 @@ import org.jboss.seam.contexts.Context;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.common.utils.IdUtils;
-import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.*;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
@@ -45,7 +42,7 @@ public class ImportActionsBean implements Serializable {
     protected DocumentModel newImportSet;
 
     @In(create = true, required=false)
-    protected CoreSession documentManager;
+    protected transient CoreSession documentManager;
 
     @In(create = true, required = false)
     protected FacesMessages facesMessages;

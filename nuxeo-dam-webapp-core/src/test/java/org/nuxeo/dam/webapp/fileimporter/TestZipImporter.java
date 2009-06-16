@@ -27,16 +27,20 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
-import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
+import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.runtime.api.Framework;
 import org.richfaces.event.UploadEvent;
 
-public class TestZipImporter extends RepositoryOSGITestCase {
+public class TestZipImporter extends SQLRepositoryTestCase {
 
     protected FileManager service;
 
     protected DocumentModel root;
+
+    public TestZipImporter() {
+        super("TestZipImporter");
+    }
 
     @Override
     public void setUp() throws Exception {
@@ -64,9 +68,9 @@ public class TestZipImporter extends RepositoryOSGITestCase {
         deployContrib("org.nuxeo.ecm.webapp.tests",
                 "OSGI-INF/test-dam-content-template.xml");
 
-        openRepository();
+        openSession();
         service = Framework.getService(FileManager.class);
-        root = coreSession.getRootDocument();
+        root = session.getRootDocument();
     }
 
     @Override
@@ -101,23 +105,23 @@ public class TestZipImporter extends RepositoryOSGITestCase {
 
         Blob input = StreamingBlob.createFromFile(file, "application/zip");
 
-        DocumentModel doc = service.createDocumentFromBlob(coreSession, input,
+        DocumentModel doc = service.createDocumentFromBlob(session, input,
                 root.getPathAsString(), true, "test-data/test.zip");
 
-        DocumentModel child = coreSession.getChild(doc.getRef(), "plain");
+        DocumentModel child = session.getChild(doc.getRef(), "plain");
         assertNotNull(child);
         assertEquals("Note", child.getType());
-        child = coreSession.getChild(doc.getRef(), "image");
+        child = session.getChild(doc.getRef(), "image");
         assertNotNull(child);
         assertEquals("Picture", child.getType());
-        child = coreSession.getChild(doc.getRef(), "spreadsheet");
+        child = session.getChild(doc.getRef(), "spreadsheet");
         assertNotNull(child);
         assertEquals("File", child.getType());
     }
 
     public void testImportSetCreation() throws Exception {
 
-        ImportActionsBean importActions = new ImportActionsMock(coreSession,
+        ImportActionsBean importActions = new ImportActionsMock(session,
                 service);
 
         DocumentModel importSet = importActions.getNewImportSet();
@@ -129,23 +133,23 @@ public class TestZipImporter extends RepositoryOSGITestCase {
 
         importActions.createImportSet();
 
-        importSet = coreSession.getDocument(importSet.getRef());
+        importSet = session.getDocument(importSet.getRef());
         assertNotNull(importSet);
         String title = (String) importSet.getProperty("dublincore", "title");
-        String type = (String) importSet.getType();
+        String type = importSet.getType();
         assertEquals(title, "myimportset");
         assertEquals(type, "ImportSet");
 
-        DocumentModelList children = coreSession.getChildren(importSet.getRef());
+        DocumentModelList children = session.getChildren(importSet.getRef());
         assertNotNull(children);
         assertEquals(3, children.size());
-        DocumentModel child = coreSession.getChild(importSet.getRef(), "plain");
+        DocumentModel child = session.getChild(importSet.getRef(), "plain");
         assertNotNull(child);
         assertEquals("Note", child.getType());
-        child = coreSession.getChild(importSet.getRef(), "image");
+        child = session.getChild(importSet.getRef(), "image");
         assertNotNull(child);
         assertEquals("Picture", child.getType());
-        child = coreSession.getChild(importSet.getRef(), "spreadsheet");
+        child = session.getChild(importSet.getRef(), "spreadsheet");
         assertNotNull(child);
         assertEquals("File", child.getType());
     }
