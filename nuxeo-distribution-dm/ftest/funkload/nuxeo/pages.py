@@ -167,6 +167,7 @@ class BasePage:
         fl = self.fl
         self.memberManagement()
 
+        # TODO: NXBT-77 action view create user form
         fl.post(fl.server_url + '/view_users.faces', params=[
             ['j_id192', 'j_id192'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
@@ -204,7 +205,7 @@ class BasePage:
             ['createUser:nxl_user:nxw_passwordMatcher', 'needed'],
             ['createUser:nxl_user:nxw_groups_suggest', ''],
             ['createUser:nxl_user:nxw_groups_suggestionBox_selection', ''],
-            ['createUser:j_id304', 'Save'],
+            ['createUser:button_create', 'Save'],
             ['javax.faces.ViewState', fl.getLastJsfState()]],
                 description="Submit user form")
         return self
@@ -220,6 +221,7 @@ class BasePage:
     def personalWorkspace(self):
         fl = self.fl
         fl.post(fl.server_url + "/view_documents.faces", params=[
+            # TODO: NXBT-77 action view personal workspace
             ['j_id16', 'j_id16'],
             ['j_id16:j_id18', ''],
             ['j_id16:j_id19', 'KEYWORDS'],
@@ -241,6 +243,7 @@ class BasePage:
         else:
             action = '/view_documents.faces'
         fl.post(fl.server_url + action, params=[
+            # TODO: NXBT-77 replace j_id
             ['j_id16', 'j_id16'],
             ['j_id16:j_id18', query],
             ['j_id16:j_id19', 'KEYWORDS'],
@@ -335,6 +338,7 @@ class FolderPage(BasePage):
         fl = self.fl
 
         fl.post(fl.server_url + "/view_documents.faces", params=[
+            # TODO: NXBT-77 replace j_id
             ['j_id250', 'j_id250'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
             ['j_id250:j_id251:j_id253:0:j_id254', 'j_id250:j_id251:j_id253:0:j_id254']],
@@ -355,6 +359,7 @@ class FolderPage(BasePage):
     def createFolder(self, title, description):
         fl = self.fl
         fl.post(fl.server_url + "/view_documents.faces", params=[
+            # TODO: NXBT-77 replace j_id
             ['j_id212', 'j_id212'],
             ['j_id212:selectDocTypePanelOpenedState', ''],
             ['javax.faces.ViewState', fl.getLastJsfState()],
@@ -377,6 +382,7 @@ class FolderPage(BasePage):
     def createFile(self, title, description, file_path=None):
         fl = self.fl
         fl.post(fl.server_url + "/view_documents.faces", params=[
+            # TODO: NXBT-77 replace j_id
             ['j_id212', 'j_id212'],
             ['j_id212:selectDocTypePanelOpenedState', ''],
             ['javax.faces.ViewState', fl.getLastJsfState()],
@@ -426,10 +432,11 @@ class FolderPage(BasePage):
         folder_uid = self.getDocUid()
         state = fl.getLastJsfState()
         self.selectItem(title)
+        # TODO: NXBT-77 delete action
         fl.post(fl.server_url + "/view_documents.faces", params=[
             ['CHILDREN_DOCUMENT_LIST', 'CHILDREN_DOCUMENT_LIST'],
             ['CHILDREN_DOCUMENT_LIST:dataTable:0:document_checkbox_select', 'on'],
-            ['CHILDREN_DOCUMENT_LIST:j_id368:1:j_id370', 'Delete'],
+            ['CHILDREN_DOCUMENT_LIST:j_id364:1:j_id366', 'Delete'],
             ['javax.faces.ViewState', state]],
             description='Delete document "%s"' % title)
         fl.assert_('Document(s) deleted' in fl.getBody())
@@ -508,17 +515,17 @@ class FolderPage(BasePage):
         server_url = fl.server_url
         fl.assert_('CHILDREN_DOCUMENT_LIST' in fl.getBody(),
                    'Not a folder listing page.')
-        options = {'date': [['CHILDREN_DOCUMENT_LIST:dataTable:j_id321',
-                             'CHILDREN_DOCUMENT_LIST:dataTable:j_id321'],
+        options = {'date': [['CHILDREN_DOCUMENT_LIST:dataTable:header_modified_sort',
+                             'CHILDREN_DOCUMENT_LIST:dataTable:header_modified_sort'],
                             ['sortColumn', 'dc:modified']],
-                   'author': [['CHILDREN_DOCUMENT_LIST:dataTable:j_id333',
-                               'CHILDREN_DOCUMENT_LIST:dataTable:j_id333'],
+                   'author': [['CHILDREN_DOCUMENT_LIST:dataTable:header_creator_sort',
+                               'CHILDREN_DOCUMENT_LIST:dataTable:header_creator_sort'],
                               ['sortColumn', 'dc:creator']],
-                   'lifecycle':[['CHILDREN_DOCUMENT_LIST:dataTable:j_id345',
-                                 'CHILDREN_DOCUMENT_LIST:dataTable:j_id345'],
+                   'lifecycle':[['CHILDREN_DOCUMENT_LIST:dataTable:header_currentLifeCycleState',
+                                 'CHILDREN_DOCUMENT_LIST:dataTable:header_currentLifeCycleState'],
                                 ['sortColumn', 'ecm:currentLifeCycleState']],
-                   'title': [['CHILDREN_DOCUMENT_LIST:dataTable:j_id294',
-                              'CHILDREN_DOCUMENT_LIST:dataTable:j_id294'],
+                   'title': [['CHILDREN_DOCUMENT_LIST:dataTable:header_title_sort',
+                              'CHILDREN_DOCUMENT_LIST:dataTable:header_title_sort'],
                              ['sortColumn', 'dc:title']]
                    }
         fl.assert_(column in options.keys(), 'Invalid sort column')
