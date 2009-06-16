@@ -10,4 +10,5 @@ Require-Bundle: org.nuxeo.dam.api,
   org.nuxeo.ecm.platform.content.template,
   org.nuxeo.ecm.platform.types.core
 Nuxeo-component: OSGI-INF/dam-content-template-contrib.xml,
-  OSGI-INF/dam-schemas-contrib.xml
+  OSGI-INF/dam-schemas-contrib.xml,
+  OSGI-INF/dam-listeners-contrib.xml

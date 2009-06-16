@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
@@ -47,6 +47,7 @@
 
   <properties>
     <nuxeo.dam.version>${pom.version}</nuxeo.dam.version>
+    <nuxeo.core.version>1.5.1-SNAPSHOT</nuxeo.core.version>
     <nuxeo.platform.version>5.2.1-SNAPSHOT</nuxeo.platform.version>
     <nuxeo.theme.version>5.2.1-SNAPSHOT</nuxeo.theme.version>
     <nuxeo.features.version>5.2.1-SNAPSHOT</nuxeo.features.version>
@@ -120,36 +121,36 @@
         <version>${nuxeo.platform.version}</version>
         <type>pom</type>
       </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-imaging-api</artifactId>
-      <version>${nuxeo.features.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-imaging-core</artifactId>
-      <version>${nuxeo.features.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-imaging-facade</artifactId>
-      <version>${nuxeo.features.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-imaging-preview</artifactId>
-      <version>${nuxeo.features.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-imaging-web</artifactId>
-      <version>${nuxeo.features.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-imaging-convert</artifactId>
-      <version>${nuxeo.features.version}</version>
-    </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-imaging-api</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-imaging-core</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-imaging-facade</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-imaging-preview</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-imaging-web</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-imaging-convert</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-jbossws-wrapper</artifactId>
@@ -163,11 +164,18 @@
         <version>${nuxeo.dam.jsf.version}</version>
       </dependency>
 
-    <dependency>
-      <groupId>truezip</groupId>
-      <artifactId>truezip</artifactId>
-      <version>6.6</version>
-    </dependency>
+      <dependency>
+        <groupId>truezip</groupId>
+        <artifactId>truezip</artifactId>
+        <version>6.6</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-core-storage-sql-test</artifactId>
+        <version>${nuxeo.core.version}</version>
+        <scope>test</scope>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 

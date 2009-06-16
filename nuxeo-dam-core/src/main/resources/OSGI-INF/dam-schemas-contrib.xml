@@ -19,6 +19,7 @@
       <schema name="file"/>
       <schema name="dam_common"/>
       <facet name="Folderish"/>
+      <facet name="SuperSpace"/>
     </doctype>
 
     <doctype name="File" extends="Document">
