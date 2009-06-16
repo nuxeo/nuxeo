@@ -19,12 +19,15 @@
 package org.nuxeo.ecm.core.chemistry.impl;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.chemistry.BaseType;
 import org.apache.chemistry.CMISObject;
 import org.apache.chemistry.Document;
 import org.apache.chemistry.Folder;
+import org.apache.chemistry.ObjectId;
+import org.apache.chemistry.Unfiling;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -35,8 +38,28 @@ public class NuxeoFolder extends NuxeoObject implements Folder {
         super(doc, connection);
     }
 
-    public List<CMISObject> getChildren(BaseType type, String orderBy) {
-        // TODO type and orderBy
+    public void add(CMISObject object) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    public void remove(CMISObject object) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    public Collection<ObjectId> deleteTree(Unfiling unfiling) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    public List<Folder> getAncestors() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    public List<CMISObject> getChildren(BaseType type) {
+        // TODO type
         DocumentModelList docs;
         try {
             docs = connection.session.getChildren(doc.getRef());

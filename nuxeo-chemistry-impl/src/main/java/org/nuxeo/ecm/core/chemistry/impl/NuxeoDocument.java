@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.chemistry.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
 
 import org.apache.chemistry.ContentStream;
 import org.apache.chemistry.ContentStreamPresence;
@@ -39,6 +40,36 @@ public class NuxeoDocument extends NuxeoObject implements Document {
         super(doc, connection);
     }
 
+    public Document checkOut() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    public void cancelCheckOut() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    public Document checkIn(boolean major, String comment) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    public Document getLatestVersion(boolean major) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    public Collection<Document> getAllVersions() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    public void deleteAllVersions() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
     protected Blob getBlob() {
         if (!doc.hasSchema("file")) {
             return null;
@@ -48,6 +79,14 @@ public class NuxeoDocument extends NuxeoObject implements Document {
         } catch (ClientException e) {
             throw new RuntimeException(e.toString(), e); // TODO
         }
+    }
+
+    public InputStream getStream() throws IOException {
+        Blob blob = getBlob();
+        if (blob == null) {
+            return null;
+        }
+        return blob.getStream();
     }
 
     // TODO put in API?
@@ -64,14 +103,6 @@ public class NuxeoDocument extends NuxeoObject implements Document {
             log.error("Could not check blob presence", e);
             return false;
         }
-    }
-
-    public InputStream getStream() throws IOException {
-        Blob blob = getBlob();
-        if (blob == null) {
-            return null;
-        }
-        return blob.getStream();
     }
 
     public ContentStream getContentStream() {
@@ -105,4 +136,5 @@ public class NuxeoDocument extends NuxeoObject implements Document {
             throw new RuntimeException(e.toString(), e); // TODO
         }
     }
+
 }

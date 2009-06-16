@@ -28,6 +28,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.chemistry.BaseType;
 import org.apache.chemistry.CMISObject;
@@ -386,29 +388,12 @@ public class NuxeoConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public void moveObject(CMISObject object, Folder targetFolder,
-            Folder sourceFolder) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
     public void deleteObject(ObjectId object) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public void deleteObject(CMISObject object) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
-    public Collection<String> deleteTree(ObjectId folder, Unfiling unfiling,
-            boolean continueOnFailure) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
-    public Collection<String> deleteTree(Folder folder, Unfiling unfiling,
+    public Collection<ObjectId> deleteTree(ObjectId folder, Unfiling unfiling,
             boolean continueOnFailure) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
@@ -419,17 +404,7 @@ public class NuxeoConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public void addObjectToFolder(CMISObject object, Folder folder) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
     public void removeObjectFromFolder(ObjectId object, ObjectId folder) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
-    public void removeObjectFromFolder(CMISObject object, Folder folder) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
@@ -442,14 +417,74 @@ public class NuxeoConnection implements Connection, SPI {
             boolean searchAllVersions, boolean includeAllowableActions,
             boolean includeRelationships, int maxItems, int skipCount,
             boolean[] hasMoreItems) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        DocumentModelList docs;
+        try {
+            docs = session.query(cmisSqlToNXQL(statement), null, maxItems,
+                    skipCount, true);
+        } catch (ClientException e) {
+            throw new RuntimeException(e.toString(), e);
+        }
+        hasMoreItems[0] = maxItems == 0 ? false
+                : docs.totalSize() > (long) (skipCount + maxItems);
+        List<ObjectEntry> results = new ArrayList<ObjectEntry>(docs.size());
+        for (DocumentModel doc : docs) {
+            results.add(new NuxeoObjectEntry(doc, this));
+        }
+        return results;
     }
 
     public Collection<CMISObject> query(String statement,
             boolean searchAllVersions) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
+    }
+
+    protected String cmisSqlToNXQL(String q) {
+        Matcher matcher = Pattern.compile(
+                "SELECT\\s+([\\w, ]+)\\s+FROM\\s+(\\w+)\\s+WHERE\\s+(.*)",
+                Pattern.CASE_INSENSITIVE).matcher(q);
+        String type;
+        String ex;
+        if (matcher.matches()) {
+            // String props = matcher.group(1);
+            type = matcher.group(2);
+            ex = matcher.group(3);
+        } else {
+            matcher = Pattern.compile(
+                    "SELECT\\s+([\\w, ]+)\\s+FROM\\s+(\\w+)\\s+",
+                    Pattern.CASE_INSENSITIVE).matcher(q);
+            if (!matcher.matches())
+                throw new RuntimeException("Invalid query: " + q);
+            // String props = matcher.group(1);
+            type = matcher.group(2);
+            ex = null;
+        }
+        // canonicalize case for NXQL
+        type = type.toLowerCase();
+        for (Type t : repository.getTypes(null, true)) {
+            if (!type.equals(t.getId().toLowerCase())) {
+                continue;
+            }
+            type = t.getId();
+        }
+        if (ex != null) {
+            // for (String name : Arrays.asList("Title", "SubTitle")) {
+            // ex = Pattern.compile("\\b" + name + "\\b",
+            // Pattern.CASE_INSENSITIVE).matcher(ex).replaceAll(name);
+            // }
+            ex = Pattern.compile("contains\\s*\\(\\s*,([^)]*)\\)",
+                    Pattern.CASE_INSENSITIVE).matcher(ex).replaceAll(
+                    "ecm:fulltext = $1");
+            ex = Pattern.compile("('[^']*')\\s*=\\s*ANY\\s*(\\w+)",
+                    Pattern.CASE_INSENSITIVE).matcher(ex).replaceAll("$2 = $1");
+        }
+        String res;
+        if (ex == null) {
+            res = String.format("SELECT * FROM %s", type);
+        } else {
+            res = String.format("SELECT * FROM %s WHERE %s", type, ex);
+        }
+        return res;
     }
 
     /*
@@ -461,17 +496,7 @@ public class NuxeoConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public Document checkOut(Document document) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
     public void cancelCheckOut(ObjectId document) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
-    public void cancelCheckOut(Document document) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
@@ -483,18 +508,8 @@ public class NuxeoConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public Document checkIn(Document document, boolean major, String comment) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
     public Map<String, Serializable> getPropertiesOfLatestVersion(
             String versionSeriesId, boolean majorVersion, String filter) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
-    public Document getLatestVersion(Document document, boolean major) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
@@ -505,17 +520,7 @@ public class NuxeoConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public Collection<Document> getAllVersions(Document document, String filter) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
     public void deleteAllVersions(String versionSeriesId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
-    public void deleteAllVersions(Document document) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
@@ -533,13 +538,6 @@ public class NuxeoConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public List<Relationship> getRelationships(CMISObject object,
-            RelationshipDirection direction, String typeId,
-            boolean includeSubRelationshipTypes) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
     /*
      * ----- Policy Services -----
      */
@@ -549,28 +547,13 @@ public class NuxeoConnection implements Connection, SPI {
         throw new UnsupportedOperationException();
     }
 
-    public void applyPolicy(Policy policy, CMISObject object) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
     public void removePolicy(ObjectId policy, ObjectId object) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
-    public void removePolicy(Policy policy, CMISObject object) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
     public Collection<ObjectEntry> getAppliedPolicies(ObjectId policy,
             String filter) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
-    public Collection<Policy> getAppliedPolicies(CMISObject object) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }

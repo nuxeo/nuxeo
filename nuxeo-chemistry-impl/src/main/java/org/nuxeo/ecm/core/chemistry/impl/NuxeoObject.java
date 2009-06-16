@@ -19,10 +19,15 @@
 package org.nuxeo.ecm.core.chemistry.impl;
 
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.List;
 
 import org.apache.chemistry.CMISObject;
 import org.apache.chemistry.Folder;
+import org.apache.chemistry.Policy;
 import org.apache.chemistry.Property;
+import org.apache.chemistry.Relationship;
+import org.apache.chemistry.RelationshipDirection;
 import org.apache.chemistry.Type;
 import org.apache.chemistry.impl.base.BaseObject;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -49,21 +54,19 @@ public class NuxeoObject extends BaseObject implements CMISObject {
         }
     }
 
-    public Type getType() {
-        return connection.repository.getType(doc.getType());
+    public void move(Folder targetFolder, Folder sourceFolder) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
     }
 
-    public void save() {
-        try {
-            if (getId() == null) {
-                connection.session.createDocument(doc);
-            } else {
-                connection.session.saveDocument(doc);
-            }
-            connection.session.save();
-        } catch (ClientException e) {
-            throw new RuntimeException("Cannot save: " + e, e); // TODO
-        }
+    public void delete() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    public void unfile() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
     }
 
     public Folder getParent() {
@@ -79,6 +82,36 @@ public class NuxeoObject extends BaseObject implements CMISObject {
         }
     }
 
+    public Collection<Folder> getParents() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    public List<Relationship> getRelationships(RelationshipDirection direction,
+            String typeId, boolean includeSubRelationshipTypes) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    public void applyPolicy(Policy policy) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    public void removePolicy(Policy policy) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    public Collection<Policy> getPolicies() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    public Type getType() {
+        return connection.repository.getType(doc.getType());
+    }
+
     public Serializable getValue(String name) {
         // TODO avoid constructing property object
         return getProperty(name).getValue();
@@ -90,6 +123,19 @@ public class NuxeoObject extends BaseObject implements CMISObject {
                     connection.session);
         } catch (ClientException e) {
             throw new RuntimeException(e.toString(), e); // TODO
+        }
+    }
+
+    public void save() {
+        try {
+            if (getId() == null) {
+                connection.session.createDocument(doc);
+            } else {
+                connection.session.saveDocument(doc);
+            }
+            connection.session.save();
+        } catch (ClientException e) {
+            throw new RuntimeException("Cannot save: " + e, e); // TODO
         }
     }
 
