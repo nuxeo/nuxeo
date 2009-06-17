@@ -31,8 +31,8 @@
 
       <!-- Use the admin credentials to be able to reinit the LDAP tree
         at each setUp and tearDown -->
-      <bindDn>cn=ldapadmin,dc=example,dc=com</bindDn>
-      <bindPassword>changeme</bindPassword>
+      <bindDn>cn=admin</bindDn>
+      <bindPassword>admin</bindPassword>
     </server>
 
   </extension>
@@ -114,9 +114,48 @@
         <ldapReference field="subGroups" directory="groupDirectory"
           dynamicAttributeId="memberURL" />
 
+        <ldapTreeReference field="ldapDirectChildren" directory="groupDirectory"
+          scope="onelevel" />
+        <ldapTreeReference field="ldapChildren" directory="groupDirectory"
+          scope="subtree" />
+        <ldapTreeReference field="ldapUnitDirectChildren"
+          directory="unitDirectory" scope="onelevel" />
+
         <inverseReference field="parentGroups" directory="groupDirectory"
           dualReferenceField="subGroups" />
 
+        <inverseReference field="ldapDirectParents" directory="groupDirectory"
+          dualReferenceField="ldapDirectChildren" />
+        <inverseReference field="ldapParents" directory="groupDirectory"
+          dualReferenceField="ldapChildren" />
+
+      </references>
+
+    </directory>
+
+    <!-- unit directory, taking organizationalUnit instance in the groups branch -->
+    <directory name="unitDirectory">
+      <server>default</server>
+      <schema>group</schema>
+      <idField>groupname</idField>
+
+      <searchBaseDn>ou=groups,dc=example,dc=com</searchBaseDn>
+      <searchFilter>(objectClass=organizationalUnit)</searchFilter>
+      <searchScope>subtree</searchScope>
+
+      <readOnly>false</readOnly>
+
+      <creationBaseDn>ou=groups,dc=example,dc=com</creationBaseDn>
+      <creationClass>top</creationClass>
+      <creationClass>organizationalUnit</creationClass>
+      <rdnAttribute>ou</rdnAttribute>
+
+      <fieldMapping name="groupname">ou</fieldMapping>
+
+      <references>
+        <inverseReference field="ldapUnitDirectParents"
+          directory="groupDirectory"
+          dualReferenceField="ldapUnitDirectChildren" />
       </references>
 
     </directory>

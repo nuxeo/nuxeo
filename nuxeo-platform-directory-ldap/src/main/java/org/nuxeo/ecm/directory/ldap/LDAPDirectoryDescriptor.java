@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.directory.ldap;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -95,13 +96,14 @@ public class LDAPDirectoryDescriptor {
     @XNode("passwordField")
     public String passwordField;
 
-    protected Map<String, Integer> scopes = new HashMap<String, Integer>();
-
     @XNodeList(value = "references/ldapReference", type = LDAPReference[].class, componentType = LDAPReference.class)
     private LDAPReference[] ldapReferences;
 
     @XNodeList(value = "references/inverseReference", type = InverseReference[].class, componentType = InverseReference.class)
     private InverseReference[] inverseReferences;
+
+    @XNodeList(value = "references/ldapTreeReference", type = LDAPTreeReference[].class, componentType = LDAPTreeReference.class)
+    private LDAPTreeReference[] ldapTreeReferences;
 
     @XNode("emptyRefMarker")
     public String emptyRefMarker = "cn=emptyRef";
@@ -119,9 +121,6 @@ public class LDAPDirectoryDescriptor {
     // XXX: ignoredFields?
     // XXX: referenceFields?
     public LDAPDirectoryDescriptor() {
-        scopes.put("object", Integer.valueOf(SearchControls.OBJECT_SCOPE));
-        scopes.put("onelevel", Integer.valueOf(SearchControls.ONELEVEL_SCOPE));
-        scopes.put("subtree", Integer.valueOf(SearchControls.SUBTREE_SCOPE));
     }
 
     public String getRdnAttribute() {
@@ -195,7 +194,7 @@ public class LDAPDirectoryDescriptor {
             this.searchScope = defaultSearchScope;
             return;
         }
-        Integer scope = scopes.get(searchScope.toLowerCase());
+        Integer scope = LdapScope.getIntegerScope(searchScope);
         if (null == scope) {
             // invalid scope
             throw new DirectoryException("Invalid search scope: " + searchScope
@@ -260,7 +259,14 @@ public class LDAPDirectoryDescriptor {
     }
 
     public Reference[] getLdapReferences() {
-        return ldapReferences;
+        List<Reference> refs = new ArrayList<Reference>();
+        if (ldapReferences != null) {
+            refs.addAll(Arrays.asList(ldapReferences));
+        }
+        if (ldapTreeReferences != null) {
+            refs.addAll(Arrays.asList(ldapTreeReferences));
+        }
+        return refs.toArray(new Reference[] {});
     }
 
     public boolean getReadOnly() {

@@ -95,15 +95,7 @@ public class LDAPReference extends AbstractReference {
 
     public static final List<String> EMPTY_STRING_LIST = Collections.emptyList();
 
-    // private LDAPFilterMatcher filterMatcher;
-
     private LDAPFilterMatcher getFilterMatcher() {
-        // NXP-1886
-        /*
-         * if (filterMatcher == null) { filterMatcher = new LDAPFilterMatcher(); }
-         * return filterMatcher;
-         */
-
         return new LDAPFilterMatcher();
     }
 
@@ -590,15 +582,13 @@ public class LDAPReference extends AbstractReference {
      *
      * @see org.nuxeo.ecm.directory.Reference#getSourceIdsForTarget(String)
      */
+    // XXX: broken, use getLdapTargetIds for a proper implementation
     @SuppressWarnings("unchecked")
     public List<String> getTargetIdsForSource(String sourceId)
             throws DirectoryException {
-        // YAGNI?
-        // XXX: use getLdapTargetIds() for a proper implementation instead?
         Session session = getSourceDirectory().getSession();
         String schemaName = getSourceDirectory().getSchema();
         try {
-            // XXX: looks broken
             try {
                 return (List<String>) session.getEntry(sourceId).getProperty(
                         schemaName, fieldName);
@@ -611,8 +601,8 @@ public class LDAPReference extends AbstractReference {
     }
 
     /**
-     * Simple helper that replaces ", " by "," in the provided dn and returns the
-     * lower case version of the result for comparison purpose.
+     * Simple helper that replaces ", " by "," in the provided dn and returns
+     * the lower case version of the result for comparison purpose.
      *
      * @param dn the raw unnormalized dn
      * @return lowercase version without whitespace after commas

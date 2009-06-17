@@ -67,7 +67,6 @@ import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.DirectoryFieldMapper;
 import org.nuxeo.ecm.directory.EntrySource;
 import org.nuxeo.ecm.directory.Reference;
-import org.nuxeo.ecm.directory.Session;
 
 /**
  * This class represents a session against an LDAPDirectory.
@@ -245,10 +244,10 @@ public class LDAPSession extends BaseSession implements EntrySource {
 
     protected SearchResult getLdapEntry(String id, boolean fetchAllAttributes)
             throws NamingException, DirectoryException {
-    		if (StringUtils.isEmpty(id)) {
-    			log.warn("the application should not queries for entries with empty id");
-    			return null;
-    		}
+        if (StringUtils.isEmpty(id)) {
+            log.warn("the application should not queries for entries with empty id");
+            return null;
+        }
         String filterExpr;
         if (directory.getBaseFilter().startsWith("(")) {
             filterExpr = String.format("(&(%s={0})%s)", idAttribute,
@@ -753,10 +752,16 @@ public class LDAPSession extends BaseSession implements EntrySource {
                     List<String> referencedIds;
                     if (reference instanceof LDAPReference) {
                         // optim: use the current LDAPSession directly to
-                        // provide
-                        // the LDAP reference with the needed backend entries
+                        // provide the LDAP reference with the needed backend
+                        // entries
                         LDAPReference ldapReference = (LDAPReference) reference;
                         referencedIds = ldapReference.getLdapTargetIds(attributes);
+                    } else if (reference instanceof LDAPTreeReference) {
+                        // TODO: optimize using the current LDAPSession directly
+                        // to provide the LDAP reference with the needed backend
+                        // entries (needs to implement getLdapTargetIds)
+                        LDAPTreeReference ldapReference = (LDAPTreeReference) reference;
+                        referencedIds = ldapReference.getTargetIdsForSource(entryId);
                     } else {
                         try {
                             referencedIds = reference.getTargetIdsForSource(entryId);

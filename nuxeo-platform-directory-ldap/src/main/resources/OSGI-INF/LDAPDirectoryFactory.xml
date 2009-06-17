@@ -181,6 +181,12 @@
 
             <inverseReference field="parentGroups"
                 directory="groupDirectory" dualReferenceField="subGroups"/>
+
+            <ldapTreeReference field="children" directory="groupDirectory"
+                scope="onelevel" />
+            <inverseReference field="parents"
+                directory="groupDirectory" dualReferenceField="children"/>
+
           </references>
 
         </directory>
@@ -195,6 +201,8 @@
       The references tags are used to dynamically build nxs:stringList
       fields of that schema that are to compute membership relationships
       between users and groups or between parent groups and sub groups.
+      It can also resole children and parents following the ldap tree
+      structure.
 
       Nuxeo EP provides group resolution for statically dn-referenced
       entries (in read and write mode) and for dynamically ldapUrl

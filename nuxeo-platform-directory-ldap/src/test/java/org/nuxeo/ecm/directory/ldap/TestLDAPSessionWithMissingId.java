@@ -81,13 +81,13 @@ public class TestLDAPSessionWithMissingId extends LDAPDirectoryTestCase {
                 assertEquals(Long.valueOf(1), entry.getProperty(
                         USER_SCHEMANAME, "intField"));
             }
-            //assertNull(entry.getProperty(USER_SCHEMANAME, "sn"));
+            // assertNull(entry.getProperty(USER_SCHEMANAME, "sn"));
             assertEquals("Administrator", entry.getProperty(USER_SCHEMANAME,
                     "firstName"));
-            //assertNull(entry.getProperty(USER_SCHEMANAME, "givenName"));
-            //assertNull(entry.getProperty(USER_SCHEMANAME, "cn"));
+            // assertNull(entry.getProperty(USER_SCHEMANAME, "givenName"));
+            // assertNull(entry.getProperty(USER_SCHEMANAME, "cn"));
             assertNull(entry.getProperty(USER_SCHEMANAME, "password"));
-            //assertNull(entry.getProperty(USER_SCHEMANAME, "userPassword"));
+            // assertNull(entry.getProperty(USER_SCHEMANAME, "userPassword"));
             List val = (List) entry.getProperty(USER_SCHEMANAME, "employeeType");
             assertTrue(val.isEmpty());
 
@@ -109,7 +109,7 @@ public class TestLDAPSessionWithMissingId extends LDAPDirectoryTestCase {
             assertEquals("User", entry2.getProperty(USER_SCHEMANAME,
                     "firstName"));
             assertNull(entry2.getProperty(USER_SCHEMANAME, "password"));
-            //assertNull(entry2.getProperty(USER_SCHEMANAME, "userPassword"));
+            // assertNull(entry2.getProperty(USER_SCHEMANAME, "userPassword"));
             assertEquals(Arrays.asList("Boss"), entry2.getProperty(
                     USER_SCHEMANAME, "employeeType"));
 
@@ -124,8 +124,8 @@ public class TestLDAPSessionWithMissingId extends LDAPDirectoryTestCase {
                             "members"), entry2.getProperty(USER_SCHEMANAME,
                             "groups"));
                 } else {
-                    assertEquals(Arrays.asList("members"), entry2.getProperty(
-                            USER_SCHEMANAME, "groups"));
+                    assertEquals(Arrays.asList("members", "subgroup"),
+                            entry2.getProperty(USER_SCHEMANAME, "groups"));
                 }
 
             }
