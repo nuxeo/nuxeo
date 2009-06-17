@@ -441,7 +441,7 @@ public class NuxeoConnection implements Connection, SPI {
 
     protected String cmisSqlToNXQL(String q) {
         Matcher matcher = Pattern.compile(
-                "SELECT\\s+([\\w, ]+)\\s+FROM\\s+(\\w+)\\s+WHERE\\s+(.*)",
+                "SELECT\\s+([*\\w, ]+)\\s+FROM\\s+(\\w+)\\s+WHERE\\s+(.*)",
                 Pattern.CASE_INSENSITIVE).matcher(q);
         String type;
         String ex;
@@ -451,7 +451,7 @@ public class NuxeoConnection implements Connection, SPI {
             ex = matcher.group(3);
         } else {
             matcher = Pattern.compile(
-                    "SELECT\\s+([\\w, ]+)\\s+FROM\\s+(\\w+)\\s+",
+                    "SELECT\\s+([*\\w, ]+)\\s+FROM\\s+(\\w+)",
                     Pattern.CASE_INSENSITIVE).matcher(q);
             if (!matcher.matches())
                 throw new RuntimeException("Invalid query: " + q);
