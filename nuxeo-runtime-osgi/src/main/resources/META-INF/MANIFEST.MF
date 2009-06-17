@@ -3,6 +3,8 @@ Bundle-Name: OSGiAdapter
 Bundle-SymbolicName: org.nuxeo.osgi
 Bundle-Vendor: Nuxeo
 Bundle-Category: runtime
-Provide-Package: org.nuxeo.osgi,
- org.nuxeo.runtime.jboss.osgi,
- org.nuxeo.runtime.launcher
+Export-Package: org.nuxeo.osgi,
+ org.nuxeo.osgi.jboss,
+ org.nuxeo.osgi.application,
+ org.nuxeo.osgi.application.loader,
+ org.nuxeo.osgi.application.client
