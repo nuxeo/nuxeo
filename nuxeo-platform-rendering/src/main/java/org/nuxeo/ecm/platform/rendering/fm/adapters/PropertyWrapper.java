@@ -19,8 +19,8 @@
 
 package org.nuxeo.ecm.platform.rendering.fm.adapters;
 
+import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.model.Property;
@@ -51,11 +51,11 @@ public class PropertyWrapper {
             if (property.isScalar()) {
                 Object value = property.getValue();
                 if (value == null) {
-                		if (property.getType() == DateType.INSTANCE) {
-                			value = Calendar.getInstance();
-                		} else {
-                			return TemplateModel.NOTHING;
-                		}
+                    if (property.getType() == DateType.INSTANCE) {
+                        value = Calendar.getInstance();
+                    } else {
+                        return TemplateModel.NOTHING;
+                    }
                 }
                 if (property.getType() == DateType.INSTANCE) {
                     return new SimpleDate(((Calendar) value).getTime(),
@@ -77,6 +77,12 @@ public class PropertyWrapper {
                     }
                     if (value == null) {
                         return TemplateModel.NOTHING;
+                    }
+                    if (value instanceof ArrayList) {
+                        // FIXME: some instances of ListProperty will answer "false"
+                        // to isContainer()
+                        return new ListPropertyTemplate(wrapper,
+                                (ListProperty) property);
                     }
                     return new ArrayModel(value, wrapper);
                 }
