@@ -70,8 +70,6 @@ public class WebEngine implements ResourceLocator {
 
     protected static final Map<Object, Object> mimeTypes = loadMimeTypes();
 
-    protected static final boolean hasRepository = Boolean.parseBoolean(Framework.getProperty("org.nuxeo.ecm.hasRepository", "true"));
-    
     static Map<Object, Object> loadMimeTypes() {
         Map<Object, Object> mimeTypes = new HashMap<Object, Object>();
         Properties p = new Properties();
@@ -94,10 +92,6 @@ public class WebEngine implements ResourceLocator {
         return mimeTypes;
     }
 
-    public static boolean hasRepository() {
-        return hasRepository;
-    }
-    
     public static WebContext getActiveContext() {
         return CTX.get();
     }
