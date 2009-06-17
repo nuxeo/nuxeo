@@ -28,6 +28,7 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.web.RequestParameter;
+import org.jboss.seam.contexts.Contexts;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.SortInfo;
 
@@ -42,13 +43,16 @@ public class SortActionsBean implements SortActions, Serializable {
     private static final Log log = LogFactory.getLog(SortActionsBean.class);
 
     @RequestParameter("sortColumn")
-    private String newSortColumn;
+    protected String newSortColumn = "dc:title";
 
     @In(required = false, create = true)
-    private transient ResultsProvidersCache resultsProvidersCache;
+    protected transient ResultsProvidersCache resultsProvidersCache;
+    
+    @RequestParameter("invalidateSeamVariables")
+    protected String invalidateSeamVariables;
 
     @RequestParameter("providerName")
-    private String providerName;
+    protected String providerName;
 
     @Deprecated
     public void init() {
@@ -69,22 +73,29 @@ public class SortActionsBean implements SortActions, Serializable {
             throw new IllegalArgumentException("newSortColumn is not set");
         }
 
+        if (invalidateSeamVariables != null) {
+            String[] variables = invalidateSeamVariables.split(",");
+            for (String variable: variables) {
+                Contexts.removeFromAllContexts(variable);
+            }
+        }
+        
         SortInfo sortInfo = resultsProvidersCache.get(providerName).getSortInfo();
 
         if (sortInfo == null) {
-            sortInfo = new SortInfo("dc:title", true);
-        }
-
-        // toggle newOrderDirection
-        String sortColumn = sortInfo.getSortColumn();
-        boolean sortAscending = sortInfo.getSortAscending();
-        if (newSortColumn.equals(sortColumn)) {
-            sortAscending = !sortAscending;
+            sortInfo = new SortInfo(newSortColumn, true);
         } else {
-            sortColumn = newSortColumn;
-            sortAscending = true;
+            // toggle newOrderDirection
+            String sortColumn = sortInfo.getSortColumn();
+            boolean sortAscending = sortInfo.getSortAscending();
+            if (newSortColumn.equals(sortColumn)) {
+                sortAscending = !sortAscending;
+            } else {
+                sortColumn = newSortColumn;
+                sortAscending = true;
+            }
+            sortInfo = new SortInfo(sortColumn, sortAscending);
         }
-        sortInfo = new SortInfo(sortColumn, sortAscending);
         resultsProvidersCache.invalidate(providerName);
         resultsProvidersCache.get(providerName, sortInfo);
 
