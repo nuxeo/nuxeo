@@ -21,6 +21,7 @@ import java.net.URLStreamHandlerFactory;
 import java.util.Map;
 import java.util.Properties;
 
+import org.nuxeo.common.utils.URLStreamHandlerFactoryInstaller;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.theme.perspectives.PerspectiveManager;
 import org.nuxeo.theme.protocol.nxtheme.Handler;
@@ -114,7 +115,7 @@ public final class Manager {
 
         if (!protocolInitialized) {
             try {
-                URL.setURLStreamHandlerFactory(new URLStreamHandlerFactory() {
+                URLStreamHandlerFactoryInstaller.installURLStreamHandlerFactory(new URLStreamHandlerFactory() {
                     public URLStreamHandler createURLStreamHandler(
                             String protocol) {
                         if ("nxtheme".equals(protocol)) {
