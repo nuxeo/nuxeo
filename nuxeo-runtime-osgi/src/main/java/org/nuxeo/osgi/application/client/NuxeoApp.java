@@ -34,8 +34,6 @@ import org.nuxeo.osgi.JarBundleFile;
 import org.nuxeo.osgi.OSGiAdapter;
 import org.osgi.framework.BundleException;
 
-import com.sun.tools.javac.tree.Tree.Throw;
-
 /**
  * Nuxeo Runtime launcher.
  *
@@ -48,7 +46,9 @@ import com.sun.tools.javac.tree.Tree.Throw;
 public class NuxeoApp {
 
     protected OSGiAdapter osgi;
+
     protected final ClassLoader loader;
+
     protected final Environment env;
 
     public static ClassLoader getDefaultClassLoader() {
@@ -57,11 +57,11 @@ public class NuxeoApp {
     }
 
     public NuxeoApp() {
-        this (new File("."), getDefaultClassLoader());
+        this(new File("."), getDefaultClassLoader());
     }
 
     public NuxeoApp(File home) {
-      this (home, getDefaultClassLoader());
+        this(home, getDefaultClassLoader());
     }
 
     public NuxeoApp(File home, ClassLoader loader) {
@@ -78,15 +78,18 @@ public class NuxeoApp {
         return this.env;
     }
 
-    public void deployBundles(String bundlePath) throws BundleException, IOException {
+    public void deployBundles(String bundlePath) throws BundleException,
+            IOException {
         deployBundles(NuxeoApp.getBundleFiles(new File("."), bundlePath, ":"));
     }
 
-    public void deployBundles(File baseDir, String bundlePath) throws BundleException, IOException {
+    public void deployBundles(File baseDir, String bundlePath)
+            throws BundleException, IOException {
         deployBundles(NuxeoApp.getBundleFiles(baseDir, bundlePath, ":"));
     }
 
-    public synchronized void deployBundles(Collection<File> files) throws BundleException, IOException {
+    public synchronized void deployBundles(Collection<File> files)
+            throws BundleException, IOException {
         if (!isStarted()) {
             throw new IllegalStateException("Framework not started");
         }
@@ -95,14 +98,16 @@ public class NuxeoApp {
         }
     }
 
-    public synchronized void deployBundle(File file) throws BundleException, IOException  {
+    public synchronized void deployBundle(File file) throws BundleException,
+            IOException {
         if (!isStarted()) {
             throw new IllegalStateException("Framework not started");
         }
         if (!file.getPath().endsWith(".jar")) {
             return; // not a valid bundle
         }
-        BundleFile bf = file.isDirectory() ? new DirectoryBundleFile(file) : new JarBundleFile(file);
+        BundleFile bf = file.isDirectory() ? new DirectoryBundleFile(file)
+                : new JarBundleFile(file);
         BundleImpl bundle = null;
         try {
             bundle = new BundleImpl(osgi, bf, loader);
@@ -111,7 +116,7 @@ public class NuxeoApp {
             }
         } catch (NullPointerException t) {
             // do nothing: may happen with non OSGi manifests
-            //System.out.println("Ignore: "+file);
+            // System.out.println("Ignore: "+file);
         }
     }
 
@@ -119,7 +124,8 @@ public class NuxeoApp {
         if (osgi != null) {
             throw new IllegalStateException("Nuxeo Runtime already started");
         }
-        osgi = new OSGiAdapter(env.getHome(), env.getData(), env.getProperties());
+        osgi = new OSGiAdapter(env.getHome(), env.getData(),
+                env.getProperties());
     }
 
     public synchronized boolean isStarted() {
@@ -130,7 +136,6 @@ public class NuxeoApp {
         return osgi;
     }
 
-
     public synchronized void shutdown() throws IOException {
         if (osgi == null) {
             throw new IllegalStateException("Nuxeo Runtime not started");
@@ -139,9 +144,11 @@ public class NuxeoApp {
         osgi = null;
     }
 
-    public static Collection<File> getBundleFiles(File baseDir, String bundles, String delim) throws IOException {
+    public static Collection<File> getBundleFiles(File baseDir, String bundles,
+            String delim) throws IOException {
         LinkedHashSet<File> result = new LinkedHashSet<File>();
-        StringTokenizer tokenizer = new StringTokenizer(bundles, delim == null ? " \t\n\r\f" : delim);
+        StringTokenizer tokenizer = new StringTokenizer(bundles,
+                delim == null ? " \t\n\r\f" : delim);
         while (tokenizer.hasMoreTokens()) {
             String tok = tokenizer.nextToken();
             List<File> files = expandFiles(baseDir, tok);
@@ -163,7 +170,7 @@ public class NuxeoApp {
         int p = line.lastIndexOf("/");
         String fileName = null;
         if (p > -1) {
-            fileName = line.substring(p+1);
+            fileName = line.substring(p + 1);
             baseDir = makeFile(baseDir, line.substring(0, p));
         } else {
             fileName = line;
@@ -175,7 +182,7 @@ public class NuxeoApp {
         if (p == -1) {
             return Collections.singletonList(makeFile(baseDir, fileName));
         } else if (p == 0) {
-            String suffix= fileName.substring(p+1);
+            String suffix = fileName.substring(p + 1);
             ArrayList<File> result = new ArrayList<File>();
             String[] names = baseDir.list();
             if (names != null) {
@@ -186,8 +193,8 @@ public class NuxeoApp {
                 }
             }
             return result;
-        } else if (p == fileName.length()-1) {
-            String prefix= fileName.substring(0, p);
+        } else if (p == fileName.length() - 1) {
+            String prefix = fileName.substring(0, p);
             ArrayList<File> result = new ArrayList<File>();
             String[] names = baseDir.list();
             if (names != null) {
@@ -199,8 +206,8 @@ public class NuxeoApp {
             }
             return result;
         } else {
-            String prefix= fileName.substring(0, p);
-            String suffix= fileName.substring(p+1);
+            String prefix = fileName.substring(0, p);
+            String suffix = fileName.substring(p + 1);
             ArrayList<File> result = new ArrayList<File>();
             String[] names = baseDir.list();
             if (names != null) {
