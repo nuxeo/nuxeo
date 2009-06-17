@@ -34,6 +34,8 @@ import org.nuxeo.osgi.JarBundleFile;
 import org.nuxeo.osgi.OSGiAdapter;
 import org.osgi.framework.BundleException;
 
+import com.sun.tools.javac.tree.Tree.Throw;
+
 /**
  * Nuxeo Runtime launcher.
  *
@@ -96,6 +98,9 @@ public class NuxeoApp {
     public synchronized void deployBundle(File file) throws BundleException, IOException  {
         if (!isStarted()) {
             throw new IllegalStateException("Framework not started");
+        }
+        if (!file.getPath().endsWith(".jar")) {
+            return; // not a valid bundle
         }
         BundleFile bf = file.isDirectory() ? new DirectoryBundleFile(file) : new JarBundleFile(file);
         BundleImpl bundle = null;
