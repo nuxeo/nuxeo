@@ -11,13 +11,23 @@
 
       <whereClause>
 
+        <predicate parameter="ecm:primaryType" operator="=">
+          <field schema="filter_query" name="ecm_primaryType" />
+        </predicate>
+
         <fixedPart>
-        ecm:mixinType != 'HiddenInNavigation' AND ecm:primaryType = 'Picture'
-          AND ecm:primaryType = 'File'
+        ecm:mixinType != 'HiddenInNavigation' AND ecm:primaryType IN ('Picture', 'File') 
         </fixedPart>
 
       </whereClause>
 
+      <sortColumn>
+        <field schema="filter_query" name="sortColumn" />
+      </sortColumn>
+
+      <sortAscending>
+        <field schema="filter_query" name="sortAscending" />
+      </sortAscending>
     </queryModel>
 
   </extension>
