@@ -3,14 +3,14 @@
 <script src="${skinPath}/script/markitup/jquery.markitup.pack.js"></script>
 <script src="${skinPath}/script/markitup/sets/wiki/set.js"></script>
 
-
+<div class="tagCloud">
 <#if (!nxthemesInfo.model.items.empty)>
   <h4>${Context.getMessage("title.tags.cloud.pages")}</h4>
 </#if>  
 
 <div id="tagsCloud">
 </div>
-
+</div>
 
 <script type="text/javascript">
 	function createCloud() {
