@@ -31,8 +31,7 @@ import org.w3c.dom.ranges.Range;
 import com.sun.org.apache.xml.internal.serialize.OutputFormat;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class XAnnotatedContent extends XAnnotatedMember {
 
@@ -69,24 +68,22 @@ public class XAnnotatedContent extends XAnnotatedMember {
         Range range = ((DocumentRange) el.getOwnerDocument()).createRange();
         range.setStartBefore(node);
         range.setEndAfter(el.getLastChild());
-        DocumentFragment fragment =  range.cloneContents();
+        DocumentFragment fragment = range.cloneContents();
         boolean asDOM = accessor.getType() == DocumentFragment.class;
-        return asDOM ? fragment
-                : DOMSerializer.toString(fragment, DEFAULT_FORMAT);
+        return asDOM ? fragment : DOMSerializer.toString(fragment, DEFAULT_FORMAT);
     }
 
     @Override
     public void toXML(Object instance, Element parent) throws Exception {
-        String value = null;
         Object v = accessor.getValue(instance);
-        if ( v instanceof DocumentFragment ){
+        if (v instanceof DocumentFragment) {
             Element e = XMLBuilder.getOrCreateElement(parent, path);
-            DocumentFragment df  = (DocumentFragment) v;
+            DocumentFragment df = (DocumentFragment) v;
             Node node = e.getOwnerDocument().importNode(df, true);
             e.appendChild(node);
-        } else if ( valueFactory != null && v != null ){
-            value = valueFactory.serialize(null,v);
-            if ( value != null) {
+        } else if (valueFactory != null && v != null) {
+            String value = valueFactory.serialize(null, v);
+            if (value != null) {
                 Element e = XMLBuilder.getOrCreateElement(parent, path);
                 DOMHelper.loadFragment(e, value);
             }

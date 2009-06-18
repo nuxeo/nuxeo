@@ -31,21 +31,21 @@ public class TestURLStreamHandlerFactoryInstaller extends TestCase {
         URLStreamHandlerFactory f1 = new URLStreamHandlerFactory() {
             public URLStreamHandler createURLStreamHandler(String protocol) {
                 return null;
-            } 
+            }
         };
         URLStreamHandlerFactoryInstaller.installURLStreamHandlerFactory(f1);
 
         URLStreamHandlerFactory f2 = new URLStreamHandlerFactory() {
             public URLStreamHandler createURLStreamHandler(String protocol) {
                 return null;
-            } 
+            }
         };
         URLStreamHandlerFactoryInstaller.installURLStreamHandlerFactory(f2);
 
         assertEquals(f2, URLStreamHandlerFactoryInstaller.getStack().pop());
         assertEquals(f1, URLStreamHandlerFactoryInstaller.getStack().pop());
         assertTrue(URLStreamHandlerFactoryInstaller.getStack().isEmpty());
-        
+
     }
-    
+
 }

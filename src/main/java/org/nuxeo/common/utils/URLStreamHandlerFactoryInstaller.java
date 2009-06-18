@@ -24,36 +24,37 @@ import java.net.URLStreamHandlerFactory;
 import java.util.ArrayList;
 
 /**
- * 
+ *
  * Used to force installation of URLStreamHandlerFactory as the default mechanism in Java
  * is failing to set a new factory if one was already set.
- * This class provides the capability to stack any number of factories - each factory having 
+ * This class provides the capability to stack any number of factories - each factory having
  * precedence over the last one.
- * Thus, when querying for a URL protocol handler all factories will be asked in turn 
+ * Thus, when querying for a URL protocol handler all factories will be asked in turn
  * (from the newest one to the older one) until a stream handler is obtained.
- * 
+ *
  * Contains some code from Eclipse Framework class.
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public class URLStreamHandlerFactoryInstaller {
 
-    private static FactoryStack factoryStack = new FactoryStack();
-    
+    private static final FactoryStack factoryStack = new FactoryStack();
+
     public static void installURLStreamHandlerFactory(URLStreamHandlerFactory shf) throws Exception {
         Field factoryField = getStaticField(URL.class, URLStreamHandlerFactory.class);
-        if (factoryField == null)
+        if (factoryField == null) {
             throw new Exception("Could not find URLStreamHandlerFactory field");
+        }
         // look for a lock to synchronize on
         Object lock = getURLStreamHandlerFactoryLock();
         synchronized (lock) {
-            URLStreamHandlerFactory factory = (URLStreamHandlerFactory) factoryField.get(null);            
-            if (factory == null) { // not installed - install it                
+            URLStreamHandlerFactory factory = (URLStreamHandlerFactory) factoryField.get(null);
+            if (factory == null) { // not installed - install it
                 factoryStack.push(shf); // push the new factory
             } else if (factory != factoryStack) { // another factory is installed
                 factoryStack.push(factory);
-                factoryStack.push(shf); // push the new factory                
+                factoryStack.push(shf); // push the new factory
             } else { // already installed
                 factoryStack.push(shf); // push the new factory
             }
@@ -66,8 +67,9 @@ public class URLStreamHandlerFactoryInstaller {
     public static void uninstallURLStreamHandlerFactory() {
         try {
             Field factoryField = getStaticField(URL.class, URLStreamHandlerFactoryInstaller.class);
-            if (factoryField == null)
+            if (factoryField == null) {
                 return; // oh well, we tried
+            }
             Object lock = getURLStreamHandlerFactoryLock();
             synchronized (lock) {
                 URLStreamHandlerFactory factory = (URLStreamHandlerFactory) factoryField.get(null);
@@ -85,11 +87,12 @@ public class URLStreamHandlerFactoryInstaller {
 
     private static Field getStaticField(Class<?> clazz, Class<?> type) {
         Field[] fields = clazz.getDeclaredFields();
-        for (int i = 0; i < fields.length; i++)
-            if (Modifier.isStatic(fields[i].getModifiers()) && fields[i].getType().equals(type)) {
-                fields[i].setAccessible(true);
-                return fields[i];
+        for (Field field : fields) {
+            if (Modifier.isStatic(field.getModifiers()) && field.getType().equals(type)) {
+                field.setAccessible(true);
+                return field;
             }
+        }
         return null;
     }
 
@@ -105,20 +108,22 @@ public class URLStreamHandlerFactoryInstaller {
         }
         return lock;
     }
-    
-    
-    /** Get the underlying stack. This should not be used to register/unregister factories (since it is not synchronized) 
+
+
+    /**
+     * Get the underlying stack.
+     * <p>
+     * This should not be used to register/unregister factories (since it is not synchronized).
      * To install / uninstall factories use the static method of that class.
-     * @return
      */
     public static FactoryStack getStack() {
         return factoryStack;
     }
-    
+
     public static class FactoryStack implements URLStreamHandlerFactory {
         ArrayList<URLStreamHandlerFactory> factories = new ArrayList<URLStreamHandlerFactory>();
         public URLStreamHandler createURLStreamHandler(String protocol) {
-            for (int i = factories.size()-1; i>=0; i--) {                
+            for (int i = factories.size()-1; i>=0; i--) {
                 URLStreamHandler h = factories.get(i).createURLStreamHandler(protocol);
                 if (h != null) {
                     return h;
@@ -130,11 +135,15 @@ public class URLStreamHandlerFactoryInstaller {
             factories.add(factory);
         }
         public URLStreamHandlerFactory pop() {
-            if (factories.isEmpty()) return null;
+            if (factories.isEmpty()) {
+                return null;
+            }
             return factories.remove(factories.size()-1);
         }
         public URLStreamHandlerFactory peek() {
-            if (factories.isEmpty()) return null;
+            if (factories.isEmpty()) {
+                return null;
+            }
             return factories.get(factories.size()-1);
         }
 
