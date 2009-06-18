@@ -26,7 +26,6 @@ import java.util.HashMap;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
-import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.AbstractSession;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -46,7 +45,6 @@ public class LocalSession extends AbstractSession {
     private static final long serialVersionUID = 1L;
 
     private Session session;
-
 
     // Locally we don't yet support NXCore.getRepository()
     protected Session createSession(String repoName) throws ClientException {
@@ -100,7 +98,6 @@ public class LocalSession extends AbstractSession {
             .getRepositoryManager().getRepository(name);
         }
     }
-
 
     /**
      * This method is for compatibility with < 1.5 core

@@ -17,7 +17,6 @@ package org.nuxeo.ecm.core.jca;
 
 import java.io.InputStream;
 import java.io.Serializable;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Map;
 

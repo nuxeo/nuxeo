@@ -44,8 +44,8 @@ public class RepositoryInstanceHandler implements InvocationHandler, RepositoryC
     protected static final ConcurrentHashMap<Method, Method> methods = new ConcurrentHashMap<Method, Method>();
     protected static ConcurrentHashMap<Method, MethodInvoker> invokers = new ConcurrentHashMap<Method, MethodInvoker>();
 
-    protected transient final Repository repository;
-    protected transient final RepositoryExceptionHandler exceptionHandler;
+    protected final transient Repository repository;
+    protected final transient RepositoryExceptionHandler exceptionHandler;
     protected transient CoreSession session;
     protected transient RepositoryInstance  proxy;
 

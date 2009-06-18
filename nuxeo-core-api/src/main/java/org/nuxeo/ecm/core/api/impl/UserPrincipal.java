@@ -23,9 +23,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -38,8 +35,6 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 public class UserPrincipal implements NuxeoPrincipal, Serializable {
 
     private static final long serialVersionUID = 2013321088068583749L;
-
-    private static final Log log = LogFactory.getLog(UserPrincipal.class);
 
     private String userName;
 

@@ -27,6 +27,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -180,7 +181,9 @@ public class SecurityService extends DefaultComponent {
     /**
      * Provides the full list of all permissions or groups of permissions that
      * contain the given one (inclusive).
-     * It is exposed remotely through {@link CoreSession#getPermissionsToCheck()}
+     * <p>
+     * It is exposed remotely through {@link CoreSession#getPermissionsToCheck()}.
+     *
      * @param permission
      * @return the list, as an array of strings.
      */
