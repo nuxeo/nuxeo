@@ -1905,6 +1905,11 @@ public abstract class AbstractSession implements CoreSession,
 
     public DocumentModel restoreToVersion(DocumentRef docRef,
             VersionModel version) throws ClientException {
+        return restoreToVersion(docRef, version, false);
+    }
+    
+    public DocumentModel restoreToVersion(DocumentRef docRef,
+            VersionModel version, boolean skipSnapshotCreation) throws ClientException {
         assert docRef != null;
         assert version != null;
 
@@ -1916,7 +1921,9 @@ public abstract class AbstractSession implements CoreSession,
             DocumentModel docModel = readModel(doc, null);
 
             // we're about to overwrite the document, make sure it's archived
-            createDocumentSnapshot(docModel, doc, null, false);
+            if (skipSnapshotCreation) {
+                createDocumentSnapshot(docModel, doc, null, false);
+            }
 
             final Map<String, Serializable> options = new HashMap<String, Serializable>();
 

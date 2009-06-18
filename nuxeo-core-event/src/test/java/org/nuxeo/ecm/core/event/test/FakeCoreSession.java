@@ -697,4 +697,11 @@ public class FakeCoreSession implements CoreSession {
         return null;
     }
 
+    public DocumentModel restoreToVersion(DocumentRef docRef,
+            VersionModel version, boolean skipSnapshotCreation)
+            throws ClientException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }
