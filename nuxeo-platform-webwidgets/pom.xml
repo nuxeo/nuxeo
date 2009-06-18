@@ -14,27 +14,27 @@
   <name>Nuxeo WebWidgets Parent</name>
   <description>Parent for WebWidgets</description>
   <packaging>pom</packaging>
+
   <modules>
     <module>nuxeo-theme-webwidgets</module>
     <module>nuxeo-theme-webwidgets-ui</module>
   </modules>
 
   <dependencyManagement>
-  <dependencies>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-theme-webwidgets</artifactId>
-      <version>${nuxeo.features.version}</version>
-    </dependency>
+    <dependencies>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-theme-webwidgets</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
 
-    <dependency>
-      <groupId>net.sf.json-lib</groupId>
-      <artifactId>json-lib</artifactId>
-      <version>2.2.1</version>
-      <classifier>jdk15</classifier>
-    </dependency>    
-
-  </dependencies>
+      <dependency>
+        <groupId>net.sf.json-lib</groupId>
+        <artifactId>json-lib</artifactId>
+        <version>2.2.1</version>
+        <classifier>jdk15</classifier>
+      </dependency>
+    </dependencies>
   </dependencyManagement>
 
 </project>
