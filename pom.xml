@@ -1,6 +1,5 @@
 <?xml version="1.0"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.nuxeo</groupId>
@@ -64,7 +63,9 @@
     <notifiers>
       <notifier>
         <type>mail</type>
-        <configuration><address>ecm-qa@lists.nuxeo.com</address></configuration>
+        <configuration>
+          <address>ecm-qa@lists.nuxeo.com</address>
+        </configuration>
       </notifier>
     </notifiers>
   </ciManagement>
@@ -213,6 +214,12 @@
         <version>1.1.1</version>
         <scope>provided</scope>
       </dependency>
+      <!-- was used nuxeo-platform-ui-web -->
+<!--      <dependency>-->
+<!--        <groupId>commons-fileupload</groupId>-->
+<!--        <artifactId>commons-fileupload</artifactId>-->
+<!--        <version>1.2</version>-->
+<!--      </dependency>-->
       <dependency>
         <groupId>commons-io</groupId>
         <artifactId>commons-io</artifactId>
@@ -376,6 +383,18 @@
         <scope>provided</scope>
         <version>1.0.b2</version>
       </dependency>
+      <dependency>
+        <groupId>jmimemagic</groupId>
+        <artifactId>jmimemagic</artifactId>
+        <version>0.1.2</version>
+        <exclusions>
+          <!-- jmimemagic has a dependency on an old xercesImpl -->
+          <exclusion>
+            <groupId>xerces</groupId>
+            <artifactId>xercesImpl</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
 
       <!-- jboss (+ hibernate, richfaces...) -->
       <dependency>
@@ -527,6 +546,11 @@
         <version>4.2.3.GA</version>
         <type>zip</type>
       </dependency>
+      <dependency>
+        <groupId>jboss</groupId>
+        <artifactId>jboss-aspect-jdk50-client</artifactId>
+        <version>1.5</version>
+      </dependency>
 
       <dependency>
         <groupId>org.hibernate</groupId>
@@ -618,6 +642,16 @@
         <scope>provided</scope>
       </dependency>
       <dependency>
+        <groupId>com.sun.xml</groupId>
+        <artifactId>xsom</artifactId>
+        <version>20060306</version>
+      </dependency>
+      <dependency>
+        <groupId>com.sun.xml</groupId>
+        <artifactId>relaxngDatatype</artifactId>
+        <version>1.0</version>
+      </dependency>
+      <dependency>
         <groupId>org.freemarker</groupId>
         <artifactId>freemarker</artifactId>
         <version>2.3.11</version>
@@ -678,6 +712,12 @@
         <scope>provided</scope>
         <classifier>jdk15</classifier>
       </dependency>
+      <!-- was used by nuxeo-platform-syndication -->
+      <!--      <dependency>-->
+      <!--        <groupId>net.sf.json-lib</groupId>-->
+      <!--        <artifactId>json-lib</artifactId>-->
+      <!--        <version>0.9</version>-->
+      <!--      </dependency>-->
       <dependency>
         <groupId>net.sf.ezmorph</groupId>
         <artifactId>ezmorph</artifactId>
@@ -902,13 +942,13 @@
         <version>2.0.2</version>
       </dependency>
 
-      <!-- used by APT for annotation processing --> 
+      <!-- used by APT for annotation processing -->
       <dependency>
         <groupId>org.nuxeo.build</groupId>
         <artifactId>nuxeo-apt-extensions</artifactId>
         <version>1.0</version>
         <scope>compile</scope>
-        <!-- workaround for Mac OS X --> 
+        <!-- workaround for Mac OS X -->
         <exclusions>
           <exclusion>
             <groupId>sun.jdk</groupId>
@@ -930,7 +970,66 @@
           </exclusion>
         </exclusions>
       </dependency>
-
+      <dependency>
+        <groupId>cup</groupId>
+        <artifactId>java-cup</artifactId>
+        <version>0.11a</version>
+      </dependency>
+      <dependency>
+        <groupId>joda-time</groupId>
+        <artifactId>joda-time</artifactId>
+        <version>1.4</version>
+      </dependency>
+      <dependency>
+        <groupId>com.hp.hpl.jena</groupId>
+        <artifactId>jena</artifactId>
+        <version>2.5.4</version>
+      </dependency>
+      <dependency>
+        <groupId>com.hp.hpl.jena</groupId>
+        <artifactId>arq</artifactId>
+        <version>2.1</version>
+      </dependency>
+      <dependency>
+        <groupId>com.hp.hpl.jena</groupId>
+        <artifactId>iri</artifactId>
+        <version>0.5</version>
+      </dependency>
+      <dependency>
+        <groupId>com.ibm.icu</groupId>
+        <artifactId>icu4j</artifactId>
+        <version>3.4.4</version>
+      </dependency>
+      <dependency>
+        <groupId>rome</groupId>
+        <artifactId>rome</artifactId>
+        <version>0.8</version>
+      </dependency>
+      <dependency>
+        <groupId>jdom</groupId>
+        <artifactId>jdom</artifactId>
+        <version>1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.restlet</groupId>
+        <artifactId>org.restlet</artifactId>
+        <version>1.0.7</version>
+      </dependency>
+      <dependency>
+        <groupId>org.restlet</groupId>
+        <artifactId>org.restlet.ext.fileupload</artifactId>
+        <version>1.0.7</version>
+      </dependency>
+      <dependency>
+        <groupId>com.noelios.restlet</groupId>
+        <artifactId>com.noelios.restlet</artifactId>
+        <version>1.0.7</version>
+      </dependency>
+      <dependency>
+        <groupId>com.noelios.restlet</groupId>
+        <artifactId>com.noelios.restlet.ext.servlet</artifactId>
+        <version>1.0.7</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -1159,9 +1258,11 @@
           </executions>
           <dependencies>
             <!--
-              dependency> <groupId>sun.jdk</groupId> <artifactId>tools</artifactId>
-              <version>1.6</version> <scope>system</scope>
-              <systemPath>${java.home}/../lib/tools.jar</systemPath> </dependency
+              dependency> <groupId>sun.jdk</groupId>
+              <artifactId>tools</artifactId> <version>1.6</version>
+              <scope>system</scope>
+              <systemPath>${java.home}/../lib/tools.jar</systemPath>
+              </dependency
             -->
             <dependency>
               <groupId>org.apache.maven.plugins</groupId>
@@ -1262,9 +1363,10 @@
             <configuration>
               <aggregate>true</aggregate>
               <maxmemory>512m</maxmemory>
-              <!--stylesheetfile>
-                ${basedir}/src/site/resources/css/jdstyle.css
-                </stylesheetfile-->
+              <!--
+                stylesheetfile> ${basedir}/src/site/resources/css/jdstyle.css
+                </stylesheetfile
+              -->
               <windowtitle>
                 Nuxeo Enterprise Platform 5.2 API Documentation
               </windowtitle>
@@ -1341,35 +1443,37 @@
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-surefire-report-plugin</artifactId>
           </plugin>
-          <!--plugin>
+          <!-- 
+          <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>taglist-maven-plugin</artifactId>
             <configuration>
-            <tags>
-            <tag>@fixme</tag>
-            <tag>FIXME</tag>
-            <tag>@todo</tag>
-            <tag>TODO</tag>
-            <tag>XXX</tag>
-            <tag>REVIEW</tag>
-            </tags>
+              <tags>
+                <tag>@fixme</tag>
+                <tag>FIXME</tag>
+                <tag>@todo</tag>
+                <tag>TODO</tag>
+                <tag>XXX</tag>
+                <tag>REVIEW</tag>
+              </tags>
             </configuration>
-            </plugin-->
-          <!--plugin>
+          </plugin>
+          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-checkstyle-plugin</artifactId>
             <configuration>
-            <configLocation>checkstyle.xml</configLocation>
+              <configLocation>checkstyle.xml</configLocation>
             </configuration>
-            </plugin>
-            <plugin>
+          </plugin>
+          <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>cobertura-maven-plugin</artifactId>
-            </plugin>
-            <plugin>
+          </plugin>
+          <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>jdepend-maven-plugin</artifactId>
-            </plugin-->
+          </plugin>
+           -->
         </plugins>
       </reporting>
     </profile>
