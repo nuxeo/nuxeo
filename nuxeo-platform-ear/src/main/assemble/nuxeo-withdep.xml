@@ -214,6 +214,7 @@
       <artifact name="jta" />
       <artifact name="derby" />
       <artifact name="jackrabbit-core" />
+      <artifact name="persistence-api" />
     </excludes>
   </artifactSet>
 
