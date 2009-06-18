@@ -56,6 +56,7 @@ import org.nuxeo.ecm.core.query.sql.model.OrderByList;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.core.schema.TypeConstants;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
@@ -833,7 +834,7 @@ public class SQLSession implements Session {
             for (Node childNode : childNodes) {
                 Property property;
                 // TODO use a better switch
-                if (type.getName().equals("content")) {
+                if (type.getName().equals(TypeConstants.CONTENT)) {
                     property = new SQLContentProperty(childNode, complexType,
                             this, readonly);
                 } else {
