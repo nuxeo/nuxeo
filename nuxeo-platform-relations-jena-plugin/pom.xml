@@ -14,31 +14,6 @@
     using JENA RDF store.
   </description>
 
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>com.hp.hpl.jena</groupId>
-        <artifactId>jena</artifactId>
-        <version>2.5.4</version>
-      </dependency>
-      <dependency>
-        <groupId>com.hp.hpl.jena</groupId>
-        <artifactId>arq</artifactId>
-        <version>2.1</version>
-      </dependency>
-      <dependency>
-        <groupId>com.hp.hpl.jena</groupId>
-        <artifactId>iri</artifactId>
-        <version>0.5</version>
-      </dependency>
-      <dependency>
-        <groupId>com.ibm.icu</groupId>
-        <artifactId>icu4j</artifactId>
-        <version>3.4.4</version>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
@@ -57,6 +32,14 @@
       <groupId>com.hp.hpl.jena</groupId>
       <artifactId>arq</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.hp.hpl.jena</groupId>
+      <artifactId>iri</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.ibm.icu</groupId>
+      <artifactId>icu4j</artifactId>
+    </dependency>
 
     <!-- test scope -->
     <dependency>
@@ -68,44 +51,6 @@
 
   <build>
     <plugins>
-      <!-- TODO: do we need all these dependencies in the jar? -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>copy-installed</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>copy</goal>
-            </goals>
-            <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>com.hp.hpl.jena</groupId>
-                  <artifactId>jena</artifactId>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>com.hp.hpl.jena</groupId>
-                  <artifactId>arq</artifactId>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>com.hp.hpl.jena</groupId>
-                  <artifactId>iri</artifactId>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>com.ibm.icu</groupId>
-                  <artifactId>icu4j</artifactId>
-                </artifactItem>
-              </artifactItems>
-              <outputDirectory>
-                ${project.build.outputDirectory}/lib
-              </outputDirectory>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
