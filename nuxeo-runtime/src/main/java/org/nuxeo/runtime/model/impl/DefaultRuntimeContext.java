@@ -156,9 +156,9 @@ public class DefaultRuntimeContext implements RuntimeContext {
             if (in != null) {
                 in.close();
             }
-        }        
+        }
     }
-    
+
     public RegistrationInfoImpl createRegistrationInfo(InputStream in) throws Exception {
         return reader.read(this, in);
     }

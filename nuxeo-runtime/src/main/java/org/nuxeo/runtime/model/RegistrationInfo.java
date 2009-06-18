@@ -145,11 +145,11 @@ public interface RegistrationInfo extends Serializable {
      */
     String[] getProvidedServiceNames();
 
-    
+
     /**
-     * Whether or not this registration is persisted by the user (not part of a real bundle) 
+     * Whether or not this registration is persisted by the user (not part of a real bundle)
      * @return true if persisted, false otherwise
      */
     boolean isPersistent();
-    
+
 }

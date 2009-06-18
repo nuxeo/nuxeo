@@ -123,7 +123,7 @@ public interface RuntimeContext {
      * Returns the registration info of the new deployed component or null if the component was not deployed.
      *
      * @param location the location
-     * @return the component registration info or null if registration failed for some reason 
+     * @return the component registration info or null if registration failed for some reason
      * @throws Exception
      */
     RegistrationInfo deploy(String location) throws Exception;
