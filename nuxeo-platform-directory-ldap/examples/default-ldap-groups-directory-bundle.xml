@@ -78,6 +78,9 @@
           
           Enabling this option will fetch each reference entry to ensure its
           existence in the target directory.
+          
+          WARNING: Edit is NOT IMPLEMENTED: modifications to this field will be
+          ignored when saving the entry.
         -->
         <ldapTreeReference field="directChildren" directory="unitDirectory"
           scope="onelevel" />
