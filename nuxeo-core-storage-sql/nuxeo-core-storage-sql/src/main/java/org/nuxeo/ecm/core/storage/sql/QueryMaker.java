@@ -68,16 +68,16 @@ import org.nuxeo.ecm.core.storage.sql.db.dialect.Dialect;
  * database.
  * <p>
  * This needs to transform statements like:
- * 
+ *
  * <pre>
  * SELECT * FROM File
  *   WHERE
  *         dc:title = 'abc' AND uid:uid = '123'
  *     AND dc:contributors = 'bob' -- multi-valued
  * </pre>
- * 
+ *
  * into:
- * 
+ *
  * <pre>
  * SELECT DISTINCT hierarchy.id
  *   FROM hierarchy
@@ -89,11 +89,11 @@ import org.nuxeo.ecm.core.storage.sql.db.dialect.Dialect;
  *     AND (dublincore.title = 'abc' AND uid.uid = '123' AND dc_contributors.item = 'bob')
  *     AND NX_ACCESS_ALLOWED(hierarchy.id, 'user1|user2', 'perm1|perm2')
  * </pre>
- * 
+ *
  * when proxies are potential matches, we must do two additional joins and
  * differentiate between the uses of "hierarchy" as the hierarchy table or the
  * main table.
- * 
+ *
  * <pre>
  * SELECT DISTINCT _nxhier.id
  *   FROM hierarchy _nxhier
@@ -107,7 +107,7 @@ import org.nuxeo.ecm.core.storage.sql.db.dialect.Dialect;
  *     AND (dublincore.title = 'abc' AND uid.uid = '123' AND dc_contributors.item = 'bob')
  *     AND NX_ACCESS_ALLOWED(_nxhier.id, 'user1|user2', 'perm1|perm2')
  * </pre>
- * 
+ *
  * @author Florent Guillaume
  */
 public class QueryMaker {

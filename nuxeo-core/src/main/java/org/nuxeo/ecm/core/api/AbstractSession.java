@@ -1907,7 +1907,7 @@ public abstract class AbstractSession implements CoreSession,
             VersionModel version) throws ClientException {
         return restoreToVersion(docRef, version, false);
     }
-    
+
     public DocumentModel restoreToVersion(DocumentRef docRef,
             VersionModel version, boolean skipSnapshotCreation) throws ClientException {
         assert docRef != null;

@@ -86,5 +86,5 @@ public class Binary implements Serializable {
     public StreamSource getStreamSource() {
         return new FileSource(file);
     }
-    
+
 }

@@ -50,7 +50,7 @@ public class CompatibilityListener implements EventListener {
     }
 
     public void handleEvent(Event event) throws ClientException {
-        String eventId = event.getName(); 
+        String eventId = event.getName();
         if (eventId.startsWith("!OPERATION_")) {
             Object[] args = event.getContext().getArguments();
             if (args.length == 1 && args[0] instanceof Operation) {

@@ -971,7 +971,7 @@ public interface CoreSession {
     /**
      * Restores the given document to the specified version permitting to skip
      * the creation of the snapshot for current document.
-     * 
+     *
      * @param docRef the reference to the document
      * @param version the version to which the document should be restored to -
      *            only the label is used for the moment
@@ -979,7 +979,7 @@ public interface CoreSession {
      */
     DocumentModel restoreToVersion(DocumentRef docRef, VersionModel version,
             boolean skipSnapshotCreation) throws ClientException;
-    
+
     /**
      * Restores the given document to the specified version.
      *

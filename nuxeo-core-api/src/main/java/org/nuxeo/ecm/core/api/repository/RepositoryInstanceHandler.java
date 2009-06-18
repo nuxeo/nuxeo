@@ -186,9 +186,9 @@ public class RepositoryInstanceHandler implements InvocationHandler, RepositoryC
     protected Object getImpl() {
         return this;
     }
-    
+
     public Object writeReplace() throws ObjectStreamException {
         return Proxy.getInvocationHandler(session);
     }
-    
+
 }
