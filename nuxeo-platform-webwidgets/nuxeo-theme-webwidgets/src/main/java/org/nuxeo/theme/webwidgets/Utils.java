@@ -125,8 +125,6 @@ public final class Utils {
             return schema;
         }
         final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        final Document document;
-        ByteArrayInputStream in = null;
 
         try {
             dbf.setFeature("http://xml.org/sax/features/validation", false);
@@ -137,6 +135,8 @@ public final class Utils {
             log.debug("Could not set DTD non-validation feature");
         }
 
+        final Document document;
+        ByteArrayInputStream in = null;
         try {
             in = new ByteArrayInputStream(html.getBytes());
             final DocumentBuilder db = dbf.newDocumentBuilder();

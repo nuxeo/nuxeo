@@ -222,9 +222,8 @@ public class PersistentProvider implements Provider {
         }
         List<?> results = em.createNamedQuery("Data.findByWidgetAndName").setParameter(
                 "widgetUid", widget.getUid()).setParameter("dataName", dataName).getResultList();
-        DataEntity dataEntity = null;
         if (results.size() > 0) {
-            dataEntity = (DataEntity) results.get(0);
+            DataEntity dataEntity = (DataEntity) results.get(0);
             return dataEntity.getData();
         }
         return null;

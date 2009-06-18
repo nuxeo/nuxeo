@@ -89,5 +89,4 @@ public class DefaultProviderSession {
         return widgetsByRegion.get(regionName);
     }
 
-
 }
