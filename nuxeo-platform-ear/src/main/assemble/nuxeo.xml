@@ -193,6 +193,7 @@
       <artifact group="org.wikimodel" name="wem" />
       <artifact group="jmimemagic" name="jmimemagic" />
       <artifact group="rome" name="rome" />
+      <artifact group="commons-jexl" name="commons-jexl" />
     </artifacts>
   </artifactSet>
 

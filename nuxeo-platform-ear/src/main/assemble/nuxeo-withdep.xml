@@ -186,6 +186,7 @@
       <artifact group="org.wikimodel" name="wem" />
       <artifact group="jmimemagic" name="jmimemagic" />
       <artifact group="rome" name="rome" />
+      <artifact group="commons-jexl" name="commons-jexl" />
     </artifacts>
   </artifactSet>
 
@@ -210,6 +211,9 @@
       <artifact name="log4j" />
       <artifact name="servlet-api" />
       <artifact name="xml-apis" />
+      <artifact name="jta" />
+      <artifact name="derby" />
+      <artifact name="jackrabbit-core" />
     </excludes>
   </artifactSet>
 
