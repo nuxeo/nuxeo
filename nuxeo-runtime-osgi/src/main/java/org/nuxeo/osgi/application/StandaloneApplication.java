@@ -56,10 +56,10 @@ public class StandaloneApplication extends OSGiAdapter {
     protected File home;
     protected List<File> classPath;
     protected boolean scanForNestedJARs = true; // by default true
-    
+
     // a list of class path prefixes that contains JARS that should not be treated as bundles.
-    protected String[] libdirs; 
-    
+    protected String[] libdirs;
+
 
     public static StandaloneApplication getInstance() {
         return instance;
@@ -76,7 +76,7 @@ public class StandaloneApplication extends OSGiAdapter {
         String val = options.getOption("scanForNestedJARs");
         if (val != null) {
             StandaloneApplication.instance.scanForNestedJARs = Boolean.parseBoolean(val);
-        }       
+        }
         // hack to avoid deploying all jars in classpath as bundles
         String javaLibsProp = System.getProperty("org.nuxeo.launcher.libdirs");
         if (javaLibsProp != null) {
@@ -161,7 +161,7 @@ public class StandaloneApplication extends OSGiAdapter {
         if (bundlesString == null) {
             return null; // no bundles to load
         }
-        ArrayList<BundleFile> bundles = new ArrayList<BundleFile>();
+        List<BundleFile> bundles = new ArrayList<BundleFile>();
         String[] ar = StringUtils.split(bundlesString, ':', true);
         for (String entry : ar) {
             File file;
@@ -304,7 +304,7 @@ public class StandaloneApplication extends OSGiAdapter {
         long startTime = System.currentTimeMillis();
         // parse command line args
         StandaloneApplication.args = args;
-        options = new CommandLineOptions(args);        
+        options = new CommandLineOptions(args);
         // start framework
         StandaloneApplication app = null;
         try {

@@ -86,16 +86,16 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
 
     /**
      * OSGi doesn't provide a method to lookup bundles by symbolic name.
-     * This table is used to map symbolic names to bundles  
+     * This table is used to map symbolic names to bundles
      */
-    Map<String, Bundle> bundles;
-    
-    ComponentPersistence persistence;
-    
+    final Map<String, Bundle> bundles;
+
+    final ComponentPersistence persistence;
+
     public OSGiRuntimeService(BundleContext context) {
         super(new OSGiRuntimeContext(context.getBundle()));
         bundleContext = context;
-        bundles = new Hashtable<String, Bundle>(); 
+        bundles = new Hashtable<String, Bundle>();
         contexts = new ConcurrentHashMap<String, RuntimeContext>();
         String bindAddress = context.getProperty(PROP_NUXEO_BIND_ADDRESS);
         if (bindAddress != null) {
@@ -109,7 +109,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
             workingDir = bundleContext.getDataFile("/");
         }
         // environment may not be set by some bootstrappers (like tests) - we create it now if not yet created
-        Environment env = Environment.getDefault(); 
+        Environment env = Environment.getDefault();
         if (env == null) {
             Environment.setDefault(new Environment(workingDir));
         }
@@ -129,7 +129,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
     public BundleContext getBundleContext() {
         return bundleContext;
     }
-    
+
     public Bundle getBundle(String symbolicName) {
         return bundles.get(symbolicName);
     }
@@ -137,11 +137,11 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
     public Map<String,Bundle> getBundlesMap() {
         return bundles;
     }
-    
+
     public ComponentPersistence getComponentPersistence() {
         return persistence;
     }
-    
+
     public synchronized RuntimeContext createContext(Bundle bundle)
             throws Exception {
         RuntimeContext ctx = contexts.get(bundle.getSymbolicName());

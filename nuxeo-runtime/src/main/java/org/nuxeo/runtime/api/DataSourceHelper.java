@@ -1,7 +1,5 @@
 package org.nuxeo.runtime.api;
 
-import java.util.Enumeration;
-
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
@@ -10,15 +8,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- *
- * Helper class to lookup DataSources without having to deal with vendors
- * specific JNDI prefixs
+ * Helper class to lookup DataSources without having to deal with vendor-specific
+ * JNDI prefixes.
  *
  * @author Thierry Delprat
- *
  */
 public class DataSourceHelper {
 
+    private static final Log log = LogFactory.getLog(DataSourceHelper.class);
 
     private static final String JBOSS_PREFIX = "java:";
     private static final String JETTY_PREFIX = "jdbc";
@@ -28,10 +25,8 @@ public class DataSourceHelper {
 
     private static final String DS_PREFIX_NAME = "org.nuxeo.runtime.datasource.prefix";
 
-    protected static String prefix = null;
+    protected static String prefix;
 
-
-    private static final Log log = LogFactory.getLog(DataSourceHelper.class);
 
     protected static void dump(String msg) {
         System.out.println(msg);
@@ -59,7 +54,7 @@ public class DataSourceHelper {
         catch (Exception e) {
             log.debug("Autodetect : not a jetty host");
         }
-        
+
         try {
         		Class.forName("com.sun.enterprise.glassfish.bootstrap.AbstractMain");
         		log.info("Detected GlassFish host");
@@ -71,27 +66,26 @@ public class DataSourceHelper {
     }
 
     /**
-     * Set the prefix to be used (mainly for tests)
-     * @param prefix
+     * Sets the prefix to be used (mainly for tests).
      */
     public static void setDataSourceJNDIPrefix(String prefix) {
         DataSourceHelper.prefix = prefix;
     }
 
     /**
-     * get the JNDI prefix used for DataSource lookups
-     * @return
+     * Get the JNDI prefix used for DataSource lookups.
      */
     public static String getDataSourceJNDIPrefix() {
         if (prefix == null) {
             if (Framework.isInitialized()) {
                 String configuredPrefix = Framework.getProperty(DS_PREFIX_NAME);
-                if (configuredPrefix!=null)
-                prefix = Framework.getProperty(DS_PREFIX_NAME);
-                if (prefix==null) {
+                if (configuredPrefix != null) {
+                    prefix = Framework.getProperty(DS_PREFIX_NAME);
+                }
+                if (prefix == null) {
                     autodetectPrefix();
                 }
-                if (prefix==null) {
+                if (prefix == null) {
                     return DEFAULT_PREFIX;
                 }
             } else {
@@ -102,13 +96,9 @@ public class DataSourceHelper {
     }
 
     /**
-     * Get the JNDI name of the DataSource
-     *
-     * @param partialName
-     * @return
+     * Get the JNDI name of the DataSource.
      */
     public static String getDataSourceJNDIName(String partialName) {
-
         if (partialName == null) {
             return null; // !!!
         }
@@ -128,8 +118,7 @@ public class DataSourceHelper {
     }
 
     /**
-     *
-     * Lookup for a DataSource
+     * Lookup for a DataSource.
      *
      * @param partialName
      * @return

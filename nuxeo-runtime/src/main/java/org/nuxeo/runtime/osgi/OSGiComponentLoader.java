@@ -99,7 +99,7 @@ public class OSGiComponentLoader implements SynchronousBundleListener {
                 break;
             case BundleEvent.UNINSTALLED:
                 runtime.bundles.remove(bundle.getSymbolicName());
-            case BundleEvent.RESOLVED:                
+            case BundleEvent.RESOLVED:
                 if (componentsList != null) {
                     bundleDebug(
                             "Bundle changed: %s RESOLVED with components: " +
@@ -213,12 +213,11 @@ public class OSGiComponentLoader implements SynchronousBundleListener {
     }
 
     /**
-     * Print out a debug message for debugging bundles.
+     * Prints out a debug message for debugging bundles.
      *
      * @param msg the debug message with a %s in it which will be replaced by
      *            the component name
      * @param name the component name
-     *
      */
     public static void bundleDebug(String msg, String name) {
         try {

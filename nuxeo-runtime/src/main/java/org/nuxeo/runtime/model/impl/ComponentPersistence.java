@@ -39,8 +39,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 /**
- * Manage persistent components. 
- * Persistent components are located in ${nxserver_data_dir}/components directory, and can be dynamically removed 
+ * Manage persistent components.
+ * Persistent components are located in ${nxserver_data_dir}/components directory, and can be dynamically removed
  * or registered. After framework startup (after the application was completely started) the persistent components
  * are deployed.
  * The layout of the components directory is the following:
@@ -57,49 +57,48 @@ import org.w3c.dom.Element;
  *         ...
  *     ...
  * </pre>
- * 
+ *
  * If components are put directly under the root then they will be deployed in the runtime bundle context.
- * If they are put in a directory having as name the symbolicName of a bundle in the system, 
- * then the component will be deployed in that bundle context.  
+ * If they are put in a directory having as name the symbolicName of a bundle in the system,
+ * then the component will be deployed in that bundle context.
  * <p>
  * Any files not ending with .xml are ignored.
- * Any directory that doesn't match a bundle symbolic name will be ignored too.  
+ * Any directory that doesn't match a bundle symbolic name will be ignored too.
  * <p>
  * Dynamic components must use the following name convention: (it is not mandatory but it is recommended)
  * <ul>
- * <li> Components deployed in root directory must use as name the file name without the .xml extension. 
+ * <li> Components deployed in root directory must use as name the file name without the .xml extension.
  * <li> Components deployed in a bundle directory must use the relative file path without the .xml extensions.
  * </ul>
- * Examples: 
+ * Examples:
  * Given the following component files: <code>components/mycomp1.xml</code> and <code>components/mybundle/mycomp2.xml</code>
- * the name for <code>mycomp1</code> must be: <code>comp1</code> and for <code>mycomp2</code> must be <code>mybundle/mycomp2</code> 
+ * the name for <code>mycomp1</code> must be: <code>comp1</code> and for <code>mycomp2</code> must be <code>mybundle/mycomp2</code>
  * <p>
- * This service is working only with {@link OSGiRuntimeService} 
- * 
+ * This service is working only with {@link OSGiRuntimeService}
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public class ComponentPersistence {
 
-    protected File root; // a directory to keep exploded extensions
-    protected RuntimeContext sysrc;
-    protected OSGiRuntimeService runtime;    
-    protected ReadWriteLock fileLock;
-    protected Set<RegistrationInfo> persistedComponents;
-    
+    protected final File root; // a directory to keep exploded extensions
+    protected final RuntimeContext sysrc;
+    protected final OSGiRuntimeService runtime;
+    protected final ReadWriteLock fileLock;
+    protected final Set<RegistrationInfo> persistedComponents;
+
 
     public ComponentPersistence(OSGiRuntimeService runtime) {
         this.runtime = runtime;
-        this.root = new File(Environment.getDefault().getData(), "components");
+        root = new File(Environment.getDefault().getData(), "components");
         fileLock = new ReentrantReadWriteLock();
         sysrc = runtime.getContext();
         persistedComponents = Collections.synchronizedSet(new HashSet<RegistrationInfo>());
     }
-    
+
     public File getRoot() {
         return root;
     }
-
 
     public final RuntimeContext getContext(String symbolicName) throws Exception {
         if (symbolicName == null) {
@@ -111,12 +110,12 @@ public class ComponentPersistence {
         }
         return runtime.createContext(bundle);
     }
-    
+
     protected void deploy(RuntimeContext rc, File file) throws Exception {
         RegistrationInfoImpl ri = (RegistrationInfoImpl)rc.deploy(file.toURI().toURL());
         ri.isPersistent = true;
     }
-    
+
     public void loadPersistedComponents() throws Exception {
         File[] files = root.listFiles();
         if (files != null) {
@@ -132,8 +131,8 @@ public class ComponentPersistence {
             }
         }
     }
-    
-    public void loadPersistedComponents(RuntimeContext rc, File root) throws Exception {        
+
+    public void loadPersistedComponents(RuntimeContext rc, File root) throws Exception {
         File[] files = root.listFiles();
         if (files != null) {
             for (File file : files) {
@@ -143,7 +142,7 @@ public class ComponentPersistence {
             }
         }
     }
-    
+
     public void loadPersistedComponent(File file) throws Exception {
         file = file.getCanonicalFile();
         if (file.isFile() && file.getName().endsWith(".xml")) {
@@ -152,7 +151,7 @@ public class ComponentPersistence {
                 deploy(sysrc, file);
                 return;
             } else {
-                String symbolicName = parent.getName(); 
+                String symbolicName = parent.getName();
                 parent = parent.getParentFile();
                 if (root.equals(parent)) {
                     RuntimeContext rc = getContext(symbolicName);
@@ -165,7 +164,7 @@ public class ComponentPersistence {
         }
         throw new IllegalArgumentException("Invalid component file location or bundle not found");
     }
-    
+
     public Document loadXml(File file) throws Exception {
         byte[] bytes = safeReadFile(file);
         return loadXml(new ByteArrayInputStream(bytes));
@@ -181,7 +180,7 @@ public class ComponentPersistence {
     public void createComponent(byte[] bytes) throws Exception {
         createComponent(bytes, true);
     }
-    
+
     public synchronized void createComponent(byte[] bytes, boolean isPersistent) throws Exception {
         Document doc = loadXml(new ByteArrayInputStream(bytes));
         Element root = doc.getDocumentElement();
@@ -207,7 +206,7 @@ public class ComponentPersistence {
 
     public synchronized boolean removeComponent(String compName) throws Exception {
         String path = compName +".xml";
-        File file = new File(this.root, path);
+        File file = new File(root, path);
         if (!file.isFile()) {
             return false;
         }
@@ -215,18 +214,18 @@ public class ComponentPersistence {
         String owner = null;
         if (p > -1) {
             owner = compName.substring(0, p);
-        }        
+        }
         DefaultRuntimeContext rc = (DefaultRuntimeContext)getContext(owner);
         rc.undeploy(file.toURI().toURL());
         file.delete();
         return true;
     }
 
-        
+
     protected void safeWriteFile(byte[] bytes, File file) throws IOException {
         fileLock.writeLock().lock();
         try {
-            FileUtils.writeFile(file, bytes);        
+            FileUtils.writeFile(file, bytes);
         } finally {
             fileLock.writeLock().unlock();
         }

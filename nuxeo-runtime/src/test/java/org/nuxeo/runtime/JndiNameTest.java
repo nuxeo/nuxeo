@@ -69,11 +69,11 @@ public class JndiNameTest extends TestCase {
         assertEquals(a.add(0, "HEAD"), new JndiName("HEAD/a/b/c/d/TAIL"));
         assertEquals(a.add(1, "x"), new JndiName("HEAD/x/a/b/c/d/TAIL"));
 
-        assertEquals(a.remove(1), "x");
+        assertEquals("x", a.remove(1));
         assertEquals(a, new JndiName("HEAD/a/b/c/d/TAIL"));
-        assertEquals(a.remove(a.size()-1), "TAIL");
+        assertEquals("TAIL", a.remove(a.size() - 1));
         assertEquals(a, new JndiName("HEAD/a/b/c/d"));
-        assertEquals(a.remove(0), "HEAD");
+        assertEquals("HEAD", a.remove(0));
         assertEquals(a, new JndiName("a/b/c/d"));
     }
 
