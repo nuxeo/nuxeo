@@ -409,6 +409,10 @@
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-osgi</artifactId>
     </dependency>
+<!--    <dependency>-->
+<!--      <groupId>org.nuxeo.runtime</groupId>-->
+<!--      <artifactId>nuxeo-runtime-jboss-extensions</artifactId>-->
+<!--    </dependency>-->
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-jboss-adapter</artifactId>
