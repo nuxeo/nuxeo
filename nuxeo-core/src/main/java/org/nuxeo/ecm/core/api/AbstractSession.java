@@ -1921,7 +1921,7 @@ public abstract class AbstractSession implements CoreSession,
             DocumentModel docModel = readModel(doc, null);
 
             // we're about to overwrite the document, make sure it's archived
-            if (skipSnapshotCreation) {
+            if (!skipSnapshotCreation) {
                 createDocumentSnapshot(docModel, doc, null, false);
             }
 
