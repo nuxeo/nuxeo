@@ -195,6 +195,21 @@
       <artifact group="jmimemagic" name="jmimemagic" />
       <artifact group="rome" name="rome" />
       <artifact group="commons-jexl" name="commons-jexl" />
+      <artifact group="com.hp.hpl.jena" name="arq" />
+      <artifact group="com.noelios.restlet" name="com.noelios.restlet" />
+      <artifact group="com.noelios.restlet" name="com.noelios.restlet.ext.servlet" />
+      <artifact group="com.ibm.icu" name="icu4j" />
+      <artifact group="com.hp.hpl.jena" name="iri" />
+      <artifact group="cup" name="java-cup" />
+      <artifact group="jdom" name="jdom" />
+      <artifact group="com.hp.hpl.jena" name="jena" />
+      <artifact group="joda-time" name="joda-time" />
+      <artifact group="org.restlet" name="org.restlet.ext.fileupload" />
+      <artifact group="oro" name="oro" />
+      <artifact group="poi" name="poi" />
+      <artifact group="poi" name="poi-scratchpad" />
+      <artifact group="com.sun.xml" name="relaxngDatatype" />
+      <artifact group="com.sun.xml" name="xsom" />
     </artifacts>
   </artifactSet>
 
