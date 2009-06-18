@@ -16,7 +16,7 @@
     applications on top of Nuxeo EP. It includes JSF components for Nuxeo EP /
     Nuxeo Core, custom JSF converters and resolvers, REST URL support, REST API,
     authentication management (Basic + Form), BLOB download via REST URL, error
-    interceptors, batching management, path handlings, etc.
+    interceptors, batching management, path handling, etc.
   </description>
 
   <dependencies>
@@ -92,7 +92,6 @@
     <dependency>
       <groupId>javax.ejb</groupId>
       <artifactId>ejb-api</artifactId>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.jboss.seam</groupId>
@@ -148,32 +147,26 @@
     <dependency>
       <groupId>org.restlet</groupId>
       <artifactId>org.restlet</artifactId>
-      <version>1.0.7</version>
     </dependency>
     <dependency>
       <groupId>org.restlet</groupId>
       <artifactId>org.restlet.ext.fileupload</artifactId>
-      <version>1.0.7</version>
     </dependency>
     <dependency>
       <groupId>commons-fileupload</groupId>
       <artifactId>commons-fileupload</artifactId>
-      <version>1.2</version>
     </dependency>
     <dependency>
       <groupId>com.noelios.restlet</groupId>
       <artifactId>com.noelios.restlet</artifactId>
-      <version>1.0.7</version>
     </dependency>
     <dependency>
       <groupId>com.noelios.restlet</groupId>
       <artifactId>com.noelios.restlet.ext.servlet</artifactId>
-      <version>1.0.7</version>
     </dependency>
     <dependency>
       <groupId>javax.transaction</groupId>
       <artifactId>jta</artifactId>
-      <version>1.0.1B</version>
     </dependency>
     <dependency>
       <groupId>commons-lang</groupId>
@@ -182,7 +175,6 @@
     <dependency>
      <groupId>org.nuxeo.ecm.platform</groupId>
      <artifactId>nuxeo-platform-el</artifactId>
-     <version>${nuxeo.services.version}</version>
     </dependency>
   </dependencies>
 
@@ -192,36 +184,6 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
         <executions>
-          <execution>
-            <id>copy-installed</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>copy</goal>
-            </goals>
-            <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>org.restlet</groupId>
-                  <artifactId>org.restlet</artifactId>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>org.restlet</groupId>
-                  <artifactId>org.restlet.ext.fileupload</artifactId>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>com.noelios.restlet</groupId>
-                  <artifactId>com.noelios.restlet</artifactId>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>com.noelios.restlet</groupId>
-                  <artifactId>com.noelios.restlet.ext.servlet</artifactId>
-                </artifactItem>
-              </artifactItems>
-              <outputDirectory>
-                ${project.build.outputDirectory}/lib
-              </outputDirectory>
-            </configuration>
-          </execution>
           <!--  artifacts in WEB-INF/lib, not needed in any classpath -->
           <execution>
             <id>copy-installed-webinflib</id>

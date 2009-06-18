@@ -227,6 +227,11 @@
         <version>${nuxeo.services.version}</version>
       </dependency>
       <dependency>
+       <groupId>org.nuxeo.ecm.platform</groupId>
+       <artifactId>nuxeo-platform-el</artifactId>
+       <version>${nuxeo.services.version}</version>
+      </dependency>
+      <dependency>
        <groupId>org.nuxeo.ecm.core</groupId>
        <artifactId>nuxeo-core-jcr-connector-test</artifactId>
        <version>${nuxeo.core.version}</version>
