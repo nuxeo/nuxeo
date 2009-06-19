@@ -50,7 +50,7 @@
       <nxu:column>
         <f:facet name="header">
           <h:panelGroup>
-          <a4j:commandLink action="#{sortActions.repeatSearch}"
+          <a4j:commandLink id="title" action="#{sortActions.repeatSearch}"
               rendered="#{provider.sortable}" reRender="filterResultTable" >
             <h:outputText value="#{messages['label.content.header.title']}" />
             <f:param name="providerName" value="#{providerName}" />

@@ -8,18 +8,18 @@
   xmlns:nxh="http://nuxeo.org/nxweb/html"
   xmlns:s="http://jboss.com/products/seam/taglib">
 
-  <a4j:form>
+  <a4j:form id="paginationControls">
     <h:panelGroup id="paginationControls"
       layout="block" styleClass="pageNavigationControls"
       rendered="#{provider.nextPageAvailable or provider.previousPageAvailable}">
 
-      <a4j:commandButton action="#{provider.rewind}"
+      <a4j:commandButton id="goToFirstPage" action="#{provider.rewind}"
                        alt="#{messages['command.navigation.rewind']}"
                        image="/icons/action_page_rewind.gif"
                        reRender="documentsList, paginationControls">
         <f:attribute name="disabled" value="#{not provider.previousPageAvailable}"/>
       </a4j:commandButton>
-      <a4j:commandButton action="#{provider.previous}"
+      <a4j:commandButton id="goToPreviousPage" action="#{provider.previous}"
                        alt="#{messages['command.navigation.previous']}"
                        image="/icons/action_page_previous.gif"
                        reRender="documentsList, paginationControls">
@@ -30,14 +30,14 @@
         <h:outputText value="#{provider.currentPageStatus}"/>
       </h:panelGroup>
 
-      <a4j:commandButton action="#{provider.next}"
+      <a4j:commandButton id="goToNextPage" action="#{provider.next}"
                        alt="#{messages['command.navigation.next']}"
                        image="/icons/action_page_next.gif"
                        reRender="documentsList, paginationControls">
         <f:attribute name="disabled" value="#{not provider.nextPageAvailable}"/>
       </a4j:commandButton>
 
-      <a4j:commandButton action="#{provider.last}"
+      <a4j:commandButton id="goToLastPage" action="#{provider.last}"
                        alt="#{messages['command.navigation.fastforward']}"
                        image="/icons/action_page_fastforward.gif"
                        reRender="documentsList, paginationControls">
