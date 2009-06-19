@@ -32,7 +32,6 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
-import org.nuxeo.ecm.core.convert.extension.Converter;
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 
 /**

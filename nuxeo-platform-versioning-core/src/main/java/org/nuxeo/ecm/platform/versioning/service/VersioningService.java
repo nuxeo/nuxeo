@@ -53,27 +53,18 @@ public class VersioningService extends DefaultComponent implements
         VersioningManager {
 
     public static final String COMPONENT_ID = "org.nuxeo.ecm.platform.versioning.service.VersioningService";
-
     public static final String VERSIONING_EXTENSION_POINT_RULES = "rules";
-
     public static final String VERSIONING_EXTENSION_POINT_PROPERTIES = "properties";
 
     private static final Log log = LogFactory.getLog(VersioningService.class);
 
-    private String minorVersionProperty;
-
-    private String majorVersionProperty;
-
     private final Map<String, EditBasedRuleDescriptor> editRuleDescriptors = new LinkedHashMap<String, EditBasedRuleDescriptor>();
-
     private final Map<String, AutoBasedRuleDescriptor> autoRuleDescriptors = new LinkedHashMap<String, AutoBasedRuleDescriptor>();
-
     private final Map<String, VersioningPropertiesDescriptor> propertiesDescriptors = new HashMap<String, VersioningPropertiesDescriptor>();
-
     private final Map<String, CreateSnapshotDescriptor> snapshotDescriptors = new HashMap<String, CreateSnapshotDescriptor>();
 
-    public VersioningService() {
-    }
+    private String minorVersionProperty;
+    private String majorVersionProperty;
 
     @Override
     public void activate(ComponentContext context) throws Exception {
@@ -164,10 +155,10 @@ public class VersioningService extends DefaultComponent implements
         // TODO
     }
 
-    public VersionIncEditOptions getVersionIncEditOptions(DocumentModel doc)
+    public VersionIncEditOptions getVersionIncEditOptions(DocumentModel document)
             throws ClientException {
         // check Versionable facet
-        DocumentType type = doc.getDocumentType();
+        DocumentType type = document.getDocumentType();
         if (!type.getFacets().contains(FacetNames.VERSIONABLE)) {
             VersionIncEditOptions vincOpt = new VersionIncEditOptions();
             vincOpt.setVersioningAction(VersioningActions.NO_VERSIONING);
@@ -178,16 +169,16 @@ public class VersioningService extends DefaultComponent implements
 
         // we cannot rely on cached document lifecycle state, so refetch it
         // directly from the core
-        if (null == doc.getSessionId()) {
+        if (null == document.getSessionId()) {
             throw new IllegalArgumentException(
                     "document model is not bound to a core session (null sessionId)");
         }
         CoreSession coreSession = CoreInstance.getInstance().getSession(
-                doc.getSessionId());
+                document.getSessionId());
         if (coreSession == null) {
-            throw new ClientException("cannot get core session for doc: " + doc);
+            throw new ClientException("cannot get core session for doc: " + document);
         }
-        String lifecycleState = coreSession.getCurrentLifeCycleState(doc.getRef());
+        String lifecycleState = coreSession.getCurrentLifeCycleState(document.getRef());
 
         if (lifecycleState == null) {
             VersionIncEditOptions vincOpt = new VersionIncEditOptions();
@@ -196,7 +187,7 @@ public class VersioningService extends DefaultComponent implements
             return vincOpt;
         }
 
-        return getVersionIncOptions(lifecycleState, doc);
+        return getVersionIncOptions(lifecycleState, document);
     }
 
     // FIXME : there is no order on rules, which makes it hard to define which
@@ -452,47 +443,47 @@ public class VersioningService extends DefaultComponent implements
         return ver;
     }
 
-    public DocumentModel incrementMajor(DocumentModel doc)
+    public DocumentModel incrementMajor(DocumentModel document)
             throws ClientException {
-        String docType = doc.getType();
+        String docType = document.getType();
         String majorPropName = getMajorVersionPropertyName(docType);
         String minorPropName = getMinorVersionPropertyName(docType);
 
-        long major = getValidVersionNumber(doc, majorPropName) + 1;
+        long major = getValidVersionNumber(document, majorPropName) + 1;
         long minor = 0;
-        doc.setProperty(DocumentModelUtils.getSchemaName(majorPropName),
+        document.setProperty(DocumentModelUtils.getSchemaName(majorPropName),
                 DocumentModelUtils.getFieldName(majorPropName),
                 Long.valueOf(major));
-        doc.setProperty(DocumentModelUtils.getSchemaName(minorPropName),
+        document.setProperty(DocumentModelUtils.getSchemaName(minorPropName),
                 DocumentModelUtils.getFieldName(minorPropName),
                 Long.valueOf(minor));
-        return doc;
+        return document;
     }
 
-    public DocumentModel incrementMinor(DocumentModel doc)
+    public DocumentModel incrementMinor(DocumentModel document)
             throws ClientException {
-        String docType = doc.getType();
+        String docType = document.getType();
         String majorPropName = getMajorVersionPropertyName(docType);
         String minorPropName = getMinorVersionPropertyName(docType);
 
-        long major = getValidVersionNumber(doc, majorPropName);
-        long minor = getValidVersionNumber(doc, minorPropName) + 1;
-        doc.setProperty(DocumentModelUtils.getSchemaName(majorPropName),
+        long major = getValidVersionNumber(document, majorPropName);
+        long minor = getValidVersionNumber(document, minorPropName) + 1;
+        document.setProperty(DocumentModelUtils.getSchemaName(majorPropName),
                 DocumentModelUtils.getFieldName(majorPropName),
                 Long.valueOf(major));
-        doc.setProperty(DocumentModelUtils.getSchemaName(minorPropName),
+        document.setProperty(DocumentModelUtils.getSchemaName(minorPropName),
                 DocumentModelUtils.getFieldName(minorPropName),
                 Long.valueOf(minor));
-        return doc;
+        return document;
     }
 
-    public String getVersionLabel(DocumentModel doc) throws ClientException {
-        String documentType = doc.getType();
+    public String getVersionLabel(DocumentModel document) throws ClientException {
+        String documentType = document.getType();
         String majorPropName = getMajorVersionPropertyName(documentType);
         String minorPropName = getMinorVersionPropertyName(documentType);
 
-        long major = getValidVersionNumber(doc, majorPropName);
-        long minor = getValidVersionNumber(doc, minorPropName);
+        long major = getValidVersionNumber(document, majorPropName);
+        long minor = getValidVersionNumber(document, minorPropName);
         return major + "." + minor;
     }
 
@@ -542,22 +533,22 @@ public class VersioningService extends DefaultComponent implements
         return minorVersionProperty;
     }
 
-    public SnapshotOptions getCreateSnapshotOption(DocumentModel doc)
+    public SnapshotOptions getCreateSnapshotOption(DocumentModel document)
             throws ClientException {
         // we cannot rely on cached document lifecycle state, so refetch it
         // directly from the core
-        if (null == doc.getSessionId()) {
+        if (null == document.getSessionId()) {
             throw new IllegalArgumentException(
                     "document model is not bound to a core session (null sessionId)");
         }
         CoreSession coreSession = CoreInstance.getInstance().getSession(
-                doc.getSessionId());
+                document.getSessionId());
         if (coreSession == null) {
-            throw new ClientException("cannot get core session for doc: " + doc);
+            throw new ClientException("cannot get core session for doc: " + document);
         }
-        String lifecycleState = coreSession.getCurrentLifeCycleState(doc.getRef());
+        String lifecycleState = coreSession.getCurrentLifeCycleState(document.getRef());
         if (lifecycleState == null) {
-            log.error("Cannot get lifecycle state for doc " + doc);
+            log.error("Cannot get lifecycle state for doc " + document);
             return SnapshotOptions.UNDEFINED;
         }
 

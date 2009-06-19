@@ -23,7 +23,6 @@ import javax.annotation.PostConstruct;
 import javax.ejb.Local;
 import javax.ejb.PostActivate;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 
 /**

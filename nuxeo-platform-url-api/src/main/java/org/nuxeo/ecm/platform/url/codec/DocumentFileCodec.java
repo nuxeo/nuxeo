@@ -44,8 +44,6 @@ import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.platform.url.service.AbstractDocumentViewCodec;
 
-import sun.util.logging.resources.logging;
-
 public class DocumentFileCodec extends AbstractDocumentViewCodec {
 
     public static final String PREFIX = "nxfile";

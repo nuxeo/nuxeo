@@ -155,7 +155,7 @@ public class TestResolvedResourcesFactory extends RepositoryTestCase {
         dm.setProperty("dublincore", "title", "Indexable data");
         dm.setProperty("dublincore", "description", "Indexable description");
         dm.setProperty("file", "filename", "foo.pdf");
-        String[] contributors = new String[] { "a", "b" };
+        String[] contributors = { "a", "b" };
         dm.setProperty("dublincore", "contributors", contributors);
 
         // add a blob
@@ -189,7 +189,7 @@ public class TestResolvedResourcesFactory extends RepositoryTestCase {
         dm.setProperty("dublincore", "title", "Indexable data");
         dm.setProperty("dublincore", "description", "Indexable description");
         dm.setProperty("file", "filename", "foo.txt");
-        String[] contributors = new String[] { "a", "b" };
+        String[] contributors = { "a", "b" };
         dm.setProperty("dublincore", "contributors", contributors);
 
         // add a blob
@@ -255,7 +255,7 @@ public class TestResolvedResourcesFactory extends RepositoryTestCase {
         dm.setProperty("dublincore", "title", "Indexable domain");
         dm.setProperty("dublincore", "description",
                 "Indexable domain description");
-        String[] contributors = new String[] { "a", "b" };
+        String[] contributors = { "a", "b" };
         dm.setProperty("dublincore", "contributors", contributors);
 
         dm.setProperty("dublincore", "created", Calendar.getInstance());

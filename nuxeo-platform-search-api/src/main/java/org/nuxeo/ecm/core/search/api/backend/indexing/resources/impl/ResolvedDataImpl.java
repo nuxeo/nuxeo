@@ -29,7 +29,6 @@ import org.nuxeo.ecm.core.search.api.backend.indexing.resources.ResolvedData;
  * Resolved data implementation.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 public class ResolvedDataImpl implements ResolvedData {
 
@@ -51,11 +50,9 @@ public class ResolvedDataImpl implements ResolvedData {
 
     protected boolean multiple = false;
 
-    @SuppressWarnings("unchecked")
-    protected Map<String, String> termVector = Collections.EMPTY_MAP;
+    protected Map<String, String> termVector = Collections.emptyMap();
 
-    @SuppressWarnings("unchecked")
-    protected Map<String, Serializable> properties = Collections.EMPTY_MAP;
+    protected Map<String, Serializable> properties = Collections.emptyMap();
 
     private boolean sortable = true;
 

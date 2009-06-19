@@ -35,7 +35,6 @@ import org.nuxeo.ecm.core.search.api.backend.indexing.resources.factory.BuiltinD
 import org.nuxeo.ecm.core.search.api.client.SearchService;
 import org.nuxeo.ecm.core.search.api.client.common.SearchServiceDelegate;
 import org.nuxeo.ecm.core.search.api.client.query.ComposedNXQuery;
-import org.nuxeo.ecm.core.search.api.client.query.QueryException;
 import org.nuxeo.ecm.core.search.api.client.query.impl.ComposedNXQueryImpl;
 import org.nuxeo.ecm.core.search.api.client.query.impl.SearchPrincipalImpl;
 import org.nuxeo.ecm.core.search.api.client.search.results.ResultItem;

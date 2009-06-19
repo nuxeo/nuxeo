@@ -20,13 +20,11 @@
 package org.nuxeo.ecm.platform.api.ws;
 
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.security.ACE;
 
 /**
  * Nuxeo EP remoting API.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 public interface NuxeoRemoting extends BaseNuxeoWebService {
 
@@ -69,10 +67,8 @@ public interface NuxeoRemoting extends BaseNuxeoWebService {
 
     /**
      * Returns the relative path as a displayable path with parent titles.
-     *
      * <p>
-     * Example : <i>/Workspaces/My Workspaces/Nice Document</i>
-     * </p>
+     * Example: <i>/Workspaces/My Workspaces/Nice Document</i>
      *
      * @param sessionId : the session id
      * @param uuid : the document uuid

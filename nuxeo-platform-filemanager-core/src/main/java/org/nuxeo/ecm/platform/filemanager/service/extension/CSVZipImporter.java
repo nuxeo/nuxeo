@@ -46,16 +46,13 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.blob.InputStreamBlob;
 import org.nuxeo.ecm.core.schema.DocumentType;
-import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.TypeConstants;
 import org.nuxeo.ecm.core.schema.types.Field;
-import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.DateType;
 import org.nuxeo.ecm.core.schema.types.primitives.IntegerType;
 import org.nuxeo.ecm.core.schema.types.primitives.LongType;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 import org.nuxeo.ecm.platform.types.TypeManager;
-import org.nuxeo.runtime.api.Framework;
 
 import au.com.bytecode.opencsv.CSVReader;
 
@@ -93,9 +90,7 @@ public class CSVZipImporter extends AbstractFileImporter {
         }
     }
 
-    public DocumentModel create(CoreSession documentManager, Blob content,
-            String path, boolean overwrite, String filename,
-            TypeManager typeService) throws ClientException, IOException {
+    public DocumentModel create(CoreSession documentManager, Blob content, String path, boolean overwrite, String filename, TypeManager typeService) throws ClientException, IOException {
 
         File tmp = File.createTempFile("zipcsv-importer", null);
 
@@ -115,18 +110,18 @@ public class CSVZipImporter extends AbstractFileImporter {
         Reader reader = new InputStreamReader(indexStream);
         CSVReader csvReader = new CSVReader(reader);
 
-        List lines = csvReader.readAll();
+        List<String[]> lines = csvReader.readAll();
 
-        String[] header = (String[]) lines.get(0);
+        String[] header = lines.get(0);
 
-        for (int idx = 1 ; idx < lines.size(); idx++) {
-            String type=null;
-            String id=null;
+        for (int idx = 1; idx < lines.size(); idx++) {
+            String type = null;
+            String id = null;
             Map<String, String> stringValues = new HashMap<String, String>();
 
-            for (int col = 0; col < header.length; col ++) {
+            for (int col = 0; col < header.length; col++) {
                 String headerValue = header[col];
-                String lineValue = ((String[])lines.get(idx))[col];
+                String lineValue = (lines.get(idx))[col];
 
                 if ("type".equalsIgnoreCase(headerValue)) {
                     type = lineValue;
@@ -140,23 +135,23 @@ public class CSVZipImporter extends AbstractFileImporter {
             boolean updateDoc = false;
             // get doc for update
             DocumentModel targetDoc = null;
-            if (id!=null) {
+            if (id != null) {
                 // update ?
                 String targetPath = new Path(path).append(id).toString();
                 if (documentManager.exists(new PathRef(targetPath))) {
                     targetDoc = documentManager.getDocument(new PathRef(targetPath));
-                    updateDoc=true;
+                    updateDoc = true;
                 }
             }
 
             // create doc if needed
-            if (targetDoc==null) {
-                if (type==null) {
+            if (targetDoc == null) {
+                if (type == null) {
                     log.error("Can not create doc without a type, skipping line");
                     continue;
                 }
 
-                if (id==null) {
+                if (id == null) {
                     id = IdUtils.generateStringId();
                 }
                 targetDoc = documentManager.createDocumentModel(path, id, type);
@@ -177,7 +172,7 @@ public class CSVZipImporter extends AbstractFileImporter {
                         field = docType.getField(fname);
                         usePrefix = true;
                     }
-                } else if (fname.contains(".")){
+                } else if (fname.contains(".")) {
                     String[] parts = fname.split("\\.");
                     schemaName = parts[0];
                     fieldName = parts[1];
@@ -194,23 +189,20 @@ public class CSVZipImporter extends AbstractFileImporter {
                 }
 
                 Serializable fieldValue = null;
-                if (field!=null) {
+                if (field != null) {
                     if (field.getType().isSimpleType()) {
                         if (field.getType() instanceof StringType) {
                             fieldValue = stringValue;
-                        }
-                        else if (field.getType() instanceof IntegerType) {
+                        } else if (field.getType() instanceof IntegerType) {
                             fieldValue = Integer.parseInt(stringValue);
-                        }
-                        else if (field.getType() instanceof LongType) {
+                        } else if (field.getType() instanceof LongType) {
                             fieldValue = Long.parseLong(stringValue);
-                        }
-                        else if (field.getType() instanceof DateType) {
+                        } else if (field.getType() instanceof DateType) {
                             Date date;
                             try {
-                                if (stringValue.length()==10) {
+                                if (stringValue.length() == 10) {
                                     date = new SimpleDateFormat("dd/MM/yyyy").parse(stringValue);
-                                } else if (stringValue.length()==8) {
+                                } else if (stringValue.length() == 8) {
                                     date = new SimpleDateFormat("dd/MM/yy").parse(stringValue);
                                 } else {
                                     log.warn("Unknow date format :" + stringValue);
@@ -224,7 +216,7 @@ public class CSVZipImporter extends AbstractFileImporter {
                     } else if (field.getType().isComplexType()) {
                         if (TypeConstants.CONTENT.equals(field.getName().getLocalName())) {
                             ZipEntry blobIndex = zip.getEntry(stringValue);
-                            if (blobIndex!=null) {
+                            if (blobIndex != null) {
                                 InputStream blobStream = zip.getInputStream(blobIndex);
                                 Blob blob = new InputStreamBlob(blobStream);
                                 blob.setFilename(stringValue);
@@ -233,7 +225,7 @@ public class CSVZipImporter extends AbstractFileImporter {
                         }
                     }
 
-                    if (fieldValue!=null) {
+                    if (fieldValue != null) {
                         if (usePrefix) {
                             targetDoc.setPropertyValue(fname, fieldValue);
                         } else {

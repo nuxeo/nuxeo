@@ -37,7 +37,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.platform.versioning.api.DocVersion;
 import org.nuxeo.ecm.platform.versioning.api.SnapshotOptions;
 import org.nuxeo.ecm.platform.versioning.api.VersionIncEditOptions;
 import org.nuxeo.ecm.platform.versioning.api.VersioningManager;
@@ -95,19 +94,19 @@ public class VersioningManagerBean implements VersioningManager {
         return props;
     }
 
-    public VersionIncEditOptions getVersionIncEditOptions(DocumentModel docModel)
+    public VersionIncEditOptions getVersionIncEditOptions(DocumentModel document)
             throws ClientException {
-        return service.getVersionIncEditOptions(docModel);
+        return service.getVersionIncEditOptions(document);
     }
 
-    public DocumentModel incrementMajor(DocumentModel doc)
+    public DocumentModel incrementMajor(DocumentModel document)
             throws ClientException {
-        return service.incrementMajor(doc);
+        return service.incrementMajor(document);
     }
 
-    public DocumentModel incrementMinor(DocumentModel doc)
+    public DocumentModel incrementMinor(DocumentModel document)
             throws ClientException {
-        return service.incrementMinor(doc);
+        return service.incrementMinor(document);
     }
 
     public String getMajorVersionPropertyName(String documentType) {
@@ -118,8 +117,8 @@ public class VersioningManagerBean implements VersioningManager {
         return service.getMinorVersionPropertyName(documentType);
     }
 
-    public String getVersionLabel(DocumentModel doc) throws ClientException {
-        return service.getVersionLabel(doc);
+    public String getVersionLabel(DocumentModel document) throws ClientException {
+        return service.getVersionLabel(document);
     }
 
     public SnapshotOptions getCreateSnapshotOption(DocumentModel document)

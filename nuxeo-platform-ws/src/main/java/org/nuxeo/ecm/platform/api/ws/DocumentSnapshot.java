@@ -21,15 +21,10 @@ package org.nuxeo.ecm.platform.api.ws;
 
 import java.io.Serializable;
 
-import org.nuxeo.ecm.core.api.security.ACE;
 
 public class DocumentSnapshot implements Serializable {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
-
 
     private DocumentProperty[] noBlobProperties;
 
@@ -37,67 +32,49 @@ public class DocumentSnapshot implements Serializable {
 
     private String pathAsString;
 
-    private WsACE[] acl ;
+    private WsACE[] acl;
 
 
-    public DocumentSnapshot()
-    {
-
+    public DocumentSnapshot() {
     }
 
-    public DocumentSnapshot(DocumentProperty[] noBlobProperties,  DocumentBlob[] blobProperties, String pathAsString, WsACE[] acl)
-    {
-     this.acl=acl;
-     this.noBlobProperties=noBlobProperties;
-     this.blobProperties=blobProperties;
-     this.pathAsString=pathAsString;
+    public DocumentSnapshot(DocumentProperty[] noBlobProperties, DocumentBlob[] blobProperties, String pathAsString, WsACE[] acl) {
+        this.acl = acl;
+        this.noBlobProperties = noBlobProperties;
+        this.blobProperties = blobProperties;
+        this.pathAsString = pathAsString;
     }
 
     public DocumentProperty[] getNoBlobProperties() {
         return noBlobProperties;
     }
 
-
-
     public void setNoBlobProperties(DocumentProperty[] noBlobProperties) {
         this.noBlobProperties = noBlobProperties;
     }
-
-
 
     public DocumentBlob[] getBlobProperties() {
         return blobProperties;
     }
 
-
-
     public void setBlobProperties(DocumentBlob[] blobProperties) {
         this.blobProperties = blobProperties;
     }
-
-
 
     public String getPathAsString() {
         return pathAsString;
     }
 
-
-
     public void setPathAsString(String pathAsString) {
         this.pathAsString = pathAsString;
     }
-
-
 
     public WsACE[] getAcl() {
         return acl;
     }
 
-
-
     public void setAcl(WsACE[] acl) {
         this.acl = acl;
     }
-
 
 }

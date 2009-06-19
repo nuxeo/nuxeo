@@ -26,20 +26,19 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  * Remote/Local interface for VersioningManager EJB.
  *
  * @author DM
- *
  */
 public interface VersioningManager {
 
     /**
      * Get document incrementation options as defined by versioning rules.
      *
-     * @param docModel the document
+     * @param document the document
      * @return a list of version incrementation options available for the given
      *         document ref
      *
      * @throws ClientException
      */
-    VersionIncEditOptions getVersionIncEditOptions(DocumentModel docModel)
+    VersionIncEditOptions getVersionIncEditOptions(DocumentModel document)
             throws ClientException;
 
     /**
@@ -63,13 +62,13 @@ public interface VersioningManager {
      */
     String getMinorVersionPropertyName(String documentType);
 
-    SnapshotOptions getCreateSnapshotOption(DocumentModel docModel)
+    SnapshotOptions getCreateSnapshotOption(DocumentModel document)
             throws ClientException;
 
-    DocumentModel incrementMinor(DocumentModel docModel)
+    DocumentModel incrementMinor(DocumentModel document)
             throws ClientException;
 
-    DocumentModel incrementMajor(DocumentModel docModel)
+    DocumentModel incrementMajor(DocumentModel document)
             throws ClientException;
 
 }

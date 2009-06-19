@@ -79,7 +79,7 @@ public class TestCSVImporter extends RepositoryOSGITestCase {
         Blob blob = new FileBlob(archive);
         fm.createDocumentFromBlob(coreSession, blob, destWS.getPathAsString(), true, "toto");
         DocumentModelList children = coreSession.getChildren(destWS.getRef());
-        assertTrue(children.size() == 2);
+        assertSame(2, children.size());
 
         DocumentModel MyFile =  coreSession.getChild(destWS.getRef(), "myfile");
         DocumentModel MyNote =  coreSession.getChild(destWS.getRef(), "mynote");
@@ -89,7 +89,6 @@ public class TestCSVImporter extends RepositoryOSGITestCase {
 
         assertEquals("this is text", MyNote.getProperty("note", "note"));
         assertNotNull(MyFile.getProperty("file", "content"));
-
     }
 
 }
