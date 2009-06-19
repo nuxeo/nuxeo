@@ -1030,6 +1030,11 @@
         <artifactId>com.noelios.restlet.ext.servlet</artifactId>
         <version>1.0.7</version>
       </dependency>
+      <dependency>
+        <groupId>javax.ressource</groupId>
+        <artifactId>jca-api</artifactId>
+        <version>1.5</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
