@@ -29,9 +29,9 @@ Export-Package: org.nuxeo.runtime,
  org.nuxeo.runtime.services.streaming,
  org.nuxeo.runtime.streaming,
  org.nuxeo.runtime.util
-Bundle-ClassPath: .,
- lib/commons-jexl-1.1.jar
-Require-Bundle: system.bundle,
+Bundle-ClassPath: .
+Require-Bundle: commons-jexl.commons-jexl,
+ system.bundle,
  org.nuxeo.common;visibility:=reexport,
  org.nuxeo.logging;visibility:=reexport
 Eclipse-LazyStart: true
