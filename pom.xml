@@ -575,19 +575,19 @@
         <groupId>org.richfaces.framework</groupId>
         <artifactId>richfaces-api</artifactId>
         <scope>provided</scope>
-        <version>3.2.1.GA</version>
+        <version>3.3.1.GA</version>
       </dependency>
       <dependency>
         <groupId>org.richfaces.framework</groupId>
         <artifactId>richfaces-impl</artifactId>
         <scope>provided</scope>
-        <version>3.2.1.GA-NX2</version>
+        <version>3.3.1.GA-NX</version>
       </dependency>
       <dependency>
         <groupId>org.richfaces.ui</groupId>
         <artifactId>richfaces-ui</artifactId>
         <scope>provided</scope>
-        <version>3.2.1.GA</version>
+        <version>3.3.1.GA-NX</version>
       </dependency>
 
       <!-- OpenOffice.org -->
