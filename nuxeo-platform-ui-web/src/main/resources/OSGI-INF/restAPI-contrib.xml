@@ -149,6 +149,7 @@
       Allows deleting documents via Restlet API:
       GET /nuxeo/restAPI/{repoId}/{docId}/deleteDocumentRestlet
       GET /nuxeo/restAPI/{repoId}/{docId}/delete
+      GET /nuxeo/restAPI/{repoId}/deleteDocumentByPath?path=/default-domain/workspaces/doc1
     </documentation>
     <restletPlugin
         name="deleteDocumentRestlet"
@@ -158,6 +159,7 @@
       <urlPatterns>
         <urlPattern>/{repo}/{docid}/deleteDocumentRestlet</urlPattern>
         <urlPattern>/{repo}/{docid}/delete</urlPattern>
+        <urlPattern>/{repo}/deleteDocumentByPath</urlPattern>
       </urlPatterns>
     </restletPlugin>
 

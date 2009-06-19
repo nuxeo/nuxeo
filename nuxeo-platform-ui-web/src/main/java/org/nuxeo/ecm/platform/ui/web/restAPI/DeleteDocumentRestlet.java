@@ -25,6 +25,7 @@ import org.dom4j.Element;
 import org.dom4j.dom.DOMDocument;
 import org.dom4j.dom.DOMDocumentFactory;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.LiveEditConstants;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
@@ -49,11 +50,33 @@ public class DeleteDocumentRestlet extends BaseStatelessNuxeoRestlet implements
         DOMDocumentFactory domfactory = new DOMDocumentFactory();
         DOMDocument result = (DOMDocument) domfactory.createDocument();
 
-        // init repo and document
-        Boolean initOk = super.initRepositoryAndTargetDocument(res, repoId,
-                docId);
-        if (!initOk) {
-            return;
+        if (docId != null) {
+            // init repo and document
+            Boolean initOk = super.initRepositoryAndTargetDocument(res, repoId,
+                    docId);
+            if (!initOk) {
+                return;
+            }
+        } else {
+            // init repo
+            Boolean initOk = super.initRepository(res, repoId);
+            if (!initOk) {
+                return;
+            }
+
+            // init document
+            String path = getQueryParamValue(req, "path", null);
+            if (path == null) {
+                return;
+            }
+            targetDocRef = new PathRef(path);
+            try {
+                targetDocument = session.getDocument(targetDocRef);
+            } catch (ClientException e) {
+                handleError(result, res, "Unable to get document " + path);
+                return;
+            }
+            docId = targetDocument.getId();
         }
 
         try {
