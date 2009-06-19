@@ -36,13 +36,10 @@ import org.jboss.seam.init.Initialization;
 import org.jboss.seam.navigation.Pages;
 
 /**
- *
  * Helper class to manage Seam Hot Reload
  *
  * Most of the code comes from Jboss Seam 2.0.3-RC1 Debug package (HotDeployFilter)
- *
  */
-
 public class SeamHotReloadHelper {
 
     private static final Log log = LogFactory.getLog(SeamHotReloadHelper.class);
@@ -76,10 +73,11 @@ public class SeamHotReloadHelper {
         servletContext.removeAttribute(Seam.getComponentName(Pages.class));
         servletContext.removeAttribute(Seam.getComponentName(Exceptions.class));
 
-        if (reloadDone)
+        if (reloadDone) {
             return init.getHotDeployableComponents();
-        else
+        } else {
             return null;
+        }
     }
 
     public static Set<String> getHotDeployableComponents(HttpServletRequest httpRequest) {
@@ -92,7 +90,7 @@ public class SeamHotReloadHelper {
 
     protected static boolean scan(Init init, File file) {
         if (file.isFile()) {
-            if (!file.exists() || (file.lastModified() > init.getTimestamp())) {
+            if (!file.exists() || file.lastModified() > init.getTimestamp()) {
                 if (log.isDebugEnabled()) {
                     log.debug("file updated: " + file.getName());
                 }
@@ -107,4 +105,5 @@ public class SeamHotReloadHelper {
         }
         return false;
     }
+
 }

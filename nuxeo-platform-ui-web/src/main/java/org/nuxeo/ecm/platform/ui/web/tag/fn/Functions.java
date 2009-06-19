@@ -40,7 +40,6 @@ import org.nuxeo.runtime.api.Framework;
  * Util functions.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public final class Functions {
 
@@ -128,7 +127,7 @@ public final class Functions {
      *
      * @param collection
      * @param separator
-     * @param finalDelimiter
+     * @param finalSeparator
      * @return
      */
     public static String joinCollectionWithFinalDelimiter(
@@ -147,10 +146,12 @@ public final class Functions {
         int i = 0;
         for (Object object : collection) {
             result.append(object);
-            if (++i == collection.length - 1)
+            if (++i == collection.length - 1) {
                 separator = finalSeparator;
-            if (i != collection.length)
+            }
+            if (i != collection.length) {
                 result.append(separator);
+            }
         }
 
         return result.toString();
@@ -259,9 +260,7 @@ public final class Functions {
     }
 
     public static String dateFormater(String formatLength) {
-
         // A map to store temporary available date format
-
         FacesContext context = FacesContext.getCurrentInstance();
         Locale locale = context.getViewRoot().getLocale();
 

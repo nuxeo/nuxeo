@@ -92,14 +92,15 @@ public class TypesTool implements Serializable {
         if (model != null) {
             Type docType = typeManager.getType(model.getType());
             if (docType != null) {
-                String key;
                 typesMap = new HashMap<String, List<List<Type>>>();
                 String[] allowedSubTypes = docType.getAllowedSubTypes();
                 for (String typeName : allowedSubTypes) {
                     Type subType = typeManager.getType(typeName);
                     if (subType != null) {
-                        key = subType.getCategory();
-                        if (key == null) key = DEFAULT_CATEGORY;
+                        String key = subType.getCategory();
+                        if (key == null) {
+                            key = DEFAULT_CATEGORY;
+                        }
                         if (!typesMap.containsKey(key)){
                             typesMap.put(key, new ArrayList<List<Type>>());
                             typesMap.get(key).add(new ArrayList<Type>());
@@ -117,28 +118,26 @@ public class TypesTool implements Serializable {
         }
     }
 
-    private Map<String, List<List<Type>>> organizeType(){
+    private Map<String, List<List<Type>>> organizeType() {
         Map<String, List<List<Type>>> newTypesMap = new HashMap<String, List<List<Type>>>();
-        Set<Entry<String,List<List<Type>>>> typeEntrySet = typesMap.entrySet();
-        List<List<Type>> typeList;
-        for (Entry<String,List<List<Type>>> set : typeEntrySet){
-            typeList = set.getValue();
-            List<List<Type>> newListe = new ArrayList<List<Type>>();
+        Set<Entry<String, List<List<Type>>>> typeEntrySet = typesMap.entrySet();
+        for (Entry<String, List<List<Type>>> set : typeEntrySet) {
+            List<List<Type>> typeList = set.getValue();
+            List<List<Type>> newList = new ArrayList<List<Type>>();
             int index = 0;
-            newListe.add(index, new ArrayList<Type>());
-            List<Type> currentList;
+            newList.add(index, new ArrayList<Type>());
             for (Type type : typeList.get(0)) {
-                currentList = newListe.get(index);
+                List<Type> currentList = newList.get(index);
                 if (currentList == null) {
-                    newListe.add(index,new ArrayList<Type>());
+                    newList.add(index, new ArrayList<Type>());
                 }
                 currentList.add(type);
-                if ((currentList.size() % COLUMN_SIZE) == 0) {
-                    index = index++;
-                    newListe.add(index, new ArrayList<Type>());
+                if (currentList.size() % COLUMN_SIZE == 0) {
+                    index++;
+                    newList.add(index, new ArrayList<Type>());
                 }
             }
-            newTypesMap.put(set.getKey(), newListe);
+            newTypesMap.put(set.getKey(), newList);
         }
         return newTypesMap;
     }
@@ -154,7 +153,6 @@ public class TypesTool implements Serializable {
         allowedSubTypes.addAll(Arrays.asList(types));
         return allowedSubTypes;
     }
-
 
     public Type getSelectedType() {
         if (selectedType != null) {

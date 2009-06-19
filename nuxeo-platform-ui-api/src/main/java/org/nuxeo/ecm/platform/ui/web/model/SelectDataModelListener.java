@@ -21,14 +21,12 @@ package org.nuxeo.ecm.platform.ui.web.model;
 
 import java.util.EventListener;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.ui.web.model.impl.SelectDataModelRowEvent;
 
 /**
  * Listener for select/unselect events happening in a SelectModel.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public interface SelectDataModelListener extends EventListener {
 

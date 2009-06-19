@@ -20,6 +20,7 @@ import org.nuxeo.theme.negotiation.AbstractNegotiator;
 
 public final class JSFNegotiator extends AbstractNegotiator {
 
+    @Override
     public String getTemplateEngineName() {
         return "jsf-facelets";
     }

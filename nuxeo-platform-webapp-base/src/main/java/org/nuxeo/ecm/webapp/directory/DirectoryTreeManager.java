@@ -24,7 +24,6 @@ import java.util.List;
 import javax.ejb.Remove;
 
 import org.jboss.seam.annotations.Destroy;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.richfaces.component.UITree;
 import org.richfaces.event.NodeExpandedEvent;
 
