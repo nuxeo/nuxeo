@@ -30,7 +30,7 @@ public class SharedResourceLoader extends URLClassLoader {
     public SharedResourceLoader(URL[] urls, ClassLoader parent) {
         super(urls, parent);
     }
-    
+
     @Override
     protected void addURL(URL url) {
         super.addURL(url);
@@ -40,10 +40,10 @@ public class SharedResourceLoader extends URLClassLoader {
     public URL getResource(String name) {
         return findResource(name);
     }
-    
+
     @Override
     public Enumeration<URL> getResources(String name) throws IOException {
         return findResources(name);
     }
-    
+
 }

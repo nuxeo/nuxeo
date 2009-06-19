@@ -100,14 +100,14 @@ public class RegistrationInfoImpl implements RegistrationInfo {
 
     @XContent("documentation")
     String documentation;
-    
+
 
     /**
-     * This is used by the component persistence service to identify registration that was 
-     * dynamically created and persisted by users.  
+     * This is used by the component persistence service to identify registration that was
+     * dynamically created and persisted by users.
      */
     boolean isPersistent;
-    
+
 
     transient RuntimeContext context;
 
@@ -117,7 +117,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
     public void setContext(RuntimeContext rc) {
         this.context = rc;
     }
-    
+
     public Set<RegistrationInfoImpl> getDependsOnMe() {
         return dependsOnMe;
     }
@@ -129,7 +129,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
     public final boolean isPersistent() {
         return isPersistent;
     }
-    
+
     public final boolean isPending() {
         return waitsFor != null;
     }
@@ -248,7 +248,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         deactivate();
         activate();
     }
-    
+
     public synchronized void activate() throws Exception {
         if (state != RESOLVED) {
             return;

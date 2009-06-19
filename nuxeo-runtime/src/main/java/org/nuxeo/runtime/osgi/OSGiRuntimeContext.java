@@ -68,7 +68,7 @@ public class OSGiRuntimeContext extends DefaultRuntimeContext {
             url = bundle.getResource(name);
         }
         if (url == null) {
-            url = Framework.getResourceLoader().getResource(name); 
+            url = Framework.getResourceLoader().getResource(name);
         }
         return url;
     }
@@ -82,7 +82,7 @@ public class OSGiRuntimeContext extends DefaultRuntimeContext {
             url = bundle.getEntry(name);
         }
         if (url == null) {
-            url = Framework.getResourceLoader().getResource(name); 
+            url = Framework.getResourceLoader().getResource(name);
         }
         return url;
     }

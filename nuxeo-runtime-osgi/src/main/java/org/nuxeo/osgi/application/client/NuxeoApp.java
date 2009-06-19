@@ -108,9 +108,8 @@ public class NuxeoApp {
         }
         BundleFile bf = file.isDirectory() ? new DirectoryBundleFile(file)
                 : new JarBundleFile(file);
-        BundleImpl bundle = null;
         try {
-            bundle = new BundleImpl(osgi, bf, loader);
+            BundleImpl bundle = new BundleImpl(osgi, bf, loader);
             if (bundle.getSymbolicName() != null) {
                 osgi.install(bundle);
             }
@@ -183,7 +182,7 @@ public class NuxeoApp {
             return Collections.singletonList(makeFile(baseDir, fileName));
         } else if (p == 0) {
             String suffix = fileName.substring(p + 1);
-            ArrayList<File> result = new ArrayList<File>();
+            List<File> result = new ArrayList<File>();
             String[] names = baseDir.list();
             if (names != null) {
                 for (String name : names) {
@@ -195,7 +194,7 @@ public class NuxeoApp {
             return result;
         } else if (p == fileName.length() - 1) {
             String prefix = fileName.substring(0, p);
-            ArrayList<File> result = new ArrayList<File>();
+            List<File> result = new ArrayList<File>();
             String[] names = baseDir.list();
             if (names != null) {
                 for (String name : baseDir.list()) {
@@ -208,7 +207,7 @@ public class NuxeoApp {
         } else {
             String prefix = fileName.substring(0, p);
             String suffix = fileName.substring(p + 1);
-            ArrayList<File> result = new ArrayList<File>();
+            List<File> result = new ArrayList<File>();
             String[] names = baseDir.list();
             if (names != null) {
                 for (String name : names) {

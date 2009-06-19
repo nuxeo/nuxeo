@@ -30,7 +30,7 @@ public class MyListener implements EventListener {
     public MyListener() {
         //System.out.println("created listener");
     }
-    
+
     public boolean aboutToHandleEvent(Event event) {
         return false;
     }

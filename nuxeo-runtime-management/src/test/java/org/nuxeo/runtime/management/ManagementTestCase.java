@@ -16,7 +16,6 @@
  */
 package org.nuxeo.runtime.management;
 
-import java.lang.management.ManagementFactory;
 import java.util.Set;
 
 import javax.management.InstanceNotFoundException;

@@ -58,13 +58,13 @@ public class SeamHotReloadPreprocessor {
     // global system property name to indicate to Nuxeo if Seam debug is enables
     public static final String SEAM_HOT_RELOAD_SYSTEM_PROP = "org.nuxeo.seam.debug";
 
-    protected Logger log;
+    protected final Logger log;
 
-    protected File earDirectory;
+    protected final File earDirectory;
+
+    protected final List<String> globalyDefinedReloadableClasses = new ArrayList<String>();
 
     protected boolean enabled = false;
-
-    protected List<String> globalyDefinedReloadableClasses = new ArrayList<String>();
 
     public SeamHotReloadPreprocessor(File earDirectory, Logger log) {
         this.log = log;
@@ -96,7 +96,6 @@ public class SeamHotReloadPreprocessor {
             enabled = false;
 
         }
-
     }
 
     protected File getJar(DeploymentInfo di) throws DeploymentException {
@@ -229,10 +228,10 @@ public class SeamHotReloadPreprocessor {
                 FileUtils.copyToFile(inputZip.getInputStream(ze), dst);
             } else {
                 // copy to the modified jar non reloadable resources
-                byte[] buf = new byte[1024];
-                int len;
                 out.putNextEntry(ze);
                 InputStream srcEntry = inputZip.getInputStream(ze);
+                byte[] buf = new byte[1024];
+                int len;
                 while ((len = srcEntry.read(buf)) > 0) {
                     out.write(buf, 0, len);
                 }
@@ -251,4 +250,5 @@ public class SeamHotReloadPreprocessor {
         di.url = newJar.toURL();
         di.watch = newJar.toURL();
     }
+
 }

@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -46,31 +47,28 @@
     <dependency>
       <groupId>jboss</groupId>
       <artifactId>ejb3</artifactId>
-      <version>3.0-RC8</version>
     </dependency>
     <dependency>
       <groupId>jboss</groupId>
       <artifactId>jboss-aop-jdk50</artifactId>
-      <version>1.4.0.SP1</version>
     </dependency>
     <dependency>
       <groupId>jboss</groupId>
       <artifactId>jboss-remoting</artifactId>
     </dependency>
-        <dependency>
+    <dependency>
       <groupId>jboss</groupId>
       <artifactId>jboss-aspect-jdk50-client</artifactId>
-      <version>1.5</version>
     </dependency>
     <dependency>
-        <groupId>javax.servlet</groupId>
-        <artifactId>servlet-api</artifactId>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
     </dependency>
 
     <dependency>
-    	<groupId>javax.ejb</groupId>
-    	<artifactId>ejb-api</artifactId>
-    	<scope>test</scope>
-    </dependency>    
+      <groupId>javax.ejb</groupId>
+      <artifactId>ejb-api</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>

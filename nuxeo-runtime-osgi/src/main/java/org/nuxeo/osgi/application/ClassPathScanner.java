@@ -37,9 +37,9 @@ public class ClassPathScanner {
 
     protected boolean scanForNestedJARs = true;
     protected final Callback callback;
-    
+
     /**
-     * If set points to a set of path prefixes to be excluded form bundle processing  
+     * If set points to a set of path prefixes to be excluded form bundle processing
      */
     protected String[] blackList;
 
