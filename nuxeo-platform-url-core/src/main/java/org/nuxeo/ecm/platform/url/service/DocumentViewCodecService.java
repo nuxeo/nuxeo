@@ -25,6 +25,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.platform.url.api.DocumentViewCodecManager;
 import org.nuxeo.ecm.platform.url.codec.api.DocumentViewCodec;
@@ -37,6 +39,8 @@ public class DocumentViewCodecService extends DefaultComponent implements
         DocumentViewCodecManager {
 
     private static final long serialVersionUID = -4521897334653742494L;
+
+    private static final Log log = LogFactory.getLog(DocumentViewCodecService.class);
 
     public static final String NAME = DocumentViewCodecService.class.getName();
 
@@ -78,6 +82,7 @@ public class DocumentViewCodecService extends DefaultComponent implements
             if (codecDesc.getDefaultCodec()) {
                 defaultCodecName = codecName;
             }
+            log.debug("Added URL codec: " + codecName);
             codecs.remove(codecName);
         }
     }
@@ -90,6 +95,7 @@ public class DocumentViewCodecService extends DefaultComponent implements
             String codecName = codecDesc.getName();
             descriptors.remove(codecName);
             codecs.remove(codecName);
+            log.debug("Removed URL codec: " + codecName);
         }
     }
 
@@ -160,8 +166,8 @@ public class DocumentViewCodecService extends DefaultComponent implements
         if (url == null) {
             for (String codecName : descriptors.keySet()) {
                 if (!codecName.equals(defaultCodecName)) {
-                    url = getUrlFromDocumentView(codecName, docView, needBaseUrl,
-                            baseUrl);
+                    url = getUrlFromDocumentView(codecName, docView,
+                            needBaseUrl, baseUrl);
                     if (url != null) {
                         break;
                     }
@@ -193,8 +199,8 @@ public class DocumentViewCodecService extends DefaultComponent implements
         if (docView == null) {
             for (String codecName : descriptors.keySet()) {
                 if (!codecName.equals(defaultCodecName)) {
-                    docView = getDocumentViewFromUrl(codecName, url, hasBaseUrl,
-                            baseUrl);
+                    docView = getDocumentViewFromUrl(codecName, url,
+                            hasBaseUrl, baseUrl);
                     if (docView != null) {
                         break;
                     }
