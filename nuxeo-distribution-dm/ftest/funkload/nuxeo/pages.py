@@ -339,9 +339,9 @@ class FolderPage(BasePage):
 
         fl.post(fl.server_url + "/view_documents.faces", params=[
             # TODO: NXBT-77 navigate to create workspace form
-            ['j_id250', 'j_id250'],
+            ['j_id248', 'j_id248'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['j_id250:j_id251:j_id253:0:j_id254', 'j_id250:j_id251:j_id253:0:j_id254']],
+            ['j_id248:j_id249:j_id251:0:j_id252', 'j_id248:j_id249:j_id251:0:j_id252']],
             description="Create workspace form")
         fl.assert_('nxw_title' in fl.getBody(),
                    "Workspace creation form not found.")
@@ -436,7 +436,7 @@ class FolderPage(BasePage):
         fl.post(fl.server_url + "/view_documents.faces", params=[
             ['CHILDREN_DOCUMENT_LIST', 'CHILDREN_DOCUMENT_LIST'],
             ['CHILDREN_DOCUMENT_LIST:dataTable:0:document_checkbox_select', 'on'],
-            ['CHILDREN_DOCUMENT_LIST:j_id364:1:j_id366', 'Delete'],
+            ['CHILDREN_DOCUMENT_LIST:j_id362:1:j_id364', 'Delete'],
             ['javax.faces.ViewState', state]],
             description='Delete document "%s"' % title)
         fl.assert_('Document(s) deleted' in fl.getBody())
