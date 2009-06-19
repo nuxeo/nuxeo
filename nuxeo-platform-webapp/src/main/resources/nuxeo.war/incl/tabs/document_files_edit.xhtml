@@ -11,6 +11,20 @@
 <script type="text/javascript">
   document.NXContextKeeper = new InputContextKeeper();
 </script>
+
+<script type="text/javascript">
+  function removeUploadedFile(deleteEntry)
+  {
+
+	  if(null!=deleteEntry)
+	  {
+	    Seam.Component.getInstance('FileManageActions').removeUploadedFile(deleteEntry.fileName);
+	  } else {
+		Seam.Component.getInstance('FileManageActions').removeAllUploadedFile();
+	  }
+
+  }
+</script>
     
 <h:form enctype="multipart/form-data" id="document_files_edit"
   rendered="#{currentDocument.hasSchema('files')}">
@@ -20,8 +34,11 @@
     <h:outputText value="#{messages['label.upload.files.download']}" /> 
   
     <rich:fileUpload uploadData="#{FileManageActions.uploadedFiles}"
-      listHeight="150" maxFilesQuantity="2"
-      immediateUpload="true" />
+      listHeight="150" maxFilesQuantity="5"
+      id="upload"
+      immediateUpload="true" >
+      <a4j:support  onsubmit="removeUploadedFile(event.memo.entry);" event="onclear"/>      
+    </rich:fileUpload>
   
     <a4j:region renderRegionOnly="true" id="files_region">
   

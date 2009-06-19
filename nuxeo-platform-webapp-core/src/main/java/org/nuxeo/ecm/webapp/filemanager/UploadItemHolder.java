@@ -28,26 +28,20 @@ import java.util.Collection;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
-import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.richfaces.model.UploadItem;
 
 @Name("fileUploadHolder")
-@Scope(ScopeType.PAGE)
-@BypassInterceptors
+@Scope(ScopeType.CONVERSATION)
 /**
  *
- * Holds FileUpload data at page scope level
- * (Can not be part of FileManager that can not be Page Scoped because of Seam remoting)
+ * Holds FileUpload data at CONVERSATION scope level
+ * (Can not be part of FileManager that can not be CONVERSATION Scoped because of Seam remoting)
  *
  */
 public class UploadItemHolder implements Serializable {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
-
-
+	
     protected Collection<UploadItem> uploadedFiles = new ArrayList<UploadItem>();
 
     protected InputStream fileUpload;
