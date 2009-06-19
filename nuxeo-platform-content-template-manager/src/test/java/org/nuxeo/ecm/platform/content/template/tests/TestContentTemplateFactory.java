@@ -156,7 +156,7 @@ public class TestContentTemplateFactory extends RepositoryTestCase {
         children = session.getChildren(domain.getRef(), "WorkspaceRoot");
         assertEquals(1, children.size());
         assertEquals("Workspaces", children.get(0).getTitle());
-        
+
         // check that Section is created under sectionRoot
         children = session.getChildren(domain.getRef(), "SectionRoot");
         assertEquals(1, children.size());

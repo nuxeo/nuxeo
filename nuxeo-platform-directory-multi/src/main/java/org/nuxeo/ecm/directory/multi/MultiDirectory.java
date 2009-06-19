@@ -96,8 +96,8 @@ public class MultiDirectory extends AbstractDirectory {
             throw new DirectoryException(e);
         }
     }
-    
-    
+
+
     @Override
     public Reference getReference(String referenceFieldName)  {
         return new MultiReference(this, referenceFieldName);

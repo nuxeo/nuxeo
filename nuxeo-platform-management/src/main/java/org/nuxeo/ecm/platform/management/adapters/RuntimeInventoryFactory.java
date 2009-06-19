@@ -19,7 +19,6 @@ package org.nuxeo.ecm.platform.management.adapters;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.management.AbstractResourceFactory;
 import org.nuxeo.runtime.management.ObjectNameFactory;
-import org.nuxeo.runtime.management.ResourceFactory;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.Extension;
 import org.nuxeo.runtime.model.ExtensionPoint;

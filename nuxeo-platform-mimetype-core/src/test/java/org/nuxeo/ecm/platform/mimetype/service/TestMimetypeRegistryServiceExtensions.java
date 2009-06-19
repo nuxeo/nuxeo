@@ -25,8 +25,8 @@ import java.util.List;
 import org.nuxeo.ecm.platform.mimetype.NXMimeType;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /*
  * Test the Nuxeo component and mimetype extension regisration. (int)
@@ -36,11 +36,8 @@ import org.nuxeo.runtime.api.Framework;
 public class TestMimetypeRegistryServiceExtensions extends NXRuntimeTestCase {
 
     private MimetypeRegistryService mimetypeRegistryService;
-
     private MimetypeEntry wordMimeType;
-
     private MimetypeEntry pdfMimeType;
-
     private ExtensionDescriptor xmlExtension;
 
     @Override

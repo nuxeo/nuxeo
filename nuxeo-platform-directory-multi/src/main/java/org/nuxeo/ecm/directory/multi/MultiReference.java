@@ -1,3 +1,22 @@
+/*
+ * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nuxeo - initial API and implementation
+ *
+ * $Id$
+ */
+
 package org.nuxeo.ecm.directory.multi;
 
 import java.util.ArrayList;
@@ -11,14 +30,14 @@ import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Reference;
 
 public class MultiReference extends AbstractReference {
-    
+
     final MultiDirectory dir;
-    
+
     final String fieldName;
-    
+
     MultiReference(MultiDirectory dir, String fieldName) {
         this.dir = dir;
-        this.fieldName = fieldName;      
+        this.fieldName = fieldName;
     }
 
     public void addLinks(String sourceId, List<String> targetIds)
@@ -34,7 +53,7 @@ public class MultiReference extends AbstractReference {
     protected interface Collector {
         List<String> collect(Reference dir) throws DirectoryException;
     }
-    
+
     protected List<String> doCollect(Collector extractor) throws DirectoryException {
         Set<String> ids = new HashSet<String>();
         for(SourceDescriptor src:dir.getDescriptor().sources) {
@@ -55,13 +74,13 @@ public class MultiReference extends AbstractReference {
         x.addAll(ids);
         return x;
     }
-    
+
     public List<String> getSourceIdsForTarget(final String targetId)
             throws DirectoryException {
         return doCollect(new Collector() {
             public List<String> collect(Reference ref) throws DirectoryException {
                 return ref.getSourceIdsForTarget(targetId);
-            }       
+            }
         });
     }
 
@@ -70,7 +89,7 @@ public class MultiReference extends AbstractReference {
         return doCollect(new Collector() {
             public List<String> collect(Reference ref) throws DirectoryException {
                 return ref.getSourceIdsForTarget(sourceId);
-            }       
+            }
         });
     }
 
