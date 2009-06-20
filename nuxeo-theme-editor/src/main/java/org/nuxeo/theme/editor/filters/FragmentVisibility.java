@@ -14,8 +14,6 @@
 
 package org.nuxeo.theme.editor.filters;
 
-import java.util.Iterator;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.theme.Manager;
@@ -55,12 +53,24 @@ public class FragmentVisibility extends StandaloneFilter {
                 return info;
             }
 
+            boolean visible = true;
+            if (perspective != null) {
+                if (!fragment.isVisibleInPerspective(perspective)) {
+                    visible = false;
+                }
+            }
+
             if ("fragment".equals(viewMode) || "layout".equals(viewMode)) {
                 StringBuilder content = new StringBuilder();
-                content.append("<div class=\"nxthemesFragment\">");
+                if (visible) {
+                    content.append("<div class=\"nxthemesFragment\">");
+                } else {
+                    content.append("<div class=\"nxthemesFragmentHidden\">");
+                }
                 String description = fragment.getDescription();
                 if (description != null) {
-                    content.append(String.format("<div><b>%s</b></div>", description));
+                    content.append(String.format("<div><b>%s</b></div>",
+                            description));
                 }
                 content.append(String.format("%s / %s",
                         fragment.getFragmentType().getTypeName(),
@@ -68,31 +78,8 @@ public class FragmentVisibility extends StandaloneFilter {
                 content.append("</div>");
                 info.setMarkup(content.toString());
                 return info;
-            }
-
-            if (perspective != null) {
-                if (!fragment.isVisibleInPerspective(perspective)) {
-                    StringBuilder content = new StringBuilder();
-                    content.append("<div class=\"nxthemesFragment\">");
-                    String description = fragment.getDescription();
-                    if (description != null) {
-                        content.append(String.format("<div><b>%s</b></div>", description));
-                    }
-                    content.append(String.format("%s / %s",
-                            fragment.getFragmentType().getTypeName(),
-                            format.getName()));
-                    content.append(" (only visible in: ");
-                    final Iterator<PerspectiveType> it = fragment.getVisibilityPerspectives().iterator();
-                    while (it.hasNext()) {
-                        final PerspectiveType p = it.next();
-                        content.append(p.getTitle());
-                        if (it.hasNext()) {
-                            content.append(", ");
-                        }
-                    }
-                    content.append(")</div>");
-                    info.setMarkup(content.toString());
-                }
+            } else if (!visible) {
+                return null;
             }
 
         } else {

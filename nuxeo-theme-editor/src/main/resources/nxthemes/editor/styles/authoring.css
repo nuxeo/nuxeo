@@ -842,22 +842,31 @@ td.nxthemesCellLayout input {
   color: #000;
 }
 
-div.nxthemesFragment {
+div.nxthemesFragment, div.nxthemesFragmentHidden {
   border-style: solid;
   border-width: 1px 2px 2px 1px;
-  border-color: #999 #000 #000 #999;
-  background: #ffe;
   font: 11px Arial, sans-serif !important;
   padding: 7px !important;
   margin: 3px !important;
-  color: #333;
   cursor: pointer;
   -moz-border-radius: 4px;
   -webkit-border-radius: 4px;
   border-radius: 4px;  
 }
 
-div.nxthemesFragment b {
+div.nxthemesFragment {
+  border-color: #999 #000 #000 #999;
+  background: #ffe;
+  color: #333;
+}
+
+div.nxthemesFragmentHidden {
+  border-color: #ccc #999 #999 #ccc;
+  background: #ffe;
+  color: #ccc;
+}
+
+div.nxthemesFragment b, div.nxthemesFragmentHidden b {
   font: bold normal 14px Arial, sans-serif !important;
 }
 
