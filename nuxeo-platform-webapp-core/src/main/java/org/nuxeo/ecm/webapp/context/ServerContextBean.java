@@ -30,7 +30,7 @@ import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
 
 /**
- * Externalize serverLocation Factory to avoid NavigationContext reentrant calls
+ * Externalize serverLocation Factory to avoid NavigationContext reentrant calls.
  *
  * @author Thierry Delprat
  */
@@ -49,6 +49,7 @@ public class ServerContextBean implements Serializable {
     }
 
     public void setRepositoryLocation(RepositoryLocation serverLocation) {
-        this.currentServerLocation = serverLocation;
+        currentServerLocation = serverLocation;
     }
+
 }

@@ -75,8 +75,7 @@ public class FictiveDocumentModel implements DocumentModel, Serializable {
         throw new UnsupportedOperationException("not implemented");
     }
 
-    public Collection<String> getAllowedStateTransitions()
-            throws ClientException {
+    public Collection<String> getAllowedStateTransitions() throws ClientException {
         throw new UnsupportedOperationException("not implemented");
     }
 
@@ -89,10 +88,9 @@ public class FictiveDocumentModel implements DocumentModel, Serializable {
     }
 
     /**
-     *
      * @param schema
      * @param create if <code>true</code> creates the dataModel corresponding
-     *            to the given schema if doesn't exist
+     *               to the given schema if doesn't exist
      * @return
      */
     public DataModel getDataModel(String schema, boolean create) {
@@ -332,8 +330,8 @@ public class FictiveDocumentModel implements DocumentModel, Serializable {
         throw new UnsupportedOperationException("not implemented");
     }
 
-    public <T extends Serializable> T getSystemProp(String systemProperty,
-            Class<T> type) throws ClientException, DocumentException {
+    public <T extends Serializable> T getSystemProp(String systemProperty, Class<T> type)
+            throws ClientException, DocumentException {
         throw new UnsupportedOperationException("not implemented");
     }
 
@@ -363,38 +361,31 @@ public class FictiveDocumentModel implements DocumentModel, Serializable {
         DocumentPart dp = DefaultPropertyFactory.newDocumentPart(schemaName);
         String prefix = dp.getSchema().getNamespace().prefix;
 
-        Map<String,Serializable> map = new HashMap<String, Serializable>();
+        Map<String, Serializable> map = new HashMap<String, Serializable>();
 
-        if (!dataModels.containsKey(schemaName))
-        {
+        if (!dataModels.containsKey(schemaName)) {
             String[] schemas = new String[1];
-            schemas[0]=schemaName;
+            schemas[0] = schemaName;
             registerSchemas(schemas);
         }
 
-        Map<String,Object> dmMap = dataModels.get(schemaName).getMap();
-        for (String k : dmMap.keySet())
-        {
-            map.put(k, (Serializable)dmMap.get(k));
+        Map<String, Object> dmMap = dataModels.get(schemaName).getMap();
+        for (String k : dmMap.keySet()) {
+            map.put(k, (Serializable) dmMap.get(k));
         }
         dp.init((Serializable) map);
-        try
-        {
+        try {
             return dp.resolvePath(xpath);
+        } catch (PropertyException e) {
+            return dp.resolvePath(xpath.replace(schemaName + ":", prefix + ":"));
         }
-        catch (PropertyException e) {
-            return dp.resolvePath(xpath.replace(schemaName+":", prefix + ":"));
-        }
-
-
     }
 
     public Serializable getPropertyValue(String xpath) throws PropertyException {
         return getProperty(xpath).getValue();
     }
 
-    public void setPropertyValue(String xpath, Serializable value)
-            throws PropertyException {
+    public void setPropertyValue(String xpath, Serializable value) throws PropertyException {
         getProperty(xpath).setValue(value);
     }
 
@@ -404,7 +395,7 @@ public class FictiveDocumentModel implements DocumentModel, Serializable {
 
     @Override
     public DocumentModel clone() throws CloneNotSupportedException {
-        throw new java.lang.UnsupportedOperationException("not implemented");
+        throw new UnsupportedOperationException("not implemented");
     }
 
     public void reset() {
@@ -415,9 +406,8 @@ public class FictiveDocumentModel implements DocumentModel, Serializable {
         throw new UnsupportedOperationException("not implemented");
     }
 
-    public void refresh(int refreshFlags, String[] schemas)
-            throws ClientException {
-        throw new java.lang.UnsupportedOperationException("not implemented");
+    public void refresh(int refreshFlags, String[] schemas) throws ClientException {
+        throw new UnsupportedOperationException("not implemented");
     }
 
 }

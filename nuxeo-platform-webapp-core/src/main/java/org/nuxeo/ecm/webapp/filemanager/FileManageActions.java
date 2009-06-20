@@ -34,7 +34,7 @@ public interface FileManageActions extends SimpleFileManager {
 
     /**
      * Adds a new File.
-     * 
+     *
      * @return the page that displays the documents
      * @throws ClientException
      */

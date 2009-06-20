@@ -154,13 +154,13 @@ public class DashBoardActionsBean implements DashboardActions {
             SortInfo sortInfo) throws ClientException,
             ResultsProviderFarmUserException {
 
-        Object[] params;
         String location = navigationContext.getCurrentDomainPath();
         if (location == null) {
             return new EmptyResultsProvider();
         }
 
         String templates = location + "/templates";
+        Object[] params;
         if (BOARD_USER.equals(name)) {
             params = new Object[] { currentUser.getName() };
         } else if (BOARD_LATEST_MODIFIED.equals(name)) {

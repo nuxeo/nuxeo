@@ -39,7 +39,7 @@ public class BulkLifeCycleChangeListener implements PostCommitEventListener {
     protected static final String OPTION_NAME_FROM = "from";
     protected static final String OPTION_NAME_TO = "to";
     protected static final String OPTION_NAME_TRANSITION = "transition";
- 
+
     public static final String DELETED_LIFECYCLE_STATE = "deleted";
 
     public void handleEvent(EventBundle events) throws ClientException {

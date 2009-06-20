@@ -44,11 +44,11 @@ import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
 @Remote
 public interface UserManagerActions extends Serializable {
 
-    static final String TABBED = "tabbed";
+    String TABBED = "tabbed";
 
-    static final String SEARCH_ONLY = "search_only";
+    String SEARCH_ONLY = "search_only";
 
-    static final String VALID_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-0123456789";
+    String VALID_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-0123456789";
 
     String getUserListingMode() throws ClientException;
 
@@ -116,6 +116,5 @@ public interface UserManagerActions extends Serializable {
 
     // XXX: never used, not tested
     String clearSearchAdvanced() throws ClientException;
-
 
 }

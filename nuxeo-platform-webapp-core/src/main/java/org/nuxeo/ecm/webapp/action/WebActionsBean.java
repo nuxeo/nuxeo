@@ -266,7 +266,7 @@ public class WebActionsBean implements WebActionsLocal, Serializable {
 
     public void setCurrentTabId(String tabId) {
         boolean set = false;
-        if ((tabId != null) && (!NULL_TAB_ID.equals(tabId))) {
+        if (tabId != null && !NULL_TAB_ID.equals(tabId)) {
             List<Action> tabsList = getTabsList();
             if (tabsList != null) {
                 for (Action a : tabsList) {

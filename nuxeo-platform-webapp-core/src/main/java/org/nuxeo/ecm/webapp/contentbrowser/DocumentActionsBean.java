@@ -150,7 +150,7 @@ public class DocumentActionsBean extends InputController implements
         log.debug("PostActivate");
     }
 
-    @Factory(autoCreate = true, value = "currentDocumentType", scope = ScopeType.EVENT)
+    @Factory(autoCreate = true, value = "currentDocumentType", scope = EVENT)
     public Type getCurrentType() {
         DocumentModel doc = navigationContext.getCurrentDocument();
         if (doc == null) {
@@ -470,7 +470,8 @@ public class DocumentActionsBean extends InputController implements
         // XXX : this proves that this method is called too many times
         // log.debug("Getter children select model");
         DocumentModelList documents = navigationContext.getCurrentDocumentChildrenPage();
-        List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
+        List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(
+                DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
         SelectDataModel model = new SelectDataModelImpl(CHILDREN_DOCUMENT_LIST,
                 documents, selectedDocuments);
         model.addSelectModelListener(this);
@@ -489,7 +490,8 @@ public class DocumentActionsBean extends InputController implements
         // XXX : this proves that this method is called too many times
         // log.debug("Getter children select model");
         DocumentModelList documents = navigationContext.getCurrentDocumentChildrenPage();
-        List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION);
+        List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(
+                DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION);
         SelectDataModel model = new SelectDataModelImpl(CHILDREN_DOCUMENT_LIST,
                 documents, selectedDocuments);
         model.addSelectModelListener(this);
@@ -666,7 +668,7 @@ public class DocumentActionsBean extends InputController implements
     }
 
     public boolean isNotReadOnly() {
-        return (!"true".equals(Framework.getProperty("org.nuxeo.ecm.webapp.readonly.mode", "false")));
+        return !"true".equals(Framework.getProperty("org.nuxeo.ecm.webapp.readonly.mode", "false"));
     }
 
 }

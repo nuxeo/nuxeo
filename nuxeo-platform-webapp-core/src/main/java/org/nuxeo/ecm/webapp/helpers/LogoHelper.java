@@ -66,15 +66,15 @@ public class LogoHelper implements Serializable {
 
     private String lastLogoHolderKey = "";
 
-    private DocumentModel lastLogoHolder = null;
+    private DocumentModel lastLogoHolder;
 
     private String lastURL = "";
 
     private String lastMainConversation = "";
 
     public String getLogoURL() {
-        if ((navigationContext == null)
-                || (navigationContext.getCurrentServerLocation() == null)) {
+        if (navigationContext == null
+                || navigationContext.getCurrentServerLocation() == null) {
             lastLogoHolderKey = "";
             lastURL = "";
             return DEFAULT_LOGO;

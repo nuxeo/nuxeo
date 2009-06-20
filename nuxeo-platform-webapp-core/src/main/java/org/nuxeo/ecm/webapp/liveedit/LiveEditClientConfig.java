@@ -124,7 +124,7 @@ public class LiveEditClientConfig implements Serializable {
                         int equalQuoteIndex = subType.indexOf("=\"");
                         String valueSubType = subType;
                         if (equalQuoteIndex >= 0 &&
-                                subType.length() > (equalQuoteIndex + 3)) {
+                                subType.length() > equalQuoteIndex + 3) {
                             valueSubType =
                                 subType.substring(equalQuoteIndex + 2,
                                         subType.length() - 1);

@@ -74,7 +74,7 @@ public abstract class AbstractTableCell implements Serializable, Comparable<Abst
     }
 
     public void setCellId(String draggableId) {
-        this.cellId = draggableId;
+        cellId = draggableId;
     }
 
     public boolean isDropable() {

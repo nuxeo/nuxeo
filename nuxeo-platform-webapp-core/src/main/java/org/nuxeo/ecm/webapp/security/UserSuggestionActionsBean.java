@@ -47,10 +47,9 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 
 /**
- * Methods to get user/groups suggestions from searches
- * 
+ * Methods to get user/groups suggestions from searches.
+ *
  * @author Anahide Tchertchian
- * 
  */
 @Name("userSuggestionActions")
 @SerializedConcurrentAccess
@@ -61,15 +60,10 @@ public class UserSuggestionActionsBean implements Serializable {
     private static final Log log = LogFactory.getLog(UserSuggestionActionsBean.class);
 
     public static final String USER_TYPE = "USER_TYPE";
-
     public static final String GROUP_TYPE = "GROUP_TYPE";
-
     public static final String TYPE_KEY_NAME = "type";
-
     public static final String PREFIXED_ID_KEY_NAME = "prefixed_id";
-
     public static final String ID_KEY_NAME = "id";
-
     public static final String ENTRY_KEY_NAME = "entry";
 
     @In(create = true)
