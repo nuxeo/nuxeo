@@ -42,7 +42,7 @@ public class Main {
 
     static ArtifactTable table;
     static JFrame frame;
-    
+
     /**
      * Create the GUI and show it.  For thread safety,
      * this method should be invoked from the
@@ -61,7 +61,7 @@ public class Main {
         frame.setTitle("Assembly Editor - "+(file == null ? "Untitled" : file.getName()));
         frame.getContentPane().add(table);
         frame.setJMenuBar(createMenuBar());
-        
+
         //Display the window.
         frame.pack();
         frame.setSize(800, 600);
@@ -71,7 +71,7 @@ public class Main {
         frame.setVisible(true);
     }
 
-    
+
     public static JMenuBar createMenuBar() {
         ActionListener actionHandler = new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -96,7 +96,7 @@ public class Main {
                     JOptionPane.showMessageDialog(table, ee.getMessage(), "Error",
                             JOptionPane.ERROR_MESSAGE);
                 }
-            } 
+            }
         };
 
         JMenuBar menuBar = new JMenuBar();
@@ -125,7 +125,7 @@ public class Main {
         menu.add(print);
         menu.addSeparator();
         menu.add(exit);
-        
+
         menu = new JMenu("Edit");
         menuBar.add(menu);
         JMenuItem addArtifact = new JMenuItem("Add Artifact", KeyEvent.VK_A);
@@ -159,19 +159,19 @@ public class Main {
                 dlg.setVisible(true);
             }
         });
-        
+
         menu.add(addArtifact);
         menu.add(removeArtifact);
         menu.addSeparator();
         menu.add(profiles);
         menu.add(browse);
-        
+
         return menuBar;
     }
-    
+
     public static void main(String[] args) {
         final File file = args.length == 1 ? new File(args[0]) : null;
-        
+
         //Schedule a job for the event-dispatching thread:
         //creating and showing this application's GUI.
         javax.swing.SwingUtilities.invokeLater(new Runnable() {

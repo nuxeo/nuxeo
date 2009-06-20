@@ -25,5 +25,5 @@ import org.apache.maven.model.Dependency;
 public interface DependencyFilter {
 
     boolean accept(Dependency dep);
-    
+
 }

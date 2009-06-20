@@ -24,11 +24,11 @@ import org.nuxeo.build.maven.filter.OrFilter;
  *
  */
 public class Filters extends DataType {
-    
-    public OrFilter filter = new OrFilter(); 
-    
-    public void addArtifact(ArtifactPattern f) {        
+
+    public OrFilter filter = new OrFilter();
+
+    public void addArtifact(ArtifactPattern f) {
         filter.addFilter(f.filter);
     }
-    
+
 }

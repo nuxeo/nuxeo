@@ -27,16 +27,16 @@ import org.nuxeo.build.maven.graph.Edge;
 public class IsOptionalFilter implements Filter {
 
     protected boolean isOptional;
-    
+
     public IsOptionalFilter(boolean isOptional) {
-        this.isOptional = isOptional; 
+        this.isOptional = isOptional;
     }
-    
+
     public boolean accept(Dependency dep) {
         return isOptional == dep.isOptional();
     }
-    
-    public boolean accept(Edge edge) {    
+
+    public boolean accept(Edge edge) {
         return isOptional == edge.isOptional;
     }
 

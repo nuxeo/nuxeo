@@ -26,31 +26,31 @@ import org.nuxeo.build.maven.graph.Edge;
  */
 public class TypeFilter implements Filter {
 
-    protected SegmentMatch matcher; 
-    
-    
+    protected SegmentMatch matcher;
+
+
     public TypeFilter(String pattern) {
         this (SegmentMatch.parse(pattern));
-    }    
-    
+    }
+
     public TypeFilter(SegmentMatch matcher) {
         this.matcher = matcher;
     }
-        
+
     public boolean match(String segment) {
         return matcher.match(segment);
     }
-    
+
     public boolean accept(Dependency dep) {
         return matcher.match(dep.getType());
     }
-    
-    public boolean accept(Edge edge) {    
+
+    public boolean accept(Edge edge) {
         return matcher.match(edge.dst.getArtifact().getType());
     }
 
     public boolean accept(Artifact artifact) {
         return matcher.match(artifact.getType());
     }
-    
+
 }

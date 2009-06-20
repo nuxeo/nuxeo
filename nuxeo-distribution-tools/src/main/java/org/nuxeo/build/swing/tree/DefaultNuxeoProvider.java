@@ -36,10 +36,10 @@ public class DefaultNuxeoProvider extends ItemProvider {
                 "org.nuxeo.ecm.core:nuxeo-core-parent:1.5-SNAPSHOT:pom",
                 "org.nuxeo.ecm.platform:nuxeo-platform-parent:5.2-SNAPSHOT:pom",
                 "org.nuxeo.ecm.webengine:nuxeo-webengine-parent:5.2-SNAPSHOT:pom",
-                
+
         };
     }
-    
+
     public Color getForegroundColor(Node node, boolean isSelected) {
         if (isSelected) {
             return node.getArtifact().getArtifactId().startsWith("nuxeo-") ? null : Color.WHITE;
@@ -47,17 +47,17 @@ public class DefaultNuxeoProvider extends ItemProvider {
             return node.getArtifact().getArtifactId().startsWith("nuxeo-") ? null : Color.GRAY;
         }
     }
-    
+
     protected boolean isNuxeoNode(Node node) {
         return node.getArtifact().getArtifactId().startsWith("nuxeo-");
     }
-    
+
     @Override
     public Icon getIcon(Node node, boolean isExpanded) {
         if (isNuxeoNode(node)) {
             String type = node.getArtifact().getType();
             if ("jar".equals(type)) {
-                return IconUtils.createImageIcon(ItemProvider.class, "nxjar.gif");    
+                return IconUtils.createImageIcon(ItemProvider.class, "nxjar.gif");
             }
         }
         return super.getIcon(node, isExpanded);

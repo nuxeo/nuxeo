@@ -28,7 +28,7 @@ public class RepositoryPolicy extends DataType {
     public String checksumPolicy;
     public String udpatePolicy;
     public String modelEncoding;
-    
+
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
@@ -36,13 +36,13 @@ public class RepositoryPolicy extends DataType {
     public void setUpdatePolicy(String udpatePolicy) {
         this.udpatePolicy = udpatePolicy;
     }
-    
+
     public void setChecksumPolicy(String checksumPolicy) {
         this.checksumPolicy = checksumPolicy;
     }
-    
+
     public void setModelEncoding(String modelEncoding) {
         this.modelEncoding = modelEncoding;
     }
-    
+
 }

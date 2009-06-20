@@ -26,21 +26,21 @@ import org.nuxeo.build.maven.graph.Edge;
  */
 public class ScopeFilter implements Filter {
 
-    protected SegmentMatch matcher; 
-    
-    
+    protected SegmentMatch matcher;
+
+
     public ScopeFilter(String pattern) {
         this (SegmentMatch.parse(pattern));
-    }    
+    }
 
     public ScopeFilter(SegmentMatch matcher) {
         this.matcher = matcher;
     }
-    
+
     public boolean match(String segment) {
         return matcher.match(segment);
     }
-    
+
     public boolean accept(Dependency dep) {
         String scope = dep.getScope();
         if (scope == null) {
@@ -48,14 +48,14 @@ public class ScopeFilter implements Filter {
         }
         return matcher.match(dep.getScope());
     }
-    
-    public boolean accept(Edge edge) {    
+
+    public boolean accept(Edge edge) {
         if (edge.scope == null) {
             return matcher == SegmentMatch.ANY;
         }
         return matcher.match(edge.scope);
     }
-    
+
     public boolean accept(Artifact artifact) {
         String scope = artifact.getScope();
         if (scope == null) {

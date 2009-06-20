@@ -31,10 +31,10 @@ public class ArtifactDescriptor {
     public String type = "jar";
     public String classifier;
     public String scope = "compile";
-    
+
     public ArtifactDescriptor() {
     }
-        
+
     public ArtifactDescriptor(String groupId, String artifactId, String version, String type, String classifier) {
         this.groupId = groupId;
         this.artifactId = artifactId;
@@ -42,25 +42,25 @@ public class ArtifactDescriptor {
         this.type = type;
         this.classifier = classifier;
     }
-    
+
     public ArtifactDescriptor(String expr) {
         parse(expr);
     }
-    
+
     public void parse(String expr) {
         int p = 0;
         int q = expr.indexOf(':', p);
         if (q == -1) {
             groupId = expr.substring(p);
-            return;            
-        }        
+            return;
+        }
         groupId = expr.substring(p, q);
 
         p = q+1;
         q = expr.indexOf(':', p);
         if (q == -1) {
             artifactId = expr.substring(p);
-            return;            
+            return;
         }
         artifactId = expr.substring(p, q);
 
@@ -68,7 +68,7 @@ public class ArtifactDescriptor {
         q = expr.indexOf(':', p);
         if (q == -1) {
             version = expr.substring(p);
-            return;            
+            return;
         }
         version = expr.substring(p, q);
 
@@ -76,7 +76,7 @@ public class ArtifactDescriptor {
         q = expr.indexOf(':', p);
         if (q == -1) {
             type = expr.substring(p);
-            return;            
+            return;
         }
         type = expr.substring(p, q);
 
@@ -84,20 +84,20 @@ public class ArtifactDescriptor {
         q = expr.indexOf(':', p);
         if (q == -1) {
             classifier = expr.substring(p);
-            return;            
+            return;
         }
-        classifier = expr.substring(p, q);        
+        classifier = expr.substring(p, q);
 
         p = q+1;
         q = expr.indexOf(':', p);
         if (q == -1) {
             scope = expr.substring(p);
-            return;            
+            return;
         }
-        scope = expr.substring(p, q);        
+        scope = expr.substring(p, q);
     }
 
-    
+
     public Artifact toBuildArtifact() {
         return MavenClient.getInstance().getArtifactFactory().createBuildArtifact(groupId, artifactId, version, type);
     }

@@ -22,8 +22,8 @@ package org.nuxeo.build.maven.graph;
  */
 public interface GraphVisitor {
 
-    public boolean visitNode(Node node);
-    
-    public boolean visitEdge(Edge edge);
-    
+    boolean visitNode(Node node);
+
+    boolean visitEdge(Edge edge);
+
 }

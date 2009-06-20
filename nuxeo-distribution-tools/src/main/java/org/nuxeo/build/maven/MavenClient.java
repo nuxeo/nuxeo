@@ -62,18 +62,18 @@ import org.nuxeo.build.maven.graph.Graph;
 public class MavenClient extends MavenEmbedder {
 
     protected Graph graph;
-    
+
     protected File settingsFile;
     private  List<ArtifactRepository> remoteRepos;
-    
+
     protected AntProfileManager profileMgr = new AntProfileManager();
-    
-    
-    private static final MavenClient instance = new MavenClient(); 
+
+
+    private static final MavenClient instance = new MavenClient();
     public static final MavenClient getInstance() {
         return instance;
     }
-    
+
     public MavenClient() {
         this (null);
     }
@@ -84,11 +84,11 @@ public class MavenClient extends MavenEmbedder {
             if (loader == null) {
                 loader = MavenClient.class.getClassLoader();
             }
-        }    
+        }
         setClassLoader(loader);
         graph = new Graph(this);
     }
-    
+
     public MavenProjectHelper getProjectHelper() {
         try {
             return (MavenProjectHelper) embedder.lookup(MavenProjectHelper.ROLE);
@@ -96,45 +96,45 @@ public class MavenClient extends MavenEmbedder {
             throw new BuildException("Failed to lookup maven project helper");
         }
     }
-    
+
     public AntProfileManager getAntProfileManager() {
         return profileMgr;
     }
-        
+
     public boolean isStarted() {
         return embedder != null;
     }
-    
+
     public Graph getGraph() {
         return graph;
     }
-    
+
     public ArtifactResolver getArtifactResolver() {
         return artifactResolver;
     }
-    
+
     public ArtifactFactory getArtifactFactory() {
         return artifactFactory;
     }
-    
+
     public Embedder getPlexusEmbedder() {
         return embedder;
     }
-    
+
     public ProfileManager getProfileManager() {
         return profileManager;
     }
-    
+
     public MavenProjectBuilder getProjectBuilder() {
         return mavenProjectBuilder;
     }
-    
+
     public void setSettings(File settingsFile) {
         this.settingsFile = settingsFile;
     }
 
     /**
-     * Default implementation is not flexible enough  
+     * Default implementation is not flexible enough
      */
     @Override
     protected void createMavenSettings() throws MavenEmbedderException,
@@ -153,7 +153,7 @@ public class MavenClient extends MavenEmbedder {
         }
         settings.setOffline(offline);
     }
-    
+
     public List<ArtifactRepository> getRemoteRepositories() {
         if (remoteRepos == null) {
             try {
@@ -166,7 +166,7 @@ public class MavenClient extends MavenEmbedder {
         }
         return remoteRepos;
     }
-    
+
     protected void addDefaultRepositories() {
         Repository repo = new Repository();
         repo.setId("central");
@@ -177,7 +177,7 @@ public class MavenClient extends MavenEmbedder {
         repo.setSnapshots(policy);
         addRemoteRepository(repo);
     }
-    
+
     public void addRemoteRepository(Repository repo) {
         try {
             ArtifactRepository arepo = ProjectUtils.buildArtifactRepository(
@@ -192,7 +192,7 @@ public class MavenClient extends MavenEmbedder {
     public void resolve(Artifact artifact) throws ArtifactNotFoundException {
         resolve(artifact, getRemoteRepositories());
     }
-    
+
     public void resolve(Artifact artifact, List<ArtifactRepository> remoteRepositories) throws ArtifactNotFoundException {
         try {
             super.resolve(artifact, remoteRepositories, localRepository);
@@ -200,7 +200,7 @@ public class MavenClient extends MavenEmbedder {
             throw new RuntimeException(e);
         }
     }
-    
+
     public List<ArtifactRepository> buildRepositoriesFromProfiles()
             throws Exception {
         ArrayList<ArtifactRepository> repos = new ArrayList<ArtifactRepository>();
@@ -222,7 +222,7 @@ public class MavenClient extends MavenEmbedder {
         }
         return repos;
     }
-    
+
     public List<ArtifactRepository> buildArtifactRepositories(Model model) throws Exception {
         ArrayList<ArtifactRepository> repos = new ArrayList<ArtifactRepository>();
         List<Repository> mavenRepos =  model.getRepositories();
@@ -236,12 +236,12 @@ public class MavenClient extends MavenEmbedder {
                 throw new Exception("Faield to build profile repositories",
                         e);
             }
-            repos.add(artifactRepo);            
+            repos.add(artifactRepo);
         }
         return repos;
     }
 
-    
+
     public Model readModel( String projectId, File pom, boolean strict) throws Exception {
         Reader reader = new FileReader(pom);
         try {
@@ -260,7 +260,7 @@ public class MavenClient extends MavenEmbedder {
         }
     }
 
-            
+
     public Model readModel( String projectId,
             String pomLocation,
             Reader reader,

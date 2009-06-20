@@ -32,7 +32,7 @@ public class AncestorFilter implements Filter {
 
     protected ArtifactDescriptor ad;
     protected List<EdgeFilter> filters;
-        
+
     public AncestorFilter(String pattern) {
         filters = new ArrayList<EdgeFilter>();
         if (ad.groupId != null && !ad.groupId.equals("*")) {
@@ -40,7 +40,7 @@ public class AncestorFilter implements Filter {
         }
         if (ad.artifactId != null && !ad.artifactId.equals("*")) {
             addFilter(new ArtifactIdFilter(ad.artifactId));
-        }        
+        }
         if (ad.version != null && !ad.version.equals("*")) {
             addFilter(new VersionFilter(ad.version));
         }
@@ -54,24 +54,24 @@ public class AncestorFilter implements Filter {
             addFilter(new GroupIdFilter(ad.scope));
         }
     }
-    
+
     protected void addFilter(EdgeFilter filter) {
         filters.add(filter);
     }
-   
+
     public boolean accept(Dependency dep) {
         throw new UnsupportedOperationException("Ancestor folter cannt be applied on dependency objects");
     }
-    
-    public boolean accept(Edge edge) {    
+
+    public boolean accept(Edge edge) {
         for (int i=0,len=filters.size(); i<len; i++) {
             if (!filters.get(i).accept(edge)) return false;
         }
         return true;
     }
-    
+
     public boolean accept(Artifact artifact) {
         throw new UnsupportedOperationException("Ancestor folter cannt be applied on artifact objects");
     }
-    
+
 }

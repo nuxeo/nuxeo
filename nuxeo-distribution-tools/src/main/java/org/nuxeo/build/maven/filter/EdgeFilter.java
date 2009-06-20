@@ -25,5 +25,5 @@ import org.nuxeo.build.maven.graph.Edge;
 public interface EdgeFilter {
 
     boolean accept(Edge edge);
-    
+
 }

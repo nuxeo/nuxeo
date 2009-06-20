@@ -27,19 +27,19 @@ import org.nuxeo.build.maven.graph.Edge;
 public class NotFilter implements Filter  {
 
     protected Filter filter;
-    
+
     public NotFilter(Filter filter) {
         this.filter = filter;
     }
-    
+
     public boolean accept(Dependency dep) {
         return !filter.accept(dep);
     }
-    
+
     public boolean accept(Edge edge) {
         return !filter.accept(edge);
     }
-    
+
     public boolean accept(Artifact artifact) {
         return !filter.accept(artifact);
     }

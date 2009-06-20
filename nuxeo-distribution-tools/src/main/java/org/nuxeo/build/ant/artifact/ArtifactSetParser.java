@@ -36,17 +36,17 @@ import org.nuxeo.build.maven.graph.Node;
 public class ArtifactSetParser {
 
     protected Project project;
-    protected AntProfileManager profileMgr; 
+    protected AntProfileManager profileMgr;
 
     public ArtifactSetParser(Project project) {
         this.project = project;
         this.profileMgr = MavenClient.getInstance().getAntProfileManager();
     }
-    
+
     public void parse(File src, Collection<Node> nodes) throws IOException {
         parse(new BufferedReader(new FileReader(src)), nodes);
     }
-    
+
     public void parse(BufferedReader reader, Collection<Node> nodes) throws IOException {
         String line = reader.readLine();
         while (line != null) {
@@ -55,7 +55,7 @@ public class ArtifactSetParser {
                 line = reader.readLine();
                 continue;
             }
-            line = project.replaceProperties(line); 
+            line = project.replaceProperties(line);
             if (line.startsWith("?")) { // a profile
                 String profile = line.substring(1).trim();
                 if (profile.length() == 0) { // default profile
@@ -64,7 +64,7 @@ public class ArtifactSetParser {
                 } else if (profileMgr.isProfileActive(profile)) {
                     line = reader.readLine();
                     continue;
-                } else { // skip this profile content                    
+                } else { // skip this profile content
                     readToNextActiveProfile(reader);
                 }
             } else if (line.startsWith("@")) { // include another file
@@ -78,18 +78,18 @@ public class ArtifactSetParser {
                     List<String> profiles = split(line.substring(p+1), ',');
                     if (!profileMgr.isAnyProfileActive(profiles)) {
                         line = reader.readLine();
-                        continue;                        
+                        continue;
                     }
-                    line = line.substring(0, p);                     
+                    line = line.substring(0, p);
                 }
                 ArtifactFile af = new ArtifactFile();
-                af.setKey(line);                        
+                af.setKey(line);
                 nodes.add(af.getNode());
             }
             line = reader.readLine();
-        }            
+        }
     }
-    
+
     protected String readToNextActiveProfile(BufferedReader reader) throws IOException {
         String line = reader.readLine();
         while (line != null) {
@@ -107,7 +107,7 @@ public class ArtifactSetParser {
         return null;
     }
 
-    
+
     protected List<String> split(String text, char ch) {
         ArrayList<String> result = new ArrayList<String>();
         int p = 0;

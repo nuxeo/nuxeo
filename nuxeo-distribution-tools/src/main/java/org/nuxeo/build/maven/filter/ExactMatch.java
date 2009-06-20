@@ -27,9 +27,9 @@ public class ExactMatch extends SegmentMatch {
     public ExactMatch(String segment) {
         this.segment = segment;
     }
-    
+
     public boolean match(String segment) {
         return this.segment.equals(segment);
     }
-    
+
 }

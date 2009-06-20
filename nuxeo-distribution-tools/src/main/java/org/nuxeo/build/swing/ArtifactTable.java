@@ -46,7 +46,7 @@ import org.nuxeo.build.swing.ArtifactTableModel.ArtifactRow;
  *
  */
 public class ArtifactTable extends JPanel {
-    
+
     private static final long serialVersionUID = 1L;
 
     protected JFrame frame;
@@ -57,7 +57,7 @@ public class ArtifactTable extends JPanel {
     JToggleButton btnFilter;
     protected ArtifactTableModel model;
     protected File file;
-    
+
     public ArtifactTable(JFrame frame) {
         super(new BorderLayout(5,5));
         this.frame = frame;
@@ -65,26 +65,26 @@ public class ArtifactTable extends JPanel {
         AbstractAction action = new AbstractAction("Add", IconUtils.createImageIcon(getClass(), "add.gif")) {
             public void actionPerformed(ActionEvent e) {
                 openAddArtifactDialog();
-            } 
+            }
         };
         action.putValue(Action.SHORT_DESCRIPTION, "Add Artifact");
         tbar.add(action);
-        action = new AbstractAction("Remove", IconUtils.createImageIcon(getClass(), "delete.gif")) {            
+        action = new AbstractAction("Remove", IconUtils.createImageIcon(getClass(), "delete.gif")) {
             public void actionPerformed(ActionEvent e) {
                 deleteSelectedArtifacts();
-            } 
+            }
         };
         action.putValue(Action.SHORT_DESCRIPTION, "Remove Selected Artifacts");
         tbar.add(action);
-        action = new AbstractAction("Profiles", IconUtils.createImageIcon(getClass(), "profiles.gif")) {            
+        action = new AbstractAction("Profiles", IconUtils.createImageIcon(getClass(), "profiles.gif")) {
             public void actionPerformed(ActionEvent e) {
                 openProfilesDialog();
-            } 
+            }
         };
         action.putValue(Action.SHORT_DESCRIPTION, "Manage Profiles");
-        tbar.add(action);        
-     
-        
+        tbar.add(action);
+
+
         JComboBox presets = new JComboBox(new String[] {"All", "Runtime", "Core", "Features", "Toolkits", "Libraries"});
         presets.setToolTipText("Default Filters");
         presets.addActionListener(new ActionListener() {
@@ -104,48 +104,48 @@ public class ArtifactTable extends JPanel {
                 } else if ("Libraries".equals(preset)) {
                     applyPresetFilter(new MultiExclusionFilter("nuxeo-", "org.nuxeo"));
                 }
-            }  
+            }
         });
         tbar.add(presets);
-        
+
         textFilter = new JTextField();
         tbar.add(textFilter);
         btnFilter = new JToggleButton(null, IconUtils.createImageIcon(getClass(), "search.gif"));
         btnFilter.setSelected(false);
         btnFilter.setToolTipText("Apply Filter");
         tbar.add(btnFilter);
-  
+
         textFilter.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (!btnFilter.isSelected()) {
                     btnFilter.doClick();//setSelected(true);
-                } else {                  
+                } else {
                     String text = textFilter.getText().trim();
                     if (text.length() > 0) {
                         applyPrefixFilter(text);
                     }
                 }
-            } 
+            }
         });
         btnFilter.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 togglePrefixFilter();
-            }             
+            }
         });
 
         add(tbar, BorderLayout.PAGE_START);
-             
+
         model = new ArtifactTableModel(this);
         table = new JTable(model);
-        table.setPreferredScrollableViewportSize(new Dimension(500, 70));        
+        table.setPreferredScrollableViewportSize(new Dimension(500, 70));
         //Create the scroll pane and add the table to it.
         JScrollPane scrollPane = new JScrollPane(table);
         //Add the scroll pane to this panel.
         add(scrollPane, BorderLayout.CENTER);
-        
+
         installKeybordShortcuts();
     }
-    
+
     public void applyPrefixFilter(String prefix) {
         PrefixFilter filter = new PrefixFilter(prefix);
         CompositeFilter cf = (CompositeFilter)model.getFilter();
@@ -158,7 +158,7 @@ public class ArtifactTable extends JPanel {
             model.setFilter(cf);
         }
     }
-    
+
     public void removePrefixFilter() {
         CompositeFilter cf = (CompositeFilter)model.getFilter();
         if (cf != null) {
@@ -166,7 +166,7 @@ public class ArtifactTable extends JPanel {
             model.buildRows();
         }
     }
-    
+
     public void applyPresetFilter(Filter filter) {
         CompositeFilter cf = (CompositeFilter)model.getFilter();
         if (cf != null) {
@@ -178,20 +178,20 @@ public class ArtifactTable extends JPanel {
             model.setFilter(cf);
         }
     }
-    
+
     public void removePresetFilter() {
         CompositeFilter cf = (CompositeFilter)model.getFilter();
         if (cf != null) {
             cf.setPresetFilter(null);
             model.buildRows();
-        }        
+        }
     }
-    
+
     public void removeFilters() {
         model.setFilter(null);
     }
-    
-    
+
+
     public void setDirty(boolean value) {
         isDirty = value;
         if (isDirty) {
@@ -200,11 +200,11 @@ public class ArtifactTable extends JPanel {
             frame.setTitle("Assembly Editor - "+(file == null ? "Untitled" : file.getName()));
         }
     }
-    
+
     public boolean isDirty() {
         return isDirty;
     }
-    
+
     public void loadFile(File file) throws IOException {
         model.load(file);
         this.file = file;
@@ -219,7 +219,7 @@ public class ArtifactTable extends JPanel {
         if (save) {
             r = fc.showSaveDialog(this);
         } else {
-            r = fc.showOpenDialog(this);    
+            r = fc.showOpenDialog(this);
         }
         if (r == JFileChooser.APPROVE_OPTION) {
             file = fc.getSelectedFile();
@@ -227,14 +227,14 @@ public class ArtifactTable extends JPanel {
         }
         return false;
     }
-    
+
     public void open() throws IOException {
         if (selectFile(false)) {
             model.load(file);
             setDirty(false);
         }
     }
-    
+
     public void save() throws IOException {
         if (file == null) {
             if (selectFile(true)) {
@@ -253,7 +253,7 @@ public class ArtifactTable extends JPanel {
     public ArtifactTableModel getModel() {
         return model;
     }
-   
+
     public void openProfilesDialog() {
         ProfilesDialog dlg = new ProfilesDialog(null, ArtifactTable.this);
         dlg.pack();
@@ -261,11 +261,11 @@ public class ArtifactTable extends JPanel {
         dlg.setLocationRelativeTo(ArtifactTable.this);
         dlg.setVisible(true);
     }
-    
+
     public void openAddArtifactDialog() {
         String s = (String)JOptionPane.showInputDialog(
-                ArtifactTable.this,                    
-                "Artifact Key: ",                    
+                ArtifactTable.this,
+                "Artifact Key: ",
                 "Add Artifact",
                 JOptionPane.PLAIN_MESSAGE);
         if (s != null) {
@@ -276,10 +276,10 @@ public class ArtifactTable extends JPanel {
             setDirty(true);
         }
     }
-    
+
     public void deleteSelectedArtifacts() {
         int[] rows = table.getSelectedRows();
-        ArtifactRow[] _rows = new ArtifactRow[rows.length]; 
+        ArtifactRow[] _rows = new ArtifactRow[rows.length];
         for (int i=0; i<rows.length; i++) {
             _rows[i] = model.getVisibleRows().get(rows[i]);
         }
@@ -301,7 +301,7 @@ public class ArtifactTable extends JPanel {
             removePrefixFilter();
         }
     }
-    
+
     public void installKeybordShortcuts() {
 //        KeyStroke stroke = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.META_MASK);
 //        registerKeyboardAction(new ActionListener() {
@@ -323,11 +323,11 @@ public class ArtifactTable extends JPanel {
 //        }, stroke, JComponent.WHEN_IN_FOCUSED_WINDOW);
         KeyStroke stroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
         registerKeyboardAction(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {                
+            public void actionPerformed(ActionEvent e) {
                 if (btnFilter.isSelected()) {
                     btnFilter.doClick();
                 }
             }
-        }, stroke, JComponent.WHEN_IN_FOCUSED_WINDOW);        
+        }, stroke, JComponent.WHEN_IN_FOCUSED_WINDOW);
     }
 }

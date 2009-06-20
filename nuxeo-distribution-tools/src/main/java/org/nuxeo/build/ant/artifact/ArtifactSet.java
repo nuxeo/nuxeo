@@ -53,60 +53,60 @@ public class ArtifactSet extends DataType  implements ResourceCollection {
 
     public AndFilter filter = new AndFilter();
     public String id;
-    public File src; 
+    public File src;
     public Expand expand;
-    
+
     public List<ArtifactFile> artifacts;
     public List<ArtifactSet> artifactSets;
     public Includes includes;
     public Excludes excludes;
-    
+
     protected Collection<Node> nodes;
-        
-    
-    
+
+
+
     public void setGroupId(String groupId) {
         if (isReference()) {
             throw tooManyAttributes();
-        }     
+        }
         filter.addFilter(new GroupIdFilter(groupId));
     }
-    
+
     public void setArtifactId(String artifactId) {
         if (isReference()) {
             throw tooManyAttributes();
-        }    
+        }
         filter.addFilter(new ArtifactIdFilter(artifactId));
     }
-    
+
     public void setVersion(String version) {
         if (isReference()) {
             throw tooManyAttributes();
-        }     
+        }
         filter.addFilter(new VersionFilter(version));
     }
-    
+
     public void setClassifier(String classifier) {
         if (isReference()) {
             throw tooManyAttributes();
-        }        
+        }
         filter.addFilter(new ClassifierFilter(classifier));
     }
-    
+
     public void setType(String type) {
         if (isReference()) {
             throw tooManyAttributes();
-        }     
+        }
         filter.addFilter(new TypeFilter(type));
     }
-    
+
     public void setScope(String scope) {
         if (isReference()) {
             throw tooManyAttributes();
         }
         filter.addFilter(new ScopeFilter(scope));
     }
-    
+
     public void setOptional(boolean isOptional) {
         if (isReference()) {
             throw tooManyAttributes();
@@ -134,18 +134,18 @@ public class ArtifactSet extends DataType  implements ResourceCollection {
         }
         this.id = id;
     }
-    
+
     public void setSrc(File importFile) {
         this.src = importFile;
     }
-    
+
     public void addExpand(Expand expand) {
         if (isReference()) {
             throw noChildrenAllowed();
         }
         this.expand = expand;
     }
-    
+
     public void addArtifact(ArtifactFile artifact) {
         if (isReference()) {
             throw noChildrenAllowed();
@@ -159,23 +159,23 @@ public class ArtifactSet extends DataType  implements ResourceCollection {
     public void addArtifactSet(ArtifactSet set) {
         if (isReference()) {
             throw noChildrenAllowed();
-        }        
+        }
         if (artifactSets == null) {
             artifactSets = new ArrayList<ArtifactSet>();
         }
         artifactSets.add(set);
     }
-    
+
     public void addIncludes(Includes includes) {
         if (isReference()) {
             throw noChildrenAllowed();
-        }        
+        }
         if (includes != null) {
             throw new BuildException("Found an Includes that is defined more than once in an artifactSet");
         }
         this.includes = includes;
     }
-    
+
     public void addExcludes(Excludes excludes) {
         if (isReference()) {
             throw noChildrenAllowed();
@@ -185,20 +185,20 @@ public class ArtifactSet extends DataType  implements ResourceCollection {
         }
         this.excludes =  excludes;
     }
-    
+
     @Override
     public void setRefid(Reference ref) {
         super.setRefid(ref);
     }
-    
+
     protected ArtifactSet getRef(Project p) {
         return (ArtifactSet) getCheckedRef(p);
     }
 
     protected List<Node> createInputNodeList() {
         if (includes == null && excludes == null) {
-            return new ArrayList<Node>(); 
-        }        
+            return new ArrayList<Node>();
+        }
         final AndFilter ieFilter = new AndFilter();
         if (includes != null) {
             ieFilter.addFilter(includes.filter);
@@ -221,13 +221,13 @@ public class ArtifactSet extends DataType  implements ResourceCollection {
                 for (Node node : c) {
                     if (f.accept(node.getArtifact())) {
                         super.add(node);
-                    }                        
+                    }
                 }
                 return true;
             }
         };
     }
-    
+
     protected Filter buildFilter() {
         AndFilter f = new AndFilter();
         if (!filter.isEmpty()) {
@@ -241,7 +241,7 @@ public class ArtifactSet extends DataType  implements ResourceCollection {
         }
         return f.isEmpty() ? Filter.ANY : CompositeFilter.compact(f);
     }
-    
+
     protected Collection<Node> computeNodes() {
         Graph graph = MavenClient.getInstance().getGraph();
         Filter finalFilter = buildFilter();
@@ -257,12 +257,12 @@ public class ArtifactSet extends DataType  implements ResourceCollection {
         if (artifactSets != null) {
             for (ArtifactSet arti : artifactSets) {
                 roots.addAll(arti.getNodes());
-            }            
+            }
         }
         if (roots.isEmpty()) {
-            roots = graph.getNodes(); 
+            roots = graph.getNodes();
         }
-                
+
         if (finalFilter != Filter.ANY) {
             ArrayList<Node> result = new ArrayList<Node>();
             for (Node node : roots) {
@@ -287,31 +287,31 @@ public class ArtifactSet extends DataType  implements ResourceCollection {
         }
         return roots;
     }
-    
+
 
     public Collection<Node> getNodes() {
         if (isReference()) {
             return getRef(getProject()).getNodes();
         }
         if (nodes == null) {
-            nodes = computeNodes(); 
+            nodes = computeNodes();
         }
-        if (id != null) { // avoid caching if artifactSet is referencable 
+        if (id != null) { // avoid caching if artifactSet is referencable
             Collection<Node> copy = nodes;
             nodes = null;
             return copy;
         }
         return nodes;
     }
-    
+
     public Iterator<FileResource> iterator() {
         return new NodeFilesIterator(getNodes().iterator());
     }
-    
+
     public int size() {
         return getNodes().size();
     }
-    
+
     public boolean isFilesystemOnly() {
         return true;
     }
@@ -322,7 +322,7 @@ public class ArtifactSet extends DataType  implements ResourceCollection {
             parser.parse(src, nodes);
         } catch (IOException e) {
             throw new BuildException("Failed to import artifacts file: "+src, e);
-        }            
+        }
     }
 
     public class NodeFilesIterator implements Iterator<FileResource> {
@@ -343,7 +343,7 @@ public class ArtifactSet extends DataType  implements ResourceCollection {
             throw new UnsupportedOperationException();
         }
     }
-    
+
 
     public static void collectNodes(Collection<Node> nodes, Node node, Filter filter, int depth) {
         nodes.add(node);
@@ -366,5 +366,5 @@ public class ArtifactSet extends DataType  implements ResourceCollection {
             }
         }
     }
-    
+
 }

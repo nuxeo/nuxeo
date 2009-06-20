@@ -27,7 +27,7 @@ import org.nuxeo.build.maven.MavenClient;
 
 /**
  * TODO offline setting is not working
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
@@ -37,39 +37,39 @@ public class SettingsTask extends Sequential {
     public Repositories repos;
     public boolean offline = false;
     public boolean interactive = false;
-    public boolean debug = false; 
+    public boolean debug = false;
 
-    
+
     public void setDebug(boolean debug) {
         this.debug = debug;
     }
-    
+
     public void setFile(File settings) {
         this.file = settings;
     }
-    
+
     public void setInteractive(boolean interactive) {
         this.interactive = interactive;
     }
-    
+
     public void setOffline(boolean offline) {
         this.offline = offline;
     }
-    
-    
+
+
     public void addRepositories(Repositories repos) {
         this.repos = repos;
     }
-    
-    
-    
+
+
+
     @Override
     public void execute() throws BuildException {
 
             MavenClient maven = MavenClient.getInstance();
             maven.setOffline(offline);
             maven.setInteractiveMode(interactive);
-                    
+
             if (debug) {
                 if (maven.getLogger() == null) {
                     maven.setLogger(new MavenEmbedderConsoleLogger());
@@ -78,44 +78,44 @@ public class SettingsTask extends Sequential {
             } else {
                 maven.setLogger(null);
             }
-            
+
             try {
                 if (!maven.isStarted()) {
-                    maven.setSettings(file);                    
+                    maven.setSettings(file);
                     maven.start();
                 }
             } catch (Exception e) {
                 throw new BuildException("Failed to start maven", e);
             }
 
-            for (Repository repo : repos.getRepositories()) {               
+            for (Repository repo : repos.getRepositories()) {
                 maven.addRemoteRepository(convertRepositoryToMavenModel(repo));
             }
 
     }
 
-    
+
     public org.apache.maven.model.Repository convertRepositoryToMavenModel(Repository repo) {
         org.apache.maven.model.Repository r = new org.apache.maven.model.Repository();
         r.setId(repo.id);
         r.setLayout(repo.layout);
         r.setName(repo.name);
         r.setUrl(repo.url);
-        RepositoryPolicy policy = new RepositoryPolicy(); 
+        RepositoryPolicy policy = new RepositoryPolicy();
         if (repo.snapshotsPolicy == null) {
             policy.setEnabled(true);
-        } else {       
+        } else {
             policy.setEnabled(repo.snapshotsPolicy.enabled);
             policy.setChecksumPolicy(repo.snapshotsPolicy.checksumPolicy);
             policy.setUpdatePolicy(repo.snapshotsPolicy.udpatePolicy);
             policy.setModelEncoding(repo.snapshotsPolicy.modelEncoding);
         }
         r.setSnapshots(policy);
-        
+
         policy = new RepositoryPolicy();
         if (repo.releasesPolicy == null) {
             policy.setEnabled(true);
-        } else {            
+        } else {
             policy.setEnabled(repo.releasesPolicy.enabled);
             policy.setChecksumPolicy(repo.releasesPolicy.checksumPolicy);
             policy.setUpdatePolicy(repo.releasesPolicy.udpatePolicy);
@@ -124,5 +124,5 @@ public class SettingsTask extends Sequential {
         r.setReleases(policy);
         return r;
     }
-    
+
 }

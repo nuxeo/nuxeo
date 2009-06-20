@@ -35,29 +35,29 @@ import freemarker.template.Template;
 public class FreemarkerEngine {
 
     protected Configuration cfg;
-    
+
     public FreemarkerEngine() {
         this.cfg = getDefaultConfiguration();
     }
 
-    
+
     public void setBaseDir(File baseDir) throws BuildException {
         try {
             cfg.setTemplateLoader(new FileTemplateLoader(baseDir));
         } catch (Exception e) {
-            throw new BuildException("Failed toc reate freemarker configuration", e);      
+            throw new BuildException("Failed toc reate freemarker configuration", e);
         }
     }
 
     public Configuration getConfiguration() {
         return cfg;
     }
-    
+
     protected Configuration getDefaultConfiguration() {
         Configuration cfg = new Configuration();
         cfg.setWhitespaceStripping(true);
         cfg.setLocalizedLookup(false);
-        cfg.setClassicCompatible(true);            
+        cfg.setClassicCompatible(true);
         return cfg;
     }
 
@@ -71,7 +71,7 @@ public class FreemarkerEngine {
         root.put("graph", MavenClient.getInstance().getGraph());
         return root;
     }
-    
+
     public Template getTemplate(String name) {
         try {
             return cfg.getTemplate(name);
@@ -79,7 +79,7 @@ public class FreemarkerEngine {
             throw new BuildException("Failed to create template "+name, e);
         }
     }
-    
+
     public void process(Project project, String name, Writer writer) {
         process(createInput(project), name, writer);
     }

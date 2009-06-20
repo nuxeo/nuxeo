@@ -22,6 +22,6 @@ package org.nuxeo.build.maven.filter;
  */
 public interface Filter extends DependencyFilter, ArtifactFilter, EdgeFilter {
 
-    public final static AnyFilter ANY = new AnyFilter();    
-    
+    final static AnyFilter ANY = new AnyFilter();
+
 }

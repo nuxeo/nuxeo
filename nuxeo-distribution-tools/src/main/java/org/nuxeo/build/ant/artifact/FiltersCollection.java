@@ -27,7 +27,7 @@ import org.nuxeo.build.maven.filter.NotFilter;
 public class FiltersCollection extends DataType {
 
     public AndFilter filter;
-    
+
     public void addExcludes(Excludes excludes) {
         if (filter == null) {
             filter = new AndFilter();
@@ -41,5 +41,5 @@ public class FiltersCollection extends DataType {
         }
         filter.addFilter(includes.filter);
     }
-        
+
 }

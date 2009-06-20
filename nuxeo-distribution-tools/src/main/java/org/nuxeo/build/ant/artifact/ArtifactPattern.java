@@ -33,32 +33,32 @@ import org.nuxeo.build.maven.filter.VersionFilter;
  */
 public class ArtifactPattern extends DataType {
 
-    public AndFilter filter = new AndFilter();    
-    
+    public AndFilter filter = new AndFilter();
+
     public void setGroupId(String groupId) {
         filter.addFilter(new GroupIdFilter(groupId));
     }
-    
+
     public void setArtifactId(String artifactId) {
         filter.addFilter(new ArtifactIdFilter(artifactId));
     }
-    
+
     public void setVersion(String version) {
         filter.addFilter(new VersionFilter(version));
     }
-    
+
     public void setClassifier(String classifier) {
         filter.addFilter(new ClassifierFilter(classifier));
     }
-    
+
     public void setType(String type) {
         filter.addFilter(new TypeFilter(type));
     }
-    
+
     public void setScope(String scope) {
         filter.addFilter(new ScopeFilter(scope));
     }
-    
+
     public void setOptional(boolean isOptional) {
         filter.addFilter(new IsOptionalFilter(isOptional));
     }
@@ -70,5 +70,5 @@ public class ArtifactPattern extends DataType {
     public void setAncestor(String ancestor) {
         filter.addFilter(new AncestorFilter(ancestor));
     }
-    
+
 }

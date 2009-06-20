@@ -30,29 +30,29 @@ public class Repository extends DataType {
     public String layout = "default";
     public ReleasesPolicy releasesPolicy;
     public SnapshotsPolicy snapshotsPolicy;
-    
+
     public void setUrl(String url) {
         this.url = url;
     }
-    
+
     public void setLayout(String layout) {
         this.layout = layout;
     }
-    
+
     public void setId(String id) {
         this.id = id;
     }
-    
+
     public void setName(String name) {
         this.name = name;
     }
-        
+
     public void addReleases(ReleasesPolicy releasesPolicy) {
         this.releasesPolicy = releasesPolicy;
     }
-    
+
     public void addSnapshots(SnapshotsPolicy snapshotsPolicy) {
         this.snapshotsPolicy = snapshotsPolicy;
     }
-    
+
 }

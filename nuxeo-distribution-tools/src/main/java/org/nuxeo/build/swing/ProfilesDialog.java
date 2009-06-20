@@ -51,12 +51,12 @@ public class ProfilesDialog extends JDialog implements ActionListener {
     protected ArtifactTable table;
     protected JTable columnTable;
     protected ColumnsDataModel model;
-    
+
     public ProfilesDialog(JFrame frame, ArtifactTable table) {
         super(frame);
         this.table = table;
         setTitle("Manage Profiles");
-        setAlwaysOnTop(true);        
+        setAlwaysOnTop(true);
         setContentPane(createContentPane());
     }
 
@@ -64,14 +64,14 @@ public class ProfilesDialog extends JDialog implements ActionListener {
         KeyStroke stroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
         JRootPane rootPane = new JRootPane();
         rootPane.registerKeyboardAction(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {                
+            public void actionPerformed(ActionEvent e) {
                 ProfilesDialog.this.setVisible(false);
                 ProfilesDialog.this.dispose();
             }
         }, stroke, JComponent.WHEN_IN_FOCUSED_WINDOW);
         return rootPane;
       }
-    
+
     protected Container createContentPane() {
         JPanel panel = new JPanel(new BorderLayout(5, 5));
         List<String> cols = table.getModel().getColumns();
@@ -82,18 +82,18 @@ public class ProfilesDialog extends JDialog implements ActionListener {
         }
         columnTable = new JTable(model);
         JScrollPane scrollPane = new JScrollPane(columnTable);
-        JPanel btnPanel = new JPanel(new SpringLayout());        
+        JPanel btnPanel = new JPanel(new SpringLayout());
 
         JButton add = new JButton("Add");
         add.addActionListener(this);
         JButton remove = new JButton("Remove");
         remove.addActionListener(this);
-        
+
         panel.add(scrollPane, BorderLayout.CENTER);
         panel.add(btnPanel, BorderLayout.LINE_END);
         btnPanel.add(add);
         btnPanel.add(remove);
-        
+
         SpringUtilities.makeCompactGrid(btnPanel, 2, 1, 5, 5, 5, 5);
         //setPreferredColumnWidths(columnTable, new double [] {0.01, 0.99});
         columnTable.getColumnModel().getColumn(0).setPreferredWidth(5);
@@ -104,8 +104,8 @@ public class ProfilesDialog extends JDialog implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         if ("Add".equals(e.getActionCommand())) {
             String s = (String)JOptionPane.showInputDialog(
-                    this,                    
-                    "Pofile Name: ",                    
+                    this,
+                    "Pofile Name: ",
                     "Create profile",
                     JOptionPane.PLAIN_MESSAGE);
             if (s != null) {
@@ -120,7 +120,7 @@ public class ProfilesDialog extends JDialog implements ActionListener {
             }
         }
     }
-    
+
     class ColumnsDataModel extends AbstractTableModel {
         private static final long serialVersionUID = 1L;
         List<Column> cols;
@@ -139,7 +139,7 @@ public class ProfilesDialog extends JDialog implements ActionListener {
         @Override
         public void setValueAt(Object value, int rowIndex, int columnIndex) {
             if (columnIndex == 0) {
-                Column col = cols.get(rowIndex); 
+                Column col = cols.get(rowIndex);
                 col.selected = (Boolean)value;
                 if (col.selected) {
                     table.getModel().getVisibleColumns().add(col.key);
@@ -169,7 +169,7 @@ public class ProfilesDialog extends JDialog implements ActionListener {
             Column col = cols.remove(index);
             fireTableDataChanged();
             return col;
-        }        
+        }
         public List<String> getSelectedColumns() {
             ArrayList<String> result = new ArrayList<String>();
             for (Column col : cols) {
@@ -180,7 +180,7 @@ public class ProfilesDialog extends JDialog implements ActionListener {
             return result;
         }
     }
-    
+
     static class Column {
         String key;
         Boolean selected;
@@ -190,18 +190,18 @@ public class ProfilesDialog extends JDialog implements ActionListener {
         }
     }
 
-    public void setPreferredColumnWidths(JTable table, double[] percentages) { 
-        Dimension tableDim = table.getPreferredSize(); 
+    public void setPreferredColumnWidths(JTable table, double[] percentages) {
+        Dimension tableDim = table.getPreferredSize();
 
-        double total = 0; 
+        double total = 0;
         for(int i = 0; i < table.getColumnModel().getColumnCount(); i++) {
-            total += percentages[i]; 
+            total += percentages[i];
         }
-        for(int i = 0,len=table.getColumnModel().getColumnCount(); i < len; i++) { 
-            TableColumn column = table.getColumnModel().getColumn(i); 
-            column.setPreferredWidth((int) (tableDim.width * (percentages[i] / total))); 
+        for(int i = 0,len=table.getColumnModel().getColumnCount(); i < len; i++) {
+            TableColumn column = table.getColumnModel().getColumn(i);
+            column.setPreferredWidth((int) (tableDim.width * (percentages[i] / total)));
             System.out.println("888 "+column.getPreferredWidth());
-        } 
+        }
     }
-    
+
 }

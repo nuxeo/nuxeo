@@ -27,7 +27,7 @@ import org.nuxeo.build.maven.MavenClient;
  */
 public class ProfileTask extends Sequential {
 
-    public String name;    
+    public String name;
     public String activate;
     public String group;
     public String defaultProfile;
@@ -39,26 +39,26 @@ public class ProfileTask extends Sequential {
         }
         if (group != null) {
             throw new  BuildException("group and name properties are exclusive. You cannot specify both.");
-        }        
+        }
         if (defaultProfile != null) {
             throw new  BuildException("Default and name properties are exclusive. You cannot specify both.");
         }
         this.name = name;
     }
-    
+
     public void setActivate(String activate) {
         if (name != null) {
             throw new  BuildException("Name and activate properties are exclusive. You cannot specify both.");
         }
         if (group != null) {
             throw new  BuildException("group and activate properties are exclusive. You cannot specify both.");
-        }        
+        }
         if (defaultProfile != null) {
             throw new  BuildException("Default and activate properties are exclusive. You cannot specify both.");
         }
         this.activate = activate;
     }
-    
+
     public void setGroup(String group) {
         if (name != null) {
             throw new  BuildException("Group and name properties are exclusive. You cannot specify both.");
@@ -68,7 +68,7 @@ public class ProfileTask extends Sequential {
         }
         this.group = group;
     }
-    
+
     public void setDefault(String defaultProfile) {
         if (name != null) {
             throw new  BuildException("default and name properties are exclusive. You cannot specify both.");
@@ -76,17 +76,17 @@ public class ProfileTask extends Sequential {
         if (activate != null) {
             throw new  BuildException("default and activate properties are exclusive. You cannot specify both.");
         }
-        this.defaultProfile = defaultProfile;        
+        this.defaultProfile = defaultProfile;
     }
-        
+
     @Override
     public void addTask(Task nestedTask) {
         if (activate != null) {
             throw new  BuildException("Cannot use nested elements when specifying activate attribute.");
-        }        
+        }
         super.addTask(nestedTask);
     }
-    
+
     @Override
     public void execute() throws BuildException {
         AntProfileManager mgr = MavenClient.getInstance().getAntProfileManager();

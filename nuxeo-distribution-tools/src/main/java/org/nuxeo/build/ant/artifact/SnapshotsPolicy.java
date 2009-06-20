@@ -23,6 +23,6 @@ package org.nuxeo.build.ant.artifact;
  */
 public class SnapshotsPolicy extends RepositoryPolicy {
 
-    
-    
+
+
 }

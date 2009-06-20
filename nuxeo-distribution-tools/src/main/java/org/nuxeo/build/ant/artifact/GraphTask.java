@@ -43,21 +43,21 @@ public class GraphTask extends Task {
     protected String src;
     protected Expand expand;
 
-    
+
     public void setResolve(String resolve) {
         if (resolves == null) {
             resolves = new ArrayList<ArtifactKey>();
         }
         resolves.add(new ArtifactKey(resolve));
     }
-    
+
     public void setSelect(String select) {
         if (selects == null) {
             selects = new ArrayList<ArtifactKey>();
         }
         selects.add(new ArtifactKey(select));
     }
-    
+
     public void setSrc(String file) {
         this.src = file;
     }
@@ -91,10 +91,10 @@ public class GraphTask extends Task {
                 BufferedReader reader = new BufferedReader(new FileReader(src));
                 String line = reader.readLine();
                 while (line != null) {
-                    line = getProject().replaceProperties(line.trim());                    
+                    line = getProject().replaceProperties(line.trim());
                     resolves.add(new ArtifactKey(line));
                     line = reader.readLine();
-                }            
+                }
             } catch (IOException e) {
                 throw new BuildException("Failed to import file: "+src, e);
             }
@@ -111,9 +111,9 @@ public class GraphTask extends Task {
                         } else {
                             node.expand(expand.level, null);
                         }
-                    }            
+                    }
                 } catch (ArtifactNotFoundException e) {
-                    throw new BuildException("Root artifact cannot be found: "+arti, e);  
+                    throw new BuildException("Root artifact cannot be found: "+arti, e);
                 }
             }
         } else if (selects != null) {
@@ -130,12 +130,12 @@ public class GraphTask extends Task {
                             node.expand(expand.level, null);
                         }
                     }
-                }            
+                }
             }
         }
     }
-    
+
     public static Artifact readArtifact(ArtifactDescriptor artifactDescriptor) {
-        return MavenClient.getInstance().getArtifactFactory().createBuildArtifact(artifactDescriptor.groupId, artifactDescriptor.artifactId, artifactDescriptor.version, artifactDescriptor.type);        
+        return MavenClient.getInstance().getArtifactFactory().createBuildArtifact(artifactDescriptor.groupId, artifactDescriptor.artifactId, artifactDescriptor.version, artifactDescriptor.type);
     }
 }

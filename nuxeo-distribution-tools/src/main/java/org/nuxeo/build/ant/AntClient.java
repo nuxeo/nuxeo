@@ -40,17 +40,17 @@ import org.nuxeo.build.maven.MavenClient;
  *
  */
 public class AntClient {
-    
+
     public final static String MAVEN_CLIENT_REF = "maven.client.ref";
 
     protected ClassLoader loader;
     protected Project project;
     protected MavenClient maven;
-    
+
     public AntClient() {
         this (null);
     }
-    
+
     public AntClient(ClassLoader loader) {
         if (loader == null) {
             loader = Thread.currentThread().getContextClassLoader();
@@ -60,24 +60,24 @@ public class AntClient {
         }
         this.loader = loader;
     }
-    
+
     public void setMavenClient(MavenClient maven) {
         this.maven = maven;
     }
-    
+
     public MavenClient getMavenClient() {
         return maven;
     }
-    
+
     public Project getProject() {
         return project;
     }
 
-  
+
     public void run(File buildFile) {
         run(buildFile, (List<String>)null);
     }
-        
+
     public void run(File buildFile, List<String> targets) {
         run(buildFile.getParentFile(), buildFile, targets);
     }
@@ -85,7 +85,7 @@ public class AntClient {
     public void run(File cwd, URL buildFile) {
         run(cwd, buildFile, null);
     }
-    
+
     public void run(URL buildFile) {
         run(new File("."), saveURL(buildFile), null);
     }
@@ -93,12 +93,12 @@ public class AntClient {
     public void run(URL buildFile, List<String> targets) {
         run(new File("."), saveURL(buildFile), targets);
     }
-    
+
     public void run(File cwd, URL buildFile, List<String> targets) {
         run(cwd, saveURL(buildFile), targets);
     }
-    
-    
+
+
     public void run(File cwd, File buildFile, List<String> targets) {
         PrintStream err = System.err;
         PrintStream out = System.out;
@@ -106,30 +106,30 @@ public class AntClient {
 
         project = new Project();
         project.setCoreLoader(loader);
-        
-        InputHandler handler =  new DefaultInputHandler();        
+
+        InputHandler handler =  new DefaultInputHandler();
         project.setInputHandler(handler);
         configureIO(false);
-        project.setKeepGoingMode(false);        
+        project.setKeepGoingMode(false);
 
         project.setBaseDir(cwd);
         project.setUserProperty("ant.file",
                 buildFile.getPath());
         project.setUserProperty("ant.version", org.apache.tools.ant.Main.getAntVersion());
-        
-        // add maven reference        
+
+        // add maven reference
         if (maven != null) {
             project.addReference(MAVEN_CLIENT_REF, maven);
         }
-        
+
         //TODO add user defined properties
         //project.setUserProperty(arg, value);
 
         // Add the default listener
         project.addBuildListener(createLogger());
-        
+
         project.fireBuildStarted();
-        
+
         try {
             project.init();
             ProjectHelper.configureProject(project, buildFile);
@@ -139,10 +139,10 @@ public class AntClient {
             } else {
                 project.getExecutor().executeTargets(project, new String[] {project.getDefaultTarget()});
             }
-            
+
             project.fireBuildFinished(null);
         } catch (Throwable t) {
-            project.fireBuildFinished(t);    
+            project.fireBuildFinished(t);
             t.printStackTrace();
         } finally {
             System.setOut(out);
@@ -161,13 +161,13 @@ public class AntClient {
         System.setErr(new PrintStream(new DemuxOutputStream(project, true)));
     }
 
-    
+
     /** Stream to use for logging. */
     private static PrintStream out = System.out;
 
     /** Stream that we are using for logging error messages. */
     private static PrintStream err = System.err;
-    
+
     private BuildLogger createLogger() {
         BuildLogger logger =  new DefaultLogger();
         logger.setMessageOutputLevel(Project.MSG_INFO);
@@ -194,7 +194,7 @@ public class AntClient {
             }
         }
     }
-    
+
 
     public static void copyToFile(InputStream in, File file) throws IOException {
         OutputStream out = null;
@@ -211,7 +211,7 @@ public class AntClient {
             }
         }
     }
-    
+
     private static byte[] createBuffer(int preferredSize) {
         if (preferredSize < 1) {
             preferredSize = BUFFER_SIZE;

@@ -40,20 +40,20 @@ public class GraphExportTask extends Task {
     public File file;
     public String nodeColor;
     public String edgeColor;
-    public List<SubGraph> graphs = new ArrayList<SubGraph>(); 
-    
+    public List<SubGraph> graphs = new ArrayList<SubGraph>();
+
     public void setFile(File file) {
         this.file = file;
     }
-    
+
     public void addGraph(SubGraph graph) {
         graphs.add(graph);
     }
-    
+
     public void setNodeColor(String color) {
         this.nodeColor = color;
     }
-    
+
     public void setEdgeColor(String color) {
         this.edgeColor = color;
     }
@@ -66,10 +66,10 @@ public class GraphExportTask extends Task {
                 exportPng();
             }
             else if (name.endsWith(".txt")) {
-                
+
             }
             else if (name.endsWith(".xml")) {
-                
+
             }
         } catch (Exception e) {
             throw new BuildException(e);
@@ -78,7 +78,7 @@ public class GraphExportTask extends Task {
 
     public void exportPng() throws Exception {
         Graph graph = MavenClient.getInstance().getGraph();
-        FileOutputStream out = new FileOutputStream(file);        
+        FileOutputStream out = new FileOutputStream(file);
         GraphVizExporter gv = GraphVizExporter.createPng(out);
         if (nodeColor != null) {
             gv.setDefaultNodeColor(nodeColor);
@@ -89,7 +89,7 @@ public class GraphExportTask extends Task {
         if (graphs.isEmpty()) {
             gv.process(graph);
         } else {
-            Set<Node> nodes = new HashSet<Node>();            
+            Set<Node> nodes = new HashSet<Node>();
             for (SubGraph subg : graphs) {
                 Collection<Node> subnodes = subg.getNodes();
                 if (subg.nodeColor != null || subg.edgeColor != null) {
@@ -99,15 +99,15 @@ public class GraphExportTask extends Task {
             }
             gv.process(nodes);
         }
-        gv.close();        
+        gv.close();
     }
-    
+
     public void exportXml() throws Exception {
-        
+
     }
-    
+
     public void exportText() throws Exception {
-        
+
     }
-    
+
 }

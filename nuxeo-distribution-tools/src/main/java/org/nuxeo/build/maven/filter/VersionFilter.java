@@ -26,29 +26,29 @@ import org.nuxeo.build.maven.graph.Edge;
  */
 public class VersionFilter implements Filter {
 
-    protected SegmentMatch matcher; 
-    
-    
+    protected SegmentMatch matcher;
+
+
     public VersionFilter(String pattern) {
         this (SegmentMatch.parse(pattern));
-    }    
+    }
 
     public VersionFilter(SegmentMatch matcher) {
         this.matcher = matcher;
     }
-    
+
     public boolean match(String segment) {
         return matcher.match(segment);
     }
-    
+
     public boolean accept(Dependency dep) {
         return matcher.match(dep.getVersion());
     }
-    
-    public boolean accept(Edge edge) {    
+
+    public boolean accept(Edge edge) {
         return matcher.match(edge.dst.getArtifact().getVersion());
     }
-    
+
     public boolean accept(Artifact artifact) {
         return matcher.match(artifact.getVersion());
     }

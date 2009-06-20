@@ -37,8 +37,8 @@ public class Resolver {
     public Graph getGraph() {
         return graph;
     }
-    
-    
+
+
     public void resolve(Node node) throws ArtifactNotFoundException {
         if (node.pom != null || node.artifact.isResolved()) {
             return;
@@ -70,7 +70,7 @@ public class Resolver {
             }
         }
         try {
-            if (!artifact.isResolved()) {                
+            if (!artifact.isResolved()) {
                 graph.maven.resolve(artifact); //TODO remote repos from pom
             }
         } catch (ArtifactNotFoundException e) {
@@ -82,7 +82,7 @@ public class Resolver {
         node.pom = pom;
     }
 
-    
+
     public MavenProject loadPom(Artifact artifact) {
         if ("system".equals(artifact.getScope())) return null;
         try {
@@ -97,5 +97,5 @@ public class Resolver {
         }
     }
 
-        
+
 }

@@ -24,12 +24,12 @@ package org.nuxeo.build.ant.artifact;
 public class Expand extends FiltersCollection {
 
     public int level = 1; // TRUE
-    
-    
+
+
     public void setLevel(String expand) {
         level = readExpand(expand);
     }
-    
+
     public static int readExpand(String expand) {
         int exp = 0;
         if ("all".equals(expand)) {

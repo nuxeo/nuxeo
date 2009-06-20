@@ -26,7 +26,7 @@ public class ProfileGroup {
 
     protected Profile defaultProfile;
     protected Profile[] profiles;
-    
+
     public ProfileGroup(AntProfileManager mgr, String[] profiles, String defaultProfile) {
         if (defaultProfile != null) {
             this.defaultProfile = mgr.getOrCreateProfile(defaultProfile);
@@ -52,7 +52,7 @@ public class ProfileGroup {
             this.defaultProfile._setActive(true);
         }
     }
-    
+
     void activateProfile(Profile profile, boolean isActive) {
         profile._setActive(isActive);
         for (Profile p : profiles) {
@@ -64,7 +64,7 @@ public class ProfileGroup {
             defaultProfile._setActive(true);
         }
     }
-    
+
     public Profile getActiveProfile() {
         for (Profile p : profiles) {
             if (p.isActive()) {
@@ -73,5 +73,5 @@ public class ProfileGroup {
         }
         return null;
     }
-    
+
 }

@@ -26,25 +26,25 @@ import org.nuxeo.build.maven.graph.Edge;
  */
 public class GroupIdFilter implements Filter {
 
-    protected SegmentMatch matcher; 
+    protected SegmentMatch matcher;
 
     public GroupIdFilter(String pattern) {
         this (SegmentMatch.parse(pattern));
-    }    
+    }
 
     public GroupIdFilter(SegmentMatch matcher) {
         this.matcher = matcher;
-    }    
-    
+    }
+
     public boolean match(String segment) {
         return matcher.match(segment);
     }
-    
+
     public boolean accept(Dependency dep) {
         return matcher.match(dep.getGroupId());
     }
-    
-    public boolean accept(Edge edge) {    
+
+    public boolean accept(Edge edge) {
         return matcher.match(edge.dst.getArtifact().getGroupId());
     }
 

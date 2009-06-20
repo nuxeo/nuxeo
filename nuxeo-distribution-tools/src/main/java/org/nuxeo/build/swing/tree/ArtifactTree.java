@@ -63,16 +63,16 @@ public class ArtifactTree extends JSplitPane {
     protected JTree tree;
     DefaultMutableTreeNode root;
     protected MavenClient maven;
-    
+
     protected ItemProvider provider = ItemProvider.DEFAULT;
-    
+
     public ArtifactTree() {
         super (JSplitPane.VERTICAL_SPLIT, true);
         setBorder(new EmptyBorder(10, 10, 10, 10));
         initializeMaven();
 
         JPanel pane = new JPanel(new BorderLayout(3,3));
-        
+
         JToolBar tbar = new JToolBar();
         final JComboBox presets = new JComboBox(new String[] {"Default", "Minimal"});
         presets.addActionListener(new ActionListener() {
@@ -83,11 +83,11 @@ public class ArtifactTree extends JSplitPane {
                 } else {
                     provider = new CleanNuxeoProvider();
                 }
-               setProvider(provider);                 
+               setProvider(provider);
             }
         });
-        tbar.add(presets);        
-        
+        tbar.add(presets);
+
         final JTextPane info = new JTextPane();
         info.setContentType("text/html");
         info.setEditable(false);
@@ -97,7 +97,7 @@ public class ArtifactTree extends JSplitPane {
             public void hyperlinkUpdate(HyperlinkEvent e) {
                 if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
                     final JFileChooser fc = new JFileChooser();
-                    int r = fc.showSaveDialog(ArtifactTree.this);                    
+                    int r = fc.showSaveDialog(ArtifactTree.this);
                     if (r == JFileChooser.APPROVE_OPTION) {
                         File file = fc.getSelectedFile();
                         try {
@@ -109,14 +109,14 @@ public class ArtifactTree extends JSplitPane {
                         }
                     }
                 }
-            } 
+            }
         });
-        
+
         final JTextField addressBar = new JTextField();
         addressBar.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
             String text = addressBar.getText().trim();
-            if (text.length() > 0) {              
+            if (text.length() > 0) {
                 try {
                     Node node = maven.getGraph().addRootNode(text);
                     DefaultMutableTreeNode graphRoot = new DefaultMutableTreeNode(node);
@@ -139,20 +139,20 @@ public class ArtifactTree extends JSplitPane {
                     ee.printStackTrace();
                 }
             }
-        } 
+        }
         });
-        tbar.add(addressBar);        
-        
-        root = new DefaultMutableTreeNode();        
+        tbar.add(addressBar);
+
+        root = new DefaultMutableTreeNode();
         tree = new JTree(root);
         tree.setRootVisible(false);
         tree.setShowsRootHandles(true);
         // to expand all nodes (without checking isChildren on the node)
-        ((DefaultTreeModel)tree.getModel()).setAsksAllowsChildren(true); 
+        ((DefaultTreeModel)tree.getModel()).setAsksAllowsChildren(true);
         tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
         //tree.putClientProperty("JTree.lineStyle", "Angled");
         tree.setCellRenderer(new ArtifactCellRenderer(this));
-        
+
         tree.addTreeSelectionListener(new TreeSelectionListener() {
             public void valueChanged(TreeSelectionEvent e) {
                 DefaultMutableTreeNode tn = (DefaultMutableTreeNode)tree.getLastSelectedPathComponent();
@@ -163,7 +163,7 @@ public class ArtifactTree extends JSplitPane {
                         info.setText(provider.getInfo(node));
                     }
                 }
-            } 
+            }
         });
         tree.addTreeExpansionListener(new TreeExpansionListener() {
             public void treeExpanded(TreeExpansionEvent event) {
@@ -186,7 +186,7 @@ public class ArtifactTree extends JSplitPane {
                     throws ExpandVetoException {
                 DefaultMutableTreeNode tn = (DefaultMutableTreeNode)tree.getLastSelectedPathComponent();
                 if (tn != null && tn.getChildCount() == 0) {
-                    Node node = (Node)tn.getUserObject();                
+                    Node node = (Node)tn.getUserObject();
                     System.out.println("Lazy load node: "+node);
                     node.expand(1, null);
                     if (!node.getEdgesOut().isEmpty()) {
@@ -194,26 +194,26 @@ public class ArtifactTree extends JSplitPane {
                             if (provider.accept(edge)) {
                                 DefaultMutableTreeNode treeNode = new DefaultMutableTreeNode();
                                 treeNode.setAllowsChildren(provider.hasChildren(node));
-                                tn.add(new DefaultMutableTreeNode(edge.dst));    
-                            }                            
+                                tn.add(new DefaultMutableTreeNode(edge.dst));
+                            }
                         }
-                        refresh(tn);                        
+                        refresh(tn);
                     }
                 }
             }
         });
 
-        
-        pane.add(tbar, BorderLayout.PAGE_START);        
+
+        pane.add(tbar, BorderLayout.PAGE_START);
         pane.add(new JScrollPane(tree), BorderLayout.CENTER);
 
         add(pane);
         add(new JScrollPane(info));
-        
+
         setProvider(new DefaultNuxeoProvider());
     }
 
-    
+
     public void refresh(TreeNode tn) {
         ((DefaultTreeModel)tree.getModel()).reload(tn);
     }
@@ -221,7 +221,7 @@ public class ArtifactTree extends JSplitPane {
     public void refresh() {
         ((DefaultTreeModel)tree.getModel()).reload();
     }
-    
+
     public void setProvider(ItemProvider provider) {
         this.provider = provider;
         root.removeAllChildren();
@@ -240,11 +240,11 @@ public class ArtifactTree extends JSplitPane {
             refresh();
         }
     }
-    
+
     public ItemProvider getProvider() {
         return provider;
     }
-    
+
     public void initializeMaven() {
         maven = MavenClient.getInstance();
         try {
@@ -255,7 +255,7 @@ public class ArtifactTree extends JSplitPane {
             e.printStackTrace();
             return;
         }
-        
+
         Repository repo = new Repository();
         repo.setId("nuxeo_public");
         repo.setName("Nuxeo Public Repository");
@@ -270,9 +270,9 @@ public class ArtifactTree extends JSplitPane {
         policy.setEnabled(false);
         policy.setUpdatePolicy("never");
         policy.setChecksumPolicy("fail");
-        repo.setSnapshots(policy);        
+        repo.setSnapshots(policy);
         maven.addRemoteRepository(repo);
-        
+
         repo = new Repository();
         repo.setId("nuxeo_public_snapshot");
         repo.setName("Nuxeo Public Snapshot Repository");
@@ -289,7 +289,7 @@ public class ArtifactTree extends JSplitPane {
         policy.setChecksumPolicy("fail");
         repo.setSnapshots(policy);
         maven.addRemoteRepository(repo);
-        
+
         repo = new Repository();
         repo.setId("jboss");
         repo.setName("JBoss Repository");
@@ -306,7 +306,7 @@ public class ArtifactTree extends JSplitPane {
         policy.setChecksumPolicy("fail");
         repo.setSnapshots(policy);
         maven.addRemoteRepository(repo);
-        
+
         repo = new Repository();
         repo.setId("ibiblio");
         repo.setName("IBiblio Mirror Repository");
@@ -323,8 +323,8 @@ public class ArtifactTree extends JSplitPane {
         policy.setChecksumPolicy("fail");
         repo.setSnapshots(policy);
         maven.addRemoteRepository(repo);
-        
+
     }
-    
-    
+
+
 }

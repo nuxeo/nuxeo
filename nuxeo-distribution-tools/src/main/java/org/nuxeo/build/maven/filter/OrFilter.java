@@ -35,7 +35,7 @@ public class OrFilter extends CompositeFilter {
     public OrFilter(List<Filter> filters) {
         super (filters);
     }
-    
+
     public boolean accept(Dependency dep) {
         for (int i=0,len=filters.size(); i<len; i++) {
             if (this.filters.get(i).accept(dep)) {

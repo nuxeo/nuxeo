@@ -36,7 +36,7 @@ public class ArtifactCellRenderer extends DefaultTreeCellRenderer {
     private static final long serialVersionUID = 1L;
 
     protected ArtifactTree tree;
-    
+
     public ArtifactCellRenderer(ArtifactTree tree) {
         this.tree = tree;
     }
@@ -74,6 +74,6 @@ public class ArtifactCellRenderer extends DefaultTreeCellRenderer {
         Font font = provider.getFont(node);
         if (font != null) {
             setFont(font);
-        }        
+        }
     }
 }

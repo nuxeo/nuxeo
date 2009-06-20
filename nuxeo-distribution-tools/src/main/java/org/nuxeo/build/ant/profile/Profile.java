@@ -26,7 +26,7 @@ public class Profile {
     protected ProfileGroup group;
     protected String name;
     private boolean isActive;
-    
+
     public Profile(String name) {
         this.name = name;
     }
@@ -38,7 +38,7 @@ public class Profile {
     public boolean isActive() {
         return isActive;
     }
-    
+
     public void setActive(boolean isActive) {
         if (group != null) {
             group.activateProfile(this, isActive);
@@ -46,13 +46,13 @@ public class Profile {
             _setActive(isActive);
         }
     }
-    
+
     public String getName() {
         return name;
     }
-    
+
     final void _setActive(boolean isActive) {
         this.isActive = isActive;
     }
-    
+
 }

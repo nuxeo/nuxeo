@@ -32,7 +32,7 @@ import org.nuxeo.build.maven.filter.Filter;
 
 /**
  * TODO: use pom settings when resolving an artifact (use remote repos specified in pom if any)
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
@@ -44,15 +44,15 @@ public class Node {
     protected Artifact artifact;
     protected List<Edge> edgesIn;
     protected List<Edge> edgesOut;
-    
+
     protected MavenProject pom;
     private boolean isExpanded;
-    
-    
+
+
     public static String createNodeId(Artifact artifact) {
         return new StringBuilder().append(artifact.getGroupId()).append(':').append(artifact.getArtifactId()).append(':').append(artifact.getVersion()).append(':').append(artifact.getType()).append(':').toString();
     }
-    
+
 
 
     public Node(Node node) {
@@ -64,7 +64,7 @@ public class Node {
         this.pom = node.pom;
         this.isExpanded = node.isExpanded;
     }
-    
+
     public Node(Graph graph, MavenProject pom, Artifact artifact) {
         this (graph, pom, artifact, Node.createNodeId(artifact));
     }
@@ -77,66 +77,66 @@ public class Node {
         edgesIn = new ArrayList<Edge>();
         edgesOut = new ArrayList<Edge>();
     }
-    
+
     public Artifact getArtifact() {
         return artifact;
     }
-    
+
     public File getFile() {
         resolveIfNeeded();
         File file = artifact.getFile();
         if (file != null) {
             graph.file2artifacts.put(file.getName(), artifact);
         }
-        return file; 
+        return file;
     }
-    
+
     public File getFile(String classifier) {
         resolveIfNeeded();
         Artifact ca = graph.maven.getArtifactFactory().createArtifactWithClassifier(
-                artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion(), artifact.getType(), classifier);  
+                artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion(), artifact.getType(), classifier);
         try {
             graph.maven.resolve(ca);
             File file = ca.getFile();
             if (file != null) {
                 graph.file2artifacts.put(file.getAbsolutePath(), ca);
             }
-            return file; 
+            return file;
         } catch (Throwable t) {
             t.printStackTrace();
             return null;
         }
     }
-    
+
     public boolean isRoot() {
         return edgesIn.isEmpty();
     }
-    
+
     public String getId() {
         return id;
     }
-    
+
     public List<Edge> getEdgesOut() {
-        return edgesOut; 
+        return edgesOut;
     }
-  
+
     public List<Edge> getEdgesIn() {
         return edgesIn;
     }
-    
-    public void addEdgeIn(Edge edge) {        
+
+    public void addEdgeIn(Edge edge) {
         edgesIn.add(edge);
     }
-    
-    public void addEdgeOut(Edge edge) {        
+
+    public void addEdgeOut(Edge edge) {
         edgesOut.add(edge);
     }
-        
+
     public MavenProject getPom() {
         resolveIfNeeded();
         return pom;
     }
-    
+
     public MavenProject getPomIfAlreadyLoaded() {
         return pom;
     }
@@ -166,20 +166,20 @@ public class Node {
     public void expandAll(Filter filter) {
         expand(Integer.MAX_VALUE, filter);
     }
-    
+
     public List<Node> getTrail() {
         if (edgesIn.isEmpty()) {
             ArrayList<Node> result = new ArrayList<Node>();
             result.add(this);
             return result;
-        } 
+        }
         Edge edge = edgesIn.get(0);
         List<Node> path = edge.src.getTrail();
         path.add(this);
         return path;
     }
-    
-    
+
+
     public void resolveIfNeeded() {
         try {
                 graph.getResolver().resolve(this);
@@ -187,7 +187,7 @@ public class Node {
             throw new BuildException("Artifact not found: "+artifact.getId(), e);
         }
     }
-    
+
     protected void loadDependencies(int recurse, List<Dependency> deps, Filter filter)  {
         resolveIfNeeded();
         ArtifactFactory factory = graph.getMaven().getArtifactFactory();
@@ -208,7 +208,7 @@ public class Node {
             // beware of Maven bug! make sure artifact got the value inherited from dependency
             assert a.getScope().equals(d.getScope());
             Node newNode = null;
-            try { 
+            try {
                 newNode = graph.getNode(a);
             } catch (ArtifactNotFoundException e) {
                 throw new RuntimeException("Unable to find dependency: "+a+". Trail: "+getTrail(), e);
@@ -219,7 +219,7 @@ public class Node {
             //edge.resolve(); //TODO resolve using pom repos
             if (recurse > 0) {
                 newNode.expand(recurse, filter);
-            }        
+            }
         }
     }
 
@@ -230,14 +230,14 @@ public class Node {
             }
         }
     }
-    
+
     public void collectNodes(Collection<Node> nodes) {
         for (Edge edge : edgesOut) {
             nodes.add(edge.dst);
         }
     }
-    
-    
+
+
     @Override
     public boolean equals(Object obj) {
         if (obj == this) {
@@ -248,7 +248,7 @@ public class Node {
         }
         return false;
     }
-    
+
     @Override
     public int hashCode() {
         return id.hashCode();

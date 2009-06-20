@@ -25,11 +25,11 @@ public class CompositeFilter implements Filter {
 
     protected Filter preset;
     protected Filter prefix;
-    
+
     public void setPrefixFilter(Filter prefix) {
         this.prefix = prefix;
     }
-    
+
     public void setPresetFilter(Filter preset) {
         this.preset = preset;
     }
@@ -37,21 +37,21 @@ public class CompositeFilter implements Filter {
     public void removePrefixFilter() {
         this.prefix = null;
     }
-    
+
     public void removePresetFilter() {
         this.preset = null;
     }
 
-    
+
     public Filter getPrefixFilter() {
         return prefix;
     }
-    
+
     public Filter getPresetFilter() {
         return preset;
     }
-    
-    
+
+
     public boolean acceptRow(String key) {
         if (preset != null && !preset.acceptRow(key)) {
             return false;

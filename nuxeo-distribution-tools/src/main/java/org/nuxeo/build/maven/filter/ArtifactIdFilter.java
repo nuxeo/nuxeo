@@ -26,30 +26,30 @@ import org.nuxeo.build.maven.graph.Edge;
  */
 public class ArtifactIdFilter implements Filter {
 
-    protected SegmentMatch matcher; 
+    protected SegmentMatch matcher;
 
     public ArtifactIdFilter(String pattern) {
         this (SegmentMatch.parse(pattern));
-    }    
+    }
 
     public ArtifactIdFilter(SegmentMatch matcher) {
         this.matcher = matcher;
     }
-    
+
     public boolean match(String segment) {
         return matcher.match(segment);
     }
-    
+
     public boolean accept(Dependency dep) {
         return matcher.match(dep.getArtifactId());
     }
-    
-    public boolean accept(Edge edge) {    
+
+    public boolean accept(Edge edge) {
         return matcher.match(edge.dst.getArtifact().getArtifactId());
     }
 
     public boolean accept(Artifact artifact) {
         return matcher.match(artifact.getArtifactId());
     }
-    
+
 }

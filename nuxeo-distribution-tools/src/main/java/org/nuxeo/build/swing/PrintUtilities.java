@@ -27,7 +27,7 @@ import java.awt.print.PrinterJob;
 import javax.swing.RepaintManager;
 
 /**
- * Code copied form 
+ * Code copied form
  * http://www.apl.jhu.edu/~hall/java/Swing-Tutorial/Swing-Tutorial-Printing.html
  *
  */
@@ -77,6 +77,3 @@ public class PrintUtilities implements Printable {
         currentManager.setDoubleBufferingEnabled(true);
     }
 }
-
-
-

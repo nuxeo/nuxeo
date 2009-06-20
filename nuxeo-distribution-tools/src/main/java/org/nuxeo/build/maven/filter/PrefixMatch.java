@@ -27,9 +27,9 @@ public class PrefixMatch extends SegmentMatch {
     public PrefixMatch(String prefix) {
         this.prefix = prefix;
     }
-    
+
     public boolean match(String segment) {
         return segment.startsWith(prefix);
     }
-    
+
 }

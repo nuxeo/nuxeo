@@ -27,15 +27,15 @@ import org.nuxeo.build.maven.ArtifactDescriptor;
  */
 public abstract class CompositeFilter implements Filter {
 
-    protected List<Filter> filters = new ArrayList<Filter>(); 
-    
+    protected List<Filter> filters = new ArrayList<Filter>();
+
     public CompositeFilter() {
     }
-    
+
     public CompositeFilter(List<Filter> filters) {
         this.filters.addAll(filters);
     }
-    
+
     public void addFilter(Filter filter) {
         filters.add(filter);
     }
@@ -43,7 +43,7 @@ public abstract class CompositeFilter implements Filter {
     public void addFilters(List<Filter> filters) {
         this.filters.addAll(filters);
     }
-    
+
     public List<Filter> getFilters() {
         return filters;
     }
@@ -55,14 +55,14 @@ public abstract class CompositeFilter implements Filter {
     public void addFiltersFromPattern(String pattern) {
         addFiltersFromDescriptor(new ArtifactDescriptor(pattern));
     }
-    
+
     public void addFiltersFromDescriptor(ArtifactDescriptor ad) {
         if (ad.groupId != null && !ad.groupId.equals("*")) {
             addFilter(new GroupIdFilter(ad.groupId));
         }
         if (ad.artifactId != null && !ad.artifactId.equals("*")) {
             addFilter(new ArtifactIdFilter(ad.artifactId));
-        }        
+        }
         if (ad.version != null && !ad.version.equals("*")) {
             addFilter(new VersionFilter(ad.version));
         }
@@ -76,7 +76,7 @@ public abstract class CompositeFilter implements Filter {
             addFilter(new ScopeFilter(ad.scope));
         }
     }
-    
+
     public static Filter compact(CompositeFilter filter) {
         Filter result = filter;
         CompositeFilter cf = filter;
@@ -88,5 +88,5 @@ public abstract class CompositeFilter implements Filter {
         }
         return result;
     }
-    
+
 }

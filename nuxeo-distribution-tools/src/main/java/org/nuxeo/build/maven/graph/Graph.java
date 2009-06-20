@@ -41,28 +41,28 @@ import org.nuxeo.build.maven.filter.Filter;
 public class Graph {
 
     protected MavenClient maven;
-    
+
     protected LinkedList<Node> roots = new LinkedList<Node>();
     protected TreeMap<String, Node> nodes = new TreeMap<String, Node>();
     protected Resolver resolver = new Resolver(this);
-    protected Map<String, Artifact> file2artifacts = new HashMap<String, Artifact>(); 
-    
+    protected Map<String, Artifact> file2artifacts = new HashMap<String, Artifact>();
+
     public Graph(MavenClient maven) {
         this.maven = maven;
     }
-    
+
     public MavenClient getMaven() {
         return maven;
     }
-    
+
     public List<Node> getRoots() {
         return roots;
     }
-    
+
     public Collection<Node> getNodes() {
         return nodes.values();
     }
-    
+
     public Artifact getArtifactByFile(String fileName) {
         return file2artifacts.get(fileName);
     }
@@ -82,7 +82,7 @@ public class Graph {
     public Node[] getNodesArray() {
         return nodes.values().toArray(new Node[nodes.size()]);
     }
-    
+
     public TreeMap<String, Node> getNodesTree() {
         return nodes;
     }
@@ -90,7 +90,7 @@ public class Graph {
     public Node findFirst(String pattern) {
         return findFirst(pattern, false);
     }
-    
+
     public Node findFirst(String pattern, boolean stopIfNotUnique) {
         SortedMap<String, Node> map = nodes.subMap(pattern+':', pattern+((char)(':'+1)));
         int size = map.size();
@@ -102,21 +102,21 @@ public class Graph {
         }
         return map.get(map.firstKey());
     }
-    
-    
+
+
 //    public List<Node> getNodes(NodeFilter filter) {
 //        Node[] allNodes = getNodes();
 //        ArrayList<Node> result = new ArrayList<Node>();
-//        
+//
 //    }
-//    
+//
 
     public Node addRootNode(String key) throws ArtifactNotFoundException {
         ArtifactDescriptor ad = new ArtifactDescriptor(key);
         Artifact artifact = GraphTask.readArtifact(ad);
         return getRootNode(artifact);
     }
-    
+
     public Node getRootNode(Artifact artifact) throws ArtifactNotFoundException {
         String key = Node.createNodeId(artifact);
         Node node = nodes.get(key);
@@ -137,21 +137,21 @@ public class Graph {
             node = new Node(this, null, artifact, key);
             nodes.put(node.getId(), node);
         }
-        return node;        
+        return node;
     }
-    
+
     public Resolver getResolver() {
         return resolver;
     }
-    
+
     public Node lookup(String id) {
         return nodes.get(id);
     }
-    
+
     public Node lookup(Artifact artifact) {
         return lookup(Node.createNodeId(artifact));
     }
-    
+
     public Node findNode(ArtifactDescriptor ad) {
         for (Node node : getNodes()) {
             Artifact arti = node.getArtifact();
@@ -174,8 +174,8 @@ public class Graph {
         }
         return null;
     }
-    
-    
+
+
     public MavenProject loadPom(Artifact artifact) {
         if ("system".equals(artifact.getScope())) return null;
         try {
@@ -190,7 +190,7 @@ public class Graph {
         }
     }
 
-    
+
     public static void main(String[] args) throws Exception {
         TreeMap<String,String> map = new TreeMap<String, String>(new Comparator<String>() {
             public int compare(String o1, String o2) {
@@ -209,12 +209,12 @@ public class Graph {
         map.put("a:b:d", "a:b:d");
 
         map.put("b", "b");
-        System.out.println(map);        
+        System.out.println(map);
         SortedMap<String, String> smap = map.subMap("org.nuxeo:core:", "org.nuxeo:core:\0");
         System.out.println(smap.size()+" - "+smap);
 //        System.out.println(smap.firstKey());
 //        System.out.println(smap.lastKey());
-        
-        
+
+
     }
 }

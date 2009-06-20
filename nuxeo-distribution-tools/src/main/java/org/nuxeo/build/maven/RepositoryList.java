@@ -37,6 +37,5 @@ public class RepositoryList extends ArrayList<ArtifactRepository> {
         }
         return super.add(o);
     }
-    
-}
 
+}

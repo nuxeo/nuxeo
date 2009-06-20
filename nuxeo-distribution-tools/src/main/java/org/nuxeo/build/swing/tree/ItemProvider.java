@@ -32,46 +32,46 @@ import org.nuxeo.build.swing.IconUtils;
  *
  */
 public class ItemProvider {
-    
-    public static final ItemProvider DEFAULT = new ItemProvider(); 
-    
+
+    public static final ItemProvider DEFAULT = new ItemProvider();
+
     public String[] getRoots() {
         return null;
     }
-    
+
     public boolean accept(Edge edge) {
         return true;
     }
-    
+
     public boolean hasChildren(Node node) {
         return true;
     }
-    
+
     public Color getForegroundColor(Node node, boolean isSelected) {
         return null;
     }
-    
+
     public Color getBackgroundColor(Node node, boolean isSelected) {
         return null;
-    }    
-    
+    }
+
     public Font getFont(Node node) {
         return null;
     }
-    
+
     public Icon getIcon(Node node, boolean isExpanded) {
         String type = node.getArtifact().getType();
         return IconUtils.createImageIcon(ArtifactCellRenderer.class, type+".gif");
     }
-    
+
     public String getName(Node node) {
         return node.getArtifact().getArtifactId();
     }
-    
+
     public String getTooltip(Node node) {
         return node.getId().substring(0, node.getId().length()-1);
     }
-    
+
     public String getInfo(Node node) {
         String id = node.getId().substring(0, node.getId().length()-1);
         List<Edge> edgesIn = node.getEdgesIn();
@@ -100,8 +100,8 @@ public class ItemProvider {
         } else {
             desc = "<i><font color=\"light-gray\">Pom not loaded. Enter the artifact to load it.</font></i>";
         }
-        return "<html><body><b>Artifact: </b> "+id+"<br><b>Scopes: </b>"+scopes+"<p>"+desc+"</p></body></html>";        
+        return "<html><body><b>Artifact: </b> "+id+"<br><b>Scopes: </b>"+scopes+"<p>"+desc+"</p></body></html>";
     }
-    
+
 
 }

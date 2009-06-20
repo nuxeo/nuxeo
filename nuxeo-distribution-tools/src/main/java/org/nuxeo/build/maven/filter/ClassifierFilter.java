@@ -26,21 +26,21 @@ import org.nuxeo.build.maven.graph.Edge;
  */
 public class ClassifierFilter implements Filter {
 
-    protected SegmentMatch matcher; 
-    
-    
+    protected SegmentMatch matcher;
+
+
     public ClassifierFilter(String pattern) {
         this (SegmentMatch.parse(pattern));
-    }    
+    }
 
     public ClassifierFilter(SegmentMatch matcher) {
         this.matcher = matcher;
     }
-    
+
     public boolean match(String segment) {
         return matcher.match(segment);
     }
-    
+
     public boolean accept(Dependency dep) {
         String classifier = dep.getClassifier();
         if (classifier == null) {
@@ -48,7 +48,7 @@ public class ClassifierFilter implements Filter {
         }
         return matcher.match(dep.getClassifier());
     }
-    
+
     public boolean accept(Edge edge) {
         return accept(edge.dst.getArtifact());
     }

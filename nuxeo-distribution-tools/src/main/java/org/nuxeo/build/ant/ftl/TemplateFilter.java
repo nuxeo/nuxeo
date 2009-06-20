@@ -33,17 +33,17 @@ public class TemplateFilter extends BaseFilterReader implements ChainableReader 
 
     protected String content;
     protected int offset = 0;
-    
+
     public TemplateFilter(Reader reader) {
         super(reader);
     }
-    
+
     public Reader chain(Reader rdr) {
         TemplateFilter newFilter = new TemplateFilter(rdr);
         newFilter.setProject(getProject());
-        return newFilter;    
+        return newFilter;
     }
-    
+
     @Override
     public int read() throws IOException {
         if (content == null) {
@@ -58,11 +58,11 @@ public class TemplateFilter extends BaseFilterReader implements ChainableReader 
             StringWriter writer = new StringWriter();
             engine.process(getProject(), "content", writer);
             content = writer.getBuffer().toString();
-        } 
+        }
         if (offset >= content.length()) {
             return -1;
         }
         return content.charAt(offset++);
     }
-    
+
 }

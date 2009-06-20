@@ -25,13 +25,13 @@ import org.apache.maven.artifact.Artifact;
 public class Edge {
 
     public Node src;
-    
+
     public Node dst;
-    
+
     public boolean isOptional;
-    
+
     public String scope = Artifact.SCOPE_COMPILE;
-    
+
     public Edge(Node src, Node dst) {
         this.src= src;
         this.dst = dst;
@@ -43,5 +43,5 @@ public class Edge {
         this.scope = scope;
         this.isOptional = isOptional;
     }
-    
+
 }

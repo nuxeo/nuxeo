@@ -28,25 +28,25 @@ public abstract class SegmentMatch {
             return true;
         }
     };
-      
+
     abstract boolean match(String segment);
-    
+
     public static SegmentMatch parse(String pattern) {
         int p = pattern.indexOf("*");
         if (p == -1) {
             return new ExactMatch(pattern);
         }
-        int len = pattern.length(); 
+        int len = pattern.length();
         if (len == 0) {
             return SegmentMatch.ANY;
         }
         if (p == len-1) {
-            return new PrefixMatch(pattern.substring(0, pattern.length()-1)); 
+            return new PrefixMatch(pattern.substring(0, pattern.length()-1));
         }
         if (p == 0) {
             return new SuffixMatch(pattern.substring(1));
         }
         return new MiddleMatch(pattern.substring(0, p), pattern.substring(p+1));
     }
-    
+
 }

@@ -25,20 +25,20 @@ import java.io.File;
 public class AttachmentNode extends Node {
 
     protected String classififier;
-    
+
     public AttachmentNode(Node node, String classifier) {
-        super(node);        
+        super(node);
         this.classififier = classifier;
     }
 
     public String getClassififier() {
         return classififier;
     }
-    
+
     @Override
-    public File getFile() {        
+    public File getFile() {
         return super.getFile(classififier);
     }
-    
-    
+
+
 }

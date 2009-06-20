@@ -28,13 +28,13 @@ import org.apache.tools.ant.types.DataType;
 public class Repositories extends DataType {
 
     protected List<Repository> repos = new ArrayList<Repository>();
-    
+
     public void addRepository(Repository repo) {
         repos.add(repo);
     }
-    
+
     public List<Repository> getRepositories() {
         return repos;
     }
-    
+
 }

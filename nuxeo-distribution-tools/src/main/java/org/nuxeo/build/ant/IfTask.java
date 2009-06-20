@@ -27,7 +27,7 @@ public class IfTask extends Sequential {
 
     protected String isSet;
     protected String isNotSet;
-    
+
     public void setIsSet(String property) {
         this.isSet = property;
     }
@@ -48,5 +48,5 @@ public class IfTask extends Sequential {
             super.execute();
         }
     }
-    
+
 }

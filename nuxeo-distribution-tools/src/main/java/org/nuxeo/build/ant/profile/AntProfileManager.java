@@ -29,10 +29,10 @@ public class AntProfileManager {
 
     protected Map<String, Profile> profiles = new HashMap<String, Profile>();
     protected List<ProfileGroup> groups = new ArrayList<ProfileGroup>();
-    
+
     public AntProfileManager() {
     }
-    
+
     public List<String> getActiveProfiles() {
         ArrayList<String> result = new ArrayList<String>();
         for (Profile p : profiles.values()) {
@@ -42,15 +42,15 @@ public class AntProfileManager {
         }
         return result;
     }
-    
+
     public void addGroup(String[] profiles, String defaultProfile) {
-        groups.add(new ProfileGroup(this, profiles, defaultProfile));        
+        groups.add(new ProfileGroup(this, profiles, defaultProfile));
     }
-    
+
     public void addProfile(Profile profile) {
         profiles.put(profile.getName(), profile);
     }
-    
+
     public boolean isProfileActive(String profileName) {
         Profile profile = profiles.get(profileName);
         if (profile != null) {
@@ -67,16 +67,16 @@ public class AntProfileManager {
         }
         return false;
     }
-    
+
     public void activateProfile(String profile, boolean isActive) {
         if (isActive) {
             System.out.println("Activating profile: "+profile);
         } else {
             System.out.println("Disabling profile: "+profile);
         }
-        getOrCreateProfile(profile).setActive(isActive);        
+        getOrCreateProfile(profile).setActive(isActive);
     }
-    
+
     public Profile getOrCreateProfile(String profileName) {
         Profile profile = profiles.get(profileName);
         if (profile == null) {
@@ -85,7 +85,7 @@ public class AntProfileManager {
         }
         return profile;
     }
-    
+
     public void activateProfiles(String config) {
         String[] ar = config.split("\\s*,\\s*");
         for (String key : ar) {
@@ -99,6 +99,6 @@ public class AntProfileManager {
         }
     }
 
-    
-    
+
+
 }

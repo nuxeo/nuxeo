@@ -27,11 +27,11 @@ import java.util.Set;
 public abstract class AbstractGraphVisitor implements GraphVisitor {
 
     protected Set<Node> visitedNodes;
-    
+
     public AbstractGraphVisitor() {
         visitedNodes = new HashSet<Node>();
     }
-    
+
     public void process(Graph graph) {
         process(graph.getRoots());
     }
@@ -60,9 +60,9 @@ public abstract class AbstractGraphVisitor implements GraphVisitor {
             }
         }
     }
-    
+
     public abstract boolean visitNode(Node node);
-    
+
     public abstract boolean visitEdge(Edge edge);
-    
+
 }

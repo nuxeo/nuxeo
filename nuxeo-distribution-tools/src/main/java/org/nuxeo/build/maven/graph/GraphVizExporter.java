@@ -1,3 +1,22 @@
+/*
+ * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nuxeo - initial API and implementation
+ *
+ * $Id$
+ */
+
 package org.nuxeo.build.maven.graph;
 
 
@@ -20,7 +39,7 @@ public class GraphVizExporter extends AbstractGraphVisitor {
     protected final Map<Object/*Node,Edge*/,String> colors = new HashMap<Object,String>();
     protected String nodeColor = "black";
     protected String edgeColor = "black";
-    
+
 
     /**
      * Unique IDs given to GraphViz for each node.
@@ -35,7 +54,7 @@ public class GraphVizExporter extends AbstractGraphVisitor {
     public GraphVizExporter(OutputStream out) {
         this(new PrintWriter(out));
     }
-    
+
     public void setDefaultEdgeColor(String edgeColor) {
         this.edgeColor = edgeColor;
     }
@@ -50,7 +69,7 @@ public class GraphVizExporter extends AbstractGraphVisitor {
             colors.put(node, nodeColor);
         }
     }
-    
+
     /**
      * Paint all edges and nodes that belong to the given subgraph by using the specified color.
      */
@@ -66,19 +85,19 @@ public class GraphVizExporter extends AbstractGraphVisitor {
             }
         }
     }
-    
+
     public void setColor(Object key, String color) {
         colors.put(key, color);
     }
-    
+
     public String getEdgeColor(Edge edge) {
         String color = colors.get(edge);
-        return color != null ? color : edgeColor; 
+        return color != null ? color : edgeColor;
     }
 
     public String getNodeColor(Node node) {
         String color = colors.get(node);
-        return color != null ? color : nodeColor;         
+        return color != null ? color : nodeColor;
     }
 
     public void close() {
@@ -135,7 +154,7 @@ public class GraphVizExporter extends AbstractGraphVisitor {
         }
         return id;
     }
-    
+
     public void process(Graph graph, OutputStream out) {
         process(graph.getRoots());
     }

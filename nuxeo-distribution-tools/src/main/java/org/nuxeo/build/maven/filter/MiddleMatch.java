@@ -31,9 +31,9 @@ public class MiddleMatch extends SegmentMatch {
         this.prefix = prefix;
         this.len = suffix.length() + prefix.length();
     }
-    
+
     public boolean match(String segment) {
         return len <=  segment.length() && segment.startsWith(prefix) && segment.endsWith(suffix);
     }
-    
+
 }

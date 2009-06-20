@@ -35,7 +35,7 @@ public class ArtifactFile extends FileResource {
     public String key;
     public boolean strict;
     public String classifier;
-    
+
     public void setKey(String pattern) {
         int p = pattern.lastIndexOf(';');
         if (p > -1) {
@@ -45,21 +45,21 @@ public class ArtifactFile extends FileResource {
             this.key = pattern;
         }
     }
-    
+
     public void setClassifier(String classifier) {
         this.classifier = classifier;
     }
-    
+
     public void setStrict(boolean strict) {
         this.strict = strict;
     }
-    
+
     public Node getNode() {
-        if (node == null) {            
+        if (node == null) {
             if (key.indexOf(':') == -1) { // only artifact Id
                 ArtifactDescriptor ad = new ArtifactDescriptor();
                 ad.artifactId = key;
-                node = MavenClient.getInstance().getGraph().findNode(ad);                
+                node = MavenClient.getInstance().getGraph().findNode(ad);
             } else {
                 node = MavenClient.getInstance().getGraph().findFirst(key);
             }
@@ -74,20 +74,20 @@ public class ArtifactFile extends FileResource {
         }
         return node;
     }
-    
-    
+
+
     @Override
     public File getFile() {
         if (isReference()) {
             return ((FileResource) getCheckedRef()).getFile();
-        }        
+        }
         return getNode().getFile();
     }
-    
+
     @Override
     public File getBaseDir() {
         return isReference()
         ? ((FileResource) getCheckedRef()).getBaseDir() : getFile().getParentFile();
     }
-    
+
 }

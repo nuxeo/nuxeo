@@ -25,18 +25,18 @@ import org.nuxeo.build.maven.graph.Edge;
  *
  */
 public class AnyFilter implements Filter {
-    
+
     public boolean accept(Artifact artifact) {
         return true;
     }
-    
+
     public boolean accept(Dependency dep) {
         return true;
     }
-    
+
     public boolean accept(Edge edge) {
         return true;
     }
-    
-    
+
+
 }

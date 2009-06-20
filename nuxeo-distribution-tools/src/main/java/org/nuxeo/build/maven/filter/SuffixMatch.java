@@ -27,9 +27,9 @@ public class SuffixMatch extends SegmentMatch {
     public SuffixMatch(String suffix) {
         this.suffix = suffix;
     }
-    
+
     public boolean match(String segment) {
         return segment.endsWith(suffix);
     }
-    
+
 }

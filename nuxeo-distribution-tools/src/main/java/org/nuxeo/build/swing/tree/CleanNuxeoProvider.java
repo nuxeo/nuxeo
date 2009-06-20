@@ -32,19 +32,19 @@ public class CleanNuxeoProvider extends DefaultNuxeoProvider {
         if ("pom".equals(edge.src.getArtifact().getType())) {
             return true;
         }
-        if (edge.src.getArtifact().getArtifactId().startsWith("nuxeo-")) {            
+        if (edge.src.getArtifact().getArtifactId().startsWith("nuxeo-")) {
             return !edge.dst.getArtifact().getArtifactId().startsWith("nuxeo-");
         }
         return true;
     }
-    
+
     @Override
     public boolean hasChildren(Node node) {
         Artifact artifact = node.getArtifact();
         if ("pom".equals(artifact.getType())) {
             return true;
-        }        
+        }
         return artifact.getArtifactId().startsWith("nuxeo-");
     }
-    
+
 }

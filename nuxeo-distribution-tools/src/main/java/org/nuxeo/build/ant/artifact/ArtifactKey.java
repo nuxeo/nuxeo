@@ -25,18 +25,18 @@ import org.apache.tools.ant.types.DataType;
  *
  */
 public class ArtifactKey extends DataType {
-    
+
     public String pattern;
-    
+
     public ArtifactKey() {
     }
 
     public ArtifactKey(String key) {
         this.pattern = key;
     }
-    
+
     public void setPattern(String pattern) {
         this.pattern = pattern;
     }
-    
+
 }

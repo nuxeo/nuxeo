@@ -25,7 +25,7 @@ import org.nuxeo.build.maven.graph.Edge;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
- */ 
+ */
 public class AndFilter extends CompositeFilter {
 
     public AndFilter() {

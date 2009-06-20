@@ -28,40 +28,40 @@ import org.apache.tools.ant.Task;
  *
  */
 public class ProcessTemplateTask extends Task {
-    
+
     public File baseDir;
     public String[] extensions = new String[] {"ftl"};
     public boolean removeExtension = true;
     public boolean removeTemplate = true;
     public boolean explicitRemoveTemplate = false;
     public Object input;
-    
+
     public File toDir;
 
     public FreemarkerEngine engine;
-    
-    
+
+
     public void setBasedir(File baseDir) {
         this.baseDir = baseDir;
     }
-    
+
     public void setExtension(String extension) {
         extensions = extension.trim().split("\\s*,\\s*");
     }
-    
+
     public void setRemoveExtension(boolean removeExtension) {
         this.removeExtension = removeExtension;
     }
-    
+
     public void setRemoveTemplate(boolean removeTemplate) {
         this.explicitRemoveTemplate = true;
         this.removeTemplate = removeTemplate;
     }
-    
+
     public void setTodir(File toDir) {
-        this.toDir = toDir;        
+        this.toDir = toDir;
     }
-        
+
     @Override
     public void execute() throws BuildException {
         if (engine == null) {
@@ -76,9 +76,9 @@ public class ProcessTemplateTask extends Task {
         toDir.mkdirs();
         File dir = baseDir;
         String relPath = "";
-        processDirectory(dir, relPath);        
+        processDirectory(dir, relPath);
     }
-    
+
 
 
     public void processDirectory(File dir, String relPath) {
@@ -98,7 +98,7 @@ public class ProcessTemplateTask extends Task {
                     }
                 }
             }
-        }        
+        }
     }
 
     public void processFile(File file, String relPath, String ext) {
@@ -107,7 +107,7 @@ public class ProcessTemplateTask extends Task {
             if (input == null) {
                 input = engine.createInput(getProject());
             }
-            engine.process(input, relPath, writer);                     
+            engine.process(input, relPath, writer);
             if (removeExtension) {
                 relPath = relPath.substring(0, relPath.length()-ext.length()-1);
             }
@@ -126,6 +126,6 @@ public class ProcessTemplateTask extends Task {
             throw new BuildException("Failed to process template: "+relPath, e);
         }
     }
-    
-    
+
+
 }

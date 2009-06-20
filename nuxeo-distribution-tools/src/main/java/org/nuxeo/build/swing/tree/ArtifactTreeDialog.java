@@ -35,18 +35,18 @@ public class ArtifactTreeDialog extends JDialog {
         }
         return instance;
     }
-    
+
     public ArtifactTreeDialog() {
         super();
         setTitle("Artifact Explorer");
-        //setAlwaysOnTop(true);        
+        //setAlwaysOnTop(true);
         setContentPane(createContentPane());
         pack();
-        setSize(800, 600);        
+        setSize(800, 600);
     }
-    
+
     protected Container createContentPane() {
         return new ArtifactTree();
     }
-    
+
 }

@@ -49,7 +49,7 @@ public class ArtifactTableModel extends AbstractTableModel {
 
     protected Filter filter;
     protected ArtifactTable table;
-    
+
     public ArtifactTableModel(ArtifactTable table) {
         map = new TreeMap<String, ArtifactRow>();
         columns = new LinkedHashSet<String>();
@@ -58,7 +58,7 @@ public class ArtifactTableModel extends AbstractTableModel {
         visibleRows = new ArrayList<ArtifactRow>();
         this.table = table;
     }
-        
+
     public List<String> getColumns() {
         return new ArrayList<String>(columns);
     }
@@ -66,7 +66,7 @@ public class ArtifactTableModel extends AbstractTableModel {
     public List<String> getVisibleColumns() {
         return visibleColumns;
     }
-    
+
     public List<ArtifactRow> getVisibleRows() {
         return visibleRows;
     }
@@ -78,25 +78,25 @@ public class ArtifactTableModel extends AbstractTableModel {
     public int getColumnCount() {
         return visibleColumns.size();
     }
-    
+
     public int getRowCount() {
         return visibleRows.size();
     }
-    
+
     @Override
     public String getColumnName(int column) {
         return visibleColumns.get(column);
     }
-    
+
     public Object getValueAt(int rowIndex, int columnIndex) {
-        ArtifactRow row = visibleRows.get(rowIndex); 
+        ArtifactRow row = visibleRows.get(rowIndex);
         if (columnIndex == 0) {
             return row.key;
         } else {
             return row.getValue(visibleColumns.get(columnIndex));
         }
     }
-    
+
     @Override
     public void setValueAt(Object value, int rowIndex, int columnIndex) {
         if (columnIndex > 0) {
@@ -105,12 +105,12 @@ public class ArtifactTableModel extends AbstractTableModel {
         }
         table.setDirty(true);
     }
-    
+
     @Override
     public Class<?> getColumnClass(int columnIndex) {
         return columnIndex == 0 ? String.class : Boolean.class;
     }
-    
+
     @Override
     public boolean isCellEditable(int rowIndex, int columnIndex) {
         return columnIndex > 0;
@@ -121,13 +121,13 @@ public class ArtifactTableModel extends AbstractTableModel {
         visibleColumns.add(column);
         fireTableStructureChanged();
     }
-    
+
     public void removeColumn(String column) {
         columns.remove(column);
         visibleColumns.remove(column);
         fireTableStructureChanged();
     }
-    
+
     public void store(File file) throws IOException {
         OutputStream in = new FileOutputStream(file);
         try {
@@ -140,17 +140,17 @@ public class ArtifactTableModel extends AbstractTableModel {
     public void store(OutputStream out) throws IOException {
         PrintStream printer = new PrintStream(out);
         for (ArtifactRow row : map.values()) {
-            printer.print(row.key);            
+            printer.print(row.key);
             int len = row.profiles.size()-1;
             if (len == -1) {
                 printer.println();
                 continue;
-            }           
+            }
             printer.print("?");
             for (int i=0; i<len; i++) {
                 printer.print(row.profiles.get(i));
                 printer.print(",");
-            }  
+            }
             printer.println(row.profiles.get(len));
         }
     }
@@ -170,7 +170,7 @@ public class ArtifactTableModel extends AbstractTableModel {
             load(in);
         } finally {
             in.close();
-        }        
+        }
     }
 
     public void load(InputStream in) throws IOException {
@@ -193,28 +193,28 @@ public class ArtifactTableModel extends AbstractTableModel {
             }
             ArtifactRow row = new ArtifactRow(key);
             if (line != null) {
-                readTokens(line, row);    
+                readTokens(line, row);
             }
             map.put(row.key, row);
             line = reader.readLine();
         }
         build();
     }
-    
+
     public synchronized void build() {
         visibleColumns = new ArrayList<String>();
         visibleColumns.add("Artifacts");
         for (String col : columns) {
-            visibleColumns.add(col);   
+            visibleColumns.add(col);
         }
         buildRows(false);
         fireTableStructureChanged();
     }
-    
+
     public synchronized void buildRows() {
         buildRows(true);
     }
-    
+
     public synchronized void buildRows(boolean refresh) {
         visibleRows = new ArrayList<ArtifactRow>();
         if (filter == null) {
@@ -224,10 +224,10 @@ public class ArtifactTableModel extends AbstractTableModel {
         } else {
             for (ArtifactRow row : map.values()) {
                 if (filter.acceptRow(row.key)) visibleRows.add(row);
-            }            
-            
+            }
+
         }
-        if (refresh) { 
+        if (refresh) {
             fireTableDataChanged();
         }
     }
@@ -242,7 +242,7 @@ public class ArtifactTableModel extends AbstractTableModel {
             buildRows();
         }
     }
-    
+
     private void readTokens(String text, ArtifactRow row) {
         StringTokenizer tokenizer = new StringTokenizer(text, ",");
         while(tokenizer.hasMoreElements()) {
@@ -252,7 +252,7 @@ public class ArtifactTableModel extends AbstractTableModel {
         }
     }
 
-        
+
     static class ArtifactRow {
         protected String key;
         protected List<String> profiles;
@@ -279,12 +279,12 @@ public class ArtifactTableModel extends AbstractTableModel {
                 for (int i=0,len=profiles.size(); i<len; i++) {
                     if (key.equals(profiles.get(i))) {
                         return;
-                    }                    
-                }    
+                    }
+                }
                 profiles.add(key);
             }
         }
-        
+
     }
-        
+
 }

@@ -25,13 +25,13 @@ public class SubGraph extends ArtifactSet {
 
     public String nodeColor;
     public String edgeColor;
-    
+
     public void setNodeColor(String nodeColor) {
         this.nodeColor = nodeColor;
     }
-    
+
     public void setEdgeColor(String edgeColor) {
         this.edgeColor = edgeColor;
     }
-    
+
 }

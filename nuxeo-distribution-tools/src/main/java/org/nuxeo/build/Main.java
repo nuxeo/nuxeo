@@ -30,12 +30,12 @@ import org.nuxeo.build.maven.MavenClient;
  */
 public class Main {
 
-    
-    
+
+
     public static void main(String[] args) throws Exception {
 
         AntClient ant = new AntClient();
-        
+
         ArrayList<String> targets = new ArrayList<String>();
         String profiles = null;
         File buildFile = null;
@@ -53,18 +53,18 @@ public class Main {
         }
 
         if (buildFile == null) {
-            buildFile = new File("build.xml"); 
+            buildFile = new File("build.xml");
         }
-        
+
         buildFile = buildFile.getCanonicalFile();
-        
+
         if (targets.isEmpty()) {
-            ant.run(buildFile);    
+            ant.run(buildFile);
         } else {
             ant.run(buildFile, targets);
         }
-        
+
     }
-    
-    
+
+
 }

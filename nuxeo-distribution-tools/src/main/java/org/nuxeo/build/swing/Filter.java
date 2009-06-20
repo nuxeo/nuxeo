@@ -22,6 +22,6 @@ package org.nuxeo.build.swing;
  */
 public interface Filter {
 
-    public boolean acceptRow(String key);
+    boolean acceptRow(String key);
 
 }

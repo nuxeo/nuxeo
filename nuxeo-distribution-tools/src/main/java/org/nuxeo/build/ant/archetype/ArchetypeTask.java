@@ -29,5 +29,5 @@ public class ArchetypeTask extends Task {
     public void execute() throws BuildException {
         super.execute(); // TODO unzip the target to specified dir, execute archetype.xml then remove it
     }
-    
+
 }

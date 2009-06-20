@@ -36,8 +36,8 @@ import org.nuxeo.build.maven.MavenClient;
 public class Resources extends DataType  implements ResourceCollection {
 
     protected List<ResourceCollection> sets;
-    protected File baseDir;    
-    
+    protected File baseDir;
+
     public Resources(Project project, File baseDir) {
         this.baseDir = baseDir;
         sets = new ArrayList<ResourceCollection>();
@@ -52,15 +52,15 @@ public class Resources extends DataType  implements ResourceCollection {
             }
         }
     }
-    
+
     public boolean isFilesystemOnly() {
         return true;
     }
-    
-    public Iterator<Resource> iterator() {        
+
+    public Iterator<Resource> iterator() {
         return new CompositeIterator(sets);
     }
-    
+
     public int size() {
         int len = 0;
         for (ResourceCollection set : sets) {
@@ -68,7 +68,7 @@ public class Resources extends DataType  implements ResourceCollection {
         }
         return 0;
     }
-    
+
 
     public static class CompositeIterator implements Iterator<Resource>{
         Iterator<Resource>[] its;
@@ -80,7 +80,7 @@ public class Resources extends DataType  implements ResourceCollection {
                 its[i] = cols.get(i).iterator();
             }
         }
-        public boolean hasNext() {            
+        public boolean hasNext() {
             if (offset >= its.length) {
                 return false;
             }
@@ -107,7 +107,7 @@ public class Resources extends DataType  implements ResourceCollection {
             }
             return its[offset].next();
         }
-        
+
         public void remove() { throw new UnsupportedOperationException("Remove not supported");};
     }
 }
