@@ -526,6 +526,15 @@ public final class ThemeManager implements Registrable {
                 }
                 ElementFormatter.setFormat(duplicate, format);
             }
+            
+            // duplicate description
+            duplicate.setDescription(element.getDescription());
+            
+            // duplicate visibility
+            PerspectiveManager perspectiveManager = Manager.getPerspectiveManager();
+            for (PerspectiveType perspective : perspectiveManager.getPerspectivesFor(element)) {
+                PerspectiveManager.setVisibleInPerspective(duplicate, perspective);
+            }
         }
         return duplicate;
     }
