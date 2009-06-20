@@ -846,8 +846,8 @@ div.nxthemesFragment, div.nxthemesFragmentHidden {
   border-style: solid;
   border-width: 1px 2px 2px 1px;
   font: 11px Arial, sans-serif !important;
-  padding: 7px !important;
-  margin: 3px !important;
+  padding: 3px 7px !important;
+  margin: 7px !important;
   cursor: pointer;
   -moz-border-radius: 4px;
   -webkit-border-radius: 4px;
