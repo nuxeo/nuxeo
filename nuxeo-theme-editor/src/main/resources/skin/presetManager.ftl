@@ -17,7 +17,7 @@
   </#if>
 </div>
 
-<h1 class="nxthemesEditor">Presets</h1>
+<h1 class="nxthemesEditor">Manage presets</h1>
 
 <a onclick="NXThemesEditor.editCanvas()" class="nxthemesBack">Back to canvas</a>
 
@@ -26,6 +26,7 @@
 
 <#if preset_manager_mode == 'by theme'>
 
+<h3 class="nxthemesEditor">THEMES</h3>
 <ul class="nxthemesSelector">
 <#list themes as theme>
 <li <#if theme.name = current_theme_name>class="selected"</#if>><a href="javascript:void(0)" 
@@ -46,6 +47,7 @@
 
 <#else>
 
+<h3 class="nxthemesEditor">PALETTES</h3>
 <ul class="nxthemesSelector">
 <#list preset_groups as group>
 <li <#if group = selected_preset_group>class="selected"</#if>><a href="javascript:void(0)" 

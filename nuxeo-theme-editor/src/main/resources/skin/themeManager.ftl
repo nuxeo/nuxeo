@@ -4,13 +4,14 @@
 
 <div id="nxthemesThemeManager" class="nxthemesScreen">
 
-<h1 class="nxthemesEditor">Themes</h1>
+<h1 class="nxthemesEditor">Manage themes</h1>
 
 <a onclick="NXThemesEditor.editCanvas()" class="nxthemesBack">Back to canvas</a>
 
 <table cellpadding="0" cellspacing="0" style="width: 100%"><tr>
 <td style="vertical-align: top; width: 200px; padding-right: 5px;">
 
+<h3 class="nxthemesEditor">THEMES</h3>
 <ul class="nxthemesSelector">
 <#list themes as theme>
 <li <#if theme.name = current_theme_name>class="selected"</#if>><a href="javascript:void(0)" 
