@@ -40,7 +40,7 @@
       <img src="${skinPath}/img/custom-theme-16.png" width="16" height="16" />
     </#if>
   </#if>
-  ${theme.name}</a></li>
+  ${theme.name} <span style="font-size: 11px; font-style: italic; overflow: hidden">(${theme.src})</span></a></li>
 </#list>
 </ul>
 
