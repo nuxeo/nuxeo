@@ -31,6 +31,13 @@
 </#list>
 </ul>
 
+<form action="javascript:void(0)" style="margin-top: 20px">
+  <div>
+    <button onclick="javascript:NXThemesEditor.addTheme()">
+    <img src="${skinPath}/img/add-theme-16.png" width="16" height="16" />
+    Add theme</button>
+  </div>
+</form>
 </td>
 <td style="padding-left: 10px; vertical-align: top;">
 
@@ -111,13 +118,6 @@
   </#if>
 </#list>
 
-<form action="javascript:void(0)">
-  <div>
-    <button onclick="javascript:NXThemesEditor.addTheme()">
-    <img src="${skinPath}/img/add-theme-16.png" width="16" height="16" />
-    Add theme</button>
-  </div>
-</form>
 </td></tr></table>
 
 </div>
