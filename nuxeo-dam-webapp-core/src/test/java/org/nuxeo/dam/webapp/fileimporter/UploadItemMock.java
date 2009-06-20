@@ -1,6 +1,8 @@
 package org.nuxeo.dam.webapp.fileimporter;
 
 import java.io.File;
+import java.util.List;
+import java.util.ArrayList;
 
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIData;
@@ -17,7 +19,7 @@ public class UploadItemMock extends UploadItem {
     protected Blob blob;
 
     public UploadItemMock(String fileName, String contentType, Object object) {
-        super(fileName, contentType, object);
+        super(fileName, 1, contentType, object);
 
         File file = (File) object;
 
@@ -27,9 +29,11 @@ public class UploadItemMock extends UploadItem {
 
 
     public static UploadEvent getUploadEvent(File file) {
-        UploadItem item = new UploadItem(file.getName(), null, file);
+        UploadItem item = new UploadItem(file.getName(), 1, null, file);
         UIComponent component = new UIData();
-        return new UploadEvent(component, item);
+        List<UploadItem> items = new ArrayList<UploadItem>();
+        items.add(item);
+        return new UploadEvent(component, items);
     }
 }
 
