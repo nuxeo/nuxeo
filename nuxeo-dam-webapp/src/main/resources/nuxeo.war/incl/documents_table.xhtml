@@ -50,18 +50,19 @@
       <nxu:column>
         <f:facet name="header">
           <h:panelGroup>
-          <h:commandLink immediate="true" action="#{sortActions.repeatSearch}"
-              rendered="#{provider.sortable}" >
+          <a4j:commandLink id="title" action="#{sortActions.repeatSearch}"
+              rendered="#{provider.sortable}" reRender="filterResultTable" >
             <h:outputText value="#{messages['label.content.header.title']}" />
             <f:param name="providerName" value="#{providerName}" />
             <f:param name="sortColumn" value="dc:title" />
+            <f:param name="invalidateSeamVariables" value="filterSelectModel" />
             <h:panelGroup rendered="#{provider.sortInfo.sortColumn == 'dc:title' }" >
               <h:graphicImage value="/icons/arrow_down.gif"
                 rendered="#{provider.sortInfo.sortAscending}" />
               <h:graphicImage value="/icons/arrow_up.gif"
                 rendered="#{!provider.sortInfo.sortAscending}" />
             </h:panelGroup>
-          </h:commandLink>
+          </a4j:commandLink>
           <h:outputText value="#{messages['label.content.header.title']}"
             rendered="#{!provider.sortable}" />
           </h:panelGroup>
@@ -84,18 +85,19 @@
       <h:column>
         <f:facet name="header">
           <h:panelGroup>
-          <h:commandLink immediate="true" action="#{sortActions.repeatSearch}"
-              rendered="#{provider.sortable}" >
+          <a4j:commandLink action="#{sortActions.repeatSearch}"
+              rendered="#{provider.sortable}" reRender="filterResultTable" >
             <h:outputText value="#{messages['label.content.header.author']}" />
             <f:param name="providerName" value="#{providerName}" />
             <f:param name="sortColumn" value="damc:creator" />
+            <f:param name="invalidateSeamVariables" value="filterSelectModel" />
             <h:panelGroup rendered="#{provider.sortInfo.sortColumn == 'damc:creator' }" >
               <h:graphicImage value="/icons/arrow_down.gif"
                 rendered="#{provider.sortInfo.sortAscending}" />
               <h:graphicImage value="/icons/arrow_up.gif"
                 rendered="#{!provider.sortInfo.sortAscending}" />
             </h:panelGroup>
-          </h:commandLink>
+          </a4j:commandLink>
           <h:outputText value="#{messages['label.content.header.author']}"
             rendered="#{!provider.sortable}" />
           </h:panelGroup>
@@ -107,18 +109,19 @@
       <h:column>
         <f:facet name="header">
           <h:panelGroup>
-          <h:commandLink immediate="true" action="#{sortActions.repeatSearch}"
-              rendered="#{provider.sortable}" >
+          <a4j:commandLink action="#{sortActions.repeatSearch}"
+              rendered="#{provider.sortable}" reRender="filterResultTable" >
             <h:outputText value="#{messages['label.content.header.authoringDate']}" />
             <f:param name="providerName" value="#{providerName}" />
             <f:param name="sortColumn" value="damc:created" />
+            <f:param name="invalidateSeamVariables" value="filterSelectModel" />
             <h:panelGroup rendered="#{provider.sortInfo.sortColumn == 'damc:created' }" >
               <h:graphicImage value="/icons/arrow_down.gif"
                 rendered="#{provider.sortInfo.sortAscending}" />
               <h:graphicImage value="/icons/arrow_up.gif"
                 rendered="#{!provider.sortInfo.sortAscending}" />
             </h:panelGroup>
-          </h:commandLink>
+          </a4j:commandLink>
           <h:outputText value="#{messages['label.content.header.authoringDate']}"
             rendered="#{!provider.sortable}" />
           </h:panelGroup>
@@ -136,7 +139,8 @@
             <h:outputText value="#{messages['label.content.header.size']}" />
           </h:panelGroup>
         </f:facet>
-        <h:outputText value="N/A" />
+        <h:outputText value="#{row.data.picture.views[1].content.length}" rendered="#{row.data.type eq 'Picture' and !empty row.data.picture.views}" />
+        <h:outputText value="#{row.data.file.content.length}" rendered="#{row.data.type eq 'File'}" />
       </h:column>
 
     </nxu:dataTable>

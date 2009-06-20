@@ -5,6 +5,9 @@
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
   xmlns:nxs="http://www.nuxeo.org/ecm/schemas/filterQuery/">
 
+  <xs:element name="ecm_primaryType" type="xs:string" />
+
+  <xs:element name="sortColumn" type="xs:string" default="dc:title" />
+  <xs:element name="sortAscending" type="xs:boolean" default="true" />
+
 </xs:schema>
-
-
