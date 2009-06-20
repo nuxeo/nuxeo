@@ -18,34 +18,29 @@ package org.nuxeo.build;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.nuxeo.build.ant.AntClient;
 import org.nuxeo.build.maven.MavenClient;
 
-
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class Main {
 
-
-
     public static void main(String[] args) throws Exception {
-
         AntClient ant = new AntClient();
 
-        ArrayList<String> targets = new ArrayList<String>();
+        List<String> targets = new ArrayList<String>();
         String profiles = null;
         File buildFile = null;
-        for (int i=0; i<args.length; i++) {
-            if (args[i].startsWith("-f")) {
-                buildFile = new File(args[i].substring(2));
-            } else if (args[i].startsWith("-p")) {
-                profiles = args[i].substring(2);
+        for (String arg : args) {
+            if (arg.startsWith("-f")) {
+                buildFile = new File(arg.substring(2));
+            } else if (arg.startsWith("-p")) {
+                profiles = arg.substring(2);
             } else {
-                targets.add(args[i]);
+                targets.add(arg);
             }
         }
         if (profiles != null) {
@@ -63,8 +58,6 @@ public class Main {
         } else {
             ant.run(buildFile, targets);
         }
-
     }
-
 
 }

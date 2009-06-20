@@ -55,7 +55,7 @@ public class AttachArtifactTask extends Task {
      * attach the main artifact.
      */
     public void setClassifier(String classifier) {
-        if(classifier!=null && classifier.length()==0)
+        if (classifier != null && classifier.length() == 0)
             classifier = null;
         this.classifier = classifier;
     }

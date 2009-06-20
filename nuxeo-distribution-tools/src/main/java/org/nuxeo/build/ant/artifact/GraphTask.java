@@ -59,7 +59,7 @@ public class GraphTask extends Task {
     }
 
     public void setSrc(String file) {
-        this.src = file;
+        src = file;
     }
 
     public void addExpand(Expand expand) {

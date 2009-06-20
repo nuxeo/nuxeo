@@ -39,10 +39,10 @@ public class ArtifactFile extends FileResource {
     public void setKey(String pattern) {
         int p = pattern.lastIndexOf(';');
         if (p > -1) {
-            this.key = pattern.substring(0, p);
-            this.classifier = pattern.substring(p+1);
+            key = pattern.substring(0, p);
+            classifier = pattern.substring(p+1);
         } else {
-            this.key = pattern;
+            key = pattern;
         }
     }
 
@@ -75,7 +75,6 @@ public class ArtifactFile extends FileResource {
         return node;
     }
 
-
     @Override
     public File getFile() {
         if (isReference()) {
@@ -87,7 +86,8 @@ public class ArtifactFile extends FileResource {
     @Override
     public File getBaseDir() {
         return isReference()
-        ? ((FileResource) getCheckedRef()).getBaseDir() : getFile().getParentFile();
+                ? ((FileResource) getCheckedRef()).getBaseDir()
+                : getFile().getParentFile();
     }
 
 }

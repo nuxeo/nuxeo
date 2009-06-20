@@ -61,39 +61,35 @@ public class SettingsTask extends Sequential {
         this.repos = repos;
     }
 
-
-
     @Override
     public void execute() throws BuildException {
 
-            MavenClient maven = MavenClient.getInstance();
-            maven.setOffline(offline);
-            maven.setInteractiveMode(interactive);
+        MavenClient maven = MavenClient.getInstance();
+        maven.setOffline(offline);
+        maven.setInteractiveMode(interactive);
 
-            if (debug) {
-                if (maven.getLogger() == null) {
-                    maven.setLogger(new MavenEmbedderConsoleLogger());
-                }
-                maven.getLogger().setThreshold(MavenEmbedderLogger.LEVEL_DEBUG);
-            } else {
-                maven.setLogger(null);
+        if (debug) {
+            if (maven.getLogger() == null) {
+                maven.setLogger(new MavenEmbedderConsoleLogger());
             }
+            maven.getLogger().setThreshold(MavenEmbedderLogger.LEVEL_DEBUG);
+        } else {
+            maven.setLogger(null);
+        }
 
-            try {
-                if (!maven.isStarted()) {
-                    maven.setSettings(file);
-                    maven.start();
-                }
-            } catch (Exception e) {
-                throw new BuildException("Failed to start maven", e);
+        try {
+            if (!maven.isStarted()) {
+                maven.setSettings(file);
+                maven.start();
             }
+        } catch (Exception e) {
+            throw new BuildException("Failed to start maven", e);
+        }
 
-            for (Repository repo : repos.getRepositories()) {
-                maven.addRemoteRepository(convertRepositoryToMavenModel(repo));
-            }
-
+        for (Repository repo : repos.getRepositories()) {
+            maven.addRemoteRepository(convertRepositoryToMavenModel(repo));
+        }
     }
-
 
     public org.apache.maven.model.Repository convertRepositoryToMavenModel(Repository repo) {
         org.apache.maven.model.Repository r = new org.apache.maven.model.Repository();

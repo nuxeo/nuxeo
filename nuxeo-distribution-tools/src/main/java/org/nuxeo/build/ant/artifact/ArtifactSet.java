@@ -64,7 +64,6 @@ public class ArtifactSet extends DataType  implements ResourceCollection {
     protected Collection<Node> nodes;
 
 
-
     public void setGroupId(String groupId) {
         if (isReference()) {
             throw tooManyAttributes();

@@ -19,6 +19,7 @@ package org.nuxeo.build.ant.ftl;
 import java.io.File;
 import java.io.Writer;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
@@ -63,7 +64,7 @@ public class FreemarkerEngine {
 
     @SuppressWarnings("unchecked")
     public Object createInput(Project project) {
-        HashMap<String, Object> root = new HashMap<String, Object>();
+        Map<String, Object> root = new HashMap<String, Object>();
         root.putAll(project.getProperties());
         root.put("ant", project.getProperties());
         root.put("system", System.getProperties());

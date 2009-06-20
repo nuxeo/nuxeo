@@ -97,8 +97,9 @@ public class ArtifactDescriptor {
         scope = expr.substring(p, q);
     }
 
-
     public Artifact toBuildArtifact() {
-        return MavenClient.getInstance().getArtifactFactory().createBuildArtifact(groupId, artifactId, version, type);
+        return MavenClient.getInstance().getArtifactFactory().createBuildArtifact(
+                groupId, artifactId, version, type);
     }
+
 }

@@ -23,5 +23,4 @@ package org.nuxeo.build.ant.artifact;
  */
 public class Excludes extends Filters {
 
-
 }

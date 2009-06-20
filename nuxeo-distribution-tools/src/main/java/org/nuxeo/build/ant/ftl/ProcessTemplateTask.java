@@ -30,7 +30,7 @@ import org.apache.tools.ant.Task;
 public class ProcessTemplateTask extends Task {
 
     public File baseDir;
-    public String[] extensions = new String[] {"ftl"};
+    public String[] extensions = {"ftl"};
     public boolean removeExtension = true;
     public boolean removeTemplate = true;
     public boolean explicitRemoveTemplate = false;
@@ -54,7 +54,7 @@ public class ProcessTemplateTask extends Task {
     }
 
     public void setRemoveTemplate(boolean removeTemplate) {
-        this.explicitRemoveTemplate = true;
+        explicitRemoveTemplate = true;
         this.removeTemplate = removeTemplate;
     }
 
@@ -78,8 +78,6 @@ public class ProcessTemplateTask extends Task {
         String relPath = "";
         processDirectory(dir, relPath);
     }
-
-
 
     public void processDirectory(File dir, String relPath) {
         for (File file : dir.listFiles()) {
@@ -109,7 +107,7 @@ public class ProcessTemplateTask extends Task {
             }
             engine.process(input, relPath, writer);
             if (removeExtension) {
-                relPath = relPath.substring(0, relPath.length()-ext.length()-1);
+                relPath = relPath.substring(0, relPath.length() - ext.length() - 1);
             }
             File f = new File(toDir, relPath);
             f.getParentFile().mkdirs();
@@ -117,15 +115,14 @@ public class ProcessTemplateTask extends Task {
             try {
                 out.write(writer.getBuffer().toString());
             } finally {
-                    out.close();
-                }
+                out.close();
+            }
             if (removeTemplate) {
                 file.delete();
             }
         } catch (Exception e) {
-            throw new BuildException("Failed to process template: "+relPath, e);
+            throw new BuildException("Failed to process template: " + relPath, e);
         }
     }
-
 
 }

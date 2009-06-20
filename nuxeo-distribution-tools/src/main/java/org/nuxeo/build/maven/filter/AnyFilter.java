@@ -38,5 +38,4 @@ public class AnyFilter implements Filter {
         return true;
     }
 
-
 }

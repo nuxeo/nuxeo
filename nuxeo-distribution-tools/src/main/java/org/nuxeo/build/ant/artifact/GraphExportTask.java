@@ -51,11 +51,11 @@ public class GraphExportTask extends Task {
     }
 
     public void setNodeColor(String color) {
-        this.nodeColor = color;
+        nodeColor = color;
     }
 
     public void setEdgeColor(String color) {
-        this.edgeColor = color;
+        edgeColor = color;
     }
 
     @Override
@@ -64,11 +64,9 @@ public class GraphExportTask extends Task {
             String name = file.getName();
             if (name.endsWith(".png")) {
                 exportPng();
-            }
-            else if (name.endsWith(".txt")) {
+            } else if (name.endsWith(".txt")) {
 
-            }
-            else if (name.endsWith(".xml")) {
+            } else if (name.endsWith(".xml")) {
 
             }
         } catch (Exception e) {

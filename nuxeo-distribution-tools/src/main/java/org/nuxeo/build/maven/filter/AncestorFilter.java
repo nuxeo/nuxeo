@@ -65,7 +65,9 @@ public class AncestorFilter implements Filter {
 
     public boolean accept(Edge edge) {
         for (int i=0,len=filters.size(); i<len; i++) {
-            if (!filters.get(i).accept(edge)) return false;
+            if (!filters.get(i).accept(edge)) {
+                return false;
+            }
         }
         return true;
     }

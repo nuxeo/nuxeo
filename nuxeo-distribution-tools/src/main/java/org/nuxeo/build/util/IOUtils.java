@@ -31,6 +31,7 @@ import org.codehaus.plexus.util.IOUtil;
  *
  */
 public class IOUtils {
+
     private static final int BUFFER_SIZE = 1024 * 64; // 64K
     private static final int MAX_BUFFER_SIZE = 1024 * 1024; // 64K
     private static final int MIN_BUFFER_SIZE = 1024 * 8; // 64K
@@ -73,6 +74,5 @@ public class IOUtils {
             // do nothing
         }
     }
-
 
 }

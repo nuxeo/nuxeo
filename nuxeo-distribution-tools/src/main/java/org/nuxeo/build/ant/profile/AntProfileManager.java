@@ -34,7 +34,7 @@ public class AntProfileManager {
     }
 
     public List<String> getActiveProfiles() {
-        ArrayList<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<String>();
         for (Profile p : profiles.values()) {
             if (p.isActive()) {
                 result.add(p.getName());
@@ -98,7 +98,5 @@ public class AntProfileManager {
             }
         }
     }
-
-
 
 }

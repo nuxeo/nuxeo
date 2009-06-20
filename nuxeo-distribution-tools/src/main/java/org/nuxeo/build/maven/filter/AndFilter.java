@@ -29,7 +29,6 @@ import org.nuxeo.build.maven.graph.Edge;
 public class AndFilter extends CompositeFilter {
 
     public AndFilter() {
-        super();
     }
 
     public AndFilter(List<Filter> filters) {
