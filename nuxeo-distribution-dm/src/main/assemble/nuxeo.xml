@@ -210,7 +210,6 @@
       <artifact group="org.apache.poi" name="poi-scratchpad" />
       <artifact group="com.sun.xml" name="relaxngDatatype" />
       <artifact group="com.sun.xml" name="xsom" />
-      <artifact group="javax.ressource" name="jca-api" />
     </artifacts>
   </artifactSet>
 
