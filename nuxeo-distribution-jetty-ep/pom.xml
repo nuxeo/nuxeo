@@ -65,6 +65,72 @@
     <url>http://hg.nuxeo.org/nuxeo/nuxeo-distribution/nuxeo-distribution-jetty/</url>
   </scm>
 
+  <dependencies>
+    <dependency>
+        <groupId>com.sun.xml</groupId>
+        <artifactId>xsom</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>com.sun.xml</groupId>
+        <artifactId>relaxngDatatype</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>cup</groupId>
+      <artifactId>java-cup</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>joda-time</groupId>
+      <artifactId>joda-time</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.wikimodel</groupId>
+      <artifactId>wem</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>jdom</groupId>
+      <artifactId>jdom</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>rome</groupId>
+      <artifactId>rome</artifactId>
+    </dependency>
+    <!-- jmimemagic -->
+    <dependency>
+      <groupId>jmimemagic</groupId>
+      <artifactId>jmimemagic</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.poi</groupId>
+      <artifactId>poi</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.poi</groupId>
+      <artifactId>poi-scratchpad</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>oro</groupId>
+      <artifactId>oro</artifactId>
+    </dependency>
+    <!-- jena deps -->
+    <dependency>
+      <groupId>com.hp.hpl.jena</groupId>
+      <artifactId>jena</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.hp.hpl.jena</groupId>
+      <artifactId>arq</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.hp.hpl.jena</groupId>
+      <artifactId>iri</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.ibm.icu</groupId>
+      <artifactId>icu4j</artifactId>
+    </dependency>
+    
+  </dependencies>
+  
   <repositories>
     <repository>
       <id>public</id>

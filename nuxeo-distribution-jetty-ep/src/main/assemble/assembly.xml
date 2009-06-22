@@ -121,10 +121,27 @@
 
       <artifact group="com.h2database" name="h2" version="1.1.114" />  
 
-      <artifact group="javax.el" name="el-api" version="unknown" />    
-
       <artifact group="org.eclipse.jdt" name="core" version="3.1.1" />  
-
+      
+      <artifact group="com.sun.xml" name="relaxngDatatype" />
+      <artifact group="com.sun.xml" name="xsom" />
+      <artifact group="cup" name="java-cup" />
+      <artifact group="joda-time" name="joda-time" />
+      <artifact group="org.wikimodel" name="wem" />
+      
+      <artifact group="com.hp.hpl.jena" name="jena" />
+      <artifact group="com.hp.hpl.jena" name="arq" />
+      <artifact group="com.hp.hpl.jena" name="iri" />
+      <artifact group="com.ibm.icu" name="icu4j" />
+      
+      <artifact group="rome" name="rome" />
+      <artifact group="jdom" name="jdom" />
+      
+      <artifact group="jmimemagic" name="jmimemagic" />      
+      <artifact group="org.apache.poi" name="poi" />
+      <artifact group="org.apache.poi" name="poi-scratchpad" />
+      <artifact group="oro" name="oro" />
+      
     </artifacts>
   </artifactSet>
 
@@ -144,9 +161,17 @@
     <outputFile>bundles</outputFile>
   </assemble>
 
-  <assemble>
+  <assemble>  
     <delete>true</delete>
-    <file>config/login-anonymous-config.xml</file>
+    <outputFile>config</outputFile>
+    <file>login-anonymous-config.xml</file>
+  </assemble>
+
+  <assemble>  
+    <delete>true</delete>
+    <outputFile>lib</outputFile>  
+    <file>el-api-unknown.jar</file>
+    <file>el-ri-unknown.jar</file>        
   </assemble>
 
 </assembly>
