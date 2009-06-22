@@ -17,8 +17,8 @@
       Additional url pattern using the doc path codec.
     </documentation>
 
-    <urlPattern name="default" enabled="true">
-      <defaultURLPolicy>true</defaultURLPolicy>
+    <urlPattern name="id" enabled="true">
+      <defaultURLPolicy>false</defaultURLPolicy>
       <needBaseURL>true</needBaseURL>
       <needRedirectFilter>true</needRedirectFilter>
       <needFilterPreprocessing>true</needFilterPreprocessing>
@@ -32,8 +32,8 @@
       </bindings>
     </urlPattern>
 
-    <urlPattern name="path" enabled="true">
-      <defaultURLPolicy>false</defaultURLPolicy>
+    <urlPattern name="default" enabled="true">
+      <defaultURLPolicy>true</defaultURLPolicy>
       <needBaseURL>true</needBaseURL>
       <needRedirectFilter>true</needRedirectFilter>
       <needFilterPreprocessing>true</needFilterPreprocessing>
