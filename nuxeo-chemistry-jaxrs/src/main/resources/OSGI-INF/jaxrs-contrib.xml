@@ -7,7 +7,7 @@
 
   <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
     point="resource">
-    <resource path="cmis" class="org.apache.chemistry.atompub.server.jaxrs.AbderaResource" />
+    <resource class="org.apache.chemistry.atompub.server.jaxrs.AbderaResource" />
   </extension>
 
   <!-- should configure providers also, but not yet implemented,
