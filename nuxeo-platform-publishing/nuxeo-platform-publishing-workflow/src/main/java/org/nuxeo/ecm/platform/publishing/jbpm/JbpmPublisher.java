@@ -258,7 +258,7 @@ public class JbpmPublisher extends AbstractPublisher implements Publisher {
                     document);
             for (String s : validators) {
                 if (principal.getName().equals(s)
-                        || principal.getAllGroups().contains(s)) {
+                        || principal.isMemberOf(s)) {
                     return true;
                 }
             }
