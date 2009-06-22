@@ -73,8 +73,7 @@ public class DocumentViewImpl implements DocumentView, Serializable {
     }
 
     public DocumentViewImpl(DocumentModel doc) {
-        documentLocation = new DocumentLocationImpl(
-                doc.getRepositoryName(), doc.getRef());
+        documentLocation = new DocumentLocationImpl(doc);
         TypeInfo typeInfo = doc.getAdapter(TypeInfo.class);
         viewId = typeInfo.getDefaultView();
     }

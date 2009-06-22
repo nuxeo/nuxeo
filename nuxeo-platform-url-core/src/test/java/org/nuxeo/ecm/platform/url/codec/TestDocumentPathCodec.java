@@ -25,6 +25,7 @@ import java.util.Map;
 import junit.framework.TestCase;
 
 import org.nuxeo.ecm.core.api.DocumentLocation;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
@@ -32,13 +33,14 @@ import org.nuxeo.ecm.platform.url.api.DocumentView;
 
 /**
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
+ * 
  */
 public class TestDocumentPathCodec extends TestCase {
 
-    private DocumentView getDocumentView(String path, String view) {
-        DocumentLocation docLoc = new DocumentLocationImpl("demo", new PathRef(
-                path));
+    private DocumentView getDocumentView(String id, String path, String view) {
+        DocumentLocation docLoc = new DocumentLocationImpl("demo",
+                new IdRef(id), new PathRef(path));
+
         Map<String, String> params = new HashMap<String, String>();
         params.put("tabId", "TAB_CONTENT");
         DocumentView docView = new DocumentViewImpl(docLoc, view, params);
@@ -48,34 +50,47 @@ public class TestDocumentPathCodec extends TestCase {
     public void testGetUrlFromDocumentView() {
         DocumentPathCodec codec = new DocumentPathCodec();
 
-        DocumentView docView = getDocumentView("/path/to/my/doc",
+        DocumentView docView = getDocumentView("dbefd5a0-35ee-4ed2-a023-6817714f32cf", "/path/to/my/doc",
                 "view_documents");
         String url = "nxpath/demo/path/to/my/doc@view_documents?tabId=TAB_CONTENT";
         assertEquals(url, codec.getUrlFromDocumentView(docView));
 
         // again without leading slash
-        docView = getDocumentView("path/to/my/doc", "view_documents");
+        docView = getDocumentView("dbefd5a0-35ee-4ed2-a023-6817714f32cf", "path/to/my/doc", "view_documents");
         url = "nxpath/demo/path/to/my/doc@view_documents?tabId=TAB_CONTENT";
         assertEquals(url, codec.getUrlFromDocumentView(docView));
 
-        docView = getDocumentView("/default-domain", "view_documents");
+        docView = getDocumentView("dbefd5a0-35ee-4ed2-a023-6817714f32cf","/default-domain", "view_documents");
         url = "nxpath/demo/default-domain@view_documents?tabId=TAB_CONTENT";
         assertEquals(url, codec.getUrlFromDocumentView(docView));
 
         // check root is handled correctly
-        docView = getDocumentView("/", "view_domains");
+        docView = getDocumentView("dbefd5a0-35ee-4ed2-a023-6817714f32cf", "/", "view_domains");
         url = "nxpath/demo@view_domains?tabId=TAB_CONTENT";
         assertEquals(url, codec.getUrlFromDocumentView(docView));
 
         // again with dot in view id
-        docView = getDocumentView("path/to/my/doc", "view.documents");
+        docView = getDocumentView("dbefd5a0-35ee-4ed2-a023-6817714f32cf", "path/to/my/doc", "view.documents");
         url = "nxpath/demo/path/to/my/doc@view.documents?tabId=TAB_CONTENT";
         assertEquals(url, codec.getUrlFromDocumentView(docView));
 
         // again with dot in repo name
-        docView = getDocumentView("path/to/my/doc.withdot", "view_documents");
+        docView = getDocumentView("dbefd5a0-35ee-4ed2-a023-6817714f32cf", "path/to/my/doc.withdot", "view_documents");
         url = "nxpath/demo/path/to/my/doc.withdot@view_documents?tabId=TAB_CONTENT";
         assertEquals(url, codec.getUrlFromDocumentView(docView));
+
+        // check url max size
+        StringBuffer veryLongUrl = new StringBuffer();
+        veryLongUrl.append("nxpath/demo/path/to/my/doc");
+        while (veryLongUrl.length() <= DocumentPathCodec.URL_MAX_LENGTH) {
+            veryLongUrl.append("/doc");
+        }
+
+        DocumentView docViewMaxLength = getDocumentView("dbefd5a0-35ee-4ed2-a023-6817714f32cf", veryLongUrl.toString(),
+                "view_documents");
+        url = "nxdoc/demo/dbefd5a0-35ee-4ed2-a023-6817714f32cf/view_documents?tabId=TAB_CONTENT";
+        assertEquals(url, codec.getUrlFromDocumentView(docViewMaxLength));
+
     }
 
     public void testGetDocumentViewFromUrl() {
