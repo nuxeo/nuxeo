@@ -44,6 +44,14 @@ public class DocumentLocationImpl implements DocumentLocation {
         docPathRef = new PathRef(doc.getPathAsString());
     }
 
+    public DocumentLocationImpl(final String serverName, final IdRef idRef,
+            final PathRef pathRef) {
+        this.serverName = serverName;
+        docRef = idRef;
+        docIdRef = idRef;
+        docPathRef = pathRef;
+    }
+
     public DocumentLocationImpl(final String serverName,
             final DocumentRef docRef) {
         this.serverName = serverName;
