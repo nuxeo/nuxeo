@@ -540,7 +540,7 @@ class FolderPage(BasePage):
     def viewRandomDocument(self, pattern):
         fl = self.fl
         hrefs = fl.listHref(content_pattern=pattern,
-                            url_pattern='\/view_documents')
+                            url_pattern='@view_documents')
         fl.assert_(len(hrefs), "No doc found with pattern: " + pattern)
         doc_url = random.choice(hrefs)
         fl.get(doc_url, description="View a random document")
