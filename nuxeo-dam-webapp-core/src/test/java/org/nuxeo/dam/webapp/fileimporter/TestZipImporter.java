@@ -27,12 +27,16 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestNG;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.runtime.api.Framework;
 import org.richfaces.event.UploadEvent;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.Test;
+import static org.testng.Assert.*;
 
-public class TestZipImporter extends SQLRepositoryTestCase {
+public class TestZipImporter extends SQLRepositoryTestNG {
 
     protected FileManager service;
 
@@ -42,10 +46,8 @@ public class TestZipImporter extends SQLRepositoryTestCase {
         super("TestZipImporter");
     }
 
-    @Override
+    @BeforeMethod
     public void setUp() throws Exception {
-        super.setUp();
-
         deployBundle("org.nuxeo.ecm.platform.types.api");
         deployBundle("org.nuxeo.ecm.platform.types.core");
         deployBundle("org.nuxeo.ecm.platform.mimetype.core");
@@ -73,7 +75,7 @@ public class TestZipImporter extends SQLRepositoryTestCase {
         root = session.getRootDocument();
     }
 
-    @Override
+    @AfterMethod
     public void tearDown() throws Exception {
         service = null;
         root = null;
@@ -92,14 +94,13 @@ public class TestZipImporter extends SQLRepositoryTestCase {
                 "OSGI-INF/dam-schemas-contrib.xml");
         undeployContrib("org.nuxeo.ecm.webapp.tests",
                 "OSGI-INF/test-dam-content-template.xml");
-
-        super.tearDown();
     }
 
     protected File getTestFile(String relativePath) {
         return new File(FileUtils.getResourcePathFromContext(relativePath));
     }
 
+    @Test
     public void testImportZip() throws Exception {
         File file = getTestFile("test-data/test.zip");
 
@@ -119,6 +120,7 @@ public class TestZipImporter extends SQLRepositoryTestCase {
         assertEquals("File", child.getType());
     }
 
+    @Test
     public void testImportSetCreation() throws Exception {
 
         ImportActionsBean importActions = new ImportActionsMock(session,
