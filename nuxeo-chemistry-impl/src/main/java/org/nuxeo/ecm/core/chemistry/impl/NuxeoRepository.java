@@ -47,13 +47,15 @@ public class NuxeoRepository implements Repository, RepositoryInfo,
 
     protected final String repositoryName;
 
-    protected final Map<String, Type> types;
+    protected Map<String, Type> types;
 
-    protected final ObjectId rootFolderId;
+    protected ObjectId rootFolderId;
 
     public NuxeoRepository(String repositoryName) {
         this.repositoryName = repositoryName;
+    }
 
+    protected void initializeTypes() {
         SchemaManager schemaManager;
         try {
             schemaManager = Framework.getService(SchemaManager.class);
@@ -67,14 +69,6 @@ public class NuxeoRepository implements Repository, RepositoryInfo,
         for (DocumentType dt : schemaManager.getDocumentTypes()) {
             NuxeoType type = new NuxeoType(dt);
             types.put(type.getId(), type);
-        }
-
-        // initialize root folder id
-        Connection conn = getConnection(null);
-        try {
-            rootFolderId = new SimpleObjectId(conn.getRootFolder().getId());
-        } finally {
-            conn.close();
         }
     }
 
@@ -120,11 +114,17 @@ public class NuxeoRepository implements Repository, RepositoryInfo,
     }
 
     public Type getType(String typeId) {
+        if (types == null) {
+            initializeTypes();
+        }
         return types.get(typeId);
     }
 
     public Collection<Type> getTypes(String typeId,
             boolean returnPropertyDefinitions) {
+        if (types == null) {
+            initializeTypes();
+        }
         // TODO always returns property definitions for now
         if (typeId == null) {
             return Collections.unmodifiableCollection(types.values());
@@ -181,6 +181,15 @@ public class NuxeoRepository implements Repository, RepositoryInfo,
     }
 
     public ObjectId getRootFolderId() {
+        if (rootFolderId == null) {
+            // lazy initialization to delay first connection
+            Connection conn = getConnection(null);
+            try {
+                rootFolderId = new SimpleObjectId(conn.getRootFolder().getId());
+            } finally {
+                conn.close();
+            }
+        }
         return rootFolderId;
     }
 

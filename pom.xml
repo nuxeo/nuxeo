@@ -20,11 +20,13 @@
 
   <modules>
     <module>nuxeo-chemistry-impl</module>
+    <module>nuxeo-chemistry-jaxrs</module>
     <module>nuxeo-chemistry-tests</module>
   </modules>
 
   <properties>
     <chemistry.version>0.1-SNAPSHOT</chemistry.version>
+    <nuxeo.webengine.version>5.2.1-SNAPSHOT</nuxeo.webengine.version>
   </properties>
 
   <dependencyManagement>
@@ -34,10 +36,25 @@
 	<artifactId>nuxeo-chemistry-impl</artifactId>
 	<version>${version}</version>
       </dependency>
+      <dependency>
+	<groupId>org.nuxeo.ecm.core</groupId>
+	<artifactId>nuxeo-chemistry-jaxrs</artifactId>
+	<version>${version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.webengine</groupId>
+        <artifactId>nuxeo-webengine-core</artifactId>
+	<version>${nuxeo.webengine.version}</version>
+      </dependency>
 
       <dependency>
 	<groupId>org.apache.chemistry</groupId>
 	<artifactId>chemistry-api</artifactId>
+	<version>${chemistry.version}</version>
+      </dependency>
+      <dependency>
+	<groupId>org.apache.chemistry</groupId>
+	<artifactId>chemistry-commons</artifactId>
 	<version>${chemistry.version}</version>
       </dependency>
       <dependency>
