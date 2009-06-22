@@ -191,7 +191,9 @@ public class NXRuntimeTestCase extends MockObjectTestCase {
                             String[] cpe = cp.split(" ");
                             URL[] newUrls = new URL[cpe.length];
                             for (int i = 0; i < cpe.length; i++) {
-                                newUrls[i] = new URL("file:" + cpe[i]);
+                                // Don't need to add 'file:' with maven surefire >= 2.4.2
+                                String newUrl = cpe[i].startsWith("file:") ? cpe[i] : "file:" + cpe[i]; 
+                                newUrls[i] = new URL(newUrl);
                             }
                             urls = newUrls;
                         }
