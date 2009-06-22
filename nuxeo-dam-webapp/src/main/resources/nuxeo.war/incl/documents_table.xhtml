@@ -89,9 +89,9 @@
               rendered="#{provider.sortable}" reRender="filterResultTable" >
             <h:outputText value="#{messages['label.content.header.author']}" />
             <f:param name="providerName" value="#{providerName}" />
-            <f:param name="sortColumn" value="damc:creator" />
+            <f:param name="sortColumn" value="damc:author" />
             <f:param name="invalidateSeamVariables" value="filterSelectModel" />
-            <h:panelGroup rendered="#{provider.sortInfo.sortColumn == 'damc:creator' }" >
+            <h:panelGroup rendered="#{provider.sortInfo.sortColumn == 'damc:author' }" >
               <h:graphicImage value="/icons/arrow_down.gif"
                 rendered="#{provider.sortInfo.sortAscending}" />
               <h:graphicImage value="/icons/arrow_up.gif"
@@ -113,9 +113,9 @@
               rendered="#{provider.sortable}" reRender="filterResultTable" >
             <h:outputText value="#{messages['label.content.header.authoringDate']}" />
             <f:param name="providerName" value="#{providerName}" />
-            <f:param name="sortColumn" value="damc:created" />
+            <f:param name="sortColumn" value="damc:authoringDate" />
             <f:param name="invalidateSeamVariables" value="filterSelectModel" />
-            <h:panelGroup rendered="#{provider.sortInfo.sortColumn == 'damc:created' }" >
+            <h:panelGroup rendered="#{provider.sortInfo.sortColumn == 'damc:authoringDate' }" >
               <h:graphicImage value="/icons/arrow_down.gif"
                 rendered="#{provider.sortInfo.sortAscending}" />
               <h:graphicImage value="/icons/arrow_up.gif"
