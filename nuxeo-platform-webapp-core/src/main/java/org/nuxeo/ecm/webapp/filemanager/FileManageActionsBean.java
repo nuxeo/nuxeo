@@ -107,7 +107,7 @@ public class FileManageActionsBean extends InputController implements
 	@In(create = true, required = false)
 	protected UploadItemHolder fileUploadHolder;
 
-	@In(create = true)
+	@In(create = true, required = false)
 	protected UploadItemHolderCycleManager fileUploadHolderCycle;
 
 	protected FileManager fileManager;
