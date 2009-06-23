@@ -179,10 +179,6 @@ public class DeploymentPreprocessor {
                 fd.install.exec(cd.context);
             }
 
-            if (fd.fileName.contains("webapp")) {
-                System.out.println("Contribut webapp");
-            }
-
             if (fd.contributions == null) {
                 continue; // no contributions
             }
