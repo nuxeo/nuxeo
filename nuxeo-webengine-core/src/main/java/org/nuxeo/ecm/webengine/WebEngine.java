@@ -32,8 +32,6 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.repository.Repository;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.url.URLFactory;
 import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
 import org.nuxeo.ecm.platform.rendering.api.ResourceLocator;
@@ -71,9 +69,6 @@ public class WebEngine implements ResourceLocator {
     private static final ThreadLocal<WebContext> CTX = new ThreadLocal<WebContext>();
 
     protected static final Map<Object, Object> mimeTypes = loadMimeTypes();
-    
-    protected static boolean hasRepository = detectedHasRepository();
-    
 
     static Map<Object, Object> loadMimeTypes() {
         Map<Object, Object> mimeTypes = new HashMap<Object, Object>();
@@ -103,24 +98,6 @@ public class WebEngine implements ResourceLocator {
 
     public static void setActiveContext(WebContext ctx) {
         CTX.set(ctx);
-    }
-    
-    /**
-     * WebenGine is also working in nuxeo applications that doesn't define a repository.
-     * This method   
-     */
-    private static boolean detectedHasRepository() {
-        try {
-            RepositoryManager rm = Framework.getService(RepositoryManager.class);
-            Repository repo = rm.getDefaultRepository();
-            return repo != null;
-        } catch (Throwable t) {
-            return false;
-        }
-    }
-
-    public static boolean hasRepository() {
-        return hasRepository;
     }
 
     protected final File root;

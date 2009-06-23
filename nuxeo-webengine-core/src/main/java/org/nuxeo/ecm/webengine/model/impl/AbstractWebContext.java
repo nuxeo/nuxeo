@@ -596,9 +596,7 @@ public abstract class AbstractWebContext implements WebContext {
             }
         }
         try {
-            if (WebEngine.hasRepository()) {
-                bindings.put("Session", getCoreSession());
-            }
+            bindings.put("Session", getCoreSession());
         } catch (Exception e) {
             throw WebException.wrap("Failed to get a core session", e);
         }
