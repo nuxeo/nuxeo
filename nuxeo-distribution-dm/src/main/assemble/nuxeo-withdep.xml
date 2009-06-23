@@ -112,6 +112,7 @@
       <artifact name="nuxeo-platform-audit-facade" />
       <artifact name="nuxeo-platform-placeful-facade" />
       <artifact name="nuxeo-platform-ear" />
+      <artifact name="nuxeo-distribution-dm" />
       <artifact name="nuxeo-apt-extensions" />
     </excludes>
   </artifactSet>
