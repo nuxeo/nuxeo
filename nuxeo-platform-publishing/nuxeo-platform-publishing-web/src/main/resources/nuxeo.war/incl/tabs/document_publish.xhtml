@@ -12,18 +12,18 @@
   <a4j:outputPanel ajaxRendered="true">
   <a4j:form ajaxSubmit="true" id="publishTreeForm">
 
-  <h:panelGroup rendered="#{!empty availablePublishingRoots}">
-    <h:panelGrid class="dataInput" columnClasses="labelColumn, fieldColumn" columns="2">
+  <h:panelGroup rendered="#{!empty availablePublicationTrees}">
+    <h:panelGrid styleClass="dataInput" columnClasses="labelColumn, fieldColumn" columns="2">
       <h:panelGroup>
         <h:outputText value="#{messages['label.publish.sections']}" />
       </h:panelGroup>
       <h:panelGroup>
-        <h:selectOneListbox class="dataInputText" size="1"
-          value="#{publishActions.currentSectionRootIdForPublishing}">
-          <nxu:selectItems value="#{availablePublishingRoots}"
+        <h:selectOneListbox styleClass="dataInputText" size="1"
+          value="#{publishActions.currentPublicationTreeNameForPublishing}">
+          <nxu:selectItems value="#{availablePublicationTrees}"
             var="root"
-            itemValue="#{root.id}"
-            itemLabel="#{root.title}" />
+            itemValue="#{root}"
+            itemLabel="#{root}" />
             <a4j:support event="onchange" reRender="sectionTree" ignoreDupResponses="true" />
         </h:selectOneListbox>
       </h:panelGroup>
@@ -33,33 +33,30 @@
     <dd class="menuForm">
       <h:panelGroup id="sectionTree">
         <rich:tree
-          icon="#{nodeState.isExpanded(rowKey)?nxd:iconExpandedPath(node.document):nxd:iconPath(node.document)}"
-          iconLeaf="#{nxd:iconPath(node.document)}"
+          icon="#{nodeState.isExpanded(rowKey)?publishActions.getCurrentPublicationTreeIconExpanded():publishActions.getCurrentPublicationTreeIconCollapsed()}"
+          iconLeaf="#{publishActions.currentPublicationTreeIconCollapsed}"
           iconExpanded="/img/toggle_minus.png"
           iconCollapsed="/img/toggle_plus.png"
           rowKeyVar="rowKey"
           stateVar="nodeState"
           id="publishTree">
           <rich:recursiveTreeNodesAdaptor
-            roots="#{publishActions.currentSectionsTreeForPublishing}"
-            nodes="#{node.children}"
+            roots="#{publishActions.currentPublicationTreeForPublishing}"
+            nodes="#{node.childrenNodes}"
             var="node"
             id="publishRecursiveAdaptor">
             <rich:treeNode
               highlightedClass="treeNodeHighlightedClass"
               selectedClass="treeNodeSelectedClass"
               id="publishTreeNode">
-              <h:outputText value="#{nxd:titleOrId(node.document)}" />
-              <nxu:methodResult name="canPublishToSection" value="#{publishActions.getCanPublishToSection(node.document)}">
+              <h:outputText value="#{node.title}" />
                 <a4j:commandLink immediate="true"
-                  action="#{publishActions.doPublish(node.document)}"
-                  rendered="#{canPublishToSection}"
+                  action="#{publishActions.doPublish(node)}"
                   reRender="publishingInfoList"
                   id="publishCommandLink">
                   <h:graphicImage value="/icons/back.png" />
                   <h:outputText value="#{messages['label.publish.publish']}" />
                 </a4j:commandLink>
-              </nxu:methodResult>
             </rich:treeNode>
           </rich:recursiveTreeNodesAdaptor>
         </rich:tree>
@@ -69,9 +66,9 @@
   </h:panelGroup>
 
   <h:panelGroup id="publishingInfoList">
-    <h:panelGroup rendered="#{!empty publishActions.publishingInfo}">
+    <h:panelGroup rendered="#{!empty publishActions.publishedDocuments}">
 
-      <nxu:dataTable value="#{publishActions.publishingInfo}" var="info"
+      <nxu:dataTable value="#{publishActions.publishedDocuments}" var="publishedDocument"
         preserveSort="true" preserveDataModel="false"
         rowClasses="dataRowEven,dataRowOdd" sortable="false"
         styleClass="dataList">
@@ -81,11 +78,7 @@
           <f:facet name="header">
             <h:outputText value="#{messages['label.content.header.title']}" />
           </f:facet>
-          <nxu:methodResult name="formattedPath" value="#{publishActions.getFormattedPath(info.section)}">
-            <nxd:restDocumentLink document="#{info.section}">
-              <h:outputText value="#{formattedPath}" />
-            </nxd:restDocumentLink>
-          </nxu:methodResult>
+          <h:outputText value="#{publishedDocument.parentPath}" />
         </nxu:column>
 
         <!--  Version of the published document -->
@@ -94,7 +87,7 @@
             <h:outputText
               value="#{messages['label.publish.header.version']}" />
           </f:facet>
-          <h:outputText value="#{info.proxyVersion}" />
+          <h:outputText value="#{publishedDocument.sourceVersionLabel}" />
         </h:column>
 
         <!--  Actions for the published document  -->
@@ -102,16 +95,12 @@
           <f:facet name="header">
             <h:outputText value="Action" />
           </f:facet>
-
-          <nxu:methodResult name="canPublishToSection" value="#{publishActions.getCanPublishToSection(info.section)}">
-            <a4j:commandLink immediate="true"
-              value="#{messages['command.document.unpublish']}"
-              action="#{publishActions.unPublishFromSection(info.section)}"
-              rendered="#{nxd:hasPermission(info.section, 'Write') and section.ref != currentDocument.parentRef}"
-              reRender="publishingInfoList"
-              ignoreDupResponses="true">
-            </a4j:commandLink>
-          </nxu:methodResult>
+          <a4j:commandLink immediate="true"
+            value="#{messages['command.document.unpublish']}"
+            action="#{publishActions.unPublish(publishedDocument)}"
+            reRender="publishingInfoList"
+            ignoreDupResponses="true">
+          </a4j:commandLink>
         </h:column>
       </nxu:dataTable>
 

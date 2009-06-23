@@ -48,6 +48,7 @@ import org.nuxeo.ecm.core.api.Filter;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.Sorter;
+import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -57,7 +58,6 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.TypeService;
 import org.nuxeo.ecm.platform.actions.Action;
-import org.nuxeo.ecm.platform.publishing.api.DocumentWaitingValidationException;
 import org.nuxeo.ecm.platform.publishing.api.PublishingException;
 import org.nuxeo.ecm.platform.publishing.api.PublishingInformation;
 import org.nuxeo.ecm.platform.publishing.api.PublishingService;
@@ -65,6 +65,10 @@ import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.ui.web.model.impl.SelectDataModelRowEvent;
 import org.nuxeo.ecm.platform.versioning.api.VersioningManager;
+import org.nuxeo.ecm.platform.publisher.api.PublisherService;
+import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
+import org.nuxeo.ecm.platform.publisher.api.PublicationTree;
+import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.ecm.webapp.helpers.EventManager;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
@@ -88,6 +92,8 @@ import org.nuxeo.runtime.api.Framework;
 public class PublishActionsBean implements PublishActions, Serializable {
 
     private PublishingService publishingService;
+
+    private PublisherService publisherService;
 
     private static final long serialVersionUID = 1L;
 
@@ -145,10 +151,13 @@ public class PublishActionsBean implements PublishActions, Serializable {
 
     protected String currentSectionRootIdForPublishing;
 
+    protected String currentPublicationTreeNameForPublishing;
+
     @Create
     public void create() {
         try {
             publishingService = Framework.getService(PublishingService.class);
+            publisherService = Framework.getService(PublisherService.class);
         } catch (Exception e) {
             throw new IllegalStateException("Publishing service not deployed.",
                     e);
@@ -501,6 +510,16 @@ public class PublishActionsBean implements PublishActions, Serializable {
                 navigationContext.getCurrentDocument());
     }
 
+    @Factory(value = "availablePublicationTrees", scope = ScopeType.EVENT)
+    public List<String> getAvailablePublicationTrees()
+            throws ClientException {
+        List<String> publicationsTrees = publisherService.getAvailablePublicationTree();
+        if (currentPublicationTreeNameForPublishing == null && !publicationsTrees.isEmpty()) {
+            currentPublicationTreeNameForPublishing = publicationsTrees.get(0);
+        }
+        return publicationsTrees;
+    }
+
     public DocumentTreeNode getCurrentSectionsTree() throws ClientException {
         DocumentModel sectionsRoot = null;
 
@@ -664,9 +683,11 @@ public class PublishActionsBean implements PublishActions, Serializable {
         return null;
     }
 
-    public String doPublish(DocumentModel section) throws ClientException {
+    public String doPublish(PublicationNode publicationNode) throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
+        publisherService.publish(currentDocument, publicationNode);
 
+        /*
         boolean isPublished = false;
         boolean isWaiting = false;
         try {
@@ -693,7 +714,7 @@ public class PublishActionsBean implements PublishActions, Serializable {
                     resourcesAccessor.getMessages().get(
                             currentDocument.getType()));
         }
-
+        */
         return null;
     }
 
@@ -775,8 +796,13 @@ public class PublishActionsBean implements PublishActions, Serializable {
         return true;
     }
 
-    public String unPublishFromSection(DocumentModel section)
+    public String unPublishFromSection(PublishedDocument publishedDocument)
             throws ClientException {
+        PublicationTree tree = publisherService.getPublicationTree(
+                currentPublicationTreeNameForPublishing, documentManager, null);
+        tree.unpublish(publishedDocument);
+
+        /*
         for (DocumentModel doc : getProxies(navigationContext
                 .getCurrentDocument())) {
 
@@ -784,6 +810,7 @@ public class PublishActionsBean implements PublishActions, Serializable {
                 unPublishDocument(doc);
             }
         }
+        */
         return null;
     }
 
@@ -795,12 +822,52 @@ public class PublishActionsBean implements PublishActions, Serializable {
         this.currentSectionRootId = currentSectionRootId;
     }
 
-    public String getCurrentSectionRootIdForPublishing() {
-        return currentSectionRootIdForPublishing;
-    }
-
     public void setCurrentSectionRootIdForPublishing(
             String currentSectionRootIdForPublishing) {
         this.currentSectionRootIdForPublishing = currentSectionRootIdForPublishing;
     }
+
+    public String getCurrentSectionRootIdForPublishing() {
+        return currentSectionRootIdForPublishing;
+    }
+
+    public void setCurrentPublicationTreeNameForPublishing(String currentPublicationTreeNameForPublishing) {
+        this.currentPublicationTreeNameForPublishing = currentPublicationTreeNameForPublishing;
+    }
+
+    public String getCurrentPublicationTreeNameForPublishing() {
+        return currentPublicationTreeNameForPublishing;
+    }
+
+    public PublicationTree getCurrentPublicationTreeForPublishing() throws Exception {
+        return publisherService.getPublicationTree(currentPublicationTreeNameForPublishing, documentManager, null);
+    }
+
+    public String getCurrentPublicationTreeIconExpanded() throws ClientException {
+        PublicationTree tree = publisherService.getPublicationTree(
+                currentPublicationTreeNameForPublishing, documentManager, null);
+        return tree.getIconExpanded();
+    }
+    
+    public String getCurrentPublicationTreeIconCollapsed() throws ClientException {
+        PublicationTree tree = publisherService.getPublicationTree(
+                currentPublicationTreeNameForPublishing, documentManager, null);
+        return tree.getIconCollapsed();
+    }
+
+    public List<PublishedDocument> getPublishedDocuments() throws ClientException {
+        PublicationTree tree = publisherService.getPublicationTree(
+                currentPublicationTreeNameForPublishing, documentManager, null);
+        DocumentModel currentDocument = navigationContext.getCurrentDocument();
+        return tree.getExistingPublishedDocument(new DocumentLocationImpl(currentDocument));
+    }
+
+    public String unPublish(PublishedDocument publishedDocument)
+            throws ClientException {
+        PublicationTree tree = publisherService.getPublicationTree(
+                currentPublicationTreeNameForPublishing, documentManager, null);
+        tree.unpublish(publishedDocument);
+        return null;
+    }
+
 }
