@@ -20,7 +20,7 @@ fi
 CMD_END="-firefoxProfileTemplate ffprofile -userExtensions user-extensions.js"
 
 # Clean old results
-rm -rf $HERE/result-*.html
+rm -f $HERE/result-*.html
 
 cd $HERE
 # Download selenium-server.jar
