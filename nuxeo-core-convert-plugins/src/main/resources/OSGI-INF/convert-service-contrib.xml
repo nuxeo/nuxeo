@@ -21,18 +21,27 @@
       <destinationMimeType>text/plain</destinationMimeType>
     </converter>
 
-    <converter name="word2text" class="org.nuxeo.ecm.core.convert.plugins.text.extractors.Word2TextConverter">
-      <sourceMimeType>application/msword</sourceMimeType>
-      <destinationMimeType>text/plain</destinationMimeType>
-    </converter>
-
     <converter name="xl2text" class="org.nuxeo.ecm.core.convert.plugins.text.extractors.XL2TextConverter">
       <sourceMimeType>application/vnd.ms-excel</sourceMimeType>
       <destinationMimeType>text/plain</destinationMimeType>
     </converter>
 
-    <converter name="ppt2text" class="org.nuxeo.ecm.core.convert.plugins.text.extractors.PPT2TextConverter">
+    <converter name="xlx2text" class="org.nuxeo.ecm.core.convert.plugins.text.extractors.XLX2TextConverter">
+      <sourceMimeType>
+      application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+      </sourceMimeType>
+      <destinationMimeType>text/plain</destinationMimeType>
+    </converter>
+
+    <converter name="msoffice2text" class="org.nuxeo.ecm.core.convert.plugins.text.extractors.MSOffice2TextConverter">
+      <sourceMimeType>application/msword</sourceMimeType>
       <sourceMimeType>application/vnd.ms-powerpoint</sourceMimeType>
+      <sourceMimeType>
+        application/vnd.openxmlformats-officedocument.wordprocessingml.document
+      </sourceMimeType>
+      <sourceMimeType>
+        application/vnd.openxmlformats-officedocument.presentationml.presentation
+      </sourceMimeType>
       <destinationMimeType>text/plain</destinationMimeType>
     </converter>
 
