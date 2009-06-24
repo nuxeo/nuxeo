@@ -82,6 +82,7 @@
           <fragment type="generic fragment"/>
           <!-- user sites -->
           <fragment type="generic fragment"/>
+          <fragment type="web widget area"/>
         </cell>
         <cell>
           <!-- user documents -->
@@ -91,6 +92,7 @@
           <!-- last published document -->
           <fragment type="generic fragment"/>
           <fragment type="generic fragment"/>
+          <fragment type="web widget area"/>
         </cell>
       </section>
       <section>
@@ -122,6 +124,20 @@
     <name>body</name>
     <defaultBody/>
     <defaultSrc/>
+  </properties>
+  <properties element="page[3]/section[3]/cell[1]/fragment[5]">
+    <maxItems/>
+    <decoration>default</decoration>
+    <name>Left Panel</name>
+    <disallowDuplicates>false</disallowDuplicates>
+    <provider>persistent per user</provider>
+  </properties>
+  <properties element="page[3]/section[3]/cell[2]/fragment[5]">
+    <maxItems/>
+    <decoration>default</decoration>
+    <name>Right Panel</name>
+    <disallowDuplicates>false</disallowDuplicates>
+    <provider>persistent per user</provider>
   </properties>
   <properties element="page[4]/section[1]/cell[1]/fragment[3]">
     <name>body</name>
@@ -316,6 +332,12 @@
     <widget element="page[3]/section[3]/cell[1]/fragment[4]">
       <view>nuxeo5 user sites</view>
     </widget>
+    <widget element="page[3]/section[3]/cell[1]/fragment[5]">
+      <view>web widget panel</view>
+    </widget>
+    <widget element="page[3]/section[3]/cell[2]/fragment[5]">
+      <view>web widget panel</view>
+    </widget>
     <!-- buttons -->
     <style name="default buttons">
       <selector path="input.button">
@@ -338,9 +360,9 @@
     <style name="breadcrumbs style">
       <selector path="">
         <border-bottom preset="breadcrumb (Galaxy borders)"/>
+        <height>25px</height>
         <background preset="breadcrumb (Galaxy backgrounds)"/>
         <padding>3px 7px</padding>
-        <height>25px</height>
       </selector>
       <selector path="div">
         <font preset="small (Galaxy fonts)"/>
@@ -383,10 +405,10 @@
         <padding-right>8px</padding-right>
       </selector>
       <selector path=".breadcrumbs">
+        <height>20px</height>
         <font-size>9px</font-size>
         <padding>5px 4px 0px 0px</padding>
         <float>left</float>
-        <height>20px</height>
       </selector>
     </style>
     <style inherit="default buttons" name="default tabs">
@@ -428,8 +450,8 @@
         <background preset="tabiselected (Galaxy backgrounds)"/>
       </selector>
       <selector path=".subtabsBar">
-        <font>normal 11px 'Lucida Grande', Verdana, sans-serif !important</font>
         <border-bottom preset="subtabsbar (Galaxy borders)"/>
+        <font>normal 11px 'Lucida Grande', Verdana, sans-serif !important</font>
       </selector>
       <selector path=".subtabsBar a, .subtabsBar a:hover, .subtabsBar a:visited">
         <color>#0066CC</color>
@@ -624,8 +646,7 @@
       <selector path=".treeNodeSelectedClass">
         <border>none</border>
       </selector>
-      <!-- end of rich faces tree -->
-      <!-- Rich Faces fileUpload-->
+      <!-- Rich Faces fileUpload -->
       <selector path=".rich-fileupload-list-decor">
         <margin>10px 0px</margin>
       </selector>
@@ -638,7 +659,7 @@
       <selector path=".rich-fileupload-button-content">
         <padding>2px 6px 2px 19px</padding>
       </selector>
-      <!-- End of Rich Faces fileUpload-->
+      <!-- End of Rich Faces fileUpload -->
       <selector path=".rightsAddSelect">
         <border>1px normal #666</border>
         <margin-top>0px</margin-top>
@@ -978,8 +999,8 @@
       </selector>
       <selector path=".labelColumn">
         <width>120px</width>
-        <font-weight>bold</font-weight>
         <vertical-align>top</vertical-align>
+        <font-weight>bold</font-weight>
       </selector>
       <selector path=".rightsAddManager .labelColumn">
         <width>80px</width>
@@ -987,10 +1008,9 @@
       <selector path=".smallButtonsGadget">
         <margin>0 0 5px 100px</margin>
       </selector>
-      <!-- 
-      <selector path=".relationCreateLabelColumn, .labelColumn, .workflowLabelColumn">
+      <!-- <selector path=".relationCreateLabelColumn, .labelColumn, .workflowLabelColumn">
         <text-align>right</text-align>
-      </selector>  -->
+      </selector> -->
       <selector path=".workflowLabelColumn">
         <width>120px</width>
       </selector>
@@ -1138,28 +1158,28 @@
       <selector path="table.dataInput td.fieldColumn label">
         <vertical-align>top</vertical-align>
       </selector>
-        <!-- Style for Resume Tab --> 
+      <!-- Style for Resume Tab -->
       <selector path="h3.summaryTitle">
+        <border-bottom>1px solid #a9a9a9</border-bottom>
         <color>#4a4a4a</color>
         <font preset="title3 (Galaxy fonts)"/>
         <margin>0px 0px 10px 0px</margin>
         <padding>25px 0px 3px 0px</padding>
-        <border-bottom>1px solid #a9a9a9</border-bottom>
       </selector>
       <selector path=".description_block">
-        <float>left</float>
         <width>65%</width>
+        <float>left</float>
       </selector>
       <selector path=".description_block h3.summaryTitle">
         <padding-top>15px</padding-top>
       </selector>
       <selector path=".dublincore_block table.floatingLeftTable">
-        <float>left</float>
         <margin-right>100px</margin-right>
+        <float>left</float>
       </selector>
       <selector path=".labelColumnLeftAlign">
-        <padding-right>30px</padding-right>
         <font-weight>bold</font-weight>
+        <padding-right>30px</padding-right>
       </selector>
       <selector path=".boldLabel">
         <font-weight>bold</font-weight>
@@ -1168,9 +1188,9 @@
         <margin-top>15px</margin-top>
       </selector>
       <selector path=".content_block">
-        <float>left</float>
         <width>45%</width>
         <padding>0px 30px 0px 0px</padding>
+        <float>left</float>
       </selector>
       <selector path=".content_block td">
         <vertical-align>top</vertical-align>
@@ -1180,20 +1200,20 @@
         <padding>0px 5px</padding>
       </selector>
       <selector path=".relation_block">
-        <float>left</float>
         <width>50%</width>
+        <float>left</float>
       </selector>
       <selector path=".lockFile_block">
-        <float>right</float>
-        <background-color>white</background-color>
         <border>1px solid black</border>
+        <background-color>white</background-color>
+        <width>30%</width>
         <margin>15px 0 10px 0px</margin>
         <padding>10px</padding>
-        <width>30%</width>
+        <float>right</float>
       </selector>
       <selector path=".summary_locked">
-        <font-weight>bold</font-weight>
         <color>#f56200</color>
+        <font-weight>bold</font-weight>
       </selector>
       <selector path=".lockDetail, .DetailList, .contributors_table">
         <padding-top>5px</padding-top>
@@ -1297,8 +1317,8 @@
         <line-height>185%</line-height>
       </selector>
       <selector path=".searchService" view="User services (Galaxy theme)">
-        <float>right</float>
         <vertical-align>middle</vertical-align>
+        <float>right</float>
       </selector>
       <selector path=".userActions" view="User services (Galaxy theme)">
         <padding-top>11px</padding-top>
@@ -1437,7 +1457,8 @@
       <selector path="div" view="nuxeo5 tree explorer">
         <font preset="default (Galaxy fonts)"/>
       </selector>
-      <selector path="td.dr-tree-h-text, td.dr-tree-h-text span, td.dr-tree-h-text a.treeLink" view="nuxeo5 tree explorer">
+      <selector
+        path="td.dr-tree-h-text, td.dr-tree-h-text span, td.dr-tree-h-text a.treeLink" view="nuxeo5 tree explorer">
         <white-space>normal</white-space>
       </selector>
     </style>
