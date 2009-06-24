@@ -48,6 +48,7 @@ import org.apache.chemistry.SPI;
 import org.apache.chemistry.Type;
 import org.apache.chemistry.Unfiling;
 import org.apache.chemistry.VersioningState;
+import org.apache.chemistry.impl.base.BaseRepository;
 import org.apache.chemistry.impl.simple.SimpleObjectId;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -78,7 +79,8 @@ public class NuxeoConnection implements Connection, SPI {
         try {
             session = CoreInstance.getInstance().open(
                     repository.repositoryName, context);
-            rootFolder = new NuxeoFolder(session.getRootDocument(), this);
+            rootFolder = new NuxeoFolder(session.getRootDocument(), this,
+                    BaseRepository.ROOT_FOLDER_NAME);
         } catch (ClientException e) {
             throw new RuntimeException("Could not connect", e); // TODO
         }
@@ -435,8 +437,17 @@ public class NuxeoConnection implements Connection, SPI {
 
     public Collection<CMISObject> query(String statement,
             boolean searchAllVersions) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        DocumentModelList docs;
+        try {
+            docs = session.query(cmisSqlToNXQL(statement), null, 0, 0, true);
+        } catch (ClientException e) {
+            throw new RuntimeException(e.toString(), e);
+        }
+        List<CMISObject> results = new ArrayList<CMISObject>(docs.size());
+        for (DocumentModel doc : docs) {
+            results.add(NuxeoObject.construct(doc, this));
+        }
+        return results;
     }
 
     protected String cmisSqlToNXQL(String q) {

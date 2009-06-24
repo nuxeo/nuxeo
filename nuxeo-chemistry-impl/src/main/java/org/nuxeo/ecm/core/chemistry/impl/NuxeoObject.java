@@ -70,6 +70,9 @@ public class NuxeoObject extends BaseObject implements CMISObject {
     }
 
     public Folder getParent() {
+        if (doc.getPathAsString().equals("/")) {
+            return null;
+        }
         DocumentRef parentRef = doc.getParentRef();
         if (parentRef == null) {
             return null;

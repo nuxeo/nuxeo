@@ -34,8 +34,24 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 
 public class NuxeoFolder extends NuxeoObject implements Folder {
 
+    public final String name;
+
     public NuxeoFolder(DocumentModel doc, NuxeoConnection connection) {
         super(doc, connection);
+        name = null;
+    }
+
+    // for the root folder we need to force the name
+    public NuxeoFolder(DocumentModel doc, NuxeoConnection connection,
+            String name) {
+        super(doc, connection);
+        this.name = name;
+    }
+
+    // TODO override properties etc.
+    @Override
+    public String getName() {
+        return name == null ? super.getName() : name;
     }
 
     public void add(CMISObject object) {
