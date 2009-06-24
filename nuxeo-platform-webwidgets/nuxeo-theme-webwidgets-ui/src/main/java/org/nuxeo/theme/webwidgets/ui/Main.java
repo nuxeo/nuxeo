@@ -186,6 +186,13 @@ public class Main extends ModuleRoot {
         // builder.type(???)
         return builder.build();
     }
+    
+    /* Widget Sample */
+    @Path("lastdocuments")
+    public Object getModules() {
+        return newObject("lastdocuments");
+    }
+
 
     /* API */
 
