@@ -206,8 +206,11 @@
       <artifact group="joda-time" name="joda-time" />
       <artifact group="org.restlet" name="org.restlet.ext.fileupload" />
       <artifact group="oro" name="oro" />
+      <artifact group="org.apache.poi" name="ooxml-schemas" />
       <artifact group="org.apache.poi" name="poi" />
+      <artifact group="org.apache.poi" name="poi-ooxml" />
       <artifact group="org.apache.poi" name="poi-scratchpad" />
+      <artifact group="org.apache" name="xmlbeans" />
       <artifact group="com.sun.xml" name="relaxngDatatype" />
       <artifact group="com.sun.xml" name="xsom" />
     </artifacts>

@@ -127,7 +127,11 @@
       <artifact group="org.jboss.resteasy" name="resteasy-jaxrs" version="1.0.2.GA-nx" />
       <artifact group="org.jboss.resteasy" name="jaxrs-api" version="1.0.2.GA" />
       <artifact group="javax.mail" name="mail" version="1.4" />
+      <artifact group="org.apache.poi" name="ooxml-schemas" />
+      <artifact group="org.apache.poi" name="poi" />
+      <artifact group="org.apache.poi" name="poi-ooxml" />
       <artifact group="org.apache.poi" name="poi-scratchpad" />
+      <artifact group="org.apache" name="xmlbeans" />
     </artifacts>
   </artifactSet>
 
