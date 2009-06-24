@@ -21,6 +21,9 @@ package org.nuxeo.dam.webapp.fileimporter;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.List;
+import java.util.regex.Pattern;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -39,6 +42,10 @@ import de.schlichtherle.io.FileInputStream;
 public class ArchiveImporter extends AbstractFileImporter {
 
     private static final long serialVersionUID = 1L;
+
+    // TODO : Refactor FileManager and drag and drop plugin to manage files to ignore
+    protected static final List<Pattern> ignorePatterns = Arrays.asList(
+            Pattern.compile("__MACOSX"), Pattern.compile("\\.DS_Store"));
 
     public DocumentModel create(CoreSession documentManager, Blob content,
             String path, boolean overwrite, String filename,
@@ -75,21 +82,26 @@ public class ArchiveImporter extends AbstractFileImporter {
     protected void importFileRec(CoreSession documentManager,
             java.io.File file, String path, boolean overwrite,
             FileManager fileManager) throws Exception {
+
+        for (Pattern pattern : ignorePatterns) {
+            if (pattern.matcher(file.getName()).matches()) {
+                return;
+            }
+        }
+
         if (file.isDirectory()) {
+            DocumentModel folder = fileManager.createFolder(documentManager, file.getName(), path);
             for (java.io.File child : file.listFiles()) {
-                // TODO: preserve the sub folder structure here by creating sub
-                // folders accordingly
-                importFileRec(documentManager, child, path, overwrite,
+                importFileRec(documentManager, child, folder.getPathAsString(), overwrite,
                         fileManager);
             }
         } else {
-            // buidl a streaming blob without loading all the file content in
-            // memory
+            // build a streaming blob without loading all the file content in memory
             InputStream is = new FileInputStream(file);
             Blob blob = StreamingBlob.createFromStream(is);
             blob.setFilename(file.getName());
             fileManager.createDocumentFromBlob(documentManager, blob, path,
-                    overwrite, file.getAbsolutePath());
+                    overwrite, file.getName());
         }
     }
 }
