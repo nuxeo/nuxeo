@@ -214,6 +214,8 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         DocumentModel sec = session.getDocument(new PathRef("/testfolder1"));
         DocumentModel proxy = session.publishDocument(doc, sec);
         session.save();
+        DocumentModelList proxies = session.getProxies(doc.getRef(), sec.getRef());
+        assertEquals(1, proxies.size());
         return proxy;
     }
 

@@ -40,6 +40,7 @@ import org.apache.jackrabbit.core.query.lucene.SingletonTokenStream;
 import org.apache.jackrabbit.core.state.ChildNodeEntry;
 import org.apache.jackrabbit.core.state.ItemStateException;
 import org.apache.jackrabbit.core.state.ItemStateManager;
+import org.apache.jackrabbit.core.state.NoSuchItemStateException;
 import org.apache.jackrabbit.core.state.NodeState;
 import org.apache.jackrabbit.core.state.PropertyState;
 import org.apache.jackrabbit.core.value.InternalValue;
@@ -228,6 +229,9 @@ public class SearchIndex extends
                     Field.Index.NO_NORMS, Field.TermVector.NO));
             changePropertyValue(doc, NameConstants.JCR_UUID, uuid);
 
+            // Ref UUID
+            setRefUUIDField(doc, node);
+
             // PARENT
             doc.removeField(FieldNames.PARENT);
             doc.add(new Field(FieldNames.PARENT, node.getParentId().toString(),
@@ -251,6 +255,48 @@ public class SearchIndex extends
             }
             addNodeName(doc, child.getName(), nsMappings, indexFormatVersion);
 
+        }
+
+        private void setRefUUIDField(Document doc, NodeState node)
+                throws RepositoryException {
+            String fieldName = resolver.getJCRName(NodeConstants.ECM_REF_UUID.qname);
+            doc.add(new Field(FieldNames.PROPERTIES_SET, fieldName,
+                    Field.Store.NO, Field.Index.NO_NORMS));
+            PropertyId refUUID = new PropertyId(node.getNodeId(),
+                    NodeConstants.ECM_REF_UUID.qname);
+            try {
+                PropertyState ps = (PropertyState) itemStateManager.getItemState(refUUID);
+                InternalValue value = ps.getValues()[0];
+                doc.add(createStringField(NodeConstants.ECM_REF_UUID.qname,
+                        value.getString()));
+                Field field = new Field(FieldNames.PROPERTIES,
+                        new SingletonTokenStream(FieldNames.createNamedValue(
+                                fieldName, value.getString()),
+                                PropertyType.STRING));
+                field.setOmitNorms(true);
+                doc.add(field);
+                // create fulltext index on property
+                int idx = fieldName.indexOf(':');
+                fieldName = fieldName.substring(0, idx + 1)
+                        + FieldNames.FULLTEXT_PREFIX
+                        + fieldName.substring(idx + 1);
+                Field f = new Field(fieldName, value.getString(),
+                        Field.Store.NO, Field.Index.TOKENIZED,
+                        Field.TermVector.NO);
+                doc.add(f);
+                doc.add(new Field(FieldNames.FULLTEXT, value.getString(),
+                        Field.Store.NO, Field.Index.TOKENIZED,
+                        Field.TermVector.NO));
+
+                doc.add(new Field(FieldNames.PROPERTY_LENGTHS,
+                        FieldNames.createNamedLength(fieldName,
+                                value.getString().length()), Field.Store.NO,
+                        Field.Index.NO_NORMS));
+            } catch (NoSuchItemStateException e1) {
+                throw new RepositoryException(e1);
+            } catch (ItemStateException e1) {
+                throw new RepositoryException(e1);
+            }
         }
 
         /**

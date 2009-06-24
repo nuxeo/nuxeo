@@ -415,16 +415,15 @@ public class JCRSession implements Session {
                 queryString = "/jcr:root/" + JCRQueryXPath.quotePath(path)
                         + '/' + NodeConstants.ECM_CHILDREN.rawname;
             }
-            queryString += "/element(*, " +
-                    NodeConstants.ECM_NT_DOCUMENT_PROXY.rawname + ")[@" +
-                    attribute.rawname + " = '" + uuid + "']";
+            queryString += "/*[@" + attribute.rawname + " = '" + uuid
+                    + "' and @" + NodeConstants.ECM_ISPROXY.rawname + " = 1 ]";
             javax.jcr.query.Query query = session.getWorkspace().getQueryManager().createQuery(
                     queryString, javax.jcr.query.Query.XPATH);
             QueryResult result = query.execute();
             return result.getNodes();
         } catch (RepositoryException e) {
-            throw new DocumentException("Failed to find proxy nodes for " +
-                    uuid, e);
+            throw new DocumentException("Failed to find proxy nodes for "
+                    + uuid, e);
         }
     }
 
