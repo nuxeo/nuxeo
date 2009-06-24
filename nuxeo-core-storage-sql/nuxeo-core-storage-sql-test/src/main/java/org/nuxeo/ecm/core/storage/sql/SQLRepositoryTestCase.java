@@ -38,7 +38,11 @@ public abstract class SQLRepositoryTestCase extends NXRuntimeTestCase {
 
     protected CoreSession session;
 
-    protected SQLRepositoryTestCase(String name) {
+    public SQLRepositoryTestCase() {
+        super();
+    }
+
+    public SQLRepositoryTestCase(String name) {
         super(name);
     }
 
