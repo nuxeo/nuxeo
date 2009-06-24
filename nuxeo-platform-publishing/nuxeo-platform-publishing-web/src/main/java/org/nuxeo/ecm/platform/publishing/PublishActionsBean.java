@@ -33,11 +33,7 @@ import javax.faces.application.FacesMessage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
-import org.jboss.seam.annotations.Create;
-import org.jboss.seam.annotations.Factory;
-import org.jboss.seam.annotations.In;
-import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.annotations.*;
 import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -152,6 +148,8 @@ public class PublishActionsBean implements PublishActions, Serializable {
     protected String currentSectionRootIdForPublishing;
 
     protected String currentPublicationTreeNameForPublishing;
+
+    protected PublicationTree currentPublicationTree;
 
     @Create
     public void create() {
@@ -503,85 +501,13 @@ public class PublishActionsBean implements PublishActions, Serializable {
         return rootFinder;
     }
 
-    @Factory(value = "availablePublishingRoots", scope = ScopeType.EVENT)
-    public DocumentModelList getSectionRootsForPublishing()
-            throws ClientException {
-        return getRootFinder().getAccessibleSectionRoots(
-                navigationContext.getCurrentDocument());
-    }
-
     @Factory(value = "availablePublicationTrees", scope = ScopeType.EVENT)
     public List<String> getAvailablePublicationTrees()
             throws ClientException {
         List<String> publicationsTrees = publisherService.getAvailablePublicationTree();
-        if (currentPublicationTreeNameForPublishing == null && !publicationsTrees.isEmpty()) {
-            currentPublicationTreeNameForPublishing = publicationsTrees.get(0);
-        }
         return publicationsTrees;
     }
 
-    public DocumentTreeNode getCurrentSectionsTree() throws ClientException {
-        DocumentModel sectionsRoot = null;
-
-        sectionRoots = getSectionRoots();
-        if (currentSectionRootId == null && sectionRoots.size() > 0) {
-            currentSectionRootId = sectionRoots.get(0).getId();
-        }
-
-        if (currentSectionRootId != null) {
-            sectionsRoot = documentManager.getDocument(new IdRef(
-                    currentSectionRootId));
-        }
-
-        sectionsTree = getDocumentTreeNode(sectionsRoot);
-
-        return sectionsTree;
-    }
-
-    public DocumentTreeNode getCurrentSectionsTreeForPublishing()
-            throws ClientException {
-        DocumentModel sectionsRoot = null;
-
-        DocumentModelList sectionRootsForPublishing = getSectionRootsForPublishing();
-        if (currentSectionRootIdForPublishing == null
-                && sectionRootsForPublishing.size() > 0) {
-            currentSectionRootIdForPublishing = sectionRootsForPublishing
-                    .get(0).getId();
-        }
-
-        if (currentSectionRootIdForPublishing != null) {
-            sectionsRoot = documentManager.getDocument(new IdRef(
-                    currentSectionRootIdForPublishing));
-        }
-
-        sectionsTreeForPublishing = getDocumentTreeNode(sectionsRoot);
-
-        return sectionsTreeForPublishing;
-    }
-
-    private DocumentTreeNode getDocumentTreeNode(DocumentModel documentModel) {
-        DocumentTreeNode documentTreeNode = null;
-        if (documentModel != null) {
-            Filter filter = null;
-            Sorter sorter = null;
-            try {
-                filter = getTreeManager().getFilter(
-                        TreeActions.DEFAULT_TREE_PLUGIN_NAME);
-                sorter = getTreeManager().getSorter(
-                        TreeActions.DEFAULT_TREE_PLUGIN_NAME);
-            } catch (Exception e) {
-                log
-                        .error(
-                                "Could not fetch filter, sorter or node type for tree ",
-                                e);
-            }
-
-            documentTreeNode = new DocumentTreeNodeImpl(documentModel, filter,
-                    null, sorter, null);
-        }
-
-        return documentTreeNode;
-    }
 
     public String getFormattedPath(DocumentModel documentModel)
             throws ClientException {
@@ -683,9 +609,9 @@ public class PublishActionsBean implements PublishActions, Serializable {
         return null;
     }
 
-    public String doPublish(PublicationNode publicationNode) throws ClientException {
+    public String doPublish(PublicationNode publicationNode) throws Exception {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
-        publisherService.publish(currentDocument, publicationNode);
+        getCurrentPublicationTreeForPublishing().publish(currentDocument, publicationNode);
 
         /*
         boolean isPublished = false;
@@ -798,9 +724,7 @@ public class PublishActionsBean implements PublishActions, Serializable {
 
     public String unPublishFromSection(PublishedDocument publishedDocument)
             throws ClientException {
-        PublicationTree tree = publisherService.getPublicationTree(
-                currentPublicationTreeNameForPublishing, documentManager, null);
-        tree.unpublish(publishedDocument);
+        currentPublicationTree.unpublish(publishedDocument);
 
         /*
         for (DocumentModel doc : getProxies(navigationContext
@@ -831,43 +755,55 @@ public class PublishActionsBean implements PublishActions, Serializable {
         return currentSectionRootIdForPublishing;
     }
 
-    public void setCurrentPublicationTreeNameForPublishing(String currentPublicationTreeNameForPublishing) {
+    public void setCurrentPublicationTreeNameForPublishing(String currentPublicationTreeNameForPublishing) throws Exception {
         this.currentPublicationTreeNameForPublishing = currentPublicationTreeNameForPublishing;
+        if (currentPublicationTree != null) {
+            currentPublicationTree.release();
+            currentPublicationTree = null;
+        }
+        currentPublicationTree = getCurrentPublicationTreeForPublishing();
     }
 
-    public String getCurrentPublicationTreeNameForPublishing() {
+    public String getCurrentPublicationTreeNameForPublishing() throws ClientException {
+        if (currentPublicationTreeNameForPublishing == null) {
+            List<String> publicationTrees = getAvailablePublicationTrees();
+            if (!publicationTrees.isEmpty()) {
+                currentPublicationTreeNameForPublishing = publicationTrees.get(0);
+            }
+        }
         return currentPublicationTreeNameForPublishing;
     }
 
     public PublicationTree getCurrentPublicationTreeForPublishing() throws Exception {
-        return publisherService.getPublicationTree(currentPublicationTreeNameForPublishing, documentManager, null);
+        if (currentPublicationTree == null) {
+            currentPublicationTree = publisherService.getPublicationTree(getCurrentPublicationTreeNameForPublishing(), documentManager, null);
+        }
+        return currentPublicationTree;
     }
 
-    public String getCurrentPublicationTreeIconExpanded() throws ClientException {
-        PublicationTree tree = publisherService.getPublicationTree(
-                currentPublicationTreeNameForPublishing, documentManager, null);
-        return tree.getIconExpanded();
+    public String getCurrentPublicationTreeIconExpanded() throws Exception {
+        return getCurrentPublicationTreeForPublishing().getIconExpanded();
     }
     
-    public String getCurrentPublicationTreeIconCollapsed() throws ClientException {
-        PublicationTree tree = publisherService.getPublicationTree(
-                currentPublicationTreeNameForPublishing, documentManager, null);
-        return tree.getIconCollapsed();
+    public String getCurrentPublicationTreeIconCollapsed() throws Exception {
+        return getCurrentPublicationTreeForPublishing().getIconCollapsed();
     }
 
-    public List<PublishedDocument> getPublishedDocuments() throws ClientException {
-        PublicationTree tree = publisherService.getPublicationTree(
-                currentPublicationTreeNameForPublishing, documentManager, null);
+    public List<PublishedDocument> getPublishedDocuments() throws Exception {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
-        return tree.getExistingPublishedDocument(new DocumentLocationImpl(currentDocument));
+        return getCurrentPublicationTreeForPublishing().getExistingPublishedDocument(new DocumentLocationImpl(currentDocument));
     }
 
     public String unPublish(PublishedDocument publishedDocument)
-            throws ClientException {
-        PublicationTree tree = publisherService.getPublicationTree(
-                currentPublicationTreeNameForPublishing, documentManager, null);
-        tree.unpublish(publishedDocument);
+            throws Exception {
+        getCurrentPublicationTreeForPublishing().unpublish(publishedDocument);
         return null;
     }
+
+   @Destroy
+   public void destroy() {
+       currentPublicationTree.release();
+       currentPublicationTree = null;
+   }
 
 }
