@@ -32,7 +32,10 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
+import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.runtime.api.Framework;
 
 public class TestNuxeoChemistry extends SQLRepositoryTestCase {
 
@@ -42,9 +45,22 @@ public class TestNuxeoChemistry extends SQLRepositoryTestCase {
 
     protected NuxeoRepository repository;
 
+    protected String folder1id;
+
+    protected String folder2id;
+
+    protected String file4id;
+
     @Override
     public void setUp() throws Exception {
         super.setUp();
+        // deployed for fulltext indexing
+        deployBundle("org.nuxeo.ecm.core.api");
+        deployBundle("org.nuxeo.ecm.core.convert.api");
+        deployBundle("org.nuxeo.ecm.core.convert");
+        deployBundle("org.nuxeo.ecm.core.convert.plugins");
+        deployBundle("org.nuxeo.ecm.core.storage.sql"); // event listener
+
         openSession();
         makeRepository();
         repository = new NuxeoRepository(REPOSITORY_NAME);
@@ -74,6 +90,7 @@ public class TestNuxeoChemistry extends SQLRepositoryTestCase {
                 "Folder");
         folder1.setPropertyValue("dc:title", "testfolder1_Title");
         folder1 = session.createDocument(folder1);
+        folder1id = folder1.getId();
 
         DocumentModel file1 = new DocumentModelImpl("/testfolder1",
                 "testfile1", "File");
@@ -114,6 +131,7 @@ public class TestNuxeoChemistry extends SQLRepositoryTestCase {
         DocumentModel folder2 = new DocumentModelImpl("/", "testfolder2",
                 "Folder");
         folder2 = session.createDocument(folder2);
+        folder2id = folder2.getId();
 
         DocumentModel folder3 = new DocumentModelImpl("/testfolder2",
                 "testfolder3", "Folder");
@@ -125,8 +143,12 @@ public class TestNuxeoChemistry extends SQLRepositoryTestCase {
         file4.setPropertyValue("dc:title", "testfile4_Title");
         file4.setPropertyValue("dc:description", "testfile4_DESCRIPTION4");
         file4 = session.createDocument(file4);
+        file4id = file4.getId();
 
         session.save();
+
+        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
+        DatabaseHelper.DATABASE.sleepForFulltext();
     }
 
     public void testBasic() {
@@ -154,9 +176,60 @@ public class TestNuxeoChemistry extends SQLRepositoryTestCase {
         Connection conn = repository.getConnection(null);
         Collection<CMISObject> res = conn.query("SELECT * FROM Document", false);
         assertNotNull(res);
-        assertEquals(7, res.size());
+        assertEquals(4, res.size());
         res = conn.query("SELECT * FROM Folder", false);
         assertEquals(3, res.size());
+        res = conn.query(
+                "SELECT * FROM Document WHERE dc:title = 'testfile1_Title'",
+                false);
+        assertEquals(1, res.size());
+        // spec says names are case-insensitive
+        res = conn.query(
+                "SELECT * FROM DOCUMENT WHERE DC:TITLE = 'testfile1_Title'",
+                false);
+        assertEquals(1, res.size());
+
+        // CMIS ANY syntax for multi-valued properties
+        res = conn.query(
+                "SELECT * FROM Document WHERE 'pete' = ANY dc:contributors",
+                false);
+        assertEquals(1, res.size());
+        res = conn.query(
+                "SELECT * FROM Document WHERE 'bob' = ANY dc:contributors",
+                false);
+        assertEquals(2, res.size());
+
+        // CMIS fulltext
+        res = conn.query(
+                "SELECT * FROM Document WHERE CONTAINS(,'restaurant')", false);
+        assertEquals(1, res.size());
+        res = conn.query("SELECT * FROM Document WHERE CONTAINS('restaurant')",
+                false);
+        assertEquals(1, res.size());
+
+        // CMIS IN_TREE / IN_FOLDER
+        res = conn.query(String.format(
+                "SELECT * FROM Document WHERE IN_FOLDER('%s')", folder1id),
+                false);
+        assertEquals(3, res.size());
+        res = conn.query(String.format(
+                "SELECT * FROM Document WHERE IN_TREE('%s')", folder2id), false);
+        assertEquals(1, res.size());
+
+        // special CMIS properties
+        res = conn.query(String.format(
+                "SELECT * FROM Document WHERE ObjectId = '%s'", file4id), false);
+        assertEquals(1, res.size());
+        res = conn.query(String.format(
+                "SELECT * FROM Document WHERE ParentId = '%s'", folder1id),
+                false);
+        assertEquals(3, res.size());
+        res = conn.query("SELECT * FROM Document WHERE ObjectTypeId = 'File'",
+                false);
+        assertEquals(3, res.size());
+        res = conn.query("SELECT * FROM Document WHERE Name = 'testfile4'",
+                false);
+        assertEquals(1, res.size());
     }
 
 }

@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -40,6 +41,7 @@ import org.apache.chemistry.Folder;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.ObjectId;
 import org.apache.chemistry.Policy;
+import org.apache.chemistry.PropertyDefinition;
 import org.apache.chemistry.Relationship;
 import org.apache.chemistry.RelationshipDirection;
 import org.apache.chemistry.Repository;
@@ -68,6 +70,12 @@ public class NuxeoConnection implements Connection, SPI {
 
     protected final NuxeoFolder rootFolder;
 
+    /** map of lowercase type name to actual Nuxeo type name */
+    protected final Map<String, String> queryTypeNames;
+
+    /** map of Nuxeo and CMIS prop names to NXQL names */
+    protected final Map<String, String> queryPropNames;
+
     public NuxeoConnection(NuxeoRepository repository,
             Map<String, Serializable> parameters) {
         this.repository = repository;
@@ -84,6 +92,20 @@ public class NuxeoConnection implements Connection, SPI {
         } catch (ClientException e) {
             throw new RuntimeException("Could not connect", e); // TODO
         }
+
+        // preprocess type names for queries
+        queryTypeNames = new HashMap<String, String>();
+        queryPropNames = new HashMap<String, String>();
+        for (Type type : repository.getTypes(null, true)) {
+            String tname = type.getQueryName();
+            queryTypeNames.put(tname.toLowerCase(), tname);
+            for (PropertyDefinition pd : type.getPropertyDefinitions()) {
+                String name = pd.getName();
+                queryPropNames.put(name, name);
+            }
+        }
+        // actual NXQL mapping for some CMIS system props
+        queryPropNames.putAll(NuxeoProperty.propertyNameToNXQL);
     }
 
     public SPI getSPI() {
@@ -455,45 +477,94 @@ public class NuxeoConnection implements Connection, SPI {
                 "SELECT\\s+([*\\w, ]+)\\s+FROM\\s+(\\w+)\\s+WHERE\\s+(.*)",
                 Pattern.CASE_INSENSITIVE).matcher(q);
         String type;
-        String ex;
+        String where;
         if (matcher.matches()) {
-            // String props = matcher.group(1);
             type = matcher.group(2);
-            ex = matcher.group(3);
+            where = matcher.group(3);
         } else {
             matcher = Pattern.compile(
                     "SELECT\\s+([*\\w, ]+)\\s+FROM\\s+(\\w+)",
                     Pattern.CASE_INSENSITIVE).matcher(q);
             if (!matcher.matches())
                 throw new RuntimeException("Invalid query: " + q);
-            // String props = matcher.group(1);
             type = matcher.group(2);
-            ex = null;
+            where = null;
         }
         // canonicalize case for NXQL
         type = type.toLowerCase();
-        for (Type t : repository.getTypes(null, true)) {
-            if (!type.equals(t.getId().toLowerCase())) {
-                continue;
-            }
-            type = t.getId();
+        if (queryTypeNames.containsKey(type)) {
+            type = queryTypeNames.get(type);
         }
-        if (ex != null) {
-            // for (String name : Arrays.asList("Title", "SubTitle")) {
-            // ex = Pattern.compile("\\b" + name + "\\b",
-            // Pattern.CASE_INSENSITIVE).matcher(ex).replaceAll(name);
-            // }
-            ex = Pattern.compile("contains\\s*\\(\\s*,([^)]*)\\)",
-                    Pattern.CASE_INSENSITIVE).matcher(ex).replaceAll(
+        if (where != null) {
+            // potentially long but we'll rewrite this code anyway
+            for (Entry<String, String> entry : queryPropNames.entrySet()) {
+                String cmisName = entry.getKey();
+                String nxqlName = entry.getValue();
+                where = Pattern.compile("\\b" + cmisName + "\\b", // word
+                                                                  // boundary
+                        Pattern.CASE_INSENSITIVE).matcher(where).replaceAll(
+                        Matcher.quoteReplacement(nxqlName));
+            }
+            // ANY
+            where = Pattern.compile(
+                    "('[^']*')\\s*=\\s*ANY\\s*([a-z][a-z0-9_:]*)",
+                    Pattern.CASE_INSENSITIVE).matcher(where).replaceAll(
+                    "$2 = $1");
+            // CONTAINS
+            where = Pattern.compile("CONTAINS\\s*\\(\\s*,?\\s*([^)]*)\\)",
+                    Pattern.CASE_INSENSITIVE).matcher(where).replaceAll(
                     "ecm:fulltext = $1");
-            ex = Pattern.compile("('[^']*')\\s*=\\s*ANY\\s*(\\w+)",
-                    Pattern.CASE_INSENSITIVE).matcher(ex).replaceAll("$2 = $1");
+            // IN_FOLDER
+            where = Pattern.compile("IN_FOLDER\\s*\\(\\s*,?\\s*([^)]*)\\)",
+                    Pattern.CASE_INSENSITIVE).matcher(where).replaceAll(
+                    "ecm:parentId = $1");
+            // IN_TREE
+            matcher = Pattern.compile(
+                    "IN_TREE\\s*\\(\\s*,?\\s*'([^)']*)'\\s*\\)",
+                    Pattern.CASE_INSENSITIVE).matcher(where);
+            if (matcher.matches()) {
+                matcher.reset();
+                StringBuffer buf = new StringBuffer();
+                while (matcher.find()) {
+                    DocumentRef docRef = new IdRef(matcher.group(1));
+                    DocumentModel doc;
+                    try {
+                        if (!session.exists(docRef)) {
+                            doc = null;
+                        } else {
+                            doc = session.getDocument(docRef);
+                        }
+                    } catch (ClientException e) {
+                        throw new RuntimeException("Invalid query: " + q
+                                + " : " + e.toString());
+                    }
+                    String repl;
+                    if (doc == null) {
+                        repl = "1 = 0";
+                    } else {
+                        repl = String.format("ecm:path STARTSWITH '%s'",
+                                doc.getPathAsString());
+                    }
+                    matcher.appendReplacement(buf, repl);
+                }
+                matcher.appendTail(buf);
+                where = buf.toString();
+            }
+        }
+        // treat Document specially, it's the root type in Nuxeo
+        if ("Document".equals(type)) {
+            String added = "ecm:mixinType <> 'Folderish'";
+            if (where == null) {
+                where = added;
+            } else {
+                where = String.format("(%s) AND %s", where, added);
+            }
         }
         String res;
-        if (ex == null) {
+        if (where == null) {
             res = String.format("SELECT * FROM %s", type);
         } else {
-            res = String.format("SELECT * FROM %s WHERE %s", type, ex);
+            res = String.format("SELECT * FROM %s WHERE %s", type, where);
         }
         return res;
     }

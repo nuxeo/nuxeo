@@ -19,6 +19,9 @@
 package org.nuxeo.ecm.core.chemistry.impl;
 
 import java.io.Serializable;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.chemistry.Property;
 import org.apache.chemistry.PropertyDefinition;
@@ -29,6 +32,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.model.PropertyException;
+import org.nuxeo.ecm.core.query.sql.NXQL;
 
 /**
  * A live property of an object.
@@ -36,6 +40,30 @@ import org.nuxeo.ecm.core.api.model.PropertyException;
  * @author Florent Guillaume
  */
 public class NuxeoProperty implements Property {
+
+    private final org.nuxeo.ecm.core.api.model.Property prop;
+
+    private final PropertyDefinition propertyDefinition;
+
+    public static final Map<String, String> propertyNameToNXQL;
+    static {
+        Map<String, String> map = new HashMap<String, String>();
+        map.put(Property.ID, NXQL.ECM_UUID);
+        map.put(Property.TYPE_ID, NXQL.ECM_PRIMARYTYPE);
+        map.put(Property.PARENT_ID, NXQL.ECM_PARENTID);
+        map.put(Property.NAME, NXQL.ECM_NAME);
+        map.put(Property.CREATED_BY, NuxeoType.NX_DC_CREATOR);
+        map.put(Property.CREATION_DATE, NuxeoType.NX_DC_CREATED);
+        map.put(Property.LAST_MODIFIED_BY, "dc:contributors");
+        map.put(Property.LAST_MODIFICATION_DATE, NuxeoType.NX_DC_MODIFIED);
+        propertyNameToNXQL = Collections.unmodifiableMap(map);
+    }
+
+    public NuxeoProperty(org.nuxeo.ecm.core.api.model.Property prop,
+            PropertyDefinition propertyDefinition) {
+        this.prop = prop;
+        this.propertyDefinition = propertyDefinition;
+    }
 
     /**
      * Factory for a new Property.
@@ -140,16 +168,6 @@ public class NuxeoProperty implements Property {
         } else {
             return new NuxeoProperty(prop, pd);
         }
-    }
-
-    private final org.nuxeo.ecm.core.api.model.Property prop;
-
-    private final PropertyDefinition propertyDefinition;
-
-    public NuxeoProperty(org.nuxeo.ecm.core.api.model.Property prop,
-            PropertyDefinition propertyDefinition) {
-        this.prop = prop;
-        this.propertyDefinition = propertyDefinition;
     }
 
     public PropertyDefinition getDefinition() {
