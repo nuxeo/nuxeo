@@ -113,7 +113,7 @@ public class ThemeService extends DefaultComponent implements FrameworkListener 
                 || xp.equals("formats") || xp.equals("format-filters")
                 || xp.equals("standalone-filters") || xp.equals("resources")
                 || xp.equals("negotiations") || xp.equals("shortcuts")
-                || xp.equals("vocabularies")) {
+                || xp.equals("vocabularies") || xp.equals("themesets")) {
             registerTypeExtension(extension);
         } else if (xp.equals("applications")) {
             registerApplicationExtension(extension);
@@ -148,7 +148,7 @@ public class ThemeService extends DefaultComponent implements FrameworkListener 
                 || xp.equals("negotiations") || xp.equals("perspectives")
                 || xp.equals("applications") || xp.equals("shortcuts")
                 || xp.equals("vocabularies") || (xp.equals("presets"))
-                || (xp.equals("views")) || (xp.equals("themes"))) {
+                || xp.equals("views") || xp.equals("themes") || xp.equals("themesets")) {
             unregisterTypeExtension(extension);
         } else if (xp.equals("views")) {
             unregisterViewExtension(extension);

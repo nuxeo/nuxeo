@@ -147,6 +147,10 @@
     <object class="org.nuxeo.theme.themes.ThemeDescriptor"/>
   </extension-point>
 
+  <extension-point name="themesets">
+    <object class="org.nuxeo.theme.themes.ThemeSet"/>
+  </extension-point>
+  
   <extension-point name="perspectives">
     <documentation>
       Extension Point for registering perspectives.

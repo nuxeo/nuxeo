@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.theme.core.tests.themesets">
+
+  <extension target="org.nuxeo.theme.services.ThemeService"
+    point="themesets">
+
+    <themeset name="galaxy">
+      <theme name="galaxy-blogs" features="blogs" />
+      <theme name="galaxy-dm" features="dm" />
+      <theme name="galaxy-sites" features="sites" />
+      <theme name="galaxy-default" features="default,dashboard,search" />
+    </themeset>
+
+  </extension>
+
+</component>

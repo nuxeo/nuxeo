@@ -80,7 +80,6 @@ import org.nuxeo.theme.uids.Identifiable;
 import org.nuxeo.theme.uids.UidManager;
 import org.nuxeo.theme.views.ViewType;
 
-
 public final class ThemeManager implements Registrable {
 
     private static final Log log = LogFactory.getLog(ThemeManager.class);
@@ -98,7 +97,7 @@ public final class ThemeManager implements Registrable {
     private final Map<String, Map<String, Integer>> namedObjectsByTheme = new HashMap<String, Map<String, Integer>>();
 
     private final Map<Integer, String> themeOfNamedObjects = new HashMap<Integer, String>();
-    
+
     private final Map<String, Info> infoMap = new HashMap<String, Info>();
 
     private static final Predicate PREDICATE_FORMAT_INHERIT = new DefaultPredicate(
@@ -130,7 +129,7 @@ public final class ThemeManager implements Registrable {
     public Map<String, Info> getGlobalInfoMap() {
         return infoMap;
     }
-    
+
     public static boolean validateThemeName(String themeName) {
         return (themeName.matches("^([a-z]|[a-z][a-z0-9_\\-]*?[a-z0-9])$"));
     }
@@ -526,14 +525,15 @@ public final class ThemeManager implements Registrable {
                 }
                 ElementFormatter.setFormat(duplicate, format);
             }
-            
+
             // duplicate description
             duplicate.setDescription(element.getDescription());
-            
+
             // duplicate visibility
             PerspectiveManager perspectiveManager = Manager.getPerspectiveManager();
             for (PerspectiveType perspective : perspectiveManager.getPerspectivesFor(element)) {
-                PerspectiveManager.setVisibleInPerspective(duplicate, perspective);
+                PerspectiveManager.setVisibleInPerspective(duplicate,
+                        perspective);
             }
         }
         return duplicate;
@@ -1116,7 +1116,7 @@ public final class ThemeManager implements Registrable {
         for (Type v : Manager.getTypeRegistry().getTypes(TypeFamily.VIEW)) {
             final ViewType viewType = (ViewType) v;
             final String viewName = viewType.getViewName();
-            
+
             if ("*".equals(viewName)) {
                 continue;
             }
@@ -1270,5 +1270,18 @@ public final class ThemeManager implements Registrable {
         return modelsByClassname.get(className);
     }
 
+    // Theme sets
+    public List<ThemeSet> getThemeSets() {
+        List<ThemeSet> themeSets = new ArrayList<ThemeSet>();
+        final TypeRegistry typeRegistry = Manager.getTypeRegistry();
+        for (Type type : typeRegistry.getTypes(TypeFamily.THEMESET)) {
+            themeSets.add((ThemeSet) type);
+        }
+        return themeSets;
+    }
 
+    public ThemeSet getThemeSetByName(final String name) {
+        final TypeRegistry typeRegistry = Manager.getTypeRegistry();
+        return (ThemeSet) typeRegistry.lookup(TypeFamily.THEMESET, name);
+    }
 }
