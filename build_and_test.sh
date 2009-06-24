@@ -4,14 +4,15 @@
 ant -f ft-build.xml make-distribution
 
 # Start JBoss
-ant -f ft-build.xml start-jboss
+chmod +x nuxeo-dam-distribution/nuxeo-dam-distribution-jboss/target/nuxeo-dam-jboss/bin/jbossctl
+nuxeo-dam-distribution/nuxeo-dam-distribution-jboss/target/nuxeo-dam-jboss/bin/jbossctl start
 
 # Run selenium tests
 HIDE_FF=true ./nuxeo-dam-distribution/nuxeo-dam-ear/ftest/selenium/run.sh
 ret1=$?
 
 # Stop JBoss
-ant -f ft-build.xml stop-jboss
+nuxeo-dam-distribution/nuxeo-dam-distribution-jboss/target/nuxeo-dam-jboss/bin/jbossctl stop
 
 # Exit if some tests failed
 [ $ret1 -eq 0 ] || exit 9
