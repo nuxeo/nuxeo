@@ -33,7 +33,11 @@ import org.nuxeo.runtime.api.Framework;
 public class LastDocuments extends DefaultObject {
 
     private static final String QUERY_CREATED_DOCUMENT = "SELECT * FROM "
-            + "Document ORDER BY dc:created DESC";
+            + "Document WHERE ecm:mixinType != 'Folderish' "
+            + "AND ecm:mixinType != 'HiddenInNavigation' "
+            + "AND ecm:isCheckedInVersion = 0 " + "AND ecm:isProxy = 0 "
+            + "AND ecm:currentLifeCycleState != 'deleted' "
+            + "ORDER BY dc:created DESC";
 
     /**
      * Return JSon data that contains a list of document properties (url, title,
@@ -46,7 +50,6 @@ public class LastDocuments extends DefaultObject {
      */
     @GET
     public Object doGet(@QueryParam("nb_docs") int nb_docs) throws Exception {
-
 
         DateFormat dateFormat = DateFormat.getDateTimeInstance(
                 DateFormat.SHORT, DateFormat.SHORT, ctx.getLocale());
