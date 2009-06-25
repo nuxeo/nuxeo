@@ -72,12 +72,17 @@ public abstract class AbstractUnicityChecker {
         Blob blob = null;
 
         for (String field : xpathFields) {
+            blob = null;
             try {
                 blob = (Blob) doc2Check.getPropertyValue(field);
             } catch (PropertyNotFoundException pnfe) {
                 continue;
             } catch (ClientException e) {
                 log.error("Error while getting property", e);
+                continue;
+            }
+            if (blob == null) {
+                log.error("No blob retrieved");
                 continue;
             }
 
