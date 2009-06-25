@@ -46,6 +46,8 @@ import org.nuxeo.theme.themes.ThemeDescriptor;
 import org.nuxeo.theme.themes.ThemeIOException;
 import org.nuxeo.theme.themes.ThemeManager;
 import org.nuxeo.theme.themes.ThemeParser;
+import org.nuxeo.theme.themes.ThemeSet;
+import org.nuxeo.theme.themes.ThemeSetEntry;
 import org.nuxeo.theme.types.Type;
 import org.nuxeo.theme.types.TypeFamily;
 import org.nuxeo.theme.types.TypeRegistry;
@@ -113,7 +115,7 @@ public class ThemeService extends DefaultComponent implements FrameworkListener 
                 || xp.equals("formats") || xp.equals("format-filters")
                 || xp.equals("standalone-filters") || xp.equals("resources")
                 || xp.equals("negotiations") || xp.equals("shortcuts")
-                || xp.equals("vocabularies") || xp.equals("themesets")) {
+                || xp.equals("vocabularies")) {
             registerTypeExtension(extension);
         } else if (xp.equals("applications")) {
             registerApplicationExtension(extension);
@@ -125,6 +127,8 @@ public class ThemeService extends DefaultComponent implements FrameworkListener 
             registerTemplateEngineExtension(extension);
         } else if (xp.equals("themes")) {
             registerThemeExtension(extension);
+        } else if (xp.equals("themesets")) {
+            registerThemeSetExtension(extension);
         } else if (xp.equals("presets")) {
             registerPresetExtension(extension);
         } else if (xp.equals("views")) {
@@ -148,7 +152,8 @@ public class ThemeService extends DefaultComponent implements FrameworkListener 
                 || xp.equals("negotiations") || xp.equals("perspectives")
                 || xp.equals("applications") || xp.equals("shortcuts")
                 || xp.equals("vocabularies") || (xp.equals("presets"))
-                || xp.equals("views") || xp.equals("themes") || xp.equals("themesets")) {
+                || xp.equals("views") || xp.equals("themes")
+                || xp.equals("themesets")) {
             unregisterTypeExtension(extension);
         } else if (xp.equals("views")) {
             unregisterViewExtension(extension);
@@ -358,6 +363,34 @@ public class ThemeService extends DefaultComponent implements FrameworkListener 
             themeDescriptor.setLoadingFailed(false);
             themeDescriptor.setLastLoaded(new Date());
             themeDescriptor.setName(themeName);
+        }
+    }
+
+    private void registerThemeSetExtension(Extension extension) {
+        Object[] contribs = extension.getContributions();
+        TypeRegistry typeRegistry = (TypeRegistry) getRegistry("types");
+
+        for (Object contrib : contribs) {
+            ThemeSet themeSet = (ThemeSet) contrib;
+            String name = themeSet.getName();
+
+            ThemeSet oldThemeSet = (ThemeSet) typeRegistry.lookup(
+                    TypeFamily.THEMESET, name);
+
+            if (oldThemeSet == null) {
+                typeRegistry.register(themeSet);
+            } else {
+                for (ThemeSetEntry theme : themeSet.getThemes()) {
+                    String themeName = theme.getName();
+                    ThemeSetEntry oldTheme = oldThemeSet.getTheme(themeName);
+                    if (oldTheme == null) {
+                        oldTheme = new ThemeSetEntry(themeName);
+                        oldThemeSet.setTheme(oldTheme);
+                    }
+                    oldTheme.addFeatures(theme.getFeatures());
+                }
+
+            }
         }
     }
 

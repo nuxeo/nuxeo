@@ -14,7 +14,9 @@
 
 package org.nuxeo.theme.themes;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.common.xmap.annotation.XNode;
@@ -48,12 +50,24 @@ public class ThemeSet implements Type {
     }
 
     public String getThemeForFeature(String feature) {
-        for (Map.Entry<String, ThemeSetEntry> theme: themes.entrySet()) {
+        for (Map.Entry<String, ThemeSetEntry> theme : themes.entrySet()) {
             if (theme.getValue().getFeatures().contains(feature)) {
                 return theme.getKey();
             }
         }
         return null;
+    }
+
+    public void setTheme(ThemeSetEntry theme) {
+        themes.put(theme.getName(), theme);
+    }
+    
+    public ThemeSetEntry getTheme(String themeName) {
+        return themes.get(themeName);
+    }
+
+    public List<ThemeSetEntry> getThemes() {
+        return new ArrayList<ThemeSetEntry>(themes.values());
     }
 
 }

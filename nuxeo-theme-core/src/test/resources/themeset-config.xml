@@ -6,10 +6,24 @@
     point="themesets">
 
     <themeset name="galaxy">
+      <theme name="galaxy-default" features="default" />
+    </themeset>
+
+    <!-- register new themes -->
+    <themeset name="galaxy">
       <theme name="galaxy-blogs" features="blogs" />
       <theme name="galaxy-dm" features="dm" />
       <theme name="galaxy-sites" features="sites" />
-      <theme name="galaxy-default" features="default,dashboard,search" />
+    </themeset>
+
+    <!-- add features to registered theme -->
+    <themeset name="galaxy">
+      <theme name="galaxy-default" features="dashboard,search" />
+    </themeset>
+
+    <!-- register new theme for existing feature -->
+    <themeset name="galaxy">
+      <theme name="galaxy-search" features="search" />
     </themeset>
 
   </extension>
