@@ -121,7 +121,8 @@
               <tasks>
                 <echo message="Backup EJB3..." />
                 <move file="${jboss.deploy}/ejb3.deployer/jboss-ejb3.jar"
-                  tofile="${jboss.deploy}/ejb3.deployer/jboss-ejb3.jar.bak" />
+                  tofile="${jboss.deploy}/ejb3.deployer/jboss-ejb3.jar.bak"
+                  failonerror="false" />
               </tasks>
             </configuration>
             <goals>
