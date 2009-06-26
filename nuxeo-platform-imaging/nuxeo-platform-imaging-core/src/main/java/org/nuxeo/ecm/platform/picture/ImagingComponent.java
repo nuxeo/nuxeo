@@ -25,6 +25,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.picture.api.ImagingService;
 import org.nuxeo.ecm.platform.picture.core.libraryselector.LibrarySelector;
@@ -47,11 +48,11 @@ public class ImagingComponent extends DefaultComponent implements
             return getLibrarySelectorService().getImageUtils().crop(in, x, y,
                     width, height);
         } catch (InstantiationException e) {
-            log.error("Failed to instanciate ImageUtils Class");
+            log.error("Failed to instanciate ImageUtils Class", e);
         } catch (IllegalAccessException e) {
-            log.error("Failed to instanciate ImageUtils Class");
+            log.error("Failed to instanciate ImageUtils Class", e);
         } catch (ClientException e) {
-            log.error("ClientException");
+            log.error(e, e);
         }
         return in;
     }
@@ -61,11 +62,11 @@ public class ImagingComponent extends DefaultComponent implements
             return getLibrarySelectorService().getImageUtils().resize(in,
                     width, height);
         } catch (InstantiationException e) {
-            log.error("Failed to instanciate ImageUtils Class");
+            log.error("Failed to instanciate ImageUtils Class", e);
         } catch (IllegalAccessException e) {
-            log.error("Failed to instanciate ImageUtils Class");
+            log.error("Failed to instanciate ImageUtils Class", e);
         } catch (ClientException e) {
-            log.error("ClientException");
+            log.error(e, e);
         }
         return in;
     }
@@ -74,39 +75,55 @@ public class ImagingComponent extends DefaultComponent implements
         try {
             return getLibrarySelectorService().getImageUtils().rotate(in, angle);
         } catch (InstantiationException e) {
-            log.error("Failed to instanciate ImageUtils Class");
+            log.error("Failed to instanciate ImageUtils Class", e);
         } catch (IllegalAccessException e) {
-            log.error("Failed to instanciate ImageUtils Class");
+            log.error("Failed to instanciate ImageUtils Class", e);
         } catch (ClientException e) {
-            log.error("ClientException");
+            log.error(e, e);
         }
         return in;
     }
 
+    @Deprecated
     public Map<String, Object> getImageMetadata(InputStream in) {
         try {
             return getLibrarySelectorService().getMetadataUtils().getImageMetadata(
                     in);
         } catch (InstantiationException e) {
-            log.error("Failed to instanciate ImageMetadata Class");
+            log.error("Failed to instanciate ImageMetadata Class", e);
         } catch (IllegalAccessException e) {
-            log.error("Failed to instanciate ImageMetadata Class");
+            log.error("Failed to instanciate ImageMetadata Class", e);
         } catch (ClientException e) {
-            log.error("ClientException");
+            log.error(e, e);
         }
         return null;
     }
 
+    @Deprecated
     public Map<String, Object> getImageMetadata(File file) {
         try {
             return getLibrarySelectorService().getMetadataUtils().getImageMetadata(
                     file);
         } catch (InstantiationException e) {
-            log.error("Failed to instanciate ImageMetadata Class");
+            log.error("Failed to instanciate ImageMetadata Class", e);
         } catch (IllegalAccessException e) {
-            log.error("Failed to instanciate ImageMetadata Class");
+            log.error("Failed to instanciate ImageMetadata Class", e);
         } catch (ClientException e) {
-            log.error("ClientException");
+            log.error(e, e);
+        }
+        return null;
+    }
+
+    public Map<String, Object> getImageMetadata(Blob blob) {
+        try {
+            return getLibrarySelectorService().getMetadataUtils().getImageMetadata(
+                    blob);
+        } catch (InstantiationException e) {
+            log.error("Failed to instanciate ImageMetadata Class", e);
+        } catch (IllegalAccessException e) {
+            log.error("Failed to instanciate ImageMetadata Class", e);
+        } catch (ClientException e) {
+            log.error(e, e);
         }
         return null;
     }
@@ -115,11 +132,11 @@ public class ImagingComponent extends DefaultComponent implements
         try {
             return getLibrarySelectorService().getMimeUtils().getImageMimeType(file);
         }catch (InstantiationException e) {
-            log.error("Failed to instanciate ImageMime Class");
+            log.error("Failed to instanciate ImageMime Class", e);
         } catch (IllegalAccessException e) {
-            log.error("Failed to instanciate ImageMime Class");
+            log.error("Failed to instanciate ImageMime Class", e);
         } catch (ClientException e) {
-            log.error("ClientException");
+            log.error(e, e);
         }
         return null;
     }
@@ -128,11 +145,11 @@ public class ImagingComponent extends DefaultComponent implements
         try {
             return getLibrarySelectorService().getMimeUtils().getImageMimeType(in);
         }catch (InstantiationException e) {
-            log.error("Failed to instanciate ImageMime Class");
+            log.error("Failed to instanciate ImageMime Class", e);
         } catch (IllegalAccessException e) {
-            log.error("Failed to instanciate ImageMime Class");
+            log.error("Failed to instanciate ImageMime Class", e);
         } catch (ClientException e) {
-            log.error("ClientException");
+            log.error(e, e);
         }
         return null;
     }

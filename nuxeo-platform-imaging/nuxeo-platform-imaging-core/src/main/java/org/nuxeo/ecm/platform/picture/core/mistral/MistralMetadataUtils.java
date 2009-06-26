@@ -34,7 +34,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.platform.picture.core.MetadataUtils;
+import org.nuxeo.runtime.services.streaming.InputStreamSource;
 
 import com.drew.imaging.jpeg.JpegMetadataReader;
 import com.drew.imaging.jpeg.JpegProcessingException;
@@ -47,30 +53,37 @@ import com.drew.metadata.iptc.IptcDirectory;
  */
 public class MistralMetadataUtils implements MetadataUtils {
 
+    private static final Log log = LogFactory.getLog(MistralMetadataUtils.class);
+
     private static final int BUFFER_LIMIT = 32000000;
 
+    @Deprecated
     public Map<String, Object> getImageMetadata(InputStream in) {
-        return getImageMetadataInternal(in);
-    }
-
-    public Map<String, Object> getImageMetadata(File file) {
-        return getImageMetadataInternal(file);
-    }
-
-    private static Map<String, Object> getImageMetadataInternal(Object source) {
-        Map<String, Object> metadata = new HashMap<String, Object>();
-        try {
-            BufferedInputStream bin = null;
-            if (source instanceof InputStream) {
-                if (source instanceof BufferedInputStream) {
-                    bin = (BufferedInputStream) source;
-                } else {
-                    source = bin = new BufferedInputStream((InputStream) source);
-                }
-                bin.mark(BUFFER_LIMIT);
+        BufferedInputStream bin = null;
+        if (in instanceof InputStream) {
+            if (in instanceof BufferedInputStream) {
+                bin = (BufferedInputStream) in;
+            } else {
+                in = bin = new BufferedInputStream((InputStream) in);
             }
+            bin.mark(BUFFER_LIMIT);
+        }
+        Blob blob = new StreamingBlob(new InputStreamSource(bin));
+        return getImageMetadata(blob);
+    }
+
+    @Deprecated
+    public Map<String, Object> getImageMetadata(File file) {
+        Blob blob = new FileBlob(file);
+        return getImageMetadata(blob);
+    }
+
+    public Map<String, Object> getImageMetadata(Blob blob) {
+        Map<String, Object> metadata = new HashMap<String, Object>();
+
+        try {
             /* EXIF */
-            EditableImage image = EditableImage.create(new ReadOp(source, ReadOp.Type.METADATA));
+            EditableImage image = EditableImage.create(new ReadOp(blob.getStream(), ReadOp.Type.METADATA));
             EXIFDirectory exif = image.getEXIFDirectory();
 
             int width;
@@ -79,10 +92,7 @@ public class MistralMetadataUtils implements MetadataUtils {
                 width = exif.getPixelXDimension();
                 height = exif.getPixelYDimension();
             } else {
-                if (bin != null) {
-                    bin.reset();
-                }
-                image = EditableImage.create(new ReadOp(source));
+                image = EditableImage.create(new ReadOp(blob.getStream()));
                 width = image.getWidth();
                 height = image.getHeight();
             }
@@ -155,16 +165,15 @@ public class MistralMetadataUtils implements MetadataUtils {
             if (exif.isInterColourProfileAvailable()) {
                 metadata.put(META_ICCPROFILE, exif.getICCProfile());
             }
+        } catch (IOException e) {
+            log.error("Failed to get EXIF metadata", e);
+        }
 
+        try {
             /* IPTC */
             Metadata md = null;
-            if (source instanceof File) {
-                md = JpegMetadataReader.readMetadata((File) source);
-            } else if (source instanceof InputStream) {
-                if (bin != null) {
-                    bin.reset();
-                }
-                md = JpegMetadataReader.readMetadata((InputStream) source);
+            if (MistralMimeUtils.MIME_IMAGE_JPEG.equals(blob.getMimeType())) {
+                md = JpegMetadataReader.readMetadata(blob.getStream());
             }
             if (md != null) {
                 Directory iptc = md.getDirectory(IptcDirectory.class);
@@ -210,13 +219,10 @@ public class MistralMetadataUtils implements MetadataUtils {
                     metadata.put(META_SOURCE, iptc.getString(IptcDirectory.TAG_SOURCE));
                 }
             }
-
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error("Failed to get IPTC metadata", e);
         } catch (JpegProcessingException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error("Failed to get IPTC metadata", e);
         }
 
         return metadata;

@@ -19,8 +19,33 @@
 
 package org.nuxeo.ecm.platform.picture.core.imagej;
 
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.*;
-
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_BYLINE;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_CAPTION;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_CATEGORY;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_CITY;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_COLORSPACE;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_COMMENT;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_COPYRIGHT;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_COUNTRY;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_CREDIT;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_DATE;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_DESCRIPTION;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_EQUIPMENT;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_EXPOSURE;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_FOCALLENGTH;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_HEADLINE;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_HEIGHT;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_HRESOLUTION;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_ICCPROFILE;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_ISOSPEED;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_LANGUAGE;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_OBJECTNAME;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_ORIGINALDATE;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_SOURCE;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_SUPPLEMENTALCATEGORIES;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_VRESOLUTION;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_WHITEBALANCE;
+import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_WIDTH;
 import ij.ImagePlus;
 import ij.io.Opener;
 import it.tidalwave.image.EditableImage;
@@ -36,8 +61,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.platform.picture.core.MetadataUtils;
+import org.nuxeo.runtime.services.streaming.InputStreamSource;
 
 import com.drew.imaging.jpeg.JpegMetadataReader;
 import com.drew.imaging.jpeg.JpegProcessingException;
@@ -47,47 +77,57 @@ import com.drew.metadata.iptc.IptcDirectory;
 
 public class ImageJMetadataUtils implements MetadataUtils {
 
+    private static final Log log = LogFactory.getLog(ImageJMetadataUtils.class);
+
     private static final int BUFFER_LIMIT = 32000000;
 
+    @Deprecated
     public Map<String, Object> getImageMetadata(InputStream in) {
-        return getImageMetadataInternal(in);
+        BufferedInputStream bin = null;
+        if (in instanceof InputStream) {
+            if (in instanceof BufferedInputStream) {
+                bin = (BufferedInputStream) in;
+            } else {
+                in = bin = new BufferedInputStream((InputStream) in);
+            }
+            bin.mark(BUFFER_LIMIT);
+        }
+        Blob blob = new StreamingBlob(new InputStreamSource(bin));
+        return getImageMetadata(blob);
     }
 
+    @Deprecated
     public Map<String, Object> getImageMetadata(File file) {
-        return getImageMetadataInternal(file);
+        Blob blob = new FileBlob(file);
+        return getImageMetadata(blob);
     }
 
-    private Map<String, Object> getImageMetadataInternal(Object source) {
+    public Map<String, Object> getImageMetadata(Blob blob) {
         Map<String, Object> metadata = new HashMap<String, Object>();
         // get Width and Height
-        try {
-            ImagePlus im = null;
-            if (source instanceof File) {
-                Opener op = new Opener();
-                im = op.openImage(((File) source).getPath());
-            } else if (source instanceof InputStream) {
-                FileBlob fb = new FileBlob((InputStream) source);
+        ImagePlus im = null;
+        if (blob instanceof FileBlob) {
+            Opener op = new Opener();
+            im = op.openImage(((FileBlob) blob).getFile().getPath());
+        } else {
+            try {
+                FileBlob fb = new FileBlob(blob.getStream());
                 String path = fb.getFile().getPath();
                 Opener op = new Opener();
                 im = op.openImage(path);
+           } catch (IOException e) {
+                log.error("Failed to get file path", e);
             }
-            if (im == null){
-                return metadata;
-            }
-            metadata.put(META_WIDTH, im.getFileInfo().width);
-            metadata.put(META_HEIGHT, im.getFileInfo().height);
+        }
+        if (im == null){
+            return metadata;
+        }
+        metadata.put(META_WIDTH, im.getFileInfo().width);
+        metadata.put(META_HEIGHT, im.getFileInfo().height);
 
-            BufferedInputStream bin = null;
-            if (source instanceof InputStream) {
-                if (source instanceof BufferedInputStream) {
-                    bin = (BufferedInputStream) source;
-                } else {
-                    source = bin = new BufferedInputStream((InputStream) source);
-                }
-                bin.mark(BUFFER_LIMIT);
-            }
+        try {
             /* EXIF */
-            EditableImage image = EditableImage.create(new ReadOp(source,
+            EditableImage image = EditableImage.create(new ReadOp(blob.getStream(),
                     ReadOp.Type.METADATA));
             EXIFDirectory exif = image.getEXIFDirectory();
 
@@ -160,16 +200,15 @@ public class ImageJMetadataUtils implements MetadataUtils {
             if (exif.isInterColourProfileAvailable()) {
                 metadata.put(META_ICCPROFILE, exif.getICCProfile());
             }
+        } catch (IOException e) {
+            log.error("Failed to get EXIF metadata", e);
+        }
 
+        try {
             /* IPTC */
             Metadata md = null;
-            if (source instanceof File) {
-                md = JpegMetadataReader.readMetadata((File) source);
-            } else if (source instanceof InputStream) {
-                if (bin != null) {
-                    bin.reset();
-                }
-                md = JpegMetadataReader.readMetadata((InputStream) source);
+            if ("image/jpeg".equals(blob.getMimeType())) {
+                md = JpegMetadataReader.readMetadata(blob.getStream());
             }
             if (md != null) {
                 Directory iptc = md.getDirectory(IptcDirectory.class);
@@ -229,9 +268,10 @@ public class ImageJMetadataUtils implements MetadataUtils {
                             iptc.getString(IptcDirectory.TAG_SOURCE));
                 }
             }
-
         } catch (IOException e) {
+            log.error("Failed to get IPTC metadata", e);
         } catch (JpegProcessingException e) {
+            log.error("Failed to get IPTC metadata", e);
         }
 
         return metadata;

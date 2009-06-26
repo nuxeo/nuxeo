@@ -18,16 +18,12 @@
  */
 package org.nuxeo.ecm.platform.picture.convert.test;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -37,11 +33,6 @@ import org.nuxeo.ecm.platform.picture.api.adapters.MultiviewPicture;
 import org.nuxeo.ecm.platform.picture.api.adapters.PictureResourceAdapter;
 
 public class TestImagingAdapter extends RepositoryOSGITestCase {
-
-    public static final String TEST_DATA_FOLDER = "test-data/";
-    
-    public static final List<String> TEST_IMAGE_FILENAMES = Arrays.asList(
-            "sample.jpeg", "big_nuxeo_logo.gif", "big_nuxeo_logo.png");
 
     @Override
     public void setUp() throws Exception {
@@ -53,12 +44,6 @@ public class TestImagingAdapter extends RepositoryOSGITestCase {
         deployBundle("org.nuxeo.ecm.platform.picture.core");
         deployBundle("org.nuxeo.ecm.platform.picture.convert");
         openRepository();
-    }
-
-    private static File getFileFromPath(String path) {
-        File file = FileUtils.getResourceFileFromContext(path);
-        assertTrue(file.length() > 0);
-        return file;
     }
 
     public void testAdapter() throws ClientException, IOException {
@@ -93,9 +78,9 @@ public class TestImagingAdapter extends RepositoryOSGITestCase {
         PictureResourceAdapter adapter = child.getAdapter(PictureResourceAdapter.class);
         assertNotNull(adapter);
 
-        for (String filename : TEST_IMAGE_FILENAMES) {
-            String path = TEST_DATA_FOLDER + filename;
-            Blob blob = new FileBlob(getFileFromPath(path));
+        for (String filename : ImagingTestRessources.TEST_IMAGE_FILENAMES) {
+            String path = ImagingTestRessources.TEST_DATA_FOLDER + filename;
+            Blob blob = new FileBlob(ImagingTestRessources.getFileFromPath(path));
             assertNotNull(blob);
             boolean ret = adapter.createPicture(blob, filename, "sample",
                     pictureTemplates);

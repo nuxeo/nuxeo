@@ -139,7 +139,7 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
 
     protected void setMetadata() throws IOException, ClientException {
         Map<String, Object> metadata = getImagingService().getImageMetadata(
-                fileContent.getStream());
+                fileContent);
         description = (String) metadata.get(MetadataConstants.META_DESCRIPTION);
         width = (Integer) metadata.get(MetadataConstants.META_WIDTH);
         height = (Integer) metadata.get(MetadataConstants.META_HEIGHT);

@@ -22,6 +22,8 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.Map;
 
+import org.nuxeo.ecm.core.api.Blob;
+
 /**
  * @author Max Stepanov
  *
@@ -65,8 +67,11 @@ public interface ImagingService {
      * @param in
      * @return metadata
      */
+    @Deprecated
     Map<String, Object> getImageMetadata(InputStream in);
+    @Deprecated
     Map<String, Object> getImageMetadata(File file);
+    Map<String, Object> getImageMetadata(Blob blob);
 
     /**
      * return file mime-type
