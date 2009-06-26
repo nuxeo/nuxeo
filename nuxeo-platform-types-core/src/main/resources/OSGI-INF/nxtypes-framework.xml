@@ -24,25 +24,21 @@
 
       - id: its string identifier
 
-      - remove: if is true remove this ecm document type. Use it, for
-      instance, if there is a document type contributed in nuxeo-dm that
-      you don't want in your application. (careful to add the dependency to
-      the contribution that create this document type)
-
-      - coretype: its core type identifier. The core type holds information
-      about the document schemas {@see org.nuxeo.ecm.core.schema.types.Type}.
-      WARNING: id and coretype currently need to be identical in the definition.
+      - remove: if true, remove this ecm document type. Can be used, for
+      instance, if there is a document type contributed by nuxeo-dm that
+      you don't want in your application. (Be careful to add a dependency
+      to the contribution that creates this document type.)
 
       - icon: icon path used to represent the document type.
 
       - icon-expanded: icon used for instance in tree view
 
       - bigIcon: icon path aimed at rich application
-      
+
       - bigIcon-expanded: same as icon-expanded for rich application
-      
+
       - category: Category of the document type.
-      
+
       - description: Description of the document type.
 
       - label: string title.
