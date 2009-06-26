@@ -51,8 +51,10 @@ public class ConversionCacheEntry {
         if (bh instanceof CachableBlobHolder) {
             CachableBlobHolder cbh = (CachableBlobHolder) bh;
             persistPath = cbh.persist(basePath);
-            sizeInKB = new File(persistPath).length() / 1024;
-            persisted = true;
+            if (persistPath != null) {
+                sizeInKB = new File(persistPath).length() / 1024;
+                persisted = true;
+            }
         }
         bh = null;
         return persisted;
