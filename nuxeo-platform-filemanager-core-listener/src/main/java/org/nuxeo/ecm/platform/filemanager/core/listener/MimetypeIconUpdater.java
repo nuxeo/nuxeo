@@ -14,16 +14,13 @@
 package org.nuxeo.ecm.platform.filemanager.core.listener;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
-import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.DataModelImpl;
-import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
@@ -51,17 +48,19 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class MimetypeIconUpdater implements EventListener {
 
-    public static final String ICON_FIELD = "common:icon";
+    public static final String ICON_FIELD = "/common:icon";
 
-    public static final String MAIN_BLOB_FIELD = "file:content";
+    public static final String MAIN_BLOB_FIELD = "/file:content";
 
     @Deprecated
     // the length of the main blob is now stored inside the blob itself
-    private static final String SIZE_FIELD = "common:size";
+    private static final String SIZE_FIELD = "common:/size";
 
     @Deprecated
     // the filename should now be stored inside the main blob
     public static final String MAIN_EXTERNAL_FILENAME_FIELD = "file:filename";
+
+    protected static final String OCTET_STREAM_MT = "application/octet-stream";
 
     public final BlobExtractor blobExtractor = new BlobExtractor();
 
@@ -79,21 +78,13 @@ public class MimetypeIconUpdater implements EventListener {
                 // ensure the document main icon is not null
                 setDefaultIcon(doc);
 
-                // Scan blob-typed dirty fields to update there mimetype
-                MimetypeRegistry mimetypeService = Framework
-                        .getService(MimetypeRegistry.class);
-                for (DataModel dm : new ArrayList<DataModel>(doc
-                        .getDataModelsCollection())) {
-                    // we iterate over doc.getDataModelsCollection() and then grab
-                    // the DocumentPart instead of directly calling
-                    // doc.getDocumentParts since the later would load yet unfetched
-                    // datamodels which cannot be dirty
+                MimetypeRegistry mimetypeService = Framework.getService(MimetypeRegistry.class);
 
-                    // the data models are copied in a new list to avoid
-                    // concurrent modification problem at the iterator level
-                    DocumentPart dp = ((DataModelImpl) dm).getDocumentPart();
-                    recursivelyUpdateBlobs(doc, mimetypeService, dp
-                            .getDirtyChildren());
+                // update mimetypes of blobs in the document
+                for (Property prop : blobExtractor.getBlobsProperties(doc)) {
+                    if (prop.isDirty()) {
+                      updateBlobProperty(doc, mimetypeService, prop);
+                    }
                 }
             }
             catch (Exception e) {
@@ -106,7 +97,10 @@ public class MimetypeIconUpdater implements EventListener {
     /**
      * Recursively call updateBlobProperty on every dirty blob embedded as
      * direct children or contained in one of the container children.
+     *
+     * @deprecated now we use {@link BlobExtractor} that cache path fields.
      */
+    @Deprecated
     public static void recursivelyUpdateBlobs(DocumentModel doc,
             MimetypeRegistry mimetypeService, Iterator<Property> dirtyChildren)
             throws Exception {
@@ -135,28 +129,29 @@ public class MimetypeIconUpdater implements EventListener {
 
 
         Blob blob = dirtyProperty.getValue(Blob.class);
-        if (blob != null) {
-            // update the mimetype using the the mimetype registry
+        if (blob != null && (blob.getEncoding() == null || blob.getEncoding().equals(OCTET_STREAM_MT))) {
+            // update the mimetype (if not set) using the the mimetype registry
             // service
             blob = mimetypeService.updateMimetype(blob);
             doc.setPropertyValue(fieldPath, (Serializable) blob);
-        }
-        if (MAIN_BLOB_FIELD.equals(fieldPath)) {
-            // update the icon field of the document
-            if (blob != null) {
-                MimetypeEntry mimetypeEntry = mimetypeService
-                        .getMimetypeEntryByMimeType(blob.getMimeType());
-                updateIconField(mimetypeEntry, doc);
-            } else {
-                // reset to document type icon
-                updateIconField(null, doc);
-            }
 
-            // BBB: update the deprecated common:size field to preserver
-            // backward compatibility (we should only use
-            // file:content/length instead)
-            doc.setPropertyValue(SIZE_FIELD, blob != null ? blob.getLength()
-                    : 0);
+            if (MAIN_BLOB_FIELD.equals(fieldPath)) {
+                // update the icon field of the document
+                if (blob != null) {
+                    MimetypeEntry mimetypeEntry = mimetypeService
+                            .getMimetypeEntryByMimeType(blob.getMimeType());
+                    updateIconField(mimetypeEntry, doc);
+                } else {
+                    // reset to document type icon
+                    updateIconField(null, doc);
+                }
+
+                // BBB: update the deprecated common:size field to preserver
+                // backward compatibility (we should only use
+                // file:content/length instead)
+                doc.setPropertyValue(SIZE_FIELD, blob != null ? blob.getLength()
+                        : 0);
+            }
         }
     }
 
