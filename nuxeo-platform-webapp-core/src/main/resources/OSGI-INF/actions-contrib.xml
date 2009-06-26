@@ -137,9 +137,9 @@
       <category>VIEW_ACTION_LIST</category>
       <filter-id>manage</filter-id>
       <filter id="has_subtabs">
-        <rule grant="true">
+        <rule grant="false">
           <condition>
-            !empty webActions.getActionsList("TAB_MANAGE_sub_tab")
+            #{webActions.getActionsList('TAB_MANAGE_sub_tab').isEmpty()}
           </condition>
         </rule>
       </filter>
