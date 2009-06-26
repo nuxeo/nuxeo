@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.platform.importer.base;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -35,7 +37,9 @@ import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.platform.importer.factories.DefaultDocumentModelFactory;
 import org.nuxeo.ecm.platform.importer.factories.ImporterDocumentModelFactory;
+import org.nuxeo.ecm.platform.importer.filter.ImporterFilter;
 import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
+import org.nuxeo.ecm.platform.importer.log.PerfLogger;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
 import org.nuxeo.ecm.platform.importer.threading.DefaultMultiThreadingPolicy;
 import org.nuxeo.ecm.platform.importer.threading.ImporterThreadingPolicy;
@@ -48,7 +52,7 @@ import org.nuxeo.runtime.api.Framework;
  * @author Thierry Delprat
  *
  */
-public class GenericMultiThreadedImporter implements Runnable {
+public class GenericMultiThreadedImporter implements ImporterRunner {
 
     protected static ThreadPoolExecutor importTP;
 
@@ -65,6 +69,10 @@ public class GenericMultiThreadedImporter implements Runnable {
     protected ImporterLogger log;
     protected CoreSession session;
     protected String importWritePath;
+
+    protected boolean enablePerfLogging=true;
+
+    protected List<ImporterFilter> filters = new ArrayList<ImporterFilter>();
 
     public static ThreadPoolExecutor getExecutor() {
         return importTP;
@@ -97,6 +105,11 @@ public class GenericMultiThreadedImporter implements Runnable {
         this.log = log;
     }
 
+
+    public void addFilter(ImporterFilter filter) {
+        filters.add(filter);
+    }
+
     protected CoreSession getCoreSession() throws Exception {
         if (this.session == null) {
             RepositoryManager rm = Framework
@@ -109,12 +122,20 @@ public class GenericMultiThreadedImporter implements Runnable {
 
     public void run() {
         LoginContext lc = null;
+        Exception finalException= null;
         try {
             lc = Framework.login();
+            for (ImporterFilter filter : filters) {
+                filter.handleBeforeImport();
+            }
             doRun();
         } catch (Exception e) {
             log.error("Task exec failed", e);
+            finalException=e;
         } finally {
+            for (ImporterFilter filter : filters) {
+                filter.handleAfterImport(finalException);
+            }
             if (lc != null) {
                 try {
                     lc.logout();
@@ -153,6 +174,10 @@ public class GenericMultiThreadedImporter implements Runnable {
         int activeTasks = importTP.getActiveCount();
         int oldActiveTasks = 0;
         long lastLogProgressTime = System.currentTimeMillis();
+        long lastCreatedDocCounter = 0;
+
+        String[] headers = {"nbDocs","average", "imediate"};
+        PerfLogger perfLogger = new PerfLogger(headers);
         while (activeTasks > 0) {
             Thread.sleep(500);
             activeTasks = importTP.getActiveCount();
@@ -171,13 +196,27 @@ public class GenericMultiThreadedImporter implements Runnable {
             }
             if (logProgress) {
                 long inbCreatedDocs = getCreatedDocsCounter();
+                long deltaT = ti-lastLogProgressTime;
+                double averageSpeed = 1000 * ((float) (inbCreatedDocs) / (ti - t0));
+                double imediateSpeed = averageSpeed;
+                if (deltaT>0) {
+                    imediateSpeed = 1000 * ((float) (inbCreatedDocs-lastCreatedDocCounter) / (deltaT));
+                }
                 log.info(inbCreatedDocs + " docs created");
-                log.info(1000 * ((float) (inbCreatedDocs) / (ti - t0))
-                        + " docs/s");
+                log.info("average speed = " + averageSpeed  + " docs/s");
+                log.info("immediate speed = " + imediateSpeed  + " docs/s");
+
+                if (enablePerfLogging) {
+                    Double[] perfData = {new Double(inbCreatedDocs), averageSpeed, imediateSpeed};
+                    perfLogger.log(perfData);
+                }
+
                 lastLogProgressTime = ti;
+                lastCreatedDocCounter = inbCreatedDocs;
             }
         }
         log.info("All Threads terminated");
+        perfLogger.release();
         long t1 = System.currentTimeMillis();
         long nbCreatedDocs = getCreatedDocsCounter();
         log.info(nbCreatedDocs + " docs created");
@@ -209,6 +248,16 @@ public class GenericMultiThreadedImporter implements Runnable {
 
     public void setFactory(ImporterDocumentModelFactory factory) {
         this.factory = factory;
+    }
+
+    public void setEnablePerfLogging(boolean enablePerfLogging) {
+        this.enablePerfLogging = enablePerfLogging;
+    }
+
+    public void stopImportProcrocess() {
+        if (importTP!=null && !importTP.isTerminated() && ! importTP.isTerminating()) {
+            importTP.shutdownNow();
+        }
     }
 
 }

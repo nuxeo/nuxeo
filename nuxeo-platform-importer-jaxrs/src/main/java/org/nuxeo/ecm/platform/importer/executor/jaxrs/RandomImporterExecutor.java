@@ -8,7 +8,10 @@ import javax.ws.rs.QueryParam;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.importer.base.GenericMultiThreadedImporter;
+import org.nuxeo.ecm.platform.importer.filter.EventServiceConfiguratorFilter;
+import org.nuxeo.ecm.platform.importer.filter.ImporterFilter;
 import org.nuxeo.ecm.platform.importer.source.RandomTextSourceNode;
+import org.nuxeo.ecm.platform.importer.source.SourceNode;
 
 public class RandomImporterExecutor extends AbstractJaxRSImporterExecutor {
 
@@ -29,15 +32,28 @@ public class RandomImporterExecutor extends AbstractJaxRSImporterExecutor {
     Integer nbTheards, @QueryParam("interactive")
     Boolean interactive, @QueryParam("nbNodes")
     Integer nbNodes , @QueryParam("fileSizeKB")
-    Integer fileSizeKB) throws Exception {
+    Integer fileSizeKB, @QueryParam("onlyText")
+    Boolean onlyText, @QueryParam("blockSyncPostCommitProcessing")
+    Boolean blockSyncPostCommitProcessing, @QueryParam("blockAsyncProcessing")
+    Boolean blockAsyncProcessing) throws Exception {
 
-        RandomTextSourceNode source =null;
+        if (onlyText==null) {
+            onlyText=true;
+        }
+
+        SourceNode source =null;
         getLogger().info("Init Random text generator");
-        source = RandomTextSourceNode.init(nbNodes, fileSizeKB);
+        source = RandomTextSourceNode.init(nbNodes, fileSizeKB, onlyText);
         getLogger().info("Random text generator initialized");
-        Runnable task = new GenericMultiThreadedImporter(source, targetPath,
+
+        GenericMultiThreadedImporter runner = new GenericMultiThreadedImporter(source, targetPath,
                 batchSize, nbTheards, getLogger());
-        return doRun(task, interactive);
+
+        ImporterFilter filter = new EventServiceConfiguratorFilter(blockSyncPostCommitProcessing, blockAsyncProcessing, !onlyText);
+        runner.addFilter(filter);
+
+        String res = doRun(runner, interactive);
+        return res;
     }
 
 }

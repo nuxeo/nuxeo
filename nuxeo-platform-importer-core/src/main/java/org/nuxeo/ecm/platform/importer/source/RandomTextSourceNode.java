@@ -69,20 +69,22 @@ public class RandomTextSourceNode implements SourceNode {
 
     public static boolean CACHE_CHILDREN=false;
 
-    public RandomTextSourceNode(boolean folderish, int level, int idx) {
+    protected boolean onlyText = true;
+
+    public RandomTextSourceNode(boolean folderish, int level, int idx, boolean onlyText) {
         this.folderish = folderish;
         hazard = new Random(System.currentTimeMillis());
         this.level=level;
         this.idx=idx;
-
+        this.onlyText=onlyText;
     }
 
     public static RandomTextSourceNode init(int maxSize) throws Exception {
-        return init(maxSize, null);
+        return init(maxSize, null, true);
     }
 
 
-    public static RandomTextSourceNode init(int maxSize, Integer blobSizeInKB) throws Exception {
+    public static RandomTextSourceNode init(int maxSize, Integer blobSizeInKB, boolean onlyText) throws Exception {
         gen = new RandomTextGenerator();
         gen.prefilCache();
         maxNode = maxSize;
@@ -91,7 +93,16 @@ public class RandomTextSourceNode implements SourceNode {
         RandomTextSourceNode.blobSizeInKB = blobSizeInKB;
         minGlobalFolders = maxNode / defaultNbDataNodesPerFolder;
         minFoldersPerNode = 1 + (int) Math.pow(minGlobalFolders, (1.0/maxDepth));
-        return new RandomTextSourceNode(true, 0, 0);
+        return new RandomTextSourceNode(true, 0, 0, onlyText);
+    }
+
+    protected String getBlobMimeType() {
+        if (onlyText) {
+            return "text/plain";
+        }
+        else {
+            return "text/partial";
+        }
     }
 
     public BlobHolder getBlobHolder() {
@@ -110,7 +121,7 @@ public class RandomTextSourceNode implements SourceNode {
         }
         Blob blob = new StringBlob(content);
         blob.setFilename(getName() + ".txt");
-        blob.setMimeType("text/plain");
+        blob.setMimeType(getBlobMimeType());
         return new SimpleBlobHolder(blob);
     }
 
@@ -162,12 +173,12 @@ public class RandomTextSourceNode implements SourceNode {
             nbNodes = nbNodes + nbChildren;
         }
         for (int i = 0; i< nbChildren; i++) {
-            children.add(new RandomTextSourceNode(false,level, i));
+            children.add(new RandomTextSourceNode(false,level, i, onlyText));
         }
         if (level < maxDepth) {
             int nbFolderish = getMaxFolderish();
             for (int i = 0; i< nbFolderish; i++) {
-                children.add(new RandomTextSourceNode(true, level+1, i));
+                children.add(new RandomTextSourceNode(true, level+1, i, onlyText));
             }
             synchronized (nbFolders) {
                 nbFolders = nbFolders + nbFolderish;

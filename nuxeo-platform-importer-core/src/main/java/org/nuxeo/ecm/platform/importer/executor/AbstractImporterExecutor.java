@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.importer.executor;
 
 import org.apache.commons.logging.Log;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.platform.importer.base.ImporterRunner;
 import org.nuxeo.ecm.platform.importer.factories.DefaultDocumentModelFactory;
 import org.nuxeo.ecm.platform.importer.factories.ImporterDocumentModelFactory;
 import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
@@ -41,7 +42,9 @@ public abstract class AbstractImporterExecutor {
 
     protected static ImporterLogger log;
 
-    protected static Thread executorMainThread;
+    protected Thread executorMainThread;
+
+    protected ImporterRunner runner;
 
     protected ImporterThreadingPolicy threadPolicy;
 
@@ -72,16 +75,15 @@ public abstract class AbstractImporterExecutor {
 
     public void kill() {
         if (executorMainThread != null) {
+            runner.stopImportProcrocess();
             executorMainThread.interrupt();
         }
     }
 
-
-
     protected abstract CoreSession getCoreSession();
 
-    protected void startTask(Runnable task, boolean interactive) {
-        executorMainThread = new Thread(task);
+    protected void startTask(ImporterRunner runner, boolean interactive) {
+        executorMainThread = new Thread(runner);
         if (interactive) {
             executorMainThread.run();
         } else {
@@ -89,14 +91,14 @@ public abstract class AbstractImporterExecutor {
         }
     }
 
-    protected String doRun(Runnable task, Boolean interactive) throws Exception {
+    protected String doRun(ImporterRunner runner, Boolean interactive) throws Exception {
         if (isRunning()) {
             throw new Exception("Task is already running");
         }
         if (interactive == null) {
             interactive = false;
         }
-        startTask(task, interactive);
+        startTask(runner, interactive);
 
         if (interactive) {
             return "Task compeleted";
