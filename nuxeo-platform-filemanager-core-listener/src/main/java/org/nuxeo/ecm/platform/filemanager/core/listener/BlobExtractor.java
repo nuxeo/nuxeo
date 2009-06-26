@@ -21,9 +21,9 @@ import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.runtime.api.Framework;
 
-public class BlobExtractorCache {
+public class BlobExtractor {
 
-    Log log = LogFactory.getLog(BlobExtractorCache.class);
+    Log log = LogFactory.getLog(BlobExtractor.class);
 
     protected Map<String, List<String>> blobFieldPaths = new HashMap<String, List<String>>();
 
@@ -114,10 +114,10 @@ public class BlobExtractorCache {
     /**
      * Analyzes the document's schemas to find which fields and complex types
      * contain blobs. For each blob fields type found,
-     * {@link BlobExtractorCache#blobMatched(DocumentType, Schema, String, Field)}
+     * {@link BlobExtractor#blobMatched(DocumentType, Schema, String, Field)}
      * is called and for each property that contains a subProperty containing a
      * Blob,
-     * {@link BlobExtractorCache#containsBlob(DocumentType, Schema, String, Field)}
+     * {@link BlobExtractor#containsBlob(DocumentType, Schema, String, Field)}
      * is called
      *
      * @param parent The parent schema that contains the field
@@ -170,7 +170,7 @@ public class BlobExtractorCache {
 
     /**
      * Call during the parsing of the schema structure in
-     * {@link BlobExtractorCache#findInteresting(Schema, ComplexType)} if field
+     * {@link BlobExtractor#findInteresting(Schema, ComplexType)} if field
      * is a Blob Type. This method stores the path to that Field.
      *
      * @param parent The parent schema that contains the field
@@ -190,7 +190,7 @@ public class BlobExtractorCache {
 
     /**
      * Call during the parsing of the schema structure in
-     * {@link BlobExtractorCache#findInteresting(Schema, ComplexType)} if field
+     * {@link BlobExtractor#findInteresting(Schema, ComplexType)} if field
      * contains a subfield of type Blob. This method do nothing.
      *
      * @param parent The parent schema that contains the field

@@ -51,17 +51,19 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class MimetypeIconUpdater implements EventListener {
 
-    public static final String ICON_FIELD = "/common:icon";
+    public static final String ICON_FIELD = "common:icon";
 
-    public static final String MAIN_BLOB_FIELD = "/file:content";
+    public static final String MAIN_BLOB_FIELD = "file:content";
 
     @Deprecated
     // the length of the main blob is now stored inside the blob itself
-    private static final String SIZE_FIELD = "common:/size";
+    private static final String SIZE_FIELD = "common:size";
 
     @Deprecated
     // the filename should now be stored inside the main blob
-    public static final String MAIN_EXTERNAL_FILENAME_FIELD = "file:/filename";
+    public static final String MAIN_EXTERNAL_FILENAME_FIELD = "file:filename";
+
+    public final BlobExtractor blobExtractor = new BlobExtractor();
 
     public void handleEvent(Event event) throws ClientException {
 

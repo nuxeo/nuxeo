@@ -14,7 +14,7 @@ import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.SchemaManagerImpl;
 import org.nuxeo.ecm.core.schema.TypeService;
-import org.nuxeo.ecm.platform.filemanager.core.listener.BlobExtractorCache;
+import org.nuxeo.ecm.platform.filemanager.core.listener.BlobExtractor;
 import org.nuxeo.runtime.api.Framework;
 
 public class TestBlobExtractor extends RepositoryOSGITestCase {
@@ -30,7 +30,7 @@ public class TestBlobExtractor extends RepositoryOSGITestCase {
 
     public void testCaching() throws Exception {
 
-        BlobExtractorCache bec = new BlobExtractorCache();
+        BlobExtractor bec = new BlobExtractor();
 
         List<String> paths = bec.getBlobFieldPathForDocumentType("NoBlobDocument");
         assertEquals(0, paths.size());
@@ -47,7 +47,7 @@ public class TestBlobExtractor extends RepositoryOSGITestCase {
 
     public void testGetBlobsFromDocumentModelNoBlob() throws Exception {
         deployBundle("org.nuxeo.ecm.platform.filemanager.core.listener.test");
-        BlobExtractorCache bec = new BlobExtractorCache();
+        BlobExtractor bec = new BlobExtractor();
 
         DocumentModel noBlob = getCoreSession().createDocumentModel("/",
                 "testNoBlob", "NoBlobDocument");
@@ -64,7 +64,7 @@ public class TestBlobExtractor extends RepositoryOSGITestCase {
 
     public void testGetBlobsFromDocumentModelSimpleBlob() throws Exception {
         deployBundle("org.nuxeo.ecm.platform.filemanager.core.listener.test");
-        BlobExtractorCache bec = new BlobExtractorCache();
+        BlobExtractor bec = new BlobExtractor();
 
         DocumentModel simpleBlob = getCoreSession().createDocumentModel("/",
                 "testSimpleBlob", "SimpleBlobDocument");
@@ -87,7 +87,7 @@ public class TestBlobExtractor extends RepositoryOSGITestCase {
     @SuppressWarnings("unchecked")
     public void testGetBlobsFromBlobInListDocument() throws Exception {
         deployBundle("org.nuxeo.ecm.platform.filemanager.core.listener.test");
-        BlobExtractorCache bec = new BlobExtractorCache();
+        BlobExtractor bec = new BlobExtractor();
 
         DocumentModel blobInListEmpty = getCoreSession().createDocumentModel(
                 "/", "testBlobInListDocumentEmpty", "BlobInListDocument");
