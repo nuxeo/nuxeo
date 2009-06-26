@@ -136,6 +136,13 @@
       label="action.view.manage" icon="/icons/file.gif">
       <category>VIEW_ACTION_LIST</category>
       <filter-id>manage</filter-id>
+      <filter id="has_subtabs">
+        <rule grant="true">
+          <condition>
+            !empty webActions.getActionsList("TAB_MANAGE_sub_tab")
+          </condition>
+        </rule>
+      </filter>
     </action>
 
     <action id="TAB_VIEW" link="/incl/tabs/document_view.xhtml" order="0"
