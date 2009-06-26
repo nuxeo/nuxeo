@@ -25,9 +25,11 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.model.impl.ListProperty;
 import org.nuxeo.ecm.core.api.model.impl.MapProperty;
 import org.nuxeo.ecm.core.api.model.impl.ScalarProperty;
+import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -38,12 +40,12 @@ public class ValueExporter implements PropertyVisitor {
 
     private final Map<String, Serializable> result = new HashMap<String, Serializable>();
 
-
     public Map<String, Serializable> getResult() {
         return result;
     }
 
-    public Map<String, Serializable> run(DocumentPart dp) throws PropertyException {
+    public Map<String, Serializable> run(DocumentPart dp)
+            throws PropertyException {
         dp.accept(this, result);
         return result;
     }
@@ -52,19 +54,32 @@ public class ValueExporter implements PropertyVisitor {
         return false;
     }
 
-    public Object visit(DocumentPart property, Object arg) throws PropertyException {
+    public Object visit(DocumentPart property, Object arg)
+            throws PropertyException {
         return arg;
     }
 
-    public Object visit(MapProperty property, Object arg) throws PropertyException {
+    public Object visit(MapProperty property, Object arg)
+            throws PropertyException {
+
         Serializable value;
         if (property.isContainer()) {
             value = new HashMap<String, Serializable>();
         } else {
             value = property.getValue();
         }
-        if (property.getParent().isList()) {
-        //if (arg instanceof Collection) {
+
+        if (BlobProperty.class.isAssignableFrom(property.getClass())) {
+            value = property.getValue();
+            if (property.getParent().isList()) {
+                ((Collection<Serializable>) arg).add(value);
+            } else {
+                ((Map<String, Serializable>) arg).put(property.getName(),
+                        value);
+            }
+            return null;
+        } else if (property.getParent().isList()) {
+            // if (arg instanceof Collection) {
             ((Collection<Serializable>) arg).add(value);
         } else {
             ((Map<String, Serializable>) arg).put(property.getName(), value);
@@ -72,7 +87,8 @@ public class ValueExporter implements PropertyVisitor {
         return value;
     }
 
-    public Object visit(ListProperty property, Object arg) throws PropertyException {
+    public Object visit(ListProperty property, Object arg)
+            throws PropertyException {
         Serializable value;
         if (property.isContainer()) {
             value = new ArrayList<Serializable>();
@@ -80,7 +96,7 @@ public class ValueExporter implements PropertyVisitor {
             value = property.getValue();
         }
         if (property.getParent().isList()) {
-        //if (arg instanceof Collection) {
+            // if (arg instanceof Collection) {
             ((Collection<Serializable>) arg).add(value);
         } else {
             ((Map<String, Serializable>) arg).put(property.getName(), value);
@@ -88,13 +104,15 @@ public class ValueExporter implements PropertyVisitor {
         return value;
     }
 
-    public Object visit(ScalarProperty property, Object arg) throws PropertyException {
+    public Object visit(ScalarProperty property, Object arg)
+            throws PropertyException {
+
         if (property.getParent().isList()) {
-        //if (arg instanceof Collection) {
+            // if (arg instanceof Collection) {
             ((Collection<Serializable>) arg).add(property.getValue());
         } else {
-            ((Map<String, Serializable>) arg).put(property.getName(),
-                    property.getValue());
+            ((Map<String, Serializable>) arg).put(property.getName(), property
+                    .getValue());
         }
         return null;
     }
