@@ -41,7 +41,7 @@ public class BlobExtractorCache {
     /**
      * Get properties of the given document that contain a blob value. This
      * method use the cache engine to find these properties.
-     * 
+     *
      * @param doc
      * @return
      * @throws Exception
@@ -70,7 +70,7 @@ public class BlobExtractorCache {
     /**
      * Get path list of properties that may contain a blob for the given
      * document type.
-     * 
+     *
      * @param documentType document type name
      * @return return the property names that contain blob
      * @throws Exception
@@ -119,7 +119,7 @@ public class BlobExtractorCache {
      * Blob,
      * {@link BlobExtractorCache#containsBlob(DocumentType, Schema, String, Field)}
      * is called
-     * 
+     *
      * @param parent The parent schema that contains the field
      * @param ct Current type parsed
      * @return {@code true} if the passed complex type contains at least one
@@ -172,7 +172,7 @@ public class BlobExtractorCache {
      * Call during the parsing of the schema structure in
      * {@link BlobExtractorCache#findInteresting(Schema, ComplexType)} if field
      * is a Blob Type. This method stores the path to that Field.
-     * 
+     *
      * @param parent The parent schema that contains the field
      * @param field Field that is a BlobType
      */
@@ -192,7 +192,7 @@ public class BlobExtractorCache {
      * Call during the parsing of the schema structure in
      * {@link BlobExtractorCache#findInteresting(Schema, ComplexType)} if field
      * contains a subfield of type Blob. This method do nothing.
-     * 
+     *
      * @param parent The parent schema that contains the field
      * @param field Field that contains a subField of type BlobType
      */
@@ -213,6 +213,11 @@ public class BlobExtractorCache {
         }
 
         for (Property childProp : prop.getChildren()) {
+            if ("/*".equals(subPath.get(0))) {
+                // TODO : if blob are in a list
+                throw new Exception("TODO : BLOB IN A LIST NOT IMPLEMENTED for this path "
+                        + completePath);
+            }
             Property childSubProp = childProp.get(subPath.get(0));
             getBlobValue(childSubProp, subPath.subList(1, subPath.size()),
                     completePath, result);
