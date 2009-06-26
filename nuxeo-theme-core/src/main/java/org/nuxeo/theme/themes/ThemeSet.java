@@ -49,25 +49,41 @@ public class ThemeSet implements Type {
         return name;
     }
 
-    public String getThemeForFeature(String feature) {
-        for (Map.Entry<String, ThemeSetEntry> theme : themes.entrySet()) {
-            if (theme.getValue().getFeatures().contains(feature)) {
-                return theme.getKey();
-            }
-        }
-        return null;
-    }
-
+    /*
+     * Theme entries
+     */
     public void setTheme(ThemeSetEntry theme) {
         themes.put(theme.getName(), theme);
     }
-    
+
     public ThemeSetEntry getTheme(String themeName) {
         return themes.get(themeName);
     }
 
     public List<ThemeSetEntry> getThemes() {
         return new ArrayList<ThemeSetEntry>(themes.values());
+    }
+
+    /*
+     * Features
+     */
+    public String getThemeForFeature(String feature) {
+        for (ThemeSetEntry theme : getThemes()) {
+            if (theme.getFeatures().contains(feature)) {
+                return theme.getName();
+            }
+        }
+        return null;
+    }
+
+    public void addFeatureToTheme(String themeName, String feature) {
+        for (ThemeSetEntry theme : getThemes()) {
+            if (theme.getName().equals(themeName)) {
+                theme.addFeature(feature);
+            } else {
+                theme.removeFeature(feature);
+            }
+        }
     }
 
 }

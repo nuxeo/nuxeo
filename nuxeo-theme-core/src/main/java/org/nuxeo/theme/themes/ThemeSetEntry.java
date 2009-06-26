@@ -31,28 +31,33 @@ public class ThemeSetEntry {
 
     public ThemeSetEntry() {
     }
-    
+
     public ThemeSetEntry(String name) {
         this.name = name;
-    }
-
-    public List<String> getFeatures() {
-        return Arrays.asList(features.split(","));
-    }
-
-    public void addFeature(String feature) {
-        if (!getFeatures().contains(feature)) {
-            features = features.concat(",").concat(feature);
-        }
-    }
-
-    public void addFeatures(List<String> featuresList) {
-        for (String feature : featuresList) {
-            addFeature(feature);
-        }
     }
 
     public String getName() {
         return name;
     }
+
+    public List<String> getFeatures() {
+        return Arrays.asList(features.split(","));
+    }
+    
+    public void addFeature(String feature) {
+        if (!getFeatures().contains(feature)) {
+            features += features.concat(",").concat(feature);
+        }
+    }
+
+    public void removeFeature(String feature) {
+        List<String> featuresList = getFeatures();
+        features = "";
+        for (String f : featuresList) {
+            if (!f.equals(feature)) {
+                addFeature(f);
+            }
+        }
+    }
+
 }

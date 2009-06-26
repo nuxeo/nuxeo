@@ -387,7 +387,9 @@ public class ThemeService extends DefaultComponent implements FrameworkListener 
                         oldTheme = new ThemeSetEntry(themeName);
                         oldThemeSet.setTheme(oldTheme);
                     }
-                    oldTheme.addFeatures(theme.getFeatures());
+                    for (String feature : theme.getFeatures()) {
+                        oldThemeSet.addFeatureToTheme(themeName, feature);
+                    }
                 }
 
             }

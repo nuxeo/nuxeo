@@ -64,7 +64,7 @@ public class TestThemeSet extends NXRuntimeTestCase {
         assertEquals("galaxy-sites", themeSet.getThemeForFeature("sites"));
         assertEquals("galaxy-default", themeSet.getThemeForFeature("default"));
         assertEquals("galaxy-default", themeSet.getThemeForFeature("dashboard"));
-        // assertEquals("galaxy-search", themeSet.getThemeForFeature("search"));
+        assertEquals("galaxy-search", themeSet.getThemeForFeature("search"));
         assertNull(themeSet.getThemeForFeature("unknown"));
     }
 }
