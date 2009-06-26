@@ -62,6 +62,7 @@ public class TestMetaDataService extends NXRuntimeTestCase {
 
     public void testMetaData() throws ClientException, IOException {
         Blob blob = new FileBlob(getFileFromPath("iptc_sample.jpg"));
+        blob.setMimeType("image/jpeg");
         Map<String, Object> map = service.getImageMetadata(blob);
         assertNotNull(map);
         assertFalse(map.isEmpty());
