@@ -48,12 +48,16 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
 
     private static final String FILENAME_PROPERTY = "filename";
 
-    public Boolean createPicture(Blob fileContent, String filename, String title,
-            ArrayList<Map<String, Object>> pictureTemplates)
+    public Boolean createPicture(Blob fileContent, String filename,
+            String title, ArrayList<Map<String, Object>> pictureTemplates)
             throws IOException, ClientException {
         this.fileContent = fileContent;
-        file = File.createTempFile("tmp", ".jpg");
+
+        file = File.createTempFile(
+                "nuxeo-platform-imaging-DefaultPictureAdapter", ".jpg");
         fileContent.transferTo(file);
+        // TODO: refactor me to delete the temporary file as soon as no longer
+        // used instead of waiting for the JVM to stop properly
         file.deleteOnExit();
         type = getImagingService().getImageMimeType(file);
 
@@ -74,14 +78,17 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
         for (int i = 0; i < size; i++) {
             String xpath = "picture:views/view[" + i + "]/";
             try {
-                BlobHolder blob = new SimpleBlobHolder(doc.getProperty(xpath + "content").getValue(
-                        Blob.class));
+                BlobHolder blob = new SimpleBlobHolder(doc.getProperty(
+                        xpath + "content").getValue(Blob.class));
                 String type = blob.getBlob().getMimeType();
                 if (type != "image/png") {
 
                     Map<String, Serializable> options = new HashMap<String, Serializable>();
-                    options.put(ImagingConvertConstants.OPTION_ROTATE_ANGLE, angle);
-                    blob = getConversionService().convert(ImagingConvertConstants.OPERATION_ROTATE , blob, options);
+                    options.put(ImagingConvertConstants.OPTION_ROTATE_ANGLE,
+                            angle);
+                    blob = getConversionService().convert(
+                            ImagingConvertConstants.OPERATION_ROTATE, blob,
+                            options);
                     doc.getProperty(xpath + "content").setValue(blob.getBlob());
                     Long height = (Long) doc.getProperty(xpath + "height").getValue();
                     Long width = (Long) doc.getProperty(xpath + "width").getValue();
@@ -98,12 +105,13 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
         doc.setPropertyValue("picture:cropCoords", coords);
     }
 
-    public Blob getPictureFromTitle(String title) throws PropertyException, ClientException{
+    public Blob getPictureFromTitle(String title) throws PropertyException,
+            ClientException {
         Collection<Property> views = doc.getProperty(VIEWS_PROPERTY).getChildren();
         for (Property property : views) {
             if (property.getValue(TITLE_PROPERTY).equals(title)) {
                 Blob blob = (Blob) property.getValue("content");
-                blob.setFilename((String)property.getValue(FILENAME_PROPERTY));
+                blob.setFilename((String) property.getValue(FILENAME_PROPERTY));
                 return blob;
             }
         }

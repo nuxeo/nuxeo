@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.platform.pictures.tiles.service;
 
-import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
@@ -94,13 +93,9 @@ public class TiledImagePreviewer extends AbstractPreviewer implements
         } else {
 	        ImagingService imagingService = Framework.getLocalService(ImagingService.class);
 	        if (imagingService != null) {
-	            try {
-	                Map<String, Object> imageMetadata = imagingService.getImageMetadata(blob.getStream());
-	                width = ((Integer) imageMetadata.get(MetadataConstants.META_WIDTH)).longValue();
-	                height = ((Integer) imageMetadata.get(MetadataConstants.META_HEIGHT)).longValue();
-	            } catch (IOException e) {
-	                log.error("Failed to get picture dimensions", e);
-	            }
+                Map<String, Object> imageMetadata = imagingService.getImageMetadata(blob);
+                width = ((Integer) imageMetadata.get(MetadataConstants.META_WIDTH)).longValue();
+                height = ((Integer) imageMetadata.get(MetadataConstants.META_HEIGHT)).longValue();
 	        }
         }
 

@@ -27,6 +27,7 @@ import javax.ejb.Local;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
 
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.platform.picture.api.ImagingService;
 import org.nuxeo.runtime.api.Framework;
 
@@ -53,12 +54,18 @@ public class ImagingServiceBean implements ImagingService {
         }
     }
 
+    @Deprecated
     public Map<String, Object> getImageMetadata(InputStream in) {
         return service.getImageMetadata(in);
     }
 
+    @Deprecated
     public Map<String, Object> getImageMetadata(File file) {
         return service.getImageMetadata(file);
+    }
+
+    public Map<String, Object> getImageMetadata(Blob blob) {
+        return service.getImageMetadata(blob);
     }
 
     public InputStream resize(InputStream in, int width, int height) {

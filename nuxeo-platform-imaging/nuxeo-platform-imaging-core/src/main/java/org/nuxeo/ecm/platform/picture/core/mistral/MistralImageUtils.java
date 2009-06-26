@@ -41,12 +41,16 @@ import javax.imageio.ImageIO;
 import javax.imageio.ImageWriteParam;
 import javax.imageio.ImageWriter;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.picture.core.ImageUtils;
 
 /**
  * @author Max Stepanov
  */
 public class MistralImageUtils implements ImageUtils{
+
+    private static final Log log = LogFactory.getLog(MistralImageUtils.class);
 
     private static final double QUALITY_SCALE = 0.25;
 
@@ -66,8 +70,7 @@ public class MistralImageUtils implements ImageUtils{
                 return new FileInputStream(resultFile);
             }
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error("Fail to crop image", e);
         }
         return null;
     }
@@ -111,8 +114,7 @@ public class MistralImageUtils implements ImageUtils{
                 return new FileInputStream(resultFile);
             }
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error("Fail to resize image", e);
         }
         return null;
     }
@@ -126,8 +128,7 @@ public class MistralImageUtils implements ImageUtils{
                 return new FileInputStream(resultFile);
             }
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error("Fail to rotate image", e);
         }
         return null;
     }
