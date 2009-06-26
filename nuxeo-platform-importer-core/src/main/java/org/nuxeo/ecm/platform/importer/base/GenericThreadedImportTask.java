@@ -146,15 +146,18 @@ public class GenericThreadedImportTask implements Runnable {
             SourceNode node) throws Exception {
         DocumentModel leaf = getFactory().createLeafNode(getCoreSession(), parent,
                 node);
-        long fileSize = node.getBlobHolder().getBlob().getLength();
-        String fileName = node.getBlobHolder().getBlob().getFilename();
-        if (fileSize > 0) {
-            long kbSize = fileSize / 1024;
-            fslog("Created doc " + leaf.getName() + " at "
-                    + parent.getPathAsString() + " with file " + fileName
-                    + " of size " + kbSize + "KB", true);
+        if (node.getBlobHolder() != null) {
+            long fileSize = node.getBlobHolder().getBlob().getLength();
+            String fileName = node.getBlobHolder().getBlob().getFilename();
+            if (fileSize > 0) {
+                long kbSize = fileSize / 1024;
+                fslog("Created doc " + leaf.getName() + " at "
+                        + parent.getPathAsString() + " with file " + fileName
+                        + " of size " + kbSize + "KB", true);
+            }
+
+            uploadedKO += fileSize;
         }
-        uploadedKO += fileSize;
         // save session if needed
         commit();
         return leaf;
