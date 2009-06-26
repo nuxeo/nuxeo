@@ -24,7 +24,9 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.event.EventBundle;
+import org.nuxeo.ecm.core.event.ReconnectedEventBundle;
 import org.nuxeo.ecm.core.event.impl.EventListenerDescriptor;
+import org.nuxeo.ecm.core.event.impl.ReconnectedEventBundleImpl;
 import org.nuxeo.ecm.core.event.jmx.EventStatsHolder;
 
 /**
@@ -42,13 +44,17 @@ public class PostCommitSynchronousRunner {
     private static final Log log = LogFactory.getLog(PostCommitSynchronousRunner.class);
 
     protected final List<EventListenerDescriptor> listeners;
-    protected final EventBundle event;
+    protected final ReconnectedEventBundle event;
     protected long timeout = 0;
 
     public PostCommitSynchronousRunner(List<EventListenerDescriptor> listeners,
             EventBundle event, long timeout) {
         this.listeners = listeners;
-        this.event = event;
+        if (event instanceof ReconnectedEventBundle) {
+            this.event = (ReconnectedEventBundle) event;
+        } else {
+            this.event = new ReconnectedEventBundleImpl(event);
+        }
         this.timeout = timeout;
     }
 
@@ -64,7 +70,7 @@ public class PostCommitSynchronousRunner {
     protected void runSync() {
         log.debug("Starting sync executor from Thread "
                 + Thread.currentThread().getId());
-        Thread runner = new Thread(new MonoThreadExecutor());
+        Thread runner = new Thread(getExecutor());
         runner.start();
         try {
             runner.join(timeout);
@@ -77,6 +83,10 @@ public class PostCommitSynchronousRunner {
         }
         log.debug("Terminated sync executor from Thread "
                 + Thread.currentThread().getId());
+    }
+
+    protected Runnable getExecutor() {
+        return new MonoThreadExecutor();
     }
 
     protected class MonoThreadExecutor implements Runnable {

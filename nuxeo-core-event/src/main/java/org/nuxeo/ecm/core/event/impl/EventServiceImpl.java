@@ -35,6 +35,7 @@ import org.nuxeo.ecm.core.event.PostCommitEventListener;
 import org.nuxeo.ecm.core.event.ReconnectedEventBundle;
 import org.nuxeo.ecm.core.event.jms.AsyncProcessorConfig;
 import org.nuxeo.ecm.core.event.jmx.EventStatsHolder;
+import org.nuxeo.ecm.core.event.tx.BulkExecutor;
 import org.nuxeo.ecm.core.event.tx.PostCommitSynchronousRunner;
 
 /**
@@ -162,6 +163,22 @@ public class EventServiceImpl implements EventService, EventServiceAdmin{
             }
         }
 
+        if (bulkModeEnabled) {
+            // run all listeners synchronously in one transaction
+            List<EventListenerDescriptor> listeners = new ArrayList<EventListenerDescriptor>();
+            if (!blockSyncPostCommitProcessing) {
+                listeners = listenerDescriptors.getEnabledSyncPostCommitListenersDescriptors();
+            }
+            if (!blockAsyncProcessing) {
+                listeners.addAll(listenerDescriptors.getEnabledAsyncPostCommitListenersDescriptors());
+            }
+            if (listeners.size()>0) {
+                BulkExecutor bulkExecutor = new BulkExecutor(listeners, event);
+                bulkExecutor.run();
+            }
+            return;
+        }
+
         // run sync listeners
         if (blockSyncPostCommitProcessing) {
             log.debug("Dropping PostCommit handler execution");
@@ -179,6 +196,7 @@ public class EventServiceImpl implements EventService, EventServiceAdmin{
                 syncRunner.run();
             }
         }
+
 
         if (blockAsyncProcessing) {
             log.debug("Dopping bundle");
