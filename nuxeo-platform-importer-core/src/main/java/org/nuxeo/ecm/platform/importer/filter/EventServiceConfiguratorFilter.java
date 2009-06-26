@@ -8,18 +8,23 @@ public class EventServiceConfiguratorFilter implements ImporterFilter {
     protected Boolean blockSyncPostCommitProcessing;
     protected Boolean blockAsyncProcessing;
     protected Boolean blockMimeTypeDetection;
+    protected Boolean bulkMode;
     protected EventServiceAdmin eventAdmin=null;
 
-    public EventServiceConfiguratorFilter(Boolean blockSyncPostCommitProcessing,Boolean blockAsyncProcessing,Boolean blockMimeTypeDetection) {
+    public EventServiceConfiguratorFilter(Boolean blockSyncPostCommitProcessing,Boolean blockAsyncProcessing,Boolean blockMimeTypeDetection, Boolean bulkMode) {
         this.blockAsyncProcessing=blockAsyncProcessing;
         this.blockSyncPostCommitProcessing = blockSyncPostCommitProcessing;
         this.blockMimeTypeDetection = blockMimeTypeDetection;
+        this.bulkMode = bulkMode;
     }
 
     public void handleBeforeImport() {
         eventAdmin = Framework.getLocalService(EventServiceAdmin.class);
 
         if (eventAdmin!=null) {
+            if (true == bulkMode) {
+                eventAdmin.setBulkModeEnabled(true);
+            }
             if (true == blockMimeTypeDetection) {
                 eventAdmin.setListenerEnabledFlag("mimetypeIconUpdater", false);
             }
@@ -38,6 +43,7 @@ public class EventServiceConfiguratorFilter implements ImporterFilter {
 
     public void handleAfterImport(Exception e) {
         if (eventAdmin!=null) {
+            eventAdmin.setBulkModeEnabled(false);
             eventAdmin.setBlockAsyncHandlers(false);
             eventAdmin.setBlockSyncPostCommitHandlers(false);
             eventAdmin.setListenerEnabledFlag("mimetypeIconUpdater", true);

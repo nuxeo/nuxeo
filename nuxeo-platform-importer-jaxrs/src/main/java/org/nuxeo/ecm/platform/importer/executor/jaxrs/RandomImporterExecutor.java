@@ -35,10 +35,15 @@ public class RandomImporterExecutor extends AbstractJaxRSImporterExecutor {
     Integer fileSizeKB, @QueryParam("onlyText")
     Boolean onlyText, @QueryParam("blockSyncPostCommitProcessing")
     Boolean blockSyncPostCommitProcessing, @QueryParam("blockAsyncProcessing")
-    Boolean blockAsyncProcessing) throws Exception {
+    Boolean blockAsyncProcessing, @QueryParam("bulkMode")
+    Boolean bulkMode) throws Exception {
 
         if (onlyText==null) {
             onlyText=true;
+        }
+
+        if (bulkMode==null) {
+            bulkMode=true;
         }
 
         SourceNode source =null;
@@ -49,7 +54,7 @@ public class RandomImporterExecutor extends AbstractJaxRSImporterExecutor {
         GenericMultiThreadedImporter runner = new GenericMultiThreadedImporter(source, targetPath,
                 batchSize, nbTheards, getLogger());
 
-        ImporterFilter filter = new EventServiceConfiguratorFilter(blockSyncPostCommitProcessing, blockAsyncProcessing, !onlyText);
+        ImporterFilter filter = new EventServiceConfiguratorFilter(blockSyncPostCommitProcessing, blockAsyncProcessing, !onlyText, bulkMode);
         runner.addFilter(filter);
 
         String res = doRun(runner, interactive);
