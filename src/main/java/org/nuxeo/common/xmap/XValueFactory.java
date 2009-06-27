@@ -34,17 +34,15 @@ import org.w3c.dom.Node;
  * Value factories are used to decode values from XML strings.
  * <p>
  * To register a new factory for a given XMap instance use the method
- * {@link XMap#setValueFactory(Class, XValueFactory)}
+ * {@link XMap#setValueFactory(Class, XValueFactory)}.
  *
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public abstract class XValueFactory {
 
     private static final Log log = LogFactory.getLog(XValueFactory.class);
 
-    static final Map<Class, XValueFactory> defaultFactories
-            = new Hashtable<Class, XValueFactory>();
+    static final Map<Class, XValueFactory> defaultFactories = new Hashtable<Class, XValueFactory>();
 
 
     public abstract Object deserialize(Context context, String value);
@@ -59,7 +57,6 @@ public abstract class XValueFactory {
         Node at = element.getAttributes().getNamedItem(name);
         return at != null ? deserialize(context, at.getNodeValue()) : null;
     }
-
 
     public static void addFactory(Class klass, XValueFactory factory) {
         defaultFactories.put(klass, factory);
@@ -150,7 +147,7 @@ public abstract class XValueFactory {
     };
 
     public static final XValueFactory DATE = new XValueFactory() {
-        final DateFormat df = DateFormat.getDateInstance();
+        private final DateFormat df = DateFormat.getDateInstance();
 
         @Override
         public Object deserialize(Context context, String value) {

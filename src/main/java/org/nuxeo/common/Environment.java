@@ -24,7 +24,6 @@ import java.util.Properties;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class Environment {
 
@@ -87,7 +86,7 @@ public class Environment {
     }
 
     public boolean isApplicationServer() {
-      return isAppServer;
+        return isAppServer;
     }
 
     public void setIsApplicationServer(boolean isAppServer) {

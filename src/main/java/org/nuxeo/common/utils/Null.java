@@ -36,10 +36,8 @@ public final class Null implements Serializable {
 
     /**
      * Serialization handling.
-     *
-     * @return
      */
-    Object readResolve() {
+    private Object readResolve() {
         return VALUE;
     }
 

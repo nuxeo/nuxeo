@@ -24,18 +24,18 @@ import java.net.URLStreamHandlerFactory;
 import java.util.ArrayList;
 
 /**
- *
  * Used to force installation of URLStreamHandlerFactory as the default mechanism in Java
  * is failing to set a new factory if one was already set.
+ * <p>
  * This class provides the capability to stack any number of factories - each factory having
  * precedence over the last one.
+ * <p>
  * Thus, when querying for a URL protocol handler all factories will be asked in turn
  * (from the newest one to the older one) until a stream handler is obtained.
- *
+ * <p>
  * Contains some code from Eclipse Framework class.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class URLStreamHandlerFactoryInstaller {
 
@@ -108,7 +108,6 @@ public class URLStreamHandlerFactoryInstaller {
         }
         return lock;
     }
-
 
     /**
      * Get the underlying stack.
