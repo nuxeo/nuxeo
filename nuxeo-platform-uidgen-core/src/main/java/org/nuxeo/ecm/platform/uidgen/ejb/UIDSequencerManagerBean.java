@@ -19,17 +19,14 @@
 
 package org.nuxeo.ecm.platform.uidgen.ejb;
 
-import java.util.List;
-
 import javax.ejb.Local;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.persistence.Persistence;
+import javax.persistence.NoResultException;
+import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.apache.commons.logging.Log;
@@ -53,57 +50,29 @@ public class UIDSequencerManagerBean implements UIDSequencerManager {
 
     private static final Log log = LogFactory.getLog(UIDSequencerManagerBean.class);
 
-    public static final String SEMAPHORE = "semaphore";
-
+    @PersistenceContext(unitName = "NXUIDSequencer")
+    private EntityManager em;
+    
+    public UIDSequenceBean getOrCreateSeq(String key) {
+        final Query q = em.createNamedQuery("UIDSequence.findByKey");
+        q.setParameter("key", key);
+        UIDSequenceBean sequence;
+        try {
+            sequence = (UIDSequenceBean)q.getSingleResult();
+        } catch (NoResultException e) {
+            sequence = new UIDSequenceBean(key);
+            em.persist(sequence);
+            log.debug("created seq " + key);
+        }
+        return sequence;
+    }
     /**
      * Handle transaction synchronizing on a static field so that two calls to
      * this method will give a distinct index (see NXP-2157)
      */
-    @SuppressWarnings({"unchecked"})
-    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public int getNext(String key) {
-        synchronized (SEMAPHORE) {
-
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory("NXUIDSequencer");
-            EntityManager em = emf.createEntityManager();
-            EntityTransaction et = em.getTransaction();
-            if (!et.isActive()) {
-                em.getTransaction().begin();
-            }
-            // UIDSequenceBean sequence = em.find(UIDSequenceBean.class, key);
-            final Query q = em.createQuery("from "
-                    + UIDSequenceBean.class.getSimpleName() + " where key = '"
-                    + key + "'");
-            final List<UIDSequenceBean> l = q.getResultList();
-
-            final UIDSequenceBean sequence;
-            if (l.isEmpty()) {
-                // create a new entry for the specified key
-                sequence = new UIDSequenceBean(key);
-                // em.persist(sequence);
-            } else {
-                // TODO : maybe integrity tests : l.size = 1;
-                sequence = l.get(0);
-                if (sequence == null) {
-                    // something wrong has happened; maybe not deployed
-                    // correctly
-                    log.error("Cannot obtain valid sequence for key: " + key
-                            + "; returning 0");
-                    return 0;
-                }
-            }
-
-            final int lastIndex = sequence.getIndex();
-            // increment the index
-            final int newIndex = lastIndex + 1;
-            sequence.setIndex(newIndex);
-            em.persist(sequence);
-
-            em.getTransaction().commit();
-            emf.close();
-
-            return newIndex;
-        }
+        return getOrCreateSeq(key).nextIndex();
     }
 
 }

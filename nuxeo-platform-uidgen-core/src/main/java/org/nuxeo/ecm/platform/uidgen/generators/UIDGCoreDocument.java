@@ -28,9 +28,7 @@ import org.nuxeo.ecm.platform.uidgen.AbstractUIDGenerator;
 
 public class UIDGCoreDocument extends AbstractUIDGenerator {
 
-    private static final String P_TITLE = "title";
-
-    private static final String NFORMAT = "%05d";
+     private static final String NFORMAT = "%05d";
 
     public String getSequenceKey(DocumentModel document)
             throws DocumentException {

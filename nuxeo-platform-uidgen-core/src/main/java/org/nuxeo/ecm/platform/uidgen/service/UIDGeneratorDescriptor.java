@@ -44,7 +44,7 @@ public class UIDGeneratorDescriptor {
     private String generationExpression;
 
     // @XNode
-    private Set generationCriteria;
+    private Set<?> generationCriteria;
 
     // @XNode
     private int counterStart;
@@ -73,14 +73,14 @@ public class UIDGeneratorDescriptor {
     /**
      * Explicit constructor.
      */
-    public UIDGeneratorDescriptor(String generationExp, Set generationCrit) {
+    public UIDGeneratorDescriptor(String generationExp, Set<?> generationCrit) {
         this(generationExp, generationCrit, DEFAULT_COUNTER_START);
     }
 
     /**
      * Explicit constructor.
      */
-    public UIDGeneratorDescriptor(String generationExp, Set generationCrit,
+    public UIDGeneratorDescriptor(String generationExp, Set<?> generationCrit,
             int counterStart) {
         generationExpression = generationExp;
         generationCriteria = generationCrit;
@@ -115,7 +115,7 @@ public class UIDGeneratorDescriptor {
         return counterStart;
     }
 
-    public Set getGenerationCriteria() {
+    public Set<?> getGenerationCriteria() {
         return generationCriteria;
     }
 

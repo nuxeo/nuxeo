@@ -24,8 +24,12 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * UID entity - keeps last indexes of all generated UIDs.
@@ -34,19 +38,26 @@ import javax.persistence.UniqueConstraint;
  *
  */
 @Entity
-@Table(name = "UID_SEQUENCE", uniqueConstraints =
-    @UniqueConstraint(columnNames = { "SEQ_KEY" }))
+@NamedQueries( {
+    @NamedQuery(name = "UIDSequence.findByKey",
+            query = "from UIDSequenceBean seq where seq.key = :key" )
+            })
+
+@Table(name = "NXP_UIDSEQ")
+    
 public class UIDSequenceBean {
 
+    public static final Log log = LogFactory.getLog(UIDSequenceBean.class);
+    
     @Id
     @Column(name = "SEQ_ID", nullable = false)
     @GeneratedValue(strategy = GenerationType.AUTO)
     protected int id;
 
-    @Column(name = "SEQ_KEY")
+    @Column(name = "SEQ_KEY", nullable = false, unique = true)
     private String key;
 
-    @Column(name = "SEQ_INDEX")
+    @Column(name = "SEQ_INDEX", nullable = false)
     private int index;
 
     /**
@@ -86,9 +97,19 @@ public class UIDSequenceBean {
     public int getIndex() {
         return index;
     }
+    
+    public static String stringify(UIDSequenceBean bean) {
+        return "UIDSeq(" + bean.key + "," + bean.index +")";
+    }
+    @Override
+    public String toString() {
+       return stringify(this);
+    }
 
-    public void setIndex(int index) {
-        this.index = index;
+    public int nextIndex() {
+        index += 1;
+        log.debug("updated to " + this);
+        return index;
     }
 
 }

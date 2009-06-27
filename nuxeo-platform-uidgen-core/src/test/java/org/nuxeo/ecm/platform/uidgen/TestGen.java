@@ -137,10 +137,6 @@ public class TestGen extends NXRuntimeTestCase {
         gdoc.setProperty("geide", "application_emetteur", "T4");
         gdoc.setProperty("geide", "atelier_emetteur", "ATELIER3_");
 
-        final UIDSequencer sequencer = new DummySequencer();
-        final UIDGenerator generator = UIDGenFactory.createGeneratorForDocType(
-                docTypeName, sequencer);
-
         for (int i = 1; i < 100; i++) {
             // local instantiation
             // TODO make it real
@@ -149,7 +145,6 @@ public class TestGen extends NXRuntimeTestCase {
             Event event = new EventImpl(DocumentEventTypes.DOCUMENT_CREATED, ctx);
             new DocUIDGeneratorListener().handleEvent(event);
 
-            //String uid = generator.createUID(gdoc);
             String uid = (String) gdoc.getProperty("uid", "uid");
             String uid2 = (String) gdoc.getProperty("other_uid_schema", "uid2");
 
