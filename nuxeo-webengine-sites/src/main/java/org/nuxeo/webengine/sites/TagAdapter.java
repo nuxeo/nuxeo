@@ -36,9 +36,9 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.webengine.sites.utils.SiteUtils;
 
 /**
- * 
+ *
  * Adapter used to display all documents for a certain tag.
- * 
+ *
  * @author mcedica
  */
 @WebAdapter(name = "tag", type = "TagAdapter", targetType = "Document")

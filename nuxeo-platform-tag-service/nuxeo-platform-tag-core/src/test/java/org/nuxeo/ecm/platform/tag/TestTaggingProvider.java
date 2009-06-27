@@ -176,7 +176,7 @@ public class TestTaggingProvider extends SQLRepositoryTestCase {
      * Creates complex tagging: file1 with tags: tag1, tag2 twice; file2 with
      * tags: tag3 3 times and tag1; file3 with tags: tag1, tag2 twice; folder
      * with tags: tag1 3 times and tag3.
-     * 
+     *
      * @throws Exception
      */
     protected void createTaggings() throws Exception {

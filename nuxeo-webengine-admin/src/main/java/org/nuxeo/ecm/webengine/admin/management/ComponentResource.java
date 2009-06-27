@@ -123,9 +123,9 @@ public class ComponentResource {
         } catch (Exception e) {
             throw WebException.wrap(e);
         }
-        return null;        
+        return null;
     }
-    
+
     public String getSummary() throws Exception {
         return ri.getDocumentation();
     }

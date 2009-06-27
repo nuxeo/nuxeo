@@ -25,16 +25,16 @@ import org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants;
 /**
  * Collection of the queries used in the sites module. It gathers all in one
  * place to ease the reading of the code.
- * 
+ *
  * @author rux
- * 
+ *
  */
 public class SiteQueriesColection {
 
     /**
      * Queries sites by URL and document type. It should be exactly one
      * returned.
-     * 
+     *
      * @param session
      * @param url
      * @param documentType
@@ -54,7 +54,7 @@ public class SiteQueriesColection {
 
     /**
      * Queries all sites of the given document type.
-     * 
+     *
      * @param session
      * @param documentType
      * @return
@@ -72,7 +72,7 @@ public class SiteQueriesColection {
 
     /**
      * Queries the modified pages within a limit.
-     * 
+     *
      * @param session
      * @param parent
      * @param numberLimit
@@ -93,7 +93,7 @@ public class SiteQueriesColection {
     /**
      * Queries the added comments within a limit. Query differs if moderated or
      * not.
-     * 
+     *
      * @param session
      * @param parent
      * @param numberLimit
@@ -126,7 +126,7 @@ public class SiteQueriesColection {
 
     /**
      * Queries the pages based on a search string.
-     * 
+     *
      * @param session
      * @param query
      * @param parent

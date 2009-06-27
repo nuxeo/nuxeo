@@ -69,7 +69,7 @@ public final class AreaFragment extends AbstractFragment {
     public Integer getMaxItems() {
         return maxItems;
     }
-    
+
     public Boolean getDisallowDuplicates() {
         return disallowDuplicates;
     }

@@ -19,16 +19,16 @@ import org.nuxeo.theme.models.AbstractModel;
 
 /**
  * Model related to the details about the tag cloud.
- * 
+ *
  * @author rux
- * 
+ *
  */
 public class TagCloudModel extends AbstractModel {
 
     private String label;
-    
+
     private String href;
-    
+
     private int weight;
 
     public TagCloudModel(String label, String href, int weight) {

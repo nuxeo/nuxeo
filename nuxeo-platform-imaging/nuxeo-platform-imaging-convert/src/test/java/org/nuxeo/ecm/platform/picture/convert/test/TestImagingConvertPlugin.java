@@ -96,14 +96,14 @@ public class TestImagingConvertPlugin extends NXRuntimeTestCase {
 
             BlobHolder result = cs.convert(converter, bh, options);
             assertNotNull(result);
-    
+
             BufferedImage image = ImageIO.read(new FileInputStream(
                     FileUtils.getResourceFileFromContext(path)));
             assertNotNull("Original image is null", image);
             int width = image.getWidth();
             int height = image.getHeight();
             assertTrue("Original image size != (0,0)", width > 0 && height > 0);
-    
+
             image = ImageIO.read(result.getBlob().getStream());
             assertNotNull("Rotated image is null", image);
             assertEquals("Ratated image width", height, image.getWidth());
@@ -133,15 +133,15 @@ public class TestImagingConvertPlugin extends NXRuntimeTestCase {
 
             BlobHolder result = cs.convert(converter, bh, options);
             assertNotNull(result);
-    
+
             BufferedImage image = ImageIO.read(new FileInputStream(
                     FileUtils.getResourceFileFromContext(path)));
             assertNotNull("Original image is null", image);
             int width = image.getWidth();
             int height = image.getHeight();
             assertTrue("Original image size != (0,0)", width > 0 && height > 0);
-    
-    
+
+
             image = ImageIO.read(result.getBlob().getStream());
             assertNotNull("Croped image is null", image);
             assertEquals("Croped image width", cropWidth, image.getWidth());

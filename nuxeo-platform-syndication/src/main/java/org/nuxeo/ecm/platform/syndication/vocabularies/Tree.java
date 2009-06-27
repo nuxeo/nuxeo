@@ -42,8 +42,8 @@ public final class Tree {
 
         private final Map<String, HierarchicalVocabulary> mapVocabularies
                 = new HashMap<String, HierarchicalVocabulary>();
-   
-    
+
+
         public void addElement(final String parent,
                 HierarchicalVocabulary parentVoca1,
                 final SimpleVocabulary voca) {
@@ -65,7 +65,7 @@ public final class Tree {
                 }
             }
         }
-        
+
         private void addNewVocabulary(final HierarchicalVocabulary voca) {
             final String id = voca.getVocabulary().getId().toLowerCase();
             mapVocabularies.put(id, voca);
@@ -96,14 +96,14 @@ public final class Tree {
 
         public Tree build() {
             final List<HierarchicalVocabulary> rootNodes = new ArrayList<HierarchicalVocabulary>();
-            
+
             Map<String, HierarchicalVocabulary> mV = new HashMap<String, HierarchicalVocabulary>();
             mV.putAll(mapVocabularies);
 
             for(String key : mV.keySet()) {
                 addWaitingChilds(mapVocabularies.get(key));
             }
-            
+
             for (HierarchicalVocabulary voca : mapVocabularies.values()) {
                 HierarchicalVocabulary vp =  getNode(voca);
                 if(rootNodes.contains(vp) ==false){
@@ -114,13 +114,13 @@ public final class Tree {
             Collections.sort(rootNodes, HierarchicalVocabulary.ORDER_BY_ID);
             return new Tree(rootNodes);
         }
-    
+
      public HierarchicalVocabulary getNode(HierarchicalVocabulary hv){
          if (hv.getParent() == null)
              return hv;
          else return getNode(hv.getParent());
      }
-    
+
     }
 
     private final List<HierarchicalVocabulary> rootNodes = new ArrayList<HierarchicalVocabulary>();
@@ -168,7 +168,7 @@ public final class Tree {
             currentElement.appendChild(element);
         }
     }
-    
+
 
 
 }

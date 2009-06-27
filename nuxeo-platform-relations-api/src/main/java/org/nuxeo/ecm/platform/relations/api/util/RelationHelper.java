@@ -45,7 +45,7 @@ public class RelationHelper {
     static RelationManager relationManager;
 
     private static final Log log = LogFactory.getLog(RelationHelper.class);
-    
+
     // Utility class.
     private RelationHelper() {
     }
@@ -165,7 +165,7 @@ public class RelationHelper {
         }
         return null;
     }
-    
+
     public static DocumentModelList getObjectDocuments(
             DocumentModel subjectDoc, Resource predicat) {
         try {

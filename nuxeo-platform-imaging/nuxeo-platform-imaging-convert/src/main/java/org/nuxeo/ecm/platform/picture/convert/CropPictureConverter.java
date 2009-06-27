@@ -42,7 +42,7 @@ import org.nuxeo.runtime.api.Framework;
 public class CropPictureConverter implements Converter {
 
     private static final Log log = LogFactory.getLog(CropPictureConverter.class);;
-    
+
     public BlobHolder convert(BlobHolder blobHolder,
             Map<String, Serializable> parameters) throws ConversionException {
         try{

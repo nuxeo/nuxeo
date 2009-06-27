@@ -39,9 +39,9 @@ import org.nuxeo.ecm.platform.tag.entity.TaggingEntity;
 /**
  * Provider of almost all queries required for Tag service. Implemented as
  * singleton. Stores the EntityManager during service life.
- * 
+ *
  * @author rux
- * 
+ *
  */
 public class TaggingProvider {
 
@@ -72,7 +72,7 @@ public class TaggingProvider {
     /**
      * Persists to the 'NXP_TAGGING' table the information contained in the
      * received parameter.
-     * 
+     *
      * @param tagging - the information about the 'tagging' that will be
      *            persisted
      */
@@ -131,7 +131,7 @@ public class TaggingProvider {
     /**
      * Persists to the 'NXP_TAGGING' table the information contained in the list
      * that is received as parameter.
-     * 
+     *
      * @param taggings - the list with the information about the 'tagging'
      *            entries that will be persisted
      */
@@ -147,7 +147,7 @@ public class TaggingProvider {
     /**
      * Lists distinct the public tags (or owned by user) that are applied on
      * document.
-     * 
+     *
      * @param docId - the UUID of the tagged document
      * @param userName - the user name of the current logged user
      * @return tags applied as list of simple tags
@@ -172,7 +172,7 @@ public class TaggingProvider {
 
     /**
      * Returns author of a tagging based on docId and the tagLabel.
-     * 
+     *
      * @param docId
      * @param tagLabel
      * @return
@@ -189,7 +189,7 @@ public class TaggingProvider {
     /**
      * Lists distinct the public tags (or owned by user) that are applied on
      * document by the user only.
-     * 
+     *
      * @param docId - the UUID of the tagged document
      * @param userName - the user name of the current logged user
      * @return tags applied as list of simple tags
@@ -215,7 +215,7 @@ public class TaggingProvider {
     /**
      * Gets vote tag (basically count of how many times the tag was applied on a
      * document).
-     * 
+     *
      * @param docId - the UUID of the tagged document
      * @param tagId - the UUID of the tag document
      * @param userName - the user name of the current logged user
@@ -238,7 +238,7 @@ public class TaggingProvider {
      * <b>tagId</b> parameter.The author of the entry must be the
      * <b>userName</b> received parameter. The method returns true in case the
      * deleting was successful or false otherwise.
-     * 
+     *
      * @param docId - the UUID of the tagged document
      * @param tagId - the UUID of the tag document
      * @param userName - the user name of the current logged user
@@ -268,7 +268,7 @@ public class TaggingProvider {
      * <b>tagId</b> parameter.The author of the entry must be the
      * <b>userName</b> received parameter. The method returns true in case the
      * deleting was successful or false otherwise.
-     * 
+     *
      * @param docId - the UUID of the tagged document
      * @param tagId - the UUID of the tag document
      * @param userName - the user name of the current logged user
@@ -313,7 +313,7 @@ public class TaggingProvider {
      * {@link WeightedTag}. The private tags or tagging are not selected, but
      * the ones owned by the user. It gets the tags and the number of documents
      * they are applied on the list of documents received as argument.
-     * 
+     *
      * @param documents
      * @param userName
      * @return
@@ -362,7 +362,7 @@ public class TaggingProvider {
 
     /**
      * Lists distinct the documents tagged with specified tag.
-     * 
+     *
      * @param tagId the tag applied
      * @param userName user
      * @return a map document ID - document title
@@ -385,7 +385,7 @@ public class TaggingProvider {
 
     /**
      * Checks if a particular tag was applied on specified daocument by user.
-     * 
+     *
      * @param tagId
      * @param docId
      * @param userName

@@ -67,6 +67,6 @@ public class ExtensionPointResource {
     public Object getContribution(@PathParam("id") String id) {
         return null;
     }
-    
-    
+
+
 }

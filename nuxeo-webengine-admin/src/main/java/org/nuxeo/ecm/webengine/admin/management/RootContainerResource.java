@@ -49,7 +49,7 @@ public class RootContainerResource extends FileContainerResource {
         return new TemplateView(this, "root-resources.ftl")
                 .arg("root", root.getName()).arg("resources", files);
     }
-    
+
     @Path("@schemas")
     public FileContainerResource getSchemas() {
         Environment env = Environment.getDefault();
@@ -61,7 +61,7 @@ public class RootContainerResource extends FileContainerResource {
         Environment env = Environment.getDefault();
         return new FileContainerResource(new File(env.getData(), "components"), true);
     }
-    
+
     @GET
     @Path("@reload")
     public void reload() {
@@ -72,7 +72,6 @@ public class RootContainerResource extends FileContainerResource {
             throw WebException.wrap(e);
         }
     }
-    
-    
-}
 
+
+}
