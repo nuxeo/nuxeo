@@ -25,6 +25,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.core.api.DocumentLocation;
@@ -38,16 +40,20 @@ import org.nuxeo.ecm.platform.url.service.AbstractDocumentViewCodec;
 /**
  * Codec handling a document repository, path, view and additional request
  * parameters.
- *
+ * 
  * @author Anahide Tchertchian
  */
 public class DocumentPathCodec extends AbstractDocumentViewCodec {
 
+    private static final Log log = LogFactory.getLog(DocumentPathCodec.class);
+
+    //The maximum length of an url for Internet Explorer.
+    public static int URL_MAX_LENGTH = 2000;
+
     public static final String PREFIX = "nxpath";
 
     // nxpath/server/path/to/doc@view_id/?requestParams
-    public static final String URLPattern
-            = "/([\\w\\.]+)(/([\\w/\\-\\.]*))?(@([\\w\\-\\.]+))(/)?(\\?(.*)?)?";
+    public static final String URLPattern = "/([\\w\\.]+)(/([\\w/\\-\\.]*))?(@([\\w\\-\\.]+))(/)?(\\?(.*)?)?";
 
     public DocumentPathCodec() {
     }
@@ -86,8 +92,27 @@ public class DocumentPathCodec extends AbstractDocumentViewCodec {
             if (viewId != null) {
                 uri += "@" + viewId;
             }
-            return URIUtils.addParametersToURIQuery(uri,
+
+            String uriWithParam = URIUtils.addParametersToURIQuery(uri,
                     docView.getParameters());
+
+            // If the URL with the Path codec is to long, it use the URL with
+            // the Id Codec.
+            if (uriWithParam.length() > URL_MAX_LENGTH) {
+
+                // If the DocumentLocation did not contains the document Id, it
+                // use the Path Codec even if the Url is too long for IE.
+                if (null == docView.getDocumentLocation().getIdRef()) {
+                    log.error("The DocumentLocation did not contains the RefId.");
+                    return uriWithParam;
+                }
+
+                DocumentIdCodec idCodec = new DocumentIdCodec();
+                return idCodec.getUrlFromDocumentView(docView);
+
+            } else {
+                return uriWithParam;
+            }
         }
         return null;
     }
