@@ -41,7 +41,7 @@ import org.richfaces.model.UploadItem;
 public class UploadItemHolder implements Serializable {
 
     private static final long serialVersionUID = 1L;
-	
+
     protected Collection<UploadItem> uploadedFiles = new ArrayList<UploadItem>();
 
     protected InputStream fileUpload;

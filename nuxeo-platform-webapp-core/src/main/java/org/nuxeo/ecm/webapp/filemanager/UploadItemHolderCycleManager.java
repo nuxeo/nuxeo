@@ -34,7 +34,7 @@ import org.jboss.seam.contexts.Contexts;
 public class UploadItemHolderCycleManager implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    
+
     @Destroy
     public void destroy() {
         Contexts.getConversationContext().remove("fileUploadHolder");

@@ -67,10 +67,10 @@ public interface FileManageActions extends SimpleFileManager {
 
     @WebRemote
     String pasteWithId(String docId) throws ClientException;
-    
+
     @WebRemote
     String removeUploadedFile(String fileName) throws ClientException;
-    
+
     @WebRemote
     String removeAllUploadedFile() throws ClientException;
 
