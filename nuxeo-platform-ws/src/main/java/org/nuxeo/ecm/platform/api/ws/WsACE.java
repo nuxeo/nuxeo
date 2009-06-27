@@ -26,11 +26,6 @@ import org.nuxeo.ecm.core.api.security.ACE;
 
 public class WsACE {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
-
     private String username;
     private String permission;
     private boolean isGranted;

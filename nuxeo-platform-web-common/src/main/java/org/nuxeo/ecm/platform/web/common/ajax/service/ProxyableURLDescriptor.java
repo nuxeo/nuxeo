@@ -25,16 +25,12 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
- *
  * Simple Descriptor for a proxyable URL config
  *
  * @author tiry
- *
  */
 @XObject(value = "proxyableURL")
 public class ProxyableURLDescriptor {
-
-    private static final long serialVersionUID = 1L;
 
     @XNode("@name")
     protected String name;
@@ -43,10 +39,10 @@ public class ProxyableURLDescriptor {
     protected boolean enabled = true;
 
     @XNode("@userCache")
-    protected boolean useCache=false;
+    protected boolean useCache = false;
 
     @XNode("@cachePerSession")
-    protected boolean cachePerSession=false;
+    protected boolean cachePerSession = false;
 
     @XNode("pattern")
     protected String pattern;
@@ -73,7 +69,6 @@ public class ProxyableURLDescriptor {
         }
         return compiledPattern;
     }
-
 
     public void merge(ProxyableURLDescriptor other) {
         // TODO
