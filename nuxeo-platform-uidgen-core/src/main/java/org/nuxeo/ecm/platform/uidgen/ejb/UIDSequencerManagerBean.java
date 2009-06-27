@@ -53,7 +53,7 @@ public class UIDSequencerManagerBean implements UIDSequencerManager {
     @PersistenceContext(unitName = "NXUIDSequencer")
     private EntityManager em;
     
-    public UIDSequenceBean getOrCreateSeq(String key) {
+    protected UIDSequenceBean doGetOrCreateSeq(String key) {
         final Query q = em.createNamedQuery("UIDSequence.findByKey");
         q.setParameter("key", key);
         UIDSequenceBean sequence;
@@ -72,7 +72,7 @@ public class UIDSequencerManagerBean implements UIDSequencerManager {
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public int getNext(String key) {
-        return getOrCreateSeq(key).nextIndex();
+        return doGetOrCreateSeq(key).nextIndex();
     }
 
 }
