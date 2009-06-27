@@ -26,10 +26,9 @@ import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.schema.types.PrimitiveType;
 
 /**
- * The binary type handles values of type InpuStream.
+ * The binary type handles values of type InputStream.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public final class BinaryType extends PrimitiveType {
 

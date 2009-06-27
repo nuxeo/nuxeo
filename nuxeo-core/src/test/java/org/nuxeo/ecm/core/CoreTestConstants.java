@@ -21,7 +21,6 @@ package org.nuxeo.ecm.core;
 
 /**
  * @author Anahide Tchertchian
- *
  */
 public class CoreTestConstants {
 

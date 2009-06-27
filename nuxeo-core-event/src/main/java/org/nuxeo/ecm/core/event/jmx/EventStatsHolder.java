@@ -24,10 +24,9 @@ import java.util.Map;
 import org.nuxeo.ecm.core.event.impl.EventListenerDescriptor;
 
 /**
- * Helper class to store statistics about Listeners calls
+ * Helper class to store statistics about listeners calls.
  *
  * @author Thierry Delprat
- *
  */
 public class EventStatsHolder {
 
@@ -68,9 +67,9 @@ public class EventStatsHolder {
                 String label = desc.asPostCommitListener().getClass()
                         .getSimpleName();
                 if (desc.getIsAsync()) {
-                    label = label + "(async)";
+                    label += "(async)";
                 } else {
-                    label = label + "(sync)";
+                    label += "(sync)";
                 }
                 stat = new CallStat(label);
                 aSyncStats.put(name, stat);
@@ -141,4 +140,6 @@ public class EventStatsHolder {
             aSyncStats = new HashMap<String, CallStat>();
         }
     }
+
 }
+

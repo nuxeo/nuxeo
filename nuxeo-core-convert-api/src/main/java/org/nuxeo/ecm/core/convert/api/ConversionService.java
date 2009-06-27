@@ -76,7 +76,7 @@ public interface ConversionService {
      * <p>
      * Result can be:
      * <ul>
-     * <li>{@link ConverterNotRegistred} if converter is not registered.
+     * <li>{@link ConverterNotRegistered} if converter is not registered.
      * <li>Error Message / Installation message if converter dependencies are
      * not available an successful check.
      * </ul>
@@ -93,7 +93,7 @@ public interface ConversionService {
      * <p>
      * Result can be:
      * <ul>
-     * <li>{@link ConverterNotRegistred} if converter is not registered.
+     * <li>{@link ConverterNotRegistered} if converter is not registered.
      * <li>Error Message / Installation message if converter dependencies are
      * not available an successful check.
      * </ul>

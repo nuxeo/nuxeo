@@ -31,7 +31,7 @@ import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.convert.api.ConverterCheckResult;
 import org.nuxeo.ecm.core.convert.api.ConverterNotAvailable;
-import org.nuxeo.ecm.core.convert.api.ConverterNotRegistred;
+import org.nuxeo.ecm.core.convert.api.ConverterNotRegistered;
 import org.nuxeo.ecm.core.convert.cache.CacheKeyGenerator;
 import org.nuxeo.ecm.core.convert.cache.ConversionCacheHolder;
 import org.nuxeo.ecm.core.convert.extension.Converter;
@@ -225,7 +225,7 @@ public class ConversionServiceImpl extends DefaultComponent implements
 
         ConverterDescriptor descriptor = converterDescriptors.get(converterName);
         if (descriptor == null) {
-            throw new ConverterNotRegistred(converterName);
+            throw new ConverterNotRegistered(converterName);
         }
 
         Converter converter = descriptor.getConverterInstance();

@@ -95,10 +95,11 @@ public class CachingRepositoryInstanceHandler extends RepositoryInstanceHandler
         return repository.getName();
     }
 
+    // --------------------------- Document Provider API --------------------------------
 
     /**
-     * --------------------------- Document Provider API -------------------------------- The doc
-     * cache should be allways updated first (before paths cache). It is not a blocking issue if we
+     * The doc
+     * cache should be always updated first (before paths cache). It is not a blocking issue if we
      * end up with garbage in the path cache (path mappings to IDs that doesn't exists anymore in
      * the doc cache)
      */
@@ -190,7 +191,6 @@ public class CachingRepositoryInstanceHandler extends RepositoryInstanceHandler
         } // cannot find the root doc in cache
         return cacheDocument(session.getRootDocument());
     }
-
 
     public DocumentModel getDocument(DocumentRef ref) throws ClientException {
         DocumentModel doc = getCachedDocument(ref);

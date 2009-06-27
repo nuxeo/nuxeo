@@ -22,7 +22,7 @@ import javax.resource.cci.ConnectionSpec;
 import org.nuxeo.ecm.core.storage.Credentials;
 
 /**
- * This represents the parameteres (mostly, credentials) passed by the
+ * This represents the parameters (mostly, credentials) passed by the
  * application to the {@link Repository} when requesting the creation of a
  * {@link Session}.
  *

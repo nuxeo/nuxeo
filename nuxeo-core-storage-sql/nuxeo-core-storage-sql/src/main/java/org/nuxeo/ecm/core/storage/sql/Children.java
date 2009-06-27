@@ -174,9 +174,9 @@ public class Children {
     }
 
     /**
-     * Marks incomplete.
-     *
-     * Called after a database operation added children with unknwon ids
+     * Marks as incomplete.
+     * <p>
+     * Called after a database operation added children with unknown ids
      * (restore of complex properties).
      */
     public void setIncomplete() {

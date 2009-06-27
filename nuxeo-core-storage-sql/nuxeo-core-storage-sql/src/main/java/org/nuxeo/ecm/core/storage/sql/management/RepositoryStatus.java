@@ -27,7 +27,6 @@ import javax.naming.NamingException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.storage.sql.Repository;
 import org.nuxeo.ecm.core.storage.sql.RepositoryManagement;
 
 /**
@@ -41,7 +40,7 @@ public class RepositoryStatus implements RepositoryStatusMBean {
 
     protected List<RepositoryManagement> getRepositories()
             throws NamingException {
-        LinkedList<RepositoryManagement> list = new LinkedList<RepositoryManagement>();
+        List<RepositoryManagement> list = new LinkedList<RepositoryManagement>();
         InitialContext context = new InitialContext();
         // we search both JBoss-like and Glassfish-like prefixes
         // @see NXCore#getRepository

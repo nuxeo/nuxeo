@@ -34,7 +34,7 @@ import org.nuxeo.ecm.core.schema.types.ComplexType;
  * An iterator over JCR nodes corresponding to properties in a document.
  * <p>
  * This is iterating only properties existing in the storage
- * (properties explicitely set by the user)
+ * (properties explicitly set by the user)
  * <p>
  * To iterate over all properties (schema fields) of the document you must use the
  * {@link PropertyIterator}.

@@ -39,7 +39,7 @@ import java.util.List;
  * </ul>
  *
  * ACLs that are used by external modules cannot be modified by the user
- * through the security UI. These ACLs should be modified only programatically
+ * through the security UI. These ACLs should be modified only programmaticaly
  * by the tool that added them.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

@@ -169,7 +169,7 @@ public final class JCAManagedConnection
 
     /**
      * Used by the container to change the association of an
-     * application-level connection handle with a ManagedConneciton instance.
+     * application-level connection handle with a ManagedConnection instance.
      */
     public synchronized void associateConnection(Object connection)
             throws ResourceException {

@@ -115,7 +115,7 @@ public class ClientLoginModule implements LoginModule {
 
         /*
          * There is no password sharing or we are the first login module. Get
-         * the username and password from the callback hander.
+         * the username and password from the callback handler.
          */
         if (callbackHandler == null) {
             throw new LoginException("Error: no CallbackHandler available "

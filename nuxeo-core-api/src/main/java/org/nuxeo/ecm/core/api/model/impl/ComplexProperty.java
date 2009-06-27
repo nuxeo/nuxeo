@@ -65,14 +65,13 @@ public abstract class ComplexProperty extends AbstractProperty implements
      * <p>
      * This method will always be called using a valid property name (a property specified by the schema).
      * The returned property will be cached by its parent so the next time it is needed, it will be reused
-     * from the cache. That means this method servers as a initializer for properties - usually you create a new property
-     * and return it - you don't need to cache created properties.
+     * from the cache. That means this method servers as a initializer for properties
+     * - usually you create a new property and return it - you don't need to cache created properties.
      * <p>
-     * If you want to change the way a property is fetched / stored you must overwride this method.
+     * If you want to change the way a property is fetched / stored, you must override this method.
      *
      * @return the child. Cannot return null
      * @throws UnsupportedOperationException
-     *
      */
     protected Property internalGetChild(Field field) {
         return null; // we don't store property that are not in the cache

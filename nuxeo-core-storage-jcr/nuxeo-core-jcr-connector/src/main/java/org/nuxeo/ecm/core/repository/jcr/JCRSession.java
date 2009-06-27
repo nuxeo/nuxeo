@@ -22,7 +22,6 @@ package org.nuxeo.ecm.core.repository.jcr;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;

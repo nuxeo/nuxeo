@@ -51,7 +51,7 @@ public abstract class AbstractProperty implements Property {
     public static final int IS_VALIDATING = 64;
 
     /**
-     * Whether ot not the data field contains keyed data.
+     * Whether or not the data field contains keyed data.
      */
     public static final int KEYED_DATA = 128;
 
@@ -75,7 +75,7 @@ public abstract class AbstractProperty implements Property {
     /**
      * Sets the given normalized value.
      * <p>
-     * This applies only for nodes that physicaly store a value
+     * This applies only for nodes that physically store a value
      * (that means non container nodes). Container nodes does nothing.
      *
      * @param value
@@ -245,7 +245,7 @@ public abstract class AbstractProperty implements Property {
     }
 
     /**
-     * THis method is public because of DataModelimpl which use it
+     * This method is public because of DataModelImpl which use it
      * TODO after removing DataModelImpl make it protected
      */
     public void setIsModified() {

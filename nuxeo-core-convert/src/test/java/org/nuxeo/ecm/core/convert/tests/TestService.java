@@ -24,7 +24,7 @@ import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.convert.api.ConverterCheckResult;
 import org.nuxeo.ecm.core.convert.api.ConverterNotAvailable;
-import org.nuxeo.ecm.core.convert.api.ConverterNotRegistred;
+import org.nuxeo.ecm.core.convert.api.ConverterNotRegistered;
 import org.nuxeo.ecm.core.convert.extension.ChainedConverter;
 import org.nuxeo.ecm.core.convert.extension.Converter;
 import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
@@ -134,7 +134,7 @@ public class TestService extends NXRuntimeTestCase {
 
         try {
             result = cs.isConverterAvailable("toto");
-        } catch (ConverterNotRegistred e) {
+        } catch (ConverterNotRegistered e) {
             notRegistred = true;
         }
         assertTrue(notRegistred);
@@ -143,7 +143,7 @@ public class TestService extends NXRuntimeTestCase {
         notRegistred = false;
         try {
             cs.convert("toto", new SimpleBlobHolder(new StringBlob("")), null);
-        } catch (ConverterNotRegistred e) {
+        } catch (ConverterNotRegistered e) {
             notRegistred = true;
         }
         assertTrue(notRegistred);
@@ -153,7 +153,7 @@ public class TestService extends NXRuntimeTestCase {
         notRegistred = false;
         try {
             result = cs.isConverterAvailable("NotAvailableConverter");
-        } catch (ConverterNotRegistred e) {
+        } catch (ConverterNotRegistered e) {
             notRegistred = true;
         }
         assertFalse(notRegistred);
@@ -166,7 +166,7 @@ public class TestService extends NXRuntimeTestCase {
         try {
             cs.convert("NotAvailableConverter", new SimpleBlobHolder(
                     new StringBlob("")), null);
-        } catch (ConverterNotRegistred e) {
+        } catch (ConverterNotRegistered e) {
             notRegistred = true;
         } catch (ConverterNotAvailable e) {
             notAvailable = true;
@@ -179,7 +179,7 @@ public class TestService extends NXRuntimeTestCase {
         notAvailable = false;
         try {
             result = cs.isConverterAvailable("dummy2");
-        } catch (ConverterNotRegistred e) {
+        } catch (ConverterNotRegistered e) {
             notRegistred = true;
         }
         assertFalse(notRegistred);
@@ -191,7 +191,7 @@ public class TestService extends NXRuntimeTestCase {
         notRegistred = false;
         try {
             cs.convert("dummy2", new SimpleBlobHolder(new StringBlob("")), null);
-        } catch (ConverterNotRegistred e) {
+        } catch (ConverterNotRegistered e) {
             notRegistred = true;
         } catch (ConverterNotAvailable e) {
             notAvailable = true;

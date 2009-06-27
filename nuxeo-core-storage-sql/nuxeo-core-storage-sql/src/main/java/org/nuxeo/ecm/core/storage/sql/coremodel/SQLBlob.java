@@ -46,7 +46,8 @@ public class SQLBlob extends DefaultStreamBlob implements Serializable {
      * This way the blob will use the default serialization (file serialization) that is optimized for
      * servers that are using a shared file system (and not nuxeo streaming)
      */
-    public final static boolean IS_STREAMING_ENABLED = Boolean.valueOf(Framework.getProperty("org.nuxeo.ecm.core.storage.sql.blob_streaming", "true"));
+    public static final boolean IS_STREAMING_ENABLED = Boolean.valueOf(
+            Framework.getProperty("org.nuxeo.ecm.core.storage.sql.blob_streaming", "true"));
 
     protected final Binary binary;
 
@@ -80,8 +81,8 @@ public class SQLBlob extends DefaultStreamBlob implements Serializable {
      * Replace this object with a {@link StreamingBlob} when serialized.
      * The StreamingBlob object can be sent to remote machines through nuxeo streaming mechanism.
      * If IS_STREAMING_ENABLED is false then no replace takes place.
-     * @return a streaming blob that points to the same content as this one
      *
+     * @return a streaming blob that points to the same content as this one
      * @throws ObjectStreamException
      */
     public Object writeReplace() throws ObjectStreamException {

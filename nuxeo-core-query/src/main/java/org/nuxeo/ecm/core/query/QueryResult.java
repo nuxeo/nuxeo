@@ -21,7 +21,6 @@ package org.nuxeo.ecm.core.query;
 import java.util.Iterator;
 
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.repository.DocumentIterator;
 
 /**
  * @author Bogdan Stefanescu

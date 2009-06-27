@@ -124,7 +124,7 @@ public abstract class AbstractDocumentModelWriter extends AbstractDocumentWriter
      * The parent of this document is assumed to exist.
      *
      * @param xdoc the document containing
-     * @param toPath the path opf the doc to create
+     * @param toPath the path of the doc to create
      * @return
      * @throws ClientException
      */
@@ -185,7 +185,7 @@ public abstract class AbstractDocumentModelWriter extends AbstractDocumentWriter
     @SuppressWarnings("unchecked")
     protected void loadSystemInfo(DocumentModel docModel, Document doc)
             throws ClientException {
-        // how do I set the life cycle? whould we set it?
+        // how do I set the life cycle? would we set it?
 
         // TODO import security
         Element system = doc.getRootElement().element(

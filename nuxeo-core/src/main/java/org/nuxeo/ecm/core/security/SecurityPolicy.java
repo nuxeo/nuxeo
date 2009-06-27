@@ -43,9 +43,9 @@ public interface SecurityPolicy {
      * @param resolvedPermissions permissions or groups of permissions
      *            containing permission
      * @param additionalPrincipals
+     *
      * @return access: true, false, or nothing. When nothing is returned,
      *         following policies or default core security are applied.
-     * @throws SecurityException
      */
     Access checkPermission(Document doc, ACP mergedAcp, Principal principal,
             String permission, String[] resolvedPermissions,

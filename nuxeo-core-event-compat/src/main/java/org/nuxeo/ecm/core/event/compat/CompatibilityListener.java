@@ -66,7 +66,7 @@ public class CompatibilityListener implements EventListener {
     }
 
 
-    /** old notify implememtation - TODO must delete this after commiting new event impl.
+    /* old notify implementation - TODO must delete this after commiting new event impl.
     protected void notifyEvent(String eventId, DocumentModel source,
             Map<String, Object> options, String category, String comment,
             boolean withLifeCycle) {
