@@ -49,6 +49,9 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
         super();
     }
     
+    @XNode("@name")
+    public String name;
+    
     @XNode("datasource")
     public void setDatasource(String name) {
        String expandedValue = Framework.expandVars(name);
@@ -73,6 +76,10 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
     public void addAnnotedClass(Class<?> annotedClass) {
        annotedClasses.add(annotedClass);
     }
+    
+    public void removeAnnotedClass(Class<?> annotedClass) {
+        annotedClasses.remove(annotedClass);
+     }
     
     protected Ejb3Configuration cfg;
 

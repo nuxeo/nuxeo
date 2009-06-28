@@ -12,4 +12,6 @@ Bundle-Description: Provide shared logic for accessing to datasources
                 and transaction management.
 Bundle-SymbolicName: org.nuxeo.ecm.core.persistence
 Bundle-DocURL: http://www.nuxeo.com/en
+Nuxeo-Component: OSGI-INF/persistence-service.xml
+
 

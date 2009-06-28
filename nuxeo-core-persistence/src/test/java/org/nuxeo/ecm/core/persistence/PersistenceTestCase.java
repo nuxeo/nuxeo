@@ -49,11 +49,10 @@ public abstract class PersistenceTestCase extends TestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        persistenceProvider = new PersistenceProvider();
         URL resource = getClass().getResource("/hibernate-test-config.xml");
         HibernateConfiguration config = HibernateConfiguration.load(resource);
+        persistenceProvider = new PersistenceProvider(config); 
         handleBeforeSetup(config);
-        persistenceProvider.setEntityManagerFactoryProvider(config);
         persistenceProvider.openPersistenceUnit();
         entityManager = persistenceProvider.acquireEntityManagerWithActiveTransaction();
         handleAfterSetup(entityManager);

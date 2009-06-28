@@ -34,7 +34,7 @@ public class PersistenceProvider {
    
     protected EntityManagerFactoryProvider emfProvider;
     
-    public void setEntityManagerFactoryProvider(EntityManagerFactoryProvider emfProvider) {
+    protected PersistenceProvider(EntityManagerFactoryProvider emfProvider) {
         this.emfProvider = emfProvider;
     }
 
@@ -143,6 +143,29 @@ public class PersistenceProvider {
             }
             try { // insure entity manager releasing
                 return callback.runWith(em);
+            } finally {
+                releaseEntityManager(em);
+            }
+        } finally {
+            myThread.setContextClassLoader(lastLoader);
+        }
+    }
+    
+    public interface RunVoid {
+        void runWith(EntityManager em);
+    }
+    
+    public void run(Boolean needActiveSession, RunVoid callback) {
+        Thread myThread = Thread.currentThread();
+        ClassLoader lastLoader = myThread.getContextClassLoader();
+        myThread.setContextClassLoader(getClass().getClassLoader());
+        try {  // insure context class loader restoring
+            EntityManager em = doAcquireEntityManager();
+            if (needActiveSession) {
+                em.getTransaction().begin();
+            }
+            try { // insure entity manager releasing
+               callback.runWith(em);
             } finally {
                 releaseEntityManager(em);
             }
