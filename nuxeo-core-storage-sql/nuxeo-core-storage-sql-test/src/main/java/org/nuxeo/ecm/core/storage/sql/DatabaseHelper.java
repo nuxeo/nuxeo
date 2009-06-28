@@ -22,7 +22,7 @@ public abstract class DatabaseHelper {
     /**
      * Change this to use another SQL database for tests.
      */
-    public static DatabaseHelper DATABASE = DatabaseH2.INSTANCE;
+    public static final DatabaseHelper DATABASE = DatabaseH2.INSTANCE;
 
     public abstract void setUp() throws Exception;
 

@@ -26,7 +26,6 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.EventService;
-import org.nuxeo.ecm.core.event.impl.EventServiceImpl;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -65,7 +64,6 @@ public abstract class SQLRepositoryTestCase extends NXRuntimeTestCase {
         Framework.getLocalService(EventService.class).waitForAsyncCompletion();
         super.tearDown();
         database.tearDown();
-        this.database =  null;
     }
 
     public void openSession() throws ClientException {
