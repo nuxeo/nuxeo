@@ -33,7 +33,6 @@ import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
 import org.nuxeo.ecm.platform.audit.api.AuditException;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.api.NXAuditEvents;
-import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
 import org.nuxeo.ecm.platform.audit.service.management.AuditEventMetricFactory;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.management.ObjectNameFactory;
@@ -56,10 +55,11 @@ public class TestNXAuditEventsService extends RepositoryOSGITestCase {
 
         deployBundle("org.nuxeo.ecm.platform.usermanager");
         deployBundle("org.nuxeo.ecm.platform.audit");
-         deployBundle("org.nuxeo.runtime.management");
-         deployBundle("org.nuxeo.ecm.platform.management");
+        deployBundle("org.nuxeo.runtime.management");
+        deployBundle("org.nuxeo.ecm.platform.management");
+        
+        deployTestContrib("org.nuxeo.ecm.platform.audit", "nxaudit-tests-config.xml");
 
-        NXAuditEventsService.persistenceProvider.setHibernateConfiguration(new TestHibernateConfiguration());
         serviceUnderTest = Framework.getService(NXAuditEvents.class);
         assertNotNull(serviceUnderTest);
 
