@@ -26,6 +26,7 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.event.impl.EventServiceImpl;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -38,6 +39,8 @@ public abstract class SQLRepositoryTestCase extends NXRuntimeTestCase {
 
     protected CoreSession session;
 
+    protected DatabaseHelper database = DatabaseHelper.DATABASE;
+    
     public SQLRepositoryTestCase() {
         super();
     }
@@ -52,16 +55,17 @@ public abstract class SQLRepositoryTestCase extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core");
         deployBundle("org.nuxeo.ecm.core.event");
-        DatabaseHelper.DATABASE.setUp();
+        database.setUp();
         deployContrib("org.nuxeo.ecm.core.storage.sql.test",
-                DatabaseHelper.DATABASE.getDeploymentContrib());
+                database.getDeploymentContrib());
     }
 
     @Override
     public void tearDown() throws Exception {
         Framework.getLocalService(EventService.class).waitForAsyncCompletion();
         super.tearDown();
-        DatabaseHelper.DATABASE.tearDown();
+        database.tearDown();
+        this.database =  null;
     }
 
     public void openSession() throws ClientException {
@@ -82,5 +86,5 @@ public abstract class SQLRepositoryTestCase extends NXRuntimeTestCase {
     public void closeSession(CoreSession session) {
         CoreInstance.getInstance().close(session);
     }
-
+    
 }
