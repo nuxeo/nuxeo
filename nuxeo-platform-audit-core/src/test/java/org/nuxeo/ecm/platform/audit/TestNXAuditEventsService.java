@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.audit;
 
 import java.lang.management.ManagementFactory;
+import java.rmi.activation.ActivateFailedException;
 import java.util.List;
 import java.util.Set;
 
@@ -33,6 +34,7 @@ import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
 import org.nuxeo.ecm.platform.audit.api.AuditException;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.api.NXAuditEvents;
+import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
 import org.nuxeo.ecm.platform.audit.service.management.AuditEventMetricFactory;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.management.ObjectNameFactory;
@@ -44,25 +46,24 @@ import org.nuxeo.runtime.management.ObjectNameFactory;
  */
 public class TestNXAuditEventsService extends RepositoryOSGITestCase {
 
-    private NXAuditEvents serviceUnderTest;
+    private NXAuditEventsService serviceUnderTest;
 
-     protected final MBeanServer mbeanServer =
-     ManagementFactory.getPlatformMBeanServer();
+     protected final MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
 
         deployBundle("org.nuxeo.ecm.platform.usermanager");
+        deployBundle("org.nuxeo.ecm.core.persistence");
         deployBundle("org.nuxeo.ecm.platform.audit");
         deployBundle("org.nuxeo.runtime.management");
         deployBundle("org.nuxeo.ecm.platform.management");
         
         deployTestContrib("org.nuxeo.ecm.platform.audit", "nxaudit-tests-config.xml");
 
-        serviceUnderTest = Framework.getService(NXAuditEvents.class);
+        serviceUnderTest = (NXAuditEventsService)Framework.getLocalService(NXAuditEvents.class);
         assertNotNull(serviceUnderTest);
-
         openRepository();
     }
 

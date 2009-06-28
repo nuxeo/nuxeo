@@ -20,13 +20,6 @@
     <provide interface="org.nuxeo.ecm.platform.audit.api.AuditLogger"/>
     <provide interface="org.nuxeo.ecm.platform.audit.api.Logs"/>
   </service>
-
-  <extension-point name="hibernate">
-   <documentation>This services use hibernate as JPA provider.
-   That extension point lets you overring the default hibernate configuration.
-   </documentation>
-   <object class="org.nuxeo.ecm.core.persistence.HibernateConfiguration"/>
-  </extension-point>
   
   <extension-point name="event">
     <documentation>
@@ -78,10 +71,9 @@
       class="org.nuxeo.ecm.platform.audit.service.extension.ExtendedInfoDescriptor" />
   </extension-point>
 
- <extension target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService"
+  <extension target="org.nuxeo.ecm.core.persistence.PersistenceComponent"
 		point="hibernate">
-		<hibernateConfiguration>
-			<descriptor>META-INF/persistence.xml</descriptor>
+		<hibernateConfiguration name="nxaudit-logs">
 			<datasource>nxaudit-logs</datasource>
 			<classes>
 				<class>org.nuxeo.ecm.platform.audit.api.ExtendedInfo</class>

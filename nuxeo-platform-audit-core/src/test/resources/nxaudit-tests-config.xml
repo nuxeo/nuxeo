@@ -1,8 +1,8 @@
 <component name="org.nuxeo.ecm.platform.audit.tests.config">
 
-  <extension target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService"
+  <extension target="org.nuxeo.ecm.core.persistence.PersistenceComponent"
 		point="hibernate">
-		<hibernateConfiguration>
+		<hibernateConfiguration name="nxaudit-logs">
 		  <properties>
             <property name="hibernate.connection.url">jdbc:hsqldb:mem:.;sql.enforce_strict_size=true</property>;
             <property name="hibernate.connection.driver_class">org.hsqldb.jdbcDriver</property>

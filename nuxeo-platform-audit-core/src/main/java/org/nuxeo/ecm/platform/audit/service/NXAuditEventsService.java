@@ -47,9 +47,11 @@ import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
-import org.nuxeo.ecm.core.persistence.HibernateConfiguration;
+import org.nuxeo.ecm.core.persistence.PersistenceError;
 import org.nuxeo.ecm.core.persistence.PersistenceProvider;
+import org.nuxeo.ecm.core.persistence.PersistenceProviderFactory;
 import org.nuxeo.ecm.core.persistence.PersistenceProvider.RunCallback;
+import org.nuxeo.ecm.core.persistence.PersistenceProvider.RunVoid;
 import org.nuxeo.ecm.platform.audit.api.AuditException;
 import org.nuxeo.ecm.platform.audit.api.AuditRuntimeException;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
@@ -77,56 +79,49 @@ public class NXAuditEventsService extends DefaultComponent implements NXAuditEve
 
     public static final ComponentName NAME = new ComponentName("org.nuxeo.ecm.platform.audit.service.NXAuditEventsService");
 
-    private static final String HIBERNATE_EXT_POINT = "hibernate";
-
     private static final String EVENT_EXT_POINT = "event";
-
-    private static final Set<String> eventNames = new HashSet<String>();
 
     private static final String EXTENDED_INFO_EXT_POINT = "extendedInfo";
 
-    protected static final Set<ExtendedInfoDescriptor> extendedInfoDescriptors = new HashSet<ExtendedInfoDescriptor>();
+    protected static final Log log = LogFactory.getLog(NXAuditEventsService.class);
 
-    private static final Log log = LogFactory.getLog(NXAuditEventsService.class);
+    protected  final Set<ExtendedInfoDescriptor> extendedInfoDescriptors = new HashSet<ExtendedInfoDescriptor>();
 
-    private final ExpressionEvaluator expressionEvaluator = new ExpressionEvaluator(new ExpressionFactoryImpl());
+    protected  final Set<String> eventNames = new HashSet<String>();
 
-    @Override
-    public void activate(ComponentContext context) throws Exception {
-        super.activate(context);
+    protected final ExpressionEvaluator expressionEvaluator = new ExpressionEvaluator(new ExpressionFactoryImpl());
+
+    protected PersistenceProvider persistenceProvider;
+    
+    public PersistenceProvider getOrCreatePersistenceProvider() {
+        if (persistenceProvider != null) {
+            return persistenceProvider;
+        }
+        PersistenceProviderFactory persistenceProviderFactory = Framework.getLocalService(PersistenceProviderFactory.class);
+        return persistenceProvider = persistenceProviderFactory.newProvider("nxaudit-logs");
+    }
+
+    protected void deactivatePersistenceProvider() { 
+        if (persistenceProvider == null) {
+            return;
+        }
+        persistenceProvider.closePersistenceUnit();
+        persistenceProvider = null;
     }
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
-        persistenceProvider.closePersistenceUnit();
+        deactivatePersistenceProvider();
         super.deactivate(context);
     }
-
+    
     @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) throws Exception {
-        if (extensionPoint.equals(HIBERNATE_EXT_POINT)) {
-            doRegisterHibernate((HibernateConfiguration) contribution);
-        } else if (extensionPoint.equals(EVENT_EXT_POINT)) {
+        if (extensionPoint.equals(EVENT_EXT_POINT)) {
             doRegisterEvent((EventDescriptor) contribution);
         } else if (extensionPoint.equals(EXTENDED_INFO_EXT_POINT)) {
             doRegisterExtendedInfo((ExtendedInfoDescriptor) contribution);
         }
-    }
-
-    protected final PersistenceProvider persistenceProvider = new PersistenceProvider();
-
-    protected final HibernateConfiguration hibCfg = new HibernateConfiguration();
-
-    {
-        hibCfg.setDescriptor(getClass().getResource("META-INF/persistence.xml"));
-        persistenceProvider.setEntityManagerFactoryProvider(hibCfg);
-    }
-
-    protected void doRegisterHibernate(HibernateConfiguration config) {
-        if (log.isDebugEnabled()) {
-            log.debug("Registered hibernate configuration ");
-        }
-        hibCfg.merge(config);
     }
 
     protected void doRegisterEvent(EventDescriptor desc) {
@@ -289,13 +284,12 @@ public class NXAuditEventsService extends DefaultComponent implements NXAuditEve
         return entry;
     }
 
-    public void addLogEntries(List<LogEntry> entries) {
-        EntityManager em = persistenceProvider.acquireEntityManagerWithActiveTransaction();
-        try {
-            addLogEntries(em, entries);
-        } finally {
-            persistenceProvider.releaseEntityManager(em);
-        }
+    public void addLogEntries(final List<LogEntry> entries) {
+        getOrCreatePersistenceProvider().run(true, new RunVoid() {
+            public void runWith(EntityManager em) {
+                addLogEntries(em, entries);
+            }
+        });
     }
 
     public void addLogEntries(EntityManager em, List<LogEntry> entries) {
@@ -303,7 +297,7 @@ public class NXAuditEventsService extends DefaultComponent implements NXAuditEve
     }
 
     public List<LogEntry> getLogEntriesFor(final String uuid) {
-        return persistenceProvider.run(false, new RunCallback<List<LogEntry>>() {
+        return getOrCreatePersistenceProvider().run(false, new RunCallback<List<LogEntry>>() {
             public List<LogEntry> runWith(EntityManager em) {
                 return getLogEntriesFor(em, uuid);
             }
@@ -316,7 +310,7 @@ public class NXAuditEventsService extends DefaultComponent implements NXAuditEve
     }
 
     public List<LogEntry> getLogEntriesFor(final String uuid, final Map<String, FilterMapEntry> filterMap, final boolean doDefaultSort) {
-        return persistenceProvider.run(false, new RunCallback<List<LogEntry>>() {
+        return getOrCreatePersistenceProvider().run(false, new RunCallback<List<LogEntry>>() {
             public List<LogEntry> runWith(EntityManager em) {
                 return getLogEntriesFor(em, uuid, filterMap, doDefaultSort);
             }
@@ -328,7 +322,7 @@ public class NXAuditEventsService extends DefaultComponent implements NXAuditEve
     }
 
     public LogEntry getLogEntryByID(final long id) {
-        return persistenceProvider.run(false, new RunCallback<LogEntry>() {
+        return getOrCreatePersistenceProvider().run(false, new RunCallback<LogEntry>() {
             public LogEntry runWith(EntityManager em) {
                 return getLogEntryByID(em, id);
             }
@@ -340,7 +334,7 @@ public class NXAuditEventsService extends DefaultComponent implements NXAuditEve
     }
 
     public List<LogEntry> nativeQueryLogs(final String whereClause, final int pageNb, final int pageSize) {
-        return persistenceProvider.run(false, new RunCallback<List<LogEntry>>() {
+        return getOrCreatePersistenceProvider().run(false, new RunCallback<List<LogEntry>>() {
             public List<LogEntry> runWith(EntityManager em) {
                 return nativeQueryLogs(em, whereClause, pageNb, pageSize);
             }
@@ -352,7 +346,7 @@ public class NXAuditEventsService extends DefaultComponent implements NXAuditEve
     }
 
     public List<?> nativeQuery(final String query, final int pageNb, final int pageSize) {
-        return persistenceProvider.run(false, new RunCallback<List<?>>() {
+        return getOrCreatePersistenceProvider().run(false, new RunCallback<List<?>>() {
             public List<?> runWith(EntityManager em) {
                 return nativeQuery(em, query, pageNb, pageSize);
             }
@@ -364,7 +358,7 @@ public class NXAuditEventsService extends DefaultComponent implements NXAuditEve
     }
 
     public List<LogEntry> queryLogs(final String[] eventIds, final String dateRange) {
-        return persistenceProvider.run(false, new RunCallback<List<LogEntry>>() {
+        return getOrCreatePersistenceProvider().run(false, new RunCallback<List<LogEntry>>() {
             public List<LogEntry> runWith(EntityManager em) {
                 return queryLogs(em, eventIds, dateRange);
             }
@@ -376,7 +370,7 @@ public class NXAuditEventsService extends DefaultComponent implements NXAuditEve
     }
 
     public List<LogEntry> queryLogsByPage(final String[] eventIds, final String dateRange, final String category, final String path, final int pageNb, final int pageSize) {
-        return persistenceProvider.run(false, new RunCallback<List<LogEntry>>() {
+        return getOrCreatePersistenceProvider().run(false, new RunCallback<List<LogEntry>>() {
             public List<LogEntry> runWith(EntityManager em) {
                 return queryLogsByPage(em, eventIds, dateRange, category, path, pageNb, pageSize);
             }
@@ -388,7 +382,7 @@ public class NXAuditEventsService extends DefaultComponent implements NXAuditEve
     }
 
     public List<LogEntry> queryLogsByPage(final String[] eventIds, final Date limit, final String category, final String path, final int pageNb, final int pageSize) {
-        return persistenceProvider.run(false, new RunCallback<List<LogEntry>>() {
+        return getOrCreatePersistenceProvider().run(false, new RunCallback<List<LogEntry>>() {
             public List<LogEntry> runWith(EntityManager em) {
                 return queryLogsByPage(em, eventIds, limit, category, path, pageNb, pageSize);
             }
@@ -400,7 +394,7 @@ public class NXAuditEventsService extends DefaultComponent implements NXAuditEve
     }
 
     public long syncLogCreationEntries(final String repoId, final String path, final Boolean recurs) {
-        return persistenceProvider.run(true, new RunCallback<Long>() {
+        return getOrCreatePersistenceProvider().run(true, new RunCallback<Long>() {
             public Long runWith(EntityManager em) {
                 return syncLogCreationEntries(em, repoId, path, recurs);
             }
@@ -455,7 +449,7 @@ public class NXAuditEventsService extends DefaultComponent implements NXAuditEve
     }
 
     public void addLogEntry(final LogEntry entry) {
-        persistenceProvider.run(true, new RunCallback<Integer>() {
+        getOrCreatePersistenceProvider().run(true, new RunCallback<Integer>() {
             public Integer runWith(EntityManager em) {
                 addLogEntry(em, entry);
                 return 0;
@@ -468,7 +462,7 @@ public class NXAuditEventsService extends DefaultComponent implements NXAuditEve
     }
 
     public Long getEventsCount(final String eventId) {
-        return persistenceProvider.run(false, new RunCallback<Long>() {
+        return getOrCreatePersistenceProvider().run(false, new RunCallback<Long>() {
             public Long runWith(EntityManager em) {
                 return getEventsCount(em, eventId);
             }
@@ -481,7 +475,7 @@ public class NXAuditEventsService extends DefaultComponent implements NXAuditEve
     }
 
     public List<String> getLoggedEventIds() {
-        return persistenceProvider.run(false, new RunCallback<List<String>>() {
+        return getOrCreatePersistenceProvider().run(false, new RunCallback<List<String>>() {
             public List<String> runWith(EntityManager em) {
                 return getLoggedEventIds(em);
             }
@@ -495,7 +489,7 @@ public class NXAuditEventsService extends DefaultComponent implements NXAuditEve
 
     public void logEvent(final Event event) throws AuditException {
         AuditException ae = null;
-        ae = persistenceProvider.run(true, new RunCallback<AuditException>() {
+        ae = getOrCreatePersistenceProvider().run(true, new RunCallback<AuditException>() {
             public AuditException runWith(EntityManager em) {
                 logEvent(em, event);
                 return null;
@@ -508,7 +502,7 @@ public class NXAuditEventsService extends DefaultComponent implements NXAuditEve
 
     public void logEvents(final EventBundle eventBundle) throws AuditException {
         AuditException ae = null;
-        ae = persistenceProvider.run(true, new RunCallback<AuditException>() {
+        ae = getOrCreatePersistenceProvider().run(true, new RunCallback<AuditException>() {
             public AuditException runWith(EntityManager em) {
                 logEvents(em, eventBundle);
                 return null;
