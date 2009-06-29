@@ -106,7 +106,7 @@ public class PersistenceProvider {
                 return;
             }
             try {
-                ; //doCommit(em);
+               doCommit(em);
             } finally {
                 if (em.isOpen()) {
                     em.clear();
