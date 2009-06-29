@@ -49,10 +49,10 @@ public class TestPlacefulServiceImpl extends RepositoryOSGITestCase {
         deployBundle("org.nuxeo.ecm.core.persistence");
         deployBundle("org.nuxeo.ecm.platform.placeful.core");
 
-        deployTestContrib("org.nuxeo.ecm.platform.placeful.core",
-                "nxplacefulservice-configs-contrib.xml");
-        deployTestContrib("org.nuxeo.ecm.platform.placeful.core",
-        "nxplaceful-tests-config.xml");
+        deployContrib("org.nuxeo.ecm.platform.placeful.core",
+                "nxplacefulservice-configs-tests.xml");
+        deployContrib("org.nuxeo.ecm.platform.placeful.core",
+        "nxplaceful-tests.xml");
 
         placefulServiceImpl = (PlacefulServiceImpl) runtime.getComponent(PlacefulService.ID);
         assertNotNull(placefulServiceImpl);
