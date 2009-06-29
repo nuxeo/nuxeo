@@ -35,10 +35,6 @@
       <groupId>javax.annotation</groupId>
       <artifactId>jsr250-api</artifactId>
     </dependency>
-    <dependency>
-      <groupId>javax.persistence</groupId>
-      <artifactId>persistence</artifactId>
-    </dependency>
 
     <!-- test scope -->
     <dependency>
