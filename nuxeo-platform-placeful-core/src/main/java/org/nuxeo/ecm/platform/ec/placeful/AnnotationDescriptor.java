@@ -32,15 +32,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 @XObject("annotation")
 public class AnnotationDescriptor {
 
-    @XNodeList(value = "class", type = ArrayList.class, componentType = String.class)
-    public List<String> classNames;
-
-    public List<String> getClassNames() {
-        return classNames;
-    }
-
-    public void setClassNames(List<String> classNames) {
-        this.classNames = classNames;
-    }
+    @XNodeList(value = "class", type = ArrayList.class, componentType = Class.class)
+    public final List<Class<? extends Annotation>> annotationClasses = new ArrayList<Class<? extends Annotation>>();
 
 }

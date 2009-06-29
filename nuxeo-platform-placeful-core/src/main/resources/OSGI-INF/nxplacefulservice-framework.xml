@@ -12,6 +12,7 @@
     <provide interface="org.nuxeo.ecm.platform.ec.placeful.interfaces.PlacefulService" />
   </service>
   
+
   <extension-point name="annotations">
     <documentation>
       This extension is used to register annotations (fully qualified entity
@@ -20,4 +21,12 @@
     <object class="org.nuxeo.ecm.platform.ec.placeful.AnnotationDescriptor" />
   </extension-point>
 
+  <require>org.nuxeo.ecm.core.persistence.PersistenceComponent</require>
+ 
+  <extension target="org.nuxeo.ecm.core.persistence.PersistenceComponent"
+		point="hibernate">
+		<hibernateConfiguration name="nxplaceful">
+			<datasource>placeful_service_ds</datasource>
+		</hibernateConfiguration>
+  </extension>
 </component>

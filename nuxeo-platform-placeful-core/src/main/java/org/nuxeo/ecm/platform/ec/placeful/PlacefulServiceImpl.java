@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.platform.ec.placeful;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,122 +29,157 @@ import javax.persistence.Query;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
+import org.nuxeo.ecm.core.persistence.HibernateConfiguration;
+import org.nuxeo.ecm.core.persistence.HibernateConfigurator;
+import org.nuxeo.ecm.core.persistence.PersistenceProvider;
+import org.nuxeo.ecm.core.persistence.PersistenceProviderFactory;
+import org.nuxeo.ecm.core.persistence.PersistenceProvider.RunCallback;
+import org.nuxeo.ecm.core.persistence.PersistenceProvider.RunVoid;
 import org.nuxeo.ecm.platform.ec.placeful.interfaces.PlacefulService;
-import org.nuxeo.ecm.platform.ec.placeful.service.ContainerManagedHibernateConfiguration;
-import org.nuxeo.ecm.platform.ec.placeful.service.PersistenceProvider;
-import org.nuxeo.ecm.platform.ec.placeful.service.PersistenceProvider.RunCallback;
-import org.nuxeo.ecm.platform.ec.placeful.service.PersistenceProvider.RunVoid;
-import org.nuxeo.runtime.api.DataSourceHelper;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
+import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
-import org.nuxeo.runtime.model.Extension;
 
 /**
- *
+ * 
  * @author <a href="mailto:rspivak@nuxeo.com">Ruslan Spivak</a>
  */
-public class PlacefulServiceImpl extends DefaultComponent implements
-        PlacefulService {
+public class PlacefulServiceImpl extends DefaultComponent implements PlacefulService {
 
-    private Map<String, String> registry;
+    protected final Map<String, String> registry = new HashMap<String, String>();
 
-    private static final Log log = LogFactory.getLog(PlacefulServiceImpl.class);
+    protected static final Log log = LogFactory.getLog(PlacefulServiceImpl.class);
 
-    protected static final String PLACEFUL_DS_NAME = "placeful_service_ds";
+    protected PersistenceProvider persistenceProvider;
 
-    public static final PersistenceProvider persistenceProvider = new PersistenceProvider(
-            new ContainerManagedHibernateConfiguration(
-                    DataSourceHelper.getDataSourceJNDIName(PLACEFUL_DS_NAME)));
+    protected HibernateConfiguration hibernateConfiguration;
 
-    @Override
-    public void activate(ComponentContext context) {
-        registry = new HashMap<String, String>();
+    public PersistenceProvider getOrCreatePersistenceProvider() {
+        if (persistenceProvider != null) {
+            return persistenceProvider;
+        }
+        PersistenceProviderFactory persistenceProviderFactory = Framework.getLocalService(PersistenceProviderFactory.class);
+        return persistenceProvider = persistenceProviderFactory.newProvider("nxplaceful");
+    }
+
+    public HibernateConfiguration getOrCreateHibernateConfiguration() {
+        if (hibernateConfiguration != null) {
+            return hibernateConfiguration;
+        }
+        HibernateConfigurator hibernateConfigurator = Framework.getLocalService(HibernateConfigurator.class);
+        return hibernateConfiguration = hibernateConfigurator.getHibernateConfiguration("nxplaceful");
+    }
+
+    protected void deactivatePersistenceProvider() {
+        if (persistenceProvider == null) {
+            return;
+        }
+        persistenceProvider.closePersistenceUnit();
+        persistenceProvider = null;
     }
 
     @Override
-    public void deactivate(ComponentContext context) {
-        registry = null;
+    public void deactivate(ComponentContext context) throws Exception {
+        deactivatePersistenceProvider();
+        registry.clear();
+        super.deactivate(context);
     }
 
     @Override
-    public void registerExtension(Extension extension) throws Exception {
-        Object[] contribs = extension.getContributions();
-        for (Object contrib : contribs) {
-            AnnotationDescriptor descriptor = (AnnotationDescriptor) contrib;
-            for (String className : descriptor.getClassNames()) {
-                String unqualifiedName = className.substring(className
-                        .lastIndexOf('.') + 1);
-                registry.put(unqualifiedName, className);
-                persistenceProvider.addAnnotedClass(className);
-            }
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) throws Exception {
+        if ("annotations".equals(extensionPoint)) {
+            registerAnnotations((AnnotationDescriptor) contribution);
+        }
+    }
+
+    protected void registerAnnotations(AnnotationDescriptor contribution) {
+        HibernateConfiguration config = getOrCreateHibernateConfiguration();
+        for (Class<? extends Annotation> annotationClass : contribution.annotationClasses) {
+            String canonicalName = annotationClass.getCanonicalName();
+            String unqualifiedName = canonicalName.substring(canonicalName.lastIndexOf('.') + 1);
+            registry.put(unqualifiedName, annotationClass.getCanonicalName());
+            config.addAnnotedClass(annotationClass);
         }
     }
 
     @Override
-    public void unregisterExtension(Extension extension) throws Exception {
-        Object[] contribs = extension.getContributions();
-        for (Object contrib : contribs) {
-            AnnotationDescriptor descriptor = (AnnotationDescriptor) contrib;
-            for (String className : descriptor.getClassNames()) {
-                String unqualifiedName = className.substring(className
-                        .lastIndexOf('.') + 1);
-                registry.remove(unqualifiedName);
-                persistenceProvider.removeAnnotedClass(className);
-            }
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) throws Exception {
+        if (extensionPoint.equals("annotations")) {
+            unregisterAnnotations((AnnotationDescriptor) contribution);
+        }
+    }
+
+    protected void unregisterAnnotations(AnnotationDescriptor contribution) {
+        HibernateConfiguration config = getOrCreateHibernateConfiguration();
+        for (Class<? extends Annotation> annotationClass : contribution.annotationClasses) {
+            String canonicalName = annotationClass.getCanonicalName();
+            String unqualifiedName = canonicalName.substring(canonicalName.lastIndexOf('.') + 1);
+            registry.remove(unqualifiedName);
+            config.removeAnnotedClass(annotationClass);
         }
     }
 
     public Map<String, String> getAnnotationRegistry() {
-        return registry;
+        return Collections.unmodifiableMap(registry);
+    }
+
+    public static String getShortName(String className) {
+        return className.substring(className.lastIndexOf('.') + 1);
     }
 
     public Annotation getAnnotation(EntityManager em, String id, String name) {
         String className = registry.get(name);
-        String shortClassName = className
-                .substring(className.lastIndexOf('.') + 1);
-        Query query = em
-                .createQuery("FROM " + shortClassName + " WHERE id=:id");
+        String shortClassName = getShortName(className);
+        Query query = em.createQuery("FROM " + shortClassName + " WHERE id=:id");
         query.setParameter("id", id);
         return (Annotation) query.getSingleResult();
     }
 
+    @SuppressWarnings("unchecked")
     public List<Annotation> getAllAnnotations(EntityManager em, String name) {
         String className = registry.get(name);
-        String shortClassName = className
-                .substring(className.lastIndexOf('.') + 1);
+        String shortClassName = getShortName(className);
         Query query = em.createQuery("FROM " + shortClassName);
-        return query.getResultList();
+        return (List<Annotation>) query.getResultList();
     }
 
     public List<Annotation> getAllAnnotations(final String name) {
-        return persistenceProvider.run(false,
-                new RunCallback<List<Annotation>>() {
-                    public List<Annotation> runWith(EntityManager em) {
-                        return getAllAnnotations(em, name);
-                    }
-                });
+        try {
+            return getOrCreatePersistenceProvider().run(false, new RunCallback<List<Annotation>>() {
+                public List<Annotation> runWith(EntityManager em) {
+                    return getAllAnnotations(em, name);
+                }
+            });
+        } catch (ClientException e) {
+           throw new ClientRuntimeException(e);
+        }
     }
 
     public Annotation getAnnotation(final String uuid, final String name) {
-        return persistenceProvider.run(false, new RunCallback<Annotation>() {
-            public Annotation runWith(EntityManager em) {
-                return getAnnotation(em, uuid, name);
-            }
+        try {
+            return getOrCreatePersistenceProvider().run(false, new RunCallback<Annotation>() {
+                public Annotation runWith(EntityManager em) {
+                    return getAnnotation(em, uuid, name);
+                }
 
-        });
+            });
+        } catch (ClientException e) {
+           throw new ClientRuntimeException(e);
+        }
     }
 
-    @SuppressWarnings({"unchecked"})
-    public List<Annotation> getAnnotationListByParamMap(EntityManager em,
-            Map<String, Object> paramMap, String name) {
+    @SuppressWarnings( { "unchecked" })
+    public List<Annotation> getAnnotationListByParamMap(EntityManager em, Map<String, Object> paramMap, String name) {
         String className = registry.get(name);
-        if (className==null) {
+        if (className == null) {
             // add fail safe
             log.warn("No placeful configuration registred for " + name);
             return new ArrayList<Annotation>();
         }
-        String shortClassName = className
-                .substring(className.lastIndexOf('.') + 1);
+        String shortClassName = getShortName(className);
         StringBuilder queryString = new StringBuilder("FROM " + shortClassName);
         if (paramMap != null && !paramMap.isEmpty()) {
             queryString.append(" WHERE ");
@@ -168,22 +204,22 @@ public class PlacefulServiceImpl extends DefaultComponent implements
         return query.getResultList();
     }
 
-    public List<Annotation> getAnnotationListByParamMap(
-            final Map<String, Object> paramMap, final String name) {
-        return persistenceProvider.run(false,
-                new RunCallback<List<Annotation>>() {
-                    public List<Annotation> runWith(EntityManager em) {
-                        return getAnnotationListByParamMap(em, paramMap, name);
-                    }
+    public List<Annotation> getAnnotationListByParamMap(final Map<String, Object> paramMap, final String name) {
+        try {
+            return getOrCreatePersistenceProvider().run(false, new RunCallback<List<Annotation>>() {
+                public List<Annotation> runWith(EntityManager em) {
+                    return getAnnotationListByParamMap(em, paramMap, name);
+                }
 
-                });
+            });
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+         }
     }
 
-    public void removeAnnotationListByParamMap(EntityManager em,
-            Map<String, Object> paramMap, String name) {
+    public void removeAnnotationListByParamMap(EntityManager em, Map<String, Object> paramMap, String name) {
 
-        List<Annotation> annotationsToRemove = getAnnotationListByParamMap(em,
-                paramMap, name);
+        List<Annotation> annotationsToRemove = getAnnotationListByParamMap(em, paramMap, name);
         if (annotationsToRemove != null && !annotationsToRemove.isEmpty()) {
             for (Annotation anno : annotationsToRemove) {
                 if (anno != null) {
@@ -193,14 +229,17 @@ public class PlacefulServiceImpl extends DefaultComponent implements
         }
     }
 
-    public void removeAnnotationListByParamMap(
-            final Map<String, Object> paramMap, final String name) {
-        persistenceProvider.run(true, new RunVoid() {
-            public void runWith(EntityManager em) {
-                removeAnnotationListByParamMap(em, paramMap, name);
-            }
+    public void removeAnnotationListByParamMap(final Map<String, Object> paramMap, final String name) {
+        try {
+            getOrCreatePersistenceProvider().run(true, new RunVoid() {
+                public void runWith(EntityManager em) {
+                    removeAnnotationListByParamMap(em, paramMap, name);
+                }
 
-        });
+            });
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+         }
     }
 
     public void setAnnotation(EntityManager em, Annotation annotation) {
@@ -208,12 +247,16 @@ public class PlacefulServiceImpl extends DefaultComponent implements
     }
 
     public void setAnnotation(final Annotation annotation) {
-        persistenceProvider.run(true, new RunVoid() {
-            public void runWith(EntityManager em) {
-                setAnnotation(em, annotation);
-            }
+        try {
+            getOrCreatePersistenceProvider().run(true, new RunVoid() {
+                public void runWith(EntityManager em) {
+                    setAnnotation(em, annotation);
+                }
 
-        });
+            });
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+         }
     }
 
     public void removeAnnotation(EntityManager em, Annotation annotation) {
@@ -221,10 +264,14 @@ public class PlacefulServiceImpl extends DefaultComponent implements
     }
 
     public void removeAnnotation(final Annotation annotation) {
-        persistenceProvider.run(true, new RunVoid() {
-            public void runWith(EntityManager em) {
-                removeAnnotation(em, annotation);
-            }
-        });
+        try {
+            getOrCreatePersistenceProvider().run(true, new RunVoid() {
+                public void runWith(EntityManager em) {
+                    removeAnnotation(em, annotation);
+                }
+            });
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+         }
     }
 }
