@@ -99,6 +99,7 @@ public class OSGiComponentLoader implements SynchronousBundleListener {
                 break;
             case BundleEvent.UNINSTALLED:
                 runtime.bundles.remove(bundle.getSymbolicName());
+                break;
             case BundleEvent.RESOLVED:
                 if (componentsList != null) {
                     bundleDebug(
