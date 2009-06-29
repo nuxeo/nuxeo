@@ -14,6 +14,7 @@
 
 package org.nuxeo.theme.test.webwidgets;
 
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -43,8 +44,10 @@ public class TestPersistentProviderPerUser extends TestCase {
 
     protected Provider provider2;
 
-
     class MockPersistentProvider extends PersistentProviderPerUser {
+
+        Principal currentNuxeoPrincipal;
+
         public MockPersistentProvider(EntityManager em, String name,
                 boolean anonymous) {
             this.em = em;
@@ -53,6 +56,7 @@ public class TestPersistentProviderPerUser extends TestCase {
             currentNuxeoPrincipal.setAnonymous(anonymous);
             this.currentNuxeoPrincipal = currentNuxeoPrincipal;
         }
+
     }
 
     @Override

@@ -14,6 +14,7 @@
 
 package org.nuxeo.theme.webwidgets.providers;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,6 +34,7 @@ public class PersistentProviderPerUser extends PersistentProvider {
         if (widgetTypeName == null) {
             throw new ProviderException("Widget type name is undefined");
         }
+        Principal currentNuxeoPrincipal = getCurrentPrincipal();
         if (currentNuxeoPrincipal == null) {
             log.warn("Could not get the current user from the context.");
             return null;
@@ -53,6 +55,7 @@ public class PersistentProviderPerUser extends PersistentProvider {
             throw new ProviderException("Region name is undefined");
         }
         List<Widget> widgets = new ArrayList<Widget>();
+        Principal currentNuxeoPrincipal = getCurrentPrincipal();
         if (currentNuxeoPrincipal != null) {
             widgets.addAll(em.createNamedQuery("Widget.findByScope").setParameter(
                     "region", regionName).setParameter("scope",
@@ -66,6 +69,7 @@ public class PersistentProviderPerUser extends PersistentProvider {
      */
     @Override
     public boolean canRead() {
+        Principal currentNuxeoPrincipal = getCurrentPrincipal();
         if (currentNuxeoPrincipal == null) {
             log.warn("Could not get the current user from the context.");
             return false;
@@ -75,6 +79,7 @@ public class PersistentProviderPerUser extends PersistentProvider {
 
     @Override
     public boolean canWrite() {
+        Principal currentNuxeoPrincipal = getCurrentPrincipal();
         if (currentNuxeoPrincipal == null) {
             log.warn("Could not get the current user from the context.");
             return false;
