@@ -42,6 +42,7 @@ import javax.persistence.Query;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.dialect.Dialect;
+import org.hibernate.impl.SessionImpl;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -75,6 +76,7 @@ public class TaggingProvider {
     }
 
     public String getCreateSql(Dialect dialect) {
+        SessionImpl delegate = (SessionImpl)em.getDelegate();
         Table table = new Table(TAGGING_TABLE_NAME);
         Column column = new Column(TAGGING_TABLE_COLUMN_ID, Types.VARCHAR);
         column.setPrimary(true);

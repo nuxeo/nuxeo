@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.platform.tag;
 
-import java.net.URL;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
@@ -29,16 +28,19 @@ import javax.persistence.EntityManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.dialect.PostgreSQLDialect;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
-import org.nuxeo.ecm.core.persistence.HibernateConfiguration;
 import org.nuxeo.ecm.core.persistence.PersistenceProvider;
+import org.nuxeo.ecm.core.persistence.PersistenceProviderFactory;
+import org.nuxeo.ecm.core.storage.sql.DatabasePostgreSQL;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.tag.entity.DublincoreEntity;
 import org.nuxeo.ecm.platform.tag.entity.TagEntity;
 import org.nuxeo.ecm.platform.tag.entity.TaggingEntity;
 import org.nuxeo.ecm.platform.tag.persistence.TaggingProvider;
+import org.nuxeo.runtime.api.Framework;
 
 public class TestTaggingProvider extends SQLRepositoryTestCase {
 
@@ -46,37 +48,32 @@ public class TestTaggingProvider extends SQLRepositoryTestCase {
         super(TestTaggingProvider.class.getName());
     }
 
-    protected static final Log log = LogFactory.getLog(TestTaggingProvider.class);
-
-    public static final String SCHEMA_BUNDLE = "org.nuxeo.ecm.core.schema";
-
-    public static final String CORE_BUNDLE = "org.nuxeo.ecm.core";
-
-    private static final String BUNDLE_NAME = "org.nuxeo.ecm.platform.tag.service.tests";
-
+    {
+        database = DatabasePostgreSQL.INSTANCE;
+    }
+    
     protected PersistenceProvider persistenceProvider;
     
     @Override
     public void setUp() throws Exception {
+        
         super.setUp();
 
-        deployBundle(CORE_BUNDLE);
-        deployBundle(SCHEMA_BUNDLE);
-        deployBundle(BUNDLE_NAME);
-        deployContrib(BUNDLE_NAME, "OSGI-INF/tag-service-core-types.xml");
-        deployContrib(BUNDLE_NAME, "OSGI-INF/TagService.xml");
-        deployTestContrib(BUNDLE_NAME, "tag-tests-config.xml");
-
-        URL resource = getClass().getResource("/hibernate-tests.xml");
-        HibernateConfiguration config = HibernateConfiguration.load(resource);
-        persistenceProvider = new PersistenceProvider(config); 
+        deployBundle("org.nuxeo.ecm.core");
+        deployBundle("org.nuxeo.ecm.core.schema");
+        deployBundle("org.nuxeo.ecm.core.persistence");
+        deployBundle("org.nuxeo.ecm.platform.tag");
+        deployBundle("org.nuxeo.ecm.platform.tag.tests");
+        
+        openSession();
+        createDataWarehouse(); 
+        
+        PersistenceProviderFactory factory = Framework.getService(PersistenceProviderFactory.class);  
+        persistenceProvider = factory.newProvider("nxtags"); 
         persistenceProvider.openPersistenceUnit();
         entityManager = persistenceProvider.acquireEntityManagerWithActiveTransaction();
         
-        openSession();
-        createDataWarehouse();
        
-        entityManager = persistenceProvider.acquireEntityManagerWithActiveTransaction();
         taggingProvider = TaggingProvider.createProvider(entityManager);
     }
 
@@ -178,7 +175,6 @@ public class TestTaggingProvider extends SQLRepositoryTestCase {
         file3 = session.createDocument(file3);
         file3 = session.saveDocument(file3);
         session.save();
-
     }
 
     /**
@@ -233,6 +229,20 @@ public class TestTaggingProvider extends SQLRepositoryTestCase {
         taggingProvider.addTagging(tg);
     }
 
+    public static final Log log = LogFactory.getLog(TestTaggingProvider.class);
+    
+    public void testSchema() {
+        log.info(taggingProvider.getCreateSql(new PostgreSQLDialect()));
+    }
+    
+    public void testCreateDatawarehouse() throws Exception {
+        createDataWarehouse();
+    }
+    
+    public void testCreateTaggings() throws Exception {
+        createTaggings();
+    }
+    
     public void testGetById() throws Exception {
         DublincoreEntity dcEntity = taggingProvider.getDcById(file2.getId());
         TagEntity tagEntity = taggingProvider.getTagById(tag2.getId());

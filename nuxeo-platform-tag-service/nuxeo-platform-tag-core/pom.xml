@@ -60,6 +60,11 @@
       <artifactId>h2</artifactId>
     </dependency>
     <dependency>
+      <groupId>postgresql.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <version>8.3-604.jdbc3</version>
+    </dependency>
+    <dependency>
       <groupId>c3p0</groupId>
       <artifactId>c3p0</artifactId>
       <version>0.9.1</version>
@@ -83,6 +88,10 @@
     </dependency>
 
 
+    <dependency>
+    	<groupId>org.nuxeo.ecm.core</groupId>
+    	<artifactId>nuxeo-core-persistence</artifactId>
+    </dependency>
   </dependencies>
 
 </project>

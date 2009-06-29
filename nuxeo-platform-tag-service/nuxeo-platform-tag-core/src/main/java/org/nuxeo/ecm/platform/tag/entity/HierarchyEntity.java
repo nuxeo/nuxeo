@@ -58,8 +58,8 @@ public class HierarchyEntity implements Serializable {
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "hierarchy")
     private DublincoreEntity dublincore;
 
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "hierarchy")
-    private TagEntity tag;
+//    @OneToOne(cascade = CascadeType.ALL, mappedBy = "hierarchy")
+//    private TagEntity tag;
 
     public HierarchyEntity() {
     }
@@ -148,13 +148,13 @@ public class HierarchyEntity implements Serializable {
         this.dublincore = dublincore;
     }
 
-    public TagEntity getTag() {
-        return tag;
-    }
-
-    public void setTag(TagEntity tag) {
-        this.tag = tag;
-    }
+//    public TagEntity getTag() {
+//        return tag;
+//    }
+//
+//    public void setTag(TagEntity tag) {
+//        this.tag = tag;
+//    }
 
     @Override
     public int hashCode() {

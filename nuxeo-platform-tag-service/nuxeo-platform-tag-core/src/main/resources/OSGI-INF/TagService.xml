@@ -17,12 +17,7 @@
 		point="hibernate">
 		<hibernateConfiguration name="nxtag">
 			<datasource>nxaudit-logs</datasource>
-			<classes>
-				<class>org.nuxeo.ecm.platform.tag.DublinCoreEntity</class>
-				<class>org.nuxeo.ecm.platform.tag.HierarchyEntity</class>
-				<class>org.nuxeo.ecm.platform.tag.TagEntity</class>
-				<class>org.nuxeo.ecm.platform.tag.TaggingEntity</class>
-			</classes>
+			
 		</hibernateConfiguration>
   </extension>
 </component>

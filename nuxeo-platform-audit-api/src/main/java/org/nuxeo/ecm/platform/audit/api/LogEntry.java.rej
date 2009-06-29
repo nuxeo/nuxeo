@@ -1,0 +1,99 @@
+***************
+*** 19,24 ****
+  
+  package org.nuxeo.ecm.platform.audit.api;
+  
+  import java.util.Date;
+  import java.util.HashMap;
+  import java.util.Map;
+--- 19,25 ----
+  
+  package org.nuxeo.ecm.platform.audit.api;
+  
++ import java.io.Serializable;
+  import java.util.Date;
+  import java.util.HashMap;
+  import java.util.Map;
+***************
+*** 40,45 ****
+  import javax.persistence.TemporalType;
+  
+  import org.apache.commons.lang.builder.ToStringBuilder;
+  import org.nuxeo.ecm.core.api.DocumentRef;
+  
+  /**
+--- 41,47 ----
+  import javax.persistence.TemporalType;
+  
+  import org.apache.commons.lang.builder.ToStringBuilder;
++ import org.hibernate.annotations.Index;
+  import org.nuxeo.ecm.core.api.DocumentRef;
+  
+  /**
+***************
+*** 65,71 ****
+                  query = "select distinct log.eventId from LogEntry log")
+          })
+          @Table(name = "NXP_LOGS")
+- public class LogEntry {
+  
+      private long id;
+  
+--- 67,75 ----
+                  query = "select distinct log.eventId from LogEntry log")
+          })
+          @Table(name = "NXP_LOGS")
++ public class LogEntry implements Serializable {
++ 
++     private static final long serialVersionUID = 3037187381843636097L;
+  
+      private long id;
+  
+***************
+*** 124,129 ****
+       */
+      @Column(name = "LOG_EVENT_ID", nullable = false)
+      @MapKey(name = "logKey")
+      public String getEventId() {
+          return eventId;
+      }
+--- 128,134 ----
+       */
+      @Column(name = "LOG_EVENT_ID", nullable = false)
+      @MapKey(name = "logKey")
++     @Index(name = "LOG_EVENT_ID_IDX")
+      public String getEventId() {
+          return eventId;
+      }
+***************
+*** 139,144 ****
+       */
+      @Temporal(TemporalType.TIMESTAMP)
+      @Column(name = "LOG_EVENT_DATE")
+      public Date getEventDate() {
+          return eventDate;
+      }
+--- 144,150 ----
+       */
+      @Temporal(TemporalType.TIMESTAMP)
+      @Column(name = "LOG_EVENT_DATE")
++     @Index(name = "LOG_EVENT_DATE_IDX")
+      public Date getEventDate() {
+          return eventDate;
+      }
+***************
+*** 180,185 ****
+       * @return the doc path related to the log entry.
+       */
+      @Column(name = "LOG_DOC_PATH", length = 1024)
+      public String getDocPath() {
+          return docPath;
+      }
+--- 186,192 ----
+       * @return the doc path related to the log entry.
+       */
+      @Column(name = "LOG_DOC_PATH", length = 1024)
++     @Index(name = "LOG_DOC_PATH_IDX")
+      public String getDocPath() {
+          return docPath;
+      }
