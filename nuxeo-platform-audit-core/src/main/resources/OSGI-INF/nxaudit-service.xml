@@ -75,18 +75,8 @@
 		point="hibernate">
 		<hibernateConfiguration name="nxaudit-logs">
 			<datasource>nxaudit-logs</datasource>
-			<classes>
-				<class>org.nuxeo.ecm.platform.audit.api.ExtendedInfo</class>
-		        <class>org.nuxeo.ecm.platform.audit.api.ExtendedInfo$StringInfo</class>
-		        <class>org.nuxeo.ecm.platform.audit.api.ExtendedInfo$BooleanInfo</class>
-				<class>org.nuxeo.ecm.platform.audit.api.ExtendedInfo$DoubleInfo</class>
-				<class>org.nuxeo.ecm.platform.audit.api.ExtendedInfo$LongInfo</class>
-				<class>org.nuxeo.ecm.platform.audit.api.ExtendedInfo$DateInfo</class>
-				<class>org.nuxeo.ecm.platform.audit.api.ExtendedInfo$BlobInfo</class>
-				<class>org.nuxeo.ecm.platform.audit.api.LogEntry</class>
-			</classes>
 			<properties>
-	          <property name="hibernate.hbm2ddl.auto">update</property>
+	                  <property name="hibernate.hbm2ddl.auto">update</property>
 			</properties>
 		</hibernateConfiguration>
   </extension>
