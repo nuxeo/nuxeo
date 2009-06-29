@@ -8,8 +8,12 @@ public class EventServiceConfiguratorFilter implements ImporterFilter {
     protected Boolean blockSyncPostCommitProcessing;
     protected Boolean blockAsyncProcessing;
     protected Boolean blockMimeTypeDetection;
+    protected boolean blockNotifications = true;
     protected Boolean bulkMode;
     protected EventServiceAdmin eventAdmin=null;
+
+    protected static final String NOTIF_LISTENER = "notificationListener";
+    protected static final String MIME_LISTENER = "mimetypeIconUpdater";
 
     public EventServiceConfiguratorFilter(Boolean blockSyncPostCommitProcessing,Boolean blockAsyncProcessing,Boolean blockMimeTypeDetection, Boolean bulkMode) {
         this.blockAsyncProcessing=blockAsyncProcessing;
@@ -26,7 +30,10 @@ public class EventServiceConfiguratorFilter implements ImporterFilter {
                 eventAdmin.setBulkModeEnabled(true);
             }
             if (true == blockMimeTypeDetection) {
-                eventAdmin.setListenerEnabledFlag("mimetypeIconUpdater", false);
+                eventAdmin.setListenerEnabledFlag(MIME_LISTENER, false);
+            }
+            if (true == blockNotifications) {
+                eventAdmin.setListenerEnabledFlag(NOTIF_LISTENER, false);
             }
             if (true == blockAsyncProcessing) {
                 eventAdmin.setBlockAsyncHandlers(true);
@@ -46,8 +53,17 @@ public class EventServiceConfiguratorFilter implements ImporterFilter {
             eventAdmin.setBulkModeEnabled(false);
             eventAdmin.setBlockAsyncHandlers(false);
             eventAdmin.setBlockSyncPostCommitHandlers(false);
-            eventAdmin.setListenerEnabledFlag("mimetypeIconUpdater", true);
+            eventAdmin.setListenerEnabledFlag(NOTIF_LISTENER, true);
+            eventAdmin.setListenerEnabledFlag(MIME_LISTENER, true);
         }
         eventAdmin=null;
+    }
+
+    public boolean getBlockNotifications() {
+        return blockNotifications;
+    }
+
+    public void setBlockNotifications(boolean blockNotifications) {
+        this.blockNotifications = blockNotifications;
     }
 }
