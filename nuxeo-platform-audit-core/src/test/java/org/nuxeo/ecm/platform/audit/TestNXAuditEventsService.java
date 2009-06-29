@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.platform.audit;
 
 import java.lang.management.ManagementFactory;
-import java.rmi.activation.ActivateFailedException;
 import java.util.List;
 import java.util.Set;
 

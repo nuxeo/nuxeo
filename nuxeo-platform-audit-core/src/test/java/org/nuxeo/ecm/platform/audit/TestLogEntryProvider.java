@@ -29,8 +29,6 @@ import javax.persistence.EntityManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.persistence.HibernateConfiguration;
-import org.nuxeo.ecm.core.persistence.PersistenceProvider;
 import org.nuxeo.ecm.core.persistence.PersistenceTestCase;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.FilterMapEntry;
@@ -49,19 +47,6 @@ public class TestLogEntryProvider extends PersistenceTestCase {
     protected static final Log log = LogFactory.getLog(TestLogEntryProvider.class);
 
     private LogEntryProvider providerUnderTest;
-
-    @Override
-    protected void handleBeforeSetup(HibernateConfiguration config) {
-        config.setDescriptor(getClass().getResource("/META-INF/persistence.xml"));
-        config.addAnnotedClass(ExtendedInfo.class);
-        config.addAnnotedClass(ExtendedInfo.StringInfo.class);
-        config.addAnnotedClass(ExtendedInfo.BooleanInfo.class);
-        config.addAnnotedClass(ExtendedInfo.DoubleInfo.class);
-        config.addAnnotedClass(ExtendedInfo.LongInfo.class);
-        config.addAnnotedClass(ExtendedInfo.DateInfo.class);
-        config.addAnnotedClass(ExtendedInfo.BlobInfo.class);
-        config.addAnnotedClass(LogEntry.class);
-    }
 
     @Override
     protected void handleAfterSetup(EntityManager entityManager) {

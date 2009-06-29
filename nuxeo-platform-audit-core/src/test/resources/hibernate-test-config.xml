@@ -1,0 +1,14 @@
+<document>
+   <hibernateConfiguration>      
+      <properties>
+        <property name="hibernate.connection.url">jdbc:hsqldb:mem:.;sql.enforce_strict_size=true</property>;
+        <property name="hibernate.connection.driver_class">org.hsqldb.jdbcDriver</property>
+        <property name="hibernate.connection.auto_commit">true</property> 
+        <property name="hibernate.connection.pool_size">1</property>;
+        <property name="hibernate.dialect">org.hibernate.dialect.HSQLDialect</property>;
+        <property name="hibernate.hbm2ddl.auto">update</property>;
+        <property name="hibernate.show_sql">false</property>; // true to debug
+        <property name="hibernate.format_sql">true</property>;
+      </properties>
+    </hibernateConfiguration>
+</document>
