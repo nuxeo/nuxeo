@@ -56,15 +56,18 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
         file = File.createTempFile(
                 "nuxeo-platform-imaging-DefaultPictureAdapter", ".jpg");
         fileContent.transferTo(file);
-        // TODO: refactor me to delete the temporary file as soon as no longer
-        // used instead of waiting for the JVM to stop properly
+        // TODO: NXP-3779 refactor me to delete the temporary file as soon as no
+        // longer used instead of waiting for the JVM to stop properly
         file.deleteOnExit();
-        type = getImagingService().getImageMimeType(file);
+
+        type = fileContent.getMimeType();
 
         if (type == null) {
-            return false;
+            // TODO : use MimetypeRegistry instead
+            type = getImagingService().getImageMimeType(file);
+            fileContent.setMimeType(type);
         }
-        if (type.equals("application/octet-stream")) {
+        if (type == null || type.equals("application/octet-stream")) {
             return false;
         }
 
