@@ -1,16 +1,10 @@
 Manifest-Version: 1.0
-Export-Package: org.nuxeo.ecm.core.persistence;
-Tool: Bnd-0.0.311
-Bundle-Name: Nuxeo Core Persistence
-Created-By: 1.6.0_13 (Apple Inc.)
-Bundle-Vendor: Nuxeo SAS
-Bundle-Version: 1.5.1.SNAPSHOT
-Bnd-LastModified: 1246180231189
 Bundle-ManifestVersion: 2
-Bundle-License: http://www.gnu.org/copyleft/lesser.txt
-Bundle-Description: Provide shared logic for accessing to datasources 
-                and transaction management.
-Bundle-SymbolicName: org.nuxeo.ecm.core.persistence
+Bundle-Name: Nuxeo ECM Core Persistence
+Bundle-SymbolicName: org.nuxeo.ecm.core.persistence;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Localization: bundle
+Bundle-Category: core
+Export-Package: org.nuxeo.ecm.core.persistence
 Nuxeo-Component: OSGI-INF/persistence-service.xml
-Bundle-DocURL: http://www.nuxeo.com/en
 
