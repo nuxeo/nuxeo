@@ -42,14 +42,16 @@ public class PersistentProvider implements Provider {
 
     protected EntityTransaction et;
 
-    protected Principal currentNuxeoPrincipal;
-
     public PersistentProvider() {
-        WebContext ctx = WebEngine.getActiveContext();
         em = PersistenceConfigurator.getEntityManager();
+    }
+
+    public Principal getCurrentPrincipal() {
+        WebContext ctx = WebEngine.getActiveContext();
         if (ctx != null) {
-            currentNuxeoPrincipal = ctx.getPrincipal();
+            return ctx.getPrincipal();
         }
+        return null;
     }
 
     public void addWidget(Widget widget, String regionName, int order)
@@ -272,6 +274,7 @@ public class PersistentProvider implements Provider {
     }
 
     public boolean canWrite() {
+        Principal currentNuxeoPrincipal = getCurrentPrincipal();
         if (currentNuxeoPrincipal == null) {
             log.warn("Could not get the current user from the context.");
             return false;
