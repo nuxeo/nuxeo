@@ -15,13 +15,6 @@
 
   <dependencies>
 
-  <dependency>
-      <groupId>org.sanjeebsahoo</groupId>
-      <artifactId>pxml-javac-plugin</artifactId>
-      <version>1.0-SNAPSHOT</version>
-      <scope>compile</scope>
-  </dependency> 
-
     <!-- bundles -->
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
@@ -113,10 +106,6 @@
 
     <!--  tests -->
 
-    <dependency>
-    	<groupId>org.slf4j</groupId>
-    	<artifactId>slf4j-log4j12</artifactId>
-    </dependency>
   </dependencies>
 
 </project>
