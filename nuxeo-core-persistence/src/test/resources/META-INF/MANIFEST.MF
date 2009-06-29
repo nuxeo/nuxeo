@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-Name: Nuxeo Core Persistence Tests
+Created-By: 1.6.0_13 (Apple Inc.)
+Bundle-Vendor: Nuxeo SAS
+Bundle-Version: 1.5.1.SNAPSHOT
+Bnd-LastModified: 1246180231189
+Bundle-ManifestVersion: 2
+Bundle-License: http://www.gnu.org/copyleft/lesser.txt
+Bundle-Description: Provide shared logic for accessing to datasources 
+                and transaction management.
+Bundle-SymbolicName: org.nuxeo.ecm.core.persistence.tests
+
