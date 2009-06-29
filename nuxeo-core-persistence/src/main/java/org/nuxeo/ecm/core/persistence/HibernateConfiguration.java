@@ -16,9 +16,9 @@
  */
 package org.nuxeo.ecm.core.persistence;
 
-import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
@@ -61,11 +61,6 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
        hibernateProperties.put("hibernate.connection.datasource", DataSourceHelper.getDataSourceJNDIName(name));;
     }
 
-    protected URL descriptorLocation;
-
-    public void setDescriptor(URL location) {
-        descriptorLocation = location;
-    }
     
     @XNodeMap(value = "properties/property", key = "@name", type = Properties.class, componentType = String.class)
     protected Properties hibernateProperties = new Properties();
@@ -85,16 +80,7 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
 
     public Ejb3Configuration setupConfiguration() {
         cfg = new Ejb3Configuration();
-
-        // Load persistence descriptor if provided
-        if (descriptorLocation != null) {
-            try {
-                InputStream openStream = descriptorLocation.openStream();
-                cfg.addInputStream(openStream);
-            } catch (Exception e) {
-                throw PersistenceError.wrap("cannot setup persistence using " + descriptorLocation, e);
-            }
-        }
+        cfg.configure(name, Collections.emptyMap());
 
         // Load hibernate properties
         cfg.setProperties(hibernateProperties);
@@ -128,7 +114,7 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
     }
     
     public void merge(HibernateConfiguration other) {
-        this.descriptorLocation = other.descriptorLocation;
+        assert name.equals(other.name) : " cannot merge configuraton that do not have the same persistence unit";
         this.annotedClasses.addAll(other.annotedClasses);
         this.hibernateProperties.clear();
         this.hibernateProperties.putAll(other.hibernateProperties);
