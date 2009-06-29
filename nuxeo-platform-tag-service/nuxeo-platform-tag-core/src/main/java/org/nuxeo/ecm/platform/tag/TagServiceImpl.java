@@ -18,7 +18,6 @@ package org.nuxeo.ecm.platform.tag;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Properties;
 
 import javax.persistence.EntityManager;
 
@@ -31,11 +30,15 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
+import org.nuxeo.ecm.core.persistence.PersistenceProvider;
+import org.nuxeo.ecm.core.persistence.PersistenceProviderFactory;
+import org.nuxeo.ecm.core.persistence.PersistenceProvider.RunCallback;
+import org.nuxeo.ecm.core.persistence.PersistenceProvider.RunVoid;
 import org.nuxeo.ecm.platform.tag.entity.DublincoreEntity;
 import org.nuxeo.ecm.platform.tag.entity.TagEntity;
 import org.nuxeo.ecm.platform.tag.entity.TaggingEntity;
-import org.nuxeo.ecm.platform.tag.persistence.TagPersistenceProvider;
 import org.nuxeo.ecm.platform.tag.persistence.TaggingProvider;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -46,16 +49,31 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class TagServiceImpl extends DefaultComponent implements TagService {
 
-    private TaggingProvider taggingProvider = null;
 
     private static final Log log = LogFactory.getLog(TagServiceImpl.class);
 
-    public void initialize(Properties properties) throws ClientException {
-        if (null != taggingProvider) {
-            log.warn("Call for intializing the service is too late");
+    @Override
+    public void deactivate(ComponentContext context) throws Exception {
+        deactivatePersistenceProvider();
+        super.deactivate(context);
+    }
+    
+    protected PersistenceProvider persistenceProvider;
+    
+    public PersistenceProvider getOrCreatePersistenceProvider() {
+        if (persistenceProvider != null) {
+            return persistenceProvider;
+        }
+        PersistenceProviderFactory persistenceProviderFactory = Framework.getLocalService(PersistenceProviderFactory.class);
+        return persistenceProvider = persistenceProviderFactory.newProvider("nxaudit-logs");
+    }
+
+    protected void deactivatePersistenceProvider() { 
+        if (persistenceProvider == null) {
             return;
         }
-        getTaggingProvider(properties);
+        persistenceProvider.closePersistenceUnit();
+        persistenceProvider = null;
     }
 
     public DocumentModel getRootTag(CoreSession session) throws ClientException {
@@ -72,12 +90,21 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
         return session.getDocument(new IdRef(runner.rootTagDocumentId));
     }
 
-    public void tagDocument(DocumentModel document, String tagId,
+    public void tagDocument(final DocumentModel document, final String tagId,
+            final boolean privateFlag) throws ClientException {
+        getOrCreatePersistenceProvider().run(true, new RunVoid() {
+            public void runWith(EntityManager em) throws ClientException {
+                tagDocument(em,  document, tagId, privateFlag);
+            }});
+    }
+    
+    
+    public void tagDocument(EntityManager em, DocumentModel document, String tagId,
             boolean privateFlag) throws ClientException {
         if (null == document) {
             throw new ClientException("Can't tag document null.");
         }
-        TaggingProvider provider = getTaggingProvider();
+        TaggingProvider provider = TaggingProvider.createProvider(em);
         TagEntity tagEntity = provider.getTagById(tagId);
         if (tagEntity == null) {
             throw new ClientException("Tag " + tagId + " doesn't exist");
@@ -102,7 +129,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
         taggingEntry.setCreationDate(new Date());
         taggingEntry.setAuthor(user);
         taggingEntry.setIsPrivate(Boolean.valueOf(privateFlag));
-        getTaggingProvider().addTagging(taggingEntry);
+        TaggingProvider.createProvider(em).addTagging(taggingEntry);
     }
 
     public DocumentModel getOrCreateTag(DocumentModel parent, String label,
@@ -123,8 +150,15 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
         return parent.getCoreSession().getDocument(
                 new IdRef(runner.tagDocumentId));
     }
-
-    public List<WeightedTag> getPopularCloud(DocumentModel document)
+    
+    public List<WeightedTag> getPopularCloud(final DocumentModel document) throws ClientException {
+        return getOrCreatePersistenceProvider().run(false, new RunCallback<List<WeightedTag>>() {
+            public List<WeightedTag> runWith(EntityManager em) throws ClientException {
+                return getPopularCloud(em, document);
+            } });
+    }
+    
+    public List<WeightedTag> getPopularCloud(EntityManager em, DocumentModel document)
             throws ClientException {
         // the NXSQL queries can't be used together with the native queries, for
         // moment the queries are performed sequentially
@@ -142,7 +176,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
         runner.runUnrestricted();
         // add the current doc also
         runner.result.add(document);
-        return getTaggingProvider().getPopularCloud(runner.result,
+        return TaggingProvider.createProvider(em).getPopularCloud(runner.result,
                 obtainCurrentPrincipalName(document));
     }
 
@@ -172,11 +206,18 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
 
     public List<WeightedTag> getVoteCloud(DocumentModel document)
             throws ClientException {
-        // TODO
-        return null;
+        throw new UnsupportedOperationException();
     }
 
-    public WeightedTag getVoteTag(DocumentModel document, String tagId)
+    public WeightedTag getVoteTag(final DocumentModel document, final String tagId) throws ClientException {
+        return getOrCreatePersistenceProvider().run(false, new RunCallback<WeightedTag>() {
+
+            public WeightedTag runWith(EntityManager em) throws ClientException {
+                return getVoteTag(em, document, tagId);
+            }});
+    }
+    
+    public WeightedTag getVoteTag(EntityManager em, DocumentModel document, String tagId)
             throws ClientException {
         if (null == document) {
             throw new ClientException(
@@ -193,7 +234,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
             log.warn("Tag " + tag.getTitle() + " not allowed for " + user);
             return new WeightedTag(tag.getId(), tag.getTitle(), 0);
         }
-        TaggingProvider taggingProvider = getTaggingProvider();
+        TaggingProvider taggingProvider = TaggingProvider.createProvider(em);
         Long result = taggingProvider.getVoteTag(document.getId(), tag.getId(),
                 user);
         return new WeightedTag(tag.getId(),
@@ -201,7 +242,14 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
                 result.intValue());
     }
 
-    public List<Tag> listTagsAppliedOnDocument(DocumentModel document)
+    public List<Tag> listTagsAppliedOnDocument(final DocumentModel document) throws ClientException {
+        return getOrCreatePersistenceProvider().run(false, new RunCallback<List<Tag>>(){
+            public List<Tag> runWith(EntityManager em) throws ClientException {
+                return listTagsAppliedOnDocument(em,document);
+            }});
+    }
+    
+    public List<Tag> listTagsAppliedOnDocument(EntityManager em, DocumentModel document)
             throws ClientException {
         if (null == document) {
             throw new ClientException("Can't get list of tags from group null.");
@@ -210,11 +258,18 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
             log.debug("Going to look for tags applied on "
                     + document.getTitle());
         }
-        return getTaggingProvider().listTagsForDocument(document.getId(),
+        return TaggingProvider.createProvider(em).listTagsForDocument(document.getId(),
                 obtainCurrentPrincipalName(document));
     }
 
-    public List<Tag> listTagsAppliedOnDocumentByUser(DocumentModel document)
+    public List<Tag> listTagsAppliedOnDocumentByUser(final DocumentModel document) throws ClientException {
+        return getOrCreatePersistenceProvider().run(false, new RunCallback<List<Tag>>(){
+            public List<Tag> runWith(EntityManager em) throws ClientException {
+                return listTagsAppliedOnDocumentByUser(em,document);
+            }});
+    }
+    
+    public List<Tag> listTagsAppliedOnDocumentByUser(EntityManager em, DocumentModel document)
             throws ClientException {
         if (null == document) {
             throw new ClientException("Can't get list of tags from group null.");
@@ -223,7 +278,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
             log.debug("Going to look only current user tags applied on "
                     + document.getTitle());
         }
-        return getTaggingProvider().listTagsForDocumentAndUser(
+        return TaggingProvider.createProvider(em).listTagsForDocumentAndUser(
                 document.getId(), obtainCurrentPrincipalName(document));
     }
 
@@ -245,7 +300,14 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
         return runner.result;
     }
 
-    public void untagDocument(DocumentModel document, String tagId)
+    public void untagDocument(final DocumentModel document, final String tagId) throws ClientException {
+        getOrCreatePersistenceProvider().run(true, new RunVoid() {
+            public void runWith(EntityManager em) throws ClientException {
+               untagDocument(em, document, tagId);
+            }});
+    }
+    
+    public void untagDocument(EntityManager em, DocumentModel document, String tagId)
             throws ClientException {
         if (null == document || tagId == null) {
             throw new ClientException("Can't untag document or tag null.");
@@ -253,11 +315,19 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
         if (log.isDebugEnabled()) {
             log.debug("Going to untag " + tagId + " for " + document.getTitle());
         }
-        getTaggingProvider().removeTagging(document.getId(), tagId,
+        TaggingProvider.createProvider(em).removeTagging(document.getId(), tagId,
                 obtainCurrentPrincipalName(document));
     }
+    
+    public void completeUntagDocument(final DocumentModel document, final String tagId) throws ClientException {
+        getOrCreatePersistenceProvider().run(true, new RunVoid() {
+            public void runWith(EntityManager em) throws ClientException {
+                completeUntagDocument(em, document, tagId);
+            }
+        });
+    }
 
-    public void completeUntagDocument(DocumentModel document, String tagId)
+    public void completeUntagDocument(EntityManager em, DocumentModel document, String tagId)
             throws ClientException {
         if (null == document || tagId == null) {
             throw new ClientException("Can't untag document or tag null.");
@@ -265,34 +335,24 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
         if (log.isDebugEnabled()) {
             log.debug("Going to untag " + tagId + " for " + document.getTitle());
         }
-        getTaggingProvider().removeAllTagging(document.getId(), tagId);
+        TaggingProvider.createProvider(em).removeAllTagging(document.getId(), tagId);
+    }
+    
+    public List<String> listDocumentsForTag(final String tagId, final String user) throws ClientException {
+        return getOrCreatePersistenceProvider().run(true, new RunCallback<List<String>>() {
+            public List<String> runWith(EntityManager em) throws ClientException {
+                return listDocumentsForTag(em, tagId, user);
+            }
+        });
     }
 
-    public List<String> listDocumentsForTag(String tagId, String user)
+    public List<String> listDocumentsForTag(EntityManager em, String tagId, String user)
             throws ClientException {
         if (null == tagId) {
             throw new ClientException(
                     "Can't get list of documents for tag null.");
         }
-        return getTaggingProvider().getDocumentsForTag(tagId, user);
-    }
-
-    protected TaggingProvider getTaggingProvider() {
-        if (null == taggingProvider) {
-            EntityManager entityManager = TagPersistenceProvider.getInstance().getEntityManager(
-                    null);
-            taggingProvider = TaggingProvider.createProvider(entityManager);
-        }
-        return taggingProvider;
-    }
-
-    protected TaggingProvider getTaggingProvider(Properties properties) {
-        if (null == taggingProvider) {
-            EntityManager entityManager = TagPersistenceProvider.getInstance().getEntityManager(
-                    properties);
-            taggingProvider = TaggingProvider.createProvider(entityManager);
-        }
-        return taggingProvider;
+        return TaggingProvider.createProvider(em).getDocumentsForTag(tagId, user);
     }
 
     /**
@@ -492,12 +552,16 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
         return tagDocument;
     }
 
-    public String getTaggingId(String docId, String tagLabel, String author) {
-        return getTaggingProvider().getTaggingId(docId, tagLabel, author);
+    public String getTaggingId(final String docId, final String tagLabel, final String author) throws ClientException {
+        return getOrCreatePersistenceProvider().run(false, new RunCallback<String>() {
+            public String runWith(EntityManager em) throws ClientException {
+              return getTaggingId(em, docId, tagLabel, author);
+            }});
+    }
+    
+    public String getTaggingId(EntityManager em, String docId, String tagLabel, String author) {
+        return TaggingProvider.createProvider(em).getTaggingId(docId, tagLabel, author);
     }
 
-    @Override
-    public void deactivate(ComponentContext context) throws Exception {
-        TagPersistenceProvider.getInstance().closePersistenceUnit();
-    }
+  
 }

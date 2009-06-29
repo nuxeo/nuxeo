@@ -42,7 +42,6 @@ public class TestTagService extends RepositoryOSGITestCase {
 
     @Override
     public void tearDown() throws Exception {
-        TagPersistenceProvider.getInstance().closePersistenceUnit();
         super.tearDown();
     }
 

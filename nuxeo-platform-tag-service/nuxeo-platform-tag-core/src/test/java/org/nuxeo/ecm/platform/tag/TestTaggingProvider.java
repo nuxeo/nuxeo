@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.tag;
 
+import java.net.URL;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
@@ -31,13 +32,12 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
+import org.nuxeo.ecm.core.persistence.HibernateConfiguration;
+import org.nuxeo.ecm.core.persistence.PersistenceProvider;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
-import org.nuxeo.ecm.platform.tag.Tag;
-import org.nuxeo.ecm.platform.tag.WeightedTag;
 import org.nuxeo.ecm.platform.tag.entity.DublincoreEntity;
 import org.nuxeo.ecm.platform.tag.entity.TagEntity;
 import org.nuxeo.ecm.platform.tag.entity.TaggingEntity;
-import org.nuxeo.ecm.platform.tag.persistence.TagPersistenceProvider;
 import org.nuxeo.ecm.platform.tag.persistence.TaggingProvider;
 
 public class TestTaggingProvider extends SQLRepositoryTestCase {
@@ -54,6 +54,8 @@ public class TestTaggingProvider extends SQLRepositoryTestCase {
 
     private static final String BUNDLE_NAME = "org.nuxeo.ecm.platform.tag.service.tests";
 
+    protected PersistenceProvider persistenceProvider;
+    
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -63,17 +65,24 @@ public class TestTaggingProvider extends SQLRepositoryTestCase {
         deployBundle(BUNDLE_NAME);
         deployContrib(BUNDLE_NAME, "OSGI-INF/tag-service-core-types.xml");
         deployContrib(BUNDLE_NAME, "OSGI-INF/TagService.xml");
+        deployTestContrib(BUNDLE_NAME, "tag-tests-config.xml");
 
+        URL resource = getClass().getResource("/hibernate-tests.xml");
+        HibernateConfiguration config = HibernateConfiguration.load(resource);
+        persistenceProvider = new PersistenceProvider(config); 
+        persistenceProvider.openPersistenceUnit();
+        entityManager = persistenceProvider.acquireEntityManagerWithActiveTransaction();
+        
         openSession();
         createDataWarehouse();
-        entityManager = TagPersistenceProvider.getInstance().getEntityManager(
-                getProperties());
+       
+        entityManager = persistenceProvider.acquireEntityManagerWithActiveTransaction();
         taggingProvider = TaggingProvider.createProvider(entityManager);
     }
 
     @Override
     public void tearDown() throws Exception {
-        TagPersistenceProvider.getInstance().closePersistenceUnit();
+        persistenceProvider.closePersistenceUnit();
         super.tearDown();
     }
 

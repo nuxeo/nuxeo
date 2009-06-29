@@ -16,7 +16,6 @@
 package org.nuxeo.ecm.platform.tag;
 
 import java.util.List;
-import java.util.Properties;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -39,21 +38,6 @@ public interface TagService {
 
     String ID = "org.nuxeo.ecm.platform.tag.TagService";
 
-    /**
-     * Optional way to initialize the service.
-     *
-     * It is used to connect to a DB by request.
-     * The expected properties are hibernation kind. Please check the
-     * file /nuxeo-platform-tag-core/src/main/resources/org/nuxeo/ecm/tagservice/config/tagservice.cfg.xml
-     * to see what properties are expected. In fact, if this method is not used,
-     * the service connects as configured in this file.
-     * The service is connecting to DB at the first request, so this method
-     * should be called prior to any other service call. If this is not done,
-     * subsequent calls are ignored.
-     *
-     * @param properties
-     */
-    void initialize(Properties properties) throws ClientException;
 
     /**
      * Gets (and creates if not existing) the RootTag in the selected

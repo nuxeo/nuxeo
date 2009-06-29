@@ -18,6 +18,7 @@ package org.nuxeo.ecm.platform.tag.entity;
 /**
  * Utility class used for managing constants used in tagging.
  *
+ * TODO define queries with entities as named queries
  * @author rux
  */
 public class TaggingConstants {

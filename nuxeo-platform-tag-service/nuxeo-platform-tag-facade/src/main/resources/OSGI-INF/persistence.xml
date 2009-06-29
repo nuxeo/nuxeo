@@ -1,0 +1,9 @@
+<persistence>
+   <persistence-unit name="nxtag">
+    <jta-data-source>java:/nxtag_ds</jta-data-source>
+    %{CLASS}%
+    <properties>
+      <property name="hibernate.hbm2ddl.auto" value="update"/>
+    </properties>
+  </persistence-unit>
+</persistence>
