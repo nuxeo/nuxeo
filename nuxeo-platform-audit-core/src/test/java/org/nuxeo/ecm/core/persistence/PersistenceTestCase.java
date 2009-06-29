@@ -36,7 +36,7 @@ public abstract class PersistenceTestCase extends TestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        URL resource = getClass().getResource("/hibernate-test-config.xml");
+        URL resource = getClass().getResource("/hibernate-tests.xml");
         HibernateConfiguration config = HibernateConfiguration.load(resource);
         persistenceProvider = new PersistenceProvider(config); 
         handleBeforeSetup(config);
