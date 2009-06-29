@@ -134,8 +134,11 @@ public class GenericThreadedImportTask implements Runnable {
             SourceNode node) throws Exception {
         DocumentModel folder = getFactory().createFolderishNode(getCoreSession(),
                 parent, node);
-        fslog("Created Folder " + folder.getName() + " at "
-                + parent.getPathAsString(), true);
+
+        if (folder!=null) {
+            fslog("Created Folder " + folder.getName() + " at "
+                    + parent.getPathAsString(), true);
+        }
         // save session if needed
         commit();
         return folder;
