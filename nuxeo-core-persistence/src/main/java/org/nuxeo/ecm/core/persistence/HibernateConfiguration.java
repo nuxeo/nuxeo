@@ -80,7 +80,7 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
 
     public Ejb3Configuration setupConfiguration() {
         cfg = new Ejb3Configuration();
-        cfg.configure(name, Collections.emptyMap());
+//      cfg.configure(name, Collections.emptyMap()); TODOe re-activate later
 
         // Load hibernate properties
         cfg.setProperties(hibernateProperties);
