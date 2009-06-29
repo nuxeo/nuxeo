@@ -40,6 +40,11 @@
       <path>nxthemes/webwidgets/samples/lastdocuments.html</path>
     </widget>
 
+    <widget name="Meteo">
+      <category>content</category>
+      <path>nxthemes/webwidgets/samples/meteo.html</path>
+    </widget>
+
   </extension>
 
 </component>
