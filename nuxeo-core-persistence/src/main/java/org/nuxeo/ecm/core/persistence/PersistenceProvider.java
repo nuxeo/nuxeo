@@ -22,6 +22,7 @@ import javax.persistence.EntityTransaction;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ClientException;
 
 /**
  * @author "Stephane Lacoin (aka matic) <slacoin@nuxeo.org>"
@@ -129,10 +130,10 @@ public class PersistenceProvider {
     }
 
     public interface RunCallback<T> {
-        T runWith(EntityManager em);
+        T runWith(EntityManager em) throws ClientException;
     }
 
-    public <T> T run(Boolean needActiveSession, RunCallback<T> callback) {
+    public <T> T run(Boolean needActiveSession, RunCallback<T> callback) throws ClientException {
         Thread myThread = Thread.currentThread();
         ClassLoader lastLoader = myThread.getContextClassLoader();
         myThread.setContextClassLoader(getClass().getClassLoader());
@@ -152,10 +153,10 @@ public class PersistenceProvider {
     }
     
     public interface RunVoid {
-        void runWith(EntityManager em);
+        void runWith(EntityManager em) throws ClientException;
     }
     
-    public void run(Boolean needActiveSession, RunVoid callback) {
+    public void run(Boolean needActiveSession, RunVoid callback) throws ClientException {
         Thread myThread = Thread.currentThread();
         ClassLoader lastLoader = myThread.getContextClassLoader();
         myThread.setContextClassLoader(getClass().getClassLoader());

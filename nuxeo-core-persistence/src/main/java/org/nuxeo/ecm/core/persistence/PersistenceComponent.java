@@ -27,7 +27,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
  * @author "Stephane Lacoin (aka matic) <slacoin@nuxeo.org>"
  *
  */
-public class PersistenceComponent extends DefaultComponent  implements PersistenceProviderFactory  {
+public class PersistenceComponent extends DefaultComponent  implements HibernateConfigurator, PersistenceProviderFactory  {
 
     protected final Map<String,HibernateConfiguration> registry =
         new HashMap<String,HibernateConfiguration>();
@@ -52,9 +52,19 @@ public class PersistenceComponent extends DefaultComponent  implements Persisten
     }
     
     public PersistenceProvider newProvider(String name) {
-        if (!registry.containsKey(name)) {
+        EntityManagerFactoryProvider emfProvider = registry.get(name);
+        if (emfProvider == null) {
             throw new PersistenceError("no hibernate configuration identified by '" + name + "' is available");
         }
-        return new PersistenceProvider(registry.get(name));
+        return new PersistenceProvider(emfProvider);
     }
+    
+    public HibernateConfiguration getHibernateConfiguration(String name) {
+        HibernateConfiguration config = registry.get(name);
+        if (config == null) {
+            throw new PersistenceError("no hibernate configuration identified by '" + name + "' is available");
+        }
+        return config;
+    }
+ 
 }

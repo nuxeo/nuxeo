@@ -8,6 +8,7 @@
 
   <service>
     <provide interface="org.nuxeo.ecm.core.persistence.PersistenceProviderFactory"/>
+    <provide interface="org.nuxeo.ecm.core.persistence.HibernateConfigurator"/>
   </service>
 
   <extension-point name="hibernate">
