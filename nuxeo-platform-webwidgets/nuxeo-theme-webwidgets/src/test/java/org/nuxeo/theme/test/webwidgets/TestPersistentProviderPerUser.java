@@ -57,11 +57,6 @@ public class TestPersistentProviderPerUser extends TestCase {
             this.currentNuxeoPrincipal = currentNuxeoPrincipal;
         }
 
-        @Override
-        public Principal getCurrentPrincipal() {
-            return currentNuxeoPrincipal;
-        }
-
     }
 
     @Override
