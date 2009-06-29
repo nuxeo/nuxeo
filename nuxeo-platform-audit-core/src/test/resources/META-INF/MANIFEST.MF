@@ -1,4 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-SymbolicName: org.nuxeo.ecm.platform.audit.tests
-Nuxeo-Component: nxaudit-hibernate-test-config.xml
