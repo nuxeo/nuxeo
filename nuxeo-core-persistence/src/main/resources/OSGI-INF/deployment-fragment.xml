@@ -3,10 +3,7 @@
 
   <extension target="application#MODULE">
     <module>
-      <ejb>${bundle.fileName}</ejb>
-    </module>
-   <module>
-      <java>datasources/nxaudit-logs-ds.xml</java>
+      <java>${bundle.fileName}</java>
     </module>
   </extension>
 
