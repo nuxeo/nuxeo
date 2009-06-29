@@ -129,6 +129,17 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-core-persistence</artifactId>
+        <version>${nuxeo.core.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-core-persistence</artifactId>
+        <classifier>tests</classifier>
+        <version>${nuxeo.core.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core-storage-sql-ra</artifactId>
         <version>${nuxeo.core.version}</version>
         <type>rar</type>

@@ -43,7 +43,7 @@ import org.nuxeo.runtime.api.Framework;
 @Remote(PlacefulServiceRemote.class)
 public class PlacefulServiceBean implements PlacefulServiceLocal, PlacefulServiceRemote {
 
-    @PersistenceContext(unitName = "nxplacefulservice")
+    @PersistenceContext(unitName = "nxplaceful")
     protected EntityManager em;
 
     protected PlacefulServiceImpl service;
