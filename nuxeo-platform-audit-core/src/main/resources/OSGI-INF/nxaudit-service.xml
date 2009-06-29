@@ -86,8 +86,6 @@
 				<class>org.nuxeo.ecm.platform.audit.api.LogEntry</class>
 			</classes>
 			<properties>
-			  <property name="hibernate.connection.autocommit">true</property>
-			  <property name="hibernate.show_sql">true</property>
 	          <property name="hibernate.hbm2ddl.auto">update</property>
 			</properties>
 		</hibernateConfiguration>
