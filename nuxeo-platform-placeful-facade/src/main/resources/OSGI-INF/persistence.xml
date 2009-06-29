@@ -1,6 +1,6 @@
 <persistence>
    <persistence-unit name="nxplaceful">
-    <jta-data-source>java:/nxplaceful_ds</jta-data-source>
+    <jta-data-source>java:/nxplaceful_service_ds</jta-data-source>
     %{CLASS}%
     <properties>
       <property name="hibernate.hbm2ddl.auto" value="update"/>
