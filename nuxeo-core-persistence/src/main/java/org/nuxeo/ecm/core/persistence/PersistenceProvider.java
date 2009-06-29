@@ -35,7 +35,7 @@ public class PersistenceProvider {
    
     protected EntityManagerFactoryProvider emfProvider;
     
-    protected PersistenceProvider(EntityManagerFactoryProvider emfProvider) {
+    public PersistenceProvider(EntityManagerFactoryProvider emfProvider) {
         this.emfProvider = emfProvider;
     }
 
@@ -43,7 +43,13 @@ public class PersistenceProvider {
         if (emfProvider == null) {
             throw new IllegalArgumentException("emfProvider not set");
         }
-        emf = emfProvider.getFactory();
+        if (emf == null) {
+            synchronized(PersistenceProvider.class) {
+                if (emf == null) {
+                    emf = emfProvider.getFactory();             
+                }
+            }
+        }
     }
 
     public void closePersistenceUnit() {
@@ -66,14 +72,11 @@ public class PersistenceProvider {
     protected ClassLoader lastLoader;
 
     public EntityManager acquireEntityManager() {
-        Thread thread = Thread.currentThread();
-        lastLoader = thread.getContextClassLoader();
-        thread.setContextClassLoader(getClass().getClassLoader());
         return doAcquireEntityManager();
     }
 
     public EntityManager acquireEntityManagerWithActiveTransaction() {
-        EntityManager em = acquireEntityManager();
+        EntityManager em = doAcquireEntityManager();
         EntityTransaction et = em.getTransaction();
         et.begin();
         return em;
@@ -103,7 +106,7 @@ public class PersistenceProvider {
                 return;
             }
             try {
-                doCommit(em);
+                ; //doCommit(em);
             } finally {
                 if (em.isOpen()) {
                     em.clear();
@@ -164,8 +167,7 @@ public class PersistenceProvider {
             EntityManager em = doAcquireEntityManager();
             if (needActiveSession) {
                 em.getTransaction().begin();
-            }
-            try { // insure entity manager releasing
+            } try { // insure entity manager releasing
                callback.runWith(em);
             } finally {
                 releaseEntityManager(em);
