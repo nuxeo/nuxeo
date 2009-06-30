@@ -21,6 +21,10 @@ import org.nuxeo.theme.webwidgets.Manager;
 
 public class Editor {
 
+    // Utility class
+    private Editor() {
+    }
+
     /* Widget actions */
     public static void addWidget(int areaUid, String widgetTypeName, int order)
             throws WidgetEditorException {

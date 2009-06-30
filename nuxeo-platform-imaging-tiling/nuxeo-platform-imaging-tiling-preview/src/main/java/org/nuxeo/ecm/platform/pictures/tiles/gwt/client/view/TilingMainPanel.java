@@ -163,7 +163,7 @@ public class TilingMainPanel extends Composite {
 
         // the button to show / hide the thumbnail
         ThumbnailButton thumbnailButton = new ThumbnailButton(controllerPanel);
-        rootPanel.add(thumbnailButton, width - thumbnailButton.getWidth(), 
+        rootPanel.add(thumbnailButton, width - thumbnailButton.getWidth(),
             height - thumbnailButton.getHeight());
 
         initWidget(rootPanel);

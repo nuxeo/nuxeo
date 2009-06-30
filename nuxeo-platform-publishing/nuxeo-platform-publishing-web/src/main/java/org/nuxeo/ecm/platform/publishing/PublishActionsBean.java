@@ -710,12 +710,13 @@ public class PublishActionsBean implements PublishActions, Serializable {
                 currentDocument.getRef(), null);
         List<PublishPojo> publishingInfo = new ArrayList<PublishPojo>();
         for (DocumentModel currentPublishedProxy : publishedProxies) {
-            DocumentModel currentPublishedProxyParent = documentManager
-                    .getDocument(currentPublishedProxy.getParentRef());
-            publishingInfo.add(new PublishPojo(currentPublishedProxyParent,
-                    versioningManager.getVersionLabel(currentPublishedProxy)));
+            if (documentManager.hasPermission(currentPublishedProxy.getParentRef(), "Read")) {
+                DocumentModel currentPublishedProxyParent = documentManager
+                        .getDocument(currentPublishedProxy.getParentRef());
+                publishingInfo.add(new PublishPojo(currentPublishedProxyParent,
+                        versioningManager.getVersionLabel(currentPublishedProxy)));
+            }
         }
-
         return publishingInfo;
     }
 

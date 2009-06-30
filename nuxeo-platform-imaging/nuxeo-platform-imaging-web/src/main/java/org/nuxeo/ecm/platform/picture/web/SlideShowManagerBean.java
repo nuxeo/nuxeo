@@ -114,7 +114,7 @@ public class SlideShowManagerBean implements
             if (repeat) {
                 index = 1;
             } else {
-                index = childrenSize;    
+                index = childrenSize;
             }
         }
     }
@@ -161,7 +161,7 @@ public class SlideShowManagerBean implements
     public DocumentModel getChild() {
         try {
             if ((index) > getChildrenSize()) {
-                    index = childrenSize;    
+                    index = childrenSize;
             }
             return navigationContext.getCurrentDocumentChildren().get(index - 1);
         } catch (ClientException e) {
@@ -173,7 +173,7 @@ public class SlideShowManagerBean implements
     public void setChild(DocumentModel child) {
         this.child = child;
     }
-    
+
     public void togglePause() {
         stoped = true;
     }
@@ -182,15 +182,15 @@ public class SlideShowManagerBean implements
         index = 1;
         stoped = true;
     }
-    
+
     public void start(){
             stoped = false;
     }
-    
+
     public Boolean getStoped() {
         return stoped;
     }
-    
+
     public void toggleRepeat(){
         if (repeat) {
             repeat = false;
@@ -202,7 +202,7 @@ public class SlideShowManagerBean implements
     public void setStoped(Boolean stoped) {
         this.stoped = stoped;
     }
-    
+
     public Boolean getRepeat() {
         return repeat;
     }

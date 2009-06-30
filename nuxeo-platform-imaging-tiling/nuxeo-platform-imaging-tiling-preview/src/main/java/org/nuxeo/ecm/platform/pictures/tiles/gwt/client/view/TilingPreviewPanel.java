@@ -78,10 +78,10 @@ public class TilingPreviewPanel extends Composite implements
                 model.getViewAreaHeight());
         rootPanel.addStyleName("tilingMasterContainer");
         rootPanel.add(tilingViewPanel, 0, 0);
-        
+
         HorizontalPanel hPanel = createZoomButtons();
         rootPanel.add(hPanel, 20, 20);
-        
+
         initWidget(rootPanel);
 
         setStyleName(DEFAULT_CLASS_NAME);
@@ -100,7 +100,7 @@ public class TilingPreviewPanel extends Composite implements
         resetZoomButton.addStyleName("resetZoomButton");
         resetZoomButton.setTitle("Default size");
         buttons.add(resetZoomButton);
-        
+
         Button zoomInButton = new Button();
         zoomInButton.addClickListener(new ClickListener() {
             public void onClick(Widget arg0) {

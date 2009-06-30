@@ -30,7 +30,7 @@ import org.nuxeo.ecm.platform.preview.adapter.BlobPostProcessor;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- * 
+ *
  */
 public class AnnotationBlobPostProcessor implements BlobPostProcessor {
 

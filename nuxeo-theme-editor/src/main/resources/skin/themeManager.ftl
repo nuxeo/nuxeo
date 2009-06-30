@@ -4,12 +4,14 @@
 
 <div id="nxthemesThemeManager" class="nxthemesScreen">
 
-<h1 class="nxthemesEditor">Themes</h1>
+<h1 class="nxthemesEditor">Manage themes</h1>
 
 <a onclick="NXThemesEditor.editCanvas()" class="nxthemesBack">Back to canvas</a>
 
 <table cellpadding="0" cellspacing="0" style="width: 100%"><tr>
 <td style="vertical-align: top; width: 200px; padding-right: 5px;">
+
+<h3 class="nxthemesEditor">THEMES</h3>
 
 <ul class="nxthemesSelector">
 <#list themes as theme>
@@ -25,31 +27,40 @@
       <img src="${skinPath}/img/custom-theme-16.png" width="16" height="16" />
     </#if>
   </#if>
-  ${theme.name}</a></li>
+  ${theme.name} <span style="font-size: 11px; font-style: italic; overflow: hidden">(${theme.src})</span></a></li>
 </#list>
 </ul>
 
-</td>
-<td style="padding-left: 10px; vertical-align: top;">
-
-<form style="float: right" action="javascript:void(0)">
+<form action="javascript:void(0)" style="margin-top: 20px">
   <div>
     <button onclick="javascript:NXThemesEditor.addTheme()">
     <img src="${skinPath}/img/add-theme-16.png" width="16" height="16" />
     Add theme</button>
   </div>
 </form>
+</td>
+<td style="padding-left: 10px; vertical-align: top;">
 
 <#list themes as theme>
   <#if theme.name = current_theme_name>
       <h2 class="nxthemesEditor" style="text-transform: uppercase">${theme.name}</h2>
       <p class="nxthemesEditor">        
-        SOURCE: <strong>${theme.src}</strong>
         <#if theme.lastLoaded && theme.loadingFailed>
           <span class="nxthemesEmphasize">LOADING FAILED</span>
         </#if>
       </p>
       
+      <#if theme.customized>
+        <p class="nxthemesEditor"><em>This theme is currently being hidden by another theme with the same name. </em></p>
+      
+      <#else>
+      
+        <#if theme.saveable>
+          <p class="nxthemesEditor"><em>This theme can be saved by clicking on the SAVE button.</em></p>
+        <#else>
+          <p class="nxthemesEditor"><em>This theme cannot be saved directly, use the DOWNLOAD button instead.</em></p>
+        </#if>
+
       <#assign template_engines=theme.templateEngines>
       <#if template_engines>
       <p class="nxthemesEditor">
@@ -60,19 +71,6 @@
       </p>
       </#if>
       
-      <#if theme.customized>
-        <p class="nxthemesEditor"><em>This theme is currently being hidden by another theme with the same name. </em></p>
-      
-      <#else>
-      
-        <#if theme.custom>
-          <p class="nxthemesEditor"><em>This theme can be saved by clicking on the SAVE button.</em></p>
-        </#if>
-      
-        <#if !theme.saveable>
-          <p class="nxthemesEditor"><em>This theme cannot be saved directly, use the DOWNLOAD button instead.</em></p>
-        </#if>
-
       <p class="nxthemesEditor">
         <button <#if !theme.saveable>disabled="disabled"</#if> onclick="NXThemesEditor.saveTheme('${theme.src}', 2)">
           <img src="${skinPath}/img/theme-save.png" width="16" height="16" />

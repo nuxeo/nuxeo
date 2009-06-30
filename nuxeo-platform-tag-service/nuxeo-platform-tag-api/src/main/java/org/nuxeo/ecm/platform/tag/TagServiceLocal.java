@@ -18,7 +18,7 @@ package org.nuxeo.ecm.platform.tag;
 
 /**
  * Local interface for Tags.
- * 
+ *
  * @author rux
  */
 public interface TagServiceLocal extends TagService {

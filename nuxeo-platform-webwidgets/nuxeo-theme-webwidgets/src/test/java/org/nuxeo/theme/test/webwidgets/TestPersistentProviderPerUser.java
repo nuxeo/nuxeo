@@ -14,6 +14,7 @@
 
 package org.nuxeo.theme.test.webwidgets;
 
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -43,8 +44,10 @@ public class TestPersistentProviderPerUser extends TestCase {
 
     protected Provider provider2;
 
-
     class MockPersistentProvider extends PersistentProviderPerUser {
+
+        Principal currentNuxeoPrincipal;
+
         public MockPersistentProvider(EntityManager em, String name,
                 boolean anonymous) {
             this.em = em;
@@ -53,6 +56,12 @@ public class TestPersistentProviderPerUser extends TestCase {
             currentNuxeoPrincipal.setAnonymous(anonymous);
             this.currentNuxeoPrincipal = currentNuxeoPrincipal;
         }
+
+        @Override
+        public Principal getCurrentPrincipal() {
+            return currentNuxeoPrincipal;
+        }
+
     }
 
     @Override
@@ -84,7 +93,7 @@ public class TestPersistentProviderPerUser extends TestCase {
         assertEquals("1", widget1.getUid());
         assertEquals("2", widget2.getUid());
     }
-    
+
     public void testGetWidgetByUid() throws ProviderException {
         Widget widget1 = provider.createWidget("test widget");
         Widget widget2 = provider.createWidget("test widget 2");
@@ -111,7 +120,7 @@ public class TestPersistentProviderPerUser extends TestCase {
         provider.addWidget(widget3, "region A", 1);
         assertEquals(1, provider.getWidgets("region A").indexOf(widget3));
     }
-    
+
     public void testReorderWidgets() throws ProviderException {
         Widget widget1 = provider.createWidget("test widget");
         Widget widget2 = provider.createWidget("test widget");
@@ -126,7 +135,7 @@ public class TestPersistentProviderPerUser extends TestCase {
         assertEquals(0, ((WidgetEntity) widget1).getOrder());
         assertEquals(1, ((WidgetEntity) widget2).getOrder());
         assertEquals(2, ((WidgetEntity) widget3).getOrder());
-        
+
         provider.reorderWidget(widget2, 0);
         assertEquals(0, provider.getWidgets("region A").indexOf(widget2));
         assertEquals(1, provider.getWidgets("region A").indexOf(widget1));
@@ -260,7 +269,7 @@ public class TestPersistentProviderPerUser extends TestCase {
         WidgetData retrievedData = provider.getWidgetData(widget, dataName);
         assertEquals("image/png", retrievedData.getContentType());
         assertEquals("image.png", retrievedData.getFilename());
-        assertEquals(content, (new String(retrievedData.getContent())));
+        assertEquals(content, new String(retrievedData.getContent()));
 
         assertNull(provider.getWidgetData(widget, "unknown"));
 

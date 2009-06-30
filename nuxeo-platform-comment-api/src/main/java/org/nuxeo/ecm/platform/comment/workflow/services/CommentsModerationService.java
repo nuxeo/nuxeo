@@ -45,7 +45,7 @@ public interface CommentsModerationService {
      * @throws ClientException
      */
     /**
-    public ProcessInstance getModerationProcess(JbpmService jbpmService,
+    ProcessInstance getModerationProcess(JbpmService jbpmService,
             CoreSession session, DocumentModel doc, String commentId)
             throws ClientException;
             **/
@@ -81,7 +81,7 @@ public interface CommentsModerationService {
      * @param commentId -the commentId
      * @throws ClientException
      */
-    public void publishComment(CoreSession session, DocumentModel comment)
+    void publishComment(CoreSession session, DocumentModel comment)
             throws ClientException;
 
 }

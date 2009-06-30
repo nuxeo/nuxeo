@@ -59,7 +59,7 @@ import org.nuxeo.runtime.api.Framework;
 @Remote(LogsRemote.class)
 public class LogsBean implements Logs {
 
-    @PersistenceContext(unitName = "NXAudit")
+    @PersistenceContext(unitName = "nxaudit-logs")
     private EntityManager em;
 
     protected NXAuditEventsService service() {

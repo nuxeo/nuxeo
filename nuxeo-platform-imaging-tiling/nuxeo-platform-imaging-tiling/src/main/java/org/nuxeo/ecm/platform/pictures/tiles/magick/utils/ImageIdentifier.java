@@ -36,7 +36,7 @@ public class ImageIdentifier extends MagickExecutor {
         CmdParameters params = new CmdParameters();
         params.addNamedParameter("inputFilePath", formatFilePath(inputFilePath));
         ExecResult result = execCommand("identify", params);
-        
+
         String out = result.getOutput().get(0);
         String res[] = out.split(" ");
 

@@ -33,11 +33,11 @@ import org.nuxeo.common.utils.FileUtils;
 public class Test {
 
     public static String encoding;
-    
+
     public static void main(String[] args) throws Exception {
         File file = new File("/Users/bstefanescu/testc.txt");
         File cfile = new File("/Users/bstefanescu/MyListener.class");
-        
+
         String userPassword = "Administrator" + ":" + "Administrator";
         encoding = new sun.misc.BASE64Encoder().encode (userPassword.getBytes());
 
@@ -47,18 +47,18 @@ public class Test {
                 return new PasswordAuthentication ("Administrator", "Administrator".toCharArray());
             }
         });
-        
+
         //deleteData("http://localhost:8080/server/components/MyListener");
-        
+
         //postBinary("http://localhost:8080/server/resources?file=org/nuxeo/runtime/MyListener.class", new FileInputStream(cfile));
         //postXml("http://localhost:8080/server/components", FileUtils.readFile(file));
-        
+
         deleteData("http://localhost:8080/server/components/test-listener");
         postBinary("http://localhost:8080/server/resources?file=script/listener.groovy", new FileInputStream(new File("/Users/bstefanescu/listener.groovy")));
         postXml("http://localhost:8080/server/components", FileUtils.readFile(new File("/Users/bstefanescu/test-listeners.xml")));
     }
-    
-    
+
+
     public static void deleteData(String url) throws Exception {
         URL u = new URL(url);
         HttpURLConnection conn = (HttpURLConnection)u.openConnection();
@@ -66,9 +66,9 @@ public class Test {
         conn.setDoOutput(false);
         conn.setRequestMethod("DELETE");
         int r = conn.getResponseCode();
-        System.out.println("response: "+r);        
+        System.out.println("response: "+r);
     }
-    
+
     public static void postXml(String url, String data) throws Exception {
         URL u = new URL(url);
         HttpURLConnection conn = (HttpURLConnection)u.openConnection();

@@ -171,18 +171,18 @@ public interface PictureBookManager {
     void destroy();
 
     void initialize() throws Exception;
-    
-    
+
+
     String downloadSelectedBook() throws ClientException, IOException;
-    
+
     String downloadAll() throws ClientException, IOException;
 
     List<SelectItem> getSelectItems() throws ClientException ;
-    
-    void setSelectItems(List<SelectItem> selectItems);
-    
-    public String[] getSelectedViews();
 
-    public void setSelectedViews(String[] selectedViews);
+    void setSelectItems(List<SelectItem> selectItems);
+
+    String[] getSelectedViews();
+
+    void setSelectedViews(String[] selectedViews);
 
 }

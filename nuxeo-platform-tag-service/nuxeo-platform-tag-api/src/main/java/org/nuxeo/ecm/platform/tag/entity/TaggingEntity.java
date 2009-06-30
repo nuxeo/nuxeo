@@ -32,16 +32,16 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 /**
- * Tagging entry. Table structure: 
- * <p>NUMBER TAGGING_ID //the PK ID 
- * <p>STRING TARGET_ID // FK, the tagged document ID 
- * <p>STRING TAG_ID // FK, the tag ID applied on document 
- * <p>STRING AUTHOR // the user name applying the tag 
- * <p>DATE CREATION_DATE // the time of creation of the tagging (apply of the tag) 
- * <p>BOOL IS_PRIVATE // default false, marks a tagging as private 
- * <p>Private tagging means the respective tag applying is visible only for the 
+ * Tagging entry. Table structure:
+ * <p>NUMBER TAGGING_ID //the PK ID
+ * <p>STRING TARGET_ID // FK, the tagged document ID
+ * <p>STRING TAG_ID // FK, the tag ID applied on document
+ * <p>STRING AUTHOR // the user name applying the tag
+ * <p>DATE CREATION_DATE // the time of creation of the tagging (apply of the tag)
+ * <p>BOOL IS_PRIVATE // default false, marks a tagging as private
+ * <p>Private tagging means the respective tag applying is visible only for the
  * creator. Mainly it impacts the tag clouding computation.
- * 
+ *
  * @author cpriceputu
  */
 @Entity(name = "Tagging")
@@ -54,7 +54,7 @@ import javax.persistence.TemporalType;
         @NamedQuery(name = GET_VOTE_CLOUD, query = GET_VOTE_CLOUD_QUERY),
         @NamedQuery(name = LIST_DOCUMENTS_FOR_TAG, query = LIST_DOCUMENTS_FOR_TAG_QUERY),
         @NamedQuery(name = GET_TAGGING, query = GET_TAGGING_QUERY)
-       
+
 })
 public class TaggingEntity implements Serializable{
 
@@ -69,8 +69,8 @@ public class TaggingEntity implements Serializable{
     private DublincoreEntity targetDocument;
 
     /**
-     * Returns the identifier of the tag .
-     * 
+     * Returns the identifier of the tag.
+     *
      * @return the tag identifier
      */
     @ManyToOne(optional = false)
@@ -79,7 +79,7 @@ public class TaggingEntity implements Serializable{
 
     /**
      * Returns the author of the tagging.
-     * 
+     *
      * @return the author of the tagging
      */
     @Column(name = "AUTHOR")
@@ -87,7 +87,7 @@ public class TaggingEntity implements Serializable{
 
     /**
      * Returns the date when the tagging was made.
-     * 
+     *
      * @return the date when the tagging was made
      */
     @Temporal(TemporalType.TIMESTAMP)
@@ -97,10 +97,9 @@ public class TaggingEntity implements Serializable{
     /**
      * A flag marking indicating the tagging is available for everyone or only
      * for creator and administrators
-     * 
-     * @return indicates the tagging is available for everyone or only for
+     *
+     * @return true the tagging is available for everyone, false if only for
      *         creator and administrators
-     * 
      */
     @Column(name = "IS_PRIVATE")
     private Boolean isPrivate = false;

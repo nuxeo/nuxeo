@@ -46,24 +46,24 @@ public final class SiteConstants {
     public static final String WEBCONTAINER_MODERATION = "webcontainer:moderationType";
     public static final String WEBCONTAINER_BASELINE = "webcontainer:baseline";
     public static final String WEBCONTAINER_EMAIL = "webc:email";
-    
+
     public static final String WEBSITE_SCHEMA_THEME = "webc:theme";
     public static final String DEFAULT_WEBSITE_THEME_VALUE = "sites";
-    public static final String WEBSITE_THEMEPAGE = "webc:themePage";    
+    public static final String WEBSITE_THEMEPAGE = "webc:themePage";
     public static final String DEFAULT_WEBSITE_THEMEPAGE_VALUE = "workspace";
-    
-    
+
+
     public static final String WEBPAGE_SCHEMA_THEME = "webp:theme";
     public static final String WEBPAGE_THEMEPAGE = "webp:themePage";
-    
+
     public static final String DEFAULT_WEBPAGE_THEME_VALUE = "sites";
     public static final String DEFAULT_WEBPAGE_THEMEPAGE_VALUE = "page";
-    
+
     public static final String WEBPAGE_EDITOR = "webp:isRichtext";
     public static final String WEBPAGE_PUSHTOMENU = "webp:pushtomenu";
     public static final String WEBPAGE_CONTENT = "webp:content";
     public static final String WEBPAGE_DESCRIPTION = "dc:description";
-    
+
 
     /**
      * Arguments in FreeMarker
@@ -98,9 +98,9 @@ public final class SiteConstants {
     public static final String CREATE_PERSPECTIVE = "create";
     public static final String EDIT_PERSPECTIVE = "edit";
     public static final String PAGE_THEME_PAGE = "sites/page";
-    public static final String SEARCH_THEME_PAGE = "search";
+    public static final String SEARCH_THEME_PAGE = "sites/search";
     public static final String SITES_THEME_PAGE = "sites/default";
-    
+
     /**
      * Tags&Tag Clouds
      */
@@ -110,10 +110,10 @@ public final class SiteConstants {
      * Themes&Perspectives
      */
     public static final String PAGE_NAME_ATTRIBUTE = "pageName";
-    
+
     public static final String DATE_AFTER = "dateAfter";
     public static final String DATE_BEFORE = "dateBefore";
-    
+
     /**
      * MimeType
      * */

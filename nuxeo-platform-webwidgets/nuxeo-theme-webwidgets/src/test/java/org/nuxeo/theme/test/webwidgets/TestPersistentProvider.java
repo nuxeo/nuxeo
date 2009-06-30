@@ -237,7 +237,7 @@ public class TestPersistentProvider extends TestCase {
         WidgetData retrievedData = provider.getWidgetData(widget, dataName);
         assertEquals("image/png", retrievedData.getContentType());
         assertEquals("image.png", retrievedData.getFilename());
-        assertEquals(content, (new String(retrievedData.getContent())));
+        assertEquals(content, new String(retrievedData.getContent()));
 
         assertNull(provider.getWidgetData(widget, "unknown"));
 

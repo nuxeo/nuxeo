@@ -47,7 +47,7 @@ import org.nuxeo.webengine.sites.JsonAdapter;
 
 /**
  * Utility class for sites implementation.
- * 
+ *
  * @author rux added web comments related
  */
 public class SiteUtils {
@@ -87,7 +87,7 @@ public class SiteUtils {
     /**
      * Gets the number of comment added on a page (published actually, if the
      * moderation is on).
-     * 
+     *
      * @param session
      * @param page
      * @return
@@ -111,7 +111,7 @@ public class SiteUtils {
 
     /**
      * Retrieves user details for a certain username.
-     * 
+     *
      * @param username
      * @return user first name + user last name
      * @throws Exception
@@ -131,7 +131,7 @@ public class SiteUtils {
 
     /**
      * Returns the path to all the existing web containers.
-     * 
+     *
      * @return the path to all the existing web containers
      */
     public static StringBuilder getWebContainersPath() {
@@ -143,7 +143,7 @@ public class SiteUtils {
 
     /**
      * Returns the path for a webPage from a webSite.
-     * 
+     *
      * @param ws the web site
      * @param documentModel the webPage
      * @return the path
@@ -159,7 +159,7 @@ public class SiteUtils {
 
     /**
      * Creates a document type that is received as parameter, as document model.
-     * 
+     *
      * @param request
      * @param session
      * @param parentPath
@@ -276,7 +276,7 @@ public class SiteUtils {
     /**
      * This method is used to retrieve the <b>WebPage</b> where this
      * <b>WebComment</b> was published
-     * 
+     *
      * @param comment
      * @return the <b>WebPage</b>
      * @throws Exception
@@ -400,7 +400,7 @@ public class SiteUtils {
 
     /**
      * Computes the arguments for rss feed
-     * 
+     *
      * @return
      * @throws Exception
      */

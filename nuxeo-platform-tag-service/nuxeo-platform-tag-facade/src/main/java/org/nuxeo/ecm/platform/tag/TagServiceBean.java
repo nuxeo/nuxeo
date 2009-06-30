@@ -39,9 +39,9 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Stateless bean allowing to query the tags.
- * 
+ *
  * @author rux
- * 
+ *
  */
 
 @Stateless

@@ -30,7 +30,7 @@ import org.nuxeo.ecm.platform.jbpm.NuxeoJbpmException;
 
 /**
  * @author arussel
- * 
+ *
  */
 public class GetRecipientsForTaskOperation implements JbpmOperation {
 

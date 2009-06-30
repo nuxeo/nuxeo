@@ -49,7 +49,7 @@ import org.nuxeo.webengine.sites.utils.SiteUtils;
 /**
  * Web object implementation corresponding to WebPage. It is resolved from site.
  * It holds the web page fragments back methods.
- * 
+ *
  * @author stan
  */
 @WebObject(type = WEBPAGE, superType = "AbstractSiteDocumentObject")
@@ -85,7 +85,7 @@ public class Page extends AbstractSiteDocumentObject {
 
     /**
      * Updates the current modified web page.
-     * 
+     *
      * @return
      */
     @POST

@@ -187,6 +187,13 @@ public class Main extends ModuleRoot {
         return builder.build();
     }
 
+    /* Widget Sample */
+    @Path("lastdocuments")
+    public Object getModules() {
+        return newObject("lastdocuments");
+    }
+
+
     /* API */
 
     public static String getSelectedWidgetCategory() {

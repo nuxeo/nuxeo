@@ -107,7 +107,7 @@ public class UserWorkspaceServiceImplComponent extends DefaultComponent {
 
 
     public static String getTargetDomainName() {
-    	return descriptor.getTargetDomainName();
+        return descriptor.getTargetDomainName();
     }
 
 }

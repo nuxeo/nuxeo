@@ -39,9 +39,13 @@ public class Manager {
 
     private static final Log log = LogFactory.getLog(Manager.class);
 
-    private static Map<String, Provider> providers = new HashMap<String, Provider>();
+    private static final Map<String, Provider> providers = new HashMap<String, Provider>();
 
-    private static Map<String, ProviderFactory> providerFactories = new HashMap<String, ProviderFactory>();
+    private static final Map<String, ProviderFactory> providerFactories = new HashMap<String, ProviderFactory>();
+
+    // Utility class.
+    private Manager() {
+    }
 
     public static Service getService() {
         return (Service) Framework.getRuntime().getComponent(Service.ID);
@@ -56,7 +60,7 @@ public class Manager {
         if (providerType == null) {
             throw new WidgetException("Provider unknown: " + name);
         }
-        
+
         String className = providerType.getClassName();
         String factoryClassName = providerType.getFactoryClassName();
         if (className == null && factoryClassName == null) {

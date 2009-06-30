@@ -34,6 +34,7 @@ import javax.persistence.EntityManager;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -47,16 +48,17 @@ import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
-import org.nuxeo.ecm.platform.audit.api.AuditAdmin;
+import org.nuxeo.ecm.core.persistence.PersistenceError;
+import org.nuxeo.ecm.core.persistence.PersistenceProvider;
+import org.nuxeo.ecm.core.persistence.PersistenceProviderFactory;
+import org.nuxeo.ecm.core.persistence.PersistenceProvider.RunCallback;
+import org.nuxeo.ecm.core.persistence.PersistenceProvider.RunVoid;
 import org.nuxeo.ecm.platform.audit.api.AuditException;
-import org.nuxeo.ecm.platform.audit.api.AuditLogger;
-import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.ecm.platform.audit.api.AuditRuntimeException;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.FilterMapEntry;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.api.NXAuditEvents;
-import org.nuxeo.ecm.platform.audit.service.PersistenceProvider.RunCallback;
 import org.nuxeo.ecm.platform.audit.service.extension.EventDescriptor;
 import org.nuxeo.ecm.platform.audit.service.extension.ExtendedInfoDescriptor;
 import org.nuxeo.ecm.platform.el.ExpressionContext;
@@ -71,52 +73,51 @@ import com.sun.el.ExpressionFactoryImpl;
 
 /**
  * Event service configuration.
- *
+ * 
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 public class NXAuditEventsService extends DefaultComponent implements NXAuditEvents {
 
-    public static final ComponentName NAME = new ComponentName(
-            "org.nuxeo.ecm.platform.audit.service.NXAuditEventsService");
+    public static final ComponentName NAME = new ComponentName("org.nuxeo.ecm.platform.audit.service.NXAuditEventsService");
 
     private static final String EVENT_EXT_POINT = "event";
 
-    private static final Set<String> eventNames = new HashSet<String>();
-
     private static final String EXTENDED_INFO_EXT_POINT = "extendedInfo";
 
-    protected static final Set<ExtendedInfoDescriptor> extendedInfoDescriptors = new HashSet<ExtendedInfoDescriptor>();
+    protected static final Log log = LogFactory.getLog(NXAuditEventsService.class);
 
-    private static final Log log = LogFactory.getLog(NXAuditEventsService.class);
+    protected  final Set<ExtendedInfoDescriptor> extendedInfoDescriptors = new HashSet<ExtendedInfoDescriptor>();
 
-    protected static final ContainerManagedHibernateConfiguration hibernateConfiguration
-            = new ContainerManagedHibernateConfiguration();
+    protected  final Set<String> eventNames = new HashSet<String>();
 
-    public static final PersistenceProvider persistenceProvider = new PersistenceProvider(
-            hibernateConfiguration);
+    protected final ExpressionEvaluator expressionEvaluator = new ExpressionEvaluator(new ExpressionFactoryImpl());
 
-    private static final ExpressionEvaluator expressionEvaluator = new ExpressionEvaluator(
-            new ExpressionFactoryImpl());
-
-    @Override
-    public void activate(ComponentContext context) throws Exception {
-        super.activate(context);
-        String datasourceProperty = Framework.getProperty("audit.datasource");
-        if (datasourceProperty != null) {
-            hibernateConfiguration.datasource = datasourceProperty;
+    protected PersistenceProvider persistenceProvider;
+    
+    public PersistenceProvider getOrCreatePersistenceProvider() {
+        if (persistenceProvider != null) {
+            return persistenceProvider;
         }
+        PersistenceProviderFactory persistenceProviderFactory = Framework.getLocalService(PersistenceProviderFactory.class);
+        return persistenceProvider = persistenceProviderFactory.newProvider("nxaudit-logs");
+    }
+
+    protected void deactivatePersistenceProvider() { 
+        if (persistenceProvider == null) {
+            return;
+        }
+        persistenceProvider.closePersistenceUnit();
+        persistenceProvider = null;
     }
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
-        persistenceProvider.closePersistenceUnit();
+        deactivatePersistenceProvider();
         super.deactivate(context);
     }
-
+    
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) throws Exception {
         if (extensionPoint.equals(EVENT_EXT_POINT)) {
             doRegisterEvent((EventDescriptor) contribution);
         } else if (extensionPoint.equals(EXTENDED_INFO_EXT_POINT)) {
@@ -149,9 +150,7 @@ public class NXAuditEventsService extends DefaultComponent implements NXAuditEve
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) throws Exception {
         if (extensionPoint.equals(EVENT_EXT_POINT)) {
             doUnregisterEvent((EventDescriptor) contribution);
         } else if (extensionPoint.equals(EXTENDED_INFO_EXT_POINT)) {
@@ -177,9 +176,7 @@ public class NXAuditEventsService extends DefaultComponent implements NXAuditEve
         return eventNames;
     }
 
-    protected void doPutExtendedInfos(LogEntry entry,
-            EventContext eventContext, DocumentModel source,
-            Principal principal) {
+    protected void doPutExtendedInfos(LogEntry entry, EventContext eventContext, DocumentModel source, Principal principal) {
         ExpressionContext context = new ExpressionContext();
         if (eventContext != null) {
             expressionEvaluator.bindValue(context, "message", eventContext);
@@ -192,13 +189,11 @@ public class NXAuditEventsService extends DefaultComponent implements NXAuditEve
         }
         Map<String, ExtendedInfo> extendedInfos = entry.getExtendedInfos();
         for (ExtendedInfoDescriptor descriptor : extendedInfoDescriptors) {
-            Serializable value = expressionEvaluator.evaluateExpression(
-                    context, descriptor.getExpression(), Serializable.class);
+            Serializable value = expressionEvaluator.evaluateExpression(context, descriptor.getExpression(), Serializable.class);
             if (value == null) {
                 continue;
             }
-            extendedInfos.put(descriptor.getKey(),
-                    ExtendedInfo.createExtendedInfo(value));
+            extendedInfos.put(descriptor.getKey(), ExtendedInfo.createExtendedInfo(value));
         }
     }
 
@@ -206,8 +201,7 @@ public class NXAuditEventsService extends DefaultComponent implements NXAuditEve
         try {
             return session.getPrincipal();
         } catch (Exception e) {
-            throw new AuditRuntimeException("Cannot get principal from "
-                    + session, e);
+            throw new AuditRuntimeException("Cannot get principal from " + session, e);
         }
     }
 
@@ -215,13 +209,11 @@ public class NXAuditEventsService extends DefaultComponent implements NXAuditEve
         try {
             return event.getPrincipal();
         } catch (Exception e) {
-            throw new AuditRuntimeException("Cannot get principal from "
-                    + event, e);
+            throw new AuditRuntimeException("Cannot get principal from " + event, e);
         }
     }
 
-    protected DocumentModel guardedDocument(CoreSession session,
-            DocumentRef reference) {
+    protected DocumentModel guardedDocument(CoreSession session, DocumentRef reference) {
         if (session == null) {
             return null;
         }
@@ -235,8 +227,7 @@ public class NXAuditEventsService extends DefaultComponent implements NXAuditEve
         }
     }
 
-    protected DocumentModelList guardedDocumentChildren(CoreSession session,
-            DocumentRef reference) throws AuditException {
+    protected DocumentModelList guardedDocumentChildren(CoreSession session, DocumentRef reference) throws AuditException {
         try {
             return session.getChildren(reference);
         } catch (ClientException e) {
@@ -248,8 +239,7 @@ public class NXAuditEventsService extends DefaultComponent implements NXAuditEve
         try {
             return Framework.getService(RepositoryManager.class);
         } catch (Exception e) {
-            throw new AuditRuntimeException("Unable to get RepositoryManager",
-                    e);
+            throw new AuditRuntimeException("Unable to get RepositoryManager", e);
         }
     }
 
@@ -267,13 +257,11 @@ public class NXAuditEventsService extends DefaultComponent implements NXAuditEve
         try {
             return repository.open();
         } catch (Exception e) {
-            throw new AuditRuntimeException("Cannot open core session for "
-                    + repoId, e);
+            throw new AuditRuntimeException("Cannot open core session for " + repoId, e);
         }
     }
 
-    protected LogEntry doCreateAndFillEntryFromDocument(DocumentModel doc,
-            Principal principal) {
+    protected LogEntry doCreateAndFillEntryFromDocument(DocumentModel doc, Principal principal) {
         LogEntry entry = new LogEntry();
         entry.setDocPath(doc.getPathAsString());
         entry.setDocType(doc.getType());
@@ -286,8 +274,7 @@ public class NXAuditEventsService extends DefaultComponent implements NXAuditEve
         try {
             creationDate = (Calendar) doc.getProperty("dublincore", "created");
         } catch (ClientException e) {
-            throw new AuditRuntimeException(
-                    "Cannot fetch date from dublin core for " + doc, e);
+            throw new AuditRuntimeException("Cannot fetch date from dublin core for " + doc, e);
         }
         if (creationDate != null) {
             entry.setEventDate(creationDate.getTime());
@@ -298,12 +285,15 @@ public class NXAuditEventsService extends DefaultComponent implements NXAuditEve
         return entry;
     }
 
-    public void addLogEntries(List<LogEntry> entries) {
-        EntityManager em = persistenceProvider.acquireEntityManagerWithActiveTransaction();
+    public void addLogEntries(final List<LogEntry> entries) {
         try {
-            addLogEntries(em, entries);
-        } finally {
-            persistenceProvider.releaseEntityManager(em);
+            getOrCreatePersistenceProvider().run(true, new RunVoid() {
+                public void runWith(EntityManager em) {
+                    addLogEntries(em, entries);
+                }
+            });
+        } catch (ClientException e) {
+           throw new ClientRuntimeException(e);
         }
     }
 
@@ -312,146 +302,146 @@ public class NXAuditEventsService extends DefaultComponent implements NXAuditEve
     }
 
     public List<LogEntry> getLogEntriesFor(final String uuid) {
-        return persistenceProvider.run(false,
-                new RunCallback<List<LogEntry>>() {
-                    public List<LogEntry> runWith(EntityManager em) {
-                        return getLogEntriesFor(em, uuid);
-                    }
-
-                });
+        try {
+            return getOrCreatePersistenceProvider().run(false, new RunCallback<List<LogEntry>>() {
+                public List<LogEntry> runWith(EntityManager em) {
+                    return getLogEntriesFor(em, uuid);
+                }
+            });
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
     }
 
     public List<LogEntry> getLogEntriesFor(EntityManager em, String uuid) {
         return LogEntryProvider.createProvider(em).getLogEntriesFor(uuid);
     }
 
-    public List<LogEntry> getLogEntriesFor(final String uuid,
-            final Map<String, FilterMapEntry> filterMap,
-            final boolean doDefaultSort) {
-        return persistenceProvider.run(false,
-                new RunCallback<List<LogEntry>>() {
-                    public List<LogEntry> runWith(EntityManager em) {
-                        return getLogEntriesFor(em, uuid, filterMap,
-                                doDefaultSort);
-                    }
-                });
+    public List<LogEntry> getLogEntriesFor(final String uuid, final Map<String, FilterMapEntry> filterMap, final boolean doDefaultSort) {
+        try {
+            return getOrCreatePersistenceProvider().run(false, new RunCallback<List<LogEntry>>() {
+                public List<LogEntry> runWith(EntityManager em) {
+                    return getLogEntriesFor(em, uuid, filterMap, doDefaultSort);
+                }
+            });
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
     }
 
-    public List<LogEntry> getLogEntriesFor(EntityManager em, String uuid,
-            Map<String, FilterMapEntry> filterMap, boolean doDefaultSort) {
-        return LogEntryProvider.createProvider(em).getLogEntriesFor(uuid,
-                filterMap, doDefaultSort);
+    public List<LogEntry> getLogEntriesFor(EntityManager em, String uuid, Map<String, FilterMapEntry> filterMap, boolean doDefaultSort) {
+        return LogEntryProvider.createProvider(em).getLogEntriesFor(uuid, filterMap, doDefaultSort);
     }
 
     public LogEntry getLogEntryByID(final long id) {
-        return persistenceProvider.run(false, new RunCallback<LogEntry>() {
-            public LogEntry runWith(EntityManager em) {
-                return getLogEntryByID(em, id);
-            }
-        });
+        try {
+            return getOrCreatePersistenceProvider().run(false, new RunCallback<LogEntry>() {
+                public LogEntry runWith(EntityManager em) {
+                    return getLogEntryByID(em, id);
+                }
+            });
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
     }
 
     public LogEntry getLogEntryByID(EntityManager em, long id) {
         return LogEntryProvider.createProvider(em).getLogEntryByID(id);
     }
 
-    public List<LogEntry> nativeQueryLogs(final String whereClause,
-            final int pageNb, final int pageSize) {
-        return persistenceProvider.run(false,
-                new RunCallback<List<LogEntry>>() {
-                    public List<LogEntry> runWith(EntityManager em) {
-                        return nativeQueryLogs(em, whereClause, pageNb,
-                                pageSize);
-                    }
-                });
+    public List<LogEntry> nativeQueryLogs(final String whereClause, final int pageNb, final int pageSize) {
+        try {
+            return getOrCreatePersistenceProvider().run(false, new RunCallback<List<LogEntry>>() {
+                public List<LogEntry> runWith(EntityManager em) {
+                    return nativeQueryLogs(em, whereClause, pageNb, pageSize);
+                }
+            });
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
     }
 
-    public List<LogEntry> nativeQueryLogs(EntityManager em, String whereClause,
-            int pageNb, int pageSize) {
-        return LogEntryProvider.createProvider(em).nativeQueryLogs(whereClause,
-                pageNb, pageSize);
+    public List<LogEntry> nativeQueryLogs(EntityManager em, String whereClause, int pageNb, int pageSize) {
+        return LogEntryProvider.createProvider(em).nativeQueryLogs(whereClause, pageNb, pageSize);
     }
 
     public List<?> nativeQuery(final String query, final int pageNb, final int pageSize) {
-        return persistenceProvider.run(false,
-                new RunCallback<List<?>>() {
-                    public List<?> runWith(EntityManager em) {
-                        return nativeQuery(em, query, pageNb,
-                                pageSize);
-                    }
-                });
+        try {
+            return getOrCreatePersistenceProvider().run(false, new RunCallback<List<?>>() {
+                public List<?> runWith(EntityManager em) {
+                    return nativeQuery(em, query, pageNb, pageSize);
+                }
+            });
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
     }
 
-    public List<?> nativeQuery(EntityManager em, String query,
-            int pageNb, int pageSize) {
-        return LogEntryProvider.createProvider(em).nativeQuery(query,
-                pageNb, pageSize);
+    public List<?> nativeQuery(EntityManager em, String query, int pageNb, int pageSize) {
+        return LogEntryProvider.createProvider(em).nativeQuery(query, pageNb, pageSize);
     }
 
-    public List<LogEntry> queryLogs(final String[] eventIds,
-            final String dateRange) {
-        return persistenceProvider.run(false,
-                new RunCallback<List<LogEntry>>() {
-                    public List<LogEntry> runWith(EntityManager em) {
-                        return queryLogs(em, eventIds, dateRange);
-                    }
-                });
+    public List<LogEntry> queryLogs(final String[] eventIds, final String dateRange) {
+        try {
+            return getOrCreatePersistenceProvider().run(false, new RunCallback<List<LogEntry>>() {
+                public List<LogEntry> runWith(EntityManager em) {
+                    return queryLogs(em, eventIds, dateRange);
+                }
+            });
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
     }
 
-    public List<LogEntry> queryLogs(EntityManager em, String[] eventIds,
-            String dateRange) {
-        return LogEntryProvider.createProvider(em).queryLogs(eventIds,
-                dateRange);
+    public List<LogEntry> queryLogs(EntityManager em, String[] eventIds, String dateRange) {
+        return LogEntryProvider.createProvider(em).queryLogs(eventIds, dateRange);
     }
 
-    public List<LogEntry> queryLogsByPage(final String[] eventIds,
-            final String dateRange, final String category, final String path,
-            final int pageNb, final int pageSize) {
-        return persistenceProvider.run(false,
-                new RunCallback<List<LogEntry>>() {
-                    public List<LogEntry> runWith(EntityManager em) {
-                        return queryLogsByPage(em, eventIds, dateRange,
-                                category, path, pageNb, pageSize);
-                    }
-                });
+    public List<LogEntry> queryLogsByPage(final String[] eventIds, final String dateRange, final String category, final String path, final int pageNb, final int pageSize) {
+        try {
+            return getOrCreatePersistenceProvider().run(false, new RunCallback<List<LogEntry>>() {
+                public List<LogEntry> runWith(EntityManager em) {
+                    return queryLogsByPage(em, eventIds, dateRange, category, path, pageNb, pageSize);
+                }
+            });
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
     }
 
-    public List<LogEntry> queryLogsByPage(EntityManager em, String[] eventIds,
-            String dateRange, String category, String path, int pageNb,
-            int pageSize) {
-        return LogEntryProvider.createProvider(em).queryLogs(eventIds,
-                dateRange);
+    public List<LogEntry> queryLogsByPage(EntityManager em, String[] eventIds, String dateRange, String category, String path, int pageNb, int pageSize) {
+        return LogEntryProvider.createProvider(em).queryLogs(eventIds, dateRange);
     }
 
-    public List<LogEntry> queryLogsByPage(final String[] eventIds,
-            final Date limit, final String category, final String path,
-            final int pageNb, final int pageSize) {
-        return persistenceProvider.run(false,
-                new RunCallback<List<LogEntry>>() {
-                    public List<LogEntry> runWith(EntityManager em) {
-                        return queryLogsByPage(em, eventIds, limit, category,
-                                path, pageNb, pageSize);
-                    }
-                });
+    public List<LogEntry> queryLogsByPage(final String[] eventIds, final Date limit, final String category, final String path, final int pageNb, final int pageSize) {
+        try {
+            return getOrCreatePersistenceProvider().run(false, new RunCallback<List<LogEntry>>() {
+                public List<LogEntry> runWith(EntityManager em) {
+                    return queryLogsByPage(em, eventIds, limit, category, path, pageNb, pageSize);
+                }
+            });
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
     }
 
-    public List<LogEntry> queryLogsByPage(EntityManager em, String[] eventIds,
-            Date limit, String category, String path, int pageNb, int pageSize) {
-        return LogEntryProvider.createProvider(em).queryLogsByPage(eventIds,
-                limit, category, path, pageNb, pageSize);
+    public List<LogEntry> queryLogsByPage(EntityManager em, String[] eventIds, Date limit, String category, String path, int pageNb, int pageSize) {
+        return LogEntryProvider.createProvider(em).queryLogsByPage(eventIds, limit, category, path, pageNb, pageSize);
     }
 
-    public long syncLogCreationEntries(final String repoId, final String path,
-            final Boolean recurs) {
-        return persistenceProvider.run(true, new RunCallback<Long>() {
-            public Long runWith(EntityManager em) {
-                return syncLogCreationEntries(em, repoId, path, recurs);
-            }
-        });
+    public long syncLogCreationEntries(final String repoId, final String path, final Boolean recurs) {
+        try {
+            return getOrCreatePersistenceProvider().run(true, new RunCallback<Long>() {
+                public Long runWith(EntityManager em) {
+                    return syncLogCreationEntries(em, repoId, path, recurs);
+                }
+            });
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
     }
 
-    public long syncLogCreationEntries(EntityManager em, String repoId,
-            String path, Boolean recurs) {
+    public long syncLogCreationEntries(EntityManager em, String repoId, String path, Boolean recurs) {
 
         LogEntryProvider provider = LogEntryProvider.createProvider(em);
         provider.removeEntries(DocumentEventTypes.DOCUMENT_CREATED, path);
@@ -467,8 +457,7 @@ public class NXAuditEventsService extends DefaultComponent implements NXAuditEve
         return nbAddedEntries;
     }
 
-    protected long doSyncNode(LogEntryProvider provider, CoreSession session,
-            DocumentModel node, boolean recurs) {
+    protected long doSyncNode(LogEntryProvider provider, CoreSession session, DocumentModel node, boolean recurs) {
 
         long nbSynchedEntries = 1;
 
@@ -476,16 +465,13 @@ public class NXAuditEventsService extends DefaultComponent implements NXAuditEve
         List<DocumentModel> folderishChildren = new ArrayList<DocumentModel>();
 
         try {
-            provider.addLogEntry(doCreateAndFillEntryFromDocument(node,
-                    guardedPrincipal(session)));
+            provider.addLogEntry(doCreateAndFillEntryFromDocument(node, guardedPrincipal(session)));
 
-            for (DocumentModel child : guardedDocumentChildren(session,
-                    node.getRef())) {
+            for (DocumentModel child : guardedDocumentChildren(session, node.getRef())) {
                 if (child.isFolder() && recurs) {
                     folderishChildren.add(child);
                 } else {
-                    provider.addLogEntry(doCreateAndFillEntryFromDocument(
-                            child, principal));
+                    provider.addLogEntry(doCreateAndFillEntryFromDocument(child, principal));
                     nbSynchedEntries += 1;
                 }
             }
@@ -495,8 +481,7 @@ public class NXAuditEventsService extends DefaultComponent implements NXAuditEve
 
         if (recurs) {
             for (DocumentModel folderChild : folderishChildren) {
-                nbSynchedEntries += doSyncNode(provider, session, folderChild,
-                        recurs);
+                nbSynchedEntries += doSyncNode(provider, session, folderChild, recurs);
             }
         }
 
@@ -504,12 +489,16 @@ public class NXAuditEventsService extends DefaultComponent implements NXAuditEve
     }
 
     public void addLogEntry(final LogEntry entry) {
-        persistenceProvider.run(true, new RunCallback<Integer>() {
-            public Integer runWith(EntityManager em) {
-                addLogEntry(em, entry);
-                return 0;
-            }
-        });
+        try {
+            getOrCreatePersistenceProvider().run(true, new RunCallback<Integer>() {
+                public Integer runWith(EntityManager em) {
+                    addLogEntry(em, entry);
+                    return 0;
+                }
+            });
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
     }
 
     public void addLogEntry(EntityManager em, LogEntry entry) {
@@ -517,12 +506,16 @@ public class NXAuditEventsService extends DefaultComponent implements NXAuditEve
     }
 
     public Long getEventsCount(final String eventId) {
-        return persistenceProvider.run(false, new RunCallback<Long>() {
-            public Long runWith(EntityManager em) {
-                return getEventsCount(em, eventId);
-            }
+        try {
+            return getOrCreatePersistenceProvider().run(false, new RunCallback<Long>() {
+                public Long runWith(EntityManager em) {
+                    return getEventsCount(em, eventId);
+                }
 
-        });
+            });
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
     }
 
     public Long getEventsCount(EntityManager em, String eventId) {
@@ -530,42 +523,45 @@ public class NXAuditEventsService extends DefaultComponent implements NXAuditEve
     }
 
     public List<String> getLoggedEventIds() {
-        return persistenceProvider.run(false, new RunCallback<List<String>>() {
-            public List<String> runWith(EntityManager em) {
-                return getLoggedEventIds(em);
-            }
+        try {
+            return getOrCreatePersistenceProvider().run(false, new RunCallback<List<String>>() {
+                public List<String> runWith(EntityManager em) {
+                    return getLoggedEventIds(em);
+                }
 
-        });
+            });
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
     }
 
     public List<String> getLoggedEventIds(EntityManager em) {
         return LogEntryProvider.createProvider(em).findEventIds();
     }
 
-    public void logEvent(final Event event) throws AuditException {
-        AuditException ae = null;
-        ae = persistenceProvider.run(true, new RunCallback<AuditException>() {
-            public AuditException runWith(EntityManager em) {
-                logEvent(em, event);
-                return null;
-            }
-        });
-        if (ae != null) {
-            throw ae;
+    public void logEvent(final Event event)  {
+        try {
+            getOrCreatePersistenceProvider().run(true, new RunVoid() {
+                public void runWith(EntityManager em) {
+                    logEvent(em, event);
+                }
+            });
+        } catch (ClientException e) {
+           throw new ClientRuntimeException(e);
         }
     }
 
-    public void logEvents(final EventBundle eventBundle) throws AuditException {
-        AuditException ae = null;
-        ae = persistenceProvider.run(true, new RunCallback<AuditException>() {
-            public AuditException runWith(EntityManager em) {
-                logEvents(em, eventBundle);
-                return null;
-            }
-        });
-        if (ae != null) {
-            throw ae;
-        }
+    public void logEvents(final EventBundle eventBundle)  {
+        try {
+            getOrCreatePersistenceProvider().run(true, new RunVoid() {
+                public void runWith(EntityManager em) {
+                    logEvents(em, eventBundle);
+                }
+            });
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+         }
+        
     }
 
     public void logEvents(EntityManager em, EventBundle eventBundle) {
@@ -581,15 +577,13 @@ public class NXAuditEventsService extends DefaultComponent implements NXAuditEve
         EventContext ctx = event.getContext();
         if (ctx instanceof DocumentEventContext) {
             DocumentEventContext docCtx = (DocumentEventContext) ctx;
-            logDocumentEvent(em, event.getName(), docCtx, new Date(
-                    event.getTime()));
+            logDocumentEvent(em, event.getName(), docCtx, new Date(event.getTime()));
         } else {
             logMiscEvent(em, event.getName(), ctx, new Date(event.getTime()));
         }
     }
 
-    protected void logDocumentEvent(EntityManager em, String eventName,
-            DocumentEventContext docCtx, Date eventDate) {
+    protected void logDocumentEvent(EntityManager em, String eventName, DocumentEventContext docCtx, Date eventDate) {
         DocumentModel document = docCtx.getSourceDocument();
         Principal principal = docCtx.getPrincipal();
         Map<String, Serializable> properties = docCtx.getProperties();
@@ -618,8 +612,7 @@ public class NXAuditEventsService extends DefaultComponent implements NXAuditEve
             entry.setComment("Document does not exist anymore!");
             log.warn("Document associated to event does not exists anymore");
         } catch (ClientException e1) {
-            throw new AuditRuntimeException(
-                    "Cannot fetch life cycle state from " + document, e1);
+            throw new AuditRuntimeException("Cannot fetch life cycle state from " + document, e1);
         }
         entry.setCategory("eventDocumentCategory");
 
@@ -628,8 +621,7 @@ public class NXAuditEventsService extends DefaultComponent implements NXAuditEve
         addLogEntry(em, entry);
     }
 
-    protected void logMiscEvent(EntityManager em, String eventName,
-            EventContext ctx, Date eventDate) {
+    protected void logMiscEvent(EntityManager em, String eventName, EventContext ctx, Date eventDate) {
         Principal principal = ctx.getPrincipal();
         Map<String, Serializable> properties = ctx.getProperties();
 
@@ -646,7 +638,5 @@ public class NXAuditEventsService extends DefaultComponent implements NXAuditEve
 
         addLogEntry(em, entry);
     }
-
-
 
 }

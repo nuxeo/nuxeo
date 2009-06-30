@@ -41,7 +41,7 @@ import org.w3c.dom.Element;
 
 /**
  * Simple restlet to export vocabularies content.
- * 
+ *
  * @author tiry
  */
 public class VocabularyRestlet extends BaseStatelessNuxeoRestlet {
@@ -51,8 +51,8 @@ public class VocabularyRestlet extends BaseStatelessNuxeoRestlet {
     // XXX TODO : add an API to be able to get one entry ?
     // XXX TODO : add an API to browse hierarchical voc
 
-   
-    
+
+
     private String getTranslation(String key, java.util.Locale local) {
         try {
             ResourceBundle bundle = ResourceBundle.getBundle("messages", local,
@@ -121,7 +121,7 @@ public class VocabularyRestlet extends BaseStatelessNuxeoRestlet {
                 }
             } else if (directorySchema.equals("xvocabulary")) {
                 final Tree.Builder treeBuilder = new Tree.Builder();
-            
+
                 for (final DocumentModel doc : dirSession.getEntries()) {
                     final String id = doc.getId();
                     final String label = (String) doc.getProperty(
@@ -133,7 +133,7 @@ public class VocabularyRestlet extends BaseStatelessNuxeoRestlet {
 
                     final SimpleVocabulary voca = new SimpleVocabulary(id,
                             label, translatedLabel, vocName);
-                 
+
 
                     try {
                         treeBuilder.addElement(parent, constructHierarchicalParent(vocName, parent), voca);
@@ -162,11 +162,11 @@ public class VocabularyRestlet extends BaseStatelessNuxeoRestlet {
 
         res.setEntity(result.asXML(), MediaType.TEXT_XML);
     }
-    
+
     /*
-     * constructs the Hierarchical parent for a given parentId going up in the hierarchy until 
-     * the first parent with no parent is found  
-     * */ 
+     * constructs the Hierarchical parent for a given parentId going up in the hierarchy until
+     * the first parent with no parent is found
+     * */
     private HierarchicalVocabulary constructHierarchicalParent(
             String vocabularyName, String parentId) throws Exception {
         DirectoryService directoryService;
@@ -179,7 +179,7 @@ public class VocabularyRestlet extends BaseStatelessNuxeoRestlet {
             return null;
         }
         HierarchicalVocabulary parentVoca1 = null;
-        
+
         String parentVocabulary = directoryService.getParentDirectoryName(vocabularyName);
         while (parentVocabulary != null) {
             Session parentDirSession = directoryService.open(parentVocabulary);
@@ -208,7 +208,7 @@ public class VocabularyRestlet extends BaseStatelessNuxeoRestlet {
                 parentDirSession.close();
                 break;
             }
-            
+
         }
         return parentVoca1;
     }

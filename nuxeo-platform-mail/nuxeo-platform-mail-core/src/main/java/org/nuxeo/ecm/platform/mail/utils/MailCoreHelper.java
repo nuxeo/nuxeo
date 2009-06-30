@@ -20,8 +20,8 @@
 package org.nuxeo.ecm.platform.mail.utils;
 
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.CORE_SESSION_ID_KEY;
-import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.EMAIL_PROPERTY_NAME;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.EMAILS_LIMIT_PROPERTY_NAME;
+import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.EMAIL_PROPERTY_NAME;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.HOST_PROPERTY_NAME;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.IMAP;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.MIMETYPE_SERVICE_KEY;
@@ -56,7 +56,6 @@ import org.nuxeo.ecm.platform.mail.action.MessageActionPipe;
 import org.nuxeo.ecm.platform.mail.action.Visitor;
 import org.nuxeo.ecm.platform.mail.service.MailService;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
-import org.nuxeo.ecm.platfrom.mail.listener.MailEventListener;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -67,7 +66,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public final class MailCoreHelper {
 
-    private static final Log log = LogFactory.getLog(MailEventListener.class);
+    private static final Log log = LogFactory.getLog(MailCoreHelper.class);
 
     public static final String PIPE_NAME = "nxmail";
 

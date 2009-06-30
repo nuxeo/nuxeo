@@ -40,7 +40,7 @@ public interface PictureTilesAdapter {
 
     void setDoc(DocumentModel doc);
 
-    public void setFileName(String fileName);
+    void setFileName(String fileName);
 
     void cleanup();
 }

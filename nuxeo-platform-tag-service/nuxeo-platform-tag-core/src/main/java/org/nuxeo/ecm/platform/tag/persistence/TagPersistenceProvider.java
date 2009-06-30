@@ -186,7 +186,6 @@ public class TagPersistenceProvider {
             // table exists already
             doRollback(em);
         }
-
     }
 
     private String getCreateSql(Dialect dialect) {
@@ -207,4 +206,5 @@ public class TagPersistenceProvider {
         table.addColumn(column);
         return table.getCreateSql(dialect);
     }
+
 }

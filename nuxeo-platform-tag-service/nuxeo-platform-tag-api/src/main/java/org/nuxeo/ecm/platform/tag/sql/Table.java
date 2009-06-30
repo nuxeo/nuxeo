@@ -22,7 +22,7 @@ import org.hibernate.dialect.Dialect;
 
 /**
  * Table creation manager.
- * 
+ *
  * @author mcedica
  */
 public class Table implements Serializable {
@@ -55,9 +55,6 @@ public class Table implements Serializable {
         return columns;
     }
 
-    /**
-     * @param column the column
-     */
     public void addColumn(Column column){
             columns.add(column);
     }

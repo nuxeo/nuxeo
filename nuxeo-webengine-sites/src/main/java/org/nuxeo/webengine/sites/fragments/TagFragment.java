@@ -38,16 +38,16 @@ import org.nuxeo.webengine.sites.utils.SiteUtils;
  * Action fragment for initializing the fragment related to the list with the
  * details about the <b>Tag</b>-s that have been created under a webpage, in the
  * fragment initialization mechanism.
- * 
+ *
  * @author rux
- * 
+ *
  */
 public class TagFragment extends AbstractFragment {
 
     /**
      * Returns the list with the details about the <b>Tag</b>-s that have been
      * created under a webpage.
-     * 
+     *
      */
     @Override
     public Model getModel() throws ModelException {
@@ -108,7 +108,7 @@ public class TagFragment extends AbstractFragment {
         if (principal.isAdministrator()) {
             return true;
         }
-        
+
         return taggingId != null;
     }
 }

@@ -19,9 +19,9 @@ import org.nuxeo.theme.models.AbstractModel;
 /**
  * Model related to the list with the details about the <b>Tag</b>-s that have
  * been created under a webpage, in the fragment initialization mechanism.
- * 
+ *
  * @author rux
- * 
+ *
  */
 public class TagModel extends AbstractModel {
 

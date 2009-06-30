@@ -23,6 +23,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -42,6 +44,8 @@ public class RelationHelper {
 
     static RelationManager relationManager;
 
+    private static final Log log = LogFactory.getLog(RelationHelper.class);
+
     // Utility class.
     private RelationHelper() {
     }
@@ -51,7 +55,7 @@ public class RelationHelper {
             try {
                 relationManager = Framework.getService(RelationManager.class);
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error(e);
             }
         }
         return relationManager;
@@ -109,7 +113,7 @@ public class RelationHelper {
                 return docs;
             }
         } catch (ClientException e) {
-            e.printStackTrace();
+            log.error(e);
         }
         return null;
     }
@@ -133,7 +137,31 @@ public class RelationHelper {
                 return docs;
             }
         } catch (ClientException e) {
-            e.printStackTrace();
+            log.error(e);
+        }
+        return null;
+    }
+
+    public static DocumentModelList getSubjectDocumentsOut(Resource predicat,
+            DocumentModel objectDocument) {
+        try {
+            QNameResource docResource = getDocumentResource(objectDocument);
+            Statement pattern = new StatementImpl(docResource, predicat, null);
+            List<Statement> stmts = getRelationManager().getStatements(
+                    RelationConstants.GRAPH_NAME, pattern);
+            if (stmts != null) {
+                DocumentModelList docs = new DocumentModelListImpl();
+                for (Statement stmt : stmts) {
+                    DocumentModel d = getDocumentModel(stmt.getObject(),
+                            objectDocument.getSessionId());
+                    if (d != null) {
+                        docs.add(d);
+                    }
+                }
+                return docs;
+            }
+        } catch (ClientException e) {
+            log.error(e);
         }
         return null;
     }
@@ -154,7 +182,7 @@ public class RelationHelper {
                 return docs;
             }
         } catch (ClientException e) {
-            e.printStackTrace();
+            log.error(e);
         }
         return null;
     }
@@ -167,7 +195,7 @@ public class RelationHelper {
             return getRelationManager().getStatements(
                     RelationConstants.GRAPH_NAME, pattern);
         } catch (ClientException e) {
-            e.printStackTrace();
+            log.error(e);
         }
         return null;
     }
@@ -182,7 +210,7 @@ public class RelationHelper {
             stmts.add(stmt);
             getRelationManager().remove(RelationConstants.GRAPH_NAME, stmts);
         } catch (ClientException e) {
-            e.printStackTrace();
+            log.error(e);
         }
     }
 

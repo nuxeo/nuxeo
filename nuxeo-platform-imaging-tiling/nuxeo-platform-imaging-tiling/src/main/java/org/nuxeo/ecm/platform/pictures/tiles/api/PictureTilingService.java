@@ -76,12 +76,12 @@ public interface PictureTilingService {
 
     void setWorkingDirPath(String path);
 
-    public Map<String, String> getBlobProperties();
+    Map<String, String> getBlobProperties();
 
-    public String getBlobProperty(String docType);
+    String getBlobProperty(String docType);
 
-    public String getBlobProperty(String docType, String defaultValue);
+    String getBlobProperty(String docType, String defaultValue);
 
-    public void removeCacheEntry(ImageResource resource) throws ClientException;
+    void removeCacheEntry(ImageResource resource) throws ClientException;
 
 }

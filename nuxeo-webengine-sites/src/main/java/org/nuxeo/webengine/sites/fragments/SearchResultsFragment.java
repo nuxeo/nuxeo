@@ -50,9 +50,9 @@ import org.nuxeo.webengine.sites.utils.SiteUtils;
  * certain webPage between all the pages under a <b>WebSite</b> that contains in
  * title, description , main content or attached files the given searchParam, or
  * related to searching all the documents for a certain tag
- * 
+ *
  * @author rux
- * 
+ *
  */
 public class SearchResultsFragment extends AbstractFragment {
 
@@ -62,7 +62,7 @@ public class SearchResultsFragment extends AbstractFragment {
      * Searches a certain webPage between all the pages under a <b>WebSite</b>
      * that contains in title, description , main content or attached files the
      * given searchParam.
-     * 
+     *
      */
     @Override
     public Model getModel() throws ModelException {

@@ -49,7 +49,7 @@ public final class CommentsConstants {
 
     public static final String COMMENT_PUBLISHED = "commentPublished";
 
-    
+
     /**
      * Schemas and fields.
      */

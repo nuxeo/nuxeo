@@ -30,7 +30,7 @@ public final class SimpleVocabulary {
     private final String label;
 
     private final String translatedLabel;
-    
+
     private  String vocabularyName ="" ;
 
     public SimpleVocabulary(final String id, final String label, final String translatedLabel) {
@@ -38,7 +38,7 @@ public final class SimpleVocabulary {
         this.label = label;
         this.translatedLabel = translatedLabel;
     }
-    
+
     public SimpleVocabulary(final String id, final String label, final String translatedLabel, String vocabularyName ) {
         this.id = id;
         this.label = label;
@@ -57,7 +57,7 @@ public final class SimpleVocabulary {
     public String getTranslatedLabel() {
         return translatedLabel;
     }
-    
+
     public String getvocabularyName() {
         return vocabularyName;
     }

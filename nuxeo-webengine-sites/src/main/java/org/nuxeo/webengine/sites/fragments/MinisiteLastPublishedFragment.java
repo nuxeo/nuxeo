@@ -40,9 +40,9 @@ import org.nuxeo.webengine.sites.utils.SiteUtils;
  * Action fragment for initializing the fragment related to retrieving a certain
  * number of pages with information about the last modified <b>WebPage</b>-s
  * that are made under an <b>WebSite</b> or <b>WebPage</b>
- * 
+ *
  * @author rux
- * 
+ *
  */
 public class MinisiteLastPublishedFragment extends AbstractFragment {
 

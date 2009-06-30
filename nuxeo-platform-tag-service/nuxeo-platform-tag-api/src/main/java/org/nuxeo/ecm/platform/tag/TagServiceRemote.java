@@ -18,7 +18,7 @@ package org.nuxeo.ecm.platform.tag;
 
 /**
  * Remote interface for Tags.
- * 
+ *
  * @author rux
  */
 public interface TagServiceRemote extends TagService {

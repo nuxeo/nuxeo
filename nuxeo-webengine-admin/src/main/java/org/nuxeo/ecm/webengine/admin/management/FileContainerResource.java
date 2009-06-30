@@ -57,7 +57,7 @@ public class FileContainerResource {
     public File getRoot() {
         return root;
     }
-    
+
     public boolean isReadOnly() {
         return isReadOnly;
     }
@@ -92,7 +92,7 @@ public class FileContainerResource {
             name = file;
         }
         if (name.contains("..")) {
-            return Response.ok(403).build(); 
+            return Response.ok(403).build();
         }
         File f = new File(root, name);
         if (isDir) {
@@ -129,7 +129,7 @@ public class FileContainerResource {
         if (!root.exists()) {
             root.mkdirs();
         } else{
-            root.setLastModified(new Date().getTime());    
+            root.setLastModified(new Date().getTime());
         }
         return Response.ok().build();
     }
@@ -140,7 +140,7 @@ public class FileContainerResource {
             return Response.ok(403).build();
         }
         if (!root.isDirectory()) {
-            return Response.ok(404).build();    
+            return Response.ok(404).build();
         }
         FileUtils.deleteTree(root);
         return Response.ok().build();
@@ -150,7 +150,7 @@ public class FileContainerResource {
     public String getLastModified(File file) {
         return formatDate(new Date(file.lastModified()));
     }
-    
+
     public static String formatDate(Date date) {
         StringBuilder sb = new StringBuilder();
         Calendar c = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
