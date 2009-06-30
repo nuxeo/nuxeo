@@ -30,16 +30,16 @@ import org.nuxeo.ecm.webengine.model.impl.AbstractWebContext;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class WebEngineContext extends AbstractWebContext {// extends HttpRequestImpl implements WebContext2 {
-
-    //private static final Log log = LogFactory.getLog(WebContext.class);
+public class WebEngineContext extends AbstractWebContext {
 
     protected UriInfo uri;
+
     protected final HttpRequest jaxReq;
 
     public WebEngineContext(HttpRequest jaxReq, HttpServletRequest request) {
         super(request);
         this.jaxReq = jaxReq;
+
     }
 
     public HttpServletRequest getHttpServletRequest() {

@@ -64,18 +64,29 @@ public abstract class AbstractWebContext implements WebContext {
 
     private static final Log log = LogFactory.getLog(WebContext.class);
 
-    public static Locale DEFAULT_LOCALE = Locale.ENGLISH; // this should be made configurable through an extension point
+    // this should be made configurable through an extension point
+    public static Locale DEFAULT_LOCALE = Locale.ENGLISH;
 
     protected final WebEngine engine;
+
     protected final UserSession us;
+
     protected final LinkedList<File> scriptExecutionStack;
+
     protected final HttpServletRequest request;
+
     protected final Map<String, Object> vars;
+
     protected AbstractResource<?> head;
+
     protected AbstractResource<?> tail;
+
     protected AbstractResource<?> root;
+
     protected Module module;
+
     protected FormData form;
+
     protected String basePath;
 
     protected AbstractWebContext(HttpServletRequest request) {
@@ -86,9 +97,8 @@ public abstract class AbstractWebContext implements WebContext {
         vars = new HashMap<String, Object>();
     }
 
-//    public abstract HttpServletRequest getHttpServletRequest();
-//    public abstract HttpServletResponse getHttpServletResponse();
-
+    // public abstract HttpServletRequest getHttpServletRequest();
+    // public abstract HttpServletResponse getHttpServletResponse();
 
     public void setModule(Module module) {
         this.module = module;
@@ -100,7 +110,7 @@ public abstract class AbstractWebContext implements WebContext {
 
     public <T> T getAdapter(Class<T> adapter) {
         if (CoreSession.class == adapter) {
-          return adapter.cast(getCoreSession());
+            return adapter.cast(getCoreSession());
         } else if (Principal.class == adapter) {
             return adapter.cast(getPrincipal());
         } else if (Resource.class == adapter) {
@@ -156,11 +166,12 @@ public abstract class AbstractWebContext implements WebContext {
         }
     }
 
-    public String getMessage(String key, String ... args) {
+    public String getMessage(String key, String... args) {
         Messages messages = module.getMessages();
         try {
             String msg = messages.getString(key, getLocale().getLanguage());
-            if (args != null && args.length > 0) { // format the string using given args
+            if (args != null && args.length > 0) { // format the string using
+                                                    // given args
                 msg = MessageFormat.format(msg, (Object[]) args);
             }
             return msg;
@@ -178,11 +189,12 @@ public abstract class AbstractWebContext implements WebContext {
         }
     }
 
-    public String getMessageL(String key, String locale, String ... args) {
+    public String getMessageL(String key, String locale, String... args) {
         Messages messages = module.getMessages();
         try {
             String msg = messages.getString(key, locale);
-            if (args != null && args.length > 0) { // format the string using given args
+            if (args != null && args.length > 0) { // format the string using
+                                                    // given args
                 msg = MessageFormat.format(msg, (Object[]) args);
             }
             return msg;
@@ -196,35 +208,39 @@ public abstract class AbstractWebContext implements WebContext {
         return locale == null ? DEFAULT_LOCALE : locale;
     }
 
-    public Resource newObject(String typeName, Object ...  args) {
+    public Resource newObject(String typeName, Object... args) {
         ResourceType type = module.getType(typeName);
         if (type == null) {
-            throw new WebResourceNotFoundException("No Such Object Type: "+typeName);
+            throw new WebResourceNotFoundException("No Such Object Type: "
+                    + typeName);
         }
         return newObject(type, args);
     }
 
-    public Resource newObject(ResourceType type, Object ...  args) {
+    public Resource newObject(ResourceType type, Object... args) {
         Resource obj = type.newInstance();
         try {
             obj.initialize(this, type, args);
         } finally {
             // we must be sure the object is pushed even if an error occurred
-            // otherwise we may end up with an empty object stack and we will not be able to
+            // otherwise we may end up with an empty object stack and we will
+            // not be able to
             // handle errors based on objects handleError() method
             push(obj);
         }
         return obj;
     }
 
-    public AdapterResource newAdapter(Resource ctx, String serviceName, Object ...  args) {
+    public AdapterResource newAdapter(Resource ctx, String serviceName,
+            Object... args) {
         AdapterType st = module.getAdapter(ctx, serviceName);
-        AdapterResource service = (AdapterResource)st.newInstance();
+        AdapterResource service = (AdapterResource) st.newInstance();
         try {
             service.initialize(this, st, args);
         } finally {
             // we must be sure the object is pushed even if an error occurred
-            // otherwise we may end up with an empty object stack and we will not be able to
+            // otherwise we may end up with an empty object stack and we will
+            // not be able to
             // handle errors based on objects handleError() method
             push(service);
         }
@@ -235,13 +251,13 @@ public abstract class AbstractWebContext implements WebContext {
         vars.put(key, value);
     }
 
-    //TODO: use FormData to get query params?
+    // TODO: use FormData to get query params?
     public Object getProperty(String key) {
         Object value = getUriInfo().getPathParameters().getFirst(key);
         if (value == null) {
             value = request.getParameter(key);
             if (value == null) {
-                value =  vars.get(key);
+                value = vars.get(key);
             }
         }
         return value;
@@ -276,7 +292,8 @@ public abstract class AbstractWebContext implements WebContext {
 
     public String getBasePath() {
         if (basePath == null) {
-            StringBuilder buf = new StringBuilder(request.getRequestURI().length());
+            StringBuilder buf = new StringBuilder(
+                    request.getRequestURI().length());
             String path = request.getContextPath();
             if (path == null) {
                 path = "/nuxeo/site"; // for testing
@@ -284,8 +301,8 @@ public abstract class AbstractWebContext implements WebContext {
             buf.append(path).append(request.getServletPath());
 
             int len = buf.length();
-            if (len > 0 && buf.charAt(len-1) == '/') {
-                buf.setLength(len-1);
+            if (len > 0 && buf.charAt(len - 1) == '/') {
+                buf.setLength(len - 1);
             }
             basePath = buf.toString();
         }
@@ -303,14 +320,15 @@ public abstract class AbstractWebContext implements WebContext {
 
     public StringBuilder getServerURL() {
         StringBuilder buf = new StringBuilder();
-        String scheme = request.getScheme ();
-        int port = request.getServerPort ();
+        String scheme = request.getScheme();
+        int port = request.getServerPort();
         String urlPath = request.getRequestURI();
         if (urlPath.length() == 0) {
             urlPath = "/";
         }
         buf.append(scheme).append("://").append(request.getServerName());
-        if ("http".equals(scheme) && port != 80 || "https".equals(scheme) && port != 443) {
+        if ("http".equals(scheme) && port != 80 || "https".equals(scheme)
+                && port != 443) {
             buf.append(':');
             buf.append(request.getServerPort());
         }
@@ -323,12 +341,11 @@ public abstract class AbstractWebContext implements WebContext {
 
     public String getURL() {
         StringBuffer sb = request.getRequestURL();
-        if (sb.charAt(sb.length()-1) == '/') {
-            sb.setLength(sb.length()-1);
+        if (sb.charAt(sb.length() - 1) == '/') {
+            sb.setLength(sb.length() - 1);
         }
         return sb.toString();
     }
-
 
     public StringBuilder getUrlPathBuffer() {
         StringBuilder buf = new StringBuilder(request.getRequestURI().length());
@@ -352,18 +369,19 @@ public abstract class AbstractWebContext implements WebContext {
     public String getLoginPath() {
         StringBuilder buf = getUrlPathBuffer();
         int len = buf.length();
-        if (len > 0 && buf.charAt(len-1) == '/') { // remove trailing /
-            buf.setLength(len-1);
+        if (len > 0 && buf.charAt(len - 1) == '/') { // remove trailing /
+            buf.setLength(len - 1);
         }
         buf.append(WebEngineFormAuthenticator.LOGIN_KEY);
         return buf.toString();
     }
 
     /**
-     * This method is working only for root objects that implement {@link ModuleResource}
+     * This method is working only for root objects that implement
+     * {@link ModuleResource}
      */
     public String getUrlPath(DocumentModel document) {
-        return ((ModuleResource)head).getLink(document);
+        return ((ModuleResource) head).getLink(document);
     }
 
     public Log getLog() {
@@ -372,9 +390,8 @@ public abstract class AbstractWebContext implements WebContext {
 
     /* object stack API */
 
-
     public Resource push(Resource obj) {
-        AbstractResource<?> rs = (AbstractResource<?>)obj;
+        AbstractResource<?> rs = (AbstractResource<?>) obj;
         if (tail != null) {
             tail.next = rs;
             rs.prev = tail;
@@ -420,7 +437,8 @@ public abstract class AbstractWebContext implements WebContext {
             File file = getCurrentScriptDirectory();
             if (file != null) {
                 try {
-                    // get the file local path - TODO this should be done in ScriptFile?
+                    // get the file local path - TODO this should be done in
+                    // ScriptFile?
                     file = new File(file, path).getCanonicalFile();
                     if (file.isFile()) {
                         return new ScriptFile(file);
@@ -442,7 +460,8 @@ public abstract class AbstractWebContext implements WebContext {
 
     public void pushScriptFile(File file) {
         if (scriptExecutionStack.size() > 64) { // stack limit
-            throw new IllegalStateException("Script execution stack overflowed. More than 64 calls between scripts");
+            throw new IllegalStateException(
+                    "Script execution stack overflowed. More than 64 calls between scripts");
         }
         if (file == null) {
             throw new IllegalArgumentException("Cannot push a null file");
@@ -453,9 +472,10 @@ public abstract class AbstractWebContext implements WebContext {
     public File popScriptFile() {
         int size = scriptExecutionStack.size();
         if (size == 0) {
-            throw new IllegalStateException("Script execution stack underflowed. No script path to pop");
+            throw new IllegalStateException(
+                    "Script execution stack underflowed. No script path to pop");
         }
-        return scriptExecutionStack.remove(size-1);
+        return scriptExecutionStack.remove(size - 1);
     }
 
     public File getCurrentScriptFile() {
@@ -463,7 +483,7 @@ public abstract class AbstractWebContext implements WebContext {
         if (size == 0) {
             return null;
         }
-        return scriptExecutionStack.get(size-1);
+        return scriptExecutionStack.get(size - 1);
     }
 
     public File getCurrentScriptDirectory() {
@@ -471,7 +491,7 @@ public abstract class AbstractWebContext implements WebContext {
         if (size == 0) {
             return null;
         }
-        return scriptExecutionStack.get(size-1).getParentFile();
+        return scriptExecutionStack.get(size - 1).getParentFile();
     }
 
     /* running scripts and rendering templates */
@@ -485,7 +505,8 @@ public abstract class AbstractWebContext implements WebContext {
         if (script != null) {
             render(script, ctx, writer);
         } else {
-            throw new WebResourceNotFoundException("Template not found: "+template);
+            throw new WebResourceNotFoundException("Template not found: "
+                    + template);
         }
     }
 
@@ -499,7 +520,7 @@ public abstract class AbstractWebContext implements WebContext {
             String template = script.getURL();
             Map<String, Object> bindings = createBindings(map);
             if (log.isDebugEnabled()) {
-                log.debug("## Rendering: "+template);
+                log.debug("## Rendering: " + template);
             }
             pushScriptFile(script.getFile());
             engine.getRendering().render(template, bindings, writer);
@@ -522,7 +543,8 @@ public abstract class AbstractWebContext implements WebContext {
         if (sf != null) {
             return runScript(sf, args);
         } else {
-            throw new WebResourceNotFoundException("Script not found: "+script);
+            throw new WebResourceNotFoundException("Script not found: "
+                    + script);
         }
     }
 
@@ -533,7 +555,7 @@ public abstract class AbstractWebContext implements WebContext {
         } catch (WebException e) {
             throw e;
         } catch (Exception e) {
-            throw WebException.wrap("Failed to run script "+script, e);
+            throw WebException.wrap("Failed to run script " + script, e);
         } finally {
             if (!scriptExecutionStack.isEmpty()) {
                 popScriptFile();
@@ -569,7 +591,7 @@ public abstract class AbstractWebContext implements WebContext {
         Resource t = tail;
         while (t != null) {
             if (t.isAdapter()) {
-                return (AdapterResource)t;
+                return (AdapterResource) t;
             }
             t = t.getPrevious();
         }
